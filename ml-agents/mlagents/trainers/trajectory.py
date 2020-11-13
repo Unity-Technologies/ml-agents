@@ -1,4 +1,4 @@
-from typing import List, NamedTuple
+from typing import List, NamedTuple, Dict
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
@@ -8,8 +8,8 @@ class AgentExperience(NamedTuple):
     obs: List[np.ndarray]
     reward: float
     done: bool
-    action: np.ndarray
-    action_probs: np.ndarray
+    action: Dict[str, np.ndarray]
+    action_probs: Dict[str, np.ndarray]
     action_pre: np.ndarray  # TODO: Remove this
     action_mask: np.ndarray
     prev_action: np.ndarray
@@ -107,12 +107,13 @@ class Trajectory(NamedTuple):
             agent_buffer_trajectory["done"].append(exp.done)
             # Add the outputs of the last eval
             if exp.action_pre is not None:
-                actions_pre = exp.action_pre
-                agent_buffer_trajectory["actions_pre"].append(actions_pre)
+                agent_buffer_trajectory["actions_pre"].append(exp.action_pre)
 
-            # value is a dictionary from name of reward to value estimate of the value head
-            agent_buffer_trajectory["actions"].append(exp.action)
-            agent_buffer_trajectory["action_probs"].append(exp.action_probs)
+            # Adds the log prob and action of continuous/discrete separately
+            for act_type, act_array in exp.action.items():
+                agent_buffer_trajectory[act_type].append(act_array)
+            for log_type, log_array in exp.action_probs.items():
+                agent_buffer_trajectory[log_type].append(log_array)
 
             # Store action masks if necessary. Note that 1 means active, while
             # in AgentExperience False means active.
@@ -122,10 +123,14 @@ class Trajectory(NamedTuple):
             else:
                 # This should never be needed unless the environment somehow doesn't supply the
                 # action mask in a discrete space.
-                agent_buffer_trajectory["action_mask"].append(
-                    np.ones(exp.action_probs.shape, dtype=np.float32), padding_value=1
-                )
 
+                if "discrete_action" in exp.action:
+                    action_shape = exp.action["discrete_action"].shape
+                else:
+                    action_shape = exp.action["continuous_action"].shape
+                agent_buffer_trajectory["action_mask"].append(
+                    np.ones(action_shape, dtype=np.float32), padding_value=1
+                )
             agent_buffer_trajectory["prev_action"].append(exp.prev_action)
             agent_buffer_trajectory["environment_rewards"].append(exp.reward)
 

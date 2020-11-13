@@ -66,7 +66,15 @@ def make_demo_buffer(
         for i, obs in enumerate(split_obs.visual_observations):
             demo_raw_buffer["visual_obs%d" % i].append(obs)
         demo_raw_buffer["vector_obs"].append(split_obs.vector_observations)
-        demo_raw_buffer["actions"].append(current_pair_info.action_info.vector_actions)
+        # TODO: update to read from the new proto format
+        if behavior_spec.action_spec.continuous_size > 0:
+            demo_raw_buffer["continuous_action"].append(
+                current_pair_info.action_info.vector_actions
+            )
+        if behavior_spec.action_spec.discrete_size > 0:
+            demo_raw_buffer["discrete_action"].append(
+                current_pair_info.action_info.vector_actions
+            )
         demo_raw_buffer["prev_action"].append(previous_action)
         if next_done:
             demo_raw_buffer.resequence_and_append(
@@ -93,17 +101,10 @@ def demo_to_buffer(
     demo_buffer = make_demo_buffer(info_action_pair, behavior_spec, sequence_length)
     if expected_behavior_spec:
         # check action dimensions in demonstration match
-        if behavior_spec.action_shape != expected_behavior_spec.action_shape:
+        if behavior_spec.action_spec != expected_behavior_spec.action_spec:
             raise RuntimeError(
-                "The action dimensions {} in demonstration do not match the policy's {}.".format(
-                    behavior_spec.action_shape, expected_behavior_spec.action_shape
-                )
-            )
-        # check the action types in demonstration match
-        if behavior_spec.action_type != expected_behavior_spec.action_type:
-            raise RuntimeError(
-                "The action type of {} in demonstration do not match the policy's {}.".format(
-                    behavior_spec.action_type, expected_behavior_spec.action_type
+                "The action spaces {} in demonstration do not match the policy's {}.".format(
+                    behavior_spec.action_spec, expected_behavior_spec.action_spec
                 )
             )
         # check observations match

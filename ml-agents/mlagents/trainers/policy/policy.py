@@ -29,13 +29,14 @@ class Policy:
         condition_sigma_on_obs: bool = True,
     ):
         self.behavior_spec = behavior_spec
+        self.action_spec = behavior_spec.action_spec
         self.trainer_settings = trainer_settings
         self.network_settings: NetworkSettings = trainer_settings.network_settings
         self.seed = seed
         self.act_size = (
-            list(behavior_spec.discrete_action_branches)
-            if behavior_spec.is_action_discrete()
-            else [behavior_spec.action_size]
+            list(self.behavior_spec.action_spec.discrete_branches)
+            if self.behavior_spec.action_spec.is_discrete()
+            else [self.behavior_spec.action_spec.continuous_size]
         )
         self.vec_obs_size = sum(
             shape[0] for shape in behavior_spec.observation_shapes if len(shape) == 1
@@ -43,9 +44,8 @@ class Policy:
         self.vis_obs_size = sum(
             1 for shape in behavior_spec.observation_shapes if len(shape) == 3
         )
-        self.use_continuous_act = behavior_spec.is_action_continuous()
-        self.num_branches = self.behavior_spec.action_size
-        self.previous_action_dict: Dict[str, np.array] = {}
+        self.use_continuous_act = self.behavior_spec.action_spec.is_continuous()
+        self.previous_action_dict: Dict[str, np.ndarray] = {}
         self.memory_dict: Dict[str, np.ndarray] = {}
         self.normalize = trainer_settings.network_settings.normalize
         self.use_recurrent = self.network_settings.memory is not None
@@ -84,6 +84,7 @@ class Policy:
     ) -> None:
         if memory_matrix is None:
             return
+
         for index, agent_id in enumerate(agent_ids):
             self.memory_dict[agent_id] = memory_matrix[index, :]
 
@@ -99,24 +100,28 @@ class Policy:
             if agent_id in self.memory_dict:
                 self.memory_dict.pop(agent_id)
 
-    def make_empty_previous_action(self, num_agents):
+    def make_empty_previous_action(self, num_agents: int) -> np.ndarray:
         """
         Creates empty previous action for use with RNNs and discrete control
         :param num_agents: Number of agents.
         :return: Numpy array of zeros.
         """
-        return np.zeros((num_agents, self.num_branches), dtype=np.int)
+        return np.zeros(
+            (num_agents, self.behavior_spec.action_spec.discrete_size), dtype=np.int32
+        )
 
     def save_previous_action(
-        self, agent_ids: List[str], action_matrix: Optional[np.ndarray]
+        self, agent_ids: List[str], action_dict: Dict[str, np.ndarray]
     ) -> None:
-        if action_matrix is None:
+        if action_dict is None or "discrete_action" not in action_dict:
             return
         for index, agent_id in enumerate(agent_ids):
-            self.previous_action_dict[agent_id] = action_matrix[index, :]
+            self.previous_action_dict[agent_id] = action_dict["discrete_action"][
+                index, :
+            ]
 
     def retrieve_previous_action(self, agent_ids: List[str]) -> np.ndarray:
-        action_matrix = np.zeros((len(agent_ids), self.num_branches), dtype=np.int)
+        action_matrix = self.make_empty_previous_action(len(agent_ids))
         for index, agent_id in enumerate(agent_ids):
             if agent_id in self.previous_action_dict:
                 action_matrix[index, :] = self.previous_action_dict[agent_id]

@@ -62,7 +62,9 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
                 [self.value_heads, self.policy.memory_out, self.memory_out], feed_dict
             )
             prev_action = (
-                batch["actions"][-1] if not self.policy.use_continuous_act else None
+                batch["discrete_action"][-1]
+                if not self.policy.use_continuous_act
+                else None
             )
         else:
             value_estimates = self.sess.run(self.value_heads, feed_dict)

@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
+import numpy as np
+
 from typing import List, Dict, NamedTuple, Iterable, Tuple
 from mlagents_envs.base_env import (
     DecisionSteps,
     TerminalSteps,
     BehaviorSpec,
     BehaviorName,
+    ActionTuple,
 )
 from mlagents_envs.side_channel.stats_side_channel import EnvironmentStats
 
@@ -143,3 +146,13 @@ class EnvManager(ABC):
                     step_info.environment_stats, step_info.worker_id
                 )
         return len(step_infos)
+
+    @staticmethod
+    def action_tuple_from_numpy_dict(action_dict: Dict[str, np.ndarray]) -> ActionTuple:
+        continuous: np.ndarray = None
+        discrete: np.ndarray = None
+        if "continuous_action" in action_dict:
+            continuous = action_dict["continuous_action"]
+        if "discrete_action" in action_dict:
+            discrete = action_dict["discrete_action"]
+        return ActionTuple(continuous, discrete)

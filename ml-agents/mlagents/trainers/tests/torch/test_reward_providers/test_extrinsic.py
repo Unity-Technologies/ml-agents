@@ -3,18 +3,22 @@ from mlagents.trainers.torch.components.reward_providers import (
     ExtrinsicRewardProvider,
     create_reward_provider,
 )
-from mlagents_envs.base_env import BehaviorSpec, ActionType
+from mlagents_envs.base_env import BehaviorSpec, ActionSpec
 from mlagents.trainers.settings import RewardSignalSettings, RewardSignalType
 from mlagents.trainers.tests.torch.test_reward_providers.utils import (
     create_agent_buffer,
 )
 
 
+ACTIONSPEC_CONTINUOUS = ActionSpec.create_continuous(5)
+ACTIONSPEC_TWODISCRETE = ActionSpec.create_discrete((2, 3))
+
+
 @pytest.mark.parametrize(
     "behavior_spec",
     [
-        BehaviorSpec([(10,)], ActionType.CONTINUOUS, 5),
-        BehaviorSpec([(10,)], ActionType.DISCRETE, (2, 3)),
+        BehaviorSpec([(10,)], ACTIONSPEC_CONTINUOUS),
+        BehaviorSpec([(10,)], ACTIONSPEC_TWODISCRETE),
     ],
 )
 def test_construction(behavior_spec: BehaviorSpec) -> None:
@@ -28,8 +32,8 @@ def test_construction(behavior_spec: BehaviorSpec) -> None:
 @pytest.mark.parametrize(
     "behavior_spec",
     [
-        BehaviorSpec([(10,)], ActionType.CONTINUOUS, 5),
-        BehaviorSpec([(10,)], ActionType.DISCRETE, (2, 3)),
+        BehaviorSpec([(10,)], ACTIONSPEC_CONTINUOUS),
+        BehaviorSpec([(10,)], ACTIONSPEC_TWODISCRETE),
     ],
 )
 def test_factory(behavior_spec: BehaviorSpec) -> None:
@@ -44,8 +48,8 @@ def test_factory(behavior_spec: BehaviorSpec) -> None:
 @pytest.mark.parametrize(
     "behavior_spec",
     [
-        BehaviorSpec([(10,)], ActionType.CONTINUOUS, 5),
-        BehaviorSpec([(10,)], ActionType.DISCRETE, (2, 3)),
+        BehaviorSpec([(10,)], ACTIONSPEC_CONTINUOUS),
+        BehaviorSpec([(10,)], ACTIONSPEC_TWODISCRETE),
     ],
 )
 def test_reward(behavior_spec: BehaviorSpec, reward: float) -> None:

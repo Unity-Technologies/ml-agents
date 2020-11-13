@@ -1,6 +1,6 @@
 from mlagents_envs.base_env import (
+    ActionSpec,
     BehaviorSpec,
-    ActionType,
     DecisionSteps,
     TerminalSteps,
 )
@@ -14,7 +14,7 @@ from mlagents_envs.communicator_objects.observation_pb2 import (
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 import numpy as np
 import io
-from typing import cast, List, Tuple, Union, Collection, Optional, Iterable
+from typing import cast, List, Tuple, Collection, Optional, Iterable
 from PIL import Image
 
 
@@ -31,18 +31,12 @@ def behavior_spec_from_proto(
     :return: BehaviorSpec object.
     """
     observation_shape = [tuple(obs.shape) for obs in agent_info.observations]
-    action_type = (
-        ActionType.DISCRETE
-        if brain_param_proto.vector_action_space_type_deprecated == 0
-        else ActionType.CONTINUOUS
+    action_spec_proto = brain_param_proto.action_spec
+    action_spec = ActionSpec(
+        action_spec_proto.num_continuous_actions,
+        tuple(branch for branch in action_spec_proto.discrete_branch_sizes),
     )
-    if action_type == ActionType.CONTINUOUS:
-        action_shape: Union[
-            int, Tuple[int, ...]
-        ] = brain_param_proto.vector_action_size_deprecated[0]
-    else:
-        action_shape = tuple(brain_param_proto.vector_action_size_deprecated)
-    return BehaviorSpec(observation_shape, action_type, action_shape)
+    return BehaviorSpec(observation_shape, action_spec)
 
 
 class OffsetBytesIO:
@@ -318,13 +312,13 @@ def steps_from_proto(
         [agent_info.id for agent_info in terminal_agent_info_list], dtype=np.int32
     )
     action_mask = None
-    if behavior_spec.is_action_discrete():
+    if behavior_spec.action_spec.discrete_size > 0:
         if any(
             [agent_info.action_mask is not None]
             for agent_info in decision_agent_info_list
         ):
             n_agents = len(decision_agent_info_list)
-            a_size = np.sum(behavior_spec.discrete_action_branches)
+            a_size = np.sum(behavior_spec.action_spec.discrete_branches)
             mask_matrix = np.ones((n_agents, a_size), dtype=np.bool)
             for agent_index, agent_info in enumerate(decision_agent_info_list):
                 if agent_info.action_mask is not None:
@@ -334,7 +328,9 @@ def steps_from_proto(
                             for k in range(a_size)
                         ]
             action_mask = (1 - mask_matrix).astype(np.bool)
-            indices = _generate_split_indices(behavior_spec.discrete_action_branches)
+            indices = _generate_split_indices(
+                behavior_spec.action_spec.discrete_branches
+            )
             action_mask = np.split(action_mask, indices, axis=1)
     return (
         DecisionSteps(

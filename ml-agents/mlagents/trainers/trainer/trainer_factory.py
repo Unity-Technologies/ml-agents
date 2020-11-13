@@ -27,6 +27,7 @@ class TrainerFactory:
         init_path: str = None,
         multi_gpu: bool = False,
         force_torch: bool = False,
+        force_tensorflow: bool = False,
     ):
         """
         The TrainerFactory generates the Trainers based on the configuration passed as
@@ -45,7 +46,9 @@ class TrainerFactory:
         :param init_path: Path from which to load model.
         :param multi_gpu: If True, multi-gpu will be used. (currently not available)
         :param force_torch: If True, the Trainers will all use the PyTorch framework
-        instead of the TensorFlow framework.
+        instead of what is specified in the config YAML.
+        :param force_tensorflow: If True, thee Trainers will all use the TensorFlow
+        framework.
         """
         self.trainer_config = trainer_config
         self.output_path = output_path
@@ -57,6 +60,7 @@ class TrainerFactory:
         self.multi_gpu = multi_gpu
         self.ghost_controller = GhostController()
         self._force_torch = force_torch
+        self._force_tf = force_tensorflow
 
     def generate(self, behavior_name: str) -> Trainer:
         if behavior_name not in self.trainer_config.keys():
@@ -67,6 +71,18 @@ class TrainerFactory:
         trainer_settings = self.trainer_config[behavior_name]
         if self._force_torch:
             trainer_settings.framework = FrameworkType.PYTORCH
+            logger.warning(
+                "Note that specifying --torch is not required anymore as PyTorch is the default framework."
+            )
+        if self._force_tf:
+            trainer_settings.framework = FrameworkType.TENSORFLOW
+            logger.warning(
+                "Setting the framework to TensorFlow. TensorFlow trainers will be deprecated in the future."
+            )
+            if self._force_torch:
+                logger.warning(
+                    "Both --torch and --tensorflow CLI options were specified. Using TensorFlow."
+                )
         return TrainerFactory._initialize_trainer(
             trainer_settings,
             behavior_name,

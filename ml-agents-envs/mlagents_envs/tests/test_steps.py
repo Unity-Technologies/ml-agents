@@ -4,7 +4,7 @@ import numpy as np
 from mlagents_envs.base_env import (
     DecisionSteps,
     TerminalSteps,
-    ActionType,
+    ActionSpec,
     BehaviorSpec,
 )
 
@@ -35,9 +35,7 @@ def test_decision_steps():
 
 def test_empty_decision_steps():
     specs = BehaviorSpec(
-        observation_shapes=[(3, 2), (5,)],
-        action_type=ActionType.CONTINUOUS,
-        action_shape=3,
+        observation_shapes=[(3, 2), (5,)], action_spec=ActionSpec.create_continuous(3)
     )
     ds = DecisionSteps.empty(specs)
     assert len(ds.obs) == 2
@@ -70,9 +68,7 @@ def test_terminal_steps():
 
 def test_empty_terminal_steps():
     specs = BehaviorSpec(
-        observation_shapes=[(3, 2), (5,)],
-        action_type=ActionType.CONTINUOUS,
-        action_shape=3,
+        observation_shapes=[(3, 2), (5,)], action_spec=ActionSpec.create_continuous(3)
     )
     ts = TerminalSteps.empty(specs)
     assert len(ts.obs) == 2
@@ -81,38 +77,39 @@ def test_empty_terminal_steps():
 
 
 def test_specs():
-    specs = BehaviorSpec(
-        observation_shapes=[(3, 2), (5,)],
-        action_type=ActionType.CONTINUOUS,
-        action_shape=3,
-    )
-    assert specs.discrete_action_branches is None
-    assert specs.action_size == 3
-    assert specs.create_empty_action(5).shape == (5, 3)
-    assert specs.create_empty_action(5).dtype == np.float32
+    specs = ActionSpec.create_continuous(3)
+    assert specs.discrete_branches == ()
+    assert specs.discrete_size == 0
+    assert specs.continuous_size == 3
+    assert specs.empty_action(5).continuous.shape == (5, 3)
+    assert specs.empty_action(5).continuous.dtype == np.float32
 
-    specs = BehaviorSpec(
-        observation_shapes=[(3, 2), (5,)],
-        action_type=ActionType.DISCRETE,
-        action_shape=(3,),
-    )
-    assert specs.discrete_action_branches == (3,)
-    assert specs.action_size == 1
-    assert specs.create_empty_action(5).shape == (5, 1)
-    assert specs.create_empty_action(5).dtype == np.int32
+    specs = ActionSpec.create_discrete((3,))
+    assert specs.discrete_branches == (3,)
+    assert specs.discrete_size == 1
+    assert specs.continuous_size == 0
+    assert specs.empty_action(5).discrete.shape == (5, 1)
+    assert specs.empty_action(5).discrete.dtype == np.int32
+
+    specs = ActionSpec(3, (3,))
+    assert specs.continuous_size == 3
+    assert specs.discrete_branches == (3,)
+    assert specs.discrete_size == 1
+    assert specs.empty_action(5).continuous.shape == (5, 3)
+    assert specs.empty_action(5).continuous.dtype == np.float32
+    assert specs.empty_action(5).discrete.shape == (5, 1)
+    assert specs.empty_action(5).discrete.dtype == np.int32
 
 
 def test_action_generator():
     # Continuous
     action_len = 30
-    specs = BehaviorSpec(
-        observation_shapes=[(5,)],
-        action_type=ActionType.CONTINUOUS,
-        action_shape=action_len,
-    )
-    zero_action = specs.create_empty_action(4)
+    specs = ActionSpec.create_continuous(action_len)
+    zero_action = specs.empty_action(4).continuous
     assert np.array_equal(zero_action, np.zeros((4, action_len), dtype=np.float32))
-    random_action = specs.create_random_action(4)
+    print(specs.random_action(4))
+    random_action = specs.random_action(4).continuous
+    print(random_action)
     assert random_action.dtype == np.float32
     assert random_action.shape == (4, action_len)
     assert np.min(random_action) >= -1
@@ -120,15 +117,11 @@ def test_action_generator():
 
     # Discrete
     action_shape = (10, 20, 30)
-    specs = BehaviorSpec(
-        observation_shapes=[(5,)],
-        action_type=ActionType.DISCRETE,
-        action_shape=action_shape,
-    )
-    zero_action = specs.create_empty_action(4)
+    specs = ActionSpec.create_discrete(action_shape)
+    zero_action = specs.empty_action(4).discrete
     assert np.array_equal(zero_action, np.zeros((4, len(action_shape)), dtype=np.int32))
 
-    random_action = specs.create_random_action(4)
+    random_action = specs.random_action(4).discrete
     assert random_action.dtype == np.int32
     assert random_action.shape == (4, len(action_shape))
     assert np.min(random_action) >= 0

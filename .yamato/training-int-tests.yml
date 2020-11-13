@@ -19,7 +19,7 @@ test_mac_training_int_{{ editor.version }}:
     # If we make a breaking change to the communication protocol, these will need
     # to be disabled until the next release.
     - python -u -m ml-agents.tests.yamato.training_int_tests --python=0.16.0
-    - python -u -m ml-agents.tests.yamato.training_int_tests --csharp=1.0.0
+    - python -u -m ml-agents.tests.yamato.training_int_tests --csharp={{ editor.csharp_backcompat_version }}
   dependencies:
     - .yamato/standalone-build-test.yml#test_mac_standalone_{{ editor.version }}
   triggers:

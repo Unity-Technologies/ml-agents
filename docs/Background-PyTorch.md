@@ -1,29 +1,29 @@
-# Background: TensorFlow
+# Background: PyTorch
 
 As discussed in our
 [machine learning background page](Background-Machine-Learning.md), many of the
 algorithms we provide in the ML-Agents Toolkit leverage some form of deep
 learning. More specifically, our implementations are built on top of the
-open-source library [TensorFlow](https://www.tensorflow.org/). In this page we
-provide a brief overview of TensorFlow, in addition to TensorFlow-related tools
+open-source library [PyTorch](https://pytorch.org/). In this page we
+provide a brief overview of PyTorch and TensorBoard
 that we leverage within the ML-Agents Toolkit.
 
-## TensorFlow
+## PyTorch
 
-[TensorFlow](https://www.tensorflow.org/) is an open source library for
+[PyTorch](https://pytorch.org/) is an open source library for
 performing computations using data flow graphs, the underlying representation of
 deep learning models. It facilitates training and inference on CPUs and GPUs in
 a desktop, server, or mobile device. Within the ML-Agents Toolkit, when you
-train the behavior of an agent, the output is a model (.nn) file that you can
+train the behavior of an agent, the output is a model (.onnx) file that you can
 then associate with an Agent. Unless you implement a new algorithm, the use of
-TensorFlow is mostly abstracted away and behind the scenes.
+PyTorch is mostly abstracted away and behind the scenes.
 
 ## TensorBoard
 
-One component of training models with TensorFlow is setting the values of
+One component of training models with PyTorch is setting the values of
 certain model attributes (called _hyperparameters_). Finding the right values of
 these hyperparameters can require a few iterations. Consequently, we leverage a
-visualization tool within TensorFlow called
+visualization tool called
 [TensorBoard](https://www.tensorflow.org/programmers_guide/summaries_and_tensorboard).
 It allows the visualization of certain agent attributes (e.g. reward) throughout
 training which can be helpful in both building intuitions for the different

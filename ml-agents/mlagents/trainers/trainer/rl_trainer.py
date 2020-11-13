@@ -13,32 +13,30 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.tf.components.reward_signals import (
-    RewardSignalResult,
-    RewardSignal,
+from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
+    BaseRewardProvider,
 )
 from mlagents_envs.timers import hierarchical_timer
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.policy import Policy
-from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.policy.torch_policy import TorchPolicy
+from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.settings import TrainerSettings, FrameworkType
 from mlagents.trainers.stats import StatsPropertyType
 from mlagents.trainers.model_saver.model_saver import BaseModelSaver
-from mlagents.trainers.model_saver.tf_model_saver import TFModelSaver
+
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents import torch_utils
+from mlagents import tf_utils
 
-if torch_utils.is_available():
-    from mlagents.trainers.policy.torch_policy import TorchPolicy
-    from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
+if tf_utils.is_available():
+    from mlagents.trainers.policy.tf_policy import TFPolicy
+    from mlagents.trainers.model_saver.tf_model_saver import TFModelSaver
 else:
-    TorchPolicy = None  # type: ignore
-    TorchSaver = None  # type: ignore
-
-RewardSignalResults = Dict[str, RewardSignalResult]
+    TFPolicy = None  # type: ignore
+    TFModelSaver = None  # type: ignore
 
 logger = get_logger(__name__)
 
@@ -62,9 +60,9 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             StatsPropertyType.HYPERPARAMETERS, self.trainer_settings.as_dict()
         )
         self.framework = self.trainer_settings.framework
-        if self.framework == FrameworkType.PYTORCH and not torch_utils.is_available():
+        if self.framework == FrameworkType.TENSORFLOW and not tf_utils.is_available():
             raise UnityTrainerException(
-                "To use the experimental PyTorch backend, install the PyTorch Python package first."
+                "To use the TensorFlow backend, install the TensorFlow Python package first."
             )
 
         logger.debug(f"Using framework {self.framework.value}")
@@ -96,14 +94,14 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 self.reward_buffer.appendleft(rewards.get(agent_id, 0))
                 rewards[agent_id] = 0
             else:
-                if isinstance(optimizer.reward_signals[name], RewardSignal):
+                if isinstance(optimizer.reward_signals[name], BaseRewardProvider):
                     self.stats_reporter.add_stat(
-                        optimizer.reward_signals[name].stat_name,
+                        f"Policy/{optimizer.reward_signals[name].name.capitalize()} Reward",
                         rewards.get(agent_id, 0),
                     )
                 else:
                     self.stats_reporter.add_stat(
-                        f"Policy/{optimizer.reward_signals[name].name.capitalize()} Reward",
+                        optimizer.reward_signals[name].stat_name,
                         rewards.get(agent_id, 0),
                     )
                 rewards[agent_id] = 0

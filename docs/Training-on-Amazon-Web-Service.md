@@ -114,7 +114,7 @@ linux executables which use visual observations.
     # Download and install the latest Nvidia driver for ubuntu
     # Please refer to http://download.nvidia.com/XFree86/Linux-#x86_64/latest.txt
     $ wget http://download.nvidia.com/XFree86/Linux-x86_64/390.87/NVIDIA-Linux-x86_64-390.87.run
-    $ sudo /bin/bash ./NVIDIA-Linux-x86_64-390.67.run --accept-license --no-questions --ui=none
+    $ sudo /bin/bash ./NVIDIA-Linux-x86_64-390.87.run --accept-license --no-questions --ui=none
 
     # Disable Nouveau as it will clash with the Nvidia driver
     $ sudo echo 'blacklist nouveau'  | sudo tee -a /etc/modprobe.d/blacklist.conf

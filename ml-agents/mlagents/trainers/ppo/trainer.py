@@ -11,20 +11,22 @@ from mlagents_envs.logging_util import get_logger
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
+from mlagents.trainers.policy.torch_policy import TorchPolicy
+from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, PPOSettings, FrameworkType
-from mlagents.trainers.tf.components.reward_signals import RewardSignal
-from mlagents import torch_utils
+from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
+    BaseRewardProvider,
+)
+from mlagents import tf_utils
 
-if torch_utils.is_available():
-    from mlagents.trainers.policy.torch_policy import TorchPolicy
-    from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
+if tf_utils.is_available():
+    from mlagents.trainers.policy.tf_policy import TFPolicy
+    from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
 else:
-    TorchPolicy = None  # type: ignore
-    TorchPPOOptimizer = None  # type: ignore
+    TFPolicy = None  # type: ignore
+    PPOOptimizer = None  # type: ignore
 
 
 logger = get_logger(__name__)
@@ -90,14 +92,14 @@ class PPOTrainer(RLTrainer):
 
         for name, v in value_estimates.items():
             agent_buffer_trajectory[f"{name}_value_estimates"].extend(v)
-            if isinstance(self.optimizer.reward_signals[name], RewardSignal):
-                self._stats_reporter.add_stat(
-                    self.optimizer.reward_signals[name].value_name, np.mean(v)
-                )
-            else:
+            if isinstance(self.optimizer.reward_signals[name], BaseRewardProvider):
                 self._stats_reporter.add_stat(
                     f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value Estimate",
                     np.mean(v),
+                )
+            else:
+                self._stats_reporter.add_stat(
+                    self.optimizer.reward_signals[name].value_name, np.mean(v)
                 )
 
         # Evaluate all reward functions
@@ -105,15 +107,16 @@ class PPOTrainer(RLTrainer):
             agent_buffer_trajectory["environment_rewards"]
         )
         for name, reward_signal in self.optimizer.reward_signals.items():
-            if isinstance(reward_signal, RewardSignal):
-                evaluate_result = reward_signal.evaluate_batch(
-                    agent_buffer_trajectory
-                ).scaled_reward
-            else:
+            # BaseRewardProvider is a PyTorch-based reward signal
+            if isinstance(reward_signal, BaseRewardProvider):
                 evaluate_result = (
                     reward_signal.evaluate(agent_buffer_trajectory)
                     * reward_signal.strength
                 )
+            else:  # reward_signal is a TensorFlow-based RewardSignal class
+                evaluate_result = reward_signal.evaluate_batch(
+                    agent_buffer_trajectory
+                ).scaled_reward
             agent_buffer_trajectory[f"{name}_rewards"].extend(evaluate_result)
             # Report the reward signals
             self.collected_rewards[name][agent_id] += np.sum(evaluate_result)
@@ -251,7 +254,7 @@ class PPOTrainer(RLTrainer):
             behavior_spec,
             self.trainer_settings,
             condition_sigma_on_obs=False,  # Faster training for PPO
-            separate_critic=behavior_spec.is_action_continuous(),
+            separate_critic=behavior_spec.action_spec.continuous_size > 0,
         )
         return policy
 
