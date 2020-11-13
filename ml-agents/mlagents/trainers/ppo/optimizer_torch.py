@@ -168,7 +168,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         value_loss = self.ppo_value_loss(
             values, old_values, returns, decay_eps, loss_masks
         )
-        policy_loss = self.ppo_policy_loss(
+        policy_loss = 2 * self.ppo_policy_loss(
             ModelUtils.list_to_tensor(batch["advantages"]),
             log_probs,
             ModelUtils.list_to_tensor(batch["action_probs"]),
