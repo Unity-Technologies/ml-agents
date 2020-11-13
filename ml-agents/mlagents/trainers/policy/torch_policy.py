@@ -6,7 +6,7 @@ import copy
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.behavior_id_utils import get_global_agent_id
 from mlagents.trainers.policy import Policy
-from mlagents_envs.base_env import DecisionSteps, BehaviorSpec, ActionTuple
+from mlagents_envs.base_env import DecisionSteps, BehaviorSpec
 from mlagents_envs.timers import timed
 
 from mlagents.trainers.settings import TrainerSettings
@@ -17,7 +17,9 @@ from mlagents.trainers.torch.networks import (
     GlobalSteps,
 )
 
-from mlagents.trainers.torch.utils import ModelUtils, AgentAction, ActionLogProbs
+from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch.agent_action import AgentAction
+from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
@@ -98,7 +100,7 @@ class TorchPolicy(Policy):
     ) -> Tuple[SplitObservations, np.ndarray]:
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
         mask = None
-        if not self.use_continuous_act:
+        if self.action_spec.discrete_size > 0:
             mask = torch.ones([len(decision_requests), np.sum(self.act_size)])
             if decision_requests.action_mask is not None:
                 mask = torch.as_tensor(
@@ -130,29 +132,12 @@ class TorchPolicy(Policy):
         :param masks: Loss masks for RNN, else None.
         :param memories: Input memories when using RNN, else None.
         :param seq_len: Sequence length when using RNN.
-        :return: Tuple of actions, log probabilities (dependent on all_log_probs), entropies, and
-            output memories, all as Torch Tensors.
+        :return: Tuple of AgentAction, ActionLogProbs, entropies, and output memories.
         """
-        if memories is None:
-            dists, memories = self.actor_critic.get_dists(
-                vec_obs, vis_obs, masks, memories, seq_len
-            )
-        else:
-            # If we're using LSTM. we need to execute the values to get the critic memories
-            dists, _, memories = self.actor_critic.get_dist_and_value(
-                vec_obs, vis_obs, masks, memories, seq_len
-            )
-        action_list = self.actor_critic.sample_action(dists)
-        log_probs_list, entropies, all_logs_list = ModelUtils.get_probs_and_entropy(
-            action_list, dists
+        actions, log_probs, entropies, _, memories = self.actor_critic.get_action_stats_and_value(
+            vec_obs, vis_obs, masks, memories, seq_len
         )
-        actions = AgentAction.create(action_list, self.behavior_spec.action_spec)
-        log_probs = ActionLogProbs.create(
-            log_probs_list, self.behavior_spec.action_spec, all_logs_list
-        )
-        # Use the sum of entropy across actions, not the mean
-        entropy_sum = torch.sum(entropies, dim=1)
-        return (actions, log_probs, entropy_sum, memories)
+        return (actions, log_probs, entropies, memories)
 
     def evaluate_actions(
         self,
@@ -163,19 +148,10 @@ class TorchPolicy(Policy):
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
     ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
-        dists, value_heads, _ = self.actor_critic.get_dist_and_value(
-            vec_obs, vis_obs, masks, memories, seq_len
+        log_probs, entropies, value_heads = self.actor_critic.get_stats_and_value(
+            vec_obs, vis_obs, actions, masks, memories, seq_len
         )
-        action_list = actions.to_tensor_list()
-        log_probs_list, entropies, _ = ModelUtils.get_probs_and_entropy(
-            action_list, dists
-        )
-        log_probs = ActionLogProbs.create(
-            log_probs_list, self.behavior_spec.action_spec
-        )
-        # Use the sum of entropy across actions, not the mean
-        entropy_sum = torch.sum(entropies, dim=1)
-        return log_probs, entropy_sum, value_heads
+        return log_probs, entropies, value_heads
 
     @timed
     def evaluate(

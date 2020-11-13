@@ -28,14 +28,10 @@ class Policy:
         condition_sigma_on_obs: bool = True,
     ):
         self.behavior_spec = behavior_spec
+        self.action_spec = behavior_spec.action_spec
         self.trainer_settings = trainer_settings
         self.network_settings: NetworkSettings = trainer_settings.network_settings
         self.seed = seed
-        if (
-            self.behavior_spec.action_spec.continuous_size > 0
-            and self.behavior_spec.action_spec.discrete_size > 0
-        ):
-            raise UnityPolicyException("Trainers do not support mixed action spaces.")
         self.act_size = (
             list(self.behavior_spec.action_spec.discrete_branches)
             if self.behavior_spec.action_spec.is_discrete()
@@ -87,6 +83,7 @@ class Policy:
     ) -> None:
         if memory_matrix is None:
             return
+
         for index, agent_id in enumerate(agent_ids):
             self.memory_dict[agent_id] = memory_matrix[index, :]
 
@@ -115,12 +112,10 @@ class Policy:
     def save_previous_action(
         self, agent_ids: List[str], action_tuple: ActionTuple
     ) -> None:
-        #if action_dict is None or "discrete_action" not in action_dict:
+        # if action_dict is None or "discrete_action" not in action_dict:
         #    return
         for index, agent_id in enumerate(agent_ids):
-            self.previous_action_dict[agent_id] = action_tuple.discrete[
-                index, :
-            ]
+            self.previous_action_dict[agent_id] = action_tuple.discrete[index, :]
 
     def retrieve_previous_action(self, agent_ids: List[str]) -> np.ndarray:
         action_matrix = self.make_empty_previous_action(len(agent_ids))

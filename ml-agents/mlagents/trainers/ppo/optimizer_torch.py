@@ -7,7 +7,9 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
-from mlagents.trainers.torch.utils import ModelUtils, AgentAction, ActionLogProbs
+from mlagents.trainers.torch.agent_action import AgentAction
+from mlagents.trainers.torch.action_log_probs import ActionLogProbs
+from mlagents.trainers.torch.utils import ModelUtils
 
 
 class TorchPPOOptimizer(TorchOptimizer):
@@ -152,6 +154,7 @@ class TorchPPOOptimizer(TorchOptimizer):
                 vis_obs.append(vis_ob)
         else:
             vis_obs = []
+
         log_probs, entropy, values = self.policy.evaluate_actions(
             vec_obs,
             vis_obs,
