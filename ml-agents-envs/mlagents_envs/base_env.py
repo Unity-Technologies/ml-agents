@@ -253,14 +253,9 @@ class ActionTuple:
     respectively.
     """
 
-    def __init__(self, continuous: np.ndarray, discrete: np.ndarray):
-        if continuous.dtype != np.float32:
-            continuous = continuous.astype(np.float32, copy=False)
-        self._continuous = continuous
-
-        if discrete.dtype != np.int32:
-            discrete = discrete.astype(np.int32, copy=False)
-        self._discrete = discrete
+    def __init__(self):
+        self._continuous = None
+        self._discrete = None
 
     @property
     def continuous(self) -> np.ndarray:
@@ -270,15 +265,19 @@ class ActionTuple:
     def discrete(self) -> np.ndarray:
         return self._discrete
 
-    @staticmethod
-    def create_continuous(continuous: np.ndarray) -> "ActionTuple":
-        discrete = np.zeros((continuous.shape[0], 0), dtype=np.int32)
-        return ActionTuple(continuous, discrete)
+    def add_continuous(self, continuous: np.ndarray) -> None:
+        if continuous.dtype != np.float32:
+            continuous = continuous.astype(np.float32, copy=False)
+        if self._discrete is None:
+            self._discrete = np.zeros((continuous.shape[0], 0), dtype=np.float32)
+        self._continuous = continuous
 
-    @staticmethod
-    def create_discrete(discrete: np.ndarray) -> "ActionTuple":
-        continuous = np.zeros((discrete.shape[0], 0), dtype=np.float32)
-        return ActionTuple(continuous, discrete)
+    def add_discrete(self, discrete: np.ndarray) -> None:
+        if discrete.dtype != np.int32:
+            discrete = discrete.astype(np.int32, copy=False)
+        if self._continuous is None:
+            self._continuous = np.zeros((discrete.shape[0], 0), dtype=np.float32)
+        self._discrete = discrete
 
 
 class ActionSpec(NamedTuple):

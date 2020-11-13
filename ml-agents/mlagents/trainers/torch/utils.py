@@ -11,7 +11,7 @@ from mlagents.trainers.torch.encoders import (
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents_envs.base_env import ActionSpec
+from mlagents_envs.base_env import ActionSpec, ActionTuple
 from mlagents.trainers.torch.distributions import DistInstance, DiscreteDistInstance
 
 
@@ -34,22 +34,23 @@ class AgentAction(NamedTuple):
         """
         return torch.stack(self.discrete_list, dim=-1)
 
-    def to_numpy_dict(self) -> Dict[str, np.ndarray]:
+    def to_action_tuple(self) -> ActionTuple:
         """
-        Returns a Dict of np arrays with an entry correspinding to the continuous action
-        and an entry corresponding to the discrete action. "continuous_action" and
+        Returns an ActionTuple "continuous_action" and
         "discrete_action" are added to the agents buffer individually to maintain a flat buffer.
         """
-        array_dict: Dict[str, np.ndarray] = {}
+        action_tuple = ActionTuple()
         if self.continuous_tensor is not None:
-            array_dict["continuous_action"] = ModelUtils.to_numpy(
+            continuous = ModelUtils.to_numpy(
                 self.continuous_tensor
             )
+            action_tuple.add_continuous(continuous)
         if self.discrete_list is not None:
-            array_dict["discrete_action"] = ModelUtils.to_numpy(
+            discrete = ModelUtils.to_numpy(
                 self.discrete_tensor[:, 0, :]
             )
-        return array_dict
+            action_tuple.add_discrete(discrete)
+        return action_tuple
 
     def to_tensor_list(self) -> List[torch.Tensor]:
         """

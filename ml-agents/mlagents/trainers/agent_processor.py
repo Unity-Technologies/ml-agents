@@ -5,6 +5,7 @@ import queue
 import numpy as np
 
 from mlagents_envs.base_env import (
+    ActionTuple,
     DecisionSteps,
     DecisionStep,
     TerminalSteps,
@@ -131,9 +132,12 @@ class AgentProcessor:
             interrupted = step.interrupted if terminated else False
             # Add the outputs of the last eval
             action_dict = stored_take_action_outputs["action"]
-            action: Dict[str, np.ndarray] = {}
-            for act_type, act_array in action_dict.items():
-                action[act_type] = act_array[idx]
+            action_tuple = ActionTuple()
+            action_tuple.add_continuous(action_dict.continuous)
+            action_tuple.add_discrete(action_dict.discrete)
+            #action: Dict[str, np.ndarray] = {}
+            #for act_type, act_array in action_dict.items():
+            #    action[act_type] = act_array[idx]
             if self.policy.use_continuous_act:
                 action_pre = stored_take_action_outputs["pre_action"][idx]
             else:
@@ -149,7 +153,7 @@ class AgentProcessor:
                 obs=obs,
                 reward=step.reward,
                 done=done,
-                action=action,
+                action=action_tuple,
                 action_probs=action_probs,
                 action_pre=action_pre,
                 action_mask=action_mask,

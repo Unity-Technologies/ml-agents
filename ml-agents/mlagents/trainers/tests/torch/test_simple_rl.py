@@ -38,7 +38,7 @@ PPO_TORCH_CONFIG = attr.evolve(ppo_dummy_config(), framework=FrameworkType.PYTOR
 SAC_TORCH_CONFIG = attr.evolve(sac_dummy_config(), framework=FrameworkType.PYTORCH)
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
+@pytest.mark.parametrize("use_discrete", [True])#, False])
 def test_simple_ppo(use_discrete):
     env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     config = attr.evolve(PPO_TORCH_CONFIG)
