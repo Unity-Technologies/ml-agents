@@ -148,8 +148,7 @@ namespace MLAgents
                 rb.angularVelocity = Vector3.up * spinAttackSpeed;
             }
 
-            var allMoveInput = inputH + inputV;
-            if (allMoveInput != 0)
+            if (inputH != 0 || inputV != 0)
             {
 
                 var dir = cam.transform.TransformDirection(new Vector3(inputH, 0, inputV));
