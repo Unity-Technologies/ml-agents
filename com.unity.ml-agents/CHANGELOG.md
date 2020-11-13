@@ -8,7 +8,20 @@ and this project adheres to
 
 
 ## [Unreleased]
+### Major Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 
+### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+
+## [1.6.0-preview] - 2020-11-18
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
@@ -19,8 +32,11 @@ and this project adheres to
  adding `framework: tensorflow` in the configuration YAML. (#4517)
 
 ### Minor Changes
-#### com.unity.ml-agents (C#)
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - The Barracuda dependency was upgraded to 1.1.2 (#4571)
+- Utilities were added to `com.unity.ml-agents.extensions` to make it easier to
+integrate with match-3 games. See the [readme](https://github.com/Unity-Technologies/ml-agents/blob/master/com.unity.ml-agents.extensions/Documentation~/Match3.md)
+for more details. (#4515)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `action_probs` node is no longer listed as an output in TensorFlow models (#4613).
 
