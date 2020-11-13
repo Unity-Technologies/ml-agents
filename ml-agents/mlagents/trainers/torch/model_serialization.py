@@ -74,6 +74,13 @@ class ModelSerializer:
             "is_continuous_control",
             "action_output_shape",
         ]
+        if self.policy.action_spec.continuous_size > 0:
+            self.output_names += [
+                "continuous_actions",
+                "continuous_action_output_shape",
+            ]
+        if self.policy.action_spec.discrete_size > 0:
+            self.output_names += ["discrete_actions", "discrete_action_output_shape"]
 
         self.dynamic_axes = {name: {0: "batch"} for name in self.input_names}
         self.dynamic_axes.update({"action": {0: "batch"}})

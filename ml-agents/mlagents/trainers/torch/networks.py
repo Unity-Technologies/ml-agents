@@ -234,13 +234,20 @@ class SimpleActor(nn.Module, Actor):
         super().__init__()
         self.action_spec = action_spec
         self.version_number = torch.nn.Parameter(torch.Tensor([2.0]))
-        self.is_continuous_int = torch.nn.Parameter(
+        self.is_continuous_int_deprecated = torch.nn.Parameter(
             torch.Tensor([int(self.action_spec.is_continuous())])
         )
-        self.act_size_vector = torch.nn.Parameter(
+        self.continuous_act_size_vector = torch.nn.Parameter(
+            torch.Tensor([int(self.action_spec.continuous_size)]), requires_grad=False
+        )
+        self.discrete_act_size_vector = torch.nn.Parameter(
+            torch.Tensor([int(sum(self.action_spec.discrete_branches))]),
+            requires_grad=False,
+        )
+        self.act_size_vector_deprecated = torch.nn.Parameter(
             torch.Tensor(
                 [
-                    self.action_spec.continuous_size
+                    int(self.action_spec.continuous_size)
                     + sum(self.action_spec.discrete_branches)
                 ]
             ),
@@ -280,15 +287,21 @@ class SimpleActor(nn.Module, Actor):
             vec_inputs, vis_inputs, memories=memories, sequence_length=1
         )
 
-        # TODO: How this is written depends on how the inference model is structured
-        action_out = self.action_model.get_action_out(encoding, masks)
-        return (
-            action_out,
+        cont_action_out, disc_action_out, action_out_deprecated = self.action_model.get_action_out(
+            encoding, masks
+        )
+        export_out = [
+            action_out_deprecated,
             self.version_number,
             torch.Tensor([self.network_body.memory_size]),
-            self.is_continuous_int,
-            self.act_size_vector,
-        )
+            self.is_continuous_int_deprecated,
+            self.act_size_vector_deprecated,
+        ]
+        if self.action_spec.continuous_size > 0:
+            export_out += [cont_action_out, self.continuous_act_size_vector]
+        if self.action_spec.discrete_size > 0:
+            export_out += [disc_action_out, self.discrete_act_size_vector]
+        return tuple(export_out)
 
 
 class SharedActorCritic(SimpleActor, ActorCritic):
