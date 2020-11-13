@@ -100,7 +100,9 @@ def test_step(mock_communicator, mock_launcher):
     decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
     n_agents = len(decision_steps)
     _empty_act = spec.action_spec.empty_action(n_agents)
-    next_action = ActionTuple(_empty_act.continuous - 1, _empty_act.discrete - 1)
+    next_action = ActionTuple()
+    next_action.add_continuous(_empty_act.continuous - 1)
+    next_action.add_discrete(_empty_act.discrete - 1)
     env.set_actions("RealFakeBrain", next_action)
     env.step()
 

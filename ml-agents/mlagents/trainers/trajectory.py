@@ -1,16 +1,17 @@
-from typing import List, NamedTuple, Dict
+from typing import List, NamedTuple
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.base_env import ActionTuple
+from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 
 
 class AgentExperience(NamedTuple):
     obs: List[np.ndarray]
     reward: float
     done: bool
-    action: ActionTuple 
-    action_probs: Dict[str, np.ndarray]
+    action: ActionTuple
+    action_probs: LogProbsTuple
     action_pre: np.ndarray  # TODO: Remove this
     action_mask: np.ndarray
     prev_action: np.ndarray
@@ -113,8 +114,12 @@ class Trajectory(NamedTuple):
             # Adds the log prob and action of continuous/discrete separately
             agent_buffer_trajectory["continuous_action"].append(exp.action.continuous)
             agent_buffer_trajectory["discrete_action"].append(exp.action.discrete)
-            for log_type, log_array in exp.action_probs.items():
-                agent_buffer_trajectory[log_type].append(log_array)
+            agent_buffer_trajectory["continuous_log_probs"].append(
+                exp.action_probs.continuous
+            )
+            agent_buffer_trajectory["discrete_log_probs"].append(
+                exp.action_probs.discrete
+            )
 
             # Store action masks if necessary. Note that 1 means active, while
             # in AgentExperience False means active.

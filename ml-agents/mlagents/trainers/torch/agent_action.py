@@ -27,8 +27,7 @@ class AgentAction(NamedTuple):
 
     def to_action_tuple(self) -> ActionTuple:
         """
-        Returns an ActionTuple "continuous_action" and
-        "discrete_action" are added to the agents buffer individually to maintain a flat buffer.
+        Returns an ActionTuple
         """
         action_tuple = ActionTuple()
         if self.continuous_tensor is not None:

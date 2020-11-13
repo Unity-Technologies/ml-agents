@@ -182,7 +182,7 @@ class TorchPolicy(Policy):
         run_out["pre_action"] = (
             action_tuple.continuous if self.use_continuous_act else None
         )
-        run_out["log_probs"] = log_probs.to_numpy_dict()
+        run_out["log_probs"] = log_probs.to_log_probs_tuple()
         run_out["entropy"] = ModelUtils.to_numpy(entropy)
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:

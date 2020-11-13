@@ -12,8 +12,9 @@ from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.trajectory import SplitObservations
+from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 from mlagents.trainers.behavior_id_utils import get_global_agent_id
-from mlagents_envs.base_env import DecisionSteps
+from mlagents_envs.base_env import DecisionSteps, ActionTuple
 from mlagents.trainers.tf.models import ModelUtils
 from mlagents.trainers.settings import TrainerSettings, EncoderType
 from mlagents.trainers import __version__
@@ -277,12 +278,19 @@ class TFPolicy(Policy):
         self.save_memories(global_agent_ids, run_out.get("memory_out"))
         # For Compatibility with buffer changes for hybrid action support
         if "log_probs" in run_out:
-            run_out["log_probs"] = {"action_probs": run_out["log_probs"]}
-        if "action" in run_out:
+            log_probs_tuple = LogProbsTuple()
             if self.behavior_spec.action_spec.is_continuous():
-                run_out["action"] = {"continuous_action": run_out["action"]}
+                log_probs_tuple.add_continuous(run_out["log_probs"])
             else:
-                run_out["action"] = {"discrete_action": run_out["action"]}
+                log_probs_tuple.add_discrete(run_out["log_probs"])
+            run_out["log_probs"] = log_probs_tuple
+        if "action" in run_out:
+            action_tuple = ActionTuple()
+            if self.behavior_spec.action_spec.is_continuous():
+                action_tuple.add_continuous(run_out["action"])
+            else:
+                action_tuple.add_discrete(run_out["action"])
+            run_out["action"] = action_tuple
         return ActionInfo(
             action=run_out.get("action"),
             value=run_out.get("value"),

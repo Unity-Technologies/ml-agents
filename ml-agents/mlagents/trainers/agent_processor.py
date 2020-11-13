@@ -2,7 +2,6 @@ import sys
 from typing import List, Dict, TypeVar, Generic, Tuple, Any, Union
 from collections import defaultdict, Counter
 import queue
-import numpy as np
 
 from mlagents_envs.base_env import (
     ActionTuple,
@@ -18,6 +17,7 @@ from mlagents_envs.side_channel.stats_side_channel import (
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo, ActionInfoOutputs
+from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.behavior_id_utils import get_global_agent_id
 
@@ -131,21 +131,18 @@ class AgentProcessor:
             done = terminated  # Since this is an ongoing step
             interrupted = step.interrupted if terminated else False
             # Add the outputs of the last eval
-            action_dict = stored_take_action_outputs["action"]
+            stored_actions = stored_take_action_outputs["action"]
             action_tuple = ActionTuple()
-            action_tuple.add_continuous(action_dict.continuous)
-            action_tuple.add_discrete(action_dict.discrete)
-            #action: Dict[str, np.ndarray] = {}
-            #for act_type, act_array in action_dict.items():
-            #    action[act_type] = act_array[idx]
+            action_tuple.add_continuous(stored_actions.continuous[idx])
+            action_tuple.add_discrete(stored_actions.discrete[idx])
             if self.policy.use_continuous_act:
                 action_pre = stored_take_action_outputs["pre_action"][idx]
             else:
                 action_pre = None
-            action_probs_dict = stored_take_action_outputs["log_probs"]
-            action_probs: Dict[str, np.ndarray] = {}
-            for prob_type, prob_array in action_probs_dict.items():
-                action_probs[prob_type] = prob_array[idx]
+            stored_action_probs = stored_take_action_outputs["log_probs"]
+            log_probs_tuple = LogProbsTuple()
+            log_probs_tuple.add_continuous(stored_action_probs.continuous[idx])
+            log_probs_tuple.add_discrete(stored_action_probs.discrete[idx])
 
             action_mask = stored_decision_step.action_mask
             prev_action = self.policy.retrieve_previous_action([global_id])[0, :]
@@ -154,7 +151,7 @@ class AgentProcessor:
                 reward=step.reward,
                 done=done,
                 action=action_tuple,
-                action_probs=action_probs,
+                action_probs=log_probs_tuple,
                 action_pre=action_pre,
                 action_mask=action_mask,
                 prev_action=prev_action,
