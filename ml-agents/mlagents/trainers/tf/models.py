@@ -42,10 +42,10 @@ class ModelUtils:
     def create_global_steps():
         """Creates TF ops to track and increment global training step."""
         global_step = tf.Variable(
-            0, name="global_step", trainable=False, dtype=tf.int32
+            0, name="global_step", trainable=False, dtype=tf.int64
         )
         steps_to_increment = tf.placeholder(
-            shape=[], dtype=tf.int32, name="steps_to_increment"
+            shape=[], dtype=tf.int64, name="steps_to_increment"
         )
         increment_step = tf.assign(global_step, tf.add(global_step, steps_to_increment))
         return global_step, increment_step, steps_to_increment
@@ -195,7 +195,7 @@ class ModelUtils:
             "normalization_steps",
             [],
             trainable=False,
-            dtype=tf.int32,
+            dtype=tf.int64,
             initializer=tf.zeros_initializer(),
         )
         running_mean = tf.get_variable(
@@ -244,7 +244,7 @@ class ModelUtils:
         # Based on Welford's algorithm for running mean and standard deviation, for batch updates. Discussion here:
         # https://stackoverflow.com/questions/56402955/whats-the-formula-for-welfords-algorithm-for-variance-std-with-batch-updates
         steps_increment = tf.shape(vector_input)[0]
-        total_new_steps = tf.add(steps, steps_increment)
+        total_new_steps = tf.add(steps, tf.cast(steps_increment, dtype=tf.int64))
 
         # Compute the incremental update and divide by the number of new steps.
         input_to_old_mean = tf.subtract(vector_input, running_mean)

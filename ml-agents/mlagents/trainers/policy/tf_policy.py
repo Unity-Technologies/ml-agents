@@ -270,6 +270,8 @@ class TFPolicy(Policy):
         )
 
         self.save_memories(global_agent_ids, run_out.get("memory_out"))
+        self.check_nan_action(run_out.get("action"))
+
         return ActionInfo(
             action=run_out.get("action"),
             value=run_out.get("value"),
