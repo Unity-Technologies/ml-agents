@@ -4,8 +4,5 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes:
-  - enabled: 1
-    path: Assets/ML-Agents/Examples/Walker/Scenes/WalkerDynamic.unity
-    guid: 65c87f50b8c81433d8fd7f6550773467
+  m_Scenes: []
   m_configObjects: {}
