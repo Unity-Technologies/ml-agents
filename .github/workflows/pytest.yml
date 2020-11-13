@@ -51,7 +51,9 @@ jobs:
         python -m pip install --progress-bar=off -r test_requirements.txt -c ${{ matrix.pip_constraints }}
         python -m pip install --progress-bar=off -e ./gym-unity -c ${{ matrix.pip_constraints }}
     - name: Save python dependencies
-      run: pip freeze > pip_versions-${{ matrix.python-version }}.txt
+      run: |
+        pip freeze > pip_versions-${{ matrix.python-version }}.txt
+        cat pip_versions-${{ matrix.python-version }}.txt
     - name: Run pytest
       run: pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings
     - name: Upload pytest test results

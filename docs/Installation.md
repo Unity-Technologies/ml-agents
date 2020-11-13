@@ -44,11 +44,6 @@ If your Python environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
 
-Although we do not provide support for Anaconda installation on Windows, the
-previous
-[Windows Anaconda Installation (Deprecated) guide](Installation-Anaconda-Windows.md)
-is still available.
-
 ### Clone the ML-Agents Toolkit Repository (Optional)
 
 Now that you have installed Unity and Python, you can now install the Unity and
@@ -58,10 +53,10 @@ example environments and training configurations to experiment with them (some
 of our tutorials / guides assume you have access to our example environments).
 
 ```sh
-git clone --branch release_8 https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch release_9 https://github.com/Unity-Technologies/ml-agents.git
 ```
 
-The `--branch release_8` option will switch to the tag of the latest stable
+The `--branch release_9` option will switch to the tag of the latest stable
 release. Omitting that will get the `master` branch which is potentially
 unstable.
 
@@ -69,7 +64,7 @@ unstable.
 
 You will need to clone the repository if you plan to modify or extend the
 ML-Agents Toolkit for your purposes. If you plan to contribute those changes
-back, make sure to clone the `master` branch (by omitting `--branch release_8`
+back, make sure to clone the `master` branch (by omitting `--branch release_9`
 from the command above). See our
 [Contributions Guidelines](../com.unity.ml-agents/CONTRIBUTING.md) for more
 information on contributing to the ML-Agents Toolkit.
@@ -124,6 +119,22 @@ Virtual Environments. Virtual Environments provide a mechanism for isolating the
 dependencies for each project and are supported on Mac / Windows / Linux. We
 offer a dedicated [guide on Virtual Environments](Using-Virtual-Environment.md).
 
+#### (Windows) Installing PyTorch
+
+On Windows, you'll have to install the PyTorch package separately prior to
+installing ML-Agents. Activate your virtual environment and run from the command line:
+
+```sh
+pip3 install torch==1.7.0 -f https://download.pytorch.org/whl/torch_stable.html
+```
+
+Note that on Windows, you may also need Microsoft's
+[Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
+if you don't have it already. See the [PyTorch installation guide](https://pytorch.org/get-started/locally/)
+for more installation options and versions.
+
+#### Installing `mlagents`
+
 To install the `mlagents` Python package, activate your virtual environment and
 run from the command line:
 
@@ -138,7 +149,7 @@ line parameters you can use with `mlagents-learn`.
 
 By installing the `mlagents` package, the dependencies listed in the
 [setup.py file](../ml-agents/setup.py) are also installed. These include
-[TensorFlow](Background-TensorFlow.md) (Requires a CPU w/ AVX support).
+[PyTorch](Background-PyTorch.md) (Requires a CPU w/ AVX support).
 
 #### Advanced: Local Installation for Development
 
@@ -148,6 +159,7 @@ this, you will need to install `mlagents` and `mlagents_envs` separately. From
 the repository's root directory, run:
 
 ```sh
+pip3 install torch -f https://download.pytorch.org/whl/torch_stable.html
 pip3 install -e ./ml-agents-envs
 pip3 install -e ./ml-agents
 ```

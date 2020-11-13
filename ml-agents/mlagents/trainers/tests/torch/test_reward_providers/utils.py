@@ -9,12 +9,14 @@ def create_agent_buffer(
 ) -> AgentBuffer:
     buffer = AgentBuffer()
     curr_observations = [
-        np.random.normal(size=shape) for shape in behavior_spec.observation_shapes
+        np.random.normal(size=shape).astype(np.float32)
+        for shape in behavior_spec.observation_shapes
     ]
     next_observations = [
-        np.random.normal(size=shape) for shape in behavior_spec.observation_shapes
+        np.random.normal(size=shape).astype(np.float32)
+        for shape in behavior_spec.observation_shapes
     ]
-    action = behavior_spec.create_random_action(1)[0, :]
+    action = behavior_spec.action_spec.random_action(1)[0, :]
     for _ in range(number):
         curr_split_obs = SplitObservations.from_observations(curr_observations)
         next_split_obs = SplitObservations.from_observations(next_observations)

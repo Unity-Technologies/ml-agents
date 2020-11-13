@@ -9,11 +9,12 @@ from mlagents.trainers.torch.networks import (
     SeparateActorCritic,
 )
 from mlagents.trainers.settings import NetworkSettings
-from mlagents_envs.base_env import ActionType
 from mlagents.trainers.torch.distributions import (
     GaussianDistInstance,
     CategoricalDistInstance,
 )
+
+from mlagents_envs.base_env import ActionSpec
 
 
 def test_networkbody_vector():
@@ -123,30 +124,35 @@ def test_valuenetwork():
             assert _out[0] == pytest.approx(1.0, abs=0.1)
 
 
-@pytest.mark.parametrize("action_type", [ActionType.DISCRETE, ActionType.CONTINUOUS])
-def test_simple_actor(action_type):
+@pytest.mark.parametrize("use_discrete", [True, False])
+def test_simple_actor(use_discrete):
     obs_size = 4
     network_settings = NetworkSettings()
     obs_shapes = [(obs_size,)]
     act_size = [2]
-    masks = None if action_type == ActionType.CONTINUOUS else torch.ones((1, 1))
-    actor = SimpleActor(obs_shapes, network_settings, action_type, act_size)
+    if use_discrete:
+        masks = torch.ones((1, 1))
+        action_spec = ActionSpec.create_discrete(tuple(act_size))
+    else:
+        masks = None
+        action_spec = ActionSpec.create_continuous(act_size[0])
+    actor = SimpleActor(obs_shapes, network_settings, action_spec)
     # Test get_dist
     sample_obs = torch.ones((1, obs_size))
     dists, _ = actor.get_dists([sample_obs], [], masks=masks)
     for dist in dists:
-        if action_type == ActionType.CONTINUOUS:
-            assert isinstance(dist, GaussianDistInstance)
-        else:
+        if use_discrete:
             assert isinstance(dist, CategoricalDistInstance)
+        else:
+            assert isinstance(dist, GaussianDistInstance)
 
     # Test sample_actions
     actions = actor.sample_action(dists)
     for act in actions:
-        if action_type == ActionType.CONTINUOUS:
-            assert act.shape == (1, act_size[0])
-        else:
+        if use_discrete:
             assert act.shape == (1, 1)
+        else:
+            assert act.shape == (1, act_size[0])
 
     # Test forward
     actions, ver_num, mem_size, is_cont, act_size_vec = actor.forward(
@@ -154,13 +160,13 @@ def test_simple_actor(action_type):
     )
     for act in actions:
         # This is different from above for ONNX export
-        if action_type == ActionType.CONTINUOUS:
-            assert act.shape == (act_size[0], 1)
-        else:
+        if use_discrete:
             assert act.shape == tuple(act_size)
+        else:
+            assert act.shape == (act_size[0], 1)
 
     assert mem_size == 0
-    assert is_cont == int(action_type == ActionType.CONTINUOUS)
+    assert is_cont == int(not use_discrete)
     assert act_size_vec == torch.tensor(act_size)
 
 
@@ -174,9 +180,8 @@ def test_actor_critic(ac_type, lstm):
     obs_shapes = [(obs_size,)]
     act_size = [2]
     stream_names = [f"stream_name{n}" for n in range(4)]
-    actor = ac_type(
-        obs_shapes, network_settings, ActionType.CONTINUOUS, act_size, stream_names
-    )
+    action_spec = ActionSpec.create_continuous(act_size[0])
+    actor = ac_type(obs_shapes, network_settings, action_spec, stream_names)
     if lstm:
         sample_obs = torch.ones((1, network_settings.memory.sequence_length, obs_size))
         memories = torch.ones(

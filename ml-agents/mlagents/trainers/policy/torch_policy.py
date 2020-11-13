@@ -72,8 +72,7 @@ class TorchPolicy(Policy):
         self.actor_critic = ac_class(
             observation_shapes=self.behavior_spec.observation_shapes,
             network_settings=trainer_settings.network_settings,
-            act_type=behavior_spec.action_type,
-            act_size=self.act_size,
+            action_spec=behavior_spec.action_spec,
             stream_names=reward_signal_names,
             conditional_sigma=self.condition_sigma_on_obs,
             tanh_squash=tanh_squash,
@@ -153,8 +152,14 @@ class TorchPolicy(Policy):
             actions = actions[:, :, 0]
         else:
             actions = actions[:, 0, :]
-
-        return (actions, all_logs if all_log_probs else log_probs, entropies, memories)
+        # Use the sum of entropy across actions, not the mean
+        entropy_sum = torch.sum(entropies, dim=1)
+        return (
+            actions,
+            all_logs if all_log_probs else log_probs,
+            entropy_sum,
+            memories,
+        )
 
     def evaluate_actions(
         self,
@@ -170,8 +175,9 @@ class TorchPolicy(Policy):
         )
         action_list = [actions[..., i] for i in range(actions.shape[-1])]
         log_probs, entropies, _ = ModelUtils.get_probs_and_entropy(action_list, dists)
-
-        return log_probs, entropies, value_heads
+        # Use the sum of entropy across actions, not the mean
+        entropy_sum = torch.sum(entropies, dim=1)
+        return log_probs, entropy_sum, value_heads
 
     @timed
     def evaluate(

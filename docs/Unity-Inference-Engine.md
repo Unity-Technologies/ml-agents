@@ -29,9 +29,8 @@ There are currently two supported model formats:
   [industry-standard open format](https://onnx.ai/about.html) produced by the
   [tf2onnx package](https://github.com/onnx/tensorflow-onnx).
 
-Export to ONNX is currently considered beta. To enable it, make sure
-`tf2onnx>=1.5.5` is installed in pip. tf2onnx does not currently support
-tensorflow 2.0.0 or later, or earlier than 1.12.0.
+Export to ONNX is used if using PyTorch (the default). To enable it
+while using TensorFlow, make sure `tf2onnx>=1.6.1` is installed in pip.
 
 ## Using the Unity Inference Engine
 
@@ -49,9 +48,9 @@ The ML-Agents Toolkit only supports the models created with our trainers. Model
 loading expects certain conventions for constants and tensor names. While it is
 possible to construct a model that follows these conventions, we don't provide
 any additional help for this. More details can be found in
-[TensorNames.cs](https://github.com/Unity-Technologies/ml-agents/blob/release_8_docs/com.unity.ml-agents/Runtime/Inference/TensorNames.cs)
+[TensorNames.cs](https://github.com/Unity-Technologies/ml-agents/blob/release_9_docs/com.unity.ml-agents/Runtime/Inference/TensorNames.cs)
 and
-[BarracudaModelParamLoader.cs](https://github.com/Unity-Technologies/ml-agents/blob/release_8_docs/com.unity.ml-agents/Runtime/Inference/BarracudaModelParamLoader.cs).
+[BarracudaModelParamLoader.cs](https://github.com/Unity-Technologies/ml-agents/blob/release_9_docs/com.unity.ml-agents/Runtime/Inference/BarracudaModelParamLoader.cs).
 
 If you wish to run inference on an externally trained model, you should use
 Barracuda directly, instead of trying to run it through ML-Agents.

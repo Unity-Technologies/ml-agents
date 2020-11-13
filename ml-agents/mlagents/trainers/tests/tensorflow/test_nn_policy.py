@@ -138,7 +138,7 @@ def test_large_normalization():
         length=time_horizon,
         max_step_complete=True,
         observation_shapes=[(1,)],
-        action_space=[2],
+        action_spec=behavior_spec.action_spec,
     )
     for i in range(time_horizon):
         trajectory.steps[i].obs[0] = np.array([large_obs1[i]], dtype=np.float32)
@@ -159,7 +159,7 @@ def test_large_normalization():
         length=time_horizon,
         max_step_complete=True,
         observation_shapes=[(1,)],
-        action_space=[2],
+        action_spec=behavior_spec.action_spec,
     )
     for i in range(time_horizon):
         trajectory.steps[i].obs[0] = np.array([large_obs2[i]], dtype=np.float32)
@@ -188,7 +188,7 @@ def test_normalization():
         length=time_horizon,
         max_step_complete=True,
         observation_shapes=[(1,)],
-        action_space=[2],
+        action_spec=behavior_spec.action_spec,
     )
     # Change half of the obs to 0
     for i in range(3):
@@ -220,7 +220,7 @@ def test_normalization():
         length=time_horizon,
         max_step_complete=True,
         observation_shapes=[(1,)],
-        action_space=[2],
+        action_spec=behavior_spec.action_spec,
     )
     trajectory_buffer = trajectory.to_agentbuffer()
     policy.update_normalization(trajectory_buffer["vector_obs"])

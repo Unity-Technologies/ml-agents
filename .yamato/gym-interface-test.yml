@@ -1,5 +1,4 @@
-test_editors:
-  - version: 2019.4
+{% metadata_file .yamato/test_versions.metafile %}
 ---
 {% for editor in test_editors %}
 test_gym_interface_{{ editor.version }}:

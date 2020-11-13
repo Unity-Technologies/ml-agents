@@ -69,7 +69,7 @@ class GAILModel:
         self.done_expert = tf.expand_dims(self.done_expert_holder, -1)
         self.done_policy = tf.expand_dims(self.done_policy_holder, -1)
 
-        if self.policy.behavior_spec.is_action_continuous():
+        if self.policy.behavior_spec.action_spec.is_continuous():
             action_length = self.policy.act_size[0]
             self.action_in_expert = tf.placeholder(
                 shape=[None, action_length], dtype=tf.float32

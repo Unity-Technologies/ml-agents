@@ -52,7 +52,9 @@ class ModelSerializer:
             for shape in self.policy.behavior_spec.observation_shapes
             if len(shape) == 3
         ]
-        dummy_masks = torch.ones(batch_dim + [sum(self.policy.actor_critic.act_size)])
+        dummy_masks = torch.ones(
+            batch_dim + [sum(self.policy.behavior_spec.action_spec.discrete_branches)]
+        )
         dummy_memories = torch.zeros(
             batch_dim + seq_len_dim + [self.policy.export_memory_size]
         )

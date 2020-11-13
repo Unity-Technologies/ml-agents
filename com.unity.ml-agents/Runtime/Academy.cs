@@ -20,7 +20,7 @@ using Unity.Barracuda;
  * API. For more information on each of these entities, in addition to how to
  * set-up a learning environment and train the behavior of characters in a
  * Unity scene, please browse our documentation pages on GitHub:
- * https://github.com/Unity-Technologies/ml-agents/tree/release_8_docs/docs/
+ * https://github.com/Unity-Technologies/ml-agents/tree/release_9_docs/docs/
  */
 
 namespace Unity.MLAgents
@@ -61,7 +61,7 @@ namespace Unity.MLAgents
     /// fall back to inference or heuristic decisions. (You can also set agents to always use
     /// inference or heuristics.)
     /// </remarks>
-    [HelpURL("https://github.com/Unity-Technologies/ml-agents/tree/release_8_docs/" +
+    [HelpURL("https://github.com/Unity-Technologies/ml-agents/tree/release_9_docs/" +
         "docs/Learning-Environment-Design.md")]
     public class Academy : IDisposable
     {
@@ -95,7 +95,7 @@ namespace Unity.MLAgents
         /// Unity package version of com.unity.ml-agents.
         /// This must match the version string in package.json and is checked in a unit test.
         /// </summary>
-        internal const string k_PackageVersion = "1.5.0-preview";
+        internal const string k_PackageVersion = "1.6.0-preview";
 
         const int k_EditorTrainingPort = 5004;
 
@@ -155,9 +155,8 @@ namespace Unity.MLAgents
         // Flag used to keep track of the first time the Academy is reset.
         bool m_HadFirstReset;
 
-        // Whether the Academy is in the middle of a step. This is used to detect and Academy
-        // step called by user code that is also called by the Academy.
-        bool m_IsStepping;
+        // Detect an Academy step called by user code that is also called by the Academy.
+        private RecursionChecker m_StepRecursionChecker = new RecursionChecker("EnvironmentStep");
 
         // Random seed used for inference.
         int m_InferenceSeed;
@@ -535,22 +534,7 @@ namespace Unity.MLAgents
         /// </summary>
         public void EnvironmentStep()
         {
-            // Check whether we're already in the middle of a step.
-            // This shouldn't happen generally, but could happen if user code (e.g. CollectObservations)
-            // that is called by EnvironmentStep() also calls EnvironmentStep(). This would result
-            // in an infinite loop and/or stack overflow, so stop it before it happens.
-            if (m_IsStepping)
-            {
-                throw new UnityAgentsException(
-                    "Academy.EnvironmentStep() called recursively. " +
-                    "This might happen if you call EnvironmentStep() from custom code such as " +
-                    "CollectObservations() or OnActionReceived()."
-                );
-            }
-
-            m_IsStepping = true;
-
-            try
+            using (m_StepRecursionChecker.Start())
             {
                 if (!m_HadFirstReset)
                 {
@@ -583,11 +567,6 @@ namespace Unity.MLAgents
                 {
                     AgentAct?.Invoke();
                 }
-            }
-            finally
-            {
-                // Reset m_IsStepping when we're done (or if an exception occurred).
-                m_IsStepping = false;
             }
         }
 

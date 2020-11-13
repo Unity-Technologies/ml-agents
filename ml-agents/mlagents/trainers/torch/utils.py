@@ -11,7 +11,7 @@ from mlagents.trainers.torch.encoders import (
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents_envs.base_env import BehaviorSpec
+from mlagents_envs.base_env import ActionSpec
 from mlagents.trainers.torch.distributions import DistInstance, DiscreteDistInstance
 
 
@@ -26,24 +26,24 @@ class ModelUtils:
     }
 
     class ActionFlattener:
-        def __init__(self, behavior_spec: BehaviorSpec):
-            self._specs = behavior_spec
+        def __init__(self, action_spec: ActionSpec):
+            self._specs = action_spec
 
         @property
         def flattened_size(self) -> int:
-            if self._specs.is_action_continuous():
-                return self._specs.action_size
+            if self._specs.is_continuous():
+                return self._specs.continuous_size
             else:
-                return sum(self._specs.discrete_action_branches)
+                return sum(self._specs.discrete_branches)
 
         def forward(self, action: torch.Tensor) -> torch.Tensor:
-            if self._specs.is_action_continuous():
+            if self._specs.is_continuous():
                 return action
             else:
                 return torch.cat(
                     ModelUtils.actions_to_onehot(
                         torch.as_tensor(action, dtype=torch.long),
-                        self._specs.discrete_action_branches,
+                        self._specs.discrete_branches,
                     ),
                     dim=1,
                 )
@@ -194,7 +194,7 @@ class ModelUtils:
 
     @staticmethod
     def list_to_tensor(
-        ndarray_list: List[np.ndarray], dtype: Optional[torch.dtype] = None
+        ndarray_list: List[np.ndarray], dtype: Optional[torch.dtype] = torch.float32
     ) -> torch.Tensor:
         """
         Converts a list of numpy arrays into a tensor. MUCH faster than

@@ -309,7 +309,7 @@ class TFPolicy(Policy):
             mask = np.ones(
                 (
                     len(batched_step_result),
-                    sum(self.behavior_spec.discrete_action_branches),
+                    sum(self.behavior_spec.action_spec.discrete_branches),
                 ),
                 dtype=np.float32,
             )
@@ -447,7 +447,7 @@ class TFPolicy(Policy):
             self.mask = tf.cast(self.mask_input, tf.int32)
 
             tf.Variable(
-                int(self.behavior_spec.is_action_continuous()),
+                int(self.behavior_spec.action_spec.is_continuous()),
                 name="is_continuous_control",
                 trainable=False,
                 dtype=tf.int32,
@@ -481,7 +481,7 @@ class TFPolicy(Policy):
             tf.Variable(
                 self.m_size, name="memory_size", trainable=False, dtype=tf.int32
             )
-            if self.behavior_spec.is_action_continuous():
+            if self.behavior_spec.action_spec.is_continuous():
                 tf.Variable(
                     self.act_size[0],
                     name="action_output_shape",
