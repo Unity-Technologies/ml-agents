@@ -190,10 +190,10 @@ class PPOTrainer(RLTrainer):
         n_sequences = max(
             int(self.hyperparameters.batch_size / self.policy.sequence_length), 1
         )
-
-        advantages = self.update_buffer["advantages"].get_batch()
+        # Normalize advantages
+        advantages = np.array(self.update_buffer["advantages"].get_batch())
         self.update_buffer["advantages"].set(
-            (advantages - advantages.mean()) / (advantages.std() + 1e-10)
+            list((advantages - advantages.mean()) / (advantages.std() + 1e-10))
         )
         num_epoch = self.hyperparameters.num_epoch
         batch_update_stats = defaultdict(list)

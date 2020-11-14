@@ -1,6 +1,6 @@
 import numpy as np
 import h5py
-from typing import List, BinaryIO
+from typing import List, BinaryIO, Any
 import itertools
 
 from mlagents_envs.exception import UnityException
@@ -33,9 +33,9 @@ class AgentBuffer(dict):
         def __str__(self):
             return str(np.array(self).shape)
 
-        def append(self, element: np.ndarray, padding_value: float = 0.0) -> None:
+        def append(self, element: Any, padding_value: float = 0.0) -> None:
             """
-            Adds an element to this list. Also lets you change the padding
+            Adds an element to this AgentBuffer. Also lets you change the padding
             type, so that it can be set on append (e.g. action_masks should
             be padded with 1.)
             :param element: The element to append to the list.
@@ -44,34 +44,24 @@ class AgentBuffer(dict):
             super().append(element)
             self.padding_value = padding_value
 
-        def extend(self, data: np.ndarray) -> None:
+        def set(self, data: List[Any]) -> None:
             """
-            Adds a list of np.arrays to the end of the list of np.arrays.
-            :param data: The np.array list to append.
-            """
-            self += list(np.array(data, dtype=np.float32))
-
-        def set(self, data):
-            """
-            Sets the list of np.array to the input data
-            :param data: The np.array list to be set.
+            Sets the AgentBuffer to the provided list
+            :param data: The list to be set.
             """
             # Make sure we convert incoming data to float32 if it's a float
-            dtype = None
-            if data is not None and len(data) and isinstance(data[0], float):
-                dtype = np.float32
             self[:] = []
-            self[:] = list(np.array(data, dtype=dtype))
+            self[:] = data
 
         def get_batch(
             self,
             batch_size: int = None,
             training_length: int = 1,
             sequential: bool = True,
-        ) -> np.ndarray:
+        ) -> List[Any]:
             """
             Retrieve the last batch_size elements of length training_length
-            from the list of np.array
+            from the AgentBuffer.
             :param batch_size: The number of elements to retrieve. If None:
             All elements will be retrieved.
             :param training_length: The length of the sequence to be retrieved. If
@@ -97,15 +87,9 @@ class AgentBuffer(dict):
                     )
                 if batch_size * training_length > len(self):
                     padding = np.array(self[-1], dtype=np.float32) * self.padding_value
-                    return np.array(
-                        [padding] * (training_length - leftover) + self[:],
-                        dtype=np.float32,
-                    )
+                    return [padding] * (training_length - leftover) + self[:]
                 else:
-                    return np.array(
-                        self[len(self) - batch_size * training_length :],
-                        dtype=np.float32,
-                    )
+                    return self[len(self) - batch_size * training_length :]
             else:
                 # The sequences will have overlapping elements
                 if batch_size is None:
@@ -121,7 +105,7 @@ class AgentBuffer(dict):
                 tmp_list: List[np.ndarray] = []
                 for end in range(len(self) - batch_size + 1, len(self) + 1):
                     tmp_list += self[end - training_length : end]
-                return np.array(tmp_list, dtype=np.float32)
+                return tmp_list
 
         def reset_field(self) -> None:
             """
