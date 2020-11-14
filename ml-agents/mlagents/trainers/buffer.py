@@ -22,8 +22,8 @@ class AgentBuffer(dict):
 
     class AgentBufferField(list):
         """
-        AgentBufferField is a list of numpy arrays. When an agent collects a field, you can add it to his
-        AgentBufferField with the append method.
+        AgentBufferField is a list of data, usually numpy arrays. When an agent collects a field,
+        you can add it to its AgentBufferField with the append method.
         """
 
         def __init__(self):
