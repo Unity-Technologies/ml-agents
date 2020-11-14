@@ -33,7 +33,7 @@ class AgentBuffer(dict):
         def __str__(self):
             return str(np.array(self).shape)
 
-        def append(self, element: Any, padding_value: float = 0.0) -> None:
+        def append(self, element: Any, padding_value: Any = 0.0) -> None:
             """
             Adds an element to this AgentBuffer. Also lets you change the padding
             type, so that it can be set on append (e.g. action_masks should
