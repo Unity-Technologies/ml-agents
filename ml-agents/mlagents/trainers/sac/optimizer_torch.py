@@ -151,7 +151,7 @@ class TorchSACOptimizer(TorchOptimizer):
         _disc_log_ent_coef = torch.nn.Parameter(
             torch.log(
                 torch.as_tensor(
-                    [self.init_entcoef] * sum(self._action_spec.discrete_branches)
+                    [self.init_entcoef] * len(self._action_spec.discrete_branches)
                 )
             ),
             requires_grad=True,
@@ -316,6 +316,13 @@ class TorchSACOptimizer(TorchOptimizer):
                     v_backup = min_policy_qs[name] - torch.mean(
                         branched_ent_bonus, axis=0
                     )
+                    # Add continuous entropy bonus to minimum Q
+                    if self._action_spec.continuous_size > 0:
+                        torch.sum(
+                            _cont_ent_coef * log_probs.continuous_tensor,
+                            dim=1,
+                            keepdim=True,
+                        )
                 value_loss = 0.5 * ModelUtils.masked_mean(
                     torch.nn.functional.mse_loss(values[name], v_backup.squeeze()),
                     loss_masks,
