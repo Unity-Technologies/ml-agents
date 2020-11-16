@@ -214,7 +214,7 @@ namespace Unity.MLAgents
                 ChannelCredentials.Insecure);
 
             m_Client = new UnityToExternalProto.UnityToExternalProtoClient(channel);
-            var result = m_Client.Exchange(WrapMessage(unityOutput, 200));
+            var result = m_Client.Exchange(WrapMessage(unityOutput, 200), deadline: DateTime.Now.AddSeconds(1));
             var inputMessage = m_Client.Exchange(WrapMessage(null, 200));
             unityInput = inputMessage.UnityInput;
 #if UNITY_EDITOR
