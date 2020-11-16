@@ -213,17 +213,6 @@ class TorchSACOptimizer(TorchOptimizer):
         self.target_network.to(device)
         self.value_network.to(device)
 
-    def _split_discrete_continuous(
-        self, tensor: torch.Tensor
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
-        """
-        Splits a tensor between continuous and discrete. Assumes tensor is [continuous, discrete],
-        for instance target entropy.
-        """
-        _cont = tensor[: self._action_spec.continuous_size]
-        _disc = tensor[self._action_spec.continuous_size :]
-        return _cont, _disc
-
     def sac_q_loss(
         self,
         q1_out: Dict[str, torch.Tensor],
