@@ -15,15 +15,11 @@ class LogProbsTuple(_ActionTupleBase):
     zero.
     """
 
-    def add_continuous(self, continuous: np.ndarray) -> None:
-        if self._discrete is None:
-            self._discrete = np.zeros((continuous.shape[0], 0), dtype=np.float32)
-        self._continuous = continuous
-
-    def add_discrete(self, discrete: np.ndarray) -> None:
-        if self._continuous is None:
-            self._continuous = np.zeros((discrete.shape[0], 0), dtype=np.float32)
-        self._discrete = discrete
+    def get_discrete_dtype(self) -> np.dtype:
+        """
+        The dtype of a discrete log probability.
+        """
+        return np.float32
 
 
 class ActionLogProbs(NamedTuple):
