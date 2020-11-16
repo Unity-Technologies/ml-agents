@@ -117,7 +117,7 @@ namespace Unity.MLAgents.Sensors
                         if (expected[h, w, c] != output[tensorShape.Index(0, h, w, c)])
                         {
                             errorMessage = $"Expected and actual differed in position [{h}, {w}, {c}]. " +
-                                "Expected: {expected[h, w, c]}  Actual: {output[tensorShape.Index(0, h, w, c)]} ";
+                                $"Expected: {expected[h, w, c]}  Actual: {output[tensorShape.Index(0, h, w, c)]} ";
                             return false;
                         }
                     }
