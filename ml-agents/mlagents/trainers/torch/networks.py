@@ -1,4 +1,4 @@
-from typing import Callable, List, Dict, Tuple, Optional
+from typing import Callable, List, Dict, Tuple, Optional, Union
 import abc
 
 from mlagents.torch_utils import torch, nn
@@ -162,7 +162,7 @@ class Actor(abc.ABC):
         vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
-    ) -> Tuple[torch.Tensor, int, int, int, int]:
+    ) -> Tuple[Union[int, torch.Tensor], ...]:
         """
         Forward pass of the Actor for inference. This is required for export to ONNX, and
         the inputs and outputs of this method should not be changed without a respective change
@@ -278,9 +278,12 @@ class SimpleActor(nn.Module, Actor):
         vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
-    ) -> Tuple[torch.Tensor, int, int, int, int]:
+    ) -> Tuple[Union[int, torch.Tensor], ...]:
         """
         Note: This forward() method is required for exporting to ONNX. Don't modify the inputs and outputs.
+
+        At this moment, torch.onnx.export() doesn't accept None as tensor to be exported,
+        so the size of return tuple varies with action spec.
         """
         encoding, memories_out = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=1
@@ -290,16 +293,20 @@ class SimpleActor(nn.Module, Actor):
             encoding, masks
         )
         export_out = [
-            action_out_deprecated,
             self.version_number,
             torch.Tensor([self.network_body.memory_size]),
-            self.is_continuous_int_deprecated,
-            self.act_size_vector_deprecated,
         ]
         if self.action_spec.continuous_size > 0:
             export_out += [cont_action_out, self.continuous_act_size_vector]
         if self.action_spec.discrete_size > 0:
             export_out += [disc_action_out, self.discrete_act_size_vector]
+        # Only export deprecated nodes with non-hybrid action spec
+        if self.action_spec.continuous_size == 0 or self.action_spec.discrete_size == 0:
+            export_out += [
+                action_out_deprecated,
+                self.is_continuous_int_deprecated,
+                self.act_size_vector_deprecated,
+            ]
         return tuple(export_out)
 
 

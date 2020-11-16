@@ -117,6 +117,9 @@ class ActionModel(nn.Module):
             ]
             discrete_out = torch.cat(discrete_out, dim=1)
             action_out_deprecated = discrete_out
+        # deprecated action field does not support hybrid action
+        if self.action_spec.continuous_size > 0 and self.action_spec.discrete_size > 0:
+            action_out_deprecated = None
         return continuous_out, discrete_out, action_out_deprecated
 
     def forward(
