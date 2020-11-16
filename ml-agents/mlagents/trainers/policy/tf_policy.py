@@ -241,6 +241,7 @@ class TFPolicy(Policy):
                 feed_dict[self.prev_action] = self.retrieve_previous_action(
                     global_agent_ids
                 )
+
             feed_dict[self.memory_in] = self.retrieve_memories(global_agent_ids)
         feed_dict = self.fill_eval_dict(feed_dict, decision_requests)
         run_out = self._execute_model(feed_dict, self.inference_dict)
@@ -270,6 +271,14 @@ class TFPolicy(Policy):
         )
 
         self.save_memories(global_agent_ids, run_out.get("memory_out"))
+        # For Compatibility with buffer changes for hybrid action support
+        if "log_probs" in run_out:
+            run_out["log_probs"] = {"action_probs": run_out["log_probs"]}
+        if "action" in run_out:
+            if self.behavior_spec.action_spec.is_continuous():
+                run_out["action"] = {"continuous_action": run_out["action"]}
+            else:
+                run_out["action"] = {"discrete_action": run_out["action"]}
         return ActionInfo(
             action=run_out.get("action"),
             value=run_out.get("value"),

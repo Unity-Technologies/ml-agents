@@ -4,6 +4,7 @@ import numpy as np
 
 from mlagents_envs.base_env import (
     ActionSpec,
+    ActionTuple,
     BaseEnv,
     BehaviorSpec,
     DecisionSteps,
@@ -58,6 +59,7 @@ class SimpleEnvironment(BaseEnv):
         else:
             action_spec = ActionSpec.create_continuous(action_size)
         self.behavior_spec = BehaviorSpec(self._make_obs_spec(), action_spec)
+        self.action_spec = action_spec
         self.action_size = action_size
         self.names = brain_names
         self.positions: Dict[str, List[float]] = {}
@@ -114,11 +116,13 @@ class SimpleEnvironment(BaseEnv):
 
     def _take_action(self, name: str) -> bool:
         deltas = []
-        for _act in self.action[name][0]:
-            if self.discrete:
-                deltas.append(1 if _act else -1)
-            else:
-                deltas.append(_act)
+        _act = self.action[name]
+        if self.action_spec.discrete_size > 0:
+            for _disc in _act.discrete[0]:
+                deltas.append(1 if _disc else -1)
+        if self.action_spec.continuous_size > 0:
+            for _cont in _act.continuous[0]:
+                deltas.append(_cont)
         for i, _delta in enumerate(deltas):
             _delta = clamp(_delta, -self.step_size, self.step_size)
             self.positions[name][i] += _delta
@@ -281,8 +285,12 @@ class RecordEnvironment(SimpleEnvironment):
     def step(self) -> None:
         super().step()
         for name in self.names:
+            if self.discrete:
+                action = self.action[name].discrete
+            else:
+                action = self.action[name].continuous
             self.demonstration_protos[name] += proto_from_steps_and_action(
-                self.step_result[name][0], self.step_result[name][1], self.action[name]
+                self.step_result[name][0], self.step_result[name][1], action
             )
             self.demonstration_protos[name] = self.demonstration_protos[name][
                 -self.n_demos :
@@ -293,7 +301,15 @@ class RecordEnvironment(SimpleEnvironment):
         for _ in range(self.n_demos):
             for name in self.names:
                 if self.discrete:
-                    self.action[name] = [[1]] if self.goal[name] > 0 else [[0]]
+                    self.action[name] = ActionTuple(
+                        np.array([], dtype=np.float32),
+                        np.array(
+                            [[1]] if self.goal[name] > 0 else [[0]], dtype=np.int32
+                        ),
+                    )
                 else:
-                    self.action[name] = [[float(self.goal[name])]]
+                    self.action[name] = ActionTuple(
+                        np.array([[float(self.goal[name])]], dtype=np.float32),
+                        np.array([], dtype=np.int32),
+                    )
             self.step()

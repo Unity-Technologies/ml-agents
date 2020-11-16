@@ -40,7 +40,7 @@ def test_trajectory_to_agentbuffer():
         "masks",
         "done",
         "actions_pre",
-        "actions",
+        "continuous_action",
         "action_probs",
         "action_mask",
         "prev_action",

@@ -2,6 +2,7 @@ import sys
 from typing import List, Dict, TypeVar, Generic, Tuple, Any, Union
 from collections import defaultdict, Counter
 import queue
+import numpy as np
 
 from mlagents_envs.base_env import (
     DecisionSteps,
@@ -129,12 +130,19 @@ class AgentProcessor:
             done = terminated  # Since this is an ongoing step
             interrupted = step.interrupted if terminated else False
             # Add the outputs of the last eval
-            action = stored_take_action_outputs["action"][idx]
+            action_dict = stored_take_action_outputs["action"]
+            action: Dict[str, np.ndarray] = {}
+            for act_type, act_array in action_dict.items():
+                action[act_type] = act_array[idx]
             if self.policy.use_continuous_act:
                 action_pre = stored_take_action_outputs["pre_action"][idx]
             else:
                 action_pre = None
-            action_probs = stored_take_action_outputs["log_probs"][idx]
+            action_probs_dict = stored_take_action_outputs["log_probs"]
+            action_probs: Dict[str, np.ndarray] = {}
+            for prob_type, prob_array in action_probs_dict.items():
+                action_probs[prob_type] = prob_array[idx]
+
             action_mask = stored_decision_step.action_mask
             prev_action = self.policy.retrieve_previous_action([global_id])[0, :]
             experience = AgentExperience(

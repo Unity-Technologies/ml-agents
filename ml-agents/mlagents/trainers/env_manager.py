@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
+import numpy as np
+
 from typing import List, Dict, NamedTuple, Iterable, Tuple
 from mlagents_envs.base_env import (
     DecisionSteps,
     TerminalSteps,
     BehaviorSpec,
     BehaviorName,
+    ActionTuple,
 )
 from mlagents_envs.side_channel.stats_side_channel import EnvironmentStats
 
@@ -12,6 +15,7 @@ from mlagents.trainers.policy import Policy
 from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
 from mlagents.trainers.action_info import ActionInfo
 from mlagents_envs.logging_util import get_logger
+from mlagents_envs.exception import UnityActionException
 
 AllStepResult = Dict[BehaviorName, Tuple[DecisionSteps, TerminalSteps]]
 AllGroupSpec = Dict[BehaviorName, BehaviorSpec]
@@ -143,3 +147,21 @@ class EnvManager(ABC):
                     step_info.environment_stats, step_info.worker_id
                 )
         return len(step_infos)
+
+    @staticmethod
+    def action_tuple_from_numpy_dict(action_dict: Dict[str, np.ndarray]) -> ActionTuple:
+        if "continuous_action" in action_dict:
+            continuous = action_dict["continuous_action"]
+            if "discrete_action" in action_dict:
+                discrete = action_dict["discrete_action"]
+                action_tuple = ActionTuple(continuous, discrete)
+            else:
+                action_tuple = ActionTuple.create_continuous(continuous)
+        elif "discrete_action" in action_dict:
+            discrete = action_dict["discrete_action"]
+            action_tuple = ActionTuple.create_discrete(discrete)
+        else:
+            raise UnityActionException(
+                "The action dict must contain entries for either continuous_action or discrete_action."
+            )
+        return action_tuple

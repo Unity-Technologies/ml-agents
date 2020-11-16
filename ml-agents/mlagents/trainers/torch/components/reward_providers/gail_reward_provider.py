@@ -8,7 +8,7 @@ from mlagents.trainers.torch.components.reward_providers.base_reward_provider im
 )
 from mlagents.trainers.settings import GAILSettings
 from mlagents_envs.base_env import BehaviorSpec
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch.utils import ModelUtils, AgentAction
 from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.torch.layers import linear_layer, Initialization
 from mlagents.trainers.settings import NetworkSettings, EncoderType
@@ -109,9 +109,7 @@ class DiscriminatorNetwork(torch.nn.Module):
         Creates the action Tensor. In continuous case, corresponds to the action. In
         the discrete case, corresponds to the concatenation of one hot action Tensors.
         """
-        return self._action_flattener.forward(
-            torch.as_tensor(mini_batch["actions"], dtype=torch.float)
-        )
+        return self._action_flattener.forward(AgentAction.from_dict(mini_batch))
 
     def get_state_inputs(
         self, mini_batch: AgentBuffer
