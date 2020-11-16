@@ -8,7 +8,20 @@ and this project adheres to
 
 
 ## [Unreleased]
+### Major Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 
+### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+
+## [1.6.0-preview] - 2020-11-18
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
@@ -19,8 +32,11 @@ and this project adheres to
  adding `framework: tensorflow` in the configuration YAML. (#4517)
 
 ### Minor Changes
-#### com.unity.ml-agents (C#)
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - The Barracuda dependency was upgraded to 1.1.2 (#4571)
+- Utilities were added to `com.unity.ml-agents.extensions` to make it easier to
+integrate with match-3 games. See the [readme](https://github.com/Unity-Technologies/ml-agents/blob/master/com.unity.ml-agents.extensions/Documentation~/Match3.md)
+for more details. (#4515)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `action_probs` node is no longer listed as an output in TensorFlow models (#4613).
 
@@ -31,6 +47,8 @@ if they are called recursively (for example, if they call `Agent.EndEpisode()`).
 Previously, this would result in an infinite loop and cause the editor to hang. (#4573)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed an issue where runs could not be resumed when using TensorFlow and Ghost Training. (#4593)
+- Change the tensor type of step count from int32 to int64 to address the overflow issue when step
+goes larger than 2^31. Previous Tensorflow checkpoints will become incompatible and cannot be loaded. (#4607)
 
 
 ## [1.5.0-preview] - 2020-10-14
