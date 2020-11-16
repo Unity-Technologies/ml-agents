@@ -29,7 +29,6 @@ class Policy:
         condition_sigma_on_obs: bool = True,
     ):
         self.behavior_spec = behavior_spec
-        self.action_spec = behavior_spec.action_spec
         self.trainer_settings = trainer_settings
         self.network_settings: NetworkSettings = trainer_settings.network_settings
         self.seed = seed

@@ -77,7 +77,7 @@ class TFPolicy(Policy):
             reparameterize,
             condition_sigma_on_obs,
         )
-        if self.action_spec.continuous_size > 0 and self.action_spec.discrete_size > 0:
+        if self.behavior_spec.action_spec.continuous_size > 0 and self.behavior_spec.action_spec.discrete_size > 0:
             raise UnityPolicyException(
                 "TensorFlow does not support mixed action spaces. Please run with the Torch framework."
             )
