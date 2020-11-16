@@ -240,6 +240,7 @@ class SimpleActor(nn.Module, Actor):
         self.continuous_act_size_vector = torch.nn.Parameter(
             torch.Tensor([int(self.action_spec.continuous_size)]), requires_grad=False
         )
+        # TODO: export list of branch sizes instead of sum
         self.discrete_act_size_vector = torch.nn.Parameter(
             torch.Tensor([sum(self.action_spec.discrete_branches)]), requires_grad=False
         )
