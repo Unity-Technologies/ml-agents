@@ -143,10 +143,7 @@ def worker(
             if req.cmd == EnvironmentCommand.STEP:
                 all_action_info = req.payload
                 for brain_name, action_info in all_action_info.items():
-                    if (
-                        len(action_info.action.continuous) > 0
-                        or len(action_info.action.discrete) > 0
-                    ):
+                    if len(action_info.agent_ids) > 0:
                         env.set_actions(brain_name, action_info.action)
                 env.step()
                 all_step_result = _generate_all_results()
