@@ -183,7 +183,8 @@ namespace Unity.MLAgents.Inference
             }
             else
             {
-                return (int)model.GetTensorByName(TensorNames.ContinuousActionOutputShape)[0];
+                var continuousOutputShape = model.GetTensorByName(TensorNames.ContinuousActionOutputShape);
+                return continuousOutputShape == null ? 0 : (int)continuousOutputShape[0];
             }
         }
 
@@ -248,7 +249,8 @@ namespace Unity.MLAgents.Inference
             }
             else
             {
-                return (int)model.GetTensorByName(TensorNames.DiscreteActionOutputShape)[0];
+                var discreteOutputShape = model.GetTensorByName(TensorNames.DiscreteActionOutputShape);
+                return discreteOutputShape == null ? 0 : (int)discreteOutputShape[0];
             }
         }
 
