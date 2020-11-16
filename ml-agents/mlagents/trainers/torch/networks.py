@@ -452,7 +452,6 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             vec_inputs, vis_inputs, memories=actor_mem, sequence_length=sequence_length
         )
         action, log_probs, entropies = self.action_model(encoding, masks)
-
         value_outputs, critic_mem_outs = self.critic(
             vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
         )
