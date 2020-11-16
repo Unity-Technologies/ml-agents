@@ -422,8 +422,8 @@ class UnityEnvironment(BaseEnv):
             if n_agents == 0:
                 continue
             for i in range(n_agents):
-                # TODO: extend to AgentBuffers
-                if vector_action[b].continuous is not None:
+                # TODO: This check will be removed when the oroto supports hybrid actions
+                if vector_action[b].continuous.shape[1] > 0:
                     _act = vector_action[b].continuous[i]
                 else:
                     _act = vector_action[b].discrete[i]
