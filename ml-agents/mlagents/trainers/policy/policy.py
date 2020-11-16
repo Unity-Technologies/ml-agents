@@ -141,6 +141,16 @@ class Policy:
     ) -> ActionInfo:
         raise NotImplementedError
 
+    @staticmethod
+    def check_nan_action(action: Optional[np.ndarray]) -> None:
+        # Fast NaN check on the action
+        # See https://stackoverflow.com/questions/6736590/fast-check-for-nan-in-numpy for background.
+        if action is not None:
+            d = np.sum(action)
+            has_nan = np.isnan(d)
+            if has_nan:
+                raise RuntimeError("NaN action detected.")
+
     @abstractmethod
     def update_normalization(self, vector_obs: np.ndarray) -> None:
         pass
