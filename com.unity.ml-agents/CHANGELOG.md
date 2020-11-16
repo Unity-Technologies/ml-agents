@@ -7,7 +7,7 @@ and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+## [1.0.6] - 2020-11-13
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 - Update documentation with recommended version of Python trainer. (#4535)
