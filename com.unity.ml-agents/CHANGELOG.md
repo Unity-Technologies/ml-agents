@@ -18,6 +18,8 @@ and this project adheres to
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
+ - Fixed a bug when running inference on Windows machine, the communicator initialization
+ blocks for a few seconds trying to establish communication with python.
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 
