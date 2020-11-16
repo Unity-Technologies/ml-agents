@@ -3,9 +3,10 @@ from mlagents.torch_utils import torch
 import numpy as np
 
 from mlagents.trainers.torch.utils import ModelUtils
+from mlagents_envs.base_env import _ActionTupleBase
 
 
-class LogProbsTuple:
+class LogProbsTuple(_ActionTupleBase):
     """
     An object whose fields correspond to the log probs of actions of different types.
     Continuous and discrete are numpy arrays
@@ -13,18 +14,6 @@ class LogProbsTuple:
     respectively. Note, this also holds when continuous or discrete size is
     zero.
     """
-
-    def __init__(self):
-        self._continuous = None
-        self._discrete = None
-
-    @property
-    def continuous(self) -> np.ndarray:
-        return self._continuous
-
-    @property
-    def discrete(self) -> np.ndarray:
-        return self._discrete
 
     def add_continuous(self, continuous: np.ndarray) -> None:
         if self._discrete is None:

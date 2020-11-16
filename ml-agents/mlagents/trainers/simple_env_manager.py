@@ -28,7 +28,6 @@ class SimpleEnvManager(EnvManager):
         self.previous_all_action_info = all_action_info
 
         for brain_name, action_info in all_action_info.items():
-            #_action = EnvManager.action_tuple_from_numpy_dict(action_info.action)
             self.env.set_actions(brain_name, action_info.action)
         self.env.step()
         all_step_result = self._generate_all_results()

@@ -244,19 +244,25 @@ class TerminalSteps(Mapping):
         )
 
 
-class ActionTuple:
+class _ActionTupleBase(ABC):
     """
-    An object whose fields correspond to actions of different types.
-    Continuous and discrete actions are numpy arrays of type float32 and
-    int32, respectively and are type checked on construction.
-    Dimensions are of (n_agents, continuous_size) and (n_agents, discrete_size),
+    An object whose fields correspond to action data of continuous and discrete
+    spaces. Dimensions are of (n_agents, continuous_size) and (n_agents, discrete_size),
     respectively. Note, this also holds when continuous or discrete size is
     zero.
     """
 
-    def __init__(self):
-        self._continuous = None
-        self._discrete = None
+    def __init__(
+        self,
+        continuous: Optional[np.ndarray] = None,
+        discrete: Optional[np.ndarray] = None,
+    ):
+        self._continuous: Optional[np.ndarray] = None
+        self._discrete: Optional[np.ndarray] = None
+        if continuous is not None:
+            self.add_continuous(continuous)
+        if discrete is not None:
+            self.add_discrete(discrete)
 
     @property
     def continuous(self) -> np.ndarray:
@@ -265,6 +271,25 @@ class ActionTuple:
     @property
     def discrete(self) -> np.ndarray:
         return self._discrete
+
+    @abstractmethod
+    def add_continuous(self, continuous: np.ndarray) -> None:
+        pass
+
+    @abstractmethod
+    def add_discrete(self, discrete: np.ndarray) -> None:
+        pass
+
+
+class ActionTuple(_ActionTupleBase):
+    """
+    An object whose fields correspond to actions of different types.
+    Continuous and discrete actions are numpy arrays of type float32 and
+    int32, respectively and are type checked on construction.
+    Dimensions are of (n_agents, continuous_size) and (n_agents, discrete_size),
+    respectively. Note, this also holds when continuous or discrete size is
+    zero.
+    """
 
     def add_continuous(self, continuous: np.ndarray) -> None:
         if continuous.dtype != np.float32:
@@ -330,14 +355,9 @@ class ActionSpec(NamedTuple):
         for a number of agents.
         :param n_agents: The number of agents that will have actions generated
         """
-        action_tuple = ActionTuple()
-        action_tuple.add_continuous(
-            np.zeros((n_agents, self.continuous_size), dtype=np.float32)
-        )
-        action_tuple.add_discrete(
-            np.zeros((n_agents, self.discrete_size), dtype=np.int32)
-        )
-        return action_tuple
+        _continuous = np.zeros((n_agents, self.continuous_size), dtype=np.float32)
+        _discrete = np.zeros((n_agents, self.discrete_size), dtype=np.int32)
+        return ActionTuple(continuous=_continuous, discrete=_discrete)
 
     def random_action(self, n_agents: int) -> ActionTuple:
         """
@@ -345,13 +365,12 @@ class ActionSpec(NamedTuple):
         or continuous) for a number of agents.
         :param n_agents: The number of agents that will have actions generated
         """
-        action_tuple = ActionTuple()
-        continuous = np.random.uniform(
+        _continuous = np.random.uniform(
             low=-1.0, high=1.0, size=(n_agents, self.continuous_size)
         )
-        action_tuple.add_continuous(continuous)
+        _discrete = np.zeros((n_agents, self.discrete_size), dtype=np.int32)
         if self.discrete_size > 0:
-            discrete = np.column_stack(
+            _discrete = np.column_stack(
                 [
                     np.random.randint(
                         0,
@@ -362,8 +381,7 @@ class ActionSpec(NamedTuple):
                     for i in range(self.discrete_size)
                 ]
             )
-            action_tuple.add_discrete(discrete)
-        return action_tuple
+        return ActionTuple(continuous=_continuous, discrete=_discrete)
 
     def _validate_action(
         self, actions: ActionTuple, n_agents: int, name: str

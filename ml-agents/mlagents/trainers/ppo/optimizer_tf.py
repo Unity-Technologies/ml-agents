@@ -335,9 +335,9 @@ class PPOOptimizer(TFOptimizer):
             feed_dict[self.old_values[name]] = mini_batch[f"{name}_value_estimates"]
 
         if self.policy.use_continuous_act:  # For hybrid action buffer support
-            feed_dict[self.all_old_log_probs] = (mini_batch["continuous_log_probs"][0],)
+            feed_dict[self.all_old_log_probs] = mini_batch["continuous_log_probs"]
         else:
-            feed_dict[self.all_old_log_probs] = (mini_batch["discrete_log_probs"][0],)
+            feed_dict[self.all_old_log_probs] = mini_batch["discrete_log_probs"]
 
         if self.policy.output_pre is not None and "actions_pre" in mini_batch:
             feed_dict[self.policy.output_pre] = mini_batch["actions_pre"]
