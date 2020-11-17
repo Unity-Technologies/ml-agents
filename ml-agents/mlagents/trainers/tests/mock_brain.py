@@ -79,22 +79,20 @@ def make_fake_trajectory(
     steps_list = []
 
     action_size = action_spec.discrete_size + action_spec.continuous_size
-    prob_ones = np.ones(
-        int(np.sum(action_spec.discrete_branches) + action_spec.continuous_size),
-        dtype=np.float32,
-    )
     for _i in range(length - 1):
         obs = []
         for _shape in observation_shapes:
             obs.append(np.ones(_shape, dtype=np.float32))
         reward = 1.0
         done = False
-        if action_spec.is_continuous():
-            action = ActionTuple(continuous=np.zeros(action_size, dtype=np.float32))
-            action_probs = LogProbsTuple(continuous=prob_ones)
-        else:
-            action = ActionTuple(discrete=np.zeros(action_size, dtype=np.float32))
-            action_probs = LogProbsTuple(discrete=prob_ones)
+        action = ActionTuple(
+            continuous=np.zeros(action_spec.continuous_size, dtype=np.float32),
+            discrete=np.zeros(action_spec.discrete_size, dtype=np.int32),
+        )
+        action_probs = LogProbsTuple(
+            continuous=np.ones(action_spec.continuous_size, dtype=np.float32),
+            discrete=np.ones(action_spec.discrete_size, dtype=np.float32),
+        )
         action_pre = np.zeros(action_size, dtype=np.float32)
         action_mask = (
             [
