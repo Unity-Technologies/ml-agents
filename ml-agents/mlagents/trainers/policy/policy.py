@@ -111,8 +111,6 @@ class Policy:
     def save_previous_action(
         self, agent_ids: List[str], action_tuple: ActionTuple
     ) -> None:
-        # if action_dict is None or "discrete_action" not in action_dict:
-        #    return
         for index, agent_id in enumerate(agent_ids):
             self.previous_action_dict[agent_id] = action_tuple.discrete[index, :]
 

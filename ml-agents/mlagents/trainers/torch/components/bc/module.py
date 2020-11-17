@@ -116,7 +116,6 @@ class BCModule:
                 expert_actions.discrete_tensor,
                 self.policy.behavior_spec.action_spec.discrete_branches,
             )
-
             log_prob_branches = ModelUtils.break_into_branches(
                 log_probs.all_discrete_tensor,
                 self.policy.behavior_spec.action_spec.discrete_branches,
@@ -147,6 +146,7 @@ class BCModule:
         act_masks = None
         expert_actions = AgentAction.from_dict(mini_batch_demo)
         if self.policy.behavior_spec.action_spec.discrete_size > 0:
+
             act_masks = ModelUtils.list_to_tensor(
                 np.ones(
                     (
@@ -173,7 +173,7 @@ class BCModule:
         else:
             vis_obs = []
 
-        selected_actions, log_probs, _, _, _ = self.policy.sample_actions(
+        selected_actions, log_probs, _, _ = self.policy.sample_actions(
             vec_obs,
             vis_obs,
             masks=act_masks,
