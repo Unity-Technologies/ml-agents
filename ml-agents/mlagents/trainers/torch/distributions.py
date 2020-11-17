@@ -66,7 +66,11 @@ class GaussianDistInstance(DistInstance):
         return torch.exp(log_prob)
 
     def entropy(self):
-        return 0.5 * torch.log(2 * math.pi * math.e * self.std + EPSILON)
+        return torch.mean(
+            0.5 * torch.log(2 * math.pi * math.e * self.std + EPSILON),
+            dim=1,
+            keepdim=True,
+        )  # Use equivalent behavior to TF
 
 
 class TanhGaussianDistInstance(GaussianDistInstance):
@@ -131,7 +135,7 @@ class GaussianDistribution(nn.Module):
             hidden_size,
             num_outputs,
             kernel_init=Initialization.KaimingHeNormal,
-            kernel_gain=0.1,
+            kernel_gain=0.2,
             bias_init=Initialization.Zero,
         )
         self.tanh_squash = tanh_squash
@@ -140,7 +144,7 @@ class GaussianDistribution(nn.Module):
                 hidden_size,
                 num_outputs,
                 kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=0.1,
+                kernel_gain=0.2,
                 bias_init=Initialization.Zero,
             )
         else:
