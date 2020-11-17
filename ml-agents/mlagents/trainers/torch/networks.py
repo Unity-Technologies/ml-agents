@@ -342,10 +342,10 @@ class SimpleActor(nn.Module, Actor):
         if self.action_spec.is_continuous():
             action_list = self.sample_action(dists)
             action_out = torch.stack(action_list, dim=-1)
+            if self._clip_action_on_export:
+                action_out = torch.clamp(action_out, -3, 3) / 3
         else:
             action_out = torch.cat([dist.all_log_prob() for dist in dists], dim=1)
-        if self._clip_action_on_export:
-            action_out = torch.clamp(action_out, -3, 3) / 3
         return (
             action_out,
             self.version_number,

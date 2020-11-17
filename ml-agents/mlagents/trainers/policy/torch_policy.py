@@ -205,7 +205,7 @@ class TorchPolicy(Policy):
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
 
-        if self._clip_action:
+        if self._clip_action and self.use_continuous_act:
             clipped_action = torch.clamp(action, -3, 3) / 3
         else:
             clipped_action = action
