@@ -140,7 +140,7 @@ def test_gym_wrapper_single_visual_and_vector(use_uint8):
     assert isinstance(done, (bool, np.bool_))
     assert isinstance(info, dict)
 
-    # check behaviour for allow_multiple_obs = False
+    # check behavior for allow_multiple_obs = False
     env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8, allow_multiple_obs=False)
     assert isinstance(env, UnityToGymWrapper)
     assert isinstance(env.observation_space, spaces.Box)
@@ -185,7 +185,7 @@ def test_gym_wrapper_multi_visual_and_vector(use_uint8):
     assert isinstance(done, (bool, np.bool_))
     assert isinstance(info, dict)
 
-    # check behaviour for allow_multiple_obs = False
+    # check behavior for allow_multiple_obs = False
     env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8, allow_multiple_obs=False)
     assert isinstance(env, UnityToGymWrapper)
     assert isinstance(env.observation_space, spaces.Box)
