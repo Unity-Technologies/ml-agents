@@ -68,7 +68,7 @@ def test_reward_decreases(behavior_spec: BehaviorSpec, seed: int) -> None:
     buffer = create_agent_buffer(behavior_spec, 5)
     curiosity_rp.update(buffer)
     reward_old = curiosity_rp.evaluate(buffer)[0]
-    for _ in range(10):
+    for _ in range(20):
         curiosity_rp.update(buffer)
         reward_new = curiosity_rp.evaluate(buffer)[0]
     assert reward_new < reward_old
