@@ -48,7 +48,7 @@ def test_take_action_returns_action_info_when_available():
     behavior_spec = basic_behavior_spec()
     policy = FakePolicy(test_seed, behavior_spec, TrainerSettings(), "output")
     policy_eval_out = {
-        "action": {"continuous_action": np.array([1.0], dtype=np.float32)},
+        "action": np.array([[1.0]], dtype=np.float32),
         "memory_out": np.array([[2.5]], dtype=np.float32),
         "value": np.array([1.1], dtype=np.float32),
     }

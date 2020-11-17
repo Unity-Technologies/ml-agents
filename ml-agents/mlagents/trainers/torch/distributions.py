@@ -161,7 +161,7 @@ class GaussianDistribution(nn.Module):
                 torch.zeros(1, num_outputs, requires_grad=True)
             )
 
-    def forward(self, inputs: torch.Tensor, masks: torch.Tensor) -> List[DistInstance]:
+    def forward(self, inputs: torch.Tensor) -> List[DistInstance]:
         mu = self.mu(inputs)
         if self.conditional_sigma:
             log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)

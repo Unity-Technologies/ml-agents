@@ -107,7 +107,9 @@ def test_action_generator():
     specs = ActionSpec.create_continuous(action_len)
     zero_action = specs.empty_action(4).continuous
     assert np.array_equal(zero_action, np.zeros((4, action_len), dtype=np.float32))
+    print(specs.random_action(4))
     random_action = specs.random_action(4).continuous
+    print(random_action)
     assert random_action.dtype == np.float32
     assert random_action.shape == (4, action_len)
     assert np.min(random_action) >= -1

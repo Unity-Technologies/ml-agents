@@ -7,7 +7,9 @@ from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.networks import ValueNetwork
-from mlagents.trainers.torch.utils import ModelUtils, AgentAction, ActionLogProbs
+from mlagents.trainers.torch.agent_action import AgentAction
+from mlagents.trainers.torch.action_log_probs import ActionLogProbs
+from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.timers import timed
 from mlagents_envs.base_env import ActionSpec
@@ -129,13 +131,13 @@ class TorchSACOptimizer(TorchOptimizer):
             name: int(not self.reward_signals[name].ignore_done)
             for name in self.stream_names
         }
-        self._action_spec = self.policy.action_spec
+        self._action_spec = self.policy.behavior_spec.action_spec
 
         self.value_network = TorchSACOptimizer.PolicyValueNetwork(
             self.stream_names,
             self.policy.behavior_spec.observation_shapes,
             policy_network_settings,
-            self.policy.action_spec,
+            self._action_spec,
         )
 
         self.target_network = ValueNetwork(
@@ -512,12 +514,15 @@ class TorchSACOptimizer(TorchOptimizer):
         self.target_network.network_body.copy_normalization(
             self.policy.actor_critic.network_body
         )
-        (sampled_actions, log_probs, _, sampled_values, _) = self.policy.sample_actions(
+        (sampled_actions, log_probs, _, _) = self.policy.sample_actions(
             vec_obs,
             vis_obs,
             masks=act_masks,
             memories=memories,
             seq_len=self.policy.sequence_length,
+        )
+        value_estimates, _ = self.policy.actor_critic.critic_pass(
+            vec_obs, vis_obs, memories, sequence_length=self.policy.sequence_length
         )
 
         cont_sampled_actions = sampled_actions.continuous_tensor
@@ -559,7 +564,7 @@ class TorchSACOptimizer(TorchOptimizer):
             q1_stream, q2_stream, target_values, dones, rewards, masks
         )
         value_loss = self.sac_value_loss(
-            log_probs, sampled_values, q1p_out, q2p_out, masks
+            log_probs, value_estimates, q1p_out, q2p_out, masks
         )
         policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks)
         entropy_loss = self.sac_entropy_loss(log_probs, masks)

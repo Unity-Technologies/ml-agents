@@ -536,3 +536,24 @@ you would like to contribute environments, please see our
     does not train with the provided default training parameters.**
 - Float Properties: None
 - Benchmark Mean Reward: 1.75
+
+## Match 3
+
+![Match 3](images/match3.png)
+
+- Set-up: Simple match-3 game. Matched pieces are removed, and remaining pieces
+drop down. New pieces are spawned randomly at the top, with a chance of being
+"special".
+- Goal: Maximize score from matching pieces.
+- Agents: The environment contains several independent Agents.
+- Agent Reward Function (independent):
+  - .01 for each normal piece cleared. Special pieces are worth 2x or 3x.
+- Behavior Parameters:
+  - None
+  - Observations and actions are defined with a sensor and actuator respectively.
+- Float Properties: None
+- Benchmark Mean Reward:
+  - 37.2 for visual observations
+  - 37.6 for vector observations
+  - 34.2 for simple heuristic (pick a random valid move)
+  - 37.0 for greedy heuristic (pick the highest-scoring valid move)

@@ -4,7 +4,8 @@ from mlagents.torch_utils import torch
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
-from mlagents.trainers.torch.utils import ModelUtils, AgentAction
+from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch.agent_action import AgentAction
 
 VECTOR_ACTION_SPACE = 2
 VECTOR_OBS_SPACE = 8
@@ -53,15 +54,9 @@ def test_policy_evaluate(rnn, visual, discrete):
 
     run_out = policy.evaluate(decision_step, list(decision_step.agent_id))
     if discrete:
-        run_out["action"]["discrete_action"].shape == (
-            NUM_AGENTS,
-            len(DISCRETE_ACTION_SPACE),
-        )
+        run_out["action"].discrete.shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
     else:
-        assert run_out["action"]["continuous_action"].shape == (
-            NUM_AGENTS,
-            VECTOR_ACTION_SPACE,
-        )
+        assert run_out["action"].continuous.shape == (NUM_AGENTS, VECTOR_ACTION_SPACE)
 
 
 @pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])

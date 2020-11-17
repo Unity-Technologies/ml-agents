@@ -143,11 +143,8 @@ def worker(
             if req.cmd == EnvironmentCommand.STEP:
                 all_action_info = req.payload
                 for brain_name, action_info in all_action_info.items():
-                    if len(action_info.action) != 0:
-                        _action = EnvManager.action_buffers_from_numpy_dict(
-                            action_info.action
-                        )
-                        env.set_actions(brain_name, _action)
+                    if len(action_info.agent_ids) > 0:
+                        env.set_actions(brain_name, action_info.action)
                 env.step()
                 all_step_result = _generate_all_results()
                 # The timers in this process are independent from all the processes and the "main" process

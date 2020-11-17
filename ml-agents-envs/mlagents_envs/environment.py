@@ -18,7 +18,7 @@ from mlagents_envs.base_env import (
     DecisionSteps,
     TerminalSteps,
     BehaviorSpec,
-    ActionBuffers,
+    ActionTuple,
     BehaviorName,
     AgentId,
     BehaviorMapping,
@@ -237,7 +237,7 @@ class UnityEnvironment(BaseEnv):
 
         self._env_state: Dict[str, Tuple[DecisionSteps, TerminalSteps]] = {}
         self._env_specs: Dict[str, BehaviorSpec] = {}
-        self._env_actions: Dict[str, ActionBuffers] = {}
+        self._env_actions: Dict[str, ActionTuple] = {}
         self._is_first_message = True
         self._update_behavior_specs(aca_output)
 
@@ -337,7 +337,7 @@ class UnityEnvironment(BaseEnv):
                 f"agent group in the environment"
             )
 
-    def set_actions(self, behavior_name: BehaviorName, action: ActionBuffers) -> None:
+    def set_actions(self, behavior_name: BehaviorName, action: ActionTuple) -> None:
         self._assert_behavior_exists(behavior_name)
         if behavior_name not in self._env_state:
             return
@@ -347,7 +347,7 @@ class UnityEnvironment(BaseEnv):
         self._env_actions[behavior_name] = action
 
     def set_action_for_agent(
-        self, behavior_name: BehaviorName, agent_id: AgentId, action: ActionBuffers
+        self, behavior_name: BehaviorName, agent_id: AgentId, action: ActionTuple
     ) -> None:
         self._assert_behavior_exists(behavior_name)
         if behavior_name not in self._env_state:
@@ -367,7 +367,10 @@ class UnityEnvironment(BaseEnv):
                     agent_id
                 )
             ) from ie
-        self._env_actions[behavior_name][index] = action
+        if action_spec.continuous_size > 0:
+            self._env_actions[behavior_name].continuous[index] = action.continuous[0, :]
+        if action_spec.discrete_size > 0:
+            self._env_actions[behavior_name].discrete[index] = action.discrete[0, :]
 
     def get_steps(
         self, behavior_name: BehaviorName
@@ -411,7 +414,7 @@ class UnityEnvironment(BaseEnv):
 
     @timed
     def _generate_step_input(
-        self, vector_action: Dict[str, ActionBuffers]
+        self, vector_action: Dict[str, ActionTuple]
     ) -> UnityInputProto:
         rl_in = UnityRLInputProto()
         for b in vector_action:
@@ -419,8 +422,8 @@ class UnityEnvironment(BaseEnv):
             if n_agents == 0:
                 continue
             for i in range(n_agents):
-                # TODO: extend to AgentBuffers
-                if vector_action[b].continuous is not None:
+                # TODO: This check will be removed when the oroto supports hybrid actions
+                if vector_action[b].continuous.shape[1] > 0:
                     _act = vector_action[b].continuous[i]
                 else:
                     _act = vector_action[b].discrete[i]

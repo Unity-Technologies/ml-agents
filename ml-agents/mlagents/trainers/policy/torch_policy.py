@@ -17,7 +17,9 @@ from mlagents.trainers.torch.networks import (
     GlobalSteps,
 )
 
-from mlagents.trainers.torch.utils import ModelUtils, AgentAction, ActionLogProbs
+from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch.agent_action import AgentAction
+from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
@@ -98,7 +100,7 @@ class TorchPolicy(Policy):
     ) -> Tuple[SplitObservations, np.ndarray]:
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
         mask = None
-        if self.action_spec.discrete_size > 0:
+        if self.behavior_spec.action_spec.discrete_size > 0:
             mask = torch.ones([len(decision_requests), np.sum(self.act_size)])
             if decision_requests.action_mask is not None:
                 mask = torch.as_tensor(
@@ -123,9 +125,7 @@ class TorchPolicy(Policy):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
-    ) -> Tuple[
-        AgentAction, ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
-    ]:
+    ) -> Tuple[AgentAction, ActionLogProbs, torch.Tensor, torch.Tensor]:
         """
         :param vec_obs: List of vector observations.
         :param vis_obs: List of visual observations.
@@ -134,10 +134,10 @@ class TorchPolicy(Policy):
         :param seq_len: Sequence length when using RNN.
         :return: Tuple of AgentAction, ActionLogProbs, entropies, and output memories.
         """
-        actions, log_probs, entropies, value_heads, memories = self.actor_critic.get_action_stats_and_value(
+        actions, log_probs, entropies, _, memories = self.actor_critic.get_action_stats_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
-        return (actions, log_probs, entropies, value_heads, memories)
+        return (actions, log_probs, entropies, memories)
 
     def evaluate_actions(
         self,
@@ -174,21 +174,16 @@ class TorchPolicy(Policy):
 
         run_out = {}
         with torch.no_grad():
-            action, log_probs, entropy, value_heads, memories = self.sample_actions(
+            action, log_probs, entropy, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
-        run_out["action"] = action.to_numpy_dict()
+        action_tuple = action.to_action_tuple()
+        run_out["action"] = action_tuple
         run_out["pre_action"] = (
-            action.to_numpy_dict()["continuous_action"]
-            if self.action_spec.continuous_size > 0
-            else None
-        )  # Todo - make pre_action difference
-        run_out["log_probs"] = log_probs.to_numpy_dict()
+            action_tuple.continuous if self.use_continuous_act else None
+        )
+        run_out["log_probs"] = log_probs.to_log_probs_tuple()
         run_out["entropy"] = ModelUtils.to_numpy(entropy)
-        run_out["value_heads"] = {
-            name: ModelUtils.to_numpy(t) for name, t in value_heads.items()
-        }
-        run_out["value"] = np.mean(list(run_out["value_heads"].values()), 0)
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:
             run_out["memory_out"] = ModelUtils.to_numpy(memories).squeeze(0)
