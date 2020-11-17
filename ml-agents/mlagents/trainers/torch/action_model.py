@@ -106,13 +106,21 @@ class ActionModel(nn.Module):
 
     def get_action_out(self, inputs: torch.Tensor, masks: torch.Tensor) -> torch.Tensor:
         dists = self._get_dists(inputs, masks)
-        out_list: List[torch.Tensor] = []
+        continuous_out, discrete_out = None, None
         if self.action_spec.continuous_size > 0:
-            out_list.append(dists.continuous.exported_model_output())
+            continuous_out = dists.continuous.exported_model_output()
+            action_out_deprecated = continuous_out
         if self.action_spec.discrete_size > 0:
-            for discrete_dist in dists.discrete:
-                out_list.append(discrete_dist.exported_model_output())
-        return torch.cat(out_list, dim=1)
+            discrete_out = [
+                discrete_dist.exported_model_output()
+                for discrete_dist in dists.discrete
+            ]
+            discrete_out = torch.cat(discrete_out, dim=1)
+            action_out_deprecated = discrete_out
+        # deprecated action field does not support hybrid action
+        if self.action_spec.continuous_size > 0 and self.action_spec.discrete_size > 0:
+            action_out_deprecated = None
+        return continuous_out, discrete_out, action_out_deprecated
 
     def forward(
         self, inputs: torch.Tensor, masks: torch.Tensor
