@@ -424,6 +424,7 @@ class UnityEnvironment(BaseEnv):
             if n_agents == 0:
                 continue
             for i in range(n_agents):
+                # TODO add separate fields for continuous and discrete actions in AgentActionProto
                 _act = []
                 if vector_action[b].continuous is not None:
                     _act.append(vector_action[b].continuous[i])
