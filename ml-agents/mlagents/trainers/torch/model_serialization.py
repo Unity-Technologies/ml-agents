@@ -7,7 +7,6 @@ from mlagents.trainers.settings import SerializationSettings
 
 
 logger = get_logger(__name__)
-lock = threading.Lock()
 
 
 class exporting_to_onnx:
@@ -20,14 +19,20 @@ class exporting_to_onnx:
     This implementation is thread safe.
     """
 
+    # local is_exporting flag for each thread
     _local_data = threading.local()
     _local_data._is_exporting = False
 
+    # global lock shared among all threads, to make sure only one thread is exporting at a time
+    _lock = threading.Lock()
+
     def __enter__(self):
         self._local_data._is_exporting = True
+        self._lock.acquire()
 
     def __exit__(self, *args):
         self._local_data._is_exporting = False
+        self._lock.release()
 
     @staticmethod
     def is_exporting():
@@ -91,15 +96,14 @@ class ModelSerializer:
         onnx_output_path = f"{output_filepath}.onnx"
         logger.info(f"Converting to {onnx_output_path}")
 
-        with lock:
-            with exporting_to_onnx():
-                torch.onnx.export(
-                    self.policy.actor_critic,
-                    self.dummy_input,
-                    onnx_output_path,
-                    opset_version=SerializationSettings.onnx_opset,
-                    input_names=self.input_names,
-                    output_names=self.output_names,
-                    dynamic_axes=self.dynamic_axes,
-                )
+        with exporting_to_onnx():
+            torch.onnx.export(
+                self.policy.actor_critic,
+                self.dummy_input,
+                onnx_output_path,
+                opset_version=SerializationSettings.onnx_opset,
+                input_names=self.input_names,
+                output_names=self.output_names,
+                dynamic_axes=self.dynamic_axes,
+            )
         logger.info(f"Exported {onnx_output_path}")
