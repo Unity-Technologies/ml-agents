@@ -108,13 +108,13 @@ class CategoricalDistInstance(DiscreteDistInstance):
         ).squeeze(-1)
 
     def log_prob(self, value):
-        return torch.log(self.pdf(value))
+        return torch.log(self.pdf(value) + EPSILON)
 
     def all_log_prob(self):
-        return torch.log(self.probs)
+        return torch.log(self.probs + EPSILON)
 
     def entropy(self):
-        return -torch.sum(self.probs * torch.log(self.probs), dim=-1)
+        return -torch.sum(self.probs * torch.log(self.probs + EPSILON), dim=-1)
 
 
 class GaussianDistribution(nn.Module):
