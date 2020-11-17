@@ -91,7 +91,7 @@ class ActionModel(nn.Module):
         discrete_dist: Optional[List[DiscreteDistInstance]] = None
         # This checks None because mypy complains otherwise
         if self._continuous_distribution is not None:
-            continuous_dist = self._continuous_distribution(inputs, masks)
+            continuous_dist = self._continuous_distribution(inputs)
         if self._discrete_distribution is not None:
             discrete_dist = self._discrete_distribution(inputs, masks)
         return DistInstances(continuous_dist, discrete_dist)
