@@ -79,7 +79,7 @@ def test_visual_ppo(num_visual, action_sizes):
 def test_visual_advanced_ppo(vis_encode_type, num_visual):
     env = SimpleEnvironment(
         [BRAIN_NAME],
-        action_sizes=True,
+        action_sizes=(0, 1),
         num_visual=num_visual,
         num_vector=0,
         step_size=0.5,
@@ -165,7 +165,7 @@ def test_visual_sac(num_visual, action_sizes):
 def test_visual_advanced_sac(vis_encode_type, num_visual):
     env = SimpleEnvironment(
         [BRAIN_NAME],
-        action_sizes=True,
+        action_sizes=(0, 1),
         num_visual=num_visual,
         num_vector=0,
         step_size=0.5,
