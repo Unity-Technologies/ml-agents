@@ -337,7 +337,7 @@ Transform:
   - {fileID: 365376271}
   - {fileID: 1265651286}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &329353032
 PrefabInstance:
@@ -448,7 +448,7 @@ PrefabInstance:
     - target: {fileID: 224194346362733190, guid: 3ce107b4a79bc4eef83afde434932a68,
         type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 224194346362733190, guid: 3ce107b4a79bc4eef83afde434932a68,
         type: 3}
@@ -845,7 +845,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1365139567
 PrefabInstance:
@@ -985,7 +985,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentRunSpeed: 3
-  agentJumpHeight: 2.75
+  agentJumpHeight: 2
   goalScoredMaterial: {fileID: 2100000, guid: df32cc593804f42df97464dc455057b8, type: 2}
   failMaterial: {fileID: 2100000, guid: a1daf31cdf41e484ca9ac33a5c6f524a, type: 2}
   agentJumpVelocity: 777
@@ -1049,7 +1049,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4768003208014390, guid: ff1a5743be49d43f08378dcd76451821, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ff1a5743be49d43f08378dcd76451821, type: 3}

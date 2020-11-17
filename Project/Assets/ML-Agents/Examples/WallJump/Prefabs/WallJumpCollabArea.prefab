@@ -159,7 +159,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 0468bf44b1efd4992b6bf22cadb50d89, type: 3}
+  m_Model: {fileID: 11400000, guid: 327490f9c2aca401a85b04307d24367a, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SmallWallJump
@@ -506,7 +506,6 @@ MonoBehaviour:
   - {fileID: 1195095783991828}
   - {fileID: 1754484102168309301}
   - {fileID: 536984960628250720}
-  ground: {fileID: 0}
 --- !u!1 &1438278873213570
 GameObject:
   m_ObjectHideFlags: 0
@@ -1352,7 +1351,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 0468bf44b1efd4992b6bf22cadb50d89, type: 3}
+  m_Model: {fileID: 11400000, guid: 327490f9c2aca401a85b04307d24367a, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SmallWallJump
@@ -1793,7 +1792,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 0468bf44b1efd4992b6bf22cadb50d89, type: 3}
+  m_Model: {fileID: 11400000, guid: 327490f9c2aca401a85b04307d24367a, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SmallWallJump
