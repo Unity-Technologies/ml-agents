@@ -7,14 +7,13 @@ from mlagents_envs.timers import timed
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
 from mlagents_envs.exception import UnityException
-from mlagents_envs.base_env import BehaviorSpec
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 from mlagents.trainers.behavior_id_utils import get_global_agent_id
-from mlagents_envs.base_env import DecisionSteps, ActionTuple
+from mlagents_envs.base_env import DecisionSteps, ActionTuple, BehaviorSpec
 from mlagents.trainers.tf.models import ModelUtils
 from mlagents.trainers.settings import TrainerSettings, EncoderType
 from mlagents.trainers import __version__
