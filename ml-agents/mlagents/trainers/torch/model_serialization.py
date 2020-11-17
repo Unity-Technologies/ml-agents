@@ -27,8 +27,8 @@ class exporting_to_onnx:
     _lock = threading.Lock()
 
     def __enter__(self):
-        self._local_data._is_exporting = True
         self._lock.acquire()
+        self._local_data._is_exporting = True
 
     def __exit__(self, *args):
         self._local_data._is_exporting = False
