@@ -3,6 +3,23 @@ from mlagents.torch_utils import torch
 import numpy as np
 
 from mlagents.trainers.torch.utils import ModelUtils
+from mlagents_envs.base_env import _ActionTupleBase
+
+
+class LogProbsTuple(_ActionTupleBase):
+    """
+    An object whose fields correspond to the log probs of actions of different types.
+    Continuous and discrete are numpy arrays
+    Dimensions are of (n_agents, continuous_size) and (n_agents, discrete_size),
+    respectively. Note, this also holds when continuous or discrete size is
+    zero.
+    """
+
+    def get_discrete_dtype(self) -> np.dtype:
+        """
+        The dtype of a discrete log probability.
+        """
+        return np.float32
 
 
 class ActionLogProbs(NamedTuple):
@@ -36,20 +53,19 @@ class ActionLogProbs(NamedTuple):
         """
         return torch.cat(self.all_discrete_list, dim=1)
 
-    def to_numpy_dict(self) -> Dict[str, np.ndarray]:
+    def to_log_probs_tuple(self) -> LogProbsTuple:
         """
-        Returns a Dict of np arrays with an entry correspinding to the continuous log probs
-        and an entry corresponding to the discrete log probs. "continuous_log_probs" and
-        "discrete_log_probs" are added to the agents buffer individually to maintain a flat buffer.
+        Returns a LogProbsTuple. Only adds if tensor is not None. Otherwise,
+        LogProbsTuple uses a default.
         """
-        array_dict: Dict[str, np.ndarray] = {}
+        log_probs_tuple = LogProbsTuple()
         if self.continuous_tensor is not None:
-            array_dict["continuous_log_probs"] = ModelUtils.to_numpy(
-                self.continuous_tensor
-            )
+            continuous = ModelUtils.to_numpy(self.continuous_tensor)
+            log_probs_tuple.add_continuous(continuous)
         if self.discrete_list is not None:
-            array_dict["discrete_log_probs"] = ModelUtils.to_numpy(self.discrete_tensor)
-        return array_dict
+            discrete = ModelUtils.to_numpy(self.discrete_tensor)
+            log_probs_tuple.add_discrete(discrete)
+        return log_probs_tuple
 
     def _to_tensor_list(self) -> List[torch.Tensor]:
         """
@@ -83,7 +99,9 @@ class ActionLogProbs(NamedTuple):
             continuous = ModelUtils.list_to_tensor(buff["continuous_log_probs"])
         if "discrete_log_probs" in buff:
             discrete_tensor = ModelUtils.list_to_tensor(buff["discrete_log_probs"])
-            discrete = [
-                discrete_tensor[..., i] for i in range(discrete_tensor.shape[-1])
-            ]
+            # This will keep discrete_list = None which enables flatten()
+            if discrete_tensor.shape[1] > 0:
+                discrete = [
+                    discrete_tensor[..., i] for i in range(discrete_tensor.shape[-1])
+                ]
         return ActionLogProbs(continuous, discrete, None)

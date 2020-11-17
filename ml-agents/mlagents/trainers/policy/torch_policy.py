@@ -100,7 +100,7 @@ class TorchPolicy(Policy):
     ) -> Tuple[SplitObservations, np.ndarray]:
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
         mask = None
-        if self.action_spec.discrete_size > 0:
+        if self.behavior_spec.action_spec.discrete_size > 0:
             mask = torch.ones([len(decision_requests), np.sum(self.act_size)])
             if decision_requests.action_mask is not None:
                 mask = torch.as_tensor(
@@ -177,12 +177,12 @@ class TorchPolicy(Policy):
             action, log_probs, entropy, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
-        action_dict = action.to_numpy_dict()
-        run_out["action"] = action_dict
+        action_tuple = action.to_action_tuple()
+        run_out["action"] = action_tuple
         run_out["pre_action"] = (
-            action_dict["continuous_action"] if self.use_continuous_act else None
+            action_tuple.continuous if self.use_continuous_act else None
         )
-        run_out["log_probs"] = log_probs.to_numpy_dict()
+        run_out["log_probs"] = log_probs.to_log_probs_tuple()
         run_out["entropy"] = ModelUtils.to_numpy(entropy)
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:

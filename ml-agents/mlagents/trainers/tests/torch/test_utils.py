@@ -6,10 +6,6 @@ from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.torch.encoders import VectorInput
-from mlagents.trainers.torch.distributions import (
-    CategoricalDistInstance,
-    GaussianDistInstance,
-)
 
 
 def test_min_visual_size():
