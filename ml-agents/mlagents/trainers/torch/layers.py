@@ -125,7 +125,7 @@ class LinearEncoder(torch.nn.Module):
                 input_size,
                 hidden_size,
                 kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=1,
+                kernel_gain=1.0,
             )
         ]
         self.layers.append(Swish())
@@ -135,7 +135,7 @@ class LinearEncoder(torch.nn.Module):
                     hidden_size,
                     hidden_size,
                     kernel_init=Initialization.KaimingHeNormal,
-                    kernel_gain=1,
+                    kernel_gain=1.0,
                 )
             )
             self.layers.append(Swish())
