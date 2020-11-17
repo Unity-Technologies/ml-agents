@@ -7,6 +7,7 @@ from mlagents.trainers.settings import SerializationSettings
 
 
 logger = get_logger(__name__)
+lock = threading.Lock()
 
 
 class exporting_to_onnx:
@@ -77,6 +78,7 @@ class ModelSerializer:
 
         self.dynamic_axes = {name: {0: "batch"} for name in self.input_names}
         self.dynamic_axes.update({"action": {0: "batch"}})
+        # self.lock = threading.Lock()
 
     def export_policy_model(self, output_filepath: str) -> None:
         """
@@ -90,14 +92,15 @@ class ModelSerializer:
         onnx_output_path = f"{output_filepath}.onnx"
         logger.info(f"Converting to {onnx_output_path}")
 
-        with exporting_to_onnx():
-            torch.onnx.export(
-                self.policy.actor_critic,
-                self.dummy_input,
-                onnx_output_path,
-                opset_version=SerializationSettings.onnx_opset,
-                input_names=self.input_names,
-                output_names=self.output_names,
-                dynamic_axes=self.dynamic_axes,
-            )
+        with lock:
+            with exporting_to_onnx():
+                torch.onnx.export(
+                    self.policy.actor_critic,
+                    self.dummy_input,
+                    onnx_output_path,
+                    opset_version=SerializationSettings.onnx_opset,
+                    input_names=self.input_names,
+                    output_names=self.output_names,
+                    dynamic_axes=self.dynamic_axes,
+                )
         logger.info(f"Exported {onnx_output_path}")
