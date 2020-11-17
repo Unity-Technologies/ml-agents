@@ -78,7 +78,6 @@ class ModelSerializer:
 
         self.dynamic_axes = {name: {0: "batch"} for name in self.input_names}
         self.dynamic_axes.update({"action": {0: "batch"}})
-        # self.lock = threading.Lock()
 
     def export_policy_model(self, output_filepath: str) -> None:
         """
