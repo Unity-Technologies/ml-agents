@@ -147,7 +147,10 @@ def test_sample_actions(rnn, visual, discrete):
         )
     else:
         assert log_probs.shape == (64, policy.behavior_spec.action_spec.continuous_size)
-        assert clipped_actions == (64, policy.behavior_spec.action_spec.continuous_size)
+        assert clipped_actions.shape == (
+            64,
+            policy.behavior_spec.action_spec.continuous_size,
+        )
     assert entropies.shape == (64,)
 
     if rnn:
