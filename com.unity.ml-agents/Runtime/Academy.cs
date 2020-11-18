@@ -420,7 +420,7 @@ namespace Unity.MLAgents
             {
                 // We try to exchange the first message with Python. If this fails, it means
                 // no Python Process is ready to train the environment. In this case, the
-                // environment must use Inference.
+                //environment must use Inference.
                 try
                 {
                     var unityRlInitParameters = Communicator.Initialize(
