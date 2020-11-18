@@ -1,4 +1,4 @@
-from typing import Callable, List, Dict, Tuple, Optional
+from typing import Callable, List, Dict, Tuple, Optional, Union
 import abc
 
 from mlagents.torch_utils import torch, nn
@@ -166,7 +166,7 @@ class Actor(abc.ABC):
         vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
-    ) -> Tuple[torch.Tensor, int, int, int, int]:
+    ) -> Tuple[Union[int, torch.Tensor], ...]:
         """
         Forward pass of the Actor for inference. This is required for export to ONNX, and
         the inputs and outputs of this method should not be changed without a respective change
@@ -238,10 +238,17 @@ class SimpleActor(nn.Module, Actor):
         super().__init__()
         self.action_spec = action_spec
         self.version_number = torch.nn.Parameter(torch.Tensor([2.0]))
-        self.is_continuous_int = torch.nn.Parameter(
+        self.is_continuous_int_deprecated = torch.nn.Parameter(
             torch.Tensor([int(self.action_spec.is_continuous())])
         )
-        self.act_size_vector = torch.nn.Parameter(
+        self.continuous_act_size_vector = torch.nn.Parameter(
+            torch.Tensor([int(self.action_spec.continuous_size)]), requires_grad=False
+        )
+        # TODO: export list of branch sizes instead of sum
+        self.discrete_act_size_vector = torch.nn.Parameter(
+            torch.Tensor([sum(self.action_spec.discrete_branches)]), requires_grad=False
+        )
+        self.act_size_vector_deprecated = torch.nn.Parameter(
             torch.Tensor(
                 [
                     self.action_spec.continuous_size
@@ -276,23 +283,36 @@ class SimpleActor(nn.Module, Actor):
         vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
-    ) -> Tuple[torch.Tensor, int, int, int, int]:
+    ) -> Tuple[Union[int, torch.Tensor], ...]:
         """
         Note: This forward() method is required for exporting to ONNX. Don't modify the inputs and outputs.
+
+        At this moment, torch.onnx.export() doesn't accept None as tensor to be exported,
+        so the size of return tuple varies with action spec.
         """
         encoding, memories_out = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=1
         )
 
-        # TODO: How this is written depends on how the inference model is structured
-        action_out = self.action_model.get_action_out(encoding, masks)
-        return (
-            action_out,
+        cont_action_out, disc_action_out, action_out_deprecated = self.action_model.get_action_out(
+            encoding, masks
+        )
+        export_out = [
             self.version_number,
             torch.Tensor([self.network_body.memory_size]),
-            self.is_continuous_int,
-            self.act_size_vector,
-        )
+        ]
+        if self.action_spec.continuous_size > 0:
+            export_out += [cont_action_out, self.continuous_act_size_vector]
+        if self.action_spec.discrete_size > 0:
+            export_out += [disc_action_out, self.discrete_act_size_vector]
+        # Only export deprecated nodes with non-hybrid action spec
+        if self.action_spec.continuous_size == 0 or self.action_spec.discrete_size == 0:
+            export_out += [
+                action_out_deprecated,
+                self.is_continuous_int_deprecated,
+                self.act_size_vector_deprecated,
+            ]
+        return tuple(export_out)
 
 
 class SharedActorCritic(SimpleActor, ActorCritic):

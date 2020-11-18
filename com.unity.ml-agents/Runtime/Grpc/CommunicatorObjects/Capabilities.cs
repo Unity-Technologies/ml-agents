@@ -25,15 +25,16 @@ namespace Unity.MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjVtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2NhcGFiaWxp",
-            "dGllcy5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMifQoYVW5pdHlSTENh",
-            "cGFiaWxpdGllc1Byb3RvEhoKEmJhc2VSTENhcGFiaWxpdGllcxgBIAEoCBIj",
-            "Chtjb25jYXRlbmF0ZWRQbmdPYnNlcnZhdGlvbnMYAiABKAgSIAoYY29tcHJl",
-            "c3NlZENoYW5uZWxNYXBwaW5nGAMgASgIQiWqAiJVbml0eS5NTEFnZW50cy5D",
-            "b21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
+            "dGllcy5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMilAEKGFVuaXR5UkxD",
+            "YXBhYmlsaXRpZXNQcm90bxIaChJiYXNlUkxDYXBhYmlsaXRpZXMYASABKAgS",
+            "IwobY29uY2F0ZW5hdGVkUG5nT2JzZXJ2YXRpb25zGAIgASgIEiAKGGNvbXBy",
+            "ZXNzZWRDaGFubmVsTWFwcGluZxgDIAEoCBIVCg1oeWJyaWRBY3Rpb25zGAQg",
+            "ASgIQiWqAiJVbml0eS5NTEFnZW50cy5Db21tdW5pY2F0b3JPYmplY3RzYgZw",
+            "cm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto.Parser, new[]{ "BaseRLCapabilities", "ConcatenatedPngObservations", "CompressedChannelMapping" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto.Parser, new[]{ "BaseRLCapabilities", "ConcatenatedPngObservations", "CompressedChannelMapping", "HybridActions" }, null, null, null)
           }));
     }
     #endregion
@@ -73,6 +74,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       baseRLCapabilities_ = other.baseRLCapabilities_;
       concatenatedPngObservations_ = other.concatenatedPngObservations_;
       compressedChannelMapping_ = other.compressedChannelMapping_;
+      hybridActions_ = other.hybridActions_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -123,6 +125,20 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "hybridActions" field.</summary>
+    public const int HybridActionsFieldNumber = 4;
+    private bool hybridActions_;
+    /// <summary>
+    /// support for hybrid action spaces (discrete + continuous)
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HybridActions {
+      get { return hybridActions_; }
+      set {
+        hybridActions_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as UnityRLCapabilitiesProto);
@@ -139,6 +155,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (BaseRLCapabilities != other.BaseRLCapabilities) return false;
       if (ConcatenatedPngObservations != other.ConcatenatedPngObservations) return false;
       if (CompressedChannelMapping != other.CompressedChannelMapping) return false;
+      if (HybridActions != other.HybridActions) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -148,6 +165,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (BaseRLCapabilities != false) hash ^= BaseRLCapabilities.GetHashCode();
       if (ConcatenatedPngObservations != false) hash ^= ConcatenatedPngObservations.GetHashCode();
       if (CompressedChannelMapping != false) hash ^= CompressedChannelMapping.GetHashCode();
+      if (HybridActions != false) hash ^= HybridActions.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -173,6 +191,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
         output.WriteRawTag(24);
         output.WriteBool(CompressedChannelMapping);
       }
+      if (HybridActions != false) {
+        output.WriteRawTag(32);
+        output.WriteBool(HybridActions);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -188,6 +210,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
         size += 1 + 1;
       }
       if (CompressedChannelMapping != false) {
+        size += 1 + 1;
+      }
+      if (HybridActions != false) {
         size += 1 + 1;
       }
       if (_unknownFields != null) {
@@ -210,6 +235,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (other.CompressedChannelMapping != false) {
         CompressedChannelMapping = other.CompressedChannelMapping;
       }
+      if (other.HybridActions != false) {
+        HybridActions = other.HybridActions;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -231,6 +259,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
           }
           case 24: {
             CompressedChannelMapping = input.ReadBool();
+            break;
+          }
+          case 32: {
+            HybridActions = input.ReadBool();
             break;
           }
         }

@@ -96,14 +96,14 @@ namespace Unity.MLAgents
         {
             var brainParametersProto = new BrainParametersProto
             {
-                VectorActionSize = { bp.VectorActionSize },
-                VectorActionSpaceType = (SpaceTypeProto)bp.VectorActionSpaceType,
+                VectorActionSizeDeprecated = { bp.VectorActionSize },
+                VectorActionSpaceTypeDeprecated = (SpaceTypeProto)bp.VectorActionSpaceType,
                 BrainName = name,
                 IsTraining = isTraining
             };
             if (bp.VectorActionDescriptions != null)
             {
-                brainParametersProto.VectorActionDescriptions.AddRange(bp.VectorActionDescriptions);
+                brainParametersProto.VectorActionDescriptionsDeprecated.AddRange(bp.VectorActionDescriptions);
             }
             return brainParametersProto;
         }
@@ -117,22 +117,36 @@ namespace Unity.MLAgents
         /// <param name="isTraining">Whether or not the Brain is training.</param>
         public static BrainParametersProto ToBrainParametersProto(this ActionSpec actionSpec, string name, bool isTraining)
         {
-            actionSpec.CheckNotHybrid();
-
             var brainParametersProto = new BrainParametersProto
             {
                 BrainName = name,
                 IsTraining = isTraining
             };
-            if (actionSpec.NumContinuousActions > 0)
+            var actionSpecProto = new ActionSpecProto
             {
-                brainParametersProto.VectorActionSize.Add(actionSpec.NumContinuousActions);
-                brainParametersProto.VectorActionSpaceType = SpaceTypeProto.Continuous;
+                NumContinuousActions = actionSpec.NumContinuousActions,
+                NumDiscreteActions = actionSpec.NumDiscreteActions,
+            };
+            if (actionSpec.BranchSizes != null)
+            {
+                actionSpecProto.DiscreteBranchSizes.AddRange(actionSpec.BranchSizes);
             }
-            else if (actionSpec.NumDiscreteActions > 0)
+            brainParametersProto.ActionSpec = actionSpecProto;
+
+            var supportHybrid = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.HybridActions;
+            if (!supportHybrid)
             {
-                brainParametersProto.VectorActionSize.AddRange(actionSpec.BranchSizes);
-                brainParametersProto.VectorActionSpaceType = SpaceTypeProto.Discrete;
+                actionSpec.CheckNotHybrid();
+                if (actionSpec.NumContinuousActions > 0)
+                {
+                    brainParametersProto.VectorActionSizeDeprecated.Add(actionSpec.NumContinuousActions);
+                    brainParametersProto.VectorActionSpaceTypeDeprecated = SpaceTypeProto.Continuous;
+                }
+                else if (actionSpec.NumDiscreteActions > 0)
+                {
+                    brainParametersProto.VectorActionSizeDeprecated.AddRange(actionSpec.BranchSizes);
+                    brainParametersProto.VectorActionSpaceTypeDeprecated = SpaceTypeProto.Discrete;
+                }
             }
 
             // TODO handle ActionDescriptions?
@@ -148,9 +162,9 @@ namespace Unity.MLAgents
         {
             var bp = new BrainParameters
             {
-                VectorActionSize = bpp.VectorActionSize.ToArray(),
-                VectorActionDescriptions = bpp.VectorActionDescriptions.ToArray(),
-                VectorActionSpaceType = (SpaceType)bpp.VectorActionSpaceType
+                VectorActionSize = bpp.VectorActionSizeDeprecated.ToArray(),
+                VectorActionDescriptions = bpp.VectorActionDescriptionsDeprecated.ToArray(),
+                VectorActionSpaceType = (SpaceType)bpp.VectorActionSpaceTypeDeprecated
             };
             return bp;
         }
@@ -324,6 +338,7 @@ namespace Unity.MLAgents
                 BaseRLCapabilities = proto.BaseRLCapabilities,
                 ConcatenatedPngObservations = proto.ConcatenatedPngObservations,
                 CompressedChannelMapping = proto.CompressedChannelMapping,
+                HybridActions = proto.HybridActions,
             };
         }
 
@@ -334,6 +349,7 @@ namespace Unity.MLAgents
                 BaseRLCapabilities = rlCaps.BaseRLCapabilities,
                 ConcatenatedPngObservations = rlCaps.ConcatenatedPngObservations,
                 CompressedChannelMapping = rlCaps.CompressedChannelMapping,
+                HybridActions = rlCaps.HybridActions,
             };
         }
 
