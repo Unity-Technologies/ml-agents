@@ -62,7 +62,7 @@ class BCModule:
         # Don't continue training if the learning rate has reached 0, to reduce training time.
 
         decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
-        if self.current_lr <= 0:
+        if self.current_lr <= 1e-10:  # Unlike in TF, this never actually reaches 0.
             return {"Losses/Pretraining Loss": 0}
 
         batch_losses = []
