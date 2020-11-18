@@ -59,7 +59,7 @@ namespace Unity.MLAgents.Inference
             }
 
             var model = (Model)barracudaModel;
-            if (model.UseDeprecated())
+            if (!model.HasHybridSupport())
             {
                 actionSpec.CheckNotHybrid();
             }
