@@ -528,7 +528,6 @@ class TorchSACOptimizer(TorchOptimizer):
         cont_sampled_actions = sampled_actions.continuous_tensor
 
         cont_actions = actions.continuous_tensor
-        disc_actions = actions.discrete_tensor
         q1p_out, q2p_out = self.value_network(
             vec_obs,
             vis_obs,
@@ -544,7 +543,8 @@ class TorchSACOptimizer(TorchOptimizer):
             sequence_length=self.policy.sequence_length,
         )
 
-        if self._action_spec.discrete_size:
+        if self._action_spec.discrete_size > 0:
+            disc_actions = actions.discrete_tensor
             q1_stream = self._condense_q_streams(q1_out, disc_actions)
             q2_stream = self._condense_q_streams(q2_out, disc_actions)
         else:
