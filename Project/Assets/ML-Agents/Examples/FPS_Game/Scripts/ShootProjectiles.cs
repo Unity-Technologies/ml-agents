@@ -98,6 +98,25 @@ public class ShootProjectiles : MonoBehaviour
             }
         }
     }
+    public void Shoot()
+    {
+        if (coolDownWait)
+        {
+            return;
+        }
+
+        shootTimer = 0; //reset timer
+
+        //shoot first available projectile in the pool
+        foreach (var item in projectilePoolList)
+        {
+            if (!item.gameObject.activeInHierarchy)
+            {
+                LaunchProjectile(item.rb, projectileStartingPos.position, projectileStartingPos.TransformPoint(Vector3.forward * autoShootDistance));
+                break;
+            }
+        }
+    }
 
 
     public void LaunchProjectile(Rigidbody rb, Vector3 startPos, Vector3 targetPos)

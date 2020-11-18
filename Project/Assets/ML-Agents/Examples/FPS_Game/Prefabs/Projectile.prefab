@@ -109,7 +109,7 @@ MonoBehaviour:
   rb: {fileID: 0}
   selfDestructNow: 0
   maxTimeToLive: 3
-  pauseCollisionDetectionWaitTime: 0.5
+  pauseCollisionDetectionWaitTime: 0.05
   projectileController: {fileID: 0}
 --- !u!54 &4341296992446652170
 Rigidbody:

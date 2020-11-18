@@ -39,6 +39,7 @@ namespace MLAgents
 
         [Header("BODY ROTATION")]
         //body rotation speed
+        public bool invertRotationIfWalkingBackwards = true;
         public float agentRotationSpeed = 35f;
 
         [Header("JUMPING")]
@@ -140,6 +141,18 @@ namespace MLAgents
             //            }
         }
 
+
+        public void RotateBody(float rotateAxis, float forwardAxis)
+        {
+            var walkingBackwardsCoeff = 1;
+            if (invertRotationIfWalkingBackwards && forwardAxis < 0)
+            {
+                walkingBackwardsCoeff = -1;
+            }
+            var amount = Quaternion.Euler(0, rotateAxis * agentRotationSpeed * walkingBackwardsCoeff * Time.fixedDeltaTime, 0);
+            rb.MoveRotation(rb.rotation * amount);
+        }
+
         void FixedUpdate()
         {
             if (spinAttack)
@@ -160,13 +173,31 @@ namespace MLAgents
                 }
 
             }
+            else //is idle
+            {
+                if (groundCheck && groundCheck.isGrounded && !dashPressed)
+                {
+                    AddIdleDrag(rb);
+                }
+            }
 
             if (lookDir != 0)
             {
                 if (!spinAttack)
                 {
-                    var rot = rb.rotation * Quaternion.Euler(0, lookDir * agentRotationSpeed * Time.fixedDeltaTime, 0);
-                    rb.MoveRotation(rot);
+                    ////                    var rot = rb.rotation * Quaternion.Euler(0, lookDir * agentRotationSpeed * Time.fixedDeltaTime, 0);
+                    //                    var walkingBackwardsCoeff = 1;
+                    //                    if (invertRotationIfWalkingBackwards && inputV < 0)
+                    //                    {
+                    //                        walkingBackwardsCoeff = -1;
+                    //                    }
+                    //
+                    ////                    var rot = rb.rotation * Quaternion.Euler(0, lookDir * agentRotationSpeed * walkingBackwardsCoeff * Time.fixedDeltaTime, 0);
+                    ////                    rb.MoveRotation(rot);
+                    ////                    var rot = rb.rotation * Quaternion.Euler(0, lookDir * agentRotationSpeed * walkingBackwardsCoeff * Time.fixedDeltaTime, 0);
+                    //                    rb.MoveRotation( Quaternion.Euler(0, lookDir * agentRotationSpeed * walkingBackwardsCoeff * Time.fixedDeltaTime, 0));
+
+                    RotateBody(lookDir, inputV);
                     //                    rb.rotation *= Quaternion.AngleAxis(); rb.rotation * Quaternion. (rb.rotation, rot, agentRotationSpeed * Time.fixedDeltaTime);
                 }
 
@@ -205,13 +236,13 @@ namespace MLAgents
             //                }
             //                //                rb.MoveRotation(rb.rotation * Quaternion.AngleAxis(agentRotationSpeed, rotationAxis));
             //            }
-            else //is idle
-            {
-                if (groundCheck && groundCheck.isGrounded && !dashPressed)
-                {
-                    AddIdleDrag(rb);
-                }
-            }
+            //            else //is idle
+            //            {
+            //                if (groundCheck && groundCheck.isGrounded && !dashPressed)
+            //                {
+            //                    AddIdleDrag(rb);
+            //                }
+            //            }
 
             if (groundCheck && !groundCheck.isGrounded)
             {
