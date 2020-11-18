@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.43632758, g: 0.47471005, b: 0.5147158, a: 1}
+  m_IndirectSpecularColor: {r: 0.43632728, g: 0.4747097, b: 0.51471573, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -690,11 +690,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3508723250470608010, guid: 2fafdcd0587684641b03b11f04454f1b,
-        type: 3}
-      propertyPath: m_BehaviorName
-      value: Match3GreedyHeuristic
-      objectReference: {fileID: 0}
     - target: {fileID: 3508723250470608011, guid: 2fafdcd0587684641b03b11f04454f1b,
         type: 3}
       propertyPath: cubeSpacing
@@ -1390,11 +1385,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3508723250470608010, guid: 2fafdcd0587684641b03b11f04454f1b,
-        type: 3}
-      propertyPath: m_BehaviorName
-      value: Match3GreedyHeuristic
-      objectReference: {fileID: 0}
     - target: {fileID: 3508723250470608011, guid: 2fafdcd0587684641b03b11f04454f1b,
         type: 3}
       propertyPath: cubeSpacing
