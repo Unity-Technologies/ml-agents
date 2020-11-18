@@ -79,10 +79,10 @@ def _compare_two_policies(policy1: TorchPolicy, policy2: TorchPolicy) -> None:
     ).unsqueeze(0)
 
     with torch.no_grad():
-        _, log_probs1, _, _ = policy1.sample_actions(
+        _, _, log_probs1, _, _ = policy1.sample_actions(
             vec_obs, vis_obs, masks=masks, memories=memories, all_log_probs=True
         )
-        _, log_probs2, _, _ = policy2.sample_actions(
+        _, _, log_probs2, _, _ = policy2.sample_actions(
             vec_obs, vis_obs, masks=masks, memories=memories, all_log_probs=True
         )
 
