@@ -464,7 +464,7 @@ class TorchSACOptimizer(TorchOptimizer):
         self.target_network.network_body.copy_normalization(
             self.policy.actor_critic.network_body
         )
-        (sampled_actions, log_probs, _, _) = self.policy.sample_actions(
+        (sampled_actions, _, log_probs, _, _) = self.policy.sample_actions(
             vec_obs,
             vis_obs,
             masks=act_masks,

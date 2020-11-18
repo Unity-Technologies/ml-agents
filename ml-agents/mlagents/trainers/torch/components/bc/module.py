@@ -164,7 +164,13 @@ class BCModule:
         else:
             vis_obs = []
 
-        selected_actions, all_log_probs, _, _ = self.policy.sample_actions(
+        (
+            selected_actions,
+            clipped_actions,
+            all_log_probs,
+            _,
+            _,
+        ) = self.policy.sample_actions(
             vec_obs,
             vis_obs,
             masks=act_masks,
@@ -173,7 +179,7 @@ class BCModule:
             all_log_probs=True,
         )
         bc_loss = self._behavioral_cloning_loss(
-            selected_actions, all_log_probs, expert_actions
+            clipped_actions, all_log_probs, expert_actions
         )
         self.optimizer.zero_grad()
         bc_loss.backward()
