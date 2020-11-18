@@ -162,7 +162,7 @@ class TorchSACOptimizer(TorchOptimizer):
             ]
 
         policy_params = list(self.policy.actor_critic.network_body.parameters()) + list(
-            self.policy.actor_critic.distribution.parameters()
+            self.policy.actor_critic.action_model.parameters()
         )
         value_params = list(self.value_network.parameters()) + list(
             self.policy.actor_critic.critic.parameters()

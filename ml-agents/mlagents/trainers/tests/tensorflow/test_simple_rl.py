@@ -289,7 +289,7 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_recurrent_sac(action_sizes):
-    step_size = 0.2 if action_sizes else 0.5
+    step_size = 0.2 if action_sizes == (0, 1) else 0.5
     env = MemoryEnvironment(
         [BRAIN_NAME], action_sizes=action_sizes, step_size=step_size
     )
