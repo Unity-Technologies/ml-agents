@@ -77,6 +77,7 @@ class TorchPolicy(Policy):
             conditional_sigma=self.condition_sigma_on_obs,
             tanh_squash=tanh_squash,
         )
+        self._clip_action = not tanh_squash
         # Save the m_size needed for export
         self._export_m_size = self.m_size
         # m_size needed for training is determined by network, not trainer settings
@@ -203,8 +204,13 @@ class TorchPolicy(Policy):
             action, log_probs, entropy, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
-        run_out["action"] = ModelUtils.to_numpy(action)
+
+        if self._clip_action and self.use_continuous_act:
+            clipped_action = torch.clamp(action, -3, 3) / 3
+        else:
+            clipped_action = action
         run_out["pre_action"] = ModelUtils.to_numpy(action)
+        run_out["action"] = ModelUtils.to_numpy(clipped_action)
         # Todo - make pre_action difference
         run_out["log_probs"] = ModelUtils.to_numpy(log_probs)
         run_out["entropy"] = ModelUtils.to_numpy(entropy)

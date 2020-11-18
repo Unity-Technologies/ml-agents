@@ -160,7 +160,7 @@ def test_get_probs_and_entropy():
         action_list, dist_list
     )
     assert log_probs.shape == (1, 2, 2)
-    assert entropies.shape == (1, 2, 2)
+    assert entropies.shape == (1, 1, 2)
     assert all_probs is None
 
     for log_prob in log_probs.flatten():
