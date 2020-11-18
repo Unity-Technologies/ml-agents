@@ -62,7 +62,7 @@ class BCModule:
         # Don't continue training if the learning rate has reached 0, to reduce training time.
 
         decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
-        if self.current_lr <= 0:
+        if self.current_lr <= 1e-10:  # Unlike in TF, this never actually reaches 0.
             return {"Losses/Pretraining Loss": 0}
 
         batch_losses = []
@@ -164,7 +164,13 @@ class BCModule:
         else:
             vis_obs = []
 
-        selected_actions, all_log_probs, _, _ = self.policy.sample_actions(
+        (
+            selected_actions,
+            clipped_actions,
+            all_log_probs,
+            _,
+            _,
+        ) = self.policy.sample_actions(
             vec_obs,
             vis_obs,
             masks=act_masks,
@@ -173,7 +179,7 @@ class BCModule:
             all_log_probs=True,
         )
         bc_loss = self._behavioral_cloning_loss(
-            selected_actions, all_log_probs, expert_actions
+            clipped_actions, all_log_probs, expert_actions
         )
         self.optimizer.zero_grad()
         bc_loss.backward()
