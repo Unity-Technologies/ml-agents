@@ -1,5 +1,5 @@
-import pytest
 import attr
+import pytest
 
 
 from mlagents.trainers.tests.simple_test_envs import (
@@ -53,5 +53,18 @@ def test_recurrent_ppo():
         hyperparameters=new_hyperparams,
         network_settings=new_network_settings,
         max_steps=10000,
+    )
+    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
+
+
+@pytest.mark.parametrize("action_size", [(1, 1), (2, 2)])
+def test_hybrid_sac(action_size):
+    env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_size)
+
+    new_hyperparams = attr.evolve(
+        SAC_TORCH_CONFIG.hyperparameters, buffer_size=50000, batch_size=128
+    )
+    config = attr.evolve(
+        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=3000
     )
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
