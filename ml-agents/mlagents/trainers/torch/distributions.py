@@ -183,12 +183,12 @@ class MultiCategoricalDistribution(nn.Module):
         return nn.ModuleList(branches)
 
     def _mask_branch(self, logits: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
-        raw_probs = torch.nn.functional.softmax(logits, dim=-1) * mask
-        normalized_probs = raw_probs / (
-            torch.sum(raw_probs, dim=-1).unsqueeze(-1) + EPSILON
-        )
-        normalized_logits = torch.log(normalized_probs + EPSILON)
-        return normalized_logits
+        # Zero out masked logits, then subtract a large value
+        flipped_mask = 1.0 - mask
+        adj_logits = logits * mask - 1e8 * flipped_mask
+        probs = torch.nn.functional.softmax(adj_logits, dim=-1)
+        log_probs = torch.log(probs + EPSILON)
+        return log_probs
 
     def _split_masks(self, masks: torch.Tensor) -> List[torch.Tensor]:
         split_masks = []
