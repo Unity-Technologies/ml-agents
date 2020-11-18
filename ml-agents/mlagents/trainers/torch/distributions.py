@@ -183,8 +183,8 @@ class MultiCategoricalDistribution(nn.Module):
         return nn.ModuleList(branches)
 
     def _mask_branch(self, logits: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
-        # Zero out masked logits, then subtract a large value. Technique mentioend here:
-        # https://arxiv.org/abs/2006.14171
+        # Zero out masked logits, then subtract a large value. Technique mentionend here:
+        # https://arxiv.org/abs/2006.14171. Our implementation is ONNX and Barrcuda-friendly.
         flipped_mask = 1.0 - mask
         adj_logits = logits * mask - 1e8 * flipped_mask
         probs = torch.nn.functional.softmax(adj_logits, dim=-1)
