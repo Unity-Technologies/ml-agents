@@ -1,6 +1,6 @@
 from mlagents.torch_utils import torch
 import abc
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 from enum import Enum
 
 
@@ -226,8 +226,13 @@ class MultiHeadAttention(torch.nn.Module):
         key: torch.Tensor,
         value: torch.Tensor,
         key_mask: torch.Tensor,
+        number_of_keys: int = -1,
+        number_of_queries: int = -1
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-        b, n_q, n_k = query.size(0), query.size(1), key.size(1)
+        b = -1  # the batch size
+        # This is to avoid using .size() when possible as Barracuda does not support
+        n_q = number_of_queries if number_of_queries != -1 else query.size(1)
+        n_k = number_of_keys if number_of_keys != -1 else key.size(1)
 
         # Create a key mask : Only 1 if all values are 0 # shape = (b, n_k)
         # key_mask = torch.sum(key ** 2, axis=2) < 0.01
@@ -252,7 +257,7 @@ class MultiHeadAttention(torch.nn.Module):
 
         qk = torch.matmul(query, key)  # (b, h, n_q, n_k)
 
-        qk = qk / (self.embedding_size ** 0.5) + key_mask * self.NEG_INF
+        qk = (1 - key_mask) * qk / (self.embedding_size ** 0.5) + key_mask * self.NEG_INF
 
         att = torch.softmax(qk, dim=3)  # (b, h, n_q, n_k)
 
@@ -266,6 +271,25 @@ class MultiHeadAttention(torch.nn.Module):
 
         out = self.fc_out(value_attention)  # (b, n_q, emb)
         return out, att
+
+
+class ZeroObservationMask(torch.nn.Module):
+    """
+    Takes a List of Tensors and returns a List of mask Tensor with 1 if the input was
+    all zeros and 0 otherwise. This is used in the Attention layer to mask the padding
+    observations.
+    """
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, observations: List[torch.Tensor]):
+        with torch.no_grad():
+            # Generate the masking tensors for each entities tensor (mask only if all zeros)
+            key_masks: List[torch.Tensor] = [
+                (torch.sum(ent ** 2, axis=2) < 0.01).type(torch.FloatTensor)
+                for ent in observations
+            ]
+        return key_masks
 
 
 class SimpleTransformer(torch.nn.Module):
@@ -283,6 +307,7 @@ class SimpleTransformer(torch.nn.Module):
         super().__init__()
         self.self_size = x_self_size
         self.entities_sizes = entities_sizes
+        self.entities_num_max_elements: Optional[List[int]] = None
         self.ent_encoders = torch.nn.ModuleList(
             [
                 LinearEncoder(self.self_size + ent_size, 1, embedding_size)
@@ -299,19 +324,20 @@ class SimpleTransformer(torch.nn.Module):
         )
         self.residual_layer = LinearEncoder(embedding_size, 1, embedding_size)
 
-    def forward(self, x_self: torch.Tensor, entities: List[torch.Tensor]):
-        # Generate the masking tensors for each entities tensor (mask only if all zeros)
-        key_masks: List[torch.Tensor] = [
-            (torch.sum(ent ** 2, axis=2) < 0.01).type(torch.FloatTensor)
-            for ent in entities
-        ]
+    def forward(self, x_self: torch.Tensor, entities: List[torch.Tensor], key_masks: List[torch.Tensor]):
+        # Gather the maximum number of entities information
+        if self.entities_num_max_elements is None:
+            self.entities_num_max_elements = []
+            for ent in entities:
+                self.entities_num_max_elements.append(ent.shape[1])
         # Concatenate all observations with self
         self_and_ent: List[torch.Tensor] = []
-        for ent_size, ent in zip(self.entities_sizes, entities):
-            num_entities = ent.shape[1]
-            expanded_self = x_self.reshape(-1, 1, self.self_size).repeat(
-                1, num_entities, 1
-            )
+        for num_entities, ent in zip(self.entities_num_max_elements, entities):
+            expanded_self = x_self.reshape(-1, 1, self.self_size)
+            # .repeat(
+            #     1, num_entities, 1
+            # )
+            expanded_self = torch.cat([expanded_self] * num_entities, dim=1)
             self_and_ent.append(torch.cat([expanded_self, ent], dim=2))
         # Generate the tensor that will serve as query, key and value to self attention
         qkv = torch.cat(
@@ -320,11 +346,11 @@ class SimpleTransformer(torch.nn.Module):
         )
         mask = torch.cat(key_masks, dim=1)
         # Feed to self attention
-        output, _ = self.attention(qkv, qkv, qkv, mask)
+        max_num_ent = sum(self.entities_num_max_elements)
+        output, _ = self.attention(qkv, qkv, qkv, mask, max_num_ent, max_num_ent)
         # Residual
         output = self.residual_layer(output) + qkv
         # Average Pooling
-        max_num_ent = qkv.shape[1]
         numerator = torch.sum(output * (1 - mask).reshape(-1, max_num_ent, 1), dim=1)
         denominator = torch.sum(1 - mask, dim=1, keepdim=True) + self.EPISLON
         output = numerator / denominator
