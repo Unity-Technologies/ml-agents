@@ -19,6 +19,7 @@ and this project adheres to
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+ - Remove extra period after "Training" in console log. (#4674)
 
 
 ## [1.6.0-preview] - 2020-11-18
