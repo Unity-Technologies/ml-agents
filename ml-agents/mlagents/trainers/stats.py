@@ -111,11 +111,11 @@ class ConsoleWriter(StatsWriter):
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
     ) -> None:
-        is_training = "Not Training."
+        is_training = "Not Training"
         if "Is Training" in values:
             stats_summary = values["Is Training"]
             if stats_summary.mean > 0.0:
-                is_training = "Training."
+                is_training = "Training"
 
         elapsed_time = time.time() - self.training_start_time
         log_info: List[str] = [category]
