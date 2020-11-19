@@ -8,6 +8,8 @@ namespace MLAgents
 {
     public class AgentCubeMovement : MonoBehaviour
     {
+
+        [Header("INPUT")] public bool allowKeyboardInput = true;
         [Header("RIGIDBODY")] public float maxAngularVel = 50;
         [Header("RUNNING")] public ForceMode runningForceMode = ForceMode.Impulse;
         //speed agent can run if grounded
@@ -15,6 +17,12 @@ namespace MLAgents
         public float agentTerminalVel = 20;
         //speed agent can run if not grounded
         public float agentRunInAirSpeed = 7f;
+
+        [Header("STRAFE")]
+        public float strafeSpeed = 10;
+        public float strafeCoolDownDuration = .2f;
+        private float strafeCoolDownTimer;
+        public ForceMode strafeForceMode = ForceMode.Impulse;
 
         [Header("DASH")]
         public float dashBoostForce = 20f;
@@ -42,7 +50,7 @@ namespace MLAgents
         public bool invertRotationIfWalkingBackwards = true;
         public float agentRotationSpeed = 35f;
 
-        [Header("JUMPING")]
+        [Header("JUMPING")] public bool canJump = true;
         //upward jump velocity magnitude
         public float agentJumpVelocity = 15f;
 
@@ -65,6 +73,10 @@ namespace MLAgents
 
         void Update()
         {
+            if (!allowKeyboardInput)
+            {
+                return;
+            }
             var camForward = cam.transform.forward;
             camForward.y = 0;
             var camRight = cam.transform.right;
@@ -82,8 +94,10 @@ namespace MLAgents
 
             //LATERAL MOVEMENT
             inputH = 0;
-            inputH += Input.GetKey(KeyCode.Q) ? -1 : 0;
-            inputH += Input.GetKey(KeyCode.E) ? 1 : 0;
+            //            inputH += Input.GetKey(KeyCode.Q) ? -1 : 0;
+            //            inputH += Input.GetKey(KeyCode.E) ? 1 : 0;
+            inputH += Input.GetKeyDown(KeyCode.Q) ? -1 : 0;
+            inputH += Input.GetKeyDown(KeyCode.E) ? 1 : 0;
 
             //            lookDir = Input.GetKey(KeyCode.A)?
             //            var moveLateral = Vector3.zero;
@@ -99,7 +113,7 @@ namespace MLAgents
             //            lookDir += Input.GetKey(KeyCode.D) ? Vector3.right : Vector3.zero;
             //            lookDir += Input.GetKey(KeyCode.A) ? Vector3.left : Vector3.zero;
 
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (canJump && Input.GetKeyDown(KeyCode.Space))
             {
                 if (groundCheck)
                 {
@@ -153,37 +167,45 @@ namespace MLAgents
             rb.MoveRotation(rb.rotation * amount);
         }
 
+        public void Strafe(Vector3 dir)
+        {
+            if (strafeCoolDownTimer > strafeCoolDownDuration)
+            {
+                rb.velocity = Vector3.zero;
+                rb.AddForce(dir.normalized * strafeSpeed, strafeForceMode);
+                strafeCoolDownTimer = 0;
+            }
+        }
+
         void FixedUpdate()
         {
+            if (!allowKeyboardInput)
+            {
+                return;
+            }
+
+            strafeCoolDownTimer += Time.fixedDeltaTime;
+
             if (spinAttack)
             {
                 //                rb.AddTorque(Vector3.up * spinAttackSpeed);
                 rb.angularVelocity = Vector3.up * spinAttackSpeed;
             }
 
-            if (inputH != 0 || inputV != 0)
-            {
-
-                var dir = cam.transform.TransformDirection(new Vector3(inputH, 0, inputV));
-                //                dir.y = 0;
-                //HANDLE WALKING
-                if (groundCheck.isGrounded)
-                {
-                    RunOnGround(rb, dir.normalized);
-                    //                    print("running");
-                }
-
-            }
-            else //is idle
-            {
-                if (groundCheck && groundCheck.isGrounded && !dashPressed)
-                {
-                    AddIdleDrag(rb);
-                    //                    print("AddIdleDrag");
-
-                }
-            }
-
+            //            if (inputH != 0 || inputV != 0)
+            //            {
+            //
+            ////                var dir = cam.transform.TransformDirection(new Vector3(inputH, 0, inputV));
+            //                var dir = cam.transform.TransformDirection(new Vector3(0, 0, inputV));
+            //                //                dir.y = 0;
+            //                //HANDLE WALKING
+            //                if (groundCheck.isGrounded)
+            //                {
+            //                    RunOnGround(rb, dir.normalized);
+            //                    //                    print("running");
+            //                }
+            //
+            //            }
             if (lookDir != 0)
             {
                 if (!spinAttack)
@@ -207,6 +229,36 @@ namespace MLAgents
                 }
 
             }
+            if (inputH != 0)
+            {
+                Strafe(transform.right * inputH);
+            }
+
+            if (inputV != 0)
+            {
+
+                //                var dir = cam.transform.TransformDirection(new Vector3(inputH, 0, inputV));
+                //                var dir = cam.transform.TransformDirection(new Vector3(0, 0, inputV));
+                var dir = transform.forward * inputV;
+                //                dir.y = 0;
+                //HANDLE WALKING
+                if (groundCheck.isGrounded)
+                {
+                    RunOnGround(rb, dir.normalized);
+                    //                    print("running");
+                }
+            }
+            else //is idle
+            {
+                if (groundCheck && groundCheck.isGrounded && !dashPressed)
+                {
+                    AddIdleDrag(rb);
+                    //                    print("AddIdleDrag");
+
+                }
+            }
+
+
 
             //            if (lookDir != Vector3.zero)
             //            {

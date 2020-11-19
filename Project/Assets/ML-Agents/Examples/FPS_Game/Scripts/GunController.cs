@@ -6,6 +6,8 @@ public class GunController : MonoBehaviour
 {
     private bool initialized; //has this robot been initialized
     public KeyCode shootKey = KeyCode.J;
+    [Header("AUTOSHOOT")] public bool autoShootEnabled;
+
 
     //SHOOTING RATE
     [Header("SHOOTING RATE")]
@@ -70,6 +72,10 @@ public class GunController : MonoBehaviour
     {
         coolDownWait = shootTimer > shootingRate ? false : true;
         shootTimer += Time.fixedDeltaTime;
+        if (autoShootEnabled)
+        {
+            Shoot();
+        }
     }
 
     public void Shoot()
