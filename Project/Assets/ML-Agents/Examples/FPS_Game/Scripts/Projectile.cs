@@ -11,7 +11,7 @@ public class Projectile : MonoBehaviour
     public bool selfDestructNow;
     public float maxTimeToLive = 3;
     public float pauseCollisionDetectionWaitTime = .5f;
-    [HideInInspector] public ShootProjectiles projectileController;
+    //    [HideInInspector] public ShootProjectiles projectileController;
 
 
     void Awake()

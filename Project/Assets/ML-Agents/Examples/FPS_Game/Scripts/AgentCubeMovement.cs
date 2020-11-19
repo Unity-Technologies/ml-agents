@@ -75,10 +75,10 @@ namespace MLAgents
             //            lookDir += Input.GetKey(KeyCode.A) ? Vector3.left : Vector3.zero;
 
             //BODY ROTATION
-            lookDir = Input.GetAxis("Horizontal");
+            lookDir = Input.GetAxisRaw("Horizontal");
 
             //FORWARD MOVEMENT
-            inputV = Input.GetAxis("Vertical");
+            inputV = Input.GetAxisRaw("Vertical");
 
             //LATERAL MOVEMENT
             inputH = 0;
@@ -170,6 +170,7 @@ namespace MLAgents
                 if (groundCheck.isGrounded)
                 {
                     RunOnGround(rb, dir.normalized);
+                    //                    print("running");
                 }
 
             }
@@ -178,6 +179,8 @@ namespace MLAgents
                 if (groundCheck && groundCheck.isGrounded && !dashPressed)
                 {
                     AddIdleDrag(rb);
+                    //                    print("AddIdleDrag");
+
                 }
             }
 
@@ -198,6 +201,8 @@ namespace MLAgents
                     //                    rb.MoveRotation( Quaternion.Euler(0, lookDir * agentRotationSpeed * walkingBackwardsCoeff * Time.fixedDeltaTime, 0));
 
                     RotateBody(lookDir, inputV);
+                    //                    print("rotating");
+
                     //                    rb.rotation *= Quaternion.AngleAxis(); rb.rotation * Quaternion. (rb.rotation, rot, agentRotationSpeed * Time.fixedDeltaTime);
                 }
 
@@ -247,6 +252,8 @@ namespace MLAgents
             if (groundCheck && !groundCheck.isGrounded)
             {
                 AddFallingForce(rb);
+                //                print("AddFallingForce");
+
             }
 
 

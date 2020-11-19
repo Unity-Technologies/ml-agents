@@ -4,8 +4,9 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: GridMatFloor
   m_Shader: {fileID: 4800000, guid: bbecf177c38d84ff08d7c683c116affd, type: 3}
   m_ShaderKeywords: 
@@ -83,7 +84,7 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _CellColor: {r: 0.116, g: 0.116, b: 0.116, a: 1}
+    - _CellColor: {r: 0.11320752, g: 0.11320752, b: 0.11320752, a: 1}
     - _Color: {r: 0.935151, g: 0.9705882, b: 0.3282872, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _LineColor: {r: 0.15686275, g: 0.15686275, b: 0.15686275, a: 1}

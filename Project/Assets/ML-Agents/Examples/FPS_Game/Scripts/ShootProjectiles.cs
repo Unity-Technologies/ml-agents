@@ -50,7 +50,7 @@ public class ShootProjectiles : MonoBehaviour
             Projectile p = obj.GetComponent<Projectile>();
             projectilePoolList.Add(p);
             p.transform.position = projectileStartingPos.position;
-            p.projectileController = this;
+            //            p.projectileController = this;
             p.gameObject.SetActive(false);
         }
 

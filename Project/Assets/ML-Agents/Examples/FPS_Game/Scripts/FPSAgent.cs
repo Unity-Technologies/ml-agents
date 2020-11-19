@@ -10,7 +10,7 @@ public class FPSAgent : Agent
 {
     private AgentCubeMovement m_CubeMovement;
 
-    public ShootProjectiles shootController;
+    public GunController gunController;
     public bool useVectorObs;
     Rigidbody m_AgentRb;
     bool m_Shoot;
@@ -72,7 +72,7 @@ public class FPSAgent : Agent
         m_CubeMovement.RotateBody(rotateAxis, forwardAxis);
         if (shootAxis > 0)
         {
-            shootController.Shoot();
+            //            gunController.Shoot();
         }
         //        }
 

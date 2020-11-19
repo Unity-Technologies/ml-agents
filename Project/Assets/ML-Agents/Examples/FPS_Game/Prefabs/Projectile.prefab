@@ -190,8 +190,7 @@ MonoBehaviour:
   rb: {fileID: 4341296992446652170}
   selfDestructNow: 1
   maxTimeToLive: 3
-  pauseCollisionDetectionWaitTime: 0.05
-  projectileController: {fileID: 0}
+  pauseCollisionDetectionWaitTime: 0
 --- !u!54 &4341296992446652170
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -203,11 +202,11 @@ Rigidbody:
   m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 3
+  m_CollisionDetection: 2
 --- !u!135 &7844766926972049869
 SphereCollider:
   m_ObjectHideFlags: 0
