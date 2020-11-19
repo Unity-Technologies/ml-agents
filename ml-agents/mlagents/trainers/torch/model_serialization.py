@@ -90,9 +90,6 @@ class ModelSerializer:
 
         :param output_filepath: file path to output the model (without file suffix)
         """
-        if not os.path.exists(output_filepath):
-            os.makedirs(output_filepath)
-
         onnx_output_path = f"{output_filepath}.onnx"
         logger.info(f"Converting to {onnx_output_path}")
 
