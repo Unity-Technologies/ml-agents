@@ -80,6 +80,6 @@ public class Projectile : MonoBehaviour
         {
             selfDestructNow = true;
         }
-        print(col.gameObject.name);
+        //        print(col.gameObject.name);
     }
 }
