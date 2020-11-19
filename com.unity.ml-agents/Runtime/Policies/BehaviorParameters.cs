@@ -1,8 +1,11 @@
 using Unity.Barracuda;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Analytics;
+using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Sensors.Reflection;
 
 namespace Unity.MLAgents.Policies
@@ -240,6 +243,36 @@ namespace Unity.MLAgents.Policies
                 return;
             }
             agent.ReloadPolicy();
+        }
+
+        internal void UpdateAnalytics(IList<ISensor> sensors, ActionSpec actionSpec)
+        {
+            switch (m_BehaviorType)
+            {
+                case BehaviorType.HeuristicOnly:
+                    return;
+                case BehaviorType.InferenceOnly:
+                    {
+                        InferenceAnalytics.InferenceModelSet(m_Model, m_BehaviorName, m_InferenceDevice, sensors, actionSpec);
+                        return;
+                    }
+                case BehaviorType.Default:
+                    if (Academy.Instance.IsCommunicatorOn)
+                    {
+                        return;
+                    }
+                    if (m_Model != null)
+                    {
+                        InferenceAnalytics.InferenceModelSet(m_Model, m_BehaviorName, m_InferenceDevice, sensors, actionSpec);
+                        return;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                default:
+                    return;
+            }
         }
     }
 }

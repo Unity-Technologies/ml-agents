@@ -1,5 +1,9 @@
+using System.Collections.Generic;
 using Unity.Barracuda;
+using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
+using Unity.MLAgents.Sensors;
 using UnityEditor;
 using UnityEditor.Analytics;
 using UnityEngine.Analytics;
@@ -30,21 +34,33 @@ namespace Unity.MLAgents.Analytics
             return s_EventRegistered;
         }
 
-        public static void InferenceModelSet(NNModel nnModel, string behaviorName, InferenceDevice inferenceDevice)
+        public static void InferenceModelSet(
+            NNModel nnModel,
+            string behaviorName,
+            InferenceDevice inferenceDevice,
+            IList<ISensor> sensors,
+            ActionSpec actionSpec
+        )
         {
-            //The event shouldn't be able to report if this is disabled but if we know we're not going to report
-            //Lets early out and not waste time gathering all the data
+            // The event shouldn't be able to report if this is disabled but if we know we're not going to report
+            // Lets early out and not waste time gathering all the data
             if (!EditorAnalytics.enabled)
                 return;
 
             if (!EnableAnalytics())
                 return;
 
-            var data = GetEventForModel(nnModel, behaviorName, inferenceDevice);
+            var data = GetEventForModel(nnModel, behaviorName, inferenceDevice, sensors, actionSpec);
             //EditorAnalytics.SendEventWithLimit(k_EventName, data);
         }
 
-        static InferenceEvent GetEventForModel(NNModel nnModel, string behaviorName, InferenceDevice inferenceDevice)
+        static InferenceEvent GetEventForModel(
+            NNModel nnModel,
+            string behaviorName,
+            InferenceDevice inferenceDevice,
+            IList<ISensor> sensors,
+            ActionSpec actionSpec
+        )
         {
             var barracudaModel = ModelLoader.Load(nnModel);
             var inferenceEvent = new InferenceEvent();
@@ -56,7 +72,7 @@ namespace Unity.MLAgents.Analytics
 
             if (barracudaModel.ProducerName == "Script")
             {
-                // .nn files don't have these fields set correctly. Make up some values.
+                // .nn files don't have these fields set correctly. Assign some placeholder values.
                 inferenceEvent.BarracudaModelSource = "NN";
                 inferenceEvent.BarracudaModelProducer = "tf2bc.py";
             }
@@ -67,6 +83,13 @@ namespace Unity.MLAgents.Analytics
 #else
             inferenceEvent.BarracudaPackageVersion = "unknown";
 #endif
+
+            inferenceEvent.ActionSpec = EventActionSpec.FromActionSpec(actionSpec);
+            inferenceEvent.ObservationSpecs = new List<EventObservationSpec>(sensors.Count);
+            foreach (var sensor in sensors)
+            {
+                inferenceEvent.ObservationSpecs.Add(EventObservationSpec.FromSensor(sensor));
+            }
 
             return inferenceEvent;
         }
