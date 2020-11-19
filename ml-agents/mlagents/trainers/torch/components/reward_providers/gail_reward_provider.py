@@ -279,10 +279,14 @@ class DiscriminatorNetwork(torch.nn.Module):
             use_vail_noise = True
             z_mu = self._z_mu_layer(hidden)
             hidden = torch.normal(z_mu, self._z_sigma * use_vail_noise)
-        estimate = self._estimator(hidden).squeeze(1).sum()
-        gradient = torch.autograd.grad(estimate, encoder_input, create_graph=True)[0]
-        # print(torch.sum(gradient ** 2, dim=1))
+        estimate = self._estimator(hidden).squeeze(1)
+        gradient = torch.autograd.grad(
+            estimate,
+            encoder_input,
+            grad_outputs=torch.ones(estimate.shape),
+            create_graph=True,
+        )[0]
         # Norm's gradient could be NaN at 0. Use our own safe_norm
-        safe_norm = (torch.sum(gradient ** 2, dim=1) + self.EPSILON).sqrt()
+        safe_norm = (torch.sum(torch.pow(gradient, 2), dim=1) + self.EPSILON).sqrt()
         gradient_mag = torch.mean((safe_norm - 1) ** 2)
         return gradient_mag
