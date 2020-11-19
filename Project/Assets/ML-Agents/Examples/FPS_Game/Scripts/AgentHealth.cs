@@ -1,12 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class AgentHealth : MonoBehaviour
 {
-    public float currentHealth;
+    public float currentHealth = 100;
 
-    public float damagePerHit;
+    public float damagePerHit = 5;
 
     // Start is called before the first frame update
     void Start()
@@ -20,5 +21,11 @@ public class AgentHealth : MonoBehaviour
 
     }
 
-
+    private void OnCollisionEnter(Collision col)
+    {
+        if (col.transform.CompareTag("projectile"))
+        {
+            currentHealth -= damagePerHit;
+        }
+    }
 }
