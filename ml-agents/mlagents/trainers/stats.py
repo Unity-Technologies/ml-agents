@@ -136,7 +136,7 @@ class ConsoleWriter(StatsWriter):
         else:
             log_info.append("No episode was completed since last summary")
             log_info.append(is_training)
-        logger.info(". ".join(log_info))
+        logger.info(". ".join(log_info) + ".")
 
     def add_property(
         self, category: str, property_type: StatsPropertyType, value: Any
