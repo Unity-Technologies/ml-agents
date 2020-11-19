@@ -1,4 +1,3 @@
-import os
 import threading
 from mlagents.torch_utils import torch
 
