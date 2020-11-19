@@ -74,11 +74,12 @@ public class Projectile : MonoBehaviour
     }
 
 
-    void OnCollisionEnter()
+    void OnCollisionEnter(Collision col)
     {
         if (aliveTime > pauseCollisionDetectionWaitTime)
         {
             selfDestructNow = true;
         }
+        print(col.gameObject.name);
     }
 }

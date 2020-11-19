@@ -122,7 +122,8 @@ public class ShootProjectiles : MonoBehaviour
     public void LaunchProjectile(Rigidbody rb, Vector3 startPos, Vector3 targetPos)
     {
         rb.transform.position = startPos;
-        rb.transform.rotation = Quaternion.identity;
+        //        rb.transform.rotation = Quaternion.identity;
+        rb.transform.rotation = transform.rotation;
 
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;

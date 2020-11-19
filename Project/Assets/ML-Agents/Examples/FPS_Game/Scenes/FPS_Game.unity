@@ -1617,8 +1617,7 @@ GameObject:
   - component: {fileID: 637814285}
   - component: {fileID: 637814288}
   - component: {fileID: 637814287}
-  - component: {fileID: 637814286}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1639,20 +1638,6 @@ Transform:
   m_Father: {fileID: 1739836887}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!136 &637814286
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 637814284}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!23 &637814287
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2741,8 +2726,7 @@ GameObject:
   - component: {fileID: 1061103511}
   - component: {fileID: 1061103514}
   - component: {fileID: 1061103513}
-  - component: {fileID: 1061103512}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2763,19 +2747,6 @@ Transform:
   m_Father: {fileID: 5337721584560684410}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1061103512
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1061103510}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1061103513
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3004,7 +2975,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1133994729}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SpawnPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3019,7 +2990,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1133994728}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.592}
+  m_LocalPosition: {x: 0, y: 0, z: 0.858}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1739836887}
@@ -3108,8 +3079,7 @@ GameObject:
   - component: {fileID: 1251493842}
   - component: {fileID: 1251493845}
   - component: {fileID: 1251493844}
-  - component: {fileID: 1251493843}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3130,19 +3100,6 @@ Transform:
   m_Father: {fileID: 1739836887}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1251493843
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1251493841}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1251493844
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4081,8 +4038,7 @@ GameObject:
   - component: {fileID: 1541496575}
   - component: {fileID: 1541496578}
   - component: {fileID: 1541496577}
-  - component: {fileID: 1541496576}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4103,20 +4059,6 @@ Transform:
   m_Father: {fileID: 5337721584560684410}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!136 &1541496576
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1541496574}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!23 &1541496577
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4171,7 +4113,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1614797500}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SpawnPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4186,7 +4128,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1614797499}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.592}
+  m_LocalPosition: {x: 0, y: 0, z: 0.858}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5337721584560684410}
@@ -4614,7 +4556,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1739836887}
   - component: {fileID: 1739836888}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: GUN (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4655,7 +4597,7 @@ MonoBehaviour:
     type: 3}
   numberOfProjectilesToPool: 25
   projectileStartingPos: {fileID: 1133994729}
-  projectileLaunchAngle: 1
+  projectileLaunchAngle: 5
   shootingRate: 0.02
   coolDownWait: 0
   autoShootEnabled: 0
@@ -5650,6 +5592,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5337721584560684409, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 5337721584560684410, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5665,6 +5612,16 @@ PrefabInstance:
       propertyPath: projectileStartingPos
       value: 
       objectReference: {fileID: 1614797500}
+    - target: {fileID: 5337721584560684411, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: numberOfProjectilesToPool
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5337721584560684411, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: projectileLaunchAngle
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 5337721584620702641, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
       propertyPath: cam
