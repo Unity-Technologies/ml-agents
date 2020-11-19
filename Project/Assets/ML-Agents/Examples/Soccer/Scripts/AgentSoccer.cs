@@ -1,4 +1,4 @@
-using System;
+//using System;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -58,12 +58,12 @@ public class AgentSoccer : Agent
         if (m_BehaviorParameters.TeamId == (int)Team.Blue)
         {
             team = Team.Blue;
-            m_Transform = new Vector3(transform.position.x - 4f, .5f, transform.position.z);
+            m_Transform = new Vector3(transform.position.x - 3f, .5f, transform.position.z);
         }
         else
         {
             team = Team.Purple;
-            m_Transform = new Vector3(transform.position.x + 4f, .5f, transform.position.z);
+            m_Transform = new Vector3(transform.position.x + 3f, .5f, transform.position.z);
         }
         if (position == Position.Goalie)
         {
@@ -222,6 +222,9 @@ public class AgentSoccer : Agent
 
         timePenalty = 0;
         m_BallTouch = m_ResetParams.GetWithDefault("ball_touch", 0);
+        var randomX = Random.Range(-3.0f, 3.0f);
+        var randomZ = Random.Range(-0.5f, 0.5f);
+        transform.position = m_Transform + new Vector3(randomX, 0f, randomZ);
         if (team == Team.Purple)
         {
             transform.rotation = Quaternion.Euler(0f, -90f, 0f);
@@ -230,7 +233,6 @@ public class AgentSoccer : Agent
         {
             transform.rotation = Quaternion.Euler(0f, 90f, 0f);
         }
-        transform.position = m_Transform;
         agentRb.velocity = Vector3.zero;
         agentRb.angularVelocity = Vector3.zero;
         SetResetParameters();

@@ -247,6 +247,7 @@ MonoBehaviour:
   m_BehaviorName: SoccerTwos
   TeamId: 1
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &114492261207303438
 MonoBehaviour:
@@ -289,8 +290,8 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  m_RaysPerDirection: 5
-  m_MaxRayDegrees: 60
+  m_RaysPerDirection: 10
+  m_MaxRayDegrees: 75
   m_SphereCastRadius: 0.5
   m_RayLength: 20
   m_RayLayerMask:
@@ -627,6 +628,7 @@ MonoBehaviour:
   m_BehaviorName: SoccerTwos
   TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &114850431417842684
 MonoBehaviour:
@@ -669,8 +671,8 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
-  m_RaysPerDirection: 5
-  m_MaxRayDegrees: 60
+  m_RaysPerDirection: 10
+  m_MaxRayDegrees: 75
   m_SphereCastRadius: 0.5
   m_RayLength: 20
   m_RayLayerMask:
@@ -3638,6 +3640,7 @@ MonoBehaviour:
   m_BehaviorName: SoccerTwos
   TeamId: 1
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &5320024511406682322
 MonoBehaviour:
@@ -3680,8 +3683,8 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  m_RaysPerDirection: 5
-  m_MaxRayDegrees: 60
+  m_RaysPerDirection: 10
+  m_MaxRayDegrees: 75
   m_SphereCastRadius: 0.5
   m_RayLength: 20
   m_RayLayerMask:
@@ -4124,6 +4127,7 @@ MonoBehaviour:
   m_BehaviorName: SoccerTwos
   TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &5379409612883756837
 MonoBehaviour:
@@ -4166,8 +4170,8 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
-  m_RaysPerDirection: 5
-  m_MaxRayDegrees: 60
+  m_RaysPerDirection: 10
+  m_MaxRayDegrees: 75
   m_SphereCastRadius: 0.5
   m_RayLength: 20
   m_RayLayerMask:
