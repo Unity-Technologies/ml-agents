@@ -68,8 +68,9 @@ public class FPSAgent : Agent
         var shootAxis = act[3];
         m_Shoot = shootAxis > 0 ? true : false;
 
-        m_CubeMovement.RunOnGround(m_AgentRb, m_Cam.transform.TransformDirection(new Vector3(rightAxis, 0, forwardAxis)));
         m_CubeMovement.RotateBody(rotateAxis, forwardAxis);
+        m_CubeMovement.RunOnGround(m_AgentRb, m_Cam.transform.TransformDirection(new Vector3(0, 0, forwardAxis)));
+        m_CubeMovement.Strafe(transform.right * rightAxis);
         if (shootAxis > 0)
         {
             //            gunController.Shoot();
@@ -100,7 +101,8 @@ public class FPSAgent : Agent
     {
         var contActionsOut = actionsOut.ContinuousActions;
         contActionsOut[0] = Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0; //inputV
-        contActionsOut[1] = Input.GetKey(KeyCode.E) ? 1 : Input.GetKey(KeyCode.Q) ? -1 : 0; //inputH
+        contActionsOut[1] = Input.GetKeyDown(KeyCode.E) ? 1 : Input.GetKeyDown(KeyCode.Q) ? -1 : 0; //inputH
+                                                                                                    //        print(contActionsOut[1]);
         contActionsOut[2] = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0; //rotate
         contActionsOut[3] = Input.GetKey(KeyCode.Space) ? 1 : 0; //shoot
 
