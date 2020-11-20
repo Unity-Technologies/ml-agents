@@ -1,11 +1,8 @@
 using Unity.Barracuda;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Analytics;
-using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Sensors.Reflection;
 
 namespace Unity.MLAgents.Policies

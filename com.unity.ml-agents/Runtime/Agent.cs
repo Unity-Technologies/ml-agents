@@ -421,8 +421,7 @@ namespace Unity.MLAgents
                 InitializeActuators();
             }
 
-            var combinedActionSpec = m_ActuatorManager.GetCombinedActionSpec();
-            m_Brain = m_PolicyFactory.GeneratePolicy(combinedActionSpec, Heuristic);
+            m_Brain = m_PolicyFactory.GeneratePolicy(m_ActuatorManager.GetCombinedActionSpec(), Heuristic);
             ResetData();
             Initialize();
 
@@ -596,8 +595,7 @@ namespace Unity.MLAgents
                 return;
             }
             m_Brain?.Dispose();
-            var combinedActionSpec = m_ActuatorManager.GetCombinedActionSpec();
-            m_Brain = m_PolicyFactory.GeneratePolicy(combinedActionSpec, Heuristic);
+            m_Brain = m_PolicyFactory.GeneratePolicy(m_ActuatorManager.GetCombinedActionSpec(), Heuristic);
         }
 
         /// <summary>
