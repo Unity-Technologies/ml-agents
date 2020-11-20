@@ -75,6 +75,7 @@ versions = [
     ReleaseInfo("release_7", "1.4.0", "0.20.0", "September 16, 2020"),
     ReleaseInfo("release_8", "1.5.0", "0.21.0", "October 14, 2020"),
     ReleaseInfo("release_9", "1.5.0", "0.21.1", "November 4, 2020"),
+    ReleaseInfo("release_10", "1.6.0", "0.22.0", "November 18, 2020"),
 ]
 
 MAX_DAYS = 150  # do not print releases older than this many days
