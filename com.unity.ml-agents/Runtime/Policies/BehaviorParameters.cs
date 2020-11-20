@@ -143,6 +143,13 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         [HideInInspector, SerializeField, FormerlySerializedAs("m_TeamID")]
         public int TeamId;
+
+        /// <summary>
+        /// The group ID for this behavior.
+        /// </summary>
+        [HideInInspector, SerializeField]
+        [Tooltip("Assign the same Group ID to all Agents in the same Area.")]
+        public int GroupId;
         // TODO properties here instead of Agent
 
         [FormerlySerializedAs("m_useChildSensors")]
@@ -193,7 +200,7 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         public string FullyQualifiedBehaviorName
         {
-            get { return m_BehaviorName + "?team=" + TeamId; }
+            get { return m_BehaviorName + "?team=" + TeamId + "&group=" + GroupId; }
         }
 
         internal IPolicy GeneratePolicy(ActionSpec actionSpec, HeuristicPolicy.ActionGenerator heuristic)

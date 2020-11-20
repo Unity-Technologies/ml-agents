@@ -60,6 +60,7 @@ namespace Unity.MLAgents.Editor
             needPolicyUpdate = needPolicyUpdate || EditorGUI.EndChangeCheck();
 
             EditorGUILayout.PropertyField(so.FindProperty("TeamId"));
+            EditorGUILayout.PropertyField(so.FindProperty("GroupId"));
             EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
                 EditorGUILayout.PropertyField(so.FindProperty("m_UseChildSensors"), true);
