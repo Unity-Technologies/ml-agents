@@ -3,13 +3,14 @@
 """Launches trainers for each External Brains in a Unity Environment."""
 
 import os
-import threading
 from typing import Dict, Set, List
 from collections import defaultdict
+from mlagents.trainers.stats import StatsReporter
 
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
+from torch import multiprocessing
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep
@@ -64,7 +65,7 @@ class TrainerController:
         self.ghost_controller = self.trainer_factory.ghost_controller
         self.registered_behavior_ids: Set[str] = set()
 
-        self.trainer_threads: List[threading.Thread] = []
+        self.trainer_threads: List[multiprocessing.Process] = []
         self.kill_trainers = False
         np.random.seed(training_seed)
         if tf_utils.is_available():
@@ -123,36 +124,37 @@ class TrainerController:
         parsed_behavior_id = BehaviorIdentifiers.from_name_behavior_id(name_behavior_id)
         brain_name = parsed_behavior_id.brain_name
         trainerthread = None
-        if brain_name in self.trainers:
+        if brain_name in self.trainer_threads:
             trainer = self.trainers[brain_name]
         else:
-            trainer = self.trainer_factory.generate(brain_name)
-            self.trainers[brain_name] = trainer
-            if trainer.threaded:
+            # trainer = self.trainer_factory.generate(brain_name)
+            # self.trainers[brain_name] = trainer
+            if True:
                 # Only create trainer thread for new trainers
-                trainerthread = threading.Thread(
-                    target=self.trainer_update_func, args=(trainer,), daemon=True
+                trainer = self.trainer_factory.generate(name_behavior_id)
+                agent_manager = AgentManager(
+                    name_behavior_id,
+                    StatsReporter(parsed_behavior_id.brain_name),
+                    16,
+                    threaded=True,
                 )
+                trainerthread = multiprocessing.Process(
+                    target=self.trainer_update_func,
+                    args=(
+                        trainer,
+                        name_behavior_id,
+                        env_manager.training_behaviors[name_behavior_id],
+                        agent_manager.policy_queue,
+                        agent_manager.trajectory_queue,
+                        StatsReporter.writers,
+                    ),
+                    daemon=True,
+                )
+
+                env_manager.set_agent_manager(name_behavior_id, agent_manager)
+                self.brain_name_to_identifier[brain_name].add(name_behavior_id)
+                # env_manager.set_policy(name_behavior_id, policy)
                 self.trainer_threads.append(trainerthread)
-
-        policy = trainer.create_policy(
-            parsed_behavior_id, env_manager.training_behaviors[name_behavior_id]
-        )
-        trainer.add_policy(parsed_behavior_id, policy)
-
-        agent_manager = AgentManager(
-            policy,
-            name_behavior_id,
-            trainer.stats_reporter,
-            trainer.parameters.time_horizon,
-            threaded=trainer.threaded,
-        )
-        env_manager.set_agent_manager(name_behavior_id, agent_manager)
-        env_manager.set_policy(name_behavior_id, policy)
-        self.brain_name_to_identifier[brain_name].add(name_behavior_id)
-
-        trainer.publish_policy_queue(agent_manager.policy_queue)
-        trainer.subscribe_trajectory_queue(agent_manager.trajectory_queue)
 
         # Only start new trainers
         if trainerthread is not None:
@@ -292,7 +294,23 @@ class TrainerController:
                     )
                     merge_gauges(thread_timer_stack.gauges)
 
-    def trainer_update_func(self, trainer: Trainer) -> None:
+    def trainer_update_func(
+        self,
+        trainer,
+        name_behavior_id,
+        behavior_spec,
+        policy_queue,
+        trajectory_queue,
+        stats_writers,
+    ) -> None:
+        # trainer = self.trainer_factory.generate(name_behavior_id)
+        parsed_behavior_id = BehaviorIdentifiers.from_name_behavior_id(name_behavior_id)
+        trainer.stats_reporter.change_writers(stats_writers)
+        policy = trainer.create_policy(parsed_behavior_id, behavior_spec)
+        trainer.publish_policy_queue(policy_queue)
+        trainer.subscribe_trajectory_queue(trajectory_queue)
+        trainer.add_policy(parsed_behavior_id, policy)
+
         while not self.kill_trainers:
             with hierarchical_timer("trainer_advance"):
                 trainer.advance()

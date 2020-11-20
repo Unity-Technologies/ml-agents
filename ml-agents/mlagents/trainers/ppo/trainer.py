@@ -285,6 +285,8 @@ class PPOTrainer(RLTrainer):
             )
         self.policy = policy
         self.policies[parsed_behavior_id.behavior_id] = policy
+        for queue in self.policy_queues:
+            queue.put(self.policy)
 
         self.optimizer = self.create_ppo_optimizer()
         for _reward_signal in self.optimizer.reward_signals.keys():

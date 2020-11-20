@@ -1,5 +1,6 @@
 # # Unity ML-Agents Toolkit
 from mlagents import torch_utils
+from torch.multiprocessing import Manager
 import yaml
 
 import os
@@ -97,6 +98,11 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         )
         gauge_write = GaugeWriter()
         console_writer = ConsoleWriter()
+
+        # Share writers across all threads
+        manager = Manager()
+        StatsReporter.writers = manager.list()
+
         StatsReporter.add_writer(tb_writer)
         StatsReporter.add_writer(gauge_write)
         StatsReporter.add_writer(console_writer)

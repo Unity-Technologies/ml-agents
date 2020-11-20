@@ -2,6 +2,7 @@ import sys
 from typing import List, Dict, TypeVar, Generic, Tuple, Any, Union
 from collections import defaultdict, Counter
 import queue
+from torch import multiprocessing
 
 from mlagents_envs.base_env import (
     DecisionSteps,
@@ -31,7 +32,6 @@ class AgentProcessor:
 
     def __init__(
         self,
-        policy: Policy,
         behavior_id: str,
         stats_reporter: StatsReporter,
         max_trajectory_length: int = sys.maxsize,
@@ -51,7 +51,7 @@ class AgentProcessor:
         self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = {}
         # Note: In the future this policy reference will be the policy of the env_manager and not the trainer.
         # We can in that case just grab the action from the policy rather than having it passed in.
-        self.policy = policy
+        self.policy = None
         self.episode_steps: Counter = Counter()
         self.episode_rewards: Dict[str, float] = defaultdict(float)
         self.stats_reporter = stats_reporter
@@ -104,7 +104,7 @@ class AgentProcessor:
             # If the ID doesn't have a last step result, the agent just reset,
             # don't store the action.
             if _gid in self.last_step_result:
-                if "action" in take_action_outputs:
+                if "action" in take_action_outputs and self.policy is not None:
                     self.policy.save_previous_action(
                         [_gid], take_action_outputs["action"]
                     )
@@ -122,7 +122,7 @@ class AgentProcessor:
         # This state is the consequence of a past action
         if stored_decision_step is not None and stored_take_action_outputs is not None:
             obs = stored_decision_step.obs
-            if self.policy.use_recurrent:
+            if self.policy is not None and self.policy.use_recurrent:
                 memory = self.policy.retrieve_memories([global_id])[0, :]
             else:
                 memory = None
@@ -130,13 +130,14 @@ class AgentProcessor:
             interrupted = step.interrupted if terminated else False
             # Add the outputs of the last eval
             action = stored_take_action_outputs["action"][idx]
-            if self.policy.use_continuous_act:
+            if self.policy is not None and self.policy.use_continuous_act:
                 action_pre = stored_take_action_outputs["pre_action"][idx]
             else:
                 action_pre = None
             action_probs = stored_take_action_outputs["log_probs"][idx]
             action_mask = stored_decision_step.action_mask
-            prev_action = self.policy.retrieve_previous_action([global_id])[0, :]
+            if self.policy is not None:
+                prev_action = self.policy.retrieve_previous_action([global_id])[0, :]
             experience = AgentExperience(
                 obs=obs,
                 reward=step.reward,
@@ -187,8 +188,9 @@ class AgentProcessor:
         self._safe_delete(self.last_step_result, global_id)
         self._safe_delete(self.episode_steps, global_id)
         self._safe_delete(self.episode_rewards, global_id)
-        self.policy.remove_previous_action([global_id])
-        self.policy.remove_memories([global_id])
+        if self.policy is not None:
+            self.policy.remove_previous_action([global_id])
+            self.policy.remove_memories([global_id])
 
     def _safe_delete(self, my_dictionary: Dict[Any, Any], key: Any) -> None:
         """
@@ -232,13 +234,13 @@ class AgentManagerQueue(Generic[T]):
 
         pass
 
-    def __init__(self, behavior_id: str, maxlen: int = 0):
+    def __init__(self, behavior_id: str, maxlen: int = 100):
         """
         Initializes an AgentManagerQueue. Note that we can give it a behavior_id so that it can be identified
         separately from an AgentManager.
         """
         self._maxlen: int = maxlen
-        self._queue: queue.Queue = queue.Queue(maxsize=maxlen)
+        self._queue: multiprocessing.Queue = multiprocessing.Queue(maxsize=maxlen)
         self._behavior_id = behavior_id
 
     @property
@@ -262,7 +264,10 @@ class AgentManagerQueue(Generic[T]):
         Returns the approximate size of the queue. Note that values may differ
         depending on the underlying queue implementation.
         """
-        return self._queue.qsize()
+        try:
+            return self._queue.qsize()
+        except NotImplementedError:
+            return self._maxlen
 
     def empty(self) -> bool:
         return self._queue.empty()
@@ -289,13 +294,12 @@ class AgentManager(AgentProcessor):
 
     def __init__(
         self,
-        policy: Policy,
         behavior_id: str,
         stats_reporter: StatsReporter,
         max_trajectory_length: int = sys.maxsize,
         threaded: bool = True,
     ):
-        super().__init__(policy, behavior_id, stats_reporter, max_trajectory_length)
+        super().__init__(behavior_id, stats_reporter, max_trajectory_length)
         trajectory_queue_len = 20 if threaded else 0
         self.trajectory_queue: AgentManagerQueue[Trajectory] = AgentManagerQueue(
             self.behavior_id, maxlen=trajectory_queue_len

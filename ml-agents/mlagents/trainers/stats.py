@@ -5,7 +5,7 @@ import numpy as np
 import abc
 import os
 import time
-from threading import RLock
+from torch.multiprocessing import RLock
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
@@ -137,6 +137,7 @@ class ConsoleWriter(StatsWriter):
             log_info.append("No episode was completed since last summary")
             log_info.append(is_training)
         logger.info(". ".join(log_info) + ".")
+        print(". ".join(log_info) + ".")
 
     def add_property(
         self, category: str, property_type: StatsPropertyType, value: Any
@@ -290,3 +291,9 @@ class StatsReporter:
                 num=len(StatsReporter.stats_dict[self.category][key]),
             )
         return StatsSummary.empty()
+
+    def change_writers(self, stats_writers: List) -> None:
+        """
+        Changes out the static writers to something else. Used for multiprocessing.
+        """
+        StatsReporter.writers = stats_writers

@@ -684,7 +684,7 @@ class TrainerSettings(ExportableSettings):
 
     class DefaultTrainerDict(collections.defaultdict):
         def __init__(self, *args):
-            super().__init__(TrainerSettings, *args)
+            super().__init__(None, *args)
 
         def __missing__(self, key: Any) -> "TrainerSettings":
             if TrainerSettings.default_override is not None:
