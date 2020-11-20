@@ -23,7 +23,7 @@ behaviors:
     max_steps: 50000000
     time_horizon: 1000
     summary_freq: 10000
-    threaded: true
+    threaded: false
     self_play:
       save_steps: 50000
       team_change: 200000
