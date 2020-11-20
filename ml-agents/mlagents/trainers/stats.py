@@ -111,11 +111,11 @@ class ConsoleWriter(StatsWriter):
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
     ) -> None:
-        is_training = "Not Training."
+        is_training = "Not Training"
         if "Is Training" in values:
             stats_summary = values["Is Training"]
             if stats_summary.mean > 0.0:
-                is_training = "Training."
+                is_training = "Training"
 
         elapsed_time = time.time() - self.training_start_time
         log_info: List[str] = [category]
@@ -136,7 +136,7 @@ class ConsoleWriter(StatsWriter):
         else:
             log_info.append("No episode was completed since last summary")
             log_info.append(is_training)
-        logger.info(". ".join(log_info))
+        logger.info(". ".join(log_info) + ".")
 
     def add_property(
         self, category: str, property_type: StatsPropertyType, value: Any
