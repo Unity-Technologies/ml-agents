@@ -49,7 +49,7 @@ Previously, this would result in an infinite loop and cause the editor to hang. 
 - Fixed an issue where runs could not be resumed when using TensorFlow and Ghost Training. (#4593)
 - Change the tensor type of step count from int32 to int64 to address the overflow issue when step
 goes larger than 2^31. Previous Tensorflow checkpoints will become incompatible and cannot be loaded. (#4607)
- - Remove extra period after "Training" in console log. (#4674)
+- Remove extra period after "Training" in console log. (#4674)
 
 
 ## [1.5.0-preview] - 2020-10-14
