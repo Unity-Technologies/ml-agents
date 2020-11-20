@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
@@ -6,6 +7,7 @@ using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using UnityEditor;
 using UnityEditor.Analytics;
+using UnityEngine;
 using UnityEngine.Analytics;
 
 namespace Unity.MLAgents.Analytics
@@ -83,6 +85,7 @@ namespace Unity.MLAgents.Analytics
             inferenceEvent.BarracudaModelSource = barracudaModel.IrSource;
             inferenceEvent.BarracudaModelVersion = barracudaModel.IrVersion;
             inferenceEvent.BarracudaModelProducer = barracudaModel.ProducerName;
+            inferenceEvent.MemorySize = (int)barracudaModel.GetTensorByName(TensorNames.MemorySize)[0];
             inferenceEvent.InferenceDevice = (int)inferenceDevice;
 
             if (barracudaModel.ProducerName == "Script")
@@ -106,7 +109,72 @@ namespace Unity.MLAgents.Analytics
                 inferenceEvent.ObservationSpecs.Add(EventObservationSpec.FromSensor(sensor));
             }
 
+            inferenceEvent.ModelHash = GetModelHash(barracudaModel);
             return inferenceEvent;
+        }
+
+        internal class FNVHash
+        {
+            const ulong kFNV_prime = 1099511628211;
+            const ulong kFNV_offset_basis = 14695981039346656037;
+            private const int kMaxBytes = 1024;
+
+            public ulong hash;
+
+            public FNVHash()
+            {
+                hash = kFNV_offset_basis;
+            }
+
+            public void Append(float[] values)
+            {
+                // Limit the max number of float bytes that we hash for performance.
+                // This increases the chance of a collision, but this should still be extremely rare.
+                var bytesToHash = Mathf.Min(kMaxBytes, Buffer.ByteLength(values));
+                for (var i = 0; i < bytesToHash; i++)
+                {
+                    var b = Buffer.GetByte(values, i);
+                    Update(b);
+                }
+            }
+
+            public void Append(string value)
+            {
+                foreach (var c in value)
+                {
+                    Update((byte)c);
+                }
+            }
+
+            private void Update(byte b)
+            {
+                hash *= kFNV_prime;
+                hash ^= b;
+            }
+
+            public override string ToString()
+            {
+                return hash.ToString();
+            }
+        }
+
+        static string GetModelHash(Model barracudaModel)
+        {
+            // Pre-2020 versions of Unity don't have Hash128.Append() (can only hash strings)
+            // For these versions, we'll use a simple FNV-1 hash.
+            // https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
+#if UNITY_2020_1_OR_NEWER
+            var hash = new Hash128();
+#else
+            var hash = new FNVHash();
+#endif
+            foreach (var layer in barracudaModel.layers)
+            {
+                hash.Append(layer.name);
+                hash.Append(layer.weights);
+            }
+
+            return hash.ToString();
         }
     }
 }

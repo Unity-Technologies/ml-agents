@@ -16,7 +16,7 @@ namespace Unity.MLAgents.Analytics
         public List<EventObservationSpec> ObservationSpecs;
         public EventActionSpec ActionSpec;
         public int MemorySize;
-        // public Int64 ModelHash; //TODO ?
+        public string ModelHash;
     }
 
     /// <summary>
