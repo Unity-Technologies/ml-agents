@@ -45,6 +45,7 @@ class AgentProcessor:
         :param stats_category: The category under which to write the stats. Usually, this comes from the Trainer.
         """
         self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
+        self.last_experience: Dict[str, AgentExperience] = {}
         self.last_step_result: Dict[str, Tuple[DecisionStep, int]] = {}
         # last_take_action_outputs stores the action a_t taken before the current observation s_(t+1), while
         # grabbing previous_action from the policy grabs the action PRIOR to that, a_(t-1).
@@ -92,11 +93,29 @@ class AgentProcessor:
             self._process_step(
                 terminal_step, global_id, terminal_steps.agent_id_to_index[local_id]
             )
+        for terminal_step in terminal_steps.values():
+            local_id = terminal_step.agent_id
+            global_id = get_global_agent_id(worker_id, local_id)
+            self._assemble_trajectory(
+                terminal_step, global_id, terminal_steps.agent_id_to_index[local_id]
+            )
+        # Clean the last experience dictionary for terminal steps
+        for terminal_step in terminal_steps.values():
+            local_id = terminal_step.agent_id
+            global_id = get_global_agent_id(worker_id, local_id)
+            self._safe_delete(self.last_experience, global_id)
+
         # Iterate over all the decision steps
         for ongoing_step in decision_steps.values():
             local_id = ongoing_step.agent_id
             global_id = get_global_agent_id(worker_id, local_id)
             self._process_step(
+                ongoing_step, global_id, decision_steps.agent_id_to_index[local_id]
+            )
+        for ongoing_step in decision_steps.values():
+            local_id = ongoing_step.agent_id
+            global_id = get_global_agent_id(worker_id, local_id)
+            self._assemble_trajectory(
                 ongoing_step, global_id, decision_steps.agent_id_to_index[local_id]
             )
 
@@ -139,6 +158,7 @@ class AgentProcessor:
             prev_action = self.policy.retrieve_previous_action([global_id])[0, :]
             experience = AgentExperience(
                 obs=obs,
+                collab_obs=[],
                 reward=step.reward,
                 done=done,
                 action=action,
@@ -149,6 +169,14 @@ class AgentProcessor:
                 interrupted=interrupted,
                 memory=memory,
             )
+            self.last_experience[global_id] = experience
+
+    def _assemble_trajectory(
+        self, step: Union[TerminalStep, DecisionStep], global_id: str, index: int
+    ) -> None:
+        if global_id in self.last_experience:
+            experience = self.last_experience[global_id]
+            terminated = isinstance(step, TerminalStep)
             # Add the value outputs if needed
             self.experience_buffers[global_id].append(experience)
             self.episode_rewards[global_id] += step.reward
@@ -160,7 +188,12 @@ class AgentProcessor:
                 len(self.experience_buffers[global_id]) >= self.max_trajectory_length
                 or terminated
             ):
-                # Make next AgentExperience
+                # Add remaining obs to AgentExperience
+                for _id, _exp in self.last_experience.items():
+                    if _id == global_id:
+                        continue
+                    else:
+                        self.last_experience[global_id].collab_obs.append(_exp.obs)
                 next_obs = step.obs
                 trajectory = Trajectory(
                     steps=self.experience_buffers[global_id],
@@ -187,6 +220,7 @@ class AgentProcessor:
         self._safe_delete(self.last_step_result, global_id)
         self._safe_delete(self.episode_steps, global_id)
         self._safe_delete(self.episode_rewards, global_id)
+        self._safe_delete(self.last_experience, global_id)
         self.policy.remove_previous_action([global_id])
         self.policy.remove_memories([global_id])
 

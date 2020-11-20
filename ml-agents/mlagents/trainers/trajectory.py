@@ -1,11 +1,14 @@
 from typing import List, NamedTuple
+import attr
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
 
 
-class AgentExperience(NamedTuple):
+@attr.s(auto_attribs=True)
+class AgentExperience:
     obs: List[np.ndarray]
+    collab_obs: List[List[np.ndarray]]
     reward: float
     done: bool
     action: np.ndarray
