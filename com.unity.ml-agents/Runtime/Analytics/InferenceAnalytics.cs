@@ -18,11 +18,18 @@ namespace Unity.MLAgents.Analytics
         const string k_VendorKey = "unity.ml-agents";
         const string k_EventName = "InferenceModelSet";
 
+        private static HashSet<NNModel> s_SentModels;
+
         static bool EnableAnalytics()
         {
             if (s_EventRegistered)
             {
                 return true;
+            }
+
+            if (s_SentModels == null)
+            {
+                s_SentModels = new HashSet<NNModel>();
             }
 
             AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(k_EventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
@@ -49,6 +56,14 @@ namespace Unity.MLAgents.Analytics
 
             if (!EnableAnalytics())
                 return;
+
+            var added = s_SentModels.Add(nnModel);
+
+            if (!added)
+            {
+                // We previously added this model. Exit so we don't resend.
+                return;
+            }
 
             var data = GetEventForModel(nnModel, behaviorName, inferenceDevice, sensors, actionSpec);
             //EditorAnalytics.SendEventWithLimit(k_EventName, data);

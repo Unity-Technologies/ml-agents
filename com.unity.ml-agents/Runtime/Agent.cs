@@ -431,8 +431,6 @@ namespace Unity.MLAgents
                 InitializeSensors();
             }
 
-            m_PolicyFactory.UpdateAnalytics(sensors, combinedActionSpec);
-
             m_Info.storedVectorActions = new float[m_ActuatorManager.TotalNumberOfActions];
 
             // The first time the Academy resets, all Agents in the scene will be
@@ -600,7 +598,6 @@ namespace Unity.MLAgents
             m_Brain?.Dispose();
             var combinedActionSpec = m_ActuatorManager.GetCombinedActionSpec();
             m_Brain = m_PolicyFactory.GeneratePolicy(combinedActionSpec, Heuristic);
-            m_PolicyFactory.UpdateAnalytics(sensors, combinedActionSpec);
         }
 
         /// <summary>
