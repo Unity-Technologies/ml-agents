@@ -246,7 +246,9 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
   TeamId: 1
+  GroupId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &114492261207303438
 MonoBehaviour:
@@ -626,7 +628,9 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
   TeamId: 0
+  GroupId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &114850431417842684
 MonoBehaviour:
@@ -3637,7 +3641,9 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
   TeamId: 1
+  GroupId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &5320024511406682322
 MonoBehaviour:
@@ -4123,7 +4129,9 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
   TeamId: 0
+  GroupId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &5379409612883756837
 MonoBehaviour:
