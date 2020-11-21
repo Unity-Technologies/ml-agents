@@ -66,7 +66,7 @@ public class CrawlerAgent : Agent
     //The direction an agent will walk during training.
     [Header("Target To Walk Towards")] public Transform dynamicTargetPrefab; //Target prefab to use in Dynamic envs
     public Transform staticTargetPrefab; //Target prefab to use in Static envs
-    private Transform m_Target; //Target the agent will walk towards during training.
+    public Transform m_Target; //Target the agent will walk towards during training.
 
     [Header("Body Parts")] [Space(10)] public Transform body;
     public Transform leg0Upper;

@@ -37,7 +37,7 @@ namespace MLAgents
         //1 means no drag will be applied
         public float agentIdleDragVelCoeff = .9f;
 
-        [Header("GROUND POUND")]
+        [Header("GROUND POUND")] public bool UseGroundPound;
         public ForceMode groundPoundForceMode = ForceMode.Impulse;
         public float groundPoundForce = 35f;
 
@@ -57,6 +57,12 @@ namespace MLAgents
         [Header("FALLING FORCE")]
         //force applied to agent while falling
         public float agentFallingSpeed = 50f;
+
+        [Header("ANIMATE MESH")] public bool AnimateBodyMesh;
+        public AnimationCurve walkingBounceCurve;
+        public float walkingAnimScale = 1;
+        public Transform bodyMesh;
+        private float m_animateBodyMeshCurveTimer;
 
         public Camera cam;
         private float lookDir;
@@ -121,7 +127,7 @@ namespace MLAgents
                     {
                         Jump(rb);
                     }
-                    else
+                    else if (UseGroundPound)
                     {
                         rb.AddForce(Vector3.down * groundPoundForce, groundPoundForceMode);
                     }
@@ -130,6 +136,7 @@ namespace MLAgents
 
             spinAttack = Input.GetKey(KeyCode.H);
             dashPressed = Input.GetKeyDown(KeyCode.K);
+
             if (dashPressed)
             {
                 //                dashPressed = false;
@@ -167,22 +174,25 @@ namespace MLAgents
             rb.MoveRotation(rb.rotation * amount);
         }
 
-        public void Strafe(Vector3 dir)
-        {
-            if (strafeCoolDownTimer > strafeCoolDownDuration)
-            {
-                rb.velocity = Vector3.zero;
-                rb.AddForce(dir.normalized * strafeSpeed, strafeForceMode);
-                strafeCoolDownTimer = 0;
-            }
-        }
 
+
+        //        public float standingForce = 10;
+        //        public ForceMode standingForceForceMode;
+        //        public float standingForcePositionOffset = .5f;
         void FixedUpdate()
         {
             if (!allowKeyboardInput)
             {
                 return;
             }
+
+            //            //STANDING FORCES
+            //            rb.AddForceAtPosition(Vector3.up * standingForce,transform.TransformPoint(Vector3.up * standingForcePositionOffset),
+            //                standingForceForceMode);
+            //            rb.AddForceAtPosition(-Vector3.up * standingForce,transform.TransformPoint(-Vector3.up * standingForcePositionOffset),
+            //                standingForceForceMode);
+
+
 
             strafeCoolDownTimer += Time.fixedDeltaTime;
 
@@ -231,6 +241,7 @@ namespace MLAgents
             }
             if (inputH != 0)
             {
+
                 Strafe(transform.right * inputH);
             }
 
@@ -245,19 +256,40 @@ namespace MLAgents
                 if (groundCheck.isGrounded)
                 {
                     RunOnGround(rb, dir.normalized);
+                    if (AnimateBodyMesh)
+                    {
+                        bodyMesh.localPosition = Vector3.zero +
+                                                 Vector3.up * walkingAnimScale * walkingBounceCurve.Evaluate(
+                                                     m_animateBodyMeshCurveTimer);
+                        m_animateBodyMeshCurveTimer += Time.fixedDeltaTime;
+                    }
                     //                    print("running");
+                }
+                else
+                {
+                    RunInAir(rb, dir.normalized);
                 }
             }
             else //is idle
             {
-                if (groundCheck && groundCheck.isGrounded && !dashPressed)
+                if (AnimateBodyMesh)
+                {
+                    bodyMesh.localPosition = Vector3.zero;
+                }
+
+            }
+
+            if (inputH == 0 && inputV == 0)
+            {
+                //                if (groundCheck && groundCheck.isGrounded && !dashPressed)
+                if (groundCheck && groundCheck.isGrounded)
                 {
                     AddIdleDrag(rb);
                     //                    print("AddIdleDrag");
 
                 }
-            }
 
+            }
 
 
             //            if (lookDir != Vector3.zero)
@@ -386,12 +418,24 @@ namespace MLAgents
             rb.MoveRotation(rb.rotation * Quaternion.AngleAxis(agentRotationSpeed, rotationAxis));
         }
 
+        public void Strafe(Vector3 dir)
+        {
+            if (strafeCoolDownTimer > strafeCoolDownDuration)
+            {
+                rb.velocity = Vector3.zero;
+                rb.AddForce(dir.normalized * strafeSpeed, strafeForceMode);
+                strafeCoolDownTimer = 0;
+            }
+        }
+
         public void RunOnGround(Rigidbody rb, Vector3 dir)
         {
             var vel = rb.velocity.magnitude;
             float adjustedSpeed = Mathf.Clamp(agentRunSpeed - vel, 0, agentTerminalVel);
             rb.AddForce(dir.normalized * adjustedSpeed,
                 runningForceMode);
+            //            rb.AddForceAtPosition(dir.normalized * adjustedSpeed,transform.TransformPoint(Vector3.forward * standingForcePositionOffset),
+            //                runningForceMode);
         }
 
         public void RunInAir(Rigidbody rb, Vector3 dir)

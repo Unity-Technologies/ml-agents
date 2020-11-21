@@ -102,7 +102,6 @@ public class FPSAgent : Agent
         var contActionsOut = actionsOut.ContinuousActions;
         contActionsOut[0] = Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0; //inputV
         contActionsOut[1] = Input.GetKeyDown(KeyCode.E) ? 1 : Input.GetKeyDown(KeyCode.Q) ? -1 : 0; //inputH
-                                                                                                    //        print(contActionsOut[1]);
         contActionsOut[2] = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0; //rotate
         contActionsOut[3] = Input.GetKey(KeyCode.Space) ? 1 : 0; //shoot
 

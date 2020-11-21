@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class GunController : MonoBehaviour
 {
+    public bool StandbyMode; //this mode ignores player input
     private bool initialized; //has this robot been initialized
     public KeyCode shootKey = KeyCode.J;
     [Header("AUTOSHOOT")] public bool autoShootEnabled;
@@ -27,8 +29,19 @@ public class GunController : MonoBehaviour
     public float forceToUse;
     public ForceMode forceMode;
 
+    [Header("SCREEN SHAKE")]
+    public bool UseScreenShake;
+
+    [Header("TRANSFORM SHAKE")] public bool ShakeTransform;
+    public float ShakeDuration = .1f;
+    public float ShakeAmount = .1f;
+    private Vector3 startPos;
+    private bool m_TransformIsShaking;
+
+    CinemachineImpulseSource impulseSource;
+
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         if (!initialized)
         {
@@ -49,6 +62,7 @@ public class GunController : MonoBehaviour
         projectilePoolList.Clear(); //clear list in case it's not empty
         for (var i = 0; i < numberOfProjectilesToPool; i++)
         {
+            impulseSource = GetComponent<CinemachineImpulseSource>();
             GameObject obj = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
             Projectile p = obj.GetComponent<Projectile>();
             projectilePoolList.Add(p);
@@ -62,9 +76,14 @@ public class GunController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(shootKey))
+        if (StandbyMode)
+        {
+            return;
+        }
+        if (Input.GetKeyDown(shootKey))
         {
             Shoot();
+            //            ShootQuantity(1);
         }
     }
 
@@ -77,6 +96,26 @@ public class GunController : MonoBehaviour
             Shoot();
         }
     }
+
+    //    public void ShootQuantity(int num)
+    //    {
+    //        var i = 0;
+    //        while (i < num)
+    //        {
+    //            //shoot first available projectile in the pool
+    //            foreach (var item in projectilePoolList)
+    //            {
+    //                if (!item.gameObject.activeInHierarchy)
+    //                {
+    //                    FireProjectile(item.rb);
+    //                    impulseSource.GenerateImpulse();
+    //                    break;
+    //                }
+    //            }
+    //
+    //            i++;
+    //        }
+    //    }
 
     public void Shoot()
     {
@@ -92,17 +131,47 @@ public class GunController : MonoBehaviour
         {
             if (!item.gameObject.activeInHierarchy)
             {
-                item.rb.transform.position = projectileOrigin.position;
-                item.rb.transform.rotation = projectileOrigin.rotation;
-
-                item.rb.velocity = Vector3.zero;
-                item.rb.angularVelocity = Vector3.zero;
-                item.rb.gameObject.SetActive(true);
-                item.rb.AddForce(projectileOrigin.forward * forceToUse, forceMode);
+                FireProjectile(item.rb);
+                if (UseScreenShake && impulseSource)
+                {
+                    impulseSource.GenerateImpulse();
+                }
+                if (ShakeTransform && !m_TransformIsShaking)
+                {
+                    StartCoroutine(I_ShakeTransform());
+                }
                 break;
             }
         }
+
     }
 
+    public void FireProjectile(Rigidbody rb)
+    {
+        rb.transform.position = projectileOrigin.position;
+        rb.transform.rotation = projectileOrigin.rotation;
+
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        rb.gameObject.SetActive(true);
+        rb.AddForce(projectileOrigin.forward * forceToUse, forceMode);
+    }
+
+    IEnumerator I_ShakeTransform()
+    {
+        m_TransformIsShaking = true;
+        WaitForFixedUpdate wait = new WaitForFixedUpdate();
+        float timer = 0;
+        startPos = transform.localPosition;
+        while (timer < ShakeDuration)
+        {
+            var pos = startPos + (Random.insideUnitSphere * ShakeAmount);
+            transform.localPosition = pos;
+            timer += Time.fixedDeltaTime;
+            yield return wait;
+        }
+        transform.localPosition = startPos;
+        m_TransformIsShaking = false;
+    }
 
 }
