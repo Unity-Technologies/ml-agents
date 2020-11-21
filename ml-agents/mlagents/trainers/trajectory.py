@@ -97,6 +97,8 @@ class Trajectory(NamedTuple):
                 agent_buffer_trajectory["next_visual_obs%d" % i].append(
                     next_vec_vis_obs.visual_observations[i]
                 )
+            agent_buffer_trajectory["critic_obs"].append(exp.collab_obs)
+
             agent_buffer_trajectory["vector_obs"].append(
                 vec_vis_obs.vector_observations
             )

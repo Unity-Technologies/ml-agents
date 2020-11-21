@@ -177,6 +177,13 @@ class AgentProcessor:
         if global_id in self.last_experience:
             experience = self.last_experience[global_id]
             terminated = isinstance(step, TerminalStep)
+
+            # Add remaining obs to AgentExperience
+            for _id, _exp in self.last_experience.items():
+                if _id == global_id:
+                    continue
+                else:
+                    self.last_experience[global_id].collab_obs.append(_exp.obs)
             # Add the value outputs if needed
             self.experience_buffers[global_id].append(experience)
             self.episode_rewards[global_id] += step.reward
@@ -188,12 +195,6 @@ class AgentProcessor:
                 len(self.experience_buffers[global_id]) >= self.max_trajectory_length
                 or terminated
             ):
-                # Add remaining obs to AgentExperience
-                for _id, _exp in self.last_experience.items():
-                    if _id == global_id:
-                        continue
-                    else:
-                        self.last_experience[global_id].collab_obs.append(_exp.obs)
                 next_obs = step.obs
                 trajectory = Trajectory(
                     steps=self.experience_buffers[global_id],
@@ -220,7 +221,6 @@ class AgentProcessor:
         self._safe_delete(self.last_step_result, global_id)
         self._safe_delete(self.episode_steps, global_id)
         self._safe_delete(self.episode_rewards, global_id)
-        self._safe_delete(self.last_experience, global_id)
         self.policy.remove_previous_action([global_id])
         self.policy.remove_memories([global_id])
 
