@@ -18,6 +18,7 @@ and this project adheres to
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
+- Removed noisy warnings about API minor version mismatches in both the C# and python code. (#4688)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 
