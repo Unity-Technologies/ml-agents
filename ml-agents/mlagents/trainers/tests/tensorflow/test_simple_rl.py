@@ -280,7 +280,7 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
         SAC_TF_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=100,
+        max_steps=200,
         framework=FrameworkType.TENSORFLOW,
     )
     # The number of steps is pretty small for these encoders
