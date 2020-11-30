@@ -72,6 +72,7 @@ namespace Unity.MLAgents.Editor
         /// </summary>
         void MakeActionsProperty(SerializedProperty property)
         {
+            // TODO: update deprecated fields to ActionSpec
             var actSizeProperty = property.FindPropertyRelative("VectorActionSize");
             var actSpaceTypeProp = property.FindPropertyRelative("VectorActionSpaceType");
 

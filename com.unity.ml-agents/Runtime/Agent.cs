@@ -875,7 +875,7 @@ namespace Unity.MLAgents
         public virtual void Heuristic(in ActionBuffers actionsOut)
         {
             // For backward compatibility
-            switch (m_PolicyFactory.BrainParameters.VectorActionSpaceType)
+            switch (m_PolicyFactory.BrainParameters.VectorActionSpaceTypeDeprecated)
             {
                 case SpaceType.Continuous:
                     Heuristic(actionsOut.ContinuousActions.Array);
@@ -975,7 +975,7 @@ namespace Unity.MLAgents
             // Support legacy OnActionReceived
             // TODO don't set this up if the sizes are 0?
             var param = m_PolicyFactory.BrainParameters;
-            m_VectorActuator = new VectorActuator(this, param.VectorActionSize, param.VectorActionSpaceType);
+            m_VectorActuator = new VectorActuator(this, param.VectorActionSpec);
             m_ActuatorManager = new ActuatorManager(attachedActuators.Length + 1);
             m_LegacyActionCache = new float[m_VectorActuator.TotalNumberOfActions()];
 

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Unity.MLAgents.Actuators;
@@ -64,7 +65,8 @@ namespace Unity.MLAgents.Policies
         /// For the discrete action space: the number of branches in the action space.
         /// </value>
         [FormerlySerializedAs("vectorActionSize")]
-        public int[] VectorActionSize = new[] { 1 };
+        [FormerlySerializedAs("VectorActionSize")]
+        public int[] VectorActionSizeDeprecated = new[] { 1 };
 
         /// <summary>
         /// The list of strings describing what the actions correspond to.
@@ -76,21 +78,26 @@ namespace Unity.MLAgents.Policies
         /// Defines if the action is discrete or continuous.
         /// </summary>
         [FormerlySerializedAs("vectorActionSpaceType")]
-        public SpaceType VectorActionSpaceType = SpaceType.Discrete;
+        [FormerlySerializedAs("VectorActionSpaceType")]
+        public SpaceType VectorActionSpaceTypeDeprecated = SpaceType.Discrete;
+
+        [SerializeField]
+        [HideInInspector]
+        internal bool hasUpgradedBrainParametersWithActionSpec;
 
         /// <summary>
         /// The number of actions specified by this Brain.
         /// </summary>
-        public int NumActions
+        public int NumActionsDeprecated
         {
             get
             {
-                switch (VectorActionSpaceType)
+                switch (VectorActionSpaceTypeDeprecated)
                 {
                     case SpaceType.Discrete:
-                        return VectorActionSize.Length;
+                        return VectorActionSizeDeprecated.Length;
                     case SpaceType.Continuous:
-                        return VectorActionSize[0];
+                        return VectorActionSizeDeprecated[0];
                     default:
                         return 0;
                 }
@@ -107,9 +114,9 @@ namespace Unity.MLAgents.Policies
             {
                 VectorObservationSize = VectorObservationSize,
                 NumStackedVectorObservations = NumStackedVectorObservations,
-                VectorActionSize = (int[])VectorActionSize.Clone(),
+                VectorActionSizeDeprecated = (int[])VectorActionSizeDeprecated.Clone(),
                 VectorActionDescriptions = (string[])VectorActionDescriptions.Clone(),
-                VectorActionSpaceType = VectorActionSpaceType,
+                VectorActionSpaceTypeDeprecated = VectorActionSpaceTypeDeprecated,
                 VectorActionSpec = new ActionSpec(VectorActionSpec.NumContinuousActions, VectorActionSpec.NumDiscreteActions, VectorActionSpec.BranchSizes)
             };
         }
