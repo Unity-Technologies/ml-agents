@@ -33,7 +33,7 @@ namespace Unity.MLAgents.Policies
     /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
     /// </remarks>
     [Serializable]
-    public class BrainParameters
+    public class BrainParameters : ISerializationCallbackReceiver
     {
         /// <summary>
         /// The number of the observations that are added in
@@ -119,6 +119,42 @@ namespace Unity.MLAgents.Policies
                 VectorActionSpaceTypeDeprecated = VectorActionSpaceTypeDeprecated,
                 VectorActionSpec = new ActionSpec(VectorActionSpec.NumContinuousActions, VectorActionSpec.NumDiscreteActions, VectorActionSpec.BranchSizes)
             };
+        }
+
+        public void OnBeforeSerialize()
+        {
+            if (!hasUpgradedBrainParametersWithActionSpec)
+            {
+                if (VectorActionSpec.NumContinuousActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Continuous)
+                {
+                    VectorActionSpec.NumContinuousActions = VectorActionSizeDeprecated[0];
+                }
+                if (VectorActionSpec.NumDiscreteActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Discrete)
+                {
+                    VectorActionSpec.NumDiscreteActions = VectorActionSizeDeprecated.Length;
+                    VectorActionSpec.BranchSizes = VectorActionSizeDeprecated;
+                    VectorActionSpec.SumOfDiscreteBranchSizes = VectorActionSizeDeprecated.Sum();
+                }
+                hasUpgradedBrainParametersWithActionSpec = true;
+            }
+        }
+
+        public void OnAfterDeserialize()
+        {
+            if (!hasUpgradedBrainParametersWithActionSpec)
+            {
+                if (VectorActionSpec.NumContinuousActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Continuous)
+                {
+                    VectorActionSpec.NumContinuousActions = VectorActionSizeDeprecated[0];
+                }
+                if (VectorActionSpec.NumDiscreteActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Discrete)
+                {
+                    VectorActionSpec.NumDiscreteActions = VectorActionSizeDeprecated.Length;
+                    VectorActionSpec.BranchSizes = VectorActionSizeDeprecated;
+                    VectorActionSpec.SumOfDiscreteBranchSizes = VectorActionSizeDeprecated.Sum();
+                }
+                hasUpgradedBrainParametersWithActionSpec = true;
+            }
         }
     }
 }
