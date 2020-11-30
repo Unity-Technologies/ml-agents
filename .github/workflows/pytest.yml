@@ -8,6 +8,7 @@ on:
     - 'gym-unity/**'
     - 'test_constraints*.txt'
     - 'test_requirements.txt'
+    - '.github/workflows/pytest.yml'
   push:
     branches: [master]
 
