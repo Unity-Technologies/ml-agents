@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Unity.MLAgents.Actuators;
 
 namespace Unity.MLAgents.Policies
 {
@@ -49,6 +50,8 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         [FormerlySerializedAs("numStackedVectorObservations")]
         [Range(1, 50)] public int NumStackedVectorObservations = 1;
+
+        public ActionSpec VectorActionSpec = new ActionSpec(0, 0, new int[] { });
 
         /// <summary>
         /// The size of the action space.
@@ -106,7 +109,8 @@ namespace Unity.MLAgents.Policies
                 NumStackedVectorObservations = NumStackedVectorObservations,
                 VectorActionSize = (int[])VectorActionSize.Clone(),
                 VectorActionDescriptions = (string[])VectorActionDescriptions.Clone(),
-                VectorActionSpaceType = VectorActionSpaceType
+                VectorActionSpaceType = VectorActionSpaceType,
+                VectorActionSpec = new ActionSpec(VectorActionSpec.NumContinuousActions, VectorActionSpec.NumDiscreteActions, VectorActionSpec.BranchSizes)
             };
         }
     }
