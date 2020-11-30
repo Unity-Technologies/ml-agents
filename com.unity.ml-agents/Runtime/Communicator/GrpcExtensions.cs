@@ -103,10 +103,11 @@ namespace Unity.MLAgents
         {
             var brainParametersProto = new BrainParametersProto
             {
-                VectorActionSizeDeprecated = { bp.VectorActionSize },
-                VectorActionSpaceTypeDeprecated = (SpaceTypeProto)bp.VectorActionSpaceType,
+                VectorActionSizeDeprecated = { bp.VectorActionSizeDeprecated },
+                VectorActionSpaceTypeDeprecated = (SpaceTypeProto)bp.VectorActionSpaceTypeDeprecated,
                 BrainName = name,
-                IsTraining = isTraining
+                IsTraining = isTraining,
+                ActionSpec = ToActionSpecProto(bp.VectorActionSpec),
             };
             if (bp.VectorActionDescriptions != null)
             {
@@ -127,18 +128,9 @@ namespace Unity.MLAgents
             var brainParametersProto = new BrainParametersProto
             {
                 BrainName = name,
-                IsTraining = isTraining
+                IsTraining = isTraining,
+                ActionSpec = ToActionSpecProto(actionSpec),
             };
-            var actionSpecProto = new ActionSpecProto
-            {
-                NumContinuousActions = actionSpec.NumContinuousActions,
-                NumDiscreteActions = actionSpec.NumDiscreteActions,
-            };
-            if (actionSpec.BranchSizes != null)
-            {
-                actionSpecProto.DiscreteBranchSizes.AddRange(actionSpec.BranchSizes);
-            }
-            brainParametersProto.ActionSpec = actionSpecProto;
 
             var supportHybrid = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.HybridActions;
             if (!supportHybrid)
@@ -169,13 +161,48 @@ namespace Unity.MLAgents
         {
             var bp = new BrainParameters
             {
-                VectorActionSize = bpp.VectorActionSizeDeprecated.ToArray(),
+                VectorActionSizeDeprecated = bpp.VectorActionSizeDeprecated.ToArray(),
                 VectorActionDescriptions = bpp.VectorActionDescriptionsDeprecated.ToArray(),
-                VectorActionSpaceType = (SpaceType)bpp.VectorActionSpaceTypeDeprecated
+                VectorActionSpaceTypeDeprecated = (SpaceType)bpp.VectorActionSpaceTypeDeprecated,
+                VectorActionSpec = ToActionSpec(bpp.ActionSpec),
             };
             return bp;
         }
 
+        /// <summary>
+        /// Convert a ActionSpecProto to a ActionSpec struct.
+        /// </summary>
+        /// <param name="actionSpecProto">An instance of an action spec protobuf object.</param>
+        /// <returns>An ActionSpec struct.</returns>
+        public static ActionSpec ToActionSpec(this ActionSpecProto actionSpecProto)
+        {
+            var actionSpec = new ActionSpec
+            (
+                actionSpecProto.NumContinuousActions,
+                actionSpecProto.NumDiscreteActions,
+                actionSpecProto.DiscreteBranchSizes.ToArray()
+            );
+            return actionSpec;
+        }
+
+        /// <summary>
+        /// Convert a ActionSpec struct to a ActionSpecProto.
+        /// </summary>
+        /// <param name="actionSpecProto">An instance of an action spec struct.</param>
+        /// <returns>An ActionSpecProto.</returns>
+        public static ActionSpecProto ToActionSpecProto(this ActionSpec actionSpec)
+        {
+            var actionSpecProto = new ActionSpecProto
+            {
+                NumContinuousActions = actionSpec.NumContinuousActions,
+                NumDiscreteActions = actionSpec.NumDiscreteActions,
+            };
+            if (actionSpec.BranchSizes != null)
+            {
+                actionSpecProto.DiscreteBranchSizes.AddRange(actionSpec.BranchSizes);
+            }
+            return actionSpecProto;
+        }
         #endregion
 
         #region DemonstrationMetaData

@@ -132,7 +132,7 @@ namespace Unity.MLAgents.Editor
         {
             var branchSizes = property.FindPropertyRelative(k_DiscreteBranchSizeName);
             var newSize = EditorGUI.IntField(
-                position, "Discrete Branch Sizes", branchSizes.arraySize);
+                position, "Discrete Branch Size", branchSizes.arraySize);
 
             // This check is here due to:
             // https://fogbugz.unity3d.com/f/cases/1246524/

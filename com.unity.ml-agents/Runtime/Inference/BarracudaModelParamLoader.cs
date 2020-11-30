@@ -397,8 +397,8 @@ namespace Unity.MLAgents.Inference
             BrainParameters brainParameters, TensorProxy tensorProxy,
             SensorComponent[] sensorComponents, int observableAttributeTotalSize)
         {
-            // TODO: Update this check after intergrating ActionSpec into BrainParameters
-            var numberActionsBp = brainParameters.VectorActionSize.Length;
+            var numberActionsBp = brainParameters.VectorActionSpec.NumContinuousActions +
+                brainParameters.VectorActionSpec.NumDiscreteActions;
             var numberActionsT = tensorProxy.shape[tensorProxy.shape.Length - 1];
             if (numberActionsBp != numberActionsT)
             {
@@ -489,11 +489,7 @@ namespace Unity.MLAgents.Inference
         static string CheckDiscreteActionOutputShape(
             BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, TensorShape? shape, int modelContinuousActionSize, int modelSumDiscreteBranchSizes)
         {
-            var sumOfDiscreteBranchSizes = 0;
-            if (brainParameters.VectorActionSpaceType == SpaceType.Discrete)
-            {
-                sumOfDiscreteBranchSizes += brainParameters.VectorActionSize.Sum();
-            }
+            var sumOfDiscreteBranchSizes = brainParameters.VectorActionSpec.SumOfDiscreteBranchSizes;
 
             foreach (var actuatorComponent in actuatorComponents)
             {
@@ -529,11 +525,7 @@ namespace Unity.MLAgents.Inference
         static string CheckContinuousActionOutputShape(
             BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, TensorShape? shape, int modelContinuousActionSize, int modelSumDiscreteBranchSizes)
         {
-            var numContinuousActions = 0;
-            if (brainParameters.VectorActionSpaceType == SpaceType.Continuous)
-            {
-                numContinuousActions += brainParameters.NumActions;
-            }
+            var numContinuousActions = brainParameters.VectorActionSpec.NumContinuousActions;
 
             foreach (var actuatorComponent in actuatorComponents)
             {
