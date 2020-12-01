@@ -96,7 +96,7 @@ class TorchPolicy(Policy):
     def _split_decision_step(
         self, decision_requests: DecisionSteps
     ) -> Tuple[SplitObservations, np.ndarray]:
-        obs = ModelUtils.list_to_tensor_list(decision_requests.obs, )
+        obs = ModelUtils.list_to_tensor_list(decision_requests.obs)
         mask = None
         if not self.use_continuous_act:
             mask = torch.ones([len(decision_requests), np.sum(self.act_size)])
@@ -106,13 +106,12 @@ class TorchPolicy(Policy):
                 )
         return obs, mask
 
-    def update_normalization(self, obs: List[np.ndarray]) -> None:
+    def update_normalization(self, vector_obs: List[np.ndarray]) -> None:
         """
         If this policy normalizes vector observations, this will update the norm values in the graph.
         :param vector_obs: The vector observations to add to the running estimate of the distribution.
         """
-        all_obs = tuple(ModelUtils.list_to_tensor(_obs) for _obs in obs])]
-        print(all_obs)
+        all_obs = ModelUtils.list_to_tensor_list(vector_obs)
         if self.use_vec_obs and self.normalize:
             self.actor_critic.update_normalization(all_obs)
 

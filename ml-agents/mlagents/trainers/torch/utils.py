@@ -146,7 +146,7 @@ class ModelUtils:
         h_size: int,
         vis_encode_type: EncoderType,
         normalize: bool = False,
-    ) -> Tuple[nn.ModuleList, nn.ModuleList, int]:
+    ) -> Tuple[nn.ModuleList, int]:
         """
         Creates visual and vector encoders, along with their normalizers.
         :param observation_shapes: List of Tuples that represent the action dimensions.
@@ -184,10 +184,7 @@ class ModelUtils:
                 )
 
         # Total output size for all inputs + CNNs
-        return (
-            nn.ModuleList(encoders),
-            total_encoded_size,
-        )
+        return (nn.ModuleList(encoders), total_encoded_size)
 
     @staticmethod
     def list_to_tensor(
@@ -207,7 +204,9 @@ class ModelUtils:
         Converts a list of numpy arrays into a list of tensors. MUCH faster than
         calling as_tensor on the list directly.
         """
-        return [torch.as_tensor(np.asanyarray(_arr), dtype=dtype) for _arr in ndarray_list]
+        return [
+            torch.as_tensor(np.asanyarray(_arr), dtype=dtype) for _arr in ndarray_list
+        ]
 
     @staticmethod
     def to_numpy(tensor: torch.Tensor) -> np.ndarray:

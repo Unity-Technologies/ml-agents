@@ -284,3 +284,13 @@ class AgentBuffer(dict):
             return len(next(iter(self.values())))
         else:
             return 0
+
+    @staticmethod
+    def obs_list_to_obs_batch(obs_list: List[List[np.ndarray]]) -> List[np.ndarray]:
+        """
+        Converts a List of obs (an obs itself consinsting of a List of np.ndarray) to
+        a List of np.ndarray, with the observations batchwise.
+        """
+        # Transpose and convert List of Lists
+        new_list = list(map(lambda x: np.asanyarray(list(x)), zip(*obs_list)))
+        return new_list
