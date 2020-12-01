@@ -65,11 +65,13 @@ public class MultiGunAlternating : MonoBehaviour
         //        {
         if (autoShootEnabled)
         {
-            ShootGunAtIndex(currentGunIndex);
+            //            ShootGunAtIndex(currentGunIndex);
+            Shoot();
         }
         if (AllowKeyboardInput && Input.GetKey(shootKey))
         {
-            ShootGunAtIndex(currentGunIndex);
+            //            ShootGunAtIndex(currentGunIndex);
+            Shoot();
         }
         //        }
         shootTimer += Time.fixedDeltaTime;
