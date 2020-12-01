@@ -81,6 +81,18 @@ public class FPSAgent : Agent
         m_CubeMovement.RunOnGround(m_AgentRb, m_Cam.transform.TransformDirection(new Vector3(0, 0, m_InputV)));
         //        if (m_InputH != 0)
         //        {
+
+        //        if (leftStrafe)
+        //        {
+        //            m_CubeMovement.Strafe(transform.right * -1);
+        //            leftStrafe = false;
+        //        }
+        //        if (rightStrafe)
+        //        {
+        //            m_CubeMovement.Strafe(transform.right * 1);
+        //            rightStrafe = false;
+        //        }
+        //
         m_CubeMovement.Strafe(transform.right * m_InputH);
         //        }
         if (m_ShootInput > 0)
@@ -89,10 +101,10 @@ public class FPSAgent : Agent
         }
         //        }
 
-        //        if (m_AgentRb.velocity.sqrMagnitude > 25f) // slow it down
-        //        {
-        //            m_AgentRb.velocity *= 0.95f;
-        //        }
+        if (m_AgentRb.velocity.sqrMagnitude > 25f) // slow it down
+        {
+            m_AgentRb.velocity *= 0.95f;
+        }
 
     }
 
@@ -109,10 +121,24 @@ public class FPSAgent : Agent
         MoveAgent(actionBuffers.ContinuousActions);
     }
 
-    private float m_InputH;
+    public float m_InputH;
     private float m_InputV;
     private float m_Rotate;
     private float m_ShootInput;
+    public bool leftStrafe;
+    public bool rightStrafe;
+    void Update()
+    {
+        //        m_InputH = Input.GetKeyDown(KeyCode.K) ? 1 : Input.GetKeyDown(KeyCode.J) ? -1 : 0; //inputH
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            rightStrafe = true;
+        }
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            leftStrafe = true;
+        }
+    }
 
     void FixedUpdate()
     {
@@ -120,20 +146,18 @@ public class FPSAgent : Agent
                                                                                    //        m_InputH = 0;
                                                                                    //        m_InputH += Input.GetKeyDown(KeyCode.Q) ? -1 : 0;
                                                                                    //        m_InputH += Input.GetKeyDown(KeyCode.E) ? 1 : 0;
-        m_InputH = Input.GetKey(KeyCode.E) ? 1 : Input.GetKey(KeyCode.Q) ? -1 : 0; //inputH
                                                                                    //        m_InputH = Input.GetKeyDown(KeyCode.E) ? 1 : Input.GetKeyDown(KeyCode.Q) ? -1 : 0; //inputH
         m_Rotate = 0;
         m_Rotate += Input.GetKey(KeyCode.A) ? -1 : 0;
         m_Rotate += Input.GetKey(KeyCode.D) ? 1 : 0;
         //        m_Rotate = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0; //rotate
-        m_ShootInput = Input.GetKey(KeyCode.J) ? 1 : 0; //shoot
+        m_ShootInput = Input.GetKey(KeyCode.Space) ? 1 : 0; //shoot
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var contActionsOut = actionsOut.ContinuousActions;
         contActionsOut[0] = m_InputV; //inputV
-        contActionsOut[1] = m_InputH; //inputH
         contActionsOut[2] = m_Rotate; //rotate
         contActionsOut[3] = m_ShootInput; //shoot
                                           //        contActionsOut[0] = Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0; //inputV
@@ -141,6 +165,20 @@ public class FPSAgent : Agent
                                           //        contActionsOut[2] = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0; //rotate
                                           //        contActionsOut[3] = Input.GetKey(KeyCode.Space) ? 1 : 0; //shoot
 
+        m_InputH = 0;
+        if (leftStrafe)
+        {
+            print("leftstrafe");
+            m_InputH += -1;
+            leftStrafe = false;
+        }
+        if (rightStrafe)
+        {
+            print("rightstrafe");
+            m_InputH += 1;
+            rightStrafe = false;
+        }
+        contActionsOut[1] = m_InputH; //inputH
     }
 
 }
