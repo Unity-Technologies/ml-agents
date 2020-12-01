@@ -107,8 +107,9 @@ class VectorInput(nn.Module, InputProcessor):
         return inputs
 
     def copy_normalization(self, other_input: "InputProcessor") -> None:
-        if self.normalizer is not None and other_input.normalizer is not None:
-            self.normalizer.copy_from(other_input.normalizer)
+        if isinstance(other_input, VectorInput):
+            if self.normalizer is not None and other_input.normalizer is not None:
+                self.normalizer.copy_from(other_input.normalizer)
 
     def update_normalization(self, inputs: torch.Tensor) -> None:
         if self.normalizer is not None:
