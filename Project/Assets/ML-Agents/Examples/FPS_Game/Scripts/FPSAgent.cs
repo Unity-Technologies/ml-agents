@@ -15,6 +15,7 @@ public class FPSAgent : Agent
     Rigidbody m_AgentRb;
     //    bool m_Shoot;
     private Camera m_Cam;
+    [Header("HEALTH")] public AgentHealth agentHealth;
 
     // Start is called before the first frame update
     public override void Initialize()
@@ -95,13 +96,13 @@ public class FPSAgent : Agent
 
     }
 
-    void OnCollisionEnter(Collision col)
-    {
-        if (col.gameObject.CompareTag("projectile"))
-        {
-            //IMPLEMENT HEALTH MECHANIC
-        }
-    }
+    //    void OnCollisionEnter(Collision col)
+    //    {
+    //        if (col.gameObject.CompareTag("projectile"))
+    //        {
+    //            //IMPLEMENT HEALTH MECHANIC
+    //        }
+    //    }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
@@ -113,7 +114,7 @@ public class FPSAgent : Agent
     private float m_Rotate;
     private float m_ShootInput;
 
-    void Update()
+    void FixedUpdate()
     {
         m_InputV = Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0; //inputV
                                                                                    //        m_InputH = 0;
@@ -121,7 +122,10 @@ public class FPSAgent : Agent
                                                                                    //        m_InputH += Input.GetKeyDown(KeyCode.E) ? 1 : 0;
         m_InputH = Input.GetKey(KeyCode.E) ? 1 : Input.GetKey(KeyCode.Q) ? -1 : 0; //inputH
                                                                                    //        m_InputH = Input.GetKeyDown(KeyCode.E) ? 1 : Input.GetKeyDown(KeyCode.Q) ? -1 : 0; //inputH
-        m_Rotate = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0; //rotate
+        m_Rotate = 0;
+        m_Rotate += Input.GetKey(KeyCode.A) ? -1 : 0;
+        m_Rotate += Input.GetKey(KeyCode.D) ? 1 : 0;
+        //        m_Rotate = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0; //rotate
         m_ShootInput = Input.GetKey(KeyCode.J) ? 1 : 0; //shoot
     }
 
