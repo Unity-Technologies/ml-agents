@@ -19,7 +19,7 @@ and this project adheres to
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-
+- A minor bug was causing unneeded critic evaluations during inference (#4695)
 
 ## [1.6.0-preview] - 2020-11-18
 ### Major Changes
