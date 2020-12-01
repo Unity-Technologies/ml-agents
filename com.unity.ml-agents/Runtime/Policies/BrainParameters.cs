@@ -152,5 +152,11 @@ namespace Unity.MLAgents.Policies
                 hasUpgradedBrainParametersWithActionSpec = true;
             }
         }
+
+        internal void UpdateBrainParameters()
+        {
+            VectorActionSpec.NumDiscreteActions = VectorActionSpec.BranchSizes.Length;
+            VectorActionSpec.SumOfDiscreteBranchSizes = VectorActionSpec.BranchSizes.Sum();
+        }
     }
 }
