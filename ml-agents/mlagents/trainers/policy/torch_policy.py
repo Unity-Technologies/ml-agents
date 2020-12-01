@@ -135,7 +135,7 @@ class TorchPolicy(Policy):
         :return: Tuple of actions, actions clipped to -1, 1, log probabilities (dependent on all_log_probs),
             entropies, and output memories, all as Torch Tensors.
         """
-        if memories is None:
+        if memories is None or memories.numel() == 0:
             dists, memories = self.actor_critic.get_dists(
                 vec_obs, vis_obs, masks, memories, seq_len
             )
