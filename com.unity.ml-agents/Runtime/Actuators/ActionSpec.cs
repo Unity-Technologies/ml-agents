@@ -73,6 +73,18 @@ namespace Unity.MLAgents.Actuators
             return actuatorSpace;
         }
 
+        public void SetContinuous(int numContinuousActions)
+        {
+            m_NumContinuousActions = numContinuousActions;
+        }
+
+        public void SetDiscrete(int numDiscreteActions, int[] branchSizes)
+        {
+            m_NumDiscreteActions = numDiscreteActions;
+            m_BranchSizes = branchSizes;
+            m_SumOfDiscreteBranchSizes = branchSizes.Sum();
+        }
+
         internal ActionSpec(int numContinuousActions, int numDiscreteActions, int[] branchSizes = null)
         {
             m_NumContinuousActions = numContinuousActions;

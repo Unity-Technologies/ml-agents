@@ -127,13 +127,11 @@ namespace Unity.MLAgents.Policies
             {
                 if (VectorActionSpec.NumContinuousActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Continuous)
                 {
-                    VectorActionSpec.NumContinuousActions = VectorActionSizeDeprecated[0];
+                    VectorActionSpec.SetContinuous(VectorActionSizeDeprecated[0]);
                 }
                 if (VectorActionSpec.NumDiscreteActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Discrete)
                 {
-                    VectorActionSpec.NumDiscreteActions = VectorActionSizeDeprecated.Length;
-                    VectorActionSpec.BranchSizes = VectorActionSizeDeprecated;
-                    VectorActionSpec.SumOfDiscreteBranchSizes = VectorActionSizeDeprecated.Sum();
+                    VectorActionSpec.SetDiscrete(VectorActionSizeDeprecated.Length, VectorActionSizeDeprecated);
                 }
                 hasUpgradedBrainParametersWithActionSpec = true;
             }
@@ -145,13 +143,11 @@ namespace Unity.MLAgents.Policies
             {
                 if (VectorActionSpec.NumContinuousActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Continuous)
                 {
-                    VectorActionSpec.NumContinuousActions = VectorActionSizeDeprecated[0];
+                    VectorActionSpec.SetContinuous(VectorActionSizeDeprecated[0]);
                 }
                 if (VectorActionSpec.NumDiscreteActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Discrete)
                 {
-                    VectorActionSpec.NumDiscreteActions = VectorActionSizeDeprecated.Length;
-                    VectorActionSpec.BranchSizes = VectorActionSizeDeprecated;
-                    VectorActionSpec.SumOfDiscreteBranchSizes = VectorActionSizeDeprecated.Sum();
+                    VectorActionSpec.SetDiscrete(VectorActionSizeDeprecated.Length, VectorActionSizeDeprecated);
                 }
                 hasUpgradedBrainParametersWithActionSpec = true;
             }
