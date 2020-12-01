@@ -72,17 +72,17 @@ namespace Unity.MLAgents.Editor
         /// </summary>
         void MakeActionsProperty(SerializedProperty property)
         {
-            // TODO: update deprecated fields to ActionSpec
-            var actSizeProperty = property.FindPropertyRelative("VectorActionSize");
-            var actSpaceTypeProp = property.FindPropertyRelative("VectorActionSpaceType");
+            var actSpecProperty = property.FindPropertyRelative("VectorActionSpec");
+            var continuousSizeProperty = actSpecProperty.FindPropertyRelative("m_NumContinuousActions");
+            var discreteSizeProperty = actSpecProperty.FindPropertyRelative("m_NumDiscreteActions");
 
-            var vecActSizeLabel =
-                actSizeProperty.displayName + ": " + BuildIntArrayLabel(actSizeProperty);
-            var actSpaceTypeLabel = actSpaceTypeProp.displayName + ": " +
-                (SpaceType)actSpaceTypeProp.enumValueIndex;
+            var continuousSizeLabel =
+                continuousSizeProperty.displayName + ": " + continuousSizeProperty.intValue;
+            var discreteSizeLabel = discreteSizeProperty.displayName + ": " +
+                discreteSizeProperty.intValue;
 
-            EditorGUILayout.LabelField(vecActSizeLabel);
-            EditorGUILayout.LabelField(actSpaceTypeLabel);
+            EditorGUILayout.LabelField(continuousSizeLabel);
+            EditorGUILayout.LabelField(discreteSizeLabel);
         }
 
         /// <summary>
