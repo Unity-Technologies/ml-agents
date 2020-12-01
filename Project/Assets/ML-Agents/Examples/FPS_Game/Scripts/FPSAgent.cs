@@ -10,10 +10,10 @@ public class FPSAgent : Agent
 {
     private AgentCubeMovement m_CubeMovement;
 
-    public GunController gunController;
+    public MultiGunAlternating gunController;
     public bool useVectorObs;
     Rigidbody m_AgentRb;
-    bool m_Shoot;
+    //    bool m_Shoot;
     private Camera m_Cam;
 
     // Start is called before the first frame update
@@ -48,7 +48,7 @@ public class FPSAgent : Agent
             //            sensor.AddObservation(localVelocity.x);
             //            sensor.AddObservation(localVelocity.z);
             //            sensor.AddObservation(m_Frozen);
-            sensor.AddObservation(m_Shoot);
+            sensor.AddObservation(m_ShootInput);
         }
         //        else if (useVectorFrozenFlag)
         //        {
@@ -62,25 +62,36 @@ public class FPSAgent : Agent
         //        if (!m_Frozen)
         //        {
         //            var shootCommand = false;
-        var forwardAxis = act[0];
-        var rightAxis = act[1];
-        var rotateAxis = act[2];
-        var shootAxis = act[3];
-        m_Shoot = shootAxis > 0 ? true : false;
+        //        var forwardAxis = act[0];
+        //        var rightAxis = act[1];
+        //        var rotateAxis = act[2];
+        //        var shootAxis = act[3];
+        //        m_Shoot = shootAxis > 0;
 
-        m_CubeMovement.RotateBody(rotateAxis, forwardAxis);
-        m_CubeMovement.RunOnGround(m_AgentRb, m_Cam.transform.TransformDirection(new Vector3(0, 0, forwardAxis)));
-        m_CubeMovement.Strafe(transform.right * rightAxis);
-        if (shootAxis > 0)
+        //        m_CubeMovement.RotateBody(rotateAxis, forwardAxis);
+        //        m_CubeMovement.RunOnGround(m_AgentRb, m_Cam.transform.TransformDirection(new Vector3(0, 0, forwardAxis)));
+        //        m_CubeMovement.Strafe(transform.right * rightAxis);
+
+        m_InputV = act[0];
+        m_InputH = act[1];
+        m_Rotate = act[2];
+        m_ShootInput = act[3];
+        m_CubeMovement.RotateBody(m_Rotate, m_InputV);
+        m_CubeMovement.RunOnGround(m_AgentRb, m_Cam.transform.TransformDirection(new Vector3(0, 0, m_InputV)));
+        //        if (m_InputH != 0)
+        //        {
+        m_CubeMovement.Strafe(transform.right * m_InputH);
+        //        }
+        if (m_ShootInput > 0)
         {
-            //            gunController.Shoot();
+            gunController.Shoot();
         }
         //        }
 
-        if (m_AgentRb.velocity.sqrMagnitude > 25f) // slow it down
-        {
-            m_AgentRb.velocity *= 0.95f;
-        }
+        //        if (m_AgentRb.velocity.sqrMagnitude > 25f) // slow it down
+        //        {
+        //            m_AgentRb.velocity *= 0.95f;
+        //        }
 
     }
 
@@ -97,13 +108,34 @@ public class FPSAgent : Agent
         MoveAgent(actionBuffers.ContinuousActions);
     }
 
+    private float m_InputH;
+    private float m_InputV;
+    private float m_Rotate;
+    private float m_ShootInput;
+
+    void Update()
+    {
+        m_InputV = Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0; //inputV
+                                                                                   //        m_InputH = 0;
+                                                                                   //        m_InputH += Input.GetKeyDown(KeyCode.Q) ? -1 : 0;
+                                                                                   //        m_InputH += Input.GetKeyDown(KeyCode.E) ? 1 : 0;
+        m_InputH = Input.GetKey(KeyCode.E) ? 1 : Input.GetKey(KeyCode.Q) ? -1 : 0; //inputH
+                                                                                   //        m_InputH = Input.GetKeyDown(KeyCode.E) ? 1 : Input.GetKeyDown(KeyCode.Q) ? -1 : 0; //inputH
+        m_Rotate = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0; //rotate
+        m_ShootInput = Input.GetKey(KeyCode.J) ? 1 : 0; //shoot
+    }
+
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var contActionsOut = actionsOut.ContinuousActions;
-        contActionsOut[0] = Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0; //inputV
-        contActionsOut[1] = Input.GetKeyDown(KeyCode.E) ? 1 : Input.GetKeyDown(KeyCode.Q) ? -1 : 0; //inputH
-        contActionsOut[2] = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0; //rotate
-        contActionsOut[3] = Input.GetKey(KeyCode.Space) ? 1 : 0; //shoot
+        contActionsOut[0] = m_InputV; //inputV
+        contActionsOut[1] = m_InputH; //inputH
+        contActionsOut[2] = m_Rotate; //rotate
+        contActionsOut[3] = m_ShootInput; //shoot
+                                          //        contActionsOut[0] = Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0; //inputV
+                                          //        contActionsOut[1] = Input.GetKeyDown(KeyCode.E) ? 1 : Input.GetKeyDown(KeyCode.Q) ? -1 : 0; //inputH
+                                          //        contActionsOut[2] = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0; //rotate
+                                          //        contActionsOut[3] = Input.GetKey(KeyCode.Space) ? 1 : 0; //shoot
 
     }
 

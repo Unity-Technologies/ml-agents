@@ -21,7 +21,7 @@ namespace MLAgents
         [Header("STRAFE")]
         public float strafeSpeed = 10;
         public float strafeCoolDownDuration = .2f;
-        private float strafeCoolDownTimer;
+        public float strafeCoolDownTimer;
         public ForceMode strafeForceMode = ForceMode.Impulse;
 
         [Header("DASH")]
@@ -181,6 +181,15 @@ namespace MLAgents
         //        public float standingForcePositionOffset = .5f;
         void FixedUpdate()
         {
+
+            if (groundCheck && !groundCheck.isGrounded)
+            {
+                AddFallingForce(rb);
+                //                print("AddFallingForce");
+
+            }
+            strafeCoolDownTimer += Time.fixedDeltaTime;
+
             if (!allowKeyboardInput)
             {
                 return;
@@ -194,7 +203,6 @@ namespace MLAgents
 
 
 
-            strafeCoolDownTimer += Time.fixedDeltaTime;
 
             if (spinAttack)
             {
@@ -256,13 +264,13 @@ namespace MLAgents
                 if (groundCheck.isGrounded)
                 {
                     RunOnGround(rb, dir.normalized);
-                    if (AnimateBodyMesh)
-                    {
-                        bodyMesh.localPosition = Vector3.zero +
-                                                 Vector3.up * walkingAnimScale * walkingBounceCurve.Evaluate(
-                                                     m_animateBodyMeshCurveTimer);
-                        m_animateBodyMeshCurveTimer += Time.fixedDeltaTime;
-                    }
+                    //                    if (AnimateBodyMesh)
+                    //                    {
+                    //                        bodyMesh.localPosition = Vector3.zero +
+                    //                                                 Vector3.up * walkingAnimScale * walkingBounceCurve.Evaluate(
+                    //                                                     m_animateBodyMeshCurveTimer);
+                    //                        m_animateBodyMeshCurveTimer += Time.fixedDeltaTime;
+                    //                    }
                     //                    print("running");
                 }
                 else
@@ -270,14 +278,11 @@ namespace MLAgents
                     RunInAir(rb, dir.normalized);
                 }
             }
-            else //is idle
-            {
-                if (AnimateBodyMesh)
-                {
-                    bodyMesh.localPosition = Vector3.zero;
-                }
-
-            }
+            //            else //is idle
+            //            {
+            //
+            //
+            //            }
 
             if (inputH == 0 && inputV == 0)
             {
@@ -333,12 +338,7 @@ namespace MLAgents
             //                }
             //            }
 
-            if (groundCheck && !groundCheck.isGrounded)
-            {
-                AddFallingForce(rb);
-                //                print("AddFallingForce");
 
-            }
 
 
         }
@@ -420,7 +420,7 @@ namespace MLAgents
 
         public void Strafe(Vector3 dir)
         {
-            if (strafeCoolDownTimer > strafeCoolDownDuration)
+            if (dir != Vector3.zero && strafeCoolDownTimer > strafeCoolDownDuration)
             {
                 rb.velocity = Vector3.zero;
                 rb.AddForce(dir.normalized * strafeSpeed, strafeForceMode);
@@ -430,12 +430,30 @@ namespace MLAgents
 
         public void RunOnGround(Rigidbody rb, Vector3 dir)
         {
-            var vel = rb.velocity.magnitude;
-            float adjustedSpeed = Mathf.Clamp(agentRunSpeed - vel, 0, agentTerminalVel);
-            rb.AddForce(dir.normalized * adjustedSpeed,
-                runningForceMode);
-            //            rb.AddForceAtPosition(dir.normalized * adjustedSpeed,transform.TransformPoint(Vector3.forward * standingForcePositionOffset),
-            //                runningForceMode);
+            if (dir == Vector3.zero)
+            {
+                if (AnimateBodyMesh)
+                {
+                    bodyMesh.localPosition = Vector3.zero;
+                }
+            }
+            else
+            {
+                var vel = rb.velocity.magnitude;
+                float adjustedSpeed = Mathf.Clamp(agentRunSpeed - vel, 0, agentTerminalVel);
+                rb.AddForce(dir.normalized * adjustedSpeed,
+                    runningForceMode);
+                if (AnimateBodyMesh)
+                {
+                    bodyMesh.localPosition = Vector3.zero +
+                                             Vector3.up * walkingAnimScale * walkingBounceCurve.Evaluate(
+                                                 m_animateBodyMeshCurveTimer);
+                    m_animateBodyMeshCurveTimer += Time.fixedDeltaTime;
+                }
+                //            rb.AddForceAtPosition(dir.normalized * adjustedSpeed,transform.TransformPoint(Vector3.forward * standingForcePositionOffset),
+                //                runningForceMode);
+
+            }
         }
 
         public void RunInAir(Rigidbody rb, Vector3 dir)

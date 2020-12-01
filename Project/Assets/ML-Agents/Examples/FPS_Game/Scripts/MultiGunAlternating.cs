@@ -5,6 +5,7 @@ using UnityEngine;
 public class MultiGunAlternating : MonoBehaviour
 {
 
+    [Header("INPUT")] public bool AllowKeyboardInput = true;
     public KeyCode shootKey = KeyCode.J;
 
     [Header("AUTOSHOOT")] public bool autoShootEnabled;
@@ -48,20 +49,29 @@ public class MultiGunAlternating : MonoBehaviour
         shootTimer = 0;
     }
 
-    void FixedUpdate()
+    public void Shoot()
     {
         coolDownComplete = shootTimer > shootingRate;
         if (coolDownComplete)
         {
-            if (autoShootEnabled)
-            {
-                ShootGunAtIndex(currentGunIndex);
-            }
-            if (Input.GetKey(shootKey))
-            {
-                ShootGunAtIndex(currentGunIndex);
-            }
+            ShootGunAtIndex(currentGunIndex);
         }
+    }
+
+    void FixedUpdate()
+    {
+        //        coolDownComplete = shootTimer > shootingRate;
+        //        if (coolDownComplete)
+        //        {
+        if (autoShootEnabled)
+        {
+            ShootGunAtIndex(currentGunIndex);
+        }
+        if (AllowKeyboardInput && Input.GetKey(shootKey))
+        {
+            ShootGunAtIndex(currentGunIndex);
+        }
+        //        }
         shootTimer += Time.fixedDeltaTime;
     }
 

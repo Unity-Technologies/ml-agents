@@ -5,7 +5,7 @@ using Cinemachine;
 
 public class GunController : MonoBehaviour
 {
-    public bool StandbyMode; //this mode ignores player input
+    public bool AllowKeyboardInput = true; //this mode ignores player input
     private bool initialized; //has this robot been initialized
     public KeyCode shootKey = KeyCode.J;
     [Header("AUTOSHOOT")] public bool autoShootEnabled;
@@ -76,7 +76,7 @@ public class GunController : MonoBehaviour
 
     void Update()
     {
-        if (StandbyMode)
+        if (!AllowKeyboardInput)
         {
             return;
         }
