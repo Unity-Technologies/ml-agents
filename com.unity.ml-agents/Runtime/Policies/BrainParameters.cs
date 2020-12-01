@@ -52,10 +52,13 @@ namespace Unity.MLAgents.Policies
         [FormerlySerializedAs("numStackedVectorObservations")]
         [Range(1, 50)] public int NumStackedVectorObservations = 1;
 
+        /// <summary>
+        /// The specification of the Action space for the BrainParameters.
+        /// </summary>
         public ActionSpec VectorActionSpec = new ActionSpec(0, 0, new int[] { });
 
         /// <summary>
-        /// The size of the action space.
+        /// (Deprecated) The size of the action space.
         /// </summary>
         /// <remarks>The size specified is interpreted differently depending on whether
         /// the agent uses the continuous or the discrete action space.</remarks>
@@ -75,7 +78,7 @@ namespace Unity.MLAgents.Policies
         public string[] VectorActionDescriptions;
 
         /// <summary>
-        /// Defines if the action is discrete or continuous.
+        /// (Deprecated) Defines if the action is discrete or continuous.
         /// </summary>
         [FormerlySerializedAs("vectorActionSpaceType")]
         [FormerlySerializedAs("VectorActionSpaceType")]
@@ -86,7 +89,7 @@ namespace Unity.MLAgents.Policies
         internal bool hasUpgradedBrainParametersWithActionSpec;
 
         /// <summary>
-        /// The number of actions specified by this Brain.
+        /// (Deprecated) The number of actions specified by this Brain.
         /// </summary>
         public int NumActionsDeprecated
         {
@@ -121,6 +124,26 @@ namespace Unity.MLAgents.Policies
             };
         }
 
+        /// <summary>
+        /// Called by Unity immediately before serializing this object.
+        /// </summary>
+        /// <remarks>
+        /// The BrainParameter class uses OnBeforeSerialize() for internal housekeeping. Call the
+        /// base class implementation if you need your own custom serialization logic.
+        ///
+        /// See [OnBeforeSerialize] for more information.
+        ///
+        /// [OnBeforeSerialize]: https://docs.unity3d.com/ScriptReference/ISerializationCallbackReceiver.OnAfterDeserialize.html
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// public new void OnBeforeSerialize()
+        /// {
+        ///     base.OnBeforeSerialize();
+        ///     // additional serialization logic...
+        /// }
+        /// </code>
+        /// </example>
         public void OnBeforeSerialize()
         {
             if (!hasUpgradedBrainParametersWithActionSpec)
@@ -137,6 +160,26 @@ namespace Unity.MLAgents.Policies
             }
         }
 
+        /// <summary>
+        /// Called by Unity immediately after deserializing this object.
+        /// </summary>
+        /// <remarks>
+        /// The BrainParameter class uses OnAfterDeserialize() for internal housekeeping. Call the
+        /// base class implementation if you need your own custom deserialization logic.
+        ///
+        /// See [OnAfterDeserialize] for more information.
+        ///
+        /// [OnAfterDeserialize]: https://docs.unity3d.com/ScriptReference/ISerializationCallbackReceiver.OnAfterDeserialize.html
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// public new void OnAfterDeserialize()
+        /// {
+        ///     base.OnAfterDeserialize();
+        ///     // additional deserialization logic...
+        /// }
+        /// </code>
+        /// </example>
         public void OnAfterDeserialize()
         {
             if (!hasUpgradedBrainParametersWithActionSpec)

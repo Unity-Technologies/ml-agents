@@ -73,11 +73,21 @@ namespace Unity.MLAgents.Actuators
             return actuatorSpace;
         }
 
+        /// <summary>
+        /// Set action size fields related to continuous actions.
+        /// </summary>
+        /// <param name="numContinuousActions">Number of Continuous Actions</param>
         public void SetContinuous(int numContinuousActions)
         {
             m_NumContinuousActions = numContinuousActions;
         }
 
+        /// <summary>
+        /// Set action size fields related to discrete actions.
+        /// </summary>
+        /// <param name="numDiscreteActions">Number of Discrete Actions</param>
+        /// <param name="branchSizes">The array of branch sizes for the discrete action space.  Each index
+        /// contains the number of actions available for that branch.</param>
         public void SetDiscrete(int numDiscreteActions, int[] branchSizes)
         {
             m_NumDiscreteActions = numDiscreteActions;

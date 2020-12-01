@@ -27,7 +27,7 @@ namespace Unity.MLAgents.Editor
             var so = serializedObject;
             so.Update();
             bool needPolicyUpdate; // Whether the name, model, inference device, or BehaviorType changed.
-            bool needBrainParametersUpdate;
+            bool needBrainParametersUpdate; // Whether the brain parameters changed
 
             // Drawing the Behavior Parameters
             EditorGUI.indentLevel++;
@@ -167,8 +167,7 @@ namespace Unity.MLAgents.Editor
         void UpdateBrainParameters()
         {
             var behaviorParameters = (BehaviorParameters)target;
-            var brainParameters = behaviorParameters.BrainParameters;
-            brainParameters.UpdateBrainParameters();
+            behaviorParameters.BrainParameters.UpdateBrainParameters();
         }
     }
 }
