@@ -168,13 +168,13 @@ public class FPSAgent : Agent
         m_InputH = 0;
         if (leftStrafe)
         {
-            print("leftstrafe");
+            //            print("leftstrafe");
             m_InputH += -1;
             leftStrafe = false;
         }
         if (rightStrafe)
         {
-            print("rightstrafe");
+            //            print("rightstrafe");
             m_InputH += 1;
             rightStrafe = false;
         }

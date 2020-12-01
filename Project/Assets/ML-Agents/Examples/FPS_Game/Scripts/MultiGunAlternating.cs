@@ -18,11 +18,16 @@ public class MultiGunAlternating : MonoBehaviour
     private float shootTimer;
     public bool coolDownComplete;
 
+    [Header("COOLDOWN & RELOAD")]
+    public float CurrentAmmoPercentage = 100; //the amount of ammo we currently have on a scale between 0-100
+    public float DepletionRate = .02f; //constant rate at which ammo depletes when being used
+    public float RegenRate = .01f; //constant rate at which ammo regenerates
+
     public
     // Start is called before the first frame update
     void Start()
     {
-
+        CurrentAmmoPercentage = 100;
     }
 
     // Update is called once per frame
@@ -55,6 +60,7 @@ public class MultiGunAlternating : MonoBehaviour
         if (coolDownComplete)
         {
             ShootGunAtIndex(currentGunIndex);
+            CurrentAmmoPercentage = Mathf.Clamp(CurrentAmmoPercentage - DepletionRate, 0, 100);
         }
     }
 
@@ -75,6 +81,7 @@ public class MultiGunAlternating : MonoBehaviour
         }
         //        }
         shootTimer += Time.fixedDeltaTime;
+        CurrentAmmoPercentage = Mathf.Clamp(CurrentAmmoPercentage + RegenRate, 0, 100);
     }
 
 
