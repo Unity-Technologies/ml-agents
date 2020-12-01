@@ -293,7 +293,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
         = pb::FieldCodec.ForInt32(26);
     private readonly pbc::RepeatedField<int> vectorActionSizeDeprecated_ = new pbc::RepeatedField<int>();
     /// <summary>
-    /// mark as deprecated in communicator v0.22.0
+    /// mark as deprecated in communicator v1.3.0
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<int> VectorActionSizeDeprecated {
@@ -306,7 +306,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
         = pb::FieldCodec.ForString(42);
     private readonly pbc::RepeatedField<string> vectorActionDescriptionsDeprecated_ = new pbc::RepeatedField<string>();
     /// <summary>
-    /// mark as deprecated in communicator v0.22.0
+    /// mark as deprecated in communicator v1.3.0
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<string> VectorActionDescriptionsDeprecated {
@@ -317,7 +317,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     public const int VectorActionSpaceTypeDeprecatedFieldNumber = 6;
     private global::Unity.MLAgents.CommunicatorObjects.SpaceTypeProto vectorActionSpaceTypeDeprecated_ = 0;
     /// <summary>
-    /// mark as deprecated in communicator v0.22.0
+    /// mark as deprecated in communicator v1.3.0
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Unity.MLAgents.CommunicatorObjects.SpaceTypeProto VectorActionSpaceTypeDeprecated {
