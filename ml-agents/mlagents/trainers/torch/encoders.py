@@ -106,7 +106,7 @@ class VectorInput(nn.Module, InputProcessor):
             inputs = self.normalizer(inputs)
         return inputs
 
-    def copy_normalization(self, other_input: "VectorInput") -> None:
+    def copy_normalization(self, other_input: "InputProcessor") -> None:
         if self.normalizer is not None and other_input.normalizer is not None:
             self.normalizer.copy_from(other_input.normalizer)
 

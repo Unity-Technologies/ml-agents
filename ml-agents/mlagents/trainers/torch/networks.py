@@ -62,7 +62,7 @@ class NetworkBody(nn.Module):
 
     def copy_normalization(self, other_network: "NetworkBody") -> None:
         if self.normalize:
-            for n1, n2 in zip(self.vector_processors, other_network.vector_processors):
+            for n1, n2 in zip(self.processors, other_network.processors):
                 n1.copy_normalization(n2)
 
     @property

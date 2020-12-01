@@ -20,6 +20,7 @@ from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, SACSettings, FrameworkType
 from mlagents.trainers.torch.components.reward_providers import BaseRewardProvider
+from mlagents.trainers.buffer import AgentBuffer
 from mlagents import tf_utils
 
 if tf_utils.is_available():
@@ -142,7 +143,10 @@ class SACTrainer(RLTrainer):
 
         # Update the normalization
         if self.is_training:
-            self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
+            obs_to_normalize = AgentBuffer.obs_list_to_obs_batch(
+                agent_buffer_trajectory["obs"]
+            )
+            self.policy.update_normalization(obs_to_normalize)
 
         # Evaluate all reward functions for reporting purposes
         self.collected_rewards["environment"][agent_id] += np.sum(
