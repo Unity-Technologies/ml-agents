@@ -289,8 +289,9 @@ class _ActionTupleBase(ABC):
         self._discrete = discrete
 
     @property
+    @abstractmethod
     def discrete_dtype(self) -> np.dtype:
-        raise UnityActionException("The discrete_dtype property is not implemented.")
+        pass
 
 
 class ActionTuple(_ActionTupleBase):
