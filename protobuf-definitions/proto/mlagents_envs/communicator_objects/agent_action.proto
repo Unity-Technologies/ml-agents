@@ -10,5 +10,5 @@ message AgentActionProto {
     float value = 4;
     reserved 5; // deprecated CustomActionProto custom_action = 5;
     repeated float continuous_actions = 6;
-    repeated float discrete_actions = 7;
+    repeated int32 discrete_actions = 7;
 }

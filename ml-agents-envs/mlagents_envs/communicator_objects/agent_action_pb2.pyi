@@ -33,14 +33,14 @@ class AgentActionProto(google___protobuf___message___Message):
     vector_actions_deprecated = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___float]
     value = ... # type: builtin___float
     continuous_actions = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___float]
-    discrete_actions = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___float]
+    discrete_actions = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___int]
 
     def __init__(self,
         *,
         vector_actions_deprecated : typing___Optional[typing___Iterable[builtin___float]] = None,
         value : typing___Optional[builtin___float] = None,
         continuous_actions : typing___Optional[typing___Iterable[builtin___float]] = None,
-        discrete_actions : typing___Optional[typing___Iterable[builtin___float]] = None,
+        discrete_actions : typing___Optional[typing___Iterable[builtin___int]] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: builtin___bytes) -> AgentActionProto: ...
