@@ -1,5 +1,6 @@
 from typing import Dict, NamedTuple, List, Any, Optional, Callable, Set
 import cloudpickle
+from datetime import datetime, timedelta
 import enum
 
 from mlagents_envs.environment import UnityEnvironment
@@ -48,6 +49,7 @@ class EnvironmentCommand(enum.Enum):
     RESET = 4
     CLOSE = 5
     ENV_EXITED = 6
+    CLOSED = 7
 
 
 class EnvironmentRequest(NamedTuple):
@@ -93,7 +95,7 @@ class UnityEnvWorker:
         except (BrokenPipeError, EOFError):
             raise UnityCommunicationException("UnityEnvironment worker: recv failed.")
 
-    def close(self):
+    def request_close(self):
         try:
             self.conn.send(EnvironmentRequest(EnvironmentCommand.CLOSE))
         except (BrokenPipeError, EOFError):
@@ -101,8 +103,6 @@ class UnityEnvWorker:
                 f"UnityEnvWorker {self.worker_id} got exception trying to close."
             )
             pass
-        logger.debug(f"UnityEnvWorker {self.worker_id} joining process.")
-        self.process.join()
 
 
 def worker(
@@ -186,14 +186,19 @@ def worker(
             EnvironmentResponse(EnvironmentCommand.ENV_EXITED, worker_id, ex)
         )
         _send_response(EnvironmentCommand.ENV_EXITED, ex)
+    except Exception as ex:
+        logger.info(
+            f"UnityEnvironment worker {worker_id}: environment raised exception."
+        )
+        step_queue.put(
+            EnvironmentResponse(EnvironmentCommand.ENV_EXITED, worker_id, ex)
+        )
+        _send_response(EnvironmentCommand.ENV_EXITED, ex)
     finally:
-        # If this worker has put an item in the step queue that hasn't been processed by the EnvManager, the process
-        # will hang until the item is processed. We avoid this behavior by using Queue.cancel_join_thread()
-        # See https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue.cancel_join_thread for
-        # more info.
         logger.debug(f"UnityEnvironment worker {worker_id} closing.")
-        step_queue.cancel_join_thread()
+        step_queue.put(EnvironmentResponse(EnvironmentCommand.CLOSED, worker_id, None))
         step_queue.close()
+        parent_conn.close()
         if env is not None:
             env.close()
         logger.debug(f"UnityEnvironment worker {worker_id} done.")
@@ -209,12 +214,14 @@ class SubprocessEnvManager(EnvManager):
         super().__init__()
         self.env_workers: List[UnityEnvWorker] = []
         self.step_queue: Queue = Queue()
+        self.workers_alive = 0
         for worker_idx in range(n_env):
             self.env_workers.append(
                 self.create_worker(
                     worker_idx, self.step_queue, env_factory, engine_configuration
                 )
             )
+            self.workers_alive += 1
 
     @staticmethod
     def create_worker(
@@ -265,6 +272,9 @@ class SubprocessEnvManager(EnvManager):
                     if step.cmd == EnvironmentCommand.ENV_EXITED:
                         env_exception: Exception = step.payload
                         raise env_exception
+                    elif step.cmd == EnvironmentCommand.CLOSED:
+                        self.workers_alive -= 1
+                        continue
                     self.env_workers[step.worker_id].waiting = False
                     if step.worker_id not in step_workers:
                         worker_steps.append(step)
@@ -306,10 +316,29 @@ class SubprocessEnvManager(EnvManager):
 
     def close(self) -> None:
         logger.debug("SubprocessEnvManager closing.")
-        self.step_queue.close()
-        self.step_queue.join_thread()
         for env_worker in self.env_workers:
-            env_worker.close()
+            env_worker.request_close()
+        # Pull messages out of the queue until every worker has CLOSED or we time out.
+        WORKER_SHUTDOWN_TIMEOUT = timedelta(seconds=10)
+        deadline = datetime.now() + WORKER_SHUTDOWN_TIMEOUT
+        while self.workers_alive > 0 and datetime.now() < deadline:
+            try:
+                step: EnvironmentResponse = self.step_queue.get_nowait()
+                if step.cmd == EnvironmentCommand.CLOSED:
+                    self.workers_alive -= 1
+                # Discard all other messages.
+            except EmptyQueueException:
+                pass
+        self.step_queue.close()
+        # Kill any workers that didn't finish.
+        if self.workers_alive > 0:
+            logger.warning(
+                f"SubprocessEnvManager couldn't close all workers (killing {self.workers_alive} workers)."
+            )
+            for w in self.env_workers:
+                if w.process.exitcode is None:  # Has not exited.
+                    w.process.terminate()
+        self.step_queue.join_thread()
 
     def _postprocess_steps(
         self, env_steps: List[EnvironmentResponse]
