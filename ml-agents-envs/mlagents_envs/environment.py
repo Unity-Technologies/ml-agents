@@ -426,11 +426,15 @@ class UnityEnvironment(BaseEnv):
             for i in range(n_agents):
                 action = AgentActionProto()
                 if vector_action[b].continuous is not None:
-                    action.vector_actions_deprecated = vector_action[b].continuous[i]
-                    action.continuous_actions = vector_action[b].continuous[i]
+                    action.vector_actions_deprecated.extend(
+                        vector_action[b].continuous[i]
+                    )
+                    action.continuous_actions.extend(vector_action[b].continuous[i])
                 if vector_action[b].discrete is not None:
-                    action.vector_actions_deprecated = vector_action[b].discrete[i]
-                    action.discrete_actions = vector_action[b].discrete[i]
+                    action.vector_actions_deprecated.extend(
+                        vector_action[b].discrete[i]
+                    )
+                    action.discrete_actions.extend(vector_action[b].discrete[i])
                 rl_in.agent_actions[b].value.extend([action])
                 rl_in.command = STEP
         rl_in.side_channel = bytes(
