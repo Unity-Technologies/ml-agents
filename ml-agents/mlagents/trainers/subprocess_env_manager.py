@@ -335,13 +335,13 @@ class SubprocessEnvManager(EnvManager):
         # Sanity check to kill zombie workers and report an issue if they occur.
         if self.workers_alive > 0:
             logger.error(
-                f"SubprocessEnvManager's had workers that didn't signal shutdown"
+                "SubprocessEnvManager's had workers that didn't signal shutdown"
             )
             for w in self.env_workers:
                 if not w.closed and w.process.exitcode is None:
                     w.process.terminate()
                     raise AssertionError(
-                        f"A SubprocessEnvManager worker did not shut down correctly"
+                        "A SubprocessEnvManager worker did not shut down correctly"
                     )
         self.step_queue.join_thread()
 
