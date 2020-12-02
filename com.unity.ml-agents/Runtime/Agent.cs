@@ -439,7 +439,10 @@ namespace Unity.MLAgents
                 InitializeSensors();
             }
 
-            m_Info.storedVectorActions = new ActionBuffers(new float[m_ActuatorManager.NumContinuousActions], new int[m_ActuatorManager.NumDiscreteActions]);
+            m_Info.storedVectorActions = new ActionBuffers(
+                new float[m_ActuatorManager.NumContinuousActions],
+                new int[m_ActuatorManager.NumDiscreteActions]
+            );
 
             // The first time the Academy resets, all Agents in the scene will be
             // forced to reset through the <see cref="AgentForceReset"/> event.
@@ -1221,7 +1224,14 @@ namespace Unity.MLAgents
         /// </param>
         public virtual void OnActionReceived(ActionBuffers actions)
         {
-            actions.PackActions(m_LegacyActionCache);
+            if (!actions.ContinuousActions.IsEmpty())
+            {
+                m_LegacyActionCache = actions.ContinuousActions.Array;
+            }
+            else
+            {
+                m_LegacyActionCache = Array.ConvertAll(actions.DiscreteActions.Array, x => (float)x);
+            }
             OnActionReceived(m_LegacyActionCache);
         }
 
