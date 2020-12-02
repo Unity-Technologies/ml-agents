@@ -54,9 +54,7 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         obs = ModelUtils.list_to_tensor_list(
             AgentBuffer.obs_list_to_obs_batch(batch["obs"])
         )
-        next_obs = ModelUtils.list_to_tensor_list(
-            AgentBuffer.obs_list_to_obs_batch(batch["next_obs"])
-        )
+        next_obs = ModelUtils.list_to_tensor_list(next_obs)
 
         memory = torch.zeros([1, 1, self.policy.m_size])
 
