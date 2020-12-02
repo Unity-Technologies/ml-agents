@@ -217,7 +217,7 @@ class CustomTestOnlyException(Exception):
 
 @pytest.mark.parametrize("num_envs", [1, 4])
 def test_subprocess_failing_step(num_envs):
-    def failing_step_env_factory(worker_id, config):
+    def failing_step_env_factory(_worker_id, _config):
         env = UnexpectedExceptionEnvironment(
             ["1D"], use_discrete=True, to_raise=CustomTestOnlyException
         )

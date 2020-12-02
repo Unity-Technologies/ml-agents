@@ -77,6 +77,7 @@ class UnityEnvWorker:
         self.previous_step: EnvironmentStep = EnvironmentStep.empty(worker_id)
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
         self.waiting = False
+        self.closed = False
 
     def send(self, cmd: EnvironmentCommand, payload: Any = None) -> None:
         try:
@@ -196,12 +197,12 @@ def worker(
         _send_response(EnvironmentCommand.ENV_EXITED, ex)
     finally:
         logger.debug(f"UnityEnvironment worker {worker_id} closing.")
-        step_queue.put(EnvironmentResponse(EnvironmentCommand.CLOSED, worker_id, None))
-        step_queue.close()
-        parent_conn.close()
         if env is not None:
             env.close()
         logger.debug(f"UnityEnvironment worker {worker_id} done.")
+        parent_conn.close()
+        step_queue.put(EnvironmentResponse(EnvironmentCommand.CLOSED, worker_id, None))
+        step_queue.close()
 
 
 class SubprocessEnvManager(EnvManager):
@@ -272,9 +273,6 @@ class SubprocessEnvManager(EnvManager):
                     if step.cmd == EnvironmentCommand.ENV_EXITED:
                         env_exception: Exception = step.payload
                         raise env_exception
-                    elif step.cmd == EnvironmentCommand.CLOSED:
-                        self.workers_alive -= 1
-                        continue
                     self.env_workers[step.worker_id].waiting = False
                     if step.worker_id not in step_workers:
                         worker_steps.append(step)
@@ -324,20 +322,27 @@ class SubprocessEnvManager(EnvManager):
         while self.workers_alive > 0 and datetime.now() < deadline:
             try:
                 step: EnvironmentResponse = self.step_queue.get_nowait()
-                if step.cmd == EnvironmentCommand.CLOSED:
+                if (
+                    step.cmd == EnvironmentCommand.CLOSED
+                    and not self.env_workers[step.worker_id].closed
+                ):
+                    self.env_workers[step.worker_id].closed = True
                     self.workers_alive -= 1
                 # Discard all other messages.
             except EmptyQueueException:
                 pass
         self.step_queue.close()
-        # Kill any workers that didn't finish.
+        # Sanity check to kill zombie workers and report an issue if they occur.
         if self.workers_alive > 0:
-            logger.warning(
-                f"SubprocessEnvManager couldn't close all workers (killing {self.workers_alive} workers)."
+            logger.error(
+                f"SubprocessEnvManager's had workers that didn't signal shutdown"
             )
             for w in self.env_workers:
-                if w.process.exitcode is None:  # Has not exited.
+                if not w.closed and w.process.exitcode is None:
                     w.process.terminate()
+                    raise AssertionError(
+                        f"A SubprocessEnvManager worker did not shut down correctly"
+                    )
         self.step_queue.join_thread()
 
     def _postprocess_steps(
