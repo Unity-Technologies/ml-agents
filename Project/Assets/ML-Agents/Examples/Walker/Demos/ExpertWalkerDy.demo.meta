@@ -1,9 +1,12 @@
 fileFormatVersion: 2
 guid: 9f87b3070a0fd4a1e838131a91399c2f
 ScriptedImporter:
-  fileIDToRecycleName:
-    11400002: Assets/ML-Agents/Examples/Walker/Demos/ExpertWalkerDy.demo
+  internalIDToNameTable:
+  - first:
+      114: 11400002
+    second: Assets/ML-Agents/Examples/Walker/Demos/ExpertWalkerDy.demo
   externalObjects: {}
+  serializedVersion: 2
   userData: ' (Unity.MLAgents.Demonstrations.DemonstrationSummary)'
   assetBundleName: 
   assetBundleVariant: 

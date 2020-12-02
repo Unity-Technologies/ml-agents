@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9858d4c8055fd45539a2e86388f7c5ba, type: 3}
+  m_Name: TanksDemo
+  m_EditorClassIdentifier: 
+  url: https://github.com/Unity-Technologies/InputSystem/releases/download/%VERSION%/TanksDemo-%VERSION%.unitypackage
+  packageDeps:
+  - com.unity.inputsystem

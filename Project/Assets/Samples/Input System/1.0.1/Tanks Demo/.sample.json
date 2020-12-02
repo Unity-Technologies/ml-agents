@@ -1,0 +1,4 @@
+{
+  "displayName": "Tanks Demo",
+  "description": "The Unity Tanks demo game, converted to using the Input System package, and with a custom input binding screen. This sample is not actually part of the package, but needs to be downloaded."
+} 
