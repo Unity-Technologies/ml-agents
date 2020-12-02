@@ -80,7 +80,7 @@ namespace Unity.MLAgents.Actuators
         {
             if (actions == null)
             {
-                return new ActionBuffers(ActionSegment<float>.Empty, ActionSegment<int>.Empty);
+                return ActionBuffers.Empty;
             }
 
             Debug.Assert(actions.Length == actionSpec.NumContinuousActions + actionSpec.NumDiscreteActions,

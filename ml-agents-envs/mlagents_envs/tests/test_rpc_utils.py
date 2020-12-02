@@ -198,13 +198,19 @@ def proto_from_steps(
     return agent_info_protos
 
 
-# The arguments here are the DecisionSteps, TerminalSteps and actions for a single agent name
+# The arguments here are the DecisionSteps, TerminalSteps and continuous/discrete actions for a single agent name
 def proto_from_steps_and_action(
-    decision_steps: DecisionSteps, terminal_steps: TerminalSteps, actions: np.ndarray
+    decision_steps: DecisionSteps,
+    terminal_steps: TerminalSteps,
+    continuous_actions: np.ndarray,
+    discrete_actions: np.ndarray,
 ) -> List[AgentInfoActionPairProto]:
     agent_info_protos = proto_from_steps(decision_steps, terminal_steps)
     agent_action_protos = [
-        AgentActionProto(vector_actions=action) for action in actions
+        AgentActionProto(
+            continuous_actions=continuous_act, discrete_actions=discrete_act
+        )
+        for continuous_act, discrete_act in zip(continuous_actions, discrete_actions)
     ]
     agent_info_action_pair_protos = [
         AgentInfoActionPairProto(agent_info=agent_info_proto, action_info=action_proto)
