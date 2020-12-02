@@ -28,7 +28,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
             "dGlvbi5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMijAEKEEFnZW50QWN0",
             "aW9uUHJvdG8SIQoZdmVjdG9yX2FjdGlvbnNfZGVwcmVjYXRlZBgBIAMoAhIN",
             "CgV2YWx1ZRgEIAEoAhIaChJjb250aW51b3VzX2FjdGlvbnMYBiADKAISGAoQ",
-            "ZGlzY3JldGVfYWN0aW9ucxgHIAMoAkoECAIQA0oECAMQBEoECAUQBkIlqgIi",
+            "ZGlzY3JldGVfYWN0aW9ucxgHIAMoBUoECAIQA0oECAMQBEoECAUQBkIlqgIi",
             "VW5pdHkuTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
@@ -113,11 +113,11 @@ namespace Unity.MLAgents.CommunicatorObjects {
 
     /// <summary>Field number for the "discrete_actions" field.</summary>
     public const int DiscreteActionsFieldNumber = 7;
-    private static readonly pb::FieldCodec<float> _repeated_discreteActions_codec
-        = pb::FieldCodec.ForFloat(58);
-    private readonly pbc::RepeatedField<float> discreteActions_ = new pbc::RepeatedField<float>();
+    private static readonly pb::FieldCodec<int> _repeated_discreteActions_codec
+        = pb::FieldCodec.ForInt32(58);
+    private readonly pbc::RepeatedField<int> discreteActions_ = new pbc::RepeatedField<int>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<float> DiscreteActions {
+    public pbc::RepeatedField<int> DiscreteActions {
       get { return discreteActions_; }
     }
 
@@ -225,7 +225,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
             break;
           }
           case 58:
-          case 61: {
+          case 56: {
             discreteActions_.AddEntriesFrom(input, _repeated_discreteActions_codec);
             break;
           }
