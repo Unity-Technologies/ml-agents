@@ -1924,8 +1924,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -13.48854, y: 1.0000002, z: -20.442457}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1739597323}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6750,151 +6749,6 @@ Transform:
   m_Father: {fileID: 1817059483}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1739597322
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1739597323}
-  - component: {fileID: 1739597325}
-  - component: {fileID: 1739597324}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1739597323
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1739597322}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 337331383}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1739597324
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1739597322}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 621567455fd1c4ceb811cc8a00b6a1a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_NotificationBehavior: 0
-  m_MaxPlayerCount: -1
-  m_AllowJoining: 1
-  m_JoinBehavior: 0
-  m_PlayerJoinedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_PlayerLeftEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_JoinAction:
-    m_UseReference: 0
-    m_Action:
-      m_Name: 
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-    m_Reference: {fileID: 0}
-  m_PlayerPrefab: {fileID: 0}
-  m_SplitScreen: 0
-  m_MaintainAspectRatioInSplitScreen: 0
-  m_FixedNumberOfSplitScreens: -1
-  m_SplitScreenRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
---- !u!114 &1739597325
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1739597322}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 77b3cef930f53497fa86a02fe6c7f145,
-    type: 3}
-  m_NotificationBehavior: 1
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 2f9ecc77-85d9-4189-8faf-18dcf905d2d4
-    m_ActionName: Player Action Map/WalkForward[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d,/XboxOneGampadMacOSWireless/leftStick/up,/XboxOneGampadMacOSWireless/leftStick/down,/XboxOneGampadMacOSWireless/leftStick/left,/XboxOneGampadMacOSWireless/leftStick/right]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 1d14cda7-c4b3-4bb4-9ebb-f197aa5ed183
-    m_ActionName: Player Action Map/DashLeft[/XboxOneGampadMacOSWireless/leftShoulder]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 96db7975-8803-410a-863b-5f25b31019f4
-    m_ActionName: Player Action Map/DashRight[/XboxOneGampadMacOSWireless/rightShoulder]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: d2faa0a0-e027-4a5d-a155-870bb0ceaf7c
-    m_ActionName: Player Action Map/Jump[/XboxOneGampadMacOSWireless/buttonSouth]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: cbcb2a57-a474-46a7-b133-cf144f6de321
-    m_ActionName: Player Action Map/Shoot[/XboxOneGampadMacOSWireless/rightTrigger]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: ec97db61-8659-49c6-afaa-20b82a98e72b
-    m_ActionName: Player Action Map/Shield[/XboxOneGampadMacOSWireless/leftTrigger]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 379999a6-e908-4242-ae2f-384e38bcb7cb
-    m_ActionName: Player Action Map/Look[/XboxOneGampadMacOSWireless/rightStick/left,/XboxOneGampadMacOSWireless/rightStick/right]
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Player Action Map
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!1 &1772651739
 GameObject:
   m_ObjectHideFlags: 0
@@ -9909,6 +9763,7 @@ GameObject:
   - component: {fileID: 2669850465594241540}
   - component: {fileID: 235556834305398865}
   - component: {fileID: 7759475058439974328}
+  - component: {fileID: 1479187681323959707}
   m_Layer: 0
   m_Name: FPSAgent
   m_TagString: agent
@@ -9916,6 +9771,98 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1479187681323959707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1479187681323959706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: 77b3cef930f53497fa86a02fe6c7f145,
+    type: 3}
+  m_NotificationBehavior: 2
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1479187681323959783}
+        m_MethodName: OnMovement
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 2f9ecc77-85d9-4189-8faf-18dcf905d2d4
+    m_ActionName: Player Action Map/WalkForward[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 1d14cda7-c4b3-4bb4-9ebb-f197aa5ed183
+    m_ActionName: Player Action Map/DashLeft
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 96db7975-8803-410a-863b-5f25b31019f4
+    m_ActionName: Player Action Map/DashRight
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: d2faa0a0-e027-4a5d-a155-870bb0ceaf7c
+    m_ActionName: Player Action Map/Jump
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1479187681323959783}
+        m_MethodName: OnShoot
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: cbcb2a57-a474-46a7-b133-cf144f6de321
+    m_ActionName: Player Action Map/Shoot
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: ec97db61-8659-49c6-afaa-20b82a98e72b
+    m_ActionName: Player Action Map/Shield
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1479187681323959783}
+        m_MethodName: OnRotate
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 379999a6-e908-4242-ae2f-384e38bcb7cb
+    m_ActionName: Player Action Map/Look
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Player Action Map
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!114 &1479187681323959776
 MonoBehaviour:
   m_ObjectHideFlags: 0

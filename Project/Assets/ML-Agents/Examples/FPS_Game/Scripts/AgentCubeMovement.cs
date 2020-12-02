@@ -441,8 +441,8 @@ namespace MLAgents
             {
                 var vel = rb.velocity.magnitude;
                 float adjustedSpeed = Mathf.Clamp(agentRunSpeed - vel, 0, agentTerminalVel);
-                rb.AddForce(dir.normalized * adjustedSpeed,
-                    runningForceMode);
+                //                rb.AddForce(dir.normalized * adjustedSpeed, runningForceMode);
+                rb.AddForce(dir * adjustedSpeed, runningForceMode);
                 if (AnimateBodyMesh)
                 {
                     bodyMesh.localPosition = Vector3.zero +
@@ -455,6 +455,33 @@ namespace MLAgents
 
             }
         }
+        //        public void RunOnGround(Rigidbody rb, Vector3 dir)
+        //        {
+        //            if (dir == Vector3.zero)
+        //            {
+        //                if (AnimateBodyMesh)
+        //                {
+        //                    bodyMesh.localPosition = Vector3.zero;
+        //                }
+        //            }
+        //            else
+        //            {
+        //                var vel = rb.velocity.magnitude;
+        //                float adjustedSpeed = Mathf.Clamp(agentRunSpeed - vel, 0, agentTerminalVel);
+        //                rb.AddForce(dir.normalized * adjustedSpeed,
+        //                    runningForceMode);
+        //                if (AnimateBodyMesh)
+        //                {
+        //                    bodyMesh.localPosition = Vector3.zero +
+        //                                             Vector3.up * walkingAnimScale * walkingBounceCurve.Evaluate(
+        //                                                 m_animateBodyMeshCurveTimer);
+        //                    m_animateBodyMeshCurveTimer += Time.fixedDeltaTime;
+        //                }
+        //                //            rb.AddForceAtPosition(dir.normalized * adjustedSpeed,transform.TransformPoint(Vector3.forward * standingForcePositionOffset),
+        //                //                runningForceMode);
+        //
+        //            }
+        //        }
 
         public void RunInAir(Rigidbody rb, Vector3 dir)
         {

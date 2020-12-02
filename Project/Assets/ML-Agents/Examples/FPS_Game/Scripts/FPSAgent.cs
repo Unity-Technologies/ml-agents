@@ -5,6 +5,7 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
+using UnityEngine.InputSystem;
 
 public class FPSAgent : Agent
 {
@@ -12,7 +13,9 @@ public class FPSAgent : Agent
 
     public MultiGunAlternating gunController;
     public bool useVectorObs;
+
     Rigidbody m_AgentRb;
+
     //    bool m_Shoot;
     private Camera m_Cam;
     [Header("HEALTH")] public AgentHealth agentHealth;
@@ -51,6 +54,7 @@ public class FPSAgent : Agent
             //            sensor.AddObservation(m_Frozen);
             sensor.AddObservation(m_ShootInput);
         }
+
         //        else if (useVectorFrozenFlag)
         //        {
         //            sensor.AddObservation(m_Frozen);
@@ -59,7 +63,6 @@ public class FPSAgent : Agent
 
     public void MoveAgent(ActionSegment<float> act)
     {
-
         //        if (!m_Frozen)
         //        {
         //            var shootCommand = false;
@@ -78,7 +81,9 @@ public class FPSAgent : Agent
         m_Rotate = act[2];
         m_ShootInput = act[3];
         m_CubeMovement.RotateBody(m_Rotate, m_InputV);
-        m_CubeMovement.RunOnGround(m_AgentRb, m_Cam.transform.TransformDirection(new Vector3(0, 0, m_InputV)));
+        //        m_CubeMovement.RunOnGround(m_AgentRb, m_Cam.transform.TransformDirection(new Vector3(0, 0, m_InputV)));
+        m_CubeMovement.RunOnGround(m_AgentRb,
+            m_Cam.transform.TransformDirection(new Vector3(m_InputH, 0, m_InputV)));
         //        if (m_InputH != 0)
         //        {
 
@@ -93,7 +98,7 @@ public class FPSAgent : Agent
         //            rightStrafe = false;
         //        }
         //
-        m_CubeMovement.Strafe(transform.right * m_InputH);
+        //        m_CubeMovement.Strafe(transform.right * m_InputH);
         //        }
         if (m_ShootInput > 0)
         {
@@ -105,7 +110,6 @@ public class FPSAgent : Agent
         {
             m_AgentRb.velocity *= 0.95f;
         }
-
     }
 
     //    void OnCollisionEnter(Collision col)
@@ -124,9 +128,9 @@ public class FPSAgent : Agent
     public float m_InputH;
     private float m_InputV;
     private float m_Rotate;
-    private float m_ShootInput;
     public bool leftStrafe;
     public bool rightStrafe;
+
     void Update()
     {
         //        m_InputH = Input.GetKeyDown(KeyCode.K) ? 1 : Input.GetKeyDown(KeyCode.J) ? -1 : 0; //inputH
@@ -134,51 +138,94 @@ public class FPSAgent : Agent
         {
             rightStrafe = true;
         }
+
         if (Input.GetKeyDown(KeyCode.J))
         {
             leftStrafe = true;
         }
     }
 
-    void FixedUpdate()
+    //    void FixedUpdate()
+    //    {
+    //        m_InputV = Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0; //inputV
+    //        //        m_InputH = 0;
+    //        //        m_InputH += Input.GetKeyDown(KeyCode.Q) ? -1 : 0;
+    //        //        m_InputH += Input.GetKeyDown(KeyCode.E) ? 1 : 0;
+    //        //        m_InputH = Input.GetKeyDown(KeyCode.E) ? 1 : Input.GetKeyDown(KeyCode.Q) ? -1 : 0; //inputH
+    //        m_Rotate = 0;
+    //        m_Rotate += Input.GetKey(KeyCode.A) ? -1 : 0;
+    //        m_Rotate += Input.GetKey(KeyCode.D) ? 1 : 0;
+    //        //        m_Rotate = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0; //rotate
+    //        m_ShootInput = Input.GetKey(KeyCode.Space) ? 1 : 0; //shoot
+    //    }
+
+    private Vector2 inputMovement;
+    private Vector2 rotateMovement;
+    public float m_ShootInput;
+
+    public void OnMovement(InputAction.CallbackContext value)
     {
-        m_InputV = Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0; //inputV
-                                                                                   //        m_InputH = 0;
-                                                                                   //        m_InputH += Input.GetKeyDown(KeyCode.Q) ? -1 : 0;
-                                                                                   //        m_InputH += Input.GetKeyDown(KeyCode.E) ? 1 : 0;
-                                                                                   //        m_InputH = Input.GetKeyDown(KeyCode.E) ? 1 : Input.GetKeyDown(KeyCode.Q) ? -1 : 0; //inputH
-        m_Rotate = 0;
-        m_Rotate += Input.GetKey(KeyCode.A) ? -1 : 0;
-        m_Rotate += Input.GetKey(KeyCode.D) ? 1 : 0;
-        //        m_Rotate = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0; //rotate
-        m_ShootInput = Input.GetKey(KeyCode.Space) ? 1 : 0; //shoot
+        inputMovement = value.ReadValue<Vector2>();
+    }
+
+    public void OnRotate(InputAction.CallbackContext value)
+    {
+        rotateMovement = value.ReadValue<Vector2>();
+    }
+    public void OnShoot(InputAction.CallbackContext value)
+    {
+        //        m_ShootInput = value.canceled? 0: value.ReadValue<float>();
+        //            m_ShootInput = 0;
+        if (value.started)
+        {
+            print("started");
+        }
+        if (value.performed)
+        {
+            print("performed" + Time.frameCount);
+        }
+        if (!value.canceled)
+        {
+            print("not cancelled" + Time.frameCount + m_ShootInput);
+            m_ShootInput = value.ReadValue<float>();
+            //        m_ShootInput = value.
+        }
+        else
+        {
+            m_ShootInput = 0;
+            print("cancelled" + Time.frameCount + m_ShootInput);
+        }
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var contActionsOut = actionsOut.ContinuousActions;
-        contActionsOut[0] = m_InputV; //inputV
-        contActionsOut[2] = m_Rotate; //rotate
+        //        contActionsOut[0] = m_InputV; //inputV
+        //        contActionsOut[2] = m_Rotate; //rotate
         contActionsOut[3] = m_ShootInput; //shoot
-                                          //        contActionsOut[0] = Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0; //inputV
-                                          //        contActionsOut[1] = Input.GetKeyDown(KeyCode.E) ? 1 : Input.GetKeyDown(KeyCode.Q) ? -1 : 0; //inputH
-                                          //        contActionsOut[2] = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0; //rotate
-                                          //        contActionsOut[3] = Input.GetKey(KeyCode.Space) ? 1 : 0; //shoot
+        //        contActionsOut[0] = Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0; //inputV
+        //        contActionsOut[1] = Input.GetKeyDown(KeyCode.E) ? 1 : Input.GetKeyDown(KeyCode.Q) ? -1 : 0; //inputH
+        //        contActionsOut[2] = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0; //rotate
+        //        contActionsOut[3] = Input.GetKey(KeyCode.Space) ? 1 : 0; //shoot
 
-        m_InputH = 0;
-        if (leftStrafe)
-        {
-            //            print("leftstrafe");
-            m_InputH += -1;
-            leftStrafe = false;
-        }
-        if (rightStrafe)
-        {
-            //            print("rightstrafe");
-            m_InputH += 1;
-            rightStrafe = false;
-        }
-        contActionsOut[1] = m_InputH; //inputH
+        contActionsOut[0] = inputMovement.y;
+        contActionsOut[1] = inputMovement.x;
+        contActionsOut[2] = rotateMovement.x;
+        //        m_InputH = 0;
+        //        if (leftStrafe)
+        //        {
+        //            //            print("leftstrafe");
+        //            m_InputH += -1;
+        //            leftStrafe = false;
+        //        }
+        //
+        //        if (rightStrafe)
+        //        {
+        //            //            print("rightstrafe");
+        //            m_InputH += 1;
+        //            rightStrafe = false;
+        //        }
+        //
+        //        contActionsOut[1] = m_InputH; //inputH
     }
-
 }
