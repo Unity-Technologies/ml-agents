@@ -129,6 +129,9 @@ class AgentProcessor:
             done = terminated  # Since this is an ongoing step
             interrupted = step.interrupted if terminated else False
             # Add the outputs of the last eval
+            if idx >= len(stored_take_action_outputs["action"]):
+                idx = 0
+                print("Something went wrong with the idx in stored_take_action_outputs")
             action = stored_take_action_outputs["action"][idx]
             if self.policy.use_continuous_act:
                 action_pre = stored_take_action_outputs["pre_action"][idx]

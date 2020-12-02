@@ -12,7 +12,7 @@ from mlagents.trainers.torch.distributions import (
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
-from mlagents.trainers.torch.layers import LSTM, LinearEncoder, SimpleTransformer, ZeroObservationMask
+from mlagents.trainers.torch.layers import LSTM, LinearEncoder, SimpleTransformer
 from mlagents.trainers.torch.model_serialization import exporting_to_onnx
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
@@ -50,25 +50,25 @@ class NetworkBody(nn.Module):
         self.use_fc = False
 
         if not self.use_fc:
-            emb_size = 32
+            emb_size = 16
 
-            self.masking_module = ZeroObservationMask()
             self.transformer = SimpleTransformer(
-                x_self_size=32,
-                entities_sizes=[32],  # hard coded, 4 obs per entity
+                x_self_size=16,
+                entities_sizes=[16],  # hard coded, 4 obs per entity
                 embedding_size=emb_size,
+                output_size = self.h_size
             )
 
             # total_enc_size = encoder_input_size + encoded_act_size
 
-            self.self_embedding = LinearEncoder(6, 2, 32)
-            self.obs_embeding = LinearEncoder(4, 2, 32)
+            self.self_embedding = LinearEncoder(6, 2, 16)
+            self.obs_embeding = LinearEncoder(4, 2, 16)
             # self.self_and_obs_embedding = LinearEncoder(64 + 64, 1, 64)
             # self.dense_after_attention = LinearEncoder(64, 1, 64)
 
-            self.linear_encoder = LinearEncoder(
-                emb_size + 32, network_settings.num_layers - 1, self.h_size
-            )
+            # self.linear_encoder = LinearEncoder(
+            #     emb_size + 16, network_settings.num_layers - 1, self.h_size
+            # )
         else:
             self.linear_encoder = LinearEncoder(
                 6 + 4 * 20, network_settings.num_layers + 2, self.h_size
@@ -126,7 +126,8 @@ class NetworkBody(nn.Module):
             x_self = self.self_embedding(processed_vec)
             var_len_input = vis_inputs[0].reshape(-1, 20, 4)
             processed_var_len_input = self.obs_embeding(var_len_input)
-            output = self.transformer(x_self, [processed_var_len_input], self.masking_module([var_len_input]))
+            masks = SimpleTransformer.get_masks([var_len_input])
+            output = self.transformer(x_self, [processed_var_len_input], masks)
 
             # # TODO : This is a Hack
             # var_len_input = vis_inputs[0].reshape(-1, 20, 4)
@@ -164,7 +165,7 @@ class NetworkBody(nn.Module):
             #     1 - key_mask, dim=1, keepdim=True
             # ) + 0.001 )   # average pooling
 
-            encoding = self.linear_encoder(torch.cat([output, x_self], dim=1))
+            encoding = output
         else:
             encoding = self.linear_encoder(torch.cat([vis_inputs[0].reshape(-1, 80), processed_vec], dim=1))
 
