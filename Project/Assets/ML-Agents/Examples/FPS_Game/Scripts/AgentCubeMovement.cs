@@ -28,6 +28,8 @@ namespace MLAgents
         public float dashBoostForce = 20f;
         public ForceMode dashForceMode = ForceMode.Impulse;
         public bool dashPressed;
+        public float dashCoolDownDuration = .2f;
+        public float dashCoolDownTimer;
 
         [Header("IDLE")]
         //coefficient used to dampen velocity when idle
@@ -67,7 +69,7 @@ namespace MLAgents
         public Camera cam;
         private float lookDir;
         private Rigidbody rb;
-        private AgentCubeGroundCheck groundCheck;
+        public AgentCubeGroundCheck groundCheck;
         private float inputH;
         private float inputV;
         void Awake()
@@ -125,7 +127,7 @@ namespace MLAgents
                 {
                     if (groundCheck.isGrounded)
                     {
-                        Jump(rb);
+                        Jump();
                     }
                     else if (UseGroundPound)
                     {
@@ -189,6 +191,7 @@ namespace MLAgents
 
             }
             strafeCoolDownTimer += Time.fixedDeltaTime;
+            dashCoolDownTimer += Time.fixedDeltaTime;
 
             if (!allowKeyboardInput)
             {
@@ -406,7 +409,7 @@ namespace MLAgents
         //
         //        }
 
-        public void Jump(Rigidbody rb)
+        public void Jump()
         {
             Vector3 velToUse = rb.velocity;
             velToUse.y = agentJumpVelocity;
@@ -425,6 +428,15 @@ namespace MLAgents
                 rb.velocity = Vector3.zero;
                 rb.AddForce(dir.normalized * strafeSpeed, strafeForceMode);
                 strafeCoolDownTimer = 0;
+            }
+        }
+        public void Dash(Vector3 dir)
+        {
+            if (dir != Vector3.zero && dashCoolDownTimer > dashCoolDownDuration)
+            {
+                rb.velocity = Vector3.zero;
+                rb.AddForce(dir.normalized * dashBoostForce, dashForceMode);
+                dashCoolDownTimer = 0;
             }
         }
 

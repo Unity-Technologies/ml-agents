@@ -8717,7 +8717,7 @@ MonoBehaviour:
   m_ZDamping: 0
   m_AngularDampingMode: 0
   m_PitchDamping: 0
-  m_YawDamping: 1
+  m_YawDamping: 0.15
   m_RollDamping: 0
   m_AngularDamping: 0
 --- !u!4 &763385665401675561
@@ -9632,13 +9632,15 @@ MonoBehaviour:
   agentRunSpeed: 10
   agentTerminalVel: 20
   agentRunInAirSpeed: 1
-  strafeSpeed: 40
+  strafeSpeed: 20
   strafeCoolDownDuration: 0
   strafeCoolDownTimer: 0
   strafeForceMode: 2
-  dashBoostForce: 20
-  dashForceMode: 1
+  dashBoostForce: 40
+  dashForceMode: 2
   dashPressed: 0
+  dashCoolDownDuration: 0.15
+  dashCoolDownTimer: 0
   agentIdleDragVelCoeff: 1
   UseGroundPound: 0
   groundPoundForceMode: 1
@@ -9695,6 +9697,7 @@ MonoBehaviour:
   walkingAnimScale: 0.1
   bodyMesh: {fileID: 1479187680222836870}
   cam: {fileID: 1828481695}
+  groundCheck: {fileID: 0}
 --- !u!4 &1479187681323959701
 Transform:
   m_ObjectHideFlags: 0
@@ -9764,6 +9767,7 @@ GameObject:
   - component: {fileID: 235556834305398865}
   - component: {fileID: 7759475058439974328}
   - component: {fileID: 1479187681323959707}
+  - component: {fileID: 1479187681323959708}
   m_Layer: 0
   m_Name: FPSAgent
   m_TagString: agent
@@ -9778,7 +9782,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1479187681323959706}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
@@ -9798,18 +9802,7 @@ MonoBehaviour:
       m_Calls: []
   m_ActionEvents:
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1479187681323959783}
-        m_MethodName: OnMovement
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: 2f9ecc77-85d9-4189-8faf-18dcf905d2d4
     m_ActionName: Player Action Map/WalkForward[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
   - m_PersistentCalls:
@@ -9825,18 +9818,7 @@ MonoBehaviour:
     m_ActionId: d2faa0a0-e027-4a5d-a155-870bb0ceaf7c
     m_ActionName: Player Action Map/Jump
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1479187681323959783}
-        m_MethodName: OnShoot
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: cbcb2a57-a474-46a7-b133-cf144f6de321
     m_ActionName: Player Action Map/Shoot
   - m_PersistentCalls:
@@ -9844,25 +9826,36 @@ MonoBehaviour:
     m_ActionId: ec97db61-8659-49c6-afaa-20b82a98e72b
     m_ActionName: Player Action Map/Shield
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1479187681323959783}
-        m_MethodName: OnRotate
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: 379999a6-e908-4242-ae2f-384e38bcb7cb
     m_ActionName: Player Action Map/Look
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 49d5245a-a350-4f94-b4c8-cf578d61000b
+    m_ActionName: Player Action Map/Dash[/XboxOneGampadMacOSWireless/buttonEast]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player Action Map
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &1479187681323959708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1479187681323959706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8895a539297b24544aba7209546d2e36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveInput: {x: 0, y: 0}
+  shootInput: 0
+  jumpInput: 0
+  dashInput: 0
+  rotateInput: {x: 0, y: 0}
+  shieldInput: 0
 --- !u!114 &1479187681323959776
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9958,9 +9951,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
+    VectorObservationSize: 0
     NumStackedVectorObservations: 1
-    VectorActionSize: 04000000
+    VectorActionSize: 06000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
   m_Model: {fileID: 0}
@@ -9993,6 +9986,7 @@ MonoBehaviour:
   m_InputH: 0
   leftStrafe: 0
   rightStrafe: 0
+  m_ShootInput: 0
 --- !u!114 &1543860467109742330
 MonoBehaviour:
   m_ObjectHideFlags: 0

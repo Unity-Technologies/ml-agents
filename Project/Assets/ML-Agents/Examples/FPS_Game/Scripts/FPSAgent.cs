@@ -20,12 +20,14 @@ public class FPSAgent : Agent
     private Camera m_Cam;
     [Header("HEALTH")] public AgentHealth agentHealth;
 
+    private FPSAgentInput input;
     // Start is called before the first frame update
     public override void Initialize()
     {
         m_CubeMovement = GetComponent<AgentCubeMovement>();
         m_Cam = Camera.main;
         m_AgentRb = GetComponent<Rigidbody>();
+        input = GetComponent<FPSAgentInput>();
     }
 
     public override void OnEpisodeBegin()
@@ -52,7 +54,7 @@ public class FPSAgent : Agent
             //            sensor.AddObservation(localVelocity.x);
             //            sensor.AddObservation(localVelocity.z);
             //            sensor.AddObservation(m_Frozen);
-            sensor.AddObservation(m_ShootInput);
+            //            sensor.AddObservation(m_ShootInput);
         }
 
         //        else if (useVectorFrozenFlag)
@@ -81,9 +83,9 @@ public class FPSAgent : Agent
         m_Rotate = act[2];
         m_ShootInput = act[3];
         m_CubeMovement.RotateBody(m_Rotate, m_InputV);
+        Vector3 moveDir = m_Cam.transform.TransformDirection(new Vector3(m_InputH, 0, m_InputV));
         //        m_CubeMovement.RunOnGround(m_AgentRb, m_Cam.transform.TransformDirection(new Vector3(0, 0, m_InputV)));
-        m_CubeMovement.RunOnGround(m_AgentRb,
-            m_Cam.transform.TransformDirection(new Vector3(m_InputH, 0, m_InputV)));
+        m_CubeMovement.RunOnGround(m_AgentRb, moveDir);
         //        if (m_InputH != 0)
         //        {
 
@@ -103,6 +105,14 @@ public class FPSAgent : Agent
         if (m_ShootInput > 0)
         {
             gunController.Shoot();
+        }
+        if (act[4] > 0 && m_CubeMovement.groundCheck.isGrounded)
+        {
+            m_CubeMovement.Jump();
+        }
+        if (act[5] > 0)
+        {
+            m_CubeMovement.Dash(moveDir);
         }
         //        }
 
@@ -202,15 +212,23 @@ public class FPSAgent : Agent
         var contActionsOut = actionsOut.ContinuousActions;
         //        contActionsOut[0] = m_InputV; //inputV
         //        contActionsOut[2] = m_Rotate; //rotate
-        contActionsOut[3] = m_ShootInput; //shoot
+        //        contActionsOut[3] = m_ShootInput; //shoot
         //        contActionsOut[0] = Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0; //inputV
         //        contActionsOut[1] = Input.GetKeyDown(KeyCode.E) ? 1 : Input.GetKeyDown(KeyCode.Q) ? -1 : 0; //inputH
         //        contActionsOut[2] = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0; //rotate
         //        contActionsOut[3] = Input.GetKey(KeyCode.Space) ? 1 : 0; //shoot
 
-        contActionsOut[0] = inputMovement.y;
-        contActionsOut[1] = inputMovement.x;
-        contActionsOut[2] = rotateMovement.x;
+        contActionsOut[0] = input.moveInput.y;
+        contActionsOut[1] = input.moveInput.x;
+        contActionsOut[2] = input.rotateInput.x;
+        contActionsOut[3] = input.shootInput ? 1 : 0; //shoot
+        contActionsOut[4] = input.jumpInput ? 1 : 0; //shoot
+        contActionsOut[5] = input.dashInput ? 1 : 0; //shoot
+                                                     //        contActionsOut[0] = inputMovement.y;
+                                                     //        contActionsOut[1] = inputMovement.x;
+                                                     //        contActionsOut[2] = rotateMovement.x;
+
+
         //        m_InputH = 0;
         //        if (leftStrafe)
         //        {

@@ -1,5 +1,5 @@
 {
-    "name": "FPS_Player_InputActions",
+    "name": "FPSPlayerInputActions",
     "maps": [
         {
             "name": "Player Action Map",
@@ -58,6 +58,14 @@
                     "type": "Value",
                     "id": "379999a6-e908-4242-ae2f-384e38bcb7cb",
                     "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Dash",
+                    "type": "Button",
+                    "id": "49d5245a-a350-4f94-b4c8-cf578d61000b",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 }
@@ -123,7 +131,7 @@
                     "id": "6fdb596c-c0bb-4f37-b409-c235e9612acf",
                     "path": "<Gamepad>/leftStick",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "StickDeadzone",
                     "groups": "",
                     "action": "Walk",
                     "isComposite": false,
@@ -143,7 +151,7 @@
                 {
                     "name": "",
                     "id": "28ddf0bd-ea22-4069-ba60-ca41d4742bf9",
-                    "path": "<Gamepad>/buttonSouth",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -154,7 +162,7 @@
                 {
                     "name": "",
                     "id": "fe641861-0da7-43ba-8bd6-e95a17232a77",
-                    "path": "<XInputController>/rightTrigger",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -189,9 +197,20 @@
                     "id": "0c0d917f-0af9-4575-b970-f441fd97db20",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "StickDeadzone",
                     "groups": "",
                     "action": "RotateBody",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "319796b1-6071-46f0-81dc-58b6bdb7d86a",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Dash",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
