@@ -233,6 +233,8 @@ class MultiHeadAttention(torch.nn.Module):
         # This is to avoid using .size() when possible as Barracuda does not support
         n_q = number_of_queries if number_of_queries != -1 else query.size(1)
         n_k = number_of_keys if number_of_keys != -1 else key.size(1)
+        n_q = 20
+        n_k = 20
 
         # Create a key mask : Only 1 if all values are 0 # shape = (b, n_k)
         # key_mask = torch.sum(key ** 2, axis=2) < 0.01
@@ -324,7 +326,7 @@ class SimpleTransformer(torch.nn.Module):
         )
         self.residual_layer = LinearEncoder(embedding_size, 1, embedding_size)
 
-    def forward(self, x_self: torch.Tensor, entities: List[torch.Tensor], key_masks: List[torch.Tensor]):
+    def forward(self, entities: torch.Tensor, key_masks: List[torch.Tensor]):
         # Gather the maximum number of entities information
         if self.entities_num_max_elements is None:
             self.entities_num_max_elements = []
@@ -332,21 +334,22 @@ class SimpleTransformer(torch.nn.Module):
                 self.entities_num_max_elements.append(ent.shape[1])
         # Concatenate all observations with self
         self_and_ent: List[torch.Tensor] = []
-        for num_entities, ent in zip(self.entities_num_max_elements, entities):
-            expanded_self = x_self.reshape(-1, 1, self.self_size)
-            # .repeat(
-            #     1, num_entities, 1
-            # )
-            expanded_self = torch.cat([expanded_self] * num_entities, dim=1)
-            self_and_ent.append(torch.cat([expanded_self, ent], dim=2))
+        #for num_entities, ent in zip(self.entities_num_max_elements, entities):
+        #    expanded_self = x_self.reshape(-1, 1, self.self_size)
+        #    # .repeat(
+        #    #     1, num_entities, 1
+        #    # )
+        #    expanded_self = torch.cat([expanded_self] * num_entities, dim=1)
+        #    self_and_ent.append(torch.cat([expanded_self, ent], dim=2))
         # Generate the tensor that will serve as query, key and value to self attention
-        qkv = torch.cat(
-            [ent_encoder(x) for ent_encoder, x in zip(self.ent_encoders, self_and_ent)],
-            dim=1,
-        )
+        #qkv = torch.cat(
+        #    [ent_encoder(x) for ent_encoder, x in zip(self.ent_encoders, self_and_ent)],
+        #    dim=1,
+        #)
+        qkv = entities
         mask = torch.cat(key_masks, dim=1)
         # Feed to self attention
-        max_num_ent = sum(self.entities_num_max_elements)
+        max_num_ent = 20 #sum(self.entities_num_max_elements)
         output, _ = self.attention(qkv, qkv, qkv, mask, max_num_ent, max_num_ent)
         # Residual
         output = self.residual_layer(output) + qkv
