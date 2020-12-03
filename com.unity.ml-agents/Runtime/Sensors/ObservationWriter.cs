@@ -38,6 +38,10 @@ namespace Unity.MLAgents.Sensors
             {
                 m_TensorShape = new TensorShape(m_Batch, shape[0]);
             }
+            else if (shape.Length == 2)
+            {
+                m_TensorShape = new TensorShape(new int[]{m_Batch, 1, shape[0], shape[1]});
+            }
             else
             {
                 m_TensorShape = new TensorShape(m_Batch, shape[0], shape[1], shape[2]);
