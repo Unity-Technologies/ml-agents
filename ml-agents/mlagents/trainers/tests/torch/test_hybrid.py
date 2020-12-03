@@ -57,7 +57,11 @@ def test_hybrid_recurrent_ppo():
         learning_rate=1.0e-3,
         batch_size=64,
         buffer_size=512,
+    )
+    config = attr.evolve(
+        PPO_TORCH_CONFIG,
         hyperparameters=new_hyperparams,
+        network_settings=new_network_settings,
         max_steps=3000,
     )
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
