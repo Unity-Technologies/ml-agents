@@ -146,7 +146,7 @@ class ModelUtils:
         h_size: int,
         vis_encode_type: EncoderType,
         normalize: bool = False,
-    ) -> Tuple[nn.ModuleList, nn.ModuleList, int]:
+    ) -> Tuple[nn.ModuleList, int]:
         """
         Creates visual and vector encoders, along with their normalizers.
         :param observation_shapes: List of Tuples that represent the action dimensions.
@@ -159,38 +159,32 @@ class ModelUtils:
         :param normalize: Normalize all vector inputs.
         :return: Tuple of visual encoders and vector encoders each as a list.
         """
-        visual_encoders: List[nn.Module] = []
-        vector_encoders: List[nn.Module] = []
+        encoders: List[nn.Module] = []
 
         visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
-        vector_size = 0
-        visual_output_size = 0
+        total_encoded_size = 0
         for i, dimension in enumerate(observation_shapes):
             if len(dimension) == 3:
                 ModelUtils._check_resolution_for_encoder(
                     dimension[0], dimension[1], vis_encode_type
                 )
-                visual_encoders.append(
+                encoders.append(
                     visual_encoder_class(
                         dimension[0], dimension[1], dimension[2], h_size
                     )
                 )
-                visual_output_size += h_size
+                total_encoded_size += h_size
             elif len(dimension) == 1:
-                vector_size += dimension[0]
+                vector_size = dimension[0]
+                encoders.append(VectorInput(vector_size, normalize))
+                total_encoded_size += vector_size
             else:
                 raise UnityTrainerException(
                     f"Unsupported shape of {dimension} for observation {i}"
                 )
-        if vector_size > 0:
-            vector_encoders.append(VectorInput(vector_size, normalize))
+
         # Total output size for all inputs + CNNs
-        total_processed_size = vector_size + visual_output_size
-        return (
-            nn.ModuleList(visual_encoders),
-            nn.ModuleList(vector_encoders),
-            total_processed_size,
-        )
+        return (nn.ModuleList(encoders), total_encoded_size)
 
     @staticmethod
     def list_to_tensor(
@@ -201,6 +195,18 @@ class ModelUtils:
         calling as_tensor on the list directly.
         """
         return torch.as_tensor(np.asanyarray(ndarray_list), dtype=dtype)
+
+    @staticmethod
+    def list_to_tensor_list(
+        ndarray_list: List[np.ndarray], dtype: Optional[torch.dtype] = torch.float32
+    ) -> torch.Tensor:
+        """
+        Converts a list of numpy arrays into a list of tensors. MUCH faster than
+        calling as_tensor on the list directly.
+        """
+        return [
+            torch.as_tensor(np.asanyarray(_arr), dtype=dtype) for _arr in ndarray_list
+        ]
 
     @staticmethod
     def to_numpy(tensor: torch.Tensor) -> np.ndarray:

@@ -81,30 +81,15 @@ class Trajectory(NamedTuple):
         step of the trajectory.
         """
         agent_buffer_trajectory = AgentBuffer()
-        vec_vis_obs = SplitObservations.from_observations(self.steps[0].obs)
+        curr_obs = self.steps[0].obs
         for step, exp in enumerate(self.steps):
             if step < len(self.steps) - 1:
-                next_vec_vis_obs = SplitObservations.from_observations(
-                    self.steps[step + 1].obs
-                )
+                next_obs = self.steps[step + 1].obs
             else:
-                next_vec_vis_obs = SplitObservations.from_observations(self.next_obs)
-
-            for i, _ in enumerate(vec_vis_obs.visual_observations):
-                agent_buffer_trajectory["visual_obs%d" % i].append(
-                    vec_vis_obs.visual_observations[i]
-                )
-                agent_buffer_trajectory["next_visual_obs%d" % i].append(
-                    next_vec_vis_obs.visual_observations[i]
-                )
+                next_obs = self.next_obs
+            agent_buffer_trajectory["obs"].append(curr_obs)
+            agent_buffer_trajectory["next_obs"].append(next_obs)
             agent_buffer_trajectory["critic_obs"].append(exp.collab_obs)
-
-            agent_buffer_trajectory["vector_obs"].append(
-                vec_vis_obs.vector_observations
-            )
-            agent_buffer_trajectory["next_vector_in"].append(
-                next_vec_vis_obs.vector_observations
-            )
             if exp.memory is not None:
                 agent_buffer_trajectory["memory"].append(exp.memory)
 
@@ -134,8 +119,8 @@ class Trajectory(NamedTuple):
             agent_buffer_trajectory["prev_action"].append(exp.prev_action)
             agent_buffer_trajectory["environment_rewards"].append(exp.reward)
 
-            # Store the next visual obs as the current
-            vec_vis_obs = next_vec_vis_obs
+            # Store the next obs as the current
+            curr_obs = next_obs
         return agent_buffer_trajectory
 
     @property

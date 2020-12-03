@@ -40,7 +40,7 @@ class NetworkBody(nn.Module):
             else 0
         )
 
-        self.visual_processors, self.vector_processors, encoder_input_size = ModelUtils.create_input_processors(
+        self.processors, encoder_input_size = ModelUtils.create_input_processors(
             observation_shapes,
             self.h_size,
             network_settings.vis_encode_type,
@@ -56,13 +56,13 @@ class NetworkBody(nn.Module):
         else:
             self.lstm = None  # type: ignore
 
-    def update_normalization(self, vec_inputs: List[torch.Tensor]) -> None:
-        for vec_input, vec_enc in zip(vec_inputs, self.vector_processors):
-            vec_enc.update_normalization(vec_input)
+    def update_normalization(self, net_inputs: List[torch.Tensor]) -> None:
+        for _in, enc in zip(net_inputs, self.processors):
+            enc.update_normalization(_in)
 
     def copy_normalization(self, other_network: "NetworkBody") -> None:
         if self.normalize:
-            for n1, n2 in zip(self.vector_processors, other_network.vector_processors):
+            for n1, n2 in zip(self.processors, other_network.processors):
                 n1.copy_normalization(n2)
 
     @property
@@ -71,24 +71,18 @@ class NetworkBody(nn.Module):
 
     def forward(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
+        net_inputs: List[torch.Tensor],
         actions: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         encodes = []
-        for idx, processor in enumerate(self.vector_processors):
-            vec_input = vec_inputs[idx]
-            processed_vec = processor(vec_input)
+        for idx, processor in enumerate(self.processors):
+            net_input = net_inputs[idx]
+            if not exporting_to_onnx.is_exporting() and len(net_input.shape) > 3:
+                net_input = net_input.permute([0, 3, 1, 2])
+            processed_vec = processor(net_input)
             encodes.append(processed_vec)
-
-        for idx, processor in enumerate(self.visual_processors):
-            vis_input = vis_inputs[idx]
-            if not exporting_to_onnx.is_exporting():
-                vis_input = vis_input.permute([0, 3, 1, 2])
-            processed_vis = processor(vis_input)
-            encodes.append(processed_vis)
 
         if len(encodes) == 0:
             raise Exception("No valid inputs to network.")
@@ -135,14 +129,13 @@ class ValueNetwork(nn.Module):
 
     def forward(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
+        net_inputs: List[torch.Tensor],
         actions: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
         encoding, memories = self.network_body(
-            vec_inputs, vis_inputs, actions, memories, sequence_length
+            net_inputs, actions, memories, sequence_length
         )
         output = self.value_heads(encoding)
         return output, memories
@@ -150,7 +143,7 @@ class ValueNetwork(nn.Module):
 
 class Actor(abc.ABC):
     @abc.abstractmethod
-    def update_normalization(self, vector_obs: List[torch.Tensor]) -> None:
+    def update_normalization(self, net_inputs: List[torch.Tensor]) -> None:
         """
         Updates normalization of Actor based on the provided List of vector obs.
         :param vector_obs: A List of vector obs as tensors.
@@ -167,8 +160,7 @@ class Actor(abc.ABC):
     @abc.abstractmethod
     def get_dists(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
+        net_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
@@ -189,8 +181,7 @@ class Actor(abc.ABC):
     @abc.abstractmethod
     def forward(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
+        net_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
     ) -> Tuple[torch.Tensor, int, int, int, int]:
@@ -206,8 +197,7 @@ class ActorCritic(Actor):
     @abc.abstractmethod
     def critic_pass(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
+        net_inputs: List[torch.Tensor],
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
@@ -223,8 +213,7 @@ class ActorCritic(Actor):
     @abc.abstractmethod
     def get_dist_and_value(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
+        net_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
@@ -300,8 +289,8 @@ class SimpleActor(nn.Module, Actor):
     def memory_size(self) -> int:
         return self.network_body.memory_size
 
-    def update_normalization(self, vector_obs: List[torch.Tensor]) -> None:
-        self.network_body.update_normalization(vector_obs)
+    def update_normalization(self, net_inputs: List[torch.Tensor]) -> None:
+        self.network_body.update_normalization(net_inputs)
 
     def sample_action(self, dists: List[DistInstance]) -> List[torch.Tensor]:
         actions = []
@@ -312,14 +301,13 @@ class SimpleActor(nn.Module, Actor):
 
     def get_dists(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
+        net_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[List[DistInstance], Optional[torch.Tensor]]:
         encoding, memories = self.network_body(
-            vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
+            net_inputs, memories=memories, sequence_length=sequence_length
         )
         if self.action_spec.is_continuous():
             dists = self.distribution(encoding)
@@ -330,15 +318,14 @@ class SimpleActor(nn.Module, Actor):
 
     def forward(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
+        net_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
     ) -> Tuple[torch.Tensor, int, int, int, int]:
         """
         Note: This forward() method is required for exporting to ONNX. Don't modify the inputs and outputs.
         """
-        dists, _ = self.get_dists(vec_inputs, vis_inputs, masks, memories, 1)
+        dists, _ = self.get_dists(net_inputs, masks, memories, 1)
         if self.action_spec.is_continuous():
             action_list = self.sample_action(dists)
             action_out = torch.stack(action_list, dim=-1)
@@ -377,26 +364,24 @@ class SharedActorCritic(SimpleActor, ActorCritic):
 
     def critic_pass(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
+        net_inputs: List[torch.Tensor],
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
         encoding, memories_out = self.network_body(
-            vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
+            net_inputs, memories=memories, sequence_length=sequence_length
         )
         return self.value_heads(encoding), memories_out
 
     def get_dist_and_value(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
+        net_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
         encoding, memories = self.network_body(
-            vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
+            net_inputs, memories=memories, sequence_length=sequence_length
         )
         if self.action_spec.is_continuous():
             dists = self.distribution(encoding)
@@ -436,8 +421,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
 
     def critic_pass(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
+        net_inputs: List[torch.Tensor],
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
@@ -446,7 +430,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             # Use only the back half of memories for critic
             actor_mem, critic_mem = torch.split(memories, self.memory_size // 2, -1)
         value_outputs, critic_mem_out = self.critic(
-            vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
+            net_inputs, memories=critic_mem, sequence_length=sequence_length
         )
         if actor_mem is not None:
             # Make memories with the actor mem unchanged
@@ -457,8 +441,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
 
     def get_dist_and_value(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
+        net_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
@@ -470,14 +453,10 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             critic_mem = None
             actor_mem = None
         dists, actor_mem_outs = self.get_dists(
-            vec_inputs,
-            vis_inputs,
-            memories=actor_mem,
-            sequence_length=sequence_length,
-            masks=masks,
+            net_inputs, memories=actor_mem, sequence_length=sequence_length, masks=masks
         )
         value_outputs, critic_mem_outs = self.critic(
-            vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
+            net_inputs, memories=critic_mem, sequence_length=sequence_length
         )
         if self.use_lstm:
             mem_out = torch.cat([actor_mem_outs, critic_mem_outs], dim=-1)
@@ -485,9 +464,9 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             mem_out = None
         return dists, value_outputs, mem_out
 
-    def update_normalization(self, vector_obs: List[torch.Tensor]) -> None:
-        super().update_normalization(vector_obs)
-        self.critic.network_body.update_normalization(vector_obs)
+    def update_normalization(self, net_inputs: List[torch.Tensor]) -> None:
+        super().update_normalization(net_inputs)
+        self.critic.network_body.update_normalization(net_inputs)
 
 
 class GlobalSteps(nn.Module):

@@ -86,7 +86,15 @@ def pool_out_shape(h_w: Tuple[int, int], kernel_size: int) -> Tuple[int, int]:
     return height, width
 
 
-class VectorInput(nn.Module):
+class InputProcessor:
+    def copy_normalization(self, other_input: "InputProcessor") -> None:
+        pass
+
+    def update_normalization(self, inputs: torch.Tensor) -> None:
+        pass
+
+
+class VectorInput(nn.Module, InputProcessor):
     def __init__(self, input_size: int, normalize: bool = False):
         super().__init__()
         self.normalizer: Optional[Normalizer] = None
@@ -98,16 +106,17 @@ class VectorInput(nn.Module):
             inputs = self.normalizer(inputs)
         return inputs
 
-    def copy_normalization(self, other_input: "VectorInput") -> None:
-        if self.normalizer is not None and other_input.normalizer is not None:
-            self.normalizer.copy_from(other_input.normalizer)
+    def copy_normalization(self, other_input: "InputProcessor") -> None:
+        if isinstance(other_input, VectorInput):
+            if self.normalizer is not None and other_input.normalizer is not None:
+                self.normalizer.copy_from(other_input.normalizer)
 
     def update_normalization(self, inputs: torch.Tensor) -> None:
         if self.normalizer is not None:
             self.normalizer.update(inputs)
 
 
-class SmallVisualEncoder(nn.Module):
+class SmallVisualEncoder(nn.Module, InputProcessor):
     """
     CNN architecture used by King in their Candy Crush predictor
     https://www.researchgate.net/publication/328307928_Human-Like_Playtesting_with_Deep_Learning
@@ -144,7 +153,7 @@ class SmallVisualEncoder(nn.Module):
         return self.dense(hidden)
 
 
-class SimpleVisualEncoder(nn.Module):
+class SimpleVisualEncoder(nn.Module, InputProcessor):
     def __init__(
         self, height: int, width: int, initial_channels: int, output_size: int
     ):
@@ -176,7 +185,7 @@ class SimpleVisualEncoder(nn.Module):
         return self.dense(hidden)
 
 
-class NatureVisualEncoder(nn.Module):
+class NatureVisualEncoder(nn.Module, InputProcessor):
     def __init__(
         self, height: int, width: int, initial_channels: int, output_size: int
     ):
@@ -230,7 +239,7 @@ class ResNetBlock(nn.Module):
         return input_tensor + self.layers(input_tensor)
 
 
-class ResNetVisualEncoder(nn.Module):
+class ResNetVisualEncoder(nn.Module, InputProcessor):
     def __init__(
         self, height: int, width: int, initial_channels: int, output_size: int
     ):

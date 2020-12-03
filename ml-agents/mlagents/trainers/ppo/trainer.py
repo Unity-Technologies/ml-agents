@@ -14,6 +14,7 @@ from mlagents.trainers.policy import Policy
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
+from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, PPOSettings, FrameworkType
 from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
@@ -81,7 +82,10 @@ class PPOTrainer(RLTrainer):
         agent_buffer_trajectory = trajectory.to_agentbuffer()
         # Update the normalization
         if self.is_training:
-            self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
+            obs_to_normalize = AgentBuffer.obs_list_to_obs_batch(
+                agent_buffer_trajectory["obs"]
+            )
+            self.policy.update_normalization(obs_to_normalize)
 
         # Get all value estimates
         value_estimates, value_next = self.optimizer.get_trajectory_value_estimates(

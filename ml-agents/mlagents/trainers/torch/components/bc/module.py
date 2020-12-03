@@ -4,6 +4,7 @@ from mlagents.torch_utils import torch
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.demo_loader import demo_to_buffer
+from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.settings import BehavioralCloningSettings, ScheduleType
 from mlagents.trainers.torch.utils import ModelUtils
 
@@ -127,7 +128,9 @@ class BCModule:
         """
         Helper function for update_batch.
         """
-        vec_obs = [ModelUtils.list_to_tensor(mini_batch_demo["vector_obs"])]
+        obs = ModelUtils.list_to_tensor_list(
+            AgentBuffer.obs_list_to_obs_batch(mini_batch_demo["obs"]), dtype=torch.float
+        )
         act_masks = None
         if self.policy.use_continuous_act:
             expert_actions = ModelUtils.list_to_tensor(mini_batch_demo["actions"])
@@ -152,18 +155,6 @@ class BCModule:
         if self.policy.use_recurrent:
             memories = torch.zeros(1, self.n_sequences, self.policy.m_size)
 
-        if self.policy.use_vis_obs:
-            vis_obs = []
-            for idx, _ in enumerate(
-                self.policy.actor_critic.network_body.visual_processors
-            ):
-                vis_ob = ModelUtils.list_to_tensor(
-                    mini_batch_demo["visual_obs%d" % idx]
-                )
-                vis_obs.append(vis_ob)
-        else:
-            vis_obs = []
-
         (
             selected_actions,
             clipped_actions,
@@ -171,8 +162,7 @@ class BCModule:
             _,
             _,
         ) = self.policy.sample_actions(
-            vec_obs,
-            vis_obs,
+            obs,
             masks=act_masks,
             memories=memories,
             seq_len=self.policy.sequence_length,
