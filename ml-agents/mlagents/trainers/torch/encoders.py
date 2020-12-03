@@ -133,7 +133,7 @@ class SmallVisualEncoder(nn.Module):
                 self.final_flat,
                 self.h_size,
                 kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=1.0,
+                kernel_gain=1.41,  # Use ReLU gain
             ),
             nn.LeakyReLU(),
         )
@@ -165,7 +165,7 @@ class SimpleVisualEncoder(nn.Module):
                 self.final_flat,
                 self.h_size,
                 kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=1.0,
+                kernel_gain=1.41,  # Use ReLU gain
             ),
             nn.LeakyReLU(),
         )
@@ -200,7 +200,7 @@ class NatureVisualEncoder(nn.Module):
                 self.final_flat,
                 self.h_size,
                 kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=1.0,
+                kernel_gain=1.41,  # Use ReLU gain
             ),
             nn.LeakyReLU(),
         )
@@ -251,7 +251,7 @@ class ResNetVisualEncoder(nn.Module):
             n_channels[-1] * height * width,
             output_size,
             kernel_init=Initialization.KaimingHeNormal,
-            kernel_gain=1.0,
+            kernel_gain=1.41,  # Use ReLU gain
         )
         self.sequential = nn.Sequential(*layers)
 

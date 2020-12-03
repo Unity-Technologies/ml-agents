@@ -288,13 +288,19 @@ class TFPolicy(Policy):
             run_out["log_probs"] = log_probs_tuple
         if "action" in run_out:
             action_tuple = ActionTuple()
+            env_action_tuple = ActionTuple()
             if self.behavior_spec.action_spec.is_continuous():
-                action_tuple.add_continuous(run_out["action"])
+                action_tuple.add_continuous(run_out["pre_action"])
+                env_action_tuple.add_continuous(run_out["action"])
             else:
                 action_tuple.add_discrete(run_out["action"])
+                env_action_tuple.add_discrete(run_out["action"])
             run_out["action"] = action_tuple
+            run_out["env_action"] = env_action_tuple
+        self.check_nan_action(run_out.get("action"))
         return ActionInfo(
             action=run_out.get("action"),
+            env_action=run_out.get("env_action"),
             value=run_out.get("value"),
             outputs=run_out,
             agent_ids=decision_requests.agent_id,

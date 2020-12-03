@@ -98,7 +98,7 @@ namespace Unity.MLAgents
     /// * <see cref="BehaviorType.InferenceOnly"/>: decisions are always made using the trained
     ///   model specified in the <see cref="BehaviorParameters"/> component.
     /// * <see cref="BehaviorType.HeuristicOnly"/>: when a decision is needed, the agent's
-    ///   <see cref="Heuristic"/> function is called. Your implementation is responsible for
+    ///   <see cref="Heuristic(in ActionBuffers)"/> function is called. Your implementation is responsible for
     ///   providing the appropriate action.
     ///
     /// To trigger an agent decision automatically, you can attach a <see cref="DecisionRequester"/>
@@ -109,7 +109,7 @@ namespace Unity.MLAgents
     /// can only take an action when it touches the ground, so several frames might elapse between
     /// one decision and the need for the next.
     ///
-    /// Use the <see cref="OnActionReceived(float[])"/> function to implement the actions your agent can take,
+    /// Use the <see cref="OnActionReceived(ActionBuffers)"/> function to implement the actions your agent can take,
     /// such as moving to reach a goal or interacting with its environment.
     ///
     /// When you call <see cref="EndEpisode"/> on an agent or the agent reaches its <see cref="MaxStep"/> count,
@@ -125,7 +125,7 @@ namespace Unity.MLAgents
     /// only use the [MonoBehaviour.Update] function for cosmetic purposes. If you override the [MonoBehaviour]
     /// methods, [OnEnable()] or [OnDisable()], always call the base Agent class implementations.
     ///
-    /// You can implement the <see cref="Heuristic"/> function to specify agent actions using
+    /// You can implement the <see cref="Heuristic(in ActionBuffers)"/> function to specify agent actions using
     /// your own heuristic algorithm. Implementing a heuristic function can be useful
     /// for debugging. For example, you can use keyboard input to select agent actions in
     /// order to manually control an agent's behavior.
@@ -148,13 +148,13 @@ namespace Unity.MLAgents
     /// [OnDisable()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDisable.html]
     /// [OnBeforeSerialize()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnBeforeSerialize.html
     /// [OnAfterSerialize()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnAfterSerialize.html
-    /// [Agents]: https://github.com/Unity-Technologies/ml-agents/blob/release_9_docs/docs/Learning-Environment-Design-Agents.md
-    /// [Reinforcement Learning in Unity]: https://github.com/Unity-Technologies/ml-agents/blob/release_9_docs/docs/Learning-Environment-Design.md
+    /// [Agents]: https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/docs/Learning-Environment-Design-Agents.md
+    /// [Reinforcement Learning in Unity]: https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/docs/Learning-Environment-Design.md
     /// [Unity ML-Agents Toolkit]: https://github.com/Unity-Technologies/ml-agents
-    /// [Unity ML-Agents Toolkit manual]: https://github.com/Unity-Technologies/ml-agents/blob/release_9_docs/docs/Readme.md
+    /// [Unity ML-Agents Toolkit manual]: https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/docs/Readme.md
     ///
     /// </remarks>
-    [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/release_9_docs/" +
+    [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/" +
         "docs/Learning-Environment-Design-Agents.md")]
     [Serializable]
     [RequireComponent(typeof(BehaviorParameters))]
@@ -293,7 +293,7 @@ namespace Unity.MLAgents
 
         /// <summary>
         /// VectorActuator which is used by default if no other sensors exist on this Agent. This VectorSensor will
-        /// delegate its actions to <see cref="OnActionReceived(float[])"/> by default in order to keep backward compatibility
+        /// delegate its actions to <see cref="OnActionReceived(ActionBuffers)"/> by default in order to keep backward compatibility
         /// with the current behavior of Agent.
         /// </summary>
         IActuator m_VectorActuator;
@@ -630,7 +630,7 @@ namespace Unity.MLAgents
         /// Use <see cref="AddReward(float)"/> to incrementally change the reward rather than
         /// overriding it.
         ///
-        /// Typically, you assign rewards in the Agent subclass's <see cref="OnActionReceived(float[])"/>
+        /// Typically, you assign rewards in the Agent subclass's <see cref="OnActionReceived(ActionBuffers)"/>
         /// implementation after carrying out the received action and evaluating its success.
         ///
         /// Rewards are used during reinforcement learning; they are ignored during inference.
@@ -639,8 +639,8 @@ namespace Unity.MLAgents
         /// for information about mixing reward signals from curiosity and Generative Adversarial
         /// Imitation Learning (GAIL) with rewards supplied through this method.
         ///
-        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_9_docs/docs/Learning-Environment-Design-Agents.md#rewards
-        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_9_docs/docs/ML-Agents-Overview.md#a-quick-note-on-reward-signals
+        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/docs/Learning-Environment-Design-Agents.md#rewards
+        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/docs/ML-Agents-Overview.md#a-quick-note-on-reward-signals
         /// </remarks>
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
@@ -669,8 +669,8 @@ namespace Unity.MLAgents
         /// for information about mixing reward signals from curiosity and Generative Adversarial
         /// Imitation Learning (GAIL) with rewards supplied through this method.
         ///
-        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_9_docs/docs/Learning-Environment-Design-Agents.md#rewards
-        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_9_docs/docs/ML-Agents-Overview.md#a-quick-note-on-reward-signals
+        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/docs/Learning-Environment-Design-Agents.md#rewards
+        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/docs/ML-Agents-Overview.md#a-quick-note-on-reward-signals
         ///</remarks>
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
@@ -848,8 +848,8 @@ namespace Unity.MLAgents
         /// implementing a simple heuristic function can aid in debugging agent actions and interactions
         /// with its environment.
         ///
-        /// [Demonstration Recorder]: https://github.com/Unity-Technologies/ml-agents/blob/release_9_docs/docs/Learning-Environment-Design-Agents.md#recording-demonstrations
-        /// [Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_9_docs/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Demonstration Recorder]: https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/docs/Learning-Environment-Design-Agents.md#recording-demonstrations
+        /// [Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </remarks>
         /// <example>
@@ -859,11 +859,12 @@ namespace Unity.MLAgents
         /// You can also use the [Input System package], which provides a more flexible and
         /// configurable input system.
         /// <code>
-        ///     public override void Heuristic(ActionBuffers actionsOut)
+        ///     public override void Heuristic(in ActionBuffers actionsOut)
         ///     {
-        ///         actionsOut.ContinuousActions[0] = Input.GetAxis("Horizontal");
-        ///         actionsOut.ContinuousActions[1] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
-        ///         actionsOut.ContinuousActions[2] = Input.GetAxis("Vertical");
+        ///         var continuousActionsOut = actionsOut.ContinuousActions;
+        ///         continuousActionsOut[0] = Input.GetAxis("Horizontal");
+        ///         continuousActionsOut[1] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
+        ///         continuousActionsOut[2] = Input.GetAxis("Vertical");
         ///     }
         /// </code>
         /// [Input Manager]: https://docs.unity3d.com/Manual/class-InputManager.html
@@ -1099,7 +1100,7 @@ namespace Unity.MLAgents
         /// For more information about observations, see [Observations and Sensors].
         ///
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
-        /// [Observations and Sensors]: https://github.com/Unity-Technologies/ml-agents/blob/release_9_docs/docs/Learning-Environment-Design-Agents.md#observations-and-sensors
+        /// [Observations and Sensors]: https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/docs/Learning-Environment-Design-Agents.md#observations-and-sensors
         /// </remarks>
         public virtual void CollectObservations(VectorSensor sensor)
         {
@@ -1130,7 +1131,7 @@ namespace Unity.MLAgents
         ///
         /// See [Agents - Actions] for more information on masking actions.
         ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_9_docs/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         public virtual void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
@@ -1205,7 +1206,7 @@ namespace Unity.MLAgents
         ///
         /// For more information about implementing agent actions see [Agents - Actions].
         ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_9_docs/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <param name="actions">
         /// Struct containing the buffers of actions to be executed at this step.

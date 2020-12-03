@@ -93,7 +93,6 @@ def make_fake_trajectory(
             continuous=np.ones(action_spec.continuous_size, dtype=np.float32),
             discrete=np.ones(action_spec.discrete_size, dtype=np.float32),
         )
-        action_pre = np.zeros(action_size, dtype=np.float32)
         action_mask = (
             [
                 [False for _ in range(branch)]
@@ -117,7 +116,6 @@ def make_fake_trajectory(
             done=done,
             action=action,
             action_probs=action_probs,
-            action_pre=action_pre,
             action_mask=action_mask,
             prev_action=prev_action,
             interrupted=max_step,
@@ -133,7 +131,6 @@ def make_fake_trajectory(
         done=not max_step_complete,
         action=action,
         action_probs=action_probs,
-        action_pre=action_pre,
         action_mask=action_mask,
         prev_action=prev_action,
         interrupted=max_step_complete,

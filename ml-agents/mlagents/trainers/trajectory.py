@@ -12,7 +12,6 @@ class AgentExperience(NamedTuple):
     done: bool
     action: ActionTuple
     action_probs: LogProbsTuple
-    action_pre: np.ndarray  # TODO: Remove this
     action_mask: np.ndarray
     prev_action: np.ndarray
     interrupted: bool
@@ -107,9 +106,6 @@ class Trajectory(NamedTuple):
 
             agent_buffer_trajectory["masks"].append(1.0)
             agent_buffer_trajectory["done"].append(exp.done)
-            # Add the outputs of the last eval
-            if exp.action_pre is not None:
-                agent_buffer_trajectory["actions_pre"].append(exp.action_pre)
 
             # Adds the log prob and action of continuous/discrete separately
             agent_buffer_trajectory["continuous_action"].append(exp.action.continuous)

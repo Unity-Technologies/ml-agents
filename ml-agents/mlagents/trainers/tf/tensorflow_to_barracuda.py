@@ -702,6 +702,8 @@ def get_tensor_data(tensor):
         data = tensor.float_val
     if tensor.int_val:
         data = np.array(tensor.int_val, dtype=float)
+    if tensor.int64_val:
+        data = np.array(tensor.int64_val, dtype=float)
     if tensor.bool_val:
         data = np.array(tensor.bool_val, dtype=float)
     return np.array(data).reshape(dims)
