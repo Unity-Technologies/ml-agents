@@ -148,7 +148,7 @@ class BCModule:
                 )
             )
 
-        memories = []
+        memories = None
         if self.policy.use_recurrent:
             memories = torch.zeros(1, self.n_sequences, self.policy.m_size)
 
