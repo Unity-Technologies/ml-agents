@@ -16,10 +16,7 @@ namespace Unity.MLAgents.Editor
         const int k_VecObsNumLine = 3;
         const string k_ActionSpecName = "VectorActionSpec";
         const string k_ContinuousActionSizeName = "m_NumContinuousActions";
-        const string k_DiscreteActionSizeName = "m_NumDiscreteActions";
         const string k_DiscreteBranchSizeName = "m_BranchSizes";
-        const string k_ActionSizePropName = "VectorActionSize";
-        const string k_ActionTypePropName = "VectorActionSpaceType";
         const string k_ActionDescriptionPropName = "VectorActionDescriptions";
         const string k_VecObsPropName = "VectorObservationSize";
         const string k_NumVecObsPropName = "NumStackedVectorObservations";

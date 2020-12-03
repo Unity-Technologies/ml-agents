@@ -167,7 +167,7 @@ namespace Unity.MLAgents.Editor
         void UpdateBrainParameters()
         {
             var behaviorParameters = (BehaviorParameters)target;
-            behaviorParameters.BrainParameters.UpdateBrainParameters();
+            behaviorParameters.BrainParameters.UpdateDiscreteParameters();
         }
     }
 }
