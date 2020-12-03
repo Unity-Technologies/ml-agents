@@ -171,10 +171,11 @@ class TorchPolicy(Policy):
         actions: torch.Tensor,
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
+        critic_obs: Optional[List[List[torch.Tensor]]] = None,
         seq_len: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor, Dict[str, torch.Tensor]]:
         dists, value_heads, _ = self.actor_critic.get_dist_and_value(
-            obs, masks, memories, seq_len
+            obs, masks, memories, critic_obs, seq_len
         )
         action_list = [actions[..., i] for i in range(actions.shape[-1])]
         log_probs, entropies, _ = ModelUtils.get_probs_and_entropy(action_list, dists)
