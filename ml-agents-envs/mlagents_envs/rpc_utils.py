@@ -1,6 +1,6 @@
 from mlagents_envs.base_env import (
-    BehaviorSpec,
     ActionSpec,
+    BehaviorSpec,
     DecisionSteps,
     TerminalSteps,
 )

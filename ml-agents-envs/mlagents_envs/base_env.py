@@ -244,23 +244,25 @@ class TerminalSteps(Mapping):
         )
 
 
-class ActionTuple:
+class _ActionTupleBase(ABC):
     """
-    An object whose fields correspond to actions of different types.
-    Continuous and discrete actions are numpy arrays of type float32 and
-    int32, respectively and are type checked on construction.
-    Dimensions are of (n_agents, continuous_size) and (n_agents, discrete_size),
-    respectively.
+    An object whose fields correspond to action data of continuous and discrete
+    spaces. Dimensions are of (n_agents, continuous_size) and (n_agents, discrete_size),
+    respectively. Note, this also holds when continuous or discrete size is
+    zero.
     """
 
-    def __init__(self, continuous: np.ndarray, discrete: np.ndarray):
-        if continuous.dtype != np.float32:
-            continuous = continuous.astype(np.float32, copy=False)
-        self._continuous = continuous
-
-        if discrete.dtype != np.int32:
-            discrete = discrete.astype(np.int32, copy=False)
-        self._discrete = discrete
+    def __init__(
+        self,
+        continuous: Optional[np.ndarray] = None,
+        discrete: Optional[np.ndarray] = None,
+    ):
+        self._continuous: Optional[np.ndarray] = None
+        self._discrete: Optional[np.ndarray] = None
+        if continuous is not None:
+            self.add_continuous(continuous)
+        if discrete is not None:
+            self.add_discrete(discrete)
 
     @property
     def continuous(self) -> np.ndarray:
@@ -270,15 +272,44 @@ class ActionTuple:
     def discrete(self) -> np.ndarray:
         return self._discrete
 
-    @staticmethod
-    def create_continuous(continuous: np.ndarray) -> "ActionTuple":
-        discrete = np.zeros((continuous.shape[0], 0), dtype=np.int32)
-        return ActionTuple(continuous, discrete)
+    def add_continuous(self, continuous: np.ndarray) -> None:
+        if continuous.dtype != np.float32:
+            continuous = continuous.astype(np.float32, copy=False)
+        if self._discrete is None:
+            self._discrete = np.zeros(
+                (continuous.shape[0], 0), dtype=self.discrete_dtype
+            )
+        self._continuous = continuous
 
-    @staticmethod
-    def create_discrete(discrete: np.ndarray) -> "ActionTuple":
-        continuous = np.zeros((discrete.shape[0], 0), dtype=np.float32)
-        return ActionTuple(continuous, discrete)
+    def add_discrete(self, discrete: np.ndarray) -> None:
+        if discrete.dtype != self.discrete_dtype:
+            discrete = discrete.astype(self.discrete_dtype, copy=False)
+        if self._continuous is None:
+            self._continuous = np.zeros((discrete.shape[0], 0), dtype=np.float32)
+        self._discrete = discrete
+
+    @property
+    @abstractmethod
+    def discrete_dtype(self) -> np.dtype:
+        pass
+
+
+class ActionTuple(_ActionTupleBase):
+    """
+    An object whose fields correspond to actions of different types.
+    Continuous and discrete actions are numpy arrays of type float32 and
+    int32, respectively and are type checked on construction.
+    Dimensions are of (n_agents, continuous_size) and (n_agents, discrete_size),
+    respectively. Note, this also holds when continuous or discrete size is
+    zero.
+    """
+
+    @property
+    def discrete_dtype(self) -> np.dtype:
+        """
+        The dtype of a discrete action.
+        """
+        return np.int32
 
 
 class ActionSpec(NamedTuple):
@@ -330,9 +361,9 @@ class ActionSpec(NamedTuple):
         for a number of agents.
         :param n_agents: The number of agents that will have actions generated
         """
-        continuous = np.zeros((n_agents, self.continuous_size), dtype=np.float32)
-        discrete = np.zeros((n_agents, self.discrete_size), dtype=np.int32)
-        return ActionTuple(continuous, discrete)
+        _continuous = np.zeros((n_agents, self.continuous_size), dtype=np.float32)
+        _discrete = np.zeros((n_agents, self.discrete_size), dtype=np.int32)
+        return ActionTuple(continuous=_continuous, discrete=_discrete)
 
     def random_action(self, n_agents: int) -> ActionTuple:
         """
@@ -340,12 +371,12 @@ class ActionSpec(NamedTuple):
         or continuous) for a number of agents.
         :param n_agents: The number of agents that will have actions generated
         """
-        continuous = np.random.uniform(
+        _continuous = np.random.uniform(
             low=-1.0, high=1.0, size=(n_agents, self.continuous_size)
         )
-        discrete = np.zeros((n_agents, self.discrete_size), dtype=np.int32)
+        _discrete = np.zeros((n_agents, self.discrete_size), dtype=np.int32)
         if self.discrete_size > 0:
-            discrete = np.column_stack(
+            _discrete = np.column_stack(
                 [
                     np.random.randint(
                         0,
@@ -356,7 +387,7 @@ class ActionSpec(NamedTuple):
                     for i in range(self.discrete_size)
                 ]
             )
-        return ActionTuple(continuous, discrete)
+        return ActionTuple(continuous=_continuous, discrete=_discrete)
 
     def _validate_action(
         self, actions: ActionTuple, n_agents: int, name: str
@@ -366,14 +397,14 @@ class ActionSpec(NamedTuple):
         for the correct number of agents and ensures the type.
         """
         _expected_shape = (n_agents, self.continuous_size)
-        if self.continuous_size > 0 and actions.continuous.shape != _expected_shape:
+        if actions.continuous.shape != _expected_shape:
             raise UnityActionException(
                 f"The behavior {name} needs a continuous input of dimension "
                 f"{_expected_shape} for (<number of agents>, <action size>) but "
                 f"received input of dimension {actions.continuous.shape}"
             )
         _expected_shape = (n_agents, self.discrete_size)
-        if self.discrete_size > 0 and actions.discrete.shape != _expected_shape:
+        if actions.discrete.shape != _expected_shape:
             raise UnityActionException(
                 f"The behavior {name} needs a discrete input of dimension "
                 f"{_expected_shape} for (<number of agents>, <action size>) but "

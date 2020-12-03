@@ -1,15 +1,17 @@
-from typing import List, NamedTuple, Dict
+from typing import List, NamedTuple
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
+from mlagents_envs.base_env import ActionTuple
+from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 
 
 class AgentExperience(NamedTuple):
     obs: List[np.ndarray]
     reward: float
     done: bool
-    action: Dict[str, np.ndarray]
-    action_probs: Dict[str, np.ndarray]
+    action: ActionTuple
+    action_probs: LogProbsTuple
     action_pre: np.ndarray  # TODO: Remove this
     action_mask: np.ndarray
     prev_action: np.ndarray
@@ -110,10 +112,14 @@ class Trajectory(NamedTuple):
                 agent_buffer_trajectory["actions_pre"].append(exp.action_pre)
 
             # Adds the log prob and action of continuous/discrete separately
-            for act_type, act_array in exp.action.items():
-                agent_buffer_trajectory[act_type].append(act_array)
-            for log_type, log_array in exp.action_probs.items():
-                agent_buffer_trajectory[log_type].append(log_array)
+            agent_buffer_trajectory["continuous_action"].append(exp.action.continuous)
+            agent_buffer_trajectory["discrete_action"].append(exp.action.discrete)
+            agent_buffer_trajectory["continuous_log_probs"].append(
+                exp.action_probs.continuous
+            )
+            agent_buffer_trajectory["discrete_log_probs"].append(
+                exp.action_probs.discrete
+            )
 
             # Store action masks if necessary. Note that 1 means active, while
             # in AgentExperience False means active.
@@ -124,10 +130,7 @@ class Trajectory(NamedTuple):
                 # This should never be needed unless the environment somehow doesn't supply the
                 # action mask in a discrete space.
 
-                if "discrete_action" in exp.action:
-                    action_shape = exp.action["discrete_action"].shape
-                else:
-                    action_shape = exp.action["continuous_action"].shape
+                action_shape = exp.action.discrete.shape
                 agent_buffer_trajectory["action_mask"].append(
                     np.ones(action_shape, dtype=np.float32), padding_value=1
                 )

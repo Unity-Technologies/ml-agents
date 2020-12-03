@@ -18,7 +18,7 @@ from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
 
 OBS_SIZE = 1
 VIS_OBS_SIZE = (20, 20, 3)
-STEP_SIZE = 0.1
+STEP_SIZE = 0.2
 
 TIME_PENALTY = 0.01
 MIN_STEPS = int(1.0 / STEP_SIZE) + 1
@@ -38,29 +38,27 @@ class SimpleEnvironment(BaseEnv):
     def __init__(
         self,
         brain_names,
-        use_discrete,
         step_size=STEP_SIZE,
         num_visual=0,
         num_vector=1,
         vis_obs_size=VIS_OBS_SIZE,
         vec_obs_size=OBS_SIZE,
-        action_size=1,
+        action_sizes=(1, 0),
     ):
         super().__init__()
-        self.discrete = use_discrete
         self.num_visual = num_visual
         self.num_vector = num_vector
         self.vis_obs_size = vis_obs_size
         self.vec_obs_size = vec_obs_size
-        if use_discrete:
-            action_spec = ActionSpec.create_discrete(
-                tuple(2 for _ in range(action_size))
-            )
-        else:
-            action_spec = ActionSpec.create_continuous(action_size)
+        continuous_action_size, discrete_action_size = action_sizes
+        discrete_tuple = tuple(2 for _ in range(discrete_action_size))
+        action_spec = ActionSpec(continuous_action_size, discrete_tuple)
+        self.total_action_size = (
+            continuous_action_size + discrete_action_size
+        )  # to set the goals/positions
+        self.action_spec = action_spec
         self.behavior_spec = BehaviorSpec(self._make_obs_spec(), action_spec)
         self.action_spec = action_spec
-        self.action_size = action_size
         self.names = brain_names
         self.positions: Dict[str, List[float]] = {}
         self.step_count: Dict[str, float] = {}
@@ -117,12 +115,12 @@ class SimpleEnvironment(BaseEnv):
     def _take_action(self, name: str) -> bool:
         deltas = []
         _act = self.action[name]
-        if self.action_spec.discrete_size > 0:
-            for _disc in _act.discrete[0]:
-                deltas.append(1 if _disc else -1)
         if self.action_spec.continuous_size > 0:
             for _cont in _act.continuous[0]:
                 deltas.append(_cont)
+        if self.action_spec.discrete_size > 0:
+            for _disc in _act.discrete[0]:
+                deltas.append(1 if _disc else -1)
         for i, _delta in enumerate(deltas):
             _delta = clamp(_delta, -self.step_size, self.step_size)
             self.positions[name][i] += _delta
@@ -133,13 +131,14 @@ class SimpleEnvironment(BaseEnv):
         return done
 
     def _generate_mask(self):
-        if self.discrete:
+        action_mask = None
+        if self.action_spec.discrete_size > 0:
             # LL-Python API will return an empty dim if there is only 1 agent.
-            ndmask = np.array(2 * self.action_size * [False], dtype=np.bool)
+            ndmask = np.array(
+                2 * self.action_spec.discrete_size * [False], dtype=np.bool
+            )
             ndmask = np.expand_dims(ndmask, axis=0)
             action_mask = [ndmask]
-        else:
-            action_mask = None
         return action_mask
 
     def _compute_reward(self, name: str, done: bool) -> float:
@@ -155,7 +154,7 @@ class SimpleEnvironment(BaseEnv):
 
     def _reset_agent(self, name):
         self.goal[name] = self.random.choice([-1, 1])
-        self.positions[name] = [0.0 for _ in range(self.action_size)]
+        self.positions[name] = [0.0 for _ in range(self.total_action_size)]
         self.step_count[name] = 0
         self.rewards[name] = 0
         self.agent_id[name] = self.agent_id[name] + 1
@@ -220,8 +219,8 @@ class SimpleEnvironment(BaseEnv):
 
 
 class MemoryEnvironment(SimpleEnvironment):
-    def __init__(self, brain_names, use_discrete, step_size=0.2):
-        super().__init__(brain_names, use_discrete, step_size=step_size)
+    def __init__(self, brain_names, action_sizes=(1, 0), step_size=0.2):
+        super().__init__(brain_names, action_sizes=action_sizes, step_size=step_size)
         # Number of steps to reveal the goal for. Lower is harder. Should be
         # less than 1/step_size to force agent to use memory
         self.num_show_steps = 2
@@ -264,18 +263,18 @@ class RecordEnvironment(SimpleEnvironment):
     def __init__(
         self,
         brain_names,
-        use_discrete,
         step_size=0.2,
         num_visual=0,
         num_vector=1,
+        action_sizes=(1, 0),
         n_demos=30,
     ):
         super().__init__(
             brain_names,
-            use_discrete,
             step_size=step_size,
             num_visual=num_visual,
             num_vector=num_vector,
+            action_sizes=action_sizes,
         )
         self.demonstration_protos: Dict[str, List[AgentInfoActionPairProto]] = {}
         self.n_demos = n_demos
@@ -285,7 +284,7 @@ class RecordEnvironment(SimpleEnvironment):
     def step(self) -> None:
         super().step()
         for name in self.names:
-            if self.discrete:
+            if self.action_spec.discrete_size > 0:
                 action = self.action[name].discrete
             else:
                 action = self.action[name].continuous
@@ -300,7 +299,7 @@ class RecordEnvironment(SimpleEnvironment):
         self.reset()
         for _ in range(self.n_demos):
             for name in self.names:
-                if self.discrete:
+                if self.action_spec.discrete_size > 0:
                     self.action[name] = ActionTuple(
                         np.array([], dtype=np.float32),
                         np.array(

@@ -186,7 +186,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
 @pytest.mark.parametrize("num_envs", [1, 4])
 def test_subprocess_env_endtoend(num_envs):
     def simple_env_factory(worker_id, config):
-        env = SimpleEnvironment(["1D"], use_discrete=True)
+        env = SimpleEnvironment(["1D"], action_sizes=(0, 1))
         return env
 
     env_manager = SubprocessEnvManager(
