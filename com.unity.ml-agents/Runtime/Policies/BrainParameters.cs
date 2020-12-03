@@ -196,7 +196,7 @@ namespace Unity.MLAgents.Policies
             }
         }
 
-        internal void UpdateBrainParameters()
+        internal void UpdateDiscreteParameters()
         {
             VectorActionSpec.NumDiscreteActions = VectorActionSpec.BranchSizes.Length;
             VectorActionSpec.SumOfDiscreteBranchSizes = VectorActionSpec.BranchSizes.Sum();
