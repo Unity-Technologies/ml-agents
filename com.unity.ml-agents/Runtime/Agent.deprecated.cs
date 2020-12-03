@@ -39,7 +39,15 @@ namespace Unity.MLAgents
         // [Obsolete("GetAction has been deprecated, please use GetStoredActionBuffers, Or GetStoredDiscreteActions.")]
         public float[] GetAction()
         {
-            return m_Info.storedVectorActions;
+            var storedAction = m_Info.storedVectorActions;
+            if (!storedAction.ContinuousActions.IsEmpty())
+            {
+                return storedAction.ContinuousActions.Array;
+            }
+            else
+            {
+                return Array.ConvertAll(storedAction.DiscreteActions.Array, x => (float)x);
+            }
         }
     }
 }

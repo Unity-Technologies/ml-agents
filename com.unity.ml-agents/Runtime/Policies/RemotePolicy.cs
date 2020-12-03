@@ -42,7 +42,7 @@ namespace Unity.MLAgents.Policies
         {
             m_Communicator?.DecideBatch();
             var actions = m_Communicator?.GetActions(m_FullyQualifiedBehaviorName, m_AgentId);
-            m_LastActionBuffer = ActionBuffers.FromActionSpec(m_ActionSpec, actions);
+            m_LastActionBuffer = actions == null ? ActionBuffers.Empty : (ActionBuffers)actions;
             return ref m_LastActionBuffer;
         }
 

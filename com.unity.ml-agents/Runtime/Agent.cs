@@ -22,7 +22,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// Keeps track of the last vector action taken by the Brain.
         /// </summary>
-        public float[] storedVectorActions;
+        public ActionBuffers storedVectorActions;
 
         /// <summary>
         /// For discrete control, specifies the actions that the agent cannot take.
@@ -53,12 +53,21 @@ namespace Unity.MLAgents
 
         public void ClearActions()
         {
-            Array.Clear(storedVectorActions, 0, storedVectorActions.Length);
+            storedVectorActions.Clear();
         }
 
         public void CopyActions(ActionBuffers actionBuffers)
         {
-            actionBuffers.PackActions(storedVectorActions);
+            var continuousActions = storedVectorActions.ContinuousActions;
+            for (var i = 0; i < actionBuffers.ContinuousActions.Length; i++)
+            {
+                continuousActions[i] = actionBuffers.ContinuousActions[i];
+            }
+            var discreteActions = storedVectorActions.DiscreteActions;
+            for (var i = 0; i < actionBuffers.DiscreteActions.Length; i++)
+            {
+                discreteActions[i] = actionBuffers.DiscreteActions[i];
+            }
         }
     }
 
@@ -430,7 +439,10 @@ namespace Unity.MLAgents
                 InitializeSensors();
             }
 
-            m_Info.storedVectorActions = new float[m_ActuatorManager.TotalNumberOfActions];
+            m_Info.storedVectorActions = new ActionBuffers(
+                new float[m_ActuatorManager.NumContinuousActions],
+                new int[m_ActuatorManager.NumDiscreteActions]
+            );
 
             // The first time the Academy resets, all Agents in the scene will be
             // forced to reset through the <see cref="AgentForceReset"/> event.
@@ -546,7 +558,7 @@ namespace Unity.MLAgents
             m_CumulativeReward = 0f;
             m_RequestAction = false;
             m_RequestDecision = false;
-            Array.Clear(m_Info.storedVectorActions, 0, m_Info.storedVectorActions.Length);
+            m_Info.storedVectorActions.Clear();
         }
 
         /// <summary>
@@ -1009,7 +1021,7 @@ namespace Unity.MLAgents
             }
             else
             {
-                m_ActuatorManager.StoredActions.PackActions(m_Info.storedVectorActions);
+                m_Info.CopyActions(m_ActuatorManager.StoredActions);
             }
 
             UpdateSensors();
@@ -1212,7 +1224,14 @@ namespace Unity.MLAgents
         /// </param>
         public virtual void OnActionReceived(ActionBuffers actions)
         {
-            actions.PackActions(m_LegacyActionCache);
+            if (!actions.ContinuousActions.IsEmpty())
+            {
+                m_LegacyActionCache = actions.ContinuousActions.Array;
+            }
+            else
+            {
+                m_LegacyActionCache = Array.ConvertAll(actions.DiscreteActions.Array, x => (float)x);
+            }
             OnActionReceived(m_LegacyActionCache);
         }
 

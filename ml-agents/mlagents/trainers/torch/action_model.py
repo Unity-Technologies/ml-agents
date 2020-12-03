@@ -156,7 +156,7 @@ class ActionModel(nn.Module):
         :return: A tuple of torch tensors corresponding to the inference output
         """
         dists = self._get_dists(inputs, masks)
-        continuous_out, discrete_out = None, None
+        continuous_out, discrete_out, action_out_deprecated = None, None, None
         if self.action_spec.continuous_size > 0 and dists.continuous is not None:
             continuous_out = dists.continuous.exported_model_output()
             action_out_deprecated = continuous_out

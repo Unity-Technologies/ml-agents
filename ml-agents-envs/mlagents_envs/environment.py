@@ -424,14 +424,17 @@ class UnityEnvironment(BaseEnv):
             if n_agents == 0:
                 continue
             for i in range(n_agents):
-                # TODO add separate fields for continuous and discrete actions in AgentActionProto
-                _act = []
+                action = AgentActionProto()
                 if vector_action[b].continuous is not None:
-                    _act.append(vector_action[b].continuous[i])
+                    action.vector_actions_deprecated.extend(
+                        vector_action[b].continuous[i]
+                    )
+                    action.continuous_actions.extend(vector_action[b].continuous[i])
                 if vector_action[b].discrete is not None:
-                    _act.append(vector_action[b].discrete[i])
-                _act = np.concatenate(_act, axis=0)
-                action = AgentActionProto(vector_actions=_act)
+                    action.vector_actions_deprecated.extend(
+                        vector_action[b].discrete[i]
+                    )
+                    action.discrete_actions.extend(vector_action[b].discrete[i])
                 rl_in.agent_actions[b].value.extend([action])
                 rl_in.command = STEP
         rl_in.side_channel = bytes(

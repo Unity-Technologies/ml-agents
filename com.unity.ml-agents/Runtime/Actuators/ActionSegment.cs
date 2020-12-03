@@ -112,7 +112,7 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         public bool IsEmpty()
         {
-            return Array.Length == 0;
+            return Array == null || Array.Length == 0;
         }
 
         /// <inheritdoc/>

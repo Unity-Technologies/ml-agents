@@ -28,9 +28,17 @@ namespace Unity.MLAgents
             var agentInfoProto = ai.ToAgentInfoProto();
 
             var agentActionProto = new AgentActionProto();
-            if (ai.storedVectorActions != null)
+
+            if (!ai.storedVectorActions.IsEmpty())
             {
-                agentActionProto.VectorActions.AddRange(ai.storedVectorActions);
+                if (!ai.storedVectorActions.ContinuousActions.IsEmpty())
+                {
+                    agentActionProto.ContinuousActions.AddRange(ai.storedVectorActions.ContinuousActions.Array);
+                }
+                if (!ai.storedVectorActions.DiscreteActions.IsEmpty())
+                {
+                    agentActionProto.DiscreteActions.AddRange(ai.storedVectorActions.DiscreteActions.Array);
+                }
             }
 
             return new AgentInfoActionPairProto
@@ -221,15 +229,21 @@ namespace Unity.MLAgents
         }
 
         #region AgentAction
-        public static List<float[]> ToAgentActionList(this UnityRLInputProto.Types.ListAgentActionProto proto)
+        public static List<ActionBuffers> ToAgentActionList(this UnityRLInputProto.Types.ListAgentActionProto proto)
         {
-            var agentActions = new List<float[]>(proto.Value.Count);
+            var agentActions = new List<ActionBuffers>(proto.Value.Count);
             foreach (var ap in proto.Value)
             {
-                agentActions.Add(ap.VectorActions.ToArray());
+                agentActions.Add(ap.ToActionBuffers());
             }
             return agentActions;
         }
+
+        public static ActionBuffers ToActionBuffers(this AgentActionProto proto)
+        {
+            return new ActionBuffers(proto.ContinuousActions.ToArray(), proto.DiscreteActions.ToArray());
+        }
+
         #endregion
 
         #region Observations
