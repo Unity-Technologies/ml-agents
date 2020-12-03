@@ -40,6 +40,7 @@ from mlagents_envs.side_channel.side_channel import SideChannel
 
 
 logger = logging_util.get_logger(__name__)
+WORKER_SHUTDOWN_TIMEOUT = timedelta(seconds=10)
 
 
 class EnvironmentCommand(enum.Enum):
@@ -317,16 +318,13 @@ class SubprocessEnvManager(EnvManager):
         for env_worker in self.env_workers:
             env_worker.request_close()
         # Pull messages out of the queue until every worker has CLOSED or we time out.
-        WORKER_SHUTDOWN_TIMEOUT = timedelta(seconds=10)
         deadline = datetime.now() + WORKER_SHUTDOWN_TIMEOUT
         while self.workers_alive > 0 and datetime.now() < deadline:
             try:
                 step: EnvironmentResponse = self.step_queue.get_nowait()
-                if (
-                    step.cmd == EnvironmentCommand.CLOSED
-                    and not self.env_workers[step.worker_id].closed
-                ):
-                    self.env_workers[step.worker_id].closed = True
+                env_worker = self.env_workers[step.worker_id]
+                if step.cmd == EnvironmentCommand.CLOSED and not env_worker.closed:
+                    env_worker.closed = True
                     self.workers_alive -= 1
                 # Discard all other messages.
             except EmptyQueueException:
@@ -334,12 +332,10 @@ class SubprocessEnvManager(EnvManager):
         self.step_queue.close()
         # Sanity check to kill zombie workers and report an issue if they occur.
         if self.workers_alive > 0:
-            logger.error(
-                "SubprocessEnvManager's had workers that didn't signal shutdown"
-            )
-            for w in self.env_workers:
-                if not w.closed and w.process.exitcode is None:
-                    w.process.terminate()
+            logger.error("SubprocessEnvManager had workers that didn't signal shutdown")
+            for env_worker in self.env_workers:
+                if not env_worker.closed and env_worker.process.is_alive():
+                    env_worker.process.terminate()
                     raise AssertionError(
                         "A SubprocessEnvManager worker did not shut down correctly"
                     )
