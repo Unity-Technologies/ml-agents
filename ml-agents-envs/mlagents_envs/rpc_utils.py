@@ -245,7 +245,7 @@ def _process_vector_observation(
             for agent_obs in agent_info_list
         ],
         dtype=np.float32,
-    ).reshape((len(agent_info_list), ) + shape)
+    ).reshape((len(agent_info_list),) + shape)
     _raise_on_nan_and_inf(np_obs, "observations")
     return np_obs
 
