@@ -234,10 +234,16 @@ namespace Unity.MLAgents
             var agentActions = new List<ActionBuffers>(proto.Value.Count);
             foreach (var ap in proto.Value)
             {
-                agentActions.Add(new ActionBuffers(ap.ContinuousActions.ToArray(), ap.DiscreteActions.ToArray()));
+                agentActions.Add(ap.ToActionBuffers());
             }
             return agentActions;
         }
+
+        public static ActionBuffers ToActionBuffers(this AgentActionProto proto)
+        {
+            return new ActionBuffers(proto.ContinuousActions.ToArray(), proto.DiscreteActions.ToArray());
+        }
+
         #endregion
 
         #region Observations
