@@ -138,7 +138,7 @@ def test_2d_sac(action_sizes):
         SAC_TORCH_CONFIG.hyperparameters, buffer_init_steps=2000
     )
     config = attr.evolve(
-        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=10000
+        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=6000
     )
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.8)
 
@@ -192,7 +192,7 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_recurrent_sac(action_sizes):
-    step_size = 0.2 if action_sizes else 0.5
+    step_size = 0.2 if action_sizes == (0, 1) else 0.5
     env = MemoryEnvironment(
         [BRAIN_NAME], action_sizes=action_sizes, step_size=step_size
     )
@@ -310,11 +310,9 @@ def simple_record(tmpdir_factory):
         agent_info_protos = env.demonstration_protos[BRAIN_NAME]
         meta_data_proto = DemonstrationMetaProto()
         brain_param_proto = BrainParametersProto(
-            vector_action_size_deprecated=[2] if action_sizes else [1],
-            vector_action_descriptions_deprecated=[""],
-            vector_action_space_type_deprecated=discrete
-            if action_sizes
-            else continuous,
+            vector_action_size=[2] if action_sizes else [1],
+            vector_action_descriptions=[""],
+            vector_action_space_type=discrete if action_sizes else continuous,
             brain_name=BRAIN_NAME,
             is_training=True,
         )

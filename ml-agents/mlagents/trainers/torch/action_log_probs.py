@@ -15,7 +15,8 @@ class LogProbsTuple(_ActionTupleBase):
     zero.
     """
 
-    def get_discrete_dtype(self) -> np.dtype:
+    @property
+    def discrete_dtype(self) -> np.dtype:
         """
         The dtype of a discrete log probability.
         """
