@@ -145,7 +145,7 @@ public class DodgeAgent : Agent
     {
         if (collision.gameObject.CompareTag("bullet") || collision.gameObject.CompareTag("wall"))
         {
-            SetReward(0f);
+            SetReward(-1f);
             EndEpisode();
         }
     }

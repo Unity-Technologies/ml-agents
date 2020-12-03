@@ -49,7 +49,9 @@ MonoBehaviour:
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
-  rad: 5
+  rad: 23
+  time: 0.2
+  dir: -1
   useVectorObs: 0
 --- !u!1 &7099812715628705112
 GameObject:
@@ -100,7 +102,9 @@ MonoBehaviour:
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
-  rad: 1
+  rad: 23
+  time: 0.3
+  dir: 1
   useVectorObs: 0
 --- !u!1 &7564015931936126656
 GameObject:
@@ -168,6 +172,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -263,6 +268,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -401,16 +407,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7562565324271374322}
     m_Modifications:
-    - target: {fileID: 968348991679639438, guid: 7a515d80a9d5b4cfaba55aa066594016,
+    - target: {fileID: 5229809530250264056, guid: 7a515d80a9d5b4cfaba55aa066594016,
         type: 3}
-      propertyPath: ground
-      value: 
-      objectReference: {fileID: 7564015931936126656}
-    - target: {fileID: 968348991679639438, guid: 7a515d80a9d5b4cfaba55aa066594016,
+      propertyPath: m_Name
+      value: DodgeAgentRaycast
+      objectReference: {fileID: 0}
+    - target: {fileID: 5229809530250264056, guid: 7a515d80a9d5b4cfaba55aa066594016,
         type: 3}
-      propertyPath: area
-      value: 
-      objectReference: {fileID: 7565593112241766594}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2272550728573618168, guid: 7a515d80a9d5b4cfaba55aa066594016,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -466,16 +472,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5229809530250264056, guid: 7a515d80a9d5b4cfaba55aa066594016,
+    - target: {fileID: 968348991679639438, guid: 7a515d80a9d5b4cfaba55aa066594016,
         type: 3}
-      propertyPath: m_Name
-      value: DodgeAgentRaycast
-      objectReference: {fileID: 0}
-    - target: {fileID: 5229809530250264056, guid: 7a515d80a9d5b4cfaba55aa066594016,
+      propertyPath: ground
+      value: 
+      objectReference: {fileID: 7564015931936126656}
+    - target: {fileID: 968348991679639438, guid: 7a515d80a9d5b4cfaba55aa066594016,
         type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
+      propertyPath: area
+      value: 
+      objectReference: {fileID: 7565593112241766594}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7a515d80a9d5b4cfaba55aa066594016, type: 3}
 --- !u!4 &4270948751059092865 stripped
@@ -491,16 +497,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7562565324271374322}
     m_Modifications:
-    - target: {fileID: 968348991679639438, guid: 16266ae2c040142b1a996878d94ec3fb,
+    - target: {fileID: 5229809530250264056, guid: 16266ae2c040142b1a996878d94ec3fb,
         type: 3}
-      propertyPath: ground
-      value: 
-      objectReference: {fileID: 7564015931936126656}
-    - target: {fileID: 968348991679639438, guid: 16266ae2c040142b1a996878d94ec3fb,
+      propertyPath: m_Name
+      value: DodgeAgent
+      objectReference: {fileID: 0}
+    - target: {fileID: 5229809530250264056, guid: 16266ae2c040142b1a996878d94ec3fb,
         type: 3}
-      propertyPath: area
-      value: 
-      objectReference: {fileID: 7565593112241766594}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2272550728573618168, guid: 16266ae2c040142b1a996878d94ec3fb,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -556,16 +562,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5229809530250264056, guid: 16266ae2c040142b1a996878d94ec3fb,
+    - target: {fileID: 968348991679639438, guid: 16266ae2c040142b1a996878d94ec3fb,
         type: 3}
-      propertyPath: m_Name
-      value: DodgeAgent
-      objectReference: {fileID: 0}
-    - target: {fileID: 5229809530250264056, guid: 16266ae2c040142b1a996878d94ec3fb,
+      propertyPath: ground
+      value: 
+      objectReference: {fileID: 7564015931936126656}
+    - target: {fileID: 968348991679639438, guid: 16266ae2c040142b1a996878d94ec3fb,
         type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
+      propertyPath: area
+      value: 
+      objectReference: {fileID: 7565593112241766594}
     m_RemovedComponents:
     - {fileID: 9204493211719777360, guid: 16266ae2c040142b1a996878d94ec3fb, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 16266ae2c040142b1a996878d94ec3fb, type: 3}
@@ -588,26 +594,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7562565324271374322}
     m_Modifications:
-    - target: {fileID: 114291266114270340, guid: 6693afcd33b8842fba88da9b967315ff,
+    - target: {fileID: 5229809530250264056, guid: 6693afcd33b8842fba88da9b967315ff,
         type: 3}
-      propertyPath: ChannelDepth.Array.size
-      value: 1
+      propertyPath: m_Name
+      value: GridDodgeAgent
       objectReference: {fileID: 0}
-    - target: {fileID: 114291266114270340, guid: 6693afcd33b8842fba88da9b967315ff,
+    - target: {fileID: 5229809530250264056, guid: 6693afcd33b8842fba88da9b967315ff,
         type: 3}
-      propertyPath: ChannelDepth.Array.data[0]
-      value: 1
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 968348991679639438, guid: 6693afcd33b8842fba88da9b967315ff,
-        type: 3}
-      propertyPath: ground
-      value: 
-      objectReference: {fileID: 7564015931936126656}
-    - target: {fileID: 968348991679639438, guid: 6693afcd33b8842fba88da9b967315ff,
-        type: 3}
-      propertyPath: area
-      value: 
-      objectReference: {fileID: 7565593112241766594}
     - target: {fileID: 2272550728573618168, guid: 6693afcd33b8842fba88da9b967315ff,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -663,15 +659,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5229809530250264056, guid: 6693afcd33b8842fba88da9b967315ff,
+    - target: {fileID: 968348991679639438, guid: 6693afcd33b8842fba88da9b967315ff,
         type: 3}
-      propertyPath: m_Name
-      value: GridDodgeAgent
+      propertyPath: ground
+      value: 
+      objectReference: {fileID: 7564015931936126656}
+    - target: {fileID: 968348991679639438, guid: 6693afcd33b8842fba88da9b967315ff,
+        type: 3}
+      propertyPath: area
+      value: 
+      objectReference: {fileID: 7565593112241766594}
+    - target: {fileID: 114291266114270340, guid: 6693afcd33b8842fba88da9b967315ff,
+        type: 3}
+      propertyPath: ChannelDepth.Array.size
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5229809530250264056, guid: 6693afcd33b8842fba88da9b967315ff,
+    - target: {fileID: 114291266114270340, guid: 6693afcd33b8842fba88da9b967315ff,
         type: 3}
-      propertyPath: m_IsActive
-      value: 0
+      propertyPath: ChannelDepth.Array.data[0]
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6693afcd33b8842fba88da9b967315ff, type: 3}

@@ -24,6 +24,8 @@ public class BulletAgent : MonoBehaviour
     [HideInInspector]
     public Bounds areaBounds;
     public float rad;
+    public float time;
+    public float dir;
 
     BulletSettings m_BulletSettings;
 
@@ -74,24 +76,19 @@ public class BulletAgent : MonoBehaviour
 
     public void FixedUpdate()
     {
-        if (Time.time > m_BulletTime + 0.03f)
+        if (Time.time > m_BulletTime + time)
         {
             //var x = Random.Range(-1f * m_x, m_x) + area.transform.position.x;
             //var z = Random.Range(-1f * m_z, m_z) + area.transform.position.z;
-            var r = Random.Range(0f, 360f);
-            var ra = Random.Range(0, 2);
-            var dir = -1f;
-            if (ra == 1)
-            {
-                dir = 1f;
-            }
-            var angle = dir * (5f * Mathf.PI/ 180f);
+            //var r = Random.Range(0f, 360f);
+
+            var angle = dir * (30f * Mathf.PI/ 180f);
             var x = Mathf.Cos(angle) * (m_currX - area.transform.position.x) - Mathf.Sin(angle) * (m_currZ - area.transform.position.z) + area.transform.position.x;;
             var z = Mathf.Sin(angle) * (m_currX - area.transform.position.x) + Mathf.Cos(angle) * (m_currZ - area.transform.position.z) + area.transform.position.z;
             var pos = new Vector3(x, 0.5f, z);
 
-            Quaternion rotation = Quaternion.Euler(0, r, 0);
-            //Quaternion rotation = Quaternion.LookRotation(m_center - pos);
+            //Quaternion rotation = Quaternion.Euler(0, r, 0);
+            Quaternion rotation = Quaternion.LookRotation(m_center - pos);
             var ob = Instantiate(m_BulletRb, pos, rotation, area.transform);
             m_currX = x;
             m_currZ = z;
