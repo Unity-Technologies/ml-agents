@@ -197,7 +197,7 @@
                     "id": "0c0d917f-0af9-4575-b970-f441fd97db20",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
-                    "processors": "StickDeadzone",
+                    "processors": "StickDeadzone(min=0.15,max=0.925)",
                     "groups": "",
                     "action": "RotateBody",
                     "isComposite": false,

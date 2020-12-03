@@ -39,6 +39,7 @@ public class GunController : MonoBehaviour
     private bool m_TransformIsShaking;
 
     CinemachineImpulseSource impulseSource;
+    public GameObject MuzzleFlashObject;
 
     // Start is called before the first frame update
     void Awake()
@@ -70,7 +71,10 @@ public class GunController : MonoBehaviour
             //            p.projectileController = this;
             p.gameObject.SetActive(false);
         }
-
+        if (MuzzleFlashObject)
+        {
+            MuzzleFlashObject.SetActive(false);
+        }
         initialized = true;
     }
 
@@ -161,6 +165,12 @@ public class GunController : MonoBehaviour
     {
         m_TransformIsShaking = true;
         WaitForFixedUpdate wait = new WaitForFixedUpdate();
+
+        if (MuzzleFlashObject)
+        {
+            MuzzleFlashObject.transform.localScale = Random.Range(.5f, 1.2f) * Vector3.one;
+            MuzzleFlashObject.SetActive(true);
+        }
         float timer = 0;
         startPos = transform.localPosition;
         while (timer < ShakeDuration)
@@ -171,6 +181,10 @@ public class GunController : MonoBehaviour
             yield return wait;
         }
         transform.localPosition = startPos;
+        if (MuzzleFlashObject)
+        {
+            MuzzleFlashObject.SetActive(false);
+        }
         m_TransformIsShaking = false;
     }
 

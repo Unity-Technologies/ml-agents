@@ -18,7 +18,8 @@ public class FPSAgent : Agent
 
     //    bool m_Shoot;
     private Camera m_Cam;
-    [Header("HEALTH")] public AgentHealth agentHealth;
+    [Header("HEALTH")] public AgentHealth AgentHealth;
+    [Header("SHIELD")] public ShieldController AgentShield;
 
     private FPSAgentInput input;
     // Start is called before the first frame update
@@ -102,6 +103,14 @@ public class FPSAgent : Agent
         //
         //        m_CubeMovement.Strafe(transform.right * m_InputH);
         //        }
+        if (AgentShield && act[6] > 0)
+        {
+            AgentShield.ActivateShield(true);
+        }
+        else
+        {
+            AgentShield.ActivateShield(false);
+        }
         if (m_ShootInput > 0)
         {
             gunController.Shoot();
@@ -222,11 +231,12 @@ public class FPSAgent : Agent
         contActionsOut[1] = input.moveInput.x;
         contActionsOut[2] = input.rotateInput.x;
         contActionsOut[3] = input.shootInput ? 1 : 0; //shoot
-        contActionsOut[4] = input.jumpInput ? 1 : 0; //shoot
-        contActionsOut[5] = input.dashInput ? 1 : 0; //shoot
-                                                     //        contActionsOut[0] = inputMovement.y;
-                                                     //        contActionsOut[1] = inputMovement.x;
-                                                     //        contActionsOut[2] = rotateMovement.x;
+        contActionsOut[4] = input.jumpInput ? 1 : 0; //jump
+        contActionsOut[5] = input.dashInput ? 1 : 0; //dash
+        contActionsOut[6] = input.shieldInput ? 1 : 0; //shield
+                                                       //        contActionsOut[0] = inputMovement.y;
+                                                       //        contActionsOut[1] = inputMovement.x;
+                                                       //        contActionsOut[2] = rotateMovement.x;
 
 
         //        m_InputH = 0;

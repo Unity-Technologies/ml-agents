@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MultiGunAlternating : MonoBehaviour
 {
@@ -19,33 +20,21 @@ public class MultiGunAlternating : MonoBehaviour
     public bool coolDownComplete;
 
     [Header("COOLDOWN & RELOAD")]
-    public float CurrentAmmoPercentage = 100; //the amount of ammo we currently have on a scale between 0-100
-    public float DepletionRate = .02f; //constant rate at which ammo depletes when being used
-    public float RegenRate = .01f; //constant rate at which ammo regenerates
+    public float CurrentPercentage = 100; //the amount of ammo we currently have on a scale between 0-100
+    public float DepletionRate = 5f; //constant rate at which ammo depletes when being used
+    public float RegenRate = .25f; //constant rate at which ammo regenerates
 
-    public
+    public Slider UISlider;
     // Start is called before the first frame update
     void Start()
     {
-        CurrentAmmoPercentage = 100;
+        CurrentPercentage = 100;
+        if (UISlider)
+        {
+            UISlider.value = CurrentPercentage;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-        //        if(shoot)
-        //        while (Input.GetKey(shootKey))
-        //        {
-        ////            Shoot();
-        //            ShootQuantity(1);
-        //        }
-        //        if (Input.GetKeyDown(shootKey))
-        //        {
-        ////            Shoot();
-        //            ShootQuantity(1);
-        //        }
-    }
 
     void ShootGunAtIndex(int i)
     {
@@ -60,8 +49,18 @@ public class MultiGunAlternating : MonoBehaviour
         if (coolDownComplete)
         {
             ShootGunAtIndex(currentGunIndex);
-            CurrentAmmoPercentage = Mathf.Clamp(CurrentAmmoPercentage - DepletionRate, 0, 100);
+            CurrentPercentage = Mathf.Clamp(CurrentPercentage - DepletionRate, 0, 100);
         }
+
+    }
+
+    void Update()
+    {
+        if (UISlider)
+        {
+            UISlider.value = CurrentPercentage;
+        }
+
     }
 
     void FixedUpdate()
@@ -81,7 +80,7 @@ public class MultiGunAlternating : MonoBehaviour
         }
         //        }
         shootTimer += Time.fixedDeltaTime;
-        CurrentAmmoPercentage = Mathf.Clamp(CurrentAmmoPercentage + RegenRate, 0, 100);
+        CurrentPercentage = Mathf.Clamp(CurrentPercentage + RegenRate, 0, 100);
     }
 
 

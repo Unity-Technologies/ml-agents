@@ -178,9 +178,10 @@ namespace MLAgents
 
 
 
-        //        public float standingForce = 10;
-        //        public ForceMode standingForceForceMode;
-        //        public float standingForcePositionOffset = .5f;
+        public bool applyStandingForce = false;
+        public float standingForce = 10;
+        public ForceMode standingForceForceMode;
+        public float standingForcePositionOffset = .5f;
         void FixedUpdate()
         {
 
@@ -193,16 +194,20 @@ namespace MLAgents
             strafeCoolDownTimer += Time.fixedDeltaTime;
             dashCoolDownTimer += Time.fixedDeltaTime;
 
+            if (applyStandingForce)
+            {
+                //STANDING FORCES
+                rb.AddForceAtPosition(Vector3.up * standingForce, transform.TransformPoint(Vector3.up * standingForcePositionOffset),
+                    standingForceForceMode);
+                rb.AddForceAtPosition(-Vector3.up * standingForce, transform.TransformPoint(-Vector3.up * standingForcePositionOffset),
+                    standingForceForceMode);
+
+            }
             if (!allowKeyboardInput)
             {
                 return;
             }
 
-            //            //STANDING FORCES
-            //            rb.AddForceAtPosition(Vector3.up * standingForce,transform.TransformPoint(Vector3.up * standingForcePositionOffset),
-            //                standingForceForceMode);
-            //            rb.AddForceAtPosition(-Vector3.up * standingForce,transform.TransformPoint(-Vector3.up * standingForcePositionOffset),
-            //                standingForceForceMode);
 
 
 

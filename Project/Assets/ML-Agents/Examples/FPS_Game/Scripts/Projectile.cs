@@ -12,12 +12,13 @@ public class Projectile : MonoBehaviour
     public float maxTimeToLive = 3;
     public float pauseCollisionDetectionWaitTime = .5f;
     //    [HideInInspector] public ShootProjectiles projectileController;
-
+    public PoolGameObjects impactParticlePool;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         //        agent = FindObjectOfType<ObstacleTowerAgent>();
+        impactParticlePool = FindObjectOfType<PoolGameObjects>();
     }
 
 
@@ -79,6 +80,16 @@ public class Projectile : MonoBehaviour
         if (aliveTime > pauseCollisionDetectionWaitTime)
         {
             selfDestructNow = true;
+        }
+
+        foreach (var item in impactParticlePool.poolList)
+        {
+            if (!item.gameObject.activeInHierarchy)
+            {
+                item.transform.position = rb.transform.position;
+                item.gameObject.SetActive(true);
+                return;
+            }
         }
         //        print(col.gameObject.name);
     }

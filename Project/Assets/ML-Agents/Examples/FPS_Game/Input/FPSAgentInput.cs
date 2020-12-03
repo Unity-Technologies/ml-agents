@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 
 public class FPSAgentInput : MonoBehaviour
 {
+    public bool DisableInput = false;
     private FPSPlayerInputActions inputActions;
     private FPSPlayerInputActions.PlayerActionMapActions actionMap;
     private Gamepad gamepad;
@@ -40,9 +41,15 @@ public class FPSAgentInput : MonoBehaviour
     {
         //        Vector2 move = gamepad.leftStick.ReadValue();
 
+        if (DisableInput)
+        {
+            return;
+        }
         moveInput = actionMap.Walk.ReadValue<Vector2>();
         //        shootInput = actionMap.Shoot.ReadValue<float>() > 0;
         shootInput = gamepad.rightTrigger.isPressed;
+        shieldInput = gamepad.leftTrigger.isPressed;
+        //        rotateInput = actionMap.RotateBody.ReadValue<Vector2>();
         rotateInput = actionMap.RotateBody.ReadValue<Vector2>();
         //        jumpInput = actionMap.Jump.ReadValue<float>() > 0;
         //        jumpInput = actionMap.Jump.performed;
