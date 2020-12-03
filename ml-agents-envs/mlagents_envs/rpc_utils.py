@@ -238,14 +238,14 @@ def _process_vector_observation(
     ],  # pylint: disable=unsubscriptable-object
 ) -> np.ndarray:
     if len(agent_info_list) == 0:
-        return np.zeros((0, shape[0]), dtype=np.float32)
+        return np.zeros((0,) + shape, dtype=np.float32)
     np_obs = np.array(
         [
             agent_obs.observations[obs_index].float_data.data
             for agent_obs in agent_info_list
         ],
         dtype=np.float32,
-    )
+    ).reshape((len(agent_info_list), ) + shape)
     _raise_on_nan_and_inf(np_obs, "observations")
     return np_obs
 
