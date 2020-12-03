@@ -58,7 +58,7 @@ mlagents-learn <trainer-config-file> --env=<env_name> --run-id=<run-identifier>
 
 where
 
-- `<trainer-config-file>` is the file path of the trainer configuration yaml.
+- `<trainer-config-file>` is the file path of the trainer configuration YAML.
   This contains all the hyperparameter values. We offer a detailed guide on the
   structure of this file and the meaning of the hyperparameters (and advice on
   how to set them) in the dedicated
@@ -138,14 +138,6 @@ flags for `mlagents-learn` that control the training configurations:
 - `<trainer-config-file>`: defines the training hyperparameters for each
   Behavior in the scene, and the set-ups for the environment parameters
   (Curriculum Learning and Environment Parameter Randomization)
-- `--num-envs`: number of concurrent Unity instances to use during training
-
-Reminder that a detailed description of all command-line options can be found by
-using the help utility:
-
-```sh
-mlagents-learn --help
-```
 
 It is important to highlight that successfully training a Behavior in the
 ML-Agents Toolkit involves tuning the training hyperparameters and
@@ -172,7 +164,6 @@ add typically has its own training configurations. For instance:
   demonstrations.)
 - Use self-play? (Assuming your environment includes multiple agents.)
 
-
 The trainer config file, `<trainer-config-file>`, determines the features you will
 use during training, and the answers to the above questions will dictate its contents.
 The rest of this guide breaks down the different sub-sections of the trainer config file
@@ -184,6 +175,57 @@ between 0.18.0 and onwards. To convert
 an old set of configuration files (trainer config, curriculum, and sampler files) to the new
 format, a script has been provided. Run `python -m mlagents.trainers.upgrade_config -h` in your
 console to see the script's usage.
+
+### Adding CLI Arguments to the Training Configuration file
+
+Additionally, within the training configuration YAML file, you can also add the
+CLI arguments (such as `--num-envs`).
+
+Reminder that a detailed description of all the CLI arguments can be found by
+using the help utility:
+
+```sh
+mlagents-learn --help
+```
+
+These additional CLI arguments are grouped into environment, engine and checkpoint. The available settings and example values are shown below.
+
+#### Environment settings
+
+```yaml
+env_settings:
+  env_path: FoodCollector
+  env_args: null
+  base_port: 5005
+  num_envs: 1
+  seed: -1
+```
+
+#### Engine settings
+
+```yaml
+engine_settings:
+  width: 84
+  height: 84
+  quality_level: 5
+  time_scale: 20
+  target_frame_rate: -1
+  capture_frame_rate: 60
+  no_graphics: false
+```
+
+#### Checkpoint settings
+
+```yaml
+checkpoint_settings:
+  run_id: foodtorch
+  initialize_from: null
+  load_model: false
+  resume: false
+  force: true
+  train_model: false
+  inference: false
+```
 
 ### Behavior Configurations
 

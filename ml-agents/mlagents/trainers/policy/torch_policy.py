@@ -86,6 +86,7 @@ class TorchPolicy(Policy):
         self.m_size = self.actor_critic.memory_size
 
         self.actor_critic.to(default_device())
+        self._clip_action = not tanh_squash
 
     @property
     def export_memory_size(self) -> int:
@@ -179,9 +180,10 @@ class TorchPolicy(Policy):
             )
         action_tuple = action.to_action_tuple()
         run_out["action"] = action_tuple
-        run_out["pre_action"] = (
-            action_tuple.continuous if self.use_continuous_act else None
-        )
+        # This is the clipped action which is not saved to the buffer
+        # but is exclusively sent to the environment.
+        env_action_tuple = action.to_action_tuple(clip=self._clip_action)
+        run_out["env_action"] = env_action_tuple
         run_out["log_probs"] = log_probs.to_log_probs_tuple()
         run_out["entropy"] = ModelUtils.to_numpy(entropy)
         run_out["learning_rate"] = 0.0
@@ -211,8 +213,10 @@ class TorchPolicy(Policy):
             decision_requests, global_agent_ids
         )  # pylint: disable=assignment-from-no-return
         self.save_memories(global_agent_ids, run_out.get("memory_out"))
+        self.check_nan_action(run_out.get("action"))
         return ActionInfo(
             action=run_out.get("action"),
+            env_action=run_out.get("env_action"),
             value=run_out.get("value"),
             outputs=run_out,
             agent_ids=list(decision_requests.agent_id),

@@ -63,6 +63,10 @@ class ActionModel(nn.Module):
                 self.encoding_size, self.action_spec.discrete_branches
             )
 
+        # During training, clipping is done in TorchPolicy, but we need to clip before ONNX
+        # export as well.
+        self._clip_action_on_export = not tanh_squash
+
     def _sample_action(self, dists: DistInstances) -> AgentAction:
         """
         Samples actions from a DistInstances tuple
@@ -74,6 +78,8 @@ class ActionModel(nn.Module):
         # This checks None because mypy complains otherwise
         if dists.continuous is not None:
             continuous_action = dists.continuous.sample()
+            if self._clip_action_on_export:
+                continuous_action = torch.clamp(continuous_action, -3, 3) / 3
         if dists.discrete is not None:
             discrete_action = []
             for discrete_dist in dists.discrete:

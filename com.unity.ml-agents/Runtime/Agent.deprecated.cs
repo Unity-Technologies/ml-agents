@@ -14,7 +14,7 @@ namespace Unity.MLAgents
         }
 
         /// <summary>
-        /// This method passes in a float array that is to be populated with actions.
+        /// Deprecated, use <see cref="Heuristic(in ActionBuffers)"/> instead.
         /// </summary>
         /// <param name="actionsOut"></param>
         public virtual void Heuristic(float[] actionsOut)
@@ -35,7 +35,7 @@ namespace Unity.MLAgents
         /// <returns>
         /// The last action that was decided by the Agent (or null if no decision has been made).
         /// </returns>
-        /// <seealso cref="OnActionReceived(float[])"/>
+        /// <seealso cref="OnActionReceived(ActionBuffers)"/>
         // [Obsolete("GetAction has been deprecated, please use GetStoredActionBuffers, Or GetStoredDiscreteActions.")]
         public float[] GetAction()
         {

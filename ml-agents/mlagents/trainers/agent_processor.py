@@ -136,10 +136,6 @@ class AgentProcessor:
                 continuous=stored_actions.continuous[idx],
                 discrete=stored_actions.discrete[idx],
             )
-            if self.policy.use_continuous_act:
-                action_pre = stored_take_action_outputs["pre_action"][idx]
-            else:
-                action_pre = None
             stored_action_probs = stored_take_action_outputs["log_probs"]
             log_probs_tuple = LogProbsTuple(
                 continuous=stored_action_probs.continuous[idx],
@@ -153,7 +149,6 @@ class AgentProcessor:
                 done=done,
                 action=action_tuple,
                 action_probs=log_probs_tuple,
-                action_pre=action_pre,
                 action_mask=action_mask,
                 prev_action=prev_action,
                 interrupted=interrupted,

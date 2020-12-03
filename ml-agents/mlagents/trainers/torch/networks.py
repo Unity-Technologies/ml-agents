@@ -284,7 +284,6 @@ class SimpleActor(nn.Module, Actor):
             vec_inputs, vis_inputs, memories=memories, sequence_length=1
         )
 
-        # TODO: How this is written depends on how the inference model is structured
         action_out = self.action_model.get_action_out(encoding, masks)
         return (
             action_out,
@@ -467,7 +466,9 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
 class GlobalSteps(nn.Module):
     def __init__(self):
         super().__init__()
-        self.__global_step = nn.Parameter(torch.Tensor([0]), requires_grad=False)
+        self.__global_step = nn.Parameter(
+            torch.Tensor([0]).to(torch.int64), requires_grad=False
+        )
 
     @property
     def current_step(self):

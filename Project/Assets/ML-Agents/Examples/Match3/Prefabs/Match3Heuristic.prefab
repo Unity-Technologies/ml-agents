@@ -81,7 +81,7 @@ MonoBehaviour:
   Board: {fileID: 0}
   MoveTime: 0.25
   MaxMoves: 500
-  UseSmartHeuristic: 1
+  HeuristicQuality: 0
 --- !u!114 &3508723250470608011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -94,7 +94,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abebb7ad4a5547d7a3b04373784ff195, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DebugEdgeIndex: -1
+  DebugMoveIndex: -1
+  CubeSpacing: 1.25
+  Board: {fileID: 0}
+  TilePrefab: {fileID: 4007900521885639951, guid: faee4e805953b49e688bd00b45c55f2e,
+    type: 3}
 --- !u!114 &3508723250470608009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,6 +131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08e4b0da54cb4d56bfcbae22dd49ab8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ActuatorName: Match3 Actuator
   ForceHeuristic: 1
 --- !u!114 &3508723250470608014
 MonoBehaviour:
@@ -140,6 +145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 530d2f105aa145bd8a00e021bdd925fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SensorName: Match3 Sensor
   ObservationType: 0
 --- !u!1 &3508723250774301855
 GameObject:
