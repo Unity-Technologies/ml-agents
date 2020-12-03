@@ -56,10 +56,13 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         )
         next_obs = ModelUtils.list_to_tensor_list(next_obs)
 
+        # This line doesn't work
+        critic_obs = [ModelUtils.list_to_tensor_list(AgentBuffer.obs_list_to_obs_batch(agent_obs)) for agent_obs in batch["critic_obs"]]
+
         memory = torch.zeros([1, 1, self.policy.m_size])
 
         value_estimates, next_memory = self.policy.actor_critic.critic_pass(
-            obs, memory, sequence_length=batch.num_experiences
+            obs, memory, sequence_length=batch.num_experiences, critic_obs=critic_obs
         )
 
         next_value_estimate, _ = self.policy.actor_critic.critic_pass(

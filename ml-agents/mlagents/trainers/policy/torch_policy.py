@@ -171,11 +171,11 @@ class TorchPolicy(Policy):
         actions: torch.Tensor,
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
-        critic_obs: Optional[List[List[torch.Tensor]]] = None,
         seq_len: int = 1,
+        critic_obs: Optional[List[List[torch.Tensor]]] = None,
     ) -> Tuple[torch.Tensor, torch.Tensor, Dict[str, torch.Tensor]]:
         dists, value_heads, _ = self.actor_critic.get_dist_and_value(
-            obs, masks, memories, critic_obs, seq_len
+            obs, masks, memories, seq_len, critic_obs
         )
         action_list = [actions[..., i] for i in range(actions.shape[-1])]
         log_probs, entropies, _ = ModelUtils.get_probs_and_entropy(action_list, dists)
@@ -196,7 +196,7 @@ class TorchPolicy(Policy):
         obs, masks = self._split_decision_step(decision_requests)
         memories = torch.as_tensor(self.retrieve_memories(global_agent_ids)).unsqueeze(
             0
-        )
+        ) if self.use_recurrent else None
         run_out = {}
         with torch.no_grad():
             action, clipped_action, log_probs, entropy, memories = self.sample_actions(

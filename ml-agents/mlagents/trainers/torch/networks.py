@@ -344,8 +344,8 @@ class ActorCritic(Actor):
         net_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
-        critic_obs: Optional[List[List[torch.Tensor]]] = None,
         sequence_length: int = 1,
+        critic_obs: Optional[List[List[torch.Tensor]]] = None,
     ) -> Tuple[List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
         """
         Returns distributions, from which actions can be sampled, and value estimates.
@@ -507,8 +507,8 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         net_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
-        critic_obs: Optional[List[List[torch.Tensor]]] = None,
         sequence_length: int = 1,
+        critic_obs: Optional[List[List[torch.Tensor]]] = None,
     ) -> Tuple[List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
         encoding, memories = self.network_body(
             net_inputs, memories=memories, sequence_length=sequence_length
@@ -555,8 +555,8 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         self,
         net_inputs: List[torch.Tensor],
         memories: Optional[torch.Tensor] = None,
-        critic_obs: List[List[torch.Tensor]] = None,
         sequence_length: int = 1,
+        critic_obs: List[List[torch.Tensor]] = None,
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
         actor_mem, critic_mem = None, None
         if self.use_lstm:
@@ -580,8 +580,8 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         net_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
-        critic_obs: Optional[List[List[torch.Tensor]]] = None,
         sequence_length: int = 1,
+        critic_obs: Optional[List[List[torch.Tensor]]] = None,
     ) -> Tuple[List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
         if self.use_lstm:
             # Use only the back half of memories for critic and actor
