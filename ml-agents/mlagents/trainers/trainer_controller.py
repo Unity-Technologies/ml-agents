@@ -48,7 +48,7 @@ class TrainerController:
         :param param_manager: EnvironmentParameterManager object which stores information about all
         environment parameters.
         :param train: Whether to train model, or only run inference.
-        :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
+        :param training_seed: Seed to use for Numpy and Torch random number generation.
         :param threaded: Whether or not to run trainers in a separate thread. Disable for testing/debugging.
         """
         self.trainers: Dict[str, Trainer] = {}
