@@ -16,6 +16,11 @@ public class AgentHealth : MonoBehaviour
     public float damageFlashDuration = .02f;
 
     public ShieldController ShieldController;
+
+    public GameObject CubeBody;
+    public GameObject DeathCube;
+
+    public bool Dead;
     // Start is called before the first frame update
     void OnEnable()
     {
@@ -30,6 +35,10 @@ public class AgentHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Dead)
+        {
+            return;
+        }
         if (UISlider)
         {
             UISlider.value = CurrentPercentage;
@@ -38,6 +47,10 @@ public class AgentHealth : MonoBehaviour
 
     private void OnCollisionEnter(Collision col)
     {
+        if (Dead)
+        {
+            return;
+        }
         if (col.transform.CompareTag("projectile"))
         {
             if (ShieldController && ShieldController.ShieldIsActive)
@@ -45,7 +58,14 @@ public class AgentHealth : MonoBehaviour
                 return;
             }
             CurrentPercentage = Mathf.Clamp(CurrentPercentage - DepletionRate, 0, 100);
-
+            if (CurrentPercentage == 0)
+            {
+                Dead = true;
+                CubeBody.SetActive(false);
+                DeathCube.transform.position = CubeBody.transform.position;
+                DeathCube.SetActive(true);
+                print("dead");
+            }
             StartCoroutine(BodyDamageFlash());
         }
     }

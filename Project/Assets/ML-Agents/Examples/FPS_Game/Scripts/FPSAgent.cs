@@ -79,6 +79,10 @@ public class FPSAgent : Agent
         //        m_CubeMovement.RunOnGround(m_AgentRb, m_Cam.transform.TransformDirection(new Vector3(0, 0, forwardAxis)));
         //        m_CubeMovement.Strafe(transform.right * rightAxis);
 
+        if (AgentHealth.Dead)
+        {
+            return;
+        }
         m_InputV = act[0];
         m_InputH = act[1];
         m_Rotate = act[2];
