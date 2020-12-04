@@ -71,6 +71,7 @@ class ModelSerializer:
             + [f"visual_observation_{i}" for i in range(self.policy.vis_obs_size)]
             + ["action_masks", "memories"]
         )
+        self.dynamic_axes = {name: {0: "batch"} for name in self.input_names}
 
         self.output_names = ["version_number", "memory_size"]
         if self.policy.behavior_spec.action_spec.continuous_size > 0:
@@ -78,8 +79,10 @@ class ModelSerializer:
                 "continuous_actions",
                 "continuous_action_output_shape",
             ]
+            self.dynamic_axes.update({"continuous_actions": {0: "batch"}})
         if self.policy.behavior_spec.action_spec.discrete_size > 0:
             self.output_names += ["discrete_actions", "discrete_action_output_shape"]
+            self.dynamic_axes.update({"discrete_actions": {0: "batch"}})
         if (
             self.policy.behavior_spec.action_spec.continuous_size == 0
             or self.policy.behavior_spec.action_spec.discrete_size == 0
@@ -89,9 +92,7 @@ class ModelSerializer:
                 "is_continuous_control",
                 "action_output_shape",
             ]
-
-        self.dynamic_axes = {name: {0: "batch"} for name in self.input_names}
-        self.dynamic_axes.update({"action": {0: "batch"}})
+            self.dynamic_axes.update({"action": {0: "batch"}})
 
     def export_policy_model(self, output_filepath: str) -> None:
         """
