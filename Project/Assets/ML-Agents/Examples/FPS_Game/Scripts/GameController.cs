@@ -4,16 +4,44 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    //    public List<
-    // Start is called before the first frame update
-    void Start()
-    {
+    public List<Rigidbody> AllRBsList = new List<Rigidbody>();
 
+    public float ExplosionForce = 100;
+    public float ExplosionUpwardsModifier = 1;
+    public float ExplosionRadius = 10;
+    public ForceMode ExplosionForceMode;
+
+    public bool triggerExplosion;
+    // Start is called before the first frame update
+    void Awake()
+    {
+        Rigidbody[] rbs = Resources.FindObjectsOfTypeAll<Rigidbody>();
+
+        foreach (var rb in rbs)
+        {
+            if (!rb.transform.CompareTag("projectile"))
+            {
+                AllRBsList.Add(rb);
+            }
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (triggerExplosion)
+        {
+            triggerExplosion = false;
+            AddExplosiveForcesToAllRB(transform.position);
+        }
 
+    }
+
+    public void AddExplosiveForcesToAllRB(Vector3 pos)
+    {
+        foreach (var rb in AllRBsList)
+        {
+            rb.AddExplosionForce(ExplosionForce, pos, ExplosionRadius, ExplosionUpwardsModifier, ExplosionForceMode);
+        }
     }
 }

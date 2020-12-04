@@ -25,9 +25,12 @@ public class AgentHealth : MonoBehaviour
     public CinemachineImpulseSource impulseSource;
     public bool ResetSceneAfterDeath = false;
     public bool Dead;
+
+    private GameController GameController;
     // Start is called before the first frame update
     void OnEnable()
     {
+        GameController = FindObjectOfType<GameController>();
         CurrentPercentage = 100;
         UISlider.value = CurrentPercentage;
         if (bodyMesh)
@@ -70,6 +73,10 @@ public class AgentHealth : MonoBehaviour
                 DeathCube.SetActive(true);
                 ExplosionParticles.transform.position = CubeBody.transform.position;
                 ExplosionParticles.SetActive(true);
+                if (GameController)
+                {
+                    GameController.AddExplosiveForcesToAllRB(CubeBody.transform.position);
+                }
                 if (impulseSource)
                 {
                     impulseSource.GenerateImpulse();
