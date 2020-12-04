@@ -31,11 +31,25 @@ def behavior_spec_from_proto(
     :return: BehaviorSpec object.
     """
     observation_shape = [tuple(obs.shape) for obs in agent_info.observations]
-    action_spec_proto = brain_param_proto.action_spec
-    action_spec = ActionSpec(
-        action_spec_proto.num_continuous_actions,
-        tuple(branch for branch in action_spec_proto.discrete_branch_sizes),
-    )
+    # proto from comminicator < v1.3 does not set action spec, use deprecated fields instead
+    if (
+        brain_param_proto.action_spec.num_continuous_actions == 0
+        and brain_param_proto.action_spec.num_discrete_actions == 0
+    ):
+        if brain_param_proto.vector_action_space_type_deprecated == 1:
+            action_spec = ActionSpec(
+                brain_param_proto.vector_action_size_deprecated[0], ()
+            )
+        else:
+            action_spec = ActionSpec(
+                0, tuple(brain_param_proto.vector_action_size_deprecated)
+            )
+    else:
+        action_spec_proto = brain_param_proto.action_spec
+        action_spec = ActionSpec(
+            action_spec_proto.num_continuous_actions,
+            tuple(branch for branch in action_spec_proto.discrete_branch_sizes),
+        )
     return BehaviorSpec(observation_shape, action_spec)
 
 
