@@ -84,12 +84,12 @@ namespace Unity.MLAgents.Analytics
                 return;
             }
 
-            // Note - to debug, use JsonUtility.ToJson on the event.
             var data = GetEventForModel(nnModel, behaviorName, inferenceDevice, sensors, actionSpec);
-            // var s = JsonUtility.ToJson(data, true);
-            // Debug.Log(s);
+            // Note - to debug, use JsonUtility.ToJson on the event.
+            var s = JsonUtility.ToJson(data, true);
+            Debug.Log(s);
 #if UNITY_EDITOR
-            //EditorAnalytics.SendEventWithLimit(k_EventName, data);
+            EditorAnalytics.SendEventWithLimit(k_EventName, data);
 #else
             return;
 #endif
@@ -133,7 +133,10 @@ namespace Unity.MLAgents.Analytics
                 inferenceEvent.ObservationSpecs.Add(EventObservationSpec.FromSensor(sensor));
             }
 
+            var startTick = DateTime.Now.Ticks;
             inferenceEvent.ModelHash = GetModelHash(barracudaModel);
+            var endTick = DateTime.Now.Ticks;
+            Debug.Log($"hash took {(endTick - startTick) * 1e-7} seconds");
             return inferenceEvent;
         }
 
@@ -150,11 +153,9 @@ namespace Unity.MLAgents.Analytics
                 hash = kFNV_offset_basis;
             }
 
-            public void Append(float[] values)
+            public void Append(float[] values, int startUnused, int count)
             {
-                // Limit the max number of float bytes that we hash for performance.
-                // This increases the chance of a collision, but this should still be extremely rare.
-                var bytesToHash = Mathf.Min(kMaxBytes, Buffer.ByteLength(values));
+                var bytesToHash = sizeof(float) * count;
                 for (var i = 0; i < bytesToHash; i++)
                 {
                     var b = Buffer.GetByte(values, i);
@@ -182,20 +183,55 @@ namespace Unity.MLAgents.Analytics
             }
         }
 
+        struct MLAgentsHash128
+        {
+            private Hash128 m_Hash;
+
+            public void Append(float[] values, int startUnused, int count)
+            {
+                if (values == null)
+                {
+                    return;
+                }
+
+                for (var i = 0; i < count; i++)
+                {
+                    var tempHash = new Hash128();
+                    HashUtilities.ComputeHash128(ref values[i], ref tempHash);
+                    HashUtilities.AppendHash(ref tempHash, ref m_Hash);
+                }
+            }
+
+            public void Append(string value)
+            {
+                var tempHash = Hash128.Compute(value);
+                HashUtilities.AppendHash(ref tempHash, ref m_Hash);
+            }
+
+            public override string ToString()
+            {
+                return m_Hash.ToString();
+            }
+        }
+
         static string GetModelHash(Model barracudaModel)
         {
             // Pre-2020 versions of Unity don't have Hash128.Append() (can only hash strings)
-            // For these versions, we'll use a simple FNV-1 hash.
-            // https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
+            // For these versions, we'll use a simple wrapper that supports arrays of floats.
 #if UNITY_2020_1_OR_NEWER
             var hash = new Hash128();
 #else
-            var hash = new FNVHash();
+            var hash = new MLAgentsHash128();
 #endif
+            // Limit the max number of float bytes that we hash for performance.
+            // This increases the chance of a collision, but this should still be extremely rare.
+            const int kMaxFloats = 256;
+
             foreach (var layer in barracudaModel.layers)
             {
                 hash.Append(layer.name);
-                hash.Append(layer.weights);
+                var numFloatsToHash = Mathf.Min(layer.weights.Length, kMaxFloats);
+                hash.Append(layer.weights, 0, numFloatsToHash);
             }
 
             return hash.ToString();
