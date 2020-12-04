@@ -78,8 +78,6 @@ class ActionModel(nn.Module):
         # This checks None because mypy complains otherwise
         if dists.continuous is not None:
             continuous_action = dists.continuous.sample()
-            if self._clip_action_on_export:
-                continuous_action = torch.clamp(continuous_action, -3, 3) / 3
         if dists.discrete is not None:
             discrete_action = []
             for discrete_dist in dists.discrete:
@@ -165,7 +163,12 @@ class ActionModel(nn.Module):
         out_list: List[torch.Tensor] = []
         # This checks None because mypy complains otherwise
         if dists.continuous is not None:
-            out_list.append(dists.continuous.exported_model_output())
+            continuous_action_export = dists.continuous.exported_model_output()
+            if self._clip_action_on_export:
+                continuous_action_export = (
+                    torch.clamp(continuous_action_export, -3, 3) / 3
+                )
+            out_list.append(continuous_action_export)
         if dists.discrete is not None:
             for discrete_dist in dists.discrete:
                 out_list.append(discrete_dist.exported_model_output())

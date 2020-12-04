@@ -77,5 +77,5 @@ def test_get_probs_and_entropy():
 
     assert log_probs.discrete_list[0] > log_probs.discrete_list[1]
 
-    for ent, val in zip(entropies[0], [1.4189, 1.4189, 0.6191, 0.6191]):
+    for ent, val in zip(entropies[0], [1.4189, 0.6191, 0.6191]):
         assert ent == pytest.approx(val, abs=0.01)
