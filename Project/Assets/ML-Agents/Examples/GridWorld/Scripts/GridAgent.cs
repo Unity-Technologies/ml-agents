@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Linq;
 using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
 using UnityEngine.Serialization;
 
@@ -21,6 +22,9 @@ public class GridAgent : Agent
     [Tooltip("Selecting will turn on action masking. Note that a model trained with action " +
         "masking turned on may not behave optimally when action masking is turned off.")]
     public bool maskActions = true;
+    
+    
+    public GridGoal gridGoal;
 
     const int k_NoAction = 0;  // do nothing!
     const int k_Up = 1;
@@ -28,11 +32,23 @@ public class GridAgent : Agent
     const int k_Left = 3;
     const int k_Right = 4;
 
+    public enum GridGoal
+    {
+        Plus,
+        Cross,
+    }
+
     EnvironmentParameters m_ResetParams;
 
     public override void Initialize()
     {
         m_ResetParams = Academy.Instance.EnvironmentParameters;
+    }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        Array values = Enum.GetValues(typeof(GridGoal));
+        sensor.AddOneHotObservation((int)gridGoal, values.Length);
     }
 
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
@@ -64,6 +80,20 @@ public class GridAgent : Agent
             {
                 actionMask.WriteMask(0, new[] { k_Up });
             }
+        }
+    }
+
+    private void ProvideReward(GridGoal hitObject)
+    {
+        if (gridGoal == hitObject)
+        {
+            SetReward(1f);
+            Debug.Log(1);
+        }
+        else
+        {
+            SetReward(-1f);
+            Debug.Log(-1);
         }
     }
 
@@ -104,12 +134,12 @@ public class GridAgent : Agent
 
             if (hit.Where(col => col.gameObject.CompareTag("goal")).ToArray().Length == 1)
             {
-                SetReward(1f);
+                ProvideReward(GridGoal.Plus);
                 EndEpisode();
             }
             else if (hit.Where(col => col.gameObject.CompareTag("pit")).ToArray().Length == 1)
             {
-                SetReward(-1f);
+                ProvideReward(GridGoal.Cross);
                 EndEpisode();
             }
         }
@@ -141,6 +171,8 @@ public class GridAgent : Agent
     public override void OnEpisodeBegin()
     {
         area.AreaReset();
+        Array values = Enum.GetValues(typeof(GridGoal));
+        gridGoal = (GridGoal)values.GetValue(UnityEngine.Random.Range(0, values.Length));
     }
 
     public void FixedUpdate()
