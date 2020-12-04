@@ -22,10 +22,8 @@ test_mac_standalone_{{ editor.version }}:
     - python -u -m ml-agents.tests.yamato.standalone_build_tests --scene=Assets/ML-Agents/TestScenes/TestCompressedTexture/TestTextureCompressed.unity
   triggers:
     cancel_old_ci: true
-    # TODO remove develop-hybrid trigger before merging to master
     expression: |
       (pull_request.target eq "master" OR
-      pull_request.target match "develop-hybrid.+" OR
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
