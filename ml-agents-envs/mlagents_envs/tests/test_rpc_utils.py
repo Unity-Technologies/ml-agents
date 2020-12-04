@@ -206,12 +206,23 @@ def proto_from_steps_and_action(
     discrete_actions: np.ndarray,
 ) -> List[AgentInfoActionPairProto]:
     agent_info_protos = proto_from_steps(decision_steps, terminal_steps)
-    agent_action_protos = [
-        AgentActionProto(
-            continuous_actions=continuous_act, discrete_actions=discrete_act
-        )
-        for continuous_act, discrete_act in zip(continuous_actions, discrete_actions)
-    ]
+    agent_action_protos = []
+    num_agents = (
+        len(continuous_actions)
+        if continuous_actions is not None
+        else len(discrete_actions)
+    )
+    for i in range(num_agents):
+        proto = AgentActionProto()
+        if continuous_actions is not None:
+            print("continuous_actions", continuous_actions[i].shape)
+            proto.continuous_actions.extend([continuous_actions[i]])
+            proto.vector_actions_deprecated.extend([continuous_actions[i]])
+        if discrete_actions is not None:
+            print("discrete_actions", discrete_actions[i].shape)
+            proto.discrete_actions.extend([discrete_actions[i]])
+            proto.vector_actions_deprecated.extend([discrete_actions[i]])
+        agent_action_protos.append(proto)
     agent_info_action_pair_protos = [
         AgentInfoActionPairProto(agent_info=agent_info_proto, action_info=action_proto)
         for agent_info_proto, action_proto in zip(
