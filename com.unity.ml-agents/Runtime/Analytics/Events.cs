@@ -22,6 +22,7 @@ namespace Unity.MLAgents.Analytics
     /// <summary>
     /// Simplified version of ActionSpec struct for use in analytics
     /// </summary>
+    [Serializable]
     internal struct EventActionSpec
     {
         public int NumContinuousActions;
@@ -43,6 +44,7 @@ namespace Unity.MLAgents.Analytics
     /// <summary>
     /// Simplified summary of Agent observations for use in analytics
     /// </summary>
+    [Serializable]
     internal struct EventObservationSpec
     {
         public string SensorName;

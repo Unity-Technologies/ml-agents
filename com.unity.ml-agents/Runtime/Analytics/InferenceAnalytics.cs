@@ -18,7 +18,7 @@ namespace Unity.MLAgents.Analytics
         const int k_MaxEventsPerHour = 1000;
         const int k_MaxNumberOfElements = 1000;
         const string k_VendorKey = "unity.ml-agents";
-        const string k_EventName = "InferenceModelSet";
+        const string k_EventName = "ml_agents_inferencemodelset";
 
         private static HashSet<NNModel> s_SentModels;
 
@@ -67,7 +67,10 @@ namespace Unity.MLAgents.Analytics
                 return;
             }
 
+            // Note - to debug, use JsonUtility.ToJson on the event.
             var data = GetEventForModel(nnModel, behaviorName, inferenceDevice, sensors, actionSpec);
+            // var s = JsonUtility.ToJson(data, true);
+            // Debug.Log(s);
             //EditorAnalytics.SendEventWithLimit(k_EventName, data);
         }
 
