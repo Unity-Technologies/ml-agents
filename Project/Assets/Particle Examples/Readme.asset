@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcf7219bab7fe46a1ad266029b2fee19, type: 3}
+  m_Name: Readme
+  m_EditorClassIdentifier: 
+  icon: {fileID: 2800000, guid: cfa6d60f1f958ba46a105ca98716c259, type: 3}
+  title: Particle Pack
+  sections:
+  - heading: What is the Particle Pack?
+    text: The Particle Pack is a collection of example effects that you can easily
+      add to your own game or examine to learn more about Unity's Shuriken particle
+      system.  Explore the example first-person scene using W,A,S, and D, and your
+      mouse to look around. Stop to view a particle system and more detailed information
+      on each effect will appear on-screen.
+    linkText: 
+    url: 
+  - heading: How do I use it?
+    text: To use these examples in your own projects, simply select the folder of
+      effects and use the 'Export Package' command from the 'Assets' menu on the top
+      bar. Depending on the effect, you may need to add the 'Shared' folder or remove
+      some unnecessary scripts from the Export window. Once your effect has succesfully
+      exported, import this package into your own projects using the 'Import Package'
+      - 'Custom Package' option from the 'Assets' menu.
+    linkText: 
+    url: 
+  - heading: Got feedback?
+    text: 'Let us know what you think or ask any questions you might have on our FORUM. '
+    linkText: Forum Thread
+    url: https://forum.unity.com/threads/new-particle-pack.548347/
+  loadedLayout: 1

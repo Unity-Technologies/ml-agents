@@ -13,7 +13,7 @@ public class Projectile : MonoBehaviour
     public float pauseCollisionDetectionWaitTime = .5f;
     //    [HideInInspector] public ShootProjectiles projectileController;
     public PoolGameObjects impactParticlePool;
-
+    public TrailRenderer trailRend;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -31,6 +31,10 @@ public class Projectile : MonoBehaviour
 
         aliveTime = 0;
         selfDestructNow = false;
+        if (trailRend)
+        {
+            trailRend.Clear(); ;
+        }
         //        if (agent)
         //        {
         //            agent.CompletedFloorAction += SelfDestruct;

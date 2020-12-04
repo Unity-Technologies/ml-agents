@@ -154,6 +154,8 @@ public class GunController : MonoBehaviour
     {
         rb.transform.position = projectileOrigin.position;
         rb.transform.rotation = projectileOrigin.rotation;
+        //        rb.position = projectileOrigin.position;
+        //        rb.rotation = projectileOrigin.rotation;
 
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;

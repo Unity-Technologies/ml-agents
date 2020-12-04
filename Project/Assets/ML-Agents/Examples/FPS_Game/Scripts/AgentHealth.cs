@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using Cinemachine;
 
 public class AgentHealth : MonoBehaviour
 {
@@ -19,7 +21,9 @@ public class AgentHealth : MonoBehaviour
 
     public GameObject CubeBody;
     public GameObject DeathCube;
-
+    public GameObject ExplosionParticles;
+    public CinemachineImpulseSource impulseSource;
+    public bool ResetSceneAfterDeath = false;
     public bool Dead;
     // Start is called before the first frame update
     void OnEnable()
@@ -64,12 +68,33 @@ public class AgentHealth : MonoBehaviour
                 CubeBody.SetActive(false);
                 DeathCube.transform.position = CubeBody.transform.position;
                 DeathCube.SetActive(true);
-                print("dead");
+                ExplosionParticles.transform.position = CubeBody.transform.position;
+                ExplosionParticles.SetActive(true);
+                if (ResetSceneAfterDeath)
+                {
+                    StartCoroutine(RestartScene());
+                }
             }
             StartCoroutine(BodyDamageFlash());
         }
     }
 
+    IEnumerator RestartScene()
+    {
+
+        if (impulseSource)
+        {
+            impulseSource.GenerateImpulse();
+        }
+        WaitForFixedUpdate wait = new WaitForFixedUpdate();
+        float timer = 0;
+        while (timer < 3)
+        {
+            timer += Time.fixedDeltaTime;
+            yield return wait;
+        }
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
     IEnumerator BodyDamageFlash()
     {
         WaitForFixedUpdate wait = new WaitForFixedUpdate();
