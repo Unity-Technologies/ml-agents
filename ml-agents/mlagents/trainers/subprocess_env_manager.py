@@ -1,7 +1,7 @@
 from typing import Dict, NamedTuple, List, Any, Optional, Callable, Set
 import cloudpickle
-from datetime import datetime, timedelta
 import enum
+import time
 
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.exception import (
@@ -40,7 +40,7 @@ from mlagents_envs.side_channel.side_channel import SideChannel
 
 
 logger = logging_util.get_logger(__name__)
-WORKER_SHUTDOWN_TIMEOUT = timedelta(seconds=10)
+WORKER_SHUTDOWN_TIMEOUT_S = 10
 
 
 class EnvironmentCommand(enum.Enum):
@@ -189,8 +189,8 @@ def worker(
         )
         _send_response(EnvironmentCommand.ENV_EXITED, ex)
     except Exception as ex:
-        logger.info(
-            f"UnityEnvironment worker {worker_id}: environment raised exception."
+        logger.error(
+            f"UnityEnvironment worker {worker_id}: environment raised an unexpected exception."
         )
         step_queue.put(
             EnvironmentResponse(EnvironmentCommand.ENV_EXITED, worker_id, ex)
@@ -318,8 +318,8 @@ class SubprocessEnvManager(EnvManager):
         for env_worker in self.env_workers:
             env_worker.request_close()
         # Pull messages out of the queue until every worker has CLOSED or we time out.
-        deadline = datetime.now() + WORKER_SHUTDOWN_TIMEOUT
-        while self.workers_alive > 0 and datetime.now() < deadline:
+        deadline = time.time() + WORKER_SHUTDOWN_TIMEOUT_S
+        while self.workers_alive > 0 and time.time() < deadline:
             try:
                 step: EnvironmentResponse = self.step_queue.get_nowait()
                 env_worker = self.env_workers[step.worker_id]
@@ -336,8 +336,8 @@ class SubprocessEnvManager(EnvManager):
             for env_worker in self.env_workers:
                 if not env_worker.closed and env_worker.process.is_alive():
                     env_worker.process.terminate()
-                    raise AssertionError(
-                        "A SubprocessEnvManager worker did not shut down correctly"
+                    logger.error(
+                        "A SubprocessEnvManager worker did not shut down correctly so it was forcefully terminated."
                     )
         self.step_queue.join_thread()
 
