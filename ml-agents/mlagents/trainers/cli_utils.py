@@ -4,6 +4,21 @@ import yaml
 from mlagents.trainers.exception import TrainerConfigError
 from mlagents_envs.environment import UnityEnvironment
 import argparse
+from mlagents_envs import logging_util
+
+logger = logging_util.get_logger(__name__)
+
+
+class RaiseDeprecationWarning(argparse.Action):
+    """
+    Internal custom Action to raise warning when argument is called.
+    """
+
+    def __init__(self, nargs=0, **kwargs):
+        super().__init__(nargs=nargs, **kwargs)
+
+    def __call__(self, arg_parser, namespace, values, option_string=None):
+        logger.warning(f"The command line argument {option_string} was deprecated")
 
 
 class DetectDefault(argparse.Action):
@@ -171,14 +186,14 @@ def _create_parser() -> argparse.ArgumentParser:
     argparser.add_argument(
         "--torch",
         default=False,
-        action=DetectDefaultStoreTrue,
-        help="Use the PyTorch framework. Note that this option is not required anymore as PyTorch is the"
+        action=RaiseDeprecationWarning,
+        help="(Deprecated) Use the PyTorch framework. Note that this option is not required anymore as PyTorch is the"
         "default framework, and will be removed in the next release.",
     )
     argparser.add_argument(
         "--tensorflow",
         default=False,
-        action=DetectDefaultStoreTrue,
+        action=RaiseDeprecationWarning,
         help="(Deprecated) Use the TensorFlow framework instead of PyTorch. Install TensorFlow "
         "before using this option.",
     )

@@ -15,19 +15,10 @@ from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
-from mlagents.trainers.settings import TrainerSettings, PPOSettings, FrameworkType
+from mlagents.trainers.settings import TrainerSettings, PPOSettings
 from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
     BaseRewardProvider,
 )
-from mlagents import tf_utils
-
-if tf_utils.is_available():
-    from mlagents.trainers.policy.tf_policy import TFPolicy
-    from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
-else:
-    TFPolicy = None  # type: ignore
-    PPOOptimizer = None  # type: ignore
-
 
 logger = get_logger(__name__)
 
@@ -218,28 +209,6 @@ class PPOTrainer(RLTrainer):
         self._clear_update_buffer()
         return True
 
-    def create_tf_policy(
-        self,
-        parsed_behavior_id: BehaviorIdentifiers,
-        behavior_spec: BehaviorSpec,
-        create_graph: bool = False,
-    ) -> TFPolicy:
-        """
-        Creates a policy with a Tensorflow backend and PPO hyperparameters
-        :param parsed_behavior_id:
-        :param behavior_spec: specifications for policy construction
-        :param create_graph: whether to create the Tensorflow graph on construction
-        :return policy
-        """
-        policy = TFPolicy(
-            self.seed,
-            behavior_spec,
-            self.trainer_settings,
-            condition_sigma_on_obs=False,  # Faster training for PPO
-            create_tf_graph=create_graph,
-        )
-        return policy
-
     def create_torch_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TorchPolicy:
@@ -258,15 +227,10 @@ class PPOTrainer(RLTrainer):
         )
         return policy
 
-    def create_ppo_optimizer(self) -> PPOOptimizer:
-        if self.framework == FrameworkType.PYTORCH:
-            return TorchPPOOptimizer(  # type: ignore
-                cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore
-            )  # type: ignore
-        else:
-            return PPOOptimizer(  # type: ignore
-                cast(TFPolicy, self.policy), self.trainer_settings  # type: ignore
-            )  # type: ignore
+    def create_ppo_optimizer(self) -> TorchPPOOptimizer:
+        return TorchPPOOptimizer(  # type: ignore
+            cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore
+        )  # type: ignore
 
     def add_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy

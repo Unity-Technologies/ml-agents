@@ -18,16 +18,8 @@ from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
-from mlagents.trainers.settings import TrainerSettings, SACSettings, FrameworkType
+from mlagents.trainers.settings import TrainerSettings, SACSettings
 from mlagents.trainers.torch.components.reward_providers import BaseRewardProvider
-from mlagents import tf_utils
-
-if tf_utils.is_available():
-    from mlagents.trainers.policy.tf_policy import TFPolicy
-    from mlagents.trainers.sac.optimizer_tf import SACOptimizer
-else:
-    TFPolicy = None  # type: ignore
-    SACOptimizer = None  # type: ignore
 
 logger = get_logger(__name__)
 
@@ -236,30 +228,6 @@ class SACTrainer(RLTrainer):
                 )
             )
 
-    def create_tf_policy(
-        self,
-        parsed_behavior_id: BehaviorIdentifiers,
-        behavior_spec: BehaviorSpec,
-        create_graph: bool = False,
-    ) -> TFPolicy:
-        """
-        Creates a policy with a Tensorflow backend and SAC hyperparameters
-        :param parsed_behavior_id:
-        :param behavior_spec: specifications for policy construction
-        :param create_graph: whether to create the Tensorflow graph on construction
-        :return policy
-        """
-        policy = TFPolicy(
-            self.seed,
-            behavior_spec,
-            self.trainer_settings,
-            tanh_squash=True,
-            reparameterize=True,
-            create_tf_graph=create_graph,
-        )
-        self.maybe_load_replay_buffer()
-        return policy
-
     def create_torch_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TorchPolicy:
@@ -384,14 +352,9 @@ class SACTrainer(RLTrainer):
                 self._stats_reporter.add_stat(stat, np.mean(stat_list))
 
     def create_sac_optimizer(self) -> TorchSACOptimizer:
-        if self.framework == FrameworkType.PYTORCH:
-            return TorchSACOptimizer(  # type: ignore
-                cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore
-            )  # type: ignore
-        else:
-            return SACOptimizer(  # type: ignore
-                cast(TFPolicy, self.policy), self.trainer_settings  # type: ignore
-            )  # type: ignore
+        return TorchSACOptimizer(  # type: ignore
+            cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore
+        )  # type: ignore
 
     def add_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy

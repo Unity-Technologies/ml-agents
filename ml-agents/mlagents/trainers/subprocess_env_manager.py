@@ -142,7 +142,9 @@ def worker(
             req: EnvironmentRequest = parent_conn.recv()
             if req.cmd == EnvironmentCommand.STEP:
                 all_action_info = req.payload
+                # print("\n")
                 for brain_name, action_info in all_action_info.items():
+                    # print(brain_name, action_info.action)
                     if len(action_info.action) != 0:
                         env.set_actions(brain_name, action_info.action)
                 env.step()
