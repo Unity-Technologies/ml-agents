@@ -70,6 +70,10 @@ public class AgentHealth : MonoBehaviour
                 DeathCube.SetActive(true);
                 ExplosionParticles.transform.position = CubeBody.transform.position;
                 ExplosionParticles.SetActive(true);
+                if (impulseSource)
+                {
+                    impulseSource.GenerateImpulse();
+                }
                 if (ResetSceneAfterDeath)
                 {
                     StartCoroutine(RestartScene());
@@ -79,13 +83,28 @@ public class AgentHealth : MonoBehaviour
         }
     }
 
+    //    IEnumerator Explosion()
+    //    {
+    //        if (impulseSource)
+    //        {
+    //            impulseSource.GenerateImpulse();
+    //        }
+    //        WaitForFixedUpdate wait = new WaitForFixedUpdate();
+    //        float timer = 0;
+    //        while (timer < 3)
+    //        {
+    //            timer += Time.fixedDeltaTime;
+    //            yield return wait;
+    //        }
+    //    }
+
     IEnumerator RestartScene()
     {
 
-        if (impulseSource)
-        {
-            impulseSource.GenerateImpulse();
-        }
+        //        if (impulseSource)
+        //        {
+        //            impulseSource.GenerateImpulse();
+        //        }
         WaitForFixedUpdate wait = new WaitForFixedUpdate();
         float timer = 0;
         while (timer < 3)
