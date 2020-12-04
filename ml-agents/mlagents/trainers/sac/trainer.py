@@ -305,10 +305,9 @@ class SACTrainer(RLTrainer):
         ) / self.reward_signal_update_steps > self.reward_signal_steps_per_update:
             # Get minibatches for reward signal update if needed
             reward_signal_minibatches = {}
-            for name, signal in self.optimizer.reward_signals.items():
+            for name in self.optimizer.reward_signals.keys():
                 logger.debug(f"Updating {name} at step {self.step}")
-                # Some signals don't need a minibatch to be sampled - so we don't!
-                if signal.update_dict:
+                if name != "extrinsic":
                     reward_signal_minibatches[name] = buffer.sample_mini_batch(
                         self.hyperparameters.batch_size,
                         sequence_length=self.policy.sequence_length,
