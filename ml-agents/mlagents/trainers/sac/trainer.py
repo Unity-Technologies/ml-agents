@@ -141,8 +141,7 @@ class SACTrainer(RLTrainer):
         )
         for name, reward_signal in self.optimizer.reward_signals.items():
             evaluate_result = (
-                reward_signal.evaluate(agent_buffer_trajectory)
-                * reward_signal.strength
+                reward_signal.evaluate(agent_buffer_trajectory) * reward_signal.strength
             )
 
             # Report the reward signals
@@ -153,10 +152,10 @@ class SACTrainer(RLTrainer):
             agent_buffer_trajectory, trajectory.next_obs, trajectory.done_reached
         )
         for name, v in value_estimates.items():
-                self._stats_reporter.add_stat(
-                    f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value",
-                    np.mean(v),
-                )
+            self._stats_reporter.add_stat(
+                f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value",
+                np.mean(v),
+            )
 
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.
         # Set last element to duplicate obs and remove dones.

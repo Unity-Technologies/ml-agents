@@ -112,10 +112,7 @@ def init_venv(
 
     # Set up the venv and install mlagents
     subprocess.check_call(f"python -m venv {venv_path}", shell=True)
-    pip_commands = [
-        "--upgrade pip",
-        "--upgrade setuptools",
-    ]
+    pip_commands = ["--upgrade pip", "--upgrade setuptools"]
     if mlagents_python_version:
         # install from pypi
         pip_commands += [

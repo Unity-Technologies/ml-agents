@@ -91,8 +91,7 @@ class PPOTrainer(RLTrainer):
         )
         for name, reward_signal in self.optimizer.reward_signals.items():
             evaluate_result = (
-                reward_signal.evaluate(agent_buffer_trajectory)
-                * reward_signal.strength
+                reward_signal.evaluate(agent_buffer_trajectory) * reward_signal.strength
             )
             agent_buffer_trajectory[f"{name}_rewards"].extend(evaluate_result)
             # Report the reward signals
