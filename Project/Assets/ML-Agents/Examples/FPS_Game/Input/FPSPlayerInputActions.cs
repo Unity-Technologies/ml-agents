@@ -81,13 +81,21 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Rotate"",
+                    ""type"": ""Value"",
+                    ""id"": ""b309ca48-95aa-4032-bd7d-46dcaeb138d0"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
                 {
                     ""name"": ""2D Vector"",
                     ""id"": ""f7a4010c-91c6-422f-91e7-4b14cbdb214a"",
-                    ""path"": ""2DVector"",
+                    ""path"": ""2DVector(mode=2)"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -164,7 +172,18 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""28ddf0bd-ea22-4069-ba60-ca41d4742bf9"",
-                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6f4a5988-5e01-4c66-a3ab-f4b5e47bd21f"",
+                    ""path"": ""<Keyboard>/j"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -175,7 +194,18 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""fe641861-0da7-43ba-8bd6-e95a17232a77"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2ae82452-d746-4a28-86f4-43c469c78eff"",
+                    ""path"": ""<Keyboard>/k"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -187,6 +217,17 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""name"": """",
                     ""id"": ""2b94ae52-9bb0-478e-8e4c-bf6c747a5c7d"",
                     ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shield"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""75b3d327-54da-4b56-a39e-052b1c173b56"",
+                    ""path"": ""<Keyboard>/i"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -226,6 +267,83 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""action"": ""Dash"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ae8dc5a5-930d-412e-a196-627e63bfcd0c"",
+                    ""path"": ""<Keyboard>/l"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""3e2a8f42-5d52-42d2-bd25-2934ab0f8c53"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""561ac5e2-b709-4ae7-8151-1777260a4798"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""23905e8a-1906-4f34-8e8f-5e6fa596e27e"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""a788bd05-d81e-47f4-a14c-5cb071e21c96"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""9844ff0b-6a74-43bb-a969-9f59c74212b9"",
+                    ""path"": ""<Gamepad>/rightStick/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""b81e038b-8786-4bbe-bb1d-aba1d54112d1"",
+                    ""path"": ""<Gamepad>/rightStick/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -242,6 +360,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
         m_PlayerActionMap_Shield = m_PlayerActionMap.FindAction("Shield", throwIfNotFound: true);
         m_PlayerActionMap_RotateBody = m_PlayerActionMap.FindAction("RotateBody", throwIfNotFound: true);
         m_PlayerActionMap_Dash = m_PlayerActionMap.FindAction("Dash", throwIfNotFound: true);
+        m_PlayerActionMap_Rotate = m_PlayerActionMap.FindAction("Rotate", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -299,6 +418,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_PlayerActionMap_Shield;
     private readonly InputAction m_PlayerActionMap_RotateBody;
     private readonly InputAction m_PlayerActionMap_Dash;
+    private readonly InputAction m_PlayerActionMap_Rotate;
     public struct PlayerActionMapActions
     {
         private @FPSPlayerInputActions m_Wrapper;
@@ -311,6 +431,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
         public InputAction @Shield => m_Wrapper.m_PlayerActionMap_Shield;
         public InputAction @RotateBody => m_Wrapper.m_PlayerActionMap_RotateBody;
         public InputAction @Dash => m_Wrapper.m_PlayerActionMap_Dash;
+        public InputAction @Rotate => m_Wrapper.m_PlayerActionMap_Rotate;
         public InputActionMap Get() { return m_Wrapper.m_PlayerActionMap; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -344,6 +465,9 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                 @Dash.started -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnDash;
                 @Dash.performed -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnDash;
                 @Dash.canceled -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnDash;
+                @Rotate.started -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRotate;
+                @Rotate.performed -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRotate;
+                @Rotate.canceled -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRotate;
             }
             m_Wrapper.m_PlayerActionMapActionsCallbackInterface = instance;
             if (instance != null)
@@ -372,6 +496,9 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                 @Dash.started += instance.OnDash;
                 @Dash.performed += instance.OnDash;
                 @Dash.canceled += instance.OnDash;
+                @Rotate.started += instance.OnRotate;
+                @Rotate.performed += instance.OnRotate;
+                @Rotate.canceled += instance.OnRotate;
             }
         }
     }
@@ -386,5 +513,6 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
         void OnShield(InputAction.CallbackContext context);
         void OnRotateBody(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
+        void OnRotate(InputAction.CallbackContext context);
     }
 }

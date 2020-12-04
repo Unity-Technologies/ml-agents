@@ -229,14 +229,23 @@ public class FPSAgent : Agent
 
         contActionsOut[0] = input.moveInput.y;
         contActionsOut[1] = input.moveInput.x;
-        contActionsOut[2] = input.rotateInput.x;
+        //        contActionsOut[2] = input.rotateInput.x; //rotate
+        contActionsOut[2] = input.rotateInput; //rotate
         contActionsOut[3] = input.shootInput ? 1 : 0; //shoot
-        contActionsOut[4] = input.jumpInput ? 1 : 0; //jump
-        contActionsOut[5] = input.dashInput ? 1 : 0; //dash
+        contActionsOut[4] = input.CheckIfInputSinceLastFrame(ref input.jumpInput) ? 1 : 0; //jump
+        contActionsOut[5] = input.CheckIfInputSinceLastFrame(ref input.dashInput) ? 1 : 0; //jump
+                                                                                           //        contActionsOut[4] = input.jumpInput ? 1 : 0; //jump
+                                                                                           //        contActionsOut[5] = input.dashInput ? 1 : 0; //dash
         contActionsOut[6] = input.shieldInput ? 1 : 0; //shield
-                                                       //        contActionsOut[0] = inputMovement.y;
-                                                       //        contActionsOut[1] = inputMovement.x;
-                                                       //        contActionsOut[2] = rotateMovement.x;
+        if (input.jumpInput)
+        {
+            print($"Agent: Jump: {input.jumpInput} : {Time.frameCount}");
+
+        }
+
+        //        contActionsOut[0] = inputMovement.y;
+        //        contActionsOut[1] = inputMovement.x;
+        //        contActionsOut[2] = rotateMovement.x;
 
 
         //        m_InputH = 0;

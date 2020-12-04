@@ -67,6 +67,5 @@ public class AgentHealth : MonoBehaviour
         {
             bodyMesh.material.color = startingColor;
         }
-
     }
 }
