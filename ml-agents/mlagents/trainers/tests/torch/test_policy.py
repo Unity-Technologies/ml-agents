@@ -126,7 +126,13 @@ def test_sample_actions(rnn, visual, discrete):
     if len(memories) > 0:
         memories = torch.stack(memories).unsqueeze(0)
 
-    (sampled_actions, log_probs, entropies, memories) = policy.sample_actions(
+    (
+        sampled_actions,
+        clipped_actions,
+        log_probs,
+        entropies,
+        memories,
+    ) = policy.sample_actions(
         vec_obs,
         vis_obs,
         masks=act_masks,
@@ -141,6 +147,10 @@ def test_sample_actions(rnn, visual, discrete):
         )
     else:
         assert log_probs.shape == (64, policy.behavior_spec.action_spec.continuous_size)
+        assert clipped_actions.shape == (
+            64,
+            policy.behavior_spec.action_spec.continuous_size,
+        )
     assert entropies.shape == (64,)
 
     if rnn:

@@ -77,6 +77,7 @@ class TorchPolicy(Policy):
             conditional_sigma=self.condition_sigma_on_obs,
             tanh_squash=tanh_squash,
         )
+        self._clip_action = not tanh_squash
         # Save the m_size needed for export
         self._export_m_size = self.m_size
         # m_size needed for training is determined by network, not trainer settings
@@ -123,7 +124,7 @@ class TorchPolicy(Policy):
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
         all_log_probs: bool = False,
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """
         :param vec_obs: List of vector observations.
         :param vis_obs: List of visual observations.
@@ -131,8 +132,8 @@ class TorchPolicy(Policy):
         :param memories: Input memories when using RNN, else None.
         :param seq_len: Sequence length when using RNN.
         :param all_log_probs: Returns (for discrete actions) a tensor of log probs, one for each action.
-        :return: Tuple of actions, log probabilities (dependent on all_log_probs), entropies, and
-            output memories, all as Torch Tensors.
+        :return: Tuple of actions, actions clipped to -1, 1, log probabilities (dependent on all_log_probs),
+            entropies, and output memories, all as Torch Tensors.
         """
         if memories is None:
             dists, memories = self.actor_critic.get_dists(
@@ -154,8 +155,14 @@ class TorchPolicy(Policy):
             actions = actions[:, 0, :]
         # Use the sum of entropy across actions, not the mean
         entropy_sum = torch.sum(entropies, dim=1)
+
+        if self._clip_action and self.use_continuous_act:
+            clipped_action = torch.clamp(actions, -3, 3) / 3
+        else:
+            clipped_action = actions
         return (
             actions,
+            clipped_action,
             all_logs if all_log_probs else log_probs,
             entropy_sum,
             memories,
@@ -200,11 +207,12 @@ class TorchPolicy(Policy):
 
         run_out = {}
         with torch.no_grad():
-            action, log_probs, entropy, memories = self.sample_actions(
+            action, clipped_action, log_probs, entropy, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
-        run_out["action"] = ModelUtils.to_numpy(action)
+
         run_out["pre_action"] = ModelUtils.to_numpy(action)
+        run_out["action"] = ModelUtils.to_numpy(clipped_action)
         # Todo - make pre_action difference
         run_out["log_probs"] = ModelUtils.to_numpy(log_probs)
         run_out["entropy"] = ModelUtils.to_numpy(entropy)

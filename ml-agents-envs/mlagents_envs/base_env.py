@@ -323,7 +323,7 @@ class ActionSpec(NamedTuple):
         return action
 
     def _validate_action(
-        self, actions: np.ndarray, n_agents: int, name: str
+        self, actions: np.ndarray, n_agents: Optional[int], name: str
     ) -> np.ndarray:
         """
         Validates that action has the correct action dim
@@ -333,7 +333,7 @@ class ActionSpec(NamedTuple):
             _size = self.continuous_size
         else:
             _size = self.discrete_size
-        _expected_shape = (n_agents, _size)
+        _expected_shape = (n_agents, _size) if n_agents else (_size,)
         if actions.shape != _expected_shape:
             raise UnityActionException(
                 f"The behavior {name} needs an input of dimension "
