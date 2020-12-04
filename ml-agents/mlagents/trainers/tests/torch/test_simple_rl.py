@@ -23,8 +23,10 @@ from mlagents.trainers.settings import (
 from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
     DemonstrationMetaProto,
 )
-from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
-from mlagents_envs.communicator_objects.space_type_pb2 import discrete, continuous
+from mlagents_envs.communicator_objects.brain_parameters_pb2 import (
+    BrainParametersProto,
+    ActionSpecProto,
+)
 
 from mlagents.trainers.tests.dummy_config import ppo_dummy_config, sac_dummy_config
 from mlagents.trainers.tests.check_env_trains import (
@@ -309,12 +311,14 @@ def simple_record(tmpdir_factory):
         env.solve()
         agent_info_protos = env.demonstration_protos[BRAIN_NAME]
         meta_data_proto = DemonstrationMetaProto()
+        continuous_action_size, discrete_action_size = action_sizes
+        action_spec_proto = ActionSpecProto(
+            num_continuous_actions=continuous_action_size,
+            num_discrete_actions=discrete_action_size,
+            discrete_branch_sizes=[2] if discrete_action_size > 0 else None,
+        )
         brain_param_proto = BrainParametersProto(
-            vector_action_size=[2] if action_sizes else [1],
-            vector_action_descriptions=[""],
-            vector_action_space_type=discrete if action_sizes else continuous,
-            brain_name=BRAIN_NAME,
-            is_training=True,
+            brain_name=BRAIN_NAME, is_training=True, action_spec=action_spec_proto
         )
         action_type = "Discrete" if action_sizes else "Continuous"
         demo_path_name = "1DTest" + action_type + ".demo"

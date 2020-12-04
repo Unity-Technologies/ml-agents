@@ -284,12 +284,21 @@ class RecordEnvironment(SimpleEnvironment):
     def step(self) -> None:
         super().step()
         for name in self.names:
-            if self.action_spec.discrete_size > 0:
-                action = self.action[name].discrete
-            else:
-                action = self.action[name].continuous
+            discrete_actions = (
+                self.action[name].discrete
+                if self.action_spec.discrete_size > 0
+                else None
+            )
+            continuous_actions = (
+                self.action[name].continuous
+                if self.action_spec.continuous_size > 0
+                else None
+            )
             self.demonstration_protos[name] += proto_from_steps_and_action(
-                self.step_result[name][0], self.step_result[name][1], action
+                self.step_result[name][0],
+                self.step_result[name][1],
+                continuous_actions,
+                discrete_actions,
             )
             self.demonstration_protos[name] = self.demonstration_protos[name][
                 -self.n_demos :

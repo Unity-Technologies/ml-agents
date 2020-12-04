@@ -7,16 +7,22 @@ namespace Unity.MLAgents
         public bool BaseRLCapabilities;
         public bool ConcatenatedPngObservations;
         public bool CompressedChannelMapping;
+        public bool HybridActions;
 
         /// <summary>
         /// A class holding the capabilities flags for Reinforcement Learning across C# and the Trainer codebase.  This
         /// struct will be used to inform users if and when they are using C# / Trainer features that are mismatched.
         /// </summary>
-        public UnityRLCapabilities(bool baseRlCapabilities = true, bool concatenatedPngObservations = true, bool compressedChannelMapping = true)
+        public UnityRLCapabilities(
+            bool baseRlCapabilities = true,
+            bool concatenatedPngObservations = true,
+            bool compressedChannelMapping = true,
+            bool hybridActions = true)
         {
             BaseRLCapabilities = baseRlCapabilities;
             ConcatenatedPngObservations = concatenatedPngObservations;
             CompressedChannelMapping = compressedChannelMapping;
+            HybridActions = hybridActions;
         }
 
         /// <summary>
