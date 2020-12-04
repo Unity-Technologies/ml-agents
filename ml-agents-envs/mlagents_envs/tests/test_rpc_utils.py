@@ -215,11 +215,9 @@ def proto_from_steps_and_action(
     for i in range(num_agents):
         proto = AgentActionProto()
         if continuous_actions is not None:
-            print("continuous_actions", continuous_actions[i].shape)
             proto.continuous_actions.extend([continuous_actions[i]])
             proto.vector_actions_deprecated.extend([continuous_actions[i]])
         if discrete_actions is not None:
-            print("discrete_actions", discrete_actions[i].shape)
             proto.discrete_actions.extend([discrete_actions[i]])
             proto.vector_actions_deprecated.extend([discrete_actions[i]])
         agent_action_protos.append(proto)
