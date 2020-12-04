@@ -5,10 +5,14 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
-using UnityEditor;
-using UnityEditor.Analytics;
 using UnityEngine;
 using UnityEngine.Analytics;
+
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEditor.Analytics;
+#endif
+
 
 namespace Unity.MLAgents.Analytics
 {
@@ -29,18 +33,31 @@ namespace Unity.MLAgents.Analytics
                 return true;
             }
 
-            if (s_SentModels == null)
-            {
-                s_SentModels = new HashSet<NNModel>();
-            }
-
+#if UNITY_EDITOR
             AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(k_EventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
+#else
+            AnalyticsResult result = AnalyticsResult.UnsupportedPlatform;
+#endif
             if (result == AnalyticsResult.Ok)
             {
                 s_EventRegistered = true;
             }
 
+            if (s_EventRegistered && s_SentModels == null)
+            {
+                s_SentModels = new HashSet<NNModel>();
+            }
+
             return s_EventRegistered;
+        }
+
+        public static bool IsAnalyticsEnabled()
+        {
+#if UNITY_EDITOR
+            return EditorAnalytics.enabled;
+#else
+            return false;
+#endif
         }
 
         public static void InferenceModelSet(
@@ -53,7 +70,7 @@ namespace Unity.MLAgents.Analytics
         {
             // The event shouldn't be able to report if this is disabled but if we know we're not going to report
             // Lets early out and not waste time gathering all the data
-            if (!EditorAnalytics.enabled)
+            if (!IsAnalyticsEnabled())
                 return;
 
             if (!EnableAnalytics())
@@ -71,7 +88,11 @@ namespace Unity.MLAgents.Analytics
             var data = GetEventForModel(nnModel, behaviorName, inferenceDevice, sensors, actionSpec);
             // var s = JsonUtility.ToJson(data, true);
             // Debug.Log(s);
+#if UNITY_EDITOR
             //EditorAnalytics.SendEventWithLimit(k_EventName, data);
+#else
+            return;
+#endif
         }
 
         static InferenceEvent GetEventForModel(
