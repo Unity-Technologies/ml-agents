@@ -538,7 +538,6 @@ you would like to contribute environments, please see our
 - Benchmark Mean Reward: 1.75
 
 ## Match 3
-
 ![Match 3](images/match3.png)
 
 - Set-up: Simple match-3 game. Matched pieces are removed, and remaining pieces

@@ -25,13 +25,16 @@ class AgentAction(NamedTuple):
         """
         return torch.stack(self.discrete_list, dim=-1)
 
-    def to_action_tuple(self) -> ActionTuple:
+    def to_action_tuple(self, clip: bool = False) -> ActionTuple:
         """
         Returns an ActionTuple
         """
         action_tuple = ActionTuple()
         if self.continuous_tensor is not None:
-            continuous = ModelUtils.to_numpy(self.continuous_tensor)
+            _continuous_tensor = self.continuous_tensor
+            if clip:
+                _continuous_tensor = torch.clamp(_continuous_tensor, -3, 3) / 3
+            continuous = ModelUtils.to_numpy(_continuous_tensor)
             action_tuple.add_continuous(continuous)
         if self.discrete_list is not None:
             discrete = ModelUtils.to_numpy(self.discrete_tensor[:, 0, :])

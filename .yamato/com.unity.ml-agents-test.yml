@@ -16,7 +16,8 @@ test_editors:
 
 trunk_editor:
   - version: trunk
-    enableCodeCoverage: !!bool true
+    # Workaround for MLA-1596 - need to make sure we load the right results.
+    enableCodeCoverage: !!bool false
     testProject: DevProject
 
 test_platforms:

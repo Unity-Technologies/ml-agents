@@ -336,18 +336,12 @@ class PPOOptimizer(TFOptimizer):
 
         if self.policy.use_continuous_act:  # For hybrid action buffer support
             feed_dict[self.all_old_log_probs] = mini_batch["continuous_log_probs"]
+            feed_dict[self.policy.output_pre] = mini_batch["continuous_action"]
         else:
             feed_dict[self.all_old_log_probs] = mini_batch["discrete_log_probs"]
-
-        if self.policy.output_pre is not None and "actions_pre" in mini_batch:
-            feed_dict[self.policy.output_pre] = mini_batch["actions_pre"]
-        else:
-            if self.policy.use_continuous_act:  # For hybrid action buffer support
-                feed_dict[self.policy.output] = mini_batch["continuous_action"]
-            else:
-                feed_dict[self.policy.output] = mini_batch["discrete_action"]
-                if self.policy.use_recurrent:
-                    feed_dict[self.policy.prev_action] = mini_batch["prev_action"]
+            feed_dict[self.policy.output] = mini_batch["discrete_action"]
+            if self.policy.use_recurrent:
+                feed_dict[self.policy.prev_action] = mini_batch["prev_action"]
             feed_dict[self.policy.action_masks] = mini_batch["action_mask"]
         if "vector_obs" in mini_batch:
             feed_dict[self.policy.vector_in] = mini_batch["vector_obs"]

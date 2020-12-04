@@ -41,7 +41,6 @@ def test_agentprocessor(num_vis_obs):
         "action": ActionTuple(continuous=np.array([[0.1], [0.1]])),
         "entropy": np.array([1.0], dtype=np.float32),
         "learning_rate": 1.0,
-        "pre_action": [0.1, 0.1],
         "log_probs": LogProbsTuple(continuous=np.array([[0.1], [0.1]])),
     }
     mock_decision_steps, mock_terminal_steps = mb.create_mock_steps(
@@ -51,6 +50,7 @@ def test_agentprocessor(num_vis_obs):
     )
     fake_action_info = ActionInfo(
         action=ActionTuple(continuous=np.array([[0.1], [0.1]])),
+        env_action=ActionTuple(continuous=np.array([[0.1], [0.1]])),
         value=[0.1, 0.1],
         outputs=fake_action_outputs,
         agent_ids=mock_decision_steps.agent_id,
@@ -82,7 +82,7 @@ def test_agentprocessor(num_vis_obs):
         action_spec=ActionSpec.create_continuous(2),
     )
     processor.add_experiences(
-        mock_decision_steps, mock_terminal_steps, 0, ActionInfo([], [], {}, [])
+        mock_decision_steps, mock_terminal_steps, 0, ActionInfo.empty()
     )
     # Assert that the AgentProcessor is still empty
     assert len(processor.experience_buffers[0]) == 0
@@ -102,7 +102,6 @@ def test_agent_deletion():
         "action": ActionTuple(continuous=np.array([[0.1]])),
         "entropy": np.array([1.0], dtype=np.float32),
         "learning_rate": 1.0,
-        "pre_action": [0.1],
         "log_probs": LogProbsTuple(continuous=np.array([[0.1]])),
     }
 
@@ -119,6 +118,7 @@ def test_agent_deletion():
     )
     fake_action_info = ActionInfo(
         action=ActionTuple(continuous=np.array([[0.1]])),
+        env_action=ActionTuple(continuous=np.array([[0.1]])),
         value=[0.1],
         outputs=fake_action_outputs,
         agent_ids=mock_decision_step.agent_id,
@@ -181,7 +181,6 @@ def test_end_episode():
         "action": ActionTuple(continuous=np.array([[0.1]])),
         "entropy": np.array([1.0], dtype=np.float32),
         "learning_rate": 1.0,
-        "pre_action": [0.1],
         "log_probs": LogProbsTuple(continuous=np.array([[0.1]])),
     }
 
@@ -192,6 +191,7 @@ def test_end_episode():
     )
     fake_action_info = ActionInfo(
         action=ActionTuple(continuous=np.array([[0.1]])),
+        env_action=ActionTuple(continuous=np.array([[0.1]])),
         value=[0.1],
         outputs=fake_action_outputs,
         agent_ids=mock_decision_step.agent_id,

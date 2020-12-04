@@ -209,9 +209,11 @@ namespace Unity.MLAgents.Sensors
         }
     }
 
+    /// <summary>
+    /// Provides extension methods for the ObservationWriter.
+    /// </summary>
     public static class ObservationWriterExtension
     {
-
         /// <summary>
         /// Writes a Texture2D into a ObservationWriter.
         /// </summary>

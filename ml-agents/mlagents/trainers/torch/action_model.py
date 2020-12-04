@@ -63,6 +63,10 @@ class ActionModel(nn.Module):
                 self.encoding_size, self.action_spec.discrete_branches
             )
 
+        # During training, clipping is done in TorchPolicy, but we need to clip before ONNX
+        # export as well.
+        self._clip_action_on_export = not tanh_squash
+
     def _sample_action(self, dists: DistInstances) -> AgentAction:
         """
         Samples actions from a DistInstances tuple
