@@ -41,7 +41,6 @@ def test_agentprocessor(num_vis_obs):
         "action": ActionTuple(continuous=np.array([[0.1], [0.1]])),
         "entropy": np.array([1.0], dtype=np.float32),
         "learning_rate": 1.0,
-        "pre_action": [0.1, 0.1],
         "log_probs": LogProbsTuple(continuous=np.array([[0.1], [0.1]])),
     }
     mock_decision_steps, mock_terminal_steps = mb.create_mock_steps(
@@ -103,7 +102,6 @@ def test_agent_deletion():
         "action": ActionTuple(continuous=np.array([[0.1]])),
         "entropy": np.array([1.0], dtype=np.float32),
         "learning_rate": 1.0,
-        "pre_action": [0.1],
         "log_probs": LogProbsTuple(continuous=np.array([[0.1]])),
     }
 
@@ -183,7 +181,6 @@ def test_end_episode():
         "action": ActionTuple(continuous=np.array([[0.1]])),
         "entropy": np.array([1.0], dtype=np.float32),
         "learning_rate": 1.0,
-        "pre_action": [0.1],
         "log_probs": LogProbsTuple(continuous=np.array([[0.1]])),
     }
 
