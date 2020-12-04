@@ -119,6 +119,11 @@ def init_venv(
             f"mlagents=={mlagents_python_version}",
             f"gym-unity=={mlagents_python_version}",
         ]
+        if mlagents_python_version == "0.16.0":
+            # version 0.16.0 of mlagents uses tensorflow only
+            pip_commands += [
+                "tensorflow==1.14.0",
+            ]
     else:
         # Local install
         pip_commands += ["-e ./ml-agents-envs", "-e ./ml-agents", "-e ./gym-unity"]
