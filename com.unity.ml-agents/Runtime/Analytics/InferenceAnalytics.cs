@@ -18,12 +18,27 @@ namespace Unity.MLAgents.Analytics
 {
     internal class InferenceAnalytics
     {
-        static bool s_EventRegistered = false;
-        const int k_MaxEventsPerHour = 1000;
-        const int k_MaxNumberOfElements = 1000;
         const string k_VendorKey = "unity.ml-agents";
         const string k_EventName = "ml_agents_inferencemodelset";
 
+        /// <summary>
+        /// Whether or not we've registered this particular event yet
+        /// </summary>
+        static bool s_EventRegistered = false;
+
+        /// <summary>
+        /// Hourly limit for this event name
+        /// </summary>
+        const int k_MaxEventsPerHour = 1000;
+
+        /// <summary>
+        /// Maximum number of items in this event.
+        /// </summary>
+        const int k_MaxNumberOfElements = 1000;
+
+        /// <summary>
+        /// Models that we've already sent events for.
+        /// </summary>
         private static HashSet<NNModel> s_SentModels;
 
         static bool EnableAnalytics()
@@ -88,6 +103,7 @@ namespace Unity.MLAgents.Analytics
             // Note - to debug, use JsonUtility.ToJson on the event.
             //Debug.Log(JsonUtility.ToJson(data, true));
 #if UNITY_EDITOR
+            // TODO re-enable when we're ready to merge.
             //EditorAnalytics.SendEventWithLimit(k_EventName, data);
 #else
             return;
@@ -137,6 +153,10 @@ namespace Unity.MLAgents.Analytics
             return inferenceEvent;
         }
 
+        /// <summary>
+        /// Simple implementation of the Fowler–Noll–Vo hash function.
+        /// https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
+        /// </summary>
         internal class FNVHash
         {
             const ulong kFNV_prime = 1099511628211;
@@ -180,6 +200,9 @@ namespace Unity.MLAgents.Analytics
             }
         }
 
+        /// <summary>
+        /// Wrapper around Hash128 that supports Append(float[], int, int)
+        /// </summary>
         struct MLAgentsHash128
         {
             private Hash128 m_Hash;
@@ -213,6 +236,8 @@ namespace Unity.MLAgents.Analytics
 
         static long GetModelWeightSize(Model barracudaModel)
         {
+            // This corresponds to the "Total weight size" display in the Barracuda inspector
+            // and the calculations are the same.
             long totalWeightsSizeInBytes = 0;
             for (var l = 0; l < barracudaModel.layers.Count; ++l)
             {
@@ -227,7 +252,7 @@ namespace Unity.MLAgents.Analytics
         static string GetModelHash(Model barracudaModel)
         {
             // Pre-2020 versions of Unity don't have Hash128.Append() (can only hash strings)
-            // For these versions, we'll use a simple wrapper that supports arrays of floats.
+            // For these versions, we'll use a simple wrapper that just supports arrays of floats.
 #if UNITY_2020_1_OR_NEWER
             var hash = new Hash128();
 #else
