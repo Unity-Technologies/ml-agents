@@ -110,6 +110,17 @@ namespace Unity.MLAgents.Analytics
 #endif
         }
 
+        /// <summary>
+        /// Send an analytics event for the NNModel when it is set up for inference.
+        /// No events will be sent if analytics are disabled, and at most one event
+        /// will be sent per model instance.
+        /// </summary>
+        /// <param name="nnModel">The NNModel being used for inference.</param>
+        /// <param name="behaviorName">The BehaviorName of the Agent using the model</param>
+        /// <param name="inferenceDevice">Whether inference is being performed on the CPU or GPU</param>
+        /// <param name="sensors">List of ISensors for the Agent. Used to generate information about the observation space.</param>
+        /// <param name="actionSpec">ActionSpec for the Agent. Used to generate information about the action space.</param>
+        /// <returns></returns>
         static InferenceEvent GetEventForModel(
             NNModel nnModel,
             string behaviorName,
@@ -234,10 +245,15 @@ namespace Unity.MLAgents.Analytics
             }
         }
 
+        /// <summary>
+        /// Compute the total model weight size in bytes.
+        /// This corresponds to the "Total weight size" display in the Barracuda inspector,
+        /// and the calculations are the same.
+        /// </summary>
+        /// <param name="barracudaModel"></param>
+        /// <returns></returns>
         static long GetModelWeightSize(Model barracudaModel)
         {
-            // This corresponds to the "Total weight size" display in the Barracuda inspector
-            // and the calculations are the same.
             long totalWeightsSizeInBytes = 0;
             for (var l = 0; l < barracudaModel.layers.Count; ++l)
             {
@@ -249,6 +265,13 @@ namespace Unity.MLAgents.Analytics
             return totalWeightsSizeInBytes;
         }
 
+        /// <summary>
+        /// Compute a hash of the model's layer data and return it as a string.
+        /// A subset of the layer weights are used for performance.
+        /// This increases the chance of a collision, but this should still be extremely rare.
+        /// </summary>
+        /// <param name="barracudaModel"></param>
+        /// <returns></returns>
         static string GetModelHash(Model barracudaModel)
         {
             // Pre-2020 versions of Unity don't have Hash128.Append() (can only hash strings)
@@ -259,7 +282,6 @@ namespace Unity.MLAgents.Analytics
             var hash = new MLAgentsHash128();
 #endif
             // Limit the max number of float bytes that we hash for performance.
-            // This increases the chance of a collision, but this should still be extremely rare.
             const int kMaxFloats = 256;
 
             foreach (var layer in barracudaModel.layers)
