@@ -86,10 +86,9 @@ namespace Unity.MLAgents.Analytics
 
             var data = GetEventForModel(nnModel, behaviorName, inferenceDevice, sensors, actionSpec);
             // Note - to debug, use JsonUtility.ToJson on the event.
-            var s = JsonUtility.ToJson(data, true);
-            Debug.Log(s);
+            //Debug.Log(JsonUtility.ToJson(data, true));
 #if UNITY_EDITOR
-            EditorAnalytics.SendEventWithLimit(k_EventName, data);
+            //EditorAnalytics.SendEventWithLimit(k_EventName, data);
 #else
             return;
 #endif
@@ -133,10 +132,8 @@ namespace Unity.MLAgents.Analytics
                 inferenceEvent.ObservationSpecs.Add(EventObservationSpec.FromSensor(sensor));
             }
 
-            var startTick = DateTime.Now.Ticks;
+            inferenceEvent.TotalWeightSizeBytes = GetModelWeightSize(barracudaModel);
             inferenceEvent.ModelHash = GetModelHash(barracudaModel);
-            var endTick = DateTime.Now.Ticks;
-            Debug.Log($"hash took {(endTick - startTick) * 1e-7} seconds");
             return inferenceEvent;
         }
 
@@ -212,6 +209,19 @@ namespace Unity.MLAgents.Analytics
             {
                 return m_Hash.ToString();
             }
+        }
+
+        static long GetModelWeightSize(Model barracudaModel)
+        {
+            long totalWeightsSizeInBytes = 0;
+            for (var l = 0; l < barracudaModel.layers.Count; ++l)
+            {
+                for (var d = 0; d < barracudaModel.layers[l].datasets.Length; ++d)
+                {
+                    totalWeightsSizeInBytes += barracudaModel.layers[l].datasets[d].length;
+                }
+            }
+            return totalWeightsSizeInBytes;
         }
 
         static string GetModelHash(Model barracudaModel)

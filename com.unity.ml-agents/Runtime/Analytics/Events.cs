@@ -16,6 +16,7 @@ namespace Unity.MLAgents.Analytics
         public List<EventObservationSpec> ObservationSpecs;
         public EventActionSpec ActionSpec;
         public int MemorySize;
+        public long TotalWeightSizeBytes;
         public string ModelHash;
     }
 
@@ -42,20 +43,40 @@ namespace Unity.MLAgents.Analytics
     }
 
     /// <summary>
+    /// Information about one dimension of an observation.
+    /// </summary>
+    [Serializable]
+    internal struct EventObservationDimensionInfo
+    {
+        public int Size;
+        public int Flags;
+    }
+
+    /// <summary>
     /// Simplified summary of Agent observations for use in analytics
     /// </summary>
     [Serializable]
     internal struct EventObservationSpec
     {
         public string SensorName;
-        public int[] ObservationShape;
+        public string CompressionType;
+        public EventObservationDimensionInfo[] DimensionInfos;
 
         public static EventObservationSpec FromSensor(ISensor sensor)
         {
+            var shape = sensor.GetObservationShape();
+            var dimInfos = new EventObservationDimensionInfo[shape.Length];
+            for (var i = 0; i < shape.Length; i++)
+            {
+                dimInfos[i].Size = shape[i];
+                // TODO copy flags when we have them
+            }
+
             return new EventObservationSpec
             {
                 SensorName = sensor.GetName(),
-                ObservationShape = sensor.GetObservationShape(),
+                CompressionType = sensor.GetCompressionType().ToString(),
+                DimensionInfos = dimInfos,
             };
         }
     }
