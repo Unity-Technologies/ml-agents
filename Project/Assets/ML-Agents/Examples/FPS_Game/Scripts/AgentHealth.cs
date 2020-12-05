@@ -9,7 +9,6 @@ using Cinemachine;
 public class AgentHealth : MonoBehaviour
 {
     public float CurrentPercentage = 100;
-    public float DepletionRate = 5f; //constant rate at which ammo depletes when being used
     public Slider UISlider;
 
     public MeshRenderer bodyMesh;
@@ -27,6 +26,9 @@ public class AgentHealth : MonoBehaviour
     public bool Dead;
 
     private GameController GameController;
+    [Header("PLAYER DAMAGE")] public bool UseGlobalDamageSettings;
+    public float DamagePerHit = 15f; //constant rate at which ammo depletes when being used
+
     // Start is called before the first frame update
     void OnEnable()
     {
@@ -64,7 +66,13 @@ public class AgentHealth : MonoBehaviour
             {
                 return;
             }
-            CurrentPercentage = Mathf.Clamp(CurrentPercentage - DepletionRate, 0, 100);
+
+            var damage = DamagePerHit;
+            if (UseGlobalDamageSettings)
+            {
+                damage = GameController.DamagePerHit;
+            }
+            CurrentPercentage = Mathf.Clamp(CurrentPercentage - damage, 0, 100);
             if (CurrentPercentage == 0)
             {
                 Dead = true;

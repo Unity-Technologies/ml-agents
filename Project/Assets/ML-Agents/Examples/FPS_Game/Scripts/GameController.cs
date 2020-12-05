@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
+    [Header("GLOBAL SETTINGS")]
     public List<Rigidbody> AllRBsList = new List<Rigidbody>();
 
     public float ExplosionForce = 100;
@@ -12,6 +13,9 @@ public class GameController : MonoBehaviour
     public ForceMode ExplosionForceMode;
 
     public bool triggerExplosion;
+
+    [Header("PLAYER DAMAGE")]
+    public float DamagePerHit = 15;
     // Start is called before the first frame update
     void Awake()
     {

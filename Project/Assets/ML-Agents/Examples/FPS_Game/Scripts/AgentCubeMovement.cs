@@ -444,7 +444,43 @@ namespace MLAgents
                 dashCoolDownTimer = 0;
             }
         }
+        public void RotateTowards(Vector3 dir, float maxRotationRate = 1)
+        {
+            if (dir != Vector3.zero)
+            {
+                var rot = Quaternion.LookRotation(dir);
+                var smoothedRot = Quaternion.RotateTowards(rb.rotation, rot, maxRotationRate * Time.deltaTime);
+                rb.MoveRotation(smoothedRot);
+            }
+        }
 
+        public void RunOnGround(Vector3 dir)
+        {
+            if (dir == Vector3.zero)
+            {
+                if (AnimateBodyMesh)
+                {
+                    bodyMesh.localPosition = Vector3.zero;
+                }
+            }
+            else
+            {
+                var vel = rb.velocity.magnitude;
+                float adjustedSpeed = Mathf.Clamp(agentRunSpeed - vel, 0, agentTerminalVel);
+                //                rb.AddForce(dir.normalized * adjustedSpeed, runningForceMode);
+                rb.AddForce(dir * adjustedSpeed, runningForceMode);
+                if (AnimateBodyMesh)
+                {
+                    bodyMesh.localPosition = Vector3.zero +
+                                             Vector3.up * walkingAnimScale * walkingBounceCurve.Evaluate(
+                                                 m_animateBodyMeshCurveTimer);
+                    m_animateBodyMeshCurveTimer += Time.fixedDeltaTime;
+                }
+                //            rb.AddForceAtPosition(dir.normalized * adjustedSpeed,transform.TransformPoint(Vector3.forward * standingForcePositionOffset),
+                //                runningForceMode);
+
+            }
+        }
         public void RunOnGround(Rigidbody rb, Vector3 dir)
         {
             if (dir == Vector3.zero)
