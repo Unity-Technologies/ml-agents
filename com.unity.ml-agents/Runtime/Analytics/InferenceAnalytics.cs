@@ -75,6 +75,17 @@ namespace Unity.MLAgents.Analytics
 #endif
         }
 
+        /// <summary>
+        /// Send an analytics event for the NNModel when it is set up for inference.
+        /// No events will be sent if analytics are disabled, and at most one event
+        /// will be sent per model instance.
+        /// </summary>
+        /// <param name="nnModel">The NNModel being used for inference.</param>
+        /// <param name="behaviorName">The BehaviorName of the Agent using the model</param>
+        /// <param name="inferenceDevice">Whether inference is being performed on the CPU or GPU</param>
+        /// <param name="sensors">List of ISensors for the Agent. Used to generate information about the observation space.</param>
+        /// <param name="actionSpec">ActionSpec for the Agent. Used to generate information about the action space.</param>
+        /// <returns></returns>
         public static void InferenceModelSet(
             NNModel nnModel,
             string behaviorName,
@@ -110,16 +121,15 @@ namespace Unity.MLAgents.Analytics
 #endif
         }
 
+
         /// <summary>
-        /// Send an analytics event for the NNModel when it is set up for inference.
-        /// No events will be sent if analytics are disabled, and at most one event
-        /// will be sent per model instance.
+        /// Generate an InferenceEvent for the model.
         /// </summary>
-        /// <param name="nnModel">The NNModel being used for inference.</param>
-        /// <param name="behaviorName">The BehaviorName of the Agent using the model</param>
-        /// <param name="inferenceDevice">Whether inference is being performed on the CPU or GPU</param>
-        /// <param name="sensors">List of ISensors for the Agent. Used to generate information about the observation space.</param>
-        /// <param name="actionSpec">ActionSpec for the Agent. Used to generate information about the action space.</param>
+        /// <param name="nnModel"></param>
+        /// <param name="behaviorName"></param>
+        /// <param name="inferenceDevice"></param>
+        /// <param name="sensors"></param>
+        /// <param name="actionSpec"></param>
         /// <returns></returns>
         static InferenceEvent GetEventForModel(
             NNModel nnModel,
