@@ -42,9 +42,17 @@ public class BouncerAgent : Agent
             continuousActions[i] = Mathf.Clamp(continuousActions[i], -1f, 1f);
         }
         var x = continuousActions[0];
-        var y = ScaleAction(continuousActions[1], 0, 1);
+        var y = 0f;
+        if (continuousActions[1] > 0 && m_JumpCooldown <= 0f)
+        {
+            m_JumpLeft -= 1;
+            m_JumpCooldown = 0.1f;
+            y = continuousActions[1] + 1f;
+        }
         var z = continuousActions[2];
-        m_Rb.AddForce(new Vector3(x, y + 1, z) * strength);
+
+        m_Rb.AddForce(new Vector3(x, y, z) * strength);
+
 
         AddReward(-0.05f * (
             continuousActions[0] * continuousActions[0] +
@@ -77,8 +85,6 @@ public class BouncerAgent : Agent
         if (Physics.Raycast(transform.position, new Vector3(0f, -1f, 0f), 0.51f) && m_JumpCooldown <= 0f)
         {
             RequestDecision();
-            m_JumpLeft -= 1;
-            m_JumpCooldown = 0.1f;
             m_Rb.velocity = default(Vector3);
         }
 
@@ -98,6 +104,7 @@ public class BouncerAgent : Agent
             EndEpisode();
             return;
         }
+
         if (m_JumpLeft == 0)
         {
             EndEpisode();
