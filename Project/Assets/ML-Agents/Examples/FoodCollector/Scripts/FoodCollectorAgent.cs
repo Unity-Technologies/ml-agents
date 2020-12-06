@@ -225,21 +225,29 @@ public class FoodCollectorAgent : Agent
         discreteActionsOut[0] = 0;
         discreteActionsOut[1] = 0;
         discreteActionsOut[2] = 0;
-        if (Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.A))
         {
-            discreteActionsOut[2] = 2;
+            discreteActionsOut[1] = 2;
         }
         if (Input.GetKey(KeyCode.W))
         {
             discreteActionsOut[0] = 1;
         }
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.D))
         {
-            discreteActionsOut[2] = 1;
+            discreteActionsOut[1] = 1;
         }
         if (Input.GetKey(KeyCode.S))
         {
             discreteActionsOut[0] = 2;
+        }
+        if (Input.GetKey(KeyCode.Q))
+        {
+            discreteActionsOut[2] = 1;
+        }
+        if (Input.GetKey(KeyCode.E))
+        {
+            discreteActionsOut[2] = 2;
         }
         discreteActionsOut[3] = Input.GetKey(KeyCode.Space) ? 1 : 0;
     }
