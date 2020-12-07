@@ -293,9 +293,7 @@ class TorchSACOptimizer(TorchOptimizer):
         if self._action_spec.discrete_size <= 0:
             for name in values.keys():
                 with torch.no_grad():
-                    v_backup = min_policy_qs[name] - torch.sum(
-                        _cont_ent_coef * log_probs.continuous_tensor, dim=1
-                    )
+                    v_backup = min_policy_qs[name]
                 value_loss = 0.5 * ModelUtils.masked_mean(
                     torch.nn.functional.mse_loss(values[name], v_backup), loss_masks
                 )
@@ -514,16 +512,22 @@ class TorchSACOptimizer(TorchOptimizer):
         self.target_network.network_body.copy_normalization(
             self.policy.actor_critic.network_body
         )
-        (sampled_actions, log_probs, _, _) = self.policy.sample_actions(
+        (
+            sampled_actions,
+            log_probs,
+            _,
+            value_estimates,
+            _,
+        ) = self.policy.actor_critic.get_action_stats_and_value(
             vec_obs,
             vis_obs,
             masks=act_masks,
             memories=memories,
-            seq_len=self.policy.sequence_length,
+            sequence_length=self.policy.sequence_length,
         )
-        value_estimates, _ = self.policy.actor_critic.critic_pass(
-            vec_obs, vis_obs, memories, sequence_length=self.policy.sequence_length
-        )
+        # value_estimates, _ = self.policy.actor_critic.critic_pass(
+        #     vec_obs, vis_obs, memories, sequence_length=self.policy.sequence_length
+        # )
 
         cont_sampled_actions = sampled_actions.continuous_tensor
 
