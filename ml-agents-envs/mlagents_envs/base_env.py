@@ -333,7 +333,7 @@ class ActionSpec(NamedTuple):
             _size = self.continuous_size
         else:
             _size = self.discrete_size
-        _expected_shape = (n_agents, _size) if n_agents else (_size,)
+        _expected_shape = (n_agents, _size) if n_agents is not None else (_size,)
         if actions.shape != _expected_shape:
             raise UnityActionException(
                 f"The behavior {name} needs an input of dimension "
