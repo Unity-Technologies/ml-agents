@@ -121,7 +121,6 @@ namespace Unity.MLAgents.Analytics
 #endif
         }
 
-
         /// <summary>
         /// Generate an InferenceEvent for the model.
         /// </summary>
@@ -131,7 +130,7 @@ namespace Unity.MLAgents.Analytics
         /// <param name="sensors"></param>
         /// <param name="actionSpec"></param>
         /// <returns></returns>
-        static InferenceEvent GetEventForModel(
+        internal static InferenceEvent GetEventForModel(
             NNModel nnModel,
             string behaviorName,
             InferenceDevice inferenceDevice,
@@ -155,11 +154,11 @@ namespace Unity.MLAgents.Analytics
                 inferenceEvent.BarracudaModelProducer = "tf2bc.py";
             }
 
-#if UNITY_2019_3_OR_NEWER
+#if UNITY_2019_3_OR_NEWER && UNITY_EDITOR
             var barracudaPackageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(Tensor).Assembly);
             inferenceEvent.BarracudaPackageVersion = barracudaPackageInfo.version;
 #else
-            inferenceEvent.BarracudaPackageVersion = "unknown";
+            inferenceEvent.BarracudaPackageVersion = null;
 #endif
 
             inferenceEvent.ActionSpec = EventActionSpec.FromActionSpec(actionSpec);
@@ -172,87 +171,6 @@ namespace Unity.MLAgents.Analytics
             inferenceEvent.TotalWeightSizeBytes = GetModelWeightSize(barracudaModel);
             inferenceEvent.ModelHash = GetModelHash(barracudaModel);
             return inferenceEvent;
-        }
-
-        /// <summary>
-        /// Simple implementation of the Fowler–Noll–Vo hash function.
-        /// https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
-        /// </summary>
-        internal class FNVHash
-        {
-            const ulong kFNV_prime = 1099511628211;
-            const ulong kFNV_offset_basis = 14695981039346656037;
-            private const int kMaxBytes = 1024;
-
-            public ulong hash;
-
-            public FNVHash()
-            {
-                hash = kFNV_offset_basis;
-            }
-
-            public void Append(float[] values, int startUnused, int count)
-            {
-                var bytesToHash = sizeof(float) * count;
-                for (var i = 0; i < bytesToHash; i++)
-                {
-                    var b = Buffer.GetByte(values, i);
-                    Update(b);
-                }
-            }
-
-            public void Append(string value)
-            {
-                foreach (var c in value)
-                {
-                    Update((byte)c);
-                }
-            }
-
-            private void Update(byte b)
-            {
-                hash *= kFNV_prime;
-                hash ^= b;
-            }
-
-            public override string ToString()
-            {
-                return hash.ToString();
-            }
-        }
-
-        /// <summary>
-        /// Wrapper around Hash128 that supports Append(float[], int, int)
-        /// </summary>
-        struct MLAgentsHash128
-        {
-            private Hash128 m_Hash;
-
-            public void Append(float[] values, int startUnused, int count)
-            {
-                if (values == null)
-                {
-                    return;
-                }
-
-                for (var i = 0; i < count; i++)
-                {
-                    var tempHash = new Hash128();
-                    HashUtilities.ComputeHash128(ref values[i], ref tempHash);
-                    HashUtilities.AppendHash(ref tempHash, ref m_Hash);
-                }
-            }
-
-            public void Append(string value)
-            {
-                var tempHash = Hash128.Compute(value);
-                HashUtilities.AppendHash(ref tempHash, ref m_Hash);
-            }
-
-            public override string ToString()
-            {
-                return m_Hash.ToString();
-            }
         }
 
         /// <summary>
@@ -276,6 +194,46 @@ namespace Unity.MLAgents.Analytics
         }
 
         /// <summary>
+        /// Wrapper around Hash128 that supports Append(float[], int, int)
+        /// </summary>
+        struct MLAgentsHash128
+        {
+            private Hash128 m_Hash;
+
+            public void Append(float[] values, int count)
+            {
+                if (values == null)
+                {
+                    return;
+                }
+
+                // Pre-2020 versions of Unity don't have Hash128.Append() (can only hash strings and scalars)
+                // For these versions, we'll hash element by element.
+#if UNITY_2020_1_OR_NEWER
+                m_Hash.Append(layer.weights, 0, count);
+#else
+                for (var i = 0; i < count; i++)
+                {
+                    var tempHash = new Hash128();
+                    HashUtilities.ComputeHash128(ref values[i], ref tempHash);
+                    HashUtilities.AppendHash(ref tempHash, ref m_Hash);
+                }
+#endif
+            }
+
+            public void Append(string value)
+            {
+                var tempHash = Hash128.Compute(value);
+                HashUtilities.AppendHash(ref tempHash, ref m_Hash);
+            }
+
+            public override string ToString()
+            {
+                return m_Hash.ToString();
+            }
+        }
+
+        /// <summary>
         /// Compute a hash of the model's layer data and return it as a string.
         /// A subset of the layer weights are used for performance.
         /// This increases the chance of a collision, but this should still be extremely rare.
@@ -284,13 +242,8 @@ namespace Unity.MLAgents.Analytics
         /// <returns></returns>
         static string GetModelHash(Model barracudaModel)
         {
-            // Pre-2020 versions of Unity don't have Hash128.Append() (can only hash strings)
-            // For these versions, we'll use a simple wrapper that just supports arrays of floats.
-#if UNITY_2020_1_OR_NEWER
-            var hash = new Hash128();
-#else
             var hash = new MLAgentsHash128();
-#endif
+
             // Limit the max number of float bytes that we hash for performance.
             const int kMaxFloats = 256;
 
@@ -298,7 +251,7 @@ namespace Unity.MLAgents.Analytics
             {
                 hash.Append(layer.name);
                 var numFloatsToHash = Mathf.Min(layer.weights.Length, kMaxFloats);
-                hash.Append(layer.weights, 0, numFloatsToHash);
+                hash.Append(layer.weights, numFloatsToHash);
             }
 
             return hash.ToString();
