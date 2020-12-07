@@ -261,39 +261,47 @@ class TorchSACOptimizer(TorchOptimizer):
         with torch.no_grad():
             _cont_ent_coef = self._log_ent_coef.continuous.exp()
             _disc_ent_coef = self._log_ent_coef.discrete.exp()
-        for name in values.keys():
-            if self._action_spec.discrete_size <= 0:
-                min_policy_qs[name] = torch.min(q1p_out[name], q2p_out[name])
-            else:
-                disc_action_probs = log_probs.all_discrete_tensor.exp()
-                _branched_q1p = ModelUtils.break_into_branches(
-                    q1p_out[name] * disc_action_probs,
-                    self._action_spec.discrete_branches,
-                )
-                _branched_q2p = ModelUtils.break_into_branches(
-                    q2p_out[name] * disc_action_probs,
-                    self._action_spec.discrete_branches,
-                )
-                _q1p_mean = torch.mean(
-                    torch.stack(
-                        [torch.sum(_br, dim=1, keepdim=True) for _br in _branched_q1p]
-                    ),
-                    dim=0,
-                )
-                _q2p_mean = torch.mean(
-                    torch.stack(
-                        [torch.sum(_br, dim=1, keepdim=True) for _br in _branched_q2p]
-                    ),
-                    dim=0,
-                )
+            for name in values.keys():
+                if self._action_spec.discrete_size <= 0:
+                    min_policy_qs[name] = torch.min(q1p_out[name], q2p_out[name])
+                else:
+                    disc_action_probs = log_probs.all_discrete_tensor.exp()
+                    _branched_q1p = ModelUtils.break_into_branches(
+                        q1p_out[name] * disc_action_probs,
+                        self._action_spec.discrete_branches,
+                    )
+                    _branched_q2p = ModelUtils.break_into_branches(
+                        q2p_out[name] * disc_action_probs,
+                        self._action_spec.discrete_branches,
+                    )
+                    _q1p_mean = torch.mean(
+                        torch.stack(
+                            [
+                                torch.sum(_br, dim=1, keepdim=True)
+                                for _br in _branched_q1p
+                            ]
+                        ),
+                        dim=0,
+                    )
+                    _q2p_mean = torch.mean(
+                        torch.stack(
+                            [
+                                torch.sum(_br, dim=1, keepdim=True)
+                                for _br in _branched_q2p
+                            ]
+                        ),
+                        dim=0,
+                    )
 
-                min_policy_qs[name] = torch.min(_q1p_mean, _q2p_mean)
+                    min_policy_qs[name] = torch.min(_q1p_mean, _q2p_mean)
 
         value_losses = []
         if self._action_spec.discrete_size <= 0:
             for name in values.keys():
                 with torch.no_grad():
-                    v_backup = min_policy_qs[name]
+                    v_backup = min_policy_qs[name] - torch.sum(
+                        _cont_ent_coef * log_probs.continuous_tensor, dim=1
+                    )
                 value_loss = 0.5 * ModelUtils.masked_mean(
                     torch.nn.functional.mse_loss(values[name], v_backup), loss_masks
                 )
