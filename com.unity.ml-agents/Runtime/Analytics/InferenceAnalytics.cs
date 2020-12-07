@@ -210,7 +210,7 @@ namespace Unity.MLAgents.Analytics
                 // Pre-2020 versions of Unity don't have Hash128.Append() (can only hash strings and scalars)
                 // For these versions, we'll hash element by element.
 #if UNITY_2020_1_OR_NEWER
-                m_Hash.Append(layer.weights, 0, count);
+                m_Hash.Append(values, 0, count);
 #else
                 for (var i = 0; i < count; i++)
                 {
