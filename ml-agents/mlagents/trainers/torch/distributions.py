@@ -115,7 +115,7 @@ class CategoricalDistInstance(DiscreteDistInstance):
         return torch.log(self.pdf(value) + EPSILON)
 
     def all_log_prob(self):
-        return torch.log(self.probs + EPSILON)
+        return self.logits
 
     def entropy(self):
         return -torch.sum(self.probs * torch.log(self.probs + EPSILON), dim=-1)
