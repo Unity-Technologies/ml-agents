@@ -326,7 +326,7 @@ class TorchSACOptimizer(TorchOptimizer):
                     )
                     # Add continuous entropy bonus to minimum Q
                     if self._action_spec.continuous_size > 0:
-                        torch.sum(
+                        v_backup += torch.sum(
                             _cont_ent_coef * log_probs.continuous_tensor,
                             dim=1,
                             keepdim=True,
