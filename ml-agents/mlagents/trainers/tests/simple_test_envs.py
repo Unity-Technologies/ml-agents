@@ -321,3 +321,12 @@ class RecordEnvironment(SimpleEnvironment):
                         np.array([], dtype=np.int32),
                     )
             self.step()
+
+
+class UnexpectedExceptionEnvironment(SimpleEnvironment):
+    def __init__(self, brain_names, use_discrete, to_raise):
+        super().__init__(brain_names, use_discrete)
+        self.to_raise = to_raise
+
+    def step(self) -> None:
+        raise self.to_raise()
