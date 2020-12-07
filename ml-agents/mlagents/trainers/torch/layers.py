@@ -290,7 +290,7 @@ class SimpleTransformer(torch.nn.Module):
         self.entities_num_max_elements: Optional[List[int]] = None
         self.ent_encoders = torch.nn.ModuleList(
             [
-                LinearEncoder(self.self_size + ent_size, 1, embedding_size)
+                LinearEncoder(self.self_size + ent_size, 2, embedding_size)
                 for ent_size in self.entities_sizes
             ]
         )

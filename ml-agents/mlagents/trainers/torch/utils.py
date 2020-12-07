@@ -188,6 +188,7 @@ class ModelUtils:
         # Total output size for all inputs + CNNs
         total_processed_size = vector_size + visual_output_size
 
+        print(observation_shapes)
         return (
             nn.ModuleList(visual_encoders),
             nn.ModuleList(vector_encoders),
