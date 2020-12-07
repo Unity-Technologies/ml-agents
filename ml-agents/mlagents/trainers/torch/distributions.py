@@ -115,7 +115,7 @@ class CategoricalDistInstance(DiscreteDistInstance):
         return torch.log(self.pdf(value) + EPSILON)
 
     def all_log_prob(self):
-        return self.logits
+        return torch.log(self.probs + EPSILON)
 
     def entropy(self):
         return -torch.sum(self.probs * torch.log(self.probs + EPSILON), dim=-1)
@@ -191,9 +191,7 @@ class MultiCategoricalDistribution(nn.Module):
         # https://arxiv.org/abs/2006.14171. Our implementation is ONNX and Barrcuda-friendly.
         flipped_mask = 1.0 - mask
         adj_logits = logits * mask - 1e8 * flipped_mask
-        probs = torch.nn.functional.softmax(adj_logits, dim=-1)
-        log_probs = torch.log(probs + EPSILON)
-        return log_probs
+        return adj_logits
 
     def _split_masks(self, masks: torch.Tensor) -> List[torch.Tensor]:
         split_masks = []
