@@ -48,7 +48,8 @@ public class GridAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         Array values = Enum.GetValues(typeof(GridGoal));
-        sensor.AddOneHotObservation((int)gridGoal, values.Length);
+        int goalNum = (int)gridGoal;
+        sensor.AddOneHotObservation(goalNum, values.Length);
     }
 
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
@@ -88,12 +89,10 @@ public class GridAgent : Agent
         if (gridGoal == hitObject)
         {
             SetReward(1f);
-            Debug.Log(1);
         }
         else
         {
             SetReward(-1f);
-            Debug.Log(-1);
         }
     }
 
