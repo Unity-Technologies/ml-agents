@@ -261,7 +261,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""name"": """",
                     ""id"": ""319796b1-6071-46f0-81dc-58b6bdb7d86a"",
                     ""path"": ""<Gamepad>/leftTrigger"",
-                    ""interactions"": """",
+                    ""interactions"": ""Press"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Dash"",

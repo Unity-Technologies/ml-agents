@@ -20,6 +20,7 @@ public class FPSAgentInput : MonoBehaviour
     public float rotateInput;
     public bool shieldInput;
 
+    public Camera Cam;
     // Start is called before the first frame update
     void Awake()
     {

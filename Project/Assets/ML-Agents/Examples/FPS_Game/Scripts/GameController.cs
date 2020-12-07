@@ -14,6 +14,12 @@ public class GameController : MonoBehaviour
 
     public bool triggerExplosion;
 
+    public enum GameMode
+    {
+        SinglePlayer, PVP_Single
+    }
+
+    public GameMode gameMode;
     [Header("PLAYER DAMAGE")]
     public float DamagePerHit = 15;
     // Start is called before the first frame update

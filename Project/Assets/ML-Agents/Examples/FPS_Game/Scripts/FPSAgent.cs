@@ -17,22 +17,26 @@ public class FPSAgent : Agent
     Rigidbody m_AgentRb;
 
     //    bool m_Shoot;
-    private Camera m_Cam;
+    //    private Camera m_Cam;
     [Header("HEALTH")] public AgentHealth AgentHealth;
     [Header("SHIELD")] public ShieldController AgentShield;
 
-    private FPSAgentInput input;
+    public FPSAgentInput input;
     // Start is called before the first frame update
     public override void Initialize()
     {
         m_CubeMovement = GetComponent<AgentCubeMovement>();
-        m_Cam = Camera.main;
+        //        m_Cam = Camera.main;
         m_AgentRb = GetComponent<Rigidbody>();
         input = GetComponent<FPSAgentInput>();
     }
 
     public override void OnEpisodeBegin()
     {
+        m_CubeMovement = GetComponent<AgentCubeMovement>();
+        //        m_Cam = Camera.main;
+        m_AgentRb = GetComponent<Rigidbody>();
+        input = GetComponent<FPSAgentInput>();
         //        Unfreeze();
         //        Unpoison();
         //        Unsatiate();
@@ -88,7 +92,7 @@ public class FPSAgent : Agent
         m_Rotate = act[2];
         m_ShootInput = act[3];
         m_CubeMovement.RotateBody(m_Rotate, m_InputV);
-        Vector3 moveDir = m_Cam.transform.TransformDirection(new Vector3(m_InputH, 0, m_InputV));
+        Vector3 moveDir = input.Cam.transform.TransformDirection(new Vector3(m_InputH, 0, m_InputV));
         //        m_CubeMovement.RunOnGround(m_AgentRb, m_Cam.transform.TransformDirection(new Vector3(0, 0, m_InputV)));
         m_CubeMovement.RunOnGround(m_AgentRb, moveDir);
         //        if (m_InputH != 0)

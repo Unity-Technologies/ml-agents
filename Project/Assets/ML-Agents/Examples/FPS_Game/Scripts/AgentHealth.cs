@@ -29,6 +29,7 @@ public class AgentHealth : MonoBehaviour
     [Header("PLAYER DAMAGE")] public bool UseGlobalDamageSettings;
     public float DamagePerHit = 15f; //constant rate at which ammo depletes when being used
 
+    private Rigidbody rb;
     // Start is called before the first frame update
     void OnEnable()
     {
@@ -39,6 +40,8 @@ public class AgentHealth : MonoBehaviour
         {
             startingColor = bodyMesh.sharedMaterial.color;
         }
+
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -76,6 +79,9 @@ public class AgentHealth : MonoBehaviour
             if (CurrentPercentage == 0)
             {
                 Dead = true;
+                rb.isKinematic = true;
+                //                rb.velocity = Vector3.zero;
+                //                rb.angularVelocity = Vector3.zero;
                 CubeBody.SetActive(false);
                 DeathCube.transform.position = CubeBody.transform.position;
                 DeathCube.SetActive(true);
