@@ -93,11 +93,11 @@ public class GameController : MonoBehaviour
             AddExplosiveForcesToAllRB(transform.position);
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-
-        }
+        //        if (Input.GetKeyDown(KeyCode.R))
+        //        {
+        //            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        //
+        //        }
 
     }
 

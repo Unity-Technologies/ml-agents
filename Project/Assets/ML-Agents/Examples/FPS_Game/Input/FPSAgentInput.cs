@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 //[ExecuteAlways]
 public class FPSAgentInput : MonoBehaviour
@@ -57,6 +58,13 @@ public class FPSAgentInput : MonoBehaviour
     //        return false;
     //    }
 
+    void Update()
+    {
+        if (inputActions.UI.Restart.triggered)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+    }
 
     // Update is called once per frame
     void FixedUpdate()

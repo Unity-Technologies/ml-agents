@@ -654,8 +654,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -170.22, y: 25}
-  m_SizeDelta: {x: 340.4464, y: 50}
+  m_AnchoredPosition: {x: -334.5, y: 25}
+  m_SizeDelta: {x: 669.03516, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &58198996
 MonoBehaviour:
@@ -676,7 +676,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Controls - Press C / Select
+  m_text: 'Controls - Press C / Select || Restart Scene: R / Btn North'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -745,10 +745,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 58198996}
-    characterCount: 27
+    characterCount: 59
     spriteCount: 0
-    spaceCount: 5
-    wordCount: 5
+    spaceCount: 12
+    wordCount: 10
     linkCount: 0
     lineCount: 1
     pageCount: 1
@@ -4374,7 +4374,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Btn East: Shield'
+  m_text: 'RS: Shield'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4443,10 +4443,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 737556610}
-    characterCount: 16
+    characterCount: 10
     spriteCount: 0
-    spaceCount: 2
-    wordCount: 3
+    spaceCount: 1
+    wordCount: 2
     linkCount: 0
     lineCount: 1
     pageCount: 1
@@ -16339,7 +16339,7 @@ PrefabInstance:
       objectReference: {fileID: 1732295774}
     - target: {fileID: 4453630946124038627, guid: a0e7db83e097b4a3e96a89b390d1ebed,
         type: 3}
-      propertyPath: m_ActionEvents.Array.data[8].m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      propertyPath: m_ActionEvents.Array.data[7].m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 914861360}
     - target: {fileID: 6753286230780216836, guid: a0e7db83e097b4a3e96a89b390d1ebed,
@@ -16406,11 +16406,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: FPSAgent
-      objectReference: {fileID: 0}
-    - target: {fileID: 7796409947774005658, guid: a0e7db83e097b4a3e96a89b390d1ebed,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8931083779362434129, guid: a0e7db83e097b4a3e96a89b390d1ebed,
         type: 3}

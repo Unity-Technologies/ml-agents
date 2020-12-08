@@ -60,14 +60,6 @@
                     "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": ""
-                },
-                {
-                    "name": "Restart",
-                    "type": "Button",
-                    "id": "82551a02-e3e9-4ef0-92d8-21d784984a6e",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -184,7 +176,7 @@
                 {
                     "name": "",
                     "id": "2b94ae52-9bb0-478e-8e4c-bf6c747a5c7d",
-                    "path": "<Gamepad>/buttonEast",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -301,17 +293,6 @@
                     "action": "Rotate",
                     "isComposite": false,
                     "isPartOfComposite": true
-                },
-                {
-                    "name": "",
-                    "id": "c63f34c8-a8e5-43b4-ba42-22de1f775994",
-                    "path": "<Keyboard>/r",
-                    "interactions": "Press",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Restart",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         },
@@ -323,6 +304,14 @@
                     "name": "Controls",
                     "type": "Button",
                     "id": "bd885a35-fff9-4afb-a855-24fb9f6006c7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Restart",
+                    "type": "Button",
+                    "id": "e94117bb-34b9-400e-98a4-5bcdc0e1ef18",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -348,6 +337,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Controls",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3558b9e6-24b3-420a-95a3-0bfd03222ba6",
+                    "path": "<Keyboard>/r",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Restart",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b3ee58f5-8a7d-40c9-abc6-6694d289683d",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Restart",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

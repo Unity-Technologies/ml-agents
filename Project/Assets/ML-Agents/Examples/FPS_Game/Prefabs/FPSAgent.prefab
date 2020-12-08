@@ -40380,10 +40380,6 @@ MonoBehaviour:
     m_ActionId: b309ca48-95aa-4032-bd7d-46dcaeb138d0
     m_ActionName: Player Action Map/Rotate[/Keyboard/q,/Keyboard/e,/DualShock4GamepadHID/rightStick/left,/DualShock4GamepadHID/rightStick/right]
   - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 82551a02-e3e9-4ef0-92d8-21d784984a6e
-    m_ActionName: Player Action Map/Restart[/Keyboard/r]
-  - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
         m_MethodName: ToggleControlsUI
@@ -40398,9 +40394,13 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: bd885a35-fff9-4afb-a855-24fb9f6006c7
     m_ActionName: UI/Controls[/Keyboard/c,/XboxOneGampadMacOSWireless/start]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: e94117bb-34b9-400e-98a4-5bcdc0e1ef18
+    m_ActionName: UI/Restart[/Keyboard/r,/XboxOneGampadMacOSWireless/buttonNorth]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
+  m_DefaultActionMap: bb797917-97ca-47e1-b3c9-0572380e9376
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 1828481695}
 --- !u!1 &7796409948114465862
@@ -40620,7 +40620,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ec99cc74da6543b459e71a51834b037d, type: 2}
+  - {fileID: 2100000, guid: b062486683ec74e22999cf04bb63ee80, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
