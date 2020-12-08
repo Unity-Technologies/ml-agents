@@ -200,31 +200,6 @@ public class FoodCollectorController : Agent
         MoveAgent(actionBuffers.ContinuousActions);
     }
 
-    // public override void Heuristic(in ActionBuffers actionsOut)
-    // {
-    //     var discreteActionsOut = actionsOut.DiscreteActions;
-    //     discreteActionsOut[0] = 0;
-    //     discreteActionsOut[1] = 0;
-    //     discreteActionsOut[2] = 0;
-    //     if (Input.GetKey(KeyCode.D))
-    //     {
-    //         discreteActionsOut[2] = 2;
-    //     }
-    //     if (Input.GetKey(KeyCode.W))
-    //     {
-    //         discreteActionsOut[0] = 1;
-    //     }
-    //     if (Input.GetKey(KeyCode.A))
-    //     {
-    //         discreteActionsOut[2] = 1;
-    //     }
-    //     if (Input.GetKey(KeyCode.S))
-    //     {
-    //         discreteActionsOut[0] = 2;
-    //     }
-    //     discreteActionsOut[3] = Input.GetKey(KeyCode.Space) ? 1 : 0;
-    // }
-
     public override void OnEpisodeBegin()
     {
         Unfreeze();
