@@ -181,7 +181,7 @@ A `DecisionStep` has the following fields:
 - `reward` is a float. Corresponds to the rewards collected by the agent since
   the last simulation step.
 - `agent_id` is an int and an unique identifier for the corresponding Agent.
-- `action_mask` is an optional list of one dimensional array of booleans. Only
+- `action_mask` is an optional list of one dimensional arrays of booleans which is only
   available when using multi-discrete actions. Each array corresponds to an
   action branch. Each array contains a mask for each action of the branch. If
   true, the action is not available for the agent during this simulation step.
