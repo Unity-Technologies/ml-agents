@@ -261,33 +261,39 @@ class TorchSACOptimizer(TorchOptimizer):
         with torch.no_grad():
             _cont_ent_coef = self._log_ent_coef.continuous.exp()
             _disc_ent_coef = self._log_ent_coef.discrete.exp()
-        for name in values.keys():
-            if self._action_spec.discrete_size <= 0:
-                min_policy_qs[name] = torch.min(q1p_out[name], q2p_out[name])
-            else:
-                disc_action_probs = log_probs.all_discrete_tensor.exp()
-                _branched_q1p = ModelUtils.break_into_branches(
-                    q1p_out[name] * disc_action_probs,
-                    self._action_spec.discrete_branches,
-                )
-                _branched_q2p = ModelUtils.break_into_branches(
-                    q2p_out[name] * disc_action_probs,
-                    self._action_spec.discrete_branches,
-                )
-                _q1p_mean = torch.mean(
-                    torch.stack(
-                        [torch.sum(_br, dim=1, keepdim=True) for _br in _branched_q1p]
-                    ),
-                    dim=0,
-                )
-                _q2p_mean = torch.mean(
-                    torch.stack(
-                        [torch.sum(_br, dim=1, keepdim=True) for _br in _branched_q2p]
-                    ),
-                    dim=0,
-                )
+            for name in values.keys():
+                if self._action_spec.discrete_size <= 0:
+                    min_policy_qs[name] = torch.min(q1p_out[name], q2p_out[name])
+                else:
+                    disc_action_probs = log_probs.all_discrete_tensor.exp()
+                    _branched_q1p = ModelUtils.break_into_branches(
+                        q1p_out[name] * disc_action_probs,
+                        self._action_spec.discrete_branches,
+                    )
+                    _branched_q2p = ModelUtils.break_into_branches(
+                        q2p_out[name] * disc_action_probs,
+                        self._action_spec.discrete_branches,
+                    )
+                    _q1p_mean = torch.mean(
+                        torch.stack(
+                            [
+                                torch.sum(_br, dim=1, keepdim=True)
+                                for _br in _branched_q1p
+                            ]
+                        ),
+                        dim=0,
+                    )
+                    _q2p_mean = torch.mean(
+                        torch.stack(
+                            [
+                                torch.sum(_br, dim=1, keepdim=True)
+                                for _br in _branched_q2p
+                            ]
+                        ),
+                        dim=0,
+                    )
 
-                min_policy_qs[name] = torch.min(_q1p_mean, _q2p_mean)
+                    min_policy_qs[name] = torch.min(_q1p_mean, _q2p_mean)
 
         value_losses = []
         if self._action_spec.discrete_size <= 0:
@@ -320,7 +326,7 @@ class TorchSACOptimizer(TorchOptimizer):
                     )
                     # Add continuous entropy bonus to minimum Q
                     if self._action_spec.continuous_size > 0:
-                        torch.sum(
+                        v_backup += torch.sum(
                             _cont_ent_coef * log_probs.continuous_tensor,
                             dim=1,
                             keepdim=True,
@@ -514,15 +520,18 @@ class TorchSACOptimizer(TorchOptimizer):
         self.target_network.network_body.copy_normalization(
             self.policy.actor_critic.network_body
         )
-        (sampled_actions, log_probs, _, _) = self.policy.sample_actions(
+        (
+            sampled_actions,
+            log_probs,
+            _,
+            value_estimates,
+            _,
+        ) = self.policy.actor_critic.get_action_stats_and_value(
             vec_obs,
             vis_obs,
             masks=act_masks,
             memories=memories,
-            seq_len=self.policy.sequence_length,
-        )
-        value_estimates, _ = self.policy.actor_critic.critic_pass(
-            vec_obs, vis_obs, memories, sequence_length=self.policy.sequence_length
+            sequence_length=self.policy.sequence_length,
         )
 
         cont_sampled_actions = sampled_actions.continuous_tensor
@@ -534,6 +543,7 @@ class TorchSACOptimizer(TorchOptimizer):
             cont_sampled_actions,
             memories=q_memories,
             sequence_length=self.policy.sequence_length,
+            q2_grad=False,
         )
         q1_out, q2_out = self.value_network(
             vec_obs,

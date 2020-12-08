@@ -294,9 +294,11 @@ class SimpleActor(nn.Module, Actor):
             vec_inputs, vis_inputs, memories=memories, sequence_length=1
         )
 
-        cont_action_out, disc_action_out, action_out_deprecated = self.action_model.get_action_out(
-            encoding, masks
-        )
+        (
+            cont_action_out,
+            disc_action_out,
+            action_out_deprecated,
+        ) = self.action_model.get_action_out(encoding, masks)
         export_out = [
             self.version_number,
             torch.Tensor([self.network_body.memory_size]),
@@ -482,6 +484,10 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         else:
             mem_out = None
         return action, log_probs, entropies, value_outputs, mem_out
+
+    def update_normalization(self, vector_obs: List[torch.Tensor]) -> None:
+        super().update_normalization(vector_obs)
+        self.critic.network_body.update_normalization(vector_obs)
 
 
 class GlobalSteps(nn.Module):
