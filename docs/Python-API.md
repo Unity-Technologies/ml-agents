@@ -111,7 +111,7 @@ A `BaseEnv` has the following methods:
   terminates the communication.
 - **Behavior Specs : `env.behavior_specs`** Returns a Mapping of
   `BehaviorName` to `BehaviorSpec` objects (read only).
-  A `BehaviorSpec` contains information such as the observation shapes and the
+  A `BehaviorSpec` contains the observation shapes and the
   `ActionSpec` (which defines the action shape). Note that
   the `BehaviorSpec` for a specific group is fixed throughout the simulation.
   The number of entries in the Mapping can change over time in the simulation
