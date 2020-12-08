@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
-
+using Random = UnityEngine.Random;
+using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour
 {
     [Header("GLOBAL SETTINGS")]
@@ -14,6 +16,21 @@ public class GameController : MonoBehaviour
 
     public bool triggerExplosion;
 
+
+    [Header("SPAWN POINTS")] public GameObject BlueSpawn;
+    public GameObject PurpleSpawn;
+
+    [Header("PLAYER PREFABS")]
+    public GameObject PlayerPrefab;
+    public GameObject AIPrefab;
+    public GameObject AITarget;
+    public Transform SpawnPlatform;
+
+    public int NumberOfEnemiesToSpawn = 3;
+    public enum PlayerType
+    {
+        Player, AI_Heuristic, AI_Agent
+    }
     public enum GameMode
     {
         SinglePlayer, PVP_Single
@@ -25,6 +42,34 @@ public class GameController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+
+        if (PlayerPrefab && BlueSpawn)
+        {
+            var randomPos = Random.insideUnitSphere * 3;
+            randomPos.y = 0;
+            var go = Instantiate(PlayerPrefab, BlueSpawn.transform.position + randomPos, quaternion.identity);
+            go.SetActive(true);
+            AITarget = go;
+        }
+
+        if (AIPrefab && PurpleSpawn)
+        {
+            var randomPos = Random.insideUnitSphere * 5;
+            randomPos.y = 0;
+            var go = Instantiate(AIPrefab, PurpleSpawn.transform.position + randomPos, quaternion.identity);
+            go.SetActive(true);
+        }
+        for (int i = 0; i < NumberOfEnemiesToSpawn; i++)
+        {
+            if (AIPrefab && PurpleSpawn)
+            {
+                var randomPos = Random.insideUnitSphere * 40;
+                randomPos.y = 3;
+                var go = Instantiate(AIPrefab, SpawnPlatform.position + randomPos, quaternion.identity);
+                go.SetActive(true);
+            }
+        }
+
         Rigidbody[] rbs = Resources.FindObjectsOfTypeAll<Rigidbody>();
 
         foreach (var rb in rbs)
@@ -44,6 +89,17 @@ public class GameController : MonoBehaviour
             triggerExplosion = false;
             AddExplosiveForcesToAllRB(transform.position);
         }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+        }
+
+    }
+
+    void SetupPlayer()
+    {
 
     }
 

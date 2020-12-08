@@ -28,16 +28,23 @@ public class PlayerAIHeuristic : MonoBehaviour
     private AgentHealth agentHealth;
 
     private MultiGunAlternating multiGunController;
+
+    private GameController gameController;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         moveController = GetComponent<AgentCubeMovement>();
         agentHealth = GetComponent<AgentHealth>();
         multiGunController = GetComponent<MultiGunAlternating>();
+        gameController = FindObjectOfType<GameController>();
     }
 
     void Update()
     {
+        if (!target)
+        {
+            target = gameController.AITarget.transform;
+        }
         canCurrentlySeeTarget = false;
         RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.forward, out hit, 50))
@@ -54,6 +61,10 @@ public class PlayerAIHeuristic : MonoBehaviour
         if (agentHealth && agentHealth.Dead)
         {
             return;
+        }
+        if (!target)
+        {
+            target = gameController.AITarget.transform;
         }
         Vector3 randomJitter = Random.insideUnitSphere * RandomRotationJitter;
         randomJitter.y = 0;

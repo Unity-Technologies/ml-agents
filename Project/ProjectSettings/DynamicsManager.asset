@@ -33,4 +33,4 @@ PhysicsManager:
   m_EnableEnhancedDeterminism: 1
   m_EnableUnifiedHeightmaps: 1
   m_SolverType: 0
-  m_DefaultMaxAngularSpeed: 7
+  m_DefaultMaxAngularSpeed: 25

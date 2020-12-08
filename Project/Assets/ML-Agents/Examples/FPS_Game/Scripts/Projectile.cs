@@ -84,6 +84,8 @@ public class Projectile : MonoBehaviour
         if (aliveTime > pauseCollisionDetectionWaitTime)
         {
             selfDestructNow = true;
+            SelfDestruct();
+
         }
 
         foreach (var item in impactParticlePool.poolList)

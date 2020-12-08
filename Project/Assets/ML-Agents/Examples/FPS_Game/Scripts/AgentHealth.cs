@@ -35,7 +35,11 @@ public class AgentHealth : MonoBehaviour
     {
         GameController = FindObjectOfType<GameController>();
         CurrentPercentage = 100;
-        UISlider.value = CurrentPercentage;
+        if (UISlider)
+        {
+            UISlider.value = CurrentPercentage;
+        }
+
         if (bodyMesh)
         {
             startingColor = bodyMesh.sharedMaterial.color;

@@ -89,6 +89,14 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Axis"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Restart"",
+                    ""type"": ""Button"",
+                    ""id"": ""82551a02-e3e9-4ef0-92d8-21d784984a6e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -261,7 +269,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""name"": """",
                     ""id"": ""319796b1-6071-46f0-81dc-58b6bdb7d86a"",
                     ""path"": ""<Gamepad>/leftTrigger"",
-                    ""interactions"": ""Press"",
+                    ""interactions"": ""Press(pressPoint=0.75)"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Dash"",
@@ -344,6 +352,17 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""action"": ""Rotate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c63f34c8-a8e5-43b4-ba42-22de1f775994"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": ""Press"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Restart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -361,6 +380,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
         m_PlayerActionMap_RotateBody = m_PlayerActionMap.FindAction("RotateBody", throwIfNotFound: true);
         m_PlayerActionMap_Dash = m_PlayerActionMap.FindAction("Dash", throwIfNotFound: true);
         m_PlayerActionMap_Rotate = m_PlayerActionMap.FindAction("Rotate", throwIfNotFound: true);
+        m_PlayerActionMap_Restart = m_PlayerActionMap.FindAction("Restart", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -419,6 +439,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_PlayerActionMap_RotateBody;
     private readonly InputAction m_PlayerActionMap_Dash;
     private readonly InputAction m_PlayerActionMap_Rotate;
+    private readonly InputAction m_PlayerActionMap_Restart;
     public struct PlayerActionMapActions
     {
         private @FPSPlayerInputActions m_Wrapper;
@@ -432,6 +453,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
         public InputAction @RotateBody => m_Wrapper.m_PlayerActionMap_RotateBody;
         public InputAction @Dash => m_Wrapper.m_PlayerActionMap_Dash;
         public InputAction @Rotate => m_Wrapper.m_PlayerActionMap_Rotate;
+        public InputAction @Restart => m_Wrapper.m_PlayerActionMap_Restart;
         public InputActionMap Get() { return m_Wrapper.m_PlayerActionMap; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -468,6 +490,9 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                 @Rotate.started -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRotate;
                 @Rotate.performed -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRotate;
                 @Rotate.canceled -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRotate;
+                @Restart.started -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRestart;
+                @Restart.performed -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRestart;
+                @Restart.canceled -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRestart;
             }
             m_Wrapper.m_PlayerActionMapActionsCallbackInterface = instance;
             if (instance != null)
@@ -499,6 +524,9 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                 @Rotate.started += instance.OnRotate;
                 @Rotate.performed += instance.OnRotate;
                 @Rotate.canceled += instance.OnRotate;
+                @Restart.started += instance.OnRestart;
+                @Restart.performed += instance.OnRestart;
+                @Restart.canceled += instance.OnRestart;
             }
         }
     }
@@ -514,5 +542,6 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
         void OnRotateBody(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
+        void OnRestart(InputAction.CallbackContext context);
     }
 }
