@@ -101,7 +101,6 @@ public class FoodCollectorController : Agent
 
             dirToGo = transform.forward * forward;
             dirToGo += transform.right * right;
-            // Debug.Log(dirToGo);
             rotateDir = -transform.up * rotate;
 
             m_AgentRb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);

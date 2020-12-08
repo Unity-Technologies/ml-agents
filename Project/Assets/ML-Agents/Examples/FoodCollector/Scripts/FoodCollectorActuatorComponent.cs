@@ -9,7 +9,7 @@ public class FoodCollectorActuatorComponent : ActuatorComponent
     ActionSpec m_ActionSpec = ActionSpec.MakeDiscrete(2);
 
     /// <summary>
-    /// Creates a BasicActuator.
+    /// Creates a FoodCollectorActuator.
     /// </summary>
     /// <returns></returns>
     public override IActuator CreateActuator()
@@ -24,7 +24,7 @@ public class FoodCollectorActuatorComponent : ActuatorComponent
 }
 
 /// <summary>
-/// Simple actuator that converts the action into a {-1, 0, 1} direction
+/// Actuator that handles the shoot action in FoodCollector
 /// </summary>
 public class FoodCollectorActuator : IActuator
 {
