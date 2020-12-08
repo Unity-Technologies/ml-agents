@@ -61,7 +61,7 @@ class UnityEnvironment(BaseEnv):
     #  * 1.0.0 - initial version
     #  * 1.1.0 - support concatenated PNGs for compressed observations.
     #  * 1.2.0 - support compression mapping for stacked compressed observations.
-    #  * 1.3.0 - support hybrid action spaces.
+    #  * 1.3.0 - support action spaces with both continuous and discrete actions.
     API_VERSION = "1.3.0"
 
     # Default port that the editor listens on. If an environment executable

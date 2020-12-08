@@ -37,10 +37,9 @@ namespace Unity.MLAgents
                 return false;
             }
             Debug.LogWarning("Unity has connected to a Training process that does not support" +
-                             "Base Reinforcement Learning Capabilities.  Please make sure you have the" +
-                             " latest training codebase installed for this version of the ML-Agents package.");
+                "Base Reinforcement Learning Capabilities.  Please make sure you have the" +
+                " latest training codebase installed for this version of the ML-Agents package.");
             return true;
         }
-
     }
 }

@@ -89,7 +89,7 @@ namespace Unity.MLAgents
         ///     </item>
         ///     <item>
         ///         <term>1.3.0</term>
-        ///         <description>Support hybrid action spaces.</description>
+        ///         <description>Support action spaces with both continuous and discrete actions.</description>
         ///     </item>
         /// </list>
         /// </remarks>
@@ -256,6 +256,7 @@ namespace Unity.MLAgents
                 Dispose();
             }
         }
+
 #endif
 
         /// <summary>

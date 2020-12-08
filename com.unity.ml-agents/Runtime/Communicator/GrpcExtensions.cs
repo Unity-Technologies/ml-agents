@@ -89,7 +89,6 @@ namespace Unity.MLAgents
             return summariesOut;
         }
 
-
         #endregion
 
         #region BrainParameters
@@ -144,7 +143,7 @@ namespace Unity.MLAgents
             var supportHybrid = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.HybridActions;
             if (!supportHybrid)
             {
-                actionSpec.CheckNotHybrid();
+                actionSpec.CheckAllContinuousOrDiscrete();
                 if (actionSpec.NumContinuousActions > 0)
                 {
                     brainParametersProto.VectorActionSizeDeprecated.Add(actionSpec.NumContinuousActions);
@@ -215,6 +214,7 @@ namespace Unity.MLAgents
             }
             return dm;
         }
+
         #endregion
 
         public static UnityRLInitParameters ToUnityRLInitParameters(this UnityRLInitializationInputProto inputProto)
@@ -290,8 +290,8 @@ namespace Unity.MLAgents
                     if (!s_HaveWarnedTrainerCapabilitiesMapping)
                     {
                         Debug.LogWarning($"The sensor {sensor.GetName()} is using non-trivial mapping and " +
-                                "the attached trainer doesn't support compression mapping. " +
-                                "Switching to uncompressed observations.");
+                            "the attached trainer doesn't support compression mapping. " +
+                            "Switching to uncompressed observations.");
                         s_HaveWarnedTrainerCapabilitiesMapping = true;
                     }
                     compressionType = SensorCompressionType.None;
@@ -327,7 +327,7 @@ namespace Unity.MLAgents
                         $"GetCompressedObservation() returned null data for sensor named {sensor.GetName()}. " +
                         "You must return a byte[]. If you don't want to use compressed observations, " +
                         "return SensorCompressionType.None from GetCompressionType()."
-                        );
+                    );
                 }
                 observationProto = new ObservationProto
                 {
@@ -343,6 +343,7 @@ namespace Unity.MLAgents
             observationProto.Shape.AddRange(shape);
             return observationProto;
         }
+
         #endregion
 
         public static UnityRLCapabilities ToRLCapabilities(this UnityRLCapabilitiesProto proto)

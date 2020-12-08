@@ -59,9 +59,9 @@ namespace Unity.MLAgents.Inference
             }
 
             var model = (Model)barracudaModel;
-            if (!model.HasHybridSupport())
+            if (!model.SupportsContinuousAndDiscrete())
             {
-                actionSpec.CheckNotHybrid();
+                actionSpec.CheckAllContinuousOrDiscrete();
             }
             if (actionSpec.NumContinuousActions > 0)
             {

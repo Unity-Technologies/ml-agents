@@ -1265,7 +1265,6 @@ namespace Unity.MLAgents
             {
                 OnEpisodeBegin();
             }
-
         }
 
         /// <summary>

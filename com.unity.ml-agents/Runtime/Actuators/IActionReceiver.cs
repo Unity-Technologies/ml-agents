@@ -102,7 +102,6 @@ namespace Unity.MLAgents.Actuators
                 for (var i = 0; i < actionSpec.NumDiscreteActions; i++)
                 {
                     discreteActions[i] = (int)actions[i + offset];
-
                 }
                 discreteActionSegment = new ActionSegment<int>(discreteActions);
             }
