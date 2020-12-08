@@ -533,9 +533,6 @@ class TorchSACOptimizer(TorchOptimizer):
             memories=memories,
             sequence_length=self.policy.sequence_length,
         )
-        # value_estimates, _ = self.policy.actor_critic.critic_pass(
-        #     vec_obs, vis_obs, memories, sequence_length=self.policy.sequence_length
-        # )
 
         cont_sampled_actions = sampled_actions.continuous_tensor
 
@@ -546,6 +543,7 @@ class TorchSACOptimizer(TorchOptimizer):
             cont_sampled_actions,
             memories=q_memories,
             sequence_length=self.policy.sequence_length,
+            q2_grad=False,
         )
         q1_out, q2_out = self.value_network(
             vec_obs,
