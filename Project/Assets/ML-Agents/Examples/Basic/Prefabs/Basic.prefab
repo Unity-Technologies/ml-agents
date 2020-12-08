@@ -441,7 +441,7 @@ MonoBehaviour:
     VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 468c183196f1844f69e125c99dd135a1, type: 3}
+  m_Model: {fileID: 11400000, guid: 61bef0cc3becb4cb2b50f0ccae9eb1f0, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Basic

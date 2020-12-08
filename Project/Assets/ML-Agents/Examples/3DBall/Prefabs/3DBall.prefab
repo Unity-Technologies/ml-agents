@@ -284,7 +284,7 @@ MonoBehaviour:
     VectorActionSize: 02000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: 20a7b83be6b0c493d9271c65c897eb9b, type: 3}
+  m_Model: {fileID: 11400000, guid: b0a7aa4c6a4054b71b9465494bbaf680, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: 3DBall

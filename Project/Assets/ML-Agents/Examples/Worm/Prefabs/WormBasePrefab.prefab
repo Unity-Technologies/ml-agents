@@ -972,8 +972,8 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   typeOfWorm: 0
-  wormDyModel: {fileID: 11400000, guid: 117512193457f4b35994eedc14532276, type: 3}
-  wormStModel: {fileID: 11400000, guid: fc1e2a84251634459bfd8edc900e2e71, type: 3}
+  wormDyModel: {fileID: 11400000, guid: 1690fd6b45a4c4857a26564201790aae, type: 3}
+  wormStModel: {fileID: 11400000, guid: eb3d995b2069942a78d2f6370127d82a, type: 3}
   dynamicTargetPrefab: {fileID: 3839136118347789758, guid: 46734abd0de454192b407379c6a4ab8d,
     type: 3}
   staticTargetPrefab: {fileID: 3839136118347789758, guid: 2173d15c0b5fc49e5870c9d1c7f7ee8e,

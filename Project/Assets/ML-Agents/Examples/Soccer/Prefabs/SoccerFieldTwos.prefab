@@ -241,12 +241,13 @@ MonoBehaviour:
     VectorActionSize: 030000000300000003000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: b0a629580a0ab48a5a774f90ff1fb48b, type: 3}
+  m_Model: {fileID: 11400000, guid: 4c66f0677c6c74f0e970268cc7fac722, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
   TeamId: 1
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &114492261207303438
 MonoBehaviour:
@@ -621,12 +622,13 @@ MonoBehaviour:
     VectorActionSize: 030000000300000003000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: b0a629580a0ab48a5a774f90ff1fb48b, type: 3}
+  m_Model: {fileID: 11400000, guid: 4c66f0677c6c74f0e970268cc7fac722, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
   TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &114850431417842684
 MonoBehaviour:
@@ -3632,12 +3634,13 @@ MonoBehaviour:
     VectorActionSize: 030000000300000003000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: b0a629580a0ab48a5a774f90ff1fb48b, type: 3}
+  m_Model: {fileID: 11400000, guid: 4c66f0677c6c74f0e970268cc7fac722, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
   TeamId: 1
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &5320024511406682322
 MonoBehaviour:
@@ -4118,12 +4121,13 @@ MonoBehaviour:
     VectorActionSize: 030000000300000003000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: b0a629580a0ab48a5a774f90ff1fb48b, type: 3}
+  m_Model: {fileID: 11400000, guid: 4c66f0677c6c74f0e970268cc7fac722, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
   TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &5379409612883756837
 MonoBehaviour:
