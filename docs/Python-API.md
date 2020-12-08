@@ -161,7 +161,7 @@ A `DecisionSteps` has the following fields :
 - `agent_id` is an int vector of length batch size containing unique identifier
   for the corresponding Agent. This is used to track Agents across simulation
   steps.
-- `action_mask` is an optional list of two dimensional array of booleans. Only
+- `action_mask` is an optional list of two dimensional arrays of booleans which is only
   available when using multi-discrete actions. Each array corresponds to an
   action branch. The first dimension of each array is the batch size and the
   second contains a mask for each action of the branch. If true, the action is
