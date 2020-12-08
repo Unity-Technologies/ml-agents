@@ -541,7 +541,7 @@ up to use either the continuous or the discrete vector action spaces.
 
 ### Continuous Action Space
 
-When an Agent uses a Policy set to the **Continuous** vector action space, the
+When an Agent's Policy has **Continuous** actions, the
 `ActionBuffers.ContinuousActions` passed to the Agent's `OnActionReceived()` function
 is an array with length equal to the `Vector Action Space Size` property value. The
 individual values in the array have whatever meanings that you ascribe to them.
@@ -576,7 +576,7 @@ As shown above, you can scale the control values as needed after clamping them.
 
 ### Discrete Action Space
 
-When an Agent uses a **Discrete** vector action space, the
+When an Agent's Policy uses **discrete** actions, the
 `ActionBuffers.DiscreteActions` passed to the Agent's `OnActionReceived()` function
 is an array of integers. When defining the discrete vector action space, `Branches`
 is an array of integers, each value corresponds to the number of possibilities for each branch.
