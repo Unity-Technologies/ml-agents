@@ -14,10 +14,8 @@ and this project adheres to
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- Analytics events are now collected when performing inference in the editor. For more details on what is collected and
-how to opt out, see the [package README](Documentation~/com.unity.ml-agents.md). (#4677)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-- `ActionSpec.validate_action()` now enforces that `UnityEnvironment.set_action_for_agent()` receives a 1D `np.array`. (#4691)
+- `ActionSpec.validate_action()` now enforces that `UnityEnvironment.set_action_for_agent()` receives a 1D `np.array`.
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
