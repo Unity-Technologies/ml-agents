@@ -168,6 +168,8 @@ namespace Unity.MLAgents.Editor
         {
             var behaviorParameters = (BehaviorParameters)target;
             behaviorParameters.BrainParameters.UpdateDiscreteParameters();
+
+            DisplayFailedModelChecks();
         }
     }
 }
