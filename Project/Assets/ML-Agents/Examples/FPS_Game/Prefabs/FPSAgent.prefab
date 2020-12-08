@@ -43,7 +43,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.25634634, g: 0.186594, b: 0.41099998, a: 1}
+  m_BackGroundColor: {r: 0.33952528, g: 0.30882353, b: 0.4117647, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -38787,7 +38787,7 @@ MonoBehaviour:
     type: 3}
   numberOfProjectilesToPool: 35
   projectileOrigin: {fileID: 2747490485103127816}
-  forceToUse: 75
+  forceToUse: 85
   forceMode: 2
   UseScreenShake: 1
   ShakeTransform: 1
@@ -38918,7 +38918,7 @@ MonoBehaviour:
     type: 3}
   numberOfProjectilesToPool: 35
   projectileOrigin: {fileID: 2747490484821474612}
-  forceToUse: 75
+  forceToUse: 85
   forceMode: 2
   UseScreenShake: 1
   ShakeTransform: 1
@@ -40079,6 +40079,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: b309ca48-95aa-4032-bd7d-46dcaeb138d0
     m_ActionName: Player Action Map/Rotate[/Keyboard/q,/Keyboard/e,/DualShock4GamepadHID/rightStick/left,/DualShock4GamepadHID/rightStick/right]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 82551a02-e3e9-4ef0-92d8-21d784984a6e
+    m_ActionName: Player Action Map/Restart[/Keyboard/r]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player Action Map
