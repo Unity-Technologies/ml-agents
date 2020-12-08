@@ -397,7 +397,9 @@ class ActionSpec(NamedTuple):
         for the correct number of agents and ensures the type.
         """
         _expected_shape = (
-            (n_agents, self.continuous_size) if n_agents else (self.continuous_size,)
+            (n_agents, self.continuous_size)
+            if n_agents is not None
+            else (self.continuous_size,)
         )
         if actions.continuous.shape != _expected_shape:
             raise UnityActionException(
@@ -406,7 +408,9 @@ class ActionSpec(NamedTuple):
                 f"received input of dimension {actions.continuous.shape}"
             )
         _expected_shape = (
-            (n_agents, self.discrete_size) if n_agents else (self.discrete_size,)
+            (n_agents, self.discrete_size)
+            if n_agents is not None
+            else (self.discrete_size,)
         )
         if actions.discrete.shape != _expected_shape:
             raise UnityActionException(
