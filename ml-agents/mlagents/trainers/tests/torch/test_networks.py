@@ -9,6 +9,7 @@ from mlagents.trainers.torch.networks import (
 )
 from mlagents.trainers.settings import NetworkSettings
 from mlagents_envs.base_env import ActionSpec
+from mlagents.trainers.tests.torch.test_encoders import compare_models
 
 
 def test_networkbody_vector():
@@ -123,7 +124,7 @@ def test_valuenetwork():
 def test_actor_critic(ac_type, lstm):
     obs_size = 4
     network_settings = NetworkSettings(
-        memory=NetworkSettings.MemorySettings() if lstm else None
+        memory=NetworkSettings.MemorySettings() if lstm else None, normalize=True
     )
     obs_shapes = [(obs_size,)]
     act_size = 2
@@ -174,3 +175,12 @@ def test_actor_critic(ac_type, lstm):
             assert value_out[stream].shape == (network_settings.memory.sequence_length,)
         else:
             assert value_out[stream].shape == (1,)
+
+    # Test normalization
+    actor.update_normalization(sample_obs)
+    if isinstance(actor, SeparateActorCritic):
+        for act_proc, crit_proc in zip(
+            actor.network_body.vector_processors,
+            actor.critic.network_body.vector_processors,
+        ):
+            assert compare_models(act_proc, crit_proc)
