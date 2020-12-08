@@ -79,7 +79,6 @@ namespace Unity.MLAgents.Inference
             return tensors;
         }
 
-
         /// <summary>
         /// Get number of visual observation inputs to the model.
         /// </summary>
@@ -154,7 +153,7 @@ namespace Unity.MLAgents.Inference
         {
             if (model == null)
                 return false;
-            if (!model.HasHybridSupport())
+            if (!model.SupportsContinuousAndDiscrete())
             {
                 return (int)model.GetTensorByName(TensorNames.IsContinuousControlDeprecated)[0] > 0;
             }
@@ -176,7 +175,7 @@ namespace Unity.MLAgents.Inference
         {
             if (model == null)
                 return 0;
-            if (!model.HasHybridSupport())
+            if (!model.SupportsContinuousAndDiscrete())
             {
                 return (int)model.GetTensorByName(TensorNames.IsContinuousControlDeprecated)[0] > 0 ?
                     (int)model.GetTensorByName(TensorNames.ActionOutputShapeDeprecated)[0] : 0;
@@ -199,7 +198,7 @@ namespace Unity.MLAgents.Inference
         {
             if (model == null)
                 return null;
-            if (!model.HasHybridSupport())
+            if (!model.SupportsContinuousAndDiscrete())
             {
                 return TensorNames.ActionOutputDeprecated;
             }
@@ -220,7 +219,7 @@ namespace Unity.MLAgents.Inference
         {
             if (model == null)
                 return false;
-            if (!model.HasHybridSupport())
+            if (!model.SupportsContinuousAndDiscrete())
             {
                 return (int)model.GetTensorByName(TensorNames.IsContinuousControlDeprecated)[0] == 0;
             }
@@ -242,7 +241,7 @@ namespace Unity.MLAgents.Inference
         {
             if (model == null)
                 return 0;
-            if (!model.HasHybridSupport())
+            if (!model.SupportsContinuousAndDiscrete())
             {
                 return (int)model.GetTensorByName(TensorNames.IsContinuousControlDeprecated)[0] > 0 ?
                     0 : (int)model.GetTensorByName(TensorNames.ActionOutputShapeDeprecated)[0];
@@ -265,7 +264,7 @@ namespace Unity.MLAgents.Inference
         {
             if (model == null)
                 return null;
-            if (!model.HasHybridSupport())
+            if (!model.SupportsContinuousAndDiscrete())
             {
                 return TensorNames.ActionOutputDeprecated;
             }
@@ -283,7 +282,7 @@ namespace Unity.MLAgents.Inference
         /// The Barracuda engine model for loading static parameters.
         /// </param>
         /// <returns>True if the model supports hybrid action spaces.</returns>
-        public static bool HasHybridSupport(this Model model)
+        public static bool SupportsContinuousAndDiscrete(this Model model)
         {
             return model == null ||
                 model.outputs.Contains(TensorNames.ContinuousActionOutput) ||
@@ -325,7 +324,7 @@ namespace Unity.MLAgents.Inference
             }
 
             // Check the presence of action output shape tensor
-            if (!model.HasHybridSupport())
+            if (!model.SupportsContinuousAndDiscrete())
             {
                 if (model.GetTensorByName(TensorNames.ActionOutputShapeDeprecated) == null)
                 {

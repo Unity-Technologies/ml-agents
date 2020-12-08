@@ -62,7 +62,6 @@ namespace Unity.MLAgents.Policies
         /// <inheritdoc />
         public ref readonly ActionBuffers DecideAction()
         {
-
             if (m_ModelRunner == null)
             {
                 m_LastActionBuffer = ActionBuffers.Empty;
