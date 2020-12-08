@@ -132,8 +132,8 @@ A `BaseEnv` has the following methods:
   contain no Agents at all.
 - **Set Actions :`env.set_actions(behavior_name: str, action: ActionTuple)`** Sets
   the actions for a whole agent group. `action` is an `ActionTuple`, which
-  is made up of a 2D `np.array` of `dtype=np.int32` for discrete action, and
-  `dtype=np.float32` for continuous action case. The first dimension of `np.array`
+  is made up of a 2D `np.array` of `dtype=np.int32` for discrete actions, and
+  `dtype=np.float32` for continuous actions. The first dimension of `np.array`
   in the tuple is the number of agents that requested a decision since the
   last call to `env.step()`. The second dimension is the number of discrete or
   continuous actions for the corresponding array.
