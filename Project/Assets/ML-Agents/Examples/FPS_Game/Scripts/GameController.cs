@@ -6,6 +6,9 @@ using Random = UnityEngine.Random;
 using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour
 {
+    //NOT IMPLEMENTED YET;
+    [Header("GRAPHICS")] public bool TurnOffFancyGraphics; //turns off expensive graphics/particle effects
+
     [Header("GLOBAL SETTINGS")]
     public List<Rigidbody> AllRBsList = new List<Rigidbody>();
 

@@ -15,7 +15,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
     ""name"": ""FPSPlayerInputActions"",
     ""maps"": [
         {
-            ""name"": ""Player Action Map"",
+            ""name"": ""Player"",
             ""id"": ""bb797917-97ca-47e1-b3c9-0572380e9376"",
             ""actions"": [
                 {
@@ -23,22 +23,6 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""type"": ""Value"",
                     ""id"": ""2f9ecc77-85d9-4189-8faf-18dcf905d2d4"",
                     ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""DashLeft"",
-                    ""type"": ""Button"",
-                    ""id"": ""1d14cda7-c4b3-4bb4-9ebb-f197aa5ed183"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""DashRight"",
-                    ""type"": ""Button"",
-                    ""id"": ""96db7975-8803-410a-863b-5f25b31019f4"",
-                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
                 },
@@ -168,17 +152,6 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""14009289-6acb-4978-8838-01648248f103"",
-                    ""path"": ""<Gamepad>/leftShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DashLeft"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""28ddf0bd-ea22-4069-ba60-ca41d4742bf9"",
                     ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
@@ -245,17 +218,6 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""4df83c50-5bb2-497d-a713-237e1c5dc25a"",
-                    ""path"": ""<Gamepad>/rightShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DashRight"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""0c0d917f-0af9-4575-b970-f441fd97db20"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
@@ -269,7 +231,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""name"": """",
                     ""id"": ""319796b1-6071-46f0-81dc-58b6bdb7d86a"",
                     ""path"": ""<Gamepad>/leftTrigger"",
-                    ""interactions"": ""Press(pressPoint=0.75)"",
+                    ""interactions"": ""Press(pressPoint=0.5)"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Dash"",
@@ -365,22 +327,61 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""UI"",
+            ""id"": ""ab1a83a2-e1a9-44f3-8688-7a60542bcf25"",
+            ""actions"": [
+                {
+                    ""name"": ""Controls"",
+                    ""type"": ""Button"",
+                    ""id"": ""bd885a35-fff9-4afb-a855-24fb9f6006c7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""b1df5ed6-1b89-4092-8140-92b0835f0a58"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Controls"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8f5dc820-dac4-4667-92d5-e1f46b8e3365"",
+                    ""path"": ""<Gamepad>/select"",
+                    ""interactions"": ""Press"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Controls"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
 }");
-        // Player Action Map
-        m_PlayerActionMap = asset.FindActionMap("Player Action Map", throwIfNotFound: true);
-        m_PlayerActionMap_Walk = m_PlayerActionMap.FindAction("Walk", throwIfNotFound: true);
-        m_PlayerActionMap_DashLeft = m_PlayerActionMap.FindAction("DashLeft", throwIfNotFound: true);
-        m_PlayerActionMap_DashRight = m_PlayerActionMap.FindAction("DashRight", throwIfNotFound: true);
-        m_PlayerActionMap_Jump = m_PlayerActionMap.FindAction("Jump", throwIfNotFound: true);
-        m_PlayerActionMap_Shoot = m_PlayerActionMap.FindAction("Shoot", throwIfNotFound: true);
-        m_PlayerActionMap_Shield = m_PlayerActionMap.FindAction("Shield", throwIfNotFound: true);
-        m_PlayerActionMap_RotateBody = m_PlayerActionMap.FindAction("RotateBody", throwIfNotFound: true);
-        m_PlayerActionMap_Dash = m_PlayerActionMap.FindAction("Dash", throwIfNotFound: true);
-        m_PlayerActionMap_Rotate = m_PlayerActionMap.FindAction("Rotate", throwIfNotFound: true);
-        m_PlayerActionMap_Restart = m_PlayerActionMap.FindAction("Restart", throwIfNotFound: true);
+        // Player
+        m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
+        m_Player_Walk = m_Player.FindAction("Walk", throwIfNotFound: true);
+        m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
+        m_Player_Shoot = m_Player.FindAction("Shoot", throwIfNotFound: true);
+        m_Player_Shield = m_Player.FindAction("Shield", throwIfNotFound: true);
+        m_Player_RotateBody = m_Player.FindAction("RotateBody", throwIfNotFound: true);
+        m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
+        m_Player_Rotate = m_Player.FindAction("Rotate", throwIfNotFound: true);
+        m_Player_Restart = m_Player.FindAction("Restart", throwIfNotFound: true);
+        // UI
+        m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
+        m_UI_Controls = m_UI.FindAction("Controls", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -427,85 +428,69 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
         asset.Disable();
     }
 
-    // Player Action Map
-    private readonly InputActionMap m_PlayerActionMap;
-    private IPlayerActionMapActions m_PlayerActionMapActionsCallbackInterface;
-    private readonly InputAction m_PlayerActionMap_Walk;
-    private readonly InputAction m_PlayerActionMap_DashLeft;
-    private readonly InputAction m_PlayerActionMap_DashRight;
-    private readonly InputAction m_PlayerActionMap_Jump;
-    private readonly InputAction m_PlayerActionMap_Shoot;
-    private readonly InputAction m_PlayerActionMap_Shield;
-    private readonly InputAction m_PlayerActionMap_RotateBody;
-    private readonly InputAction m_PlayerActionMap_Dash;
-    private readonly InputAction m_PlayerActionMap_Rotate;
-    private readonly InputAction m_PlayerActionMap_Restart;
-    public struct PlayerActionMapActions
+    // Player
+    private readonly InputActionMap m_Player;
+    private IPlayerActions m_PlayerActionsCallbackInterface;
+    private readonly InputAction m_Player_Walk;
+    private readonly InputAction m_Player_Jump;
+    private readonly InputAction m_Player_Shoot;
+    private readonly InputAction m_Player_Shield;
+    private readonly InputAction m_Player_RotateBody;
+    private readonly InputAction m_Player_Dash;
+    private readonly InputAction m_Player_Rotate;
+    private readonly InputAction m_Player_Restart;
+    public struct PlayerActions
     {
         private @FPSPlayerInputActions m_Wrapper;
-        public PlayerActionMapActions(@FPSPlayerInputActions wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Walk => m_Wrapper.m_PlayerActionMap_Walk;
-        public InputAction @DashLeft => m_Wrapper.m_PlayerActionMap_DashLeft;
-        public InputAction @DashRight => m_Wrapper.m_PlayerActionMap_DashRight;
-        public InputAction @Jump => m_Wrapper.m_PlayerActionMap_Jump;
-        public InputAction @Shoot => m_Wrapper.m_PlayerActionMap_Shoot;
-        public InputAction @Shield => m_Wrapper.m_PlayerActionMap_Shield;
-        public InputAction @RotateBody => m_Wrapper.m_PlayerActionMap_RotateBody;
-        public InputAction @Dash => m_Wrapper.m_PlayerActionMap_Dash;
-        public InputAction @Rotate => m_Wrapper.m_PlayerActionMap_Rotate;
-        public InputAction @Restart => m_Wrapper.m_PlayerActionMap_Restart;
-        public InputActionMap Get() { return m_Wrapper.m_PlayerActionMap; }
+        public PlayerActions(@FPSPlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Walk => m_Wrapper.m_Player_Walk;
+        public InputAction @Jump => m_Wrapper.m_Player_Jump;
+        public InputAction @Shoot => m_Wrapper.m_Player_Shoot;
+        public InputAction @Shield => m_Wrapper.m_Player_Shield;
+        public InputAction @RotateBody => m_Wrapper.m_Player_RotateBody;
+        public InputAction @Dash => m_Wrapper.m_Player_Dash;
+        public InputAction @Rotate => m_Wrapper.m_Player_Rotate;
+        public InputAction @Restart => m_Wrapper.m_Player_Restart;
+        public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(PlayerActionMapActions set) { return set.Get(); }
-        public void SetCallbacks(IPlayerActionMapActions instance)
+        public static implicit operator InputActionMap(PlayerActions set) { return set.Get(); }
+        public void SetCallbacks(IPlayerActions instance)
         {
-            if (m_Wrapper.m_PlayerActionMapActionsCallbackInterface != null)
+            if (m_Wrapper.m_PlayerActionsCallbackInterface != null)
             {
-                @Walk.started -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnWalk;
-                @Walk.performed -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnWalk;
-                @Walk.canceled -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnWalk;
-                @DashLeft.started -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnDashLeft;
-                @DashLeft.performed -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnDashLeft;
-                @DashLeft.canceled -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnDashLeft;
-                @DashRight.started -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnDashRight;
-                @DashRight.performed -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnDashRight;
-                @DashRight.canceled -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnDashRight;
-                @Jump.started -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnJump;
-                @Jump.performed -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnJump;
-                @Jump.canceled -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnJump;
-                @Shoot.started -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnShoot;
-                @Shoot.performed -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnShoot;
-                @Shoot.canceled -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnShoot;
-                @Shield.started -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnShield;
-                @Shield.performed -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnShield;
-                @Shield.canceled -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnShield;
-                @RotateBody.started -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRotateBody;
-                @RotateBody.performed -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRotateBody;
-                @RotateBody.canceled -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRotateBody;
-                @Dash.started -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnDash;
-                @Dash.performed -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnDash;
-                @Dash.canceled -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnDash;
-                @Rotate.started -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRotate;
-                @Rotate.performed -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRotate;
-                @Rotate.canceled -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRotate;
-                @Restart.started -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRestart;
-                @Restart.performed -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRestart;
-                @Restart.canceled -= m_Wrapper.m_PlayerActionMapActionsCallbackInterface.OnRestart;
+                @Walk.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnWalk;
+                @Walk.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnWalk;
+                @Walk.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnWalk;
+                @Jump.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
+                @Jump.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
+                @Jump.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
+                @Shoot.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShoot;
+                @Shoot.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShoot;
+                @Shoot.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShoot;
+                @Shield.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShield;
+                @Shield.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShield;
+                @Shield.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShield;
+                @RotateBody.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateBody;
+                @RotateBody.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateBody;
+                @RotateBody.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateBody;
+                @Dash.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
+                @Dash.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
+                @Dash.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
+                @Rotate.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotate;
+                @Rotate.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotate;
+                @Rotate.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotate;
+                @Restart.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRestart;
+                @Restart.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRestart;
+                @Restart.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRestart;
             }
-            m_Wrapper.m_PlayerActionMapActionsCallbackInterface = instance;
+            m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
             {
                 @Walk.started += instance.OnWalk;
                 @Walk.performed += instance.OnWalk;
                 @Walk.canceled += instance.OnWalk;
-                @DashLeft.started += instance.OnDashLeft;
-                @DashLeft.performed += instance.OnDashLeft;
-                @DashLeft.canceled += instance.OnDashLeft;
-                @DashRight.started += instance.OnDashRight;
-                @DashRight.performed += instance.OnDashRight;
-                @DashRight.canceled += instance.OnDashRight;
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
@@ -530,12 +515,43 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
             }
         }
     }
-    public PlayerActionMapActions @PlayerActionMap => new PlayerActionMapActions(this);
-    public interface IPlayerActionMapActions
+    public PlayerActions @Player => new PlayerActions(this);
+
+    // UI
+    private readonly InputActionMap m_UI;
+    private IUIActions m_UIActionsCallbackInterface;
+    private readonly InputAction m_UI_Controls;
+    public struct UIActions
+    {
+        private @FPSPlayerInputActions m_Wrapper;
+        public UIActions(@FPSPlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Controls => m_Wrapper.m_UI_Controls;
+        public InputActionMap Get() { return m_Wrapper.m_UI; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(UIActions set) { return set.Get(); }
+        public void SetCallbacks(IUIActions instance)
+        {
+            if (m_Wrapper.m_UIActionsCallbackInterface != null)
+            {
+                @Controls.started -= m_Wrapper.m_UIActionsCallbackInterface.OnControls;
+                @Controls.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnControls;
+                @Controls.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnControls;
+            }
+            m_Wrapper.m_UIActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Controls.started += instance.OnControls;
+                @Controls.performed += instance.OnControls;
+                @Controls.canceled += instance.OnControls;
+            }
+        }
+    }
+    public UIActions @UI => new UIActions(this);
+    public interface IPlayerActions
     {
         void OnWalk(InputAction.CallbackContext context);
-        void OnDashLeft(InputAction.CallbackContext context);
-        void OnDashRight(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnShoot(InputAction.CallbackContext context);
         void OnShield(InputAction.CallbackContext context);
@@ -543,5 +559,9 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
         void OnDash(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
         void OnRestart(InputAction.CallbackContext context);
+    }
+    public interface IUIActions
+    {
+        void OnControls(InputAction.CallbackContext context);
     }
 }

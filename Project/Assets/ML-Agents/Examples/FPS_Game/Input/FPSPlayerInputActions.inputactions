@@ -2,7 +2,7 @@
     "name": "FPSPlayerInputActions",
     "maps": [
         {
-            "name": "Player Action Map",
+            "name": "Player",
             "id": "bb797917-97ca-47e1-b3c9-0572380e9376",
             "actions": [
                 {
@@ -10,22 +10,6 @@
                     "type": "Value",
                     "id": "2f9ecc77-85d9-4189-8faf-18dcf905d2d4",
                     "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
-                    "name": "DashLeft",
-                    "type": "Button",
-                    "id": "1d14cda7-c4b3-4bb4-9ebb-f197aa5ed183",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
-                    "name": "DashRight",
-                    "type": "Button",
-                    "id": "96db7975-8803-410a-863b-5f25b31019f4",
-                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 },
@@ -155,17 +139,6 @@
                 },
                 {
                     "name": "",
-                    "id": "14009289-6acb-4978-8838-01648248f103",
-                    "path": "<Gamepad>/leftShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "DashLeft",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "28ddf0bd-ea22-4069-ba60-ca41d4742bf9",
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
@@ -232,17 +205,6 @@
                 },
                 {
                     "name": "",
-                    "id": "4df83c50-5bb2-497d-a713-237e1c5dc25a",
-                    "path": "<Gamepad>/rightShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "DashRight",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "0c0d917f-0af9-4575-b970-f441fd97db20",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
@@ -256,7 +218,7 @@
                     "name": "",
                     "id": "319796b1-6071-46f0-81dc-58b6bdb7d86a",
                     "path": "<Gamepad>/leftTrigger",
-                    "interactions": "Press(pressPoint=0.75)",
+                    "interactions": "Press(pressPoint=0.5)",
                     "processors": "",
                     "groups": "",
                     "action": "Dash",
@@ -348,6 +310,44 @@
                     "processors": "",
                     "groups": "",
                     "action": "Restart",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "UI",
+            "id": "ab1a83a2-e1a9-44f3-8688-7a60542bcf25",
+            "actions": [
+                {
+                    "name": "Controls",
+                    "type": "Button",
+                    "id": "bd885a35-fff9-4afb-a855-24fb9f6006c7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "b1df5ed6-1b89-4092-8140-92b0835f0a58",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Controls",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8f5dc820-dac4-4667-92d5-e1f46b8e3365",
+                    "path": "<Gamepad>/select",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Controls",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

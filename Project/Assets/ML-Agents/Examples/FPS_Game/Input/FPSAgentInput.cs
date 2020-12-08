@@ -9,7 +9,7 @@ public class FPSAgentInput : MonoBehaviour
 {
     public bool DisableInput = false;
     private FPSPlayerInputActions inputActions;
-    private FPSPlayerInputActions.PlayerActionMapActions actionMap;
+    private FPSPlayerInputActions.PlayerActions actionMap;
     private Gamepad gamepad;
 
     public Vector2 moveInput;
@@ -25,7 +25,7 @@ public class FPSAgentInput : MonoBehaviour
     void Awake()
     {
         inputActions = new FPSPlayerInputActions();
-        actionMap = inputActions.PlayerActionMap;
+        actionMap = inputActions.Player;
     }
     void OnEnable()
     {
