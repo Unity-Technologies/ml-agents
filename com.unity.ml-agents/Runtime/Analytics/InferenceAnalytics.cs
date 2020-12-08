@@ -112,10 +112,9 @@ namespace Unity.MLAgents.Analytics
 
             var data = GetEventForModel(nnModel, behaviorName, inferenceDevice, sensors, actionSpec);
             // Note - to debug, use JsonUtility.ToJson on the event.
-            //Debug.Log(JsonUtility.ToJson(data, true));
+            // Debug.Log(JsonUtility.ToJson(data, true));
 #if UNITY_EDITOR
-            // TODO re-enable when we're ready to merge.
-            //EditorAnalytics.SendEventWithLimit(k_EventName, data);
+            EditorAnalytics.SendEventWithLimit(k_EventName, data);
 #else
             return;
 #endif
