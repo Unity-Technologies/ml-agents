@@ -105,7 +105,7 @@ namespace Unity.MLAgents.Tests
             var validBrainParameters = new BrainParameters();
             validBrainParameters.VectorObservationSize = 0;
             validBrainParameters.NumStackedVectorObservations = 1;
-            validBrainParameters.ActionSpec = ActionSpec.MakeDiscrete(new[] { 2, 3 });
+            validBrainParameters.ActionSpec = ActionSpec.MakeDiscrete(2, 3);
             return validBrainParameters;
         }
 
@@ -332,7 +332,7 @@ namespace Unity.MLAgents.Tests
             Assert.Greater(errors.Count(), 0);
 
             brainParameters = GetContinuous2vis8vec2actionBrainParameters();
-            brainParameters.ActionSpec = ActionSpec.MakeDiscrete(new int[] { 3 }); // Invalid SpaceType
+            brainParameters.ActionSpec = ActionSpec.MakeDiscrete(3); // Invalid SpaceType
             errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 }, new ActuatorComponent[0]);
             Assert.Greater(errors.Count(), 0);
         }
@@ -344,7 +344,7 @@ namespace Unity.MLAgents.Tests
             var model = useDeprecatedNNModel ? ModelLoader.Load(discreteNNModel) : ModelLoader.Load(discreteONNXModel);
 
             var brainParameters = GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters();
-            brainParameters.ActionSpec = ActionSpec.MakeDiscrete(new[] { 3, 3 }); // Invalid action
+            brainParameters.ActionSpec = ActionSpec.MakeDiscrete(3, 3); // Invalid action
             var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3 }, new ActuatorComponent[0]);
             Assert.Greater(errors.Count(), 0);
 
@@ -365,7 +365,7 @@ namespace Unity.MLAgents.Tests
             Assert.Greater(errors.Count(), 0);
 
             brainParameters = GetContinuous2vis8vec2actionBrainParameters();
-            brainParameters.ActionSpec = ActionSpec.MakeDiscrete(new int[] { 2 }); // Missing continuous action
+            brainParameters.ActionSpec = ActionSpec.MakeDiscrete(2); // Missing continuous action
             errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 }, new ActuatorComponent[0]);
             Assert.Greater(errors.Count(), 0);
         }

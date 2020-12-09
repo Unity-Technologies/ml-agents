@@ -32,7 +32,7 @@ namespace Unity.MLAgents.Tests.Actuators
         public void TestConstruct()
         {
             var ar = new TestActionReceiver();
-            var va = new VectorActuator(ar, ActionSpec.MakeDiscrete(new int[] { 1, 2, 3 }), "name");
+            var va = new VectorActuator(ar, ActionSpec.MakeDiscrete(1, 2, 3), "name");
 
             Assert.IsTrue(va.ActionSpec.NumDiscreteActions == 3);
             Assert.IsTrue(va.ActionSpec.SumOfDiscreteBranchSizes == 6);
@@ -49,7 +49,7 @@ namespace Unity.MLAgents.Tests.Actuators
         public void TestOnActionReceived()
         {
             var ar = new TestActionReceiver();
-            var va = new VectorActuator(ar, ActionSpec.MakeDiscrete(new int[] { 1, 2, 3 }), "name");
+            var va = new VectorActuator(ar, ActionSpec.MakeDiscrete(1, 2, 3), "name");
 
             var discreteActions = new[] { 0, 1, 1 };
             var ab = new ActionBuffers(ActionSegment<float>.Empty,
@@ -67,7 +67,7 @@ namespace Unity.MLAgents.Tests.Actuators
         public void TestResetData()
         {
             var ar = new TestActionReceiver();
-            var va = new VectorActuator(ar, ActionSpec.MakeDiscrete(new int[] { 1, 2, 3 }), "name");
+            var va = new VectorActuator(ar, ActionSpec.MakeDiscrete(1, 2, 3), "name");
 
             var discreteActions = new[] { 0, 1, 1 };
             var ab = new ActionBuffers(ActionSegment<float>.Empty,
@@ -80,7 +80,7 @@ namespace Unity.MLAgents.Tests.Actuators
         public void TestWriteDiscreteActionMask()
         {
             var ar = new TestActionReceiver();
-            var va = new VectorActuator(ar, ActionSpec.MakeDiscrete(new int[] { 1, 2, 3 }), "name");
+            var va = new VectorActuator(ar, ActionSpec.MakeDiscrete(1, 2, 3), "name");
             var bdam = new ActuatorDiscreteActionMask(new[] { va }, 6, 3);
 
             var groundTruthMask = new[] { false, true, false, false, true, true };
