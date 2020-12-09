@@ -15,7 +15,7 @@ public class PlayBackgroundAudio : MonoBehaviour
     private AudioSource m_AudioSource;
     void Awake()
     {
-        DontDestroyOnLoad(gameObject);
+        //        DontDestroyOnLoad(gameObject);
 
         if (m_AudioSource == null)
         {
@@ -30,7 +30,10 @@ public class PlayBackgroundAudio : MonoBehaviour
         //        if (BackgroundSong)
         //        {
         //            m_AudioSource.clip = BackgroundSong;
-        m_AudioSource.Play();
+        if (!m_AudioSource.isPlaying)
+        {
+            m_AudioSource.Play();
+        }
         //        }
     }
 

@@ -1564,12 +1564,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 134432279}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -13.48854, y: 1, z: -20.442457}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 1132733227}
-  m_RootOrder: 0
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &134432281
 AudioSource:
@@ -1582,7 +1582,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 32d90d29710e442e197cb2238790c963, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0.75
   m_Pitch: 1
   Loop: 1
@@ -2201,7 +2201,7 @@ Transform:
   - {fileID: 1236036023}
   - {fileID: 253704780}
   m_Father: {fileID: 0}
-  m_RootOrder: 17
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &253704779
 GameObject:
@@ -2580,7 +2580,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 19
+  m_RootOrder: 20
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &320583313
 GameObject:
@@ -2695,7 +2695,7 @@ Transform:
   m_Children:
   - {fileID: 1545228315}
   m_Father: {fileID: 0}
-  m_RootOrder: 18
+  m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &338592044
 GameObject:
@@ -5423,7 +5423,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &975117374
 GameObject:
@@ -6124,7 +6124,7 @@ Transform:
   - {fileID: 1419764706}
   - {fileID: 965336649}
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1103948492
 GameObject:
@@ -6410,10 +6410,9 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -13.48854, y: 1.0000002, z: -20.442457}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 134432280}
+  m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1137767715
 GameObject:
@@ -8059,7 +8058,7 @@ Transform:
   m_Children:
   - {fileID: 1695256207}
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1527549674
 GameObject:
@@ -9139,7 +9138,7 @@ Transform:
   - {fileID: 2372382112527972584}
   - {fileID: 320583314}
   m_Father: {fileID: 0}
-  m_RootOrder: 16
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: -165.00002, z: 0}
 --- !u!1 &1672274306
 GameObject:
@@ -11647,7 +11646,7 @@ Transform:
   m_Children:
   - {fileID: 1627753779}
   m_Father: {fileID: 0}
-  m_RootOrder: 15
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2144694764
 GameObject:
@@ -16355,29 +16354,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4595975476135097}
     m_Modifications:
-    - target: {fileID: 1828481692, guid: a0e7db83e097b4a3e96a89b390d1ebed, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1828481692, guid: a0e7db83e097b4a3e96a89b390d1ebed, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -5
-      objectReference: {fileID: 0}
     - target: {fileID: 1376546389932612024, guid: a0e7db83e097b4a3e96a89b390d1ebed,
         type: 3}
       propertyPath: UISlider
       value: 
       objectReference: {fileID: 1732295774}
-    - target: {fileID: 2747490485226133338, guid: a0e7db83e097b4a3e96a89b390d1ebed,
-        type: 3}
-      propertyPath: shootingRate
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2747490485406847266, guid: a0e7db83e097b4a3e96a89b390d1ebed,
-        type: 3}
-      propertyPath: shootingRate
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4453630946124038627, guid: a0e7db83e097b4a3e96a89b390d1ebed,
         type: 3}
       propertyPath: m_ActionEvents.Array.data[7].m_PersistentCalls.m_Calls.Array.data[0].m_Target

@@ -39124,7 +39124,7 @@ MonoBehaviour:
   AllowKeyboardInput: 0
   shootKey: 106
   autoShootEnabled: 0
-  shootingRate: 0.02
+  shootingRate: 0
   coolDownWait: 0
   projectilePrefab: {fileID: 3911029810215854908, guid: 01e75f85d5a3c451b9a5bed7070be0a0,
     type: 3}
@@ -39354,7 +39354,7 @@ MonoBehaviour:
   AllowKeyboardInput: 0
   shootKey: 106
   autoShootEnabled: 0
-  shootingRate: 0.02
+  shootingRate: 0
   coolDownWait: 0
   projectilePrefab: {fileID: 3911029810215854908, guid: 01e75f85d5a3c451b9a5bed7070be0a0,
     type: 3}

@@ -132,7 +132,7 @@ public class AgentHealth : MonoBehaviour
         //        }
         WaitForFixedUpdate wait = new WaitForFixedUpdate();
         float timer = 0;
-        while (timer < 3)
+        while (timer < 1)
         {
             timer += Time.fixedDeltaTime;
             yield return wait;
