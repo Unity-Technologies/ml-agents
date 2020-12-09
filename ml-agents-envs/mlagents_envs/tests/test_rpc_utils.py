@@ -357,7 +357,9 @@ def test_action_masking_discrete():
     n_agents = 10
     shapes = [(3,), (4,)]
     sensor_type = [SensorType.OBSERVATION, SensorType.OBSERVATION]
-    behavior_spec = BehaviorSpec(shapes, sensor_type, ActionSpec.create_discrete((7, 3)))
+    behavior_spec = BehaviorSpec(
+        shapes, sensor_type, ActionSpec.create_discrete((7, 3))
+    )
     ap_list = generate_list_agent_proto(n_agents, shapes)
     decision_steps, terminal_steps = steps_from_proto(ap_list, behavior_spec)
     masks = decision_steps.action_mask
@@ -388,7 +390,9 @@ def test_action_masking_discrete_2():
     n_agents = 10
     shapes = [(3,), (4,)]
     sensor_type = [SensorType.OBSERVATION, SensorType.OBSERVATION]
-    behavior_spec = BehaviorSpec(shapes, sensor_type, ActionSpec.create_discrete((2, 2, 6)))
+    behavior_spec = BehaviorSpec(
+        shapes, sensor_type, ActionSpec.create_discrete((2, 2, 6))
+    )
     ap_list = generate_list_agent_proto(n_agents, shapes)
     decision_steps, terminal_steps = steps_from_proto(ap_list, behavior_spec)
     masks = decision_steps.action_mask
