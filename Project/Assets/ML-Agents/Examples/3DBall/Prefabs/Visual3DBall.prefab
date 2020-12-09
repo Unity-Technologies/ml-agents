@@ -282,7 +282,7 @@ MonoBehaviour:
     VectorActionSize: 02000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: 8eb5fecdbd2eb4ec48236d3fee1e1149, type: 3}
+  m_Model: {fileID: 11400000, guid: fd9816170d5984af1838671258629543, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Visual3DBall

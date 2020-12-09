@@ -629,7 +629,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: c3b1eb0bcf06b4c0488599c7ab806de7, type: 3}
+  m_Model: {fileID: 11400000, guid: ed8c53381f61846cdba03e68bec8938a, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: VisualFoodCollector
@@ -1213,7 +1213,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: c3b1eb0bcf06b4c0488599c7ab806de7, type: 3}
+  m_Model: {fileID: 11400000, guid: ed8c53381f61846cdba03e68bec8938a, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: VisualFoodCollector
@@ -1611,7 +1611,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: c3b1eb0bcf06b4c0488599c7ab806de7, type: 3}
+  m_Model: {fileID: 11400000, guid: ed8c53381f61846cdba03e68bec8938a, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: VisualFoodCollector
@@ -3429,7 +3429,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: c3b1eb0bcf06b4c0488599c7ab806de7, type: 3}
+  m_Model: {fileID: 11400000, guid: ed8c53381f61846cdba03e68bec8938a, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: VisualFoodCollector

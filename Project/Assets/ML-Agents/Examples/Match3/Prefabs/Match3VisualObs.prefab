@@ -85,7 +85,7 @@ MonoBehaviour:
     VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 48d14da88fea74d0693c691c6e3f2e34, type: 3}
+  m_Model: {fileID: 11400000, guid: 1d9e3415c370d46be9f5b6fbd39f9433, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Match3VisualObs
@@ -127,7 +127,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DebugMoveIndex: -1
   CubeSpacing: 1.25
-  Board: {fileID: 0}
   TilePrefab: {fileID: 4007900521885639951, guid: faee4e805953b49e688bd00b45c55f2e,
     type: 3}
 --- !u!114 &3019509692332007776

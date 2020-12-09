@@ -2811,9 +2811,9 @@ MonoBehaviour:
   MaxStep: 5000
   typeOfCrawler: 0
   crawlerDyModel: {fileID: 11400000, guid: 59840b941673d4f60af0e416f8f21106, type: 3}
-  crawlerDyVSModel: {fileID: 11400000, guid: 0d9a992c217a44684b41c7663f3eab3d, type: 3}
+  crawlerDyVSModel: {fileID: 11400000, guid: a598091bbc49f4e70b5ec32666e1ca42, type: 3}
   crawlerStModel: {fileID: 11400000, guid: 19c8e46e8f5a149ca822373d80d7cf57, type: 3}
-  crawlerStVSModel: {fileID: 11400000, guid: e0800a8eb11a34c138fa8186124af9dc, type: 3}
+  crawlerStVSModel: {fileID: 11400000, guid: 0a078c877047a42cf9b3c3eccc1dff90, type: 3}
   m_TargetWalkingSpeed: 15
   dynamicTargetPrefab: {fileID: 3839136118347789758, guid: 46734abd0de454192b407379c6a4ab8d,
     type: 3}

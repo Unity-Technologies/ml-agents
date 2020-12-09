@@ -47,25 +47,21 @@ public class GridAgent : Agent
 
             if (positionX == 0)
             {
-                Debug.Log("Mask left");
                 actionMask.WriteMask(0, new[] { k_Left });
             }
 
             if (positionX == maxPosition)
             {
-                Debug.Log("Mask Right");
                 actionMask.WriteMask(0, new[] { k_Right });
             }
 
             if (positionZ == 0)
             {
-                Debug.Log("Mask Down");
                 actionMask.WriteMask(0, new[] { k_Down });
             }
 
             if (positionZ == maxPosition)
             {
-                Debug.Log("Mask Up");
                 actionMask.WriteMask(0, new[] { k_Up });
             }
         }
@@ -102,10 +98,6 @@ public class GridAgent : Agent
 
         var hit = Physics.OverlapBox(
             targetPos, new Vector3(0.3f, 0.3f, 0.3f));
-        if (hit.Where(col => col.gameObject.CompareTag("wall")).ToArray().Length > 0)
-        {
-            Debug.LogError("Buumping into wall" + action);
-        }
         if (hit.Where(col => col.gameObject.CompareTag("wall")).ToArray().Length == 0)
         {
             transform.position = targetPos;

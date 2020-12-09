@@ -2183,7 +2183,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 699f852e79b5ba642871514fb1fb9843, type: 3}
+  m_Model: {fileID: 11400000, guid: 70f2289d1a99e4c679db76bd507e719d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -2217,6 +2217,7 @@ MonoBehaviour:
   myLaser: {fileID: 1081721624670010}
   contribute: 0
   useVectorObs: 0
+  useVectorFrozenFlag: 0
 --- !u!114 &8297075921230369060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2286,6 +2287,7 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 0, a: 0}
   GizmoYOffset: 0
   ShowGizmos: 0
+  CompressionType: 1
 --- !u!1 &1482701732800114
 GameObject:
   m_ObjectHideFlags: 0
@@ -2535,7 +2537,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 699f852e79b5ba642871514fb1fb9843, type: 3}
+  m_Model: {fileID: 11400000, guid: 70f2289d1a99e4c679db76bd507e719d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -2569,6 +2571,7 @@ MonoBehaviour:
   myLaser: {fileID: 1941433838307300}
   contribute: 0
   useVectorObs: 0
+  useVectorFrozenFlag: 0
 --- !u!114 &259154752087955944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2625,6 +2628,7 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 0, a: 0}
   GizmoYOffset: 0
   ShowGizmos: 0
+  CompressionType: 1
 --- !u!1 &1528397385587768
 GameObject:
   m_ObjectHideFlags: 0
@@ -2878,7 +2882,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 699f852e79b5ba642871514fb1fb9843, type: 3}
+  m_Model: {fileID: 11400000, guid: 70f2289d1a99e4c679db76bd507e719d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -2912,6 +2916,7 @@ MonoBehaviour:
   myLaser: {fileID: 1421240237750412}
   contribute: 0
   useVectorObs: 0
+  useVectorFrozenFlag: 0
 --- !u!114 &5519119940433428255
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2968,6 +2973,7 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 0, a: 0}
   GizmoYOffset: 0
   ShowGizmos: 0
+  CompressionType: 1
 --- !u!1 &1617924810425504
 GameObject:
   m_ObjectHideFlags: 0
@@ -3484,7 +3490,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 699f852e79b5ba642871514fb1fb9843, type: 3}
+  m_Model: {fileID: 11400000, guid: 70f2289d1a99e4c679db76bd507e719d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -3518,6 +3524,7 @@ MonoBehaviour:
   myLaser: {fileID: 1617924810425504}
   contribute: 0
   useVectorObs: 0
+  useVectorFrozenFlag: 0
 --- !u!114 &5884750436653390196
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3574,6 +3581,7 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 0, a: 0}
   GizmoYOffset: 0
   ShowGizmos: 0
+  CompressionType: 1
 --- !u!1 &1688105343773098
 GameObject:
   m_ObjectHideFlags: 0
@@ -3813,7 +3821,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 699f852e79b5ba642871514fb1fb9843, type: 3}
+  m_Model: {fileID: 11400000, guid: 70f2289d1a99e4c679db76bd507e719d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -3847,6 +3855,7 @@ MonoBehaviour:
   myLaser: {fileID: 1045923826166930}
   contribute: 0
   useVectorObs: 0
+  useVectorFrozenFlag: 0
 --- !u!114 &4768752321433982785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3903,6 +3912,7 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 0, a: 0}
   GizmoYOffset: 0
   ShowGizmos: 0
+  CompressionType: 1
 --- !u!1 &1729825611722018
 GameObject:
   m_ObjectHideFlags: 0
