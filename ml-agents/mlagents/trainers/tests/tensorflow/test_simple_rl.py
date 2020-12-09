@@ -184,7 +184,7 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
         PPO_TF_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=400,
+        max_steps=300,
         summary_freq=100,
         framework=FrameworkType.TENSORFLOW,
     )
@@ -218,9 +218,7 @@ def test_recurrent_ppo(action_sizes):
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_simple_sac(action_sizes):
     env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_sizes)
-    config = attr.evolve(
-        SAC_TF_CONFIG, framework=FrameworkType.TENSORFLOW, max_steps=900
-    )
+    config = attr.evolve(SAC_TF_CONFIG, framework=FrameworkType.TENSORFLOW)
     _check_environment_trains(env, {BRAIN_NAME: config})
 
 

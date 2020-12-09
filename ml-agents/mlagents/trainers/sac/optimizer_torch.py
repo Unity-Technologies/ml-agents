@@ -159,7 +159,10 @@ class TorchSACOptimizer(TorchOptimizer):
             requires_grad=True,
         )
         _cont_log_ent_coef = torch.nn.Parameter(
-            torch.log(torch.as_tensor([self.init_entcoef])), requires_grad=True
+            torch.log(
+                torch.as_tensor([self.init_entcoef] * self._action_spec.continuous_size)
+            ),
+            requires_grad=True,
         )
         self._log_ent_coef = TorchSACOptimizer.LogEntCoef(
             discrete=_disc_log_ent_coef, continuous=_cont_log_ent_coef
@@ -423,7 +426,7 @@ class TorchSACOptimizer(TorchOptimizer):
                 )
             # We update all the _cont_ent_coef as one block
             entropy_loss += -1 * ModelUtils.masked_mean(
-                _cont_ent_coef * target_current_diff, loss_masks
+                torch.mean(_cont_ent_coef) * target_current_diff, loss_masks
             )
 
         return entropy_loss
