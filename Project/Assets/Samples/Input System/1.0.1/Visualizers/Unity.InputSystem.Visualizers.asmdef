@@ -1,0 +1,15 @@
+{
+    "name": "InputSystem.Samples.Visualizers",
+    "references": [
+        "GUID:75469ad4d38634e559750d17036d5f7c"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

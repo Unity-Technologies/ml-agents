@@ -20,8 +20,11 @@ public class GameController : MonoBehaviour
     public bool triggerExplosion;
 
 
-    [Header("SPAWN POINTS")] public GameObject BlueSpawn;
+    [Header("SPAWN SETTINGS")]
+    public GameObject BlueSpawn;
     public GameObject PurpleSpawn;
+    public bool SpawnPlayer;
+    public bool SpawnBaddies;
 
     [Header("PLAYER PREFABS")]
     public GameObject PlayerPrefab;
@@ -46,7 +49,7 @@ public class GameController : MonoBehaviour
     void Awake()
     {
 
-        if (PlayerPrefab && BlueSpawn)
+        if (SpawnPlayer && PlayerPrefab && BlueSpawn)
         {
             var randomPos = Random.insideUnitSphere * 3;
             randomPos.y = 0;
@@ -55,22 +58,26 @@ public class GameController : MonoBehaviour
             AITarget = go;
         }
 
-        if (AIPrefab && PurpleSpawn)
-        {
-            var randomPos = Random.insideUnitSphere * 5;
-            randomPos.y = 0;
-            var go = Instantiate(AIPrefab, PurpleSpawn.transform.position + randomPos, quaternion.identity);
-            go.SetActive(true);
-        }
-        for (int i = 0; i < NumberOfEnemiesToSpawn; i++)
+        if (SpawnBaddies)
         {
             if (AIPrefab && PurpleSpawn)
             {
-                var randomPos = Random.insideUnitSphere * 40;
-                randomPos.y = 3;
-                var go = Instantiate(AIPrefab, SpawnPlatform.position + randomPos, quaternion.identity);
+                var randomPos = Random.insideUnitSphere * 5;
+                randomPos.y = 0;
+                var go = Instantiate(AIPrefab, PurpleSpawn.transform.position + randomPos, quaternion.identity);
                 go.SetActive(true);
             }
+            for (int i = 0; i < NumberOfEnemiesToSpawn; i++)
+            {
+                if (AIPrefab && PurpleSpawn)
+                {
+                    var randomPos = Random.insideUnitSphere * 40;
+                    randomPos.y = 3;
+                    var go = Instantiate(AIPrefab, SpawnPlatform.position + randomPos, quaternion.identity);
+                    go.SetActive(true);
+                }
+            }
+
         }
 
         Rigidbody[] rbs = Resources.FindObjectsOfTypeAll<Rigidbody>();
