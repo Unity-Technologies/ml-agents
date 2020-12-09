@@ -69,6 +69,7 @@ class Trajectory(NamedTuple):
     next_obs: List[
         np.ndarray
     ]  # Observation following the trajectory, for bootstrapping
+    next_collab_obs: List[List[np.ndarray]]
     agent_id: str
     behavior_id: str
 

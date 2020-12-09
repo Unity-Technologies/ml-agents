@@ -136,7 +136,10 @@ class TorchPPOOptimizer(TorchOptimizer):
         obs = ModelUtils.list_to_tensor_list(
             AgentBuffer.obs_list_to_obs_batch(batch["obs"])
         )
-        critic_obs = [ModelUtils.list_to_tensor_list(AgentBuffer.obs_list_to_obs_batch(agent_obs)) for agent_obs in batch["critic_obs"]]
+        critic_obs_np = AgentBuffer.obs_list_list_to_obs_batch(batch["critic_obs"])
+        critic_obs = [
+            ModelUtils.list_to_tensor_list(_agent_obs) for _agent_obs in critic_obs_np
+        ]
 
         act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
         if self.policy.use_continuous_act:

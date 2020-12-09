@@ -294,3 +294,20 @@ class AgentBuffer(dict):
         # Transpose and convert List of Lists
         new_list = list(map(lambda x: np.asanyarray(list(x)), zip(*obs_list)))
         return new_list
+
+    @staticmethod
+    def obs_list_list_to_obs_batch(
+        obs_list_list: List[List[List[np.ndarray]]]
+    ) -> List[List[np.ndarray]]:
+        """
+        Convert a List of List of obs, where one of the dimension is time and the other is number (e.g. in the
+        case of a variable number of critic observations) to a List of obs, where time is in the batch dimension
+        of the obs, and the List is the variable number of agents.
+        """
+        new_list = list(
+            map(
+                lambda x: AgentBuffer.obs_list_to_obs_batch(list(x)),
+                zip(*obs_list_list),
+            )
+        )
+        return new_list

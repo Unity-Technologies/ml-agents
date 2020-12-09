@@ -49,15 +49,24 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
             )
 
     def get_trajectory_value_estimates(
-        self, batch: AgentBuffer, next_obs: List[np.ndarray], done: bool
+        self,
+        batch: AgentBuffer,
+        next_obs: List[np.ndarray],
+        next_critic_obs: List[List[np.ndarray]],
+        done: bool,
     ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:
         obs = ModelUtils.list_to_tensor_list(
             AgentBuffer.obs_list_to_obs_batch(batch["obs"])
         )
         next_obs = ModelUtils.list_to_tensor_list(next_obs)
 
-        # This line doesn't work
-        critic_obs = [ModelUtils.list_to_tensor_list(AgentBuffer.obs_list_to_obs_batch(agent_obs)) for agent_obs in batch["critic_obs"]]
+        critic_obs_np = AgentBuffer.obs_list_list_to_obs_batch(batch["critic_obs"])
+        critic_obs = [
+            ModelUtils.list_to_tensor_list(_agent_obs) for _agent_obs in critic_obs_np
+        ]
+        next_critic_obs = [
+            ModelUtils.list_to_tensor_list(_obs) for _obs in next_critic_obs
+        ]
 
         memory = torch.zeros([1, 1, self.policy.m_size])
 
@@ -66,7 +75,7 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         )
 
         next_value_estimate, _ = self.policy.actor_critic.critic_pass(
-            next_obs, next_memory, sequence_length=1
+            next_obs, next_memory, sequence_length=1, critic_obs=next_critic_obs
         )
 
         for name, estimate in value_estimates.items():

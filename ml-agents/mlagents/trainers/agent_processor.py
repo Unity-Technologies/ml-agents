@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 from typing import List, Dict, TypeVar, Generic, Tuple, Any, Union
 from collections import defaultdict, Counter
 import queue
@@ -47,6 +48,8 @@ class AgentProcessor:
         self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
         self.last_experience: Dict[str, AgentExperience] = {}
         self.last_step_result: Dict[str, Tuple[DecisionStep, int]] = {}
+        # current_obs is used to collect the last seen obs of all the agents, and assemble the next_collab_obs.
+        self.current_obs: Dict[str, List[np.ndarray]] = {}
         # last_take_action_outputs stores the action a_t taken before the current observation s_(t+1), while
         # grabbing previous_action from the policy grabs the action PRIOR to that, a_(t-1).
         self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = {}
@@ -96,9 +99,9 @@ class AgentProcessor:
         for terminal_step in terminal_steps.values():
             local_id = terminal_step.agent_id
             global_id = get_global_agent_id(worker_id, local_id)
-            self._assemble_trajectory(
-                terminal_step, global_id, terminal_steps.agent_id_to_index[local_id]
-            )
+            self._assemble_trajectory(terminal_step, global_id)
+        self.current_obs.clear()
+
         # Clean the last experience dictionary for terminal steps
         for terminal_step in terminal_steps.values():
             local_id = terminal_step.agent_id
@@ -115,9 +118,8 @@ class AgentProcessor:
         for ongoing_step in decision_steps.values():
             local_id = ongoing_step.agent_id
             global_id = get_global_agent_id(worker_id, local_id)
-            self._assemble_trajectory(
-                ongoing_step, global_id, decision_steps.agent_id_to_index[local_id]
-            )
+            self._assemble_trajectory(ongoing_step, global_id)
+        self.current_obs.clear()
 
         for _gid in action_global_agent_ids:
             # If the ID doesn't have a last step result, the agent just reset,
@@ -169,16 +171,17 @@ class AgentProcessor:
                 interrupted=interrupted,
                 memory=memory,
             )
+            self.current_obs[global_id] = step.obs
             self.last_experience[global_id] = experience
 
     def _assemble_trajectory(
-        self, step: Union[TerminalStep, DecisionStep], global_id: str, index: int
+        self, step: Union[TerminalStep, DecisionStep], global_id: str
     ) -> None:
         if global_id in self.last_experience:
             experience = self.last_experience[global_id]
             terminated = isinstance(step, TerminalStep)
 
-            # Add remaining obs to AgentExperience
+            # Add remaining shared obs to AgentExperience
             for _id, _exp in self.last_experience.items():
                 if _id == global_id:
                     continue
@@ -196,10 +199,18 @@ class AgentProcessor:
                 or terminated
             ):
                 next_obs = step.obs
+                next_collab_obs = []
+                for _id, _exp in self.current_obs.items():
+                    if _id == global_id:
+                        continue
+                    else:
+                        next_collab_obs.append(_exp)
+
                 trajectory = Trajectory(
                     steps=self.experience_buffers[global_id],
                     agent_id=global_id,
                     next_obs=next_obs,
+                    next_collab_obs=next_collab_obs,
                     behavior_id=self.behavior_id,
                 )
                 for traj_queue in self.trajectory_queues:
