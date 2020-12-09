@@ -6,6 +6,7 @@ from mlagents_envs.base_env import (
     TerminalSteps,
     ActionSpec,
     BehaviorSpec,
+    SensorType,
 )
 
 
@@ -34,8 +35,9 @@ def test_decision_steps():
 
 
 def test_empty_decision_steps():
+    sensor_type = [SensorType.OBSERVATION, SensorType.OBSERVATION]
     specs = BehaviorSpec(
-        observation_shapes=[(3, 2), (5,)], action_spec=ActionSpec.create_continuous(3)
+        observation_shapes=[(3, 2), (5,)], sensor_types=sensor_type, action_spec=ActionSpec.create_continuous(3)
     )
     ds = DecisionSteps.empty(specs)
     assert len(ds.obs) == 2
@@ -67,8 +69,9 @@ def test_terminal_steps():
 
 
 def test_empty_terminal_steps():
+    sensor_type = [SensorType.OBSERVATION, SensorType.OBSERVATION]
     specs = BehaviorSpec(
-        observation_shapes=[(3, 2), (5,)], action_spec=ActionSpec.create_continuous(3)
+        observation_shapes=[(3, 2), (5,)], sensor_types=sensor_type, action_spec=ActionSpec.create_continuous(3)
     )
     ts = TerminalSteps.empty(specs)
     assert len(ts.obs) == 2
