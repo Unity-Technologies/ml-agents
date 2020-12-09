@@ -55,7 +55,7 @@ namespace Unity.MLAgents.Policies
         /// <summary>
         /// The specification of the Action space for the BrainParameters.
         /// </summary>
-        public ActionSpec VectorActionSpec = new ActionSpec(0, new int[] { });
+        public ActionSpec ActionSpec = new ActionSpec(0, new int[] { });
 
         /// <summary>
         /// (Deprecated) The size of the action space.
@@ -120,7 +120,7 @@ namespace Unity.MLAgents.Policies
                 VectorActionSizeDeprecated = (int[])VectorActionSizeDeprecated.Clone(),
                 VectorActionDescriptions = (string[])VectorActionDescriptions.Clone(),
                 VectorActionSpaceTypeDeprecated = VectorActionSpaceTypeDeprecated,
-                VectorActionSpec = new ActionSpec(VectorActionSpec.NumContinuousActions, VectorActionSpec.BranchSizes)
+                ActionSpec = new ActionSpec(ActionSpec.NumContinuousActions, ActionSpec.BranchSizes)
             };
         }
 
@@ -148,13 +148,13 @@ namespace Unity.MLAgents.Policies
         {
             if (!hasUpgradedBrainParametersWithActionSpec)
             {
-                if (VectorActionSpec.NumContinuousActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Continuous)
+                if (ActionSpec.NumContinuousActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Continuous)
                 {
-                    VectorActionSpec.SetContinuous(VectorActionSizeDeprecated[0]);
+                    ActionSpec.SetContinuous(VectorActionSizeDeprecated[0]);
                 }
-                if (VectorActionSpec.NumDiscreteActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Discrete)
+                if (ActionSpec.NumDiscreteActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Discrete)
                 {
-                    VectorActionSpec.SetDiscrete(VectorActionSizeDeprecated);
+                    ActionSpec.SetDiscrete(VectorActionSizeDeprecated);
                 }
                 hasUpgradedBrainParametersWithActionSpec = true;
             }
@@ -184,13 +184,13 @@ namespace Unity.MLAgents.Policies
         {
             if (!hasUpgradedBrainParametersWithActionSpec)
             {
-                if (VectorActionSpec.NumContinuousActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Continuous)
+                if (ActionSpec.NumContinuousActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Continuous)
                 {
-                    VectorActionSpec.SetContinuous(VectorActionSizeDeprecated[0]);
+                    ActionSpec.SetContinuous(VectorActionSizeDeprecated[0]);
                 }
-                if (VectorActionSpec.NumDiscreteActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Discrete)
+                if (ActionSpec.NumDiscreteActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Discrete)
                 {
-                    VectorActionSpec.SetDiscrete(VectorActionSizeDeprecated);
+                    ActionSpec.SetDiscrete(VectorActionSizeDeprecated);
                 }
                 hasUpgradedBrainParametersWithActionSpec = true;
             }

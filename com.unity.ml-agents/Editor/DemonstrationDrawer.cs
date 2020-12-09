@@ -24,7 +24,7 @@ namespace Unity.MLAgents.Editor
         const string k_NumberStepsName = "numberSteps";
         const string k_NumberEpisodesName = "numberEpisodes";
         const string k_MeanRewardName = "meanReward";
-        const string k_VectorActionSpecName = "VectorActionSpec";
+        const string k_ActionSpecName = "ActionSpec";
         const string k_NumContinuousActionsName = "m_NumContinuousActions";
         const string k_NumDiscreteActionsName = "m_NumDiscreteActions";
         const string k_ShapeName = "shape";
@@ -84,7 +84,7 @@ namespace Unity.MLAgents.Editor
         /// </summary>
         void MakeActionsProperty(SerializedProperty property)
         {
-            var actSpecProperty = property.FindPropertyRelative(k_VectorActionSpecName);
+            var actSpecProperty = property.FindPropertyRelative(k_ActionSpecName);
             var continuousSizeProperty = actSpecProperty.FindPropertyRelative(k_NumContinuousActionsName);
             var discreteSizeProperty = actSpecProperty.FindPropertyRelative(k_NumDiscreteActionsName);
 

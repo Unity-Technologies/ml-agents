@@ -14,7 +14,7 @@ namespace Unity.MLAgents.Editor
         // The height of a line in the Unity Inspectors
         const float k_LineHeight = 17f;
         const int k_VecObsNumLine = 3;
-        const string k_ActionSpecName = "VectorActionSpec";
+        const string k_ActionSpecName = "ActionSpec";
         const string k_ContinuousActionSizeName = "m_NumContinuousActions";
         const string k_DiscreteBranchSizeName = "m_BranchSizes";
         const string k_ActionDescriptionPropName = "VectorActionDescriptions";

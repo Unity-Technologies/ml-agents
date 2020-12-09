@@ -72,7 +72,7 @@ namespace Tests
             behaviorParams.BrainParameters.VectorObservationSize = 3;
             behaviorParams.BrainParameters.NumStackedVectorObservations = 2;
             behaviorParams.BrainParameters.VectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
-            behaviorParams.BrainParameters.VectorActionSpec = ActionSpec.MakeDiscrete(new[] { 2, 2 });
+            behaviorParams.BrainParameters.ActionSpec = ActionSpec.MakeDiscrete(new[] { 2, 2 });
             behaviorParams.BehaviorName = "TestBehavior";
             behaviorParams.TeamId = 42;
             behaviorParams.UseChildSensors = true;

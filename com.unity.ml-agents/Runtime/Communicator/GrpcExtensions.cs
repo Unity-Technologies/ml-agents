@@ -107,7 +107,7 @@ namespace Unity.MLAgents
                 VectorActionSpaceTypeDeprecated = (SpaceTypeProto)bp.VectorActionSpaceTypeDeprecated,
                 BrainName = name,
                 IsTraining = isTraining,
-                ActionSpec = ToActionSpecProto(bp.VectorActionSpec),
+                ActionSpec = ToActionSpecProto(bp.ActionSpec),
             };
             if (bp.VectorActionDescriptions != null)
             {
@@ -164,7 +164,7 @@ namespace Unity.MLAgents
                 VectorActionSizeDeprecated = bpp.VectorActionSizeDeprecated.ToArray(),
                 VectorActionDescriptions = bpp.VectorActionDescriptionsDeprecated.ToArray(),
                 VectorActionSpaceTypeDeprecated = (SpaceType)bpp.VectorActionSpaceTypeDeprecated,
-                VectorActionSpec = ToActionSpec(bpp.ActionSpec),
+                ActionSpec = ToActionSpec(bpp.ActionSpec),
             };
             return bp;
         }

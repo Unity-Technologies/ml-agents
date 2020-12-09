@@ -397,7 +397,7 @@ namespace Unity.MLAgents.Inference
             BrainParameters brainParameters, TensorProxy tensorProxy,
             SensorComponent[] sensorComponents, int observableAttributeTotalSize)
         {
-            var numberActionsBp = brainParameters.VectorActionSpec.NumDiscreteActions;
+            var numberActionsBp = brainParameters.ActionSpec.NumDiscreteActions;
             var numberActionsT = tensorProxy.shape[tensorProxy.shape.Length - 1];
             if (numberActionsBp != numberActionsT)
             {
@@ -477,7 +477,7 @@ namespace Unity.MLAgents.Inference
             BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, int modelSumDiscreteBranchSizes)
         {
             // TODO: check each branch size instead of sum of branch sizes
-            var sumOfDiscreteBranchSizes = brainParameters.VectorActionSpec.SumOfDiscreteBranchSizes;
+            var sumOfDiscreteBranchSizes = brainParameters.ActionSpec.SumOfDiscreteBranchSizes;
 
             foreach (var actuatorComponent in actuatorComponents)
             {
@@ -513,7 +513,7 @@ namespace Unity.MLAgents.Inference
         static string CheckContinuousActionOutputShape(
             BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, int modelContinuousActionSize)
         {
-            var numContinuousActions = brainParameters.VectorActionSpec.NumContinuousActions;
+            var numContinuousActions = brainParameters.ActionSpec.NumContinuousActions;
 
             foreach (var actuatorComponent in actuatorComponents)
             {
