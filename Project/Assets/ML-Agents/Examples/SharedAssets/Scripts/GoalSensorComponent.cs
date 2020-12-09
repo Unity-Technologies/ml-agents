@@ -1,4 +1,4 @@
-﻿using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
 
 public class GoalSensorComponent : SensorComponent
@@ -23,7 +23,7 @@ public class GoalSensorComponent : SensorComponent
 
     public void AddGoal(float goal)
     {
-        if(goalSensor != null)
+        if (goalSensor != null)
         {
             goalSensor.AddObservation(goal);
         }
