@@ -31,7 +31,7 @@ view the documentation for doing so [here](#custom-instances).
 1. [Move](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/copy-files-to-linux-vm-using-scp)
    the `ml-agents` sub-folder of this ml-agents repo to the remote Azure
    instance, and set it as the working directory.
-2. Install the required packages with `pip3 install ...`.
+2. Install the required packages:
    Torch: `pip3 install torch==1.7.0 -f https://download.pytorch.org/whl/torch_stable.html` and
    MLAgents: `pip3 install mlagents`
 
