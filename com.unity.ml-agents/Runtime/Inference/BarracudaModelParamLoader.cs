@@ -397,8 +397,7 @@ namespace Unity.MLAgents.Inference
             BrainParameters brainParameters, TensorProxy tensorProxy,
             SensorComponent[] sensorComponents, int observableAttributeTotalSize)
         {
-            var numberActionsBp = brainParameters.VectorActionSpec.NumContinuousActions +
-                brainParameters.VectorActionSpec.NumDiscreteActions;
+            var numberActionsBp = brainParameters.VectorActionSpec.NumDiscreteActions;
             var numberActionsT = tensorProxy.shape[tensorProxy.shape.Length - 1];
             if (numberActionsBp != numberActionsT)
             {
