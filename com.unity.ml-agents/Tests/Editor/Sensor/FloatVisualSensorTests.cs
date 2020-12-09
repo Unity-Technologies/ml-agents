@@ -29,6 +29,11 @@ namespace Unity.MLAgents.Tests
             m_Shape = new[] { Height, Width, 1 };
         }
 
+        public SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
+
         public string GetName()
         {
             return m_Name;

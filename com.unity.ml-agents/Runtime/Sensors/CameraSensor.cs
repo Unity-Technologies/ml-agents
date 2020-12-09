@@ -75,6 +75,15 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
+        /// Camera sensors are always Observations.
+        /// </summary>
+        /// <returns>Sensor type of observation.</returns>
+        public SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
+
+        /// <summary>
         /// Generates a compressed image. This can be valuable in speeding-up training.
         /// </summary>
         /// <returns>Compressed image.</returns>

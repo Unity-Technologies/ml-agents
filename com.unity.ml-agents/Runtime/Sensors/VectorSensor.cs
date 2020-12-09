@@ -95,6 +95,12 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
+        public SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
+
+        /// <inheritdoc/>
         public virtual byte[] GetCompressedObservation()
         {
             return null;

@@ -312,6 +312,7 @@ namespace Unity.MLAgents
                     observationProto.CompressedChannelMapping.AddRange(compressibleSensor.GetCompressedChannelMapping());
                 }
             }
+            observationProto.SensorType = (SensorTypeProto)sensor.GetSensorType();
             observationProto.Shape.AddRange(shape);
             return observationProto;
         }

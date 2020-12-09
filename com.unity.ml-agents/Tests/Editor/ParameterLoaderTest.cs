@@ -44,6 +44,11 @@ namespace Unity.MLAgents.Tests
             return new[] { m_Height, m_Width, m_Channels };
         }
 
+        public SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
+
         public int Write(ObservationWriter writer)
         {
             for (int i = 0; i < m_Width * m_Height * m_Channels; i++)

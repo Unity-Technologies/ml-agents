@@ -1,6 +1,7 @@
 from mlagents_envs.base_env import (
     BehaviorSpec,
     ActionSpec,
+    SensorType,
     DecisionSteps,
     TerminalSteps,
 )
@@ -31,11 +32,12 @@ def behavior_spec_from_proto(
     :return: BehaviorSpec object.
     """
     observation_shape = [tuple(obs.shape) for obs in agent_info.observations]
+    sensor_type = [SensorType(obs.sensor_type) for obs in agent_info.observations]
     if brain_param_proto.vector_action_space_type == 1:
         action_spec = ActionSpec(brain_param_proto.vector_action_size[0], ())
     else:
         action_spec = ActionSpec(0, tuple(brain_param_proto.vector_action_size))
-    return BehaviorSpec(observation_shape, action_spec)
+    return BehaviorSpec(observation_shape, sensor_type, action_spec)
 
 
 class OffsetBytesIO:
