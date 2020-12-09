@@ -36,13 +36,13 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// The number of branches for a Discrete <see cref="SpaceType"/>.
         /// </summary>
-        public int NumDiscreteActions { get { return m_BranchSizes.Length; } }
+        public int NumDiscreteActions { get { return m_BranchSizes == null ? 0 : m_BranchSizes.Length; } }
 
         /// <summary>
         /// Get the total number of Discrete Actions that can be taken by calculating the Sum
         /// of all of the Discrete Action branch sizes.
         /// </summary>
-        public int SumOfDiscreteBranchSizes { get { return m_BranchSizes.Sum(); } }
+        public int SumOfDiscreteBranchSizes { get { return m_BranchSizes == null ? 0 : m_BranchSizes.Sum(); } }
 
         /// <summary>
         /// Creates a Continuous <see cref="ActionSpec"/> with the number of actions available.
