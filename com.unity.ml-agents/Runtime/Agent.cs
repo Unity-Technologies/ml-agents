@@ -887,7 +887,7 @@ namespace Unity.MLAgents
         public virtual void Heuristic(in ActionBuffers actionsOut)
         {
             // For backward compatibility
-            switch (m_PolicyFactory.BrainParameters.VectorActionSpaceTypeDeprecated)
+            switch (m_PolicyFactory.BrainParameters.VectorActionSpaceType)
             {
                 case SpaceType.Continuous:
                     Heuristic(actionsOut.ContinuousActions.Array);

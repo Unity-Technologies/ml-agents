@@ -103,8 +103,8 @@ namespace Unity.MLAgents
         {
             var brainParametersProto = new BrainParametersProto
             {
-                VectorActionSizeDeprecated = { bp.VectorActionSizeDeprecated },
-                VectorActionSpaceTypeDeprecated = (SpaceTypeProto)bp.VectorActionSpaceTypeDeprecated,
+                VectorActionSizeDeprecated = { bp.VectorActionSize },
+                VectorActionSpaceTypeDeprecated = (SpaceTypeProto)bp.VectorActionSpaceType,
                 BrainName = name,
                 IsTraining = isTraining,
                 ActionSpec = ToActionSpecProto(bp.ActionSpec),
@@ -161,9 +161,7 @@ namespace Unity.MLAgents
         {
             var bp = new BrainParameters
             {
-                VectorActionSizeDeprecated = bpp.VectorActionSizeDeprecated.ToArray(),
                 VectorActionDescriptions = bpp.VectorActionDescriptionsDeprecated.ToArray(),
-                VectorActionSpaceTypeDeprecated = (SpaceType)bpp.VectorActionSpaceTypeDeprecated,
                 ActionSpec = ToActionSpec(bpp.ActionSpec),
             };
             return bp;
