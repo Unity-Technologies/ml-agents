@@ -75,6 +75,12 @@ namespace Unity.MLAgents.Tests
                 return new byte[] { 13, 37 };
             }
 
+            /// <inheritdoc/>
+            public virtual SensorType GetSensorType()
+            {
+                return SensorType.Observation;
+            }
+
             public void Update() { }
 
             public void Reset() { }
