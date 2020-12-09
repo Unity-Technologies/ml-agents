@@ -22,8 +22,8 @@ public class GridAgent : Agent
     [Tooltip("Selecting will turn on action masking. Note that a model trained with action " +
         "masking turned on may not behave optimally when action masking is turned off.")]
     public bool maskActions = true;
-    
-    
+
+
     public GridGoal gridGoal;
 
     const int k_NoAction = 0;  // do nothing!
