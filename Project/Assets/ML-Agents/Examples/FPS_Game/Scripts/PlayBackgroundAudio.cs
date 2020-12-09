@@ -10,11 +10,13 @@ using UnityEngine;
 public class PlayBackgroundAudio : MonoBehaviour
 {
 
-    public AudioClip BackgroundSong;
+    //    public AudioClip BackgroundSong;
 
     private AudioSource m_AudioSource;
     void Awake()
     {
+        DontDestroyOnLoad(gameObject);
+
         if (m_AudioSource == null)
         {
             m_AudioSource = GetComponent<AudioSource>();
@@ -25,11 +27,11 @@ public class PlayBackgroundAudio : MonoBehaviour
 
     void Start()
     {
-        if (BackgroundSong)
-        {
-            m_AudioSource.clip = BackgroundSong;
-            m_AudioSource.Play();
-        }
+        //        if (BackgroundSong)
+        //        {
+        //            m_AudioSource.clip = BackgroundSong;
+        m_AudioSource.Play();
+        //        }
     }
 
     // Update is called once per frame
