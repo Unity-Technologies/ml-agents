@@ -14,7 +14,7 @@ and this project adheres to
 - PyTorch trainers now support training agents with both continuous and discrete action spaces.
 Agent's with hybrid action spaces can be implented using actuators. Please see
 [here](../Project/Assets/ML-Agents/Examples/Basic/Scripts/BasicActuatorComponent.cs) for an
-example of how to use actuators.
+example of how to use actuators. (#4702)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
