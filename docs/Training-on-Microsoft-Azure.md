@@ -51,7 +51,7 @@ To verify that all steps worked correctly:
 ```python
 from mlagents_envs.environment import UnityEnvironment
 
-env = UnityEnvironment(file_name="<your_env>", seed=1, side_channels=[]<your_env>)
+env = UnityEnvironment(file_name="<your_env>", seed=1, side_channels=[])
 ```
 
 Where `<your_env>` corresponds to the path to your environment executable (i.e. `/home/UserName/Build/yourFile`).
