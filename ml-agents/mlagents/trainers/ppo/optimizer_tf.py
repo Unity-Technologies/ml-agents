@@ -329,16 +329,17 @@ class PPOOptimizer(TFOptimizer):
             self.policy.sequence_length_ph: self.policy.sequence_length,
             self.policy.mask_input: mini_batch["masks"] * burn_in_mask,
             self.advantage: mini_batch["advantages"],
-            self.all_old_log_probs: mini_batch["action_probs"],
         }
         for name in self.reward_signals:
             feed_dict[self.returns_holders[name]] = mini_batch[f"{name}_returns"]
             feed_dict[self.old_values[name]] = mini_batch[f"{name}_value_estimates"]
 
-        if self.policy.output_pre is not None and "actions_pre" in mini_batch:
-            feed_dict[self.policy.output_pre] = mini_batch["actions_pre"]
+        if self.policy.use_continuous_act:  # For hybrid action buffer support
+            feed_dict[self.all_old_log_probs] = mini_batch["continuous_log_probs"]
+            feed_dict[self.policy.output_pre] = mini_batch["continuous_action"]
         else:
-            feed_dict[self.policy.output] = mini_batch["actions"]
+            feed_dict[self.all_old_log_probs] = mini_batch["discrete_log_probs"]
+            feed_dict[self.policy.output] = mini_batch["discrete_action"]
             if self.policy.use_recurrent:
                 feed_dict[self.policy.prev_action] = mini_batch["prev_action"]
             feed_dict[self.policy.action_masks] = mini_batch["action_mask"]

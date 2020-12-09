@@ -32,6 +32,13 @@ class DistInstance(nn.Module, abc.ABC):
         """
         pass
 
+    @abc.abstractmethod
+    def exported_model_output(self) -> torch.Tensor:
+        """
+        Returns the tensor to be exported to ONNX for the distribution
+        """
+        pass
+
 
 class DiscreteDistInstance(DistInstance):
     @abc.abstractmethod
@@ -71,6 +78,9 @@ class GaussianDistInstance(DistInstance):
             dim=1,
             keepdim=True,
         )  # Use equivalent behavior to TF
+
+    def exported_model_output(self):
+        return self.sample()
 
 
 class TanhGaussianDistInstance(GaussianDistInstance):
@@ -118,7 +128,12 @@ class CategoricalDistInstance(DiscreteDistInstance):
         return torch.log(self.probs + EPSILON)
 
     def entropy(self):
-        return -torch.sum(self.probs * torch.log(self.probs + EPSILON), dim=-1)
+        return -torch.sum(
+            self.probs * torch.log(self.probs + EPSILON), dim=-1
+        ).unsqueeze(-1)
+
+    def exported_model_output(self):
+        return self.all_log_prob()
 
 
 class GaussianDistribution(nn.Module):
@@ -162,9 +177,9 @@ class GaussianDistribution(nn.Module):
             # verified version of Barracuda (1.0.2).
             log_sigma = torch.cat([self.log_sigma] * inputs.shape[0], axis=0)
         if self.tanh_squash:
-            return [TanhGaussianDistInstance(mu, torch.exp(log_sigma))]
+            return TanhGaussianDistInstance(mu, torch.exp(log_sigma))
         else:
-            return [GaussianDistInstance(mu, torch.exp(log_sigma))]
+            return GaussianDistInstance(mu, torch.exp(log_sigma))
 
 
 class MultiCategoricalDistribution(nn.Module):

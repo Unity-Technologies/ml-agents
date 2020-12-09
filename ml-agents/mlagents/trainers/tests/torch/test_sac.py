@@ -69,7 +69,8 @@ def test_sac_optimizer_update(dummy_config, rnn, visual, discrete):
         "Losses/Value Loss",
         "Losses/Q1 Loss",
         "Losses/Q2 Loss",
-        "Policy/Entropy Coeff",
+        "Policy/Continuous Entropy Coeff",
+        "Policy/Discrete Entropy Coeff",
         "Policy/Learning Rate",
     ]
     for stat in required_stats:

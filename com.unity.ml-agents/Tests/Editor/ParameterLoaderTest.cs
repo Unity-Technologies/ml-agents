@@ -75,10 +75,19 @@ namespace Unity.MLAgents.Tests
     [TestFixture]
     public class ParameterLoaderTest
     {
-        const string k_continuous2vis8vec2actionPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action.nn";
-        const string k_discrete1vis0vec_2_3action_recurrModelPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_recurr.nn";
-        NNModel continuous2vis8vec2actionModel;
-        NNModel discrete1vis0vec_2_3action_recurrModel;
+        // ONNX model with continuous/discrete action output (support hybrid action)
+        const string k_continuousONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action.onnx";
+        const string k_discreteONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_recurr.onnx";
+        const string k_hybridONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/hybrid0vis53vec_3c_2daction.onnx";
+        // NN model with single action output (deprecated, does not support hybrid action).
+        // Same BrainParameters settings as the corresponding ONNX model.
+        const string k_continuousNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action_deprecated.nn";
+        const string k_discreteNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_recurr_deprecated.nn";
+        NNModel continuousONNXModel;
+        NNModel discreteONNXModel;
+        NNModel hybridONNXModel;
+        NNModel continuousNNModel;
+        NNModel discreteNNModel;
         Test3DSensorComponent sensor_21_20_3;
         Test3DSensorComponent sensor_20_22_3;
 
@@ -102,11 +111,25 @@ namespace Unity.MLAgents.Tests
             return validBrainParameters;
         }
 
+        // TODO: update and enable this after integrating action spec into BrainParameters
+        // BrainParameters GetHybridBrainParameters()
+        // {
+        //     var validBrainParameters = new BrainParameters();
+        //     validBrainParameters.VectorObservationSize = 53;
+        //     validBrainParameters.VectorActionSize = new[] { 2 };
+        //     validBrainParameters.NumStackedVectorObservations = 1;
+        //     validBrainParameters.VectorActionSpaceType = SpaceType.Discrete;
+        //     return validBrainParameters;
+        // }
+
         [SetUp]
         public void SetUp()
         {
-            continuous2vis8vec2actionModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuous2vis8vec2actionPath, typeof(NNModel));
-            discrete1vis0vec_2_3action_recurrModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_discrete1vis0vec_2_3action_recurrModelPath, typeof(NNModel));
+            continuousONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(NNModel));
+            discreteONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_discreteONNXPath, typeof(NNModel));
+            hybridONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_hybridONNXPath, typeof(NNModel));
+            continuousNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuousNNPath, typeof(NNModel));
+            discreteNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_discreteNNPath, typeof(NNModel));
             var go = new GameObject("SensorA");
             sensor_21_20_3 = go.AddComponent<Test3DSensorComponent>();
             sensor_21_20_3.Sensor = new Test3DSensor("SensorA", 21, 20, 3);
@@ -117,35 +140,39 @@ namespace Unity.MLAgents.Tests
         [Test]
         public void TestModelExist()
         {
-            Assert.IsNotNull(continuous2vis8vec2actionModel);
-            Assert.IsNotNull(discrete1vis0vec_2_3action_recurrModel);
+            Assert.IsNotNull(continuousONNXModel);
+            Assert.IsNotNull(discreteONNXModel);
+            Assert.IsNotNull(hybridONNXModel);
+            Assert.IsNotNull(continuousNNModel);
+            Assert.IsNotNull(discreteNNModel);
         }
 
-        [Test]
-        public void TestGetInputTensors1()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestGetInputTensorsContinuous(bool useDeprecatedNNModel)
         {
-            var model = ModelLoader.Load(continuous2vis8vec2actionModel);
-            var inputTensors = BarracudaModelParamLoader.GetInputTensors(model);
-            var inputNames = inputTensors.Select(x => x.name).ToList();
+            var model = useDeprecatedNNModel ? ModelLoader.Load(continuousNNModel) : ModelLoader.Load(continuousONNXModel);
+            var inputNames = model.GetInputNames();
             // Model should contain 3 inputs : vector, visual 1 and visual 2
-            Assert.AreEqual(3, inputNames.Count);
+            Assert.AreEqual(3, inputNames.Count());
             Assert.Contains(TensorNames.VectorObservationPlaceholder, inputNames);
             Assert.Contains(TensorNames.VisualObservationPlaceholderPrefix + "0", inputNames);
             Assert.Contains(TensorNames.VisualObservationPlaceholderPrefix + "1", inputNames);
 
-            Assert.AreEqual(2, BarracudaModelParamLoader.GetNumVisualInputs(model));
+            Assert.AreEqual(2, model.GetNumVisualInputs());
 
             // Test if the model is null
-            Assert.AreEqual(0, BarracudaModelParamLoader.GetInputTensors(null).Count);
-            Assert.AreEqual(0, BarracudaModelParamLoader.GetNumVisualInputs(null));
+            model = null;
+            Assert.AreEqual(0, model.GetInputTensors().Count);
+            Assert.AreEqual(0, model.GetNumVisualInputs());
         }
 
-        [Test]
-        public void TestGetInputTensors2()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestGetInputTensorsDiscrete(bool useDeprecatedNNModel)
         {
-            var model = ModelLoader.Load(discrete1vis0vec_2_3action_recurrModel);
-            var inputTensors = BarracudaModelParamLoader.GetInputTensors(model);
-            var inputNames = inputTensors.Select(x => x.name).ToList();
+            var model = useDeprecatedNNModel ? ModelLoader.Load(discreteNNModel) : ModelLoader.Load(discreteONNXModel);
+            var inputNames = model.GetInputNames();
             // Model should contain 2 inputs : recurrent and visual 1
 
             Assert.Contains(TensorNames.VisualObservationPlaceholderPrefix + "0", inputNames);
@@ -153,29 +180,57 @@ namespace Unity.MLAgents.Tests
         }
 
         [Test]
-        public void TestGetOutputTensors1()
+        public void TestGetInputTensorsHybrid()
         {
-            var model = ModelLoader.Load(continuous2vis8vec2actionModel);
-            var outputNames = BarracudaModelParamLoader.GetOutputNames(model);
-            Assert.Contains(TensorNames.ActionOutput, outputNames);
-            Assert.AreEqual(1, outputNames.Count());
-
-            Assert.AreEqual(0, BarracudaModelParamLoader.GetOutputNames(null).Count());
+            var model = ModelLoader.Load(hybridONNXModel);
+            var inputNames = model.GetInputNames();
+            Assert.Contains(TensorNames.VectorObservationPlaceholder, inputNames);
         }
 
-        [Test]
-        public void TestGetOutputTensors2()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestGetOutputTensorsContinuous(bool useDeprecatedNNModel)
         {
-            var model = ModelLoader.Load(discrete1vis0vec_2_3action_recurrModel);
-            var outputNames = BarracudaModelParamLoader.GetOutputNames(model);
-            Assert.Contains(TensorNames.ActionOutput, outputNames);
+            var model = useDeprecatedNNModel ? ModelLoader.Load(continuousNNModel) : ModelLoader.Load(continuousONNXModel);
+            var outputNames = model.GetOutputNames();
+            var actionOutputName = useDeprecatedNNModel ? TensorNames.ActionOutputDeprecated : TensorNames.ContinuousActionOutput;
+            Assert.Contains(actionOutputName, outputNames);
+            Assert.AreEqual(1, outputNames.Count());
+
+            model = null;
+            Assert.AreEqual(0, model.GetOutputNames().Count());
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestGetOutputTensorsDiscrete(bool useDeprecatedNNModel)
+        {
+            var model = useDeprecatedNNModel ? ModelLoader.Load(discreteNNModel) : ModelLoader.Load(discreteONNXModel);
+            var outputNames = model.GetOutputNames();
+            var actionOutputName = useDeprecatedNNModel ? TensorNames.ActionOutputDeprecated : TensorNames.DiscreteActionOutput;
+            Assert.Contains(actionOutputName, outputNames);
             // TODO : There are some memory tensors as well
         }
 
         [Test]
-        public void TestCheckModelValid1()
+        public void TestGetOutputTensorsHybrid()
         {
-            var model = ModelLoader.Load(continuous2vis8vec2actionModel);
+            var model = ModelLoader.Load(hybridONNXModel);
+            var outputNames = model.GetOutputNames();
+
+            Assert.AreEqual(2, outputNames.Count());
+            Assert.Contains(TensorNames.ContinuousActionOutput, outputNames);
+            Assert.Contains(TensorNames.DiscreteActionOutput, outputNames);
+
+            model = null;
+            Assert.AreEqual(0, model.GetOutputNames().Count());
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestCheckModelValidContinuous(bool useDeprecatedNNModel)
+        {
+            var model = useDeprecatedNNModel ? ModelLoader.Load(continuousNNModel) : ModelLoader.Load(continuousONNXModel);
             var validBrainParameters = GetContinuous2vis8vec2actionBrainParameters();
 
             var errors = BarracudaModelParamLoader.CheckModel(
@@ -185,10 +240,11 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, errors.Count()); // There should not be any errors
         }
 
-        [Test]
-        public void TestCheckModelValid2()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestCheckModelValidDiscrete(bool useDeprecatedNNModel)
         {
-            var model = ModelLoader.Load(discrete1vis0vec_2_3action_recurrModel);
+            var model = useDeprecatedNNModel ? ModelLoader.Load(discreteNNModel) : ModelLoader.Load(discreteONNXModel);
             var validBrainParameters = GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters();
 
             var errors = BarracudaModelParamLoader.CheckModel(
@@ -198,10 +254,25 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, errors.Count()); // There should not be any errors
         }
 
-        [Test]
-        public void TestCheckModelThrowsVectorObservation1()
+        // TODO: update and enable this test after integrating action spec into BrainParameters
+        // [Test]
+        // public void TestCheckModelValidHybrid()
+        // {
+        //     var model = ModelLoader.Load(hybridModel);
+        //     var validBrainParameters = GetHybridBrainParameters();
+
+        //     var errors = BarracudaModelParamLoader.CheckModel(
+        //         model, validBrainParameters,
+        //         new SensorComponent[] { }, new ActuatorComponent[0]
+        //     );
+        //     Assert.AreEqual(0, errors.Count()); // There should not be any errors
+        // }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestCheckModelThrowsVectorObservationContinuous(bool useDeprecatedNNModel)
         {
-            var model = ModelLoader.Load(continuous2vis8vec2actionModel);
+            var model = useDeprecatedNNModel ? ModelLoader.Load(continuousNNModel) : ModelLoader.Load(continuousONNXModel);
 
             var brainParameters = GetContinuous2vis8vec2actionBrainParameters();
             brainParameters.VectorObservationSize = 9; // Invalid observation
@@ -220,10 +291,11 @@ namespace Unity.MLAgents.Tests
             Assert.Greater(errors.Count(), 0);
         }
 
-        [Test]
-        public void TestCheckModelThrowsVectorObservation2()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestCheckModelThrowsVectorObservationDiscrete(bool useDeprecatedNNModel)
         {
-            var model = ModelLoader.Load(discrete1vis0vec_2_3action_recurrModel);
+            var model = useDeprecatedNNModel ? ModelLoader.Load(discreteNNModel) : ModelLoader.Load(discreteONNXModel);
 
             var brainParameters = GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters();
             brainParameters.VectorObservationSize = 1; // Invalid observation
@@ -231,10 +303,34 @@ namespace Unity.MLAgents.Tests
             Assert.Greater(errors.Count(), 0);
         }
 
-        [Test]
-        public void TestCheckModelThrowsAction1()
+        // TODO: update and enable this test after integrating action spec into BrainParameters
+        // [Test]
+        // public void TestCheckModelThrowsVectorObservationHybrid()
+        // {
+        //     var model = ModelLoader.Load(hybridModel);
+
+        //     var brainParameters = GetHybridBrainParameters();
+        //     brainParameters.VectorObservationSize = 9; // Invalid observation
+        //     var errors = BarracudaModelParamLoader.CheckModel(
+        //         model, brainParameters,
+        //         new SensorComponent[] { }, new ActuatorComponent[0]
+        //     );
+        //     Assert.Greater(errors.Count(), 0);
+
+        //     brainParameters = GetContinuous2vis8vec2actionBrainParameters();
+        //     brainParameters.NumStackedVectorObservations = 2;// Invalid stacking
+        //     errors = BarracudaModelParamLoader.CheckModel(
+        //         model, brainParameters,
+        //         new SensorComponent[] { }, new ActuatorComponent[0]
+        //     );
+        //     Assert.Greater(errors.Count(), 0);
+        // }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestCheckModelThrowsActionContinuous(bool useDeprecatedNNModel)
         {
-            var model = ModelLoader.Load(continuous2vis8vec2actionModel);
+            var model = useDeprecatedNNModel ? ModelLoader.Load(continuousNNModel) : ModelLoader.Load(continuousONNXModel);
 
             var brainParameters = GetContinuous2vis8vec2actionBrainParameters();
             brainParameters.VectorActionSize = new[] { 3 }; // Invalid action
@@ -247,10 +343,11 @@ namespace Unity.MLAgents.Tests
             Assert.Greater(errors.Count(), 0);
         }
 
-        [Test]
-        public void TestCheckModelThrowsAction2()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestCheckModelThrowsActionDiscrete(bool useDeprecatedNNModel)
         {
-            var model = ModelLoader.Load(discrete1vis0vec_2_3action_recurrModel);
+            var model = useDeprecatedNNModel ? ModelLoader.Load(discreteNNModel) : ModelLoader.Load(discreteONNXModel);
 
             var brainParameters = GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters();
             brainParameters.VectorActionSize = new[] { 3, 3 }; // Invalid action
@@ -262,6 +359,23 @@ namespace Unity.MLAgents.Tests
             errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3 }, new ActuatorComponent[0]);
             Assert.Greater(errors.Count(), 0);
         }
+
+        // TODO: update and enable this test after integrating action spec into BrainParameters
+        // [Test]
+        // public void TestCheckModelThrowsActionHybrid()
+        // {
+        //     var model = ModelLoader.Load(hybridModel);
+
+        //     var brainParameters = GetHybridBrainParameters();
+        //     brainParameters.VectorActionSize = new[] { 3 }; // Invalid action
+        //     var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 }, new ActuatorComponent[0]);
+        //     Assert.Greater(errors.Count(), 0);
+
+        //     brainParameters = GetContinuous2vis8vec2actionBrainParameters();
+        //     brainParameters.VectorActionSpaceType = SpaceType.Discrete;// Invalid SpaceType
+        //     errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 }, new ActuatorComponent[0]);
+        //     Assert.Greater(errors.Count(), 0);
+        // }
 
         [Test]
         public void TestCheckModelThrowsNoModel()

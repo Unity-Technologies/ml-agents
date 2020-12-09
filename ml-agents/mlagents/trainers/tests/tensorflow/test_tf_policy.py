@@ -40,7 +40,7 @@ def test_take_action_returns_nones_on_missing_values():
         [], np.array([], dtype=np.float32), np.array([0]), None
     )
     result = policy.get_action(step_with_agents, worker_id=0)
-    assert result == ActionInfo(None, None, {}, [0])
+    assert result == ActionInfo(None, None, None, {}, [0])
 
 
 def test_take_action_returns_action_info_when_available():
@@ -48,7 +48,8 @@ def test_take_action_returns_action_info_when_available():
     behavior_spec = basic_behavior_spec()
     policy = FakePolicy(test_seed, behavior_spec, TrainerSettings(), "output")
     policy_eval_out = {
-        "action": np.array([1.0], dtype=np.float32),
+        "action": np.array([[1.0]], dtype=np.float32),
+        "pre_action": np.array([[1.0]], dtype=np.float32),
         "memory_out": np.array([[2.5]], dtype=np.float32),
         "value": np.array([1.1], dtype=np.float32),
     }
@@ -57,8 +58,13 @@ def test_take_action_returns_action_info_when_available():
         [], np.array([], dtype=np.float32), np.array([0]), None
     )
     result = policy.get_action(step_with_agents)
+    print(result)
     expected = ActionInfo(
-        policy_eval_out["action"], policy_eval_out["value"], policy_eval_out, [0]
+        policy_eval_out["action"],
+        policy_eval_out["env_action"],
+        policy_eval_out["value"],
+        policy_eval_out,
+        [0],
     )
     assert result == expected
 

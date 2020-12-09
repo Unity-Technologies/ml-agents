@@ -22,13 +22,14 @@ namespace Unity.MLAgents.Inference
         public const string recurrentOutputC = "recurrent_out_c";
         public const string MemorySize = "memory_size";
         public const string VersionNumber = "version_number";
-        public const string IsContinuousControl = "is_continuous_control";
-        public const string ActionOutputShape = "action_output_shape";
-        public const string ActionOutput = "action";
+        public const string ContinuousActionOutputShape = "continuous_action_output_shape";
+        public const string DiscreteActionOutputShape = "discrete_action_output_shape";
+        public const string ContinuousActionOutput = "continuous_actions";
+        public const string DiscreteActionOutput = "discrete_actions";
 
-        public static readonly string[] RequiredConstants =
-        {
-            VersionNumber, MemorySize, IsContinuousControl, ActionOutputShape
-        };
+        // Deprecated TensorNames entries for backward compatibility
+        public const string IsContinuousControlDeprecated = "is_continuous_control";
+        public const string ActionOutputDeprecated = "action";
+        public const string ActionOutputShapeDeprecated = "action_output_shape";
     }
 }

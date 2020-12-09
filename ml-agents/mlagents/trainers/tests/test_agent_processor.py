@@ -8,21 +8,20 @@ from mlagents.trainers.agent_processor import (
     AgentManagerQueue,
 )
 from mlagents.trainers.action_info import ActionInfo
+from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.stats import StatsReporter, StatsSummary
 from mlagents.trainers.behavior_id_utils import get_global_agent_id
 from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 
-from mlagents_envs.base_env import ActionSpec
+from mlagents_envs.base_env import ActionSpec, ActionTuple
 
 
 def create_mock_policy():
     mock_policy = mock.Mock()
     mock_policy.reward_signals = {}
     mock_policy.retrieve_memories.return_value = np.zeros((1, 1), dtype=np.float32)
-    mock_policy.retrieve_previous_action.return_value = np.zeros(
-        (1, 1), dtype=np.float32
-    )
+    mock_policy.retrieve_previous_action.return_value = np.zeros((1, 1), dtype=np.int32)
     return mock_policy
 
 
@@ -39,11 +38,10 @@ def test_agentprocessor(num_vis_obs):
     )
 
     fake_action_outputs = {
-        "action": [0.1, 0.1],
+        "action": ActionTuple(continuous=np.array([[0.1], [0.1]])),
         "entropy": np.array([1.0], dtype=np.float32),
         "learning_rate": 1.0,
-        "pre_action": [0.1, 0.1],
-        "log_probs": [0.1, 0.1],
+        "log_probs": LogProbsTuple(continuous=np.array([[0.1], [0.1]])),
     }
     mock_decision_steps, mock_terminal_steps = mb.create_mock_steps(
         num_agents=2,
@@ -51,7 +49,8 @@ def test_agentprocessor(num_vis_obs):
         action_spec=ActionSpec.create_continuous(2),
     )
     fake_action_info = ActionInfo(
-        action=[0.1, 0.1],
+        action=ActionTuple(continuous=np.array([[0.1], [0.1]])),
+        env_action=ActionTuple(continuous=np.array([[0.1], [0.1]])),
         value=[0.1, 0.1],
         outputs=fake_action_outputs,
         agent_ids=mock_decision_steps.agent_id,
@@ -83,7 +82,7 @@ def test_agentprocessor(num_vis_obs):
         action_spec=ActionSpec.create_continuous(2),
     )
     processor.add_experiences(
-        mock_decision_steps, mock_terminal_steps, 0, ActionInfo([], [], {}, [])
+        mock_decision_steps, mock_terminal_steps, 0, ActionInfo.empty()
     )
     # Assert that the AgentProcessor is still empty
     assert len(processor.experience_buffers[0]) == 0
@@ -99,14 +98,13 @@ def test_agent_deletion():
         max_trajectory_length=5,
         stats_reporter=StatsReporter("testcat"),
     )
-
     fake_action_outputs = {
-        "action": [0.1],
+        "action": ActionTuple(continuous=np.array([[0.1]])),
         "entropy": np.array([1.0], dtype=np.float32),
         "learning_rate": 1.0,
-        "pre_action": [0.1],
-        "log_probs": [0.1],
+        "log_probs": LogProbsTuple(continuous=np.array([[0.1]])),
     }
+
     mock_decision_step, mock_terminal_step = mb.create_mock_steps(
         num_agents=1,
         observation_shapes=[(8,)],
@@ -119,7 +117,8 @@ def test_agent_deletion():
         done=True,
     )
     fake_action_info = ActionInfo(
-        action=[0.1],
+        action=ActionTuple(continuous=np.array([[0.1]])),
+        env_action=ActionTuple(continuous=np.array([[0.1]])),
         value=[0.1],
         outputs=fake_action_outputs,
         agent_ids=mock_decision_step.agent_id,
@@ -139,7 +138,9 @@ def test_agent_deletion():
             processor.add_experiences(
                 mock_decision_step, mock_terminal_step, _ep, fake_action_info
             )
-            add_calls.append(mock.call([get_global_agent_id(_ep, 0)], [0.1]))
+            add_calls.append(
+                mock.call([get_global_agent_id(_ep, 0)], fake_action_outputs["action"])
+            )
         processor.add_experiences(
             mock_done_decision_step, mock_done_terminal_step, _ep, fake_action_info
         )
@@ -176,21 +177,21 @@ def test_end_episode():
         max_trajectory_length=5,
         stats_reporter=StatsReporter("testcat"),
     )
-
     fake_action_outputs = {
-        "action": [0.1],
+        "action": ActionTuple(continuous=np.array([[0.1]])),
         "entropy": np.array([1.0], dtype=np.float32),
         "learning_rate": 1.0,
-        "pre_action": [0.1],
-        "log_probs": [0.1],
+        "log_probs": LogProbsTuple(continuous=np.array([[0.1]])),
     }
+
     mock_decision_step, mock_terminal_step = mb.create_mock_steps(
         num_agents=1,
         observation_shapes=[(8,)],
         action_spec=ActionSpec.create_continuous(2),
     )
     fake_action_info = ActionInfo(
-        action=[0.1],
+        action=ActionTuple(continuous=np.array([[0.1]])),
+        env_action=ActionTuple(continuous=np.array([[0.1]])),
         value=[0.1],
         outputs=fake_action_outputs,
         agent_ids=mock_decision_step.agent_id,

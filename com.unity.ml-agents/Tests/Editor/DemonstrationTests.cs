@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using System.IO.Abstractions.TestingHelpers;
 using System.Reflection;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.CommunicatorObjects;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Demonstrations;
@@ -69,7 +70,7 @@ namespace Unity.MLAgents.Tests
                 done = true,
                 episodeId = 5,
                 maxStepReached = true,
-                storedVectorActions = new[] { 0f, 1f },
+                storedVectorActions = new ActionBuffers(null, new int[] { 0, 1 }),
             };
 
 

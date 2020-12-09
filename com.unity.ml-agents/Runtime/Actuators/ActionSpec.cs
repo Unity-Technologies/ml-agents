@@ -10,7 +10,6 @@ namespace Unity.MLAgents.Actuators
     /// </summary>
     public readonly struct ActionSpec
     {
-
         /// <summary>
         /// An array of branch sizes for our action space.
         ///
@@ -73,15 +72,18 @@ namespace Unity.MLAgents.Actuators
         }
 
         /// <summary>
-        /// Temporary check that the ActionSpec uses either all continuous or all discrete actions.
-        /// This should be removed once the trainer supports them.
+        /// Check that the ActionSpec uses either all continuous or all discrete actions.
+        /// This is only used when connecting to old versions of the trainer that don't support this.
         /// </summary>
         /// <exception cref="UnityAgentsException"></exception>
-        internal void CheckNotHybrid()
+        internal void CheckAllContinuousOrDiscrete()
         {
             if (NumContinuousActions > 0 && NumDiscreteActions > 0)
             {
-                throw new UnityAgentsException("ActionSpecs must be all continuous or all discrete.");
+                throw new UnityAgentsException(
+                    "Action spaces with both continuous and discrete actions are not supported by the trainer. " +
+                    "ActionSpecs must be all continuous or all discrete."
+                );
             }
         }
     }
