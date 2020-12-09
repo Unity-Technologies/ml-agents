@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 
+[RequireComponent(typeof(AudioSource))]
+
 public class GunController : MonoBehaviour
 {
     public bool AllowKeyboardInput = true; //this mode ignores player input
@@ -28,6 +30,11 @@ public class GunController : MonoBehaviour
     [Header("FORCES")]
     public float forceToUse;
     public ForceMode forceMode;
+
+    [Header("SOUND")]
+    public bool PlaySound;
+    public GunSFX GunSFX;
+    private AudioSource m_AudioSource;
 
     [Header("SCREEN SHAKE")]
     public bool UseScreenShake;
@@ -75,6 +82,8 @@ public class GunController : MonoBehaviour
         {
             MuzzleFlashObject.SetActive(false);
         }
+        m_AudioSource = GetComponent<AudioSource>();
+
         initialized = true;
     }
 
@@ -136,14 +145,6 @@ public class GunController : MonoBehaviour
             if (!item.gameObject.activeInHierarchy)
             {
                 FireProjectile(item.rb);
-                if (UseScreenShake && impulseSource)
-                {
-                    impulseSource.GenerateImpulse();
-                }
-                if (ShakeTransform && !m_TransformIsShaking)
-                {
-                    StartCoroutine(I_ShakeTransform());
-                }
                 break;
             }
         }
@@ -161,6 +162,20 @@ public class GunController : MonoBehaviour
         rb.angularVelocity = Vector3.zero;
         rb.gameObject.SetActive(true);
         rb.AddForce(projectileOrigin.forward * forceToUse, forceMode);
+        if (UseScreenShake && impulseSource)
+        {
+            impulseSource.GenerateImpulse();
+        }
+        if (ShakeTransform && !m_TransformIsShaking)
+        {
+            StartCoroutine(I_ShakeTransform());
+        }
+        if (PlaySound)
+        {
+            m_AudioSource.PlayOneShot(m_AudioSource.clip);
+
+            //            GunSFX.PlayAudio();
+        }
     }
 
     IEnumerator I_ShakeTransform()
@@ -170,7 +185,7 @@ public class GunController : MonoBehaviour
 
         if (MuzzleFlashObject)
         {
-            MuzzleFlashObject.transform.localScale = Random.Range(.5f, 1.2f) * Vector3.one;
+            MuzzleFlashObject.transform.localScale = Random.Range(.5f, 1.5f) * Vector3.one;
             MuzzleFlashObject.SetActive(true);
         }
         float timer = 0;
