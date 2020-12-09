@@ -56,6 +56,11 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         public ActionSpec ActionSpec = new ActionSpec(0, new int[] { });
 
+
+        [FormerlySerializedAs("vectorActionSize")]
+        [FormerlySerializedAs("VectorActionSize")]
+        internal int[] m_VectorActionSizeDeprecated = new[] { 1 };
+
         /// <summary>
         /// (Deprecated) The size of the action space.
         /// </summary>
@@ -66,9 +71,11 @@ namespace Unity.MLAgents.Policies
         /// the action.
         /// For the discrete action space: the number of branches in the action space.
         /// </value>
-        [FormerlySerializedAs("vectorActionSize")]
-        [FormerlySerializedAs("VectorActionSize")]
-        public int[] VectorActionSizeDeprecated = new[] { 1 };
+        /// [Obsolete("VectorActionSize has been deprecated, please use ActionSpec instead.")]
+        public int[] VectorActionSize
+        {
+            get { return ActionSpec.NumContinuousActions > 0 ? new int[] { ActionSpec.NumContinuousActions } : ActionSpec.BranchSizes; }
+        }
 
         /// <summary>
         /// The list of strings describing what the actions correspond to.
@@ -76,12 +83,18 @@ namespace Unity.MLAgents.Policies
         [FormerlySerializedAs("vectorActionDescriptions")]
         public string[] VectorActionDescriptions;
 
+        [FormerlySerializedAs("vectorActionSpaceType")]
+        [FormerlySerializedAs("VectorActionSpaceType")]
+        internal SpaceType m_ActionSpaceTypeDeprecated = SpaceType.Discrete;
+
         /// <summary>
         /// (Deprecated) Defines if the action is discrete or continuous.
         /// </summary>
-        [FormerlySerializedAs("vectorActionSpaceType")]
-        [FormerlySerializedAs("VectorActionSpaceType")]
-        public SpaceType VectorActionSpaceTypeDeprecated = SpaceType.Discrete;
+        /// [Obsolete("VectorActionSpaceType has been deprecated, please use ActionSpec instead.")]
+        public SpaceType VectorActionSpaceType
+        {
+            get { return ActionSpec.NumContinuousActions > 0 ? SpaceType.Continuous : SpaceType.Discrete; }
+        }
 
         [SerializeField]
         [HideInInspector]
@@ -90,19 +103,12 @@ namespace Unity.MLAgents.Policies
         /// <summary>
         /// (Deprecated) The number of actions specified by this Brain.
         /// </summary>
-        public int NumActionsDeprecated
+        /// [Obsolete("NumActions has been deprecated, please use ActionSpec instead.")]
+        public int NumActions
         {
             get
             {
-                switch (VectorActionSpaceTypeDeprecated)
-                {
-                    case SpaceType.Discrete:
-                        return VectorActionSizeDeprecated.Length;
-                    case SpaceType.Continuous:
-                        return VectorActionSizeDeprecated[0];
-                    default:
-                        return 0;
-                }
+                return ActionSpec.NumContinuousActions > 0 ? ActionSpec.NumContinuousActions : ActionSpec.NumDiscreteActions;
             }
         }
 
@@ -116,83 +122,44 @@ namespace Unity.MLAgents.Policies
             {
                 VectorObservationSize = VectorObservationSize,
                 NumStackedVectorObservations = NumStackedVectorObservations,
-                VectorActionSizeDeprecated = (int[])VectorActionSizeDeprecated.Clone(),
                 VectorActionDescriptions = (string[])VectorActionDescriptions.Clone(),
-                VectorActionSpaceTypeDeprecated = VectorActionSpaceTypeDeprecated,
                 ActionSpec = new ActionSpec(ActionSpec.NumContinuousActions, ActionSpec.BranchSizes)
             };
         }
 
         /// <summary>
-        /// Called by Unity immediately before serializing this object.
+        /// Propogate ActionSpec fields from deprecated fields
         /// </summary>
-        /// <remarks>
-        /// The BrainParameter class uses OnBeforeSerialize() for internal housekeeping. Call the
-        /// base class implementation if you need your own custom serialization logic.
-        ///
-        /// See [OnBeforeSerialize] for more information.
-        ///
-        /// [OnBeforeSerialize]: https://docs.unity3d.com/ScriptReference/ISerializationCallbackReceiver.OnAfterDeserialize.html
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// public new void OnBeforeSerialize()
-        /// {
-        ///     base.OnBeforeSerialize();
-        ///     // additional serialization logic...
-        /// }
-        /// </code>
-        /// </example>
-        public void OnBeforeSerialize()
+        private void UpdateToActionSpec()
         {
             if (!hasUpgradedBrainParametersWithActionSpec)
             {
-                if (ActionSpec.NumContinuousActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Continuous)
+                if (ActionSpec.NumContinuousActions == 0 && m_ActionSpaceTypeDeprecated == SpaceType.Continuous)
                 {
-                    ActionSpec.SetContinuous(VectorActionSizeDeprecated[0]);
+                    ActionSpec.SetContinuous(m_VectorActionSizeDeprecated[0]);
                 }
-                if (ActionSpec.NumDiscreteActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Discrete)
+                if (ActionSpec.NumDiscreteActions == 0 && m_ActionSpaceTypeDeprecated == SpaceType.Discrete)
                 {
-                    ActionSpec.SetDiscrete(VectorActionSizeDeprecated);
+                    ActionSpec.SetDiscrete(m_VectorActionSizeDeprecated);
                 }
                 hasUpgradedBrainParametersWithActionSpec = true;
             }
         }
 
         /// <summary>
+        /// Called by Unity immediately before serializing this object.
+        /// </summary>
+        public void OnBeforeSerialize()
+        {
+            UpdateToActionSpec();
+        }
+
+        /// <summary>
         /// Called by Unity immediately after deserializing this object.
         /// </summary>
-        /// <remarks>
-        /// The BrainParameter class uses OnAfterDeserialize() for internal housekeeping. Call the
-        /// base class implementation if you need your own custom deserialization logic.
-        ///
-        /// See [OnAfterDeserialize] for more information.
-        ///
-        /// [OnAfterDeserialize]: https://docs.unity3d.com/ScriptReference/ISerializationCallbackReceiver.OnAfterDeserialize.html
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// public new void OnAfterDeserialize()
-        /// {
-        ///     base.OnAfterDeserialize();
-        ///     // additional deserialization logic...
-        /// }
-        /// </code>
-        /// </example>
         public void OnAfterDeserialize()
         {
-            if (!hasUpgradedBrainParametersWithActionSpec)
-            {
-                if (ActionSpec.NumContinuousActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Continuous)
-                {
-                    ActionSpec.SetContinuous(VectorActionSizeDeprecated[0]);
-                }
-                if (ActionSpec.NumDiscreteActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Discrete)
-                {
-                    ActionSpec.SetDiscrete(VectorActionSizeDeprecated);
-                }
-                hasUpgradedBrainParametersWithActionSpec = true;
-            }
+            UpdateToActionSpec();
         }
     }
 }
