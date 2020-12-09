@@ -16,7 +16,7 @@ from mlagents.trainers.policy import Policy
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
-from mlagents.trainers.trajectory import Trajectory, SplitObservations
+from mlagents.trainers.trajectory import Trajectory, ObsUtil
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, SACSettings
 
@@ -133,7 +133,7 @@ class SACTrainer(RLTrainer):
 
         # Update the normalization
         if self.is_training:
-            self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
+            self.policy.update_normalization(agent_buffer_trajectory)
 
         # Evaluate all reward functions for reporting purposes
         self.collected_rewards["environment"][agent_id] += np.sum(
@@ -160,13 +160,9 @@ class SACTrainer(RLTrainer):
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.
         # Set last element to duplicate obs and remove dones.
         if last_step.interrupted:
-            vec_vis_obs = SplitObservations.from_observations(last_step.obs)
-            for i, obs in enumerate(vec_vis_obs.visual_observations):
-                agent_buffer_trajectory["next_visual_obs%d" % i][-1] = obs
-            if vec_vis_obs.vector_observations.size > 1:
-                agent_buffer_trajectory["next_vector_in"][
-                    -1
-                ] = vec_vis_obs.vector_observations
+            last_step_obs = last_step.obs
+            for i, obs in enumerate(last_step_obs):
+                agent_buffer_trajectory[ObsUtil.get_name_at_next(i)][-1] = obs
             agent_buffer_trajectory["done"][-1] = False
 
         # Append to update buffer

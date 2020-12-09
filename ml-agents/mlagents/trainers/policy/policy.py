@@ -8,6 +8,7 @@ from mlagents_envs.exception import UnityException
 from mlagents.trainers.action_info import ActionInfo
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
+from mlagents.trainers.buffer import AgentBuffer
 
 
 class UnityPolicyException(UnityException):
@@ -152,7 +153,7 @@ class Policy:
                 raise RuntimeError("NaN action detected.")
 
     @abstractmethod
-    def update_normalization(self, vector_obs: np.ndarray) -> None:
+    def update_normalization(self, buffer: AgentBuffer) -> None:
         pass
 
     @abstractmethod

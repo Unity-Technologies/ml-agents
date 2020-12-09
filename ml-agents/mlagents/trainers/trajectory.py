@@ -17,48 +17,37 @@ class AgentExperience(NamedTuple):
     memory: np.ndarray
 
 
-class SplitObservations(NamedTuple):
-    vector_observations: np.ndarray
-    visual_observations: List[np.ndarray]
+class ObsUtil:
 
     @staticmethod
-    def from_observations(obs: List[np.ndarray]) -> "SplitObservations":
-        """
-        Divides a List of numpy arrays into a SplitObservations NamedTuple.
-        This allows you to access the vector and visual observations directly,
-        without enumerating the list over and over.
-        :param obs: List of numpy arrays (observation)
-        :returns: A SplitObservations object.
-        """
-        vis_obs_list: List[np.ndarray] = []
-        vec_obs_list: List[np.ndarray] = []
-        last_obs = None
-        for observation in obs:
-            # Obs could be batched or single
-            if len(observation.shape) == 1 or len(observation.shape) == 2:
-                vec_obs_list.append(observation)
-            if len(observation.shape) == 3 or len(observation.shape) == 4:
-                vis_obs_list.append(observation)
-            last_obs = observation
-        if last_obs is not None:
-            is_batched = len(last_obs.shape) == 2 or len(last_obs.shape) == 4
-            if is_batched:
-                vec_obs = (
-                    np.concatenate(vec_obs_list, axis=1)
-                    if len(vec_obs_list) > 0
-                    else np.zeros((last_obs.shape[0], 0), dtype=np.float32)
-                )
-            else:
-                vec_obs = (
-                    np.concatenate(vec_obs_list, axis=0)
-                    if len(vec_obs_list) > 0
-                    else np.array([], dtype=np.float32)
-                )
-        else:
-            vec_obs = []
-        return SplitObservations(
-            vector_observations=vec_obs, visual_observations=vis_obs_list
-        )
+    def get_obs_with_rank(observations: List[np.array], rank: int) -> List[np.array]:
+        result = []
+        for obs in observations:
+            if len(obs.shape) == rank:
+                result += [obs]
+        return result
+
+    @staticmethod
+    def get_name_at(index: int) -> str:
+        return "obs_%d" % index
+
+    @staticmethod
+    def get_name_at_next(index: int) -> str:
+        return "next_obs_%d" % index
+
+    @staticmethod
+    def from_buffer(batch: AgentBuffer, num_obs: int) -> List[np.array]:
+        result = []
+        for i in range(num_obs):
+            result.append(batch[ObsUtil.get_name_at(i)])
+        return result
+
+    @staticmethod
+    def from_buffer_next(batch: AgentBuffer, num_obs: int) -> List[np.array]:
+        result = []
+        for i in range(num_obs):
+            result.append(batch[ObsUtil.get_name_at_next(i)])
+        return result
 
 
 class Trajectory(NamedTuple):
@@ -78,28 +67,18 @@ class Trajectory(NamedTuple):
         step of the trajectory.
         """
         agent_buffer_trajectory = AgentBuffer()
-        vec_vis_obs = SplitObservations.from_observations(self.steps[0].obs)
+        obs = self.steps[0].obs
         for step, exp in enumerate(self.steps):
             if step < len(self.steps) - 1:
-                next_vec_vis_obs = SplitObservations.from_observations(
-                    self.steps[step + 1].obs
-                )
+                next_obs = self.steps[step + 1].obs
             else:
-                next_vec_vis_obs = SplitObservations.from_observations(self.next_obs)
+                next_obs = self.next_obs
 
-            for i, _ in enumerate(vec_vis_obs.visual_observations):
-                agent_buffer_trajectory["visual_obs%d" % i].append(
-                    vec_vis_obs.visual_observations[i]
-                )
-                agent_buffer_trajectory["next_visual_obs%d" % i].append(
-                    next_vec_vis_obs.visual_observations[i]
-                )
-            agent_buffer_trajectory["vector_obs"].append(
-                vec_vis_obs.vector_observations
-            )
-            agent_buffer_trajectory["next_vector_in"].append(
-                next_vec_vis_obs.vector_observations
-            )
+            num_obs = len(obs)
+            for i in range(num_obs):
+                agent_buffer_trajectory[ObsUtil.get_name_at(i)].append(obs[i])
+                agent_buffer_trajectory[ObsUtil.get_name_at_next(i)].append(next_obs[i])
+
             if exp.memory is not None:
                 agent_buffer_trajectory["memory"].append(exp.memory)
 
@@ -130,7 +109,7 @@ class Trajectory(NamedTuple):
             agent_buffer_trajectory["environment_rewards"].append(exp.reward)
 
             # Store the next visual obs as the current
-            vec_vis_obs = next_vec_vis_obs
+            obs = next_obs
         return agent_buffer_trajectory
 
     @property

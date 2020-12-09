@@ -10,13 +10,13 @@ from mlagents_envs.base_env import DecisionSteps, BehaviorSpec
 from mlagents_envs.timers import timed
 
 from mlagents.trainers.settings import TrainerSettings
-from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.torch.networks import (
     SharedActorCritic,
     SeparateActorCritic,
     GlobalSteps,
 )
 from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.buffer import AgentBuffer
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
@@ -95,8 +95,8 @@ class TorchPolicy(Policy):
 
     def _split_decision_step(
         self, decision_requests: DecisionSteps
-    ) -> Tuple[SplitObservations, np.ndarray]:
-        vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
+    ) -> Tuple[List[np.array], np.ndarray]:
+        obs = decision_requests.obs
         mask = None
         if not self.use_continuous_act:
             mask = torch.ones([len(decision_requests), np.sum(self.act_size)])
@@ -104,22 +104,20 @@ class TorchPolicy(Policy):
                 mask = torch.as_tensor(
                     1 - np.concatenate(decision_requests.action_mask, axis=1)
                 )
-        return vec_vis_obs, mask
+        return obs, mask
 
-    def update_normalization(self, vector_obs: np.ndarray) -> None:
+    def update_normalization(self, buffer: AgentBuffer) -> None:
         """
         If this policy normalizes vector observations, this will update the norm values in the graph.
         :param vector_obs: The vector observations to add to the running estimate of the distribution.
         """
-        vector_obs = [torch.as_tensor(vector_obs)]
         if self.use_vec_obs and self.normalize:
-            self.actor_critic.update_normalization(vector_obs)
+            self.actor_critic.update_normalization(buffer)
 
     @timed
     def sample_actions(
         self,
-        vec_obs: List[torch.Tensor],
-        vis_obs: List[torch.Tensor],
+        obs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
@@ -137,12 +135,12 @@ class TorchPolicy(Policy):
         """
         if memories is None:
             dists, memories = self.actor_critic.get_dists(
-                vec_obs, vis_obs, masks, memories, seq_len
+                obs, masks, memories, seq_len
             )
         else:
             # If we're using LSTM. we need to execute the values to get the critic memories
             dists, _, memories = self.actor_critic.get_dist_and_value(
-                vec_obs, vis_obs, masks, memories, seq_len
+                obs, masks, memories, seq_len
             )
         action_list = self.actor_critic.sample_action(dists)
         log_probs, entropies, all_logs = ModelUtils.get_probs_and_entropy(
@@ -170,15 +168,14 @@ class TorchPolicy(Policy):
 
     def evaluate_actions(
         self,
-        vec_obs: torch.Tensor,
-        vis_obs: torch.Tensor,
+        obs: torch.Tensor,
         actions: torch.Tensor,
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor, Dict[str, torch.Tensor]]:
         dists, value_heads, _ = self.actor_critic.get_dist_and_value(
-            vec_obs, vis_obs, masks, memories, seq_len
+            obs, masks, memories, seq_len
         )
         action_list = [actions[..., i] for i in range(actions.shape[-1])]
         log_probs, entropies, _ = ModelUtils.get_probs_and_entropy(action_list, dists)
@@ -196,11 +193,9 @@ class TorchPolicy(Policy):
         :param decision_requests: DecisionStep object containing inputs.
         :return: Outputs from network as defined by self.inference_dict.
         """
-        vec_vis_obs, masks = self._split_decision_step(decision_requests)
-        vec_obs = [torch.as_tensor(vec_vis_obs.vector_observations)]
-        vis_obs = [
-            torch.as_tensor(vis_ob) for vis_ob in vec_vis_obs.visual_observations
-        ]
+        obs, masks = self._split_decision_step(decision_requests)
+        obs = [torch.as_tensor(np_ob) for np_ob in obs]
+
         memories = torch.as_tensor(self.retrieve_memories(global_agent_ids)).unsqueeze(
             0
         )
@@ -208,7 +203,7 @@ class TorchPolicy(Policy):
         run_out = {}
         with torch.no_grad():
             action, clipped_action, log_probs, entropy, memories = self.sample_actions(
-                vec_obs, vis_obs, masks=masks, memories=memories
+                obs, masks=masks, memories=memories
             )
 
         run_out["pre_action"] = ModelUtils.to_numpy(action)

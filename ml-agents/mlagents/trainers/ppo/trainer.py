@@ -16,6 +16,7 @@ from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
+from mlagents.trainers.buffer import AgentBuffer
 
 logger = get_logger(__name__)
 
@@ -69,7 +70,7 @@ class PPOTrainer(RLTrainer):
         agent_buffer_trajectory = trajectory.to_agentbuffer()
         # Update the normalization
         if self.is_training:
-            self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
+            self.policy.update_normalization(agent_buffer_trajectory)
 
         # Get all value estimates
         value_estimates, value_next = self.optimizer.get_trajectory_value_estimates(
