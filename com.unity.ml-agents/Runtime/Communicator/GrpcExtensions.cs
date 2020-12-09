@@ -176,12 +176,11 @@ namespace Unity.MLAgents
         /// <returns>An ActionSpec struct.</returns>
         public static ActionSpec ToActionSpec(this ActionSpecProto actionSpecProto)
         {
-            var actionSpec = new ActionSpec
-            (
-                actionSpecProto.NumContinuousActions,
-                actionSpecProto.NumDiscreteActions,
-                actionSpecProto.DiscreteBranchSizes.ToArray()
-            );
+            var actionSpec = new ActionSpec(actionSpecProto.NumContinuousActions);
+            if (actionSpecProto.DiscreteBranchSizes != null)
+            {
+                actionSpec.BranchSizes = actionSpecProto.DiscreteBranchSizes.ToArray();
+            }
             return actionSpec;
         }
 

@@ -165,8 +165,8 @@ namespace Unity.MLAgents.Editor
         static float GetHeightDrawVectorAction(SerializedProperty property)
         {
             var actionSpecProperty = property.FindPropertyRelative(k_ActionSpecName);
-            var actionSize = 3 + actionSpecProperty.FindPropertyRelative("m_BranchSizes").arraySize;
-            return actionSize * k_LineHeight;
+            var numActionLines = 3 + actionSpecProperty.FindPropertyRelative(k_DiscreteBranchSizeName).arraySize;
+            return numActionLines * k_LineHeight;
         }
     }
 }

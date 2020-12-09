@@ -55,7 +55,7 @@ namespace Unity.MLAgents.Policies
         /// <summary>
         /// The specification of the Action space for the BrainParameters.
         /// </summary>
-        public ActionSpec VectorActionSpec = new ActionSpec(0, 0, new int[] { });
+        public ActionSpec VectorActionSpec = new ActionSpec(0, new int[] { });
 
         /// <summary>
         /// (Deprecated) The size of the action space.
@@ -120,7 +120,7 @@ namespace Unity.MLAgents.Policies
                 VectorActionSizeDeprecated = (int[])VectorActionSizeDeprecated.Clone(),
                 VectorActionDescriptions = (string[])VectorActionDescriptions.Clone(),
                 VectorActionSpaceTypeDeprecated = VectorActionSpaceTypeDeprecated,
-                VectorActionSpec = new ActionSpec(VectorActionSpec.NumContinuousActions, VectorActionSpec.NumDiscreteActions, VectorActionSpec.BranchSizes)
+                VectorActionSpec = new ActionSpec(VectorActionSpec.NumContinuousActions, VectorActionSpec.BranchSizes)
             };
         }
 
@@ -154,7 +154,7 @@ namespace Unity.MLAgents.Policies
                 }
                 if (VectorActionSpec.NumDiscreteActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Discrete)
                 {
-                    VectorActionSpec.SetDiscrete(VectorActionSizeDeprecated.Length, VectorActionSizeDeprecated);
+                    VectorActionSpec.SetDiscrete(VectorActionSizeDeprecated);
                 }
                 hasUpgradedBrainParametersWithActionSpec = true;
             }
@@ -190,16 +190,10 @@ namespace Unity.MLAgents.Policies
                 }
                 if (VectorActionSpec.NumDiscreteActions == 0 && VectorActionSpaceTypeDeprecated == SpaceType.Discrete)
                 {
-                    VectorActionSpec.SetDiscrete(VectorActionSizeDeprecated.Length, VectorActionSizeDeprecated);
+                    VectorActionSpec.SetDiscrete(VectorActionSizeDeprecated);
                 }
                 hasUpgradedBrainParametersWithActionSpec = true;
             }
-        }
-
-        internal void UpdateDiscreteParameters()
-        {
-            VectorActionSpec.NumDiscreteActions = VectorActionSpec.BranchSizes.Length;
-            VectorActionSpec.SumOfDiscreteBranchSizes = VectorActionSpec.BranchSizes.Sum();
         }
     }
 }

@@ -15,10 +15,6 @@ namespace Unity.MLAgents.Actuators
         int[] m_BranchSizes;
         [SerializeField]
         int m_NumContinuousActions;
-        [SerializeField]
-        int m_NumDiscreteActions;
-        [SerializeField]
-        int m_SumOfDiscreteBranchSizes;
 
         /// <summary>
         /// An array of branch sizes for our action space.
@@ -40,13 +36,13 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// The number of branches for a Discrete <see cref="SpaceType"/>.
         /// </summary>
-        public int NumDiscreteActions { get { return m_NumDiscreteActions; } set { m_NumDiscreteActions = value; } }
+        public int NumDiscreteActions { get { return m_BranchSizes.Length; } }
 
         /// <summary>
         /// Get the total number of Discrete Actions that can be taken by calculating the Sum
         /// of all of the Discrete Action branch sizes.
         /// </summary>
-        public int SumOfDiscreteBranchSizes { get { return m_SumOfDiscreteBranchSizes; } set { m_SumOfDiscreteBranchSizes = value; } }
+        public int SumOfDiscreteBranchSizes { get { return m_BranchSizes.Sum(); } }
 
         /// <summary>
         /// Creates a Continuous <see cref="ActionSpec"/> with the number of actions available.
@@ -55,7 +51,7 @@ namespace Unity.MLAgents.Actuators
         /// <returns>An Continuous ActionSpec initialized with the number of actions available.</returns>
         public static ActionSpec MakeContinuous(int numActions)
         {
-            var actuatorSpace = new ActionSpec(numActions, 0);
+            var actuatorSpace = new ActionSpec(numActions, null);
             return actuatorSpace;
         }
 
@@ -69,7 +65,7 @@ namespace Unity.MLAgents.Actuators
         public static ActionSpec MakeDiscrete(params int[] branchSizes)
         {
             var numActions = branchSizes.Length;
-            var actuatorSpace = new ActionSpec(0, numActions, branchSizes);
+            var actuatorSpace = new ActionSpec(0, branchSizes);
             return actuatorSpace;
         }
 
@@ -88,19 +84,15 @@ namespace Unity.MLAgents.Actuators
         /// <param name="numDiscreteActions">Number of Discrete Actions</param>
         /// <param name="branchSizes">The array of branch sizes for the discrete action space.  Each index
         /// contains the number of actions available for that branch.</param>
-        public void SetDiscrete(int numDiscreteActions, int[] branchSizes)
+        public void SetDiscrete(int[] branchSizes)
         {
-            m_NumDiscreteActions = numDiscreteActions;
             m_BranchSizes = branchSizes;
-            m_SumOfDiscreteBranchSizes = branchSizes.Sum();
         }
 
-        internal ActionSpec(int numContinuousActions, int numDiscreteActions, int[] branchSizes = null)
+        internal ActionSpec(int numContinuousActions, int[] branchSizes = null)
         {
             m_NumContinuousActions = numContinuousActions;
-            m_NumDiscreteActions = numDiscreteActions;
             m_BranchSizes = branchSizes;
-            m_SumOfDiscreteBranchSizes = branchSizes?.Sum() ?? 0;
         }
 
         /// <summary>
