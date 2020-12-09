@@ -21,11 +21,11 @@ public class GoalSensorComponent : SensorComponent
         return new[] { observationSize };
     }
 
-    public void AddParameterizaton(float parameter)
+    public void AddGoal(float goal)
     {
         if(goalSensor != null)
         {
-            goalSensor.AddObservation(parameter);
+            goalSensor.AddObservation(goal);
         }
     }
 }
