@@ -56,7 +56,7 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         public ActionSpec ActionSpec = new ActionSpec(0, new int[] { });
 
-
+        [SerializeField]
         [FormerlySerializedAs("vectorActionSize")]
         [FormerlySerializedAs("VectorActionSize")]
         internal int[] m_VectorActionSizeDeprecated = new[] { 1 };
@@ -83,6 +83,7 @@ namespace Unity.MLAgents.Policies
         [FormerlySerializedAs("vectorActionDescriptions")]
         public string[] VectorActionDescriptions;
 
+        [SerializeField]
         [FormerlySerializedAs("vectorActionSpaceType")]
         [FormerlySerializedAs("VectorActionSpaceType")]
         internal SpaceType m_ActionSpaceTypeDeprecated = SpaceType.Discrete;
@@ -136,17 +137,16 @@ namespace Unity.MLAgents.Policies
         {
             if (!hasUpgradedBrainParametersWithActionSpec)
             {
-                if (ActionSpec.NumContinuousActions == 0 && ActionSpec.NumDiscreteActions == 0)
+
+                if (m_ActionSpaceTypeDeprecated == SpaceType.Continuous)
                 {
-                    if (ActionSpec.NumContinuousActions == 0 && m_ActionSpaceTypeDeprecated == SpaceType.Continuous)
-                    {
-                        ActionSpec = ActionSpec.MakeContinuous(m_VectorActionSizeDeprecated[0]);
-                    }
-                    if (ActionSpec.NumDiscreteActions == 0 && m_ActionSpaceTypeDeprecated == SpaceType.Discrete)
-                    {
-                        ActionSpec = ActionSpec.MakeDiscrete(m_VectorActionSizeDeprecated);
-                    }
+                    ActionSpec = ActionSpec.MakeContinuous(m_VectorActionSizeDeprecated[0]);
                 }
+                if (m_ActionSpaceTypeDeprecated == SpaceType.Discrete)
+                {
+                    ActionSpec = ActionSpec.MakeDiscrete(m_VectorActionSizeDeprecated);
+                }
+
                 hasUpgradedBrainParametersWithActionSpec = true;
             }
         }
