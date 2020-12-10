@@ -58,8 +58,12 @@ class SimpleEnvironment(BaseEnv):
             )
         else:
             action_spec = ActionSpec.create_continuous(action_size)
-        sensor_type_list = [SensorType.OBSERVATION for i in range(len(self._make_obs_spec()))]
-        self.behavior_spec = BehaviorSpec(self._make_obs_spec(), sensor_type_list, action_spec)
+        sensor_type_list = [
+            SensorType.OBSERVATION for i in range(len(self._make_obs_spec()))
+        ]
+        self.behavior_spec = BehaviorSpec(
+            self._make_obs_spec(), sensor_type_list, action_spec
+        )
         self.action_size = action_size
         self.names = brain_names
         self.positions: Dict[str, List[float]] = {}
