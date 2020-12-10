@@ -43,6 +43,12 @@ public class TestTextureSensor : ISensor
     }
 
     /// <inheritdoc/>
+    public virtual SensorType GetSensorType()
+    {
+        return SensorType.Observation;
+    }
+
+    /// <inheritdoc/>
     public byte[] GetCompressedObservation()
     {
         var compressed = m_Texture.EncodeToPNG();

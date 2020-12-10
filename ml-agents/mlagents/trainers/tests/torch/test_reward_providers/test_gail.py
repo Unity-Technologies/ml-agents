@@ -8,7 +8,7 @@ from mlagents.trainers.torch.components.reward_providers import (
     GAILRewardProvider,
     create_reward_provider,
 )
-from mlagents_envs.base_env import BehaviorSpec, ActionSpec
+from mlagents_envs.base_env import BehaviorSpec, ActionSpec, SensorType
 from mlagents.trainers.settings import GAILSettings, RewardSignalType
 from mlagents.trainers.tests.torch.test_reward_providers.utils import (
     create_agent_buffer,
@@ -33,14 +33,20 @@ ACTIONSPEC_FOURDISCRETE = ActionSpec.create_discrete((2, 3, 3, 3))
 ACTIONSPEC_DISCRETE = ActionSpec.create_discrete((20,))
 
 
-@pytest.mark.parametrize("behavior_spec", [BehaviorSpec([(8,)], ACTIONSPEC_CONTINUOUS)])
+@pytest.mark.parametrize(
+    "behavior_spec",
+    [BehaviorSpec([(8,)], [SensorType.OBSERVATION], ACTIONSPEC_CONTINUOUS)],
+)
 def test_construction(behavior_spec: BehaviorSpec) -> None:
     gail_settings = GAILSettings(demo_path=CONTINUOUS_PATH)
     gail_rp = GAILRewardProvider(behavior_spec, gail_settings)
     assert gail_rp.name == "GAIL"
 
 
-@pytest.mark.parametrize("behavior_spec", [BehaviorSpec([(8,)], ACTIONSPEC_CONTINUOUS)])
+@pytest.mark.parametrize(
+    "behavior_spec",
+    [BehaviorSpec([(8,)], [SensorType.OBSERVATION], ACTIONSPEC_CONTINUOUS)],
+)
 def test_factory(behavior_spec: BehaviorSpec) -> None:
     gail_settings = GAILSettings(demo_path=CONTINUOUS_PATH)
     gail_rp = create_reward_provider(
@@ -53,9 +59,13 @@ def test_factory(behavior_spec: BehaviorSpec) -> None:
 @pytest.mark.parametrize(
     "behavior_spec",
     [
-        BehaviorSpec([(8,), (24, 26, 1)], ACTIONSPEC_CONTINUOUS),
-        BehaviorSpec([(50,)], ACTIONSPEC_FOURDISCRETE),
-        BehaviorSpec([(10,)], ACTIONSPEC_DISCRETE),
+        BehaviorSpec(
+            [(8,), (24, 26, 1)],
+            [SensorType.OBSERVATION, SensorType.OBSERVATION],
+            ACTIONSPEC_CONTINUOUS,
+        ),
+        BehaviorSpec([(50,)], [SensorType.OBSERVATION], ACTIONSPEC_FOURDISCRETE),
+        BehaviorSpec([(10,)], [SensorType.OBSERVATION], ACTIONSPEC_DISCRETE),
     ],
 )
 @pytest.mark.parametrize("use_actions", [False, True])
@@ -101,9 +111,13 @@ def test_reward_decreases(
 @pytest.mark.parametrize(
     "behavior_spec",
     [
-        BehaviorSpec([(8,), (24, 26, 1)], ACTIONSPEC_CONTINUOUS),
-        BehaviorSpec([(50,)], ACTIONSPEC_FOURDISCRETE),
-        BehaviorSpec([(10,)], ACTIONSPEC_DISCRETE),
+        BehaviorSpec(
+            [(8,), (24, 26, 1)],
+            [SensorType.OBSERVATION, SensorType.OBSERVATION],
+            ACTIONSPEC_CONTINUOUS,
+        ),
+        BehaviorSpec([(50,)], [SensorType.OBSERVATION], ACTIONSPEC_FOURDISCRETE),
+        BehaviorSpec([(10,)], [SensorType.OBSERVATION], ACTIONSPEC_DISCRETE),
     ],
 )
 @pytest.mark.parametrize("use_actions", [False, True])

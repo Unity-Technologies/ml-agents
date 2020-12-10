@@ -854,6 +854,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <inheritdoc/>
+        public virtual SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
+
+        /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
             using (TimerStack.Instance.Scoped("GridSensor.WriteToTensor"))

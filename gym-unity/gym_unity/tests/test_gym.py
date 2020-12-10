@@ -7,6 +7,7 @@ from gym_unity.envs import UnityToGymWrapper
 from mlagents_envs.base_env import (
     BehaviorSpec,
     ActionSpec,
+    SensorType,
     DecisionSteps,
     TerminalSteps,
     BehaviorMapping,
@@ -226,7 +227,8 @@ def create_mock_group_spec(
     obs_shapes = [(vector_observation_space_size,)]
     for _ in range(number_visual_observations):
         obs_shapes += [(8, 8, 3)]
-    return BehaviorSpec(obs_shapes, action_spec)
+    sensor_types = [SensorType.OBSERVATION for _ in range(len(obs_shapes))]
+    return BehaviorSpec(obs_shapes, sensor_types, action_spec)
 
 
 def create_mock_vector_steps(specs, num_agents=1, number_visual_observations=0):

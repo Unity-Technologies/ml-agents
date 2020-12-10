@@ -80,6 +80,12 @@ namespace Unity.MLAgents.Tests
                 return Shape;
             }
 
+            /// <inheritdoc/>
+            public virtual SensorType GetSensorType()
+            {
+                return SensorType.Observation;
+            }
+
             public int Write(ObservationWriter writer)
             {
                 for (var h = 0; h < Shape[0]; h++)

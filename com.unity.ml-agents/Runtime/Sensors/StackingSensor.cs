@@ -214,6 +214,12 @@ namespace Unity.MLAgents.Sensors
             return m_WrappedSensor.GetCompressionType();
         }
 
+        /// <inheritdoc/>
+        public SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
+
         /// <summary>
         /// Create Empty PNG for initializing the buffer for stacking.
         /// </summary>

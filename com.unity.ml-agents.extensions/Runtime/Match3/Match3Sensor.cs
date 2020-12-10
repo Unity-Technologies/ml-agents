@@ -102,6 +102,12 @@ namespace Unity.MLAgents.Extensions.Match3
         }
 
         /// <inheritdoc/>
+        public virtual SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
+
+        /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
             if (m_Board.Rows != m_Rows || m_Board.Columns != m_Columns || m_Board.NumCellTypes != m_NumCellTypes)
