@@ -327,7 +327,7 @@ namespace Unity.MLAgents.Tests
             var model = useDeprecatedNNModel ? ModelLoader.Load(continuousNNModel) : ModelLoader.Load(continuousONNXModel);
 
             var brainParameters = GetContinuous2vis8vec2actionBrainParameters();
-            brainParameters.ActionSpec.SetContinuous(3); // Invalid action
+            brainParameters.ActionSpec = ActionSpec.MakeContinuous(3); // Invalid action
             var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 }, new ActuatorComponent[0]);
             Assert.Greater(errors.Count(), 0);
 
