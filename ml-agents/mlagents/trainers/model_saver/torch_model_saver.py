@@ -54,7 +54,7 @@ class TorchModelSaver(BaseModelSaver):
         }
         torch.save(state_dict, f"{checkpoint_path}.pt")
         torch.save(state_dict, os.path.join(self.model_path, "checkpoint.pt"))
-        self.export(checkpoint_path, behavior_name)
+        # self.export(checkpoint_path, behavior_name)
         return checkpoint_path
 
     def export(self, output_filepath: str, behavior_name: str) -> None:
