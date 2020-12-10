@@ -8741,7 +8741,7 @@ MonoBehaviour:
   BlueSpawn: {fileID: 1669694872}
   PurpleSpawn: {fileID: 247758844}
   SpawnPlayer: 0
-  SpawnBaddies: 1
+  SpawnBaddies: 0
   PlayerPrefab: {fileID: 7796409947774005658, guid: a0e7db83e097b4a3e96a89b390d1ebed,
     type: 3}
   AIPrefab: {fileID: 3775793887401821308, guid: 6a2f6d60e715b493dad52cc5c9fd1e71,
@@ -16361,7 +16361,7 @@ PrefabInstance:
       objectReference: {fileID: 1732295774}
     - target: {fileID: 4453630946124038627, guid: a0e7db83e097b4a3e96a89b390d1ebed,
         type: 3}
-      propertyPath: m_ActionEvents.Array.data[7].m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      propertyPath: m_ActionEvents.Array.data[6].m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 914861360}
     - target: {fileID: 6753286230780216836, guid: a0e7db83e097b4a3e96a89b390d1ebed,

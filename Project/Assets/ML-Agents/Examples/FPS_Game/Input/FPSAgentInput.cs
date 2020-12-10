@@ -27,6 +27,7 @@ public class FPSAgentInput : MonoBehaviour
     {
         inputActions = new FPSPlayerInputActions();
         actionMap = inputActions.Player;
+        Cursor.lockState = CursorLockMode.Locked;
     }
     void OnEnable()
     {
@@ -80,7 +81,8 @@ public class FPSAgentInput : MonoBehaviour
         //        shootInput = gamepad.rightTrigger.isPressed;
         shieldInput = actionMap.Shield.ReadValue<float>() > 0;
         //        rotateInput = actionMap.RotateBody.ReadValue<Vector2>();
-        rotateInput = actionMap.Rotate.ReadValue<float>();
+        rotateInput = actionMap.Rotate.ReadValue<float>() * .1f;
+        //        rotateInput = actionMap.Rotate.ReadValue<float>();
         //        rotateInput = actionMap.RotateBody.ReadValue<Vector2>();
         //        jumpInput = actionMap.Jump.ReadValue<float>() > 0;
         //        jumpInput = actionMap.Jump.triggered;
@@ -92,6 +94,8 @@ public class FPSAgentInput : MonoBehaviour
         {
             jumpInput = true;
         }
+        //print($"AxisRAwX: {Input.GetAxisRaw ("Mouse X")}");
+        //        print($"ActionMapX: {actionMap.Rotate.ReadValue<float>() * .1f}");
         //        if (jumpInput)
         //        {
         //        print($"Input: Jump: {jumpInput} : {Time.frameCount}");

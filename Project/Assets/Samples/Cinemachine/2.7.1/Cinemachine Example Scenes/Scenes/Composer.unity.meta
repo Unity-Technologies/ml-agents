@@ -1,0 +1,8 @@
+fileFormatVersion: 2
+guid: 28d486f6c2c82f1478706265c2a41e9a
+timeCreated: 1455760058
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

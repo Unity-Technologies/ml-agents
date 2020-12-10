@@ -51,14 +51,6 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""RotateBody"",
-                    ""type"": ""Value"",
-                    ""id"": ""379999a6-e908-4242-ae2f-384e38bcb7cb"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
                     ""name"": ""Dash"",
                     ""type"": ""Button"",
                     ""id"": ""49d5245a-a350-4f94-b4c8-cf578d61000b"",
@@ -188,6 +180,17 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""f3b10de9-a5c7-4952-b617-d46c6132d174"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""2b94ae52-9bb0-478e-8e4c-bf6c747a5c7d"",
                     ""path"": ""<Gamepad>/rightShoulder"",
                     ""interactions"": """",
@@ -205,17 +208,6 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Shield"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""0c0d917f-0af9-4575-b970-f441fd97db20"",
-                    ""path"": ""<Gamepad>/rightStick"",
-                    ""interactions"": """",
-                    ""processors"": ""StickDeadzone(min=0.15,max=0.925)"",
-                    ""groups"": """",
-                    ""action"": ""RotateBody"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -242,37 +234,15 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""1D Axis"",
-                    ""id"": ""3e2a8f42-5d52-42d2-bd25-2934ab0f8c53"",
-                    ""path"": ""1DAxis"",
+                    ""name"": """",
+                    ""id"": ""ac165f0a-fa27-4311-b148-2689537b942b"",
+                    ""path"": ""<Mouse>/delta/x"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Rotate"",
-                    ""isComposite"": true,
+                    ""isComposite"": false,
                     ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""negative"",
-                    ""id"": ""561ac5e2-b709-4ae7-8151-1777260a4798"",
-                    ""path"": ""<Keyboard>/q"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Rotate"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""positive"",
-                    ""id"": ""23905e8a-1906-4f34-8e8f-5e6fa596e27e"",
-                    ""path"": ""<Keyboard>/e"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Rotate"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
                 },
                 {
                     ""name"": ""1D Axis"",
@@ -386,7 +356,6 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Shoot = m_Player.FindAction("Shoot", throwIfNotFound: true);
         m_Player_Shield = m_Player.FindAction("Shield", throwIfNotFound: true);
-        m_Player_RotateBody = m_Player.FindAction("RotateBody", throwIfNotFound: true);
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         m_Player_Rotate = m_Player.FindAction("Rotate", throwIfNotFound: true);
         // UI
@@ -446,7 +415,6 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Shoot;
     private readonly InputAction m_Player_Shield;
-    private readonly InputAction m_Player_RotateBody;
     private readonly InputAction m_Player_Dash;
     private readonly InputAction m_Player_Rotate;
     public struct PlayerActions
@@ -457,7 +425,6 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Shoot => m_Wrapper.m_Player_Shoot;
         public InputAction @Shield => m_Wrapper.m_Player_Shield;
-        public InputAction @RotateBody => m_Wrapper.m_Player_RotateBody;
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
         public InputAction @Rotate => m_Wrapper.m_Player_Rotate;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -481,9 +448,6 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                 @Shield.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShield;
                 @Shield.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShield;
                 @Shield.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShield;
-                @RotateBody.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateBody;
-                @RotateBody.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateBody;
-                @RotateBody.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateBody;
                 @Dash.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
                 @Dash.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
                 @Dash.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
@@ -506,9 +470,6 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                 @Shield.started += instance.OnShield;
                 @Shield.performed += instance.OnShield;
                 @Shield.canceled += instance.OnShield;
-                @RotateBody.started += instance.OnRotateBody;
-                @RotateBody.performed += instance.OnRotateBody;
-                @RotateBody.canceled += instance.OnRotateBody;
                 @Dash.started += instance.OnDash;
                 @Dash.performed += instance.OnDash;
                 @Dash.canceled += instance.OnDash;
@@ -566,7 +527,6 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnShoot(InputAction.CallbackContext context);
         void OnShield(InputAction.CallbackContext context);
-        void OnRotateBody(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
     }

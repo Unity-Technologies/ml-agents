@@ -40510,7 +40510,7 @@ MonoBehaviour:
   groundPoundForce: 35
   spinAttackSpeed: 20
   invertRotationIfWalkingBackwards: 0
-  agentRotationSpeed: 200
+  agentRotationSpeed: 250
   canJump: 1
   agentJumpVelocity: 25
   agentFallingSpeed: 80
@@ -40783,10 +40783,6 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: ec97db61-8659-49c6-afaa-20b82a98e72b
     m_ActionName: Player Action Map/Shield[/DualShock4GamepadHID/buttonEast,/Keyboard/i]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 379999a6-e908-4242-ae2f-384e38bcb7cb
-    m_ActionName: Player Action Map/RotateBody[/DualShock4GamepadHID/rightStick]
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 49d5245a-a350-4f94-b4c8-cf578d61000b

@@ -38,14 +38,6 @@
                     "interactions": ""
                 },
                 {
-                    "name": "RotateBody",
-                    "type": "Value",
-                    "id": "379999a6-e908-4242-ae2f-384e38bcb7cb",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
                     "name": "Dash",
                     "type": "Button",
                     "id": "49d5245a-a350-4f94-b4c8-cf578d61000b",
@@ -175,6 +167,17 @@
                 },
                 {
                     "name": "",
+                    "id": "f3b10de9-a5c7-4952-b617-d46c6132d174",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Shoot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "2b94ae52-9bb0-478e-8e4c-bf6c747a5c7d",
                     "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
@@ -192,17 +195,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Shield",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "0c0d917f-0af9-4575-b970-f441fd97db20",
-                    "path": "<Gamepad>/rightStick",
-                    "interactions": "",
-                    "processors": "StickDeadzone(min=0.15,max=0.925)",
-                    "groups": "",
-                    "action": "RotateBody",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -229,37 +221,15 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "1D Axis",
-                    "id": "3e2a8f42-5d52-42d2-bd25-2934ab0f8c53",
-                    "path": "1DAxis",
+                    "name": "",
+                    "id": "ac165f0a-fa27-4311-b148-2689537b942b",
+                    "path": "<Mouse>/delta/x",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Rotate",
-                    "isComposite": true,
+                    "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "negative",
-                    "id": "561ac5e2-b709-4ae7-8151-1777260a4798",
-                    "path": "<Keyboard>/q",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Rotate",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "23905e8a-1906-4f34-8e8f-5e6fa596e27e",
-                    "path": "<Keyboard>/e",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Rotate",
-                    "isComposite": false,
-                    "isPartOfComposite": true
                 },
                 {
                     "name": "1D Axis",
