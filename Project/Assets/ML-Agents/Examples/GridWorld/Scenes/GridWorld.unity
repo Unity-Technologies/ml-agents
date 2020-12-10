@@ -254,6 +254,7 @@ GameObject:
   - component: {fileID: 125487790}
   - component: {fileID: 125487787}
   - component: {fileID: 125487791}
+  - component: {fileID: 125487792}
   m_Layer: 8
   m_Name: RenderTextureAgent
   m_TagString: agent
@@ -338,7 +339,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 2
+    VectorObservationSize: 0
     NumStackedVectorObservations: 1
     VectorActionSize: 05000000
     VectorActionDescriptions: []
@@ -368,6 +369,19 @@ MonoBehaviour:
   m_Grayscale: 0
   m_ObservationStacks: 1
   m_Compression: 1
+--- !u!114 &125487792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 125487785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 163dac4bcbb2f4d8499db2cdcb22a89e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  observationSize: 1
 --- !u!1 &260425459
 GameObject:
   m_ObjectHideFlags: 0
@@ -812,7 +826,7 @@ PrefabInstance:
     - target: {fileID: 114935253044749092, guid: 5c2bd19e4bbda4991b74387ca5d28156,
         type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114935253044749092, guid: 5c2bd19e4bbda4991b74387ca5d28156,
         type: 3}

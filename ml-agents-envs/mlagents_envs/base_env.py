@@ -247,8 +247,9 @@ class TerminalSteps(Mapping):
 
 class SensorType(Enum):
     OBSERVATION = 0
-    PARAMETERIZATION = 1
+    GOAL = 1
     REWARD = 2
+
 
 class _ActionTupleBase(ABC):
     """
