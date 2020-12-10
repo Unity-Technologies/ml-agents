@@ -82,11 +82,11 @@ eight elements: the `x` and `z` components of the agent cube's rotation and the
 
 #### Behavior Parameters : Vector Action Space
 
-An Agent is given instructions in the form of a float array of _actions_.
+An Agent is given instructions in the form of actions.
 ML-Agents Toolkit classifies actions into two types: continuous and discrete.
-The 3D Balance Ball example is programmed to use continuous action space which
-is a a vector of numbers that can vary continuously. More specifically, it uses
-a `Space Size` of 2 to control the amount of `x` and `z` rotations to apply to
+The 3D Balance Ball example is programmed to use continuous actions, which
+are a vector of floating-point numbers that can vary continuously. More specifically,
+it uses a `Space Size` of 2 to control the amount of `x` and `z` rotations to apply to
 itself to keep the ball balanced on its head.
 
 ## Running a pre-trained model

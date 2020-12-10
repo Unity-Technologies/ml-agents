@@ -87,9 +87,13 @@ namespace Unity.MLAgents
         ///         <term>1.2.0</term>
         ///         <description>Support compression mapping for stacked compressed observations.</description>
         ///     </item>
+        ///     <item>
+        ///         <term>1.3.0</term>
+        ///         <description>Support action spaces with both continuous and discrete actions.</description>
+        ///     </item>
         /// </list>
         /// </remarks>
-        const string k_ApiVersion = "1.2.0";
+        const string k_ApiVersion = "1.3.0";
 
         /// <summary>
         /// Unity package version of com.unity.ml-agents.
@@ -252,6 +256,7 @@ namespace Unity.MLAgents
                 Dispose();
             }
         }
+
 #endif
 
         /// <summary>
