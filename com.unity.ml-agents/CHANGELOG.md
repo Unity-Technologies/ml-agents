@@ -14,8 +14,10 @@ and this project adheres to
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- Analytics events are now collected when performing inference in the editor. For more details on what is collected and
-how to opt out, see the [package README](Documentation~/com.unity.ml-agents.md). (#4677)
+- If [Unity Editor Analytics](https://docs.unity3d.com/Manual/EditorAnalytics.html) are enabled, ML-Agents collects
+anonymous data about models that are used for inference. This helps us focus our efforts on the most commonly used
+features, and better understand the needs of our users. We compute a hash of a subset of model weights but cannot
+recreate your model from the collected information. (#4677)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - `ActionSpec.validate_action()` now enforces that `UnityEnvironment.set_action_for_agent()` receives a 1D `np.array`. (#4691)
