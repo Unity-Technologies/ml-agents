@@ -109,7 +109,8 @@ class TorchPolicy(Policy):
     def update_normalization(self, buffer: AgentBuffer) -> None:
         """
         If this policy normalizes vector observations, this will update the norm values in the graph.
-        :param vector_obs: The vector observations to add to the running estimate of the distribution.
+        :param buffer: The buffer with the observations to add to the running estimate
+        of the distribution.
         """
         if self.use_vec_obs and self.normalize:
             self.actor_critic.update_normalization(buffer)
@@ -124,8 +125,7 @@ class TorchPolicy(Policy):
         all_log_probs: bool = False,
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """
-        :param vec_obs: List of vector observations.
-        :param vis_obs: List of visual observations.
+        :param obs: List of observations.
         :param masks: Loss masks for RNN, else None.
         :param memories: Input memories when using RNN, else None.
         :param seq_len: Sequence length when using RNN.

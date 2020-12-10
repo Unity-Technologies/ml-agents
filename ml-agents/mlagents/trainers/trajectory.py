@@ -19,23 +19,24 @@ class AgentExperience(NamedTuple):
 
 class ObsUtil:
     @staticmethod
-    def get_obs_with_rank(observations: List[np.array], rank: int) -> List[np.array]:
-        result: List[np.array] = []
-        for obs in observations:
-            if len(obs.shape) == rank:
-                result += [obs]
-        return result
-
-    @staticmethod
     def get_name_at(index: int) -> str:
+        """
+        returns the name of the observation given the index of the observation
+        """
         return "obs_%d" % index
 
     @staticmethod
     def get_name_at_next(index: int) -> str:
+        """
+        returns the name of the next observation given the index of the observation
+        """
         return "next_obs_%d" % index
 
     @staticmethod
     def from_buffer(batch: AgentBuffer, num_obs: int) -> List[np.array]:
+        """
+        Creates the list of observations from an AgentBuffer
+        """
         result: List[np.array] = []
         for i in range(num_obs):
             result.append(batch[ObsUtil.get_name_at(i)])
@@ -43,6 +44,9 @@ class ObsUtil:
 
     @staticmethod
     def from_buffer_next(batch: AgentBuffer, num_obs: int) -> List[np.array]:
+        """
+        Creates the list of next observations from an AgentBuffer
+        """
         result = []
         for i in range(num_obs):
             result.append(batch[ObsUtil.get_name_at_next(i)])

@@ -173,8 +173,7 @@ class Actor(abc.ABC):
         """
         Returns distributions from this Actor, from which actions can be sampled.
         If memory is enabled, return the memories as well.
-        :param vec_inputs: A List of vector inputs as tensors.
-        :param vis_inputs: A List of visual inputs as tensors.
+        :param vec_inputs: A List of inputs as tensors.
         :param masks: If using discrete actions, a Tensor of action masks.
         :param memories: If using memory, a Tensor of initial memories.
         :param sequence_length: If using memory, the sequence length.
@@ -209,8 +208,7 @@ class ActorCritic(Actor):
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
         """
         Get value outputs for the given obs.
-        :param vec_inputs: List of vector inputs as tensors.
-        :param vis_inputs: List of visual inputs as tensors.
+        :param inputs: List of inputs as tensors.
         :param memories: Tensor of memories, if using memory. Otherwise, None.
         :returns: Dict of reward stream to output tensor for values.
         """
@@ -227,8 +225,7 @@ class ActorCritic(Actor):
         """
         Returns distributions, from which actions can be sampled, and value estimates.
         If memory is enabled, return the memories as well.
-        :param vec_inputs: A List of vector inputs as tensors.
-        :param vis_inputs: A List of visual inputs as tensors.
+        :param inputs: A List of vector inputs as tensors.
         :param masks: If using discrete actions, a Tensor of action masks.
         :param memories: If using memory, a Tensor of initial memories.
         :param sequence_length: If using memory, the sequence length.
@@ -332,7 +329,6 @@ class SimpleActor(nn.Module, Actor):
         """
         Note: This forward() method is required for exporting to ONNX. Don't modify the inputs and outputs.
         """
-
         # This code will convert the ugly vec and obs into glorious unified list of inputs
         concatenated_vec_obs = vec_inputs[0]
         inputs = []

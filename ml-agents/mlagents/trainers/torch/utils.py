@@ -148,7 +148,11 @@ class ModelUtils:
         vis_encode_type: EncoderType,
     ) -> Tuple[nn.Module, int]:
         """
-        Returns the encoder and the size of the generated embedding
+        Returns the encoder and the size of the appropriate encoder.
+        :param shape: Tuples that represent the observation dimension.
+        :param normalize: Normalize all vector inputs.
+        :param h_size: Number of hidden units per layer.
+        :param vis_encode_type: Type of visual encoder to use.
         """
         if len(shape) == 1:
             # Case rank 1 tensor
