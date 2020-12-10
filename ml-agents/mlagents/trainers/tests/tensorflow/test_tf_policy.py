@@ -4,12 +4,12 @@ from mlagents.trainers.action_info import ActionInfo
 from unittest.mock import MagicMock
 from mlagents.trainers.settings import TrainerSettings
 import numpy as np
-from mlagents_envs.base_env import ActionSpec
+from mlagents_envs.base_env import ActionSpec, SensorType
 
 
 def basic_behavior_spec():
     dummy_actionspec = ActionSpec.create_continuous(1)
-    dummy_groupspec = BehaviorSpec([(1,)], dummy_actionspec)
+    dummy_groupspec = BehaviorSpec([(1,)], [SensorType.OBSERVATION], dummy_actionspec)
     return dummy_groupspec
 
 

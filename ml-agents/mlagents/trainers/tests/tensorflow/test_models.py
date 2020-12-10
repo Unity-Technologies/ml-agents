@@ -2,14 +2,13 @@ import pytest
 
 from mlagents.trainers.tf.models import ModelUtils
 from mlagents.tf_utils import tf
-from mlagents_envs.base_env import BehaviorSpec, ActionSpec
+from mlagents_envs.base_env import BehaviorSpec, ActionSpec, SensorType
 
 
 def create_behavior_spec(num_visual, num_vector, vector_size):
-    behavior_spec = BehaviorSpec(
-        [(84, 84, 3)] * int(num_visual) + [(vector_size,)] * int(num_vector),
-        ActionSpec.create_discrete((1,)),
-    )
+    obs_shapes = [(84, 84, 3)] * int(num_visual) + [(vector_size,)] * int(num_vector)
+    sensor_types = [SensorType.OBSERVATION for _ in range(len(obs_shapes))]
+    behavior_spec = BehaviorSpec(obs_shapes, sensor_types, ActionSpec.create_discrete((1,)))
     return behavior_spec
 
 
