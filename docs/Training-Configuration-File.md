@@ -159,8 +159,8 @@ and setting `memory_size` and `sequence_length`:
 
 A few considerations when deciding to use memory:
 
-- LSTM does not work well with continuous vector action space. Please use
-  discrete vector action space for better results.
+- LSTM does not work well with continuous vector actions. Please use
+  discrete actions for better results.
 - Since the memories must be sent back and forth between Python and Unity, using
   too large `memory_size` will slow down training.
 - Adding a recurrent layer increases the complexity of the neural network, it is

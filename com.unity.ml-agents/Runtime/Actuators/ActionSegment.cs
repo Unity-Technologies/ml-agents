@@ -107,6 +107,14 @@ namespace Unity.MLAgents.Actuators
             System.Array.Clear(Array, Offset, Length);
         }
 
+        /// <summary>
+        /// Check if the segment is empty.
+        /// </summary>
+        public bool IsEmpty()
+        {
+            return Array == null || Array.Length == 0;
+        }
+
         /// <inheritdoc/>
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {

@@ -510,20 +510,9 @@ setting the State Size.
 ## Actions
 
 An action is an instruction from the Policy that the agent carries out. The
-action is passed to the Agent as a parameter when the Academy invokes the
-agent's `OnActionReceived()` function. Actions for an agent can take one of two
-forms, either **Continuous** or **Discrete**.
-
-When you specify that the vector action space is **Continuous**, the action
-parameter passed to the Agent is an array of floating point numbers with length
-equal to the `Vector Action Space Size` property. When you specify a
-**Discrete** vector action space type, the action parameter is an array
-containing integers. Each integer is an index into a list or table of commands.
-In the **Discrete** vector action space type, the action parameter is an array
-of indices. The number of indices in the array is determined by the number of
-branches defined in the `Branches Size` property. Each branch corresponds to an
-action table, you can specify the size of each table by modifying the `Branches`
-property.
+action is passed to the Agent as the `ActionBuffers` parameter when the Academy invokes the
+agent's `OnActionReceived()` function. There are two types of actions supported:
+ **Continuous** and **Discrete**.
 
 Neither the Policy nor the training algorithm know anything about what the
 action values themselves mean. The training algorithm simply tries different
@@ -552,9 +541,9 @@ up to use either the continuous or the discrete vector action spaces.
 
 ### Continuous Action Space
 
-When an Agent uses a Policy set to the **Continuous** vector action space, the
-action parameter passed to the Agent's `OnActionReceived()` function is an array
-with length equal to the `Vector Action Space Size` property value. The
+When an Agent's Policy has **Continuous** actions, the
+`ActionBuffers.ContinuousActions` passed to the Agent's `OnActionReceived()` function
+is an array with length equal to the `Vector Action Space Size` property value. The
 individual values in the array have whatever meanings that you ascribe to them.
 If you assign an element in the array as the speed of an Agent, for example, the
 training process learns to control the speed of the Agent through this
@@ -568,16 +557,16 @@ continuous action space with four control values.
 These control values are applied as torques to the bodies making up the arm:
 
 ```csharp
-public override void OnActionReceived(float[] act)
-{
-    float torque_x = Mathf.Clamp(act[0], -1, 1) * 100f;
-    float torque_z = Mathf.Clamp(act[1], -1, 1) * 100f;
-    rbA.AddTorque(new Vector3(torque_x, 0f, torque_z));
+    public override void OnActionReceived(ActionBuffers actionBuffers)
+    {
+        var torqueX = Mathf.Clamp(actionBuffers.ContinuousActions[0], -1f, 1f) * 150f;
+        var torqueZ = Mathf.Clamp(actionBuffers.ContinuousActions[1], -1f, 1f) * 150f;
+        m_RbA.AddTorque(new Vector3(torqueX, 0f, torqueZ));
 
-    torque_x = Mathf.Clamp(act[2], -1, 1) * 100f;
-    torque_z = Mathf.Clamp(act[3], -1, 1) * 100f;
-    rbB.AddTorque(new Vector3(torque_x, 0f, torque_z));
-}
+        torqueX = Mathf.Clamp(actionBuffers.ContinuousActions[2], -1f, 1f) * 150f;
+        torqueZ = Mathf.Clamp(actionBuffers.ContinuousActions[3], -1f, 1f) * 150f;
+        m_RbB.AddTorque(new Vector3(torqueX, 0f, torqueZ));
+    }
 ```
 
 By default the output from our provided PPO algorithm pre-clamps the values of
@@ -587,10 +576,10 @@ As shown above, you can scale the control values as needed after clamping them.
 
 ### Discrete Action Space
 
-When an Agent uses a **Discrete** vector action space, the action parameter
-passed to the Agent's `OnActionReceived()` function is an array containing
-indices. With the discrete vector action space, `Branches` is an array of
-integers, each value corresponds to the number of possibilities for each branch.
+When an Agent's Policy uses **discrete** actions, the
+`ActionBuffers.DiscreteActions` passed to the Agent's `OnActionReceived()` function
+is an array of integers. When defining the discrete vector action space, `Branches`
+is an array of integers, each value corresponds to the number of possibilities for each branch.
 
 For example, if we wanted an Agent that can move in a plane and jump, we could
 define two branches (one for motion and one for jumping) because we want our
@@ -601,9 +590,9 @@ and the second one to have 2 possible actions (don't jump, jump). The
 
 ```csharp
 // Get the action index for movement
-int movement = Mathf.FloorToInt(act[0]);
+int movement = actionBuffers.DiscreteActions[0];
 // Get the action index for jumping
-int jump = Mathf.FloorToInt(act[1]);
+int jump = actionBuffers.DiscreteActions[1];
 
 // Look up the index in the movement action list:
 if (movement == 1) { directionX = -1; }
@@ -619,10 +608,6 @@ gameObject.GetComponent<Rigidbody>().AddForce(
         directionX * 40f, directionY * 300f, directionZ * 40f));
 ```
 
-Note that the above code example is a simplified extract from the AreaAgent
-class, which provides alternate implementations for both the discrete and the
-continuous action spaces.
-
 #### Masking Discrete Actions
 
 When using Discrete Actions, it is possible to specify that some actions are
@@ -630,12 +615,13 @@ impossible for the next decision. When the Agent is controlled by a neural
 network, the Agent will be unable to perform the specified action. Note that
 when the Agent is controlled by its Heuristic, the Agent will still be able to
 decide to perform the masked action. In order to mask an action, override the
-`Agent.CollectDiscreteActionMasks()` virtual method, and call
-`DiscreteActionMasker.SetMask()` in it:
+`Agent.WriteDiscreteActionMask()` virtual method, and call
+`WriteMask()` on the provided `IDiscreteActionMask`:
 
 ```csharp
-public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker){
-    actionMasker.SetMask(branch, actionIndices)
+public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
+{
+    actionMasker.WriteMask(branch, actionIndices)
 }
 ```
 
@@ -644,7 +630,7 @@ Where:
 - `branch` is the index (starting at 0) of the branch on which you want to mask
   the action
 - `actionIndices` is a list of `int` corresponding to the indices of the actions
-  that the Agent cannot perform.
+  that the Agent **cannot** perform.
 
 For example, if you have an Agent with 2 branches and on the first branch
 (branch 0) there are 4 possible actions : _"do nothing"_, _"jump"_, _"shoot"_
@@ -653,26 +639,26 @@ nothing"_ or _"change weapon"_ for his next decision (since action index 1 and 2
 are masked)
 
 ```csharp
-SetMask(0, new int[2]{1,2})
+WriteMask(0, new int[2]{1,2})
 ```
 
 Notes:
 
-- You can call `SetMask` multiple times if you want to put masks on multiple
+- You can call `WriteMask` multiple times if you want to put masks on multiple
   branches.
 - You cannot mask all the actions of a branch.
 - You cannot mask actions in continuous control.
 
 ### Actions Summary & Best Practices
 
-- Actions can either use `Discrete` or `Continuous` spaces.
-- When using `Discrete` it is possible to assign multiple action branches, and
-  to mask certain actions.
+- Agents can either use `Discrete` or `Continuous` actions.
+- Discrete actions can have multiple action branches, and it's possible to mask
+  certain actions so that they won't be taken.
 - In general, smaller action spaces will make for easier learning.
 - Be sure to set the Vector Action's Space Size to the number of used Vector
   Actions, and not greater, as doing the latter can interfere with the
   efficiency of the training process.
-- When using continuous control, action values should be clipped to an
+- Continuous action values should be clipped to an
   appropriate range. The provided PPO model automatically clips these values
   between -1 and 1, but third party training systems may not do so.
 

@@ -32,7 +32,7 @@ namespace Unity.MLAgents.Inference
             /// </param>
             /// <param name="actionIds"> List of Agents Ids that will be updated using the tensor's data</param>
             /// <param name="lastActions"> Dictionary of AgentId to Actions to be updated</param>
-            void Apply(TensorProxy tensorProxy, IEnumerable<int> actionIds, Dictionary<int, float[]> lastActions);
+            void Apply(TensorProxy tensorProxy, IEnumerable<int> actionIds, Dictionary<int, ActionBuffers> lastActions);
         }
 
         readonly Dictionary<string, IApplier> m_Dict = new Dictionary<string, IApplier>();
@@ -52,28 +52,33 @@ namespace Unity.MLAgents.Inference
             Dictionary<int, List<float>> memories,
             object barracudaModel = null)
         {
-            actionSpec.CheckNotHybrid();
+            // If model is null, no inference to run and exception is thrown before reaching here.
+            if (barracudaModel == null)
+            {
+                return;
+            }
 
+            var model = (Model)barracudaModel;
+            if (!model.SupportsContinuousAndDiscrete())
+            {
+                actionSpec.CheckAllContinuousOrDiscrete();
+            }
             if (actionSpec.NumContinuousActions > 0)
             {
-                m_Dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
+                var tensorName = model.ContinuousOutputName();
+                m_Dict[tensorName] = new ContinuousActionOutputApplier(actionSpec);
             }
-            else
+            if (actionSpec.NumDiscreteActions > 0)
             {
-                m_Dict[TensorNames.ActionOutput] =
-                    new DiscreteActionOutputApplier(actionSpec.BranchSizes, seed, allocator);
+                var tensorName = model.DiscreteOutputName();
+                m_Dict[tensorName] = new DiscreteActionOutputApplier(actionSpec, seed, allocator);
             }
             m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
 
-            if (barracudaModel != null)
+            for (var i = 0; i < model?.memories.Count; i++)
             {
-                var model = (Model)barracudaModel;
-
-                for (var i = 0; i < model?.memories.Count; i++)
-                {
-                    m_Dict[model.memories[i].output] =
-                        new BarracudaMemoryOutputApplier(model.memories.Count, i, memories);
-                }
+                m_Dict[model.memories[i].output] =
+                    new BarracudaMemoryOutputApplier(model.memories.Count, i, memories);
             }
         }
 
@@ -86,7 +91,7 @@ namespace Unity.MLAgents.Inference
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated applier.</exception>
         public void ApplyTensors(
-            IEnumerable<TensorProxy> tensors, IEnumerable<int> actionIds, Dictionary<int, float[]> lastActions)
+            IEnumerable<TensorProxy> tensors, IEnumerable<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
             foreach (var tensor in tensors)
             {

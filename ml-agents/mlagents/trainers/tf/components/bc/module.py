@@ -106,8 +106,8 @@ class BCModule:
             self.policy.batch_size_ph: n_sequences,
             self.policy.sequence_length_ph: self.policy.sequence_length,
         }
-        feed_dict[self.model.action_in_expert] = mini_batch_demo["actions"]
         if self.policy.behavior_spec.action_spec.is_discrete():
+            feed_dict[self.model.action_in_expert] = mini_batch_demo["discrete_action"]
             feed_dict[self.policy.action_masks] = np.ones(
                 (
                     self.n_sequences * self.policy.sequence_length,
@@ -115,6 +115,10 @@ class BCModule:
                 ),
                 dtype=np.float32,
             )
+        else:
+            feed_dict[self.model.action_in_expert] = mini_batch_demo[
+                "continuous_action"
+            ]
         if self.policy.vec_obs_size > 0:
             feed_dict[self.policy.vector_in] = mini_batch_demo["vector_obs"]
         for i, _ in enumerate(self.policy.visual_in):

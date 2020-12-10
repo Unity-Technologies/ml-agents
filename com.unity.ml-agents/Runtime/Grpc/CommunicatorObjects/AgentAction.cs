@@ -25,14 +25,15 @@ namespace Unity.MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjVtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2FnZW50X2Fj",
-            "dGlvbi5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMiSwoQQWdlbnRBY3Rp",
-            "b25Qcm90bxIWCg52ZWN0b3JfYWN0aW9ucxgBIAMoAhINCgV2YWx1ZRgEIAEo",
-            "AkoECAIQA0oECAMQBEoECAUQBkIlqgIiVW5pdHkuTUxBZ2VudHMuQ29tbXVu",
-            "aWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
+            "dGlvbi5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMijAEKEEFnZW50QWN0",
+            "aW9uUHJvdG8SIQoZdmVjdG9yX2FjdGlvbnNfZGVwcmVjYXRlZBgBIAMoAhIN",
+            "CgV2YWx1ZRgEIAEoAhIaChJjb250aW51b3VzX2FjdGlvbnMYBiADKAISGAoQ",
+            "ZGlzY3JldGVfYWN0aW9ucxgHIAMoBUoECAIQA0oECAMQBEoECAUQBkIlqgIi",
+            "VW5pdHkuTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.AgentActionProto), global::Unity.MLAgents.CommunicatorObjects.AgentActionProto.Parser, new[]{ "VectorActions", "Value" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.AgentActionProto), global::Unity.MLAgents.CommunicatorObjects.AgentActionProto.Parser, new[]{ "VectorActionsDeprecated", "Value", "ContinuousActions", "DiscreteActions" }, null, null, null)
           }));
     }
     #endregion
@@ -64,8 +65,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public AgentActionProto(AgentActionProto other) : this() {
-      vectorActions_ = other.vectorActions_.Clone();
+      vectorActionsDeprecated_ = other.vectorActionsDeprecated_.Clone();
       value_ = other.value_;
+      continuousActions_ = other.continuousActions_.Clone();
+      discreteActions_ = other.discreteActions_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -74,14 +77,17 @@ namespace Unity.MLAgents.CommunicatorObjects {
       return new AgentActionProto(this);
     }
 
-    /// <summary>Field number for the "vector_actions" field.</summary>
-    public const int VectorActionsFieldNumber = 1;
-    private static readonly pb::FieldCodec<float> _repeated_vectorActions_codec
+    /// <summary>Field number for the "vector_actions_deprecated" field.</summary>
+    public const int VectorActionsDeprecatedFieldNumber = 1;
+    private static readonly pb::FieldCodec<float> _repeated_vectorActionsDeprecated_codec
         = pb::FieldCodec.ForFloat(10);
-    private readonly pbc::RepeatedField<float> vectorActions_ = new pbc::RepeatedField<float>();
+    private readonly pbc::RepeatedField<float> vectorActionsDeprecated_ = new pbc::RepeatedField<float>();
+    /// <summary>
+    /// mark as deprecated in communicator v1.3.0
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<float> VectorActions {
-      get { return vectorActions_; }
+    public pbc::RepeatedField<float> VectorActionsDeprecated {
+      get { return vectorActionsDeprecated_; }
     }
 
     /// <summary>Field number for the "value" field.</summary>
@@ -93,6 +99,26 @@ namespace Unity.MLAgents.CommunicatorObjects {
       set {
         value_ = value;
       }
+    }
+
+    /// <summary>Field number for the "continuous_actions" field.</summary>
+    public const int ContinuousActionsFieldNumber = 6;
+    private static readonly pb::FieldCodec<float> _repeated_continuousActions_codec
+        = pb::FieldCodec.ForFloat(50);
+    private readonly pbc::RepeatedField<float> continuousActions_ = new pbc::RepeatedField<float>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<float> ContinuousActions {
+      get { return continuousActions_; }
+    }
+
+    /// <summary>Field number for the "discrete_actions" field.</summary>
+    public const int DiscreteActionsFieldNumber = 7;
+    private static readonly pb::FieldCodec<int> _repeated_discreteActions_codec
+        = pb::FieldCodec.ForInt32(58);
+    private readonly pbc::RepeatedField<int> discreteActions_ = new pbc::RepeatedField<int>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<int> DiscreteActions {
+      get { return discreteActions_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -108,16 +134,20 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if(!vectorActions_.Equals(other.vectorActions_)) return false;
+      if(!vectorActionsDeprecated_.Equals(other.vectorActionsDeprecated_)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Value, other.Value)) return false;
+      if(!continuousActions_.Equals(other.continuousActions_)) return false;
+      if(!discreteActions_.Equals(other.discreteActions_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      hash ^= vectorActions_.GetHashCode();
+      hash ^= vectorActionsDeprecated_.GetHashCode();
       if (Value != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Value);
+      hash ^= continuousActions_.GetHashCode();
+      hash ^= discreteActions_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -131,11 +161,13 @@ namespace Unity.MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      vectorActions_.WriteTo(output, _repeated_vectorActions_codec);
+      vectorActionsDeprecated_.WriteTo(output, _repeated_vectorActionsDeprecated_codec);
       if (Value != 0F) {
         output.WriteRawTag(37);
         output.WriteFloat(Value);
       }
+      continuousActions_.WriteTo(output, _repeated_continuousActions_codec);
+      discreteActions_.WriteTo(output, _repeated_discreteActions_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -144,10 +176,12 @@ namespace Unity.MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      size += vectorActions_.CalculateSize(_repeated_vectorActions_codec);
+      size += vectorActionsDeprecated_.CalculateSize(_repeated_vectorActionsDeprecated_codec);
       if (Value != 0F) {
         size += 1 + 4;
       }
+      size += continuousActions_.CalculateSize(_repeated_continuousActions_codec);
+      size += discreteActions_.CalculateSize(_repeated_discreteActions_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -159,10 +193,12 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (other == null) {
         return;
       }
-      vectorActions_.Add(other.vectorActions_);
+      vectorActionsDeprecated_.Add(other.vectorActionsDeprecated_);
       if (other.Value != 0F) {
         Value = other.Value;
       }
+      continuousActions_.Add(other.continuousActions_);
+      discreteActions_.Add(other.discreteActions_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -176,11 +212,21 @@ namespace Unity.MLAgents.CommunicatorObjects {
             break;
           case 10:
           case 13: {
-            vectorActions_.AddEntriesFrom(input, _repeated_vectorActions_codec);
+            vectorActionsDeprecated_.AddEntriesFrom(input, _repeated_vectorActionsDeprecated_codec);
             break;
           }
           case 37: {
             Value = input.ReadFloat();
+            break;
+          }
+          case 50:
+          case 53: {
+            continuousActions_.AddEntriesFrom(input, _repeated_continuousActions_codec);
+            break;
+          }
+          case 58:
+          case 56: {
+            discreteActions_.AddEntriesFrom(input, _repeated_discreteActions_codec);
             break;
           }
         }

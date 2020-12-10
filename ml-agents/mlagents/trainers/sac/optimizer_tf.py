@@ -608,9 +608,11 @@ class SACOptimizer(TFOptimizer):
             feed_dict[self.rewards_holders[name]] = batch[f"{name}_rewards"]
 
         if self.policy.use_continuous_act:
-            feed_dict[self.policy_network.external_action_in] = batch["actions"]
+            feed_dict[self.policy_network.external_action_in] = batch[
+                "continuous_action"
+            ]
         else:
-            feed_dict[policy.output] = batch["actions"]
+            feed_dict[policy.output] = batch["discrete_action"]
             if self.policy.use_recurrent:
                 feed_dict[policy.prev_action] = batch["prev_action"]
             feed_dict[policy.action_masks] = batch["action_mask"]

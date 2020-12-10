@@ -15,7 +15,10 @@ from mlagents_envs.base_env import BaseEnv
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 from mlagents_envs.exception import UnityEnvironmentException
-from mlagents.trainers.tests.simple_test_envs import SimpleEnvironment
+from mlagents.trainers.tests.simple_test_envs import (
+    SimpleEnvironment,
+    UnexpectedExceptionEnvironment,
+)
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests.check_env_trains import (
@@ -186,7 +189,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
 @pytest.mark.parametrize("num_envs", [1, 4])
 def test_subprocess_env_endtoend(num_envs):
     def simple_env_factory(worker_id, config):
-        env = SimpleEnvironment(["1D"], use_discrete=True)
+        env = SimpleEnvironment(["1D"], action_sizes=(0, 1))
         return env
 
     env_manager = SubprocessEnvManager(
@@ -205,6 +208,32 @@ def test_subprocess_env_endtoend(num_envs):
     assert all(
         val > 0.7 for val in StatsReporter.writers[0].get_last_rewards().values()
     )
+    env_manager.close()
+
+
+class CustomTestOnlyException(Exception):
+    pass
+
+
+@pytest.mark.parametrize("num_envs", [1, 4])
+def test_subprocess_failing_step(num_envs):
+    def failing_step_env_factory(_worker_id, _config):
+        env = UnexpectedExceptionEnvironment(
+            ["1D"], use_discrete=True, to_raise=CustomTestOnlyException
+        )
+        return env
+
+    env_manager = SubprocessEnvManager(
+        failing_step_env_factory, EngineConfig.default_config()
+    )
+    # Expect the exception raised to be routed back up to the top level.
+    with pytest.raises(CustomTestOnlyException):
+        check_environment_trains(
+            failing_step_env_factory(0, []),
+            {"1D": ppo_dummy_config()},
+            env_manager=env_manager,
+            success_threshold=None,
+        )
     env_manager.close()
 
 
