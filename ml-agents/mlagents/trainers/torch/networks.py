@@ -186,7 +186,8 @@ class Actor(abc.ABC):
     @abc.abstractmethod
     def forward(
         self,
-        inputs: List[torch.Tensor],
+        vec_inputs: List[torch.Tensor],
+        vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
     ) -> Tuple[torch.Tensor, int, int, int, int]:
@@ -294,8 +295,8 @@ class SimpleActor(nn.Module, Actor):
     def memory_size(self) -> int:
         return self.network_body.memory_size
 
-    def update_normalization(self, vector_obs: List[torch.Tensor]) -> None:
-        self.network_body.update_normalization(vector_obs)
+    def update_normalization(self, buffer: AgentBuffer) -> None:
+        self.network_body.update_normalization(buffer)
 
     def sample_action(self, dists: List[DistInstance]) -> List[torch.Tensor]:
         actions = []
@@ -478,10 +479,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             critic_mem = None
             actor_mem = None
         dists, actor_mem_outs = self.get_dists(
-            inputs,
-            memories=actor_mem,
-            sequence_length=sequence_length,
-            masks=masks,
+            inputs, memories=actor_mem, sequence_length=sequence_length, masks=masks
         )
         value_outputs, critic_mem_outs = self.critic(
             inputs, memories=critic_mem, sequence_length=sequence_length
@@ -492,9 +490,9 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             mem_out = None
         return dists, value_outputs, mem_out
 
-    def update_normalization(self, vector_obs: AgentBuffer) -> None:
-        super().update_normalization(vector_obs)
-        self.critic.network_body.update_normalization(vector_obs)
+    def update_normalization(self, buffer: AgentBuffer) -> None:
+        super().update_normalization(buffer)
+        self.critic.network_body.update_normalization(buffer)
 
 
 class GlobalSteps(nn.Module):

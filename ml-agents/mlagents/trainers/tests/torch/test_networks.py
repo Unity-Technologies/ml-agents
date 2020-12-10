@@ -29,7 +29,7 @@ def test_networkbody_vector():
     sample_act = 0.1 * torch.ones((1, 2))
 
     for _ in range(300):
-        encoded, _ = networkbody([sample_obs], [], sample_act)
+        encoded, _ = networkbody([sample_obs], sample_act)
         assert encoded.shape == (1, network_settings.hidden_units)
         # Try to force output to 1
         loss = torch.nn.functional.mse_loss(encoded, torch.ones(encoded.shape))
@@ -55,7 +55,7 @@ def test_networkbody_lstm():
     sample_obs = torch.ones((1, seq_len, obs_size))
 
     for _ in range(200):
-        encoded, _ = networkbody([sample_obs], [], memories=torch.ones(1, seq_len, 12))
+        encoded, _ = networkbody([sample_obs], memories=torch.ones(1, seq_len, 12))
         # Try to force output to 1
         loss = torch.nn.functional.mse_loss(encoded, torch.ones(encoded.shape))
         optimizer.zero_grad()
@@ -77,9 +77,10 @@ def test_networkbody_visual():
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-3)
     sample_obs = 0.1 * torch.ones((1, 84, 84, 3))
     sample_vec_obs = torch.ones((1, vec_obs_size))
+    obs = [sample_vec_obs] + [sample_obs]
 
     for _ in range(150):
-        encoded, _ = networkbody([sample_vec_obs], [sample_obs])
+        encoded, _ = networkbody(obs)
         assert encoded.shape == (1, network_settings.hidden_units)
         # Try to force output to 1
         loss = torch.nn.functional.mse_loss(encoded, torch.ones(encoded.shape))
@@ -106,7 +107,7 @@ def test_valuenetwork():
 
     for _ in range(50):
         sample_obs = torch.ones((1, obs_size))
-        values, _ = value_net([sample_obs], [])
+        values, _ = value_net([sample_obs])
         loss = 0
         for s_name in stream_names:
             assert values[s_name].shape == (1, num_outputs)
@@ -139,7 +140,7 @@ def test_simple_actor(use_discrete):
     actor = SimpleActor(obs_shapes, network_settings, action_spec)
     # Test get_dist
     sample_obs = torch.ones((1, obs_size))
-    dists, _ = actor.get_dists([sample_obs], [], masks=masks)
+    dists, _ = actor.get_dists([sample_obs], masks=masks)
     for dist in dists:
         if use_discrete:
             assert isinstance(dist, CategoricalDistInstance)
@@ -193,7 +194,7 @@ def test_actor_critic(ac_type, lstm):
         # memories isn't always set to None, the network should be able to
         # deal with that.
     # Test critic pass
-    value_out, memories_out = actor.critic_pass([sample_obs], [], memories=memories)
+    value_out, memories_out = actor.critic_pass([sample_obs], memories=memories)
     for stream in stream_names:
         if lstm:
             assert value_out[stream].shape == (network_settings.memory.sequence_length,)
@@ -203,7 +204,7 @@ def test_actor_critic(ac_type, lstm):
 
     # Test get_dist_and_value
     dists, value_out, mem_out = actor.get_dist_and_value(
-        [sample_obs], [], memories=memories
+        [sample_obs], memories=memories
     )
     if mem_out is not None:
         assert mem_out.shape == memories.shape

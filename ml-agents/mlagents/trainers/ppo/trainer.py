@@ -16,7 +16,6 @@ from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
-from mlagents.trainers.buffer import AgentBuffer
 
 logger = get_logger(__name__)
 

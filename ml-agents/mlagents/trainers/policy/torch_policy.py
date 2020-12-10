@@ -134,9 +134,7 @@ class TorchPolicy(Policy):
             entropies, and output memories, all as Torch Tensors.
         """
         if memories is None:
-            dists, memories = self.actor_critic.get_dists(
-                obs, masks, memories, seq_len
-            )
+            dists, memories = self.actor_critic.get_dists(obs, masks, memories, seq_len)
         else:
             # If we're using LSTM. we need to execute the values to get the critic memories
             dists, _, memories = self.actor_critic.get_dist_and_value(

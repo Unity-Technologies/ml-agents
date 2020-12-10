@@ -18,10 +18,9 @@ class AgentExperience(NamedTuple):
 
 
 class ObsUtil:
-
     @staticmethod
     def get_obs_with_rank(observations: List[np.array], rank: int) -> List[np.array]:
-        result = []
+        result: List[np.array] = []
         for obs in observations:
             if len(obs.shape) == rank:
                 result += [obs]
@@ -37,7 +36,7 @@ class ObsUtil:
 
     @staticmethod
     def from_buffer(batch: AgentBuffer, num_obs: int) -> List[np.array]:
-        result = []
+        result: List[np.array] = []
         for i in range(num_obs):
             result.append(batch[ObsUtil.get_name_at(i)])
         return result

@@ -145,7 +145,7 @@ class ModelUtils:
         shape: Tuple[int, ...],
         normalize: bool,
         h_size: int,
-        vis_encode_type: EncoderType
+        vis_encode_type: EncoderType,
     ) -> Tuple[nn.Module, int]:
         """
         Returns the encoder and the size of the generated embedding
@@ -153,14 +153,13 @@ class ModelUtils:
         if len(shape) == 1:
             # Case rank 1 tensor
             return (VectorInput(shape[0], normalize), shape[0])
-        if len(shape) == 2:
-            raise UnityTrainerException(f"Unsupported shape of {shape} for observation")
         if len(shape) == 3:
             ModelUtils._check_resolution_for_encoder(
                 shape[0], shape[1], vis_encode_type
             )
             visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
             return (visual_encoder_class(shape[0], shape[1], shape[2], h_size), h_size)
+        raise UnityTrainerException(f"Unsupported shape of {shape} for observation")
 
     @staticmethod
     def create_input_processors(
@@ -168,12 +167,12 @@ class ModelUtils:
         h_size: int,
         vis_encode_type: EncoderType,
         normalize: bool = False,
-    ) -> Tuple[nn.ModuleList, nn.ModuleList, int]:
+    ) -> Tuple[nn.ModuleList, List[int]]:
         """
         Creates visual and vector encoders, along with their normalizers.
         :param observation_shapes: List of Tuples that represent the action dimensions.
         :param action_size: Number of additional un-normalized inputs to each vector encoder. Used for
-            conditioining network on other values (e.g. actions for a Q function)
+            conditioning network on other values (e.g. actions for a Q function)
         :param h_size: Number of hidden units per layer.
         :param vis_encode_type: Type of visual encoder to use.
         :param unnormalized_inputs: Vector inputs that should not be normalized, and added to the vector
@@ -184,12 +183,14 @@ class ModelUtils:
         encoders: List[nn.Module] = []
         embedding_sizes: List[int] = []
 
-        for i, dimension in enumerate(observation_shapes):
-            encoder, embedding_size = ModelUtils.get_encoder_for_obs(dimension, normalize, h_size, vis_encode_type)
+        for dimension in observation_shapes:
+            encoder, embedding_size = ModelUtils.get_encoder_for_obs(
+                dimension, normalize, h_size, vis_encode_type
+            )
             encoders.append(encoder)
             embedding_sizes.append(embedding_size)
 
-        return (encoders, embedding_sizes)
+        return (nn.ModuleList(encoders), embedding_sizes)
 
     @staticmethod
     def list_to_tensor(

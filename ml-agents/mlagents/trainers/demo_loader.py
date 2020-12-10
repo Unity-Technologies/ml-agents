@@ -63,7 +63,7 @@ def make_demo_buffer(
         demo_raw_buffer["done"].append(next_done)
         demo_raw_buffer["rewards"].append(next_reward)
         for i, obs in enumerate(current_obs):
-            demo_raw_buffer[ObsUtil.get_name_at(i)].append(obs[i])
+            demo_raw_buffer[ObsUtil.get_name_at(i)].append(obs)
         demo_raw_buffer["actions"].append(current_pair_info.action_info.vector_actions)
         demo_raw_buffer["prev_action"].append(previous_action)
         if next_done:

@@ -6,6 +6,8 @@ from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.demo_loader import demo_to_buffer
 from mlagents.trainers.settings import BehavioralCloningSettings, ScheduleType
 from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.trajectory import ObsUtil
+from mlagents.trainers.buffer import AgentBuffer
 
 
 class BCModule:
@@ -38,7 +40,6 @@ class BCModule:
         _, self.demonstration_buffer = demo_to_buffer(
             settings.demo_path, policy.sequence_length, policy.behavior_spec
         )
-
         self.batch_size = (
             settings.batch_size if settings.batch_size else default_batch_size
         )
@@ -122,12 +123,17 @@ class BCModule:
         return bc_loss
 
     def _update_batch(
-        self, mini_batch_demo: Dict[str, np.ndarray], n_sequences: int
+        self, mini_batch_demo: AgentBuffer, n_sequences: int
     ) -> Dict[str, float]:
         """
         Helper function for update_batch.
         """
-        vec_obs = [ModelUtils.list_to_tensor(mini_batch_demo["vector_obs"])]
+        obs = ObsUtil.from_buffer(
+            mini_batch_demo, len(self.policy.behavior_spec.observation_shapes)
+        )
+        # Convert to tensors
+        obs = [ModelUtils.list_to_tensor(obs) for obs in obs]
+        print("\n\n\n\n", obs, obs[0].shape)
         act_masks = None
         if self.policy.use_continuous_act:
             expert_actions = ModelUtils.list_to_tensor(mini_batch_demo["actions"])
@@ -152,18 +158,6 @@ class BCModule:
         if self.policy.use_recurrent:
             memories = torch.zeros(1, self.n_sequences, self.policy.m_size)
 
-        if self.policy.use_vis_obs:
-            vis_obs = []
-            for idx, _ in enumerate(
-                self.policy.actor_critic.network_body.visual_processors
-            ):
-                vis_ob = ModelUtils.list_to_tensor(
-                    mini_batch_demo["visual_obs%d" % idx]
-                )
-                vis_obs.append(vis_ob)
-        else:
-            vis_obs = []
-
         (
             selected_actions,
             clipped_actions,
@@ -171,8 +165,7 @@ class BCModule:
             _,
             _,
         ) = self.policy.sample_actions(
-            vec_obs,
-            vis_obs,
+            obs,
             masks=act_masks,
             memories=memories,
             seq_len=self.policy.sequence_length,
