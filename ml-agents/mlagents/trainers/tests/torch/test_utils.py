@@ -6,10 +6,6 @@ from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.torch.encoders import VectorInput
-from mlagents.trainers.torch.distributions import (
-    CategoricalDistInstance,
-    GaussianDistInstance,
-)
 
 
 def test_min_visual_size():
@@ -146,46 +142,6 @@ def test_actions_to_onehot():
     ]
     for res, exp in zip(oh_actions, expected_result):
         assert torch.equal(res, exp)
-
-
-def test_get_probs_and_entropy():
-    # Test continuous
-    # Add two dists to the list. This isn't done in the code but we'd like to support it.
-    dist_list = [
-        GaussianDistInstance(torch.zeros((1, 2)), torch.ones((1, 2))),
-        GaussianDistInstance(torch.zeros((1, 2)), torch.ones((1, 2))),
-    ]
-    action_list = [torch.zeros((1, 2)), torch.zeros((1, 2))]
-    log_probs, entropies, all_probs = ModelUtils.get_probs_and_entropy(
-        action_list, dist_list
-    )
-    assert log_probs.shape == (1, 2, 2)
-    assert entropies.shape == (1, 1, 2)
-    assert all_probs is None
-
-    for log_prob in log_probs.flatten():
-        # Log prob of standard normal at 0
-        assert log_prob == pytest.approx(-0.919, abs=0.01)
-
-    for ent in entropies.flatten():
-        # entropy of standard normal at 0
-        assert ent == pytest.approx(1.42, abs=0.01)
-
-    # Test continuous
-    # Add two dists to the list.
-    act_size = 2
-    test_prob = torch.tensor(
-        [[1.0 - 0.1 * (act_size - 1)] + [0.1] * (act_size - 1)]
-    )  # High prob for first action
-    dist_list = [CategoricalDistInstance(test_prob), CategoricalDistInstance(test_prob)]
-    action_list = [torch.tensor([0]), torch.tensor([1])]
-    log_probs, entropies, all_probs = ModelUtils.get_probs_and_entropy(
-        action_list, dist_list
-    )
-    assert all_probs.shape == (1, len(dist_list * act_size))
-    assert entropies.shape == (1, len(dist_list))
-    # Make sure the first action has high probability than the others.
-    assert log_probs.flatten()[0] > log_probs.flatten()[1]
 
 
 def test_masked_mean():

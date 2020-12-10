@@ -41,11 +41,15 @@ def make_demo_buffer(
             [next_pair_info.agent_info], behavior_spec
         )
         previous_action = (
-            np.array(pair_infos[idx].action_info.vector_actions, dtype=np.float32) * 0
+            np.array(
+                pair_infos[idx].action_info.vector_actions_deprecated, dtype=np.float32
+            )
+            * 0
         )
         if idx > 0:
             previous_action = np.array(
-                pair_infos[idx - 1].action_info.vector_actions, dtype=np.float32
+                pair_infos[idx - 1].action_info.vector_actions_deprecated,
+                dtype=np.float32,
             )
 
         next_done = len(next_terminal_step) == 1
@@ -66,7 +70,15 @@ def make_demo_buffer(
         for i, obs in enumerate(split_obs.visual_observations):
             demo_raw_buffer["visual_obs%d" % i].append(obs)
         demo_raw_buffer["vector_obs"].append(split_obs.vector_observations)
-        demo_raw_buffer["actions"].append(current_pair_info.action_info.vector_actions)
+        # TODO: update the demonstraction files and read from the new proto format
+        if behavior_spec.action_spec.continuous_size > 0:
+            demo_raw_buffer["continuous_action"].append(
+                current_pair_info.action_info.vector_actions_deprecated
+            )
+        if behavior_spec.action_spec.discrete_size > 0:
+            demo_raw_buffer["discrete_action"].append(
+                current_pair_info.action_info.vector_actions_deprecated
+            )
         demo_raw_buffer["prev_action"].append(previous_action)
         if next_done:
             demo_raw_buffer.resequence_and_append(
