@@ -4,17 +4,12 @@ from mlagents.torch_utils import torch
 from mlagents.trainers.torch.networks import (
     NetworkBody,
     ValueNetwork,
-    SimpleActor,
     SharedActorCritic,
     SeparateActorCritic,
 )
 from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.torch.distributions import (
-    GaussianDistInstance,
-    CategoricalDistInstance,
-)
-
 from mlagents_envs.base_env import ActionSpec
+from mlagents.trainers.tests.torch.test_encoders import compare_models
 
 
 def test_networkbody_vector():
@@ -124,63 +119,19 @@ def test_valuenetwork():
             assert _out[0] == pytest.approx(1.0, abs=0.1)
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_actor(use_discrete):
-    obs_size = 4
-    network_settings = NetworkSettings()
-    obs_shapes = [(obs_size,)]
-    act_size = [2]
-    if use_discrete:
-        masks = torch.ones((1, 1))
-        action_spec = ActionSpec.create_discrete(tuple(act_size))
-    else:
-        masks = None
-        action_spec = ActionSpec.create_continuous(act_size[0])
-    actor = SimpleActor(obs_shapes, network_settings, action_spec)
-    # Test get_dist
-    sample_obs = torch.ones((1, obs_size))
-    dists, _ = actor.get_dists([sample_obs], [], masks=masks)
-    for dist in dists:
-        if use_discrete:
-            assert isinstance(dist, CategoricalDistInstance)
-        else:
-            assert isinstance(dist, GaussianDistInstance)
-
-    # Test sample_actions
-    actions = actor.sample_action(dists)
-    for act in actions:
-        if use_discrete:
-            assert act.shape == (1, 1)
-        else:
-            assert act.shape == (1, act_size[0])
-
-    # Test forward
-    actions, ver_num, mem_size, is_cont, act_size_vec = actor.forward(
-        [sample_obs], [], masks=masks
-    )
-    for act in actions:
-        # This is different from above for ONNX export
-        if use_discrete:
-            assert act.shape == tuple(act_size)
-        else:
-            assert act.shape == (act_size[0], 1)
-
-    assert mem_size == 0
-    assert is_cont == int(not use_discrete)
-    assert act_size_vec == torch.tensor(act_size)
-
-
 @pytest.mark.parametrize("ac_type", [SharedActorCritic, SeparateActorCritic])
 @pytest.mark.parametrize("lstm", [True, False])
 def test_actor_critic(ac_type, lstm):
     obs_size = 4
     network_settings = NetworkSettings(
-        memory=NetworkSettings.MemorySettings() if lstm else None
+        memory=NetworkSettings.MemorySettings() if lstm else None, normalize=True
     )
     obs_shapes = [(obs_size,)]
-    act_size = [2]
+    act_size = 2
+    mask = torch.ones([1, act_size * 2])
     stream_names = [f"stream_name{n}" for n in range(4)]
-    action_spec = ActionSpec.create_continuous(act_size[0])
+    # action_spec = ActionSpec.create_continuous(act_size[0])
+    action_spec = ActionSpec(act_size, tuple(act_size for _ in range(act_size)))
     actor = ac_type(obs_shapes, network_settings, action_spec, stream_names)
     if lstm:
         sample_obs = torch.ones((1, network_settings.memory.sequence_length, obs_size))
@@ -201,16 +152,35 @@ def test_actor_critic(ac_type, lstm):
         else:
             assert value_out[stream].shape == (1,)
 
-    # Test get_dist_and_value
-    dists, value_out, mem_out = actor.get_dist_and_value(
-        [sample_obs], [], memories=memories
+    # Test get action stats and_value
+    action, log_probs, entropies, value_out, mem_out = actor.get_action_stats_and_value(
+        [sample_obs], [], memories=memories, masks=mask
     )
+    if lstm:
+        assert action.continuous_tensor.shape == (64, 2)
+    else:
+        assert action.continuous_tensor.shape == (1, 2)
+
+    assert len(action.discrete_list) == 2
+    for _disc in action.discrete_list:
+        if lstm:
+            assert _disc.shape == (64, 1)
+        else:
+            assert _disc.shape == (1, 1)
+
     if mem_out is not None:
         assert mem_out.shape == memories.shape
-    for dist in dists:
-        assert isinstance(dist, GaussianDistInstance)
     for stream in stream_names:
         if lstm:
             assert value_out[stream].shape == (network_settings.memory.sequence_length,)
         else:
             assert value_out[stream].shape == (1,)
+
+    # Test normalization
+    actor.update_normalization(sample_obs)
+    if isinstance(actor, SeparateActorCritic):
+        for act_proc, crit_proc in zip(
+            actor.network_body.vector_processors,
+            actor.critic.network_body.vector_processors,
+        ):
+            assert compare_models(act_proc, crit_proc)

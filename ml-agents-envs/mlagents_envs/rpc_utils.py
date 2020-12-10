@@ -1,6 +1,6 @@
 from mlagents_envs.base_env import (
-    BehaviorSpec,
     ActionSpec,
+    BehaviorSpec,
     DecisionSteps,
     TerminalSteps,
 )
@@ -31,10 +31,25 @@ def behavior_spec_from_proto(
     :return: BehaviorSpec object.
     """
     observation_shape = [tuple(obs.shape) for obs in agent_info.observations]
-    if brain_param_proto.vector_action_space_type == 1:
-        action_spec = ActionSpec(brain_param_proto.vector_action_size[0], ())
+    # proto from comminicator < v1.3 does not set action spec, use deprecated fields instead
+    if (
+        brain_param_proto.action_spec.num_continuous_actions == 0
+        and brain_param_proto.action_spec.num_discrete_actions == 0
+    ):
+        if brain_param_proto.vector_action_space_type_deprecated == 1:
+            action_spec = ActionSpec(
+                brain_param_proto.vector_action_size_deprecated[0], ()
+            )
+        else:
+            action_spec = ActionSpec(
+                0, tuple(brain_param_proto.vector_action_size_deprecated)
+            )
     else:
-        action_spec = ActionSpec(0, tuple(brain_param_proto.vector_action_size))
+        action_spec_proto = brain_param_proto.action_spec
+        action_spec = ActionSpec(
+            action_spec_proto.num_continuous_actions,
+            tuple(branch for branch in action_spec_proto.discrete_branch_sizes),
+        )
     return BehaviorSpec(observation_shape, action_spec)
 
 
@@ -238,14 +253,14 @@ def _process_vector_observation(
     ],  # pylint: disable=unsubscriptable-object
 ) -> np.ndarray:
     if len(agent_info_list) == 0:
-        return np.zeros((0, shape[0]), dtype=np.float32)
+        return np.zeros((0,) + shape, dtype=np.float32)
     np_obs = np.array(
         [
             agent_obs.observations[obs_index].float_data.data
             for agent_obs in agent_info_list
         ],
         dtype=np.float32,
-    )
+    ).reshape((len(agent_info_list),) + shape)
     _raise_on_nan_and_inf(np_obs, "observations")
     return np_obs
 

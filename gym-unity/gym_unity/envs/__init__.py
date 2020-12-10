@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Tuple, Union
 import gym
 from gym import error, spaces
 
-from mlagents_envs.base_env import BaseEnv
+from mlagents_envs.base_env import ActionTuple, BaseEnv
 from mlagents_envs.base_env import DecisionSteps, TerminalSteps
 from mlagents_envs import logging_util
 
@@ -179,7 +179,13 @@ class UnityToGymWrapper(gym.Env):
             action = self._flattener.lookup_action(action)
 
         action = np.array(action).reshape((1, self.action_size))
-        self._env.set_actions(self.name, action)
+
+        action_tuple = ActionTuple()
+        if self.group_spec.action_spec.is_continuous():
+            action_tuple.add_continuous(action)
+        else:
+            action_tuple.add_discrete(action)
+        self._env.set_actions(self.name, action_tuple)
 
         self._env.step()
         decision_step, terminal_step = self._env.get_steps(self.name)
