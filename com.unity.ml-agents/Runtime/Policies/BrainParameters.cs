@@ -123,7 +123,9 @@ namespace Unity.MLAgents.Policies
                 VectorObservationSize = VectorObservationSize,
                 NumStackedVectorObservations = NumStackedVectorObservations,
                 VectorActionDescriptions = (string[])VectorActionDescriptions.Clone(),
-                ActionSpec = new ActionSpec(ActionSpec.NumContinuousActions, ActionSpec.BranchSizes)
+                ActionSpec = new ActionSpec(ActionSpec.NumContinuousActions, ActionSpec.BranchSizes),
+                m_VectorActionSizeDeprecated = (int[])m_VectorActionSizeDeprecated.Clone(),
+                m_ActionSpaceTypeDeprecated = m_ActionSpaceTypeDeprecated,
             };
         }
 
@@ -134,13 +136,16 @@ namespace Unity.MLAgents.Policies
         {
             if (!hasUpgradedBrainParametersWithActionSpec)
             {
-                if (ActionSpec.NumContinuousActions == 0 && m_ActionSpaceTypeDeprecated == SpaceType.Continuous)
+                if (ActionSpec.NumContinuousActions == 0 && ActionSpec.NumDiscreteActions == 0)
                 {
-                    ActionSpec.SetContinuous(m_VectorActionSizeDeprecated[0]);
-                }
-                if (ActionSpec.NumDiscreteActions == 0 && m_ActionSpaceTypeDeprecated == SpaceType.Discrete)
-                {
-                    ActionSpec.SetDiscrete(m_VectorActionSizeDeprecated);
+                    if (ActionSpec.NumContinuousActions == 0 && m_ActionSpaceTypeDeprecated == SpaceType.Continuous)
+                    {
+                        ActionSpec = ActionSpec.MakeContinuous(m_VectorActionSizeDeprecated[0]);
+                    }
+                    if (ActionSpec.NumDiscreteActions == 0 && m_ActionSpaceTypeDeprecated == SpaceType.Discrete)
+                    {
+                        ActionSpec = ActionSpec.MakeDiscrete(m_VectorActionSizeDeprecated);
+                    }
                 }
                 hasUpgradedBrainParametersWithActionSpec = true;
             }
