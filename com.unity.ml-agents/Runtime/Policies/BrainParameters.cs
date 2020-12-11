@@ -74,6 +74,10 @@ namespace Unity.MLAgents.Policies
                     VectorActionSize = new[] { m_ActionSpec.NumContinuousActions };
                     VectorActionSpaceType = SpaceType.Continuous;
                 }
+                else
+                {
+                    VectorActionSize = null;
+                }
             }
         }
 
