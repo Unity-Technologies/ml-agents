@@ -30,7 +30,19 @@ namespace Unity.MLAgents.Actuators
         {
             m_ActionReceiver = actionReceiver;
             ActionSpec = actionSpec;
-            string suffix = $"-Continuous-{actionSpec.NumContinuousActions}-Discrete-{actionSpec.NumDiscreteActions}";
+            string suffix;
+            if (actionSpec.NumContinuousActions == 0)
+            {
+                suffix = "-Continuous";
+            }
+            else if (actionSpec.NumDiscreteActions == 0)
+            {
+                suffix = "-Discrete";
+            }
+            else
+            {
+                suffix = $"-Continuous-{actionSpec.NumContinuousActions}-Discrete-{actionSpec.NumDiscreteActions}";
+            }
             Name = name + suffix;
         }
 
