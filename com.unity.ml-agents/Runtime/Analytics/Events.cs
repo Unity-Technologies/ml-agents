@@ -7,11 +7,17 @@ namespace Unity.MLAgents.Analytics
 {
     internal struct InferenceEvent
     {
+        /// <summary>
+        /// Hash of the BehaviorName.
+        /// </summary>
         public string BehaviorName;
         public string BarracudaModelSource;
         public string BarracudaModelVersion;
         public string BarracudaModelProducer;
         public string BarracudaPackageVersion;
+        /// <summary>
+        /// Whether inference is performed on CPU (0) or GPU (1).
+        /// </summary>
         public int InferenceDevice;
         public List<EventObservationSpec> ObservationSpecs;
         public EventActionSpec ActionSpec;

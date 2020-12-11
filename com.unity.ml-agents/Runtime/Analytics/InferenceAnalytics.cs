@@ -139,7 +139,11 @@ namespace Unity.MLAgents.Analytics
         {
             var barracudaModel = ModelLoader.Load(nnModel);
             var inferenceEvent = new InferenceEvent();
-            inferenceEvent.BehaviorName = behaviorName;
+
+            // Hash the behavior name so that there's no concern about PII or "secret" data being leaked.
+            var behaviorNameHash = Hash128.Compute(behaviorName);
+            inferenceEvent.BehaviorName = behaviorNameHash.ToString();
+
             inferenceEvent.BarracudaModelSource = barracudaModel.IrSource;
             inferenceEvent.BarracudaModelVersion = barracudaModel.IrVersion;
             inferenceEvent.BarracudaModelProducer = barracudaModel.ProducerName;
@@ -150,7 +154,7 @@ namespace Unity.MLAgents.Analytics
             {
                 // .nn files don't have these fields set correctly. Assign some placeholder values.
                 inferenceEvent.BarracudaModelSource = "NN";
-                inferenceEvent.BarracudaModelProducer = "tf2bc.py";
+                inferenceEvent.BarracudaModelProducer = "tensorflow_to_barracuda.py";
             }
 
 #if UNITY_2019_3_OR_NEWER && UNITY_EDITOR

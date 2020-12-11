@@ -38,11 +38,16 @@ namespace Unity.MLAgents.Tests.Analytics
         public void TestModelEvent()
         {
             var sensors = new List<ISensor> { sensor_21_20_3.Sensor, sensor_20_22_3.Sensor };
+            var behaviorName = "continuousModel";
 
             var continuousEvent = InferenceAnalytics.GetEventForModel(
-                continuous2vis8vec2actionModel, "continuousModel",
+                continuous2vis8vec2actionModel, behaviorName,
                 InferenceDevice.CPU, sensors, GetContinuous2vis8vec2actionActionSpec()
             );
+
+            // The behavior name should be hashed, not pass-through.
+            Assert.AreNotEqual(behaviorName, continuousEvent.BehaviorName);
+
             Assert.AreEqual(2, continuousEvent.ActionSpec.NumContinuousActions);
             Assert.AreEqual(0, continuousEvent.ActionSpec.NumDiscreteActions);
             Assert.AreEqual(2, continuousEvent.ObservationSpecs.Count);
