@@ -14,8 +14,9 @@ namespace Unity.MLAgents.Editor
         // The height of a line in the Unity Inspectors
         const float k_LineHeight = 17f;
         const int k_VecObsNumLine = 3;
+        const string k_ActionSpecName = "m_ActionSpec";
         const string k_ContinuousActionSizeName = "m_NumContinuousActions";
-        const string k_DiscreteBranchSizeName = "m_DiscreteBranchSizes";
+        const string k_DiscreteBranchSizeName = "BranchSizes";
         const string k_ActionDescriptionPropName = "VectorActionDescriptions";
         const string k_VecObsPropName = "VectorObservationSize";
         const string k_NumVecObsPropName = "NumStackedVectorObservations";
@@ -97,9 +98,10 @@ namespace Unity.MLAgents.Editor
             EditorGUI.LabelField(position, "Vector Action");
             position.y += k_LineHeight;
             EditorGUI.indentLevel++;
-            DrawContinuousVectorAction(position, property);
+            var actionSpecProperty = property.FindPropertyRelative(k_ActionSpecName);
+            DrawContinuousVectorAction(position, actionSpecProperty);
             position.y += k_LineHeight;
-            DrawDiscreteVectorAction(position, property);
+            DrawDiscreteVectorAction(position, actionSpecProperty);
         }
 
         /// <summary>
@@ -162,7 +164,8 @@ namespace Unity.MLAgents.Editor
         /// <returns>The height of the drawer of the Vector Action.</returns>
         static float GetHeightDrawVectorAction(SerializedProperty property)
         {
-            var numActionLines = 3 + property.FindPropertyRelative(k_DiscreteBranchSizeName).arraySize;
+            var actionSpecProperty = property.FindPropertyRelative(k_ActionSpecName);
+            var numActionLines = 3 + actionSpecProperty.FindPropertyRelative(k_DiscreteBranchSizeName).arraySize;
             return numActionLines * k_LineHeight;
         }
     }

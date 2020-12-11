@@ -52,28 +52,26 @@ namespace Unity.MLAgents.Policies
         [Range(1, 50)] public int NumStackedVectorObservations = 1;
 
         [SerializeField]
-        internal int m_NumContinuousActions = 0;
-        [SerializeField]
-        internal int[] m_DiscreteBranchSizes = null;
+        internal ActionSpec m_ActionSpec = new ActionSpec(0, null);
 
         /// <summary>
         /// The specification of the Action space for the BrainParameters.
         /// </summary>
         public ActionSpec ActionSpec
         {
-            get { return new ActionSpec(m_NumContinuousActions, m_DiscreteBranchSizes); }
+            get { return m_ActionSpec; }
             set
             {
-                m_NumContinuousActions = value.NumContinuousActions;
-                m_DiscreteBranchSizes = value.BranchSizes;
-                if (m_NumContinuousActions == 0)
+                m_ActionSpec.NumContinuousActions = value.NumContinuousActions;
+                m_ActionSpec.BranchSizes = value.BranchSizes;
+                if (m_ActionSpec.NumContinuousActions == 0)
                 {
                     VectorActionSize = value.BranchSizes;
                     VectorActionSpaceType = SpaceType.Discrete;
                 }
-                else if (m_DiscreteBranchSizes == null || m_DiscreteBranchSizes.Length == 0)
+                else if (m_ActionSpec.NumDiscreteActions == 0)
                 {
-                    VectorActionSize = new[] { m_NumContinuousActions };
+                    VectorActionSize = new[] { m_ActionSpec.NumContinuousActions };
                     VectorActionSpaceType = SpaceType.Continuous;
                 }
             }
@@ -148,13 +146,13 @@ namespace Unity.MLAgents.Policies
             {
                 if (VectorActionSpaceType == SpaceType.Continuous)
                 {
-                    m_NumContinuousActions = VectorActionSize[0];
-                    m_DiscreteBranchSizes = null;
+                    m_ActionSpec.NumContinuousActions = VectorActionSize[0];
+                    m_ActionSpec.BranchSizes = null;
                 }
                 if (VectorActionSpaceType == SpaceType.Discrete)
                 {
-                    m_NumContinuousActions = 0;
-                    m_DiscreteBranchSizes = VectorActionSize;
+                    m_ActionSpec.NumContinuousActions = 0;
+                    m_ActionSpec.BranchSizes = VectorActionSize;
                 }
 
                 hasUpgradedBrainParametersWithActionSpec = true;
@@ -163,14 +161,14 @@ namespace Unity.MLAgents.Policies
 
         private void SyncDeprecatedActionFields()
         {
-            if (m_NumContinuousActions == 0)
+            if (m_ActionSpec.NumContinuousActions == 0)
             {
                 VectorActionSize = ActionSpec.BranchSizes;
                 VectorActionSpaceType = SpaceType.Discrete;
             }
-            else if (m_DiscreteBranchSizes == null || m_DiscreteBranchSizes.Length == 0)
+            else if (m_ActionSpec.NumDiscreteActions == 0)
             {
-                VectorActionSize = new[] { m_NumContinuousActions };
+                VectorActionSize = new[] { m_ActionSpec.NumContinuousActions };
                 VectorActionSpaceType = SpaceType.Continuous;
             }
             else

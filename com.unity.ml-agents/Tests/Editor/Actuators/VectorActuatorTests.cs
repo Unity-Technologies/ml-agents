@@ -42,7 +42,7 @@ namespace Unity.MLAgents.Tests.Actuators
 
             Assert.IsTrue(va1.ActionSpec.NumContinuousActions == 4);
             Assert.IsTrue(va1.ActionSpec.SumOfDiscreteBranchSizes == 0);
-            Assert.AreEqual(va1.Name, "name-Continuous-4-Discrete-0");
+            Assert.AreEqual(va1.Name, "name-Continuous");
         }
 
         [Test]

@@ -33,11 +33,11 @@ namespace Unity.MLAgents.Actuators
             string suffix;
             if (actionSpec.NumContinuousActions == 0)
             {
-                suffix = "-Continuous";
+                suffix = "-Discrete";
             }
             else if (actionSpec.NumDiscreteActions == 0)
             {
-                suffix = "-Discrete";
+                suffix = "-Continuous";
             }
             else
             {

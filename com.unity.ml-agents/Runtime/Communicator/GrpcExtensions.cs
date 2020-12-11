@@ -101,18 +101,16 @@ namespace Unity.MLAgents
         /// <param name="isTraining">Whether or not the Brain is training.</param>
         public static BrainParametersProto ToProto(this BrainParameters bp, string name, bool isTraining)
         {
-            var vectorActionSizeDeprecated = bp.ActionSpec.NumContinuousActions > 0 ? new int[] { bp.ActionSpec.NumContinuousActions } : bp.ActionSpec.BranchSizes;
-            var vectorActionSpaceTypeDeprecated = bp.ActionSpec.NumContinuousActions > 0 ? SpaceType.Continuous : SpaceType.Discrete;
             var brainParametersProto = new BrainParametersProto
             {
-                VectorActionSpaceTypeDeprecated = (SpaceTypeProto)vectorActionSpaceTypeDeprecated,
+                VectorActionSpaceTypeDeprecated = (SpaceTypeProto)bp.VectorActionSpaceType,
                 BrainName = name,
                 IsTraining = isTraining,
                 ActionSpec = ToActionSpecProto(bp.ActionSpec),
             };
-            if (vectorActionSizeDeprecated != null)
+            if (bp.VectorActionSize != null)
             {
-                brainParametersProto.VectorActionSizeDeprecated.AddRange(vectorActionSizeDeprecated);
+                brainParametersProto.VectorActionSizeDeprecated.AddRange(bp.VectorActionSize);
             }
             if (bp.VectorActionDescriptions != null)
             {
