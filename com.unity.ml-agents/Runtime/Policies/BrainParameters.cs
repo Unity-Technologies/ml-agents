@@ -56,11 +56,6 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         public ActionSpec ActionSpec = new ActionSpec(0, new int[] { });
 
-        [SerializeField]
-        [FormerlySerializedAs("vectorActionSize")]
-        [FormerlySerializedAs("VectorActionSize")]
-        internal int[] m_VectorActionSizeDeprecated = new[] { 1 };
-
         /// <summary>
         /// (Deprecated) The size of the action space.
         /// </summary>
@@ -72,10 +67,8 @@ namespace Unity.MLAgents.Policies
         /// For the discrete action space: the number of branches in the action space.
         /// </value>
         /// [Obsolete("VectorActionSize has been deprecated, please use ActionSpec instead.")]
-        public int[] VectorActionSize
-        {
-            get { return ActionSpec.NumContinuousActions > 0 ? new int[] { ActionSpec.NumContinuousActions } : ActionSpec.BranchSizes; }
-        }
+        [FormerlySerializedAs("vectorActionSize")]
+        public int[] VectorActionSize = new[] { 1 };
 
         /// <summary>
         /// The list of strings describing what the actions correspond to.
@@ -83,19 +76,12 @@ namespace Unity.MLAgents.Policies
         [FormerlySerializedAs("vectorActionDescriptions")]
         public string[] VectorActionDescriptions;
 
-        [SerializeField]
-        [FormerlySerializedAs("vectorActionSpaceType")]
-        [FormerlySerializedAs("VectorActionSpaceType")]
-        internal SpaceType m_ActionSpaceTypeDeprecated = SpaceType.Discrete;
-
         /// <summary>
         /// (Deprecated) Defines if the action is discrete or continuous.
         /// </summary>
         /// [Obsolete("VectorActionSpaceType has been deprecated, please use ActionSpec instead.")]
-        public SpaceType VectorActionSpaceType
-        {
-            get { return ActionSpec.NumContinuousActions > 0 ? SpaceType.Continuous : SpaceType.Discrete; }
-        }
+        [FormerlySerializedAs("vectorActionSpaceType")]
+        public SpaceType VectorActionSpaceType = SpaceType.Discrete;
 
         [SerializeField]
         [HideInInspector]
@@ -125,8 +111,8 @@ namespace Unity.MLAgents.Policies
                 NumStackedVectorObservations = NumStackedVectorObservations,
                 VectorActionDescriptions = (string[])VectorActionDescriptions.Clone(),
                 ActionSpec = new ActionSpec(ActionSpec.NumContinuousActions, ActionSpec.BranchSizes),
-                m_VectorActionSizeDeprecated = (int[])m_VectorActionSizeDeprecated.Clone(),
-                m_ActionSpaceTypeDeprecated = m_ActionSpaceTypeDeprecated,
+                VectorActionSize = (int[])VectorActionSize.Clone(),
+                VectorActionSpaceType = VectorActionSpaceType,
             };
         }
 
@@ -137,14 +123,13 @@ namespace Unity.MLAgents.Policies
         {
             if (!hasUpgradedBrainParametersWithActionSpec)
             {
-
-                if (m_ActionSpaceTypeDeprecated == SpaceType.Continuous)
+                if (VectorActionSpaceType == SpaceType.Continuous)
                 {
-                    ActionSpec = ActionSpec.MakeContinuous(m_VectorActionSizeDeprecated[0]);
+                    ActionSpec = ActionSpec.MakeContinuous(VectorActionSize[0]);
                 }
-                if (m_ActionSpaceTypeDeprecated == SpaceType.Discrete)
+                if (VectorActionSpaceType == SpaceType.Discrete)
                 {
-                    ActionSpec = ActionSpec.MakeDiscrete(m_VectorActionSizeDeprecated);
+                    ActionSpec = ActionSpec.MakeDiscrete(VectorActionSize);
                 }
 
                 hasUpgradedBrainParametersWithActionSpec = true;
