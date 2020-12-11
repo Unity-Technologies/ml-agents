@@ -64,20 +64,7 @@ namespace Unity.MLAgents.Policies
             {
                 m_ActionSpec.NumContinuousActions = value.NumContinuousActions;
                 m_ActionSpec.BranchSizes = value.BranchSizes;
-                if (m_ActionSpec.NumContinuousActions == 0)
-                {
-                    VectorActionSize = value.BranchSizes;
-                    VectorActionSpaceType = SpaceType.Discrete;
-                }
-                else if (m_ActionSpec.NumDiscreteActions == 0)
-                {
-                    VectorActionSize = new[] { m_ActionSpec.NumContinuousActions };
-                    VectorActionSpaceType = SpaceType.Continuous;
-                }
-                else
-                {
-                    VectorActionSize = null;
-                }
+                SyncDeprecatedActionFields();
             }
         }
 
@@ -163,6 +150,9 @@ namespace Unity.MLAgents.Policies
             }
         }
 
+        /// <summary>
+        /// Sync values in ActionSpec fields to deprecated fields
+        /// </summary>
         private void SyncDeprecatedActionFields()
         {
             if (m_ActionSpec.NumContinuousActions == 0)
