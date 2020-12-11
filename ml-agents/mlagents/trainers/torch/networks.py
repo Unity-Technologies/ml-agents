@@ -258,13 +258,13 @@ class CentralizedValueNetwork(ValueNetwork):
 
     def forward(
         self,
-        all_net_inputs: List[List[torch.Tensor]],
+        net_inputs: List[List[torch.Tensor]],
         actions: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
         encoding, memories = self.network_body(
-            all_net_inputs, actions, memories, sequence_length
+            net_inputs, actions, memories, sequence_length
         )
         output = self.value_heads(encoding)
         return output, memories
@@ -310,7 +310,8 @@ class Actor(abc.ABC):
     @abc.abstractmethod
     def forward(
         self,
-        net_inputs: List[torch.Tensor],
+        vec_inputs: List[torch.Tensor],
+        vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
     ) -> Tuple[torch.Tensor, int, int, int, int]:
