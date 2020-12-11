@@ -105,12 +105,15 @@ namespace Unity.MLAgents
             var vectorActionSpaceTypeDeprecated = bp.ActionSpec.NumContinuousActions > 0 ? SpaceType.Continuous : SpaceType.Discrete;
             var brainParametersProto = new BrainParametersProto
             {
-                VectorActionSizeDeprecated = { vectorActionSizeDeprecated },
                 VectorActionSpaceTypeDeprecated = (SpaceTypeProto)vectorActionSpaceTypeDeprecated,
                 BrainName = name,
                 IsTraining = isTraining,
                 ActionSpec = ToActionSpecProto(bp.ActionSpec),
             };
+            if (vectorActionSizeDeprecated != null)
+            {
+                brainParametersProto.VectorActionSizeDeprecated.AddRange(vectorActionSizeDeprecated);
+            }
             if (bp.VectorActionDescriptions != null)
             {
                 brainParametersProto.VectorActionDescriptionsDeprecated.AddRange(bp.VectorActionDescriptions);
