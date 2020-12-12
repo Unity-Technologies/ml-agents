@@ -11,13 +11,11 @@ and this project adheres to
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-- PyTorch trainers now support training agents with both continuous and discrete action spaces.
-Currently, this can only be done with Actuators. Please see
-[here](../Project/Assets/ML-Agents/Examples/Basic/Scripts/BasicActuatorComponent.cs) for an
-example of how to use Actuators. (#4702)
-
+- PyTorch trainers now support training agents with both continuous and discrete action spaces. (#4702)
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Agent with both continuous and discrete actions is now supported. You can specify
+continuous and discrete action sizes repectively in Behavior Parameters. (#4702, #4718)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - `ActionSpec.validate_action()` now enforces that `UnityEnvironment.set_action_for_agent()` receives a 1D `np.array`.
 

@@ -137,7 +137,7 @@ namespace Unity.MLAgents.Actuators
                 }
             }
 
-            return new ActionSpec(numContinuousActions, numDiscreteActions, combinedBranchSizes);
+            return new ActionSpec(numContinuousActions, combinedBranchSizes);
         }
 
         /// <summary>
