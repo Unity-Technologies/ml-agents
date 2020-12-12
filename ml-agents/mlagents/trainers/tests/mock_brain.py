@@ -25,8 +25,7 @@ def create_mock_steps(
 
     :int num_agents: Number of "agents" to imitate.
     :List observation_shapes: A List of the observation spaces in your steps
-    :int num_vector_acts: Number of actions in your action space
-    :bool discrete: Whether or not action space is discrete
+    :int action_spec: ActionSpec for the agent
     :bool done: Whether all the agents in the batch are done
     """
     obs_list = []
