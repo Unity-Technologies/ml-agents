@@ -7,6 +7,7 @@ from mlagents_envs.base_env import (
     ActionTuple,
     BaseEnv,
     BehaviorSpec,
+    SensorType,
     DecisionSteps,
     TerminalSteps,
     BehaviorMapping,
@@ -50,6 +51,9 @@ class SimpleEnvironment(BaseEnv):
         self.num_vector = num_vector
         self.vis_obs_size = vis_obs_size
         self.vec_obs_size = vec_obs_size
+        sensor_types = [
+            SensorType.OBSERVATION for _ in range(len(self._make_obs_spec()))
+        ]
         continuous_action_size, discrete_action_size = action_sizes
         discrete_tuple = tuple(2 for _ in range(discrete_action_size))
         action_spec = ActionSpec(continuous_action_size, discrete_tuple)
@@ -57,7 +61,7 @@ class SimpleEnvironment(BaseEnv):
             continuous_action_size + discrete_action_size
         )  # to set the goals/positions
         self.action_spec = action_spec
-        self.behavior_spec = BehaviorSpec(self._make_obs_spec(), action_spec)
+        self.behavior_spec = BehaviorSpec(self._make_obs_spec(), sensor_types, action_spec)
         self.action_spec = action_spec
         self.names = brain_names
         self.positions: Dict[str, List[float]] = {}

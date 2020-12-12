@@ -349,6 +349,12 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
+        public SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
+
+        /// <inheritdoc/>
         public string GetName()
         {
             return m_Name;

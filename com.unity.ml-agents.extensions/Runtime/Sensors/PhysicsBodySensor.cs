@@ -91,6 +91,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <inheritdoc/>
+        public virtual SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
+
+        /// <inheritdoc/>
         public void Update()
         {
             if (m_Settings.UseModelSpace)

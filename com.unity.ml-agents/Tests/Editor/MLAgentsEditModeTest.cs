@@ -142,6 +142,11 @@ namespace Unity.MLAgents.Tests
             return new byte[] { 0 };
         }
 
+        public SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
+
         public SensorCompressionType GetCompressionType()
         {
             return compressionType;

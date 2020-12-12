@@ -9,6 +9,7 @@ from mlagents_envs.base_env import (
     TerminalSteps,
     BehaviorSpec,
     ActionSpec,
+    SensorType,
     ActionTuple,
 )
 
@@ -32,6 +33,7 @@ def create_mock_steps(
     obs_list = []
     for _shape in observation_shapes:
         obs_list.append(np.ones((num_agents,) + _shape, dtype=np.float32))
+    sensor_types = [SensorType.OBSERVATION for i in range(len(obs_list))]
     action_mask = None
     if action_spec.is_discrete():
         action_mask = [
@@ -42,7 +44,7 @@ def create_mock_steps(
     reward = np.array(num_agents * [1.0], dtype=np.float32)
     interrupted = np.array(num_agents * [False], dtype=np.bool)
     agent_id = np.arange(num_agents, dtype=np.int32)
-    behavior_spec = BehaviorSpec(observation_shapes, action_spec)
+    behavior_spec = BehaviorSpec(observation_shapes, sensor_types, action_spec)
     if done:
         return (
             DecisionSteps.empty(behavior_spec),
@@ -171,7 +173,9 @@ def setup_test_behavior_specs(
     else:
         action_spec = ActionSpec.create_continuous(vector_action_space)
     behavior_spec = BehaviorSpec(
-        [(84, 84, 3)] * int(use_visual) + [(vector_obs_space,)], action_spec
+        [(84, 84, 3)] * int(use_visual) + [(vector_obs_space,)],
+        [SensorType.OBSERVATION],
+        action_spec,
     )
     return behavior_spec
 

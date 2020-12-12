@@ -18,6 +18,7 @@ not necessarily correspond to a fixed simulation time increment.
 
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
+from enum import Enum
 from typing import (
     List,
     NamedTuple,
@@ -244,6 +245,11 @@ class TerminalSteps(Mapping):
         )
 
 
+class SensorType(Enum):
+    OBSERVATION = 0
+    PARAMETERIZATION = 1
+    REWARD = 2
+
 class _ActionTupleBase(ABC):
     """
     An object whose fields correspond to action data of continuous and discrete
@@ -442,10 +448,13 @@ class BehaviorSpec(NamedTuple):
     - observation_shapes is a List of Tuples of int : Each Tuple corresponds
     to an observation's dimensions. The shape tuples have the same ordering as
     the ordering of the DecisionSteps and TerminalSteps.
+    - sensor_types is a List of SensorTypes, each corresponding to the type of
+    sensor (i.e. observation, goal, etc).
     - action_spec is an ActionSpec NamedTuple
     """
 
     observation_shapes: List[Tuple]
+    sensor_types: List[SensorType]
     action_spec: ActionSpec
 
 

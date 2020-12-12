@@ -83,6 +83,12 @@ namespace Unity.MLAgents.Sensors.Reflection
         }
 
         /// <inheritdoc/>
+        public SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
+
+        /// <inheritdoc/>
         public void Update() { }
 
         /// <inheritdoc/>

@@ -94,6 +94,15 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
+        /// RenderTexture sensors are always Observations.
+        /// </summary>
+        /// <returns>Sensor type of observation.</returns>
+        public SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
+
+        /// <summary>
         /// Converts a RenderTexture to a 2D texture.
         /// </summary>
         /// <returns>The 2D texture.</returns>
