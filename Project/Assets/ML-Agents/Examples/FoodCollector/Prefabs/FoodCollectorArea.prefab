@@ -2180,10 +2180,12 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 4
     NumStackedVectorObservations: 1
-    ActionSpec:
-      m_BranchSizes: 02000000
+    m_ActionSpec:
       m_NumContinuousActions: 3
+      BranchSizes: 02000000
+    VectorActionSize: 
     VectorActionDescriptions: []
+    VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
   m_InferenceDevice: 0
@@ -2524,10 +2526,12 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 4
     NumStackedVectorObservations: 1
-    ActionSpec:
-      m_BranchSizes: 02000000
+    m_ActionSpec:
       m_NumContinuousActions: 3
+      BranchSizes: 02000000
+    VectorActionSize: 
     VectorActionDescriptions: []
+    VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
   m_InferenceDevice: 0
@@ -2859,10 +2863,12 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 4
     NumStackedVectorObservations: 1
-    ActionSpec:
-      m_BranchSizes: 02000000
+    m_ActionSpec:
       m_NumContinuousActions: 3
+      BranchSizes: 02000000
+    VectorActionSize: 
     VectorActionDescriptions: []
+    VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
   m_InferenceDevice: 0
@@ -3457,10 +3463,12 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 4
     NumStackedVectorObservations: 1
-    ActionSpec:
-      m_BranchSizes: 02000000
+    m_ActionSpec:
       m_NumContinuousActions: 3
+      BranchSizes: 02000000
+    VectorActionSize: 
     VectorActionDescriptions: []
+    VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
   m_InferenceDevice: 0
@@ -3778,10 +3786,12 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 4
     NumStackedVectorObservations: 1
-    ActionSpec:
-      m_BranchSizes: 02000000
+    m_ActionSpec:
       m_NumContinuousActions: 3
+      BranchSizes: 02000000
+    VectorActionSize: 
     VectorActionDescriptions: []
+    VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
   m_InferenceDevice: 0
