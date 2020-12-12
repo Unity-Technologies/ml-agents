@@ -18,8 +18,8 @@
   - [Raycast Observations](#raycast-observations)
     - [RayCast Observation Summary & Best Practices](#raycast-observation-summary--best-practices)
 - [Actions](#actions)
-  - [Continuous Actions](#continuous-action-space)
-  - [Discrete Actions](#discrete-action-space)
+  - [Continuous Actions](#continuous-actions)
+  - [Discrete Actions](#discrete-actions)
     - [Masking Discrete Actions](#masking-discrete-actions)
   - [Actions Summary & Best Practices](#actions-summary--best-practices)
 - [Rewards](#rewards)
@@ -511,7 +511,7 @@ setting the State Size.
 
 An action is an instruction from the Policy that the agent carries out. The
 action is passed to the Agent as the `ActionBuffers` parameter when the Academy invokes the
-agent's `OnActionReceived()` function. There are two types of actions supported:
+agent's `OnActionReceived()` function. There are two types of actions than an Agent can use:
  **Continuous** and **Discrete**.
 
 Neither the Policy nor the training algorithm know anything about what the
@@ -529,7 +529,9 @@ direction), and the Policy would create an action array containing a single
 element with a value ranging from zero to three. Alternatively, you could create
 two branches of size two (one for horizontal movement and one for vertical
 movement), and the Policy would create an action array containing two elements
-with values ranging from zero to one.
+with values ranging from zero to one. You could even use a combination of continuous
+and discrete actions, for example using one continuous action for horizontal movement,
+and a discrete branch of size two for the vertical movement.
 
 Note that when you are programming actions for an agent, it is often helpful to
 test your action logic using the `Heuristic()` method of the Agent, which lets

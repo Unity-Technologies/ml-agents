@@ -80,7 +80,7 @@ This means that the feature vector containing the Agent's observations contains
 eight elements: the `x` and `z` components of the agent cube's rotation and the
 `x`, `y`, and `z` components of the ball's relative position and velocity.
 
-#### Behavior Parameters : Actions
+#### Behavior Parameters : Vector Action
 
 An Agent is given instructions in the form of actions.
 ML-Agents Toolkit classifies actions into two types: continuous and discrete.
