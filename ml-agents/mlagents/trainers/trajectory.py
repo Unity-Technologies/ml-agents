@@ -98,9 +98,11 @@ class Trajectory(NamedTuple):
             agent_buffer_trajectory["vector_obs"].append(
                 vec_vis_obs.vector_observations
             )
+
             agent_buffer_trajectory["next_vector_in"].append(
                 next_vec_vis_obs.vector_observations
             )
+
             if exp.memory is not None:
                 agent_buffer_trajectory["memory"].append(exp.memory)
 

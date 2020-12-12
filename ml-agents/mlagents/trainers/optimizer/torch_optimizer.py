@@ -52,7 +52,8 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
     def get_trajectory_value_estimates(
         self, batch: AgentBuffer, next_obs: List[np.ndarray], done: bool
     ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:
-        vector_obs = [ModelUtils.list_to_tensor(batch["vector_obs"])]
+        vector_obs = [ModelUtils.list_to_tensor(batch["vector_obs"])[:, 1:]]
+        goals = [ModelUtils.list_to_tensor(batch["vector_obs"])[:, :1]]
         if self.policy.use_vis_obs:
             visual_obs = []
             for idx, _ in enumerate(
@@ -67,19 +68,21 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
 
         vec_vis_obs = SplitObservations.from_observations(next_obs)
         next_vec_obs = [
-            ModelUtils.list_to_tensor(vec_vis_obs.vector_observations).unsqueeze(0)
+            ModelUtils.list_to_tensor(vec_vis_obs.vector_observations[1:]).unsqueeze(0)
         ]
         next_vis_obs = [
             ModelUtils.list_to_tensor(_vis_ob).unsqueeze(0)
             for _vis_ob in vec_vis_obs.visual_observations
         ]
 
+        # goals dont change but otherwise broken
+        next_goals = [torch.as_tensor(vec_vis_obs.vector_observations[:1])]
         value_estimates, next_memory = self.policy.actor_critic.critic_pass(
-            vector_obs, visual_obs, memory, sequence_length=batch.num_experiences
+            vector_obs, visual_obs, goals, memory, sequence_length=batch.num_experiences
         )
 
         next_value_estimate, _ = self.policy.actor_critic.critic_pass(
-            next_vec_obs, next_vis_obs, next_memory, sequence_length=1
+            next_vec_obs, next_vis_obs, next_goals, next_memory, sequence_length=1
         )
 
         for name, estimate in value_estimates.items():

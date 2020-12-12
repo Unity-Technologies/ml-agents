@@ -3,7 +3,13 @@ from typing import List
 from mlagents.torch_utils import torch, nn
 import numpy as np
 import math
-from mlagents.trainers.torch.layers import linear_layer, Initialization
+from mlagents.trainers.torch.layers import (
+    linear_layer,
+    Initialization,
+    LinearEncoder,
+    Swish,
+)
+from mlagents.trainers.torch.utils import ModelUtils
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
@@ -176,6 +182,84 @@ class GaussianDistribution(nn.Module):
             # torch.cat here instead of torch.expand() becuase it is not supported in the
             # verified version of Barracuda (1.0.2).
             log_sigma = torch.cat([self.log_sigma] * inputs.shape[0], axis=0)
+        if self.tanh_squash:
+            return TanhGaussianDistInstance(mu, torch.exp(log_sigma))
+        else:
+            return GaussianDistInstance(mu, torch.exp(log_sigma))
+
+
+class GaussianHyperNetwork(nn.Module):
+    def __init__(
+        self,
+        num_layers,
+        layer_size,
+        hidden_size,
+        num_outputs,
+        conditional_sigma,
+        tanh_squash,
+        num_goals,
+    ):
+        super().__init__()
+        self._num_goals = num_goals
+        self.hidden_size = hidden_size
+        self.tanh_squash = tanh_squash
+        self.conditional_sigma = conditional_sigma
+        self.num_outputs = num_outputs
+        hypernet_encoder = linear_layer(
+            num_goals,
+            layer_size,
+            kernel_init=Initialization.KaimingHeNormal,
+            kernel_gain=0.1,
+            bias_init=Initialization.Zero,
+        )
+        if conditional_sigma:
+            flat_output = linear_layer(
+                layer_size,
+                (2 * hidden_size) * num_outputs,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=0.1,
+                bias_init=Initialization.Zero,
+            )
+            self.log_sigma_w = None
+        else:
+            flat_output = linear_layer(
+                layer_size,
+                hidden_size * num_outputs,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=0.1,
+                bias_init=Initialization.Zero,
+            )
+            self._log_sigma_w = linear_layer(
+                num_goals,
+                num_outputs,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=0.2,
+                bias_init=Initialization.Zero,
+            )
+        self.hypernet = torch.nn.Sequential(hypernet_encoder, Swish(), flat_output)
+
+    def forward(self, inputs: torch.Tensor, goal: torch.Tensor):
+        goal_onehot = torch.nn.functional.one_hot(
+            goal[0].long(), self._num_goals
+        ).float()
+        flat_output_weights = self.hypernet(goal_onehot)
+        b = inputs.size(0)
+        if self.conditional_sigma:
+            output_weights = torch.reshape(
+                flat_output_weights, (b, 2 * self.hidden_size, self.num_outputs)
+            )
+            mu_w, log_sigma_w = torch.split(output_weights, self.hidden_size, dim=-1)
+            log_sigma = torch.bmm(inputs.unsqueeze(dim=1), log_sigma_w)
+            log_sigma = log_sigma.squeeze()
+        else:
+            mu_w = torch.reshape(
+                flat_output_weights, (b, self.hidden_size, self.num_outputs)
+            )
+            log_sigma = self._log_sigma_w(goal_onehot)
+            log_sigma = torch.squeeze(log_sigma)
+
+        mu = torch.bmm(inputs.unsqueeze(dim=1), mu_w)
+        mu = mu.squeeze()
         if self.tanh_squash:
             return TanhGaussianDistInstance(mu, torch.exp(log_sigma))
         else:

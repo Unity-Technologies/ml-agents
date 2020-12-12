@@ -9,7 +9,7 @@ from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
-from mlagents.trainers.torch.decoders import ValueHeads
+from mlagents.trainers.torch.decoders import ValueHeads, ValueHeadsHyperNetwork
 from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 from mlagents.trainers.torch.model_serialization import exporting_to_onnx
 
@@ -43,7 +43,7 @@ class NetworkBody(nn.Module):
             self.vector_processors,
             encoder_input_size,
         ) = ModelUtils.create_input_processors(
-            observation_shapes,
+            observation_shapes[1:],
             self.h_size,
             network_settings.vis_encode_type,
             normalize=self.normalize,
@@ -129,7 +129,14 @@ class ValueNetwork(nn.Module):
             encoding_size = network_settings.memory.memory_size // 2
         else:
             encoding_size = network_settings.hidden_units
-        self.value_heads = ValueHeads(stream_names, encoding_size, outputs_per_stream)
+        self.value_heads = ValueHeadsHyperNetwork(
+            num_layers=1,
+            layer_size=128,
+            num_goals=2,
+            stream_names=stream_names,
+            input_size=encoding_size,
+            output_size=outputs_per_stream,
+        )
 
     @property
     def memory_size(self) -> int:
@@ -139,6 +146,7 @@ class ValueNetwork(nn.Module):
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
+        goal: List[torch.tensor],
         actions: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
@@ -146,7 +154,7 @@ class ValueNetwork(nn.Module):
         encoding, memories = self.network_body(
             vec_inputs, vis_inputs, actions, memories, sequence_length
         )
-        output = self.value_heads(encoding)
+        output = self.value_heads(encoding, goal)
         return output, memories
 
 
@@ -181,6 +189,7 @@ class ActorCritic(Actor):
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
+        goal: List[torch.Tensor],
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
@@ -290,6 +299,8 @@ class SimpleActor(nn.Module, Actor):
         At this moment, torch.onnx.export() doesn't accept None as tensor to be exported,
         so the size of return tuple varies with action spec.
         """
+        vec_inputs = [vec_inputs[0][:, 1:]]
+        goal = [vec_inputs[0][:, :1]]
         encoding, memories_out = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=1
         )
@@ -298,7 +309,7 @@ class SimpleActor(nn.Module, Actor):
             cont_action_out,
             disc_action_out,
             action_out_deprecated,
-        ) = self.action_model.get_action_out(encoding, masks)
+        ) = self.action_model.get_action_out(encoding, masks, goal)
         export_out = [
             self.version_number,
             torch.Tensor([self.network_body.memory_size]),
@@ -342,6 +353,7 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
+        goal: List[torch.Tensor],
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
@@ -362,7 +374,9 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
-        log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
+        log_probs, entropies = self.action_model.evaluate(
+            encoding, masks, actions, goal
+        )
         value_outputs = self.value_heads(encoding)
         return log_probs, entropies, value_outputs
 
@@ -380,7 +394,7 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
-        action, log_probs, entropies = self.action_model(encoding, masks)
+        action, log_probs, entropies = self.action_model(encoding, masks, goal)
         value_outputs = self.value_heads(encoding)
         return action, log_probs, entropies, value_outputs, memories
 
@@ -414,6 +428,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
+        goal: List[torch.Tensor],
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
@@ -422,7 +437,11 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             # Use only the back half of memories for critic
             actor_mem, critic_mem = torch.split(memories, self.memory_size // 2, -1)
         value_outputs, critic_mem_out = self.critic(
-            vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
+            vec_inputs,
+            vis_inputs,
+            goal,
+            memories=critic_mem,
+            sequence_length=sequence_length,
         )
         if actor_mem is not None:
             # Make memories with the actor mem unchanged
@@ -435,6 +454,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
+        goals: List[torch.Tensor],
         actions: AgentAction,
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
@@ -446,12 +466,19 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         else:
             critic_mem = None
             actor_mem = None
+
         encoding, actor_mem_outs = self.network_body(
             vec_inputs, vis_inputs, memories=actor_mem, sequence_length=sequence_length
         )
-        log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
+        log_probs, entropies = self.action_model.evaluate(
+            encoding, masks, actions, goals
+        )
         value_outputs, critic_mem_outs = self.critic(
-            vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
+            vec_inputs,
+            vis_inputs,
+            goals,
+            memories=critic_mem,
+            sequence_length=sequence_length,
         )
 
         return log_probs, entropies, value_outputs
@@ -460,6 +487,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
+        goals: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
@@ -475,9 +503,13 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         encoding, actor_mem_outs = self.network_body(
             vec_inputs, vis_inputs, memories=actor_mem, sequence_length=sequence_length
         )
-        action, log_probs, entropies = self.action_model(encoding, masks)
+        action, log_probs, entropies = self.action_model(encoding, masks, goals)
         value_outputs, critic_mem_outs = self.critic(
-            vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
+            vec_inputs,
+            vis_inputs,
+            goals,
+            memories=critic_mem,
+            sequence_length=sequence_length,
         )
         if self.use_lstm:
             mem_out = torch.cat([actor_mem_outs, critic_mem_outs], dim=-1)
