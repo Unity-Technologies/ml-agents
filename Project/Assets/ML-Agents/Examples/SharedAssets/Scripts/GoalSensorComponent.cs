@@ -31,9 +31,9 @@ public class GoalSensorComponent : SensorComponent
 
     public void AddOneHotGoal(int goal, int range)
     {
-        for (var i = 0; i < range; i++)
+        if (goalSensor != null)
         {
-            goalSensor.AddObservation(i == goal ? 1.0f : 0.0f);
+            goalSensor.AddOneHotObservation(goal, range);
         }
     }
 }
