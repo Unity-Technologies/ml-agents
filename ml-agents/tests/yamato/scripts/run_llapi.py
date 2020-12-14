@@ -1,5 +1,4 @@
 import argparse
-import numpy as np
 
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.engine_configuration_channel import (
@@ -53,27 +52,10 @@ def test_run_environment(env_name):
             episode_rewards = 0
             tracked_agent = -1
             while not done:
-                if group_spec.action_spec.is_continuous():
-                    action = np.random.randn(
-                        len(decision_steps), group_spec.action_spec.continuous_size
-                    )
-
-                elif group_spec.action_spec.is_discrete():
-                    branch_size = group_spec.action_spec.discrete_branches
-                    action = np.column_stack(
-                        [
-                            np.random.randint(
-                                0, branch_size[i], size=(len(decision_steps))
-                            )
-                            for i in range(len(branch_size))
-                        ]
-                    )
-                else:
-                    # Should never happen
-                    action = None
+                action_tuple = group_spec.action_spec.random_action(len(decision_steps))
                 if tracked_agent == -1 and len(decision_steps) >= 1:
                     tracked_agent = decision_steps.agent_id[0]
-                env.set_actions(group_name, action)
+                env.set_actions(group_name, action_tuple)
                 env.step()
                 decision_steps, terminal_steps = env.get_steps(group_name)
                 done = False

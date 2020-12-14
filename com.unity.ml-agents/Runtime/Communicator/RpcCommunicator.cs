@@ -36,8 +36,8 @@ namespace Unity.MLAgents
         UnityRLOutputProto m_CurrentUnityRlOutput =
             new UnityRLOutputProto();
 
-        Dictionary<string, Dictionary<int, float[]>> m_LastActionsReceived =
-            new Dictionary<string, Dictionary<int, float[]>>();
+        Dictionary<string, Dictionary<int, ActionBuffers>> m_LastActionsReceived =
+            new Dictionary<string, Dictionary<int, ActionBuffers>>();
 
         // Brains that we have sent over the communicator with agents.
         HashSet<string> m_SentBrainKeys = new HashSet<string>();
@@ -75,7 +75,6 @@ namespace Unity.MLAgents
                 {
                     return false;
                 }
-
             }
             else if (unityVersion.Major != pythonVersion.Major)
             {
@@ -348,9 +347,9 @@ namespace Unity.MLAgents
             }
             if (!m_LastActionsReceived.ContainsKey(behaviorName))
             {
-                m_LastActionsReceived[behaviorName] = new Dictionary<int, float[]>();
+                m_LastActionsReceived[behaviorName] = new Dictionary<int, ActionBuffers>();
             }
-            m_LastActionsReceived[behaviorName][info.episodeId] = null;
+            m_LastActionsReceived[behaviorName][info.episodeId] = ActionBuffers.Empty;
             if (info.done)
             {
                 m_LastActionsReceived[behaviorName].Remove(info.episodeId);
@@ -423,7 +422,7 @@ namespace Unity.MLAgents
             }
         }
 
-        public float[] GetActions(string behaviorName, int agentId)
+        public ActionBuffers GetActions(string behaviorName, int agentId)
         {
             if (m_LastActionsReceived.ContainsKey(behaviorName))
             {
@@ -432,7 +431,7 @@ namespace Unity.MLAgents
                     return m_LastActionsReceived[behaviorName][agentId];
                 }
             }
-            return null;
+            return ActionBuffers.Empty;
         }
 
         /// <summary>

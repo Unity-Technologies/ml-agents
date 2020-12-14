@@ -42,7 +42,7 @@ class CuriosityRewardSignal(RewardSignal):
 
     def evaluate_batch(self, mini_batch: AgentBuffer) -> RewardSignalResult:
         feed_dict: Dict[tf.Tensor, Any] = {
-            self.policy.batch_size_ph: len(mini_batch["actions"]),
+            self.policy.batch_size_ph: len(mini_batch["vector_obs"]),
             self.policy.sequence_length_ph: self.policy.sequence_length,
         }
         if self.policy.use_vec_obs:
@@ -56,9 +56,9 @@ class CuriosityRewardSignal(RewardSignal):
                 feed_dict[self.model.next_visual_in[i]] = _next_obs
 
         if self.policy.use_continuous_act:
-            feed_dict[self.policy.selected_actions] = mini_batch["actions"]
+            feed_dict[self.policy.selected_actions] = mini_batch["continuous_action"]
         else:
-            feed_dict[self.policy.output] = mini_batch["actions"]
+            feed_dict[self.policy.output] = mini_batch["discrete_action"]
         unscaled_reward = self.policy.sess.run(
             self.model.intrinsic_reward, feed_dict=feed_dict
         )
@@ -82,9 +82,9 @@ class CuriosityRewardSignal(RewardSignal):
             policy.mask_input: mini_batch["masks"],
         }
         if self.policy.use_continuous_act:
-            feed_dict[policy.selected_actions] = mini_batch["actions"]
+            feed_dict[policy.selected_actions] = mini_batch["continuous_action"]
         else:
-            feed_dict[policy.output] = mini_batch["actions"]
+            feed_dict[policy.output] = mini_batch["discrete_action"]
         if self.policy.use_vec_obs:
             feed_dict[policy.vector_in] = mini_batch["vector_obs"]
             feed_dict[self.model.next_vector_in] = mini_batch["next_vector_in"]

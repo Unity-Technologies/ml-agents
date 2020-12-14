@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using UnityEngine;
 using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
@@ -22,7 +21,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// Keeps track of the last vector action taken by the Brain.
         /// </summary>
-        public float[] storedVectorActions;
+        public ActionBuffers storedVectorActions;
 
         /// <summary>
         /// For discrete control, specifies the actions that the agent cannot take.
@@ -53,12 +52,21 @@ namespace Unity.MLAgents
 
         public void ClearActions()
         {
-            Array.Clear(storedVectorActions, 0, storedVectorActions.Length);
+            storedVectorActions.Clear();
         }
 
         public void CopyActions(ActionBuffers actionBuffers)
         {
-            actionBuffers.PackActions(storedVectorActions);
+            var continuousActions = storedVectorActions.ContinuousActions;
+            for (var i = 0; i < actionBuffers.ContinuousActions.Length; i++)
+            {
+                continuousActions[i] = actionBuffers.ContinuousActions[i];
+            }
+            var discreteActions = storedVectorActions.DiscreteActions;
+            for (var i = 0; i < actionBuffers.DiscreteActions.Length; i++)
+            {
+                discreteActions[i] = actionBuffers.DiscreteActions[i];
+            }
         }
     }
 
@@ -98,7 +106,7 @@ namespace Unity.MLAgents
     /// * <see cref="BehaviorType.InferenceOnly"/>: decisions are always made using the trained
     ///   model specified in the <see cref="BehaviorParameters"/> component.
     /// * <see cref="BehaviorType.HeuristicOnly"/>: when a decision is needed, the agent's
-    ///   <see cref="Heuristic"/> function is called. Your implementation is responsible for
+    ///   <see cref="Heuristic(in ActionBuffers)"/> function is called. Your implementation is responsible for
     ///   providing the appropriate action.
     ///
     /// To trigger an agent decision automatically, you can attach a <see cref="DecisionRequester"/>
@@ -109,7 +117,7 @@ namespace Unity.MLAgents
     /// can only take an action when it touches the ground, so several frames might elapse between
     /// one decision and the need for the next.
     ///
-    /// Use the <see cref="OnActionReceived(float[])"/> function to implement the actions your agent can take,
+    /// Use the <see cref="OnActionReceived(ActionBuffers)"/> function to implement the actions your agent can take,
     /// such as moving to reach a goal or interacting with its environment.
     ///
     /// When you call <see cref="EndEpisode"/> on an agent or the agent reaches its <see cref="MaxStep"/> count,
@@ -125,7 +133,7 @@ namespace Unity.MLAgents
     /// only use the [MonoBehaviour.Update] function for cosmetic purposes. If you override the [MonoBehaviour]
     /// methods, [OnEnable()] or [OnDisable()], always call the base Agent class implementations.
     ///
-    /// You can implement the <see cref="Heuristic"/> function to specify agent actions using
+    /// You can implement the <see cref="Heuristic(in ActionBuffers)"/> function to specify agent actions using
     /// your own heuristic algorithm. Implementing a heuristic function can be useful
     /// for debugging. For example, you can use keyboard input to select agent actions in
     /// order to manually control an agent's behavior.
@@ -293,7 +301,7 @@ namespace Unity.MLAgents
 
         /// <summary>
         /// VectorActuator which is used by default if no other sensors exist on this Agent. This VectorSensor will
-        /// delegate its actions to <see cref="OnActionReceived(float[])"/> by default in order to keep backward compatibility
+        /// delegate its actions to <see cref="OnActionReceived(ActionBuffers)"/> by default in order to keep backward compatibility
         /// with the current behavior of Agent.
         /// </summary>
         IActuator m_VectorActuator;
@@ -430,7 +438,10 @@ namespace Unity.MLAgents
                 InitializeSensors();
             }
 
-            m_Info.storedVectorActions = new float[m_ActuatorManager.TotalNumberOfActions];
+            m_Info.storedVectorActions = new ActionBuffers(
+                new float[m_ActuatorManager.NumContinuousActions],
+                new int[m_ActuatorManager.NumDiscreteActions]
+            );
 
             // The first time the Academy resets, all Agents in the scene will be
             // forced to reset through the <see cref="AgentForceReset"/> event.
@@ -546,7 +557,7 @@ namespace Unity.MLAgents
             m_CumulativeReward = 0f;
             m_RequestAction = false;
             m_RequestDecision = false;
-            Array.Clear(m_Info.storedVectorActions, 0, m_Info.storedVectorActions.Length);
+            m_Info.storedVectorActions.Clear();
         }
 
         /// <summary>
@@ -630,7 +641,7 @@ namespace Unity.MLAgents
         /// Use <see cref="AddReward(float)"/> to incrementally change the reward rather than
         /// overriding it.
         ///
-        /// Typically, you assign rewards in the Agent subclass's <see cref="OnActionReceived(float[])"/>
+        /// Typically, you assign rewards in the Agent subclass's <see cref="OnActionReceived(ActionBuffers)"/>
         /// implementation after carrying out the received action and evaluating its success.
         ///
         /// Rewards are used during reinforcement learning; they are ignored during inference.
@@ -859,11 +870,12 @@ namespace Unity.MLAgents
         /// You can also use the [Input System package], which provides a more flexible and
         /// configurable input system.
         /// <code>
-        ///     public override void Heuristic(ActionBuffers actionsOut)
+        ///     public override void Heuristic(in ActionBuffers actionsOut)
         ///     {
-        ///         actionsOut.ContinuousActions[0] = Input.GetAxis("Horizontal");
-        ///         actionsOut.ContinuousActions[1] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
-        ///         actionsOut.ContinuousActions[2] = Input.GetAxis("Vertical");
+        ///         var continuousActionsOut = actionsOut.ContinuousActions;
+        ///         continuousActionsOut[0] = Input.GetAxis("Horizontal");
+        ///         continuousActionsOut[1] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
+        ///         continuousActionsOut[2] = Input.GetAxis("Vertical");
         ///     }
         /// </code>
         /// [Input Manager]: https://docs.unity3d.com/Manual/class-InputManager.html
@@ -975,7 +987,7 @@ namespace Unity.MLAgents
             // Support legacy OnActionReceived
             // TODO don't set this up if the sizes are 0?
             var param = m_PolicyFactory.BrainParameters;
-            m_VectorActuator = new VectorActuator(this, param.VectorActionSize, param.VectorActionSpaceType);
+            m_VectorActuator = new VectorActuator(this, param.ActionSpec);
             m_ActuatorManager = new ActuatorManager(attachedActuators.Length + 1);
             m_LegacyActionCache = new float[m_VectorActuator.TotalNumberOfActions()];
 
@@ -1009,7 +1021,7 @@ namespace Unity.MLAgents
             }
             else
             {
-                m_ActuatorManager.StoredActions.PackActions(m_Info.storedVectorActions);
+                m_Info.CopyActions(m_ActuatorManager.StoredActions);
             }
 
             UpdateSensors();
@@ -1212,7 +1224,14 @@ namespace Unity.MLAgents
         /// </param>
         public virtual void OnActionReceived(ActionBuffers actions)
         {
-            actions.PackActions(m_LegacyActionCache);
+            if (!actions.ContinuousActions.IsEmpty())
+            {
+                m_LegacyActionCache = actions.ContinuousActions.Array;
+            }
+            else
+            {
+                m_LegacyActionCache = Array.ConvertAll(actions.DiscreteActions.Array, x => (float)x);
+            }
             OnActionReceived(m_LegacyActionCache);
         }
 
@@ -1245,7 +1264,6 @@ namespace Unity.MLAgents
             {
                 OnEpisodeBegin();
             }
-
         }
 
         /// <summary>

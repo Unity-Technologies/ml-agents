@@ -41,8 +41,8 @@ public class GridAgent : Agent
         if (maskActions)
         {
             // Prevents the agent from picking an action that would make it collide with a wall
-            var positionX = (int)transform.position.x;
-            var positionZ = (int)transform.position.z;
+            var positionX = (int)transform.localPosition.x;
+            var positionZ = (int)transform.localPosition.z;
             var maxPosition = (int)m_ResetParams.GetWithDefault("gridSize", 5f) - 1;
 
             if (positionX == 0)
