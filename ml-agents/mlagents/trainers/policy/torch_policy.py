@@ -142,8 +142,8 @@ class TorchPolicy(Policy):
 
     def evaluate_actions(
         self,
-        vec_obs: torch.Tensor,
-        vis_obs: torch.Tensor,
+        vec_obs: List[torch.Tensor],
+        vis_obs: List[torch.Tensor],
         actions: AgentAction,
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
