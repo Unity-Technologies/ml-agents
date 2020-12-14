@@ -131,7 +131,7 @@ class ValueNetwork(nn.Module):
             encoding_size = network_settings.hidden_units
         self.value_heads = ValueHeadsHyperNetwork(
             num_layers=1,
-            layer_size=128,
+            layer_size=256,
             num_goals=2,
             stream_names=stream_names,
             input_size=encoding_size,

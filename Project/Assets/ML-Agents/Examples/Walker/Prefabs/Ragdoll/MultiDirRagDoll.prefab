@@ -15,7 +15,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 500
+  MaxStep: 5000
   m_TargetWalkingSpeed: 10
   randomizeWalkSpeedEachEpisode: 0
   target: {fileID: 4058446934158437408}
@@ -36,6 +36,19 @@ MonoBehaviour:
   forearmR: {fileID: 7818481576563420652}
   handR: {fileID: 7818481575132336870}
   goals: 2
+--- !u!114 &1800586501491974962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077752704035527923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 163dac4bcbb2f4d8499db2cdcb22a89e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  observationSize: 1
 --- !u!1001 &186987432828422960
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -154,7 +167,7 @@ PrefabInstance:
     - target: {fileID: 895268871377934297, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
-      value: 245
+      value: 243
       objectReference: {fileID: 0}
     - target: {fileID: 6359877977706987617, guid: 765582efd9dda46ed98564603316353f,
         type: 3}

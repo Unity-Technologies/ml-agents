@@ -57,6 +57,7 @@ public class MultiDirWalkerAgent : Agent
     //This will be used as a stabilized model space reference point for observations
     //Because ragdolls can move erratically during training, using a stabilized reference transform improves learning
     OrientationCubeController m_OrientationCube;
+    GoalSensorComponent goalSensor;
 
     //The indicator graphic gameobject that points towards the target
     DirectionIndicator m_DirectionIndicator;
@@ -67,6 +68,7 @@ public class MultiDirWalkerAgent : Agent
     {
         m_startingPos = target.position;
         m_Goal = Random.Range(0, goals);
+        //m_Goal = 0;
         m_GoalOneHot = new float[goals];
         System.Array.Clear(m_GoalOneHot, 0, m_GoalOneHot.Length);
         m_GoalOneHot[m_Goal] = 1;
@@ -115,6 +117,7 @@ public class MultiDirWalkerAgent : Agent
     public override void OnEpisodeBegin()
     {
         m_Goal = Random.Range(0, goals);
+        //m_Goal = 0;
         System.Array.Clear(m_GoalOneHot, 0, m_GoalOneHot.Length);
         m_GoalOneHot[m_Goal] = 1;
         if (m_Goal == 0)
@@ -201,7 +204,9 @@ public class MultiDirWalkerAgent : Agent
             CollectObservationBodyPart(bodyPart, sensor);
         }
 
-        sensor.AddObservation(m_GoalOneHot);
+        //sensor.AddObservation(m_GoalOneHot);
+        goalSensor = this.GetComponent<GoalSensorComponent>();
+        goalSensor.AddGoal(m_Goal);
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)

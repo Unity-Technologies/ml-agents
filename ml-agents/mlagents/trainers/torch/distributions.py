@@ -205,26 +205,41 @@ class GaussianHyperNetwork(nn.Module):
         self.tanh_squash = tanh_squash
         self.conditional_sigma = conditional_sigma
         self.num_outputs = num_outputs
-        hypernet_encoder = linear_layer(
-            num_goals,
-            layer_size,
-            kernel_init=Initialization.KaimingHeNormal,
-            kernel_gain=0.1,
-            bias_init=Initialization.Zero,
-        )
-        if conditional_sigma:
-            flat_output = linear_layer(
+        layers = []
+        layers.append(
+            linear_layer(
+                num_goals,
                 layer_size,
-                (2 * hidden_size) * num_outputs,
                 kernel_init=Initialization.KaimingHeNormal,
                 kernel_gain=0.1,
                 bias_init=Initialization.Zero,
             )
-            self.log_sigma_w = None
+        )
+        layers.append(Swish())
+        for _ in range(num_layers - 1):
+            layers.append(
+                linear_layer(
+                    layer_size,
+                    layer_size,
+                    kernel_init=Initialization.KaimingHeNormal,
+                    kernel_gain=0.1,
+                    bias_init=Initialization.Zero,
+                )
+            )
+            layers.append(Swish())
+        if conditional_sigma:
+            flat_output = linear_layer(
+                layer_size,
+                (2 * hidden_size) * num_outputs + num_outputs,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=0.01,
+                bias_init=Initialization.Zero,
+            )
+            self._log_sigma_w = None
         else:
             flat_output = linear_layer(
                 layer_size,
-                hidden_size * num_outputs,
+                hidden_size * num_outputs + num_outputs,
                 kernel_init=Initialization.KaimingHeNormal,
                 kernel_gain=0.1,
                 bias_init=Initialization.Zero,
@@ -233,32 +248,43 @@ class GaussianHyperNetwork(nn.Module):
                 num_goals,
                 num_outputs,
                 kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=0.2,
+                kernel_gain=0.1,
                 bias_init=Initialization.Zero,
             )
-        self.hypernet = torch.nn.Sequential(hypernet_encoder, Swish(), flat_output)
+        self.hypernet = torch.nn.Sequential(*layers, flat_output)
 
     def forward(self, inputs: torch.Tensor, goal: torch.Tensor):
         goal_onehot = torch.nn.functional.one_hot(
             goal[0].long(), self._num_goals
         ).float()
+
+        # cond (b, 2 * H * O + O
+        # not cond (b, H * O + O
         flat_output_weights = self.hypernet(goal_onehot)
         b = inputs.size(0)
+        inputs = inputs.unsqueeze(dim=1)
         if self.conditional_sigma:
-            output_weights = torch.reshape(
-                flat_output_weights, (b, 2 * self.hidden_size, self.num_outputs)
+            mu_w_log_sigma_w, mu_b = torch.split(
+                flat_output_weights, 2 * self.hidden_size * self.num_outputs, dim=-1
             )
-            mu_w, log_sigma_w = torch.split(output_weights, self.hidden_size, dim=-1)
-            log_sigma = torch.bmm(inputs.unsqueeze(dim=1), log_sigma_w)
+            mu_w_log_sigma_w = torch.reshape(
+                mu_w_log_sigma_w, (b, 2 * self.hidden_size, self.num_outputs)
+            )
+
+            mu_w, log_sigma_w = torch.split(mu_w_log_sigma_w, self.hidden_size, dim=1)
+            log_sigma = torch.bmm(inputs, log_sigma_w)
             log_sigma = log_sigma.squeeze()
+            log_sigma = torch.clamp(log_sigma, min=-20, max=2)
         else:
-            mu_w = torch.reshape(
-                flat_output_weights, (b, self.hidden_size, self.num_outputs)
+            mu_w, mu_b = torch.split(
+                flat_output_weights, self.hidden_size * self.num_outputs, dim=-1
             )
+            mu_w = torch.reshape(mu_w, (b, self.hidden_size, self.num_outputs))
             log_sigma = self._log_sigma_w(goal_onehot)
             log_sigma = torch.squeeze(log_sigma)
 
-        mu = torch.bmm(inputs.unsqueeze(dim=1), mu_w)
+        mu = torch.bmm(inputs, mu_w)
+        mu = mu + mu_b
         mu = mu.squeeze()
         if self.tanh_squash:
             return TanhGaussianDistInstance(mu, torch.exp(log_sigma))

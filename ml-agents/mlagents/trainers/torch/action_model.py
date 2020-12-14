@@ -54,7 +54,7 @@ class ActionModel(nn.Module):
         if self.action_spec.continuous_size > 0:
             self._continuous_distribution = GaussianHyperNetwork(
                 num_layers=1,
-                layer_size=128,
+                layer_size=256,
                 hidden_size=self.encoding_size,
                 num_outputs=self.action_spec.continuous_size,
                 conditional_sigma=conditional_sigma,

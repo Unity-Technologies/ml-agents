@@ -45,22 +45,37 @@ class ValueHeadsHyperNetwork(nn.Module):
         self.input_size = input_size
         self.output_size = output_size
         self.streams_size = len(stream_names)
-        hypernet_encoder = linear_layer(
-            num_goals,
-            layer_size,
-            kernel_init=Initialization.KaimingHeNormal,
-            kernel_gain=1.0,
-            bias_init=Initialization.Zero,
+        layers = []
+        layers.append(
+            linear_layer(
+                num_goals,
+                layer_size,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=1.0,
+                bias_init=Initialization.Zero,
+            )
         )
-
+        layers.append(Swish())
+        for _ in range(num_layers - 1):
+            layers.append(
+                linear_layer(
+                    layer_size,
+                    layer_size,
+                    kernel_init=Initialization.KaimingHeNormal,
+                    kernel_gain=1.0,
+                    bias_init=Initialization.Zero,
+                )
+            )
+            layers.append(Swish())
         flat_output = linear_layer(
             layer_size,
-            input_size * output_size * self.streams_size,
+            input_size * output_size * self.streams_size
+            + self.output_size * self.streams_size,
             kernel_init=Initialization.KaimingHeNormal,
             kernel_gain=0.1,
             bias_init=Initialization.Zero,
         )
-        self.hypernet = torch.nn.Sequential(hypernet_encoder, Swish(), flat_output)
+        self.hypernet = torch.nn.Sequential(*layers, flat_output)
 
     def forward(
         self, hidden: torch.Tensor, goal: torch.Tensor
@@ -68,16 +83,27 @@ class ValueHeadsHyperNetwork(nn.Module):
         goal_onehot = torch.nn.functional.one_hot(
             goal[0].long(), self._num_goals
         ).float()
+        # (b, i * o * streams + o * streams)
         flat_output_weights = self.hypernet(goal_onehot)
         b = hidden.size(0)
 
-        output_heads = torch.reshape(
+        output_weights, output_bias = torch.split(
             flat_output_weights,
-            (self.streams_size, b, self.input_size, self.output_size),
+            self.streams_size * self.input_size * self.output_size,
+            dim=-1,
         )
+        output_weights = torch.reshape(
+            output_weights, (self.streams_size, b, self.input_size, self.output_size)
+        )
+        output_bias = torch.reshape(
+            output_bias, (self.streams_size, b, self.output_size)
+        )
+        output_bias = output_bias.unsqueeze(dim=2)
         value_outputs = {}
-        for stream_name, out_h in zip(self.stream_names, output_heads):
-            value_outputs[stream_name] = torch.bmm(
-                hidden.unsqueeze(dim=1), out_h
-            ).squeeze()
+        for stream_name, out_w, out_b in zip(
+            self.stream_names, output_weights, output_bias
+        ):
+            inp_out_w = torch.bmm(hidden.unsqueeze(dim=1), out_w)
+            inp_out_w_out_b = inp_out_w + out_b
+            value_outputs[stream_name] = inp_out_w_out_b.squeeze()
         return value_outputs
