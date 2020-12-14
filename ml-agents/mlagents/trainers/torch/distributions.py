@@ -230,9 +230,9 @@ class GaussianHyperNetwork(nn.Module):
         if conditional_sigma:
             flat_output = linear_layer(
                 layer_size,
-                (2 * hidden_size) * num_outputs + num_outputs,
+                2 * (hidden_size * num_outputs + num_outputs),
                 kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=0.01,
+                kernel_gain=0.1,
                 bias_init=Initialization.Zero,
             )
             self._log_sigma_w = None
@@ -264,8 +264,14 @@ class GaussianHyperNetwork(nn.Module):
         b = inputs.size(0)
         inputs = inputs.unsqueeze(dim=1)
         if self.conditional_sigma:
-            mu_w_log_sigma_w, mu_b = torch.split(
-                flat_output_weights, 2 * self.hidden_size * self.num_outputs, dim=-1
+            mu_w_log_sigma_w, mu_b, log_sigma_b = torch.split(
+                flat_output_weights,
+                [
+                    2 * self.hidden_size * self.num_outputs,
+                    self.num_outputs,
+                    self.num_outputs,
+                ],
+                dim=-1,
             )
             mu_w_log_sigma_w = torch.reshape(
                 mu_w_log_sigma_w, (b, 2 * self.hidden_size, self.num_outputs)
@@ -273,6 +279,7 @@ class GaussianHyperNetwork(nn.Module):
 
             mu_w, log_sigma_w = torch.split(mu_w_log_sigma_w, self.hidden_size, dim=1)
             log_sigma = torch.bmm(inputs, log_sigma_w)
+            log_sigma = log_sigma + log_sigma_b
             log_sigma = log_sigma.squeeze()
             log_sigma = torch.clamp(log_sigma, min=-20, max=2)
         else:
