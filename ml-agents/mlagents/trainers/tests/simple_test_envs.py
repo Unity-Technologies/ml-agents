@@ -61,7 +61,9 @@ class SimpleEnvironment(BaseEnv):
             continuous_action_size + discrete_action_size
         )  # to set the goals/positions
         self.action_spec = action_spec
-        self.behavior_spec = BehaviorSpec(self._make_obs_spec(), sensor_types, action_spec)
+        self.behavior_spec = BehaviorSpec(
+            self._make_obs_spec(), sensor_types, action_spec
+        )
         self.action_spec = action_spec
         self.names = brain_names
         self.positions: Dict[str, List[float]] = {}

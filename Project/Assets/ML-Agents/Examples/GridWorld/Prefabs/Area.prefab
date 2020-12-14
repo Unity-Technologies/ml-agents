@@ -305,6 +305,7 @@ GameObject:
   - component: {fileID: 114650561397225712}
   - component: {fileID: 114889700908650620}
   - component: {fileID: 7980686505185502968}
+  - component: {fileID: 8359584214300847863}
   m_Layer: 8
   m_Name: Agent
   m_TagString: agent
@@ -364,7 +365,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 2
+    VectorObservationSize: 0
     NumStackedVectorObservations: 1
     VectorActionSize: 05000000
     VectorActionDescriptions: []
@@ -430,6 +431,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugCommandLineOverride: 
+--- !u!114 &8359584214300847863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1488387672112076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 163dac4bcbb2f4d8499db2cdcb22a89e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  observationSize: 1
 --- !u!1 &1625008366184734
 GameObject:
   m_ObjectHideFlags: 0

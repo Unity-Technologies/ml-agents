@@ -23,6 +23,7 @@ public class GridAgent : Agent
         "masking turned on may not behave optimally when action masking is turned off.")]
     public bool maskActions = true;
 
+    GoalSensorComponent goalSensor;
 
     public GridGoal gridGoal;
 
@@ -49,7 +50,8 @@ public class GridAgent : Agent
     {
         Array values = Enum.GetValues(typeof(GridGoal));
         int goalNum = (int)gridGoal;
-        sensor.AddOneHotObservation(goalNum, values.Length);
+        goalSensor = this.GetComponent<GoalSensorComponent>();
+        goalSensor.AddGoal(goalNum);
     }
 
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
