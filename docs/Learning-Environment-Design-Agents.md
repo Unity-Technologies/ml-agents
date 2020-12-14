@@ -83,7 +83,7 @@ As a concrete example, here is how the Ball3DAgent class implements these method
   method calls `VectorSensor.AddObservation()` such that vector size adds up to 8,
   the Behavior Parameters of the Agent are set with vector observation space
   with a state size of 8.
-- `Agent.OnActionReceived()` — The actions result
+- `Agent.OnActionReceived()` — The action results
   in a small change in the agent cube's rotation at each step. In this example,
   an Agent receives a small positive reward for each step it keeps the ball on the
   agent cube's head and a larger, negative reward for dropping the ball. An
@@ -511,7 +511,7 @@ setting the State Size.
 
 An action is an instruction from the Policy that the agent carries out. The
 action is passed to the Agent as the `ActionBuffers` parameter when the Academy invokes the
-agent's `OnActionReceived()` function. There are two types of actions than an Agent can use:
+agent's `OnActionReceived()` function. There are two types of actions that an Agent can use:
  **Continuous** and **Discrete**.
 
 Neither the Policy nor the training algorithm know anything about what the
@@ -523,14 +523,14 @@ for an Agent is in the `OnActionReceived()` function.
 For example, if you designed an agent to move in two dimensions, you could use
 either continuous or the discrete actions. In the continuous case, you
 would set the action size to two (one for each dimension), and the
-agent's Policy would create an action with two floating point values. In the
+agent's Policy would output an action with two floating point values. In the
 discrete case, you would use one Branch with a size of four (one for each
 direction), and the Policy would create an action array containing a single
 element with a value ranging from zero to three. Alternatively, you could create
 two branches of size two (one for horizontal movement and one for vertical
-movement), and the Policy would create an action array containing two elements
-with values ranging from zero to one. You could even use a combination of continuous
-and discrete actions, for example using one continuous action for horizontal movement,
+movement), and the Policy would output an action array containing two elements
+with values ranging from zero to one. You could alternatively use a combination of continuous
+and discrete actions e.g., using one continuous action for horizontal movement
 and a discrete branch of size two for the vertical movement.
 
 Note that when you are programming actions for an agent, it is often helpful to
@@ -576,7 +576,7 @@ As shown above, you can scale the control values as needed after clamping them.
 
 When an Agent's Policy uses **discrete** actions, the
 `ActionBuffers.DiscreteActions` passed to the Agent's `OnActionReceived()` function
-is an array of integers with length equal `Discrete Branch Size`. When defining the discrete actions, `Branches`
+is an array of integers with length equal to `Discrete Branch Size`. When defining the discrete actions, `Branches`
 is an array of integers, each value corresponds to the number of possibilities for each branch.
 
 For example, if we wanted an Agent that can move in a plane and jump, we could
@@ -652,8 +652,8 @@ Notes:
 - Agents can use `Discrete` and/or `Continuous` actions.
 - Discrete actions can have multiple action branches, and it's possible to mask
   certain actions so that they won't be taken.
-- In general, a smaller number of action will make for easier learning.
-- Be sure to set the Continuous Action Size and Discrete Branch Size to desired
+- In general, fewer actions will make for easier learning.
+- Be sure to set the Continuous Action Size and Discrete Branch Size to the desired
   number for each type of action, and not greater, as doing the latter can interfere with the
   efficiency of the training process.
 - Continuous action values should be clipped to an
