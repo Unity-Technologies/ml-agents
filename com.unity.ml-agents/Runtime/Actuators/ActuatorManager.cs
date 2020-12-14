@@ -137,7 +137,7 @@ namespace Unity.MLAgents.Actuators
                 }
             }
 
-            return new ActionSpec(numContinuousActions, numDiscreteActions, combinedBranchSizes);
+            return new ActionSpec(numContinuousActions, combinedBranchSizes);
         }
 
         /// <summary>
@@ -283,10 +283,6 @@ namespace Unity.MLAgents.Actuators
                 Debug.Assert(
                     !m_Actuators[i].Name.Equals(m_Actuators[i + 1].Name),
                     "Actuator names must be unique.");
-                var first = m_Actuators[i].ActionSpec;
-                var second = m_Actuators[i + 1].ActionSpec;
-                Debug.Assert(first.NumContinuousActions > 0 == second.NumContinuousActions > 0,
-                    "Actuators on the same Agent must have the same action SpaceType.");
             }
         }
 

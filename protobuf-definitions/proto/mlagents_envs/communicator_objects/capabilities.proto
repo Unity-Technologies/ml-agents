@@ -16,4 +16,7 @@ message UnityRLCapabilitiesProto {
 
     // compression mapping for stacking compressed observations.
     bool compressedChannelMapping = 3;
+
+    // support for hybrid action spaces (discrete + continuous)
+    bool hybridActions = 4;
 }

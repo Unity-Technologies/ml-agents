@@ -79,14 +79,15 @@ def _compare_two_policies(policy1: TorchPolicy, policy2: TorchPolicy) -> None:
     ).unsqueeze(0)
 
     with torch.no_grad():
-        _, _, log_probs1, _, _ = policy1.sample_actions(
-            vec_obs, vis_obs, masks=masks, memories=memories, all_log_probs=True
+        _, log_probs1, _, _ = policy1.sample_actions(
+            vec_obs, vis_obs, masks=masks, memories=memories
         )
-        _, _, log_probs2, _, _ = policy2.sample_actions(
-            vec_obs, vis_obs, masks=masks, memories=memories, all_log_probs=True
+        _, log_probs2, _, _ = policy2.sample_actions(
+            vec_obs, vis_obs, masks=masks, memories=memories
         )
-
-    np.testing.assert_array_equal(log_probs1, log_probs2)
+    np.testing.assert_array_equal(
+        log_probs1.all_discrete_tensor, log_probs2.all_discrete_tensor
+    )
 
 
 @pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
