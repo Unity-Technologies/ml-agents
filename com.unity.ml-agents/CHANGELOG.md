@@ -16,6 +16,8 @@ and this project adheres to
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - Agent with both continuous and discrete actions is now supported. You can specify
 continuous and discrete action sizes repectively in Behavior Parameters. (#4702, #4718)
+- The FoodCollector example environment now uses continuous actions for moving and discrete actions
+for shooting. (#4746)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - `ActionSpec.validate_action()` now enforces that `UnityEnvironment.set_action_for_agent()` receives a 1D `np.array`.
 
