@@ -137,7 +137,7 @@ Then, edit the new `RollerAgent` script:
    using Unity.MLAgents.Actuators;
    ```
    then change the base class from `MonoBehaviour` to `Agent`.
-1. Delete the `Update()` method, but keep the `Start()` method.
+1. Delete `Update()` since we are not using it, but keep `Start()`.
 
 So far, these are the basic steps that you would use to add ML-Agents to any
 Unity project. Next, we will add the logic that will let our Agent learn to roll
@@ -156,14 +156,14 @@ The process of training in the ML-Agents Toolkit involves running episodes where
 the Agent (Sphere) attempts to solve the task. Each episode lasts until the
 Agents solves the task (i.e. reaches the cube), fails (rolls off the platform)
 or times out (takes too long to solve or fail at the task). At the start of each
-episode, the `OnEpisodeBegin()` method is called to set-up the environment for a
+episode, `OnEpisodeBegin()` is called to set-up the environment for a
 new episode. Typically the scene is initialized in a random manner to enable the
 agent to learn to solve the task under a variety of conditions.
 
 In this example, each time the Agent (Sphere) reaches its target (Cube), the
 episode ends and the target (Cube) is moved to a new random location; and if
 the Agent rolls off the platform, it will be put back onto the floor.
-These are all done in `OnEpisodeBegin()`.
+These are all handled in `OnEpisodeBegin()`.
 
 To move the target (Cube), we need a reference to its Transform (which stores a
 GameObject's position, orientation and scale in the 3D world). To get this
@@ -221,7 +221,7 @@ method.
 
 ### Observing the Environment
 
-The Agent sends the information we collect to the Brain for the Brain to make a
+The Agent sends the information we collect to the Brain, which uses it to make a
 decision. When you train the Agent (or use a trained model), the data is fed
 into a neural network as a feature vector. For an Agent to successfully learn a
 task, we need to provide the correct information. A good rule of thumb for
@@ -261,7 +261,7 @@ second determines the force applied along the z-axis. (If we allowed the Agent
 to move in three dimensions, then we would need a third action.)
 
 The RollerAgent applies the values from the `action[]` array to its Rigidbody
-component `rBody`, using the `Rigidbody.AddForce()` method:
+component `rBody`, using `Rigidbody.AddForce()`:
 
 ```csharp
 Vector3 controlSignal = Vector3.zero;
@@ -278,10 +278,10 @@ is giving the Agent the optimal actions. You want to reward an Agent for
 completing the assigned task. In this case, the Agent is given a reward of 1.0
 for reaching the Target cube.
 
-Rewards are assigned in the `OnActionReceived()` method. The RollerAgent
+Rewards are assigned in `OnActionReceived()`. The RollerAgent
 calculates the distance to detect when it reaches the target.
-When it does, the code calls the `Agent.SetReward()` method to assign a reward
-of 1.0 and marks the agent as finished by calling the `EndEpisode()` method on
+When it does, the code calls `Agent.SetReward()` to assign a reward
+of 1.0 and marks the agent as finished by calling `EndEpisode()` on
 the Agent.
 
 ```csharp
@@ -307,8 +307,8 @@ if (this.transform.localPosition.y < 0)
 
 #### OnActionReceived()
 
-With the action and reward logic outlined above, the final version of the
-`OnActionReceived()` method looks like:
+With the action and reward logic outlined above, the final version of
+`OnActionReceived()` looks like:
 
 ```csharp
 public float forceMultiplier = 10;
