@@ -134,7 +134,8 @@ class TorchPPOOptimizer(TorchOptimizer):
             )
             returns[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns"])
 
-        vec_obs = [ModelUtils.list_to_tensor(batch["vector_obs"])]
+        vec_obs = [ModelUtils.list_to_tensor(batch["vector_obs"])[:, 1:]]
+        goals = [ModelUtils.list_to_tensor(batch["vector_obs"])[:, :1]]
         act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
         actions = AgentAction.from_dict(batch)
 
@@ -158,6 +159,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         log_probs, entropy, values = self.policy.evaluate_actions(
             vec_obs,
             vis_obs,
+            goals,
             masks=act_masks,
             actions=actions,
             memories=memories,
@@ -180,7 +182,6 @@ class TorchPPOOptimizer(TorchOptimizer):
             + 0.5 * value_loss
             - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
         )
-
         # Set optimizer learning rate
         ModelUtils.update_learning_rate(self.optimizer, decay_lr)
         self.optimizer.zero_grad()

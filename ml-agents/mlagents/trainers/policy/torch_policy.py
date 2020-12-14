@@ -114,7 +114,7 @@ class TorchPolicy(Policy):
         If this policy normalizes vector observations, this will update the norm values in the graph.
         :param vector_obs: The vector observations to add to the running estimate of the distribution.
         """
-        vector_obs = [torch.as_tensor(vector_obs)]
+        vector_obs = [torch.as_tensor(vector_obs)[:, 1:]]
         if self.use_vec_obs and self.normalize:
             self.actor_critic.update_normalization(vector_obs)
 
@@ -123,6 +123,7 @@ class TorchPolicy(Policy):
         self,
         vec_obs: List[torch.Tensor],
         vis_obs: List[torch.Tensor],
+        goals: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
@@ -136,7 +137,7 @@ class TorchPolicy(Policy):
         :return: Tuple of AgentAction, ActionLogProbs, entropies, and output memories.
         """
         actions, log_probs, entropies, _, memories = self.actor_critic.get_action_stats_and_value(
-            vec_obs, vis_obs, masks, memories, seq_len
+            vec_obs, vis_obs, goals, masks, memories, seq_len
         )
         return (actions, log_probs, entropies, memories)
 
@@ -144,13 +145,14 @@ class TorchPolicy(Policy):
         self,
         vec_obs: torch.Tensor,
         vis_obs: torch.Tensor,
+        goals: torch.Tensor,
         actions: AgentAction,
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
     ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
         log_probs, entropies, value_heads = self.actor_critic.get_stats_and_value(
-            vec_obs, vis_obs, actions, masks, memories, seq_len
+            vec_obs, vis_obs, goals, actions, masks, memories, seq_len
         )
         return log_probs, entropies, value_heads
 
@@ -165,10 +167,11 @@ class TorchPolicy(Policy):
         :return: Outputs from network as defined by self.inference_dict.
         """
         vec_vis_obs, masks = self._split_decision_step(decision_requests)
-        vec_obs = [torch.as_tensor(vec_vis_obs.vector_observations)]
+        vec_obs = [torch.as_tensor(vec_vis_obs.vector_observations[:, 1:])]
         vis_obs = [
             torch.as_tensor(vis_ob) for vis_ob in vec_vis_obs.visual_observations
         ]
+        goals = [torch.as_tensor(vec_vis_obs.vector_observations[:, :1])]
         memories = torch.as_tensor(self.retrieve_memories(global_agent_ids)).unsqueeze(
             0
         )
@@ -176,7 +179,7 @@ class TorchPolicy(Policy):
         run_out = {}
         with torch.no_grad():
             action, log_probs, entropy, memories = self.sample_actions(
-                vec_obs, vis_obs, masks=masks, memories=memories
+                vec_obs, vis_obs, goals, masks=masks, memories=memories
             )
         action_tuple = action.to_action_tuple()
         run_out["action"] = action_tuple
