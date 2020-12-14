@@ -138,7 +138,7 @@ class SACTrainer(RLTrainer):
         last_step = trajectory.steps[-1]
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
-        agent_buffer_trajectory = trajectory.to_agentbuffer()
+        agent_buffer_trajectory = trajectory.to_agentbuffer(self.policy.behavior_spec)
 
         # Update the normalization
         if self.is_training:
@@ -182,7 +182,9 @@ class SACTrainer(RLTrainer):
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.
         # Set last element to duplicate obs and remove dones.
         if last_step.interrupted:
-            vec_vis_obs = SplitObservations.from_observations(last_step.obs)
+            vec_vis_obs = SplitObservations.from_observations(
+                last_step.obs, self.policy.behavior_spec
+            )
             for i, obs in enumerate(vec_vis_obs.visual_observations):
                 agent_buffer_trajectory["next_visual_obs%d" % i][-1] = obs
             if vec_vis_obs.vector_observations.size > 1:

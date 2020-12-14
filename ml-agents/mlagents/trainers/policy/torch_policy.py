@@ -99,7 +99,9 @@ class TorchPolicy(Policy):
     def _split_decision_step(
         self, decision_requests: DecisionSteps
     ) -> Tuple[SplitObservations, np.ndarray]:
-        vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
+        vec_vis_obs = SplitObservations.from_observations(
+            decision_requests.obs, self.behavior_spec
+        )
         mask = None
         if self.behavior_spec.action_spec.discrete_size > 0:
             mask = torch.ones([len(decision_requests), np.sum(self.act_size)])
@@ -114,7 +116,7 @@ class TorchPolicy(Policy):
         If this policy normalizes vector observations, this will update the norm values in the graph.
         :param vector_obs: The vector observations to add to the running estimate of the distribution.
         """
-        vector_obs = [torch.as_tensor(vector_obs)[:, 1:]]
+        vector_obs = [torch.as_tensor(vector_obs)]
         if self.use_vec_obs and self.normalize:
             self.actor_critic.update_normalization(vector_obs)
 
@@ -167,11 +169,11 @@ class TorchPolicy(Policy):
         :return: Outputs from network as defined by self.inference_dict.
         """
         vec_vis_obs, masks = self._split_decision_step(decision_requests)
-        vec_obs = [torch.as_tensor(vec_vis_obs.vector_observations[:, 1:])]
+        vec_obs = [torch.as_tensor(vec_vis_obs.vector_observations)]
         vis_obs = [
             torch.as_tensor(vis_ob) for vis_ob in vec_vis_obs.visual_observations
         ]
-        goals = [torch.as_tensor(vec_vis_obs.vector_observations[:, :1])]
+        goals = [torch.as_tensor(vec_vis_obs.goals)]
         memories = torch.as_tensor(self.retrieve_memories(global_agent_ids)).unsqueeze(
             0
         )
