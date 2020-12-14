@@ -159,11 +159,12 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 327490f9c2aca401a85b04307d24367a, type: 3}
+  m_Model: {fileID: 11400000, guid: 25b8e2fb1a49e4e298368f50b14489e4, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SmallWallJump
   TeamId: 0
+  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -1351,11 +1352,12 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 327490f9c2aca401a85b04307d24367a, type: 3}
+  m_Model: {fileID: 11400000, guid: 25b8e2fb1a49e4e298368f50b14489e4, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SmallWallJump
   TeamId: 0
+  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -1792,11 +1794,12 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 327490f9c2aca401a85b04307d24367a, type: 3}
+  m_Model: {fileID: 11400000, guid: 25b8e2fb1a49e4e298368f50b14489e4, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SmallWallJump
   TeamId: 0
+  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
