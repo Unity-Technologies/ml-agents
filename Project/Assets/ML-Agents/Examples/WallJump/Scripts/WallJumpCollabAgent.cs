@@ -48,7 +48,7 @@ public class WallJumpCollabAgent : WallJumpAgent
     protected override void ConfigureAgent(int config)
     {
         var localScale = wall.transform.localScale;
-        var height = m_ResetParams.GetWithDefault("big_wall_height", 10);
+        var height = m_ResetParams.GetWithDefault("big_wall_height", 9);
         localScale = new Vector3(
             localScale.x,
             height,
