@@ -13,11 +13,11 @@ public class HallwayAgent : Agent
     public GameObject symbolO;
     public GameObject symbolX;
     public bool useVectorObs;
-    Rigidbody m_AgentRb;
-    Material m_GroundMaterial;
-    Renderer m_GroundRenderer;
-    HallwaySettings m_HallwaySettings;
-    int m_Selection;
+    protected Rigidbody m_AgentRb;
+    protected Material m_GroundMaterial;
+    protected Renderer m_GroundRenderer;
+    protected HallwaySettings m_HallwaySettings;
+    protected int m_Selection;
 
     public override void Initialize()
     {
@@ -35,7 +35,7 @@ public class HallwayAgent : Agent
         }
     }
 
-    IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
+    protected IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
     {
         m_GroundRenderer.material = mat;
         yield return new WaitForSeconds(time);
