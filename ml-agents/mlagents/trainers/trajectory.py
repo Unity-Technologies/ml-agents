@@ -2,7 +2,7 @@ from typing import List, NamedTuple
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents_envs.base_env import ActionTuple
+from mlagents_envs.base_env import ActionTuple, BehaviorSpec, SensorType
 from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 
 
@@ -21,9 +21,10 @@ class AgentExperience(NamedTuple):
 class SplitObservations(NamedTuple):
     vector_observations: np.ndarray
     visual_observations: List[np.ndarray]
+    goals: np.ndarray
 
     @staticmethod
-    def from_observations(obs: List[np.ndarray]) -> "SplitObservations":
+    def from_observations(obs: List[np.ndarray], behavior_spec) -> "SplitObservations":
         """
         Divides a List of numpy arrays into a SplitObservations NamedTuple.
         This allows you to access the vector and visual observations directly,
@@ -33,14 +34,18 @@ class SplitObservations(NamedTuple):
         """
         vis_obs_list: List[np.ndarray] = []
         vec_obs_list: List[np.ndarray] = []
+        goal_list: List[np.ndarray] = []
         last_obs = None
-        for observation in obs:
-            # Obs could be batched or single
-            if len(observation.shape) == 1 or len(observation.shape) == 2:
-                vec_obs_list.append(observation)
-            if len(observation.shape) == 3 or len(observation.shape) == 4:
-                vis_obs_list.append(observation)
-            last_obs = observation
+        for observation, sensor_type in zip(obs, behavior_spec.sensor_types):
+            if sensor_type == SensorType.PARAMETERIZATION:
+                goal_list.append(observation)
+            elif sensor_type == SensorType.OBSERVATION:
+                # Obs could be batched or single
+                if len(observation.shape) == 1 or len(observation.shape) == 2:
+                    vec_obs_list.append(observation)
+                if len(observation.shape) == 3 or len(observation.shape) == 4:
+                    vis_obs_list.append(observation)
+                last_obs = observation
         if last_obs is not None:
             is_batched = len(last_obs.shape) == 2 or len(last_obs.shape) == 4
             if is_batched:
@@ -49,16 +54,28 @@ class SplitObservations(NamedTuple):
                     if len(vec_obs_list) > 0
                     else np.zeros((last_obs.shape[0], 0), dtype=np.float32)
                 )
+                goals = (
+                    np.concatenate(goal_list, axis=1)
+                    if len(goal_list) > 0
+                    else np.zeros((last_obs.shape[0], 0), dtype=np.float32)
+                )
+
             else:
                 vec_obs = (
                     np.concatenate(vec_obs_list, axis=0)
                     if len(vec_obs_list) > 0
                     else np.array([], dtype=np.float32)
                 )
+                goals = (
+                    np.concatenate(goal_list, axis=0)
+                    if len(goal_list) > 0
+                    else np.array([], dtype=np.float32)
+                )
+
         else:
             vec_obs = []
         return SplitObservations(
-            vector_observations=vec_obs, visual_observations=vis_obs_list
+            vector_observations=vec_obs, visual_observations=vis_obs_list, goals=goals
         )
 
 
@@ -70,7 +87,7 @@ class Trajectory(NamedTuple):
     agent_id: str
     behavior_id: str
 
-    def to_agentbuffer(self) -> AgentBuffer:
+    def to_agentbuffer(self, behavior_spec: BehaviorSpec) -> AgentBuffer:
         """
         Converts a Trajectory to an AgentBuffer
         :param trajectory: A Trajectory
@@ -79,14 +96,18 @@ class Trajectory(NamedTuple):
         step of the trajectory.
         """
         agent_buffer_trajectory = AgentBuffer()
-        vec_vis_obs = SplitObservations.from_observations(self.steps[0].obs)
+        vec_vis_obs = SplitObservations.from_observations(
+            self.steps[0].obs, behavior_spec
+        )
         for step, exp in enumerate(self.steps):
             if step < len(self.steps) - 1:
                 next_vec_vis_obs = SplitObservations.from_observations(
-                    self.steps[step + 1].obs
+                    self.steps[step + 1].obs, behavior_spec
                 )
             else:
-                next_vec_vis_obs = SplitObservations.from_observations(self.next_obs)
+                next_vec_vis_obs = SplitObservations.from_observations(
+                    self.next_obs, behavior_spec
+                )
 
             for i, _ in enumerate(vec_vis_obs.visual_observations):
                 agent_buffer_trajectory["visual_obs%d" % i].append(
@@ -102,6 +123,9 @@ class Trajectory(NamedTuple):
             agent_buffer_trajectory["next_vector_in"].append(
                 next_vec_vis_obs.vector_observations
             )
+            agent_buffer_trajectory["goals"].append(vec_vis_obs.goals)
+            # this shouldnt be necessary in an optimized implementation since the goal does not change
+            agent_buffer_trajectory["next_goals"].append(next_vec_vis_obs.goals)
 
             if exp.memory is not None:
                 agent_buffer_trajectory["memory"].append(exp.memory)

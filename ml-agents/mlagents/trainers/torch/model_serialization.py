@@ -57,6 +57,7 @@ class ModelSerializer:
             for shape in self.policy.behavior_spec.observation_shapes
             if len(shape) == 3
         ]
+        dummy_goals = [torch.zeros(batch_dim + [1])]
         dummy_masks = torch.ones(
             batch_dim + [sum(self.policy.behavior_spec.action_spec.discrete_branches)]
         )
@@ -64,10 +65,17 @@ class ModelSerializer:
             batch_dim + seq_len_dim + [self.policy.export_memory_size]
         )
 
-        self.dummy_input = (dummy_vec_obs, dummy_vis_obs, dummy_masks, dummy_memories)
+        self.dummy_input = (
+            dummy_vec_obs,
+            dummy_vis_obs,
+            dummy_goals,
+            dummy_masks,
+            dummy_memories,
+        )
 
         self.input_names = (
             ["vector_observation"]
+            + ["goals"]
             + [f"visual_observation_{i}" for i in range(self.policy.vis_obs_size)]
             + ["action_masks", "memories"]
         )

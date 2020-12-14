@@ -134,8 +134,8 @@ class TorchPPOOptimizer(TorchOptimizer):
             )
             returns[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns"])
 
-        vec_obs = [ModelUtils.list_to_tensor(batch["vector_obs"])[:, 1:]]
-        goals = [ModelUtils.list_to_tensor(batch["vector_obs"])[:, :1]]
+        vec_obs = [ModelUtils.list_to_tensor(batch["vector_obs"])]
+        goals = [ModelUtils.list_to_tensor(batch["goals"])]
         act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
         actions = AgentAction.from_dict(batch)
 

@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import Dict, List, Optional
 import numpy as np
 
-from mlagents_envs.base_env import ActionTuple, BehaviorSpec, DecisionSteps
+from mlagents_envs.base_env import ActionTuple, BehaviorSpec, DecisionSteps, SensorType
 from mlagents_envs.exception import UnityException
 
 from mlagents.trainers.action_info import ActionInfo
@@ -37,7 +37,11 @@ class Policy:
             else [self.behavior_spec.action_spec.continuous_size]
         )
         self.vec_obs_size = sum(
-            shape[0] for shape in behavior_spec.observation_shapes if len(shape) == 1
+            shape[0]
+            for shape, obs_type in zip(
+                behavior_spec.observation_shapes, behavior_spec.sensor_types
+            )
+            if len(shape) == 1 and obs_type == SensorType.OBSERVATION
         )
         self.vis_obs_size = sum(
             1 for shape in behavior_spec.observation_shapes if len(shape) == 3
