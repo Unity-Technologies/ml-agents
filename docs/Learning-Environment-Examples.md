@@ -315,11 +315,15 @@ you would like to contribute environments, please see our
     agent is frozen and/or shot its laser (2), plus ray-based perception of
     objects around agent's forward direction (49; 7 raycast angles with 7
     measurements for each).
-  - Vector Action space: (Discrete) 4 Branches:
-    - Forward Motion (3 possible actions: Forward, Backwards, No Action)
-    - Side Motion (3 possible actions: Left, Right, No Action)
-    - Rotation (3 possible actions: Rotate Left, Rotate Right, No Action)
-    - Laser (2 possible actions: Laser, No Action)
+  - Vector Action space:
+    - `FoodCollector` scene: 3 Continuous Actions + 1 Discrete Action with 2 Branches
+      - 3 continuous actions correspond to Forward Motion, Side Motion and Rotation
+      - Laser (2 possible actions: Laser, No Action)
+    - `GridFoodCollector` and `VisualFoodCollector` scenes: (Discrete) 4 Branches:
+      - Forward Motion (3 possible actions: Forward, Backwards, No Action)
+      - Side Motion (3 possible actions: Left, Right, No Action)
+      - Rotation (3 possible actions: Rotate Left, Rotate Right, No Action)
+      - Laser (2 possible actions: Laser, No Action)
   - Visual Observations (Optional): First-person camera per-agent, plus one vector
     flag representing the frozen state of the agent. This scene uses a combination
     of vector and visual observations and the training will not succeed without
