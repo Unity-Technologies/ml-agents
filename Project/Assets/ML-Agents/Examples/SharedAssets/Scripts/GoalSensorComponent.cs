@@ -28,6 +28,14 @@ public class GoalSensorComponent : SensorComponent
             goalSensor.AddObservation(goal);
         }
     }
+
+    public void AddOneHotGoal(int goal, int range)
+    {
+        for (var i = 0; i < range; i++)
+        {
+            goalSensor.AddObservation(i == goal ? 1.0f : 0.0f);
+        }
+    }
 }
 
 public class GoalSensor : VectorSensor

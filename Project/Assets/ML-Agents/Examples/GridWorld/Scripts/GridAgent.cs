@@ -51,7 +51,7 @@ public class GridAgent : Agent
         Array values = Enum.GetValues(typeof(GridGoal));
         int goalNum = (int)gridGoal;
         goalSensor = this.GetComponent<GoalSensorComponent>();
-        goalSensor.AddGoal(goalNum);
+        goalSensor.AddOneHotGoal(goalNum, values.Length);
     }
 
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
