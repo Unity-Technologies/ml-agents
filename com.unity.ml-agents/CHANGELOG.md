@@ -11,6 +11,7 @@ and this project adheres to
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- TensorFlow trainers have been removed, please use the Torch trainers instead. (#4707)
 - PyTorch trainers now support training agents with both continuous and discrete action spaces. (#4702)
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
