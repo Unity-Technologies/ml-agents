@@ -620,7 +620,6 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
     ) -> Tuple[
         AgentAction, ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
     ]:
-        print(len(critic_obs))
         if self.use_lstm:
             # Use only the back half of memories for critic and actor
             actor_mem, critic_mem = torch.split(memories, self.memory_size // 2, dim=-1)
