@@ -9,14 +9,12 @@ from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
-from mlagents.trainers.settings import TrainerSettings, SelfPlaySettings, FrameworkType
+from mlagents.trainers.settings import TrainerSettings, SelfPlaySettings
 
 
 @pytest.fixture
 def dummy_config():
-    return TrainerSettings(
-        self_play=SelfPlaySettings(), framework=FrameworkType.PYTORCH
-    )
+    return TrainerSettings(self_play=SelfPlaySettings())
 
 
 VECTOR_ACTION_SPACE = 1

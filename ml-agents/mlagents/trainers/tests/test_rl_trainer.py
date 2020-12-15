@@ -6,7 +6,7 @@ from mlagents.trainers.policy.checkpoint_manager import ModelCheckpoint
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.tests.test_buffer import construct_fake_buffer
 from mlagents.trainers.agent_processor import AgentManagerQueue
-from mlagents.trainers.settings import TrainerSettings, FrameworkType
+from mlagents.trainers.settings import TrainerSettings
 
 from mlagents_envs.base_env import ActionSpec
 
@@ -45,12 +45,10 @@ class FakeTrainer(RLTrainer):
         super()._process_trajectory(trajectory)
 
 
-def create_rl_trainer(framework=FrameworkType.TENSORFLOW):
+def create_rl_trainer():
     trainer = FakeTrainer(
         "test_trainer",
-        TrainerSettings(
-            max_steps=100, checkpoint_interval=10, summary_freq=20, framework=framework
-        ),
+        TrainerSettings(max_steps=100, checkpoint_interval=10, summary_freq=20),
         True,
         False,
         "mock_model_path",
@@ -124,15 +122,12 @@ def test_advance(mocked_clear_update_buffer, mocked_save_model):
     assert mocked_save_model.call_count == 0
 
 
-@pytest.mark.parametrize(
-    "framework", [FrameworkType.TENSORFLOW, FrameworkType.PYTORCH], ids=["tf", "torch"]
-)
 @mock.patch("mlagents.trainers.trainer.trainer.StatsReporter.write_stats")
 @mock.patch(
     "mlagents.trainers.trainer.rl_trainer.ModelCheckpointManager.add_checkpoint"
 )
-def test_summary_checkpoint(mock_add_checkpoint, mock_write_summary, framework):
-    trainer = create_rl_trainer(framework)
+def test_summary_checkpoint(mock_add_checkpoint, mock_write_summary):
+    trainer = create_rl_trainer()
     mock_policy = mock.Mock()
     trainer.add_policy("TestBrain", mock_policy)
     trajectory_queue = AgentManagerQueue("testbrain")
@@ -169,7 +164,7 @@ def test_summary_checkpoint(mock_add_checkpoint, mock_write_summary, framework):
     calls = [mock.call(trainer.brain_name, step) for step in checkpoint_range]
 
     trainer.model_saver.save_checkpoint.assert_has_calls(calls, any_order=True)
-    export_ext = "nn" if trainer.framework == FrameworkType.TENSORFLOW else "onnx"
+    export_ext = "onnx"
 
     add_checkpoint_calls = [
         mock.call(

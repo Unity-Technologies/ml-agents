@@ -26,9 +26,7 @@ namespace Unity.MLAgents.Tests.Communicator
             Assert.IsTrue(RpcCommunicator.CheckCommunicationVersionsAreCompatible(unityVerStr,
                 pythonVerStr,
                 pythonPackageVerStr));
-
-            // Ensure that a warning was printed.
-            LogAssert.Expect(LogType.Warning, new Regex("(.\\s)+"));
+            LogAssert.NoUnexpectedReceived();
 
             unityVerStr = "2.0.0";
             Assert.IsFalse(RpcCommunicator.CheckCommunicationVersionsAreCompatible(unityVerStr,
