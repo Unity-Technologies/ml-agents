@@ -117,6 +117,6 @@ def test_hybrid_recurrent_sac():
         SAC_TORCH_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=4000,
+        max_steps=3500,
     )
     check_environment_trains(env, {BRAIN_NAME: config})
