@@ -105,7 +105,7 @@ def demo_to_buffer(
         # check action dimensions in demonstration match
         if behavior_spec.action_spec != expected_behavior_spec.action_spec:
             raise RuntimeError(
-                "The action spaces {} in demonstration do not match the policy's {}.".format(
+                "The actions {} in demonstration do not match the policy's {}.".format(
                     behavior_spec.action_spec, expected_behavior_spec.action_spec
                 )
             )

@@ -397,8 +397,7 @@ namespace Unity.MLAgents.Inference
             BrainParameters brainParameters, TensorProxy tensorProxy,
             SensorComponent[] sensorComponents, int observableAttributeTotalSize)
         {
-            // TODO: Update this check after intergrating ActionSpec into BrainParameters
-            var numberActionsBp = brainParameters.VectorActionSize.Length;
+            var numberActionsBp = brainParameters.ActionSpec.NumDiscreteActions;
             var numberActionsT = tensorProxy.shape[tensorProxy.shape.Length - 1];
             if (numberActionsBp != numberActionsT)
             {
@@ -439,30 +438,18 @@ namespace Unity.MLAgents.Inference
         {
             var failedModelChecks = new List<string>();
 
-            var tensorTester = new Dictionary<string, Func<BrainParameters, ActuatorComponent[], TensorShape?, int, int, string>>();
-            if (model.HasContinuousOutputs())
-            {
-                tensorTester[model.ContinuousOutputName()] = CheckContinuousActionOutputShape;
-            }
-            if (model.HasDiscreteOutputs())
-            {
-                tensorTester[model.DiscreteOutputName()] = CheckDiscreteActionOutputShape;
-            }
-
             // If the model expects an output but it is not in this list
             var modelContinuousActionSize = model.ContinuousOutputSize();
-            var modelSumDiscreteBranchSizes = model.DiscreteOutputSize();
-            foreach (var name in model.outputs)
+            var continuousError = CheckContinuousActionOutputShape(brainParameters, actuatorComponents, modelContinuousActionSize);
+            if (continuousError != null)
             {
-                if (tensorTester.ContainsKey(name))
-                {
-                    var tester = tensorTester[name];
-                    var error = tester.Invoke(brainParameters, actuatorComponents, model.GetShapeByName(name), modelContinuousActionSize, modelSumDiscreteBranchSizes);
-                    if (error != null)
-                    {
-                        failedModelChecks.Add(error);
-                    }
-                }
+                failedModelChecks.Add(continuousError);
+            }
+            var modelSumDiscreteBranchSizes = model.DiscreteOutputSize();
+            var discreteError = CheckDiscreteActionOutputShape(brainParameters, actuatorComponents, modelSumDiscreteBranchSizes);
+            if (discreteError != null)
+            {
+                failedModelChecks.Add(discreteError);
             }
             return failedModelChecks;
         }
@@ -487,13 +474,10 @@ namespace Unity.MLAgents.Inference
         /// check failed. If the check passed, returns null.
         /// </returns>
         static string CheckDiscreteActionOutputShape(
-            BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, TensorShape? shape, int modelContinuousActionSize, int modelSumDiscreteBranchSizes)
+            BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, int modelSumDiscreteBranchSizes)
         {
-            var sumOfDiscreteBranchSizes = 0;
-            if (brainParameters.VectorActionSpaceType == SpaceType.Discrete)
-            {
-                sumOfDiscreteBranchSizes += brainParameters.VectorActionSize.Sum();
-            }
+            // TODO: check each branch size instead of sum of branch sizes
+            var sumOfDiscreteBranchSizes = brainParameters.ActionSpec.SumOfDiscreteBranchSizes;
 
             foreach (var actuatorComponent in actuatorComponents)
             {
@@ -527,13 +511,9 @@ namespace Unity.MLAgents.Inference
         /// <returns>If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.</returns>
         static string CheckContinuousActionOutputShape(
-            BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, TensorShape? shape, int modelContinuousActionSize, int modelSumDiscreteBranchSizes)
+            BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, int modelContinuousActionSize)
         {
-            var numContinuousActions = 0;
-            if (brainParameters.VectorActionSpaceType == SpaceType.Continuous)
-            {
-                numContinuousActions += brainParameters.NumActions;
-            }
+            var numContinuousActions = brainParameters.ActionSpec.NumContinuousActions;
 
             foreach (var actuatorComponent in actuatorComponents)
             {

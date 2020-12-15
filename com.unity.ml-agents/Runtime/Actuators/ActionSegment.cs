@@ -110,6 +110,7 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Check if the segment is empty.
         /// </summary>
+        /// <returns>Whether or not the segment is empty.</returns>
         public bool IsEmpty()
         {
             return Array == null || Array.Length == 0;

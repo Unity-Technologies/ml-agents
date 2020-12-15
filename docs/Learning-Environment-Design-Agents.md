@@ -18,8 +18,8 @@
   - [Raycast Observations](#raycast-observations)
     - [RayCast Observation Summary & Best Practices](#raycast-observation-summary--best-practices)
 - [Actions](#actions)
-  - [Continuous Action Space](#continuous-action-space)
-  - [Discrete Action Space](#discrete-action-space)
+  - [Continuous Actions](#continuous-actions)
+  - [Discrete Actions](#discrete-actions)
     - [Masking Discrete Actions](#masking-discrete-actions)
   - [Actions Summary & Best Practices](#actions-summary--best-practices)
 - [Rewards](#rewards)
@@ -83,7 +83,7 @@ As a concrete example, here is how the Ball3DAgent class implements these method
   method calls `VectorSensor.AddObservation()` such that vector size adds up to 8,
   the Behavior Parameters of the Agent are set with vector observation space
   with a state size of 8.
-- `Agent.OnActionReceived()` — The vector action spaces result
+- `Agent.OnActionReceived()` — The action results
   in a small change in the agent cube's rotation at each step. In this example,
   an Agent receives a small positive reward for each step it keeps the ball on the
   agent cube's head and a larger, negative reward for dropping the ball. An
@@ -511,7 +511,7 @@ setting the State Size.
 
 An action is an instruction from the Policy that the agent carries out. The
 action is passed to the Agent as the `ActionBuffers` parameter when the Academy invokes the
-agent's `OnActionReceived()` function. There are two types of actions supported:
+agent's `OnActionReceived()` function. There are two types of actions that an Agent can use:
  **Continuous** and **Discrete**.
 
 Neither the Policy nor the training algorithm know anything about what the
@@ -521,36 +521,34 @@ over time and many training episodes. Thus, the only place actions are defined
 for an Agent is in the `OnActionReceived()` function.
 
 For example, if you designed an agent to move in two dimensions, you could use
-either continuous or the discrete vector actions. In the continuous case, you
-would set the vector action size to two (one for each dimension), and the
-agent's Policy would create an action with two floating point values. In the
+either continuous or the discrete actions. In the continuous case, you
+would set the action size to two (one for each dimension), and the
+agent's Policy would output an action with two floating point values. In the
 discrete case, you would use one Branch with a size of four (one for each
 direction), and the Policy would create an action array containing a single
 element with a value ranging from zero to three. Alternatively, you could create
 two branches of size two (one for horizontal movement and one for vertical
-movement), and the Policy would create an action array containing two elements
-with values ranging from zero to one.
+movement), and the Policy would output an action array containing two elements
+with values ranging from zero to one. You could alternatively use a combination of continuous
+and discrete actions e.g., using one continuous action for horizontal movement
+and a discrete branch of size two for the vertical movement.
 
 Note that when you are programming actions for an agent, it is often helpful to
 test your action logic using the `Heuristic()` method of the Agent, which lets
 you map keyboard commands to actions.
 
-The [3DBall](Learning-Environment-Examples.md#3dball-3d-balance-ball) and
-[Area](Learning-Environment-Examples.md#push-block) example environments are set
-up to use either the continuous or the discrete vector action spaces.
-
-### Continuous Action Space
+### Continuous Actions
 
 When an Agent's Policy has **Continuous** actions, the
 `ActionBuffers.ContinuousActions` passed to the Agent's `OnActionReceived()` function
-is an array with length equal to the `Vector Action Space Size` property value. The
+is an array with length equal to the `Continuous Action Size` property value. The
 individual values in the array have whatever meanings that you ascribe to them.
 If you assign an element in the array as the speed of an Agent, for example, the
 training process learns to control the speed of the Agent through this
 parameter.
 
-The [Reacher example](Learning-Environment-Examples.md#reacher) defines a
-continuous action space with four control values.
+The [Reacher example](Learning-Environment-Examples.md#reacher) uses
+continuous actions with four control values.
 
 ![reacher](images/reacher.png)
 
@@ -570,15 +568,15 @@ These control values are applied as torques to the bodies making up the arm:
 ```
 
 By default the output from our provided PPO algorithm pre-clamps the values of
-`vectorAction` into the [-1, 1] range. It is a best practice to manually clip
+`ActionBuffers.ContinuousActions` into the [-1, 1] range. It is a best practice to manually clip
 these as well, if you plan to use a 3rd party algorithm with your environment.
 As shown above, you can scale the control values as needed after clamping them.
 
-### Discrete Action Space
+### Discrete Actions
 
 When an Agent's Policy uses **discrete** actions, the
 `ActionBuffers.DiscreteActions` passed to the Agent's `OnActionReceived()` function
-is an array of integers. When defining the discrete vector action space, `Branches`
+is an array of integers with length equal to `Discrete Branch Size`. When defining the discrete actions, `Branches`
 is an array of integers, each value corresponds to the number of possibilities for each branch.
 
 For example, if we wanted an Agent that can move in a plane and jump, we could
@@ -651,12 +649,12 @@ Notes:
 
 ### Actions Summary & Best Practices
 
-- Agents can either use `Discrete` or `Continuous` actions.
+- Agents can use `Discrete` and/or `Continuous` actions.
 - Discrete actions can have multiple action branches, and it's possible to mask
   certain actions so that they won't be taken.
-- In general, smaller action spaces will make for easier learning.
-- Be sure to set the Vector Action's Space Size to the number of used Vector
-  Actions, and not greater, as doing the latter can interfere with the
+- In general, fewer actions will make for easier learning.
+- Be sure to set the Continuous Action Size and Discrete Branch Size to the desired
+  number for each type of action, and not greater, as doing the latter can interfere with the
   efficiency of the training process.
 - Continuous action values should be clipped to an
   appropriate range. The provided PPO model automatically clips these values
@@ -797,13 +795,12 @@ be called independently of the `Max Step` property.
       be stacked and used collectively for decision making. This results in the
       effective size of the vector observation being passed to the Policy being:
       _Space Size_ x _Stacked Vectors_.
-  - `Vector Action`
-    - `Space Type` - Corresponds to whether action vector contains a single
-      integer (Discrete) or a series of real-valued floats (Continuous).
-    - `Space Size` (Continuous) - Length of action vector.
-    - `Branches` (Discrete) - An array of integers, defines multiple concurrent
-      discrete actions. The values in the `Branches` array correspond to the
-      number of possible discrete values for each action branch.
+  - `Actions`
+    - `Continuous Actions` - The number of concurrent continuous actions that
+     the Agent can take.
+    - `Discrete Branches` - An array of integers, defines multiple concurrent
+      discrete actions. The values in the `Discrete Branches` array correspond
+      to the number of possible discrete values for each action branch.
   - `Model` - The neural network model used for inference (obtained after
     training)
   - `Inference Device` - Whether to use CPU or GPU to run the model during

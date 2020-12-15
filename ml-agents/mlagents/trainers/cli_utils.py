@@ -9,7 +9,7 @@ from mlagents_envs import logging_util
 logger = logging_util.get_logger(__name__)
 
 
-class RaiseDeprecationWarning(argparse.Action):
+class RaiseRemovedWarning(argparse.Action):
     """
     Internal custom Action to raise warning when argument is called.
     """
@@ -18,7 +18,7 @@ class RaiseDeprecationWarning(argparse.Action):
         super().__init__(nargs=nargs, **kwargs)
 
     def __call__(self, arg_parser, namespace, values, option_string=None):
-        logger.warning(f"The command line argument {option_string} was deprecated")
+        logger.warning(f"The command line argument {option_string} was removed.")
 
 
 class DetectDefault(argparse.Action):
@@ -186,16 +186,14 @@ def _create_parser() -> argparse.ArgumentParser:
     argparser.add_argument(
         "--torch",
         default=False,
-        action=RaiseDeprecationWarning,
-        help="(Deprecated) Use the PyTorch framework. Note that this option is not required anymore as PyTorch is the"
-        "default framework, and will be removed in the next release.",
+        action=RaiseRemovedWarning,
+        help="(Removed) Use the PyTorch framework.",
     )
     argparser.add_argument(
         "--tensorflow",
         default=False,
-        action=RaiseDeprecationWarning,
-        help="(Deprecated) Use the TensorFlow framework instead of PyTorch. Install TensorFlow "
-        "before using this option.",
+        action=RaiseRemovedWarning,
+        help="(Removed) Use the TensorFlow framework.",
     )
 
     eng_conf = argparser.add_argument_group(title="Engine Configuration")

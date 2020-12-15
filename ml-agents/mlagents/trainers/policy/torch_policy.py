@@ -38,7 +38,7 @@ class TorchPolicy(Policy):
         """
         Policy that uses a multilayer perceptron to map the observations to actions. Could
         also use a CNN to encode visual input prior to the MLP. Supports discrete and
-        continuous action spaces, as well as recurrent networks.
+        continuous actions, as well as recurrent networks.
         :param seed: Random seed.
         :param behavior_spec: Assigned BehaviorSpec object.
         :param trainer_settings: Defined training parameters.
@@ -133,7 +133,7 @@ class TorchPolicy(Policy):
         :param seq_len: Sequence length when using RNN.
         :return: Tuple of AgentAction, ActionLogProbs, entropies, and output memories.
         """
-        actions, log_probs, entropies, _, memories = self.actor_critic.get_action_stats_and_value(
+        actions, log_probs, entropies, memories = self.actor_critic.get_action_stats(
             obs, masks, memories, seq_len
         )
         return (actions, log_probs, entropies, memories)
