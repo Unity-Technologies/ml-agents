@@ -143,7 +143,7 @@ namespace Unity.MLAgents.Policies
                 if (VectorActionSpaceType == SpaceType.Discrete)
                 {
                     m_ActionSpec.NumContinuousActions = 0;
-                    m_ActionSpec.BranchSizes = VectorActionSize;
+                    m_ActionSpec.BranchSizes = (int[])VectorActionSize.Clone();
                 }
 
                 hasUpgradedBrainParametersWithActionSpec = true;
@@ -157,7 +157,7 @@ namespace Unity.MLAgents.Policies
         {
             if (m_ActionSpec.NumContinuousActions == 0)
             {
-                VectorActionSize = ActionSpec.BranchSizes;
+                VectorActionSize = (int[])ActionSpec.BranchSizes.Clone();
                 VectorActionSpaceType = SpaceType.Discrete;
             }
             else if (m_ActionSpec.NumDiscreteActions == 0)

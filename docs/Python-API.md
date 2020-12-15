@@ -143,8 +143,7 @@ A `BaseEnv` has the following methods:
   name of the group the Agent belongs to and `agent_id` is the integer
   identifier of the Agent. `action` is an `ActionTuple` as described above.
 **Note:** If no action is provided for an agent group between two calls to
-`env.step()` then the default action will be all zeros (in either discrete or
-continuous action space)
+`env.step()` then the default action will be all zeros.
 
 #### DecisionSteps and DecisionStep
 
