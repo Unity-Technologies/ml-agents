@@ -17,8 +17,12 @@ and this project adheres to
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - Agents with both continuous and discrete actions are now supported. You can specify
 both continuous and discrete action sizes in Behavior Parameters. (#4702, #4718)
+- In order to improve the developer experience for Unity ML-Agents Toolkit, we have added in-editor analytics.
+Please refer to "Information that is passively collected by Unity" in the
+[Unity Privacy Policy](https://unity3d.com/legal/privacy-policy). (#4677)
+
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-- `ActionSpec.validate_action()` now enforces that `UnityEnvironment.set_action_for_agent()` receives a 1D `np.array`.
+- `ActionSpec.validate_action()` now enforces that `UnityEnvironment.set_action_for_agent()` receives a 1D `np.array`. (#4691)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)

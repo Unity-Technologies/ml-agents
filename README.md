@@ -161,6 +161,12 @@ minutes to
 For any other questions or feedback, connect directly with the ML-Agents team at
 ml-agents@unity3d.com.
 
+## Privacy
+
+In order to improve the developer experience for Unity ML-Agents Toolkit, we have added in-editor analytics.
+Please refer to "Information that is passively collected by Unity" in the
+[Unity Privacy Policy](https://unity3d.com/legal/privacy-policy).
+
 ## License
 
 [Apache License 2.0](LICENSE)
