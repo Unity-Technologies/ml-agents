@@ -59,7 +59,7 @@ class ActionModel(nn.Module):
                 num_outputs=self.action_spec.continuous_size,
                 conditional_sigma=conditional_sigma,
                 tanh_squash=tanh_squash,
-                num_goals=2,
+                goal_size=2,
             )
 
         if self.action_spec.discrete_size > 0:

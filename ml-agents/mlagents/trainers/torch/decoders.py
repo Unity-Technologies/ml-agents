@@ -1,14 +1,7 @@
 from typing import List, Dict
 
 from mlagents.torch_utils import torch, nn
-from mlagents.trainers.torch.layers import (
-    linear_layer,
-    LinearEncoder,
-    Initialization,
-    Swish,
-)
-
-from collections import defaultdict
+from mlagents.trainers.torch.layers import linear_layer, HyperNetwork
 
 
 class ValueHeads(nn.Module):
@@ -27,62 +20,6 @@ class ValueHeads(nn.Module):
         for stream_name, head in self.value_heads.items():
             value_outputs[stream_name] = head(hidden).squeeze(-1)
         return value_outputs
-
-
-class HyperNetwork(nn.Module):
-    def __init__(
-        self, input_size, output_size, hyper_input_size, num_layers, layer_size
-    ):
-        super().__init__()
-        self.input_size = input_size
-        self.output_size = output_size
-        layers = [
-            linear_layer(
-                hyper_input_size,
-                layer_size,
-                kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=1.0,
-                bias_init=Initialization.Zero,
-            ),
-            Swish(),
-        ]
-        for _ in range(num_layers - 1):
-            layers.append(
-                linear_layer(
-                    layer_size,
-                    layer_size,
-                    kernel_init=Initialization.KaimingHeNormal,
-                    kernel_gain=1.0,
-                    bias_init=Initialization.Zero,
-                )
-            )
-            layers.append(Swish())
-        flat_output = linear_layer(
-            layer_size,
-            input_size * output_size + output_size,
-            kernel_init=Initialization.KaimingHeNormal,
-            kernel_gain=0.1,
-            bias_init=Initialization.Zero,
-        )
-        self.hypernet = torch.nn.Sequential(*layers, flat_output)
-
-    def forward(self, input_activation, hyper_input):
-        flat_output_weights = self.hypernet(hyper_input)
-        batch_size = input_activation.size(0)
-
-        output_weights, output_bias = torch.split(
-            flat_output_weights, self.input_size * self.output_size, dim=-1
-        )
-
-        output_weights = output_weights.view(
-            batch_size, self.input_size, self.output_size
-        )
-        output_bias = output_bias.view(batch_size, self.output_size)
-        output = (
-            torch.bmm(input_activation.unsqueeze(1), output_weights).squeeze(1)
-            + output_bias
-        )
-        return output
 
 
 class ValueHeadsHyperNetwork(nn.Module):
