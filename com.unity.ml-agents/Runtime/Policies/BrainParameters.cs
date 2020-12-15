@@ -133,7 +133,9 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         private void UpdateToActionSpec()
         {
-            if (!hasUpgradedBrainParametersWithActionSpec)
+            if (!hasUpgradedBrainParametersWithActionSpec
+                && m_ActionSpec.NumContinuousActions == 0
+                && m_ActionSpec.BranchSizes == null)
             {
                 if (VectorActionSpaceType == SpaceType.Continuous)
                 {
