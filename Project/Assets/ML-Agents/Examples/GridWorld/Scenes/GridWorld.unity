@@ -2075,7 +2075,7 @@ MonoBehaviour:
   trueAgent: {fileID: 125487785}
   goalPref: {fileID: 1508142483324970, guid: 1ec4e4e96e7514d45b7ebc3ba5a9a481, type: 3}
   pitPref: {fileID: 1811317785436014, guid: d13ee2db77b3a4dcc8664d2fe2a0f219, type: 3}
-  numberOfObstacles: 2
+  numberOfObstacles: 1
 --- !u!4 &1795599558
 Transform:
   m_ObjectHideFlags: 0
