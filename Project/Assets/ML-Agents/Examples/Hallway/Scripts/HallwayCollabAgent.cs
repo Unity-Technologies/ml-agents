@@ -9,6 +9,9 @@ public class HallwayCollabAgent : HallwayAgent
     public HallwayCollabAgent teammate;
     public bool isSpotter = true;
     int m_Message = 0;
+
+    [HideInInspector]
+    public float selection = 0;
     public override void OnEpisodeBegin()
     {
         // Set initial message to random to avoid initialization issues
@@ -28,8 +31,9 @@ public class HallwayCollabAgent : HallwayAgent
         if (isSpotter)
         {
             var blockOffset = 0f;
-            m_Selection = Random.Range(0, 2);
-            if (m_Selection == 0)
+            // Only the Spotter has the correct selection
+            selection = Random.Range(0, 2);
+            if (selection == 0)
             {
                 symbolO.transform.position =
                     new Vector3(0f + Random.Range(-3f, 3f), 2f, blockOffset + Random.Range(-5f, 5f))
@@ -87,21 +91,25 @@ public class HallwayCollabAgent : HallwayAgent
     {
         if (col.gameObject.CompareTag("symbol_O_Goal") || col.gameObject.CompareTag("symbol_X_Goal"))
         {
-            if ((m_Selection == 0 && col.gameObject.CompareTag("symbol_O_Goal")) ||
-                (m_Selection == 1 && col.gameObject.CompareTag("symbol_X_Goal")))
+            if (!isSpotter)
             {
-                SetReward(1f);
-                teammate.SetReward(1f);
-                StartCoroutine(GoalScoredSwapGroundMaterial(m_HallwaySettings.goalScoredMaterial, 0.5f));
+                // Check the ground truth
+                if ((teammate.selection == 0 && col.gameObject.CompareTag("symbol_O_Goal")) ||
+                    (teammate.selection == 1 && col.gameObject.CompareTag("symbol_X_Goal")))
+                {
+                    SetReward(1f);
+                    teammate.SetReward(1f);
+                    StartCoroutine(GoalScoredSwapGroundMaterial(m_HallwaySettings.goalScoredMaterial, 0.5f));
+                }
+                else
+                {
+                    SetReward(-0.1f);
+                    teammate.SetReward(-0.1f);
+                    StartCoroutine(GoalScoredSwapGroundMaterial(m_HallwaySettings.failMaterial, 0.5f));
+                }
+                EndEpisode();
+                teammate.EndEpisode();
             }
-            else
-            {
-                SetReward(-0.1f);
-                teammate.SetReward(-0.1f);
-                StartCoroutine(GoalScoredSwapGroundMaterial(m_HallwaySettings.failMaterial, 0.5f));
-            }
-            EndEpisode();
-            teammate.EndEpisode();
         }
     }
 }
