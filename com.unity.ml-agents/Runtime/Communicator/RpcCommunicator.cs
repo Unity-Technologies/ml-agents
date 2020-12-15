@@ -82,16 +82,8 @@ namespace Unity.MLAgents
             }
             else if (unityVersion.Minor != pythonVersion.Minor)
             {
-                // Even if we initialize, we still want to check to make sure that we inform users of minor version
-                // changes.  This will surface any features that may not work due to minor version incompatibilities.
-                Debug.LogWarningFormat(
-                    "WARNING: The communication API versions between Unity and python differ at the minor version level. " +
-                    "Python API: {0}, Unity API: {1} Python Library Version: {2} .\n" +
-                    "This means that some features may not work unless you upgrade the package with the lower version." +
-                    "Please find the versions that work best together from our release page.\n" +
-                    "https://github.com/Unity-Technologies/ml-agents/releases",
-                    pythonApiVersion, unityCommunicationVersion, pythonLibraryVersion
-                );
+                // If a feature is used in Unity but not supported in the trainer,
+                // we will warn at the point it's used. Don't warn here to avoid noise.
             }
             return true;
         }
