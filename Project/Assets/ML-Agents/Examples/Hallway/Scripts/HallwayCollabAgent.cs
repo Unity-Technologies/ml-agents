@@ -19,13 +19,19 @@ public class HallwayCollabAgent : HallwayAgent
         var agentOffset = 15f;
         if (isSpotter)
         {
-            agentOffset = -15f;
+            agentOffset = -5f;
         }
 
-        transform.position = new Vector3(0f + Random.Range(-3f, 3f),
-            1f, agentOffset + Random.Range(-5f, 5f))
+        // transform.position = new Vector3(0f + Random.Range(-3f, 3f),
+        //     1f, agentOffset + Random.Range(-5f, 5f))
+        //     + ground.transform.position;
+        // transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+
+        // Remove the randomness
+        transform.position = new Vector3(0f,
+            1f, agentOffset)
             + ground.transform.position;
-        transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+        transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         m_AgentRb.velocity *= 0f;
         if (isSpotter)
         {
@@ -35,7 +41,7 @@ public class HallwayCollabAgent : HallwayAgent
             if (selection == 0)
             {
                 symbolO.transform.position =
-                    new Vector3(0f + Random.Range(-3f, 3f), 2f, blockOffset + Random.Range(-5f, 5f))
+                    new Vector3(0f, 2f, blockOffset)
                     + ground.transform.position;
                 symbolX.transform.position =
                     new Vector3(0f, -1000f, blockOffset + Random.Range(-5f, 5f))
@@ -47,7 +53,7 @@ public class HallwayCollabAgent : HallwayAgent
                     new Vector3(0f, -1000f, blockOffset + Random.Range(-5f, 5f))
                     + ground.transform.position;
                 symbolX.transform.position =
-                    new Vector3(0f, 2f, blockOffset + Random.Range(-5f, 5f))
+                    new Vector3(0f, 2f, blockOffset)
                     + ground.transform.position;
             }
 
@@ -81,7 +87,11 @@ public class HallwayCollabAgent : HallwayAgent
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
         AddReward(-1f / MaxStep);
-        MoveAgent(actionBuffers.DiscreteActions);
+        if (!isSpotter)
+        {
+            MoveAgent(actionBuffers.DiscreteActions);
+        }
+
         int comm_act = actionBuffers.DiscreteActions[1];
         teammate.tellAgent(comm_act);
         // if (isSpotter) // Test
