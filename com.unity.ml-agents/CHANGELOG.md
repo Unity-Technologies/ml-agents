@@ -11,18 +11,38 @@ and this project adheres to
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- TensorFlow trainers have been removed, please use the Torch trainers instead. (#4707)
+
+### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+
+## [1.7.0-preview] - 2020-12-21
+### Major Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 - PyTorch trainers now support training agents with both continuous and discrete action spaces. (#4702)
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - Agents with both continuous and discrete actions is now supported. You can specify
 both continuous and discrete action sizes in Behavior Parameters. (#4702, #4718)
+- In order to improve the developer experience for Unity ML-Agents Toolkit, we have added in-editor analytics.
+Please refer to "Information that is passively collected by Unity" in the
+[Unity Privacy Policy](https://unity3d.com/legal/privacy-policy). (#4677)
 - The FoodCollector example environment now uses continuous actions for moving and
 discrete actions for shooting. (#4746)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-- `ActionSpec.validate_action()` now enforces that `UnityEnvironment.set_action_for_agent()` receives a 1D `np.array`.
+- `ActionSpec.validate_action()` now enforces that `UnityEnvironment.set_action_for_agent()` receives a 1D `np.array`. (#4691)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
+- Removed noisy warnings about API minor version mismatches in both the C# and python code. (#4688)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 

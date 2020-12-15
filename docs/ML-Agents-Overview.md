@@ -372,7 +372,7 @@ your agent's behavior:
   below).
 - `rnd`: represents an intrinsic reward signal that encourages exploration
   in sparse-reward environments that is defined by the Curiosity module (see
-  below). (Not available for TensorFlow trainers)
+  below).
 
 ### Deep Reinforcement Learning
 
@@ -436,8 +436,6 @@ The loss (the squared difference between the predicted and actual encoded observ
 of the trained model is used as intrinsic reward. The more an Agent visits a state, the
 more accurate the predictions and the lower the rewards which encourages the Agent to
 explore new states with higher prediction errors.
-
-__Note:__ RND is not available for TensorFlow trainers (only PyTorch trainers)
 
 ### Imitation Learning
 
