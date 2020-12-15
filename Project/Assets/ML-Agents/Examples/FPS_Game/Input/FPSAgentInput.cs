@@ -81,8 +81,8 @@ public class FPSAgentInput : MonoBehaviour
         //        shootInput = gamepad.rightTrigger.isPressed;
         shieldInput = actionMap.Shield.ReadValue<float>() > 0;
         //        rotateInput = actionMap.RotateBody.ReadValue<Vector2>();
-        rotateInput = actionMap.Rotate.ReadValue<float>() * .1f;
-        //        rotateInput = actionMap.Rotate.ReadValue<float>();
+        //        rotateInput = actionMap.Rotate.ReadValue<float>() * .1f;
+        rotateInput = actionMap.Rotate.ReadValue<float>();
         //        rotateInput = actionMap.RotateBody.ReadValue<Vector2>();
         //        jumpInput = actionMap.Jump.ReadValue<float>() > 0;
         //        jumpInput = actionMap.Jump.triggered;

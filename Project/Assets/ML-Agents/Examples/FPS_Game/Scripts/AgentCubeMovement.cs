@@ -165,6 +165,36 @@ namespace MLAgents
         }
 
 
+        //        private float yaw;
+        //        private float pitch;
+        //        public float mouseSensitivity;
+        //        public float mouseSensitivityMultiplier;
+        //        public float maxMouseSmoothTime;
+        //        public float mouseSmoothing;
+        //        public Vector2 pitchMinMax;
+        //        public float smoothPitch;
+        //        public float pitchSmoothV;
+        //        public float smoothYaw;
+        //        public float yawSmoothV;
+        //        public void RotateBody(float rotateAxis, float forwardAxis)
+        //        {
+        //            // Look input
+        //            yaw += Input.GetAxisRaw ("Mouse X") * mouseSensitivity / 10 * mouseSensitivityMultiplier;
+        //            pitch -= Input.GetAxisRaw ("Mouse Y") * mouseSensitivity / 10 * mouseSensitivityMultiplier;
+        //            pitch = Mathf.Clamp (pitch, pitchMinMax.x, pitchMinMax.y);
+        //            float mouseSmoothTime = Mathf.Lerp (0.01f, maxMouseSmoothTime, mouseSmoothing);
+        //            smoothPitch = Mathf.SmoothDampAngle (smoothPitch, pitch, ref pitchSmoothV, mouseSmoothTime);
+        //            float smoothYawOld = smoothYaw;
+        //            smoothYaw = Mathf.SmoothDampAngle (smoothYaw, yaw, ref yawSmoothV, mouseSmoothTime);
+        //            if (!debug_playerFrozen && Time.timeScale > 0) {
+        //                cam.transform.localEulerAngles = Vector3.right * smoothPitch;
+        //                transform.Rotate (Vector3.up * Mathf.DeltaAngle (smoothYawOld, smoothYaw), Space.Self);
+        //            }
+        //            rb.MoveRotation(rb.rotation * amount);
+        //
+        //        }
+
+
         public void RotateBody(float rotateAxis, float forwardAxis)
         {
             var walkingBackwardsCoeff = 1;

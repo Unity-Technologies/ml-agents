@@ -238,7 +238,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""id"": ""ac165f0a-fa27-4311-b148-2689537b942b"",
                     ""path"": ""<Mouse>/delta/x"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""Clamp(min=-1,max=1)"",
                     ""groups"": """",
                     ""action"": ""Rotate"",
                     ""isComposite"": false,
