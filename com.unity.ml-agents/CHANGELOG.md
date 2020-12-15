@@ -30,7 +30,7 @@ and this project adheres to
 - PyTorch trainers now support training agents with both continuous and discrete action spaces. (#4702)
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- Agents with both continuous and discrete actions is now supported. You can specify
+- Agents with both continuous and discrete actions are now supported. You can specify
 both continuous and discrete action sizes in Behavior Parameters. (#4702, #4718)
 - In order to improve the developer experience for Unity ML-Agents Toolkit, we have added in-editor analytics.
 Please refer to "Information that is passively collected by Unity" in the
