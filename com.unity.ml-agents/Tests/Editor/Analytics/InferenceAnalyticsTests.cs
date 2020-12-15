@@ -13,8 +13,8 @@ namespace Unity.MLAgents.Tests.Analytics
     [TestFixture]
     public class InferenceAnalyticsTests
     {
-        const string k_continuous2vis8vec2actionPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action.nn";
-        NNModel continuous2vis8vec2actionModel;
+        const string k_continuousONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action.onnx";
+        NNModel continuousONNXModel;
         Test3DSensorComponent sensor_21_20_3;
         Test3DSensorComponent sensor_20_22_3;
 
@@ -26,7 +26,7 @@ namespace Unity.MLAgents.Tests.Analytics
         [SetUp]
         public void SetUp()
         {
-            continuous2vis8vec2actionModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuous2vis8vec2actionPath, typeof(NNModel));
+            continuousONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(NNModel));
             var go = new GameObject("SensorA");
             sensor_21_20_3 = go.AddComponent<Test3DSensorComponent>();
             sensor_21_20_3.Sensor = new Test3DSensor("SensorA", 21, 20, 3);
@@ -41,7 +41,7 @@ namespace Unity.MLAgents.Tests.Analytics
             var behaviorName = "continuousModel";
 
             var continuousEvent = InferenceAnalytics.GetEventForModel(
-                continuous2vis8vec2actionModel, behaviorName,
+                continuousONNXModel, behaviorName,
                 InferenceDevice.CPU, sensors, GetContinuous2vis8vec2actionActionSpec()
             );
 
