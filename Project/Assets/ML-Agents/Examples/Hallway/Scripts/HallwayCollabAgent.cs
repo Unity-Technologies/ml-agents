@@ -11,11 +11,10 @@ public class HallwayCollabAgent : HallwayAgent
     int m_Message = 0;
 
     [HideInInspector]
-    public float selection = 0;
+    public int selection = 0;
     public override void OnEpisodeBegin()
     {
-        // Set initial message to random to avoid initialization issues
-        m_Message = Random.Range(0, 2);
+        m_Message = -1;
 
         var agentOffset = 15f;
         if (isSpotter)
@@ -85,6 +84,10 @@ public class HallwayCollabAgent : HallwayAgent
         MoveAgent(actionBuffers.DiscreteActions);
         int comm_act = actionBuffers.DiscreteActions[1];
         teammate.tellAgent(comm_act);
+        // if (isSpotter) // Test
+        // {
+        //     teammate.tellAgent(selection);
+        // }
     }
 
     void OnCollisionEnter(Collision col)
