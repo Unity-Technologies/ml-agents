@@ -54,7 +54,7 @@ namespace Unity.MLAgents.Tests
         [Test]
         public void ApplyDiscreteActionOutput()
         {
-            var actionSpec = ActionSpec.MakeDiscrete(new int[] { 2, 3 });
+            var actionSpec = ActionSpec.MakeDiscrete(2, 3);
             var inputTensor = new TensorProxy()
             {
                 shape = new long[] { 2, 5 },
@@ -84,7 +84,7 @@ namespace Unity.MLAgents.Tests
         [Test]
         public void ApplyHybridActionOutput()
         {
-            var actionSpec = new ActionSpec(3, 2, new int[] { 2, 3 });
+            var actionSpec = new ActionSpec(3, new int[] { 2, 3 });
             var continuousInputTensor = new TensorProxy()
             {
                 shape = new long[] { 2, 3 },
