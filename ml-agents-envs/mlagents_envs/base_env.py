@@ -45,7 +45,7 @@ class DecisionStep(NamedTuple):
      since the last simulation step.
      - agent_id is an int and an unique identifier for the corresponding Agent.
      - action_mask is an optional list of one dimensional array of booleans.
-     Only available in multi-discrete action space type.
+     Only available when using multi-discrete actions.
      Each array corresponds to an action branch. Each array contains a mask
      for each action of the branch. If true, the action is not available for
      the agent during this simulation step.
@@ -73,7 +73,7 @@ class DecisionSteps(Mapping):
      identifier for the corresponding Agent. This is used to track Agents
      across simulation steps.
      - action_mask is an optional list of two dimensional array of booleans.
-     Only available in multi-discrete action space type.
+     Only available when using multi-discrete actions.
      Each array corresponds to an action branch. The first dimension of each
      array is the batch size and the second contains a mask for each action of
      the branch. If true, the action is not available for the agent during

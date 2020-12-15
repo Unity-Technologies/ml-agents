@@ -31,7 +31,9 @@ view the documentation for doing so [here](#custom-instances).
 1. [Move](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/copy-files-to-linux-vm-using-scp)
    the `ml-agents` sub-folder of this ml-agents repo to the remote Azure
    instance, and set it as the working directory.
-2. Install the required packages with `pip3 install .`.
+2. Install the required packages:
+   Torch: `pip3 install torch==1.7.0 -f https://download.pytorch.org/whl/torch_stable.html` and
+   MLAgents: `pip3 install mlagents`
 
 ## Testing
 
@@ -49,13 +51,16 @@ To verify that all steps worked correctly:
 ```python
 from mlagents_envs.environment import UnityEnvironment
 
-env = UnityEnvironment(<your_env>)
+env = UnityEnvironment(file_name="<your_env>", seed=1, side_channels=[])
 ```
 
-Where `<your_env>` corresponds to the path to your environment executable.
+Where `<your_env>` corresponds to the path to your environment executable (i.e. `/home/UserName/Build/yourFile`).
 
 You should receive a message confirming that the environment was loaded
 successfully.
+
+**Note:** When running your environment in headless mode, you must append `--no-graphics` to your mlagents-learn command, as it won't train otherwise.
+You can test this simply by aborting a training and check if it says "Model Saved" or "Aborted", or see if it generated the .onnx in the result folder.
 
 ## Running Training on your Virtual Machine
 

@@ -22,32 +22,26 @@ namespace Unity.MLAgents.Actuators
         /// Create a VectorActuator that forwards to the provided IActionReceiver.
         /// </summary>
         /// <param name="actionReceiver">The <see cref="IActionReceiver"/> used for OnActionReceived and WriteDiscreteActionMask.</param>
-        /// <param name="vectorActionSize">For discrete action spaces, the branch sizes for each action.
-        /// For continuous action spaces, the number of actions is the 0th element.</param>
-        /// <param name="spaceType"></param>
+        /// <param name="actionSpec"></param>
         /// <param name="name"></param>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown for invalid <see cref="SpaceType"/></exception>
         public VectorActuator(IActionReceiver actionReceiver,
-                              int[] vectorActionSize,
-                              SpaceType spaceType,
+                              ActionSpec actionSpec,
                               string name = "VectorActuator")
         {
             m_ActionReceiver = actionReceiver;
+            ActionSpec = actionSpec;
             string suffix;
-            switch (spaceType)
+            if (actionSpec.NumContinuousActions == 0)
             {
-                case SpaceType.Continuous:
-                    ActionSpec = ActionSpec.MakeContinuous(vectorActionSize[0]);
-                    suffix = "-Continuous";
-                    break;
-                case SpaceType.Discrete:
-                    ActionSpec = ActionSpec.MakeDiscrete(vectorActionSize);
-                    suffix = "-Discrete";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(spaceType),
-                        spaceType,
-                        "Unknown enum value.");
+                suffix = "-Discrete";
+            }
+            else if (actionSpec.NumDiscreteActions == 0)
+            {
+                suffix = "-Continuous";
+            }
+            else
+            {
+                suffix = $"-Continuous-{actionSpec.NumContinuousActions}-Discrete-{actionSpec.NumDiscreteActions}";
             }
             Name = name + suffix;
         }
