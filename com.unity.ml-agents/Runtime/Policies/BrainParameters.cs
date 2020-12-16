@@ -133,7 +133,9 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         private void UpdateToActionSpec()
         {
-            if (!hasUpgradedBrainParametersWithActionSpec)
+            if (!hasUpgradedBrainParametersWithActionSpec
+                && m_ActionSpec.NumContinuousActions == 0
+                && m_ActionSpec.BranchSizes == null)
             {
                 if (VectorActionSpaceType == SpaceType.Continuous)
                 {
@@ -145,9 +147,8 @@ namespace Unity.MLAgents.Policies
                     m_ActionSpec.NumContinuousActions = 0;
                     m_ActionSpec.BranchSizes = (int[])VectorActionSize.Clone();
                 }
-
-                hasUpgradedBrainParametersWithActionSpec = true;
             }
+            hasUpgradedBrainParametersWithActionSpec = true;
         }
 
         /// <summary>
