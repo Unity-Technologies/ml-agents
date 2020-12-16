@@ -72,7 +72,8 @@ def _compare_two_policies(policy1: TorchPolicy, policy2: TorchPolicy) -> None:
     decision_step, _ = mb.create_steps_from_behavior_spec(
         policy1.behavior_spec, num_agents=1
     )
-    obs, masks = policy1._split_decision_step(decision_step)
+    obs = decision_step.obs
+    masks = policy1._extract_masks(decision_step)
     memories = torch.as_tensor(
         policy1.retrieve_memories(list(decision_step.agent_id))
     ).unsqueeze(0)
