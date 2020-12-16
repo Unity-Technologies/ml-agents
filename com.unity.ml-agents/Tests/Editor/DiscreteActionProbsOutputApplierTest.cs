@@ -7,7 +7,7 @@ using Unity.MLAgents.Inference.Utils;
 
 namespace Unity.MLAgents.Tests
 {
-    public class DiscreteActionOutputApplierTest
+    public class DiscreteActionProbsOutputApplierTest
     {
         [Test]
         public void TestEvalP()
