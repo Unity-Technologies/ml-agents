@@ -108,11 +108,11 @@ class CuriosityNetwork(torch.nn.Module):
         Extracts the current state embedding from a mini_batch.
         """
         n_obs = len(self._state_encoder.encoders)
-        obs = ObsUtil.from_buffer(mini_batch, n_obs)
+        np_obs = ObsUtil.from_buffer(mini_batch, n_obs)
         # Convert to tensors
-        obs = [ModelUtils.list_to_tensor(obs) for obs in obs]
+        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
 
-        hidden, _ = self._state_encoder.forward(obs)
+        hidden, _ = self._state_encoder.forward(tensor_obs)
         return hidden
 
     def get_next_state(self, mini_batch: AgentBuffer) -> torch.Tensor:

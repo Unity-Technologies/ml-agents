@@ -148,7 +148,6 @@ class BCModule:
         )
         # Convert to tensors
         obs = [ModelUtils.list_to_tensor(obs) for obs in obs]
-        print("\n\n\n\n", obs, obs[0].shape)
         act_masks = None
         expert_actions = AgentAction.from_dict(mini_batch_demo)
         if self.policy.behavior_spec.action_spec.discrete_size > 0:

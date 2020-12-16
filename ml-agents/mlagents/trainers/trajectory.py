@@ -24,14 +24,14 @@ class ObsUtil:
         """
         returns the name of the observation given the index of the observation
         """
-        return "obs_%d" % index
+        return f"obs_{index}"
 
     @staticmethod
     def get_name_at_next(index: int) -> str:
         """
         returns the name of the next observation given the index of the observation
         """
-        return "next_obs_%d" % index
+        return f"next_obs_{index}"
 
     @staticmethod
     def from_buffer(batch: AgentBuffer, num_obs: int) -> List[np.array]:

@@ -96,10 +96,7 @@ class TorchPolicy(Policy):
         """
         return self._export_m_size
 
-    def _split_decision_step(
-        self, decision_requests: DecisionSteps
-    ) -> Tuple[List[np.array], np.ndarray]:
-        obs = decision_requests.obs
+    def _extract_masks(self, decision_requests: DecisionSteps) -> np.ndarray:
         mask = None
         if self.behavior_spec.action_spec.discrete_size > 0:
             mask = torch.ones([len(decision_requests), np.sum(self.act_size)])
@@ -107,7 +104,7 @@ class TorchPolicy(Policy):
                 mask = torch.as_tensor(
                     1 - np.concatenate(decision_requests.action_mask, axis=1)
                 )
-        return obs, mask
+        return mask
 
     def update_normalization(self, buffer: AgentBuffer) -> None:
         """
@@ -140,7 +137,7 @@ class TorchPolicy(Policy):
 
     def evaluate_actions(
         self,
-        obs: torch.Tensor,
+        obs: List[torch.Tensor],
         actions: AgentAction,
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
@@ -161,8 +158,9 @@ class TorchPolicy(Policy):
         :param decision_requests: DecisionStep object containing inputs.
         :return: Outputs from network as defined by self.inference_dict.
         """
-        obs, masks = self._split_decision_step(decision_requests)
-        obs = [torch.as_tensor(np_ob) for np_ob in obs]
+        obs = decision_requests.obs
+        masks = self._extract_masks(decision_requests)
+        tensor_obs = [torch.as_tensor(np_ob) for np_ob in obs]
 
         memories = torch.as_tensor(self.retrieve_memories(global_agent_ids)).unsqueeze(
             0
@@ -171,7 +169,7 @@ class TorchPolicy(Policy):
         run_out = {}
         with torch.no_grad():
             action, log_probs, entropy, memories = self.sample_actions(
-                obs, masks=masks, memories=memories
+                tensor_obs, masks=masks, memories=memories
             )
         action_tuple = action.to_action_tuple()
         run_out["action"] = action_tuple
