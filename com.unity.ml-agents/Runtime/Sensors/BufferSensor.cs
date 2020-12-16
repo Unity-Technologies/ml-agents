@@ -1,3 +1,5 @@
+using System;
+
 namespace Unity.MLAgents.Sensors
 {
     public class BufferSensor : ISensor
@@ -10,7 +12,7 @@ namespace Unity.MLAgents.Sensors
         {
             m_MaxNumObs = maxNumberObs;
             m_ObsSize = obsSize;
-            m_ObservationBuffer = new float[m_ObservableSize * m_MaxNumObservables];
+            m_ObservationBuffer = new float[m_ObsSize * m_MaxNumObs];
             m_CurrentNumObservables = 0;
         }
 
@@ -43,11 +45,11 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
-            for (int i = 0; i < m_ObservableSize * m_MaxNumObservables; i++)
+            for (int i = 0; i < m_ObsSize * m_MaxNumObs; i++)
             {
                 writer[i] = m_ObservationBuffer[i];
             }
-            return m_ObservableSize * m_MaxNumObservables;
+            return m_ObsSize * m_MaxNumObs;
         }
 
         /// <inheritdoc/>
