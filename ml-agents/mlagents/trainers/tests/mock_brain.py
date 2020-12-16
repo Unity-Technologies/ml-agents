@@ -7,6 +7,7 @@ from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents_envs.base_env import (
     DecisionSteps,
     TerminalSteps,
+    ObservationSpec,
     BehaviorSpec,
     ActionSpec,
     ActionTuple,
@@ -41,7 +42,8 @@ def create_mock_steps(
     reward = np.array(num_agents * [1.0], dtype=np.float32)
     interrupted = np.array(num_agents * [False], dtype=np.bool)
     agent_id = np.arange(num_agents, dtype=np.int32)
-    behavior_spec = BehaviorSpec(observation_shapes, action_spec)
+    obs_spec = ObservationSpec.create_simple(observation_shapes)
+    behavior_spec = BehaviorSpec(obs_spec, action_spec)
     if done:
         return (
             DecisionSteps.empty(behavior_spec),
@@ -59,7 +61,7 @@ def create_steps_from_behavior_spec(
 ) -> Tuple[DecisionSteps, TerminalSteps]:
     return create_mock_steps(
         num_agents=num_agents,
-        observation_shapes=behavior_spec.observation_shapes,
+        observation_shapes=behavior_spec.observation_spec.shapes,
         action_spec=behavior_spec.action_spec,
     )
 
@@ -149,7 +151,7 @@ def simulate_rollout(
 ) -> AgentBuffer:
     trajectory = make_fake_trajectory(
         length,
-        behavior_spec.observation_shapes,
+        behavior_spec.observation_spec.shapes,
         action_spec=behavior_spec.action_spec,
         memory_size=memory_size,
     )
@@ -169,9 +171,9 @@ def setup_test_behavior_specs(
         action_spec = ActionSpec.create_discrete(tuple(vector_action_space))
     else:
         action_spec = ActionSpec.create_continuous(vector_action_space)
-    behavior_spec = BehaviorSpec(
-        [(84, 84, 3)] * int(use_visual) + [(vector_obs_space,)], action_spec
-    )
+    observation_shapes = [(84, 84, 3)] * int(use_visual) + [(vector_obs_space,)]
+    obs_spec = ObservationSpec.create_simple(observation_shapes)
+    behavior_spec = BehaviorSpec(obs_spec, action_spec)
     return behavior_spec
 
 

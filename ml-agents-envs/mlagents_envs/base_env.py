@@ -28,6 +28,7 @@ from typing import (
     Any,
     Mapping as MappingType,
 )
+from enum import IntFlag
 import numpy as np
 
 from mlagents_envs.exception import UnityActionException
@@ -136,7 +137,7 @@ class DecisionSteps(Mapping):
         :param spec: The BehaviorSpec for the DecisionSteps
         """
         obs: List[np.ndarray] = []
-        for shape in spec.observation_shapes:
+        for shape in spec.observation_spec.shapes:
             obs += [np.zeros((0,) + shape, dtype=np.float32)]
         return DecisionSteps(
             obs=obs,
@@ -234,7 +235,7 @@ class TerminalSteps(Mapping):
         :param spec: The BehaviorSpec for the TerminalSteps
         """
         obs: List[np.ndarray] = []
-        for shape in spec.observation_shapes:
+        for shape in spec.observation_spec.shapes:
             obs += [np.zeros((0,) + shape, dtype=np.float32)]
         return TerminalSteps(
             obs=obs,
@@ -435,17 +436,61 @@ class ActionSpec(NamedTuple):
         return ActionSpec(0, discrete_branches)
 
 
+class DimensionProperty(IntFlag):
+    """
+    No properties specified.
+    """
+
+    UNSPECIFIED = 0
+    """
+    No Property of the observation in that dimension. Observation can be processed with
+    Fully connected networks.
+    """
+    NONE = 1
+    """
+    Means it is possible to do a convolution in this dimension.
+    """
+    TRANSLATIONAL_EQUIVARIANCE = 2
+    """
+    Means that there can be a variable number of observations in this dimension.
+    The observations are unordered.
+    """
+    VARIABLE_SIZE = 3
+
+
+class ObservationSpec(NamedTuple):
+    """
+    A NamedTuple containing information about the observation of Agents under the
+    same behavior.
+    - observation_shapes is a List of Tuples of int : Each Tuple corresponds
+    to an observation's dimensions. The shape tuples have the same ordering as
+    the ordering of the DecisionSteps and TerminalSteps.
+    - dimension_properties is a List of Tuples of DimensionProperties flag. Each Tuple
+    corresponds to an observation's properties. The tuples have the same ordering as
+    the ordering of the DecisionSteps and TerminalSteps.
+    """
+
+    shapes: List[Tuple[int, ...]]
+    dimension_properties: List[Tuple[DimensionProperty, ...]]
+
+    @staticmethod
+    def create_simple(shapes: List[Tuple[int, ...]]) -> "ObservationSpec":
+        dim_prop: List[Tuple[DimensionProperty, ...]] = []
+        for shape in shapes:
+            dim_prop += [(DimensionProperty.UNSPECIFIED,) * len(shape)]
+        return ObservationSpec(shapes, dim_prop)
+
+
 class BehaviorSpec(NamedTuple):
     """
     A NamedTuple containing information about the observation and action
     spaces for a group of Agents under the same behavior.
-    - observation_shapes is a List of Tuples of int : Each Tuple corresponds
-    to an observation's dimensions. The shape tuples have the same ordering as
-    the ordering of the DecisionSteps and TerminalSteps.
+    - observation_spec is an ObservationSpec NamedTuple containing information about
+    the information of the Agent's observations such as their shapes.
     - action_spec is an ActionSpec NamedTuple
     """
 
-    observation_shapes: List[Tuple]
+    observation_spec: ObservationSpec
     action_spec: ActionSpec
 
 

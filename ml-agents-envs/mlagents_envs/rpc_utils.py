@@ -1,5 +1,7 @@
 from mlagents_envs.base_env import (
     ActionSpec,
+    ObservationSpec,
+    DimensionProperty,
     BehaviorSpec,
     DecisionSteps,
     TerminalSteps,
@@ -31,6 +33,11 @@ def behavior_spec_from_proto(
     :return: BehaviorSpec object.
     """
     observation_shape = [tuple(obs.shape) for obs in agent_info.observations]
+    dim_props = [
+        tuple(DimensionProperty(dim) for dim in obs.dimension_properties)
+        for obs in agent_info.observations
+    ]
+    obs_spec = ObservationSpec(observation_shape, dim_props)
     # proto from comminicator < v1.3 does not set action spec, use deprecated fields instead
     if (
         brain_param_proto.action_spec.num_continuous_actions == 0
@@ -50,7 +57,7 @@ def behavior_spec_from_proto(
             action_spec_proto.num_continuous_actions,
             tuple(branch for branch in action_spec_proto.discrete_branch_sizes),
         )
-    return BehaviorSpec(observation_shape, action_spec)
+    return BehaviorSpec(obs_spec, action_spec)
 
 
 class OffsetBytesIO:
@@ -280,7 +287,7 @@ def steps_from_proto(
     ]
     decision_obs_list: List[np.ndarray] = []
     terminal_obs_list: List[np.ndarray] = []
-    for obs_index, obs_shape in enumerate(behavior_spec.observation_shapes):
+    for obs_index, obs_shape in enumerate(behavior_spec.observation_spec.shapes):
         is_visual = len(obs_shape) == 3
         if is_visual:
             obs_shape = cast(Tuple[int, int, int], obs_shape)

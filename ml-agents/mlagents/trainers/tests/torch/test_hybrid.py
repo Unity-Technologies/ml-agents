@@ -62,7 +62,7 @@ def test_hybrid_recurrent_ppo():
         PPO_TORCH_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_network_settings,
-        max_steps=3000,
+        max_steps=5000,
     )
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
@@ -75,10 +75,10 @@ def test_hybrid_sac(action_size):
         SAC_TORCH_CONFIG.hyperparameters,
         buffer_size=50000,
         batch_size=256,
-        buffer_init_steps=2000,
+        buffer_init_steps=0,
     )
     config = attr.evolve(
-        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=6000
+        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=2000
     )
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 

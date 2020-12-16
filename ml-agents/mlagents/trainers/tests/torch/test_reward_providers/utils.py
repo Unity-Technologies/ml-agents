@@ -10,11 +10,11 @@ def create_agent_buffer(
     buffer = AgentBuffer()
     curr_observations = [
         np.random.normal(size=shape).astype(np.float32)
-        for shape in behavior_spec.observation_shapes
+        for shape in behavior_spec.observation_spec.shapes
     ]
     next_observations = [
         np.random.normal(size=shape).astype(np.float32)
-        for shape in behavior_spec.observation_shapes
+        for shape in behavior_spec.observation_spec.shapes
     ]
     action_buffer = behavior_spec.action_spec.random_action(1)
     action = {}

@@ -51,10 +51,10 @@ class ModelSerializer:
         seq_len_dim = [1]
         dummy_vec_obs = [torch.zeros(batch_dim + [self.policy.vec_obs_size])]
         # create input shape of NCHW
-        # (It's NHWC in self.policy.behavior_spec.observation_shapes)
+        # (It's NHWC in self.policy.behavior_spec.observation_spec.shapes)
         dummy_vis_obs = [
             torch.zeros(batch_dim + [shape[2], shape[0], shape[1]])
-            for shape in self.policy.behavior_spec.observation_shapes
+            for shape in self.policy.behavior_spec.observation_spec.shapes
             if len(shape) == 3
         ]
         dummy_masks = torch.ones(

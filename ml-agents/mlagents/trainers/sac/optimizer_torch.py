@@ -135,14 +135,14 @@ class TorchSACOptimizer(TorchOptimizer):
 
         self.value_network = TorchSACOptimizer.PolicyValueNetwork(
             self.stream_names,
-            self.policy.behavior_spec.observation_shapes,
+            self.policy.behavior_spec.observation_spec.shapes,
             policy_network_settings,
             self._action_spec,
         )
 
         self.target_network = ValueNetwork(
             self.stream_names,
-            self.policy.behavior_spec.observation_shapes,
+            self.policy.behavior_spec.observation_spec.shapes,
             policy_network_settings,
         )
         ModelUtils.soft_update(

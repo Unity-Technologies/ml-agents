@@ -64,7 +64,9 @@ class RNDNetwork(torch.nn.Module):
             vis_encode_type=EncoderType.SIMPLE,
             memory=None,
         )
-        self._encoder = NetworkBody(specs.observation_shapes, state_encoder_settings)
+        self._encoder = NetworkBody(
+            specs.observation_spec.shapes, state_encoder_settings
+        )
 
     def forward(self, mini_batch: AgentBuffer) -> torch.Tensor:
         n_vis = len(self._encoder.visual_processors)
