@@ -26,7 +26,7 @@ namespace Unity.MLAgents.Tests
                 valueType = TensorProxy.TensorType.FloatingPoint
             };
 
-            DiscreteActionOutputApplier.Eval(src, dst, m);
+            DiscreteActionProbsOutputApplier.Eval(src, dst, m);
 
             float[] reference = { 2, 2, 1 };
             for (var i = 0; i < dst.data.length; i++)
@@ -56,7 +56,7 @@ namespace Unity.MLAgents.Tests
                 valueType = TensorProxy.TensorType.FloatingPoint
             };
 
-            DiscreteActionOutputApplier.Eval(src, dst, m);
+            DiscreteActionProbsOutputApplier.Eval(src, dst, m);
 
             float[] reference = { 2, 2, 2 };
             for (var i = 0; i < dst.data.length; i++)
@@ -87,7 +87,7 @@ namespace Unity.MLAgents.Tests
                 valueType = TensorProxy.TensorType.FloatingPoint
             };
 
-            DiscreteActionOutputApplier.Eval(src, dst, m);
+            DiscreteActionProbsOutputApplier.Eval(src, dst, m);
 
             float[] reference = { 2, 2, 2, 0, 1, 0 };
             for (var i = 0; i < dst.data.length; i++)
@@ -108,7 +108,7 @@ namespace Unity.MLAgents.Tests
             };
 
             Assert.Throws<NotImplementedException>(
-                () => DiscreteActionOutputApplier.Eval(src, null, m));
+                () => DiscreteActionProbsOutputApplier.Eval(src, null, m));
         }
 
         [Test]
@@ -127,7 +127,7 @@ namespace Unity.MLAgents.Tests
             };
 
             Assert.Throws<ArgumentException>(
-                () => DiscreteActionOutputApplier.Eval(src, dst, m));
+                () => DiscreteActionProbsOutputApplier.Eval(src, dst, m));
         }
 
         [Test]
@@ -146,7 +146,7 @@ namespace Unity.MLAgents.Tests
             };
 
             Assert.Throws<ArgumentNullException>(
-                () => DiscreteActionOutputApplier.Eval(src, dst, m));
+                () => DiscreteActionProbsOutputApplier.Eval(src, dst, m));
         }
 
         [Test]
@@ -166,7 +166,7 @@ namespace Unity.MLAgents.Tests
             };
 
             Assert.Throws<ArgumentNullException>(
-                () => DiscreteActionOutputApplier.Eval(src, dst, m));
+                () => DiscreteActionProbsOutputApplier.Eval(src, dst, m));
         }
 
         [Test]
@@ -187,7 +187,7 @@ namespace Unity.MLAgents.Tests
             };
 
             Assert.Throws<ArgumentException>(
-                () => DiscreteActionOutputApplier.Eval(src, dst, m));
+                () => DiscreteActionProbsOutputApplier.Eval(src, dst, m));
         }
     }
 }

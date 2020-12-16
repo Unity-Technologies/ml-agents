@@ -203,7 +203,7 @@ namespace Unity.MLAgents.Tests
         {
             var model = useDeprecatedNNModel ? ModelLoader.Load(discreteNNModel) : ModelLoader.Load(discreteONNXModel);
             var outputNames = model.GetOutputNames();
-            var actionOutputName = useDeprecatedNNModel ? TensorNames.ActionOutputDeprecated : TensorNames.DiscreteActionOutput;
+            var actionOutputName = useDeprecatedNNModel ? TensorNames.ActionOutputDeprecated : TensorNames.DiscreteActionProbsOutput;
             Assert.Contains(actionOutputName, outputNames);
             // TODO : There are some memory tensors as well
         }
@@ -216,7 +216,8 @@ namespace Unity.MLAgents.Tests
 
             Assert.AreEqual(2, outputNames.Count());
             Assert.Contains(TensorNames.ContinuousActionOutput, outputNames);
-            Assert.Contains(TensorNames.DiscreteActionOutput, outputNames);
+            Debug.Log(string.Join(", ", outputNames));
+            Assert.Contains(TensorNames.DiscreteActionProbsOutput, outputNames);
 
             model = null;
             Assert.AreEqual(0, model.GetOutputNames().Count());

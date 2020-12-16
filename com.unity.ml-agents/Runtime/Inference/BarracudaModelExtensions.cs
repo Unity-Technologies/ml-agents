@@ -225,7 +225,8 @@ namespace Unity.MLAgents.Inference
             }
             else
             {
-                return model.outputs.Contains(TensorNames.DiscreteActionOutput) &&
+                return (model.outputs.Contains(TensorNames.DiscreteActionOutput) ||
+                    model.outputs.Contains(TensorNames.DiscreteActionProbsOutput)) &&
                     (int)model.GetTensorByName(TensorNames.DiscreteActionOutputShape)[0] > 0;
             }
         }
@@ -270,7 +271,14 @@ namespace Unity.MLAgents.Inference
             }
             else
             {
-                return TensorNames.DiscreteActionOutput;
+                if (model.outputs.Contains(TensorNames.DiscreteActionOutput))
+                {
+                    return TensorNames.DiscreteActionOutput;
+                }
+                else
+                {
+                    return TensorNames.DiscreteActionProbsOutput;
+                }
             }
         }
 
@@ -286,7 +294,8 @@ namespace Unity.MLAgents.Inference
         {
             return model == null ||
                 model.outputs.Contains(TensorNames.ContinuousActionOutput) ||
-                model.outputs.Contains(TensorNames.DiscreteActionOutput);
+                model.outputs.Contains(TensorNames.DiscreteActionOutput) ||
+                model.outputs.Contains(TensorNames.DiscreteActionProbsOutput);
         }
 
         /// <summary>
@@ -317,7 +326,8 @@ namespace Unity.MLAgents.Inference
             // Check the presence of action output tensor
             if (!model.outputs.Contains(TensorNames.ActionOutputDeprecated) &&
                 !model.outputs.Contains(TensorNames.ContinuousActionOutput) &&
-                !model.outputs.Contains(TensorNames.DiscreteActionOutput))
+                !model.outputs.Contains(TensorNames.DiscreteActionOutput) &&
+                !model.outputs.Contains(TensorNames.DiscreteActionProbsOutput))
             {
                 failedModelChecks.Add("The model does not contain any Action Output Node.");
                 return false;
@@ -346,7 +356,8 @@ namespace Unity.MLAgents.Inference
                     failedModelChecks.Add("The model uses continuous action but does not contain Continuous Action Output Shape Node.");
                     return false;
                 }
-                if (model.outputs.Contains(TensorNames.DiscreteActionOutput) &&
+                if ((model.outputs.Contains(TensorNames.DiscreteActionOutput) ||
+                    model.outputs.Contains(TensorNames.DiscreteActionProbsOutput)) &&
                     model.GetTensorByName(TensorNames.DiscreteActionOutputShape) == null)
                 {
                     failedModelChecks.Add("The model uses discrete action but does not contain Discrete Action Output Shape Node.");
