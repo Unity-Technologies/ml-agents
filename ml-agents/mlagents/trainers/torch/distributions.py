@@ -174,7 +174,7 @@ class GaussianDistribution(nn.Module):
         else:
             # Expand so that entropy matches batch size. Note that we're using
             # mu*0 here to get the batch size implicitly since Barracuda 1.2.1
-            # throws error on runtime broadcasting due to unknow reason. We
+            # throws error on runtime broadcasting due to unknown reason. We
             # use this to replace torch.expand() becuase it is not supported in
             # the verified version of Barracuda (1.0.2).
             log_sigma = mu * 0 + self.log_sigma
