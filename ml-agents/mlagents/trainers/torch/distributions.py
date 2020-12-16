@@ -176,7 +176,7 @@ class GaussianDistribution(nn.Module):
             # mu*0 here to get the batch size implicitly since Barracuda 1.2.1
             # throws error on runtime broadcasting due to unknown reason. We
             # use this to replace torch.expand() becuase it is not supported in
-            # the verified version of Barracuda (1.0.2).
+            # the verified version of Barracuda (1.0.X).
             log_sigma = mu * 0 + self.log_sigma
         if self.tanh_squash:
             return TanhGaussianDistInstance(mu, torch.exp(log_sigma))
