@@ -484,6 +484,8 @@ namespace MLAgents
             }
         }
 
+        //        public float WalkSmoothing = 3;
+        //        private float agentVel;
         public void RunOnGround(Vector3 dir)
         {
             if (dir == Vector3.zero)
@@ -497,6 +499,9 @@ namespace MLAgents
             {
                 var vel = rb.velocity.magnitude;
                 float adjustedSpeed = Mathf.Clamp(agentRunSpeed - vel, 0, agentTerminalVel);
+                //                float adjustedSpeed = Mathf.MoveTowards(vel, agentRunSpeed, WalkSmoothing);
+                //                float adjustedSpeed = Mathf.SmoothDamp(vel, agentRunSpeed, ref agentVel, WalkSmoothing, agentTerminalVel);
+
                 //                rb.AddForce(dir.normalized * adjustedSpeed, runningForceMode);
                 rb.AddForce(dir * adjustedSpeed, runningForceMode);
                 if (AnimateBodyMesh)
