@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 33776711028771674}
   - component: {fileID: 65981801441420474}
   - component: {fileID: 23936659159756770}
+  - component: {fileID: 3900195163183970603}
   m_Layer: 0
-  m_Name: goal higher
+  m_Name: goal highScore
   m_TagString: goal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -93,6 +94,19 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &3900195163183970603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508142483324970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ac8bdc645d427a429fe9370f207b690, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goalConfig: {fileID: 11400000, guid: 60239836b1b1c7b409425c20597bbd6e, type: 2}
 --- !u!1 &1765554778432800
 GameObject:
   m_ObjectHideFlags: 0

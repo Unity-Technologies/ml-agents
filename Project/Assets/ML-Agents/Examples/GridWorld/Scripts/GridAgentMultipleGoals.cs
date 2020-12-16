@@ -104,7 +104,8 @@ public class GridAgentMultipleGoals : Agent
 
             if (hit.Where(col => col.gameObject.CompareTag("goal")).ToArray().Length == 1)
             {
-                SetReward(1f);
+                var col = (Collider)hit.GetValue(0);
+                SetReward(col.gameObject.GetComponent<GoalControl>().goalConfig.rewardScore);
                 EndEpisode();
             }
             else if (hit.Where(col => col.gameObject.CompareTag("pit")).ToArray().Length == 1)
