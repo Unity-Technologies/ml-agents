@@ -147,9 +147,8 @@ namespace Unity.MLAgents.Policies
                     m_ActionSpec.NumContinuousActions = 0;
                     m_ActionSpec.BranchSizes = (int[])VectorActionSize.Clone();
                 }
-
-                hasUpgradedBrainParametersWithActionSpec = true;
             }
+            hasUpgradedBrainParametersWithActionSpec = true;
         }
 
         /// <summary>
