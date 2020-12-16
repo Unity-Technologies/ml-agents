@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
+using UnityEngine;
 
 
 namespace Unity.MLAgents.Inference
@@ -70,13 +71,14 @@ namespace Unity.MLAgents.Inference
             if (actionSpec.NumDiscreteActions > 0)
             {
                 var tensorName = model.DiscreteOutputName();
-                if (tensorName == TensorNames.DiscreteActionProbsOutput)
+                if (tensorName == TensorNames.DiscreteActionOutput)
                 {
-                    m_Dict[tensorName] = new DiscreteActionProbsOutputApplier(actionSpec, seed, allocator);
+                    m_Dict[tensorName] = new DiscreteActionOutputApplier(actionSpec);
                 }
                 else
                 {
-                    m_Dict[tensorName] = new DiscreteActionOutputApplier(actionSpec);
+
+                    m_Dict[tensorName] = new DiscreteActionProbsOutputApplier(actionSpec, seed, allocator);
                 }
             }
             m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
