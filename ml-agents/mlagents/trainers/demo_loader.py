@@ -70,8 +70,6 @@ def make_demo_buffer(
         for i, obs in enumerate(split_obs.visual_observations):
             demo_raw_buffer["visual_obs%d" % i].append(obs)
         demo_raw_buffer["vector_obs"].append(split_obs.vector_observations)
-        print(current_pair_info.action_info.continuous_actions)
-        print(current_pair_info.action_info.discrete_actions)
         if (
             len(current_pair_info.action_info.continuous_actions) == 0
             and len(current_pair_info.action_info.discrete_actions) == 0
