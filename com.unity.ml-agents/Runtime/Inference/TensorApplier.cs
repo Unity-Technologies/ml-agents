@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
-using UnityEngine;
 
 
 namespace Unity.MLAgents.Inference

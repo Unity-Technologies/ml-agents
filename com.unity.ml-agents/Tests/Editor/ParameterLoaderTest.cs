@@ -216,7 +216,6 @@ namespace Unity.MLAgents.Tests
 
             Assert.AreEqual(2, outputNames.Count());
             Assert.Contains(TensorNames.ContinuousActionOutput, outputNames);
-            Debug.Log(string.Join(", ", outputNames));
             Assert.Contains(TensorNames.DiscreteActionProbsOutput, outputNames);
 
             model = null;
