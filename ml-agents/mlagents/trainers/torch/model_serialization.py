@@ -81,8 +81,17 @@ class ModelSerializer:
             ]
             self.dynamic_axes.update({"continuous_actions": {0: "batch"}})
         if self.policy.behavior_spec.action_spec.discrete_size > 0:
-            self.output_names += ["discrete_actions", "discrete_action_output_shape"]
-            self.dynamic_axes.update({"discrete_actions": {0: "batch"}})
+            self.output_names += [
+                "sampled_discrete_actions",
+                "discrete_actions",
+                "discrete_action_output_shape",
+            ]
+            self.dynamic_axes.update(
+                {
+                    "sampled_discrete_actions": {0: "batch"},
+                    "discrete_actions": {0: "batch"},
+                }
+            )
         if (
             self.policy.behavior_spec.action_spec.continuous_size == 0
             or self.policy.behavior_spec.action_spec.discrete_size == 0

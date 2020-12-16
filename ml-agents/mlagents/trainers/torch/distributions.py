@@ -133,6 +133,10 @@ class CategoricalDistInstance(DiscreteDistInstance):
         ).unsqueeze(-1)
 
     def exported_model_output(self):
+        return self.sample()
+
+    def exported_model_probs(self):
+        # legacy method to export action probs for communicator < v1.3
         return self.all_log_prob()
 
 

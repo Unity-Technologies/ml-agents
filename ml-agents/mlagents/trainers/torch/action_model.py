@@ -160,7 +160,12 @@ class ActionModel(nn.Module):
         :return: A tuple of torch tensors corresponding to the inference output
         """
         dists = self._get_dists(inputs, masks)
-        continuous_out, discrete_out, action_out_deprecated = None, None, None
+        continuous_out, discrete_out, discrete_probs_out, action_out_deprecated = (
+            None,
+            None,
+            None,
+            None,
+        )
         if self.action_spec.continuous_size > 0 and dists.continuous is not None:
             continuous_out = dists.continuous.exported_model_output()
             action_out_deprecated = dists.continuous.exported_model_output()
@@ -173,11 +178,15 @@ class ActionModel(nn.Module):
                 for discrete_dist in dists.discrete
             ]
             discrete_out = torch.cat(discrete_out_list, dim=1)
-            action_out_deprecated = torch.cat(discrete_out_list, dim=1)
+            discrete_probs_out_list = [
+                discrete_dist.exported_model_probs() for discrete_dist in dists.discrete
+            ]
+            discrete_probs_out = torch.cat(discrete_probs_out_list, dim=1)
+            action_out_deprecated = torch.cat(discrete_probs_out_list, dim=1)
         # deprecated action field does not support hybrid action
         if self.action_spec.continuous_size > 0 and self.action_spec.discrete_size > 0:
             action_out_deprecated = None
-        return continuous_out, discrete_out, action_out_deprecated
+        return continuous_out, discrete_out, discrete_probs_out, action_out_deprecated
 
     def forward(
         self, inputs: torch.Tensor, masks: torch.Tensor
