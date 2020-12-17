@@ -16,26 +16,33 @@ public class HallwayCollabAgent : HallwayAgent
     {
         m_Message = -1;
 
-        var agentOffset = 15f;
+        var agentOffset = 10f;
         if (isSpotter)
         {
-            agentOffset = -5f;
+            agentOffset = -15;
         }
 
-        // transform.position = new Vector3(0f + Random.Range(-3f, 3f),
-        //     1f, agentOffset + Random.Range(-5f, 5f))
-        //     + ground.transform.position;
-        // transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+        if (!isSpotter)
+        {
+            transform.position = new Vector3(0f + Random.Range(-3f, 3f),
+                1f, agentOffset + Random.Range(-5f, 5f))
+                + ground.transform.position;
+            transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+        }
+        else
+        {
+            transform.position = new Vector3(0f,
+                1f, agentOffset)
+                + ground.transform.position;
+            transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        }
 
         // Remove the randomness
-        transform.position = new Vector3(0f,
-            1f, agentOffset)
-            + ground.transform.position;
-        transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+
         m_AgentRb.velocity *= 0f;
         if (isSpotter)
         {
-            var blockOffset = 0f;
+            var blockOffset = -9f;
             // Only the Spotter has the correct selection
             selection = Random.Range(0, 2);
             if (selection == 0)
