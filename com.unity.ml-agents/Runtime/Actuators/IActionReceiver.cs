@@ -156,7 +156,7 @@ namespace Unity.MLAgents.Actuators
         /// <param name="destination">A float array to pack actions into whose length is greater than or
         /// equal to the addition of the Lengths of this objects <see cref="ContinuousActions"/> and
         /// <see cref="DiscreteActions"/> segments.</param>
-        /// [Obsolete("PackActions has been deprecated.")]
+        [Obsolete("PackActions has been deprecated.")]
         public void PackActions(in float[] destination)
         {
             Debug.Assert(destination.Length >= ContinuousActions.Length + DiscreteActions.Length,
