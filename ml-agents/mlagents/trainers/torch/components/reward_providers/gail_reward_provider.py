@@ -103,7 +103,7 @@ class DiscriminatorNetwork(torch.nn.Module):
             )
 
         self._estimator = torch.nn.Sequential(
-            linear_layer(estimator_input_size, 1), torch.nn.Sigmoid()
+            linear_layer(estimator_input_size, 1, kernel_gain=0.2), torch.nn.Sigmoid()
         )
 
     def get_action_input(self, mini_batch: AgentBuffer) -> torch.Tensor:
