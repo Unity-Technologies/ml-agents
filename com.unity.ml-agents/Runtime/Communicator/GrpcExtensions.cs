@@ -101,7 +101,7 @@ namespace Unity.MLAgents
         /// <param name="isTraining">Whether or not the Brain is training.</param>
         public static BrainParametersProto ToProto(this BrainParameters bp, string name, bool isTraining)
         {
-            // Disable deprecation warnings to we can set legacy fields
+            // Disable deprecation warnings so we can set legacy fields
 #pragma warning disable CS0618
             var brainParametersProto = new BrainParametersProto
             {

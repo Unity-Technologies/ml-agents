@@ -711,7 +711,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(numSteps, agent1.sensor1.numWriteCalls);
             Assert.AreEqual(numSteps, agent1.sensor2.numCompressedCalls);
 
-            // Disable deprecation warnings to we can read/write the old fields.
+            // Disable deprecation warnings so we can read/write the old fields.
 #pragma warning disable CS0618
 
             // Make sure the Heuristic method read the observation and set the action

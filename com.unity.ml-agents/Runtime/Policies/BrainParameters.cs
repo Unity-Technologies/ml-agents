@@ -117,7 +117,7 @@ namespace Unity.MLAgents.Policies
         /// <returns> A new BrainParameter object with the same values as the original.</returns>
         public BrainParameters Clone()
         {
-            // Disable deprecation warnings to we can read/write the old fields.
+            // Disable deprecation warnings so we can read/write the old fields.
 #pragma warning disable CS0618
             return new BrainParameters
             {
@@ -136,7 +136,7 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         private void UpdateToActionSpec()
         {
-            // Disable deprecation warnings to we can read the old fields.
+            // Disable deprecation warnings so we can read the old fields.
 #pragma warning disable CS0618
             if (!hasUpgradedBrainParametersWithActionSpec
                 && m_ActionSpec.NumContinuousActions == 0
@@ -162,7 +162,7 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         private void SyncDeprecatedActionFields()
         {
-            // Disable deprecation warnings to we can read the old fields.
+            // Disable deprecation warnings so we can read the old fields.
 #pragma warning disable CS0618
 
             if (m_ActionSpec.NumContinuousActions == 0)

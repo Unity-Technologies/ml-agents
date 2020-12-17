@@ -886,7 +886,7 @@ namespace Unity.MLAgents
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         public virtual void Heuristic(in ActionBuffers actionsOut)
         {
-            // Disable deprecation warnings to we can call the legacy overload.
+            // Disable deprecation warnings so we can call the legacy overload.
 #pragma warning disable CS0618
 
             // The default implementation of Heuristic calls the
@@ -1157,7 +1157,7 @@ namespace Unity.MLAgents
             {
                 m_ActionMasker = new DiscreteActionMasker(actionMask);
             }
-            // Disable deprecation warnings to we can call the legacy overload.
+            // Disable deprecation warnings so we can call the legacy overload.
 #pragma warning disable CS0618
             CollectDiscreteActionMasks(m_ActionMasker);
 #pragma warning restore CS0618
@@ -1241,7 +1241,7 @@ namespace Unity.MLAgents
             {
                 m_LegacyActionCache = Array.ConvertAll(actions.DiscreteActions.Array, x => (float)x);
             }
-            // Disable deprecation warnings to we can call the legacy overload.
+            // Disable deprecation warnings so we can call the legacy overload.
 #pragma warning disable CS0618
             OnActionReceived(m_LegacyActionCache);
 #pragma warning restore CS0618

@@ -9,7 +9,7 @@ namespace Unity.MLAgents
         /// Deprecated, use <see cref="WriteDiscreteActionMask"/> instead.
         /// </summary>
         /// <param name="actionMasker"></param>
-        [Obsolete("CollectDiscreteActionMasks has been deprecated, please the WriteDiscreteActionMask.")]
+        [Obsolete("CollectDiscreteActionMasks has been deprecated, please use WriteDiscreteActionMask.")]
         public virtual void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
         {
         }
@@ -18,7 +18,7 @@ namespace Unity.MLAgents
         /// Deprecated, use <see cref="Heuristic(in ActionBuffers)"/> instead.
         /// </summary>
         /// <param name="actionsOut"></param>
-        [Obsolete("The float[] version of Heuristic has been deprecated, please the ActionBuffers version instead.")]
+        [Obsolete("The float[] version of Heuristic has been deprecated, please use the ActionBuffers version instead.")]
         public virtual void Heuristic(float[] actionsOut)
         {
             Debug.LogWarning("Heuristic method called but not implemented. Returning placeholder actions.");
@@ -29,7 +29,7 @@ namespace Unity.MLAgents
         /// Deprecated, use <see cref="OnActionReceived(ActionBuffers)"/> instead.
         /// </summary>
         /// <param name="vectorAction"></param>
-        [Obsolete("The float[] version of OnActionReceived has been deprecated, please the ActionBuffers version instead.")]
+        [Obsolete("The float[] version of OnActionReceived has been deprecated, please use the ActionBuffers version instead.")]
         public virtual void OnActionReceived(float[] vectorAction) { }
 
         /// <summary>
