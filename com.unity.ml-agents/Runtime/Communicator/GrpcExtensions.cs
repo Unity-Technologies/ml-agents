@@ -162,10 +162,27 @@ namespace Unity.MLAgents
         /// <returns>A BrainParameters struct.</returns>
         public static BrainParameters ToBrainParameters(this BrainParametersProto bpp)
         {
+            ActionSpec actionSpec;
+            if (bpp.ActionSpec == null)
+            {
+                var spaceType = (SpaceType)bpp.VectorActionSpaceTypeDeprecated;
+                if (spaceType == SpaceType.Continuous)
+                {
+                    actionSpec = ActionSpec.MakeContinuous(bpp.VectorActionSizeDeprecated.ToArray()[0]);
+                }
+                else
+                {
+                    actionSpec = ActionSpec.MakeDiscrete(bpp.VectorActionSizeDeprecated.ToArray());
+                }
+            }
+            else
+            {
+                actionSpec = ToActionSpec(bpp.ActionSpec);
+            }
             var bp = new BrainParameters
             {
                 VectorActionDescriptions = bpp.VectorActionDescriptionsDeprecated.ToArray(),
-                ActionSpec = ToActionSpec(bpp.ActionSpec),
+                ActionSpec = actionSpec,
             };
             return bp;
         }
