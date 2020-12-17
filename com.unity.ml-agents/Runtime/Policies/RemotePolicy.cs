@@ -2,7 +2,9 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Analytics;
 using Unity.MLAgents.Sensors;
+
 
 namespace Unity.MLAgents.Policies
 {
@@ -16,6 +18,7 @@ namespace Unity.MLAgents.Policies
         string m_FullyQualifiedBehaviorName;
         ActionSpec m_ActionSpec;
         ActionBuffers m_LastActionBuffer;
+        private bool m_AnalyticsSent = false;
 
         internal ICommunicator m_Communicator;
 
@@ -33,6 +36,15 @@ namespace Unity.MLAgents.Policies
         /// <inheritdoc />
         public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
+            if (!m_AnalyticsSent)
+            {
+                m_AnalyticsSent = true;
+                TrainingAnalytics.RemotePolicyStarted(
+                    m_FullyQualifiedBehaviorName,
+                    sensors,
+                    m_ActionSpec
+                );
+            }
             m_AgentId = info.episodeId;
             m_Communicator?.PutObservations(m_FullyQualifiedBehaviorName, info, sensors);
         }

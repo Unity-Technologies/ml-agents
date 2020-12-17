@@ -86,4 +86,17 @@ namespace Unity.MLAgents.Analytics
             };
         }
     }
+
+    internal struct RemotePolicyStartedEvent
+    {
+        /// <summary>
+        /// Hash of the BehaviorName.
+        /// </summary>
+        public string BehaviorName;
+        public string TrainingSessionGuid;
+        public List<EventObservationSpec> ObservationSpecs;
+        public EventActionSpec ActionSpec;
+
+        // TODO get python versions from RpcCommunicator?
+    }
 }
