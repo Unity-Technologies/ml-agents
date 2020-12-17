@@ -1,8 +1,8 @@
 pack:
   name: Pack
   agent:
-    type: Unity::VM::osx
-    image: package-ci/mac:stable
+    type: Unity::VM
+    image: package-ci/ubuntu:stable
     flavor: b1.small
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm

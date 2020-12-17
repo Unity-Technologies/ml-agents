@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import yaml
+from sys import platform
 from typing import List, Optional
 
 
@@ -115,6 +116,8 @@ def init_venv(
     pip_commands = ["--upgrade pip", "--upgrade setuptools"]
     if mlagents_python_version:
         # install from pypi
+        if platform != "darwin":
+            raise RuntimeError("Yamato can only run tensorflow on mac platforms!")
         pip_commands += [
             f"mlagents=={mlagents_python_version}",
             f"gym-unity=={mlagents_python_version}",
