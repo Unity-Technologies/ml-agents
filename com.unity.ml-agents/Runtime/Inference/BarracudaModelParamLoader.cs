@@ -109,11 +109,7 @@ namespace Unity.MLAgents.Inference
         /// <param name="memory">
         /// The memory size that the model is expecting.
         /// </param>
-        /// <param name="isContinuous">
-        /// Whether the model is expecting continuous or discrete control.
-        /// </param>
         /// <param name="sensorComponents">Array of attached sensor components</param>
-        /// <param name="observableAttributeTotalSize">Total size of ObservableAttributes</param>
         /// <returns>
         /// A IEnumerable of string corresponding to the failed input presence checks.
         /// </returns>
@@ -418,15 +414,6 @@ namespace Unity.MLAgents.Inference
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
         /// </param>
         /// <param name="actuatorComponents">Array of attached actuator components.</param>
-        /// <param name="isContinuous">
-        /// Whether the model is expecting continuous or discrete control.
-        /// </param>
-        /// <param name="modelContinuousActionSize">
-        /// The size of the continuous action output that is expected by the model.
-        /// </param>
-        /// <param name="modelSumDiscreteBranchSizes">
-        /// The size of the discrete action output that is expected by the model.
-        /// </param>
         /// <returns>
         /// A IEnumerable of string corresponding to the incompatible shapes between model
         /// and BrainParameters.
@@ -462,10 +449,6 @@ namespace Unity.MLAgents.Inference
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
         /// </param>
         /// <param name="actuatorComponents">Array of attached actuator components.</param>
-        /// <param name="shape"> The tensor shape that is expected by the model</param>
-        /// <param name="modelContinuousActionSize">
-        /// The size of the continuous action output that is expected by the model.
-        /// </param>
         /// <param name="modelSumDiscreteBranchSizes">
         /// The size of the discrete action output that is expected by the model.
         /// </param>
@@ -501,12 +484,8 @@ namespace Unity.MLAgents.Inference
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
         /// </param>
         /// <param name="actuatorComponents">Array of attached actuator components.</param>
-        /// <param name="shape"> The tensor shape that is expected by the model</param>
         /// <param name="modelContinuousActionSize">
         /// The size of the continuous action output that is expected by the model.
-        /// </param>
-        /// <param name="modelSumDiscreteBranchSizes">
-        /// The size of the discrete action output that is expected by the model.
         /// </param>
         /// <returns>If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.</returns>
