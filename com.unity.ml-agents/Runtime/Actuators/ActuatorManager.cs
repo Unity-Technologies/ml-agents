@@ -73,7 +73,7 @@ namespace Unity.MLAgents.Actuators
         }
 
         /// <summary>
-        /// This method validates that all <see cref="IActuator"/>s have unique names and equivalent action space types
+        /// This method validates that all <see cref="IActuator"/>s have unique names
         /// if the `DEBUG` preprocessor macro is defined, and allocates the appropriate buffers to manage the actions for
         /// all of the <see cref="IActuator"/>s that may live on a particular object.
         /// </summary>
@@ -272,7 +272,7 @@ namespace Unity.MLAgents.Actuators
         }
 
         /// <summary>
-        /// Validates that the IActuators managed by this object have unique names and equivalent action space types.
+        /// Validates that the IActuators managed by this object have unique names.
         /// Each Actuator needs to have a unique name in order for this object to ensure that the storage of action
         /// buffers, and execution of Actuators remains deterministic across different sessions of running.
         /// </summary>

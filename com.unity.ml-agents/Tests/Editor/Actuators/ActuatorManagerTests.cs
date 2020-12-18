@@ -65,6 +65,18 @@ namespace Unity.MLAgents.Tests.Actuators
         }
 
         [Test]
+        public void TestAllowMixedActions()
+        {
+            // Make sure discrete + continuous actuators are allowed.
+            var manager = new ActuatorManager();
+            var actuator1 = new TestActuator(ActionSpec.MakeDiscrete(new[] { 1, 2, 3, 4 }), "actuator1");
+            var actuator2 = new TestActuator(ActionSpec.MakeContinuous(3), "actuator2");
+            manager.Add(actuator1);
+            manager.Add(actuator2);
+            manager.ReadyActuatorsForExecution(new[] { actuator1, actuator2 }, 3, 10, 4);
+        }
+
+        [Test]
         public void TestFailOnSameActuatorName()
         {
             var manager = new ActuatorManager();

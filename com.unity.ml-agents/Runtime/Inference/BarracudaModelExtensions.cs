@@ -275,13 +275,13 @@ namespace Unity.MLAgents.Inference
         }
 
         /// <summary>
-        /// Check if the model supports hybrid action spaces.
+        /// Check if the model supports both continuous and discrete actions.
         /// If not, the model should be handled differently and use the deprecated fields.
         /// </summary>
         /// <param name="model">
         /// The Barracuda engine model for loading static parameters.
         /// </param>
-        /// <returns>True if the model supports hybrid action spaces.</returns>
+        /// <returns>True if the model supports both continuous and discrete actions.</returns>
         public static bool SupportsContinuousAndDiscrete(this Model model)
         {
             return model == null ||

@@ -173,7 +173,7 @@ namespace Unity.MLAgents
         /// Adds the brain to the list of brains which will be sending information to External.
         /// </summary>
         /// <param name="brainKey">Brain key.</param>
-        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         public void SubscribeBrain(string brainKey, ActionSpec actionSpec)
         {
             if (m_BehaviorNames.Contains(brainKey))
