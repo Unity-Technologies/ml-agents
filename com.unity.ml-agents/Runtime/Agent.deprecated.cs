@@ -42,7 +42,14 @@ namespace Unity.MLAgents
         [Obsolete("GetAction has been deprecated, please use GetStoredActionBuffers instead.")]
         public float[] GetAction()
         {
-            var storedAction = m_Info.storedVectorActions;
+            var actionSpec = m_PolicyFactory.BrainParameters.ActionSpec;
+            // For continuous and discrete actions together, this shouldn't be called because we can only return one.
+            if (actionSpec.NumContinuousActions > 0 && actionSpec.NumDiscreteActions > 0)
+            {
+                Debug.LogWarning("Agent.GetAction() when both continuous and discrete actions are in use. Use Agent.GetStoredActionBuffers() instead.");
+            }
+
+            var storedAction = m_Info.storedActions;
             if (!storedAction.ContinuousActions.IsEmpty())
             {
                 return storedAction.ContinuousActions.Array;

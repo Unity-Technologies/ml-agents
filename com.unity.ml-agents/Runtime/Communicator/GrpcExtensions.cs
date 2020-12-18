@@ -29,15 +29,15 @@ namespace Unity.MLAgents
 
             var agentActionProto = new AgentActionProto();
 
-            if (!ai.storedVectorActions.IsEmpty())
+            if (!ai.storedActions.IsEmpty())
             {
-                if (!ai.storedVectorActions.ContinuousActions.IsEmpty())
+                if (!ai.storedActions.ContinuousActions.IsEmpty())
                 {
-                    agentActionProto.ContinuousActions.AddRange(ai.storedVectorActions.ContinuousActions.Array);
+                    agentActionProto.ContinuousActions.AddRange(ai.storedActions.ContinuousActions.Array);
                 }
-                if (!ai.storedVectorActions.DiscreteActions.IsEmpty())
+                if (!ai.storedActions.DiscreteActions.IsEmpty())
                 {
-                    agentActionProto.DiscreteActions.AddRange(ai.storedVectorActions.DiscreteActions.Array);
+                    agentActionProto.DiscreteActions.AddRange(ai.storedActions.DiscreteActions.Array);
                 }
             }
 
@@ -126,7 +126,7 @@ namespace Unity.MLAgents
         /// Converts an ActionSpec into to a Protobuf BrainInfoProto so it can be sent.
         /// </summary>
         /// <returns>The BrainInfoProto generated.</returns>
-        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         /// <param name="name">The name of the brain.</param>
         /// <param name="isTraining">Whether or not the Brain is training.</param>
         public static BrainParametersProto ToBrainParametersProto(this ActionSpec actionSpec, string name, bool isTraining)
@@ -168,8 +168,8 @@ namespace Unity.MLAgents
             ActionSpec actionSpec;
             if (bpp.ActionSpec == null)
             {
-                var spaceType = (SpaceType)bpp.VectorActionSpaceTypeDeprecated;
-                if (spaceType == SpaceType.Continuous)
+                var spaceType = bpp.VectorActionSpaceTypeDeprecated;
+                if (spaceType == SpaceTypeProto.Continuous)
                 {
                     actionSpec = ActionSpec.MakeContinuous(bpp.VectorActionSizeDeprecated.ToArray()[0]);
                 }
