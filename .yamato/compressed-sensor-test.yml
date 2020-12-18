@@ -10,8 +10,8 @@ test_compressed_obs_{{ editor.version }}:
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
-    - pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
-    - python -u -m ml-agents.tests.yamato.setup_venv
+    - python3 -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+    - python3 -u -m ml-agents.tests.yamato.setup_venv
     - ./venv/bin/python ml-agents/tests/yamato/scripts/run_compressed_sensor.py --env=artifacts/testPlayer-TestGridCompressed
     - ./venv/bin/python ml-agents/tests/yamato/scripts/run_compressed_sensor.py --env=artifacts/testPlayer-TestTextureCompressed
   dependencies:
