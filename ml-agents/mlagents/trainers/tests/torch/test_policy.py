@@ -70,8 +70,8 @@ def test_evaluate_actions(rnn, visual, discrete):
     buffer = mb.simulate_rollout(64, policy.behavior_spec, memory_size=policy.m_size)
     act_masks = ModelUtils.list_to_tensor(buffer["action_mask"])
     agent_action = AgentAction.from_dict(buffer)
-    obs = ObsUtil.from_buffer(buffer, len(policy.behavior_spec.observation_shapes))
-    obs = [ModelUtils.list_to_tensor(obs) for obs in obs]
+    np_obs = ObsUtil.from_buffer(buffer, len(policy.behavior_spec.observation_shapes))
+    tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
 
     memories = [
         ModelUtils.list_to_tensor(buffer["memory"][i])
@@ -81,7 +81,7 @@ def test_evaluate_actions(rnn, visual, discrete):
         memories = torch.stack(memories).unsqueeze(0)
 
     log_probs, entropy, values = policy.evaluate_actions(
-        obs,
+        tensor_obs,
         masks=act_masks,
         actions=agent_action,
         memories=memories,
@@ -108,8 +108,8 @@ def test_sample_actions(rnn, visual, discrete):
     buffer = mb.simulate_rollout(64, policy.behavior_spec, memory_size=policy.m_size)
     act_masks = ModelUtils.list_to_tensor(buffer["action_mask"])
 
-    obs = ObsUtil.from_buffer(buffer, len(policy.behavior_spec.observation_shapes))
-    obs = [ModelUtils.list_to_tensor(obs) for obs in obs]
+    np_obs = ObsUtil.from_buffer(buffer, len(policy.behavior_spec.observation_shapes))
+    tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
 
     memories = [
         ModelUtils.list_to_tensor(buffer["memory"][i])
@@ -119,7 +119,7 @@ def test_sample_actions(rnn, visual, discrete):
         memories = torch.stack(memories).unsqueeze(0)
 
     (sampled_actions, log_probs, entropies, memories) = policy.sample_actions(
-        obs, masks=act_masks, memories=memories, seq_len=policy.sequence_length
+        tensor_obs, masks=act_masks, memories=memories, seq_len=policy.sequence_length
     )
     if discrete:
         assert log_probs.all_discrete_tensor.shape == (

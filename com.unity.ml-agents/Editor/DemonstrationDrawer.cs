@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEditor;
 using Unity.MLAgents.Demonstrations;
+using Unity.MLAgents.Policies;
 
 
 namespace Unity.MLAgents.Editor
@@ -23,9 +24,9 @@ namespace Unity.MLAgents.Editor
         const string k_NumberStepsName = "numberSteps";
         const string k_NumberEpisodesName = "numberEpisodes";
         const string k_MeanRewardName = "meanReward";
-        const string k_ActionSpecName = "ActionSpec";
+        const string k_ActionSpecName = "m_ActionSpec";
         const string k_NumContinuousActionsName = "m_NumContinuousActions";
-        const string k_NumDiscreteActionsName = "m_NumDiscreteActions";
+        const string k_NumDiscreteActionsName = "BranchSizes";
         const string k_ShapeName = "shape";
 
 
@@ -86,12 +87,9 @@ namespace Unity.MLAgents.Editor
             var actSpecProperty = property.FindPropertyRelative(k_ActionSpecName);
             var continuousSizeProperty = actSpecProperty.FindPropertyRelative(k_NumContinuousActionsName);
             var discreteSizeProperty = actSpecProperty.FindPropertyRelative(k_NumDiscreteActionsName);
-
-            var continuousSizeLabel =
-                continuousSizeProperty.displayName + ": " + continuousSizeProperty.intValue;
-            var discreteSizeLabel = discreteSizeProperty.displayName + ": " +
-                discreteSizeProperty.intValue;
-
+            var continuousSizeLabel = "Continuous Actions: " + continuousSizeProperty.intValue;
+            var discreteSizeLabel = "Discrete Action Branches: ";
+            discreteSizeLabel += discreteSizeProperty == null ? "[]" : BuildIntArrayLabel(discreteSizeProperty);
             EditorGUILayout.LabelField(continuousSizeLabel);
             EditorGUILayout.LabelField(discreteSizeLabel);
         }

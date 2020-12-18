@@ -78,7 +78,7 @@ namespace Unity.MLAgents.Policies
         /// the action.
         /// For the discrete action space: the number of branches in the action space.
         /// </value>
-        /// [Obsolete("VectorActionSize has been deprecated, please use ActionSpec instead.")]
+        [Obsolete("VectorActionSize has been deprecated, please use ActionSpec instead.")]
         [FormerlySerializedAs("vectorActionSize")]
         public int[] VectorActionSize = new[] { 1 };
 
@@ -91,7 +91,7 @@ namespace Unity.MLAgents.Policies
         /// <summary>
         /// (Deprecated) Defines if the action is discrete or continuous.
         /// </summary>
-        /// [Obsolete("VectorActionSpaceType has been deprecated, please use ActionSpec instead.")]
+        [Obsolete("VectorActionSpaceType has been deprecated, please use ActionSpec instead.")]
         [FormerlySerializedAs("vectorActionSpaceType")]
         public SpaceType VectorActionSpaceType = SpaceType.Discrete;
 
@@ -102,7 +102,7 @@ namespace Unity.MLAgents.Policies
         /// <summary>
         /// (Deprecated) The number of actions specified by this Brain.
         /// </summary>
-        /// [Obsolete("NumActions has been deprecated, please use ActionSpec instead.")]
+        [Obsolete("NumActions has been deprecated, please use ActionSpec instead.")]
         public int NumActions
         {
             get
@@ -117,6 +117,8 @@ namespace Unity.MLAgents.Policies
         /// <returns> A new BrainParameter object with the same values as the original.</returns>
         public BrainParameters Clone()
         {
+            // Disable deprecation warnings so we can read/write the old fields.
+#pragma warning disable CS0618
             return new BrainParameters
             {
                 VectorObservationSize = VectorObservationSize,
@@ -126,6 +128,7 @@ namespace Unity.MLAgents.Policies
                 VectorActionSize = (int[])VectorActionSize.Clone(),
                 VectorActionSpaceType = VectorActionSpaceType,
             };
+#pragma warning restore CS0618
         }
 
         /// <summary>
@@ -133,7 +136,11 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         private void UpdateToActionSpec()
         {
-            if (!hasUpgradedBrainParametersWithActionSpec)
+            // Disable deprecation warnings so we can read the old fields.
+#pragma warning disable CS0618
+            if (!hasUpgradedBrainParametersWithActionSpec
+                && m_ActionSpec.NumContinuousActions == 0
+                && m_ActionSpec.BranchSizes == null)
             {
                 if (VectorActionSpaceType == SpaceType.Continuous)
                 {
@@ -145,9 +152,9 @@ namespace Unity.MLAgents.Policies
                     m_ActionSpec.NumContinuousActions = 0;
                     m_ActionSpec.BranchSizes = (int[])VectorActionSize.Clone();
                 }
-
-                hasUpgradedBrainParametersWithActionSpec = true;
             }
+            hasUpgradedBrainParametersWithActionSpec = true;
+#pragma warning restore CS0618
         }
 
         /// <summary>
@@ -155,6 +162,9 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         private void SyncDeprecatedActionFields()
         {
+            // Disable deprecation warnings so we can read the old fields.
+#pragma warning disable CS0618
+
             if (m_ActionSpec.NumContinuousActions == 0)
             {
                 VectorActionSize = (int[])ActionSpec.BranchSizes.Clone();
@@ -169,6 +179,7 @@ namespace Unity.MLAgents.Policies
             {
                 VectorActionSize = null;
             }
+#pragma warning restore CS0618
         }
 
         /// <summary>

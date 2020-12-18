@@ -68,11 +68,11 @@ class RNDNetwork(torch.nn.Module):
         self._encoder = NetworkBody(specs.observation_shapes, state_encoder_settings)
 
     def forward(self, mini_batch: AgentBuffer) -> torch.Tensor:
-        n_obs = len(self._encoder.encoders)
-        obs = ObsUtil.from_buffer(mini_batch, n_obs)
+        n_obs = len(self._encoder.processors)
+        np_obs = ObsUtil.from_buffer(mini_batch, n_obs)
         # Convert to tensors
-        obs = [ModelUtils.list_to_tensor(obs) for obs in obs]
+        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
 
-        hidden, _ = self._encoder.forward(obs)
+        hidden, _ = self._encoder.forward(tensor_obs)
         self._encoder.update_normalization(mini_batch)
         return hidden

@@ -41,7 +41,7 @@ class NetworkBody(nn.Module):
             else 0
         )
 
-        self.encoders, self.embedding_sizes = ModelUtils.create_input_processors(
+        self.processors, self.embedding_sizes = ModelUtils.create_input_processors(
             observation_shapes,
             self.h_size,
             network_settings.vis_encode_type,
@@ -59,14 +59,14 @@ class NetworkBody(nn.Module):
             self.lstm = None  # type: ignore
 
     def update_normalization(self, buffer: AgentBuffer) -> None:
-        obs = ObsUtil.from_buffer(buffer, len(self.encoders))
-        for vec_input, enc in zip(obs, self.encoders):
+        obs = ObsUtil.from_buffer(buffer, len(self.processors))
+        for vec_input, enc in zip(obs, self.processors):
             if isinstance(enc, VectorInput):
                 enc.update_normalization(torch.as_tensor(vec_input))
 
     def copy_normalization(self, other_network: "NetworkBody") -> None:
         if self.normalize:
-            for n1, n2 in zip(self.encoders, other_network.encoders):
+            for n1, n2 in zip(self.processors, other_network.processors):
                 if isinstance(n1, VectorInput) and isinstance(n2, VectorInput):
                     n1.copy_normalization(n2)
 
@@ -82,7 +82,7 @@ class NetworkBody(nn.Module):
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         encodes = []
-        for idx, processor in enumerate(self.encoders):
+        for idx, processor in enumerate(self.processors):
             obs_input = inputs[idx]
             processed_obs = processor(obs_input)
             encodes.append(processed_obs)
@@ -247,9 +247,11 @@ class SimpleActor(nn.Module, Actor):
     ):
         super().__init__()
         self.action_spec = action_spec
-        self.version_number = torch.nn.Parameter(torch.Tensor([2.0]))
+        self.version_number = torch.nn.Parameter(
+            torch.Tensor([2.0]), requires_grad=False
+        )
         self.is_continuous_int_deprecated = torch.nn.Parameter(
-            torch.Tensor([int(self.action_spec.is_continuous())])
+            torch.Tensor([int(self.action_spec.is_continuous())]), requires_grad=False
         )
         self.continuous_act_size_vector = torch.nn.Parameter(
             torch.Tensor([int(self.action_spec.continuous_size)]), requires_grad=False
@@ -272,6 +274,9 @@ class SimpleActor(nn.Module, Actor):
             self.encoding_size = network_settings.memory.memory_size // 2
         else:
             self.encoding_size = network_settings.hidden_units
+        self.memory_size_vector = torch.nn.Parameter(
+            torch.Tensor([int(self.network_body.memory_size)]), requires_grad=False
+        )
 
         self.action_model = ActionModel(
             self.encoding_size,
@@ -320,7 +325,7 @@ class SimpleActor(nn.Module, Actor):
         start = 0
         end = 0
         vis_index = 0
-        for i, enc in enumerate(self.network_body.encoders):
+        for i, enc in enumerate(self.network_body.processors):
             if isinstance(enc, VectorInput):
                 # This is a vec_obs
                 vec_size = self.network_body.embedding_sizes[i]
@@ -340,10 +345,7 @@ class SimpleActor(nn.Module, Actor):
             disc_action_out,
             action_out_deprecated,
         ) = self.action_model.get_action_out(encoding, masks)
-        export_out = [
-            self.version_number,
-            torch.Tensor([self.network_body.memory_size]),
-        ]
+        export_out = [self.version_number, self.memory_size_vector]
         if self.action_spec.continuous_size > 0:
             export_out += [cont_action_out, self.continuous_act_size_vector]
         if self.action_spec.discrete_size > 0:

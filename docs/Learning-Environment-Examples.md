@@ -315,11 +315,10 @@ you would like to contribute environments, please see our
     agent is frozen and/or shot its laser (2), plus ray-based perception of
     objects around agent's forward direction (49; 7 raycast angles with 7
     measurements for each).
-  - Actions: 4 discrete action ranches:
-    - Forward Motion (3 possible actions: Forward, Backwards, No Action)
-    - Side Motion (3 possible actions: Left, Right, No Action)
-    - Rotation (3 possible actions: Rotate Left, Rotate Right, No Action)
-    - Laser (2 possible actions: Laser, No Action)
+  - Actions:
+    - 3 continuous actions correspond to Forward Motion, Side Motion and Rotation
+    - 1 discrete acion branch for Laser with 2 possible actions corresponding to
+      Shoot Laser or No Action
   - Visual Observations (Optional): First-person camera per-agent, plus one vector
     flag representing the frozen state of the agent. This scene uses a combination
     of vector and visual observations and the training will not succeed without

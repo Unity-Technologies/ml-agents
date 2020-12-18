@@ -104,7 +104,7 @@ class DiscriminatorNetwork(torch.nn.Module):
             )
 
         self._estimator = torch.nn.Sequential(
-            linear_layer(estimator_input_size, 1), torch.nn.Sigmoid()
+            linear_layer(estimator_input_size, 1, kernel_gain=0.2), torch.nn.Sigmoid()
         )
 
     def get_action_input(self, mini_batch: AgentBuffer) -> torch.Tensor:
@@ -118,11 +118,11 @@ class DiscriminatorNetwork(torch.nn.Module):
         """
         Creates the observation input.
         """
-        n_obs = len(self.encoder.encoders)
-        obs = ObsUtil.from_buffer(mini_batch, n_obs)
+        n_obs = len(self.encoder.processors)
+        np_obs = ObsUtil.from_buffer(mini_batch, n_obs)
         # Convert to tensors
-        obs = [ModelUtils.list_to_tensor(obs) for obs in obs]
-        return obs
+        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
+        return tensor_obs
 
     def compute_estimate(
         self, mini_batch: AgentBuffer, use_vail_noise: bool = False

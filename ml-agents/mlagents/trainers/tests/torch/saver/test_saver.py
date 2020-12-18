@@ -72,19 +72,19 @@ def _compare_two_policies(policy1: TorchPolicy, policy2: TorchPolicy) -> None:
     decision_step, _ = mb.create_steps_from_behavior_spec(
         policy1.behavior_spec, num_agents=1
     )
-    obs = decision_step.obs
+    np_obs = decision_step.obs
     masks = policy1._extract_masks(decision_step)
     memories = torch.as_tensor(
         policy1.retrieve_memories(list(decision_step.agent_id))
     ).unsqueeze(0)
-    obs = [ModelUtils.list_to_tensor(obs) for obs in obs]
+    tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
 
     with torch.no_grad():
         _, log_probs1, _, _ = policy1.sample_actions(
-            obs, masks=masks, memories=memories
+            tensor_obs, masks=masks, memories=memories
         )
         _, log_probs2, _, _ = policy2.sample_actions(
-            obs, masks=masks, memories=memories
+            tensor_obs, masks=masks, memories=memories
         )
     np.testing.assert_array_equal(
         log_probs1.all_discrete_tensor, log_probs2.all_discrete_tensor

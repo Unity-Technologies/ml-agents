@@ -101,6 +101,8 @@ namespace Unity.MLAgents
         /// <param name="isTraining">Whether or not the Brain is training.</param>
         public static BrainParametersProto ToProto(this BrainParameters bp, string name, bool isTraining)
         {
+            // Disable deprecation warnings so we can set legacy fields
+#pragma warning disable CS0618
             var brainParametersProto = new BrainParametersProto
             {
                 VectorActionSpaceTypeDeprecated = (SpaceTypeProto)bp.VectorActionSpaceType,
@@ -116,6 +118,7 @@ namespace Unity.MLAgents
             {
                 brainParametersProto.VectorActionDescriptionsDeprecated.AddRange(bp.VectorActionDescriptions);
             }
+#pragma warning restore CS0618
             return brainParametersProto;
         }
 
@@ -162,10 +165,27 @@ namespace Unity.MLAgents
         /// <returns>A BrainParameters struct.</returns>
         public static BrainParameters ToBrainParameters(this BrainParametersProto bpp)
         {
+            ActionSpec actionSpec;
+            if (bpp.ActionSpec == null)
+            {
+                var spaceType = (SpaceType)bpp.VectorActionSpaceTypeDeprecated;
+                if (spaceType == SpaceType.Continuous)
+                {
+                    actionSpec = ActionSpec.MakeContinuous(bpp.VectorActionSizeDeprecated.ToArray()[0]);
+                }
+                else
+                {
+                    actionSpec = ActionSpec.MakeDiscrete(bpp.VectorActionSizeDeprecated.ToArray());
+                }
+            }
+            else
+            {
+                actionSpec = ToActionSpec(bpp.ActionSpec);
+            }
             var bp = new BrainParameters
             {
                 VectorActionDescriptions = bpp.VectorActionDescriptionsDeprecated.ToArray(),
-                ActionSpec = ToActionSpec(bpp.ActionSpec),
+                ActionSpec = actionSpec,
             };
             return bp;
         }
@@ -302,7 +322,11 @@ namespace Unity.MLAgents
                 {
                     if (!s_HaveWarnedTrainerCapabilitiesMultiPng)
                     {
-                        Debug.LogWarning($"Attached trainer doesn't support multiple PNGs. Switching to uncompressed observations for sensor {sensor.GetName()}.");
+                        Debug.LogWarning(
+                            $"Attached trainer doesn't support multiple PNGs. Switching to uncompressed observations for sensor {sensor.GetName()}. " +
+                            "Please find the versions that work best together from our release page: " +
+                            "https://github.com/Unity-Technologies/ml-agents/releases"
+                        );
                         s_HaveWarnedTrainerCapabilitiesMultiPng = true;
                     }
                     compressionType = SensorCompressionType.None;
@@ -317,9 +341,13 @@ namespace Unity.MLAgents
                 {
                     if (!s_HaveWarnedTrainerCapabilitiesMapping)
                     {
-                        Debug.LogWarning($"The sensor {sensor.GetName()} is using non-trivial mapping and " +
+                        Debug.LogWarning(
+                            $"The sensor {sensor.GetName()} is using non-trivial mapping and " +
                             "the attached trainer doesn't support compression mapping. " +
-                            "Switching to uncompressed observations.");
+                            "Switching to uncompressed observations. " +
+                            "Please find the versions that work best together from our release page: " +
+                            "https://github.com/Unity-Technologies/ml-agents/releases"
+                        );
                         s_HaveWarnedTrainerCapabilitiesMapping = true;
                     }
                     compressionType = SensorCompressionType.None;

@@ -107,7 +107,7 @@ class CuriosityNetwork(torch.nn.Module):
         """
         Extracts the current state embedding from a mini_batch.
         """
-        n_obs = len(self._state_encoder.encoders)
+        n_obs = len(self._state_encoder.processors)
         np_obs = ObsUtil.from_buffer(mini_batch, n_obs)
         # Convert to tensors
         tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
@@ -119,12 +119,12 @@ class CuriosityNetwork(torch.nn.Module):
         """
         Extracts the next state embedding from a mini_batch.
         """
-        n_obs = len(self._state_encoder.encoders)
-        obs = ObsUtil.from_buffer_next(mini_batch, n_obs)
+        n_obs = len(self._state_encoder.processors)
+        np_obs = ObsUtil.from_buffer_next(mini_batch, n_obs)
         # Convert to tensors
-        obs = [ModelUtils.list_to_tensor(obs) for obs in obs]
+        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
 
-        hidden, _ = self._state_encoder.forward(obs)
+        hidden, _ = self._state_encoder.forward(tensor_obs)
         return hidden
 
     def predict_action(self, mini_batch: AgentBuffer) -> ActionPredictionTuple:

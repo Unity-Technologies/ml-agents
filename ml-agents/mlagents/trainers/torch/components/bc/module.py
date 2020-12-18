@@ -143,11 +143,11 @@ class BCModule:
         """
         Helper function for update_batch.
         """
-        obs = ObsUtil.from_buffer(
+        np_obs = ObsUtil.from_buffer(
             mini_batch_demo, len(self.policy.behavior_spec.observation_shapes)
         )
         # Convert to tensors
-        obs = [ModelUtils.list_to_tensor(obs) for obs in obs]
+        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
         act_masks = None
         expert_actions = AgentAction.from_dict(mini_batch_demo)
         if self.policy.behavior_spec.action_spec.discrete_size > 0:
@@ -167,7 +167,10 @@ class BCModule:
             memories = torch.zeros(1, self.n_sequences, self.policy.m_size)
 
         selected_actions, log_probs, _, _ = self.policy.sample_actions(
-            obs, masks=act_masks, memories=memories, seq_len=self.policy.sequence_length
+            tensor_obs,
+            masks=act_masks,
+            memories=memories,
+            seq_len=self.policy.sequence_length,
         )
         bc_loss = self._behavioral_cloning_loss(
             selected_actions, log_probs, expert_actions
