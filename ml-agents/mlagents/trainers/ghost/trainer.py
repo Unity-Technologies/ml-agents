@@ -366,6 +366,7 @@ class GhostTrainer(Trainer):
         :param name_behavior_id: Fully qualified behavior name
         :return: Policy associated with name_behavior_id
         """
+        # Get policy based on team id, but not group id
         parsed_behavior_id = BehaviorIdentifiers.from_name_behavior_id(name_behavior_id)
         name_behavior_id = create_name_behavior_id(
             parsed_behavior_id.brain_name, team_id=parsed_behavior_id.team_id
