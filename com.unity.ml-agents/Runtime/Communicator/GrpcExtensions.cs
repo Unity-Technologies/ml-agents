@@ -168,8 +168,8 @@ namespace Unity.MLAgents
             ActionSpec actionSpec;
             if (bpp.ActionSpec == null)
             {
-                var spaceType = (SpaceType)bpp.VectorActionSpaceTypeDeprecated;
-                if (spaceType == SpaceType.Continuous)
+                var spaceType = bpp.VectorActionSpaceTypeDeprecated;
+                if (spaceType == SpaceTypeProto.Continuous)
                 {
                     actionSpec = ActionSpec.MakeContinuous(bpp.VectorActionSizeDeprecated.ToArray()[0]);
                 }
