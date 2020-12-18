@@ -62,6 +62,7 @@ test_mac_backcompat_2020.1:
     # Backwards-compatibility tests.
     # If we make a breaking change to the communication protocol, these will need
     # to be disabled until the next release.
+    - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=mac
     - python -u -m ml-agents.tests.yamato.training_int_tests --python=0.16.0
     - python -u -m ml-agents.tests.yamato.training_int_tests --csharp={{ csharp_backcompat_version }}
   dependencies:

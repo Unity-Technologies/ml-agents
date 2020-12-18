@@ -126,7 +126,7 @@ def init_venv(
         venv_path += "_" + mlagents_python_version
 
     # Set up the venv and install mlagents
-    subprocess.check_call(f"python -m venv {venv_path}", shell=True)
+    subprocess.check_call(f"python3 -m venv {venv_path}", shell=True)
     pip_commands = ["--upgrade pip", "--upgrade setuptools"]
     if mlagents_python_version:
         # install from pypi
@@ -147,7 +147,7 @@ def init_venv(
     for cmd in pip_commands:
         pip_index_url = "--index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple"
         subprocess.check_call(
-            f"source {venv_path}/bin/activate; python -m pip install -q {cmd} {pip_index_url}",
+            f"source {venv_path}/bin/activate; python3 -m pip install -q {cmd} {pip_index_url}",
             shell=True,
         )
     return venv_path
