@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 from urllib.parse import urlparse, parse_qs
 
 
@@ -42,14 +42,21 @@ class BehaviorIdentifiers(NamedTuple):
         )
 
 
-def create_name_behavior_id(name: str, team_id: int) -> str:
+def create_name_behavior_id(
+    name: str, team_id: Optional[int] = None, group_id: Optional[int] = None
+) -> str:
     """
-   Reconstructs fully qualified behavior name from name and team_id
-   :param name: brain name
-   :param team_id: team ID
-   :return: name_behavior_id
-   """
-    return name + "?team=" + str(team_id)
+    Reconstructs fully qualified behavior name from name and team_id
+    :param name: brain name
+    :param team_id: team ID
+    :return: name_behavior_id
+    """
+    final_name = name
+    if team_id is not None:
+        final_name += f"?team={team_id}"
+    if group_id is not None:
+        final_name += f"&group={group_id}"
+    return final_name
 
 
 def get_global_agent_id(worker_id: int, agent_id: int) -> str:

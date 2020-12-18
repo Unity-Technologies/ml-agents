@@ -351,8 +351,13 @@ class GhostTrainer(Trainer):
         :param parsed_behavior_id: Behavior ID that the policy should belong to.
         :param policy: Policy to associate with name_behavior_id.
         """
-        name_behavior_id = parsed_behavior_id.behavior_id
-        self._name_to_parsed_behavior_id[name_behavior_id] = parsed_behavior_id
+        name_behavior_id = create_name_behavior_id(
+            parsed_behavior_id.brain_name, team_id=parsed_behavior_id.team_id
+        )
+        # Add policy only based on the team id, not the group id
+        self._name_to_parsed_behavior_id[
+            parsed_behavior_id.behavior_id
+        ] = parsed_behavior_id
         self.policies[name_behavior_id] = policy
 
     def get_policy(self, name_behavior_id: str) -> Policy:
@@ -361,6 +366,10 @@ class GhostTrainer(Trainer):
         :param name_behavior_id: Fully qualified behavior name
         :return: Policy associated with name_behavior_id
         """
+        parsed_behavior_id = BehaviorIdentifiers.from_name_behavior_id(name_behavior_id)
+        name_behavior_id = create_name_behavior_id(
+            parsed_behavior_id.brain_name, team_id=parsed_behavior_id.team_id
+        )
         return self.policies[name_behavior_id]
 
     def _save_snapshot(self) -> None:
