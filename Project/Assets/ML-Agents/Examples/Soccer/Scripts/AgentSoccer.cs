@@ -1,8 +1,8 @@
-using System;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
+using Unity.MLAgents.Sensors;
 
 public class AgentSoccer : Agent
 {
@@ -31,6 +31,7 @@ public class AgentSoccer : Agent
     float m_KickPower;
     int m_PlayerIndex;
     public SoccerFieldArea area;
+
     // The coefficient for the reward for colliding with a ball. Set using curriculum.
     float m_BallTouch;
     public Position position;
@@ -39,6 +40,9 @@ public class AgentSoccer : Agent
     float m_Existential;
     float m_LateralSpeed;
     float m_ForwardSpeed;
+    float[] m_Message = new float[3];
+    public GameObject teammate_gb;
+    AgentSoccer teammate;
 
     [HideInInspector]
     public float timePenalty;
@@ -55,15 +59,16 @@ public class AgentSoccer : Agent
     {
         m_Existential = 1f / MaxStep;
         m_BehaviorParameters = gameObject.GetComponent<BehaviorParameters>();
+        teammate = teammate_gb.GetComponent<AgentSoccer>();
         if (m_BehaviorParameters.TeamId == (int)Team.Blue)
         {
             team = Team.Blue;
-            m_Transform = new Vector3(transform.position.x - 4f, .5f, transform.position.z);
+            m_Transform = new Vector3(transform.position.x - 3f, .5f, transform.position.z);
         }
         else
         {
             team = Team.Purple;
-            m_Transform = new Vector3(transform.position.x + 4f, .5f, transform.position.z);
+            m_Transform = new Vector3(transform.position.x + 3f, .5f, transform.position.z);
         }
         if (position == Position.Goalie)
         {
@@ -164,6 +169,17 @@ public class AgentSoccer : Agent
             timePenalty -= m_Existential;
         }
         MoveAgent(actionBuffers.DiscreteActions);
+        teammate.tellAgent(actionBuffers.ContinuousActions.Array);
+    }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        sensor.AddObservation(m_Message);
+    }
+
+    public void tellAgent(float[] message)
+    {
+        m_Message = message;
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -230,10 +246,13 @@ public class AgentSoccer : Agent
         {
             transform.rotation = Quaternion.Euler(0f, 90f, 0f);
         }
-        transform.position = m_Transform;
+        var randomX = Random.Range(-3.0f, 3.0f);
+        var randomZ = Random.Range(-0.5f, 0.5f);
+        transform.position = m_Transform + new Vector3(randomX, 0f, randomZ);
         agentRb.velocity = Vector3.zero;
         agentRb.angularVelocity = Vector3.zero;
         SetResetParameters();
+        System.Array.Clear(m_Message, 0, m_Message.Length);
     }
 
     public void SetResetParameters()
