@@ -989,11 +989,21 @@ PrefabInstance:
     - target: {fileID: 114907778469006590, guid: f3a451555dc514f46a69319857762eda,
         type: 3}
       propertyPath: TeamId
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114907778469006590, guid: f3a451555dc514f46a69319857762eda,
+        type: 3}
+      propertyPath: GroupId
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3849025303538859997, guid: f3a451555dc514f46a69319857762eda,
         type: 3}
       propertyPath: TeamId
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3849025303538859997, guid: f3a451555dc514f46a69319857762eda,
+        type: 3}
+      propertyPath: GroupId
       value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
