@@ -1,0 +1,125 @@
+using UnityEngine;
+using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
+using Unity.MLAgents.Sensors;
+
+public class AgentSoccerCollab : AgentSoccer
+{
+    public int tester = 0;
+    int m_Previous = 0;
+
+
+    float[] m_Message = new float[10];
+    public GameObject teammate_gb;
+    AgentSoccerCollab teammate;
+
+    public override void Initialize()
+    {
+        base.Initialize();
+        teammate = teammate_gb.GetComponent<AgentSoccerCollab>();
+    }
+
+    public override void OnActionReceived(ActionBuffers actionBuffers)
+
+    {
+        base.OnActionReceived(actionBuffers);
+        //if (team == Team.Blue && tester == 1)
+        //{
+        //    Debug.Log(actionBuffers.DiscreteActions[3]);
+        //}
+        teammate.tellAgent(actionBuffers.DiscreteActions[3]);
+    }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+
+        sensor.AddObservation(m_Message);
+    }
+
+    public void tellAgent(int message)
+    {
+        m_Message[m_Previous] = 0f;
+        m_Message[message] = 1f;
+        m_Previous = message;
+    }
+
+    public override void OnEpisodeBegin()
+    {
+        base.OnEpisodeBegin();
+        System.Array.Clear(m_Message, 0, m_Message.Length);
+    }
+
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        var discreteActionsOut = actionsOut.DiscreteActions;
+        discreteActionsOut.Clear();
+        if (Input.GetKey(KeyCode.Alpha0))
+        {
+            discreteActionsOut[3] = 0;
+        }
+        if (Input.GetKey(KeyCode.Alpha1))
+        {
+            discreteActionsOut[3] = 1;
+        }
+        if (Input.GetKey(KeyCode.Alpha2))
+        {
+            discreteActionsOut[3] = 2;
+        }
+        if (Input.GetKey(KeyCode.Alpha3))
+        {
+            discreteActionsOut[3] = 3;
+        }
+        if (Input.GetKey(KeyCode.Alpha4))
+        {
+            discreteActionsOut[3] = 4;
+        }
+        if (Input.GetKey(KeyCode.Alpha5))
+        {
+            discreteActionsOut[3] = 5;
+        }
+        if (Input.GetKey(KeyCode.Alpha6))
+        {
+            discreteActionsOut[3] = 6;
+        }
+        if (Input.GetKey(KeyCode.Alpha7))
+        {
+            discreteActionsOut[3] = 7;
+        }
+        if (Input.GetKey(KeyCode.Alpha8))
+        {
+            discreteActionsOut[3] = 8;
+        }
+        if (Input.GetKey(KeyCode.Alpha9))
+        {
+            discreteActionsOut[3] = 9;
+        }
+        //forward
+        if (Input.GetKey(KeyCode.W))
+        {
+            discreteActionsOut[0] = 1;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            discreteActionsOut[0] = 2;
+        }
+        //rotate
+        if (Input.GetKey(KeyCode.A))
+        {
+            discreteActionsOut[2] = 1;
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            discreteActionsOut[2] = 2;
+        }
+        //right
+        if (Input.GetKey(KeyCode.E))
+        {
+            discreteActionsOut[1] = 1;
+        }
+        if (Input.GetKey(KeyCode.Q))
+        {
+            discreteActionsOut[1] = 2;
+        }
+    }
+}
