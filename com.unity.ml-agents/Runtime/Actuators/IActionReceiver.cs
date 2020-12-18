@@ -121,6 +121,7 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Check if the <see cref="ActionBuffers"/> is empty.
         /// </summary>
+        /// <returns>Whether the buffers are empty.</returns>
         public bool IsEmpty()
         {
             return ContinuousActions.IsEmpty() && DiscreteActions.IsEmpty();
