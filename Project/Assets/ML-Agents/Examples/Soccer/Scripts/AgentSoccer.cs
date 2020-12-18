@@ -98,47 +98,61 @@ public class AgentSoccer : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
 
-    public void MoveAgent(ActionSegment<int> act)
+    public void MoveAgent(ActionSegment<float> act)
     {
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
 
         m_KickPower = 0f;
 
-        var forwardAxis = act[0];
-        var rightAxis = act[1];
-        var rotateAxis = act[2];
 
-        switch (forwardAxis)
+        var forward = Mathf.Clamp(act[0], -1f, 1f);
+        var right = Mathf.Clamp(act[1], -1f, 1f);
+        var rotate = Mathf.Clamp(act[2], -1f, 1f);
+
+        dirToGo = transform.forward * forward * m_ForwardSpeed;
+        dirToGo += transform.right * right * m_LateralSpeed;
+        rotateDir = -transform.up * rotate;
+        if (forward > 0)
         {
-            case 1:
-                dirToGo = transform.forward * m_ForwardSpeed;
-                m_KickPower = 1f;
-                break;
-            case 2:
-                dirToGo = transform.forward * -m_ForwardSpeed;
-                break;
+            m_KickPower = forward;
         }
 
-        switch (rightAxis)
-        {
-            case 1:
-                dirToGo = transform.right * m_LateralSpeed;
-                break;
-            case 2:
-                dirToGo = transform.right * -m_LateralSpeed;
-                break;
-        }
+        //m_KickPower = 0f;
+        //var forwardAxis = act[0];
+        //var rightAxis = act[1];
+        //var rotateAxis = act[2];
 
-        switch (rotateAxis)
-        {
-            case 1:
-                rotateDir = transform.up * -1f;
-                break;
-            case 2:
-                rotateDir = transform.up * 1f;
-                break;
-        }
+        //switch (forwardAxis)
+        //{
+        //    case 1:
+        //        dirToGo = transform.forward * m_ForwardSpeed;
+        //        m_KickPower = 1f;
+        //        break;
+        //    case 2:
+        //        dirToGo = transform.forward * -m_ForwardSpeed;
+        //        break;
+        //}
+
+        //switch (rightAxis)
+        //{
+        //    case 1:
+        //        dirToGo = transform.right * m_LateralSpeed;
+        //        break;
+        //    case 2:
+        //        dirToGo = transform.right * -m_LateralSpeed;
+        //        break;
+        //}
+
+        //switch (rotateAxis)
+        //{
+        //    case 1:
+        //        rotateDir = transform.up * -1f;
+        //        break;
+        //    case 2:
+        //        rotateDir = transform.up * 1f;
+        //        break;
+        //}
 
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
         agentRb.AddForce(dirToGo * m_SoccerSettings.agentRunSpeed,
@@ -164,41 +178,72 @@ public class AgentSoccer : Agent
             // Existential penalty cumulant for Generic
             timePenalty -= m_Existential;
         }
-        MoveAgent(actionBuffers.DiscreteActions);
+        //MoveAgent(actionBuffers.DiscreteActions);
+        MoveAgent(actionBuffers.ContinuousActions);
     }
 
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        var discreteActionsOut = actionsOut.DiscreteActions;
-        discreteActionsOut.Clear();
+        var contOut = actionsOut.ContinuousActions;
+        contOut.Clear();
         //forward
         if (Input.GetKey(KeyCode.W))
         {
-            discreteActionsOut[0] = 1;
+            contOut[0] = 1f;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            discreteActionsOut[0] = 2;
+            contOut[0] = -1f;
         }
         //rotate
         if (Input.GetKey(KeyCode.A))
         {
-            discreteActionsOut[2] = 1;
+            contOut[1] = -1f;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            discreteActionsOut[2] = 2;
+            contOut[1] = 1f;
         }
         //right
         if (Input.GetKey(KeyCode.E))
         {
-            discreteActionsOut[1] = 1;
+            contOut[2] = 1f;
         }
         if (Input.GetKey(KeyCode.Q))
         {
-            discreteActionsOut[1] = 2;
+            contOut[2] = -1f;
         }
+
+        //var discreteActionsOut = actionsOut.DiscreteActions;
+        //discreteActionsOut.Clear();
+        ////forward
+        //if (Input.GetKey(KeyCode.W))
+        //{
+        //    discreteActionsOut[0] = 1;
+        //}
+        //if (Input.GetKey(KeyCode.S))
+        //{
+        //    discreteActionsOut[0] = 2;
+        //}
+        ////rotate
+        //if (Input.GetKey(KeyCode.A))
+        //{
+        //    discreteActionsOut[2] = 1;
+        //}
+        //if (Input.GetKey(KeyCode.D))
+        //{
+        //    discreteActionsOut[2] = 2;
+        //}
+        ////right
+        //if (Input.GetKey(KeyCode.E))
+        //{
+        //    discreteActionsOut[1] = 1;
+        //}
+        //if (Input.GetKey(KeyCode.Q))
+        //{
+        //    discreteActionsOut[1] = 2;
+        //}
     }
     /// <summary>
     /// Used to provide a "kick" to the ball.

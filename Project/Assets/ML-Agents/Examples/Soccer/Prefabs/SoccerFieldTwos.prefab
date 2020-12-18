@@ -241,13 +241,13 @@ MonoBehaviour:
     VectorObservationSize: 10
     NumStackedVectorObservations: 3
     m_ActionSpec:
-      m_NumContinuousActions: 0
-      BranchSizes: 0300000003000000030000000a000000
-    VectorActionSize: 0300000003000000030000000a000000
+      m_NumContinuousActions: 3
+      BranchSizes: 0a000000
+    VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: fb0dcbf8aad8340428473b83fbb41557, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 191c36f874b274185a637be2d959a324, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
@@ -630,13 +630,13 @@ MonoBehaviour:
     VectorObservationSize: 10
     NumStackedVectorObservations: 3
     m_ActionSpec:
-      m_NumContinuousActions: 0
-      BranchSizes: 0300000003000000030000000a000000
-    VectorActionSize: 0300000003000000030000000a000000
+      m_NumContinuousActions: 3
+      BranchSizes: 0a000000
+    VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: fb0dcbf8aad8340428473b83fbb41557, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 191c36f874b274185a637be2d959a324, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
@@ -4747,13 +4747,13 @@ MonoBehaviour:
     VectorObservationSize: 10
     NumStackedVectorObservations: 3
     m_ActionSpec:
-      m_NumContinuousActions: 0
-      BranchSizes: 0300000003000000030000000a000000
-    VectorActionSize: 0300000003000000030000000a000000
+      m_NumContinuousActions: 3
+      BranchSizes: 0a000000
+    VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: fb0dcbf8aad8340428473b83fbb41557, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 191c36f874b274185a637be2d959a324, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
@@ -5381,13 +5381,13 @@ MonoBehaviour:
     VectorObservationSize: 10
     NumStackedVectorObservations: 3
     m_ActionSpec:
-      m_NumContinuousActions: 0
-      BranchSizes: 0300000003000000030000000a000000
-    VectorActionSize: 0300000003000000030000000a000000
+      m_NumContinuousActions: 3
+      BranchSizes: 0a000000
+    VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: fb0dcbf8aad8340428473b83fbb41557, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 191c36f874b274185a637be2d959a324, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
