@@ -32,6 +32,7 @@ def run_standalone_build(
     verbose: bool = False,
     output_path: str = None,
     scene_path: str = None,
+    build_target: str = None,
     log_output_path: str = f"{get_base_output_path()}/standalone_build.txt",
 ) -> int:
     """
@@ -39,7 +40,14 @@ def run_standalone_build(
     artifacts/standalone_build/testPlayer.
     """
     unity_exe = get_unity_executable_path()
-    print(f"Running BuildStandalonePlayerOSX via {unity_exe}")
+    print(f"Running BuildStandalonePlayer via {unity_exe}")
+
+    # enum values from https://docs.unity3d.com/2019.4/Documentation/ScriptReference/BuildTarget.html
+    build_target_to_enum = {
+        "mac": "StandaloneOSX",
+        "osx": "StandaloneOSX",
+        "linux": "StandaloneLinux64",
+    }
 
     test_args = [
         unity_exe,
@@ -60,6 +68,8 @@ def run_standalone_build(
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
     if scene_path is not None:
         test_args += ["--mlagents-build-scene-path", scene_path]
+    if build_target is not None:
+        test_args += ["--mlagents-build-target", build_target_to_enum[build_target]]
     print(f"{' '.join(test_args)} ...")
 
     timeout = 30 * 60  # 30 minutes, just in case

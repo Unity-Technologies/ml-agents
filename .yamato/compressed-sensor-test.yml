@@ -4,9 +4,9 @@
 test_compressed_obs_{{ editor.version }}:
   name: Test Compressed Sensor Observation {{ editor.version }}
   agent:
-    type: Unity::VM::osx
-    image: package-ci/mac:stable
-    flavor: b1.small
+    type: Unity::VM
+    image: package-ci/ubuntu:stable
+    flavor: b1.medium
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
@@ -15,7 +15,7 @@ test_compressed_obs_{{ editor.version }}:
     - ./venv/bin/python ml-agents/tests/yamato/scripts/run_compressed_sensor.py --env=artifacts/testPlayer-TestGridCompressed
     - ./venv/bin/python ml-agents/tests/yamato/scripts/run_compressed_sensor.py --env=artifacts/testPlayer-TestTextureCompressed
   dependencies:
-    - .yamato/standalone-build-test.yml#test_mac_standalone_{{ editor.version }}
+    - .yamato/standalone-build-test.yml#test_linux_standalone_{{ editor.version }}
   triggers:
     cancel_old_ci: true
     expression: |

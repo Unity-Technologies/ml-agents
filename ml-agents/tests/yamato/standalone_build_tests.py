@@ -5,7 +5,7 @@ import argparse
 from .yamato_utils import get_base_path, run_standalone_build
 
 
-def main(scene_path):
+def main(scene_path, build_target):
     base_path = get_base_path()
     print(f"Running in base path {base_path}")
 
@@ -17,7 +17,10 @@ def main(scene_path):
     print(f"Executable name {executable_name}")
 
     returncode = run_standalone_build(
-        base_path, output_path=executable_name, scene_path=scene_path
+        base_path,
+        output_path=executable_name,
+        scene_path=scene_path,
+        build_target=build_target,
     )
 
     if returncode == 0:
@@ -31,5 +34,6 @@ def main(scene_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--scene", default=None)
+    parser.add_argument("--build-target", default="mac", choices=["mac", "linux"])
     args = parser.parse_args()
-    main(args.scene)
+    main(args.scene, args.build_target)
