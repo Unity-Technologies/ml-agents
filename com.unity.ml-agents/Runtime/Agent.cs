@@ -886,7 +886,11 @@ namespace Unity.MLAgents
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         public virtual void Heuristic(in ActionBuffers actionsOut)
         {
-            // For backward compatibility
+            // Disable deprecation warnings so we can call the legacy overload.
+#pragma warning disable CS0618
+
+            // The default implementation of Heuristic calls the
+            // obsolete version for backward compatibility
             switch (m_PolicyFactory.BrainParameters.VectorActionSpaceType)
             {
                 case SpaceType.Continuous:
@@ -904,6 +908,8 @@ namespace Unity.MLAgents
                     actionsOut.ContinuousActions.Clear();
                     break;
             }
+#pragma warning restore CS0618
+
         }
 
         /// <summary>
@@ -1151,7 +1157,10 @@ namespace Unity.MLAgents
             {
                 m_ActionMasker = new DiscreteActionMasker(actionMask);
             }
+            // Disable deprecation warnings so we can call the legacy overload.
+#pragma warning disable CS0618
             CollectDiscreteActionMasks(m_ActionMasker);
+#pragma warning restore CS0618
         }
 
         /// <summary>
@@ -1232,7 +1241,10 @@ namespace Unity.MLAgents
             {
                 m_LegacyActionCache = Array.ConvertAll(actions.DiscreteActions.Array, x => (float)x);
             }
+            // Disable deprecation warnings so we can call the legacy overload.
+#pragma warning disable CS0618
             OnActionReceived(m_LegacyActionCache);
+#pragma warning restore CS0618
         }
 
         /// <summary>
