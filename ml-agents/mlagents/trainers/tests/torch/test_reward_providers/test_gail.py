@@ -80,7 +80,7 @@ def test_reward_decreases(
     init_reward_expert = gail_rp.evaluate(buffer_expert)[0]
     init_reward_policy = gail_rp.evaluate(buffer_policy)[0]
 
-    for _ in range(10):
+    for _ in range(20):
         gail_rp.update(buffer_policy)
         reward_expert = gail_rp.evaluate(buffer_expert)[0]
         reward_policy = gail_rp.evaluate(buffer_policy)[0]
