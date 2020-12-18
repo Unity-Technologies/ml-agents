@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Extensions.Sensors
