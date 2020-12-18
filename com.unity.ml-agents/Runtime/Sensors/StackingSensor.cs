@@ -252,7 +252,7 @@ namespace Unity.MLAgents.Sensors
             {
                 if (wrappedNumChannel == 1)
                 {
-                    wrappedMapping = new int[] { 0, 0, 0 };
+                    wrappedMapping = new[] { 0, 0, 0 };
                 }
                 else
                 {
