@@ -30,6 +30,7 @@ public class AgentSoccer : Agent
     public Team team;
     float m_KickPower;
     int m_PlayerIndex;
+    int m_Previous = 0;
     public SoccerFieldArea area;
 
     // The coefficient for the reward for colliding with a ball. Set using curriculum.
@@ -40,7 +41,7 @@ public class AgentSoccer : Agent
     float m_Existential;
     float m_LateralSpeed;
     float m_ForwardSpeed;
-    float[] m_Message = new float[3];
+    float[] m_Message = new float[10];
     public GameObject teammate_gb;
     AgentSoccer teammate;
 
@@ -169,17 +170,20 @@ public class AgentSoccer : Agent
             timePenalty -= m_Existential;
         }
         MoveAgent(actionBuffers.DiscreteActions);
-        teammate.tellAgent(actionBuffers.ContinuousActions.Array);
+        teammate.tellAgent(actionBuffers.DiscreteActions[3]);
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
+
         sensor.AddObservation(m_Message);
     }
 
-    public void tellAgent(float[] message)
+    public void tellAgent(int message)
     {
-        m_Message = message;
+        m_Message[m_Previous] = 0f;
+        m_Message[message] = 1f;
+        m_Previous = message;
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
