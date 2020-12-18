@@ -80,9 +80,10 @@ def run_standalone_build(
 
     # Copy the default build name into the artifacts folder.
     if output_path is None and res.returncode == 0:
+        exe_name = "testPlayer.app" if platform == "darwin" else "testPlayer"
         shutil.move(
-            os.path.join(base_path, "Project", "testPlayer.app"),
-            os.path.join(get_base_output_path(), "testPlayer.app"),
+            os.path.join(base_path, "Project", exe_name),
+            os.path.join(get_base_output_path(), exe_name),
         )
 
     # Print if we fail or want verbosity.
