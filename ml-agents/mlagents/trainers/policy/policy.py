@@ -140,10 +140,6 @@ class Policy:
             has_nan = np.isnan(d)
             if has_nan:
                 raise RuntimeError("Continuous NaN action detected.")
-            d = np.sum(action.discrete)
-            has_nan = np.isnan(d)
-            if has_nan:
-                raise RuntimeError("Discrete NaN action detected.")
 
     @abstractmethod
     def update_normalization(self, vector_obs: np.ndarray) -> None:
