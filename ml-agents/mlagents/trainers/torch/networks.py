@@ -319,7 +319,7 @@ class SimpleActor(nn.Module, Actor):
         At this moment, torch.onnx.export() doesn't accept None as tensor to be exported,
         so the size of return tuple varies with action spec.
         """
-        # This code will convert the ugly vec and obs into glorious unified list of inputs
+        # This code will convert the vec and vis obs into a list of inputs for the network
         concatenated_vec_obs = vec_inputs[0]
         inputs = []
         start = 0
@@ -335,7 +335,7 @@ class SimpleActor(nn.Module, Actor):
             else:
                 inputs.append(vis_inputs[vis_index])
                 vis_index += 1
-        # End of code to convert the ugly vec and obs into glorious unified list of inputs
+        # End of code to convert the vec and vis obs into a list of inputs for the network
         encoding, memories_out = self.network_body(
             inputs, memories=memories, sequence_length=1
         )
