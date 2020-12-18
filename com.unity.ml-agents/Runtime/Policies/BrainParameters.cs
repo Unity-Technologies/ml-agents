@@ -8,6 +8,7 @@ namespace Unity.MLAgents.Policies
     /// <summary>
     /// This is deprecated. Agents can now use both continuous and discrete actions together.
     /// </summary>
+    [Obsolete("Continuous and discrete actions on the same Agent are now supported; see ActionSpec.")]
     public enum SpaceType
     {
         /// <summary>

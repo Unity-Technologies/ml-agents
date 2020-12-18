@@ -1048,7 +1048,7 @@ namespace Unity.MLAgents
                     CollectObservations(collectObservationsSensor);
                 }
             }
-            using (TimerStack.Instance.Scoped("CollectDiscreteActionMasks"))
+            using (TimerStack.Instance.Scoped("WriteActionMask"))
             {
                 m_ActuatorManager.WriteActionMask();
             }
@@ -1145,7 +1145,7 @@ namespace Unity.MLAgents
         }
 
         /// <summary>
-        /// Implement `CollectDiscreteActionMasks()` to collects the masks for discrete
+        /// Implement `WriteDiscreteActionMask()` to collects the masks for discrete
         /// actions. When using discrete actions, the agent will not perform the masked
         /// action.
         /// </summary>
@@ -1154,7 +1154,7 @@ namespace Unity.MLAgents
         /// </param>
         /// <remarks>
         /// When using Discrete Control, you can prevent the Agent from using a certain
-        /// action by masking it with <see cref="DiscreteActionMasker.SetMask(int, IEnumerable{int})"/>.
+        /// action by masking it with <see cref="IDiscreteActionMask.WriteMask(int, IEnumerable{int})"/>.
         ///
         /// See [Agents - Actions] for more information on masking actions.
         ///

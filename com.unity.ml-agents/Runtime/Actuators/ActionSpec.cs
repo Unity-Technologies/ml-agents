@@ -27,12 +27,12 @@ namespace Unity.MLAgents.Actuators
         public int[] BranchSizes;
 
         /// <summary>
-        /// The number of actions for a Continuous <see cref="SpaceType"/>.
+        /// The number of continuous actions that an Agent can take.
         /// </summary>
         public int NumContinuousActions { get { return m_NumContinuousActions; } set { m_NumContinuousActions = value; } }
 
         /// <summary>
-        /// The number of branches for a Discrete <see cref="SpaceType"/>.
+        /// The number of branches for discrete actions that an Agent can take.
         /// </summary>
         public int NumDiscreteActions { get { return BranchSizes == null ? 0 : BranchSizes.Length; } }
 

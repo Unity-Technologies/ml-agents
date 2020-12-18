@@ -90,7 +90,6 @@ namespace Unity.MLAgents.Actuators
             }
 #if DEBUG
             // Make sure the names are actually unique
-            // Make sure all Actuators have the same SpaceType
             ValidateActuators();
 #endif
 
