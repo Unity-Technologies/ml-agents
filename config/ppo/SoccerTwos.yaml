@@ -13,14 +13,14 @@ behaviors:
     network_settings:
       normalize: false
       hidden_units: 512
-      num_layers: 2
+      num_layers: 3
       vis_encode_type: simple
     reward_signals:
       extrinsic:
         gamma: 0.99
         strength: 1.0
     keep_checkpoints: 5
-    max_steps: 50000000
+    max_steps: 100000000
     time_horizon: 1000
     summary_freq: 10000
     threaded: false
@@ -31,3 +31,5 @@ behaviors:
       window: 10
       play_against_latest_model_ratio: 0.5
       initial_elo: 1200.0
+env_settings:
+  num_envs: 4

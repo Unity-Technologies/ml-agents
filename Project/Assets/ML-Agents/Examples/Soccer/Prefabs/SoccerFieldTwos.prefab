@@ -239,12 +239,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 3
+    VectorObservationSize: 10
     NumStackedVectorObservations: 3
     m_ActionSpec:
-      m_NumContinuousActions: 3
-      BranchSizes: 030000000300000003000000
-    VectorActionSize: 
+      m_NumContinuousActions: 0
+      BranchSizes: 0300000003000000030000000a000000
+    VectorActionSize: 0300000003000000030000000a000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
@@ -658,12 +658,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 3
+    VectorObservationSize: 10
     NumStackedVectorObservations: 3
     m_ActionSpec:
-      m_NumContinuousActions: 3
-      BranchSizes: 030000000300000003000000
-    VectorActionSize: 
+      m_NumContinuousActions: 0
+      BranchSizes: 0300000003000000030000000a000000
+    VectorActionSize: 0300000003000000030000000a000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
@@ -3735,12 +3735,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 3
+    VectorObservationSize: 10
     NumStackedVectorObservations: 3
     m_ActionSpec:
-      m_NumContinuousActions: 3
-      BranchSizes: 030000000300000003000000
-    VectorActionSize: 
+      m_NumContinuousActions: 0
+      BranchSizes: 0300000003000000030000000a000000
+    VectorActionSize: 0300000003000000030000000a000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
@@ -4262,12 +4262,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 3
+    VectorObservationSize: 10
     NumStackedVectorObservations: 3
     m_ActionSpec:
-      m_NumContinuousActions: 3
-      BranchSizes: 030000000300000003000000
-    VectorActionSize: 
+      m_NumContinuousActions: 0
+      BranchSizes: 0300000003000000030000000a000000
+    VectorActionSize: 0300000003000000030000000a000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
