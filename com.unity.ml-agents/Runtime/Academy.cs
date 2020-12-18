@@ -89,7 +89,7 @@ namespace Unity.MLAgents
         ///     </item>
         ///     <item>
         ///         <term>1.3.0</term>
-        ///         <description>Support action spaces with both continuous and discrete actions.</description>
+        ///         <description>Support both continuous and discrete actions.</description>
         ///     </item>
         /// </list>
         /// </remarks>
@@ -590,7 +590,7 @@ namespace Unity.MLAgents
         /// NNModel and the InferenceDevice as provided.
         /// </summary>
         /// <param name="model">The NNModel the ModelRunner must use.</param>
-        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         /// <param name="inferenceDevice">
         /// The inference device (CPU or GPU) the ModelRunner will use.
         /// </param>

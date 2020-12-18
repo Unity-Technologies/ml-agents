@@ -41,7 +41,7 @@ namespace Unity.MLAgents.Inference
         /// the agents
         /// </summary>
         /// <param name="model"> The Barracuda model to load </param>
-        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         /// <param name="inferenceDevice"> Inference execution device. CPU is the fastest
         /// option for most of ML Agents models. </param>
         /// <param name="seed"> The seed that will be used to initialize the RandomNormal
