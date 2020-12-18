@@ -173,6 +173,7 @@ GameObject:
   - component: {fileID: 114320493772006642}
   - component: {fileID: 9152743230243588598}
   - component: {fileID: 798330825103180240}
+  - component: {fileID: 5032957679850712691}
   m_Layer: 0
   m_Name: PurpleStriker
   m_TagString: purpleAgent
@@ -297,7 +298,7 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  m_RaysPerDirection: 5
+  m_RaysPerDirection: 12
   m_MaxRayDegrees: 60
   m_SphereCastRadius: 0.5
   m_RayLength: 20
@@ -336,6 +337,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugCommandLineOverride: 
+--- !u!114 &5032957679850712691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1095606497496374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: BallRayPerceptionSensor
+  m_DetectableTags:
+  - ball
+  - purpleGoal
+  - blueGoal
+  - wall
+  m_RaysPerDirection: 8
+  m_MaxRayDegrees: 60
+  m_SphereCastRadius: 0.5
+  m_RayLength: 20
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
+  m_ObservationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0
+  m_EndVerticalOffset: 0
 --- !u!1 &1100217258374548
 GameObject:
   m_ObjectHideFlags: 0
@@ -561,6 +592,7 @@ GameObject:
   - component: {fileID: 114516244030127556}
   - component: {fileID: 404683423509059512}
   - component: {fileID: 8557426429796011212}
+  - component: {fileID: 1525596211563862289}
   m_Layer: 0
   m_Name: BlueStriker
   m_TagString: blueAgent
@@ -685,7 +717,7 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
-  m_RaysPerDirection: 5
+  m_RaysPerDirection: 12
   m_MaxRayDegrees: 60
   m_SphereCastRadius: 0.5
   m_RayLength: 20
@@ -724,6 +756,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugCommandLineOverride: 
+--- !u!114 &1525596211563862289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1131626411948014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: BallRayPerceptionSensor
+  m_DetectableTags:
+  - ball
+  - blueGoal
+  - purpleGoal
+  - wall
+  m_RaysPerDirection: 8
+  m_MaxRayDegrees: 60
+  m_SphereCastRadius: 0.5
+  m_RayLength: 20
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
+  m_ObservationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0
+  m_EndVerticalOffset: 0
 --- !u!1 &1141134673700168
 GameObject:
   m_ObjectHideFlags: 0
@@ -980,7 +1042,7 @@ GameObject:
   - component: {fileID: 33151135767273144}
   - component: {fileID: 23420896636371710}
   - component: {fileID: 64474002074256704}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: WallSideA
   m_TagString: wall
   m_Icon: {fileID: 0}
@@ -1073,7 +1135,7 @@ GameObject:
   - component: {fileID: 33588944737043670}
   - component: {fileID: 23135375652557800}
   - component: {fileID: 64463101538527252}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: WallSideB
   m_TagString: wall
   m_Icon: {fileID: 0}
@@ -1462,7 +1524,7 @@ GameObject:
   - component: {fileID: 33594846689333450}
   - component: {fileID: 23472375383448142}
   - component: {fileID: 65419777742325110}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: GoalBlue
   m_TagString: blueGoal
   m_Icon: {fileID: 0}
@@ -1726,7 +1788,7 @@ GameObject:
   - component: {fileID: 135993924486820224}
   - component: {fileID: 114273807544954564}
   - component: {fileID: 54100138833592438}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Soccer Ball
   m_TagString: ball
   m_Icon: {fileID: 0}
@@ -1741,7 +1803,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1682753582128710}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0.01, y: 0.5, z: 0}
   m_LocalScale: {x: 0.015, y: 0.015, z: 0.015}
   m_Children: []
   m_Father: {fileID: 4558743310993102}
@@ -2857,7 +2919,7 @@ GameObject:
   - component: {fileID: 33693580190047416}
   - component: {fileID: 23941816170183106}
   - component: {fileID: 65779051553495090}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: GoalPurple
   m_TagString: purpleGoal
   m_Icon: {fileID: 0}
@@ -3607,6 +3669,7 @@ GameObject:
   - component: {fileID: 1023485123796557062}
   - component: {fileID: 8734522883866558980}
   - component: {fileID: 6283479335904612434}
+  - component: {fileID: 8514050053507665853}
   m_Layer: 0
   m_Name: PurpleStriker (1)
   m_TagString: purpleAgent
@@ -3731,7 +3794,7 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  m_RaysPerDirection: 5
+  m_RaysPerDirection: 12
   m_MaxRayDegrees: 60
   m_SphereCastRadius: 0.5
   m_RayLength: 20
@@ -3770,6 +3833,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugCommandLineOverride: 
+--- !u!114 &8514050053507665853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6257467487437560250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: BallRayPerceptionSensor
+  m_DetectableTags:
+  - ball
+  - purpleGoal
+  - blueGoal
+  - wall
+  m_RaysPerDirection: 8
+  m_MaxRayDegrees: 60
+  m_SphereCastRadius: 0.5
+  m_RayLength: 20
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
+  m_ObservationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0
+  m_EndVerticalOffset: 0
 --- !u!1 &6442519122303792292
 GameObject:
   m_ObjectHideFlags: 0
@@ -4103,6 +4196,7 @@ GameObject:
   - component: {fileID: 2562571719799803906}
   - component: {fileID: 1018414316889932458}
   - component: {fileID: 6939753220642424022}
+  - component: {fileID: 5071475723905762410}
   m_Layer: 0
   m_Name: BlueStriker (1)
   m_TagString: blueAgent
@@ -4227,7 +4321,7 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
-  m_RaysPerDirection: 5
+  m_RaysPerDirection: 12
   m_MaxRayDegrees: 60
   m_SphereCastRadius: 0.5
   m_RayLength: 20
@@ -4266,6 +4360,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugCommandLineOverride: 
+--- !u!114 &5071475723905762410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8360301818957399454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: BallRayPerceptionSensor
+  m_DetectableTags:
+  - ball
+  - blueGoal
+  - purpleGoal
+  - wall
+  m_RaysPerDirection: 8
+  m_MaxRayDegrees: 60
+  m_SphereCastRadius: 0.5
+  m_RayLength: 20
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
+  m_ObservationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0
+  m_EndVerticalOffset: 0
 --- !u!1 &8673569163220857793
 GameObject:
   m_ObjectHideFlags: 0
