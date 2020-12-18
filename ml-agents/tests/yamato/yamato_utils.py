@@ -7,7 +7,10 @@ from typing import List, Optional
 
 
 def get_unity_executable_path():
-    downloader_install_path = "./.Editor/Unity.app/Contents/MacOS/Unity"
+    if platform == "darwin":
+        downloader_install_path = "./.Editor/Unity.app/Contents/MacOS/Unity"
+    else:  # if platform == "linux":
+        downloader_install_path = "./.Editor/Unity"
     if os.path.exists(downloader_install_path):
         return downloader_install_path
     raise FileNotFoundError("Can't find executable from unity-downloader-cli")
