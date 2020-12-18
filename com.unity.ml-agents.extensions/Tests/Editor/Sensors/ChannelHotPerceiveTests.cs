@@ -46,7 +46,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             string[] tags = { k_Tag1 };
             int[] depths = { 1 };
-            dummyData.Data = new float[] { -0.1f };
+            dummyData.Data = new[] { -0.1f };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
@@ -65,7 +65,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             string[] tags = { k_Tag1 };
             int[] depths = { 1 };
-            dummyData.Data = new float[] { 1.1f };
+            dummyData.Data = new[] { 1.1f };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
@@ -84,7 +84,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             string[] tags = { k_Tag1 };
             int[] depths = { 1 };
-            dummyData.Data = new float[] { .2f };
+            dummyData.Data = new[] { .2f };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
@@ -97,8 +97,8 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(10 * 10 * 1, output.Length);
 
             int[] subarrayIndicies = new int[] { 77, 78, 87, 88 };
-            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new float[] { .2f }, 4);
-            float[] expectedDefault = new float[] { 0 };
+            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new[] { .2f }, 4);
+            float[] expectedDefault = new[] { 0.0f };
             GridObsTestUtils.AssertSubarraysAtIndex(output, subarrayIndicies, expectedSubarrays, expectedDefault);
         }
 
@@ -107,7 +107,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             string[] tags = { k_Tag1 };
             int[] depths = { 3 };
-            dummyData.Data = new float[] { -1f };
+            dummyData.Data = new[] { -1f };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
@@ -126,7 +126,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             string[] tags = { k_Tag1 };
             int[] depths = { 3 };
-            dummyData.Data = new float[] { 4f };
+            dummyData.Data = new[] { 4f };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
@@ -145,7 +145,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             string[] tags = { k_Tag1 };
             int[] depths = { 3 };
-            dummyData.Data = new float[] { 2f };
+            dummyData.Data = new[] { 2f };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
@@ -157,9 +157,9 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 
             Assert.AreEqual(10 * 10 * 3, output.Length);
 
-            int[] subarrayIndicies = new int[] { 77, 78, 87, 88 };
+            int[] subarrayIndicies = new[] { 77, 78, 87, 88 };
             float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new float[] { 0, 0, 1 }, 4);
-            float[] expectedDefault = new float[] { 1, 0, 0 };
+            float[] expectedDefault = new[] { 1.0f, 0.0f, 0.0f };
             GridObsTestUtils.AssertSubarraysAtIndex(output, subarrayIndicies, expectedSubarrays, expectedDefault);
         }
 
@@ -168,7 +168,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             string[] tags = { k_Tag1 };
             int[] depths = { 3 };
-            dummyData.Data = new float[] { 2.4f };
+            dummyData.Data = new[] { 2.4f };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
@@ -229,7 +229,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             string[] tags = { k_Tag1 };
             int[] depths = { 1, 1 };
-            dummyData.Data = new float[] { .4f, .3f };
+            dummyData.Data = new[] { .4f, .3f };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
@@ -242,7 +242,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(10 * 10 * 2, output.Length);
 
             int[] subarrayIndicies = new int[] { 77, 78, 87, 88 };
-            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new float[] { .4f, .3f }, 4);
+            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new[] { .4f, .3f }, 4);
             float[] expectedDefault = new float[] { 0, 0 };
             GridObsTestUtils.AssertSubarraysAtIndex(output, subarrayIndicies, expectedSubarrays, expectedDefault);
         }
@@ -252,7 +252,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             string[] tags = { k_Tag1 };
             int[] depths = { 1, 3 };
-            dummyData.Data = new float[] { .4f, 4f };
+            dummyData.Data = new[] { .4f, 4f };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
@@ -271,7 +271,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             string[] tags = { k_Tag1 };
             int[] depths = { 1, 3 };
-            dummyData.Data = new float[] { .4f, 1f };
+            dummyData.Data = new[] { .4f, 1f };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
@@ -284,7 +284,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(10 * 10 * 4, output.Length);
 
             int[] subarrayIndicies = new int[] { 77, 78, 87, 88 };
-            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new float[] { .4f, 0, 1, 0 }, 4);
+            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new[] { .4f, 0, 1, 0 }, 4);
             float[] expectedDefault = new float[] { 0, 1, 0, 0 };
             GridObsTestUtils.AssertSubarraysAtIndex(output, subarrayIndicies, expectedSubarrays, expectedDefault);
         }
@@ -294,7 +294,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             string[] tags = { k_Tag1 };
             int[] depths = { 3, 1 };
-            dummyData.Data = new float[] { 1f, .4f };
+            dummyData.Data = new[] { 1f, .4f };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
@@ -306,8 +306,8 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 
             Assert.AreEqual(10 * 10 * 4, output.Length);
 
-            int[] subarrayIndicies = new int[] { 77, 78, 87, 88 };
-            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new float[] { 0, 1, 0, .4f }, 4);
+            int[] subarrayIndicies = new[] { 77, 78, 87, 88 };
+            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new[] { 0, 1, 0, .4f }, 4);
             float[] expectedDefault = new float[] { 1, 0, 0, 0 };
             GridObsTestUtils.AssertSubarraysAtIndex(output, subarrayIndicies, expectedSubarrays, expectedDefault);
         }
@@ -317,7 +317,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             string[] tags = { k_Tag1 };
             int[] depths = { 3, 3 };
-            dummyData.Data = new float[] { 1f, 2.2f };
+            dummyData.Data = new[] { 1f, 2.2f };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
@@ -340,7 +340,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             string[] tags = { k_Tag1 };
             int[] depths = { 5, 1, 3 };
-            dummyData.Data = new float[] { 3f, .6f, 2.2f };
+            dummyData.Data = new[] { 3f, .6f, 2.2f };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
@@ -353,7 +353,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(10 * 10 * 9, output.Length);
 
             int[] subarrayIndicies = new int[] { 77, 78, 87, 88 };
-            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new float[] { 0, 0, 0, 1, 0, .6f, 0, 0, 1 }, 4);
+            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new[] { 0, 0, 0, 1, 0, .6f, 0, 0, 1 }, 4);
             float[] expectedDefault = new float[] { 1, 0, 0, 0, 0, 0, 1, 0, 0 };
             GridObsTestUtils.AssertSubarraysAtIndex(output, subarrayIndicies, expectedSubarrays, expectedDefault);
         }
@@ -363,7 +363,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             string[] tags = { k_Tag1 };
             int[] depths = { 5, 1, 3 };
-            dummyData.Data = new float[] { 3f, .6f, 2.2f };
+            dummyData.Data = new[] { 3f, .6f, 2.2f };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
@@ -376,7 +376,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(10 * 10 * 9, output.Length);
 
             int[] subarrayIndicies = new int[] { 77, 78, 87, 88 };
-            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new float[] { 0, 0, 0, 1, 0, .6f, 0, 0, 1 }, 4);
+            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new[] { 0, 0, 0, 1, 0, .6f, 0, 0, 1 }, 4);
             float[] expectedDefault = new float[] { 1, 0, 0, 0, 0, 0, 1, 0, 0 };
             GridObsTestUtils.AssertSubarraysAtIndex(output, subarrayIndicies, expectedSubarrays, expectedDefault);
 

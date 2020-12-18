@@ -5,7 +5,6 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Sensors.Reflection;
-using UnityEngine;
 
 namespace Unity.MLAgents.Editor
 {
