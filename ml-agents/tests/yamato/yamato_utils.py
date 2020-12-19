@@ -127,7 +127,7 @@ def init_venv(
 
     # Set up the venv and install mlagents
     if platform == "linux":
-        subprocess.check_call("apt-get install python3-venv", shell=True)
+        subprocess.check_call("sudo apt-get install python3-venv", shell=True)
 
     subprocess.check_call(f"python3 -m venv {venv_path}", shell=True)
     pip_commands = ["--upgrade pip", "--upgrade setuptools"]
