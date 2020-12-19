@@ -37,9 +37,7 @@ from mlagents_envs.side_channel.stats_side_channel import (
     EnvironmentStats,
     StatsSideChannel,
 )
-from mlagents_envs.side_channel.training_analytics_side_channel import (
-    TrainingAnalyticsSideChannel,
-)
+from mlagents.training_analytics_side_channel import TrainingAnalyticsSideChannel
 from mlagents_envs.side_channel.side_channel import SideChannel
 
 
