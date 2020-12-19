@@ -117,7 +117,9 @@ namespace Unity.MLAgents.Analytics
 
             var data = GetEventForRemotePolicy(behaviorName, sensors, actionSpec);
             // Note - to debug, use JsonUtility.ToJson on the event.
-            Debug.Log(JsonUtility.ToJson(data, true));
+            Debug.Log(
+                $"Would send event {k_RemotePolicyStartedEventName} with body {JsonUtility.ToJson(data, true)}"
+                );
 #if UNITY_EDITOR
             //EditorAnalytics.SendEventWithLimit(k_RemotePolicyStartedEventName, data);
 #else
