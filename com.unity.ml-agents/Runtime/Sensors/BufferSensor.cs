@@ -2,7 +2,7 @@ using System;
 
 namespace Unity.MLAgents.Sensors
 {
-    public class BufferSensor : ISensor
+    public class BufferSensor : ISensor, IDimensionPropertiesSensor
     {
         private int m_MaxNumObs;
         private int m_ObsSize;
@@ -22,6 +22,15 @@ namespace Unity.MLAgents.Sensors
             return new int[] { m_MaxNumObs, m_ObsSize };
         }
 
+        /// <inheritdoc/>
+        public DimensionProperty[] GetDimensionProperties()
+        {
+            return new DimensionProperty[]{
+                DimensionProperty.VariableSize,
+                DimensionProperty.None
+            };
+        }
+
         /// <summary>
         /// Appends an observation to the buffer. If the buffer is full (maximum number
         /// of observation is reached) the observation will be ignored. the length of
@@ -37,7 +46,7 @@ namespace Unity.MLAgents.Sensors
             }
             for (int i = 0; i < obs.Length; i++)
             {
-                m_ObservationBuffer[m_CurrentNumObservables * m_MaxNumObs + i] = obs[i];
+                m_ObservationBuffer[m_CurrentNumObservables * m_ObsSize + i] = obs[i];
             }
             m_CurrentNumObservables++;
         }

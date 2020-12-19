@@ -455,7 +455,7 @@ class DimensionProperty(IntFlag):
     Means that there can be a variable number of observations in this dimension.
     The observations are unordered.
     """
-    VARIABLE_SIZE = 3
+    VARIABLE_SIZE = 4
 
 
 class ObservationSpec(NamedTuple):

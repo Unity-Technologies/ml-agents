@@ -382,9 +382,8 @@ namespace Unity.MLAgents
                     int[] intDimensionProperties = new int[dimensionProperties.Length];
                     for (int i = 0; i < dimensionProperties.Length; i++)
                     {
-                        intDimensionProperties[i] = (int)dimensionProperties[i];
+                        observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
                     }
-                    observationProto.DimensionProperties.AddRange(intDimensionProperties);
                 }
 
             }
