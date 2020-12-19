@@ -406,6 +406,7 @@ namespace Unity.MLAgents
             EnableAutomaticStepping();
 
             SideChannelManager.RegisterSideChannel(new EngineConfigurationChannel());
+            SideChannelManager.RegisterSideChannel(new TrainingAnalyticsSideChannel());
             m_EnvironmentParameters = new EnvironmentParameters();
             m_StatsRecorder = new StatsRecorder();
 

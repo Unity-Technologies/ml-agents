@@ -33,8 +33,11 @@ from mlagents_envs.side_channel.engine_configuration_channel import (
     EngineConfig,
 )
 from mlagents_envs.side_channel.stats_side_channel import (
-    StatsSideChannel,
     EnvironmentStats,
+    StatsSideChannel,
+)
+from mlagents_envs.side_channel.training_analytics_side_channel import (
+    TrainingAnalyticsSideChannel,
 )
 from mlagents_envs.side_channel.side_channel import SideChannel
 
@@ -122,6 +125,7 @@ def worker(
     engine_configuration_channel = EngineConfigurationChannel()
     engine_configuration_channel.set_configuration(engine_configuration)
     stats_channel = StatsSideChannel()
+    training_analytics_channel = TrainingAnalyticsSideChannel()
     env: BaseEnv = None
     # Set log level. On some platforms, the logger isn't common with the
     # main process, so we need to set it again.
@@ -137,9 +141,12 @@ def worker(
         return all_step_result
 
     try:
-        env = env_factory(
-            worker_id, [env_parameters, engine_configuration_channel, stats_channel]
-        )
+        side_channels = [env_parameters, engine_configuration_channel, stats_channel]
+        if worker_id == 0:
+            side_channels.append(training_analytics_channel)
+
+        env = env_factory(worker_id, side_channels)
+        training_analytics_channel.environment_initialized()
         while True:
             req: EnvironmentRequest = parent_conn.recv()
             if req.cmd == EnvironmentCommand.STEP:

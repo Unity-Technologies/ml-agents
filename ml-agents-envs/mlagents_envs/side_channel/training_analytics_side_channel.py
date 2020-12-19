@@ -1,6 +1,6 @@
 import uuid
 from mlagents_envs.exception import UnityCommunicationException
-from mlagents_envs.side_channel import SideChannel, IncomingMessage
+from mlagents_envs.side_channel import SideChannel, IncomingMessage, OutgoingMessage
 
 
 class TrainingAnalyticsSideChannel(SideChannel):
@@ -26,5 +26,7 @@ class TrainingAnalyticsSideChannel(SideChannel):
             + "this should not have happend."
         )
 
-    def behavior_started_training(self):
-        pass
+    def environment_initialized(self):
+        env_init_msg = OutgoingMessage()
+        env_init_msg.write_string("environment_initialized!")
+        super().queue_message_to_send(env_init_msg)

@@ -18,7 +18,11 @@ namespace Unity.MLAgents.SideChannels
         /// <inheritdoc/>
         protected override void OnMessageReceived(IncomingMessage msg)
         {
-
+            var eventName = msg.ReadString();
+            if (!string.IsNullOrEmpty(eventName))
+            {
+                Debug.Log(eventName);
+            }
         }
     }
 }
