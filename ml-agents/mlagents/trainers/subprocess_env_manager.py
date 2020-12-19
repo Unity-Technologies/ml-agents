@@ -16,6 +16,7 @@ from queue import Empty as EmptyQueueException
 from mlagents_envs.base_env import BaseEnv, BehaviorName, BehaviorSpec
 from mlagents_envs import logging_util
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
+from mlagents.trainers.settings import TrainerSettings
 from mlagents_envs.timers import (
     TimerNode,
     timed,
@@ -54,6 +55,7 @@ class EnvironmentCommand(enum.Enum):
     CLOSE = 5
     ENV_EXITED = 6
     CLOSED = 7
+    TRAINING_STARTED = 8
 
 
 class EnvironmentRequest(NamedTuple):
@@ -177,6 +179,12 @@ def worker(
                 for k, v in req.payload.items():
                     if isinstance(v, ParameterRandomizationSettings):
                         v.apply(k, env_parameters)
+            elif req.cmd == EnvironmentCommand.TRAINING_STARTED:
+                behavior_name, trainer_config = req.payload
+                if training_analytics_channel:
+                    training_analytics_channel.training_started(
+                        behavior_name, trainer_config
+                    )
             elif req.cmd == EnvironmentCommand.RESET:
                 env.reset()
                 all_step_result = _generate_all_results()
@@ -314,6 +322,20 @@ class SubprocessEnvManager(EnvManager):
         """
         for ew in self.env_workers:
             ew.send(EnvironmentCommand.ENVIRONMENT_PARAMETERS, config)
+
+    def on_training_started(
+        self, behavior_name: str, trainer_settings: TrainerSettings
+    ) -> None:
+        """
+        Handle traing starting for a new behavior type. Generally nothing is necessary here.
+        :param behavior_name:
+        :param trainer_settings:
+        :return:
+        """
+        for ew in self.env_workers:
+            ew.send(
+                EnvironmentCommand.TRAINING_STARTED, (behavior_name, trainer_settings)
+            )
 
     @property
     def training_behaviors(self) -> Dict[BehaviorName, BehaviorSpec]:

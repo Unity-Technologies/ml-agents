@@ -30,3 +30,10 @@ class TrainingAnalyticsSideChannel(SideChannel):
         env_init_msg = OutgoingMessage()
         env_init_msg.write_string("environment_initialized!")
         super().queue_message_to_send(env_init_msg)
+
+    def training_started(self, behavior_name, config):
+        training_start_msg = OutgoingMessage()
+        training_start_msg.write_string(
+            f"training_started for {behavior_name} with config {str(config)}!"
+        )
+        super().queue_message_to_send(training_start_msg)
