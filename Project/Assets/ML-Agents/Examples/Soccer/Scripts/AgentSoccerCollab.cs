@@ -107,20 +107,20 @@ public class AgentSoccerCollab : AgentSoccer
             contOut[0] = -1f;
         }
         //rotate
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.Q))
         {
             contOut[1] = -1f;
         }
-        if (Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.E))
         {
             contOut[1] = 1f;
         }
         //right
-        if (Input.GetKey(KeyCode.E))
+        if (Input.GetKey(KeyCode.D))
         {
             contOut[2] = 1f;
         }
-        if (Input.GetKey(KeyCode.Q))
+        if (Input.GetKey(KeyCode.A))
         {
             contOut[2] = -1f;
         }

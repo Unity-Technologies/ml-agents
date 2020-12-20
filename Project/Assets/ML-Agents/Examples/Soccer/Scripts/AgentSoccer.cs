@@ -78,8 +78,8 @@ public class AgentSoccer : Agent
         }
         else
         {
-            m_LateralSpeed = 0.3f;
-            m_ForwardSpeed = 1.0f;
+            m_LateralSpeed = 0.6f;
+            m_ForwardSpeed = 1.5f;
         }
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
         agentRb = GetComponent<Rigidbody>();
@@ -154,7 +154,7 @@ public class AgentSoccer : Agent
         //        break;
         //}
 
-        transform.Rotate(rotateDir, Time.deltaTime * 100f);
+        transform.Rotate(rotateDir, Time.deltaTime * 200f);
         agentRb.AddForce(dirToGo * m_SoccerSettings.agentRunSpeed,
             ForceMode.VelocityChange);
     }
@@ -197,20 +197,20 @@ public class AgentSoccer : Agent
             contOut[0] = -1f;
         }
         //rotate
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.Q))
         {
             contOut[1] = -1f;
         }
-        if (Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.E))
         {
             contOut[1] = 1f;
         }
         //right
-        if (Input.GetKey(KeyCode.E))
+        if (Input.GetKey(KeyCode.D))
         {
             contOut[2] = 1f;
         }
-        if (Input.GetKey(KeyCode.Q))
+        if (Input.GetKey(KeyCode.A))
         {
             contOut[2] = -1f;
         }
