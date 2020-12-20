@@ -1,4 +1,3 @@
-using UnityEngine;
 using UnityEditor;
 using Unity.MLAgents.Editor;
 using Unity.MLAgents.Extensions.Sensors;

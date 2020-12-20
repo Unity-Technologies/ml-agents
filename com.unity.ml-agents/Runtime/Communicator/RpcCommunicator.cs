@@ -11,7 +11,6 @@ using UnityEngine;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.CommunicatorObjects;
 using Unity.MLAgents.Sensors;
-using Unity.MLAgents.Policies;
 using Unity.MLAgents.SideChannels;
 using Google.Protobuf;
 

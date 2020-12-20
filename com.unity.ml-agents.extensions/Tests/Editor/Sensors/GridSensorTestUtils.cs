@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using System;
-using System.Diagnostics;
 using System.Linq;
 
 namespace Unity.MLAgents.Extensions.Tests.Sensors
@@ -14,7 +13,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         /// </summary>
         /// <param name="arr">The array to convert to string</param>
         /// <param name="initialIndex">The initial index. Default 0</param>
-        /// <param name="numOfElements">The number of elements to print</param>
+        /// <param name="maxNumberOfElements">The number of elements to print</param>
         /// <returns>Human readable string</returns>
         public static string Array2Str<T>(T[] arr, int initialIndex = 0, int maxNumberOfElements = int.MaxValue)
         {
@@ -106,14 +105,14 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         /// If the total array is data from a 4x4x2 grid observation, total will be an array of size 32 and each sub array will have a size of 2.
         /// Let 3 cells at indicies (0, 1), (2, 2), and (3, 0) with values ([.1, .5]), ([.9, .7]), ([0, .2]), respectively.
         /// If the default values of cells are ([0, 0]) then the grid observation will be as follows:
-        /// [ [0,  0], [.1, .5], [ 0, 0 ], [0, 0], 
+        /// [ [0,  0], [.1, .5], [ 0, 0 ], [0, 0],
         ///   [0,  0], [ 0, 0 ], [ 0, 0 ], [0, 0],
         ///   [0,  0], [ 0, 0 ], [.9, .7], [0, 0],
         ///   [0, .2], [ 0, 0 ], [ 0, 0 ],  [0, 0] ]
-        ///   
+        ///
         /// Which will make the total array will be the flattened array
         /// total = [0, 0, .1, .5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .9, .7, 0, 0, 0, .2, 0, 0, 0, 0, 0]
-        /// 
+        ///
         /// The indicies of the activated cells in the flattened array will be 1, 10, and 12
         ///
         /// So to verify that the total array is as expected, AssertSubarraysAtIndex should be called as

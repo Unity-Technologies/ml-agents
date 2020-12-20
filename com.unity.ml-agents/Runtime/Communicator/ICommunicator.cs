@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents

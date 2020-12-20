@@ -20,7 +20,7 @@ namespace Unity.MLAgents.Extensions.Match3
         /// </summary>
         [FormerlySerializedAs("ForceRandom")]
         [Tooltip("Force using the Agent's Heuristic() method to decide the action. This should only be used in testing.")]
-        public bool ForceHeuristic = false;
+        public bool ForceHeuristic;
 
         /// <inheritdoc/>
         public override IActuator CreateActuator()

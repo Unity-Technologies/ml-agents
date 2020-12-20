@@ -38,7 +38,7 @@ namespace Unity.MLAgents.Demonstrations
         /// </summary>
         [Tooltip("Number of steps to record. The editor will stop playing when it reaches this threshold. " +
                  "Set to zero to record indefinitely.")]
-        public int NumStepsToRecord = 0;
+        public int NumStepsToRecord;
 
         /// <summary>
         /// Base demonstration file name. If multiple files are saved, the additional filenames

@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
-using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Extensions.Match3;
 using UnityEngine;
 using Unity.MLAgents.Extensions.Tests.Sensors;

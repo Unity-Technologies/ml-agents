@@ -220,7 +220,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             Assert.Throws<UnityAgentsException>(() =>
             {
-                var bad = new BadPoseExtractor();
+                var unused = new BadPoseExtractor();
             });
         }
 

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
@@ -24,7 +23,7 @@ namespace Unity.MLAgents.Analytics
         /// <summary>
         /// Whether or not we've registered this particular event yet
         /// </summary>
-        static bool s_EventRegistered = false;
+        static bool s_EventRegistered;
 
         /// <summary>
         /// Hourly limit for this event name

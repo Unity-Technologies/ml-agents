@@ -208,7 +208,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// Convert a ActionSpec struct to a ActionSpecProto.
         /// </summary>
-        /// <param name="actionSpecProto">An instance of an action spec struct.</param>
+        /// <param name="actionSpec">An instance of an action spec struct.</param>
         /// <returns>An ActionSpecProto.</returns>
         public static ActionSpecProto ToActionSpecProto(this ActionSpec actionSpec)
         {

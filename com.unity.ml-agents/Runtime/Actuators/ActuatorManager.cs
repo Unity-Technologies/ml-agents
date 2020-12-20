@@ -207,7 +207,7 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Iterates through all of the IActuators in this list and calls their
         /// <see cref="IActionReceiver.OnActionReceived"/> method on them with the appropriate
-        /// <see cref="ActionSegment{T}"/>s depending on their <see cref="IActionReceiver.ActionSpec"/>.
+        /// <see cref="ActionSegment{T}"/>s depending on their <see cref="ActionSpec"/>.
         /// </summary>
         public void ExecuteActions()
         {

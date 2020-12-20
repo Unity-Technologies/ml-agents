@@ -295,6 +295,8 @@ namespace Unity.MLAgents.Inference
         /// <param name="model">
         /// The Barracuda engine model for loading static parameters.
         /// </param>
+        /// <param name="failedModelChecks">Output list of failure messages</param>
+        ///
         /// <returns>True if the model contains all the expected tensors.</returns>
         public static bool CheckExpectedTensors(this Model model, List<string> failedModelChecks)
         {
