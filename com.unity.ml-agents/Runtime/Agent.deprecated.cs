@@ -15,7 +15,7 @@ namespace Unity.MLAgents
         }
 
         /// <summary>
-        /// Deprecated, use <see cref="Heuristic(in ActionBuffers)"/> instead.
+        /// Deprecated, use <see cref="Heuristic(in Actuators.ActionBuffers)"/> instead.
         /// </summary>
         /// <param name="actionsOut"></param>
         [Obsolete("The float[] version of Heuristic has been deprecated, please use the ActionBuffers version instead.")]
@@ -26,7 +26,7 @@ namespace Unity.MLAgents
         }
 
         /// <summary>
-        /// Deprecated, use <see cref="OnActionReceived(ActionBuffers)"/> instead.
+        /// Deprecated, use <see cref="OnActionReceived(Actuators.ActionBuffers)"/> instead.
         /// </summary>
         /// <param name="vectorAction"></param>
         [Obsolete("The float[] version of OnActionReceived has been deprecated, please use the ActionBuffers version instead.")]
@@ -38,7 +38,7 @@ namespace Unity.MLAgents
         /// <returns>
         /// The last action that was decided by the Agent (or null if no decision has been made).
         /// </returns>
-        /// <seealso cref="OnActionReceived(ActionBuffers)"/>
+        /// <seealso cref="OnActionReceived(Actuators.ActionBuffers)"/>
         [Obsolete("GetAction has been deprecated, please use GetStoredActionBuffers instead.")]
         public float[] GetAction()
         {
