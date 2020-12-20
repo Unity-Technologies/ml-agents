@@ -2,11 +2,10 @@ from abc import abstractmethod
 from typing import Dict, List, Optional
 import numpy as np
 
-from mlagents_envs.base_env import DecisionSteps
+from mlagents_envs.base_env import ActionTuple, BehaviorSpec, DecisionSteps
 from mlagents_envs.exception import UnityException
 
 from mlagents.trainers.action_info import ActionInfo
-from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
 
 
@@ -32,11 +31,6 @@ class Policy:
         self.trainer_settings = trainer_settings
         self.network_settings: NetworkSettings = trainer_settings.network_settings
         self.seed = seed
-        if (
-            self.behavior_spec.action_spec.continuous_size > 0
-            and self.behavior_spec.action_spec.discrete_size > 0
-        ):
-            raise UnityPolicyException("Trainers do not support mixed action spaces.")
         self.act_size = (
             list(self.behavior_spec.action_spec.discrete_branches)
             if self.behavior_spec.action_spec.is_discrete()
@@ -49,12 +43,7 @@ class Policy:
             1 for shape in behavior_spec.observation_shapes if len(shape) == 3
         )
         self.use_continuous_act = self.behavior_spec.action_spec.is_continuous()
-        # This line will be removed in the ActionBuffer change
-        self.num_branches = (
-            self.behavior_spec.action_spec.continuous_size
-            + self.behavior_spec.action_spec.discrete_size
-        )
-        self.previous_action_dict: Dict[str, np.array] = {}
+        self.previous_action_dict: Dict[str, np.ndarray] = {}
         self.memory_dict: Dict[str, np.ndarray] = {}
         self.normalize = trainer_settings.network_settings.normalize
         self.use_recurrent = self.network_settings.memory is not None
@@ -93,6 +82,7 @@ class Policy:
     ) -> None:
         if memory_matrix is None:
             return
+
         for index, agent_id in enumerate(agent_ids):
             self.memory_dict[agent_id] = memory_matrix[index, :]
 
@@ -108,24 +98,24 @@ class Policy:
             if agent_id in self.memory_dict:
                 self.memory_dict.pop(agent_id)
 
-    def make_empty_previous_action(self, num_agents):
+    def make_empty_previous_action(self, num_agents: int) -> np.ndarray:
         """
         Creates empty previous action for use with RNNs and discrete control
         :param num_agents: Number of agents.
         :return: Numpy array of zeros.
         """
-        return np.zeros((num_agents, self.num_branches), dtype=np.int)
+        return np.zeros(
+            (num_agents, self.behavior_spec.action_spec.discrete_size), dtype=np.int32
+        )
 
     def save_previous_action(
-        self, agent_ids: List[str], action_matrix: Optional[np.ndarray]
+        self, agent_ids: List[str], action_tuple: ActionTuple
     ) -> None:
-        if action_matrix is None:
-            return
         for index, agent_id in enumerate(agent_ids):
-            self.previous_action_dict[agent_id] = action_matrix[index, :]
+            self.previous_action_dict[agent_id] = action_tuple.discrete[index, :]
 
     def retrieve_previous_action(self, agent_ids: List[str]) -> np.ndarray:
-        action_matrix = np.zeros((len(agent_ids), self.num_branches), dtype=np.int)
+        action_matrix = self.make_empty_previous_action(len(agent_ids))
         for index, agent_id in enumerate(agent_ids):
             if agent_id in self.previous_action_dict:
                 action_matrix[index, :] = self.previous_action_dict[agent_id]
@@ -142,14 +132,14 @@ class Policy:
         raise NotImplementedError
 
     @staticmethod
-    def check_nan_action(action: Optional[np.ndarray]) -> None:
+    def check_nan_action(action: Optional[ActionTuple]) -> None:
         # Fast NaN check on the action
         # See https://stackoverflow.com/questions/6736590/fast-check-for-nan-in-numpy for background.
         if action is not None:
-            d = np.sum(action)
+            d = np.sum(action.continuous)
             has_nan = np.isnan(d)
             if has_nan:
-                raise RuntimeError("NaN action detected.")
+                raise RuntimeError("Continuous NaN action detected.")
 
     @abstractmethod
     def update_normalization(self, vector_obs: np.ndarray) -> None:

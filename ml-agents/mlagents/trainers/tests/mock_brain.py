@@ -2,12 +2,14 @@ from typing import List, Tuple
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents_envs.base_env import (
     DecisionSteps,
     TerminalSteps,
     BehaviorSpec,
     ActionSpec,
+    ActionTuple,
 )
 
 
@@ -23,8 +25,7 @@ def create_mock_steps(
 
     :int num_agents: Number of "agents" to imitate.
     :List observation_shapes: A List of the observation spaces in your steps
-    :int num_vector_acts: Number of actions in your action space
-    :bool discrete: Whether or not action space is discrete
+    :int action_spec: ActionSpec for the agent
     :bool done: Whether all the agents in the batch are done
     """
     obs_list = []
@@ -77,18 +78,20 @@ def make_fake_trajectory(
     steps_list = []
 
     action_size = action_spec.discrete_size + action_spec.continuous_size
-    action_probs = np.ones(
-        int(np.sum(action_spec.discrete_branches) + action_spec.continuous_size),
-        dtype=np.float32,
-    )
     for _i in range(length - 1):
         obs = []
         for _shape in observation_shapes:
             obs.append(np.ones(_shape, dtype=np.float32))
         reward = 1.0
         done = False
-        action = np.zeros(action_size, dtype=np.float32)
-        action_pre = np.zeros(action_size, dtype=np.float32)
+        action = ActionTuple(
+            continuous=np.zeros(action_spec.continuous_size, dtype=np.float32),
+            discrete=np.zeros(action_spec.discrete_size, dtype=np.int32),
+        )
+        action_probs = LogProbsTuple(
+            continuous=np.ones(action_spec.continuous_size, dtype=np.float32),
+            discrete=np.ones(action_spec.discrete_size, dtype=np.float32),
+        )
         action_mask = (
             [
                 [False for _ in range(branch)]
@@ -97,7 +100,11 @@ def make_fake_trajectory(
             if action_spec.is_discrete()
             else None
         )
-        prev_action = np.ones(action_size, dtype=np.float32)
+        if action_spec.is_discrete():
+            prev_action = np.ones(action_size, dtype=np.int32)
+        else:
+            prev_action = np.ones(action_size, dtype=np.float32)
+
         max_step = False
         memory = np.ones(memory_size, dtype=np.float32)
         agent_id = "test_agent"
@@ -108,7 +115,6 @@ def make_fake_trajectory(
             done=done,
             action=action,
             action_probs=action_probs,
-            action_pre=action_pre,
             action_mask=action_mask,
             prev_action=prev_action,
             interrupted=max_step,
@@ -124,7 +130,6 @@ def make_fake_trajectory(
         done=not max_step_complete,
         action=action,
         action_probs=action_probs,
-        action_pre=action_pre,
         action_mask=action_mask,
         prev_action=prev_action,
         interrupted=max_step_complete,

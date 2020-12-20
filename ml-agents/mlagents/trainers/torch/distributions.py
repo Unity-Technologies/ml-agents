@@ -32,6 +32,13 @@ class DistInstance(nn.Module, abc.ABC):
         """
         pass
 
+    @abc.abstractmethod
+    def exported_model_output(self) -> torch.Tensor:
+        """
+        Returns the tensor to be exported to ONNX for the distribution
+        """
+        pass
+
 
 class DiscreteDistInstance(DistInstance):
     @abc.abstractmethod
@@ -71,6 +78,9 @@ class GaussianDistInstance(DistInstance):
             dim=1,
             keepdim=True,
         )  # Use equivalent behavior to TF
+
+    def exported_model_output(self):
+        return self.sample()
 
 
 class TanhGaussianDistInstance(GaussianDistInstance):
@@ -118,7 +128,12 @@ class CategoricalDistInstance(DiscreteDistInstance):
         return torch.log(self.probs + EPSILON)
 
     def entropy(self):
-        return -torch.sum(self.probs * torch.log(self.probs + EPSILON), dim=-1)
+        return -torch.sum(
+            self.probs * torch.log(self.probs + EPSILON), dim=-1
+        ).unsqueeze(-1)
+
+    def exported_model_output(self):
+        return self.all_log_prob()
 
 
 class GaussianDistribution(nn.Module):
@@ -158,13 +173,15 @@ class GaussianDistribution(nn.Module):
             log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)
         else:
             # Expand so that entropy matches batch size. Note that we're using
-            # torch.cat here instead of torch.expand() becuase it is not supported in the
-            # verified version of Barracuda (1.0.2).
-            log_sigma = torch.cat([self.log_sigma] * inputs.shape[0], axis=0)
+            # mu*0 here to get the batch size implicitly since Barracuda 1.2.1
+            # throws error on runtime broadcasting due to unknown reason. We
+            # use this to replace torch.expand() becuase it is not supported in
+            # the verified version of Barracuda (1.0.X).
+            log_sigma = mu * 0 + self.log_sigma
         if self.tanh_squash:
-            return [TanhGaussianDistInstance(mu, torch.exp(log_sigma))]
+            return TanhGaussianDistInstance(mu, torch.exp(log_sigma))
         else:
-            return [GaussianDistInstance(mu, torch.exp(log_sigma))]
+            return GaussianDistInstance(mu, torch.exp(log_sigma))
 
 
 class MultiCategoricalDistribution(nn.Module):
@@ -186,14 +203,16 @@ class MultiCategoricalDistribution(nn.Module):
             branches.append(branch_output_layer)
         return nn.ModuleList(branches)
 
-    def _mask_branch(self, logits: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+    def _mask_branch(
+        self, logits: torch.Tensor, allow_mask: torch.Tensor
+    ) -> torch.Tensor:
         # Zero out masked logits, then subtract a large value. Technique mentionend here:
-        # https://arxiv.org/abs/2006.14171. Our implementation is ONNX and Barrcuda-friendly.
-        flipped_mask = 1.0 - mask
-        adj_logits = logits * mask - 1e8 * flipped_mask
-        probs = torch.nn.functional.softmax(adj_logits, dim=-1)
-        log_probs = torch.log(probs + EPSILON)
-        return log_probs
+        # https://arxiv.org/abs/2006.14171. Our implementation is ONNX and Barracuda-friendly.
+        block_mask = -1.0 * allow_mask + 1.0
+        # We do -1 * tensor + constant instead of constant - tensor because it seems
+        # Barracuda might swap the inputs of a "Sub" operation
+        logits = logits * allow_mask - 1e8 * block_mask
+        return logits
 
     def _split_masks(self, masks: torch.Tensor) -> List[torch.Tensor]:
         split_masks = []

@@ -1,14 +1,12 @@
-from typing import Callable, List, Dict, Tuple, Optional
+from typing import Callable, List, Dict, Tuple, Optional, Union
 import abc
 
 from mlagents.torch_utils import torch, nn
 
 from mlagents_envs.base_env import ActionSpec
-from mlagents.trainers.torch.distributions import (
-    GaussianDistribution,
-    MultiCategoricalDistribution,
-    DistInstance,
-)
+from mlagents.trainers.torch.action_model import ActionModel
+from mlagents.trainers.torch.agent_action import AgentAction
+from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
@@ -40,7 +38,11 @@ class NetworkBody(nn.Module):
             else 0
         )
 
-        self.visual_processors, self.vector_processors, encoder_input_size = ModelUtils.create_input_processors(
+        (
+            self.visual_processors,
+            self.vector_processors,
+            encoder_input_size,
+        ) = ModelUtils.create_input_processors(
             observation_shapes,
             self.h_size,
             network_settings.vis_encode_type,
@@ -157,31 +159,23 @@ class Actor(abc.ABC):
         """
         pass
 
-    @abc.abstractmethod
-    def sample_action(self, dists: List[DistInstance]) -> List[torch.Tensor]:
-        """
-        Takes a List of Distribution iinstances and samples an action from each.
-        """
-        pass
-
-    @abc.abstractmethod
-    def get_dists(
+    def get_action_stats(
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[List[DistInstance], Optional[torch.Tensor]]:
+    ) -> Tuple[AgentAction, ActionLogProbs, torch.Tensor, torch.Tensor]:
         """
-        Returns distributions from this Actor, from which actions can be sampled.
+        Returns sampled actions.
         If memory is enabled, return the memories as well.
         :param vec_inputs: A List of vector inputs as tensors.
         :param vis_inputs: A List of visual inputs as tensors.
         :param masks: If using discrete actions, a Tensor of action masks.
         :param memories: If using memory, a Tensor of initial memories.
         :param sequence_length: If using memory, the sequence length.
-        :return: A Tuple of a List of action distribution instances, and memories.
+        :return: A Tuple of AgentAction, ActionLogProbs, entropies, and memories.
             Memories will be None if not using memory.
         """
         pass
@@ -193,7 +187,7 @@ class Actor(abc.ABC):
         vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
-    ) -> Tuple[torch.Tensor, int, int, int, int]:
+    ) -> Tuple[Union[int, torch.Tensor], ...]:
         """
         Forward pass of the Actor for inference. This is required for export to ONNX, and
         the inputs and outputs of this method should not be changed without a respective change
@@ -221,23 +215,25 @@ class ActorCritic(Actor):
         pass
 
     @abc.abstractmethod
-    def get_dist_and_value(
+    def get_action_stats_and_value(
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
+    ) -> Tuple[
+        AgentAction, ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
+    ]:
         """
-        Returns distributions, from which actions can be sampled, and value estimates.
+        Returns sampled actions and value estimates.
         If memory is enabled, return the memories as well.
         :param vec_inputs: A List of vector inputs as tensors.
         :param vis_inputs: A List of visual inputs as tensors.
         :param masks: If using discrete actions, a Tensor of action masks.
         :param memories: If using memory, a Tensor of initial memories.
         :param sequence_length: If using memory, the sequence length.
-        :return: A Tuple of a List of action distribution instances, a Dict of reward signal
+        :return: A Tuple of AgentAction, ActionLogProbs, entropies, Dict of reward signal
             name to value estimate, and memories. Memories will be None if not using memory.
         """
         pass
@@ -262,11 +258,20 @@ class SimpleActor(nn.Module, Actor):
     ):
         super().__init__()
         self.action_spec = action_spec
-        self.version_number = torch.nn.Parameter(torch.Tensor([2.0]))
-        self.is_continuous_int = torch.nn.Parameter(
-            torch.Tensor([int(self.action_spec.is_continuous())])
+        self.version_number = torch.nn.Parameter(
+            torch.Tensor([2.0]), requires_grad=False
         )
-        self.act_size_vector = torch.nn.Parameter(
+        self.is_continuous_int_deprecated = torch.nn.Parameter(
+            torch.Tensor([int(self.action_spec.is_continuous())]), requires_grad=False
+        )
+        self.continuous_act_size_vector = torch.nn.Parameter(
+            torch.Tensor([int(self.action_spec.continuous_size)]), requires_grad=False
+        )
+        # TODO: export list of branch sizes instead of sum
+        self.discrete_act_size_vector = torch.nn.Parameter(
+            torch.Tensor([sum(self.action_spec.discrete_branches)]), requires_grad=False
+        )
+        self.act_size_vector_deprecated = torch.nn.Parameter(
             torch.Tensor(
                 [
                     self.action_spec.continuous_size
@@ -280,21 +285,16 @@ class SimpleActor(nn.Module, Actor):
             self.encoding_size = network_settings.memory.memory_size // 2
         else:
             self.encoding_size = network_settings.hidden_units
+        self.memory_size_vector = torch.nn.Parameter(
+            torch.Tensor([int(self.network_body.memory_size)]), requires_grad=False
+        )
 
-        if self.action_spec.is_continuous():
-            self.distribution = GaussianDistribution(
-                self.encoding_size,
-                self.action_spec.continuous_size,
-                conditional_sigma=conditional_sigma,
-                tanh_squash=tanh_squash,
-            )
-        else:
-            self.distribution = MultiCategoricalDistribution(
-                self.encoding_size, self.action_spec.discrete_branches
-            )
-        # During training, clipping is done in TorchPolicy, but we need to clip before ONNX
-        # export as well.
-        self._clip_action_on_export = not tanh_squash
+        self.action_model = ActionModel(
+            self.encoding_size,
+            action_spec,
+            conditional_sigma=conditional_sigma,
+            tanh_squash=tanh_squash,
+        )
 
     @property
     def memory_size(self) -> int:
@@ -303,30 +303,20 @@ class SimpleActor(nn.Module, Actor):
     def update_normalization(self, vector_obs: List[torch.Tensor]) -> None:
         self.network_body.update_normalization(vector_obs)
 
-    def sample_action(self, dists: List[DistInstance]) -> List[torch.Tensor]:
-        actions = []
-        for action_dist in dists:
-            action = action_dist.sample()
-            actions.append(action)
-        return actions
-
-    def get_dists(
+    def get_action_stats(
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[List[DistInstance], Optional[torch.Tensor]]:
+    ) -> Tuple[AgentAction, ActionLogProbs, torch.Tensor, torch.Tensor]:
+
         encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
-        if self.action_spec.is_continuous():
-            dists = self.distribution(encoding)
-        else:
-            dists = self.distribution(encoding, masks)
-
-        return dists, memories
+        action, log_probs, entropies = self.action_model(encoding, masks)
+        return action, log_probs, entropies, memories
 
     def forward(
         self,
@@ -334,25 +324,35 @@ class SimpleActor(nn.Module, Actor):
         vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
-    ) -> Tuple[torch.Tensor, int, int, int, int]:
+    ) -> Tuple[Union[int, torch.Tensor], ...]:
         """
         Note: This forward() method is required for exporting to ONNX. Don't modify the inputs and outputs.
+
+        At this moment, torch.onnx.export() doesn't accept None as tensor to be exported,
+        so the size of return tuple varies with action spec.
         """
-        dists, _ = self.get_dists(vec_inputs, vis_inputs, masks, memories, 1)
-        if self.action_spec.is_continuous():
-            action_list = self.sample_action(dists)
-            action_out = torch.stack(action_list, dim=-1)
-            if self._clip_action_on_export:
-                action_out = torch.clamp(action_out, -3, 3) / 3
-        else:
-            action_out = torch.cat([dist.all_log_prob() for dist in dists], dim=1)
-        return (
-            action_out,
-            self.version_number,
-            torch.Tensor([self.network_body.memory_size]),
-            self.is_continuous_int,
-            self.act_size_vector,
+        encoding, memories_out = self.network_body(
+            vec_inputs, vis_inputs, memories=memories, sequence_length=1
         )
+
+        (
+            cont_action_out,
+            disc_action_out,
+            action_out_deprecated,
+        ) = self.action_model.get_action_out(encoding, masks)
+        export_out = [self.version_number, self.memory_size_vector]
+        if self.action_spec.continuous_size > 0:
+            export_out += [cont_action_out, self.continuous_act_size_vector]
+        if self.action_spec.discrete_size > 0:
+            export_out += [disc_action_out, self.discrete_act_size_vector]
+        # Only export deprecated nodes with non-hybrid action spec
+        if self.action_spec.continuous_size == 0 or self.action_spec.discrete_size == 0:
+            export_out += [
+                action_out_deprecated,
+                self.is_continuous_int_deprecated,
+                self.act_size_vector_deprecated,
+            ]
+        return tuple(export_out)
 
 
 class SharedActorCritic(SimpleActor, ActorCritic):
@@ -365,6 +365,7 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
     ):
+        self.use_lstm = network_settings.memory is not None
         super().__init__(
             observation_shapes,
             network_settings,
@@ -387,24 +388,39 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         )
         return self.value_heads(encoding), memories_out
 
-    def get_dist_and_value(
+    def get_stats_and_value(
+        self,
+        vec_inputs: List[torch.Tensor],
+        vis_inputs: List[torch.Tensor],
+        actions: AgentAction,
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
+        encoding, memories = self.network_body(
+            vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
+        )
+        log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
+        value_outputs = self.value_heads(encoding)
+        return log_probs, entropies, value_outputs
+
+    def get_action_stats_and_value(
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
+    ) -> Tuple[
+        AgentAction, ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
+    ]:
+
         encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
-        if self.action_spec.is_continuous():
-            dists = self.distribution(encoding)
-        else:
-            dists = self.distribution(encoding, masks=masks)
-
+        action, log_probs, entropies = self.action_model(encoding, masks)
         value_outputs = self.value_heads(encoding)
-        return dists, value_outputs, memories
+        return action, log_probs, entropies, value_outputs, memories
 
 
 class SeparateActorCritic(SimpleActor, ActorCritic):
@@ -417,8 +433,6 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
     ):
-        # Give the Actor only half the memories. Note we previously validate
-        # that memory_size must be a multiple of 4.
         self.use_lstm = network_settings.memory is not None
         super().__init__(
             observation_shapes,
@@ -434,6 +448,17 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
     def memory_size(self) -> int:
         return self.network_body.memory_size + self.critic.memory_size
 
+    def _get_actor_critic_mem(
+        self, memories: Optional[torch.Tensor] = None
+    ) -> Tuple[Optional[torch.Tensor], Optional[torch.Tensor]]:
+        if self.use_lstm and memories is not None:
+            # Use only the back half of memories for critic and actor
+            actor_mem, critic_mem = torch.split(memories, self.memory_size // 2, dim=-1)
+        else:
+            critic_mem = None
+            actor_mem = None
+        return actor_mem, critic_mem
+
     def critic_pass(
         self,
         vec_inputs: List[torch.Tensor],
@@ -441,10 +466,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
-        actor_mem, critic_mem = None, None
-        if self.use_lstm:
-            # Use only the back half of memories for critic
-            actor_mem, critic_mem = torch.split(memories, self.memory_size // 2, -1)
+        actor_mem, critic_mem = self._get_actor_critic_mem(memories)
         value_outputs, critic_mem_out = self.critic(
             vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
         )
@@ -455,27 +477,64 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             memories_out = None
         return value_outputs, memories_out
 
-    def get_dist_and_value(
+    def get_stats_and_value(
+        self,
+        vec_inputs: List[torch.Tensor],
+        vis_inputs: List[torch.Tensor],
+        actions: AgentAction,
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
+        actor_mem, critic_mem = self._get_actor_critic_mem(memories)
+        encoding, actor_mem_outs = self.network_body(
+            vec_inputs, vis_inputs, memories=actor_mem, sequence_length=sequence_length
+        )
+        log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
+        value_outputs, critic_mem_outs = self.critic(
+            vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
+        )
+
+        return log_probs, entropies, value_outputs
+
+    def get_action_stats(
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
-        if self.use_lstm:
-            # Use only the back half of memories for critic and actor
-            actor_mem, critic_mem = torch.split(memories, self.memory_size // 2, dim=-1)
-        else:
-            critic_mem = None
-            actor_mem = None
-        dists, actor_mem_outs = self.get_dists(
+    ) -> Tuple[AgentAction, ActionLogProbs, torch.Tensor, torch.Tensor]:
+        actor_mem, critic_mem = self._get_actor_critic_mem(memories)
+        action, log_probs, entropies, actor_mem_out = super().get_action_stats(
             vec_inputs,
             vis_inputs,
+            masks=masks,
             memories=actor_mem,
             sequence_length=sequence_length,
-            masks=masks,
         )
+        if critic_mem is not None:
+            # Make memories with the actor mem unchanged
+            memories_out = torch.cat([actor_mem_out, critic_mem], dim=-1)
+        else:
+            memories_out = None
+        return action, log_probs, entropies, memories_out
+
+    def get_action_stats_and_value(
+        self,
+        vec_inputs: List[torch.Tensor],
+        vis_inputs: List[torch.Tensor],
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Tuple[
+        AgentAction, ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
+    ]:
+        actor_mem, critic_mem = self._get_actor_critic_mem(memories)
+        encoding, actor_mem_outs = self.network_body(
+            vec_inputs, vis_inputs, memories=actor_mem, sequence_length=sequence_length
+        )
+        action, log_probs, entropies = self.action_model(encoding, masks)
         value_outputs, critic_mem_outs = self.critic(
             vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
         )
@@ -483,7 +542,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             mem_out = torch.cat([actor_mem_outs, critic_mem_outs], dim=-1)
         else:
             mem_out = None
-        return dists, value_outputs, mem_out
+        return action, log_probs, entropies, value_outputs, mem_out
 
     def update_normalization(self, vector_obs: List[torch.Tensor]) -> None:
         super().update_normalization(vector_obs)

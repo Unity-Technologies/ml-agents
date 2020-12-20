@@ -198,14 +198,29 @@ def proto_from_steps(
     return agent_info_protos
 
 
-# The arguments here are the DecisionSteps, TerminalSteps and actions for a single agent name
+# The arguments here are the DecisionSteps, TerminalSteps and continuous/discrete actions for a single agent name
 def proto_from_steps_and_action(
-    decision_steps: DecisionSteps, terminal_steps: TerminalSteps, actions: np.ndarray
+    decision_steps: DecisionSteps,
+    terminal_steps: TerminalSteps,
+    continuous_actions: np.ndarray,
+    discrete_actions: np.ndarray,
 ) -> List[AgentInfoActionPairProto]:
     agent_info_protos = proto_from_steps(decision_steps, terminal_steps)
-    agent_action_protos = [
-        AgentActionProto(vector_actions=action) for action in actions
-    ]
+    agent_action_protos = []
+    num_agents = (
+        len(continuous_actions)
+        if continuous_actions is not None
+        else len(discrete_actions)
+    )
+    for i in range(num_agents):
+        proto = AgentActionProto()
+        if continuous_actions is not None:
+            proto.continuous_actions.extend(continuous_actions[i])
+            proto.vector_actions_deprecated.extend(continuous_actions[i])
+        if discrete_actions is not None:
+            proto.discrete_actions.extend(discrete_actions[i])
+            proto.vector_actions_deprecated.extend(discrete_actions[i])
+        agent_action_protos.append(proto)
     agent_info_action_pair_protos = [
         AgentInfoActionPairProto(agent_info=agent_info_proto, action_info=action_proto)
         for agent_info_proto, action_proto in zip(
@@ -408,8 +423,8 @@ def test_action_masking_continuous():
 def test_agent_behavior_spec_from_proto():
     agent_proto = generate_list_agent_proto(1, [(3,), (4,)])[0]
     bp = BrainParametersProto()
-    bp.vector_action_size.extend([5, 4])
-    bp.vector_action_space_type = 0
+    bp.vector_action_size_deprecated.extend([5, 4])
+    bp.vector_action_space_type_deprecated = 0
     behavior_spec = behavior_spec_from_proto(bp, agent_proto)
     assert behavior_spec.action_spec.is_discrete()
     assert not behavior_spec.action_spec.is_continuous()
@@ -417,8 +432,8 @@ def test_agent_behavior_spec_from_proto():
     assert behavior_spec.action_spec.discrete_branches == (5, 4)
     assert behavior_spec.action_spec.discrete_size == 2
     bp = BrainParametersProto()
-    bp.vector_action_size.extend([6])
-    bp.vector_action_space_type = 1
+    bp.vector_action_size_deprecated.extend([6])
+    bp.vector_action_space_type_deprecated = 1
     behavior_spec = behavior_spec_from_proto(bp, agent_proto)
     assert not behavior_spec.action_spec.is_discrete()
     assert behavior_spec.action_spec.is_continuous()
