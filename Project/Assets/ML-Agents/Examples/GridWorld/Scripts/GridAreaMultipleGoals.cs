@@ -15,7 +15,7 @@ public class GridAreaMultipleGoals : MonoBehaviour
 
     Camera m_AgentCam;
 
-    public List<GoalConfig> goalConfigList;
+    public List<GoalConfig> goalConfigList;//
     public GameObject pitPref;
     GameObject[] m_Objects;
     public int numberOfObstacles = 1;
