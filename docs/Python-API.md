@@ -111,8 +111,8 @@ A `BaseEnv` has the following methods:
   terminates the communication.
 - **Behavior Specs : `env.behavior_specs`** Returns a Mapping of
   `BehaviorName` to `BehaviorSpec` objects (read only).
-  A `BehaviorSpec` contains information such as the observation shapes, the
-  action type (multi-discrete or continuous) and the action shape. Note that
+  A `BehaviorSpec` contains the observation shapes and the
+  `ActionSpec` (which defines the action shape). Note that
   the `BehaviorSpec` for a specific group is fixed throughout the simulation.
   The number of entries in the Mapping can change over time in the simulation
   if new Agent behaviors are created in the simulation.
@@ -130,25 +130,20 @@ A `BaseEnv` has the following methods:
   number of agents is not guaranteed to remain constant during the simulation
   and it is not unusual to have either `DecisionSteps` or `TerminalSteps`
   contain no Agents at all.
-- **Set Actions :`env.set_actions(behavior_name: str, action: np.array)`** Sets
-  the actions for a whole agent group. `action` is a 2D `np.array` of
-  `dtype=np.int32` in the discrete action case and `dtype=np.float32` in the
-  continuous action case. The first dimension of `action` is the number of
-  agents that requested a decision since the last call to `env.step()`. The
-  second dimension is the number of discrete actions in multi-discrete action
-  type and the number of actions in continuous action type.
+- **Set Actions :`env.set_actions(behavior_name: str, action: ActionTuple)`** Sets
+  the actions for a whole agent group. `action` is an `ActionTuple`, which
+  is made up of a 2D `np.array` of `dtype=np.int32` for discrete actions, and
+  `dtype=np.float32` for continuous actions. The first dimension of `np.array`
+  in the tuple is the number of agents that requested a decision since the
+  last call to `env.step()`. The second dimension is the number of discrete or
+  continuous actions for the corresponding array.
 - **Set Action for Agent :
-  `env.set_action_for_agent(agent_group: str, agent_id: int, action: np.array)`**
+  `env.set_action_for_agent(agent_group: str, agent_id: int, action: ActionTuple)`**
   Sets the action for a specific Agent in an agent group. `agent_group` is the
   name of the group the Agent belongs to and `agent_id` is the integer
-  identifier of the Agent. Action is a 1D array of type `dtype=np.int32` and
-  size equal to the number of discrete actions in multi-discrete action type and
-  of type `dtype=np.float32` and size equal to the number of actions in
-  continuous action type.
-
+  identifier of the Agent. `action` is an `ActionTuple` as described above.
 **Note:** If no action is provided for an agent group between two calls to
-`env.step()` then the default action will be all zeros (in either discrete or
-continuous action space)
+`env.step()` then the default action will be all zeros.
 
 #### DecisionSteps and DecisionStep
 
@@ -165,8 +160,8 @@ A `DecisionSteps` has the following fields :
 - `agent_id` is an int vector of length batch size containing unique identifier
   for the corresponding Agent. This is used to track Agents across simulation
   steps.
-- `action_mask` is an optional list of two dimensional array of booleans. Only
-  available in multi-discrete action space type. Each array corresponds to an
+- `action_mask` is an optional list of two dimensional arrays of booleans which is only
+  available when using multi-discrete actions. Each array corresponds to an
   action branch. The first dimension of each array is the batch size and the
   second contains a mask for each action of the branch. If true, the action is
   not available for the agent during this simulation step.
@@ -185,8 +180,8 @@ A `DecisionStep` has the following fields:
 - `reward` is a float. Corresponds to the rewards collected by the agent since
   the last simulation step.
 - `agent_id` is an int and an unique identifier for the corresponding Agent.
-- `action_mask` is an optional list of one dimensional array of booleans. Only
-  available in multi-discrete action space type. Each array corresponds to an
+- `action_mask` is an optional list of one dimensional arrays of booleans which is only
+  available when using multi-discrete actions. Each array corresponds to an
   action branch. Each array contains a mask for each action of the branch. If
   true, the action is not available for the agent during this simulation step.
 
@@ -230,32 +225,26 @@ A `TerminalStep` has the following fields:
 
 #### BehaviorSpec
 
-An Agent behavior can either have discrete or continuous actions. To check which
-type it is, use `spec.is_action_discrete()` or `spec.is_action_continuous()` to
-see which one it is. If discrete, the action tensors are expected to be
-`np.int32`. If continuous, the actions are expected to be `np.float32`.
-
 A `BehaviorSpec` has the following fields :
 
 - `observation_shapes` is a List of Tuples of int : Each Tuple corresponds to an
   observation's dimensions (without the number of agents dimension). The shape
   tuples have the same ordering as the ordering of the DecisionSteps,
   DecisionStep, TerminalSteps and TerminalStep.
-- `action_type` is the type of data of the action. it can be discrete or
-  continuous. If discrete, the action tensors are expected to be `np.int32`. If
-  continuous, the actions are expected to be `np.float32`.
-- `action_size` is an `int` corresponding to the expected dimension of the
-  action array.
-  - In continuous action space it is the number of floats that constitute the
-    action.
-  - In discrete action space (same as multi-discrete) it corresponds to the
-    number of branches (the number of independent actions)
-- `discrete_action_branches` is a Tuple of int only for discrete action space.
-  Each int corresponds to the number of different options for each branch of the
-  action. For example : In a game direction input (no movement, left, right) and
+- `action_spec` is an `ActionSpec` namedtuple that defines the number and types
+  of actions for the Agent.
+
+An `ActionSpec` has the following fields and properties:
+- `continuous_size` is the number of floats that constitute the continuous actions.
+- `discrete_size` is the number of branches (the number of independent actions) that
+  constitute the multi-discrete actions.
+- `discrete_branches` is a Tuple of ints. Each int corresponds to the number of
+  different options for each branch of the action. For example:
+  In a game direction input (no movement, left, right) and
   jump input (no jump, jump) there will be two branches (direction and jump),
-  the first one with 3 options and the second with 2 options. (`action_size = 2`
+  the first one with 3 options and the second with 2 options. (`discrete_size = 2`
   and `discrete_action_branches = (3,2,)`)
+
 
 ### Communicating additional information with the Environment
 

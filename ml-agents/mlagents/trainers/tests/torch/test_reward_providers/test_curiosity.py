@@ -68,7 +68,7 @@ def test_reward_decreases(behavior_spec: BehaviorSpec, seed: int) -> None:
     buffer = create_agent_buffer(behavior_spec, 5)
     curiosity_rp.update(buffer)
     reward_old = curiosity_rp.evaluate(buffer)[0]
-    for _ in range(10):
+    for _ in range(20):
         curiosity_rp.update(buffer)
         reward_new = curiosity_rp.evaluate(buffer)[0]
     assert reward_new < reward_old
@@ -87,7 +87,7 @@ def test_continuous_action_prediction(behavior_spec: BehaviorSpec, seed: int) ->
     for _ in range(200):
         curiosity_rp.update(buffer)
     prediction = curiosity_rp._network.predict_action(buffer)[0]
-    target = torch.tensor(buffer["actions"][0])
+    target = torch.tensor(buffer["continuous_action"][0])
     error = torch.mean((prediction - target) ** 2).item()
     assert error < 0.001
 

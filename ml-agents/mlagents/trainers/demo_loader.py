@@ -41,11 +41,15 @@ def make_demo_buffer(
             [next_pair_info.agent_info], behavior_spec
         )
         previous_action = (
-            np.array(pair_infos[idx].action_info.vector_actions, dtype=np.float32) * 0
+            np.array(
+                pair_infos[idx].action_info.vector_actions_deprecated, dtype=np.float32
+            )
+            * 0
         )
         if idx > 0:
             previous_action = np.array(
-                pair_infos[idx - 1].action_info.vector_actions, dtype=np.float32
+                pair_infos[idx - 1].action_info.vector_actions_deprecated,
+                dtype=np.float32,
             )
 
         next_done = len(next_terminal_step) == 1
@@ -66,7 +70,28 @@ def make_demo_buffer(
         for i, obs in enumerate(split_obs.visual_observations):
             demo_raw_buffer["visual_obs%d" % i].append(obs)
         demo_raw_buffer["vector_obs"].append(split_obs.vector_observations)
-        demo_raw_buffer["actions"].append(current_pair_info.action_info.vector_actions)
+        if (
+            len(current_pair_info.action_info.continuous_actions) == 0
+            and len(current_pair_info.action_info.discrete_actions) == 0
+        ):
+            if behavior_spec.action_spec.continuous_size > 0:
+                demo_raw_buffer["continuous_action"].append(
+                    current_pair_info.action_info.vector_actions_deprecated
+                )
+            else:
+                demo_raw_buffer["discrete_action"].append(
+                    current_pair_info.action_info.vector_actions_deprecated
+                )
+        else:
+            if behavior_spec.action_spec.continuous_size > 0:
+                demo_raw_buffer["continuous_action"].append(
+                    current_pair_info.action_info.continuous_actions
+                )
+            if behavior_spec.action_spec.discrete_size > 0:
+                demo_raw_buffer["discrete_action"].append(
+                    current_pair_info.action_info.discrete_actions
+                )
+
         demo_raw_buffer["prev_action"].append(previous_action)
         if next_done:
             demo_raw_buffer.resequence_and_append(
@@ -95,7 +120,7 @@ def demo_to_buffer(
         # check action dimensions in demonstration match
         if behavior_spec.action_spec != expected_behavior_spec.action_spec:
             raise RuntimeError(
-                "The action spaces {} in demonstration do not match the policy's {}.".format(
+                "The actions {} in demonstration do not match the policy's {}.".format(
                     behavior_spec.action_spec, expected_behavior_spec.action_spec
                 )
             )

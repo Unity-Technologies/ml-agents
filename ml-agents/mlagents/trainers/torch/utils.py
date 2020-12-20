@@ -11,8 +11,6 @@ from mlagents.trainers.torch.encoders import (
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents_envs.base_env import ActionSpec
-from mlagents.trainers.torch.distributions import DistInstance, DiscreteDistInstance
 
 
 class ModelUtils:
@@ -24,29 +22,6 @@ class ModelUtils:
         EncoderType.NATURE_CNN: 36,
         EncoderType.RESNET: 15,
     }
-
-    class ActionFlattener:
-        def __init__(self, action_spec: ActionSpec):
-            self._specs = action_spec
-
-        @property
-        def flattened_size(self) -> int:
-            if self._specs.is_continuous():
-                return self._specs.continuous_size
-            else:
-                return sum(self._specs.discrete_branches)
-
-        def forward(self, action: torch.Tensor) -> torch.Tensor:
-            if self._specs.is_continuous():
-                return action
-            else:
-                return torch.cat(
-                    ModelUtils.actions_to_onehot(
-                        torch.as_tensor(action, dtype=torch.long),
-                        self._specs.discrete_branches,
-                    ),
-                    dim=1,
-                )
 
     @staticmethod
     def update_learning_rate(optim: torch.optim.Optimizer, lr: float) -> None:
@@ -266,29 +241,6 @@ class ModelUtils:
         for i in range(num_partitions):
             res += [data[(partitions == i).nonzero().squeeze(1)]]
         return res
-
-    @staticmethod
-    def get_probs_and_entropy(
-        action_list: List[torch.Tensor], dists: List[DistInstance]
-    ) -> Tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor]]:
-        log_probs_list = []
-        all_probs_list = []
-        entropies_list = []
-        for action, action_dist in zip(action_list, dists):
-            log_prob = action_dist.log_prob(action)
-            log_probs_list.append(log_prob)
-            entropies_list.append(action_dist.entropy())
-            if isinstance(action_dist, DiscreteDistInstance):
-                all_probs_list.append(action_dist.all_log_prob())
-        log_probs = torch.stack(log_probs_list, dim=-1)
-        entropies = torch.stack(entropies_list, dim=-1)
-        if not all_probs_list:
-            log_probs = log_probs.squeeze(-1)
-            entropies = entropies.squeeze(-1)
-            all_probs = None
-        else:
-            all_probs = torch.cat(all_probs_list, dim=-1)
-        return log_probs, entropies, all_probs
 
     @staticmethod
     def masked_mean(tensor: torch.Tensor, masks: torch.Tensor) -> torch.Tensor:

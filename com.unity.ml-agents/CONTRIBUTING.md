@@ -40,11 +40,11 @@ contains the following:
 
 ## Environments
 
-We are also actively open to adding community contributed environments as
-examples, as long as they are small, simple, demonstrate a unique feature of the
-platform, and provide a unique non-trivial challenge to modern machine learning
-algorithms. Feel free to submit these environments with a PR explaining the
-nature of the environment and task.
+We are currently not accepting environment contributions directly into ML-Agents.
+However, we believe community created enviornments have a lot of value to the
+community. If you have an interesting enviornment and are willing to share,
+feel free to showcase it and share any relevant files in the
+[ML-Agents forum](https://forum.unity.com/forums/ml-agents.453/).
 
 ## Continuous Integration (CI)
 

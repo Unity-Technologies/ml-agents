@@ -1,4 +1,3 @@
-import os
 import threading
 from mlagents.torch_utils import torch
 
@@ -19,14 +18,20 @@ class exporting_to_onnx:
     This implementation is thread safe.
     """
 
+    # local is_exporting flag for each thread
     _local_data = threading.local()
     _local_data._is_exporting = False
 
+    # global lock shared among all threads, to make sure only one thread is exporting at a time
+    _lock = threading.Lock()
+
     def __enter__(self):
+        self._lock.acquire()
         self._local_data._is_exporting = True
 
     def __exit__(self, *args):
         self._local_data._is_exporting = False
+        self._lock.release()
 
     @staticmethod
     def is_exporting():
@@ -66,17 +71,28 @@ class ModelSerializer:
             + [f"visual_observation_{i}" for i in range(self.policy.vis_obs_size)]
             + ["action_masks", "memories"]
         )
-
-        self.output_names = [
-            "action",
-            "version_number",
-            "memory_size",
-            "is_continuous_control",
-            "action_output_shape",
-        ]
-
         self.dynamic_axes = {name: {0: "batch"} for name in self.input_names}
-        self.dynamic_axes.update({"action": {0: "batch"}})
+
+        self.output_names = ["version_number", "memory_size"]
+        if self.policy.behavior_spec.action_spec.continuous_size > 0:
+            self.output_names += [
+                "continuous_actions",
+                "continuous_action_output_shape",
+            ]
+            self.dynamic_axes.update({"continuous_actions": {0: "batch"}})
+        if self.policy.behavior_spec.action_spec.discrete_size > 0:
+            self.output_names += ["discrete_actions", "discrete_action_output_shape"]
+            self.dynamic_axes.update({"discrete_actions": {0: "batch"}})
+        if (
+            self.policy.behavior_spec.action_spec.continuous_size == 0
+            or self.policy.behavior_spec.action_spec.discrete_size == 0
+        ):
+            self.output_names += [
+                "action",
+                "is_continuous_control",
+                "action_output_shape",
+            ]
+            self.dynamic_axes.update({"action": {0: "batch"}})
 
     def export_policy_model(self, output_filepath: str) -> None:
         """
@@ -84,9 +100,6 @@ class ModelSerializer:
 
         :param output_filepath: file path to output the model (without file suffix)
         """
-        if not os.path.exists(output_filepath):
-            os.makedirs(output_filepath)
-
         onnx_output_path = f"{output_filepath}.onnx"
         logger.info(f"Converting to {onnx_output_path}")
 

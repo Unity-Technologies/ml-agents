@@ -29,7 +29,7 @@ def test_gaussian_distribution(conditional_sigma, tanh_squash):
     optimizer = torch.optim.Adam(gauss_dist.parameters(), lr=3e-3)
 
     for _ in range(50):
-        dist_inst = gauss_dist(sample_embedding)[0]
+        dist_inst = gauss_dist(sample_embedding)
         if tanh_squash:
             assert isinstance(dist_inst, TanhGaussianDistInstance)
         else:

@@ -1,7 +1,10 @@
 from .communicator import Communicator
 from .environment import UnityEnvironment
 from mlagents_envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutputProto
-from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
+from mlagents_envs.communicator_objects.brain_parameters_pb2 import (
+    BrainParametersProto,
+    ActionSpecProto,
+)
 from mlagents_envs.communicator_objects.unity_rl_initialization_output_pb2 import (
     UnityRLInitializationOutputProto,
 )
@@ -13,7 +16,6 @@ from mlagents_envs.communicator_objects.observation_pb2 import (
     NONE as COMPRESSION_TYPE_NONE,
     PNG as COMPRESSION_TYPE_PNG,
 )
-from mlagents_envs.communicator_objects.space_type_pb2 import discrete, continuous
 
 
 class MockCommunicator(Communicator):
@@ -38,12 +40,14 @@ class MockCommunicator(Communicator):
         self.vec_obs_size = vec_obs_size
 
     def initialize(self, inputs: UnityInputProto) -> UnityOutputProto:
+        if self.is_discrete:
+            action_spec = ActionSpecProto(
+                num_discrete_actions=2, discrete_branch_sizes=[3, 2]
+            )
+        else:
+            action_spec = ActionSpecProto(num_continuous_actions=2)
         bp = BrainParametersProto(
-            vector_action_size=[2],
-            vector_action_descriptions=["", ""],
-            vector_action_space_type=discrete if self.is_discrete else continuous,
-            brain_name=self.brain_name,
-            is_training=True,
+            brain_name=self.brain_name, is_training=True, action_spec=action_spec
         )
         rl_init = UnityRLInitializationOutputProto(
             name="RealFakeAcademy",
