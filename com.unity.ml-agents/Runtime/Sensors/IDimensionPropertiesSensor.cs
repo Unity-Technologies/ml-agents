@@ -14,7 +14,7 @@ namespace Unity.MLAgents.Sensors
 
         /// <summary>
         /// No Property of the observation in that dimension. Observation can be processed with
-        /// Fully connected networks.
+        /// fully connected networks.
         /// </summary>
         None = 1,
 
