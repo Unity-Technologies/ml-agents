@@ -6,9 +6,12 @@ using Unity.MLAgents.Sensors;
 
 public class HallwayCollabAgent : HallwayAgent
 {
+    public GameObject symbolSGoal;
+    public GameObject symbolS;
     public HallwayCollabAgent teammate;
     public bool isSpotter = true;
     int m_Message = 0;
+
 
     [HideInInspector]
     public int selection = 0;
@@ -44,7 +47,7 @@ public class HallwayCollabAgent : HallwayAgent
         {
             var blockOffset = -9f;
             // Only the Spotter has the correct selection
-            selection = Random.Range(0, 2);
+            selection = Random.Range(0, 3);
             if (selection == 0)
             {
                 symbolO.transform.position =
@@ -53,8 +56,11 @@ public class HallwayCollabAgent : HallwayAgent
                 symbolX.transform.position =
                     new Vector3(0f, -1000f, blockOffset + Random.Range(-5f, 5f))
                     + ground.transform.position;
+                symbolS.transform.position =
+                    new Vector3(0f, -1000f, blockOffset + Random.Range(-5f, 5f))
+                    + ground.transform.position;
             }
-            else
+            else if (selection == 1)
             {
                 symbolO.transform.position =
                     new Vector3(0f, -1000f, blockOffset + Random.Range(-5f, 5f))
@@ -62,18 +68,59 @@ public class HallwayCollabAgent : HallwayAgent
                 symbolX.transform.position =
                     new Vector3(0f, 2f, blockOffset)
                     + ground.transform.position;
-            }
-
-            var goalPos = Random.Range(0, 2);
-            if (goalPos == 0)
-            {
-                symbolOGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
-                symbolXGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
+                symbolS.transform.position =
+                    new Vector3(0f, -1000f, blockOffset + Random.Range(-5f, 5f))
+                    + ground.transform.position;
             }
             else
             {
-                symbolXGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
+                symbolO.transform.position =
+                    new Vector3(0f, -1000f, blockOffset + Random.Range(-5f, 5f))
+                    + ground.transform.position;
+                symbolX.transform.position =
+                    new Vector3(0f, -1000f, blockOffset)
+                    + ground.transform.position;
+                symbolS.transform.position =
+                    new Vector3(0f, 2f, blockOffset)
+                    + ground.transform.position;
+            }
+
+            var goalPos = Random.Range(0, 7);
+            if (goalPos == 0)
+            {
+                symbolOGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
+                symbolXGoal.transform.position = new Vector3(0f, 0.5f, 22.29f) + area.transform.position;
+                symbolSGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
+            }
+            else if (goalPos == 1)
+            {
+                symbolOGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
+                symbolXGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
+                symbolSGoal.transform.position = new Vector3(0f, 0.5f, 22.29f) + area.transform.position;
+            }
+            else if (goalPos == 2)
+            {
                 symbolOGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
+                symbolXGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
+                symbolSGoal.transform.position = new Vector3(0f, 0.5f, 22.29f) + area.transform.position;
+            }
+            else if (goalPos == 3)
+            {
+                symbolOGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
+                symbolXGoal.transform.position = new Vector3(0f, 0.5f, 22.29f) + area.transform.position;
+                symbolSGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
+            }
+            else if (goalPos == 4)
+            {
+                symbolOGoal.transform.position = new Vector3(0f, 0.5f, 22.29f) + area.transform.position;
+                symbolXGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
+                symbolSGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
+            }
+            else
+            {
+                symbolOGoal.transform.position = new Vector3(0f, 0.5f, 22.29f) + area.transform.position;
+                symbolXGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
+                symbolSGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
             }
         }
     }
@@ -109,13 +156,14 @@ public class HallwayCollabAgent : HallwayAgent
 
     void OnCollisionEnter(Collision col)
     {
-        if (col.gameObject.CompareTag("symbol_O_Goal") || col.gameObject.CompareTag("symbol_X_Goal"))
+        if (col.gameObject.CompareTag("symbol_O_Goal") || col.gameObject.CompareTag("symbol_X_Goal") || col.gameObject.CompareTag("symbol_S_Goal"))
         {
             if (!isSpotter)
             {
                 // Check the ground truth
                 if ((teammate.selection == 0 && col.gameObject.CompareTag("symbol_O_Goal")) ||
-                    (teammate.selection == 1 && col.gameObject.CompareTag("symbol_X_Goal")))
+                    (teammate.selection == 1 && col.gameObject.CompareTag("symbol_X_Goal")) ||
+                    (teammate.selection == 2 && col.gameObject.CompareTag("symbol_S_Goal")))
                 {
                     SetReward(1f);
                     teammate.SetReward(1f);
