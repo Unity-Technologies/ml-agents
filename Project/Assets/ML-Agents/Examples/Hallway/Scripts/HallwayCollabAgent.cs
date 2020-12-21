@@ -130,7 +130,18 @@ public class HallwayCollabAgent : HallwayAgent
         {
             sensor.AddObservation(StepCount / (float)MaxStep);
         }
-        sensor.AddObservation(m_Message);
+        sensor.AddObservation(toOnehot(m_Message));
+    }
+
+    float[] toOnehot(int message)
+    {
+        float[] onehot = new float[3];
+        if (message < 0 || message >= 3)
+        {
+            return onehot;
+        }
+        onehot[message] = 1f;
+        return onehot;
     }
 
     public void tellAgent(int message)
