@@ -252,7 +252,7 @@ class CentralizedValueNetwork(ValueNetwork):
         if network_settings.memory is not None:
             encoding_size = network_settings.memory.memory_size // 2
         else:
-            encoding_size = network_settings.hidden_units
+            encoding_size = network_settings.hidden_units * num_agents
         self.value_heads = ValueHeads(stream_names, encoding_size, outputs_per_stream)
 
     def forward(
