@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Sensors
     public enum DimensionProperty
     {
         /// <summary>
-        ///     No properties specified.
+        /// No properties specified.
         /// </summary>
         Unspecified = 0,
 
