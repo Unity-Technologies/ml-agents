@@ -53,7 +53,7 @@ public class PushBlockEnvController : MonoBehaviour
 
     private int m_NumberOfRemainingBlocks;
 
-    void Awake()
+    void Start()
     {
         m_NumberOfRemainingBlocks = BlocksList.Count;
 
@@ -139,32 +139,25 @@ public class PushBlockEnvController : MonoBehaviour
     /// <summary>
     /// Called when the agent moves the block into the goal.
     /// </summary>
-    public void ScoredAGoal(float f)
+    public void ScoredAGoal(Collider col)
     {
         m_NumberOfRemainingBlocks--;
         bool done = m_NumberOfRemainingBlocks == 0;
 
-        if (m_NumberOfRemainingBlocks == 0) //done
-        {
-
-        }
-        else
-        {
-
-
-        }
         //Give Agent Rewards
         foreach (var item in AgentsList)
         {
             item.Agent.AddReward(5f);
-            item.Agent.EndEpisode();
         }
 
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
 
-        //Reset assets
-        ResetScene();
+        if (done)
+        {
+            //Reset assets
+            ResetScene();
+        }
     }
 
     Quaternion GetRandomRot()
@@ -177,6 +170,15 @@ public class PushBlockEnvController : MonoBehaviour
         //Random platform rot
         area.transform.rotation = GetRandomRot();
 
+        //End Episode
+        foreach (var item in AgentsList)
+        {
+            if (!item.Agent)
+            {
+                return;
+            }
+            item.Agent.EndEpisode();
+        }
         //Reset Agents
         foreach (var item in AgentsList)
         {

@@ -22,15 +22,15 @@ public class PushAgentCollab : Agent
 
     PushBlockSettings m_PushBlockSettings;
 
-    /// <summary>
-    /// The goal to push the block to.
-    /// </summary>
-    public GameObject goal;
-
-    /// <summary>
-    /// The block to be pushed to the goal.
-    /// </summary>
-    public GameObject block;
+    //    /// <summary>
+    //    /// The goal to push the block to.
+    //    /// </summary>
+    //    public GameObject goal;
+    //
+    //    /// <summary>
+    //    /// The block to be pushed to the goal.
+    //    /// </summary>
+    //    public GameObject block;
 
     /// <summary>
     /// Detects when the block touches the goal.
@@ -58,7 +58,7 @@ public class PushAgentCollab : Agent
 
     public override void Initialize()
     {
-        goalDetect = block.GetComponent<GoalDetect>();
+        //        goalDetect = block.GetComponent<GoalDetect>();
         //        goalDetect.agent = this;
 
         // Cache the agent rigidbody

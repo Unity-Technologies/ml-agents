@@ -512,7 +512,6 @@ GameObject:
   - component: {fileID: 261815314}
   - component: {fileID: 261815322}
   - component: {fileID: 261815321}
-  - component: {fileID: 261815320}
   - component: {fileID: 261815323}
   - component: {fileID: 261815319}
   - component: {fileID: 261815318}
@@ -639,31 +638,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &261815320
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 261815313}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dea8c4f2604b947e6b7b97750dde87ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 0
-  hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
-  ground: {fileID: 1500989827241484}
-  area: {fileID: 1125451440611342}
-  areaBounds:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0, y: 0, z: 0}
-  goal: {fileID: 1441514604925936}
-  block: {fileID: 1831339105991534}
-  goalDetect: {fileID: 0}
-  useVectorObs: 1
 --- !u!114 &261815321
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -686,7 +660,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 70db47ab276e44fe0beb677ff8d69382, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -726,11 +700,9 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
-  goal: {fileID: 1441514604925936}
-  block: {fileID: 0}
+  MaxStep: 5000
   goalDetect: {fileID: 0}
-  useVectorObs: 0
+  useVectorObs: 1
 --- !u!1001 &269719766
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1701,7 +1673,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!23 &1102546558
 MeshRenderer:
@@ -3018,30 +2990,30 @@ MonoBehaviour:
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
-  ground: {fileID: 0}
-  area: {fileID: 0}
+  ground: {fileID: 1500989827241484}
+  area: {fileID: 1125451440611342}
   AgentsList:
-  - Agent: {fileID: 0}
+  - Agent: {fileID: 1489717564321787}
     StartingPos: {x: 0, y: 0, z: 0}
     StartingRot: {x: 0, y: 0, z: 0, w: 0}
     Rb: {fileID: 0}
-  - Agent: {fileID: 0}
+  - Agent: {fileID: 261815323}
     StartingPos: {x: 0, y: 0, z: 0}
     StartingRot: {x: 0, y: 0, z: 0, w: 0}
     Rb: {fileID: 0}
-  BlocksLists:
-  - T: {fileID: 0}
+  BlocksList:
+  - T: {fileID: 4491956747235670}
     StartingPos: {x: 0, y: 0, z: 0}
     StartingRot: {x: 0, y: 0, z: 0, w: 0}
     Rb: {fileID: 0}
-  - T: {fileID: 0}
+  - T: {fileID: 1102546555}
     StartingPos: {x: 0, y: 0, z: 0}
     StartingRot: {x: 0, y: 0, z: 0, w: 0}
     Rb: {fileID: 0}
-  UseRandomAgentRotation: 0
-  UseRandomAgentPosition: 0
+  UseRandomAgentRotation: 1
+  UseRandomAgentPosition: 1
   UseRandomBlockRotation: 1
-  UseRandomBlockPosition: 0
+  UseRandomBlockPosition: 1
 --- !u!1 &1257456948449766
 GameObject:
   m_ObjectHideFlags: 0
@@ -3095,19 +3067,10 @@ MonoBehaviour:
   tagToDetect: block
   onTriggerEnterEvent:
     m_PersistentCalls:
-      m_Calls: []
-  onTriggerStayEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onTriggerExitEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onCollisionEnterEvent:
-    m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1125451440611343}
         m_MethodName: ScoredAGoal
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -3116,6 +3079,15 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
   onCollisionStayEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -3151,7 +3123,6 @@ GameObject:
   - component: {fileID: 4188186536186108}
   - component: {fileID: 54817352185271872}
   - component: {fileID: 114306174327856710}
-  - component: {fileID: 114505491593959730}
   - component: {fileID: 1489717564321787}
   - component: {fileID: 65880097045731894}
   - component: {fileID: 114807074011938370}
@@ -3180,11 +3151,9 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
-  goal: {fileID: 1441514604925936}
-  block: {fileID: 0}
+  MaxStep: 5000
   goalDetect: {fileID: 0}
-  useVectorObs: 0
+  useVectorObs: 1
 --- !u!1 &1500989827241484
 GameObject:
   m_ObjectHideFlags: 0
@@ -3941,7 +3910,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!54 &54817352185271872
 Rigidbody:
@@ -4045,7 +4014,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1441514604925936}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 2500, y: 300, z: 400}
@@ -4085,7 +4054,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 70db47ab276e44fe0beb677ff8d69382, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -4123,31 +4092,6 @@ MonoBehaviour:
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   m_StartVerticalOffset: 1.5
   m_EndVerticalOffset: 1.5
---- !u!114 &114505491593959730
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1489717564321786}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dea8c4f2604b947e6b7b97750dde87ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 0
-  hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
-  ground: {fileID: 1500989827241484}
-  area: {fileID: 1125451440611342}
-  areaBounds:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0, y: 0, z: 0}
-  goal: {fileID: 1441514604925936}
-  block: {fileID: 1831339105991534}
-  goalDetect: {fileID: 0}
-  useVectorObs: 1
 --- !u!114 &114807074011938370
 MonoBehaviour:
   m_ObjectHideFlags: 0
