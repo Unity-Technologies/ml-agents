@@ -448,7 +448,7 @@ class DimensionProperty(IntFlag):
     """
     NONE = 1
     """
-    Means it is possible to do a convolution in this dimension.
+    Means it is suitable to do a convolution in this dimension.
     """
     TRANSLATIONAL_EQUIVARIANCE = 2
     """

@@ -19,7 +19,7 @@ namespace Unity.MLAgents.Sensors
         None = 1,
 
         /// <summary>
-        /// Means it is possible to do a convolution in this dimension.
+        /// Means it is suitable to do a convolution in this dimension.
         /// </summary>
         TranslationalEquivariance = 2,
 
