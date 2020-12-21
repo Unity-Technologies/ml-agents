@@ -380,7 +380,6 @@ namespace Unity.MLAgents
             var dimensionPropertySensor = sensor as IDimensionPropertiesSensor;
             if (dimensionPropertySensor != null)
             {
-                Debug.Log(shape[0] + " " + shape[1]);
                 var dimensionProperties = dimensionPropertySensor.GetDimensionProperties();
                 int[] intDimensionProperties = new int[dimensionProperties.Length];
                 for (int i = 0; i < dimensionProperties.Length; i++)
