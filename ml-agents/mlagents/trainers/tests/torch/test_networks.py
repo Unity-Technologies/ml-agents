@@ -9,7 +9,6 @@ from mlagents.trainers.torch.networks import (
 )
 from mlagents.trainers.settings import NetworkSettings
 from mlagents_envs.base_env import ActionSpec
-from mlagents.trainers.tests.torch.test_encoders import compare_models
 
 
 def test_networkbody_vector():
@@ -24,7 +23,7 @@ def test_networkbody_vector():
     sample_act = 0.1 * torch.ones((1, 2))
 
     for _ in range(300):
-        encoded, _ = networkbody([sample_obs], [], sample_act)
+        encoded, _ = networkbody([sample_obs], sample_act)
         assert encoded.shape == (1, network_settings.hidden_units)
         # Try to force output to 1
         loss = torch.nn.functional.mse_loss(encoded, torch.ones(encoded.shape))
@@ -50,7 +49,7 @@ def test_networkbody_lstm():
     sample_obs = torch.ones((1, seq_len, obs_size))
 
     for _ in range(200):
-        encoded, _ = networkbody([sample_obs], [], memories=torch.ones(1, seq_len, 12))
+        encoded, _ = networkbody([sample_obs], memories=torch.ones(1, seq_len, 12))
         # Try to force output to 1
         loss = torch.nn.functional.mse_loss(encoded, torch.ones(encoded.shape))
         optimizer.zero_grad()
@@ -72,9 +71,10 @@ def test_networkbody_visual():
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-3)
     sample_obs = 0.1 * torch.ones((1, 84, 84, 3))
     sample_vec_obs = torch.ones((1, vec_obs_size))
+    obs = [sample_vec_obs] + [sample_obs]
 
     for _ in range(150):
-        encoded, _ = networkbody([sample_vec_obs], [sample_obs])
+        encoded, _ = networkbody(obs)
         assert encoded.shape == (1, network_settings.hidden_units)
         # Try to force output to 1
         loss = torch.nn.functional.mse_loss(encoded, torch.ones(encoded.shape))
@@ -101,7 +101,7 @@ def test_valuenetwork():
 
     for _ in range(50):
         sample_obs = torch.ones((1, obs_size))
-        values, _ = value_net([sample_obs], [])
+        values, _ = value_net([sample_obs])
         loss = 0
         for s_name in stream_names:
             assert values[s_name].shape == (1, num_outputs)
@@ -144,7 +144,7 @@ def test_actor_critic(ac_type, lstm):
         # memories isn't always set to None, the network should be able to
         # deal with that.
     # Test critic pass
-    value_out, memories_out = actor.critic_pass([sample_obs], [], memories=memories)
+    value_out, memories_out = actor.critic_pass([sample_obs], memories=memories)
     for stream in stream_names:
         if lstm:
             assert value_out[stream].shape == (network_settings.memory.sequence_length,)
@@ -154,7 +154,7 @@ def test_actor_critic(ac_type, lstm):
 
     # Test get action stats and_value
     action, log_probs, entropies, value_out, mem_out = actor.get_action_stats_and_value(
-        [sample_obs], [], memories=memories, masks=mask
+        [sample_obs], memories=memories, masks=mask
     )
     if lstm:
         assert action.continuous_tensor.shape == (64, 2)
@@ -175,12 +175,3 @@ def test_actor_critic(ac_type, lstm):
             assert value_out[stream].shape == (network_settings.memory.sequence_length,)
         else:
             assert value_out[stream].shape == (1,)
-
-    # Test normalization
-    actor.update_normalization(sample_obs)
-    if isinstance(actor, SeparateActorCritic):
-        for act_proc, crit_proc in zip(
-            actor.network_body.vector_processors,
-            actor.critic.network_body.vector_processors,
-        ):
-            assert compare_models(act_proc, crit_proc)

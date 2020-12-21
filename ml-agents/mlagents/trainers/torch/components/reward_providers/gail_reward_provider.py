@@ -1,4 +1,4 @@
-from typing import Optional, Dict, List, Tuple
+from typing import Optional, Dict, List
 import numpy as np
 from mlagents.torch_utils import torch, default_device
 
@@ -15,6 +15,7 @@ from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.torch.layers import linear_layer, Initialization
 from mlagents.trainers.settings import NetworkSettings, EncoderType
 from mlagents.trainers.demo_loader import demo_to_buffer
+from mlagents.trainers.trajectory import ObsUtil
 
 
 class GAILRewardProvider(BaseRewardProvider):
@@ -113,24 +114,15 @@ class DiscriminatorNetwork(torch.nn.Module):
         """
         return self._action_flattener.forward(AgentAction.from_dict(mini_batch))
 
-    def get_state_inputs(
-        self, mini_batch: AgentBuffer
-    ) -> Tuple[List[torch.Tensor], List[torch.Tensor]]:
+    def get_state_inputs(self, mini_batch: AgentBuffer) -> List[torch.Tensor]:
         """
         Creates the observation input.
         """
-        n_vis = len(self.encoder.visual_processors)
-        n_vec = len(self.encoder.vector_processors)
-        vec_inputs = (
-            [ModelUtils.list_to_tensor(mini_batch["vector_obs"], dtype=torch.float)]
-            if n_vec > 0
-            else []
-        )
-        vis_inputs = [
-            ModelUtils.list_to_tensor(mini_batch["visual_obs%d" % i], dtype=torch.float)
-            for i in range(n_vis)
-        ]
-        return vec_inputs, vis_inputs
+        n_obs = len(self.encoder.processors)
+        np_obs = ObsUtil.from_buffer(mini_batch, n_obs)
+        # Convert to tensors
+        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
+        return tensor_obs
 
     def compute_estimate(
         self, mini_batch: AgentBuffer, use_vail_noise: bool = False
@@ -142,14 +134,14 @@ class DiscriminatorNetwork(torch.nn.Module):
         :param use_vail_noise: Only when using VAIL : If true, will sample the code, if
         false, will return the mean of the code.
         """
-        vec_inputs, vis_inputs = self.get_state_inputs(mini_batch)
+        inputs = self.get_state_inputs(mini_batch)
         if self._settings.use_actions:
             actions = self.get_action_input(mini_batch)
             dones = torch.as_tensor(mini_batch["done"], dtype=torch.float).unsqueeze(1)
             action_inputs = torch.cat([actions, dones], dim=1)
-            hidden, _ = self.encoder(vec_inputs, vis_inputs, action_inputs)
+            hidden, _ = self.encoder(inputs, action_inputs)
         else:
-            hidden, _ = self.encoder(vec_inputs, vis_inputs)
+            hidden, _ = self.encoder(inputs)
         z_mu: Optional[torch.Tensor] = None
         if self._settings.use_vail:
             z_mu = self._z_mu_layer(hidden)
@@ -216,28 +208,14 @@ class DiscriminatorNetwork(torch.nn.Module):
         Gradient penalty from https://arxiv.org/pdf/1704.00028. Adds stability esp.
         for off-policy. Compute gradients w.r.t randomly interpolated input.
         """
-        policy_vec_inputs, policy_vis_inputs = self.get_state_inputs(policy_batch)
-        expert_vec_inputs, expert_vis_inputs = self.get_state_inputs(expert_batch)
-        interp_vec_inputs = []
-        for policy_vec_input, expert_vec_input in zip(
-            policy_vec_inputs, expert_vec_inputs
-        ):
-            obs_epsilon = torch.rand(policy_vec_input.shape)
-            interp_vec_input = (
-                obs_epsilon * policy_vec_input + (1 - obs_epsilon) * expert_vec_input
-            )
-            interp_vec_input.requires_grad = True  # For gradient calculation
-            interp_vec_inputs.append(interp_vec_input)
-        interp_vis_inputs = []
-        for policy_vis_input, expert_vis_input in zip(
-            policy_vis_inputs, expert_vis_inputs
-        ):
-            obs_epsilon = torch.rand(policy_vis_input.shape)
-            interp_vis_input = (
-                obs_epsilon * policy_vis_input + (1 - obs_epsilon) * expert_vis_input
-            )
-            interp_vis_input.requires_grad = True  # For gradient calculation
-            interp_vis_inputs.append(interp_vis_input)
+        policy_inputs = self.get_state_inputs(policy_batch)
+        expert_inputs = self.get_state_inputs(expert_batch)
+        interp_inputs = []
+        for policy_input, expert_input in zip(policy_inputs, expert_inputs):
+            obs_epsilon = torch.rand(policy_input.shape)
+            interp_input = obs_epsilon * policy_input + (1 - obs_epsilon) * expert_input
+            interp_input.requires_grad = True  # For gradient calculation
+            interp_inputs.append(interp_input)
         if self._settings.use_actions:
             policy_action = self.get_action_input(policy_batch)
             expert_action = self.get_action_input(expert_batch)
@@ -258,15 +236,11 @@ class DiscriminatorNetwork(torch.nn.Module):
                 dim=1,
             )
             action_inputs.requires_grad = True
-            hidden, _ = self.encoder(
-                interp_vec_inputs, interp_vis_inputs, action_inputs
-            )
-            encoder_input = tuple(
-                interp_vec_inputs + interp_vis_inputs + [action_inputs]
-            )
+            hidden, _ = self.encoder(interp_inputs, action_inputs)
+            encoder_input = tuple(interp_inputs + [action_inputs])
         else:
-            hidden, _ = self.encoder(interp_vec_inputs, interp_vis_inputs)
-            encoder_input = tuple(interp_vec_inputs + interp_vis_inputs)
+            hidden, _ = self.encoder(interp_inputs)
+            encoder_input = tuple(interp_inputs)
         if self._settings.use_vail:
             use_vail_noise = True
             z_mu = self._z_mu_layer(hidden)

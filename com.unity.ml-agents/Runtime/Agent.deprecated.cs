@@ -38,7 +38,7 @@ namespace Unity.MLAgents
         /// <returns>
         /// The last action that was decided by the Agent (or null if no decision has been made).
         /// </returns>
-        /// <seealso cref="OnActionReceived(Actuators.ActionBuffers)"/>
+        /// <seealso cref="OnActionReceived(ActionBuffers)"/>
         [Obsolete("GetAction has been deprecated, please use GetStoredActionBuffers instead.")]
         public float[] GetAction()
         {

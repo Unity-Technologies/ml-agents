@@ -16,18 +16,9 @@ from mlagents.trainers.policy import Policy
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
-from mlagents.trainers.trajectory import Trajectory, SplitObservations
+from mlagents.trainers.trajectory import Trajectory, ObsUtil
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
-from mlagents.trainers.settings import TrainerSettings, SACSettings, FrameworkType
-from mlagents.trainers.torch.components.reward_providers import BaseRewardProvider
-from mlagents import tf_utils
-
-if tf_utils.is_available():
-    from mlagents.trainers.policy.tf_policy import TFPolicy
-    from mlagents.trainers.sac.optimizer_tf import SACOptimizer
-else:
-    TFPolicy = None  # type: ignore
-    SACOptimizer = None  # type: ignore
+from mlagents.trainers.settings import TrainerSettings, SACSettings
 
 logger = get_logger(__name__)
 
@@ -142,23 +133,16 @@ class SACTrainer(RLTrainer):
 
         # Update the normalization
         if self.is_training:
-            self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
+            self.policy.update_normalization(agent_buffer_trajectory)
 
         # Evaluate all reward functions for reporting purposes
         self.collected_rewards["environment"][agent_id] += np.sum(
             agent_buffer_trajectory["environment_rewards"]
         )
         for name, reward_signal in self.optimizer.reward_signals.items():
-            # BaseRewardProvider is a PyTorch-based reward signal
-            if isinstance(reward_signal, BaseRewardProvider):
-                evaluate_result = (
-                    reward_signal.evaluate(agent_buffer_trajectory)
-                    * reward_signal.strength
-                )
-            else:  # reward_signal uses TensorFlow
-                evaluate_result = reward_signal.evaluate_batch(
-                    agent_buffer_trajectory
-                ).scaled_reward
+            evaluate_result = (
+                reward_signal.evaluate(agent_buffer_trajectory) * reward_signal.strength
+            )
 
             # Report the reward signals
             self.collected_rewards[name][agent_id] += np.sum(evaluate_result)
@@ -168,27 +152,17 @@ class SACTrainer(RLTrainer):
             agent_buffer_trajectory, trajectory.next_obs, trajectory.done_reached
         )
         for name, v in value_estimates.items():
-            # BaseRewardProvider is a PyTorch-based reward signal
-            if isinstance(self.optimizer.reward_signals[name], BaseRewardProvider):
-                self._stats_reporter.add_stat(
-                    f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value",
-                    np.mean(v),
-                )
-            else:  # TensorFlow reward signal
-                self._stats_reporter.add_stat(
-                    self.optimizer.reward_signals[name].value_name, np.mean(v)
-                )
+            self._stats_reporter.add_stat(
+                f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value",
+                np.mean(v),
+            )
 
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.
         # Set last element to duplicate obs and remove dones.
         if last_step.interrupted:
-            vec_vis_obs = SplitObservations.from_observations(last_step.obs)
-            for i, obs in enumerate(vec_vis_obs.visual_observations):
-                agent_buffer_trajectory["next_visual_obs%d" % i][-1] = obs
-            if vec_vis_obs.vector_observations.size > 1:
-                agent_buffer_trajectory["next_vector_in"][
-                    -1
-                ] = vec_vis_obs.vector_observations
+            last_step_obs = last_step.obs
+            for i, obs in enumerate(last_step_obs):
+                agent_buffer_trajectory[ObsUtil.get_name_at_next(i)][-1] = obs
             agent_buffer_trajectory["done"][-1] = False
 
         # Append to update buffer
@@ -236,30 +210,6 @@ class SACTrainer(RLTrainer):
                 )
             )
 
-    def create_tf_policy(
-        self,
-        parsed_behavior_id: BehaviorIdentifiers,
-        behavior_spec: BehaviorSpec,
-        create_graph: bool = False,
-    ) -> TFPolicy:
-        """
-        Creates a policy with a Tensorflow backend and SAC hyperparameters
-        :param parsed_behavior_id:
-        :param behavior_spec: specifications for policy construction
-        :param create_graph: whether to create the Tensorflow graph on construction
-        :return policy
-        """
-        policy = TFPolicy(
-            self.seed,
-            behavior_spec,
-            self.trainer_settings,
-            tanh_squash=True,
-            reparameterize=True,
-            create_tf_graph=create_graph,
-        )
-        self.maybe_load_replay_buffer()
-        return policy
-
     def create_torch_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TorchPolicy:
@@ -304,15 +254,9 @@ class SACTrainer(RLTrainer):
                 )
                 # Get rewards for each reward
                 for name, signal in self.optimizer.reward_signals.items():
-                    # BaseRewardProvider is a PyTorch-based reward signal
-                    if isinstance(signal, BaseRewardProvider):
-                        sampled_minibatch[f"{name}_rewards"] = (
-                            signal.evaluate(sampled_minibatch) * signal.strength
-                        )
-                    else:  # reward_signal is a TensorFlow-based RewardSignal class
-                        sampled_minibatch[f"{name}_rewards"] = signal.evaluate_batch(
-                            sampled_minibatch
-                        ).scaled_reward
+                    sampled_minibatch[f"{name}_rewards"] = (
+                        signal.evaluate(sampled_minibatch) * signal.strength
+                    )
 
                 update_stats = self.optimizer.update(sampled_minibatch, n_sequences)
                 for stat_name, value in update_stats.items():
@@ -357,22 +301,13 @@ class SACTrainer(RLTrainer):
         ) / self.reward_signal_update_steps > self.reward_signal_steps_per_update:
             # Get minibatches for reward signal update if needed
             reward_signal_minibatches = {}
-            for name, signal in self.optimizer.reward_signals.items():
+            for name in self.optimizer.reward_signals.keys():
                 logger.debug(f"Updating {name} at step {self.step}")
-                # BaseRewardProvider is a PyTorch-based reward signal
-                if not isinstance(signal, BaseRewardProvider):
-                    # Some signals don't need a minibatch to be sampled - so we don't!
-                    if signal.update_dict:
-                        reward_signal_minibatches[name] = buffer.sample_mini_batch(
-                            self.hyperparameters.batch_size,
-                            sequence_length=self.policy.sequence_length,
-                        )
-                else:  # TensorFlow reward signal
-                    if name != "extrinsic":
-                        reward_signal_minibatches[name] = buffer.sample_mini_batch(
-                            self.hyperparameters.batch_size,
-                            sequence_length=self.policy.sequence_length,
-                        )
+                if name != "extrinsic":
+                    reward_signal_minibatches[name] = buffer.sample_mini_batch(
+                        self.hyperparameters.batch_size,
+                        sequence_length=self.policy.sequence_length,
+                    )
             update_stats = self.optimizer.update_reward_signals(
                 reward_signal_minibatches, n_sequences
             )
@@ -384,14 +319,9 @@ class SACTrainer(RLTrainer):
                 self._stats_reporter.add_stat(stat, np.mean(stat_list))
 
     def create_sac_optimizer(self) -> TorchSACOptimizer:
-        if self.framework == FrameworkType.PYTORCH:
-            return TorchSACOptimizer(  # type: ignore
-                cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore
-            )  # type: ignore
-        else:
-            return SACOptimizer(  # type: ignore
-                cast(TFPolicy, self.policy), self.trainer_settings  # type: ignore
-            )  # type: ignore
+        return TorchSACOptimizer(  # type: ignore
+            cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore
+        )  # type: ignore
 
     def add_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy

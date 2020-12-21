@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
@@ -23,7 +24,7 @@ namespace Unity.MLAgents.Analytics
         /// <summary>
         /// Whether or not we've registered this particular event yet
         /// </summary>
-        static bool s_EventRegistered;
+        static bool s_EventRegistered = false;
 
         /// <summary>
         /// Hourly limit for this event name
@@ -83,7 +84,7 @@ namespace Unity.MLAgents.Analytics
         /// <param name="behaviorName">The BehaviorName of the Agent using the model</param>
         /// <param name="inferenceDevice">Whether inference is being performed on the CPU or GPU</param>
         /// <param name="sensors">List of ISensors for the Agent. Used to generate information about the observation space.</param>
-        /// <param name="actionSpec">ActionSpec for the Agent. Used to generate information about the actions.</param>
+        /// <param name="actionSpec">ActionSpec for the Agent. Used to generate information about the action space.</param>
         /// <returns></returns>
         public static void InferenceModelSet(
             NNModel nnModel,
