@@ -375,17 +375,18 @@ namespace Unity.MLAgents
                 {
                     observationProto.CompressedChannelMapping.AddRange(compressibleSensor.GetCompressedChannelMapping());
                 }
-                var dimensionPropertySensor = sensor as IDimensionPropertiesSensor;
-                if (dimensionPropertySensor != null)
+            }
+            // Add the dimension properties if any to the observationProto
+            var dimensionPropertySensor = sensor as IDimensionPropertiesSensor;
+            if (dimensionPropertySensor != null)
+            {
+                Debug.Log(shape[0] + " " + shape[1]);
+                var dimensionProperties = dimensionPropertySensor.GetDimensionProperties();
+                int[] intDimensionProperties = new int[dimensionProperties.Length];
+                for (int i = 0; i < dimensionProperties.Length; i++)
                 {
-                    var dimensionProperties = dimensionPropertySensor.GetDimensionProperties();
-                    int[] intDimensionProperties = new int[dimensionProperties.Length];
-                    for (int i = 0; i < dimensionProperties.Length; i++)
-                    {
-                        observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
-                    }
+                    observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
                 }
-
             }
             observationProto.Shape.AddRange(shape);
             return observationProto;
