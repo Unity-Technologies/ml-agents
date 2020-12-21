@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/agent_action.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n5mlagents_envs/communicator_objects/agent_action.proto\x12\x14\x63ommunicator_objects\"K\n\x10\x41gentActionProto\x12\x16\n\x0evector_actions\x18\x01 \x03(\x02\x12\r\n\x05value\x18\x04 \x01(\x02J\x04\x08\x02\x10\x03J\x04\x08\x03\x10\x04J\x04\x08\x05\x10\x06\x42%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n5mlagents_envs/communicator_objects/agent_action.proto\x12\x14\x63ommunicator_objects\"\x8c\x01\n\x10\x41gentActionProto\x12!\n\x19vector_actions_deprecated\x18\x01 \x03(\x02\x12\r\n\x05value\x18\x04 \x01(\x02\x12\x1a\n\x12\x63ontinuous_actions\x18\x06 \x03(\x02\x12\x18\n\x10\x64iscrete_actions\x18\x07 \x03(\x05J\x04\x08\x02\x10\x03J\x04\x08\x03\x10\x04J\x04\x08\x05\x10\x06\x42%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 
@@ -33,7 +33,7 @@ _AGENTACTIONPROTO = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='vector_actions', full_name='communicator_objects.AgentActionProto.vector_actions', index=0,
+      name='vector_actions_deprecated', full_name='communicator_objects.AgentActionProto.vector_actions_deprecated', index=0,
       number=1, type=2, cpp_type=6, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -43,6 +43,20 @@ _AGENTACTIONPROTO = _descriptor.Descriptor(
       name='value', full_name='communicator_objects.AgentActionProto.value', index=1,
       number=4, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='continuous_actions', full_name='communicator_objects.AgentActionProto.continuous_actions', index=2,
+      number=6, type=2, cpp_type=6, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='discrete_actions', full_name='communicator_objects.AgentActionProto.discrete_actions', index=3,
+      number=7, type=5, cpp_type=1, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
@@ -58,8 +72,8 @@ _AGENTACTIONPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=79,
-  serialized_end=154,
+  serialized_start=80,
+  serialized_end=220,
 )
 
 DESCRIPTOR.message_types_by_name['AgentActionProto'] = _AGENTACTIONPROTO

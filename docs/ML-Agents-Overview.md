@@ -372,7 +372,7 @@ your agent's behavior:
   below).
 - `rnd`: represents an intrinsic reward signal that encourages exploration
   in sparse-reward environments that is defined by the Curiosity module (see
-  below). (Not available for TensorFlow trainers)
+  below).
 
 ### Deep Reinforcement Learning
 
@@ -436,8 +436,6 @@ The loss (the squared difference between the predicted and actual encoded observ
 of the trained model is used as intrinsic reward. The more an Agent visits a state, the
 more accurate the predictions and the lower the rewards which encourages the Agent to
 explore new states with higher prediction errors.
-
-__Note:__ RND is not available for TensorFlow trainers (only PyTorch trainers)
 
 ### Imitation Learning
 
@@ -551,10 +549,10 @@ adversarial games with
 one in which opposing agents are equal in form, function and objective. Examples
 of symmetric games are our Tennis and Soccer example environments. In
 reinforcement learning, this means both agents have the same observation and
-action spaces and learn from the same reward function and so _they can share the
+actions and learn from the same reward function and so _they can share the
 same policy_. In asymmetric games, this is not the case. An example of an
 asymmetric games are Hide and Seek. Agents in these types of games do not always
-have the same observation or action spaces and so sharing policy networks is not
+have the same observation or actions and so sharing policy networks is not
 necessarily ideal.
 
 With self-play, an agent learns in adversarial games by competing against fixed,

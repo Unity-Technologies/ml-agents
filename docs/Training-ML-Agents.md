@@ -317,9 +317,6 @@ behaviors:
       save_steps: 50000
       swap_steps: 2000
       team_change: 100000
-
-    # use TensorFlow backend
-    framework: tensorflow
 ```
 
 Here is an equivalent file if we use an SAC trainer instead. Notice that the

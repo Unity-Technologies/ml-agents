@@ -87,7 +87,7 @@ def test_continuous_action_prediction(behavior_spec: BehaviorSpec, seed: int) ->
     for _ in range(200):
         curiosity_rp.update(buffer)
     prediction = curiosity_rp._network.predict_action(buffer)[0]
-    target = torch.tensor(buffer["actions"][0])
+    target = torch.tensor(buffer["continuous_action"][0])
     error = torch.mean((prediction - target) ** 2).item()
     assert error < 0.001
 
