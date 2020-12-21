@@ -79,7 +79,7 @@ public class GridAgentMultipleGoals : Agent
         {
             case k_NoAction:
                 // do nothing
-                break;
+                return;
             case k_Right:
                 targetPos = transform.position + new Vector3(1f, 0, 0f);
                 break;
