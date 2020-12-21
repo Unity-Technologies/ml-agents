@@ -16,6 +16,7 @@ from mlagents_envs.base_env import ActionSpec
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.settings import TrainerSettings, SACSettings
 from contextlib import ExitStack
+from mlagents.trainers.trajectory import ObsUtil
 
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
@@ -52,8 +53,7 @@ class TorchSACOptimizer(TorchOptimizer):
 
         def forward(
             self,
-            vec_inputs: List[torch.Tensor],
-            vis_inputs: List[torch.Tensor],
+            inputs: List[torch.Tensor],
             actions: Optional[torch.Tensor] = None,
             memories: Optional[torch.Tensor] = None,
             sequence_length: int = 1,
@@ -63,8 +63,7 @@ class TorchSACOptimizer(TorchOptimizer):
             """
             Performs a forward pass on the value network, which consists of a Q1 and Q2
             network. Optionally does not evaluate gradients for either the Q1, Q2, or both.
-            :param vec_inputs: List of vector observation tensors.
-            :param vis_input: List of visual observation tensors.
+            :param inputs: List of observation tensors.
             :param actions: For a continuous Q function (has actions), tensor of actions.
                 Otherwise, None.
             :param memories: Initial memories if using memory. Otherwise, None.
@@ -79,8 +78,7 @@ class TorchSACOptimizer(TorchOptimizer):
                 if not q1_grad:
                     stack.enter_context(torch.no_grad())
                 q1_out, _ = self.q1_network(
-                    vec_inputs,
-                    vis_inputs,
+                    inputs,
                     actions=actions,
                     memories=memories,
                     sequence_length=sequence_length,
@@ -89,8 +87,7 @@ class TorchSACOptimizer(TorchOptimizer):
                 if not q2_grad:
                     stack.enter_context(torch.no_grad())
                 q2_out, _ = self.q2_network(
-                    vec_inputs,
-                    vis_inputs,
+                    inputs,
                     actions=actions,
                     memories=memories,
                     sequence_length=sequence_length,
@@ -464,8 +461,15 @@ class TorchSACOptimizer(TorchOptimizer):
         for name in self.reward_signals:
             rewards[name] = ModelUtils.list_to_tensor(batch[f"{name}_rewards"])
 
-        vec_obs = [ModelUtils.list_to_tensor(batch["vector_obs"])]
-        next_vec_obs = [ModelUtils.list_to_tensor(batch["next_vector_in"])]
+        n_obs = len(self.policy.behavior_spec.observation_shapes)
+        current_obs = ObsUtil.from_buffer(batch, n_obs)
+        # Convert to tensors
+        current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
+
+        next_obs = ObsUtil.from_buffer_next(batch, n_obs)
+        # Convert to tensors
+        next_obs = [ModelUtils.list_to_tensor(obs) for obs in next_obs]
+
         act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
         actions = AgentAction.from_dict(batch)
 
@@ -493,20 +497,6 @@ class TorchSACOptimizer(TorchOptimizer):
             torch.zeros_like(next_memories) if next_memories is not None else None
         )
 
-        vis_obs: List[torch.Tensor] = []
-        next_vis_obs: List[torch.Tensor] = []
-        if self.policy.use_vis_obs:
-            vis_obs = []
-            for idx, _ in enumerate(
-                self.policy.actor_critic.network_body.visual_processors
-            ):
-                vis_ob = ModelUtils.list_to_tensor(batch["visual_obs%d" % idx])
-                vis_obs.append(vis_ob)
-                next_vis_ob = ModelUtils.list_to_tensor(
-                    batch["next_visual_obs%d" % idx]
-                )
-                next_vis_obs.append(next_vis_ob)
-
         # Copy normalizers from policy
         self.value_network.q1_network.network_body.copy_normalization(
             self.policy.actor_critic.network_body
@@ -524,27 +514,23 @@ class TorchSACOptimizer(TorchOptimizer):
             value_estimates,
             _,
         ) = self.policy.actor_critic.get_action_stats_and_value(
-            vec_obs,
-            vis_obs,
+            current_obs,
             masks=act_masks,
             memories=memories,
             sequence_length=self.policy.sequence_length,
         )
 
         cont_sampled_actions = sampled_actions.continuous_tensor
-
         cont_actions = actions.continuous_tensor
         q1p_out, q2p_out = self.value_network(
-            vec_obs,
-            vis_obs,
+            current_obs,
             cont_sampled_actions,
             memories=q_memories,
             sequence_length=self.policy.sequence_length,
             q2_grad=False,
         )
         q1_out, q2_out = self.value_network(
-            vec_obs,
-            vis_obs,
+            current_obs,
             cont_actions,
             memories=q_memories,
             sequence_length=self.policy.sequence_length,
@@ -559,8 +545,7 @@ class TorchSACOptimizer(TorchOptimizer):
 
         with torch.no_grad():
             target_values, _ = self.target_network(
-                next_vec_obs,
-                next_vis_obs,
+                next_obs,
                 memories=next_memories,
                 sequence_length=self.policy.sequence_length,
             )
