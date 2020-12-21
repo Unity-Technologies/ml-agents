@@ -71,13 +71,17 @@ setup(
         "cattrs>=1.0.0,<1.1.0",
         "attrs>=19.3.0",
         'pypiwin32==223;platform_system=="Windows"',
+        "importlib_metadata",  # TODO for python<3.8 only
     ],
     python_requires=">=3.6.1",
     entry_points={
         "console_scripts": [
             "mlagents-learn=mlagents.trainers.learn:main",
             "mlagents-run-experiment=mlagents.trainers.run_experiment:main",
-        ]
+        ],
+        "mlagents.stats_writer": [
+            "default=mlagents.plugins.stats_writer:get_default_stats_writers"
+        ],
     },
     cmdclass={"verify": VerifyVersionCommand},
 )

@@ -35,6 +35,7 @@ from mlagents_envs.timers import (
     add_metadata as add_timer_metadata,
 )
 from mlagents_envs import logging_util
+from mlagents.plugins.stats_writer import register_stats_writer_plugins
 
 logger = logging_util.get_logger(__name__)
 
@@ -91,14 +92,17 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             )
 
         # Configure Tensorboard Writers and StatsReporter
-        tb_writer = TensorboardWriter(
-            write_path, clear_past_data=not checkpoint_settings.resume
-        )
-        gauge_write = GaugeWriter()
-        console_writer = ConsoleWriter()
-        StatsReporter.add_writer(tb_writer)
-        StatsReporter.add_writer(gauge_write)
-        StatsReporter.add_writer(console_writer)
+        stats_writers = [
+            TensorboardWriter(
+                write_path, clear_past_data=not checkpoint_settings.resume
+            ),
+            GaugeWriter(),
+            ConsoleWriter(),
+        ]
+
+        stats_writers += register_stats_writer_plugins()
+        for sw in stats_writers:
+            StatsReporter.add_writer(sw)
 
         if env_settings.env_path is None:
             port = None
