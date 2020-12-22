@@ -8,8 +8,11 @@ public class PushBlockEnvController : MonoBehaviour
     public class AgentInfo
     {
         public PushAgentCollab Agent;
+        [HideInInspector]
         public Vector3 StartingPos;
+        [HideInInspector]
         public Quaternion StartingRot;
+        [HideInInspector]
         public Rigidbody Rb;
 
     }
@@ -18,8 +21,11 @@ public class PushBlockEnvController : MonoBehaviour
     public class BlockInfo
     {
         public Transform T;
+        [HideInInspector]
         public Vector3 StartingPos;
+        [HideInInspector]
         public Quaternion StartingRot;
+        [HideInInspector]
         public Rigidbody Rb;
     }
 
