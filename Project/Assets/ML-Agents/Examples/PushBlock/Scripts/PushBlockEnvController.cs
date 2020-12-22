@@ -29,9 +29,6 @@ public class PushBlockEnvController : MonoBehaviour
         public Rigidbody Rb;
     }
 
-
-    public float SmallBlockScoreValue = 2;
-    public float BigBlockScoreValue = 3;
     /// <summary>
     /// The area bounds.
     /// </summary>
