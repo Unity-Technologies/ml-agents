@@ -71,7 +71,7 @@ setup(
         "cattrs>=1.0.0,<1.1.0",
         "attrs>=19.3.0",
         'pypiwin32==223;platform_system=="Windows"',
-        "importlib_metadata; python_version < '3.8'",
+        "importlib_metadata; python_version<'3.8'",
     ],
     python_requires=">=3.6.1",
     entry_points={
