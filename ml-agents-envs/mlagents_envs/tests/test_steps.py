@@ -37,7 +37,7 @@ def test_decision_steps():
 def test_empty_decision_steps():
     specs = BehaviorSpec(
         sensor_specs=create_sensor_specs_with_shapes([(3, 2), (5,)]),
-        action_specs=ActionSpec.create_continuous(3),
+        action_spec=ActionSpec.create_continuous(3),
     )
     ds = DecisionSteps.empty(specs)
     assert len(ds.obs) == 2

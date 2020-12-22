@@ -75,11 +75,11 @@ def test_reset(mock_communicator, mock_launcher):
     assert len(spec.sensor_specs) == len(decision_steps.obs)
     assert len(spec.sensor_specs) == len(terminal_steps.obs)
     n_agents = len(decision_steps)
-    for spec, obs in zip(spec.sensor_specs, decision_steps.obs):
-        assert (n_agents,) + spec.shape == obs.shape
+    for sen_spec, obs in zip(spec.sensor_specs, decision_steps.obs):
+        assert (n_agents,) + sen_spec.shape == obs.shape
     n_agents = len(terminal_steps)
-    for spec, obs in zip(spec.sensor_specs.shapes, terminal_steps.obs):
-        assert (n_agents,) + spec.shape == obs.shape
+    for sen_spec, obs in zip(spec.sensor_specs, terminal_steps.obs):
+        assert (n_agents,) + sen_spec.shape == obs.shape
 
 
 @mock.patch("mlagents_envs.env_utils.launch_executable")
