@@ -5,7 +5,7 @@ from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
-from mlagents.trainers.trajectory import SplitObservations
+from mlagents.trainers.trajectory import ObsUtil
 from mlagents_envs.rpc_utils import behavior_spec_from_proto, steps_from_proto
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
@@ -66,19 +66,29 @@ def make_demo_buffer(
 
         demo_raw_buffer["done"].append(next_done)
         demo_raw_buffer["rewards"].append(next_reward)
-        split_obs = SplitObservations.from_observations(current_obs)
-        for i, obs in enumerate(split_obs.visual_observations):
-            demo_raw_buffer["visual_obs%d" % i].append(obs)
-        demo_raw_buffer["vector_obs"].append(split_obs.vector_observations)
-        # TODO: update the demonstraction files and read from the new proto format
-        if behavior_spec.action_spec.continuous_size > 0:
-            demo_raw_buffer["continuous_action"].append(
-                current_pair_info.action_info.vector_actions_deprecated
-            )
-        if behavior_spec.action_spec.discrete_size > 0:
-            demo_raw_buffer["discrete_action"].append(
-                current_pair_info.action_info.vector_actions_deprecated
-            )
+        for i, obs in enumerate(current_obs):
+            demo_raw_buffer[ObsUtil.get_name_at(i)].append(obs)
+        if (
+            len(current_pair_info.action_info.continuous_actions) == 0
+            and len(current_pair_info.action_info.discrete_actions) == 0
+        ):
+            if behavior_spec.action_spec.continuous_size > 0:
+                demo_raw_buffer["continuous_action"].append(
+                    current_pair_info.action_info.vector_actions_deprecated
+                )
+            else:
+                demo_raw_buffer["discrete_action"].append(
+                    current_pair_info.action_info.vector_actions_deprecated
+                )
+        else:
+            if behavior_spec.action_spec.continuous_size > 0:
+                demo_raw_buffer["continuous_action"].append(
+                    current_pair_info.action_info.continuous_actions
+                )
+            if behavior_spec.action_spec.discrete_size > 0:
+                demo_raw_buffer["discrete_action"].append(
+                    current_pair_info.action_info.discrete_actions
+                )
         demo_raw_buffer["prev_action"].append(previous_action)
         if next_done:
             demo_raw_buffer.resequence_and_append(

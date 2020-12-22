@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Unity.MLAgents.Inference.Utils;
-using UnityEngine;
 using Random = System.Random;
 
 namespace Unity.MLAgents
@@ -32,7 +31,7 @@ namespace Unity.MLAgents
             // Will be used to normalize intervalFuncs
             float sumIntervalSizes = 0;
             //The number of intervals
-            int numIntervals = (int)(intervals.Count / 2);
+            int numIntervals = (intervals.Count / 2);
             // List that will store interval lengths
             float[] intervalSizes = new float[numIntervals];
             // List that will store uniform distributions

@@ -117,12 +117,37 @@ class ModelUtils:
             )
 
     @staticmethod
+    def get_encoder_for_obs(
+        shape: Tuple[int, ...],
+        normalize: bool,
+        h_size: int,
+        vis_encode_type: EncoderType,
+    ) -> Tuple[nn.Module, int]:
+        """
+        Returns the encoder and the size of the appropriate encoder.
+        :param shape: Tuples that represent the observation dimension.
+        :param normalize: Normalize all vector inputs.
+        :param h_size: Number of hidden units per layer.
+        :param vis_encode_type: Type of visual encoder to use.
+        """
+        if len(shape) == 1:
+            # Case rank 1 tensor
+            return (VectorInput(shape[0], normalize), shape[0])
+        if len(shape) == 3:
+            ModelUtils._check_resolution_for_encoder(
+                shape[0], shape[1], vis_encode_type
+            )
+            visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
+            return (visual_encoder_class(shape[0], shape[1], shape[2], h_size), h_size)
+        raise UnityTrainerException(f"Unsupported shape of {shape} for observation")
+
+    @staticmethod
     def create_input_processors(
         sensor_spec: List[SensorSpec],
         h_size: int,
         vis_encode_type: EncoderType,
         normalize: bool = False,
-    ) -> Tuple[nn.ModuleList, nn.ModuleList, int]:
+    ) -> Tuple[nn.ModuleList, List[int]]:
         """
         Creates visual and vector encoders, along with their normalizers.
         :param sensor_spec: List of SensorSpec that represent the observation dimensions.
@@ -135,38 +160,16 @@ class ModelUtils:
         :param normalize: Normalize all vector inputs.
         :return: Tuple of visual encoders and vector encoders each as a list.
         """
-        visual_encoders: List[nn.Module] = []
-        vector_encoders: List[nn.Module] = []
+        encoders: List[nn.Module] = []
+        embedding_sizes: List[int] = []
+        for sen_spec in sensor_spec:
+            encoder, embedding_size = ModelUtils.get_encoder_for_obs(
+                sen_spec.shape, normalize, h_size, vis_encode_type
+            )
+            encoders.append(encoder)
+            embedding_sizes.append(embedding_size)
 
-        visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
-        vector_size = 0
-        visual_output_size = 0
-        for i, sen_spec in enumerate(sensor_spec):
-            if len(sen_spec.shape) == 3:
-                ModelUtils._check_resolution_for_encoder(
-                    sen_spec.shape[0], sen_spec.shape[1], vis_encode_type
-                )
-                visual_encoders.append(
-                    visual_encoder_class(
-                        sen_spec.shape[0], sen_spec.shape[1], sen_spec.shape[2], h_size
-                    )
-                )
-                visual_output_size += h_size
-            elif len(sen_spec.shape) == 1:
-                vector_size += sen_spec.shape[0]
-            else:
-                raise UnityTrainerException(
-                    f"Unsupported shape of {sen_spec.shape} for observation {i}"
-                )
-        if vector_size > 0:
-            vector_encoders.append(VectorInput(vector_size, normalize))
-        # Total output size for all inputs + CNNs
-        total_processed_size = vector_size + visual_output_size
-        return (
-            nn.ModuleList(visual_encoders),
-            nn.ModuleList(vector_encoders),
-            total_processed_size,
-        )
+        return (nn.ModuleList(encoders), embedding_sizes)
 
     @staticmethod
     def list_to_tensor(

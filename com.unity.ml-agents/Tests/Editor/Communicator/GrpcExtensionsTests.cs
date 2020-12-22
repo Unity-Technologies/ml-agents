@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using UnityEngine;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Actuators;
@@ -161,13 +160,13 @@ namespace Unity.MLAgents.Tests
             var sparseChannelSensor = new DummySparseChannelSensor();
             sparseChannelSensor.Mapping = null;
             Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), true);
-            sparseChannelSensor.Mapping = new int[] { 0, 0, 0 };
+            sparseChannelSensor.Mapping = new[] { 0, 0, 0 };
             Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), true);
-            sparseChannelSensor.Mapping = new int[] { 0, 1, 2, 3, 4 };
+            sparseChannelSensor.Mapping = new[] { 0, 1, 2, 3, 4 };
             Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), true);
-            sparseChannelSensor.Mapping = new int[] { 1, 2, 3, 4, -1, -1 };
+            sparseChannelSensor.Mapping = new[] { 1, 2, 3, 4, -1, -1 };
             Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), false);
-            sparseChannelSensor.Mapping = new int[] { 0, 0, 0, 1, 1, 1 };
+            sparseChannelSensor.Mapping = new[] { 0, 0, 0, 1, 1, 1 };
             Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), false);
         }
     }
