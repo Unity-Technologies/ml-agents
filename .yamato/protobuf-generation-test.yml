@@ -9,7 +9,7 @@ test_mac_protobuf_generation:
     CS_PROTO_PATH: "com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects"
   commands:
     - |
-      brew install nuget
+      brew install nuget@5.7
       nuget install Grpc.Tools -Version $GRPC_VERSION -OutputDirectory protobuf-definitions/
       python3 -m venv venv
       . venv/bin/activate
