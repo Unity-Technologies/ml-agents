@@ -10,7 +10,7 @@ public class AgentSoccerCollab : AgentSoccer
     int m_Previous = 0;
 
 
-    float[] m_Message = new float[10];
+    float[] m_Message = new float[2];
     public GameObject teammate_gb;
     AgentSoccerCollab teammate;
 
