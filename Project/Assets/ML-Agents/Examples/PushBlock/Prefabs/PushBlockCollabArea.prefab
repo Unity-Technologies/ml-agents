@@ -1606,8 +1606,8 @@ MonoBehaviour:
   RootBody: {fileID: 2416809913911815196}
   VirtualRoot: {fileID: 2416809913911815191}
   Settings:
-    UseModelSpaceTranslations: 1
-    UseModelSpaceRotations: 1
+    UseModelSpaceTranslations: 0
+    UseModelSpaceRotations: 0
     UseLocalSpaceTranslations: 0
     UseLocalSpaceRotations: 0
     UseModelSpaceLinearVelocity: 1
@@ -2963,8 +2963,8 @@ MonoBehaviour:
   RootBody: {fileID: 2398443709714007622}
   VirtualRoot: {fileID: 2418275959552442364}
   Settings:
-    UseModelSpaceTranslations: 1
-    UseModelSpaceRotations: 1
+    UseModelSpaceTranslations: 0
+    UseModelSpaceRotations: 0
     UseLocalSpaceTranslations: 0
     UseLocalSpaceRotations: 0
     UseModelSpaceLinearVelocity: 1
