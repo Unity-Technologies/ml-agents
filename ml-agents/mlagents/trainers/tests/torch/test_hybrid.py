@@ -80,7 +80,9 @@ def test_hybrid_sac(action_size):
     config = attr.evolve(
         SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=2000
     )
-    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
+    check_environment_trains(
+        env, {BRAIN_NAME: config}, success_threshold=0.9, training_seed=1336
+    )
 
 
 @pytest.mark.parametrize("num_visual", [1, 2])
