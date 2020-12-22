@@ -1,7 +1,6 @@
 using UnityEngine;
 using NUnit.Framework;
 using Unity.MLAgents.Extensions.Sensors;
-using UnityEditor;
 
 namespace Unity.MLAgents.Extensions.Tests.Sensors
 {
@@ -52,7 +51,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(0, poseExtractor.NumPoses);
 
             // Add an RB under the other GameObject. Constructor will find a rigid body, but not the root.
-            var otherRb = otherGameObj.AddComponent<Rigidbody>();
+            otherGameObj.AddComponent<Rigidbody>();
             poseExtractor = new RigidBodyPoseExtractor(rootRb, otherGameObj);
             Assert.AreEqual(0, poseExtractor.NumPoses);
         }
@@ -111,7 +110,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             var rb1 = rootObj.AddComponent<Rigidbody>();
 
             var go2 = new GameObject();
-            var rb2 = go2.AddComponent<Rigidbody>();
+            go2.AddComponent<Rigidbody>();
             go2.transform.SetParent(rootObj.transform);
 
             var joint = go2.AddComponent<ConfigurableJoint>();

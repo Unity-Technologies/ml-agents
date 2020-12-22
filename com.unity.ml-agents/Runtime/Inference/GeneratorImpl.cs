@@ -268,7 +268,7 @@ namespace Unity.MLAgents.Inference
             foreach (var infoSensorPair in infos)
             {
                 var info = infoSensorPair.agentInfo;
-                var pastAction = info.storedVectorActions.DiscreteActions;
+                var pastAction = info.storedActions.DiscreteActions;
                 if (!pastAction.IsEmpty())
                 {
                     for (var j = 0; j < actionSize; j++)

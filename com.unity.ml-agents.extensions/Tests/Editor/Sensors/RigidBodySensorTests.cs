@@ -12,15 +12,15 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         public static void CompareObservation(ISensor sensor, float[] expected)
         {
             string errorMessage;
-            bool isOK = SensorHelper.CompareObservation(sensor, expected, out errorMessage);
-            Assert.IsTrue(isOK, errorMessage);
+            bool isOk = SensorHelper.CompareObservation(sensor, expected, out errorMessage);
+            Assert.IsTrue(isOk, errorMessage);
         }
 
         public static void CompareObservation(ISensor sensor, float[,,] expected)
         {
             string errorMessage;
-            bool isOK = SensorHelper.CompareObservation(sensor, expected, out errorMessage);
-            Assert.IsTrue(isOK, errorMessage);
+            bool isOk = SensorHelper.CompareObservation(sensor, expected, out errorMessage);
+            Assert.IsTrue(isOk, errorMessage);
         }
     }
 
