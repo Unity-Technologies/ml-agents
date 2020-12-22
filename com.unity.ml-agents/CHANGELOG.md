@@ -20,6 +20,7 @@ and this project adheres to
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
+- Add analytics package depedency to the package manifest. (#4794)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 
