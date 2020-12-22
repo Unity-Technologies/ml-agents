@@ -11,6 +11,8 @@ and this project adheres to
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 - Add analytics package dependency to the package manifest. (#4794)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- Fixed the docker build process. (#4791)
 
 ## [1.7.0-preview] - 2020-12-21
 ### Major Changes
