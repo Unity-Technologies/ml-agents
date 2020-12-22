@@ -7,6 +7,7 @@ test_mac_protobuf_generation:
   variables:
     GRPC_VERSION: "1.14.1"
     CS_PROTO_PATH: "com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects"
+    HOMEBREW_NO_AUTO_UPDATE: "1"
   commands:
     - |
       brew install nuget
