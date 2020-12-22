@@ -9,7 +9,7 @@ from mlagents.trainers.torch.networks import (
 )
 from mlagents.trainers.settings import NetworkSettings
 from mlagents_envs.base_env import ActionSpec
-from mlagents.trainers.tests.dummy_config import create_sensor_spec_with_shapes
+from mlagents.trainers.tests.dummy_config import create_sensor_specs_with_shapes
 
 
 def test_networkbody_vector():
@@ -19,7 +19,9 @@ def test_networkbody_vector():
     obs_shapes = [(obs_size,)]
 
     networkbody = NetworkBody(
-        create_sensor_spec_with_shapes(obs_shapes), network_settings, encoded_act_size=2
+        create_sensor_specs_with_shapes(obs_shapes),
+        network_settings,
+        encoded_act_size=2,
     )
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-3)
     sample_obs = 0.1 * torch.ones((1, obs_size))
@@ -48,7 +50,7 @@ def test_networkbody_lstm():
     obs_shapes = [(obs_size,)]
 
     networkbody = NetworkBody(
-        create_sensor_spec_with_shapes(obs_shapes), network_settings
+        create_sensor_specs_with_shapes(obs_shapes), network_settings
     )
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-4)
     sample_obs = torch.ones((1, seq_len, obs_size))
@@ -73,7 +75,7 @@ def test_networkbody_visual():
     obs_shapes = [(vec_obs_size,), obs_size]
 
     networkbody = NetworkBody(
-        create_sensor_spec_with_shapes(obs_shapes), network_settings
+        create_sensor_specs_with_shapes(obs_shapes), network_settings
     )
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-3)
     sample_obs = 0.1 * torch.ones((1, 84, 84, 3))
@@ -98,7 +100,7 @@ def test_valuenetwork():
     obs_size = 4
     num_outputs = 2
     network_settings = NetworkSettings()
-    sen_spec = create_sensor_spec_with_shapes([(obs_size,)])
+    sen_spec = create_sensor_specs_with_shapes([(obs_size,)])
 
     stream_names = [f"stream_name{n}" for n in range(4)]
     value_net = ValueNetwork(
@@ -133,7 +135,7 @@ def test_actor_critic(ac_type, lstm):
     network_settings = NetworkSettings(
         memory=NetworkSettings.MemorySettings() if lstm else None, normalize=True
     )
-    sen_spec = create_sensor_spec_with_shapes([(obs_size,)])
+    sen_spec = create_sensor_specs_with_shapes([(obs_size,)])
     act_size = 2
     mask = torch.ones([1, act_size * 2])
     stream_names = [f"stream_name{n}" for n in range(4)]

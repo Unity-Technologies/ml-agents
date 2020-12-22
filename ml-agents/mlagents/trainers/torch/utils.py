@@ -143,14 +143,14 @@ class ModelUtils:
 
     @staticmethod
     def create_input_processors(
-        sensor_spec: List[SensorSpec],
+        sensor_specs: List[SensorSpec],
         h_size: int,
         vis_encode_type: EncoderType,
         normalize: bool = False,
     ) -> Tuple[nn.ModuleList, List[int]]:
         """
         Creates visual and vector encoders, along with their normalizers.
-        :param sensor_spec: List of SensorSpec that represent the observation dimensions.
+        :param sensor_specs: List of SensorSpec that represent the observation dimensions.
         :param action_size: Number of additional un-normalized inputs to each vector encoder. Used for
             conditioning network on other values (e.g. actions for a Q function)
         :param h_size: Number of hidden units per layer.
@@ -162,7 +162,7 @@ class ModelUtils:
         """
         encoders: List[nn.Module] = []
         embedding_sizes: List[int] = []
-        for sen_spec in sensor_spec:
+        for sen_spec in sensor_specs:
             encoder, embedding_size = ModelUtils.get_encoder_for_obs(
                 sen_spec.shape, normalize, h_size, vis_encode_type
             )

@@ -28,7 +28,7 @@ class TorchSACOptimizer(TorchOptimizer):
         def __init__(
             self,
             stream_names: List[str],
-            sensor_spec: List[SensorSpec],
+            sensor_specs: List[SensorSpec],
             network_settings: NetworkSettings,
             action_spec: ActionSpec,
         ):
@@ -38,14 +38,14 @@ class TorchSACOptimizer(TorchOptimizer):
 
             self.q1_network = ValueNetwork(
                 stream_names,
-                sensor_spec,
+                sensor_specs,
                 network_settings,
                 num_action_ins,
                 num_value_outs,
             )
             self.q2_network = ValueNetwork(
                 stream_names,
-                sensor_spec,
+                sensor_specs,
                 network_settings,
                 num_action_ins,
                 num_value_outs,
@@ -132,14 +132,14 @@ class TorchSACOptimizer(TorchOptimizer):
 
         self.value_network = TorchSACOptimizer.PolicyValueNetwork(
             self.stream_names,
-            self.policy.behavior_spec.sensor_spec,
+            self.policy.behavior_spec.sensor_specs,
             policy_network_settings,
             self._action_spec,
         )
 
         self.target_network = ValueNetwork(
             self.stream_names,
-            self.policy.behavior_spec.sensor_spec,
+            self.policy.behavior_spec.sensor_specs,
             policy_network_settings,
         )
         ModelUtils.soft_update(
@@ -461,7 +461,7 @@ class TorchSACOptimizer(TorchOptimizer):
         for name in self.reward_signals:
             rewards[name] = ModelUtils.list_to_tensor(batch[f"{name}_rewards"])
 
-        n_obs = len(self.policy.behavior_spec.sensor_spec)
+        n_obs = len(self.policy.behavior_spec.sensor_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
         # Convert to tensors
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]

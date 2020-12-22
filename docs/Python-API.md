@@ -227,7 +227,7 @@ A `TerminalStep` has the following fields:
 
 A `BehaviorSpec` has the following fields :
 
-- `sensor_spec` is a List of `SensorSpec` objects : Each `SensorSpec`
+- `sensor_specs` is a List of `SensorSpec` objects : Each `SensorSpec`
   corresponds to an observation's properties: `shape` is a tuple of ints that
   corresponds to the shape of the observation (without the number of agents dimension).
   `dimension_property` is a tuple of flags containing extra information about how the

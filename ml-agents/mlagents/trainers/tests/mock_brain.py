@@ -12,12 +12,12 @@ from mlagents_envs.base_env import (
     ActionSpec,
     ActionTuple,
 )
-from mlagents.trainers.tests.dummy_config import create_sensor_spec_with_shapes
+from mlagents.trainers.tests.dummy_config import create_sensor_specs_with_shapes
 
 
 def create_mock_steps(
     num_agents: int,
-    sensor_spec: List[SensorSpec],
+    sensor_specs: List[SensorSpec],
     action_spec: ActionSpec,
     done: bool = False,
 ) -> Tuple[DecisionSteps, TerminalSteps]:
@@ -26,12 +26,12 @@ def create_mock_steps(
     Imitates constant vector/visual observations, rewards, dones, and agents.
 
     :int num_agents: Number of "agents" to imitate.
-    :List sensor_spec: A List of the observation specs in your steps
+    :List sensor_specs: A List of the observation specs in your steps
     :int action_spec: ActionSpec for the agent
     :bool done: Whether all the agents in the batch are done
     """
     obs_list = []
-    for sen_spec in sensor_spec:
+    for sen_spec in sensor_specs:
         obs_list.append(np.ones((num_agents,) + sen_spec.shape, dtype=np.float32))
     action_mask = None
     if action_spec.is_discrete():
@@ -43,7 +43,7 @@ def create_mock_steps(
     reward = np.array(num_agents * [1.0], dtype=np.float32)
     interrupted = np.array(num_agents * [False], dtype=np.bool)
     agent_id = np.arange(num_agents, dtype=np.int32)
-    behavior_spec = BehaviorSpec(sensor_spec, action_spec)
+    behavior_spec = BehaviorSpec(sensor_specs, action_spec)
     if done:
         return (
             DecisionSteps.empty(behavior_spec),
@@ -61,14 +61,14 @@ def create_steps_from_behavior_spec(
 ) -> Tuple[DecisionSteps, TerminalSteps]:
     return create_mock_steps(
         num_agents=num_agents,
-        sensor_spec=behavior_spec.sensor_spec,
+        sensor_specs=behavior_spec.sensor_specs,
         action_spec=behavior_spec.action_spec,
     )
 
 
 def make_fake_trajectory(
     length: int,
-    sensor_spec: List[SensorSpec],
+    sensor_specs: List[SensorSpec],
     action_spec: ActionSpec,
     max_step_complete: bool = False,
     memory_size: int = 10,
@@ -82,7 +82,7 @@ def make_fake_trajectory(
     action_size = action_spec.discrete_size + action_spec.continuous_size
     for _i in range(length - 1):
         obs = []
-        for sen_spec in sensor_spec:
+        for sen_spec in sensor_specs:
             obs.append(np.ones(sen_spec.shape, dtype=np.float32))
         reward = 1.0
         done = False
@@ -124,7 +124,7 @@ def make_fake_trajectory(
         )
         steps_list.append(experience)
     obs = []
-    for sen_spec in sensor_spec:
+    for sen_spec in sensor_specs:
         obs.append(np.ones(sen_spec.shape, dtype=np.float32))
     last_experience = AgentExperience(
         obs=obs,
@@ -151,7 +151,7 @@ def simulate_rollout(
 ) -> AgentBuffer:
     trajectory = make_fake_trajectory(
         length,
-        behavior_spec.sensor_spec,
+        behavior_spec.sensor_specs,
         action_spec=behavior_spec.action_spec,
         memory_size=memory_size,
     )
@@ -172,7 +172,7 @@ def setup_test_behavior_specs(
     else:
         action_spec = ActionSpec.create_continuous(vector_action_space)
     observation_shapes = [(84, 84, 3)] * int(use_visual) + [(vector_obs_space,)]
-    sen_spec = create_sensor_spec_with_shapes(observation_shapes)
+    sen_spec = create_sensor_specs_with_shapes(observation_shapes)
     behavior_spec = BehaviorSpec(sen_spec, action_spec)
     return behavior_spec
 
