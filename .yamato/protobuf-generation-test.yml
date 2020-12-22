@@ -2,14 +2,13 @@ test_mac_protobuf_generation:
   name: Protobuf Generation Tests
   agent:
     type: Unity::VM::osx
-    image: ml-agents/ml-agents-bokken-mac:0.1.4-492264
+    image: package-ci/mac:stable
     flavor: b1.small
   variables:
     GRPC_VERSION: "1.14.1"
     CS_PROTO_PATH: "com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects"
   commands:
     - |
-      brew install nuget
       nuget install Grpc.Tools -Version $GRPC_VERSION -OutputDirectory protobuf-definitions/
       python3 -m venv venv
       . venv/bin/activate
