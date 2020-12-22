@@ -75,7 +75,9 @@ public class SoccerFieldArea : MonoBehaviour
 
     public void ResetBall()
     {
-        ball.transform.position = ballStartingPos;
+        var randomX = Random.Range(-2.0f, 2.0f);
+        var randomZ = Random.Range(-2.0f, 2.0f);
+        ball.transform.position = ballStartingPos + new Vector3(randomX, 0f, randomZ);
         ballRb.velocity = Vector3.zero;
         ballRb.angularVelocity = Vector3.zero;
 
