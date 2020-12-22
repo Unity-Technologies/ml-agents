@@ -1,6 +1,4 @@
-using UnityEngine;
 using System.Collections.Generic;
-using System;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 

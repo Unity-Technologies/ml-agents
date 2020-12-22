@@ -7,6 +7,7 @@ from mlagents_envs.exception import UnityException
 
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
+from mlagents.trainers.buffer import AgentBuffer
 
 
 class UnityPolicyException(UnityException):
@@ -140,13 +141,9 @@ class Policy:
             has_nan = np.isnan(d)
             if has_nan:
                 raise RuntimeError("Continuous NaN action detected.")
-            d = np.sum(action.discrete)
-            has_nan = np.isnan(d)
-            if has_nan:
-                raise RuntimeError("Discrete NaN action detected.")
 
     @abstractmethod
-    def update_normalization(self, vector_obs: np.ndarray) -> None:
+    def update_normalization(self, buffer: AgentBuffer) -> None:
         pass
 
     @abstractmethod

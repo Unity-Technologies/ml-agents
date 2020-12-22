@@ -14,7 +14,7 @@ def test_min_visual_size():
 
     for encoder_type in EncoderType:
         good_size = ModelUtils.MIN_RESOLUTION_FOR_ENCODER[encoder_type]
-        vis_input = torch.ones((1, 3, good_size, good_size))
+        vis_input = torch.ones((1, good_size, good_size, 3))
         ModelUtils._check_resolution_for_encoder(good_size, good_size, encoder_type)
         enc_func = ModelUtils.get_encoder_for_type(encoder_type)
         enc = enc_func(good_size, good_size, 3, 1)
@@ -23,7 +23,7 @@ def test_min_visual_size():
         # Anything under the min size should raise an exception. If not, decrease the min size!
         with pytest.raises(Exception):
             bad_size = ModelUtils.MIN_RESOLUTION_FOR_ENCODER[encoder_type] - 1
-            vis_input = torch.ones((1, 3, bad_size, bad_size))
+            vis_input = torch.ones((1, bad_size, bad_size, 3))
 
             with pytest.raises(UnityTrainerException):
                 # Make sure we'd hit a friendly error during model setup time.
@@ -48,12 +48,18 @@ def test_create_inputs(encoder_type, normalize, num_vector, num_visual):
     for _ in range(num_visual):
         obs_shapes.append(vis_obs_shape)
     h_size = 128
-    vis_enc, vec_enc, total_output = ModelUtils.create_input_processors(
+    encoders, embedding_sizes = ModelUtils.create_input_processors(
         obs_shapes, h_size, encoder_type, normalize
     )
-    vec_enc = list(vec_enc)
-    vis_enc = list(vis_enc)
-    assert len(vec_enc) == (1 if num_vector >= 1 else 0)
+    total_output = sum(embedding_sizes)
+    vec_enc = []
+    vis_enc = []
+    for i, enc in enumerate(encoders):
+        if len(obs_shapes[i]) == 1:
+            vec_enc.append(enc)
+        else:
+            vis_enc.append(enc)
+    assert len(vec_enc) == num_vector
     assert len(vis_enc) == num_visual
     assert total_output == int(num_visual * h_size + vec_obs_shape[0] * num_vector)
     if num_vector > 0:

@@ -24,7 +24,7 @@ public class WalkerAgent : Agent
     const float m_maxWalkingSpeed = 10; //The max walking speed
 
     //Should the agent sample a new goal velocity each episode?
-    //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin() 
+    //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin()
     //If false, the goal velocity will be walkingSpeed
     public bool randomizeWalkSpeedEachEpisode;
 
@@ -146,7 +146,7 @@ public class WalkerAgent : Agent
         //ragdoll's avg vel
         var avgVel = GetAvgVelocity();
 
-        //current ragdoll velocity. normalized 
+        //current ragdoll velocity. normalized
         sensor.AddObservation(Vector3.Distance(velGoal, avgVel));
         //avg body vel relative to cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
@@ -264,14 +264,14 @@ public class WalkerAgent : Agent
         Vector3 avgVel = Vector3.zero;
 
         //ALL RBS
-        int numOfRB = 0;
+        int numOfRb = 0;
         foreach (var item in m_JdController.bodyPartsList)
         {
-            numOfRB++;
+            numOfRb++;
             velSum += item.rb.velocity;
         }
 
-        avgVel = velSum / numOfRB;
+        avgVel = velSum / numOfRb;
         return avgVel;
     }
 

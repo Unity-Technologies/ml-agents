@@ -79,6 +79,6 @@ def test_visual_encoder(vis_class, image_size):
     num_outputs = 128
     enc = vis_class(image_size[0], image_size[1], image_size[2], num_outputs)
     # Note: NCHW not NHWC
-    sample_input = torch.ones((1, image_size[2], image_size[0], image_size[1]))
+    sample_input = torch.ones((1, image_size[0], image_size[1], image_size[2]))
     encoding = enc(sample_input)
     assert encoding.shape == (1, num_outputs)

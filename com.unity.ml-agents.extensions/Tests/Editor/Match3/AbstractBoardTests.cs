@@ -60,13 +60,13 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         public override int GetCellType(int row, int col)
         {
             var character = m_Board[m_Board.Length - 1 - row][col];
-            return (int)(character - '0');
+            return (character - '0');
         }
 
         public override int GetSpecialType(int row, int col)
         {
             var character = m_Special[m_Board.Length - 1 - row][col];
-            return (int)(character - '0');
+            return (character - '0');
         }
 
     }
