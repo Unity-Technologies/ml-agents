@@ -2,4 +2,4 @@
 __version__ = "0.23.0"
 
 # Git tag that will be checked to determine whether to trigger upload to pypi
-__release_tag__ = "release_11"
+__release_tag__ = "release_12"
