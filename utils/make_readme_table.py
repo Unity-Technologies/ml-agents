@@ -81,7 +81,9 @@ versions = [
 ]
 
 MAX_DAYS = 150  # do not print releases older than this many days
-sorted_versions = sorted(versions, key=lambda x: x.loose_version, reverse=True)
+sorted_versions = sorted(
+    versions, key=lambda x: (x.loose_version, x.csharp_version), reverse=True
+)
 
 print(table_line("master (unstable)", "master", "--"))
 highlight = True  # whether to bold the line or not
