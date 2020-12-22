@@ -149,15 +149,19 @@ public class PushBlockEnvController : MonoBehaviour
     /// </summary>
     public void ScoredAGoal(Collider col, float score)
     {
-        print(col.name);
+        //Decrement the counter
         m_NumberOfRemainingBlocks--;
+
+        //Are we done?
         bool done = m_NumberOfRemainingBlocks == 0;
 
+        //Disable the block
         col.gameObject.SetActive(false);
+
         //Give Agent Rewards
         foreach (var item in AgentsList)
         {
-            item.Agent.AddReward(5f);
+            item.Agent.AddReward(score);
         }
 
         // Swap ground material for a bit to indicate we scored.
