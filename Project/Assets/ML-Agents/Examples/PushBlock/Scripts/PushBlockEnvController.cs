@@ -23,6 +23,9 @@ public class PushBlockEnvController : MonoBehaviour
         public Rigidbody Rb;
     }
 
+
+    public float SmallBlockScoreValue = 2;
+    public float BigBlockScoreValue = 3;
     /// <summary>
     /// The area bounds.
     /// </summary>
@@ -55,7 +58,6 @@ public class PushBlockEnvController : MonoBehaviour
 
     void Start()
     {
-        m_NumberOfRemainingBlocks = BlocksList.Count;
 
         // Get the ground's bounds
         areaBounds = ground.GetComponent<Collider>().bounds;
@@ -139,11 +141,13 @@ public class PushBlockEnvController : MonoBehaviour
     /// <summary>
     /// Called when the agent moves the block into the goal.
     /// </summary>
-    public void ScoredAGoal(Collider col)
+    public void ScoredAGoal(Collider col, float score)
     {
+        print(col.name);
         m_NumberOfRemainingBlocks--;
         bool done = m_NumberOfRemainingBlocks == 0;
 
+        col.gameObject.SetActive(false);
         //Give Agent Rewards
         foreach (var item in AgentsList)
         {
@@ -168,7 +172,9 @@ public class PushBlockEnvController : MonoBehaviour
     void ResetScene()
     {
         //Random platform rot
-        area.transform.rotation = GetRandomRot();
+        var rotation = Random.Range(0, 4);
+        var rotationAngle = rotation * 90f;
+        area.transform.Rotate(new Vector3(0f, rotationAngle, 0f));
 
         //End Episode
         foreach (var item in AgentsList)
@@ -199,6 +205,10 @@ public class PushBlockEnvController : MonoBehaviour
             item.T.transform.SetPositionAndRotation(pos, rot);
             item.Rb.velocity = Vector3.zero;
             item.Rb.angularVelocity = Vector3.zero;
+            item.T.gameObject.SetActive(true);
         }
+
+        //Reset counter
+        m_NumberOfRemainingBlocks = BlocksList.Count;
     }
 }

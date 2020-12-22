@@ -581,9 +581,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: OffsetRayPerceptionSensor
   m_DetectableTags:
-  - block
-  - goal
   - wall
+  - goal
+  - blockLarge
+  - blockSmall
   m_RaysPerDirection: 3
   m_MaxRayDegrees: 90
   m_SphereCastRadius: 0.5
@@ -610,9 +611,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
-  - block
-  - goal
   - wall
+  - goal
+  - blockLarge
+  - blockSmall
   m_RaysPerDirection: 3
   m_MaxRayDegrees: 90
   m_SphereCastRadius: 0.5
@@ -1637,10 +1639,10 @@ GameObject:
   - component: {fileID: 1102546559}
   - component: {fileID: 1102546558}
   - component: {fileID: 1102546557}
-  - component: {fileID: 1102546561}
+  - component: {fileID: 1102546556}
   m_Layer: 0
-  m_Name: Block_50
-  m_TagString: block
+  m_Name: Block_Small
+  m_TagString: blockSmall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1659,6 +1661,40 @@ Transform:
   m_Father: {fileID: 4006991767121726}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1102546556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1102546554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dcea692df32b46b4a884cfcc150aef7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tagToDetect: goal
+  GoalValue: 2
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1125451440611343}
+        m_MethodName: ScoredAGoal
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!54 &1102546557
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1667,7 +1703,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1102546554}
   serializedVersion: 2
-  m_Mass: 50
+  m_Mass: 25
   m_Drag: 0.5
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -1733,41 +1769,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1102546554}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1102546561
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1102546554}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c8f113a8b8d94967b1b1782c549be81, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tagToDetect: block
-  spawnRadius: 0
-  respawnIfTouched: 0
-  respawnIfFallsOffPlatform: 1
-  fallDistance: 5
-  onTriggerEnterEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onTriggerStayEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onTriggerExitEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onCollisionEnterEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onCollisionStayEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onCollisionExitEvent:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1001 &1132899702
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2225,7 +2226,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec51f47c5ed0478080c449c74fd9c154, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravityMultiplier: 2.5
+  gravityMultiplier: 1.5
   fixedDeltaTime: 0.02
   maximumDeltaTime: 0.33333334
   solverIterations: 6
@@ -2274,7 +2275,7 @@ GameObject:
   - component: {fileID: 1611021063}
   - component: {fileID: 1611021062}
   m_Layer: 0
-  m_Name: AgentCube_Blue
+  m_Name: AgentCube_Purple
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2316,7 +2317,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
+  - {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2987,6 +2988,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bb2bb36bb51d452ab58d30a868dfab3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SmallBlockScoreValue: 2
+  BigBlockScoreValue: 3
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -3044,7 +3047,6 @@ GameObject:
   - component: {fileID: 33257577519850892}
   - component: {fileID: 23824899963671282}
   - component: {fileID: 65797107524335970}
-  - component: {fileID: 1441514604925937}
   m_Layer: 0
   m_Name: Goal
   m_TagString: goal
@@ -3052,48 +3054,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1441514604925937
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1441514604925936}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tagToDetect: block
-  onTriggerEnterEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1125451440611343}
-        m_MethodName: ScoredAGoal
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  onTriggerStayEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onTriggerExitEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onCollisionEnterEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onCollisionStayEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onCollisionExitEvent:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &1461266933788148
 GameObject:
   m_ObjectHideFlags: 0
@@ -3221,13 +3181,48 @@ GameObject:
   - component: {fileID: 65500236550660044}
   - component: {fileID: 23965302191626844}
   - component: {fileID: 54485095312058970}
+  - component: {fileID: 1831339105991535}
   m_Layer: 0
-  m_Name: Block_100
-  m_TagString: block
+  m_Name: Block_Large
+  m_TagString: blockLarge
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1831339105991535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831339105991534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dcea692df32b46b4a884cfcc150aef7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tagToDetect: goal
+  GoalValue: 3
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1125451440611343}
+        m_MethodName: ScoredAGoal
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1948184009346040
 GameObject:
   m_ObjectHideFlags: 0
@@ -3904,7 +3899,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1831339105991534}
   serializedVersion: 2
-  m_Mass: 100
+  m_Mass: 50
   m_Drag: 0.5
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -4077,9 +4072,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: OffsetRayPerceptionSensor
   m_DetectableTags:
-  - block
-  - goal
   - wall
+  - goal
+  - blockLarge
+  - blockSmall
   m_RaysPerDirection: 3
   m_MaxRayDegrees: 90
   m_SphereCastRadius: 0.5
@@ -4106,9 +4102,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
-  - block
-  - goal
   - wall
+  - goal
+  - blockLarge
+  - blockSmall
   m_RaysPerDirection: 3
   m_MaxRayDegrees: 90
   m_SphereCastRadius: 0.5

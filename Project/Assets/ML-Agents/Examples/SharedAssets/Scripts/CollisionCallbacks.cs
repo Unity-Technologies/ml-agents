@@ -124,20 +124,20 @@ namespace Unity.MLAgentsExamples
             }
         }
 
-        //        private void OnTriggerStay(Collider col)
-        //        {
-        //            if (col.CompareTag(tagToDetect))
-        //            {
-        //                onTriggerStayEvent.Invoke(col);
-        //            }
-        //        }
-        //
-        //        private void OnTriggerExit(Collider col)
-        //        {
-        //            if (col.CompareTag(tagToDetect))
-        //            {
-        //                onTriggerExitEvent.Invoke(col);
-        //            }
-        //        }
+        private void OnTriggerStay(Collider col)
+        {
+            if (col.CompareTag(tagToDetect))
+            {
+                onTriggerStayEvent.Invoke(col);
+            }
+        }
+
+        private void OnTriggerExit(Collider col)
+        {
+            if (col.CompareTag(tagToDetect))
+            {
+                onTriggerExitEvent.Invoke(col);
+            }
+        }
     }
 }
