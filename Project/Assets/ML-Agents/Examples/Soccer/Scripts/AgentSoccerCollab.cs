@@ -24,8 +24,14 @@ public class AgentSoccerCollab : AgentSoccer
 
     {
         base.OnActionReceived(actionBuffers);
-        //if (team == Team.Blue && tester == 1)
+        //if (team == Team.Blue && tester == 0)
         //{
+        //    Debug.Log("cont");
+        //    Debug.Log(actionBuffers.ContinuousActions[2]);
+        //}
+        //else if (team == Team.Blue && tester == 1)
+        //{
+        //    Debug.Log("mess");
         //    Debug.Log(actionBuffers.DiscreteActions[0]);
         //}
         teammate.tellAgent(actionBuffers.DiscreteActions[0]);
@@ -40,6 +46,10 @@ public class AgentSoccerCollab : AgentSoccer
     public void tellAgent(int message)
     {
         m_Message[m_Previous] = 0f;
+        //if (team == Team.Purple)
+        //{
+        //    message = Random.Range(0, 2);
+        //}
         m_Message[message] = 1f;
         m_Previous = message;
     }
