@@ -137,8 +137,8 @@ class DecisionSteps(Mapping):
         :param spec: The BehaviorSpec for the DecisionSteps
         """
         obs: List[np.ndarray] = []
-        for shape in spec.observation_spec.shapes:
-            obs += [np.zeros((0,) + shape, dtype=np.float32)]
+        for obs_spec in spec.observation_spec:
+            obs += [np.zeros((0,) + obs_spec.shape, dtype=np.float32)]
         return DecisionSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
@@ -235,8 +235,8 @@ class TerminalSteps(Mapping):
         :param spec: The BehaviorSpec for the TerminalSteps
         """
         obs: List[np.ndarray] = []
-        for shape in spec.observation_spec.shapes:
-            obs += [np.zeros((0,) + shape, dtype=np.float32)]
+        for obs_spec in spec.observation_spec:
+            obs += [np.zeros((0,) + obs_spec.shape, dtype=np.float32)]
         return TerminalSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
@@ -460,37 +460,29 @@ class DimensionProperty(IntFlag):
 
 class ObservationSpec(NamedTuple):
     """
-    A NamedTuple containing information about the observation of Agents under the
-    same behavior.
-    - observation_shapes is a List of Tuples of int : Each Tuple corresponds
-    to an observation's dimensions. The shape tuples have the same ordering as
-    the ordering of the DecisionSteps and TerminalSteps.
-    - dimension_properties is a List of Tuples of DimensionProperties flag. Each Tuple
-    corresponds to an observation's properties. The tuples have the same ordering as
-    the ordering of the DecisionSteps and TerminalSteps.
+    A NamedTuple containing information about the observation of Agents.
+    - shape is a Tuple of int : It corresponds to the shape of
+    an observation's dimensions.
+    - dimension_property is a Tuple of DimensionProperties flag, one flag for each
+    dimension.
     """
 
-    shapes: List[Tuple[int, ...]]
-    dimension_properties: List[Tuple[DimensionProperty, ...]]
-
-    @staticmethod
-    def create_simple(shapes: List[Tuple[int, ...]]) -> "ObservationSpec":
-        dim_prop: List[Tuple[DimensionProperty, ...]] = []
-        for shape in shapes:
-            dim_prop += [(DimensionProperty.UNSPECIFIED,) * len(shape)]
-        return ObservationSpec(shapes, dim_prop)
+    shape: Tuple[int, ...]
+    dimension_property: Tuple[DimensionProperty, ...]
 
 
 class BehaviorSpec(NamedTuple):
     """
     A NamedTuple containing information about the observation and action
     spaces for a group of Agents under the same behavior.
-    - observation_spec is an ObservationSpec NamedTuple containing information about
-    the information of the Agent's observations such as their shapes.
-    - action_spec is an ActionSpec NamedTuple
+    - observation_spec is a List of ObservationSpec NamedTuple containing
+    information about the information of the Agent's observations such as their shapes.
+    The order of the OservationSpec is the same as the order of the observations of an
+    agent.
+    - action_spec is an ActionSpec NamedTuple.
     """
 
-    observation_spec: ObservationSpec
+    observation_spec: List[ObservationSpec]
     action_spec: ActionSpec
 
 

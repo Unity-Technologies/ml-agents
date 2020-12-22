@@ -77,7 +77,7 @@ class CuriosityNetwork(torch.nn.Module):
             memory=None,
         )
         self._state_encoder = NetworkBody(
-            specs.observation_spec.shapes, state_encoder_settings
+            specs.observation_spec, state_encoder_settings
         )
 
         self._action_flattener = ActionFlattener(self._action_spec)

@@ -37,8 +37,11 @@ def behavior_spec_from_proto(
         tuple(DimensionProperty(dim) for dim in obs.dimension_properties)
         for obs in agent_info.observations
     ]
-    obs_spec = ObservationSpec(observation_shape, dim_props)
-    # proto from comminicator < v1.3 does not set action spec, use deprecated fields instead
+    obs_spec = [
+        ObservationSpec(obs_shape, dim_p)
+        for obs_shape, dim_p in zip(observation_shape, dim_props)
+    ]
+    # proto from communicator < v1.3 does not set action spec, use deprecated fields instead
     if (
         brain_param_proto.action_spec.num_continuous_actions == 0
         and brain_param_proto.action_spec.num_discrete_actions == 0
@@ -287,10 +290,10 @@ def steps_from_proto(
     ]
     decision_obs_list: List[np.ndarray] = []
     terminal_obs_list: List[np.ndarray] = []
-    for obs_index, obs_shape in enumerate(behavior_spec.observation_spec.shapes):
-        is_visual = len(obs_shape) == 3
+    for obs_index, obs_spec in enumerate(behavior_spec.observation_spec):
+        is_visual = len(obs_spec.shape) == 3
         if is_visual:
-            obs_shape = cast(Tuple[int, int, int], obs_shape)
+            obs_shape = cast(Tuple[int, int, int], obs_spec.shape)
             decision_obs_list.append(
                 _process_visual_observation(
                     obs_index, obs_shape, decision_agent_info_list
@@ -304,12 +307,12 @@ def steps_from_proto(
         else:
             decision_obs_list.append(
                 _process_vector_observation(
-                    obs_index, obs_shape, decision_agent_info_list
+                    obs_index, obs_spec.shape, decision_agent_info_list
                 )
             )
             terminal_obs_list.append(
                 _process_vector_observation(
-                    obs_index, obs_shape, terminal_agent_info_list
+                    obs_index, obs_spec.shape, terminal_agent_info_list
                 )
             )
     decision_rewards = np.array(

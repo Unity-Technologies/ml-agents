@@ -16,6 +16,7 @@ from mlagents_envs.tests.test_rpc_utils import proto_from_steps_and_action
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
+from mlagents.trainers.tests.dummy_config import create_obs_spec_with_shapes
 
 OBS_SIZE = 1
 VIS_OBS_SIZE = (20, 20, 3)
@@ -87,7 +88,7 @@ class SimpleEnvironment(BaseEnv):
             obs_shape.append((self.vec_obs_size,))
         for _ in range(self.num_visual):
             obs_shape.append(self.vis_obs_size)
-        obs_spec = ObservationSpec.create_simple(obs_shape)
+        obs_spec = create_obs_spec_with_shapes(obs_shape)
         return obs_spec
 
     def _make_obs(self, value: float) -> List[np.ndarray]:

@@ -34,10 +34,10 @@ def test_run_environment(env_name):
         decision_steps, terminal_steps = env.get_steps(group_name)
 
         # Examine the number of observations per Agent
-        print("Number of observations : ", len(group_spec.observation_spec.shapes))
+        print("Number of observations : ", len(group_spec.observation_spec))
 
         # Is there a visual observation ?
-        vis_obs = any(len(shape) == 3 for shape in group_spec.observation_spec.shapes)
+        vis_obs = any(len(o_spec.shape) == 3 for o_spec in group_spec.observation_spec)
         print("Is there a visual observation ?", vis_obs)
 
         # Examine the state space for the first observation for the first agent

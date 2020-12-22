@@ -11,6 +11,7 @@ from mlagents.trainers.torch.encoders import (
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents_envs.base_env import ObservationSpec
 
 
 class ModelUtils:
@@ -117,16 +118,16 @@ class ModelUtils:
 
     @staticmethod
     def create_input_processors(
-        observation_shapes: List[Tuple[int, ...]],
+        observation_spec: List[ObservationSpec],
         h_size: int,
         vis_encode_type: EncoderType,
         normalize: bool = False,
     ) -> Tuple[nn.ModuleList, nn.ModuleList, int]:
         """
         Creates visual and vector encoders, along with their normalizers.
-        :param observation_shapes: List of Tuples that represent the action dimensions.
+        :param observation_spec: List of ObservationSpecs that represent the observation dimensions.
         :param action_size: Number of additional un-normalized inputs to each vector encoder. Used for
-            conditioining network on other values (e.g. actions for a Q function)
+            conditioning network on other values (e.g. actions for a Q function)
         :param h_size: Number of hidden units per layer.
         :param vis_encode_type: Type of visual encoder to use.
         :param unnormalized_inputs: Vector inputs that should not be normalized, and added to the vector
@@ -140,22 +141,22 @@ class ModelUtils:
         visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
         vector_size = 0
         visual_output_size = 0
-        for i, dimension in enumerate(observation_shapes):
-            if len(dimension) == 3:
+        for i, obs_spec in enumerate(observation_spec):
+            if len(obs_spec.shape) == 3:
                 ModelUtils._check_resolution_for_encoder(
-                    dimension[0], dimension[1], vis_encode_type
+                    obs_spec.shape[0], obs_spec.shape[1], vis_encode_type
                 )
                 visual_encoders.append(
                     visual_encoder_class(
-                        dimension[0], dimension[1], dimension[2], h_size
+                        obs_spec.shape[0], obs_spec.shape[1], obs_spec.shape[2], h_size
                     )
                 )
                 visual_output_size += h_size
-            elif len(dimension) == 1:
-                vector_size += dimension[0]
+            elif len(obs_spec.shape) == 1:
+                vector_size += obs_spec.shape[0]
             else:
                 raise UnityTrainerException(
-                    f"Unsupported shape of {dimension} for observation {i}"
+                    f"Unsupported shape of {obs_spec.shape} for observation {i}"
                 )
         if vector_size > 0:
             vector_encoders.append(VectorInput(vector_size, normalize))

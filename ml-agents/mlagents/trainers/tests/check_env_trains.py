@@ -51,13 +51,14 @@ def check_environment_trains(
     env_parameter_manager=None,
     success_threshold=0.9,
     env_manager=None,
+    training_seed=None,
 ):
     if env_parameter_manager is None:
         env_parameter_manager = EnvironmentParameterManager()
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
         run_id = "id"
-        seed = 1337
+        seed = 1337 if training_seed is None else training_seed
         StatsReporter.writers.clear()  # Clear StatsReporters so we don't write to file
         debug_writer = DebugWriter()
         StatsReporter.add_writer(debug_writer)

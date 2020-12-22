@@ -43,7 +43,7 @@ def test_hybrid_visual_ppo(num_visual):
         PPO_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4
     )
     config = attr.evolve(PPO_TORCH_CONFIG, hyperparameters=new_hyperparams)
-    check_environment_trains(env, {BRAIN_NAME: config})
+    check_environment_trains(env, {BRAIN_NAME: config}, training_seed=1336)
 
 
 def test_hybrid_recurrent_ppo():

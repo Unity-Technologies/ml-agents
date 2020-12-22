@@ -34,7 +34,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// Sensor interface for sensors with special dimension properties.
     /// </summary>
-    public interface IDimensionPropertiesSensor : ISensor
+    public interface IDimensionPropertiesSensor
     {
         /// <summary>
         /// Returns the array containing the properties of each dimensions of the

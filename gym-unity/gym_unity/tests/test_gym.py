@@ -6,12 +6,12 @@ from gym import spaces
 from gym_unity.envs import UnityToGymWrapper
 from mlagents_envs.base_env import (
     BehaviorSpec,
-    ObservationSpec,
     ActionSpec,
     DecisionSteps,
     TerminalSteps,
     BehaviorMapping,
 )
+from mlagents.trainers.tests.dummy_config import create_obs_spec_with_shapes
 
 
 def test_gym_wrapper():
@@ -227,7 +227,7 @@ def create_mock_group_spec(
     obs_shapes = [(vector_observation_space_size,)]
     for _ in range(number_visual_observations):
         obs_shapes += [(8, 8, 3)]
-    obs_spec = ObservationSpec.create_simple(obs_shapes)
+    obs_spec = create_obs_spec_with_shapes(obs_shapes)
     return BehaviorSpec(obs_spec, action_spec)
 
 
