@@ -1522,6 +1522,7 @@ MonoBehaviour:
   - goal
   - blockLarge
   - blockSmall
+  - agent
   m_RaysPerDirection: 3
   m_MaxRayDegrees: 90
   m_SphereCastRadius: 0.5
@@ -1552,6 +1553,7 @@ MonoBehaviour:
   - goal
   - blockLarge
   - blockSmall
+  - agent
   m_RaysPerDirection: 3
   m_MaxRayDegrees: 90
   m_SphereCastRadius: 0.5
@@ -2879,6 +2881,7 @@ MonoBehaviour:
   - goal
   - blockLarge
   - blockSmall
+  - agent
   m_RaysPerDirection: 3
   m_MaxRayDegrees: 90
   m_SphereCastRadius: 0.5
@@ -2909,6 +2912,7 @@ MonoBehaviour:
   - goal
   - blockLarge
   - blockSmall
+  - agent
   m_RaysPerDirection: 3
   m_MaxRayDegrees: 90
   m_SphereCastRadius: 0.5
