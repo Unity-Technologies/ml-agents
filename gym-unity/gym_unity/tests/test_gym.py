@@ -251,7 +251,7 @@ def create_mock_vector_steps(specs, num_agents=1, number_visual_observations=0):
 
 def setup_mock_unityenvironment(mock_env, mock_spec, mock_decision, mock_termination):
     """
-    Takes a mock Unitsensor_specst and adds the appropriate properties, defined by the mock
+    Takes a mock UnityEnvironment and adds the appropriate properties, defined by the mock
     GroupSpec and BatchedStepResult.
 
     :Mock mock_env: A mock UnityEnvironment, usually empty.
