@@ -137,7 +137,7 @@ class DecisionSteps(Mapping):
         :param spec: The BehaviorSpec for the DecisionSteps
         """
         obs: List[np.ndarray] = []
-        for obs_spec in spec.observation_spec:
+        for obs_spec in spec.sensor_spec:
             obs += [np.zeros((0,) + obs_spec.shape, dtype=np.float32)]
         return DecisionSteps(
             obs=obs,
@@ -235,7 +235,7 @@ class TerminalSteps(Mapping):
         :param spec: The BehaviorSpec for the TerminalSteps
         """
         obs: List[np.ndarray] = []
-        for obs_spec in spec.observation_spec:
+        for obs_spec in spec.sensor_spec:
             obs += [np.zeros((0,) + obs_spec.shape, dtype=np.float32)]
         return TerminalSteps(
             obs=obs,
@@ -458,7 +458,7 @@ class DimensionProperty(IntFlag):
     VARIABLE_SIZE = 4
 
 
-class ObservationSpec(NamedTuple):
+class SensorSpec(NamedTuple):
     """
     A NamedTuple containing information about the observation of Agents.
     - shape is a Tuple of int : It corresponds to the shape of
@@ -475,14 +475,14 @@ class BehaviorSpec(NamedTuple):
     """
     A NamedTuple containing information about the observation and action
     spaces for a group of Agents under the same behavior.
-    - observation_spec is a List of ObservationSpec NamedTuple containing
+    - sensor_spec is a List of SensorSpec NamedTuple containing
     information about the information of the Agent's observations such as their shapes.
-    The order of the OservationSpec is the same as the order of the observations of an
+    The order of the SensorSpec is the same as the order of the observations of an
     agent.
     - action_spec is an ActionSpec NamedTuple.
     """
 
-    observation_spec: List[ObservationSpec]
+    sensor_spec: List[SensorSpec]
     action_spec: ActionSpec
 
 

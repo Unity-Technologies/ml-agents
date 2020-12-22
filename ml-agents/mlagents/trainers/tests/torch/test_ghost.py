@@ -134,7 +134,7 @@ def test_process_trajectory(dummy_config):
     trajectory = make_fake_trajectory(
         length=time_horizon,
         max_step_complete=True,
-        observation_spec=create_obs_spec_with_shapes([(1,)]),
+        sensor_spec=create_obs_spec_with_shapes([(1,)]),
         action_spec=mock_specs.action_spec,
     )
     trajectory_queue0.put(trajectory)

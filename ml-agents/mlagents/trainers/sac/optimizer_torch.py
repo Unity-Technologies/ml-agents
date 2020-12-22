@@ -12,7 +12,7 @@ from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.timers import timed
-from mlagents_envs.base_env import ActionSpec, ObservationSpec
+from mlagents_envs.base_env import ActionSpec, SensorSpec
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.settings import TrainerSettings, SACSettings
 from contextlib import ExitStack
@@ -27,7 +27,7 @@ class TorchSACOptimizer(TorchOptimizer):
         def __init__(
             self,
             stream_names: List[str],
-            observation_spec: List[ObservationSpec],
+            sensor_spec: List[SensorSpec],
             network_settings: NetworkSettings,
             action_spec: ActionSpec,
         ):
@@ -37,14 +37,14 @@ class TorchSACOptimizer(TorchOptimizer):
 
             self.q1_network = ValueNetwork(
                 stream_names,
-                observation_spec,
+                sensor_spec,
                 network_settings,
                 num_action_ins,
                 num_value_outs,
             )
             self.q2_network = ValueNetwork(
                 stream_names,
-                observation_spec,
+                sensor_spec,
                 network_settings,
                 num_action_ins,
                 num_value_outs,
@@ -135,14 +135,14 @@ class TorchSACOptimizer(TorchOptimizer):
 
         self.value_network = TorchSACOptimizer.PolicyValueNetwork(
             self.stream_names,
-            self.policy.behavior_spec.observation_spec,
+            self.policy.behavior_spec.sensor_spec,
             policy_network_settings,
             self._action_spec,
         )
 
         self.target_network = ValueNetwork(
             self.stream_names,
-            self.policy.behavior_spec.observation_spec,
+            self.policy.behavior_spec.sensor_spec,
             policy_network_settings,
         )
         ModelUtils.soft_update(

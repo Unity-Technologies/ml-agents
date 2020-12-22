@@ -45,9 +45,7 @@ def test_agentprocessor(num_vis_obs):
     }
     mock_decision_steps, mock_terminal_steps = mb.create_mock_steps(
         num_agents=2,
-        observation_spec=create_obs_spec_with_shapes(
-            [(8,)] + num_vis_obs * [(84, 84, 3)]
-        ),
+        sensor_spec=create_obs_spec_with_shapes([(8,)] + num_vis_obs * [(84, 84, 3)]),
         action_spec=ActionSpec.create_continuous(2),
     )
     fake_action_info = ActionInfo(
@@ -80,9 +78,7 @@ def test_agentprocessor(num_vis_obs):
     # Test empty steps
     mock_decision_steps, mock_terminal_steps = mb.create_mock_steps(
         num_agents=0,
-        observation_spec=create_obs_spec_with_shapes(
-            [(8,)] + num_vis_obs * [(84, 84, 3)]
-        ),
+        sensor_spec=create_obs_spec_with_shapes([(8,)] + num_vis_obs * [(84, 84, 3)]),
         action_spec=ActionSpec.create_continuous(2),
     )
     processor.add_experiences(
@@ -111,12 +107,12 @@ def test_agent_deletion():
 
     mock_decision_step, mock_terminal_step = mb.create_mock_steps(
         num_agents=1,
-        observation_spec=create_obs_spec_with_shapes([(8,)]),
+        sensor_spec=create_obs_spec_with_shapes([(8,)]),
         action_spec=ActionSpec.create_continuous(2),
     )
     mock_done_decision_step, mock_done_terminal_step = mb.create_mock_steps(
         num_agents=1,
-        observation_spec=create_obs_spec_with_shapes([(8,)]),
+        sensor_spec=create_obs_spec_with_shapes([(8,)]),
         action_spec=ActionSpec.create_continuous(2),
         done=True,
     )
@@ -190,7 +186,7 @@ def test_end_episode():
 
     mock_decision_step, mock_terminal_step = mb.create_mock_steps(
         num_agents=1,
-        observation_spec=create_obs_spec_with_shapes([(8,)]),
+        sensor_spec=create_obs_spec_with_shapes([(8,)]),
         action_spec=ActionSpec.create_continuous(2),
     )
     fake_action_info = ActionInfo(

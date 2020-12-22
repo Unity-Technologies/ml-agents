@@ -4,7 +4,7 @@ import numpy as np
 
 from mlagents_envs.base_env import (
     ActionSpec,
-    ObservationSpec,
+    SensorSpec,
     ActionTuple,
     BaseEnv,
     BehaviorSpec,
@@ -82,7 +82,7 @@ class SimpleEnvironment(BaseEnv):
             self.action[name] = None
             self.step_result[name] = None
 
-    def _make_obs_spec(self) -> ObservationSpec:
+    def _make_obs_spec(self) -> SensorSpec:
         obs_shape: List[Any] = []
         for _ in range(self.num_vector):
             obs_shape.append((self.vec_obs_size,))

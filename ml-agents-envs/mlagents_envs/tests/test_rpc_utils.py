@@ -439,7 +439,7 @@ def test_agent_behavior_spec_from_proto():
     behavior_spec = behavior_spec_from_proto(bp, agent_proto)
     assert behavior_spec.action_spec.is_discrete()
     assert not behavior_spec.action_spec.is_continuous()
-    assert [spec.shape for spec in behavior_spec.observation_spec] == [(3,), (4,)]
+    assert [spec.shape for spec in behavior_spec.sensor_spec] == [(3,), (4,)]
     assert behavior_spec.action_spec.discrete_branches == (5, 4)
     assert behavior_spec.action_spec.discrete_size == 2
     bp = BrainParametersProto()

@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from mlagents_envs.base_env import ObservationSpec, DimensionProperty
+from mlagents_envs.base_env import SensorSpec, DimensionProperty
 import pytest
 import copy
 import os
@@ -74,10 +74,10 @@ def extrinsic_dummy_config():
     return {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
 
 
-def create_obs_spec_with_shapes(shapes: List[Tuple[int, ...]]) -> List[ObservationSpec]:
-    obs_spec: List[ObservationSpec] = []
+def create_obs_spec_with_shapes(shapes: List[Tuple[int, ...]]) -> List[SensorSpec]:
+    obs_spec: List[SensorSpec] = []
     for shape in shapes:
         dim_prop = (DimensionProperty.UNSPECIFIED,) * len(shape)
-        spec = ObservationSpec(shape, dim_prop)
+        spec = SensorSpec(shape, dim_prop)
         obs_spec.append(spec)
     return obs_spec

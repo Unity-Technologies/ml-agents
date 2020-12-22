@@ -1,6 +1,6 @@
 from mlagents_envs.base_env import (
     ActionSpec,
-    ObservationSpec,
+    SensorSpec,
     DimensionProperty,
     BehaviorSpec,
     DecisionSteps,
@@ -38,7 +38,7 @@ def behavior_spec_from_proto(
         for obs in agent_info.observations
     ]
     obs_spec = [
-        ObservationSpec(obs_shape, dim_p)
+        SensorSpec(obs_shape, dim_p)
         for obs_shape, dim_p in zip(observation_shape, dim_props)
     ]
     # proto from communicator < v1.3 does not set action spec, use deprecated fields instead
@@ -290,7 +290,7 @@ def steps_from_proto(
     ]
     decision_obs_list: List[np.ndarray] = []
     terminal_obs_list: List[np.ndarray] = []
-    for obs_index, obs_spec in enumerate(behavior_spec.observation_spec):
+    for obs_index, obs_spec in enumerate(behavior_spec.sensor_spec):
         is_visual = len(obs_spec.shape) == 3
         if is_visual:
             obs_shape = cast(Tuple[int, int, int], obs_spec.shape)

@@ -90,7 +90,7 @@ def test_advance(mocked_clear_update_buffer, mocked_save_model):
     time_horizon = 10
     trajectory = mb.make_fake_trajectory(
         length=time_horizon,
-        observation_spec=create_obs_spec_with_shapes([(1,)]),
+        sensor_spec=create_obs_spec_with_shapes([(1,)]),
         max_step_complete=True,
         action_spec=ActionSpec.create_discrete((2,)),
     )
@@ -139,7 +139,7 @@ def test_summary_checkpoint(mock_add_checkpoint, mock_write_summary):
     checkpoint_interval = trainer.trainer_settings.checkpoint_interval
     trajectory = mb.make_fake_trajectory(
         length=time_horizon,
-        observation_spec=create_obs_spec_with_shapes([(1,)]),
+        sensor_spec=create_obs_spec_with_shapes([(1,)]),
         max_step_complete=True,
         action_spec=ActionSpec.create_discrete((2,)),
     )
