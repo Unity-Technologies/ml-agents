@@ -7,6 +7,11 @@ and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+## [1.7.1-preview] - 2020-12-21
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+- Add analytics package dependency to the package manifest. (#4794)
+
 ## [1.7.0-preview] - 2020-12-21
 ### Major Changes
 #### com.unity.ml-agents (C#)
