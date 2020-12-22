@@ -12,7 +12,7 @@ from mlagents_envs.base_env import (
     ActionSpec,
     ActionTuple,
 )
-from mlagents.trainers.tests.dummy_config import create_obs_spec_with_shapes
+from mlagents.trainers.tests.dummy_config import create_sensor_spec_with_shapes
 
 
 def create_mock_steps(
@@ -31,8 +31,8 @@ def create_mock_steps(
     :bool done: Whether all the agents in the batch are done
     """
     obs_list = []
-    for obs_spec in sensor_spec:
-        obs_list.append(np.ones((num_agents,) + obs_spec.shape, dtype=np.float32))
+    for sen_spec in sensor_spec:
+        obs_list.append(np.ones((num_agents,) + sen_spec.shape, dtype=np.float32))
     action_mask = None
     if action_spec.is_discrete():
         action_mask = [
@@ -82,8 +82,8 @@ def make_fake_trajectory(
     action_size = action_spec.discrete_size + action_spec.continuous_size
     for _i in range(length - 1):
         obs = []
-        for obs_spec in sensor_spec:
-            obs.append(np.ones(obs_spec.shape, dtype=np.float32))
+        for sen_spec in sensor_spec:
+            obs.append(np.ones(sen_spec.shape, dtype=np.float32))
         reward = 1.0
         done = False
         action = ActionTuple(
@@ -124,8 +124,8 @@ def make_fake_trajectory(
         )
         steps_list.append(experience)
     obs = []
-    for obs_spec in sensor_spec:
-        obs.append(np.ones(obs_spec.shape, dtype=np.float32))
+    for sen_spec in sensor_spec:
+        obs.append(np.ones(sen_spec.shape, dtype=np.float32))
     last_experience = AgentExperience(
         obs=obs,
         reward=reward,
@@ -172,8 +172,8 @@ def setup_test_behavior_specs(
     else:
         action_spec = ActionSpec.create_continuous(vector_action_space)
     observation_shapes = [(84, 84, 3)] * int(use_visual) + [(vector_obs_space,)]
-    obs_spec = create_obs_spec_with_shapes(observation_shapes)
-    behavior_spec = BehaviorSpec(obs_spec, action_spec)
+    sen_spec = create_sensor_spec_with_shapes(observation_shapes)
+    behavior_spec = BehaviorSpec(sen_spec, action_spec)
     return behavior_spec
 
 

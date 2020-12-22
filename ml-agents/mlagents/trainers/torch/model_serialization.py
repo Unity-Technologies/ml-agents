@@ -54,10 +54,10 @@ class ModelSerializer:
         # (It's NHWC in self.policy.behavior_spec.sensor_spec.shape)
         dummy_vis_obs = [
             torch.zeros(
-                batch_dim + [obs_spec.shape[2], obs_spec.shape[0], obs_spec.shape[1]]
+                batch_dim + [sen_spec.shape[2], sen_spec.shape[0], sen_spec.shape[1]]
             )
-            for obs_spec in self.policy.behavior_spec.sensor_spec
-            if len(obs_spec.shape) == 3
+            for sen_spec in self.policy.behavior_spec.sensor_spec
+            if len(sen_spec.shape) == 3
         ]
         dummy_masks = torch.ones(
             batch_dim + [sum(self.policy.behavior_spec.action_spec.discrete_branches)]

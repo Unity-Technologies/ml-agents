@@ -37,7 +37,7 @@ def behavior_spec_from_proto(
         tuple(DimensionProperty(dim) for dim in obs.dimension_properties)
         for obs in agent_info.observations
     ]
-    obs_spec = [
+    sensor_spec = [
         SensorSpec(obs_shape, dim_p)
         for obs_shape, dim_p in zip(observation_shape, dim_props)
     ]
@@ -60,7 +60,7 @@ def behavior_spec_from_proto(
             action_spec_proto.num_continuous_actions,
             tuple(branch for branch in action_spec_proto.discrete_branch_sizes),
         )
-    return BehaviorSpec(obs_spec, action_spec)
+    return BehaviorSpec(sensor_spec, action_spec)
 
 
 class OffsetBytesIO:
@@ -290,10 +290,10 @@ def steps_from_proto(
     ]
     decision_obs_list: List[np.ndarray] = []
     terminal_obs_list: List[np.ndarray] = []
-    for obs_index, obs_spec in enumerate(behavior_spec.sensor_spec):
-        is_visual = len(obs_spec.shape) == 3
+    for obs_index, sensor_spec in enumerate(behavior_spec.sensor_spec):
+        is_visual = len(sensor_spec.shape) == 3
         if is_visual:
-            obs_shape = cast(Tuple[int, int, int], obs_spec.shape)
+            obs_shape = cast(Tuple[int, int, int], sensor_spec.shape)
             decision_obs_list.append(
                 _process_visual_observation(
                     obs_index, obs_shape, decision_agent_info_list
@@ -307,12 +307,12 @@ def steps_from_proto(
         else:
             decision_obs_list.append(
                 _process_vector_observation(
-                    obs_index, obs_spec.shape, decision_agent_info_list
+                    obs_index, sensor_spec.shape, decision_agent_info_list
                 )
             )
             terminal_obs_list.append(
                 _process_vector_observation(
-                    obs_index, obs_spec.shape, terminal_agent_info_list
+                    obs_index, sensor_spec.shape, terminal_agent_info_list
                 )
             )
     decision_rewards = np.array(

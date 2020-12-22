@@ -137,8 +137,8 @@ class DecisionSteps(Mapping):
         :param spec: The BehaviorSpec for the DecisionSteps
         """
         obs: List[np.ndarray] = []
-        for obs_spec in spec.sensor_spec:
-            obs += [np.zeros((0,) + obs_spec.shape, dtype=np.float32)]
+        for sen_spec in spec.sensor_spec:
+            obs += [np.zeros((0,) + sen_spec.shape, dtype=np.float32)]
         return DecisionSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
@@ -235,8 +235,8 @@ class TerminalSteps(Mapping):
         :param spec: The BehaviorSpec for the TerminalSteps
         """
         obs: List[np.ndarray] = []
-        for obs_spec in spec.sensor_spec:
-            obs += [np.zeros((0,) + obs_spec.shape, dtype=np.float32)]
+        for sen_spec in spec.sensor_spec:
+            obs += [np.zeros((0,) + sen_spec.shape, dtype=np.float32)]
         return TerminalSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),

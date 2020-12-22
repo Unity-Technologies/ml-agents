@@ -37,12 +37,12 @@ class Policy:
             else [self.behavior_spec.action_spec.continuous_size]
         )
         self.vec_obs_size = sum(
-            obs_spec.shape[0]
-            for obs_spec in behavior_spec.sensor_spec
-            if len(obs_spec.shape) == 1
+            sen_spec.shape[0]
+            for sen_spec in behavior_spec.sensor_spec
+            if len(sen_spec.shape) == 1
         )
         self.vis_obs_size = sum(
-            1 for obs_spec in behavior_spec.sensor_spec if len(obs_spec.shape) == 3
+            1 for sen_spec in behavior_spec.sensor_spec if len(sen_spec.shape) == 3
         )
         self.use_continuous_act = self.behavior_spec.action_spec.is_continuous()
         self.previous_action_dict: Dict[str, np.ndarray] = {}

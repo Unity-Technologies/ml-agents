@@ -74,10 +74,10 @@ def extrinsic_dummy_config():
     return {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
 
 
-def create_obs_spec_with_shapes(shapes: List[Tuple[int, ...]]) -> List[SensorSpec]:
-    obs_spec: List[SensorSpec] = []
+def create_sensor_spec_with_shapes(shapes: List[Tuple[int, ...]]) -> List[SensorSpec]:
+    sen_spec: List[SensorSpec] = []
     for shape in shapes:
         dim_prop = (DimensionProperty.UNSPECIFIED,) * len(shape)
         spec = SensorSpec(shape, dim_prop)
-        obs_spec.append(spec)
-    return obs_spec
+        sen_spec.append(spec)
+    return sen_spec

@@ -11,7 +11,7 @@ from mlagents_envs.base_env import (
     TerminalSteps,
     BehaviorMapping,
 )
-from mlagents.trainers.tests.dummy_config import create_obs_spec_with_shapes
+from mlagents.trainers.tests.dummy_config import create_sensor_spec_with_shapes
 
 
 def test_gym_wrapper():
@@ -227,8 +227,8 @@ def create_mock_group_spec(
     obs_shapes = [(vector_observation_space_size,)]
     for _ in range(number_visual_observations):
         obs_shapes += [(8, 8, 3)]
-    obs_spec = create_obs_spec_with_shapes(obs_shapes)
-    return BehaviorSpec(obs_spec, action_spec)
+    sen_spec = create_sensor_spec_with_shapes(obs_shapes)
+    return BehaviorSpec(sen_spec, action_spec)
 
 
 def create_mock_vector_steps(specs, num_agents=1, number_visual_observations=0):

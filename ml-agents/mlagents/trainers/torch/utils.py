@@ -141,22 +141,22 @@ class ModelUtils:
         visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
         vector_size = 0
         visual_output_size = 0
-        for i, obs_spec in enumerate(sensor_spec):
-            if len(obs_spec.shape) == 3:
+        for i, sen_spec in enumerate(sensor_spec):
+            if len(sen_spec.shape) == 3:
                 ModelUtils._check_resolution_for_encoder(
-                    obs_spec.shape[0], obs_spec.shape[1], vis_encode_type
+                    sen_spec.shape[0], sen_spec.shape[1], vis_encode_type
                 )
                 visual_encoders.append(
                     visual_encoder_class(
-                        obs_spec.shape[0], obs_spec.shape[1], obs_spec.shape[2], h_size
+                        sen_spec.shape[0], sen_spec.shape[1], sen_spec.shape[2], h_size
                     )
                 )
                 visual_output_size += h_size
-            elif len(obs_spec.shape) == 1:
-                vector_size += obs_spec.shape[0]
+            elif len(sen_spec.shape) == 1:
+                vector_size += sen_spec.shape[0]
             else:
                 raise UnityTrainerException(
-                    f"Unsupported shape of {obs_spec.shape} for observation {i}"
+                    f"Unsupported shape of {sen_spec.shape} for observation {i}"
                 )
         if vector_size > 0:
             vector_encoders.append(VectorInput(vector_size, normalize))
