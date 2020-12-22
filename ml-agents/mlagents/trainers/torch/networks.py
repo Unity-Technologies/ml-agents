@@ -114,7 +114,8 @@ class MultiInputNetworkBody(nn.Module):
         super().__init__()
         self.normalize = network_settings.normalize
         self.use_lstm = network_settings.memory is not None
-        self.h_size = network_settings.hidden_units
+        # Scale network depending on num agents
+        self.h_size = network_settings.hidden_units * num_obs_heads
         self.m_size = (
             network_settings.memory.memory_size
             if network_settings.memory is not None
@@ -251,7 +252,7 @@ class CentralizedValueNetwork(ValueNetwork):
         if network_settings.memory is not None:
             encoding_size = network_settings.memory.memory_size // 2
         else:
-            encoding_size = network_settings.hidden_units
+            encoding_size = network_settings.hidden_units * num_agents
         self.value_heads = ValueHeads(stream_names, encoding_size, outputs_per_stream)
 
     def forward(
