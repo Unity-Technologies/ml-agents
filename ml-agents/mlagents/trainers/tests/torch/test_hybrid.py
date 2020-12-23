@@ -7,15 +7,15 @@ from mlagents.trainers.tests.simple_test_envs import (
     MemoryEnvironment,
 )
 
-from mlagents.trainers.settings import NetworkSettings, FrameworkType
+from mlagents.trainers.settings import NetworkSettings
 
 from mlagents.trainers.tests.dummy_config import ppo_dummy_config, sac_dummy_config
 from mlagents.trainers.tests.check_env_trains import check_environment_trains
 
 BRAIN_NAME = "1D"
 
-PPO_TORCH_CONFIG = attr.evolve(ppo_dummy_config(), framework=FrameworkType.PYTORCH)
-SAC_TORCH_CONFIG = attr.evolve(sac_dummy_config(), framework=FrameworkType.PYTORCH)
+PPO_TORCH_CONFIG = ppo_dummy_config()
+SAC_TORCH_CONFIG = sac_dummy_config()
 
 
 @pytest.mark.parametrize("action_size", [(1, 1), (2, 2), (1, 2), (2, 1)])

@@ -886,22 +886,12 @@ namespace Unity.MLAgents
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         public virtual void Heuristic(in ActionBuffers actionsOut)
         {
-            var brainParams = m_PolicyFactory.BrainParameters;
-            var actionSpec = brainParams.ActionSpec;
-            // For continuous and discrete actions together, we don't need to fall back to the legacy method
-            if (actionSpec.NumContinuousActions > 0 && actionSpec.NumDiscreteActions > 0)
-            {
-                Debug.LogWarning("Heuristic method called but not implemented. Clearing ActionBuffers.");
-                actionsOut.Clear();
-                return;
-            }
-
             // Disable deprecation warnings so we can call the legacy overload.
 #pragma warning disable CS0618
 
             // The default implementation of Heuristic calls the
             // obsolete version for backward compatibility
-            switch (brainParams.VectorActionSpaceType)
+            switch (m_PolicyFactory.BrainParameters.VectorActionSpaceType)
             {
                 case SpaceType.Continuous:
                     Heuristic(actionsOut.ContinuousActions.Array);

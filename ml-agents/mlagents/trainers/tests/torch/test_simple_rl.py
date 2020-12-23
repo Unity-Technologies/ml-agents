@@ -17,7 +17,6 @@ from mlagents.trainers.settings import (
     GAILSettings,
     RewardSignalType,
     EncoderType,
-    FrameworkType,
 )
 
 from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
@@ -36,8 +35,8 @@ from mlagents.trainers.tests.check_env_trains import (
 
 BRAIN_NAME = "1D"
 
-PPO_TORCH_CONFIG = attr.evolve(ppo_dummy_config(), framework=FrameworkType.PYTORCH)
-SAC_TORCH_CONFIG = attr.evolve(sac_dummy_config(), framework=FrameworkType.PYTORCH)
+PPO_TORCH_CONFIG = ppo_dummy_config()
+SAC_TORCH_CONFIG = sac_dummy_config()
 
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])

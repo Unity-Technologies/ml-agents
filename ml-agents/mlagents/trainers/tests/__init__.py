@@ -19,7 +19,7 @@ if os.getenv("TEST_ENFORCE_NUMPY_FLOAT32"):
             # tb[-2] is the wrapper function, e.g. np_array_no_float64
             # we want the calling function, so use tb[-3]
             filename = tb[-3].filename
-            # Only raise if this came from mlagents code, not tensorflow
+            # Only raise if this came from mlagents code
             if (
                 "ml-agents/mlagents" in filename
                 or "ml-agents-envs/mlagents" in filename

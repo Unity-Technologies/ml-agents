@@ -592,11 +592,6 @@ class TrainerType(Enum):
         return _mapping[self]
 
 
-class FrameworkType(Enum):
-    TENSORFLOW: str = "tensorflow"
-    PYTORCH: str = "pytorch"
-
-
 @attr.s(auto_attribs=True)
 class TrainerSettings(ExportableSettings):
     default_override: ClassVar[Optional["TrainerSettings"]] = None
@@ -620,7 +615,6 @@ class TrainerSettings(ExportableSettings):
     threaded: bool = True
     self_play: Optional[SelfPlaySettings] = None
     behavioral_cloning: Optional[BehavioralCloningSettings] = None
-    framework: FrameworkType = FrameworkType.PYTORCH
 
     cattr.register_structure_hook(
         Dict[RewardSignalType, RewardSignalSettings], RewardSignalSettings.structure
@@ -661,6 +655,10 @@ class TrainerSettings(ExportableSettings):
             d_copy.update(cattr.unstructure(TrainerSettings.default_override))
 
         deep_update_dict(d_copy, d)
+
+        if "framework" in d_copy:
+            logger.warning("Framework option was deprecated but was specified")
+            d_copy.pop("framework", None)
 
         for key, val in d_copy.items():
             if attr.has(type(val)):
