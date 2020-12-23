@@ -7,6 +7,7 @@ from mlagents_envs.base_env import (
     ActionSpec,
     BehaviorSpec,
 )
+from mlagents.trainers.tests.dummy_config import create_sensor_specs_with_shapes
 
 
 def test_decision_steps():
@@ -35,7 +36,8 @@ def test_decision_steps():
 
 def test_empty_decision_steps():
     specs = BehaviorSpec(
-        observation_shapes=[(3, 2), (5,)], action_spec=ActionSpec.create_continuous(3)
+        sensor_specs=create_sensor_specs_with_shapes([(3, 2), (5,)]),
+        action_spec=ActionSpec.create_continuous(3),
     )
     ds = DecisionSteps.empty(specs)
     assert len(ds.obs) == 2
@@ -68,7 +70,8 @@ def test_terminal_steps():
 
 def test_empty_terminal_steps():
     specs = BehaviorSpec(
-        observation_shapes=[(3, 2), (5,)], action_spec=ActionSpec.create_continuous(3)
+        sensor_specs=create_sensor_specs_with_shapes([(3, 2), (5,)]),
+        action_spec=ActionSpec.create_continuous(3),
     )
     ts = TerminalSteps.empty(specs)
     assert len(ts.obs) == 2

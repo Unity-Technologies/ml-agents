@@ -11,6 +11,7 @@ from mlagents.trainers.torch.encoders import (
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents_envs.base_env import SensorSpec
 
 
 class ModelUtils:
@@ -142,14 +143,14 @@ class ModelUtils:
 
     @staticmethod
     def create_input_processors(
-        observation_shapes: List[Tuple[int, ...]],
+        sensor_specs: List[SensorSpec],
         h_size: int,
         vis_encode_type: EncoderType,
         normalize: bool = False,
     ) -> Tuple[nn.ModuleList, List[int]]:
         """
         Creates visual and vector encoders, along with their normalizers.
-        :param observation_shapes: List of Tuples that represent the action dimensions.
+        :param sensor_specs: List of SensorSpec that represent the observation dimensions.
         :param action_size: Number of additional un-normalized inputs to each vector encoder. Used for
             conditioning network on other values (e.g. actions for a Q function)
         :param h_size: Number of hidden units per layer.
@@ -161,10 +162,9 @@ class ModelUtils:
         """
         encoders: List[nn.Module] = []
         embedding_sizes: List[int] = []
-
-        for dimension in observation_shapes:
+        for sen_spec in sensor_specs:
             encoder, embedding_size = ModelUtils.get_encoder_for_obs(
-                dimension, normalize, h_size, vis_encode_type
+                sen_spec.shape, normalize, h_size, vis_encode_type
             )
             encoders.append(encoder)
             embedding_sizes.append(embedding_size)

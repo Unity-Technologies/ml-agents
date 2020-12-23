@@ -60,11 +60,13 @@ class ModelSerializer:
         )
         dummy_vec_obs = [torch.zeros(batch_dim + [vec_obs_size])]
         # create input shape of NCHW
-        # (It's NHWC in self.policy.behavior_spec.observation_shapes)
+        # (It's NHWC in self.policy.behavior_spec.sensor_specs.shape)
         dummy_vis_obs = [
-            torch.zeros(batch_dim + [shape[2], shape[0], shape[1]])
-            for shape in self.policy.behavior_spec.observation_shapes
-            if len(shape) == 3
+            torch.zeros(
+                batch_dim + [sen_spec.shape[2], sen_spec.shape[0], sen_spec.shape[1]]
+            )
+            for sen_spec in self.policy.behavior_spec.sensor_specs
+            if len(sen_spec.shape) == 3
         ]
         dummy_masks = torch.ones(
             batch_dim + [sum(self.policy.behavior_spec.action_spec.discrete_branches)]

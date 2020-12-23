@@ -20,4 +20,5 @@ message ObservationProto {
         FloatData float_data = 4;
     }
     repeated int32 compressed_channel_mapping = 5;
+    repeated int32 dimension_properties = 6;
 }

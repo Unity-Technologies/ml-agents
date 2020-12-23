@@ -38,8 +38,8 @@ class Policy:
         if self.normalize:
             has_vec_obs = False
             # Make sure there is at least one vector observation for normalization
-            for shape in behavior_spec.observation_shapes:
-                if len(shape) == 1:
+            for sen_spec in behavior_spec.sensor_specs:
+                if len(sen_spec.shape) == 1:
                     has_vec_obs = True
                     break
             if not has_vec_obs:
