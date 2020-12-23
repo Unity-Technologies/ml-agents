@@ -2527,7 +2527,7 @@ GameObject:
   - component: {fileID: 3363965654201556884}
   m_Layer: 0
   m_Name: Symbol_S
-  m_TagString: symbol_X_Goal
+  m_TagString: symbol_S_Goal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
