@@ -100,7 +100,6 @@ public class PushBlockEnvController : MonoBehaviour
         m_ResetTimer += 1;
         if (m_ResetTimer > MaxEnvironmentSteps)
         {
-            m_ResetTimer = 0;
             ResetScene();
         }
     }
@@ -191,6 +190,8 @@ public class PushBlockEnvController : MonoBehaviour
 
     void ResetScene()
     {
+        m_ResetTimer = 0;
+
         //Random platform rot
         var rotation = Random.Range(0, 4);
         var rotationAngle = rotation * 90f;
