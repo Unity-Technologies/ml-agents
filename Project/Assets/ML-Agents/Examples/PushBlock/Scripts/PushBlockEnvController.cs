@@ -231,5 +231,6 @@ public class PushBlockEnvController : MonoBehaviour
 
         //Reset counter
         m_NumberOfRemainingBlocks = BlocksList.Count;
+        // m_NumberOfRemainingBlocks = 2;
     }
 }

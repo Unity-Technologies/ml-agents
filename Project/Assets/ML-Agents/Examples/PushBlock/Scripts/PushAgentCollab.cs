@@ -4,6 +4,7 @@ using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Sensors;
 
 public class PushAgentCollab : Agent
 {
@@ -13,6 +14,7 @@ public class PushAgentCollab : Agent
     //    Rigidbody m_BlockRb;  //cached on initialization
     Rigidbody m_AgentRb;  //cached on initialization
 
+    public bool useVectorObs = true;
     void Awake()
     {
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
@@ -59,6 +61,14 @@ public class PushAgentCollab : Agent
         m_AgentRb.AddForce(dirToGo * m_PushBlockSettings.agentRunSpeed,
             ForceMode.VelocityChange);
     }
+
+    // public override void CollectObservations(VectorSensor sensor)
+    // {
+    //     if (useVectorObs)
+    //     {
+    //         sensor.AddObservation(StepCount / (float)MaxStep);
+    //     }
+    // }
 
     /// <summary>
     /// Called every step of the engine. Here the agent takes an action.

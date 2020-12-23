@@ -453,6 +453,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bb2bb36bb51d452ab58d30a868dfab3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MaxEnvironmentSteps: 25000
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -1491,6 +1492,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
+  useVectorObs: 1
 --- !u!65 &2416809913911815185
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2850,6 +2852,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
+  useVectorObs: 1
 --- !u!65 &2404981946995968560
 BoxCollider:
   m_ObjectHideFlags: 0
