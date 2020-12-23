@@ -87,9 +87,9 @@ class Trajectory(NamedTuple):
         for step, exp in enumerate(self.steps):
             if step == 0:
                 # this initial all zeros creates the offset for comms
-                agent_buffer_trajectory["comm_obs"].append(
-                    np.zeros_like(exp.collab_obs)
-                )
+                
+                dummy = [[np.zeros_like(col_ob) for col_ob in exp.collab_obs[_ag]] for _ag in range(len(exp.collab_obs))]
+                agent_buffer_trajectory["comm_obs"].append(dummy)
             if step < len(self.steps) - 1:
                 next_obs = self.steps[step + 1].obs
             else:

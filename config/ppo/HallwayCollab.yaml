@@ -2,8 +2,8 @@ behaviors:
   HallwayCollab:
     trainer_type: ppo
     hyperparameters:
-      batch_size: 128
-      buffer_size: 1024
+      batch_size: 512
+      buffer_size: 4096
       learning_rate: 0.0003
       beta: 0.01
       epsilon: 0.2
@@ -12,7 +12,7 @@ behaviors:
       learning_rate_schedule: linear
     network_settings:
       normalize: false
-      hidden_units: 128
+      hidden_units: 256
       num_layers: 2
       vis_encode_type: simple
     reward_signals:

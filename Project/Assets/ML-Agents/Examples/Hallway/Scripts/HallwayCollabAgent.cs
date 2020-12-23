@@ -11,12 +11,13 @@ public class HallwayCollabAgent : HallwayAgent
     public HallwayCollabAgent teammate;
     public bool isSpotter = true;
     TextMesh m_MessageText;
+    TextMesh m_MessageRec;
     int m_Message = 0;
 
 
     [HideInInspector]
     public int selection = 0;
-    
+
     public override void Initialize()
     {
         base.Initialize();
@@ -172,7 +173,7 @@ public class HallwayCollabAgent : HallwayAgent
 
         if (isSpotter)
         {
-            m_MessageText.text = "Message:" + comm_act.ToString();
+            m_MessageText.text = "Sent:" + comm_act.ToString();
         }
         teammate.tellAgent(comm_act);
         // if (isSpotter) // Test
@@ -208,14 +209,14 @@ public class HallwayCollabAgent : HallwayAgent
         }
     }
 
-    public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
-    {
-        // Mask the necessary actions if selected by the user.
-        if (!isSpotter)
-        {
-            // Prevents the agent from picking an action that would make it collide with a wall
-            actionMask.WriteMask(1, new[] {0});
-        }
-    }
+    //public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
+    //{
+    //    // Mask the necessary actions if selected by the user.
+    //    if (!isSpotter)
+    //    {
+    //        // Prevents the agent from picking an action that would make it collide with a wall
+    //        actionMask.WriteMask(1, new[] { 0 });
+    //    }
+    //}
 
 }

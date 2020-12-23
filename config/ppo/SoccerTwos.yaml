@@ -2,8 +2,8 @@ behaviors:
   SoccerTwos:
     trainer_type: ppo
     hyperparameters:
-      batch_size: 2048
-      buffer_size: 20480
+      batch_size: 4096
+      buffer_size: 40960
       learning_rate: 0.0003
       beta: 0.005
       epsilon: 0.2
@@ -40,7 +40,7 @@ environment_parameters:
           behavior: SoccerTwos
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.0005
+          threshold: 0.001
         value: 1.0
       - name: Lesson1
         completion_criteria:
@@ -48,7 +48,7 @@ environment_parameters:
           behavior: SoccerTwos
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.001
+          threshold: 0.00175
         value: 0.5
       - name: Lesson2
         completion_criteria:
@@ -56,7 +56,7 @@ environment_parameters:
           behavior: SoccerTwos
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.0015
+          threshold: 0.00225
         value: 0.1
       - name: Lesson3
         completion_criteria:
@@ -64,7 +64,7 @@ environment_parameters:
           behavior: SoccerTwos
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.002
+          threshold: 0.003
         value: 0.0
-env_settings:
-  num_envs: 2
+#env_settings:
+#  num_envs: 2

@@ -240,7 +240,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BrainParameters:
     VectorObservationSize: 2
-    NumStackedVectorObservations: 3
+    NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 3
       BranchSizes: 02000000
@@ -253,6 +253,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
   TeamId: 1
+  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -659,7 +660,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BrainParameters:
     VectorObservationSize: 2
-    NumStackedVectorObservations: 3
+    NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 3
       BranchSizes: 02000000
@@ -672,6 +673,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
   TeamId: 0
+  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -3230,6 +3232,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
   TeamId: 1
+  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -3937,6 +3940,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
   TeamId: 1
+  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -4797,7 +4801,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BrainParameters:
     VectorObservationSize: 2
-    NumStackedVectorObservations: 3
+    NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 3
       BranchSizes: 02000000
@@ -4810,6 +4814,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
   TeamId: 1
+  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -5461,7 +5466,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BrainParameters:
     VectorObservationSize: 2
-    NumStackedVectorObservations: 3
+    NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 3
       BranchSizes: 02000000
@@ -5474,6 +5479,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
   TeamId: 0
+  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0

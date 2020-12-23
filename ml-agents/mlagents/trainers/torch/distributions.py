@@ -206,8 +206,8 @@ class MultiCategoricalDistribution(nn.Module):
     ) -> torch.Tensor:
         # Zero out masked logits, then subtract a large value. Technique mentionend here:
         # https://arxiv.org/abs/2006.14171. Our implementation is ONNX and Barracuda-friendly.
-        if allow_mask.shape[1] == 3:
-            allow_mask = allow_mask[:, :1].expand(-1, 3)
+        #if allow_mask.shape[1] == 3:
+        #    allow_mask = allow_mask[:, :1].expand(-1, 3)
         block_mask = -1.0 * allow_mask + 1.0
         # We do -1 * tensor + constant instead of constant - tensor because it seems
         # Barracuda might swap the inputs of a "Sub" operation

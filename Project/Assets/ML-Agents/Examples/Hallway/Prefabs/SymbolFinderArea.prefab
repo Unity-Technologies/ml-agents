@@ -1633,6 +1633,9 @@ MonoBehaviour:
   - symbol_O
   - symbol_X
   - symbol_S
+  - symbol_O_Goal
+  - symbol_X_Goal
+  - symbol_S_Goal
   - wall
   m_RaysPerDirection: 2
   m_MaxRayDegrees: 70
@@ -2303,7 +2306,7 @@ TextMesh:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1164310131249751511}
-  m_Text: 'Message: '
+  m_Text: 'Sent:'
   m_OffsetZ: 0
   m_CharacterSize: 1
   m_LineSpacing: 1
@@ -2864,6 +2867,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
+  - symbol_O
+  - symbol_X
+  - symbol_S
   - symbol_O_Goal
   - symbol_X_Goal
   - symbol_S_Goal
