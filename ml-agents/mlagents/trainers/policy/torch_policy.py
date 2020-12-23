@@ -11,11 +11,7 @@ from mlagents_envs.timers import timed
 
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.trajectory import SplitObservations
-from mlagents.trainers.torch.networks import (
-    SharedActorCritic,
-    SeparateActorCritic,
-    GlobalSteps,
-)
+from mlagents.trainers.torch.networks import SeparateActorCritic, GlobalSteps
 
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.agent_action import AgentAction
@@ -139,6 +135,24 @@ class TorchPolicy(Policy):
             obs, masks, memories, seq_len
         )
         return (actions, log_probs, entropies, memories)
+
+    def get_comms(
+        self,
+        obs: List[torch.Tensor],
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        seq_len: int = 1,
+    ) -> Tuple[torch.Tensor]:
+        """
+        :param vec_obs: List of vector observations.
+        :param vis_obs: List of visual observations.
+        :param masks: Loss masks for RNN, else None.
+        :param memories: Input memories when using RNN, else None.
+        :param seq_len: Sequence length when using RNN.
+        :return: Tuple of AgentAction, ActionLogProbs, entropies, and output memories.
+        """
+        comms = self.actor_critic.get_comms(obs, masks, memories, seq_len)
+        return comms
 
     def evaluate_actions(
         self,

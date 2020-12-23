@@ -141,6 +141,11 @@ class TorchPPOOptimizer(TorchOptimizer):
         critic_obs = [
             ModelUtils.list_to_tensor_list(_agent_obs) for _agent_obs in critic_obs_np
         ]
+        comm_obs_np = AgentBuffer.obs_list_list_to_obs_batch(batch["comm_obs"])
+
+        comm_obs = [
+            ModelUtils.list_to_tensor_list(_agent_obs) for _agent_obs in comm_obs_np
+        ]
 
         act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
         actions = AgentAction.from_dict(batch)
@@ -151,6 +156,14 @@ class TorchPPOOptimizer(TorchOptimizer):
         ]
         if len(memories) > 0:
             memories = torch.stack(memories).unsqueeze(0)
+
+        comms = self.policy.get_comms(
+            comm_obs[0],
+            masks=act_masks,
+            memories=memories,
+            seq_len=self.policy.sequence_length,
+        )
+        obs[-1] = comms[1]
 
         log_probs, entropy, values = self.policy.evaluate_actions(
             obs,

@@ -206,6 +206,8 @@ class MultiCategoricalDistribution(nn.Module):
     ) -> torch.Tensor:
         # Zero out masked logits, then subtract a large value. Technique mentionend here:
         # https://arxiv.org/abs/2006.14171. Our implementation is ONNX and Barracuda-friendly.
+        if allow_mask.shape[1] == 3:
+            allow_mask = allow_mask[:, :1].expand(-1, 3)
         block_mask = -1.0 * allow_mask + 1.0
         # We do -1 * tensor + constant instead of constant - tensor because it seems
         # Barracuda might swap the inputs of a "Sub" operation
@@ -219,6 +221,21 @@ class MultiCategoricalDistribution(nn.Module):
             end = int(np.sum(self.act_sizes[: idx + 1]))
             split_masks.append(masks[:, start:end])
         return split_masks
+
+    def differentiable_forward(
+        self, inputs: torch.Tensor, masks: torch.Tensor
+    ) -> List[DistInstance]:
+        # Todo - Support multiple branches in mask code
+        branch_distributions = []
+        masks = self._split_masks(masks)
+        for idx, branch in enumerate(self.branches):
+            logits = branch(inputs)
+            norm_logits = self._mask_branch(logits, masks[idx])
+            distribution = torch.nn.functional.gumbel_softmax(
+                norm_logits, tau=0.1, hard=True, dim=1
+            )
+            branch_distributions.append(distribution)
+        return branch_distributions
 
     def forward(self, inputs: torch.Tensor, masks: torch.Tensor) -> List[DistInstance]:
         # Todo - Support multiple branches in mask code

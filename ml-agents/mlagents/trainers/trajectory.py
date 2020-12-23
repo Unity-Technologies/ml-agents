@@ -85,6 +85,11 @@ class Trajectory(NamedTuple):
         agent_buffer_trajectory = AgentBuffer()
         curr_obs = self.steps[0].obs
         for step, exp in enumerate(self.steps):
+            if step == 0:
+                # this initial all zeros creates the offset for comms
+                agent_buffer_trajectory["comm_obs"].append(
+                    np.zeros_like(exp.collab_obs)
+                )
             if step < len(self.steps) - 1:
                 next_obs = self.steps[step + 1].obs
             else:
@@ -92,6 +97,9 @@ class Trajectory(NamedTuple):
             agent_buffer_trajectory["obs"].append(curr_obs)
             agent_buffer_trajectory["next_obs"].append(next_obs)
             agent_buffer_trajectory["critic_obs"].append(exp.collab_obs)
+            # to avoid error of different sized bufferfields
+            if step < len(self.steps) - 1:
+                agent_buffer_trajectory["comm_obs"].append(exp.collab_obs)
             if exp.memory is not None:
                 agent_buffer_trajectory["memory"].append(exp.memory)
 
