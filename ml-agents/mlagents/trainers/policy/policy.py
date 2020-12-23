@@ -32,21 +32,18 @@ class Policy:
         self.trainer_settings = trainer_settings
         self.network_settings: NetworkSettings = trainer_settings.network_settings
         self.seed = seed
-        self.act_size = (
-            list(self.behavior_spec.action_spec.discrete_branches)
-            if self.behavior_spec.action_spec.is_discrete()
-            else [self.behavior_spec.action_spec.continuous_size]
-        )
-        self.vec_obs_size = sum(
-            shape[0] for shape in behavior_spec.observation_shapes if len(shape) == 1
-        )
-        self.vis_obs_size = sum(
-            1 for shape in behavior_spec.observation_shapes if len(shape) == 3
-        )
-        self.use_continuous_act = self.behavior_spec.action_spec.is_continuous()
         self.previous_action_dict: Dict[str, np.ndarray] = {}
         self.memory_dict: Dict[str, np.ndarray] = {}
         self.normalize = trainer_settings.network_settings.normalize
+        if self.normalize:
+            has_vec_obs = False
+            # Make sure there is at least one vector observation for normalization
+            for shape in behavior_spec.observation_shapes:
+                if len(shape) == 1:
+                    has_vec_obs = True
+                    break
+            if not has_vec_obs:
+                self.normalize = False
         self.use_recurrent = self.network_settings.memory is not None
         self.h_size = self.network_settings.hidden_units
         num_layers = self.network_settings.num_layers
