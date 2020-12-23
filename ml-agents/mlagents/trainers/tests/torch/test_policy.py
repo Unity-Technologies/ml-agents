@@ -70,7 +70,7 @@ def test_evaluate_actions(rnn, visual, discrete):
     buffer = mb.simulate_rollout(64, policy.behavior_spec, memory_size=policy.m_size)
     act_masks = ModelUtils.list_to_tensor(buffer["action_mask"])
     agent_action = AgentAction.from_dict(buffer)
-    np_obs = ObsUtil.from_buffer(buffer, len(policy.behavior_spec.observation_shapes))
+    np_obs = ObsUtil.from_buffer(buffer, len(policy.behavior_spec.sensor_specs))
     tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
 
     memories = [
@@ -108,7 +108,7 @@ def test_sample_actions(rnn, visual, discrete):
     buffer = mb.simulate_rollout(64, policy.behavior_spec, memory_size=policy.m_size)
     act_masks = ModelUtils.list_to_tensor(buffer["action_mask"])
 
-    np_obs = ObsUtil.from_buffer(buffer, len(policy.behavior_spec.observation_shapes))
+    np_obs = ObsUtil.from_buffer(buffer, len(policy.behavior_spec.sensor_specs))
     tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
 
     memories = [

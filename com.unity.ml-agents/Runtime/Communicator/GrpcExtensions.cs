@@ -396,6 +396,17 @@ namespace Unity.MLAgents
                     observationProto.CompressedChannelMapping.AddRange(compressibleSensor.GetCompressedChannelMapping());
                 }
             }
+            // Add the dimension properties if any to the observationProto
+            var dimensionPropertySensor = sensor as IDimensionPropertiesSensor;
+            if (dimensionPropertySensor != null)
+            {
+                var dimensionProperties = dimensionPropertySensor.GetDimensionProperties();
+                int[] intDimensionProperties = new int[dimensionProperties.Length];
+                for (int i = 0; i < dimensionProperties.Length; i++)
+                {
+                    observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
+                }
+            }
             observationProto.Shape.AddRange(shape);
             return observationProto;
         }

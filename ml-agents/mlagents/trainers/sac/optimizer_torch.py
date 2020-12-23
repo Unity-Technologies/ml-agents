@@ -12,7 +12,7 @@ from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.timers import timed
-from mlagents_envs.base_env import ActionSpec
+from mlagents_envs.base_env import ActionSpec, SensorSpec
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.settings import TrainerSettings, SACSettings
 from contextlib import ExitStack
@@ -28,7 +28,7 @@ class TorchSACOptimizer(TorchOptimizer):
         def __init__(
             self,
             stream_names: List[str],
-            observation_shapes: List[Tuple[int, ...]],
+            sensor_specs: List[SensorSpec],
             network_settings: NetworkSettings,
             action_spec: ActionSpec,
         ):
@@ -38,14 +38,14 @@ class TorchSACOptimizer(TorchOptimizer):
 
             self.q1_network = ValueNetwork(
                 stream_names,
-                observation_shapes,
+                sensor_specs,
                 network_settings,
                 num_action_ins,
                 num_value_outs,
             )
             self.q2_network = ValueNetwork(
                 stream_names,
-                observation_shapes,
+                sensor_specs,
                 network_settings,
                 num_action_ins,
                 num_value_outs,
@@ -76,7 +76,7 @@ class TorchSACOptimizer(TorchOptimizer):
             # ExitStack allows us to enter the torch.no_grad() context conditionally
             with ExitStack() as stack:
                 if not q1_grad:
-                    stack.enter_context(torch.no_grad())
+                    stack.enter_context(torch.no_grad())  # pylint: disable=E1101
                 q1_out, _ = self.q1_network(
                     inputs,
                     actions=actions,
@@ -85,7 +85,7 @@ class TorchSACOptimizer(TorchOptimizer):
                 )
             with ExitStack() as stack:
                 if not q2_grad:
-                    stack.enter_context(torch.no_grad())
+                    stack.enter_context(torch.no_grad())  # pylint: disable=E1101
                 q2_out, _ = self.q2_network(
                     inputs,
                     actions=actions,
@@ -132,14 +132,14 @@ class TorchSACOptimizer(TorchOptimizer):
 
         self.value_network = TorchSACOptimizer.PolicyValueNetwork(
             self.stream_names,
-            self.policy.behavior_spec.observation_shapes,
+            self.policy.behavior_spec.sensor_specs,
             policy_network_settings,
             self._action_spec,
         )
 
         self.target_network = ValueNetwork(
             self.stream_names,
-            self.policy.behavior_spec.observation_shapes,
+            self.policy.behavior_spec.sensor_specs,
             policy_network_settings,
         )
         ModelUtils.soft_update(
@@ -461,7 +461,7 @@ class TorchSACOptimizer(TorchOptimizer):
         for name in self.reward_signals:
             rewards[name] = ModelUtils.list_to_tensor(batch[f"{name}_rewards"])
 
-        n_obs = len(self.policy.behavior_spec.observation_shapes)
+        n_obs = len(self.policy.behavior_spec.sensor_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
         # Convert to tensors
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
