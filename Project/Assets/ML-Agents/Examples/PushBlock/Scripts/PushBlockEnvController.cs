@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.MLAgents;
 using UnityEngine;
 
 public class PushBlockEnvController : MonoBehaviour
@@ -28,6 +29,13 @@ public class PushBlockEnvController : MonoBehaviour
         [HideInInspector]
         public Rigidbody Rb;
     }
+
+    /// <summary>
+    /// Max Academy steps before this platform resets
+    /// </summary>
+    /// <returns></returns>
+    [Header("Max Environment Steps")] public int MaxEnvironmentSteps = 25000;
+    private int m_ResetTimer;
 
     /// <summary>
     /// The area bounds.
@@ -87,9 +95,14 @@ public class PushBlockEnvController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-
+        m_ResetTimer += 1;
+        if (m_ResetTimer > MaxEnvironmentSteps)
+        {
+            m_ResetTimer = 0;
+            ResetScene();
+        }
     }
 
     /// <summary>
