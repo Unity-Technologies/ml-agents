@@ -40,7 +40,7 @@ def run_standalone_build(
 ) -> int:
     """
     Run BuildStandalonePlayerOSX test to produce a player. The location defaults to
-    artifacts/standalone_build/testPlayer.
+    artifacts/standalonebuild/testPlayer.
     """
     unity_exe = get_unity_executable_path()
     print(f"Running BuildStandalonePlayer via {unity_exe}")
