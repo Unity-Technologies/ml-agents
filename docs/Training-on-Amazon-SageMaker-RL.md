@@ -1,6 +1,3 @@
-For https://github.com/Unity-Technologies/ml-agents/tree/f80d40bf7bcb1182caff1a4f437c99ffa7e5fe7d/docs
-
-
 ## Training on Amazon SageMaker RL
 
 This page contains instructions for setting up a SageMaker RL Training job for training ML-Agents environments. For the notebook containing the complete code, see [Unity 3D Game with Amazon SageMaker RL](https://github.com/aws/amazon-sagemaker-examples/tree/master/reinforcement_learning/rl_unity_ray).
@@ -9,7 +6,7 @@ This page contains instructions for setting up a SageMaker RL Training job for t
 
 SageMaker is a fully managed service that enables fast model development. It provides many built-in features to assist you with training, tuning, debugging, and model deployment. SageMaker RL builds on top of SageMaker, adding pre-built RL libraries and making it easy to integrate with different simulation environments. You can use built-in deep learning frameworks such as TensorFlow and PyTorch with various built-in RL algorithms from the [RLlib](https://docs.ray.io/en/latest/rllib.html) library to train RL policies. Infrastructures for training and inference are fully managed by SageMaker, so you can focus on RL formulation. SageMaker RL also provides a set of [Jupyter notebooks](https://github.com/aws/amazon-sagemaker-examples/tree/master/reinforcement_learning), demonstrating varieties of domain RL applications in robotics, operations research, finance, and more.
 The following diagram illustrates our architecture.
-[Image: ./images/architecture_sagemaker.png]
+![Architecture](images/architecture_sagemaker.png)
 
 ## Configuring your environment
 
@@ -54,8 +51,8 @@ print("Using IAM role arn: {}".format(role))
 
 SageMaker uses Docker containers to run scripts, train algorithms, and deploy models. A [Docker container](https://www.docker.com/resources/what-container) is a standalone package of software that manages all the code and dependencies, and it includes everything needed to run an application. We start by building on top of a pre-built SageMaker Docker image that contains dependencies for Ray, then install the required core packages:
 
-* gym-unity – Unity provides a wrapper to wrap Unity environment into a [gym](https://github.com/openai/gym) interface, an open-source library that gives you access to a set of classic RL environments
-* mlagents-envs – Package that provides a Python API to allow direct interaction with the Unity game engine
+* `gym-unity` – Unity provides a wrapper to wrap Unity environment into a [gym](https://github.com/openai/gym) interface, an open-source library that gives you access to a set of classic RL environments
+* `mlagents-envs` – Package that provides a Python API to allow direct interaction with the Unity game engine
 
 For all pre-built SageMaker RL Docker images, see the [GitHub repo](https://github.com/aws/sagemaker-rl-container).
 
@@ -92,10 +89,10 @@ WORKDIR /opt/ml/code
 
 1. In the Unity Editor, load a project containing an ML-Agents environment (you can use one of the example environments if you have not created your own but please make sure your environment only contains one single agent).
 
-1. Open the Build Settings window (menu: File > Build Settings).
-2. Select Linux as the Target Platform, and x86_64 as the target architecture.
-3. Click Build to build the Unity environment executable.
-4. Upload the executable file, dependency data files and library files to s3.
+2. Open the Build Settings window (menu: File > Build Settings).
+3. Select Linux as the Target Platform, and x86_64 as the target architecture.
+4. Click Build to build the Unity environment executable.
+5. Upload the executable file, dependency data files and library files to s3.
 
 ## Model training, evaluation, and deployment
 
@@ -202,8 +199,8 @@ if __name__ == "__main__":
 
 The training script has two components:
 
-* UnityEnvWrapper – The Unity environment is stored as a binary file. To load the environment, we need to use the Unity ML-Agents Python API. `UnityEnvironment` takes the name of the environment and returns an interactive environment object. We then wrap the object with `UnityToGymWrapper` and return an object that is trainable using Ray-RLLib and SageMaker RL.
-* MyLauncher – This class inherits the `SageMakerRayLauncher` base class for SageMaker RL applications to use [Ray-RLLib](https://docs.ray.io/en/master/rllib.html). Inside the class, we register the environment to be recognized by Ray and specify the configurations we want during training. Example hyperparameters include the name of the environment, discount factor in cumulative rewards, learning rate of the model, and number of iterations to run the model. For a full list of commonly used hyperparameters, see [Common Parameters](https://docs.ray.io/en/latest/rllib-training.html#common-parameters).
+* `UnityEnvWrapper` – The Unity environment is stored as a binary file. To load the environment, we need to use the Unity ML-Agents Python API. `UnityEnvironment` takes the name of the environment and returns an interactive environment object. We then wrap the object with `UnityToGymWrapper` and return an object that is trainable using Ray-RLLib and SageMaker RL.
+* `MyLauncher` – This class inherits the `SageMakerRayLauncher` base class for SageMaker RL applications to use [Ray-RLLib](https://docs.ray.io/en/master/rllib.html). Inside the class, we register the environment to be recognized by Ray and specify the configurations we want during training. Example hyperparameters include the name of the environment, discount factor in cumulative rewards, learning rate of the model, and number of iterations to run the model. For a full list of commonly used hyperparameters, see [Common Parameters](https://docs.ray.io/en/latest/rllib-training.html#common-parameters).
 
 ### Training the model
 
@@ -235,9 +232,9 @@ print("Training job: %s" % job_name)
 
 Inside the code, we specify a few parameters:
 
-* entry_point – The path to the training script we wrote that specifies the training process
-* source_dir – The path to the directory with other training source code dependencies aside from the entry point file
-* dependencies – A list of paths to directories with additional libraries to be exported to the container
+* `entry_point` – The path to the training script we wrote that specifies the training process
+* `source_dir` – The path to the directory with other training source code dependencies aside from the entry point file
+* `dependencies` – A list of paths to directories with additional libraries to be exported to the container
 
 In addition, we state the container image name, training instance information, output path, and selected metrics. We are also allowed to customize any Ray-related parameters using the hyperparameters argument. We launch the SageMaker RL training job by calling `estimator.fit`, and start the model training process based on the specifications in the training script.
 At a high level, the training job initiates a neural network and updates the network gradually towards the direction in which the agent collects higher reward. Through multiple trials, the agent eventually learns how to navigate to the high-rewarding location efficiently. SageMaker RL handles the entire process and allows you to view the training job status in the Training jobs page on the SageMaker console.
@@ -254,14 +251,14 @@ We can deploy the trained RL policy with just a few lines of code using the Sage
 For the Basic environment, we deploy the model and pass an input to the predictor:
 
 ```
-`from`` sagemaker``.``tensorflow``.``model ``import`` ``TensorFlowModel`
+from sagemaker.tensorflow.model import TensorFlowModel
 
-`model ``=`` ``TensorFlowModel``(``model_data``=``estimator``.``model_data``,`
-`              framework_version``=``'2.1.0'``,`
-`              role``=``role``)`
+model = TensorFlowModel(model_data=estimator.model_data,
+              framework_version='2.1.0',
+              role=role)
 
-`predictor ``=`` model``.``deploy``(``initial_instance_count``=``1``,`` `
-`                         instance_type``=``instance_type``)``
+predictor = model.deploy(initial_instance_count=1, 
+                         instance_type=instance_type)
 input = {"inputs": {'observations': np.ones(shape=(1, 20)).tolist(),
                     'prev_action': [0, 0],
                     'is_training': False,
@@ -269,7 +266,7 @@ input = {"inputs": {'observations': np.ones(shape=(1, 20)).tolist(),
                     'seq_lens': -1
                    }
         }  
-``result ``=`` predictor``.``predict``(``input``)``print``(``result``[``'outputs'``][``'actions'``])`
+result = predictor.predict(input)print(result['outputs']['actions'])
 ```
 
 The model predicts an indicator corresponding to moving left or right. The recommended direction of movement for the blue box agent always points towards the larger green ball.
