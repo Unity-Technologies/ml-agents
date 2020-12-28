@@ -113,25 +113,13 @@ def find_executables(root_dir: str) -> List[str]:
 
 def init_venv(
     mlagents_python_version: str = None, extra_packages: Optional[List[str]] = None
-) -> str:
+) -> None:
     """
-    Set up the virtual environment, and return the venv path.
+    Install the necessary packages for the venv
     :param mlagents_python_version: The version of mlagents python packcage to install.
         If None, will do a local install, otherwise will install from pypi
     :return:
     """
-    # Use a different venv path for different versions
-    venv_path = "venv"
-    if mlagents_python_version:
-        venv_path += "_" + mlagents_python_version
-
-    # Set up the venv and install mlagents
-    if platform == "linux":
-        subprocess.check_call(
-            "sudo apt-get update && sudo apt-get install -y python3-venv", shell=True
-        )
-
-    subprocess.check_call(f"python3 -m venv {venv_path}", shell=True)
     pip_commands = ["--upgrade pip", "--upgrade setuptools"]
     if mlagents_python_version:
         # install from pypi
@@ -149,13 +137,13 @@ def init_venv(
         pip_commands += ["-e ./ml-agents-envs", "-e ./ml-agents", "-e ./gym-unity"]
     if extra_packages:
         pip_commands += extra_packages
+
     for cmd in pip_commands:
         pip_index_url = "--index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple"
+        print(f'Running "python3 -m pip install -q {cmd} {pip_index_url}"')
         subprocess.check_call(
-            f"source {venv_path}/bin/activate; python3 -m pip install -q {cmd} {pip_index_url}",
-            shell=True,
+            f"python3 -m pip install -q {cmd} {pip_index_url}", shell=True
         )
-    return venv_path
 
 
 def checkout_csharp_version(csharp_version):

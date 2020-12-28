@@ -64,7 +64,7 @@ def run_training(python_version: str, csharp_version: str) -> bool:
     else:
         standalone_player_path = "testPlayer"
 
-    venv_path = init_venv(python_version)
+    init_venv(python_version)
 
     # Copy the default training config but override the max_steps parameter,
     # and reduce the batch_size and buffer_size enough to ensure an update step happens.
@@ -86,9 +86,7 @@ def run_training(python_version: str, csharp_version: str) -> bool:
         f"mlagents-learn {yaml_out} --force --env={env_path} "
         f"--run-id={run_id} --no-graphics --env-args -logFile -"
     )  # noqa
-    res = subprocess.run(
-        f"source {venv_path}/bin/activate; {mla_learn_cmd}", shell=True
-    )
+    res = subprocess.run(f"{mla_learn_cmd}", shell=True)
 
     # Save models as artifacts (only if we're using latest python and C#)
     if csharp_version is None and python_version is None:
