@@ -18,9 +18,9 @@ namespace Unity.MLAgents.Analytics
     internal class TrainingAnalytics
     {
         const string k_VendorKey = "unity.ml-agents";
-        const string k_TrainingEnvironmentInitializedEventName = "ml_agents_trainingenvironmentinitialized";
-        const string k_BehaviorTrainingStartedEventName = "ml_agents_behaviortrainingstarted";
-        const string k_RemotePolicyStartedEventName = "ml_agents_remotepolicystarted";
+        const string k_TrainingEnvironmentInitializedEventName = "ml_agents_training_environment_initialized";
+        const string k_BehaviorTrainingStartedEventName = "ml_agents_training_behavior_initialized";
+        const string k_RemotePolicyStartedEventName = "ml_agents_training_policy_initialized";
 
         private static readonly string[] s_EventNames =
         {
