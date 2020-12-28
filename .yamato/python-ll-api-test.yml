@@ -19,13 +19,9 @@ test_mac_ll_api_{{ editor.version }}:
     - ./venv/bin/python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-Basic
     - ./venv/bin/python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-WallJump
     - ./venv/bin/python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-Bouncer
-  dependencies:
-    - .yamato/standalone-build-test.yml#test_linux_standalone_{{ editor.version }}
   triggers:
     cancel_old_ci: true
     expression: |
-      #(pull_request.target eq "master" OR
-      #pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
       pull_request.changes.any match "Project/**" OR
