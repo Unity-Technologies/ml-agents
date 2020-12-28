@@ -151,11 +151,12 @@ def init_venv(
         pip_commands += ["-e ./ml-agents-envs", "-e ./ml-agents", "-e ./gym-unity"]
     if extra_packages:
         pip_commands += extra_packages
+
     for cmd in pip_commands:
         pip_index_url = "--index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple"
+        print(f'Running "python3 -m pip install -q {cmd} {pip_index_url}"')
         subprocess.check_call(
-            f"source {venv_path}/bin/activate; python3 -m pip install -q {cmd} {pip_index_url}",
-            shell=True,
+            f"python3 -m pip install -q {cmd} {pip_index_url}", shell=True
         )
     return venv_path
 
