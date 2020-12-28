@@ -10,6 +10,9 @@ test_mac_ll_api_{{ editor.version }}:
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
+    - sudo apt-get update && sudo apt-get install -y python3-venv
+    - python3 -m venv venv
+    - source venv/bin/activate
     - python3 -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
     - python3 -u -m ml-agents.tests.yamato.setup_venv
     - ./venv/bin/python ml-agents/tests/yamato/scripts/run_llapi.py
@@ -21,8 +24,8 @@ test_mac_ll_api_{{ editor.version }}:
   triggers:
     cancel_old_ci: true
     expression: |
-      (pull_request.target eq "master" OR
-      pull_request.target match "release.+") AND
+      #(pull_request.target eq "master" OR
+      #pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
       pull_request.changes.any match "Project/**" OR

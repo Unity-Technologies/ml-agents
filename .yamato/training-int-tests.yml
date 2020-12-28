@@ -10,17 +10,20 @@ test_linux_training_int_{{ editor.version }}:
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
+    - sudo apt-get update && sudo apt-get install -y python3-venv
+    - python3 -m venv venv
+    - source venv/bin/activate
     - python3 -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
     - python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
     - unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
     - python3 -u -m ml-agents.tests.yamato.training_int_tests
-  dependencies:
-    - .yamato/standalone-build-test.yml#test_linux_standalone_{{ editor.version }}
+#  dependencies:
+#    - .yamato/standalone-build-test.yml#test_linux_standalone_{{ editor.version }}
   triggers:
     cancel_old_ci: true
     expression: |
-      (pull_request.target eq "master" OR
-      pull_request.target match "release.+") AND
+      #(pull_request.target eq "master" OR
+      #pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
       pull_request.changes.any match "com.unity.ml-agents.extensions/**" OR
@@ -65,13 +68,13 @@ test_mac_backcompat_2020.1:
     - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=mac
     - python -u -m ml-agents.tests.yamato.training_int_tests --python=0.16.0
     - python -u -m ml-agents.tests.yamato.training_int_tests --csharp={{ csharp_backcompat_version }}
-  dependencies:
-    - .yamato/standalone-build-test.yml#test_linux_training_int_{{ editor_version }}
+#  dependencies:
+#    - .yamato/standalone-build-test.yml#test_linux_training_int_{{ editor_version }}
   triggers:
     cancel_old_ci: true
     expression: |
-      (pull_request.target eq "master" OR
-      pull_request.target match "release.+") AND
+      #(pull_request.target eq "master" OR
+      #pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
       pull_request.changes.any match "com.unity.ml-agents.extensions/**" OR
