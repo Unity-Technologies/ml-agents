@@ -113,27 +113,13 @@ def find_executables(root_dir: str) -> List[str]:
 
 def init_venv(
     mlagents_python_version: str = None, extra_packages: Optional[List[str]] = None
-) -> str:
+) -> None:
     """
-    Set up the virtual environment, and return the venv path.
+    Install the necessary packages for the venv
     :param mlagents_python_version: The version of mlagents python packcage to install.
         If None, will do a local install, otherwise will install from pypi
     :return:
     """
-    # Use a different venv path for different versions
-    venv_path = "venv"
-    if mlagents_python_version:
-        venv_path += "_" + mlagents_python_version
-
-    # Set up the venv and install mlagents
-    # if platform == "linux":
-    #     subprocess.check_call(
-    #         "sudo apt-get update && sudo apt-get install -y python3-venv", shell=True
-    #     )
-
-    if platform == "darwin":
-        subprocess.check_call(f"python3 -m venv {venv_path}", shell=True)
-
     pip_commands = ["--upgrade pip", "--upgrade setuptools"]
     if mlagents_python_version:
         # install from pypi
@@ -158,7 +144,6 @@ def init_venv(
         subprocess.check_call(
             f"python3 -m pip install -q {cmd} {pip_index_url}", shell=True
         )
-    return venv_path
 
 
 def checkout_csharp_version(csharp_version):
