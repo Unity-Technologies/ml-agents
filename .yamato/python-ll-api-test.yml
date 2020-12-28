@@ -10,9 +10,9 @@ test_mac_ll_api_{{ editor.version }}:
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
-    - which python3
     - sudo apt-get update && sudo apt-get install -y python3-venv
     - python3 -m venv venv && source venv/bin/activate && which python3
+    - export PATH=/home/bokken/.local/bin:$PATH
     - python3 -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
     - python3 -u -m ml-agents.tests.yamato.setup_venv
     - ./venv/bin/python ml-agents/tests/yamato/scripts/run_llapi.py
