@@ -1,3 +1,4 @@
+import os.path
 import warnings
 
 import attr
@@ -701,6 +702,23 @@ class CheckpointSettings:
     force: bool = parser.get_default("force")
     train_model: bool = parser.get_default("train_model")
     inference: bool = parser.get_default("inference")
+    results_dir: str = parser.get_default("results_dir")
+
+    @property
+    def write_path(self) -> str:
+        return os.path.join(self.results_dir, self.run_id)
+
+    @property
+    def maybe_init_path(self) -> Optional[str]:
+        return (
+            os.path.join(self.results_dir, self.initialize_from)
+            if self.initialize_from is not None
+            else None
+        )
+
+    @property
+    def run_logs_dir(self) -> str:
+        return os.path.join(self.write_path, "run_logs")
 
 
 @attr.s(auto_attribs=True)
@@ -742,6 +760,7 @@ class RunOptions(ExportableSettings):
     # These are options that are relevant to the run itself, and not the engine or environment.
     # They will be left here.
     debug: bool = parser.get_default("debug")
+
     # Strict conversion
     cattr.register_structure_hook(EnvironmentSettings, strict_to_cls)
     cattr.register_structure_hook(EngineSettings, strict_to_cls)
