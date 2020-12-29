@@ -135,7 +135,9 @@ def worker(
     engine_configuration_channel.set_configuration(engine_config)
 
     stats_channel = StatsSideChannel()
-    training_analytics_channel = TrainingAnalyticsSideChannel()
+    training_analytics_channel: Optional[TrainingAnalyticsSideChannel] = None
+    if worker_id == 0:
+        training_analytics_channel = TrainingAnalyticsSideChannel()
     env: BaseEnv = None
     # Set log level. On some platforms, the logger isn't common with the
     # main process, so we need to set it again.
@@ -152,11 +154,12 @@ def worker(
 
     try:
         side_channels = [env_parameters, engine_configuration_channel, stats_channel]
-        if worker_id == 0:
+        if training_analytics_channel is not None:
             side_channels.append(training_analytics_channel)
 
         env = env_factory(worker_id, side_channels)
-        training_analytics_channel.environment_initialized(run_options)
+        if training_analytics_channel:
+            training_analytics_channel.environment_initialized(run_options)
         while True:
             req: EnvironmentRequest = parent_conn.recv()
             if req.cmd == EnvironmentCommand.STEP:

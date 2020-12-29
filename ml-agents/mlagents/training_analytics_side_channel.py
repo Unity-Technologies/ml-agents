@@ -1,6 +1,7 @@
+# pylint: skip-file
 # flake8: noqa
 
-# TODO re-enable flake8
+# TODO re-enable flake8 and pylint
 import sys
 from typing import Optional
 import uuid
@@ -46,7 +47,7 @@ class TrainingAnalyticsSideChannel(SideChannel):
         num_randomized_parameters = len(env_params) if env_params else 0
 
         env_init_msg = OutgoingMessage()
-        env_init_msg.write_string("environment_initialized!")
+        env_init_msg.write_string(f"environment_initialized! {str(locals())}")
         super().queue_message_to_send(env_init_msg)
 
     def training_started(self, behavior_name: str, config: TrainerSettings) -> None:
@@ -70,7 +71,7 @@ class TrainingAnalyticsSideChannel(SideChannel):
 
         training_start_msg = OutgoingMessage()
         training_start_msg.write_string(
-            f"training_started for {behavior_name} with config {str(config)}!"
+            f"training_started for {behavior_name} with config {str(locals())}!"
         )
         super().queue_message_to_send(training_start_msg)
 
