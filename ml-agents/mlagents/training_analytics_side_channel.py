@@ -2,6 +2,7 @@
 
 # TODO re-enable flake8
 import sys
+from typing import Optional
 import uuid
 import mlagents_envs
 import mlagents.trainers
@@ -10,7 +11,7 @@ from mlagents.trainers.settings import RewardSignalType
 from mlagents_envs.exception import UnityCommunicationException
 from mlagents_envs.side_channel import SideChannel, IncomingMessage, OutgoingMessage
 
-from mlagents.trainers.settings import TrainerSettings
+from mlagents.trainers.settings import TrainerSettings, RunOptions
 
 
 class TrainingAnalyticsSideChannel(SideChannel):
@@ -22,6 +23,7 @@ class TrainingAnalyticsSideChannel(SideChannel):
         # >>> uuid.uuid5(uuid.NAMESPACE_URL, "com.unity.ml-agents/TrainingAnalyticsSideChannel")
         # UUID('b664a4a9-d86f-5a5f-95cb-e8353a7e8356')
         super().__init__(uuid.UUID("b664a4a9-d86f-5a5f-95cb-e8353a7e8356"))
+        self.run_options: Optional[RunOptions] = None
 
     def on_message_received(self, msg: IncomingMessage) -> None:
         raise UnityCommunicationException(
@@ -29,7 +31,8 @@ class TrainingAnalyticsSideChannel(SideChannel):
             + "this should not have happend."
         )
 
-    def environment_initialized(self) -> None:
+    def environment_initialized(self, run_options: RunOptions) -> None:
+        self.run_options = run_options
         # Tuple of (major, minor, patch)
         vi = sys.version_info
         python_version = f"{vi[0]}.{vi[1]}.{vi[2]}"
@@ -37,6 +40,10 @@ class TrainingAnalyticsSideChannel(SideChannel):
         mlagents_envs_version = mlagents_envs.__version__
         torch_version = torch_utils.torch.__version__
         torch_device_type = torch_utils.default_device().type
+        num_envs = run_options.env_settings.num_envs
+
+        env_params = run_options.environment_parameters
+        num_randomized_parameters = len(env_params) if env_params else 0
 
         env_init_msg = OutgoingMessage()
         env_init_msg.write_string("environment_initialized!")
@@ -59,9 +66,25 @@ class TrainingAnalyticsSideChannel(SideChannel):
 
         trainer_threaded = config.threaded
         self_play = config.self_play is not None
+        uses_curriculum = self._behavior_uses_curriculum(behavior_name)
 
         training_start_msg = OutgoingMessage()
         training_start_msg.write_string(
             f"training_started for {behavior_name} with config {str(config)}!"
         )
         super().queue_message_to_send(training_start_msg)
+
+    def _behavior_uses_curriculum(self, behavior_name: str) -> bool:
+        if not self.run_options or not self.run_options.environment_parameters:
+            return False
+
+        for (
+            param_name,
+            param_settings,
+        ) in self.run_options.environment_parameters.items():
+            for lesson in param_settings.curriculum:
+                cc = lesson.completion_criteria
+                if cc and cc.behavior == behavior_name:
+                    return True
+
+        return False

@@ -24,7 +24,7 @@ from mlagents_envs.timers import (
     reset_timers,
     get_timer_root,
 )
-from mlagents.trainers.settings import ParameterRandomizationSettings
+from mlagents.trainers.settings import ParameterRandomizationSettings, RunOptions
 from mlagents.trainers.action_info import ActionInfo
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
@@ -115,15 +115,25 @@ def worker(
     step_queue: Queue,
     pickled_env_factory: str,
     worker_id: int,
-    engine_configuration: EngineConfig,
+    run_options: RunOptions,
     log_level: int = logging_util.INFO,
 ) -> None:
     env_factory: Callable[
         [int, List[SideChannel]], UnityEnvironment
     ] = cloudpickle.loads(pickled_env_factory)
     env_parameters = EnvironmentParametersChannel()
+
+    engine_config = EngineConfig(
+        width=run_options.engine_settings.width,
+        height=run_options.engine_settings.height,
+        quality_level=run_options.engine_settings.quality_level,
+        time_scale=run_options.engine_settings.time_scale,
+        target_frame_rate=run_options.engine_settings.target_frame_rate,
+        capture_frame_rate=run_options.engine_settings.capture_frame_rate,
+    )
     engine_configuration_channel = EngineConfigurationChannel()
-    engine_configuration_channel.set_configuration(engine_configuration)
+    engine_configuration_channel.set_configuration(engine_config)
+
     stats_channel = StatsSideChannel()
     training_analytics_channel = TrainingAnalyticsSideChannel()
     env: BaseEnv = None
@@ -146,7 +156,7 @@ def worker(
             side_channels.append(training_analytics_channel)
 
         env = env_factory(worker_id, side_channels)
-        training_analytics_channel.environment_initialized()
+        training_analytics_channel.environment_initialized(run_options)
         while True:
             req: EnvironmentRequest = parent_conn.recv()
             if req.cmd == EnvironmentCommand.STEP:
@@ -223,7 +233,7 @@ class SubprocessEnvManager(EnvManager):
     def __init__(
         self,
         env_factory: Callable[[int, List[SideChannel]], BaseEnv],
-        engine_configuration: EngineConfig,
+        run_options: RunOptions,
         n_env: int = 1,
     ):
         super().__init__()
@@ -233,7 +243,7 @@ class SubprocessEnvManager(EnvManager):
         for worker_idx in range(n_env):
             self.env_workers.append(
                 self.create_worker(
-                    worker_idx, self.step_queue, env_factory, engine_configuration
+                    worker_idx, self.step_queue, env_factory, run_options
                 )
             )
             self.workers_alive += 1
@@ -243,7 +253,7 @@ class SubprocessEnvManager(EnvManager):
         worker_id: int,
         step_queue: Queue,
         env_factory: Callable[[int, List[SideChannel]], BaseEnv],
-        engine_configuration: EngineConfig,
+        run_options: RunOptions,
     ) -> UnityEnvWorker:
         parent_conn, child_conn = Pipe()
 
@@ -257,7 +267,7 @@ class SubprocessEnvManager(EnvManager):
                 step_queue,
                 pickled_env_factory,
                 worker_id,
-                engine_configuration,
+                run_options,
                 logger.level,
             ),
         )

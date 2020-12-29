@@ -28,7 +28,6 @@ from mlagents.trainers.training_status import GlobalTrainingStatus
 from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
-from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 from mlagents_envs.timers import (
     hierarchical_timer,
     get_timer_tree,
@@ -110,17 +109,8 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             env_settings.env_args,
             os.path.abspath(run_logs_dir),  # Unity environment requires absolute path
         )
-        engine_config = EngineConfig(
-            width=engine_settings.width,
-            height=engine_settings.height,
-            quality_level=engine_settings.quality_level,
-            time_scale=engine_settings.time_scale,
-            target_frame_rate=engine_settings.target_frame_rate,
-            capture_frame_rate=engine_settings.capture_frame_rate,
-        )
-        env_manager = SubprocessEnvManager(
-            env_factory, engine_config, env_settings.num_envs
-        )
+
+        env_manager = SubprocessEnvManager(env_factory, options, env_settings.num_envs)
         env_parameter_manager = EnvironmentParameterManager(
             options.environment_parameters, run_seed, restore=checkpoint_settings.resume
         )
