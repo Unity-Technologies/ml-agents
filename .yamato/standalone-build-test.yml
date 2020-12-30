@@ -36,4 +36,5 @@ test_linux_standalone_{{ editor.version }}:
     standalonebuild:
       paths:
         - "artifacts/testPlayer*/**"
+        - "artifacts/**/UnityPlayer.so"
 {% endfor %}
