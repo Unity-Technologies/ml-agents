@@ -39,7 +39,7 @@ namespace Unity.MLAgents.Policies
             if (!m_AnalyticsSent)
             {
                 m_AnalyticsSent = true;
-                TrainingAnalytics.RemotePolicyStarted(
+                TrainingAnalytics.RemotePolicyInitialized(
                     m_FullyQualifiedBehaviorName,
                     sensors,
                     m_ActionSpec

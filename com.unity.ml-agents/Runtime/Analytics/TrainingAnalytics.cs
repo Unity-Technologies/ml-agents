@@ -19,14 +19,14 @@ namespace Unity.MLAgents.Analytics
     {
         const string k_VendorKey = "unity.ml-agents";
         const string k_TrainingEnvironmentInitializedEventName = "ml_agents_training_environment_initialized";
-        const string k_BehaviorTrainingStartedEventName = "ml_agents_training_behavior_initialized";
-        const string k_RemotePolicyStartedEventName = "ml_agents_training_policy_initialized";
+        const string k_TrainingBehaviorInitializedEventName = "ml_agents_training_behavior_initialized";
+        const string k_RemotePolicyInitializedEventName = "ml_agents_remote_policy_initialized";
 
         private static readonly string[] s_EventNames =
         {
             k_TrainingEnvironmentInitializedEventName,
-            k_BehaviorTrainingStartedEventName,
-            k_RemotePolicyStartedEventName
+            k_TrainingBehaviorInitializedEventName,
+            k_RemotePolicyInitializedEventName
         };
 
         /// <summary>
@@ -44,12 +44,14 @@ namespace Unity.MLAgents.Analytics
         /// </summary>
         const int k_MaxNumberOfElements = 1000;
 
+        private static bool s_SentEnvironmentInitialized;
         /// <summary>
         /// Behaviors that we've already sent events for.
         /// </summary>
-        private static HashSet<string> s_SentRemotePolicyStartedBehaviors;
+        private static HashSet<string> s_SentRemotePolicyInitialized;
+        private static HashSet<string> s_SentTrainingBehaviorInitialized;
 
-        private static Guid s_TrainingSessionId;
+        private static Guid s_TrainingSessionGuid;
 
         static bool EnableAnalytics()
         {
@@ -73,10 +75,11 @@ namespace Unity.MLAgents.Analytics
             }
             s_EventsRegistered = true;
 
-            if (s_SentRemotePolicyStartedBehaviors == null)
+            if (s_SentRemotePolicyInitialized == null)
             {
-                s_SentRemotePolicyStartedBehaviors = new HashSet<string>();
-                s_TrainingSessionId = Guid.NewGuid();
+                s_SentRemotePolicyInitialized = new HashSet<string>();
+                s_SentTrainingBehaviorInitialized = new HashSet<string>();
+                s_TrainingSessionGuid = Guid.NewGuid();
             }
 
             return s_EventsRegistered;
@@ -91,14 +94,40 @@ namespace Unity.MLAgents.Analytics
 #endif
         }
 
-        public static void RemotePolicyStarted(
+        public static void TrainingEnvironmentInitialized(TrainingEnvironmentInitializedEvent tbiEvent)
+        {
+            if (!IsAnalyticsEnabled())
+                return;
+
+            if (!EnableAnalytics())
+                return;
+
+            if (s_SentEnvironmentInitialized)
+            {
+                // We already sent an TrainingEnvironmentInitializedEvent. Exit so we don't resend.
+                return;
+            }
+
+            s_SentEnvironmentInitialized = true;
+            tbiEvent.TrainingSessionGuid = s_TrainingSessionGuid.ToString();
+
+            // Note - to debug, use JsonUtility.ToJson on the event.
+            Debug.Log(
+                $"Would send event {k_TrainingEnvironmentInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
+            );
+#if UNITY_EDITOR
+            //EditorAnalytics.SendEventWithLimit(k_TrainingEnvironmentInitializedEventName, tbiEvent);
+#else
+            return;
+#endif
+        }
+
+        public static void RemotePolicyInitialized(
             string fullyQualifiedBehaviorName,
             IList<ISensor> sensors,
             ActionSpec actionSpec
         )
         {
-            // The event shouldn't be able to report if this is disabled but if we know we're not going to report
-            // Lets early out and not waste time gathering all the data
             if (!IsAnalyticsEnabled())
                 return;
 
@@ -107,7 +136,7 @@ namespace Unity.MLAgents.Analytics
 
             // TODO extract base behavior name (no team ID)
             var behaviorName = fullyQualifiedBehaviorName;
-            var added = s_SentRemotePolicyStartedBehaviors.Add(fullyQualifiedBehaviorName);
+            var added = s_SentRemotePolicyInitialized.Add(fullyQualifiedBehaviorName);
 
             if (!added)
             {
@@ -118,21 +147,52 @@ namespace Unity.MLAgents.Analytics
             var data = GetEventForRemotePolicy(behaviorName, sensors, actionSpec);
             // Note - to debug, use JsonUtility.ToJson on the event.
             Debug.Log(
-                $"Would send event {k_RemotePolicyStartedEventName} with body {JsonUtility.ToJson(data, true)}"
+                $"Would send event {k_RemotePolicyInitializedEventName} with body {JsonUtility.ToJson(data, true)}"
                 );
 #if UNITY_EDITOR
-            //EditorAnalytics.SendEventWithLimit(k_RemotePolicyStartedEventName, data);
+            //EditorAnalytics.SendEventWithLimit(k_RemotePolicyInitializedEventName, data);
 #else
             return;
 #endif
         }
 
-        static RemotePolicyStartedEvent GetEventForRemotePolicy(
+        public static void TrainingBehaviorInitialized(TrainingBehaviorInitializedEvent tbiEvent)
+        {
+            if (!IsAnalyticsEnabled())
+                return;
+
+            if (!EnableAnalytics())
+                return;
+
+            var behaviorName = tbiEvent.BehaviorName;
+            var added = s_SentTrainingBehaviorInitialized.Add(behaviorName);
+
+            if (!added)
+            {
+                // We previously added this model. Exit so we don't resend.
+                return;
+            }
+
+            // TODO hash behavior name before shipping.
+            tbiEvent.TrainingSessionGuid = s_TrainingSessionGuid.ToString();
+
+            // Note - to debug, use JsonUtility.ToJson on the event.
+            Debug.Log(
+                $"Would send event {k_TrainingBehaviorInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
+            );
+#if UNITY_EDITOR
+            //EditorAnalytics.SendEventWithLimit(k_TrainingBehaviorInitializedEventName, tbiEvent);
+#else
+            return;
+#endif
+        }
+
+        static RemotePolicyInitializedEvent GetEventForRemotePolicy(
             string behaviorName,
             IList<ISensor> sensors,
             ActionSpec actionSpec)
         {
-            var remotePolicyEvent = new RemotePolicyStartedEvent();
+            var remotePolicyEvent = new RemotePolicyInitializedEvent();
 
             // Hash the behavior name so that there's no concern about PII or "secret" data being leaked.
             //var behaviorNameHash = Hash128.Compute(behaviorName);
@@ -140,7 +200,7 @@ namespace Unity.MLAgents.Analytics
             // TODO hash before shipping
             remotePolicyEvent.BehaviorName = behaviorName;
 
-            remotePolicyEvent.TrainingSessionGuid = s_TrainingSessionId.ToString();
+            remotePolicyEvent.TrainingSessionGuid = s_TrainingSessionGuid.ToString();
             remotePolicyEvent.ActionSpec = EventActionSpec.FromActionSpec(actionSpec);
             remotePolicyEvent.ObservationSpecs = new List<EventObservationSpec>(sensors.Count);
             foreach (var sensor in sensors)

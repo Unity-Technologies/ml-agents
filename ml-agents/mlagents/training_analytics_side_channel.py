@@ -47,7 +47,8 @@ class TrainingAnalyticsSideChannel(SideChannel):
         num_randomized_parameters = len(env_params) if env_params else 0
 
         env_init_msg = OutgoingMessage()
-        env_init_msg.write_string(f"environment_initialized! {str(locals())}")
+        env_init_msg.write_string("environment_initialized")
+        env_init_msg.write_string(str(locals()))
         super().queue_message_to_send(env_init_msg)
 
     def training_started(self, behavior_name: str, config: TrainerSettings) -> None:
@@ -62,17 +63,18 @@ class TrainingAnalyticsSideChannel(SideChannel):
 
         recurrent_enabled = config.network_settings.memory is not None
         visual_encoder = config.network_settings.vis_encode_type.value
-        network_layers = config.network_settings.num_layers
-        network_hidden_units = config.network_settings.hidden_units
+        num_network_layers = config.network_settings.num_layers
+        num_network_hidden_units = config.network_settings.hidden_units
 
         trainer_threaded = config.threaded
-        self_play = config.self_play is not None
+        self_play_enabled = config.self_play is not None
         uses_curriculum = self._behavior_uses_curriculum(behavior_name)
 
         training_start_msg = OutgoingMessage()
-        training_start_msg.write_string(
-            f"training_started for {behavior_name} with config {str(locals())}!"
-        )
+        training_start_msg.write_string("training_started")
+        training_start_msg.write_string(behavior_name)
+        training_start_msg.write_string(str(locals()))
+
         super().queue_message_to_send(training_start_msg)
 
     def _behavior_uses_curriculum(self, behavior_name: str) -> bool:

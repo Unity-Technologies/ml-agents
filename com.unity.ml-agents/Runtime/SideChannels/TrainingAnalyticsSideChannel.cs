@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using Unity.MLAgents.Analytics;
+
 namespace Unity.MLAgents.SideChannels
 {
     public class TrainingAnalyticsSideChannel : SideChannel
@@ -18,10 +20,30 @@ namespace Unity.MLAgents.SideChannels
         /// <inheritdoc/>
         protected override void OnMessageReceived(IncomingMessage msg)
         {
+            // TODO logic here is placeholder until we define protos for sending information.
             var eventName = msg.ReadString();
-            if (!string.IsNullOrEmpty(eventName))
+            if (eventName == "environment_initialized")
             {
-                Debug.Log(eventName);
+                var eventBody = msg.ReadString();
+                Debug.Log($"{eventName}: {eventBody}");
+
+                var envInitEvent = new TrainingEnvironmentInitializedEvent
+                {
+
+                };
+                TrainingAnalytics.TrainingEnvironmentInitialized(envInitEvent);
+            }
+            else // TrainingBehaviorInitialized
+            {
+                var behaviorName = msg.ReadString();
+                var eventBody = msg.ReadString();
+                Debug.Log($"{eventName} ({behaviorName}): {eventBody}");
+
+                var behaviorTrainingEvent = new TrainingBehaviorInitializedEvent
+                {
+                    BehaviorName = behaviorName,
+                };
+                TrainingAnalytics.TrainingBehaviorInitialized(behaviorTrainingEvent);
             }
         }
     }

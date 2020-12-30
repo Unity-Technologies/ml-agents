@@ -87,16 +87,49 @@ namespace Unity.MLAgents.Analytics
         }
     }
 
-    internal struct RemotePolicyStartedEvent
+    internal struct RemotePolicyInitializedEvent
     {
+        public string TrainingSessionGuid;
         /// <summary>
         /// Hash of the BehaviorName.
         /// </summary>
         public string BehaviorName;
-        public string TrainingSessionGuid;
         public List<EventObservationSpec> ObservationSpecs;
         public EventActionSpec ActionSpec;
 
         // TODO get python versions from RpcCommunicator?
+    }
+
+    internal struct TrainingEnvironmentInitializedEvent
+    {
+        public string TrainingSessionGuid;
+
+        public string TrainerPythonVersion;
+        public string MLAgentsVersion;
+        public string MLAgentsEnvsVersion;
+        public string TorchVersion;
+        public string TorchDeviceType;
+        public int NumEnvironments;
+        public int NumRandomizedParameters;
+    }
+
+    internal struct TrainingBehaviorInitializedEvent
+    {
+        public string TrainingSessionGuid;
+
+        public string BehaviorName;
+        public string TrainerType;
+        public bool ExtrinsicRewardEnabled;
+        public bool GailRewardEnabled;
+        public bool CuriosityRewardEnabled;
+        public bool RndRewardEnabled;
+        public bool BehavioralCloningEnabled;
+        public bool RecurrentEnabled;
+        public string VisualEncoder;
+        public int NumNetworkLayers;
+        public int NumNetworkHiddenUnits;
+        public bool Threaded;
+        public bool SelfPlayEnabled;
+        public bool UsesCurriculum;
     }
 }
