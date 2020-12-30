@@ -20,6 +20,7 @@ and this project adheres to
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
+- Fix a compile warning about using an obsolete enum in `GrpcExtensions.cs`
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 
