@@ -102,7 +102,8 @@ def run_training(python_version: str, csharp_version: str) -> bool:
     if csharp_version is None and python_version is None:
         model_artifacts_dir = os.path.join(get_base_output_path(), "models")
         os.makedirs(model_artifacts_dir, exist_ok=True)
-        shutil.copy(onnx_file_expected, model_artifacts_dir)
+        if os.path.exists(onnx_file_expected):
+            shutil.copy(onnx_file_expected, model_artifacts_dir)
 
     if res.returncode != 0 or not os.path.exists(onnx_file_expected):
         print("mlagents-learn run FAILED!")
