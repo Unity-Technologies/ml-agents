@@ -360,7 +360,7 @@ def test_gail_visual_ppo(simple_record, action_sizes):
     reward_signals = {
         RewardSignalType.GAIL: GAILSettings(encoding_size=32, demo_path=demo_path)
     }
-    hyperparams = attr.evolve(PPO_TORCH_CONFIG.hyperparameters, learning_rate=3e-4)
+    hyperparams = attr.evolve(PPO_TORCH_CONFIG.hyperparameters, learning_rate=5e-3)
     config = attr.evolve(
         PPO_TORCH_CONFIG,
         reward_signals=reward_signals,

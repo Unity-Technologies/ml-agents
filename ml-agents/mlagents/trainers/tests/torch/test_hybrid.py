@@ -43,7 +43,7 @@ def test_hybrid_visual_ppo(num_visual):
         PPO_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4
     )
     config = attr.evolve(PPO_TORCH_CONFIG, hyperparameters=new_hyperparams)
-    check_environment_trains(env, {BRAIN_NAME: config})
+    check_environment_trains(env, {BRAIN_NAME: config}, training_seed=1336)
 
 
 def test_hybrid_recurrent_ppo():
@@ -62,7 +62,7 @@ def test_hybrid_recurrent_ppo():
         PPO_TORCH_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_network_settings,
-        max_steps=3000,
+        max_steps=5000,
     )
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
@@ -75,12 +75,14 @@ def test_hybrid_sac(action_size):
         SAC_TORCH_CONFIG.hyperparameters,
         buffer_size=50000,
         batch_size=256,
-        buffer_init_steps=2000,
+        buffer_init_steps=0,
     )
     config = attr.evolve(
-        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=6000
+        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=2200
     )
-    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
+    check_environment_trains(
+        env, {BRAIN_NAME: config}, success_threshold=0.9, training_seed=1336
+    )
 
 
 @pytest.mark.parametrize("num_visual", [1, 2])

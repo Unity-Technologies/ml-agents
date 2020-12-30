@@ -1,3 +1,5 @@
+from typing import List, Tuple
+from mlagents_envs.base_env import SensorSpec, DimensionProperty
 import pytest
 import copy
 import os
@@ -70,3 +72,12 @@ def curiosity_dummy_config():
 @pytest.fixture
 def extrinsic_dummy_config():
     return {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
+
+
+def create_sensor_specs_with_shapes(shapes: List[Tuple[int, ...]]) -> List[SensorSpec]:
+    sen_spec: List[SensorSpec] = []
+    for shape in shapes:
+        dim_prop = (DimensionProperty.UNSPECIFIED,) * len(shape)
+        spec = SensorSpec(shape, dim_prop)
+        sen_spec.append(spec)
+    return sen_spec

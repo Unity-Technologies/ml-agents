@@ -6,7 +6,7 @@ namespace Unity.MLAgents.Actuators
     public interface IActuator : IActionReceiver
     {
         /// <summary>
-        /// The specification of the Action space for this IActuator.
+        /// The specification of the actions for this IActuator.
         /// </summary>
         /// <seealso cref="ActionSpec"/>
         ActionSpec ActionSpec { get; }

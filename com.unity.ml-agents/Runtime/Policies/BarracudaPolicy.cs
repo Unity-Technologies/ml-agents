@@ -1,4 +1,3 @@
-using System;
 using Unity.Barracuda;
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;

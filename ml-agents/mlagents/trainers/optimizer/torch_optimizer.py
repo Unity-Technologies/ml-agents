@@ -3,7 +3,7 @@ from mlagents.torch_utils import torch
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.trajectory import SplitObservations
+from mlagents.trainers.trajectory import ObsUtil
 from mlagents.trainers.torch.components.bc.module import BCModule
 from mlagents.trainers.torch.components.reward_providers import create_reward_provider
 
@@ -52,34 +52,23 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
     def get_trajectory_value_estimates(
         self, batch: AgentBuffer, next_obs: List[np.ndarray], done: bool
     ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:
-        vector_obs = [ModelUtils.list_to_tensor(batch["vector_obs"])]
-        if self.policy.use_vis_obs:
-            visual_obs = []
-            for idx, _ in enumerate(
-                self.policy.actor_critic.network_body.visual_processors
-            ):
-                visual_ob = ModelUtils.list_to_tensor(batch["visual_obs%d" % idx])
-                visual_obs.append(visual_ob)
-        else:
-            visual_obs = []
+        n_obs = len(self.policy.behavior_spec.sensor_specs)
+        current_obs = ObsUtil.from_buffer(batch, n_obs)
+
+        # Convert to tensors
+        current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
+        next_obs = [ModelUtils.list_to_tensor(obs) for obs in next_obs]
 
         memory = torch.zeros([1, 1, self.policy.m_size])
 
-        vec_vis_obs = SplitObservations.from_observations(next_obs)
-        next_vec_obs = [
-            ModelUtils.list_to_tensor(vec_vis_obs.vector_observations).unsqueeze(0)
-        ]
-        next_vis_obs = [
-            ModelUtils.list_to_tensor(_vis_ob).unsqueeze(0)
-            for _vis_ob in vec_vis_obs.visual_observations
-        ]
+        next_obs = [obs.unsqueeze(0) for obs in next_obs]
 
         value_estimates, next_memory = self.policy.actor_critic.critic_pass(
-            vector_obs, visual_obs, memory, sequence_length=batch.num_experiences
+            current_obs, memory, sequence_length=batch.num_experiences
         )
 
         next_value_estimate, _ = self.policy.actor_critic.critic_pass(
-            next_vec_obs, next_vis_obs, next_memory, sequence_length=1
+            next_obs, next_memory, sequence_length=1
         )
 
         for name, estimate in value_estimates.items():

@@ -13,6 +13,22 @@ double-check that the versions are in the same. The versions can be found in
   ([example](https://github.com/Unity-Technologies/ml-agents/blob/b255661084cb8f701c716b040693069a3fb9a257/ml-agents-envs/mlagents/envs/environment.py#L45))
 
 # Migrating
+## Migrating to Release 11
+### Agent virtual method deprecation
+ - `Agent.CollectDiscreteActionMasks()` was deprecated and should be replaced with `Agent.WriteDiscreteActionMask()`
+ - `Agent.Heuristic(float[])` was deprecated and should be replaced with `Agent.Heuristic(ActionBuffers)`.
+ - `Agent.OnActionReceived(float[])` was deprecated and should be replaced with `Agent.OnActionReceived(ActionBuffers)`.
+ - `Agent.GetAction()` was deprecated and should be replaced with `Agent.GetStoredActionBuffers()`.
+
+The default implementation of these will continue to call the deprecated versions where appropriate. However, the
+deprecated versions may not be compatible with continuous and discrete actions on the same Agent.
+
+### BrainParameters field and method deprecation
+ - `BrainParameters.VectorActionSize` was deprecated; you can now set `BrainParameters.ActionSpec.NumContinuousActions`
+ or `BrainParameters.ActionSpec.BranchSizes` instead.
+ - `BrainParameters.VectorActionSpaceType` was deprecated, since both continuous and discrete actions can now be used.
+ - `BrainParameters.NumActions()` was deprecated. Use  `BrainParameters.ActionSpec.NumContinuousActions` and
+ `BrainParameters.ActionSpec.NumDiscreteActions` instead.
 
 ## Migrating from Release 7 to latest
 

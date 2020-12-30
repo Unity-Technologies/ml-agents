@@ -10,6 +10,7 @@ from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.torch.test_policy import create_policy_mock
+from mlagents.trainers.torch.utils import ModelUtils
 
 
 def test_register(tmp_path):
@@ -71,19 +72,19 @@ def _compare_two_policies(policy1: TorchPolicy, policy2: TorchPolicy) -> None:
     decision_step, _ = mb.create_steps_from_behavior_spec(
         policy1.behavior_spec, num_agents=1
     )
-    vec_vis_obs, masks = policy1._split_decision_step(decision_step)
-    vec_obs = [torch.as_tensor(vec_vis_obs.vector_observations)]
-    vis_obs = [torch.as_tensor(vis_ob) for vis_ob in vec_vis_obs.visual_observations]
+    np_obs = decision_step.obs
+    masks = policy1._extract_masks(decision_step)
     memories = torch.as_tensor(
         policy1.retrieve_memories(list(decision_step.agent_id))
     ).unsqueeze(0)
+    tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
 
     with torch.no_grad():
         _, log_probs1, _, _ = policy1.sample_actions(
-            vec_obs, vis_obs, masks=masks, memories=memories
+            tensor_obs, masks=masks, memories=memories
         )
         _, log_probs2, _, _ = policy2.sample_actions(
-            vec_obs, vis_obs, masks=masks, memories=memories
+            tensor_obs, masks=masks, memories=memories
         )
     np.testing.assert_array_equal(
         log_probs1.all_discrete_tensor, log_probs2.all_discrete_tensor

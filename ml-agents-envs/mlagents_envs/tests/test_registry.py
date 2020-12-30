@@ -36,7 +36,7 @@ def test_basic_in_registry():
     for worker_id in range(2):
         assert BASIC_ID in registry
         env = registry[BASIC_ID].make(
-            base_port=6005, worker_id=worker_id, no_graphics=True
+            base_port=6002, worker_id=worker_id, no_graphics=True
         )
         env.reset()
         env.step()

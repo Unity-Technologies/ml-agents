@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Policies;
 
 
 namespace Unity.MLAgents.Inference
@@ -40,7 +39,7 @@ namespace Unity.MLAgents.Inference
         /// <summary>
         /// Returns a new TensorAppliers object.
         /// </summary>
-        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         /// <param name="seed"> The seed the Appliers will be initialized with.</param>
         /// <param name="allocator"> Tensor allocator</param>
         /// <param name="memories">Dictionary of AgentInfo.id to memory used to pass to the inference model.</param>

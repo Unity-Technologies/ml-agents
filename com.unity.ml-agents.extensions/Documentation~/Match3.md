@@ -10,7 +10,7 @@ Our aim is to enable Match-3 teams to leverage ML-Agents to create player agents
 This implementation includes:
 
 * C# implementation catered toward a Match-3 setup including concepts around encoding for moves based on [Human Like Playtesting with Deep Learning](https://www.researchgate.net/publication/328307928_Human-Like_Playtesting_with_Deep_Learning)
-* An example Match-3 scene with ML-Agents implemented (located under /Project/Assets/ML-Agents/Examples/Match3). More information, on Match-3 example [here](https://github.com/Unity-Technologies/ml-agents/tree/release_10_docs/docs/docs/Learning-Environment-Examples.md#match-3).
+* An example Match-3 scene with ML-Agents implemented (located under /Project/Assets/ML-Agents/Examples/Match3). More information, on Match-3 example [here](https://github.com/Unity-Technologies/ml-agents/tree/release_12_docs/docs/docs/Learning-Environment-Examples.md#match-3).
 
 ### Feedback
 If you are a Match-3 developer and are trying to leverage ML-Agents for this scenario, [we want to hear from you](https://forms.gle/TBsB9jc8WshgzViU9). Additionally, we are also looking for interested Match-3 teams to speak with us for 45 minutes. If you are interested, please indicate that in the [form](https://forms.gle/TBsB9jc8WshgzViU9).  If selected, we will provide gift cards as a token of appreciation.

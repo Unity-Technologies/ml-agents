@@ -1,9 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
 using Unity.MLAgents.Extensions.Sensors;
-using NUnit.Framework.Internal;
-using UnityEngine.TestTools;
-using System.Collections;
 
 namespace Unity.MLAgents.Extensions.Tests.Sensors
 {
