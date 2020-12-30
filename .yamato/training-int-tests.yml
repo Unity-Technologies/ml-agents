@@ -68,9 +68,10 @@ test_mac_backcompat_2020.1:
       # to be disabled until the next release.
       python -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=mac
       python -u -m ml-agents.tests.yamato.training_int_tests --csharp={{ csharp_backcompat_version }}
-      deactivate
+    - |
       python3 -m venv venv_old && source venv_old/bin/activate
-      python -u -m ml-agents.tests.yamato.training_int_tests --python==0.16.0
+      python -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+      python -u -m ml-agents.tests.yamato.training_int_tests --python=0.16.0
   triggers:
     cancel_old_ci: true
     expression: |
