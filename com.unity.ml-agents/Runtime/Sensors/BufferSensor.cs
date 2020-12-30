@@ -2,7 +2,7 @@ using System;
 
 namespace Unity.MLAgents.Sensors
 {
-    public class BufferSensor : ISensor, IDimensionPropertiesSensor
+    internal class BufferSensor : ISensor, IDimensionPropertiesSensor
     {
         private int m_MaxNumObs;
         private int m_ObsSize;

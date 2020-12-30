@@ -5,7 +5,7 @@ namespace Unity.MLAgents.Sensors
     /// The Dimension property flags of the observations
     /// </summary>
     [System.Flags]
-    public enum DimensionProperty
+    internal enum DimensionProperty
     {
         /// <summary>
         /// No properties specified.
@@ -34,7 +34,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// Sensor interface for sensors with special dimension properties.
     /// </summary>
-    public interface IDimensionPropertiesSensor
+    internal interface IDimensionPropertiesSensor
     {
         /// <summary>
         /// Returns the array containing the properties of each dimensions of the
