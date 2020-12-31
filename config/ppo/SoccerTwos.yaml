@@ -66,5 +66,5 @@ environment_parameters:
           min_lesson_length: 100
           threshold: 0.003
         value: 0.0
-#env_settings:
-#  num_envs: 2
+env_settings:
+  num_envs: 1

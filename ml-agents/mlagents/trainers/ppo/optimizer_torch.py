@@ -163,7 +163,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             memories=memories,
             seq_len=self.policy.sequence_length,
         )
-        obs[-1] = comms[0]
+        obs[-1] = comms[1]
 
         log_probs, entropy, values = self.policy.evaluate_actions(
             obs,

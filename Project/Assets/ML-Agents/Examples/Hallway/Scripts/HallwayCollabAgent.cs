@@ -200,7 +200,7 @@ public class HallwayCollabAgent : HallwayAgent
                 else
                 {
                     SetReward(-0.1f);
-                    teammate.SetReward(-0.1f);
+                    teammate.SetReward(-1f);
                     StartCoroutine(GoalScoredSwapGroundMaterial(m_HallwaySettings.failMaterial, 0.5f));
                 }
                 EndEpisode();
