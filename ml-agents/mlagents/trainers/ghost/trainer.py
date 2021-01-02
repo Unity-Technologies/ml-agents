@@ -368,6 +368,11 @@ class GhostTrainer(Trainer):
         """
         # Get policy based on team id, but not group id
         parsed_behavior_id = BehaviorIdentifiers.from_name_behavior_id(name_behavior_id)
+        # So that the parsed behavior id is there for new groups
+        if parsed_behavior_id.behavior_id not in self._name_to_parsed_behavior_id:
+            self._name_to_parsed_behavior_id[
+                parsed_behavior_id.behavior_id
+            ] = parsed_behavior_id
         name_behavior_id = create_name_behavior_id(
             parsed_behavior_id.brain_name, team_id=parsed_behavior_id.team_id
         )

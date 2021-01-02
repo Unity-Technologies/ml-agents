@@ -62,6 +62,7 @@ class TrainerController:
         self.train_model = train
         self.param_manager = param_manager
         self.ghost_controller = self.trainer_factory.ghost_controller
+        self.team_ids: List[int] = []
         self.registered_behavior_ids: Set[str] = set()
 
         self.trainer_threads: List[threading.Thread] = []
@@ -135,10 +136,14 @@ class TrainerController:
                 )
                 self.trainer_threads.append(trainerthread)
 
-        policy = trainer.create_policy(
-            parsed_behavior_id, env_manager.training_behaviors[name_behavior_id]
-        )
-        trainer.add_policy(parsed_behavior_id, policy)
+        if parsed_behavior_id.team_id not in self.team_ids:
+            policy = trainer.create_policy(
+                parsed_behavior_id, env_manager.training_behaviors[name_behavior_id]
+            )
+            trainer.add_policy(parsed_behavior_id, policy)
+            self.team_ids.append(parsed_behavior_id.team_id)
+        else:
+            policy = trainer.get_policy(name_behavior_id)
 
         agent_manager = AgentManager(
             policy,
