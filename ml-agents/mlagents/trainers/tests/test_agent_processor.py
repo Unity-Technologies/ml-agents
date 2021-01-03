@@ -272,8 +272,8 @@ def test_agent_manager_stats():
         manager.record_environment_stats(env_stats, worker_id=0)
 
     expected_stats = {
-        "averaged": StatsSummary(mean=2.0, std=mock.ANY, num=2),
-        "most_recent": StatsSummary(mean=4.0, std=0.0, num=1),
+        "averaged": StatsSummary(stats_value=2.0, std=mock.ANY, num=2),
+        "most_recent": StatsSummary(stats_value=4.0, std=0.0, num=1),
     }
     stats_reporter.write_stats(123)
     writer.write_stats.assert_any_call("FakeCategory", expected_stats, 123)

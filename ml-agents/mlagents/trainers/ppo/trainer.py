@@ -169,7 +169,7 @@ class PPOTrainer(RLTrainer):
 
         advantages = self.update_buffer["advantages"].get_batch()
         self.update_buffer["advantages"].set(
-            (advantages - advantages.mean()) / (advantages.std() + 1e-10)
+            (advantages - advantages.stats_value()) / (advantages.std() + 1e-10)
         )
         num_epoch = self.hyperparameters.num_epoch
         batch_update_stats = defaultdict(list)

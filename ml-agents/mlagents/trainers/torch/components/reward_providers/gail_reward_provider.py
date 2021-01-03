@@ -161,12 +161,12 @@ class DiscriminatorNetwork(torch.nn.Module):
         expert_estimate, expert_mu = self.compute_estimate(
             expert_batch, use_vail_noise=True
         )
-        stats_dict["Policy/GAIL Policy Estimate"] = policy_estimate.mean().item()
-        stats_dict["Policy/GAIL Expert Estimate"] = expert_estimate.mean().item()
+        stats_dict["Policy/GAIL Policy Estimate"] = policy_estimate.stats_value().item()
+        stats_dict["Policy/GAIL Expert Estimate"] = expert_estimate.stats_value().item()
         discriminator_loss = -(
             torch.log(expert_estimate + self.EPSILON)
             + torch.log(1.0 - policy_estimate + self.EPSILON)
-        ).mean()
+        ).stats_value()
         stats_dict["Losses/GAIL Loss"] = discriminator_loss.item()
         total_loss += discriminator_loss
         if self._settings.use_vail:

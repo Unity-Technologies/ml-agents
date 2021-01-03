@@ -41,15 +41,13 @@ def _dict_to_str(param_dict: Dict[str, Any], num_tabs: int) -> str:
 
 
 class StatsSummary(NamedTuple):
-    mean: float
+    stats_value: float
     std: float
     num: int
-    sum: float = 0
-    aggregation: StatsAggregationMethod = StatsAggregationMethod.AVERAGE
 
     @staticmethod
     def empty() -> "StatsSummary":
-        return StatsSummary(0.0, 0.0, 0, 0.0, StatsAggregationMethod.AVERAGE)
+        return StatsSummary(0.0, 0.0, 0)
 
 
 class StatsPropertyType(Enum):
@@ -78,7 +76,7 @@ class StatsWriter(abc.ABC):
         with all types of properties. For instance, a TB writer doesn't need a max step.
 
         :param category: The category that the property belongs to.
-        :param type: The type of property.
+        :param property_type: The type of property.
         :param value: The property itself.
         """
         pass
@@ -102,7 +100,7 @@ class GaugeWriter(StatsWriter):
         for val, stats_summary in values.items():
             set_gauge(
                 GaugeWriter.sanitize_string(f"{category}.{val}.mean"),
-                float(stats_summary.mean),
+                float(stats_summary.stats_value),
             )
 
 
@@ -120,7 +118,7 @@ class ConsoleWriter(StatsWriter):
         is_training = "Not Training"
         if "Is Training" in values:
             stats_summary = values["Is Training"]
-            if stats_summary.mean > 0.0:
+            if stats_summary.stats_value > 0.0:
                 is_training = "Training"
 
         elapsed_time = time.time() - self.training_start_time
@@ -132,15 +130,14 @@ class ConsoleWriter(StatsWriter):
             if self.rank is not None:
                 log_info.append(f"Rank: {self.rank}")
 
-            log_info.append(f"Mean Reward: {stats_summary.mean:0.3f}")
+            log_info.append(f"Mean Reward: {stats_summary.stats_value:0.3f}")
             log_info.append(f"Std of Reward: {stats_summary.std:0.3f}")
             log_info.append(f"Num of Reward: {stats_summary.num:0.3f}")
-            log_info.append(f"Sum of Reward: {stats_summary.sum:0.3f}")
             log_info.append(is_training)
 
             if self.self_play and "Self-play/ELO" in values:
                 elo_stats = values["Self-play/ELO"]
-                log_info.append(f"ELO: {elo_stats.mean:0.3f}")
+                log_info.append(f"ELO: {elo_stats.stats_value:0.3f}")
         else:
             log_info.append("No episode was completed since last summary")
             log_info.append(is_training)
@@ -179,10 +176,7 @@ class TensorboardWriter(StatsWriter):
     ) -> None:
         self._maybe_create_summary_writer(category)
         for key, value in values.items():
-            if value.aggregation == StatsAggregationMethod.SUM:
-                self.summary_writers[category].add_scalar(f"{key}", value.sum, step)
-            else:
-                self.summary_writers[category].add_scalar(f"{key}", value.mean, step)
+            self.summary_writers[category].add_scalar(f"{key}", value.stats_value, step)
             self.summary_writers[category].flush()
 
     def _maybe_create_summary_writer(self, category: str) -> None:
@@ -311,11 +305,19 @@ class StatsReporter:
         :returns: A StatsSummary NamedTuple containing (mean, std, sum, count, aggregation).
         """
         if len(StatsReporter.stats_dict[self.category][key]) > 0:
-            return StatsSummary(
-                mean=np.mean(StatsReporter.stats_dict[self.category][key]),
-                std=np.std(StatsReporter.stats_dict[self.category][key]),
-                num=len(StatsReporter.stats_dict[self.category][key]),
-                sum=np.sum(StatsReporter.stats_dict[self.category][key]),
-                aggregation=StatsReporter.stats_aggregation[self.category][key],
-            )
+            if (
+                StatsReporter.stats_aggregation[self.category][key]
+                == StatsAggregationMethod.SUM
+            ):
+                return StatsSummary(
+                    stats_value=np.sum(StatsReporter.stats_dict[self.category][key]),
+                    std=np.std(StatsReporter.stats_dict[self.category][key]),
+                    num=len(StatsReporter.stats_dict[self.category][key]),
+                )
+            else:
+                return StatsSummary(
+                    stats_value=np.mean(StatsReporter.stats_dict[self.category][key]),
+                    std=np.std(StatsReporter.stats_dict[self.category][key]),
+                    num=len(StatsReporter.stats_dict[self.category][key]),
+                )
         return StatsSummary.empty()
