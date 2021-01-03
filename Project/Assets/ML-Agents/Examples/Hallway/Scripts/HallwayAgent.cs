@@ -160,5 +160,7 @@ public class HallwayAgent : Agent
             symbolXGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
             symbolOGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
         }
+        statsRecorder.Add("Goal/Correct", 0, StatAggregationMethod.Sum);
+        statsRecorder.Add("Goal/Wrong", 0, StatAggregationMethod.Sum);
     }
 }
