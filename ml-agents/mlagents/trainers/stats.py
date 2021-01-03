@@ -40,11 +40,12 @@ def _dict_to_str(param_dict: Dict[str, Any], num_tabs: int) -> str:
 class StatsSummary(NamedTuple):
     mean: float
     std: float
+    sum: float
     num: int
 
     @staticmethod
     def empty() -> "StatsSummary":
-        return StatsSummary(0.0, 0.0, 0)
+        return StatsSummary(0.0, 0.0, 0.0, 0)
 
 
 class StatsPropertyType(Enum):
@@ -129,6 +130,7 @@ class ConsoleWriter(StatsWriter):
             log_info.append(f"Mean Reward: {stats_summary.mean:0.3f}")
             log_info.append(f"Std of Reward: {stats_summary.std:0.3f}")
             log_info.append(f"Num of Reward: {stats_summary.num:0.3f}")
+            log_info.append(f"Sum of Reward: {stats_summary.sum:0.3f}")
             log_info.append(is_training)
 
             if self.self_play and "Self-play/ELO" in values:
@@ -280,14 +282,15 @@ class StatsReporter:
 
     def get_stats_summaries(self, key: str) -> StatsSummary:
         """
-        Get the mean, std, and count of a particular statistic, since last write.
+        Get the mean, std, sum, and count of a particular statistic, since last write.
         :param key: The type of statistic, e.g. Environment/Reward.
-        :returns: A StatsSummary NamedTuple containing (mean, std, count).
+        :returns: A StatsSummary NamedTuple containing (mean, std, sum, count).
         """
         if len(StatsReporter.stats_dict[self.category][key]) > 0:
             return StatsSummary(
                 mean=np.mean(StatsReporter.stats_dict[self.category][key]),
                 std=np.std(StatsReporter.stats_dict[self.category][key]),
+                sum=np.sum(StatsReporter.stats_dict[self.category][key]),
                 num=len(StatsReporter.stats_dict[self.category][key]),
             )
         return StatsSummary.empty()
