@@ -128,6 +128,7 @@ class DiscriminatorNetwork(torch.nn.Module):
         """
         Given a mini_batch, computes the estimate (How much the discriminator believes
         the data was sampled from the demonstration data).
+
         :param mini_batch: The AgentBuffer of data
         :param use_vail_noise: Only when using VAIL : If true, will sample the code, if
         false, will return the mean of the code.
@@ -161,12 +162,12 @@ class DiscriminatorNetwork(torch.nn.Module):
         expert_estimate, expert_mu = self.compute_estimate(
             expert_batch, use_vail_noise=True
         )
-        stats_dict["Policy/GAIL Policy Estimate"] = policy_estimate.stats_value().item()
-        stats_dict["Policy/GAIL Expert Estimate"] = expert_estimate.stats_value().item()
+        stats_dict["Policy/GAIL Policy Estimate"] = policy_estimate.mean().item()
+        stats_dict["Policy/GAIL Expert Estimate"] = expert_estimate.mean().item()
         discriminator_loss = -(
             torch.log(expert_estimate + self.EPSILON)
             + torch.log(1.0 - policy_estimate + self.EPSILON)
-        ).stats_value()
+        ).mean()
         stats_dict["Losses/GAIL Loss"] = discriminator_loss.item()
         total_loss += discriminator_loss
         if self._settings.use_vail:

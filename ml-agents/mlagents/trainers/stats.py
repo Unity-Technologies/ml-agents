@@ -221,7 +221,7 @@ class StatsReporter:
     stats_dict: Dict[str, Dict[str, List]] = defaultdict(lambda: defaultdict(list))
     lock = RLock()
     stats_aggregation: Dict[str, Dict[str, StatsAggregationMethod]] = defaultdict(
-        lambda: defaultdict(lambda: StatsAggregationMethod.AVERAGE)
+        lambda: defaultdict(lambda: {"", StatsAggregationMethod.AVERAGE})
     )
 
     def __init__(self, category: str):
