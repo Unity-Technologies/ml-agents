@@ -7,6 +7,8 @@ import os
 import time
 from threading import RLock
 
+from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
+
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
 from torch.utils.tensorboard import SummaryWriter
@@ -20,8 +22,9 @@ def _dict_to_str(param_dict: Dict[str, Any], num_tabs: int) -> str:
     """
     Takes a parameter dictionary and converts it to a human-readable string.
     Recurses if there are multiple levels of dict. Used to print out hyperparameters.
-    param: param_dict: A Dictionary of key, value parameters.
-    return: A string version of this dictionary.
+
+    :param param_dict: A Dictionary of key, value parameters.
+    :return: A string version of this dictionary.
     """
     if not isinstance(param_dict, dict):
         return str(param_dict)
@@ -42,10 +45,11 @@ class StatsSummary(NamedTuple):
     std: float
     sum: float
     num: int
+    aggregation: StatsAggregationMethod
 
     @staticmethod
     def empty() -> "StatsSummary":
-        return StatsSummary(0.0, 0.0, 0.0, 0)
+        return StatsSummary(0.0, 0.0, 0.0, 0, StatsAggregationMethod.AVERAGE)
 
 
 class StatsPropertyType(Enum):
@@ -72,6 +76,7 @@ class StatsWriter(abc.ABC):
         Add a generic property to the StatsWriter. This could be e.g. a Dict of hyperparameters,
         a max step count, a trainer type, etc. Note that not all StatsWriters need to be compatible
         with all types of properties. For instance, a TB writer doesn't need a max step.
+
         :param category: The category that the property belongs to.
         :param type: The type of property.
         :param value: The property itself.
@@ -159,10 +164,11 @@ class TensorboardWriter(StatsWriter):
     def __init__(self, base_dir: str, clear_past_data: bool = False):
         """
         A StatsWriter that writes to a Tensorboard summary.
+
         :param base_dir: The directory within which to place all the summaries. Tensorboard files will be written to a
         {base_dir}/{category} directory.
         :param clear_past_data: Whether or not to clean up existing Tensorboard files associated with the base_dir and
-            category.
+        category.
         """
         self.summary_writers: Dict[str, SummaryWriter] = {}
         self.base_dir: str = base_dir
@@ -173,7 +179,10 @@ class TensorboardWriter(StatsWriter):
     ) -> None:
         self._maybe_create_summary_writer(category)
         for key, value in values.items():
-            self.summary_writers[category].add_scalar(f"{key}", value.mean, step)
+            if value.aggregation == StatsAggregationMethod.SUM:
+                self.summary_writers[category].add_scalar(f"{key}", value.sum, step)
+            else:
+                self.summary_writers[category].add_scalar(f"{key}", value.mean, step)
             self.summary_writers[category].flush()
 
     def _maybe_create_summary_writer(self, category: str) -> None:
@@ -217,6 +226,9 @@ class StatsReporter:
     writers: List[StatsWriter] = []
     stats_dict: Dict[str, Dict[str, List]] = defaultdict(lambda: defaultdict(list))
     lock = RLock()
+    stats_aggregation: Dict[str, Dict[str, StatsAggregationMethod]] = defaultdict(
+        lambda: defaultdict(lambda: StatsAggregationMethod.AVERAGE)
+    )
 
     def __init__(self, category: str):
         """
@@ -237,26 +249,36 @@ class StatsReporter:
         Add a generic property to the StatsReporter. This could be e.g. a Dict of hyperparameters,
         a max step count, a trainer type, etc. Note that not all StatsWriters need to be compatible
         with all types of properties. For instance, a TB writer doesn't need a max step.
-        :param key: The type of property.
+
+        :param property_type: The type of property.
         :param value: The property itself.
         """
         with StatsReporter.lock:
             for writer in StatsReporter.writers:
                 writer.add_property(self.category, property_type, value)
 
-    def add_stat(self, key: str, value: float) -> None:
+    def add_stat(
+        self,
+        key: str,
+        value: float,
+        aggregation: StatsAggregationMethod = StatsAggregationMethod.AVERAGE,
+    ) -> None:
         """
         Add a float value stat to the StatsReporter.
+
         :param key: The type of statistic, e.g. Environment/Reward.
         :param value: the value of the statistic.
+        :param aggregation: the aggregation method for the statistic, default StatsAggregationMethod.AVERAGE.
         """
         with StatsReporter.lock:
             StatsReporter.stats_dict[self.category][key].append(value)
+            StatsReporter.stats_aggregation[self.category][key] = aggregation
 
     def set_stat(self, key: str, value: float) -> None:
         """
         Sets a stat value to a float. This is for values that we don't want to average, and just
         want the latest.
+
         :param key: The type of statistic, e.g. Environment/Reward.
         :param value: the value of the statistic.
         """
@@ -268,6 +290,7 @@ class StatsReporter:
         Write out all stored statistics that fall under the category specified.
         The currently stored values will be averaged, written out as a single value,
         and the buffer cleared.
+
         :param step: Training step which to write these stats as.
         """
         with StatsReporter.lock:
@@ -282,9 +305,10 @@ class StatsReporter:
 
     def get_stats_summaries(self, key: str) -> StatsSummary:
         """
-        Get the mean, std, sum, and count of a particular statistic, since last write.
+        Get the mean, std, sum, count and aggregation method of a particular statistic, since last write.
+
         :param key: The type of statistic, e.g. Environment/Reward.
-        :returns: A StatsSummary NamedTuple containing (mean, std, sum, count).
+        :returns: A StatsSummary NamedTuple containing (mean, std, sum, count, aggregation).
         """
         if len(StatsReporter.stats_dict[self.category][key]) > 0:
             return StatsSummary(
@@ -292,5 +316,6 @@ class StatsReporter:
                 std=np.std(StatsReporter.stats_dict[self.category][key]),
                 sum=np.sum(StatsReporter.stats_dict[self.category][key]),
                 num=len(StatsReporter.stats_dict[self.category][key]),
+                aggregation=StatsReporter.stats_aggregation[self.category][key],
             )
         return StatsSummary.empty()

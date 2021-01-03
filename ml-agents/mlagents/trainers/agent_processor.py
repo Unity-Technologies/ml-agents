@@ -40,6 +40,7 @@ class AgentProcessor:
     ):
         """
         Create an AgentProcessor.
+
         :param trainer: Trainer instance connected to this AgentProcessor. Trainer is given trajectory
         when it is finished.
         :param policy: Policy instance associated with this AgentProcessor.
@@ -70,6 +71,7 @@ class AgentProcessor:
     ) -> None:
         """
         Adds experiences to each agent's experience history.
+
         :param decision_steps: current DecisionSteps.
         :param terminal_steps: current TerminalSteps.
         :param previous_action: The outputs of the Policy's get_action method.
@@ -209,6 +211,7 @@ class AgentProcessor:
         """
         Adds a trajectory queue to the list of queues to publish to when this AgentProcessor
         assembles a Trajectory
+
         :param trajectory_queue: Trajectory queue to publish to.
         """
         self.trajectory_queues.append(trajectory_queue)
@@ -250,6 +253,7 @@ class AgentManagerQueue(Generic[T]):
     def maxlen(self):
         """
         The maximum length of the queue.
+
         :return: Maximum length of the queue.
         """
         return self._maxlen
@@ -258,6 +262,7 @@ class AgentManagerQueue(Generic[T]):
     def behavior_id(self):
         """
         The Behavior ID of this queue.
+
         :return: Behavior ID associated with the queue.
         """
         return self._behavior_id
@@ -318,7 +323,8 @@ class AgentManager(AgentProcessor):
         """
         Pass stats from the environment to the StatsReporter.
         Depending on the StatsAggregationMethod, either StatsReporter.add_stat or StatsReporter.set_stat is used.
-        The worker_id is used to determin whether StatsReporter.set_stat should be used.
+        The worker_id is used to determine whether StatsReporter.set_stat should be used.
+
         :param env_stats:
         :param worker_id:
         :return:
@@ -332,3 +338,5 @@ class AgentManager(AgentProcessor):
                     # only stats from the first environment are recorded.
                     if worker_id == 0:
                         self.stats_reporter.set_stat(stat_name, val)
+                elif agg_type == StatsAggregationMethod.SUM:
+                    self.stats_reporter.add_stat(stat_name, val, agg_type)
