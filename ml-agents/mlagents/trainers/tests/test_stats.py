@@ -129,7 +129,7 @@ class ConsoleWriterTest(unittest.TestCase):
         with self.assertLogs("mlagents.trainers", level="INFO") as cm:
             category = "category1"
             console_writer = ConsoleWriter()
-            statssummary1 = StatsSummary(mean=1.0, std=1.0, num=1)
+            statssummary1 = StatsSummary(mean=1.0, std=1.0, num=1, sum=1)
             console_writer.write_stats(
                 category,
                 {
@@ -138,11 +138,11 @@ class ConsoleWriterTest(unittest.TestCase):
                 },
                 10,
             )
-            statssummary2 = StatsSummary(mean=0.0, std=0.0, num=1)
+            statssummary2 = StatsSummary(mean=0.0, std=0.0, num=1, sum=0.0)
             console_writer.write_stats(
                 category,
                 {
-                    "Environment/Cumulative Reward": statssummary1,
+                    "Environment/Cumulative Reward": statssummary2,
                     "Is Training": statssummary2,
                 },
                 10,
@@ -153,7 +153,8 @@ class ConsoleWriterTest(unittest.TestCase):
             )
 
         self.assertIn(
-            "Mean Reward: 1.000. Std of Reward: 1.000. Training.", cm.output[0]
+            "Mean Reward: 0.500. Std of Reward: 0.707. Num of Reward: 2.000. Sum of Reward: 1.000. Training.",
+            cm.output[0],
         )
         self.assertIn("Not Training.", cm.output[1])
 
@@ -165,7 +166,7 @@ class ConsoleWriterTest(unittest.TestCase):
             category = "category1"
             console_writer = ConsoleWriter()
             console_writer.add_property(category, StatsPropertyType.SELF_PLAY, True)
-            statssummary1 = StatsSummary(mean=1.0, std=1.0, num=1)
+            statssummary1 = StatsSummary(mean=1.0, std=1.0, num=1, sum=1)
             console_writer.write_stats(
                 category,
                 {
@@ -177,5 +178,6 @@ class ConsoleWriterTest(unittest.TestCase):
             )
 
         self.assertIn(
-            "Mean Reward: 1.000. Std of Reward: 1.000. Training.", cm.output[0]
+            "Mean Reward: 1.000. Std of Reward: 1.000. Num of Reward: 1.000. Sum of Reward: 1.000. Training.",
+            cm.output[0],
         )
