@@ -128,6 +128,7 @@ class ConsoleWriter(StatsWriter):
 
             log_info.append(f"Mean Reward: {stats_summary.mean:0.3f}")
             log_info.append(f"Std of Reward: {stats_summary.std:0.3f}")
+            log_info.append(f"Num of Reward: {stats_summary.num:0.3f}")
             log_info.append(is_training)
 
             if self.self_play and "Self-play/ELO" in values:
