@@ -79,6 +79,7 @@ setup(
             "mlagents-learn=mlagents.trainers.learn:main",
             "mlagents-run-experiment=mlagents.trainers.run_experiment:main",
         ],
+        # Plugins - each plugin type should have an entry here for the default behavior
         "mlagents.stats_writer": [
             "default=mlagents.plugins.stats_writer:get_default_stats_writers"
         ],
