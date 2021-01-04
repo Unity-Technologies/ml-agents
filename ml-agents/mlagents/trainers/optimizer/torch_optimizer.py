@@ -71,8 +71,13 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         critic_obs = [
             ModelUtils.list_to_tensor_list(_agent_obs) for _agent_obs in critic_obs_np
         ]
+
         next_critic_obs = [
-            ModelUtils.list_to_tensor_list(_obs) for _obs in next_critic_obs
+            ModelUtils.list_to_tensor_list(_list_obs) for _list_obs in next_critic_obs
+        ]
+        # Expand dimensions of next critic obs
+        next_critic_obs = [
+            [_obs.unsqueeze(0) for _obs in _list_obs] for _list_obs in next_critic_obs
         ]
 
         memory = torch.zeros([1, 1, self.policy.m_size])
