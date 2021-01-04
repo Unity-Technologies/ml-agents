@@ -163,7 +163,6 @@ def run_inference(env_path: str, output_path: str, model_extension: str) -> bool
 
 
 def main():
-    print(f"sys.argv={sys.argv}")
     parser = argparse.ArgumentParser()
     parser.add_argument("--python", default=None)
     parser.add_argument("--csharp", default=None)
