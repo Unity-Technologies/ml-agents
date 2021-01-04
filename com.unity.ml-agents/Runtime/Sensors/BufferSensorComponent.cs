@@ -7,7 +7,7 @@ namespace Unity.MLAgents.Sensors
     /// A component for BufferSensor.
     /// </summary>
     [AddComponentMenu("ML Agents/Buffer Sensor", (int)MenuGroup.Sensors)]
-    public class BufferSensorComponent : SensorComponent
+    internal class BufferSensorComponent : SensorComponent
     {
         public int ObservableSize;
         public int MaxNumObservables;
