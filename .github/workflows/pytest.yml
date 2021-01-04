@@ -9,6 +9,8 @@ on:
     - 'test_constraints*.txt'
     - 'test_requirements.txt'
     - '.github/workflows/pytest.yml'
+    paths-ignore:
+    - 'ml-agents/tests/yamato/**'
   push:
     branches: [master]
 
