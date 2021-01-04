@@ -9,7 +9,7 @@ def main(scene_path, build_target):
     base_path = get_base_path()
     print(f"Running in base path {base_path}")
 
-    executable_name = None
+    executable_name = "testPlayer"
     if scene_path is not None:
         executable_name = os.path.splitext(scene_path)[0]  # Remove extension
         executable_name = executable_name.split("/")[-1]
