@@ -46,8 +46,8 @@ test_linux_training_int_{{ editor.version }}:
 
 
 test_mac_backcompat_2020.1:
-  {% capture editor_version %} 2020.1 {% endcapture %}
-  {% capture csharp_backcompat_version %} 1.0.0 {% endcapture %}
+  {% capture editor_version %}2020.1{% endcapture %}
+  {% capture csharp_backcompat_version %}1.0.0{% endcapture %}
   # This test has to run on mac because it requires the custom build of tensorflow without AVX
   # Test against 2020.1 because 2020.2 has to run against package version 1.2.0
   name: Test Mac Backcompat Training {{ editor_version }}
@@ -67,11 +67,11 @@ test_mac_backcompat_2020.1:
       # If we make a breaking change to the communication protocol, these will need
       # to be disabled until the next release.
       python -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=mac
-      python -u -m ml-agents.tests.yamato.training_int_tests --csharp={{ csharp_backcompat_version }}
+      python -u -m ml-agents.tests.yamato.training_int_tests --csharp {{ csharp_backcompat_version }}
     - |
       python3 -m venv venv_old && source venv_old/bin/activate
       python -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
-      python -u -m ml-agents.tests.yamato.training_int_tests --python=0.16.0
+      python -u -m ml-agents.tests.yamato.training_int_tests --python 0.16.0
   triggers:
     cancel_old_ci: true
     expression: |
