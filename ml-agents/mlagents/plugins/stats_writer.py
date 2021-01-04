@@ -1,17 +1,19 @@
+import sys
 from typing import List
-from mlagents.trainers.stats import TensorboardWriter, GaugeWriter, ConsoleWriter
 
+# importlib.metadata is new in python3.8
+# We use the backport for older python versions.
+if sys.version_info < (3, 8):
+    import importlib_metadata
+else:
+    import importlib.metadata as importlib_metadata  # pylint: disable=E0611
 
-try:
-    # importlib.metadata is new in python3.8
-    import importlib.metadata as importlib_metadata
-except ImportError:
-    # We use the backport for older python versions.
-    import importlib_metadata  # type: ignore
 from mlagents.trainers.stats import StatsWriter
 
 from mlagents_envs import logging_util
 from mlagents.trainers.settings import RunOptions
+from mlagents.trainers.stats import TensorboardWriter, GaugeWriter, ConsoleWriter
+
 
 logger = logging_util.get_logger(__name__)
 
@@ -30,22 +32,21 @@ def get_default_stats_writers(run_options: RunOptions) -> List[StatsWriter]:
 
 def register_stats_writer_plugins(run_options: RunOptions) -> List[StatsWriter]:
     all_stats_writers: List[StatsWriter] = []
-    eps = importlib_metadata.entry_points()["mlagents.stats_writer"]  # type: ignore
+    entry_points = importlib_metadata.entry_points()["mlagents.stats_writer"]
 
-    for ep in eps:
-        if ep.name != "default":
-            logger.info(f"Initializing StatsWriter plugins: {ep.name}")
+    for entry_point in entry_points:
 
         try:
-            plugin_func = ep.load()
+            logger.debug(f"Initializing StatsWriter plugins: {entry_point.name}")
+            plugin_func = entry_point.load()
             plugin_stats_writers = plugin_func(run_options)
             logger.debug(
-                f"Found {len(plugin_stats_writers)} StatsWriters for plugin {ep.name}"
+                f"Found {len(plugin_stats_writers)} StatsWriters for plugin {entry_point.name}"
             )
             all_stats_writers += plugin_stats_writers
         except BaseException:
             # Catch all exceptions from setting up the plugin, so that bad user code doesn't break things.
             logger.exception(
-                f"Error initializing StatsWriter plugins for {ep.name}. This plugin will not be used."
+                f"Error initializing StatsWriter plugins for {entry_point.name}. This plugin will not be used."
             )
     return all_stats_writers
