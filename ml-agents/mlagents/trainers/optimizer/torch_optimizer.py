@@ -78,7 +78,10 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         memory = torch.zeros([1, 1, self.policy.m_size])
 
         value_estimates, next_memory = self.policy.actor_critic.critic_pass(
-            current_obs, memory, sequence_length=batch.num_experiences, critic_obs=critic_obs
+            current_obs,
+            memory,
+            sequence_length=batch.num_experiences,
+            critic_obs=critic_obs,
         )
 
         next_value_estimate, _ = self.policy.actor_critic.critic_pass(

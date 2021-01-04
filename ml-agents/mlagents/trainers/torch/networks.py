@@ -221,13 +221,13 @@ class ValueNetwork(nn.Module):
 
     def forward(
         self,
-        net_inputs: List[torch.Tensor],
+        inputs: List[torch.Tensor],
         actions: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
         encoding, memories = self.network_body(
-            net_inputs, actions, memories, sequence_length
+            inputs, actions, memories, sequence_length
         )
         output = self.value_heads(encoding)
         return output, memories
@@ -259,8 +259,7 @@ class CentralizedValueNetwork(ValueNetwork):
 
     def forward(
         self,
-        net_inputs: List[List[torch.Tensor]],
-        inputs: List[torch.Tensor],
+        inputs: List[List[torch.Tensor]],
         actions: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
@@ -487,22 +486,6 @@ class SimpleActor(nn.Module, Actor):
                 self.act_size_vector_deprecated,
             ]
         return tuple(export_out)
-
-    def get_action_stats(
-        self,
-        net_inputs: List[torch.Tensor],
-        masks: Optional[torch.Tensor] = None,
-        memories: Optional[torch.Tensor] = None,
-        sequence_length: int = 1,
-    ) -> Tuple[
-        AgentAction, ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
-    ]:
-
-        encoding, memories = self.network_body(
-            net_inputs, memories=memories, sequence_length=sequence_length
-        )
-        action, log_probs, entropies = self.action_model(encoding, masks)
-        return action, log_probs, entropies, memories
 
 
 class SharedActorCritic(SimpleActor, ActorCritic):
