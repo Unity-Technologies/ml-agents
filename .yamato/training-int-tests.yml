@@ -1,27 +1,24 @@
 {% metadata_file .yamato/test_versions.metafile %}
 ---
 {% for editor in test_editors %}
-test_mac_training_int_{{ editor.version }}:
-  name: Test Mac Fast Training {{ editor.version }}
+test_linux_training_int_{{ editor.version }}:
+  name: Test Linux Fast Training {{ editor.version }}
   agent:
-    type: Unity::VM::osx
-    image: ml-agents/ml-agents-bokken-mac:0.1.4-492264
-    flavor: b1.small
+    type: Unity::VM
+    image: package-ci/ubuntu:stable
+    flavor: b1.medium
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
-    - pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
-    # TODO remove the "--user" command and the path prefix when we can migrate away from the custom bokken image
-    - python -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade --user
-    - /Users/bokken/Library/Python/3.7/bin/unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
-    - python -u -m ml-agents.tests.yamato.training_int_tests
-    # Backwards-compatibility tests.
-    # If we make a breaking change to the communication protocol, these will need
-    # to be disabled until the next release.
-    - python -u -m ml-agents.tests.yamato.training_int_tests --python=0.16.0
-    - python -u -m ml-agents.tests.yamato.training_int_tests --csharp={{ editor.csharp_backcompat_version }}
+    - |
+      sudo apt-get update && sudo apt-get install -y python3-venv
+      python3 -m venv venv && source venv/bin/activate
+      python -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+      python -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
+      unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
+      python -u -m ml-agents.tests.yamato.training_int_tests
   dependencies:
-    - .yamato/standalone-build-test.yml#test_mac_standalone_{{ editor.version }}
+    - .yamato/standalone-build-test.yml#test_linux_standalone_{{ editor.version }}
   triggers:
     cancel_old_ci: true
     expression: |
@@ -43,6 +40,6 @@ test_mac_training_int_{{ editor.version }}:
         - "artifacts/inference.onnx.txt"
     standalonebuild:
       paths:
-        - "artifacts/testplayer*/**"
+        - "artifacts/testPlayer*/**"
         - "artifacts/models/**"
 {% endfor %}
