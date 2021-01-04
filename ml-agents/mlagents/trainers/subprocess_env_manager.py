@@ -138,7 +138,7 @@ def worker(
     training_analytics_channel: Optional[TrainingAnalyticsSideChannel] = None
     if worker_id == 0:
         training_analytics_channel = TrainingAnalyticsSideChannel()
-    env: BaseEnv = None
+    env: UnityEnvironment = None
     # Set log level. On some platforms, the logger isn't common with the
     # main process, so we need to set it again.
     logging_util.set_log_level(log_level)
@@ -158,6 +158,7 @@ def worker(
             side_channels.append(training_analytics_channel)
 
         env = env_factory(worker_id, side_channels)
+        # TODO set training_analytics_channel to None if env.academy_capabilities don't support it.
         if training_analytics_channel:
             training_analytics_channel.environment_initialized(run_options)
         while True:
