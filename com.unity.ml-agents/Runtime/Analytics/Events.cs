@@ -110,7 +110,7 @@ namespace Unity.MLAgents.Analytics
         public string TorchVersion;
         public string TorchDeviceType;
         public int NumEnvironments;
-        public int NumRandomizedParameters;
+        public int NumEnvironmentParameters;
     }
 
     internal struct TrainingBehaviorInitializedEvent

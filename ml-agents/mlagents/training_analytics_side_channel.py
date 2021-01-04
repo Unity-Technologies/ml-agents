@@ -44,7 +44,7 @@ class TrainingAnalyticsSideChannel(SideChannel):
         num_envs = run_options.env_settings.num_envs
 
         env_params = run_options.environment_parameters
-        num_randomized_parameters = len(env_params) if env_params else 0
+        num_environment_parameters = len(env_params) if env_params else 0
 
         env_init_msg = OutgoingMessage()
         env_init_msg.write_string("environment_initialized")
