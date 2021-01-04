@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock, patch
 import pytest
+from mlagents.torch_utils import torch
 
-from mlagents.tf_utils import tf
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.ghost.controller import GhostController
@@ -22,8 +22,8 @@ def basic_trainer_controller():
 
 
 @patch("numpy.random.seed")
-@patch.object(tf, "set_random_seed")
-def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
+@patch.object(torch, "manual_seed")
+def test_initialization_seed(numpy_random_seed, torch_set_seed):
     seed = 27
     trainer_factory_mock = MagicMock()
     trainer_factory_mock.ghost_controller = GhostController()
@@ -36,7 +36,7 @@ def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
         training_seed=seed,
     )
     numpy_random_seed.assert_called_with(seed)
-    tensorflow_set_seed.assert_called_with(seed)
+    torch_set_seed.assert_called_with(seed)
 
 
 @pytest.fixture
@@ -70,14 +70,11 @@ def trainer_controller_with_start_learning_mocks(basic_trainer_controller):
     return tc, trainer_mock
 
 
-@patch.object(tf, "reset_default_graph")
 def test_start_learning_trains_forever_if_no_train_model(
-    tf_reset_graph, trainer_controller_with_start_learning_mocks
+    trainer_controller_with_start_learning_mocks
 ):
     tc, trainer_mock = trainer_controller_with_start_learning_mocks
     tc.train_model = False
-
-    tf_reset_graph.return_value = None
 
     env_mock = MagicMock()
     env_mock.close = MagicMock()
@@ -85,18 +82,15 @@ def test_start_learning_trains_forever_if_no_train_model(
     env_mock.training_behaviors = MagicMock()
 
     tc.start_learning(env_mock)
-    tf_reset_graph.assert_called_once()
     env_mock.reset.assert_called_once()
     assert tc.advance.call_count == 11
     tc._save_models.assert_not_called()
 
 
-@patch.object(tf, "reset_default_graph")
 def test_start_learning_trains_until_max_steps_then_saves(
-    tf_reset_graph, trainer_controller_with_start_learning_mocks
+    trainer_controller_with_start_learning_mocks
 ):
     tc, trainer_mock = trainer_controller_with_start_learning_mocks
-    tf_reset_graph.return_value = None
 
     brain_info_mock = MagicMock()
     env_mock = MagicMock()
@@ -105,7 +99,6 @@ def test_start_learning_trains_until_max_steps_then_saves(
     env_mock.training_behaviors = MagicMock()
 
     tc.start_learning(env_mock)
-    tf_reset_graph.assert_called_once()
     env_mock.reset.assert_called_once()
     assert tc.advance.call_count == trainer_mock.get_max_steps + 1
     tc._save_models.assert_called_once()

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.Barracuda;
@@ -334,14 +333,14 @@ public class CrawlerAgent : Agent
         Vector3 avgVel = Vector3.zero;
 
         //ALL RBS
-        int numOfRB = 0;
+        int numOfRb = 0;
         foreach (var item in m_JdController.bodyPartsList)
         {
-            numOfRB++;
+            numOfRb++;
             velSum += item.rb.velocity;
         }
 
-        avgVel = velSum / numOfRB;
+        avgVel = velSum / numOfRb;
         return avgVel;
     }
 

@@ -15,6 +15,7 @@ from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.torch.layers import LinearEncoder, linear_layer
 from mlagents.trainers.settings import NetworkSettings, EncoderType
+from mlagents.trainers.trajectory import ObsUtil
 
 
 class ActionPredictionTuple(NamedTuple):
@@ -76,9 +77,7 @@ class CuriosityNetwork(torch.nn.Module):
             vis_encode_type=EncoderType.SIMPLE,
             memory=None,
         )
-        self._state_encoder = NetworkBody(
-            specs.observation_shapes, state_encoder_settings
-        )
+        self._state_encoder = NetworkBody(specs.sensor_specs, state_encoder_settings)
 
         self._action_flattener = ActionFlattener(self._action_spec)
 
@@ -106,23 +105,24 @@ class CuriosityNetwork(torch.nn.Module):
         """
         Extracts the current state embedding from a mini_batch.
         """
-        hidden, _ = self._state_encoder.forward(
-            net_inputs=ModelUtils.list_to_tensor_list(
-                AgentBuffer.obs_list_to_obs_batch(mini_batch["obs"]), dtype=torch.float
-            )
-        )
+        n_obs = len(self._state_encoder.processors)
+        np_obs = ObsUtil.from_buffer(mini_batch, n_obs)
+        # Convert to tensors
+        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
+
+        hidden, _ = self._state_encoder.forward(tensor_obs)
         return hidden
 
     def get_next_state(self, mini_batch: AgentBuffer) -> torch.Tensor:
         """
         Extracts the next state embedding from a mini_batch.
         """
-        hidden, _ = self._state_encoder.forward(
-            net_inputs=ModelUtils.list_to_tensor_list(
-                AgentBuffer.obs_list_to_obs_batch(mini_batch["next_obs"]),
-                dtype=torch.float,
-            )
-        )
+        n_obs = len(self._state_encoder.processors)
+        np_obs = ObsUtil.from_buffer_next(mini_batch, n_obs)
+        # Convert to tensors
+        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
+
+        hidden, _ = self._state_encoder.forward(tensor_obs)
         return hidden
 
     def predict_action(self, mini_batch: AgentBuffer) -> ActionPredictionTuple:

@@ -1,14 +1,13 @@
 import pytest
 
 import numpy as np
-from mlagents.tf_utils import tf
 import attr
 
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
-from mlagents.trainers.settings import NetworkSettings, FrameworkType
+from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disable=unused-variable
     ppo_dummy_config,
     curiosity_dummy_config,
@@ -20,7 +19,7 @@ from mlagents_envs.base_env import ActionSpec
 
 @pytest.fixture
 def dummy_config():
-    return attr.evolve(ppo_dummy_config(), framework=FrameworkType.PYTORCH)
+    return ppo_dummy_config()
 
 
 VECTOR_ACTION_SPACE = 2
@@ -59,7 +58,6 @@ def create_test_ppo_optimizer(dummy_config, use_rnn, use_discrete, use_visual):
 @pytest.mark.parametrize("rnn", [True, False], ids=["rnn", "no_rnn"])
 def test_ppo_optimizer_update(dummy_config, rnn, visual, discrete):
     # Test evaluate
-    tf.reset_default_graph()
     optimizer = create_test_ppo_optimizer(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
@@ -98,7 +96,6 @@ def test_ppo_optimizer_update_curiosity(
     dummy_config, curiosity_dummy_config, rnn, visual, discrete  # noqa: F811
 ):
     # Test evaluate
-    tf.reset_default_graph()
     dummy_config.reward_signals = curiosity_dummy_config
     optimizer = create_test_ppo_optimizer(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
@@ -125,7 +122,7 @@ def test_ppo_optimizer_update_curiosity(
 def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F811
     # Test evaluate
     dummy_config.reward_signals = gail_dummy_config
-    config = attr.evolve(ppo_dummy_config(), framework=FrameworkType.PYTORCH)
+    config = ppo_dummy_config()
     optimizer = create_test_ppo_optimizer(
         config, use_rnn=False, use_discrete=False, use_visual=False
     )
@@ -171,7 +168,7 @@ def test_ppo_get_value_estimates(dummy_config, rnn, visual, discrete):
     time_horizon = 15
     trajectory = make_fake_trajectory(
         length=time_horizon,
-        observation_shapes=optimizer.policy.behavior_spec.observation_shapes,
+        sensor_specs=optimizer.policy.behavior_spec.sensor_specs,
         action_spec=DISCRETE_ACTION_SPEC if discrete else CONTINUOUS_ACTION_SPEC,
         max_step_complete=True,
     )

@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.MLAgents;
-using Unity.MLAgents.Actuators;
 using UnityEngine.Serialization;
 
 /// <summary>

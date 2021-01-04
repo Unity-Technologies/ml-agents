@@ -37,7 +37,7 @@ namespace Unity.MLAgents.Tests
 
         ActionSpec GetHybrid0vis53vec_3c_2dActionSpec()
         {
-            return new ActionSpec(3, new int[] { 2 });
+            return new ActionSpec(3, new[] { 2 });
         }
 
         [SetUp]

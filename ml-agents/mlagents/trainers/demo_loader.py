@@ -5,6 +5,7 @@ from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
+from mlagents.trainers.trajectory import ObsUtil
 from mlagents_envs.rpc_utils import behavior_spec_from_proto, steps_from_proto
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
@@ -65,17 +66,29 @@ def make_demo_buffer(
 
         demo_raw_buffer["done"].append(next_done)
         demo_raw_buffer["rewards"].append(next_reward)
-        demo_raw_buffer["obs"].append(current_obs)
-        demo_raw_buffer["actions"].append(current_pair_info.action_info.vector_actions)
-        # TODO: update the demonstraction files and read from the new proto format
-        if behavior_spec.action_spec.continuous_size > 0:
-            demo_raw_buffer["continuous_action"].append(
-                current_pair_info.action_info.vector_actions_deprecated
-            )
-        if behavior_spec.action_spec.discrete_size > 0:
-            demo_raw_buffer["discrete_action"].append(
-                current_pair_info.action_info.vector_actions_deprecated
-            )
+        for i, obs in enumerate(current_obs):
+            demo_raw_buffer[ObsUtil.get_name_at(i)].append(obs)
+        if (
+            len(current_pair_info.action_info.continuous_actions) == 0
+            and len(current_pair_info.action_info.discrete_actions) == 0
+        ):
+            if behavior_spec.action_spec.continuous_size > 0:
+                demo_raw_buffer["continuous_action"].append(
+                    current_pair_info.action_info.vector_actions_deprecated
+                )
+            else:
+                demo_raw_buffer["discrete_action"].append(
+                    current_pair_info.action_info.vector_actions_deprecated
+                )
+        else:
+            if behavior_spec.action_spec.continuous_size > 0:
+                demo_raw_buffer["continuous_action"].append(
+                    current_pair_info.action_info.continuous_actions
+                )
+            if behavior_spec.action_spec.discrete_size > 0:
+                demo_raw_buffer["discrete_action"].append(
+                    current_pair_info.action_info.discrete_actions
+                )
         demo_raw_buffer["prev_action"].append(previous_action)
         if next_done:
             demo_raw_buffer.resequence_and_append(
@@ -104,25 +117,20 @@ def demo_to_buffer(
         # check action dimensions in demonstration match
         if behavior_spec.action_spec != expected_behavior_spec.action_spec:
             raise RuntimeError(
-                "The action spaces {} in demonstration do not match the policy's {}.".format(
+                "The actions {} in demonstration do not match the policy's {}.".format(
                     behavior_spec.action_spec, expected_behavior_spec.action_spec
                 )
             )
         # check observations match
-        if len(behavior_spec.observation_shapes) != len(
-            expected_behavior_spec.observation_shapes
-        ):
+        if len(behavior_spec.sensor_specs) != len(expected_behavior_spec.sensor_specs):
             raise RuntimeError(
                 "The demonstrations do not have the same number of observations as the policy."
             )
         else:
             for i, (demo_obs, policy_obs) in enumerate(
-                zip(
-                    behavior_spec.observation_shapes,
-                    expected_behavior_spec.observation_shapes,
-                )
+                zip(behavior_spec.sensor_specs, expected_behavior_spec.sensor_specs)
             ):
-                if demo_obs != policy_obs:
+                if demo_obs.shape != policy_obs.shape:
                     raise RuntimeError(
                         f"The shape {demo_obs} for observation {i} in demonstration \
                         do not match the policy's {policy_obs}."

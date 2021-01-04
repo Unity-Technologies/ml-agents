@@ -3,6 +3,7 @@ from mlagents.torch_utils import torch
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.trajectory import ObsUtil
 from mlagents.trainers.torch.components.bc.module import BCModule
 from mlagents.trainers.torch.components.reward_providers import create_reward_provider
 
@@ -55,10 +56,16 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         next_critic_obs: List[List[np.ndarray]],
         done: bool,
     ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:
-        obs = ModelUtils.list_to_tensor_list(
-            AgentBuffer.obs_list_to_obs_batch(batch["obs"])
-        )
-        next_obs = ModelUtils.list_to_tensor_list(next_obs)
+        n_obs = len(self.policy.behavior_spec.sensor_specs)
+        current_obs = ObsUtil.from_buffer(batch, n_obs)
+
+        # Convert to tensors
+        current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
+        next_obs = [ModelUtils.list_to_tensor(obs) for obs in next_obs]
+
+        memory = torch.zeros([1, 1, self.policy.m_size])
+
+        next_obs = [obs.unsqueeze(0) for obs in next_obs]
 
         critic_obs_np = AgentBuffer.obs_list_list_to_obs_batch(batch["critic_obs"])
         critic_obs = [
@@ -71,7 +78,7 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         memory = torch.zeros([1, 1, self.policy.m_size])
 
         value_estimates, next_memory = self.policy.actor_critic.critic_pass(
-            obs, memory, sequence_length=batch.num_experiences, critic_obs=critic_obs
+            current_obs, memory, sequence_length=batch.num_experiences, critic_obs=critic_obs
         )
 
         next_value_estimate, _ = self.policy.actor_critic.critic_pass(

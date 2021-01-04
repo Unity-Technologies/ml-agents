@@ -114,7 +114,7 @@ namespace Unity.MLAgents.Tests
             var validBrainParameters = new BrainParameters();
             validBrainParameters.VectorObservationSize = 53;
             validBrainParameters.NumStackedVectorObservations = 1;
-            validBrainParameters.ActionSpec = new ActionSpec(3, new int[] { 2 });
+            validBrainParameters.ActionSpec = new ActionSpec(3, new[] { 2 });
             return validBrainParameters;
         }
 
@@ -360,7 +360,7 @@ namespace Unity.MLAgents.Tests
             var model = ModelLoader.Load(hybridONNXModel);
 
             var brainParameters = GetHybridBrainParameters();
-            brainParameters.ActionSpec = new ActionSpec(3, new int[] { 3 }); ; // Invalid discrete action size
+            brainParameters.ActionSpec = new ActionSpec(3, new[] { 3 }); // Invalid discrete action size
             var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 }, new ActuatorComponent[0]);
             Assert.Greater(errors.Count(), 0);
 

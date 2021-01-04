@@ -24,19 +24,10 @@ from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.trajectory import Trajectory
-from mlagents.trainers.settings import TrainerSettings, FrameworkType
+from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.stats import StatsPropertyType
 from mlagents.trainers.model_saver.model_saver import BaseModelSaver
 
-from mlagents.trainers.exception import UnityTrainerException
-from mlagents import tf_utils
-
-if tf_utils.is_available():
-    from mlagents.trainers.policy.tf_policy import TFPolicy
-    from mlagents.trainers.model_saver.tf_model_saver import TFModelSaver
-else:
-    TFPolicy = None  # type: ignore
-    TFModelSaver = None  # type: ignore
 
 logger = get_logger(__name__)
 
@@ -59,18 +50,11 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         self._stats_reporter.add_property(
             StatsPropertyType.HYPERPARAMETERS, self.trainer_settings.as_dict()
         )
-        self.framework = self.trainer_settings.framework
-        if self.framework == FrameworkType.TENSORFLOW and not tf_utils.is_available():
-            raise UnityTrainerException(
-                "To use the TensorFlow backend, install the TensorFlow Python package first."
-            )
-
-        logger.debug(f"Using framework {self.framework.value}")
 
         self._next_save_step = 0
         self._next_summary_step = 0
         self.model_saver = self.create_model_saver(
-            self.framework, self.trainer_settings, self.artifact_path, self.load
+            self.trainer_settings, self.artifact_path, self.load
         )
 
     def end_episode(self) -> None:
@@ -126,12 +110,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         behavior_spec: BehaviorSpec,
         create_graph: bool = False,
     ) -> Policy:
-        if self.framework == FrameworkType.PYTORCH:
-            return self.create_torch_policy(parsed_behavior_id, behavior_spec)
-        else:
-            return self.create_tf_policy(
-                parsed_behavior_id, behavior_spec, create_graph=create_graph
-            )
+        return self.create_torch_policy(parsed_behavior_id, behavior_spec)
 
     @abc.abstractmethod
     def create_torch_policy(
@@ -142,30 +121,13 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         pass
 
-    @abc.abstractmethod
-    def create_tf_policy(
-        self,
-        parsed_behavior_id: BehaviorIdentifiers,
-        behavior_spec: BehaviorSpec,
-        create_graph: bool = False,
-    ) -> TFPolicy:
-        """
-        Create a Policy object that uses the TensorFlow backend.
-        """
-        pass
-
     @staticmethod
     def create_model_saver(
-        framework: str, trainer_settings: TrainerSettings, model_path: str, load: bool
+        trainer_settings: TrainerSettings, model_path: str, load: bool
     ) -> BaseModelSaver:
-        if framework == FrameworkType.PYTORCH:
-            model_saver = TorchModelSaver(  # type: ignore
-                trainer_settings, model_path, load
-            )
-        else:
-            model_saver = TFModelSaver(  # type: ignore
-                trainer_settings, model_path, load
-            )
+        model_saver = TorchModelSaver(  # type: ignore
+            trainer_settings, model_path, load
+        )
         return model_saver
 
     def _policy_mean_reward(self) -> Optional[float]:
@@ -187,7 +149,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 "Trainer has multiple policies, but default behavior only saves the first."
             )
         checkpoint_path = self.model_saver.save_checkpoint(self.brain_name, self.step)
-        export_ext = "nn" if self.framework == FrameworkType.TENSORFLOW else "onnx"
+        export_ext = "onnx"
         new_checkpoint = ModelCheckpoint(
             int(self.step),
             f"{checkpoint_path}.{export_ext}",
@@ -214,7 +176,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
 
         model_checkpoint = self._checkpoint()
         self.model_saver.copy_final_model(model_checkpoint.file_path)
-        export_ext = "nn" if self.framework == FrameworkType.TENSORFLOW else "onnx"
+        export_ext = "onnx"
         final_checkpoint = attr.evolve(
             model_checkpoint, file_path=f"{self.model_saver.model_path}.{export_ext}"
         )

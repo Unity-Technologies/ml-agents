@@ -1,4 +1,3 @@
-using System;
 using Unity.Barracuda;
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
@@ -41,20 +40,42 @@ namespace Unity.MLAgents.Policies
         List<int[]> m_SensorShapes;
         ActionSpec m_ActionSpec;
 
+        private string m_BehaviorName;
+
+        /// <summary>
+        /// Whether or not we've tried to send analytics for this model. We only ever try to send once per policy,
+        /// and do additional deduplication in the analytics code.
+        /// </summary>
+        private bool m_AnalyticsSent;
+
         /// <inheritdoc />
         public BarracudaPolicy(
             ActionSpec actionSpec,
             NNModel model,
-            InferenceDevice inferenceDevice)
+            InferenceDevice inferenceDevice,
+            string behaviorName
+        )
         {
             var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, actionSpec, inferenceDevice);
             m_ModelRunner = modelRunner;
+            m_BehaviorName = behaviorName;
             m_ActionSpec = actionSpec;
         }
 
         /// <inheritdoc />
         public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
+            if (!m_AnalyticsSent)
+            {
+                m_AnalyticsSent = true;
+                Analytics.InferenceAnalytics.InferenceModelSet(
+                    m_ModelRunner.Model,
+                    m_BehaviorName,
+                    m_ModelRunner.InferenceDevice,
+                    sensors,
+                    m_ActionSpec
+                );
+            }
             m_AgentId = info.episodeId;
             m_ModelRunner?.PutObservations(info, sensors);
         }

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -35,7 +34,6 @@ public class Match3TileSelector : MonoBehaviour
         {
             AllTilesOff();
             emptyTile.SetActive(true);
-            return;
         }
         else
         {

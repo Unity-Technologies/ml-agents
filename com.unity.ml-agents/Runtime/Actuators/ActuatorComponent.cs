@@ -15,7 +15,7 @@ namespace Unity.MLAgents.Actuators
         public abstract IActuator CreateActuator();
 
         /// <summary>
-        /// The specification of the Action space for this ActuatorComponent.
+        /// The specification of the possible actions for this ActuatorComponent.
         /// This must produce the same results as the corresponding IActuator's ActionSpec.
         /// </summary>
         /// <seealso cref="ActionSpec"/>

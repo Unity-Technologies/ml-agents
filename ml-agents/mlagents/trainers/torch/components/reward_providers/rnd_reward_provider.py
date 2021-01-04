@@ -12,6 +12,7 @@ from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.settings import NetworkSettings, EncoderType
+from mlagents.trainers.trajectory import ObsUtil
 
 
 class RNDRewardProvider(BaseRewardProvider):
@@ -64,20 +65,14 @@ class RNDNetwork(torch.nn.Module):
             vis_encode_type=EncoderType.SIMPLE,
             memory=None,
         )
-        self._encoder = NetworkBody(specs.observation_shapes, state_encoder_settings)
+        self._encoder = NetworkBody(specs.sensor_specs, state_encoder_settings)
 
     def forward(self, mini_batch: AgentBuffer) -> torch.Tensor:
-        n_vis = len(self._encoder.visual_processors)
-        hidden, _ = self._encoder.forward(
-            vec_inputs=[
-                ModelUtils.list_to_tensor(mini_batch["vector_obs"], dtype=torch.float)
-            ],
-            vis_inputs=[
-                ModelUtils.list_to_tensor(
-                    mini_batch["visual_obs%d" % i], dtype=torch.float
-                )
-                for i in range(n_vis)
-            ],
-        )
-        self._encoder.update_normalization(torch.tensor(mini_batch["vector_obs"]))
+        n_obs = len(self._encoder.processors)
+        np_obs = ObsUtil.from_buffer(mini_batch, n_obs)
+        # Convert to tensors
+        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
+
+        hidden, _ = self._encoder.forward(tensor_obs)
+        self._encoder.update_normalization(mini_batch)
         return hidden

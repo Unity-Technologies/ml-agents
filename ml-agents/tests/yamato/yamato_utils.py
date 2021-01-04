@@ -112,18 +112,15 @@ def init_venv(
 
     # Set up the venv and install mlagents
     subprocess.check_call(f"python -m venv {venv_path}", shell=True)
-    pip_commands = [
-        "--upgrade pip",
-        "--upgrade setuptools",
-        # TODO build these and publish to internal pypi
-        "~/tensorflow_pkg/tensorflow-2.0.0-cp37-cp37m-macosx_10_14_x86_64.whl",
-        "tf2onnx==1.6.1",
-    ]
+    pip_commands = ["--upgrade pip", "--upgrade setuptools"]
     if mlagents_python_version:
         # install from pypi
         pip_commands += [
             f"mlagents=={mlagents_python_version}",
             f"gym-unity=={mlagents_python_version}",
+            # TODO build these and publish to internal pypi
+            "~/tensorflow_pkg/tensorflow-2.0.0-cp37-cp37m-macosx_10_14_x86_64.whl",
+            "tf2onnx==1.6.1",
         ]
     else:
         # Local install
