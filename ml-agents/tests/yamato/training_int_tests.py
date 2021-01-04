@@ -82,7 +82,7 @@ def run_training(python_version: str, csharp_version: str) -> bool:
         override_config_file("config/ppo/3DBall.yaml", yaml_out, overrides)
 
     log_output_path = f"{get_base_output_path()}/training.log"
-    env_path = os.path.join(get_base_output_path(), standalone_player_path + ".app")
+    env_path = os.path.join(get_base_output_path(), standalone_player_path)
     mla_learn_cmd = [
         "mlagents-learn",
         "--force",
