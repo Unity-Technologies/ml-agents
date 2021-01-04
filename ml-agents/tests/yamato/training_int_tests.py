@@ -81,21 +81,35 @@ def run_training(python_version: str, csharp_version: str) -> bool:
         }
         override_config_file("config/ppo/3DBall.yaml", yaml_out, overrides)
 
-    env_path = os.path.join(get_base_output_path(), standalone_player_path + ".app")
-    mla_learn_cmd = (
-        f"mlagents-learn {yaml_out} --force --env={env_path} "
-        f"--run-id={run_id} --no-graphics --env-args -logFile -"
-    )  # noqa
-    res = subprocess.run(f"{mla_learn_cmd}", shell=True)
+    log_output_path = f"{get_base_output_path()}/training.log"
+    env_path = os.path.join(get_base_output_path(), standalone_player_path)
+    mla_learn_cmd = [
+        "mlagents-learn",
+        yaml_out,
+        "--force",
+        "--env",
+        env_path,
+        "--run-id",
+        str(run_id),
+        "--no-graphics",
+        "--env-args",
+        "-logFile",
+        log_output_path,
+    ]
+
+    res = subprocess.run(mla_learn_cmd)
 
     # Save models as artifacts (only if we're using latest python and C#)
     if csharp_version is None and python_version is None:
         model_artifacts_dir = os.path.join(get_base_output_path(), "models")
         os.makedirs(model_artifacts_dir, exist_ok=True)
-        shutil.copy(onnx_file_expected, model_artifacts_dir)
+        if os.path.exists(onnx_file_expected):
+            shutil.copy(onnx_file_expected, model_artifacts_dir)
 
     if res.returncode != 0 or not os.path.exists(onnx_file_expected):
         print("mlagents-learn run FAILED!")
+        print("Command line: " + " ".join(mla_learn_cmd))
+        subprocess.run(["cat", log_output_path])
         return False
 
     if csharp_version is None and python_version is None:

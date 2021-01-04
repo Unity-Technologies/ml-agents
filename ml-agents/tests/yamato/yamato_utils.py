@@ -108,6 +108,9 @@ def find_executables(root_dir: str) -> List[str]:
             file_path = os.path.join(root, filename)
             if os.access(file_path, os.X_OK):
                 exes.append(file_path)
+    # Also check the input path
+    if os.access(root_dir, os.X_OK):
+        exes.append(root_dir)
     return exes
 
 

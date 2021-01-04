@@ -91,6 +91,7 @@ test_mac_backcompat_2020.1:
         - "artifacts/standalone_build.txt"
         - "artifacts/inference.nn.txt"
         - "artifacts/inference.onnx.txt"
+        - "artifacts/*.log"
     standalonebuild:
       paths:
         - "artifacts/testPlayer*/**"
