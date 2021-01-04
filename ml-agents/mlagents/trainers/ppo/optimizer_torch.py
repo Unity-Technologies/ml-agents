@@ -163,7 +163,10 @@ class TorchPPOOptimizer(TorchOptimizer):
             memories=memories,
             seq_len=self.policy.sequence_length,
         )
-        obs[-1] = comms[0]
+        # this is a little bit of a hack but is whats recommended in the
+        # gumbel softmax documentation
+        one_hot_diff_comms = obs[-1] - comms[1].detach() + comms[1]
+        obs[-1] = one_hot_diff_comms
 
         log_probs, entropy, values = self.policy.evaluate_actions(
             obs,
