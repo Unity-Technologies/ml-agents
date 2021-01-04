@@ -85,6 +85,7 @@ def run_training(python_version: str, csharp_version: str) -> bool:
     env_path = os.path.join(get_base_output_path(), standalone_player_path)
     mla_learn_cmd = [
         "mlagents-learn",
+        yaml_out,
         "--force",
         "--env",
         env_path,
