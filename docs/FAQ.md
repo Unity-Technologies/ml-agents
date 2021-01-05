@@ -19,7 +19,9 @@ Some known potential causes are:
 
 - You're using 32-bit python instead of 64-bit. See the answer
   [here](https://stackoverflow.com/a/1405971/224264) for how to tell which you
-  have installed.
+  have installed. And Tensorflow only supports Python 3.5 to 3.8. So, if you're
+  using an out-of-range version of Python (older or newer) or a 32-bit version, 
+  then you'll need to   use a different version.
 - You have the `tensorflow-gpu` package installed. This is equivalent to
   `tensorflow`, however `pip` doesn't recognize this. The best way to resolve
   this is to update to `tensorflow==1.15.0` which provides GPU support in the
