@@ -17,6 +17,7 @@ and this project adheres to
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- python 3.9 is now supported and tested. (#4821)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
