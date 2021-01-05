@@ -649,7 +649,7 @@ Notes:
 - You cannot mask actions in continuous control.
 
 
-#### IActuator interface and ActuatorComponents
+### IActuator interface and ActuatorComponents
 The Actuator API allows users to abstract behavior out of Agents and in to
 components (similar to the ISensor API).  The `IActuator` interface and `Agent`
 class both implement the `IActionReceiver` interface to allow for backward compatibility
