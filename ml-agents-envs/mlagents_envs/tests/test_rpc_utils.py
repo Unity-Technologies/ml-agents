@@ -161,7 +161,7 @@ def proto_from_steps(
             reward=reward,
             done=done,
             id=agent_id,
-            max_step_reached=max_step_reached,
+            max_step_reached=bool(max_step_reached),
             action_mask=agent_mask,
             observations=observations,
         )
@@ -190,7 +190,7 @@ def proto_from_steps(
             reward=reward,
             done=done,
             id=agent_id,
-            max_step_reached=max_step_reached,
+            max_step_reached=bool(max_step_reached),
             action_mask=None,
             observations=final_observations,
         )
