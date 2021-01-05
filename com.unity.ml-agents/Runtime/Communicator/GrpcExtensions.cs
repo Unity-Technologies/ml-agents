@@ -411,6 +411,9 @@ namespace Unity.MLAgents
                 }
             }
             observationProto.Shape.AddRange(shape);
+
+            var typeSensor = sensor as ITypedSensor;
+            observationProto.SensorType = (SensorTypeProto)typeSensor.GetSensorType();
             return observationProto;
         }
 

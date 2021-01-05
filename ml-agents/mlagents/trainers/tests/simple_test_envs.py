@@ -82,7 +82,7 @@ class SimpleEnvironment(BaseEnv):
             self.action[name] = None
             self.step_result[name] = None
 
-    def _make_sensor_specs(self) -> SensorSpec:
+    def _make_sensor_specs(self) -> List[SensorSpec]:
         obs_shape: List[Any] = []
         for _ in range(self.num_vector):
             obs_shape.append((self.vec_obs_size,))

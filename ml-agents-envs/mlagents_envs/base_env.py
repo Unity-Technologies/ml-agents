@@ -28,7 +28,7 @@ from typing import (
     Any,
     Mapping as MappingType,
 )
-from enum import IntFlag
+from enum import IntFlag, Enum
 import numpy as np
 
 from mlagents_envs.exception import UnityActionException
@@ -458,6 +458,13 @@ class DimensionProperty(IntFlag):
     VARIABLE_SIZE = 4
 
 
+class SensorType(Enum):
+    OBSERVATION = 0
+    GOAL = 1
+    REWARD = 2
+    MESSAGE = 3
+
+
 class SensorSpec(NamedTuple):
     """
     A NamedTuple containing information about the observation of Agents.
@@ -465,10 +472,12 @@ class SensorSpec(NamedTuple):
     an observation's dimensions.
     - dimension_property is a Tuple of DimensionProperties flag, one flag for each
     dimension.
+    - type is an enum of SensorType.
     """
 
     shape: Tuple[int, ...]
     dimension_property: Tuple[DimensionProperty, ...]
+    type: SensorType
 
 
 class BehaviorSpec(NamedTuple):

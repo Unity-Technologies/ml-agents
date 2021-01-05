@@ -8,6 +8,13 @@ enum CompressionTypeProto {
     PNG = 1;
 }
 
+enum SensorTypeProto {
+    OBSERVATION = 0;
+    GOAL = 1;
+    REWARD = 2;
+    MESSAGE = 3;
+}
+
 message ObservationProto {
     message FloatData {
         repeated float data = 1;
@@ -21,4 +28,5 @@ message ObservationProto {
     }
     repeated int32 compressed_channel_mapping = 5;
     repeated int32 dimension_properties = 6;
+    SensorTypeProto sensor_type = 7;
 }

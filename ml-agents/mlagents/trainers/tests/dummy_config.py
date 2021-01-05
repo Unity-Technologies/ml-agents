@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from mlagents_envs.base_env import SensorSpec, DimensionProperty
+from mlagents_envs.base_env import SensorSpec, DimensionProperty, SensorType
 import pytest
 import copy
 import os
@@ -78,6 +78,6 @@ def create_sensor_specs_with_shapes(shapes: List[Tuple[int, ...]]) -> List[Senso
     sen_spec: List[SensorSpec] = []
     for shape in shapes:
         dim_prop = (DimensionProperty.UNSPECIFIED,) * len(shape)
-        spec = SensorSpec(shape, dim_prop)
+        spec = SensorSpec(shape, dim_prop, SensorType.OBSERVATION)
         sen_spec.append(spec)
     return sen_spec

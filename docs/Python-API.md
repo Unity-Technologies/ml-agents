@@ -231,9 +231,10 @@ A `BehaviorSpec` has the following fields :
   corresponds to an observation's properties: `shape` is a tuple of ints that
   corresponds to the shape of the observation (without the number of agents dimension).
   `dimension_property` is a tuple of flags containing extra information about how the
-  data should be processed in the corresponding dimension. Note that the `SensorSpec`
-  have the same ordering as the ordering of observations in the DecisionSteps,
-  DecisionStep, TerminalSteps and TerminalStep.
+  data should be processed in the corresponding dimension. `type` is an enum
+  corresponding to what type of sensor is generating the data (i.e., observation, goal,
+  etc). Note that the `SensorSpec` have the same ordering as the ordering of observations 
+  in the DecisionSteps, DecisionStep, TerminalSteps and TerminalStep.
 - `action_spec` is an `ActionSpec` namedtuple that defines the number and types
   of actions for the Agent.
 

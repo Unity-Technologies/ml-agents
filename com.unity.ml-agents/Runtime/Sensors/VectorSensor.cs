@@ -7,13 +7,14 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// A sensor implementation for vector observations.
     /// </summary>
-    public class VectorSensor : ISensor
+    public class VectorSensor : ISensor, ITypedSensor
     {
         // TODO use float[] instead
         // TODO allow setting float[]
         List<float> m_Observations;
         int[] m_Shape;
         string m_Name;
+        SensorType m_sensorType;
 
         /// <summary>
         /// Initializes the sensor.
@@ -29,6 +30,7 @@ namespace Unity.MLAgents.Sensors
 
             m_Observations = new List<float>(observationSize);
             m_Name = name;
+            m_sensorType = SensorType.Observation;
             m_Shape = new[] { observationSize };
         }
 
@@ -86,6 +88,11 @@ namespace Unity.MLAgents.Sensors
         public int[] GetObservationShape()
         {
             return m_Shape;
+        }
+
+        public SensorType GetSensorType()
+        {
+            return m_sensorType;
         }
 
         /// <inheritdoc/>

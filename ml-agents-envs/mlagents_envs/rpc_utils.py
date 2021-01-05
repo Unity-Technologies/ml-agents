@@ -37,9 +37,10 @@ def behavior_spec_from_proto(
         tuple(DimensionProperty(dim) for dim in obs.dimension_properties)
         for obs in agent_info.observations
     ]
+    sensor_types = [obs.sensor_type for obs in agent_info.observations]
     sensor_specs = [
-        SensorSpec(obs_shape, dim_p)
-        for obs_shape, dim_p in zip(observation_shape, dim_props)
+        SensorSpec(obs_shape, dim_p, sensor_type)
+        for obs_shape, dim_p, sensor_type in zip(observation_shape, dim_props, sensor_types)
     ]
     # proto from communicator < v1.3 does not set action spec, use deprecated fields instead
     if (
