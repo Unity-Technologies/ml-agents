@@ -35,15 +35,6 @@ class Policy:
         self.previous_action_dict: Dict[str, np.ndarray] = {}
         self.memory_dict: Dict[str, np.ndarray] = {}
         self.normalize = trainer_settings.network_settings.normalize
-        if self.normalize:
-            has_vec_obs = False
-            # Make sure there is at least one vector observation for normalization
-            for sen_spec in behavior_spec.sensor_specs:
-                if len(sen_spec.shape) == 1:
-                    has_vec_obs = True
-                    break
-            if not has_vec_obs:
-                self.normalize = False
         self.use_recurrent = self.network_settings.memory is not None
         self.h_size = self.network_settings.hidden_units
         num_layers = self.network_settings.num_layers
