@@ -21,6 +21,7 @@ def main(scene_path, build_target):
         output_path=executable_name,
         scene_path=scene_path,
         build_target=build_target,
+        log_output_path=None,  # Log to stdout so we get timestamps on the logs
     )
 
     if returncode == 0:
