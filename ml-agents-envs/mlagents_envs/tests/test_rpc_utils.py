@@ -144,7 +144,7 @@ def proto_from_steps(
                 agent_mask = np.concatenate(
                     (agent_mask, _branch[agent_id_index, :]), axis=0
                 )
-            agent_mask = agent_mask.astype(np.bool)
+            agent_mask = agent_mask.astype(np.bool).tolist()
         observations: List[ObservationProto] = []
         for all_observations_of_type in decision_steps.obs:
             observation = all_observations_of_type[agent_id_index]
