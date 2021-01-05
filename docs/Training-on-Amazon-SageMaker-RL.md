@@ -19,10 +19,10 @@ To get started, we import the needed Python libraries and set up environments fo
 ```
 import sagemaker
 import boto3
- 
+
 # set up the linkage and authentication to the S3 bucket
 sage_session = sagemaker.session.Session()
-s3_bucket = sage_session.default_bucket()  
+s3_bucket = sage_session.default_bucket()
 s3_output_path = 's3://{}/'.format(s3_bucket)
 print("S3 bucket path: {}".format(s3_output_path))
 
@@ -129,9 +129,9 @@ class UnityEnvWrapper(gym.Env):
             while True:
                 try:
                     unity_env = UnityEnvironment(
-                                    env_name, 
-                                    no_graphics=True, 
-                                    worker_id=self.worker_index, 
+                                    env_name,
+                                    no_graphics=True,
+                                    worker_id=self.worker_index,
                                     additional_args=['-logFile', 'unity.log'])
                 except UnityWorkerInUseException:
                     self.worker_index += 1
@@ -149,8 +149,8 @@ class UnityEnvWrapper(gym.Env):
                     self.worker_index += 1
                 else:
                     break
-            
-        self.env = UnityToGymWrapper(unity_env) 
+
+        self.env = UnityToGymWrapper(unity_env)
         self.action_space = self.env.action_space
         self.observation_space = self.env.observation_space
 
@@ -209,7 +209,7 @@ After setting up the configuration and model customization, we’re ready to sta
 
 ```
 metric_definitions = RLEstimator.default_metric_definitions(RLToolkit.RAY)
-    
+
 estimator = RLEstimator(entry_point="train-unity.py",
                         source_dir='src',
                         dependencies=["common/sagemaker_rl"],
@@ -257,7 +257,7 @@ model = TensorFlowModel(model_data=estimator.model_data,
               framework_version='2.1.0',
               role=role)
 
-predictor = model.deploy(initial_instance_count=1, 
+predictor = model.deploy(initial_instance_count=1,
                          instance_type=instance_type)
 input = {"inputs": {'observations': np.ones(shape=(1, 20)).tolist(),
                     'prev_action': [0, 0],
@@ -265,12 +265,11 @@ input = {"inputs": {'observations': np.ones(shape=(1, 20)).tolist(),
                     'prev_reward': -1,
                     'seq_lens': -1
                    }
-        }  
+        }
 result = predictor.predict(input)print(result['outputs']['actions'])
 ```
 
 The model predicts an indicator corresponding to moving left or right. The recommended direction of movement for the blue box agent always points towards the larger green ball.
-
 
 ## Cleaning up
 
