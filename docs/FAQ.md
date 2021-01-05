@@ -22,7 +22,7 @@ Some known potential causes are:
   have installed.
 - You have the `tensorflow-gpu` package installed. This is equivalent to
   `tensorflow`, however `pip` doesn't recognize this. The best way to resolve
-  this is to update to `tensorflow==1.15.0` which provides GPU support in the
+  this is to update a version later than `tensorflow==1.15.0` which provides GPU support in the
   same package (see the
   [release notes](https://github.com/tensorflow/tensorflow/issues/33374) for
   more details.)
