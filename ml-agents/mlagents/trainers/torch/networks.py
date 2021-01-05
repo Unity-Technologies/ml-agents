@@ -552,7 +552,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         )
         self.stream_names = stream_names
         self.critic = CentralizedValueNetwork(
-            stream_names, observation_shapes, network_settings, num_agents=2
+            stream_names, observation_shapes, network_settings, num_agents=3
         )
 
     @property

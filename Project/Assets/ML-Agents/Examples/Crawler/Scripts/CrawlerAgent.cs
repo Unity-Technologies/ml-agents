@@ -17,7 +17,8 @@ public class CrawlerAgent : Agent
         CrawlerDynamic,
         CrawlerDynamicVariableSpeed,
         CrawlerStatic,
-        CrawlerStaticVariableSpeed
+        CrawlerStaticVariableSpeed,
+        CrawlerDynamicVariableSpeedCustomTarget
     }
 
     [Tooltip(
@@ -66,7 +67,7 @@ public class CrawlerAgent : Agent
     //The direction an agent will walk during training.
     [Header("Target To Walk Towards")] public Transform dynamicTargetPrefab; //Target prefab to use in Dynamic envs
     public Transform staticTargetPrefab; //Target prefab to use in Static envs
-    private Transform m_Target; //Target the agent will walk towards during training.
+    public Transform m_Target; //Target the agent will walk towards during training.
 
     [Header("Body Parts")] [Space(10)] public Transform body;
     public Transform leg0Upper;
@@ -135,6 +136,14 @@ public class CrawlerAgent : Agent
         var behaviorParams = GetComponent<Unity.MLAgents.Policies.BehaviorParameters>();
         switch (typeOfCrawler)
         {
+            case CrawlerAgentBehaviorType.CrawlerDynamicVariableSpeedCustomTarget:
+                {
+                    behaviorParams.BehaviorName = "CrawlerDynamicVariableSpeed"; //set behavior name
+                    if (crawlerDyVSModel)
+                        behaviorParams.Model = crawlerDyVSModel; //assign the model
+                    m_RandomizeWalkSpeedEachEpisode = true; //randomize m_TargetWalkingSpeed during training
+                    break;
+                }
             case CrawlerAgentBehaviorType.CrawlerDynamic:
                 {
                     behaviorParams.BehaviorName = "CrawlerDynamic"; //set behavior name
