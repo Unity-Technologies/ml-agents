@@ -665,7 +665,7 @@ child `GameObject`.  Actuators and all of their data structures are initialized
 during `Agent.Initialize`.  This was done to prevent an unexpected allocations at runtime.
 
 You can find an example of an `IActuator` implementation in the `Basic` example scene.
-**NOTE**: you do not need to adjust the Space Size in the Agent's
+**NOTE**: you do not need to adjust the Actions in the Agent's
 `Behavior Parameters` when using an `IActuator` and `ActuatorComponents`.
 
 Internally, `Agent.OnActionReceived` uses an `IActuator` to send actions to the Agent,
