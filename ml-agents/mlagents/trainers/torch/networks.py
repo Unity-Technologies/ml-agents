@@ -14,6 +14,7 @@ from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
+from mlagents.trainers.torch.attention import SmallestAttention, SimpleTransformer
 
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
@@ -124,17 +125,16 @@ class MultiInputNetworkBody(nn.Module):
             if network_settings.memory is not None
             else 0
         )
-        self.processors = []
-        encoder_input_size = 0
-        for i in range(num_obs_heads):
-            _proc, _input_size = ModelUtils.create_input_processors(
-                sensor_specs,
-                self.h_size,
-                network_settings.vis_encode_type,
-                normalize=self.normalize,
-            )
-            self.processors.append(_proc)
-            encoder_input_size += sum(_input_size)
+        self.processors, _input_size = ModelUtils.create_input_processors(
+            sensor_specs,
+            self.h_size,
+            network_settings.vis_encode_type,
+            normalize=self.normalize,
+        )
+        self.transformer = SmallestAttention(
+            sum(_input_size), [sum(_input_size)], self.h_size, self.h_size
+        )
+        encoder_input_size = self.h_size + sum(_input_size)
 
         total_enc_size = encoder_input_size + encoded_act_size
         self.linear_encoder = LinearEncoder(
@@ -146,21 +146,21 @@ class MultiInputNetworkBody(nn.Module):
         else:
             self.lstm = None  # type: ignore
 
-    def update_normalization(self, buffer: AgentBuffer) -> None:
-        obs = ObsUtil.from_buffer(buffer, len(self.processors))
-        for _proc in self.processors:
-            for _in, enc in zip(obs, _proc):
-                enc.update_normalization(_in)
-
-    def copy_normalization(self, other_network: "NetworkBody") -> None:
-        if self.normalize:
-            for _proc in self.processors:
-                for n1, n2 in zip(_proc, other_network.processors):
-                    n1.copy_normalization(n2)
-
     @property
     def memory_size(self) -> int:
         return self.lstm.memory_size if self.use_lstm else 0
+
+    def update_normalization(self, buffer: AgentBuffer) -> None:
+        obs = ObsUtil.from_buffer(buffer, len(self.processors))
+        for vec_input, enc in zip(obs, self.processors):
+            if isinstance(enc, VectorInput):
+                enc.update_normalization(torch.as_tensor(vec_input))
+
+    def copy_normalization(self, other_network: "NetworkBody") -> None:
+        if self.normalize:
+            for n1, n2 in zip(self.processors, other_network.processors):
+                if isinstance(n1, VectorInput) and isinstance(n2, VectorInput):
+                    n1.copy_normalization(n2)
 
     def forward(
         self,
@@ -169,21 +169,40 @@ class MultiInputNetworkBody(nn.Module):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-        encodes = []
-        for inputs, processor_set in zip(all_net_inputs, self.processors):
-            for idx, processor in enumerate(processor_set):
+        concat_encoded_obs = []
+        x_self = None
+        self_encodes = []
+        inputs = all_net_inputs[0]
+        for idx, processor in enumerate(self.processors):
+            obs_input = inputs[idx]
+            processed_obs = processor(obs_input)
+            self_encodes.append(processed_obs)
+        x_self = torch.cat(self_encodes, dim=-1)
+
+        # Get the self encoding separately, but keep it in the entities
+        concat_encoded_obs = [x_self]
+        for inputs in all_net_inputs[1:]:
+            encodes = []
+            for idx, processor in enumerate(self.processors):
                 obs_input = inputs[idx]
                 processed_obs = processor(obs_input)
                 encodes.append(processed_obs)
+            concat_encoded_obs.append(torch.cat(encodes, dim=-1))
 
-        if len(encodes) == 0:
+        concat_entites = torch.stack(concat_encoded_obs, dim=1)
+
+        encoded_state = self.transformer(
+            x_self, [concat_entites], SimpleTransformer.get_masks([concat_entites])
+        )
+
+        if len(concat_encoded_obs) == 0:
             raise Exception("No valid inputs to network.")
 
         # Constants don't work in Barracuda
         if actions is not None:
-            inputs = torch.cat(encodes + [actions], dim=-1)
+            inputs = torch.cat([encoded_state, actions], dim=-1)
         else:
-            inputs = torch.cat(encodes, dim=-1)
+            inputs = encoded_state
         encoding = self.linear_encoder(inputs)
 
         if self.use_lstm:
@@ -241,15 +260,11 @@ class CentralizedValueNetwork(ValueNetwork):
         network_settings: NetworkSettings,
         encoded_act_size: int = 0,
         outputs_per_stream: int = 1,
-        num_agents: int = 1,
     ):
         # This is not a typo, we want to call __init__ of nn.Module
         nn.Module.__init__(self)
         self.network_body = MultiInputNetworkBody(
-            observation_shapes,
-            network_settings,
-            encoded_act_size=encoded_act_size,
-            num_obs_heads=num_agents,
+            observation_shapes, network_settings, encoded_act_size=encoded_act_size,
         )
         if network_settings.memory is not None:
             encoding_size = network_settings.memory.memory_size // 2
@@ -566,7 +581,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         )
         self.stream_names = stream_names
         self.critic = CentralizedValueNetwork(
-            stream_names, sensor_specs, network_settings, num_agents=2
+            stream_names, sensor_specs, network_settings
         )
 
     @property
@@ -623,9 +638,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         if critic_obs is not None:
             all_net_inputs.extend(critic_obs)
         value_outputs, critic_mem_outs = self.critic(
-            all_net_inputs,
-            memories=critic_mem,
-            sequence_length=sequence_length,
+            all_net_inputs, memories=critic_mem, sequence_length=sequence_length,
         )
 
         return log_probs, entropies, value_outputs
