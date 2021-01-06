@@ -2,10 +2,9 @@ namespace Unity.MLAgents.Sensors
 {
 
     /// <summary>
-    /// The SensorType flag of the observation
+    /// The SensorType enum of the observation
     /// </summary>
-    [System.Flags]
-    public enum SensorType
+    internal enum SensorType
     {
         Observation = 0,
         Goal = 1,
@@ -17,7 +16,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// Sensor interface for sensors with variable types.
     /// </summary>
-    public interface ITypedSensor
+    internal interface ITypedSensor
     {
         /// <summary>
         /// Returns the SensorType enum corresponding to the type of the sensor.
