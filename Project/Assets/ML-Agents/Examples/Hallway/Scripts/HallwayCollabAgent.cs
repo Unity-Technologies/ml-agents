@@ -12,7 +12,8 @@ public class HallwayCollabAgent : HallwayAgent
     public bool isSpotter = true;
     TextMesh m_MessageText;
     TextMesh m_MessageRec;
-    int m_Message = 0;
+    //int m_Message = 0;
+    float[] m_Message = new float[3];
 
 
     [HideInInspector]
@@ -30,7 +31,8 @@ public class HallwayCollabAgent : HallwayAgent
 
     public override void OnEpisodeBegin()
     {
-        m_Message = -1;
+        //m_Message = -1;
+        System.Array.Clear(m_Message, 0, m_Message.Length);
         var agentOffset = 10f;
         if (isSpotter)
         {
@@ -142,7 +144,8 @@ public class HallwayCollabAgent : HallwayAgent
         //{
         //    sensor.AddObservation(StepCount / (float)MaxStep);
         //}
-        sensor.AddObservation(toOnehot(m_Message));
+        //sensor.AddObservation(toOnehot(m_Message));
+        sensor.AddObservation(m_Message);
     }
 
     float[] toOnehot(int message)
@@ -156,10 +159,15 @@ public class HallwayCollabAgent : HallwayAgent
         return onehot;
     }
 
-    public void tellAgent(int message)
+    public void tellAgent(float[] message)
     {
         m_Message = message;
     }
+
+    //public void tellAgent(int message)
+    //{
+    //    m_Message = message;
+    //}
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
@@ -169,11 +177,13 @@ public class HallwayCollabAgent : HallwayAgent
             MoveAgent(actionBuffers.DiscreteActions);
         }
 
-        int comm_act = actionBuffers.DiscreteActions[1];
+        //int comm_act = actionBuffers.DiscreteActions[1];
+        float[] comm_act = actionBuffers.ContinuousActions.Array;
 
         if (isSpotter)
         {
-            m_MessageText.text = "Sent:" + comm_act.ToString();
+            //m_MessageText.text = "Sent:" + comm_act.ToString();
+            m_MessageText.text = "Sent:" + comm_act[0].ToString("F2") + ", " + comm_act[1].ToString("F2") + ", " + comm_act[2].ToString("F2");
         }
         teammate.tellAgent(comm_act);
         // if (isSpotter) // Test

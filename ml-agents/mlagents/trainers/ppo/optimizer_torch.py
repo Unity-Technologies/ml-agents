@@ -165,8 +165,12 @@ class TorchPPOOptimizer(TorchOptimizer):
         )
         # this is a little bit of a hack but is whats recommended in the
         # gumbel softmax documentation
-        one_hot_diff_comms = obs[-1] - comms[1].detach() + comms[1]
-        obs[-1] = one_hot_diff_comms
+        #one_hot_diff_comms = obs[-1] - comms[1].detach() + comms[1]
+        #obs[-1] = one_hot_diff_comms
+        with torch.no_grad():
+            rand_n = (obs[-1] - comms.mean) / (comms.std + 1E-7)
+        obs[-1] = comms.mean + rand_n * comms.std
+
 
         log_probs, entropy, values = self.policy.evaluate_actions(
             obs,
