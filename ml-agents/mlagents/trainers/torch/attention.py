@@ -1,6 +1,6 @@
 from mlagents.torch_utils import torch
 from typing import Tuple, Optional, List
-from mlagents.trainers.torch.layers import LinearEncoder
+from mlagents.trainers.torch.layers import LinearEncoder, linear_layer, Initialization
 
 
 class MultiHeadAttention(torch.nn.Module):
@@ -117,7 +117,10 @@ class SimpleTransformer(torch.nn.Module):
         self.entities_num_max_elements: Optional[List[int]] = None
         self.ent_encoders = torch.nn.ModuleList(
             [
-                LinearEncoder(self.self_size + ent_size, 2, embedding_size)
+                # LinearEncoder(self.self_size + ent_size, 2, embedding_size)
+                # from http://www.cs.toronto.edu/~mvolkovs/ICML2020_tfixup.pdf
+                # linear_layer(self.self_size + ent_size, embedding_size, Initialization.Normal, kernel_gain=1 / (self.self_size + ent_size) ** 0.5)
+                LinearEncoder(self.self_size + ent_size, 1, embedding_size)
                 for ent_size in self.entities_sizes
             ]
         )
@@ -132,9 +135,6 @@ class SimpleTransformer(torch.nn.Module):
         self.residual_layer = LinearEncoder(embedding_size, 1, embedding_size)
         if output_size is None:
             output_size = embedding_size
-        self.x_self_residual_layer = LinearEncoder(
-            embedding_size + x_self_size, 1, output_size
-        )
 
     def forward(
         self,
@@ -172,7 +172,7 @@ class SimpleTransformer(torch.nn.Module):
         denominator = torch.sum(1 - mask, dim=1, keepdim=True) + self.EPISLON
         output = numerator / denominator
         # Residual between x_self and the output of the module
-        output = self.x_self_residual_layer(torch.cat([output, x_self], dim=1))
+        output = torch.cat([output, x_self], dim=1)
         return output
 
     @staticmethod
@@ -189,3 +189,63 @@ class SimpleTransformer(torch.nn.Module):
                 for ent in observations
             ]
         return key_masks
+
+class SmallestAttention(torch.nn.Module):
+    def __init__(
+        self,
+        x_self_size: int,
+        entities_sizes: List[int],
+        embedding_size: int,
+        output_size: Optional[int] = None,
+    ):
+        super().__init__()
+        self.self_size = x_self_size
+        self.entities_sizes = entities_sizes
+        self.entities_num_max_elements: Optional[List[int]] = None
+        self.ent_encoders = torch.nn.ModuleList(
+            [
+                LinearEncoder(self.self_size + ent_size, 2, embedding_size)
+                # LinearEncoder(self.self_size + ent_size, 3, embedding_size)
+                # LinearEncoder(self.self_size + ent_size, 1, embedding_size)
+                for ent_size in self.entities_sizes
+            ]
+        )
+        self.importance_layer = LinearEncoder(embedding_size, 1, 1)
+
+    def forward(
+        self,
+        x_self: torch.Tensor,
+        entities: List[torch.Tensor],
+        key_masks: List[torch.Tensor],
+    ) -> torch.Tensor:
+        # Gather the maximum number of entities information
+        if self.entities_num_max_elements is None:
+            self.entities_num_max_elements = []
+            for ent in entities:
+                self.entities_num_max_elements.append(ent.shape[1])
+        # Concatenate all observations with self
+        self_and_ent: List[torch.Tensor] = []
+        for num_entities, ent in zip(self.entities_num_max_elements, entities):
+            expanded_self = x_self.reshape(-1, 1, self.self_size)
+            # .repeat(
+            #     1, num_entities, 1
+            # )
+            expanded_self = torch.cat([expanded_self] * num_entities, dim=1)
+            self_and_ent.append(torch.cat([expanded_self, ent], dim=2))
+        # Generate the tensor that will serve as query, key and value to self attention
+        qkv = torch.cat(
+            [ent_encoder(x) for ent_encoder, x in zip(self.ent_encoders, self_and_ent)],
+            dim=1,
+        )
+        mask = torch.cat(key_masks, dim=1)
+        # Feed to self attention
+        max_num_ent = sum(self.entities_num_max_elements)
+
+        importance = self.importance_layer(qkv) + mask.unsqueeze(2) * -1e6
+        importance = torch.softmax(importance, dim=1)
+        weighted_qkv = qkv * importance
+
+        output = torch.sum(weighted_qkv, dim=1)
+        output = torch.cat([output, x_self], dim=1)
+
+        return output

@@ -356,6 +356,12 @@ def steps_from_proto(
                 behavior_spec.action_spec.discrete_branches
             )
             action_mask = np.split(action_mask, indices, axis=1)
+
+    if len(set(decision_agent_id)) != len(decision_agent_id):
+        ds = DecisionSteps(
+            decision_obs_list, decision_rewards, decision_agent_id, action_mask
+        )
+        print("Error, duplicate agent_ids :", ds)
     return (
         DecisionSteps(
             decision_obs_list, decision_rewards, decision_agent_id, action_mask

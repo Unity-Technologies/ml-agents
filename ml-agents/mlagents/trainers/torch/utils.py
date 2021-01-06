@@ -162,14 +162,22 @@ class ModelUtils:
         """
         encoders: List[nn.Module] = []
         embedding_sizes: List[int] = []
-        for sen_spec in sensor_specs:
-            encoder, embedding_size = ModelUtils.get_encoder_for_obs(
-                sen_spec.shape, normalize, h_size, vis_encode_type
-            )
-            encoders.append(encoder)
-            embedding_sizes.append(embedding_size)
+        var_len_indices: List[int] = []
+        for idx, sen_spec in enumerate(sensor_specs):
+            if len(sen_spec.shape) == 2:
+                # This is a 2D tensor
+                # TODO : better if condition
+                var_len_indices.append(idx)
+                encoders.append(None)
+                embedding_sizes.append(0)
+            else:
+                encoder, embedding_size = ModelUtils.get_encoder_for_obs(
+                    sen_spec.shape, normalize, h_size, vis_encode_type
+                )
+                encoders.append(encoder)
+                embedding_sizes.append(embedding_size)
 
-        return (nn.ModuleList(encoders), embedding_sizes)
+        return (nn.ModuleList(encoders), embedding_sizes, var_len_indices)
 
     @staticmethod
     def list_to_tensor(

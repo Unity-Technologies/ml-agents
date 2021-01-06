@@ -15,6 +15,7 @@ class Initialization(Enum):
     XavierGlorotUniform = 2
     KaimingHeNormal = 3  # also known as Variance scaling
     KaimingHeUniform = 4
+    Normal = 5
 
 
 _init_methods = {
@@ -23,6 +24,7 @@ _init_methods = {
     Initialization.XavierGlorotUniform: torch.nn.init.xavier_uniform_,
     Initialization.KaimingHeNormal: torch.nn.init.kaiming_normal_,
     Initialization.KaimingHeUniform: torch.nn.init.kaiming_uniform_,
+    Initialization.Normal: torch.nn.init.normal_
 }
 
 

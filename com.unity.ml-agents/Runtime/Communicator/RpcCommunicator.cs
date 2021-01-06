@@ -324,6 +324,13 @@ namespace Unity.MLAgents
                         agentInfoProto.Observations.Add(obsProto);
                     }
                 }
+                foreach (var proto in m_CurrentUnityRlOutput.AgentInfos[behaviorName].Value)
+                {
+                    if (proto.Id == agentInfoProto.Id && !proto.Done && !agentInfoProto.Done )
+                    {
+                        UnityEngine.Debug.LogError("The same AgentId was added twice " + proto.Id + " "+m_CurrentUnityRlOutput.AgentInfos[behaviorName].Value.Count);
+                    }
+                }
                 m_CurrentUnityRlOutput.AgentInfos[behaviorName].Value.Add(agentInfoProto);
             }
 

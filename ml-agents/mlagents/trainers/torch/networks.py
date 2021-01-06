@@ -14,6 +14,7 @@ from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
+from mlagents.trainers.torch.attention import SimpleTransformer, SmallestAttention
 
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
@@ -41,16 +42,57 @@ class NetworkBody(nn.Module):
             else 0
         )
 
-        self.processors, self.embedding_sizes = ModelUtils.create_input_processors(
+        self.processors, self.embedding_sizes, var_len_indices = ModelUtils.create_input_processors(
             sensor_specs,
             self.h_size,
             network_settings.vis_encode_type,
             normalize=self.normalize,
         )
 
-        total_enc_size = sum(self.embedding_sizes) + encoded_act_size
+        self.use_fc = False
+        if len(var_len_indices) > 0:
+            # there are some variable length observations
+            x_self_len = sum(self.embedding_sizes)
+            entities_sizes = [] # TODO : More robust
+            for idx in var_len_indices:
+                entities_sizes.append(sensor_specs[idx].shape[1])
+
+            # self.x_self_enc = LinearEncoder(6, 2, 64)
+            # self.var_len_obs_enc = LinearEncoder(4, 2, 64)
+            # self.transformer = SimpleTransformer(
+            #     64,
+            #     [64],
+            #     self.h_size,
+            #     self.h_size
+            #     )
+            # self.transformer = SimpleTransformer(
+            #     x_self_len,
+            #     entities_sizes,
+            #     self.h_size,
+            #     self.h_size
+            #     )
+            self.transformer = SmallestAttention(x_self_len, entities_sizes, self.h_size, self.h_size)
+            # self.transformer = SmallestAttention(64, [64], self.h_size, self.h_size)
+            # self.use_fc = True
+
+            total_enc_size = self.h_size + sum(self.embedding_sizes)
+            # total_enc_size = 128#self.h_size + sum(self.embedding_sizes)
+            n_layers = 1
+            if self.use_fc:
+                self.transformer = None
+                total_enc_size = 80  + sum(self.embedding_sizes)
+                n_layers = max(1, network_settings.num_layers + 1)
+        else:
+            self.transformer = None
+            total_enc_size = sum(self.embedding_sizes)
+            n_layers = max(1, network_settings.num_layers)
+
+
+        if total_enc_size == 0:
+            raise Exception("No valid inputs to network.")
+        total_enc_size += encoded_act_size
         self.linear_encoder = LinearEncoder(
-            total_enc_size, network_settings.num_layers, self.h_size
+            total_enc_size, n_layers, self.h_size
         )
 
         if self.use_lstm:
@@ -82,20 +124,40 @@ class NetworkBody(nn.Module):
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         encodes = []
+        var_len_inputs = []
         for idx, processor in enumerate(self.processors):
-            obs_input = inputs[idx]
-            processed_obs = processor(obs_input)
-            encodes.append(processed_obs)
+            if processor is not None:
+                obs_input = inputs[idx]
+                processed_obs = processor(obs_input)
+                encodes.append(processed_obs)
+            else:
+                var_len_inputs.append(inputs[idx])
+                # var_len_inputs.append(
+                #     self.var_len_obs_enc(inputs[idx])
+                #     )
 
-        if len(encodes) == 0:
-            raise Exception("No valid inputs to network.")
+        if self.transformer is not None and not self.use_fc:
+            x_self = torch.cat(encodes, dim=1)
+            x_self_encoded = x_self
+            # x_self_encoded = self.x_self_enc(x_self)
 
-        # Constants don't work in Barracuda
-        if actions is not None:
-            inputs = torch.cat(encodes + [actions], dim=-1)
+            encoded_state = self.transformer(
+                x_self_encoded,
+                var_len_inputs,
+                SimpleTransformer.get_masks(var_len_inputs)
+            )
+            # print("\n\n\nUsing transformer ", self.transformer, "use fc = ", self.use_fc, " x_self.shape=",x_self_encoded.shape," var_len_inputs[0].shape=",var_len_inputs[0].shape," len(var_len_inputs)=",len(var_len_inputs))
         else:
-            inputs = torch.cat(encodes, dim=-1)
-        encoding = self.linear_encoder(inputs)
+            encoded_state = torch.cat(encodes, dim=1)
+
+        if self.use_fc:
+            x_self = torch.cat(encodes, dim=1)
+            encoded_state = torch.cat([x_self, inputs[0].reshape(x_self.shape[0], 80)], dim=1)
+
+        if actions is not None:
+            encoded_state = torch.cat([encoded_state, actions], dim=1)
+
+        encoding = self.linear_encoder(encoded_state)
 
         if self.use_lstm:
             # Resize to (batch, sequence length, encoding size)
@@ -310,6 +372,7 @@ class SimpleActor(nn.Module, Actor):
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
+        var_len_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
     ) -> Tuple[Union[int, torch.Tensor], ...]:
@@ -325,6 +388,7 @@ class SimpleActor(nn.Module, Actor):
         start = 0
         end = 0
         vis_index = 0
+        var_len_index = 0
         for i, enc in enumerate(self.network_body.processors):
             if isinstance(enc, VectorInput):
                 # This is a vec_obs
@@ -332,9 +396,12 @@ class SimpleActor(nn.Module, Actor):
                 end = start + vec_size
                 inputs.append(concatenated_vec_obs[:, start:end])
                 start = end
-            else:
+            elif enc is not None:
                 inputs.append(vis_inputs[vis_index])
                 vis_index += 1
+            else:
+                inputs.append(var_len_inputs[var_len_index])
+                var_len_index+=1
         # End of code to convert the vec and vis obs into a list of inputs for the network
         encoding, memories_out = self.network_body(
             inputs, memories=memories, sequence_length=1
