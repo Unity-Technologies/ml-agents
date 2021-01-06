@@ -262,10 +262,12 @@ def test_agent_manager_stats():
         {
             "averaged": [(1.0, StatsAggregationMethod.AVERAGE)],
             "most_recent": [(2.0, StatsAggregationMethod.MOST_RECENT)],
+            "summed": [(3.1, StatsAggregationMethod.SUM)],
         },
         {
             "averaged": [(3.0, StatsAggregationMethod.AVERAGE)],
             "most_recent": [(4.0, StatsAggregationMethod.MOST_RECENT)],
+            "summed": [(1.1, StatsAggregationMethod.SUM)],
         },
     ]
     for env_stats in all_env_stats:
@@ -274,6 +276,7 @@ def test_agent_manager_stats():
     expected_stats = {
         "averaged": StatsSummary(stats_value=2.0, std=mock.ANY, num=2),
         "most_recent": StatsSummary(stats_value=4.0, std=0.0, num=1),
+        "summed": StatsSummary(stats_value=4.2, std=mock.ANY, num=2),
     }
     stats_reporter.write_stats(123)
     writer.write_stats.assert_any_call("FakeCategory", expected_stats, 123)
