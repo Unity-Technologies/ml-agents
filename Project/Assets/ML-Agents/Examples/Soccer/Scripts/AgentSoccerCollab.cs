@@ -46,10 +46,10 @@ public class AgentSoccerCollab : AgentSoccer
     public void tellAgent(int message)
     {
         m_Message[m_Previous] = 0f;
-        //if (team == Team.Purple)
-        //{
-        //    message = Random.Range(0, 2);
-        //}
+        if (team == Team.Purple)
+        {
+            message = 0;//Random.Range(0, 2);
+        }
         m_Message[message] = 1f;
         m_Previous = message;
     }
