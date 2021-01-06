@@ -36,7 +36,7 @@ def run_standalone_build(
     output_path: str = None,
     scene_path: str = None,
     build_target: str = None,
-    log_output_path: str = f"{get_base_output_path()}/standalone_build.txt",
+    log_output_path: Optional[str] = f"{get_base_output_path()}/standalone_build.txt",
 ) -> int:
     """
     Run BuildStandalonePlayerOSX test to produce a player. The location defaults to
@@ -61,9 +61,13 @@ def run_standalone_build(
         "Unity.MLAgents.StandaloneBuildTest.BuildStandalonePlayerOSX",
     ]
 
-    os.makedirs(os.path.dirname(log_output_path), exist_ok=True)
-    subprocess.run(["touch", log_output_path])
-    test_args += ["-logfile", log_output_path]
+    if log_output_path:
+        os.makedirs(os.path.dirname(log_output_path), exist_ok=True)
+        subprocess.run(["touch", log_output_path])
+        test_args += ["-logfile", log_output_path]
+    else:
+        # Log to stdout
+        test_args += ["-logfile", "-"]
 
     if output_path is not None:
         output_path = os.path.join(get_base_output_path(), output_path)
@@ -88,7 +92,8 @@ def run_standalone_build(
 
     # Print if we fail or want verbosity.
     if verbose or res.returncode != 0:
-        subprocess.run(["cat", log_output_path])
+        if log_output_path:
+            subprocess.run(["cat", log_output_path])
 
     return res.returncode
 
