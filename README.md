@@ -135,7 +135,7 @@ We have published a series of blog posts that are relevant for ML-Agents:
 In addition to our own documentation, here are some additional, relevant
 articles:
 
-- [A Game Developer Learns Machine Learning](https://mikecann.co.uk/machine-learning/a-game-developer-learns-machine-learning-intent/)
+- [A Game Developer Learns Machine Learning](https://mikecann.co.uk/posts/a-game-developer-learns-machine-learning-intent)
 - [Explore Unity Technologies ML-Agents Exclusively on Intel Architecture](https://software.intel.com/en-us/articles/explore-unity-technologies-ml-agents-exclusively-on-intel-architecture)
 - [ML-Agents Penguins tutorial](https://learn.unity.com/project/ml-agents-penguins)
 
