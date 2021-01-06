@@ -10,8 +10,8 @@ will try to install it when you install the ml-agents package.
 If you see a message like this
 
 ```console
-ERROR: Could not find a version that satisfies the requirement tensorflow<2.0,>=1.7 (from mlagents) (from versions: none)
-ERROR: No matching distribution found for tensorflow<2.0,>=1.7 (from mlagents)
+ERROR: Could not find a version that satisfies the requirement tensorflow<3.0,>=1.14 (from mlagents) (from versions: none)
+ERROR: No matching distribution found for tensorflow<3.0,>=1.14 (from mlagents)
 ```
 
 it means that there is no version of TensorFlow for your python environment.
@@ -20,9 +20,13 @@ Some known potential causes are:
 - You're using 32-bit python instead of 64-bit. See the answer
   [here](https://stackoverflow.com/a/1405971/224264) for how to tell which you
   have installed.
+- You're using python 3.9. TensorFlow plans to release packages for this as soon
+  as possible; see
+  [this issue](https://github.com/tensorflow/tensorflow/issues/44485) for more
+  details.
 - You have the `tensorflow-gpu` package installed. This is equivalent to
   `tensorflow`, however `pip` doesn't recognize this. The best way to resolve
-  this is to update to `tensorflow==1.15.0` which provides GPU support in the
+  this is to update to `tensorflow==1.15.0` or later, which provides GPU support in the
   same package (see the
   [release notes](https://github.com/tensorflow/tensorflow/issues/33374) for
   more details.)
@@ -30,7 +34,7 @@ Some known potential causes are:
   packages.
 
 In all of these cases, the issue is a pip/python environment setup issue. Please
-search the tensorflow github issues for similar problems and solutions before
+search the TensorFlow github issues for similar problems and solutions before
 creating a new issue.
 
 #### Visual C++ Dependency (Windows Users)
