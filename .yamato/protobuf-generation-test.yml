@@ -16,10 +16,11 @@ test_mac_protobuf_generation:
       . venv/bin/activate
       python3 -m pip install --upgrade pip --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python3 -m pip install grpcio==1.28.1 grpcio-tools==1.13.0 protobuf==3.11.3 six==1.14.0 mypy-protobuf==1.16.0  --progress-bar=off --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
-      cd protobuf-definitions
+      pushd protobuf-definitions
       chmod +x Grpc.Tools.$GRPC_VERSION/tools/macosx_x64/protoc
       chmod +x Grpc.Tools.$GRPC_VERSION/tools/macosx_x64/grpc_csharp_plugin
       COMPILER=Grpc.Tools.$GRPC_VERSION/tools/macosx_x64 ./make.sh
+      popd
       mkdir -p artifacts
       touch artifacts/proto.patch
       git diff --exit-code -- :/ ":(exclude,top)$CS_PROTO_PATH/*.meta"                          \
