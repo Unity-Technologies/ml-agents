@@ -139,7 +139,7 @@ def test_summary_checkpoint(mock_add_checkpoint, mock_write_summary):
     checkpoint_interval = trainer.trainer_settings.checkpoint_interval
     trajectory = mb.make_fake_trajectory(
         length=time_horizon,
-        observation_spec=create_observation_spec_with_shapes([(1,)]),
+        observation_spec=create_observation_specs_with_shapes([(1,)]),
         max_step_complete=True,
         action_spec=ActionSpec.create_discrete((2,)),
     )

@@ -61,7 +61,7 @@ def create_steps_from_behavior_spec(
 ) -> Tuple[DecisionSteps, TerminalSteps]:
     return create_mock_steps(
         num_agents=num_agents,
-        observation_spec=behavior_spec.observation_spec,
+        observation_specs=behavior_spec.observation_specs,
         action_spec=behavior_spec.action_spec,
     )
 
@@ -172,7 +172,7 @@ def setup_test_behavior_specs(
     else:
         action_spec = ActionSpec.create_continuous(vector_action_space)
     observation_shapes = [(84, 84, 3)] * int(use_visual) + [(vector_obs_space,)]
-    obs_spec = create_observation_spec_with_shapes(observation_shapes)
+    obs_spec = create_observation_specs_with_shapes(observation_shapes)
     behavior_spec = BehaviorSpec(obs_spec, action_spec)
     return behavior_spec
 

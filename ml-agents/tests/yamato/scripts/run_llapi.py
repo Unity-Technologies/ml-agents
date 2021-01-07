@@ -37,7 +37,9 @@ def test_run_environment(env_name):
         print("Number of observations : ", len(group_spec.observation_specs))
 
         # Is there a visual observation ?
-        vis_obs = any(len(obs_spec.shape) == 3 for obs_spec in group_spec.observation_specs)
+        vis_obs = any(
+            len(obs_spec.shape) == 3 for obs_spec in group_spec.observation_specs
+        )
         print("Is there a visual observation ?", vis_obs)
 
         # Examine the state space for the first observation for the first agent

@@ -77,9 +77,9 @@ def extrinsic_dummy_config():
 def create_observation_specs_with_shapes(
     shapes: List[Tuple[int, ...]]
 ) -> List[ObservationSpec]:
-    obs_spec: List[ObservationSpec] = []
+    obs_specs: List[ObservationSpec] = []
     for shape in shapes:
         dim_prop = (DimensionProperty.UNSPECIFIED,) * len(shape)
         spec = ObservationSpec(shape, dim_prop, SensorType.OBSERVATION)
-        obs_spec.append(spec)
-    return obs_spec
+        obs_specs.append(spec)
+    return obs_specs

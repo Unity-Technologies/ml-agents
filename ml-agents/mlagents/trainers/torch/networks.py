@@ -372,7 +372,11 @@ class SharedActorCritic(SimpleActor, ActorCritic):
     ):
         self.use_lstm = network_settings.memory is not None
         super().__init__(
-            observation_spec, network_settings, action_spec, conditional_sigma, tanh_squash
+            observation_spec,
+            network_settings,
+            action_spec,
+            conditional_sigma,
+            tanh_squash,
         )
         self.stream_names = stream_names
         self.value_heads = ValueHeads(stream_names, self.encoding_size)
@@ -433,7 +437,11 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
     ):
         self.use_lstm = network_settings.memory is not None
         super().__init__(
-            observation_spec, network_settings, action_spec, conditional_sigma, tanh_squash
+            observation_spec,
+            network_settings,
+            action_spec,
+            conditional_sigma,
+            tanh_squash,
         )
         self.stream_names = stream_names
         self.critic = ValueNetwork(stream_names, observation_spec, network_settings)

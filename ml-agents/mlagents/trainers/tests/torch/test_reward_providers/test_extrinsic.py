@@ -18,8 +18,12 @@ ACTIONSPEC_TWODISCRETE = ActionSpec.create_discrete((2, 3))
 @pytest.mark.parametrize(
     "behavior_spec",
     [
-        BehaviorSpec(create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_CONTINUOUS),
-        BehaviorSpec(create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_TWODISCRETE),
+        BehaviorSpec(
+            create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_CONTINUOUS
+        ),
+        BehaviorSpec(
+            create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_TWODISCRETE
+        ),
     ],
 )
 def test_construction(behavior_spec: BehaviorSpec) -> None:
@@ -33,8 +37,12 @@ def test_construction(behavior_spec: BehaviorSpec) -> None:
 @pytest.mark.parametrize(
     "behavior_spec",
     [
-        BehaviorSpec(create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_CONTINUOUS),
-        BehaviorSpec(create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_TWODISCRETE),
+        BehaviorSpec(
+            create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_CONTINUOUS
+        ),
+        BehaviorSpec(
+            create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_TWODISCRETE
+        ),
     ],
 )
 def test_factory(behavior_spec: BehaviorSpec) -> None:
@@ -49,8 +57,12 @@ def test_factory(behavior_spec: BehaviorSpec) -> None:
 @pytest.mark.parametrize(
     "behavior_spec",
     [
-        BehaviorSpec(create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_CONTINUOUS),
-        BehaviorSpec(create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_TWODISCRETE),
+        BehaviorSpec(
+            create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_CONTINUOUS
+        ),
+        BehaviorSpec(
+            create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_TWODISCRETE
+        ),
     ],
 )
 def test_reward(behavior_spec: BehaviorSpec, reward: float) -> None:
