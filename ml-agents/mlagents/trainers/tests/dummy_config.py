@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from mlagents_envs.base_env import SensorSpec, DimensionProperty, SensorType
+from mlagents_envs.base_env import ObservationSpec, DimensionProperty, SensorType
 import pytest
 import copy
 import os
@@ -76,10 +76,10 @@ def extrinsic_dummy_config():
 
 def create_observation_specs_with_shapes(
     shapes: List[Tuple[int, ...]]
-) -> List[SensorSpec]:
-    sen_spec: List[SensorSpec] = []
+) -> List[ObservationSpec]:
+    obs_spec: List[ObservationSpec] = []
     for shape in shapes:
         dim_prop = (DimensionProperty.UNSPECIFIED,) * len(shape)
-        spec = SensorSpec(shape, dim_prop, SensorType.OBSERVATION)
-        sen_spec.append(spec)
-    return sen_spec
+        spec = ObservationSpec(shape, dim_prop, SensorType.OBSERVATION)
+        obs_spec.append(spec)
+    return obs_spec

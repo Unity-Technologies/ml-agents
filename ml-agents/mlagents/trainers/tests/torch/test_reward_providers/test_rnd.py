@@ -10,7 +10,7 @@ from mlagents.trainers.settings import RNDSettings, RewardSignalType
 from mlagents.trainers.tests.torch.test_reward_providers.utils import (
     create_agent_buffer,
 )
-from mlagents.trainers.tests.dummy_config import create_sensor_specs_with_shapes
+from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
 
 
 SEED = [42]
@@ -23,8 +23,8 @@ ACTIONSPEC_DISCRETE = ActionSpec.create_discrete((2,))
 @pytest.mark.parametrize(
     "behavior_spec",
     [
-        BehaviorSpec(create_sensor_specs_with_shapes([(10,)]), ACTIONSPEC_CONTINUOUS),
-        BehaviorSpec(create_sensor_specs_with_shapes([(10,)]), ACTIONSPEC_TWODISCRETE),
+        BehaviorSpec(create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_CONTINUOUS),
+        BehaviorSpec(create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_TWODISCRETE),
     ],
 )
 def test_construction(behavior_spec: BehaviorSpec) -> None:
@@ -38,16 +38,16 @@ def test_construction(behavior_spec: BehaviorSpec) -> None:
 @pytest.mark.parametrize(
     "behavior_spec",
     [
-        BehaviorSpec(create_sensor_specs_with_shapes([(10,)]), ACTIONSPEC_CONTINUOUS),
+        BehaviorSpec(create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_CONTINUOUS),
         BehaviorSpec(
-            create_sensor_specs_with_shapes([(10,), (64, 66, 3), (84, 86, 1)]),
+            create_observation_specs_with_shapes([(10,), (64, 66, 3), (84, 86, 1)]),
             ACTIONSPEC_CONTINUOUS,
         ),
         BehaviorSpec(
-            create_sensor_specs_with_shapes([(10,), (64, 66, 1)]),
+            create_observation_specs_with_shapes([(10,), (64, 66, 1)]),
             ACTIONSPEC_TWODISCRETE,
         ),
-        BehaviorSpec(create_sensor_specs_with_shapes([(10,)]), ACTIONSPEC_DISCRETE),
+        BehaviorSpec(create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_DISCRETE),
     ],
 )
 def test_factory(behavior_spec: BehaviorSpec) -> None:
@@ -63,11 +63,11 @@ def test_factory(behavior_spec: BehaviorSpec) -> None:
     "behavior_spec",
     [
         BehaviorSpec(
-            create_sensor_specs_with_shapes([(10,), (64, 66, 3), (24, 26, 1)]),
+            create_observation_specs_with_shapes([(10,), (64, 66, 3), (24, 26, 1)]),
             ACTIONSPEC_CONTINUOUS,
         ),
-        BehaviorSpec(create_sensor_specs_with_shapes([(10,)]), ACTIONSPEC_TWODISCRETE),
-        BehaviorSpec(create_sensor_specs_with_shapes([(10,)]), ACTIONSPEC_DISCRETE),
+        BehaviorSpec(create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_TWODISCRETE),
+        BehaviorSpec(create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_DISCRETE),
     ],
 )
 def test_reward_decreases(behavior_spec: BehaviorSpec, seed: int) -> None:

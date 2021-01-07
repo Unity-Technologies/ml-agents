@@ -16,7 +16,7 @@ from mlagents.trainers.tests.torch.test_reward_providers.utils import (
 from mlagents.trainers.torch.components.reward_providers.gail_reward_provider import (
     DiscriminatorNetwork,
 )
-from mlagents.trainers.tests.dummy_config import create_sensor_specs_with_shapes
+from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
 
 
 CONTINUOUS_PATH = (
@@ -36,7 +36,7 @@ ACTIONSPEC_DISCRETE = ActionSpec.create_discrete((20,))
 
 @pytest.mark.parametrize(
     "behavior_spec",
-    [BehaviorSpec(create_sensor_specs_with_shapes([(8,)]), ACTIONSPEC_CONTINUOUS)],
+    [BehaviorSpec(create_observation_specs_with_shapes([(8,)]), ACTIONSPEC_CONTINUOUS)],
 )
 def test_construction(behavior_spec: BehaviorSpec) -> None:
     gail_settings = GAILSettings(demo_path=CONTINUOUS_PATH)
@@ -46,7 +46,7 @@ def test_construction(behavior_spec: BehaviorSpec) -> None:
 
 @pytest.mark.parametrize(
     "behavior_spec",
-    [BehaviorSpec(create_sensor_specs_with_shapes([(8,)]), ACTIONSPEC_CONTINUOUS)],
+    [BehaviorSpec(create_observation_specs_with_shapes([(8,)]), ACTIONSPEC_CONTINUOUS)],
 )
 def test_factory(behavior_spec: BehaviorSpec) -> None:
     gail_settings = GAILSettings(demo_path=CONTINUOUS_PATH)
@@ -61,10 +61,10 @@ def test_factory(behavior_spec: BehaviorSpec) -> None:
     "behavior_spec",
     [
         BehaviorSpec(
-            create_sensor_specs_with_shapes([(8,), (24, 26, 1)]), ACTIONSPEC_CONTINUOUS
+            create_observation_specs_with_shapes([(8,), (24, 26, 1)]), ACTIONSPEC_CONTINUOUS
         ),
-        BehaviorSpec(create_sensor_specs_with_shapes([(50,)]), ACTIONSPEC_FOURDISCRETE),
-        BehaviorSpec(create_sensor_specs_with_shapes([(10,)]), ACTIONSPEC_DISCRETE),
+        BehaviorSpec(create_observation_specs_with_shapes([(50,)]), ACTIONSPEC_FOURDISCRETE),
+        BehaviorSpec(create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_DISCRETE),
     ],
 )
 @pytest.mark.parametrize("use_actions", [False, True])
@@ -111,10 +111,10 @@ def test_reward_decreases(
     "behavior_spec",
     [
         BehaviorSpec(
-            create_sensor_specs_with_shapes([(8,), (24, 26, 1)]), ACTIONSPEC_CONTINUOUS
+            create_observation_spec_with_shapes([(8,), (24, 26, 1)]), ACTIONSPEC_CONTINUOUS
         ),
-        BehaviorSpec(create_sensor_specs_with_shapes([(50,)]), ACTIONSPEC_FOURDISCRETE),
-        BehaviorSpec(create_sensor_specs_with_shapes([(10,)]), ACTIONSPEC_DISCRETE),
+        BehaviorSpec(create_observation_spec_with_shapes([(50,)]), ACTIONSPEC_FOURDISCRETE),
+        BehaviorSpec(create_observation_spec_with_shapes([(10,)]), ACTIONSPEC_DISCRETE),
     ],
 )
 @pytest.mark.parametrize("use_actions", [False, True])
