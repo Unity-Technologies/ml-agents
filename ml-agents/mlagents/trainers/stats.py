@@ -232,7 +232,7 @@ class StatsReporter:
     stats_dict: Dict[str, Dict[str, List]] = defaultdict(lambda: defaultdict(list))
     lock = RLock()
     stats_aggregation: Dict[str, Dict[str, StatsAggregationMethod]] = defaultdict(
-        lambda: defaultdict(lambda: {"", StatsAggregationMethod.AVERAGE})
+        lambda: defaultdict(lambda: StatsAggregationMethod.AVERAGE)
     )
 
     def __init__(self, category: str):
@@ -289,6 +289,9 @@ class StatsReporter:
         """
         with StatsReporter.lock:
             StatsReporter.stats_dict[self.category][key] = [value]
+            StatsReporter.stats_aggregation[self.category][
+                key
+            ] = StatsAggregationMethod.MOST_RECENT
 
     def write_stats(self, step: int) -> None:
         """
@@ -310,7 +313,7 @@ class StatsReporter:
 
     def get_stats_summaries(self, key: str) -> StatsSummary:
         """
-        Get the mean, std, sum, count and aggregation method of a particular statistic, since last write.
+        Get the mean, std, count, sum and aggregation method of a particular statistic, since last write.
 
         :param key: The type of statistic, e.g. Environment/Reward.
         :returns: A StatsSummary NamedTuple containing (mean, std, sum, count, aggregation).

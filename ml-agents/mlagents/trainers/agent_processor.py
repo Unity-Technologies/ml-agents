@@ -332,11 +332,11 @@ class AgentManager(AgentProcessor):
         for stat_name, value_list in env_stats.items():
             for val, agg_type in value_list:
                 if agg_type == StatsAggregationMethod.AVERAGE:
-                    self.stats_reporter.add_stat(stat_name, val)
+                    self.stats_reporter.add_stat(stat_name, val, agg_type)
+                elif agg_type == StatsAggregationMethod.SUM:
+                    self.stats_reporter.add_stat(stat_name, val, agg_type)
                 elif agg_type == StatsAggregationMethod.MOST_RECENT:
                     # In order to prevent conflicts between multiple environments,
                     # only stats from the first environment are recorded.
                     if worker_id == 0:
                         self.stats_reporter.set_stat(stat_name, val)
-                elif agg_type == StatsAggregationMethod.SUM:
-                    self.stats_reporter.add_stat(stat_name, val, agg_type)
