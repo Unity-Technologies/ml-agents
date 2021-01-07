@@ -39,7 +39,7 @@ def behavior_spec_from_proto(
             ObservationSpec(
                 tuple(obs.shape),
                 tuple(DimensionProperty(dim) for dim in obs.dimension_properties),
-                ObservationType(obs.sensor_type),
+                ObservationType(obs.observation_type),
             )
         )
     # proto from communicator < v1.3 does not set action spec, use deprecated fields instead
