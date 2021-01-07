@@ -28,8 +28,8 @@ class DebugWriter(StatsWriter):
     ) -> None:
         for val, stats_summary in values.items():
             if val == "Environment/Cumulative Reward":
-                print(step, val, stats_summary.stats_value)
-                self._last_reward_summary[category] = stats_summary.stats_value
+                print(step, val, stats_summary.aggregated_value)
+                self._last_reward_summary[category] = stats_summary.aggregated_value
 
 
 # The reward processor is passed as an argument to _check_environment_trains.

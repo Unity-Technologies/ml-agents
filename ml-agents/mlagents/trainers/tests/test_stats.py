@@ -12,6 +12,7 @@ from mlagents.trainers.stats import (
     GaugeWriter,
     ConsoleWriter,
     StatsPropertyType,
+    StatsAggregationMethod,
 )
 
 
@@ -36,8 +37,8 @@ def test_stat_reporter_add_summary_write():
 
     assert statssummary1.num == 10
     assert statssummary2.num == 10
-    assert statssummary1.stats_value == 4.5
-    assert statssummary2.stats_value == 4.5
+    assert statssummary1.mean == 4.5
+    assert statssummary2.mean == 4.5
     assert statssummary1.std == pytest.approx(2.9, abs=0.1)
     assert statssummary2.std == pytest.approx(2.9, abs=0.1)
 
@@ -74,7 +75,13 @@ def test_tensorboard_writer(mock_summary):
     category = "category1"
     with tempfile.TemporaryDirectory(prefix="unittest-") as base_dir:
         tb_writer = TensorboardWriter(base_dir, clear_past_data=False)
-        statssummary1 = StatsSummary(stats_value=1.0, std=1.0, num=1)
+        statssummary1 = StatsSummary(
+            mean=1.0,
+            std=1.0,
+            num=1,
+            sum=1.0,
+            aggregation_method=StatsAggregationMethod.AVERAGE,
+        )
         tb_writer.write_stats("category1", {"key1": statssummary1}, 10)
 
         # Test that the filewriter has been created and the directory has been created.
@@ -97,7 +104,13 @@ def test_tensorboard_writer(mock_summary):
 
 def test_tensorboard_writer_clear(tmp_path):
     tb_writer = TensorboardWriter(tmp_path, clear_past_data=False)
-    statssummary1 = StatsSummary(stats_value=1.0, std=1.0, num=1)
+    statssummary1 = StatsSummary(
+        mean=1.0,
+        std=1.0,
+        num=1,
+        sum=1.0,
+        aggregation_method=StatsAggregationMethod.AVERAGE,
+    )
     tb_writer.write_stats("category1", {"key1": statssummary1}, 10)
     # TB has some sort of timeout before making a new file
     time.sleep(1.0)
@@ -129,7 +142,13 @@ class ConsoleWriterTest(unittest.TestCase):
         with self.assertLogs("mlagents.trainers", level="INFO") as cm:
             category = "category1"
             console_writer = ConsoleWriter()
-            statssummary1 = StatsSummary(stats_value=1.0, std=1.0, num=1)
+            statssummary1 = StatsSummary(
+                mean=1.0,
+                std=1.0,
+                num=1,
+                sum=1.0,
+                aggregation_method=StatsAggregationMethod.AVERAGE,
+            )
             console_writer.write_stats(
                 category,
                 {
@@ -138,7 +157,13 @@ class ConsoleWriterTest(unittest.TestCase):
                 },
                 10,
             )
-            statssummary2 = StatsSummary(stats_value=0.0, std=0.0, num=1)
+            statssummary2 = StatsSummary(
+                mean=0.0,
+                std=0.0,
+                num=1,
+                sum=0.0,
+                aggregation_method=StatsAggregationMethod.AVERAGE,
+            )
             console_writer.write_stats(
                 category,
                 {
@@ -166,7 +191,13 @@ class ConsoleWriterTest(unittest.TestCase):
             category = "category1"
             console_writer = ConsoleWriter()
             console_writer.add_property(category, StatsPropertyType.SELF_PLAY, True)
-            statssummary1 = StatsSummary(stats_value=1.0, std=1.0, num=1)
+            statssummary1 = StatsSummary(
+                mean=1.0,
+                std=1.0,
+                num=1,
+                sum=1.0,
+                aggregation_method=StatsAggregationMethod.AVERAGE,
+            )
             console_writer.write_stats(
                 category,
                 {
