@@ -137,7 +137,7 @@ class DecisionSteps(Mapping):
         :param spec: The BehaviorSpec for the DecisionSteps
         """
         obs: List[np.ndarray] = []
-        for sen_spec in spec.sensor_specs:
+        for sen_spec in spec.observation_specs:
             obs += [np.zeros((0,) + sen_spec.shape, dtype=np.float32)]
         return DecisionSteps(
             obs=obs,
@@ -235,7 +235,7 @@ class TerminalSteps(Mapping):
         :param spec: The BehaviorSpec for the TerminalSteps
         """
         obs: List[np.ndarray] = []
-        for sen_spec in spec.sensor_specs:
+        for sen_spec in spec.observation_specs:
             obs += [np.zeros((0,) + sen_spec.shape, dtype=np.float32)]
         return TerminalSteps(
             obs=obs,
@@ -458,26 +458,26 @@ class DimensionProperty(IntFlag):
     VARIABLE_SIZE = 4
 
 
-class SensorType(Enum):
-    OBSERVATION = 0
+class ObservationType(Enum):
+    DEFAULT = 0
     GOAL = 1
     REWARD = 2
     MESSAGE = 3
 
 
-class SensorSpec(NamedTuple):
+class ObservationSpec(NamedTuple):
     """
     A NamedTuple containing information about the observation of Agents.
     - shape is a Tuple of int : It corresponds to the shape of
     an observation's dimensions.
     - dimension_property is a Tuple of DimensionProperties flag, one flag for each
     dimension.
-    - type is an enum of SensorType.
+    - observation_type is an enum of ObservationType.
     """
 
     shape: Tuple[int, ...]
     dimension_property: Tuple[DimensionProperty, ...]
-    type: SensorType
+    observation_type: ObservationType
 
 
 class BehaviorSpec(NamedTuple):
@@ -491,7 +491,7 @@ class BehaviorSpec(NamedTuple):
     - action_spec is an ActionSpec NamedTuple.
     """
 
-    sensor_specs: List[SensorSpec]
+    observation_specs: List[ObservationSpec]
     action_spec: ActionSpec
 
 

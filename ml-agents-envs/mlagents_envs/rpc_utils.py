@@ -1,11 +1,11 @@
 from mlagents_envs.base_env import (
     ActionSpec,
-    SensorSpec,
+    ObservationSpec,
     DimensionProperty,
     BehaviorSpec,
     DecisionSteps,
     TerminalSteps,
-    SensorType,
+    ObservationType,
 )
 from mlagents_envs.exception import UnityObservationException
 from mlagents_envs.timers import hierarchical_timer, timed
@@ -36,7 +36,7 @@ def behavior_spec_from_proto(
     sensor_specs = []
     for obs in agent_info.observations:
         sensor_specs.append(
-            SensorSpec(
+            ObservationSpec(
                 tuple(obs.shape),
                 tuple(DimensionProperty(dim) for dim in obs.dimension_properties),
                 SensorType(obs.sensor_type),
@@ -291,7 +291,7 @@ def steps_from_proto(
     ]
     decision_obs_list: List[np.ndarray] = []
     terminal_obs_list: List[np.ndarray] = []
-    for obs_index, sensor_specs in enumerate(behavior_spec.sensor_specs):
+    for obs_index, sensor_specs in enumerate(behavior_spec.observation_specs):
         is_visual = len(sensor_specs.shape) == 3
         if is_visual:
             obs_shape = cast(Tuple[int, int, int], sensor_specs.shape)

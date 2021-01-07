@@ -2,11 +2,11 @@ namespace Unity.MLAgents.Sensors
 {
 
     /// <summary>
-    /// The SensorType enum of the observation
+    /// The ObservationType enum of the Sensor.
     /// </summary>
-    internal enum SensorType
+    internal enum ObservationType
     {
-        Observation = 0,
+        Default = 0,
         Goal = 1,
         Reward = 2,
         Message = 3,
@@ -19,9 +19,9 @@ namespace Unity.MLAgents.Sensors
     internal interface ITypedSensor
     {
         /// <summary>
-        /// Returns the SensorType enum corresponding to the type of the sensor.
+        /// Returns the ObservationType enum corresponding to the type of the sensor.
         /// </summary>
-        /// <returns>The SensorType enum</returns>
-        SensorType GetSensorType();
+        /// <returns>The ObservationType enum</returns>
+        ObservationType GetObservationType();
     }
 }

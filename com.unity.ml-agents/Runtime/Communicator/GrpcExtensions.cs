@@ -415,11 +415,11 @@ namespace Unity.MLAgents
             var typeSensor = sensor as ITypedSensor;
             if (typeSensor != null)
             {
-                observationProto.SensorType = (SensorTypeProto)typeSensor.GetSensorType();
+                observationProto.ObservationType = (ObservationTypeProto)typeSensor.GetObservationType();
             }
             else
             {
-                observationProto.SensorType = SensorTypeProto.Observation;
+                observationProto.ObservationType = ObservationTypeProto.Default;
             }
             return observationProto;
         }
