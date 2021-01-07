@@ -65,17 +65,17 @@ class NetworkBody(nn.Module):
             #     self.h_size,
             #     self.h_size
             #     )
-            # self.transformer = SimpleTransformer(
-            #     x_self_len,
-            #     entities_sizes,
-            #     self.h_size,
-            #     self.h_size
-            #     )
-            self.transformer = SmallestAttention(x_self_len, entities_sizes, self.h_size, self.h_size)
+            self.transformer = SimpleTransformer(
+                 x_self_len,
+                 entities_sizes,
+                 self.h_size,
+                 self.h_size,
+                 )
+            #self.transformer = SmallestAttention(x_self_len, entities_sizes, self.h_size, self.h_size)
             # self.transformer = SmallestAttention(64, [64], self.h_size, self.h_size)
             # self.use_fc = True
 
-            total_enc_size = self.h_size + sum(self.embedding_sizes)
+            total_enc_size = self.h_size #+ sum(self.embedding_sizes)
             # total_enc_size = 128#self.h_size + sum(self.embedding_sizes)
             n_layers = 1
             if self.use_fc:
@@ -90,10 +90,18 @@ class NetworkBody(nn.Module):
 
         if total_enc_size == 0:
             raise Exception("No valid inputs to network.")
+        for _,tens in list(self.transformer.named_parameters()):
+            tens.retain_grad()
         total_enc_size += encoded_act_size
         self.linear_encoder = LinearEncoder(
             total_enc_size, n_layers, self.h_size
         )
+        for _,tens in list(self.linear_encoder.named_parameters()):
+            tens.retain_grad()
+        for processor in self.processors:
+            if processor is not None:
+                for _,tens in list(processor.named_parameters()):
+                    tens.retain_grad()
 
         if self.use_lstm:
             self.lstm = LSTM(self.h_size, self.m_size)

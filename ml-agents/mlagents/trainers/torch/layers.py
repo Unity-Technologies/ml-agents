@@ -93,6 +93,22 @@ def lstm_layer(
                     )
     return lstm
 
+class LayerNorm(torch.nn.Module):
+    def __init__(self, input_size: int, elementwise_affine: bool=False):
+        super().__init__()
+        self.gamma = torch.nn.Parameter(
+             torch.ones(input_size, requires_grad=elementwise_affine)
+        )
+        self.beta = torch.nn.Parameter(
+             torch.zeros(input_size, requires_grad=elementwise_affine)
+        )
+
+    def forward(self, layer_activations: torch.Tensor):
+        mean = torch.mean(layer_activations, dim=-1, keepdim=True)
+        centered_activations = layer_activations - mean
+        var = torch.mean(centered_activations**2, dim=-1, keepdim=True)
+        return centered_activations / (torch.sqrt(var + 1E-5)) * self.gamma + self.beta
+        
 
 class MemoryModule(torch.nn.Module):
     @abc.abstractproperty
@@ -120,7 +136,7 @@ class LinearEncoder(torch.nn.Module):
     Linear layers.
     """
 
-    def __init__(self, input_size: int, num_layers: int, hidden_size: int):
+    def __init__(self, input_size: int, num_layers: int, hidden_size: int, layer_norm=False):
         super().__init__()
         self.layers = [
             linear_layer(
@@ -131,6 +147,8 @@ class LinearEncoder(torch.nn.Module):
             )
         ]
         self.layers.append(Swish())
+        if layer_norm:
+            self.layers.append(torch.nn.LayerNorm(hidden_size, elementwise_affine=True))
         for _ in range(num_layers - 1):
             self.layers.append(
                 linear_layer(
@@ -140,6 +158,9 @@ class LinearEncoder(torch.nn.Module):
                     kernel_gain=1.0,
                 )
             )
+            if layer_norm:
+                self.layers.append(torch.nn.LayerNorm(hidden_size, elementwise_affine=True))
+
             self.layers.append(Swish())
         self.seq_layers = torch.nn.Sequential(*self.layers)
 

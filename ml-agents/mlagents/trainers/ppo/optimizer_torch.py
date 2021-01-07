@@ -181,6 +181,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         loss.backward()
 
         self.optimizer.step()
+
         update_stats = {
             # NOTE: abs() is not technically correct, but matches the behavior in TensorFlow.
             # TODO: After PyTorch is default, change to something more correct.
@@ -190,6 +191,18 @@ class TorchPPOOptimizer(TorchOptimizer):
             "Policy/Epsilon": decay_eps,
             "Policy/Beta": decay_bet,
         }
+
+        for name, params in list(self.policy.actor_critic.network_body.transformer.named_parameters()):
+            update_stats["Policy/" + name + '_mean'] = torch.mean(params).item()
+            update_stats["Policy/" + name + '_std'] = torch.std(params).item()
+            update_stats["Policy/" + name + '_grad_mag'] = torch.norm(params.grad).item()
+            #update_stats["Policy/" + name + '_grad_mean'] = torch.mean(params.grad).item()
+            #update_stats["Policy/" + name + '_grad_std'] = torch.std(params.grad).item()
+        for name, params in list(self.policy.actor_critic.network_body.linear_encoder.named_parameters()):
+            update_stats["Policy/" + name + '_grad_mag'] = torch.norm(params.grad).item()
+            #update_stats["Policy/" + name + '_grad_mean'] = torch.mean(params.grad).item()
+            #update_stats["Policy/" + name + '_grad_std'] = torch.std(params.grad).item()
+
 
         for reward_provider in self.reward_signals.values():
             update_stats.update(reward_provider.update(batch))
