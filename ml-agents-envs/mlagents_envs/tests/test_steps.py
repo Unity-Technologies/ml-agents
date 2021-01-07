@@ -36,7 +36,7 @@ def test_decision_steps():
 
 def test_empty_decision_steps():
     specs = BehaviorSpec(
-        sensor_specs=create_observation_specs_with_shapes([(3, 2), (5,)]),
+        observation_specs=create_observation_specs_with_shapes([(3, 2), (5,)]),
         action_spec=ActionSpec.create_continuous(3),
     )
     ds = DecisionSteps.empty(specs)
@@ -70,7 +70,7 @@ def test_terminal_steps():
 
 def test_empty_terminal_steps():
     specs = BehaviorSpec(
-        sensor_specs=create_observation_specs_with_shapes([(3, 2), (5,)]),
+        observation_specs=create_observation_specs_with_shapes([(3, 2), (5,)]),
         action_spec=ActionSpec.create_continuous(3),
     )
     ts = TerminalSteps.empty(specs)

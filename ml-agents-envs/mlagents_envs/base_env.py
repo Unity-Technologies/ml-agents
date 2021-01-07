@@ -484,7 +484,7 @@ class BehaviorSpec(NamedTuple):
     """
     A NamedTuple containing information about the observation and action
     spaces for a group of Agents under the same behavior.
-    - sensor_specs is a List of SensorSpec NamedTuple containing
+    - observation_specs is a List of ObservationSpec NamedTuple containing
     information about the information of the Agent's observations such as their shapes.
     The order of the SensorSpec is the same as the order of the observations of an
     agent.
