@@ -40,7 +40,7 @@ def _dict_to_str(param_dict: Dict[str, Any], num_tabs: int) -> str:
         )
 
 
-class StatsSummary(NamedTuple):
+class StatsSummary(NamedTuple):  # pylint: disable=inherit-non-class
     mean: float
     std: float
     num: int
@@ -145,7 +145,6 @@ class ConsoleWriter(StatsWriter):
 
             log_info.append(f"Mean Reward: {stats_summary.mean:0.3f}")
             log_info.append(f"Std of Reward: {stats_summary.std:0.3f}")
-            log_info.append(f"Num of Reward: {stats_summary.num:0.3f}")
             log_info.append(is_training)
 
             if self.self_play and "Self-play/ELO" in values:

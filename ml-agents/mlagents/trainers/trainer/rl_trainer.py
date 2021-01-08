@@ -186,7 +186,6 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
     def _update_policy(self) -> bool:
         """
         Uses demonstration_buffer to update model.
-
         :return: Whether or not the policy was updated.
         """
         pass
@@ -194,7 +193,6 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
     def _increment_step(self, n_steps: int, name_behavior_id: str) -> None:
         """
         Increment the step count of the trainer
-
         :param n_steps: number of steps to increment the step count by
         """
         self.step += n_steps
@@ -209,7 +207,6 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
     def _get_next_interval_step(self, interval: int) -> int:
         """
         Get the next step count that should result in an action.
-
         :param interval: The interval between actions.
         """
         return self.step + (interval - self.step % interval)
@@ -225,7 +222,6 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
         Takes a trajectory and processes it, putting it into the update buffer.
-
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
         self._maybe_write_summary(self.get_step + len(trajectory.steps))
@@ -236,7 +232,6 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         If processing the trajectory will make the step exceed the next summary write,
         write the summary. This logic ensures summaries are written on the update step and not in between.
-
         :param step_after_process: the step count after processing the next trajectory.
         """
         if self._next_summary_step == 0:  # Don't write out the first one
@@ -248,7 +243,6 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         If processing the trajectory will make the step exceed the next model write,
         save the model. This logic ensures models are written on the update step and not in between.
-
         :param step_after_process: the step count after processing the next trajectory.
         """
         if self._next_save_step == 0:  # Don't save the first one
