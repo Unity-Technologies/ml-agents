@@ -15,6 +15,11 @@ _sym_db = _symbol_database.Default()
 
 
 
+
+
+
+
+
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/agent_action.proto',
   package='communicator_objects',
