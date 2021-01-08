@@ -71,7 +71,6 @@ class AgentProcessor:
     ) -> None:
         """
         Adds experiences to each agent's experience history.
-
         :param decision_steps: current DecisionSteps.
         :param terminal_steps: current TerminalSteps.
         :param previous_action: The outputs of the Policy's get_action method.
@@ -114,7 +113,12 @@ class AgentProcessor:
                     )
 
     def _process_step(
-        self, step: Union[TerminalStep, DecisionStep], global_id: str, index: int
+        self,
+        step: Union[
+            TerminalStep, DecisionStep
+        ],  # pylint: disable=unsubscriptable-object
+        global_id: str,
+        index: int,
     ) -> None:
         terminated = isinstance(step, TerminalStep)
         stored_decision_step, idx = self.last_step_result.get(global_id, (None, None))
@@ -211,7 +215,6 @@ class AgentProcessor:
         """
         Adds a trajectory queue to the list of queues to publish to when this AgentProcessor
         assembles a Trajectory
-
         :param trajectory_queue: Trajectory queue to publish to.
         """
         self.trajectory_queues.append(trajectory_queue)
@@ -253,7 +256,6 @@ class AgentManagerQueue(Generic[T]):
     def maxlen(self):
         """
         The maximum length of the queue.
-
         :return: Maximum length of the queue.
         """
         return self._maxlen
@@ -262,7 +264,6 @@ class AgentManagerQueue(Generic[T]):
     def behavior_id(self):
         """
         The Behavior ID of this queue.
-
         :return: Behavior ID associated with the queue.
         """
         return self._behavior_id
