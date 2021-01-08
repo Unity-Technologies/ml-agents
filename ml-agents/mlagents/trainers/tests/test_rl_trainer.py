@@ -36,9 +36,6 @@ class FakeTrainer(RLTrainer):
         mock_model_saver.save_checkpoint.side_effect = checkpoint_path
         self.model_saver = mock_model_saver
 
-    def create_tf_policy(self, parsed_behavior_id, behavior_spec):
-        return mock.Mock()
-
     def create_torch_policy(self, parsed_behavior_id, behavior_spec):
         return mock.Mock()
 

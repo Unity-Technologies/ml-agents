@@ -18,7 +18,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         """
         Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy.
         The PPO optimizer has a value estimator and a loss function.
-        :param policy: A TFPolicy object that will be updated by this PPO Optimizer.
+        :param policy: A TorchPolicy object that will be updated by this PPO Optimizer.
         :param trainer_params: Trainer parameters dictionary that specifies the
         properties of the trainer.
         """
