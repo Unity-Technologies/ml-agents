@@ -40,7 +40,7 @@ def _dict_to_str(param_dict: Dict[str, Any], num_tabs: int) -> str:
         )
 
 
-class StatsSummary(NamedTuple):  # pylint: disable=inherit-non-class
+class StatsSummary(NamedTuple):
     mean: float
     std: float
     num: int

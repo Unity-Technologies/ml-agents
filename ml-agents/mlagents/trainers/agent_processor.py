@@ -113,12 +113,7 @@ class AgentProcessor:
                     )
 
     def _process_step(
-        self,
-        step: Union[
-            TerminalStep, DecisionStep
-        ],  # pylint: disable=unsubscriptable-object
-        global_id: str,
-        index: int,
+        self, step: Union[TerminalStep, DecisionStep], global_id: str, index: int
     ) -> None:
         terminated = isinstance(step, TerminalStep)
         stored_decision_step, idx = self.last_step_result.get(global_id, (None, None))

@@ -220,9 +220,7 @@ def observation_to_np_array(
 def _process_visual_observation(
     obs_index: int,
     shape: Tuple[int, int, int],
-    agent_info_list: Collection[
-        AgentInfoProto
-    ],  # pylint: disable=unsubscriptable-object
+    agent_info_list: Collection[AgentInfoProto],
 ) -> np.ndarray:
     if len(agent_info_list) == 0:
         return np.zeros((0, shape[0], shape[1], shape[2]), dtype=np.float32)
@@ -256,11 +254,7 @@ def _raise_on_nan_and_inf(data: np.array, source: str) -> np.array:
 
 @timed
 def _process_vector_observation(
-    obs_index: int,
-    shape: Tuple[int, ...],
-    agent_info_list: Collection[
-        AgentInfoProto
-    ],  # pylint: disable=unsubscriptable-object
+    obs_index: int, shape: Tuple[int, ...], agent_info_list: Collection[AgentInfoProto]
 ) -> np.ndarray:
     if len(agent_info_list) == 0:
         return np.zeros((0,) + shape, dtype=np.float32)
@@ -277,10 +271,7 @@ def _process_vector_observation(
 
 @timed
 def steps_from_proto(
-    agent_info_list: Collection[
-        AgentInfoProto
-    ],  # pylint: disable=unsubscriptable-object
-    behavior_spec: BehaviorSpec,
+    agent_info_list: Collection[AgentInfoProto], behavior_spec: BehaviorSpec
 ) -> Tuple[DecisionSteps, TerminalSteps]:
     decision_agent_info_list = [
         agent_info for agent_info in agent_info_list if not agent_info.done
