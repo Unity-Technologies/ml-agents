@@ -100,7 +100,6 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
     def _is_ready_update(self):
         """
         Returns whether or not the trainer has enough elements to run update model
-
         :return: A boolean corresponding to wether or not update_model() can be run
         """
         return False

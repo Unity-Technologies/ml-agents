@@ -128,7 +128,6 @@ class DiscriminatorNetwork(torch.nn.Module):
         """
         Given a mini_batch, computes the estimate (How much the discriminator believes
         the data was sampled from the demonstration data).
-
         :param mini_batch: The AgentBuffer of data
         :param use_vail_noise: Only when using VAIL : If true, will sample the code, if
         false, will return the mean of the code.
