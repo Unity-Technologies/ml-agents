@@ -178,8 +178,7 @@ class ConsoleWriterTest(unittest.TestCase):
             )
 
         self.assertIn(
-            "Mean Reward: 1.000. Std of Reward: 1.000. Num of Reward: 1.000. Training.",
-            cm.output[0],
+            "Mean Reward: 1.000. Std of Reward: 1.000. Training.", cm.output[0]
         )
         self.assertIn("Not Training.", cm.output[1])
 
@@ -209,6 +208,5 @@ class ConsoleWriterTest(unittest.TestCase):
             )
 
         self.assertIn(
-            "Mean Reward: 1.000. Std of Reward: 1.000. Num of Reward: 1.000. Training.",
-            cm.output[0],
+            "Mean Reward: 1.000. Std of Reward: 1.000. Training.", cm.output[0]
         )
