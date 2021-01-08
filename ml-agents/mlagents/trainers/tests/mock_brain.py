@@ -68,7 +68,7 @@ def create_steps_from_behavior_spec(
 
 def make_fake_trajectory(
     length: int,
-    observation_spec: List[ObservationSpec],
+    observation_specs: List[ObservationSpec],
     action_spec: ActionSpec,
     max_step_complete: bool = False,
     memory_size: int = 10,
@@ -82,7 +82,7 @@ def make_fake_trajectory(
     action_size = action_spec.discrete_size + action_spec.continuous_size
     for _i in range(length - 1):
         obs = []
-        for obs_spec in observation_spec:
+        for obs_spec in observation_specs:
             obs.append(np.ones(obs_spec.shape, dtype=np.float32))
         reward = 1.0
         done = False
@@ -124,7 +124,7 @@ def make_fake_trajectory(
         )
         steps_list.append(experience)
     obs = []
-    for obs_spec in observation_spec:
+    for obs_spec in observation_specs:
         obs.append(np.ones(obs_spec.shape, dtype=np.float32))
     last_experience = AgentExperience(
         obs=obs,

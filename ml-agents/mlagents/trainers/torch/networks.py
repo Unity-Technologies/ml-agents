@@ -363,7 +363,7 @@ class SimpleActor(nn.Module, Actor):
 class SharedActorCritic(SimpleActor, ActorCritic):
     def __init__(
         self,
-        observation_spec: List[ObservationSpec],
+        observation_specs: List[ObservationSpec],
         network_settings: NetworkSettings,
         action_spec: ActionSpec,
         stream_names: List[str],
@@ -372,7 +372,7 @@ class SharedActorCritic(SimpleActor, ActorCritic):
     ):
         self.use_lstm = network_settings.memory is not None
         super().__init__(
-            observation_spec,
+            observation_specs,
             network_settings,
             action_spec,
             conditional_sigma,
@@ -428,7 +428,7 @@ class SharedActorCritic(SimpleActor, ActorCritic):
 class SeparateActorCritic(SimpleActor, ActorCritic):
     def __init__(
         self,
-        observation_spec: List[ObservationSpec],
+        observation_specs: List[ObservationSpec],
         network_settings: NetworkSettings,
         action_spec: ActionSpec,
         stream_names: List[str],
@@ -437,14 +437,14 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
     ):
         self.use_lstm = network_settings.memory is not None
         super().__init__(
-            observation_spec,
+            observation_specs,
             network_settings,
             action_spec,
             conditional_sigma,
             tanh_squash,
         )
         self.stream_names = stream_names
-        self.critic = ValueNetwork(stream_names, observation_spec, network_settings)
+        self.critic = ValueNetwork(stream_names, observation_specs, network_settings)
 
     @property
     def memory_size(self) -> int:

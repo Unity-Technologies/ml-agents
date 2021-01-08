@@ -73,7 +73,7 @@ class TorchPolicy(Policy):
         else:
             ac_class = SharedActorCritic
         self.actor_critic = ac_class(
-            observation_spec=self.behavior_spec.observation_specs,
+            observation_specs=self.behavior_spec.observation_specs,
             network_settings=trainer_settings.network_settings,
             action_spec=behavior_spec.action_spec,
             stream_names=reward_signal_names,
