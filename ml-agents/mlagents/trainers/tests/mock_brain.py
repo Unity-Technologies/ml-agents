@@ -151,7 +151,7 @@ def simulate_rollout(
 ) -> AgentBuffer:
     trajectory = make_fake_trajectory(
         length,
-        behavior_spec.observation_spec,
+        behavior_spec.observation_specs,
         action_spec=behavior_spec.action_spec,
         memory_size=memory_size,
     )

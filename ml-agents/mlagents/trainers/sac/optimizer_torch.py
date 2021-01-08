@@ -461,7 +461,7 @@ class TorchSACOptimizer(TorchOptimizer):
         for name in self.reward_signals:
             rewards[name] = ModelUtils.list_to_tensor(batch[f"{name}_rewards"])
 
-        n_obs = len(self.policy.behavior_spec.observation_spec)
+        n_obs = len(self.policy.behavior_spec.observation_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
         # Convert to tensors
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
