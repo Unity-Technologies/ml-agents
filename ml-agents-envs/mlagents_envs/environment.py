@@ -468,7 +468,7 @@ class UnityEnvironment(BaseEnv):
         """
         try:
             # A negative value -N indicates that the child was terminated by signal N (POSIX only).
-            s = signal.Signals(-returncode)  # pylint: disable=no-member
+            s = signal.Signals(-returncode)
             return s.name
         except Exception:
             # Should generally be a ValueError, but catch everything just in case.

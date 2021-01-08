@@ -32,7 +32,7 @@ from mlagents.trainers.model_saver.model_saver import BaseModelSaver
 logger = get_logger(__name__)
 
 
-class RLTrainer(Trainer):  # pylint: disable=abstract-method
+class RLTrainer(Trainer):
     """
     This class is the base class for trainers that use Reward Signals.
     """

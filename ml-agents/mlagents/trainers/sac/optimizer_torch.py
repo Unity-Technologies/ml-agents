@@ -76,7 +76,7 @@ class TorchSACOptimizer(TorchOptimizer):
             # ExitStack allows us to enter the torch.no_grad() context conditionally
             with ExitStack() as stack:
                 if not q1_grad:
-                    stack.enter_context(torch.no_grad())  # pylint: disable=E1101
+                    stack.enter_context(torch.no_grad())
                 q1_out, _ = self.q1_network(
                     inputs,
                     actions=actions,
@@ -85,7 +85,7 @@ class TorchSACOptimizer(TorchOptimizer):
                 )
             with ExitStack() as stack:
                 if not q2_grad:
-                    stack.enter_context(torch.no_grad())  # pylint: disable=E1101
+                    stack.enter_context(torch.no_grad())
                 q2_out, _ = self.q2_network(
                     inputs,
                     actions=actions,
