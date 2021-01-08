@@ -33,8 +33,7 @@ test_linux_protobuf_generation:
       NOT pull_request.draft AND
       (pull_request.changes.any match "protobuf-definitions/**" OR
       pull_request.changes.any match "com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects/**" OR
-      pull_request.changes.any match "ml-agents-envs/mlagents_envs/communicator_objects/**" OR
-      pull_request.changes.any match ".yamato/protobuf-generation-test.yml") AND
+      pull_request.changes.any match "ml-agents-envs/mlagents_envs/communicator_objects/**") AND
       NOT pull_request.changes.all match "protobuf-definitions/**/*.md"
   artifacts:
     patch:
