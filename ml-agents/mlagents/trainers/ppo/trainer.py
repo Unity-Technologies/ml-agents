@@ -35,7 +35,6 @@ class PPOTrainer(RLTrainer):
     ):
         """
         Responsible for collecting experiences and training PPO model.
-
         :param behavior_name: The name of the behavior associated with trainer config
         :param reward_buff_cap: Max reward history to track in the reward buffer
         :param trainer_settings: The parameters for the trainer.
@@ -62,7 +61,6 @@ class PPOTrainer(RLTrainer):
         """
         Takes a trajectory and processes it, putting it into the update buffer.
         Processing involves calculating value and advantage targets for model updating step.
-
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
         super()._process_trajectory(trajectory)
@@ -143,7 +141,6 @@ class PPOTrainer(RLTrainer):
     def _is_ready_update(self):
         """
         Returns whether or not the trainer has enough elements to run update model
-
         :return: A boolean corresponding to whether or not update_model() can be run
         """
         size_of_buffer = self.update_buffer.num_experiences
@@ -202,7 +199,6 @@ class PPOTrainer(RLTrainer):
     ) -> TorchPolicy:
         """
         Creates a policy with a PyTorch backend and PPO hyperparameters
-
         :param parsed_behavior_id:
         :param behavior_spec: specifications for policy construction
         :return policy
@@ -226,7 +222,6 @@ class PPOTrainer(RLTrainer):
     ) -> None:
         """
         Adds policy to trainer.
-
         :param parsed_behavior_id: Behavior identifiers that the policy should belong to.
         :param policy: Policy to associate with name_behavior_id.
         """
@@ -254,7 +249,6 @@ class PPOTrainer(RLTrainer):
     def get_policy(self, name_behavior_id: str) -> Policy:
         """
         Gets policy from trainer associated with name_behavior_id
-
         :param name_behavior_id: full identifier of policy
         """
 
@@ -264,7 +258,6 @@ class PPOTrainer(RLTrainer):
 def discount_rewards(r, gamma=0.99, value_next=0.0):
     """
     Computes discounted sum of future rewards for use in updating value estimate.
-
     :param r: List of rewards.
     :param gamma: Discount factor.
     :param value_next: T+1 value estimate for returns calculation.
@@ -281,7 +274,6 @@ def discount_rewards(r, gamma=0.99, value_next=0.0):
 def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
     """
     Computes generalized advantage estimate for use in updating policy.
-
     :param rewards: list of rewards for time-steps t to T.
     :param value_next: Value estimate for time-step T+1.
     :param value_estimates: list of value estimates for time-steps t to T.
