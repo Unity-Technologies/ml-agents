@@ -108,8 +108,12 @@ class GaugeWriter(StatsWriter):
     ) -> None:
         for val, stats_summary in values.items():
             set_gauge(
-                GaugeWriter.sanitize_string(f"{category}.{val}.aggregated_value"),
-                float(stats_summary.aggregated_value),
+                GaugeWriter.sanitize_string(f"{category}.{val}.mean"),
+                float(stats_summary.mean),
+            )
+            set_gauge(
+                GaugeWriter.sanitize_string(f"{category}.{val}.sum"),
+                float(stats_summary.sum),
             )
 
 
@@ -146,7 +150,7 @@ class ConsoleWriter(StatsWriter):
 
             if self.self_play and "Self-play/ELO" in values:
                 elo_stats = values["Self-play/ELO"]
-                log_info.append(f"ELO: {elo_stats.aggregated_value:0.3f}")
+                log_info.append(f"ELO: {elo_stats.mean:0.3f}")
         else:
             log_info.append("No episode was completed since last summary")
             log_info.append(is_training)
@@ -316,7 +320,7 @@ class StatsReporter:
         Get the mean, std, count, sum and aggregation method of a particular statistic, since last write.
 
         :param key: The type of statistic, e.g. Environment/Reward.
-        :returns: A StatsSummary NamedTuple containing (mean, std, sum, count, aggregation).
+        :returns: A StatsSummary containing summary statistics.
         """
         stat_values = StatsReporter.stats_dict[self.category][key]
         if len(stat_values) == 0:
