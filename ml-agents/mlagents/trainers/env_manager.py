@@ -107,8 +107,7 @@ class EnvManager(ABC):
                     _policy = self.agent_managers[brain_name].policy_queue.get_nowait()
             except AgentManagerQueue.Empty:
                 if _policy is not None:
-                    # policy_queue contains Policy, but we need a TFPolicy here
-                    self.set_policy(brain_name, _policy)  # type: ignore
+                    self.set_policy(brain_name, _policy)
         # Step the environments
         new_step_infos = self._step()
         return new_step_infos
