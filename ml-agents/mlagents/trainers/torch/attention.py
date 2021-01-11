@@ -82,14 +82,17 @@ class EntityEmbeddings(torch.nn.Module):
         self,
         x_self_size: int,
         entity_sizes: List[int],
-        entity_num_max_elements: List[int],
         embedding_size: int,
+        entity_num_max_elements: Optional[List[int]] = None,
         concat_self: bool = True,
     ):
         super().__init__()
         self.self_size: int = x_self_size
         self.entity_sizes: List[int] = entity_sizes
-        self.entity_num_max_elements: List[int] = entity_num_max_elements
+        self.entity_num_max_elements: List[int] = [-1] * len(entity_sizes)
+        if entity_num_max_elements is not None:
+            self.entity_num_max_elements = entity_num_max_elements
+
         self.concat_self: bool = concat_self
         # If not concatenating self, input to encoder is just entity size
         if not concat_self:
@@ -108,6 +111,8 @@ class EntityEmbeddings(torch.nn.Module):
             # Concatenate all observations with self
             self_and_ent: List[torch.Tensor] = []
             for num_entities, ent in zip(self.entity_num_max_elements, entities):
+                if num_entities < 0:
+                    num_entities = ent.shape[1]
                 expanded_self = x_self.reshape(-1, 1, self.self_size)
                 expanded_self = torch.cat([expanded_self] * num_entities, dim=1)
                 self_and_ent.append(torch.cat([expanded_self, ent], dim=2))
@@ -148,12 +153,15 @@ class ResidualSelfAttention(torch.nn.Module):
     def __init__(
         self,
         embedding_size: int,
-        entity_num_max_elements: List[int],
+        entity_num_max_elements: Optional[List[int]] = None,
         num_heads: int = 4,
     ):
         super().__init__()
-        self.entity_num_max_elements: List[int] = entity_num_max_elements
-        self.max_num_ent = sum(entity_num_max_elements)
+        self.max_num_ent: Optional[int] = None
+        if entity_num_max_elements is not None:
+            _entity_num_max_elements = entity_num_max_elements
+            self.max_num_ent = sum(_entity_num_max_elements)
+
         self.attention = MultiHeadAttention(
             num_heads=num_heads, embedding_size=embedding_size
         )
@@ -190,15 +198,15 @@ class ResidualSelfAttention(torch.nn.Module):
         query = self.fc_q(inp)  # (b, n_q, emb)
         key = self.fc_k(inp)  # (b, n_k, emb)
         value = self.fc_v(inp)  # (b, n_k, emb)
-        output, _ = self.attention(
-            query, key, value, self.max_num_ent, self.max_num_ent, mask
-        )
+
+        # Only use max num if provided
+        num_ent = self.max_num_ent if self.max_num_ent is not None else inp.shape[1]
+
+        output, _ = self.attention(query, key, value, num_ent, num_ent, mask)
         # Residual
         output = self.fc_out(output) + inp
         # Average Pooling
-        numerator = torch.sum(
-            output * (1 - mask).reshape(-1, self.max_num_ent, 1), dim=1
-        )
+        numerator = torch.sum(output * (1 - mask).reshape(-1, num_ent, 1), dim=1)
         denominator = torch.sum(1 - mask, dim=1, keepdim=True) + self.EPSILON
         output = numerator / denominator
         # Residual between x_self and the output of the module
