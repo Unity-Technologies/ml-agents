@@ -346,13 +346,13 @@ namespace Unity.MLAgents.Inference
     /// It will use the Texture input data contained in the agentInfo to fill the data
     /// of the tensor.
     /// </summary>
-    internal class VisualObservationInputGenerator : TensorGenerator.IGenerator
+    internal class NonVectorObservationInputGenerator : TensorGenerator.IGenerator
     {
         readonly int m_SensorIndex;
         readonly ITensorAllocator m_Allocator;
         ObservationWriter m_ObservationWriter = new ObservationWriter();
 
-        public VisualObservationInputGenerator(
+        public NonVectorObservationInputGenerator(
             int sensorIndex, ITensorAllocator allocator)
         {
             m_SensorIndex = sensorIndex;

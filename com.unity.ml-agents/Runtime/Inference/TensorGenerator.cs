@@ -95,7 +95,7 @@ namespace Unity.MLAgents.Inference
         {
             // Loop through the sensors on a representative agent.
             // For vector observations, add the index to the (single) VectorObservationGenerator
-            // For visual observations, make a VisualObservationInputGenerator
+            // For visual observations, make a NonVectorObservationInputGenerator
             var visIndex = 0;
             VectorObservationGenerator vecObsGen = null;
             for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
@@ -103,21 +103,28 @@ namespace Unity.MLAgents.Inference
                 var sensor = sensors[sensorIndex];
                 var shape = sensor.GetObservationShape();
                 // TODO generalize - we currently only have vector or visual, but can't handle "2D" observations
-                var isVectorSensor = (shape.Length == 1);
-                if (isVectorSensor)
+                var rank = shape.Length;
+                switch (rank)
                 {
-                    if (vecObsGen == null)
-                    {
-                        vecObsGen = new VectorObservationGenerator(allocator);
-                    }
+                    case 1:
+                        if (vecObsGen == null)
+                        {
+                            vecObsGen = new VectorObservationGenerator(allocator);
+                        }
+                        vecObsGen.AddSensorIndex(sensorIndex);
+                        break;
+                    case 2:
+                        m_Dict[TensorNames.ObservationPlaceholderPrefix + sensorIndex] =
+                        new NonVectorObservationInputGenerator(sensorIndex, allocator);
+                        break;
+                    case 3:
+                        m_Dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] =
+                        new NonVectorObservationInputGenerator(sensorIndex, allocator);
+                        visIndex++;
+                        break;
+                    default:
+                        break;
 
-                    vecObsGen.AddSensorIndex(sensorIndex);
-                }
-                else
-                {
-                    m_Dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] =
-                        new VisualObservationInputGenerator(sensorIndex, allocator);
-                    visIndex++;
                 }
             }
 
