@@ -412,6 +412,7 @@ namespace Unity.MLAgents
             }
             observationProto.Shape.AddRange(shape);
 
+            // Add the observation type, if any, to the observationProto
             var typeSensor = sensor as ITypedSensor;
             if (typeSensor != null)
             {

@@ -459,9 +459,17 @@ class DimensionProperty(IntFlag):
 
 
 class ObservationType(Enum):
+    '''
+    An Enum which defines the type of information carried in the observation
+    of the agent.
+    '''
+    # Observation information is generic.
     DEFAULT = 0
+    # Observation contains goal information for current task.
     GOAL = 1
+    # Observation contains reward information for current task.
     REWARD = 2
+    # Observation contains a message from another agent.
     MESSAGE = 3
 
 
