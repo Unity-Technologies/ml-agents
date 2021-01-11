@@ -135,11 +135,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ZombiePushBlockCollabArea (2)
       objectReference: {fileID: 0}
-    - target: {fileID: 7252929719452920129, guid: 4efb4d72c7b94469ca38276842875f65,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7253705700397590129, guid: 4efb4d72c7b94469ca38276842875f65,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -316,7 +311,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: 3b69d0e9e212f4f5aab1b6714f9b491b,
+      objectReference: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207,
         type: 3}
     - target: {fileID: 7252038610261898582, guid: 4efb4d72c7b94469ca38276842875f65,
         type: 3}
@@ -327,17 +322,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: 3b69d0e9e212f4f5aab1b6714f9b491b,
+      objectReference: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207,
         type: 3}
     - target: {fileID: 7252929719452920129, guid: 4efb4d72c7b94469ca38276842875f65,
         type: 3}
       propertyPath: m_Name
       value: ZombiePushBlockCollabArea (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 7252929719452920129, guid: 4efb4d72c7b94469ca38276842875f65,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7253705700397590129, guid: 4efb4d72c7b94469ca38276842875f65,
         type: 3}
@@ -403,7 +393,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: 3b69d0e9e212f4f5aab1b6714f9b491b,
+      objectReference: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207,
         type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4efb4d72c7b94469ca38276842875f65, type: 3}
@@ -574,11 +564,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ZombiePushBlockCollabArea (3)
-      objectReference: {fileID: 0}
-    - target: {fileID: 7252929719452920129, guid: 4efb4d72c7b94469ca38276842875f65,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7253705700397590129, guid: 4efb4d72c7b94469ca38276842875f65,
         type: 3}

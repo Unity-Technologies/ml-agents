@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &21991507
 Transform:
   m_ObjectHideFlags: 0
@@ -76,7 +76,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 4614780883785923405}
-  walkSpeed: 55
+  walkSpeed: 3
 --- !u!1 &85984725
 GameObject:
   m_ObjectHideFlags: 0
@@ -901,7 +901,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 4614780883785923405}
-  walkSpeed: 1
+  walkSpeed: 3
 --- !u!1 &275182881
 GameObject:
   m_ObjectHideFlags: 0
@@ -4943,7 +4943,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 4614780883785923405}
-  walkSpeed: 55
+  walkSpeed: 3
 --- !u!1 &1822279126
 GameObject:
   m_ObjectHideFlags: 0
@@ -9995,7 +9995,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 477526d6c0b3a462cbed5c653ca3a99c, type: 3}
+  m_Model: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -11877,7 +11877,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 477526d6c0b3a462cbed5c653ca3a99c, type: 3}
+  m_Model: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -13640,7 +13640,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 477526d6c0b3a462cbed5c653ca3a99c, type: 3}
+  m_Model: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -14497,7 +14497,11 @@ MonoBehaviour:
     StartingPos: {x: 0, y: 0, z: 0}
     StartingRot: {x: 0, y: 0, z: 0, w: 0}
     Rb: {fileID: 0}
-  ZombiesList: []
+  ZombiesList:
+  - Agent: {fileID: 1817759251}
+    StartingPos: {x: 0, y: 0, z: 0}
+    StartingRot: {x: 0, y: 0, z: 0, w: 0}
+    Rb: {fileID: 0}
   BlocksList:
   - T: {fileID: 4614780883785923405}
     StartingPos: {x: 0, y: 0, z: 0}

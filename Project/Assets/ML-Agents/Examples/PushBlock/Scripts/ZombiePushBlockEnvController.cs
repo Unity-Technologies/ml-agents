@@ -15,19 +15,20 @@ public class ZombiePushBlockEnvController : MonoBehaviour
         public Quaternion StartingRot;
         [HideInInspector]
         public Rigidbody Rb;
-
+        public Collider Col;
     }
 
     [System.Serializable]
     public class ZombieInfo
     {
-        public CrawlerAgent Agent;
+        public SimpleNPC Agent;
         [HideInInspector]
         public Vector3 StartingPos;
         [HideInInspector]
         public Quaternion StartingRot;
         [HideInInspector]
         public Rigidbody Rb;
+        public Collider Col;
     }
 
     [System.Serializable]
@@ -101,11 +102,13 @@ public class ZombiePushBlockEnvController : MonoBehaviour
             item.StartingPos = item.Agent.transform.position;
             item.StartingRot = item.Agent.transform.rotation;
             item.Rb = item.Agent.GetComponent<Rigidbody>();
+            item.Col = item.Agent.GetComponent<Collider>();
         }
         foreach (var item in ZombiesList)
         {
             item.StartingPos = item.Agent.transform.position;
             item.StartingRot = item.Agent.transform.rotation;
+            item.Col = item.Agent.GetComponent<Collider>();
         }
 
         ResetScene();
@@ -121,6 +124,14 @@ public class ZombiePushBlockEnvController : MonoBehaviour
             ResetScene();
         }
     }
+
+    //Kill/disable an agent
+    public void KillAgent(Collider col)
+    {
+
+
+    }
+
 
     /// <summary>
     /// Use the ground's bounds to pick a random spawn position.
@@ -237,15 +248,6 @@ public class ZombiePushBlockEnvController : MonoBehaviour
             }
             item.Agent.EndEpisode();
         }
-        //End Episode
-        foreach (var item in ZombiesList)
-        {
-            if (!item.Agent)
-            {
-                return;
-            }
-            item.Agent.EndEpisode();
-        }
         //Reset Agents
         foreach (var item in AgentsList)
         {
@@ -267,6 +269,17 @@ public class ZombiePushBlockEnvController : MonoBehaviour
             item.Rb.velocity = Vector3.zero;
             item.Rb.angularVelocity = Vector3.zero;
             item.T.gameObject.SetActive(true);
+        }
+        //End Episode
+        foreach (var item in ZombiesList)
+        {
+            if (!item.Agent)
+            {
+                return;
+            }
+            // item.Agent.EndEpisode();
+            item.Agent.transform.SetPositionAndRotation(item.StartingPos, item.StartingRot);
+            item.Agent.SetRandomWalkSpeed();
         }
 
         //Reset counter
