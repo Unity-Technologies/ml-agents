@@ -14,7 +14,7 @@ from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
-from mlagents.trainers.torch.attention import SmallestAttention, EntityEmbeddings
+from mlagents.trainers.torch.attention import ResidualSelfAttention, EntityEmbeddings
 
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
@@ -131,10 +131,14 @@ class MultiInputNetworkBody(nn.Module):
             network_settings.vis_encode_type,
             normalize=self.normalize,
         )
-        self.transformer = SmallestAttention(
-            sum(_input_size), [sum(_input_size)], self.h_size, self.h_size
+
+        # Modules for self-attention
+        self.entity_encoder = EntityEmbeddings(
+            sum(_input_size), [sum(_input_size)], self.h_size
         )
-        encoder_input_size = self.h_size + sum(_input_size)
+        self.self_attn = ResidualSelfAttention(self.h_size, num_heads=1)
+
+        encoder_input_size = self.h_size
 
         total_enc_size = encoder_input_size + encoded_act_size
         self.linear_encoder = LinearEncoder(
@@ -191,8 +195,9 @@ class MultiInputNetworkBody(nn.Module):
 
         concat_entites = torch.stack(concat_encoded_obs, dim=1)
 
-        encoded_state = self.transformer(
-            x_self, [concat_entites], EntityEmbeddings.get_masks([concat_entites])
+        encoded_entity = self.entity_encoder(x_self, [concat_entites])
+        encoded_state = self.self_attn(
+            encoded_entity, EntityEmbeddings.get_masks([concat_entites])
         )
 
         if len(concat_encoded_obs) == 0:
@@ -264,7 +269,7 @@ class CentralizedValueNetwork(ValueNetwork):
         # This is not a typo, we want to call __init__ of nn.Module
         nn.Module.__init__(self)
         self.network_body = MultiInputNetworkBody(
-            observation_shapes, network_settings, encoded_act_size=encoded_act_size,
+            observation_shapes, network_settings, encoded_act_size=encoded_act_size
         )
         if network_settings.memory is not None:
             encoding_size = network_settings.memory.memory_size // 2
@@ -541,7 +546,7 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         critic_obs: Optional[List[List[torch.Tensor]]] = None,
     ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
         encoding, memories = self.network_body(
-            inputs, memories=memories, sequence_length=sequence_length,
+            inputs, memories=memories, sequence_length=sequence_length
         )
         log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
         value_outputs = self.value_heads(encoding)
@@ -638,7 +643,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         if critic_obs is not None:
             all_net_inputs.extend(critic_obs)
         value_outputs, critic_mem_outs = self.critic(
-            all_net_inputs, memories=critic_mem, sequence_length=sequence_length,
+            all_net_inputs, memories=critic_mem, sequence_length=sequence_length
         )
 
         return log_probs, entropies, value_outputs
