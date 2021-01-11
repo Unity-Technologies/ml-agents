@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using UnityEngine;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Tests

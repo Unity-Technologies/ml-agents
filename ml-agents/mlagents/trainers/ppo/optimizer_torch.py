@@ -10,6 +10,7 @@ from mlagents.trainers.settings import TrainerSettings, PPOSettings
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.trajectory import ObsUtil
 
 
 class TorchPPOOptimizer(TorchOptimizer):
@@ -17,7 +18,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         """
         Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy.
         The PPO optimizer has a value estimator and a loss function.
-        :param policy: A TFPolicy object that will be updated by this PPO Optimizer.
+        :param policy: A TorchPolicy object that will be updated by this PPO Optimizer.
         :param trainer_params: Trainer parameters dictionary that specifies the
         properties of the trainer.
         """
@@ -134,7 +135,11 @@ class TorchPPOOptimizer(TorchOptimizer):
             )
             returns[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns"])
 
-        vec_obs = [ModelUtils.list_to_tensor(batch["vector_obs"])]
+        n_obs = len(self.policy.behavior_spec.sensor_specs)
+        current_obs = ObsUtil.from_buffer(batch, n_obs)
+        # Convert to tensors
+        current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
+
         act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
         actions = AgentAction.from_dict(batch)
 
@@ -145,19 +150,8 @@ class TorchPPOOptimizer(TorchOptimizer):
         if len(memories) > 0:
             memories = torch.stack(memories).unsqueeze(0)
 
-        if self.policy.use_vis_obs:
-            vis_obs = []
-            for idx, _ in enumerate(
-                self.policy.actor_critic.network_body.visual_processors
-            ):
-                vis_ob = ModelUtils.list_to_tensor(batch["visual_obs%d" % idx])
-                vis_obs.append(vis_ob)
-        else:
-            vis_obs = []
-
         log_probs, entropy, values = self.policy.evaluate_actions(
-            vec_obs,
-            vis_obs,
+            current_obs,
             masks=act_masks,
             actions=actions,
             memories=memories,

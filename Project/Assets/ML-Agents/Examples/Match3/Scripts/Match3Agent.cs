@@ -166,7 +166,7 @@ namespace Unity.MLAgentsExamples
 
             m_TimeUntilMove = MoveTime;
 
-            var nextState = State.Invalid;
+            State nextState;
             switch (m_CurrentState)
             {
                 case State.FindMatches:
@@ -214,7 +214,7 @@ namespace Unity.MLAgentsExamples
 
         bool HasValidMoves()
         {
-            foreach (var move in Board.ValidMoves())
+            foreach (var unused in Board.ValidMoves())
             {
                 return true;
             }

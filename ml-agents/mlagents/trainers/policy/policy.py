@@ -7,6 +7,7 @@ from mlagents_envs.exception import UnityException
 
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
+from mlagents.trainers.buffer import AgentBuffer
 
 
 class UnityPolicyException(UnityException):
@@ -31,18 +32,6 @@ class Policy:
         self.trainer_settings = trainer_settings
         self.network_settings: NetworkSettings = trainer_settings.network_settings
         self.seed = seed
-        self.act_size = (
-            list(self.behavior_spec.action_spec.discrete_branches)
-            if self.behavior_spec.action_spec.is_discrete()
-            else [self.behavior_spec.action_spec.continuous_size]
-        )
-        self.vec_obs_size = sum(
-            shape[0] for shape in behavior_spec.observation_shapes if len(shape) == 1
-        )
-        self.vis_obs_size = sum(
-            1 for shape in behavior_spec.observation_shapes if len(shape) == 3
-        )
-        self.use_continuous_act = self.behavior_spec.action_spec.is_continuous()
         self.previous_action_dict: Dict[str, np.ndarray] = {}
         self.memory_dict: Dict[str, np.ndarray] = {}
         self.normalize = trainer_settings.network_settings.normalize
@@ -140,13 +129,9 @@ class Policy:
             has_nan = np.isnan(d)
             if has_nan:
                 raise RuntimeError("Continuous NaN action detected.")
-            d = np.sum(action.discrete)
-            has_nan = np.isnan(d)
-            if has_nan:
-                raise RuntimeError("Discrete NaN action detected.")
 
     @abstractmethod
-    def update_normalization(self, vector_obs: np.ndarray) -> None:
+    def update_normalization(self, buffer: AgentBuffer) -> None:
         pass
 
     @abstractmethod

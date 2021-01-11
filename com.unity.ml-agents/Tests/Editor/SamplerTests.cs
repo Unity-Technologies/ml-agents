@@ -1,8 +1,5 @@
-using System;
 using NUnit.Framework;
 using System.IO;
-using System.Collections.Generic;
-using UnityEngine;
 using Unity.MLAgents.SideChannels;
 
 namespace Unity.MLAgents.Tests

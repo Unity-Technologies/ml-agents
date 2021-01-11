@@ -17,7 +17,7 @@ namespace Unity.MLAgents.Actuators
         ///
         /// See [Agents - Actions] for more information on masking actions.
         ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <param name="branch">The branch for which the actions will be masked.</param>
         /// <param name="actionIndices">The indices of the masked actions.</param>

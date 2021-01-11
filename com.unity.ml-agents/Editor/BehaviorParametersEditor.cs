@@ -5,7 +5,6 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Sensors.Reflection;
-using UnityEngine;
 
 namespace Unity.MLAgents.Editor
 {
@@ -35,7 +34,6 @@ namespace Unity.MLAgents.Editor
             var so = serializedObject;
             so.Update();
             bool needPolicyUpdate; // Whether the name, model, inference device, or BehaviorType changed.
-            bool needBrainParametersUpdate; // Whether the brain parameters changed
 
             // Drawing the Behavior Parameters
             EditorGUI.indentLevel++;
@@ -53,7 +51,6 @@ namespace Unity.MLAgents.Editor
                 EditorGUILayout.PropertyField(so.FindProperty(k_BrainParametersName), true);
             }
             EditorGUI.EndDisabledGroup();
-            needBrainParametersUpdate = EditorGUI.EndChangeCheck();
 
             EditorGUI.BeginChangeCheck();
             {

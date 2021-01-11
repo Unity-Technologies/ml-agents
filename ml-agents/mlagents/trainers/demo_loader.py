@@ -5,7 +5,7 @@ from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
-from mlagents.trainers.trajectory import SplitObservations
+from mlagents.trainers.trajectory import ObsUtil
 from mlagents_envs.rpc_utils import behavior_spec_from_proto, steps_from_proto
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
@@ -66,10 +66,8 @@ def make_demo_buffer(
 
         demo_raw_buffer["done"].append(next_done)
         demo_raw_buffer["rewards"].append(next_reward)
-        split_obs = SplitObservations.from_observations(current_obs)
-        for i, obs in enumerate(split_obs.visual_observations):
-            demo_raw_buffer["visual_obs%d" % i].append(obs)
-        demo_raw_buffer["vector_obs"].append(split_obs.vector_observations)
+        for i, obs in enumerate(current_obs):
+            demo_raw_buffer[ObsUtil.get_name_at(i)].append(obs)
         if (
             len(current_pair_info.action_info.continuous_actions) == 0
             and len(current_pair_info.action_info.discrete_actions) == 0
@@ -91,7 +89,6 @@ def make_demo_buffer(
                 demo_raw_buffer["discrete_action"].append(
                     current_pair_info.action_info.discrete_actions
                 )
-
         demo_raw_buffer["prev_action"].append(previous_action)
         if next_done:
             demo_raw_buffer.resequence_and_append(
@@ -125,20 +122,15 @@ def demo_to_buffer(
                 )
             )
         # check observations match
-        if len(behavior_spec.observation_shapes) != len(
-            expected_behavior_spec.observation_shapes
-        ):
+        if len(behavior_spec.sensor_specs) != len(expected_behavior_spec.sensor_specs):
             raise RuntimeError(
                 "The demonstrations do not have the same number of observations as the policy."
             )
         else:
             for i, (demo_obs, policy_obs) in enumerate(
-                zip(
-                    behavior_spec.observation_shapes,
-                    expected_behavior_spec.observation_shapes,
-                )
+                zip(behavior_spec.sensor_specs, expected_behavior_spec.sensor_specs)
             ):
-                if demo_obs != policy_obs:
+                if demo_obs.shape != policy_obs.shape:
                     raise RuntimeError(
                         f"The shape {demo_obs} for observation {i} in demonstration \
                         do not match the policy's {policy_obs}."
