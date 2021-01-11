@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option csharp_namespace = "Unity.MLAgents.CommunicatorObjects";
+package communicator_objects;
+
+message TrainingEnvironmentInitialized {
+    string mlagents_version = 1;
+    string mlagents_envs_version = 2;
+    string python_version = 3;
+    string torch_version = 4;
+    string torch_device_type = 5;
+    int32 num_envs = 6;
+    int32 num_randomized_parameters = 7;
+}
+
+message TrainingBehaviorInitialized {
+    bool extrinsic_reward_enabled = 1;
+    bool gail_reward_enabled = 2;
+    bool curiosity_reward_enabled = 3;
+    bool rnd_reward_enabled = 4;
+    bool behavioral_cloning_enabled = 5;
+    bool recurrent_enabled = 6;
+    string visual_encoder = 7;
+    int32 num_network_layers = 8;
+    int32 num_network_hidden_units = 9;
+    bool trainer_threaded = 10;
+    bool self_play_enabled = 11;
+    bool uses_curriculum = 12;
+}
