@@ -682,7 +682,8 @@ class TrainerSettings(ExportableSettings):
     class DefaultTrainerDict(collections.defaultdict):
         def __init__(self, *args):
             # Depending on how this is called, args may have the defaultdict
-            # callable at the start of the list or not.
+            # callable at the start of the list or not. In particular, unpickling
+            # will pass [TrainerSettings].
             if args and args[0] == TrainerSettings:
                 super().__init__(*args)
             else:
