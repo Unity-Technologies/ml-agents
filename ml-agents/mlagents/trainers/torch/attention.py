@@ -20,7 +20,8 @@ class MultiHeadAttention(torch.nn.Module):
 
     def __init__(self, embedding_size: int, num_heads: int):
         super().__init__()
-        self.n_heads, self.embedding_size = num_heads, embedding_size
+        self.n_heads = num_heads
+        self.embedding_size: int = embedding_size // self.n_heads * self.n_heads
         self.head_size: int = self.embedding_size // self.n_heads
 
     def forward(
