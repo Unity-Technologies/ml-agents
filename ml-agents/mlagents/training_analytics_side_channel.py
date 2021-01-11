@@ -11,6 +11,11 @@ from mlagents import torch_utils
 from mlagents.trainers.settings import RewardSignalType
 from mlagents_envs.exception import UnityCommunicationException
 from mlagents_envs.side_channel import SideChannel, IncomingMessage, OutgoingMessage
+from mlagents_envs.communicator_objects.training_analytics_pb2 import (
+    TrainingEnvironmentInitialized,
+    TrainingBehaviorInitialized,
+)
+from google.protobuf.any_pb2 import Any
 
 from mlagents.trainers.settings import TrainerSettings, RunOptions
 
@@ -36,44 +41,49 @@ class TrainingAnalyticsSideChannel(SideChannel):
         self.run_options = run_options
         # Tuple of (major, minor, patch)
         vi = sys.version_info
-        python_version = f"{vi[0]}.{vi[1]}.{vi[2]}"
-        mlagents_version = mlagents.trainers.__version__
-        mlagents_envs_version = mlagents_envs.__version__
-        torch_version = torch_utils.torch.__version__
-        torch_device_type = torch_utils.default_device().type
-        num_envs = run_options.env_settings.num_envs
-
         env_params = run_options.environment_parameters
-        num_environment_parameters = len(env_params) if env_params else 0
+
+        msg = TrainingEnvironmentInitialized(
+            python_version=f"{vi[0]}.{vi[1]}.{vi[2]}",
+            mlagents_version=mlagents.trainers.__version__,
+            mlagents_envs_version=mlagents_envs.__version__,
+            torch_version=torch_utils.torch.__version__,
+            torch_device_type=torch_utils.default_device().type,
+            num_envs=run_options.env_settings.num_envs,
+            num_environment_parameters=len(env_params) if env_params else 0,
+        )
+
+        any_message = Any()
+        any_message.Pack(msg)
 
         env_init_msg = OutgoingMessage()
-        env_init_msg.write_string("environment_initialized")
-        env_init_msg.write_string(str(locals()))
+        env_init_msg.set_raw_bytes(any_message.SerializeToString())
         super().queue_message_to_send(env_init_msg)
 
     def training_started(self, behavior_name: str, config: TrainerSettings) -> None:
-        trainer_type = config.trainer_type
+        msg = TrainingBehaviorInitialized(
+            trainer_type=config.trainer_type.value,
+            extrinsic_reward_enabled=RewardSignalType.EXTRINSIC
+            in config.reward_signals,
+            gail_reward_enabled=RewardSignalType.GAIL in config.reward_signals,
+            curiosity_reward_enabled=RewardSignalType.CURIOSITY
+            in config.reward_signals,
+            rnd_reward_enabled=RewardSignalType.RND in config.reward_signals,
+            behavioral_cloning_enabled=config.behavioral_cloning is not None,
+            recurrent_enabled=config.network_settings.memory is not None,
+            visual_encoder=config.network_settings.vis_encode_type.value,
+            num_network_layers=config.network_settings.num_layers,
+            num_network_hidden_units=config.network_settings.hidden_units,
+            trainer_threaded=config.threaded,
+            self_play_enabled=config.self_play is not None,
+            uses_curriculum=self._behavior_uses_curriculum(behavior_name),
+        )
 
-        extrinsic_reward_enabled = RewardSignalType.EXTRINSIC in config.reward_signals
-        gail_reward_enabled = RewardSignalType.GAIL in config.reward_signals
-        curiosity_reward_enabled = RewardSignalType.CURIOSITY in config.reward_signals
-        rnd_reward_enabled = RewardSignalType.RND in config.reward_signals
-
-        behavioral_cloning_enabled = config.behavioral_cloning is not None
-
-        recurrent_enabled = config.network_settings.memory is not None
-        visual_encoder = config.network_settings.vis_encode_type.value
-        num_network_layers = config.network_settings.num_layers
-        num_network_hidden_units = config.network_settings.hidden_units
-
-        trainer_threaded = config.threaded
-        self_play_enabled = config.self_play is not None
-        uses_curriculum = self._behavior_uses_curriculum(behavior_name)
+        any_message = Any()
+        any_message.Pack(msg)
 
         training_start_msg = OutgoingMessage()
-        training_start_msg.write_string("training_started")
-        training_start_msg.write_string(behavior_name)
-        training_start_msg.write_string(str(locals()))
+        training_start_msg.set_raw_bytes(any_message.SerializeToString())
 
         super().queue_message_to_send(training_start_msg)
 

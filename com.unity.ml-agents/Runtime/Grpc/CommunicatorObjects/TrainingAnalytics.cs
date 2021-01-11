@@ -25,27 +25,28 @@ namespace Unity.MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjttbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3RyYWluaW5n",
-            "X2FuYWx5dGljcy5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMi2AEKHlRy",
+            "X2FuYWx5dGljcy5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMi2QEKHlRy",
             "YWluaW5nRW52aXJvbm1lbnRJbml0aWFsaXplZBIYChBtbGFnZW50c192ZXJz",
             "aW9uGAEgASgJEh0KFW1sYWdlbnRzX2VudnNfdmVyc2lvbhgCIAEoCRIWCg5w",
             "eXRob25fdmVyc2lvbhgDIAEoCRIVCg10b3JjaF92ZXJzaW9uGAQgASgJEhkK",
-            "EXRvcmNoX2RldmljZV90eXBlGAUgASgJEhAKCG51bV9lbnZzGAYgASgFEiEK",
-            "GW51bV9yYW5kb21pemVkX3BhcmFtZXRlcnMYByABKAUi/QIKG1RyYWluaW5n",
-            "QmVoYXZpb3JJbml0aWFsaXplZBIgChhleHRyaW5zaWNfcmV3YXJkX2VuYWJs",
-            "ZWQYASABKAgSGwoTZ2FpbF9yZXdhcmRfZW5hYmxlZBgCIAEoCBIgChhjdXJp",
-            "b3NpdHlfcmV3YXJkX2VuYWJsZWQYAyABKAgSGgoScm5kX3Jld2FyZF9lbmFi",
-            "bGVkGAQgASgIEiIKGmJlaGF2aW9yYWxfY2xvbmluZ19lbmFibGVkGAUgASgI",
-            "EhkKEXJlY3VycmVudF9lbmFibGVkGAYgASgIEhYKDnZpc3VhbF9lbmNvZGVy",
-            "GAcgASgJEhoKEm51bV9uZXR3b3JrX2xheWVycxgIIAEoBRIgChhudW1fbmV0",
-            "d29ya19oaWRkZW5fdW5pdHMYCSABKAUSGAoQdHJhaW5lcl90aHJlYWRlZBgK",
-            "IAEoCBIZChFzZWxmX3BsYXlfZW5hYmxlZBgLIAEoCBIXCg91c2VzX2N1cnJp",
-            "Y3VsdW0YDCABKAhCJaoCIlVuaXR5Lk1MQWdlbnRzLkNvbW11bmljYXRvck9i",
-            "amVjdHNiBnByb3RvMw=="));
+            "EXRvcmNoX2RldmljZV90eXBlGAUgASgJEhAKCG51bV9lbnZzGAYgASgFEiIK",
+            "Gm51bV9lbnZpcm9ubWVudF9wYXJhbWV0ZXJzGAcgASgFIqoDChtUcmFpbmlu",
+            "Z0JlaGF2aW9ySW5pdGlhbGl6ZWQSFQoNYmVoYXZpb3JfbmFtZRgBIAEoCRIU",
+            "Cgx0cmFpbmVyX3R5cGUYAiABKAkSIAoYZXh0cmluc2ljX3Jld2FyZF9lbmFi",
+            "bGVkGAMgASgIEhsKE2dhaWxfcmV3YXJkX2VuYWJsZWQYBCABKAgSIAoYY3Vy",
+            "aW9zaXR5X3Jld2FyZF9lbmFibGVkGAUgASgIEhoKEnJuZF9yZXdhcmRfZW5h",
+            "YmxlZBgGIAEoCBIiChpiZWhhdmlvcmFsX2Nsb25pbmdfZW5hYmxlZBgHIAEo",
+            "CBIZChFyZWN1cnJlbnRfZW5hYmxlZBgIIAEoCBIWCg52aXN1YWxfZW5jb2Rl",
+            "chgJIAEoCRIaChJudW1fbmV0d29ya19sYXllcnMYCiABKAUSIAoYbnVtX25l",
+            "dHdvcmtfaGlkZGVuX3VuaXRzGAsgASgFEhgKEHRyYWluZXJfdGhyZWFkZWQY",
+            "DCABKAgSGQoRc2VsZl9wbGF5X2VuYWJsZWQYDSABKAgSFwoPdXNlc19jdXJy",
+            "aWN1bHVtGA4gASgIQiWqAiJVbml0eS5NTEFnZW50cy5Db21tdW5pY2F0b3JP",
+            "YmplY3RzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.TrainingEnvironmentInitialized), global::Unity.MLAgents.CommunicatorObjects.TrainingEnvironmentInitialized.Parser, new[]{ "MlagentsVersion", "MlagentsEnvsVersion", "PythonVersion", "TorchVersion", "TorchDeviceType", "NumEnvs", "NumRandomizedParameters" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.TrainingBehaviorInitialized), global::Unity.MLAgents.CommunicatorObjects.TrainingBehaviorInitialized.Parser, new[]{ "ExtrinsicRewardEnabled", "GailRewardEnabled", "CuriosityRewardEnabled", "RndRewardEnabled", "BehavioralCloningEnabled", "RecurrentEnabled", "VisualEncoder", "NumNetworkLayers", "NumNetworkHiddenUnits", "TrainerThreaded", "SelfPlayEnabled", "UsesCurriculum" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.TrainingEnvironmentInitialized), global::Unity.MLAgents.CommunicatorObjects.TrainingEnvironmentInitialized.Parser, new[]{ "MlagentsVersion", "MlagentsEnvsVersion", "PythonVersion", "TorchVersion", "TorchDeviceType", "NumEnvs", "NumEnvironmentParameters" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.TrainingBehaviorInitialized), global::Unity.MLAgents.CommunicatorObjects.TrainingBehaviorInitialized.Parser, new[]{ "BehaviorName", "TrainerType", "ExtrinsicRewardEnabled", "GailRewardEnabled", "CuriosityRewardEnabled", "RndRewardEnabled", "BehavioralCloningEnabled", "RecurrentEnabled", "VisualEncoder", "NumNetworkLayers", "NumNetworkHiddenUnits", "TrainerThreaded", "SelfPlayEnabled", "UsesCurriculum" }, null, null, null)
           }));
     }
     #endregion
@@ -83,7 +84,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       torchVersion_ = other.torchVersion_;
       torchDeviceType_ = other.torchDeviceType_;
       numEnvs_ = other.numEnvs_;
-      numRandomizedParameters_ = other.numRandomizedParameters_;
+      numEnvironmentParameters_ = other.numEnvironmentParameters_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -158,14 +159,14 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
     }
 
-    /// <summary>Field number for the "num_randomized_parameters" field.</summary>
-    public const int NumRandomizedParametersFieldNumber = 7;
-    private int numRandomizedParameters_;
+    /// <summary>Field number for the "num_environment_parameters" field.</summary>
+    public const int NumEnvironmentParametersFieldNumber = 7;
+    private int numEnvironmentParameters_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int NumRandomizedParameters {
-      get { return numRandomizedParameters_; }
+    public int NumEnvironmentParameters {
+      get { return numEnvironmentParameters_; }
       set {
-        numRandomizedParameters_ = value;
+        numEnvironmentParameters_ = value;
       }
     }
 
@@ -188,7 +189,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (TorchVersion != other.TorchVersion) return false;
       if (TorchDeviceType != other.TorchDeviceType) return false;
       if (NumEnvs != other.NumEnvs) return false;
-      if (NumRandomizedParameters != other.NumRandomizedParameters) return false;
+      if (NumEnvironmentParameters != other.NumEnvironmentParameters) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -201,7 +202,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (TorchVersion.Length != 0) hash ^= TorchVersion.GetHashCode();
       if (TorchDeviceType.Length != 0) hash ^= TorchDeviceType.GetHashCode();
       if (NumEnvs != 0) hash ^= NumEnvs.GetHashCode();
-      if (NumRandomizedParameters != 0) hash ^= NumRandomizedParameters.GetHashCode();
+      if (NumEnvironmentParameters != 0) hash ^= NumEnvironmentParameters.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -239,9 +240,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
         output.WriteRawTag(48);
         output.WriteInt32(NumEnvs);
       }
-      if (NumRandomizedParameters != 0) {
+      if (NumEnvironmentParameters != 0) {
         output.WriteRawTag(56);
-        output.WriteInt32(NumRandomizedParameters);
+        output.WriteInt32(NumEnvironmentParameters);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -269,8 +270,8 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (NumEnvs != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(NumEnvs);
       }
-      if (NumRandomizedParameters != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(NumRandomizedParameters);
+      if (NumEnvironmentParameters != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(NumEnvironmentParameters);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -301,8 +302,8 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (other.NumEnvs != 0) {
         NumEnvs = other.NumEnvs;
       }
-      if (other.NumRandomizedParameters != 0) {
-        NumRandomizedParameters = other.NumRandomizedParameters;
+      if (other.NumEnvironmentParameters != 0) {
+        NumEnvironmentParameters = other.NumEnvironmentParameters;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -340,7 +341,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
             break;
           }
           case 56: {
-            NumRandomizedParameters = input.ReadInt32();
+            NumEnvironmentParameters = input.ReadInt32();
             break;
           }
         }
@@ -374,6 +375,8 @@ namespace Unity.MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public TrainingBehaviorInitialized(TrainingBehaviorInitialized other) : this() {
+      behaviorName_ = other.behaviorName_;
+      trainerType_ = other.trainerType_;
       extrinsicRewardEnabled_ = other.extrinsicRewardEnabled_;
       gailRewardEnabled_ = other.gailRewardEnabled_;
       curiosityRewardEnabled_ = other.curiosityRewardEnabled_;
@@ -394,8 +397,30 @@ namespace Unity.MLAgents.CommunicatorObjects {
       return new TrainingBehaviorInitialized(this);
     }
 
+    /// <summary>Field number for the "behavior_name" field.</summary>
+    public const int BehaviorNameFieldNumber = 1;
+    private string behaviorName_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string BehaviorName {
+      get { return behaviorName_; }
+      set {
+        behaviorName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "trainer_type" field.</summary>
+    public const int TrainerTypeFieldNumber = 2;
+    private string trainerType_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string TrainerType {
+      get { return trainerType_; }
+      set {
+        trainerType_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     /// <summary>Field number for the "extrinsic_reward_enabled" field.</summary>
-    public const int ExtrinsicRewardEnabledFieldNumber = 1;
+    public const int ExtrinsicRewardEnabledFieldNumber = 3;
     private bool extrinsicRewardEnabled_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool ExtrinsicRewardEnabled {
@@ -406,7 +431,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     }
 
     /// <summary>Field number for the "gail_reward_enabled" field.</summary>
-    public const int GailRewardEnabledFieldNumber = 2;
+    public const int GailRewardEnabledFieldNumber = 4;
     private bool gailRewardEnabled_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool GailRewardEnabled {
@@ -417,7 +442,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     }
 
     /// <summary>Field number for the "curiosity_reward_enabled" field.</summary>
-    public const int CuriosityRewardEnabledFieldNumber = 3;
+    public const int CuriosityRewardEnabledFieldNumber = 5;
     private bool curiosityRewardEnabled_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool CuriosityRewardEnabled {
@@ -428,7 +453,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     }
 
     /// <summary>Field number for the "rnd_reward_enabled" field.</summary>
-    public const int RndRewardEnabledFieldNumber = 4;
+    public const int RndRewardEnabledFieldNumber = 6;
     private bool rndRewardEnabled_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool RndRewardEnabled {
@@ -439,7 +464,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     }
 
     /// <summary>Field number for the "behavioral_cloning_enabled" field.</summary>
-    public const int BehavioralCloningEnabledFieldNumber = 5;
+    public const int BehavioralCloningEnabledFieldNumber = 7;
     private bool behavioralCloningEnabled_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool BehavioralCloningEnabled {
@@ -450,7 +475,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     }
 
     /// <summary>Field number for the "recurrent_enabled" field.</summary>
-    public const int RecurrentEnabledFieldNumber = 6;
+    public const int RecurrentEnabledFieldNumber = 8;
     private bool recurrentEnabled_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool RecurrentEnabled {
@@ -461,7 +486,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     }
 
     /// <summary>Field number for the "visual_encoder" field.</summary>
-    public const int VisualEncoderFieldNumber = 7;
+    public const int VisualEncoderFieldNumber = 9;
     private string visualEncoder_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string VisualEncoder {
@@ -472,7 +497,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     }
 
     /// <summary>Field number for the "num_network_layers" field.</summary>
-    public const int NumNetworkLayersFieldNumber = 8;
+    public const int NumNetworkLayersFieldNumber = 10;
     private int numNetworkLayers_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int NumNetworkLayers {
@@ -483,7 +508,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     }
 
     /// <summary>Field number for the "num_network_hidden_units" field.</summary>
-    public const int NumNetworkHiddenUnitsFieldNumber = 9;
+    public const int NumNetworkHiddenUnitsFieldNumber = 11;
     private int numNetworkHiddenUnits_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int NumNetworkHiddenUnits {
@@ -494,7 +519,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     }
 
     /// <summary>Field number for the "trainer_threaded" field.</summary>
-    public const int TrainerThreadedFieldNumber = 10;
+    public const int TrainerThreadedFieldNumber = 12;
     private bool trainerThreaded_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool TrainerThreaded {
@@ -505,7 +530,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     }
 
     /// <summary>Field number for the "self_play_enabled" field.</summary>
-    public const int SelfPlayEnabledFieldNumber = 11;
+    public const int SelfPlayEnabledFieldNumber = 13;
     private bool selfPlayEnabled_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool SelfPlayEnabled {
@@ -516,7 +541,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     }
 
     /// <summary>Field number for the "uses_curriculum" field.</summary>
-    public const int UsesCurriculumFieldNumber = 12;
+    public const int UsesCurriculumFieldNumber = 14;
     private bool usesCurriculum_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool UsesCurriculum {
@@ -539,6 +564,8 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (ReferenceEquals(other, this)) {
         return true;
       }
+      if (BehaviorName != other.BehaviorName) return false;
+      if (TrainerType != other.TrainerType) return false;
       if (ExtrinsicRewardEnabled != other.ExtrinsicRewardEnabled) return false;
       if (GailRewardEnabled != other.GailRewardEnabled) return false;
       if (CuriosityRewardEnabled != other.CuriosityRewardEnabled) return false;
@@ -557,6 +584,8 @@ namespace Unity.MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
+      if (BehaviorName.Length != 0) hash ^= BehaviorName.GetHashCode();
+      if (TrainerType.Length != 0) hash ^= TrainerType.GetHashCode();
       if (ExtrinsicRewardEnabled != false) hash ^= ExtrinsicRewardEnabled.GetHashCode();
       if (GailRewardEnabled != false) hash ^= GailRewardEnabled.GetHashCode();
       if (CuriosityRewardEnabled != false) hash ^= CuriosityRewardEnabled.GetHashCode();
@@ -582,52 +611,60 @@ namespace Unity.MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+      if (BehaviorName.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(BehaviorName);
+      }
+      if (TrainerType.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(TrainerType);
+      }
       if (ExtrinsicRewardEnabled != false) {
-        output.WriteRawTag(8);
+        output.WriteRawTag(24);
         output.WriteBool(ExtrinsicRewardEnabled);
       }
       if (GailRewardEnabled != false) {
-        output.WriteRawTag(16);
+        output.WriteRawTag(32);
         output.WriteBool(GailRewardEnabled);
       }
       if (CuriosityRewardEnabled != false) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(40);
         output.WriteBool(CuriosityRewardEnabled);
       }
       if (RndRewardEnabled != false) {
-        output.WriteRawTag(32);
+        output.WriteRawTag(48);
         output.WriteBool(RndRewardEnabled);
       }
       if (BehavioralCloningEnabled != false) {
-        output.WriteRawTag(40);
+        output.WriteRawTag(56);
         output.WriteBool(BehavioralCloningEnabled);
       }
       if (RecurrentEnabled != false) {
-        output.WriteRawTag(48);
+        output.WriteRawTag(64);
         output.WriteBool(RecurrentEnabled);
       }
       if (VisualEncoder.Length != 0) {
-        output.WriteRawTag(58);
+        output.WriteRawTag(74);
         output.WriteString(VisualEncoder);
       }
       if (NumNetworkLayers != 0) {
-        output.WriteRawTag(64);
+        output.WriteRawTag(80);
         output.WriteInt32(NumNetworkLayers);
       }
       if (NumNetworkHiddenUnits != 0) {
-        output.WriteRawTag(72);
+        output.WriteRawTag(88);
         output.WriteInt32(NumNetworkHiddenUnits);
       }
       if (TrainerThreaded != false) {
-        output.WriteRawTag(80);
+        output.WriteRawTag(96);
         output.WriteBool(TrainerThreaded);
       }
       if (SelfPlayEnabled != false) {
-        output.WriteRawTag(88);
+        output.WriteRawTag(104);
         output.WriteBool(SelfPlayEnabled);
       }
       if (UsesCurriculum != false) {
-        output.WriteRawTag(96);
+        output.WriteRawTag(112);
         output.WriteBool(UsesCurriculum);
       }
       if (_unknownFields != null) {
@@ -638,6 +675,12 @@ namespace Unity.MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
+      if (BehaviorName.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(BehaviorName);
+      }
+      if (TrainerType.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(TrainerType);
+      }
       if (ExtrinsicRewardEnabled != false) {
         size += 1 + 1;
       }
@@ -684,6 +727,12 @@ namespace Unity.MLAgents.CommunicatorObjects {
     public void MergeFrom(TrainingBehaviorInitialized other) {
       if (other == null) {
         return;
+      }
+      if (other.BehaviorName.Length != 0) {
+        BehaviorName = other.BehaviorName;
+      }
+      if (other.TrainerType.Length != 0) {
+        TrainerType = other.TrainerType;
       }
       if (other.ExtrinsicRewardEnabled != false) {
         ExtrinsicRewardEnabled = other.ExtrinsicRewardEnabled;
@@ -732,51 +781,59 @@ namespace Unity.MLAgents.CommunicatorObjects {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
-            ExtrinsicRewardEnabled = input.ReadBool();
+          case 10: {
+            BehaviorName = input.ReadString();
             break;
           }
-          case 16: {
-            GailRewardEnabled = input.ReadBool();
+          case 18: {
+            TrainerType = input.ReadString();
             break;
           }
           case 24: {
-            CuriosityRewardEnabled = input.ReadBool();
+            ExtrinsicRewardEnabled = input.ReadBool();
             break;
           }
           case 32: {
-            RndRewardEnabled = input.ReadBool();
+            GailRewardEnabled = input.ReadBool();
             break;
           }
           case 40: {
-            BehavioralCloningEnabled = input.ReadBool();
+            CuriosityRewardEnabled = input.ReadBool();
             break;
           }
           case 48: {
-            RecurrentEnabled = input.ReadBool();
+            RndRewardEnabled = input.ReadBool();
             break;
           }
-          case 58: {
-            VisualEncoder = input.ReadString();
+          case 56: {
+            BehavioralCloningEnabled = input.ReadBool();
             break;
           }
           case 64: {
-            NumNetworkLayers = input.ReadInt32();
+            RecurrentEnabled = input.ReadBool();
             break;
           }
-          case 72: {
-            NumNetworkHiddenUnits = input.ReadInt32();
+          case 74: {
+            VisualEncoder = input.ReadString();
             break;
           }
           case 80: {
-            TrainerThreaded = input.ReadBool();
+            NumNetworkLayers = input.ReadInt32();
             break;
           }
           case 88: {
-            SelfPlayEnabled = input.ReadBool();
+            NumNetworkHiddenUnits = input.ReadInt32();
             break;
           }
           case 96: {
+            TrainerThreaded = input.ReadBool();
+            break;
+          }
+          case 104: {
+            SelfPlayEnabled = input.ReadBool();
+            break;
+          }
+          case 112: {
             UsesCurriculum = input.ReadBool();
             break;
           }

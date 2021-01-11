@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 using Unity.MLAgents.Analytics;
+using Unity.MLAgents.CommunicatorObjects;
+using static Google.Protobuf.WellKnownTypes;
 
 namespace Unity.MLAgents.SideChannels
 {
@@ -20,12 +22,14 @@ namespace Unity.MLAgents.SideChannels
         /// <inheritdoc/>
         protected override void OnMessageReceived(IncomingMessage msg)
         {
-            // TODO logic here is placeholder until we define protos for sending information.
-            var eventName = msg.ReadString();
-            if (eventName == "environment_initialized")
+            var anyMessage = Google.Protobuf.WellKnownTypes.Any.Parser.ParseFrom(msg.GetRawBytes());
+            var envInitProto = anyMessage.Unpack<TrainingEnvironmentInitialized>();
+            var behaviorInitProto = anyMessage.Unpack<TrainingBehaviorInitialized>();
+
+            if (envInitProto != null)
             {
-                var eventBody = msg.ReadString();
-                Debug.Log($"{eventName}: {eventBody}");
+
+                Debug.Log($"envInitProto init: {envInitProto}");
 
                 var envInitEvent = new TrainingEnvironmentInitializedEvent
                 {
@@ -35,13 +39,11 @@ namespace Unity.MLAgents.SideChannels
             }
             else // TrainingBehaviorInitialized
             {
-                var behaviorName = msg.ReadString();
-                var eventBody = msg.ReadString();
-                Debug.Log($"{eventName} ({behaviorName}): {eventBody}");
+                Debug.Log($"behaviorInitProto ({behaviorInitProto.BehaviorName}): {behaviorInitProto}");
 
                 var behaviorTrainingEvent = new TrainingBehaviorInitializedEvent
                 {
-                    BehaviorName = behaviorName,
+                    BehaviorName = behaviorInitProto.BehaviorName,
                 };
                 TrainingAnalytics.TrainingBehaviorInitialized(behaviorTrainingEvent);
             }

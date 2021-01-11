@@ -32,7 +32,7 @@ class TrainingEnvironmentInitialized(google___protobuf___message___Message):
     torch_version = ... # type: typing___Text
     torch_device_type = ... # type: typing___Text
     num_envs = ... # type: builtin___int
-    num_randomized_parameters = ... # type: builtin___int
+    num_environment_parameters = ... # type: builtin___int
 
     def __init__(self,
         *,
@@ -42,19 +42,21 @@ class TrainingEnvironmentInitialized(google___protobuf___message___Message):
         torch_version : typing___Optional[typing___Text] = None,
         torch_device_type : typing___Optional[typing___Text] = None,
         num_envs : typing___Optional[builtin___int] = None,
-        num_randomized_parameters : typing___Optional[builtin___int] = None,
+        num_environment_parameters : typing___Optional[builtin___int] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: builtin___bytes) -> TrainingEnvironmentInitialized: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
-        def ClearField(self, field_name: typing_extensions___Literal[u"mlagents_envs_version",u"mlagents_version",u"num_envs",u"num_randomized_parameters",u"python_version",u"torch_device_type",u"torch_version"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"mlagents_envs_version",u"mlagents_version",u"num_environment_parameters",u"num_envs",u"python_version",u"torch_device_type",u"torch_version"]) -> None: ...
     else:
-        def ClearField(self, field_name: typing_extensions___Literal[u"mlagents_envs_version",b"mlagents_envs_version",u"mlagents_version",b"mlagents_version",u"num_envs",b"num_envs",u"num_randomized_parameters",b"num_randomized_parameters",u"python_version",b"python_version",u"torch_device_type",b"torch_device_type",u"torch_version",b"torch_version"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"mlagents_envs_version",b"mlagents_envs_version",u"mlagents_version",b"mlagents_version",u"num_environment_parameters",b"num_environment_parameters",u"num_envs",b"num_envs",u"python_version",b"python_version",u"torch_device_type",b"torch_device_type",u"torch_version",b"torch_version"]) -> None: ...
 
 class TrainingBehaviorInitialized(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
+    behavior_name = ... # type: typing___Text
+    trainer_type = ... # type: typing___Text
     extrinsic_reward_enabled = ... # type: builtin___bool
     gail_reward_enabled = ... # type: builtin___bool
     curiosity_reward_enabled = ... # type: builtin___bool
@@ -70,6 +72,8 @@ class TrainingBehaviorInitialized(google___protobuf___message___Message):
 
     def __init__(self,
         *,
+        behavior_name : typing___Optional[typing___Text] = None,
+        trainer_type : typing___Optional[typing___Text] = None,
         extrinsic_reward_enabled : typing___Optional[builtin___bool] = None,
         gail_reward_enabled : typing___Optional[builtin___bool] = None,
         curiosity_reward_enabled : typing___Optional[builtin___bool] = None,
@@ -88,6 +92,6 @@ class TrainingBehaviorInitialized(google___protobuf___message___Message):
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
-        def ClearField(self, field_name: typing_extensions___Literal[u"behavioral_cloning_enabled",u"curiosity_reward_enabled",u"extrinsic_reward_enabled",u"gail_reward_enabled",u"num_network_hidden_units",u"num_network_layers",u"recurrent_enabled",u"rnd_reward_enabled",u"self_play_enabled",u"trainer_threaded",u"uses_curriculum",u"visual_encoder"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"behavior_name",u"behavioral_cloning_enabled",u"curiosity_reward_enabled",u"extrinsic_reward_enabled",u"gail_reward_enabled",u"num_network_hidden_units",u"num_network_layers",u"recurrent_enabled",u"rnd_reward_enabled",u"self_play_enabled",u"trainer_threaded",u"trainer_type",u"uses_curriculum",u"visual_encoder"]) -> None: ...
     else:
-        def ClearField(self, field_name: typing_extensions___Literal[u"behavioral_cloning_enabled",b"behavioral_cloning_enabled",u"curiosity_reward_enabled",b"curiosity_reward_enabled",u"extrinsic_reward_enabled",b"extrinsic_reward_enabled",u"gail_reward_enabled",b"gail_reward_enabled",u"num_network_hidden_units",b"num_network_hidden_units",u"num_network_layers",b"num_network_layers",u"recurrent_enabled",b"recurrent_enabled",u"rnd_reward_enabled",b"rnd_reward_enabled",u"self_play_enabled",b"self_play_enabled",u"trainer_threaded",b"trainer_threaded",u"uses_curriculum",b"uses_curriculum",u"visual_encoder",b"visual_encoder"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"behavior_name",b"behavior_name",u"behavioral_cloning_enabled",b"behavioral_cloning_enabled",u"curiosity_reward_enabled",b"curiosity_reward_enabled",u"extrinsic_reward_enabled",b"extrinsic_reward_enabled",u"gail_reward_enabled",b"gail_reward_enabled",u"num_network_hidden_units",b"num_network_hidden_units",u"num_network_layers",b"num_network_layers",u"recurrent_enabled",b"recurrent_enabled",u"rnd_reward_enabled",b"rnd_reward_enabled",u"self_play_enabled",b"self_play_enabled",u"trainer_threaded",b"trainer_threaded",u"trainer_type",b"trainer_type",u"uses_curriculum",b"uses_curriculum",u"visual_encoder",b"visual_encoder"]) -> None: ...
