@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 using Unity.MLAgents.Analytics;
 using Unity.MLAgents.CommunicatorObjects;
-using static Google.Protobuf.WellKnownTypes;
 
 namespace Unity.MLAgents.SideChannels
 {
@@ -23,11 +22,10 @@ namespace Unity.MLAgents.SideChannels
         protected override void OnMessageReceived(IncomingMessage msg)
         {
             var anyMessage = Google.Protobuf.WellKnownTypes.Any.Parser.ParseFrom(msg.GetRawBytes());
-            var envInitProto = anyMessage.Unpack<TrainingEnvironmentInitialized>();
-            var behaviorInitProto = anyMessage.Unpack<TrainingBehaviorInitialized>();
 
-            if (envInitProto != null)
+            if (anyMessage.Is(TrainingEnvironmentInitialized.Descriptor))
             {
+                var envInitProto = anyMessage.Unpack<TrainingEnvironmentInitialized>();
 
                 Debug.Log($"envInitProto init: {envInitProto}");
 
@@ -37,8 +35,9 @@ namespace Unity.MLAgents.SideChannels
                 };
                 TrainingAnalytics.TrainingEnvironmentInitialized(envInitEvent);
             }
-            else // TrainingBehaviorInitialized
+            else if (anyMessage.Is(TrainingBehaviorInitialized.Descriptor))
             {
+                var behaviorInitProto = anyMessage.Unpack<TrainingBehaviorInitialized>();
                 Debug.Log($"behaviorInitProto ({behaviorInitProto.BehaviorName}): {behaviorInitProto}");
 
                 var behaviorTrainingEvent = new TrainingBehaviorInitializedEvent
@@ -46,6 +45,10 @@ namespace Unity.MLAgents.SideChannels
                     BehaviorName = behaviorInitProto.BehaviorName,
                 };
                 TrainingAnalytics.TrainingBehaviorInitialized(behaviorTrainingEvent);
+            }
+            else
+            {
+
             }
         }
     }
