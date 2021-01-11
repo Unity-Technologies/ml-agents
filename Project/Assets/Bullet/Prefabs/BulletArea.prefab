@@ -168,6 +168,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -263,6 +264,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -477,16 +479,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7562565324271374322}
     m_Modifications:
-    - target: {fileID: 968348991679639438, guid: 16266ae2c040142b1a996878d94ec3fb,
-        type: 3}
-      propertyPath: ground
-      value: 
-      objectReference: {fileID: 7564015931936126656}
-    - target: {fileID: 968348991679639438, guid: 16266ae2c040142b1a996878d94ec3fb,
-        type: 3}
-      propertyPath: area
-      value: 
-      objectReference: {fileID: 7565593112241766594}
     - target: {fileID: 2272550728573618168, guid: 16266ae2c040142b1a996878d94ec3fb,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -542,6 +534,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 968348991679639438, guid: 16266ae2c040142b1a996878d94ec3fb,
+        type: 3}
+      propertyPath: ground
+      value: 
+      objectReference: {fileID: 7564015931936126656}
+    - target: {fileID: 968348991679639438, guid: 16266ae2c040142b1a996878d94ec3fb,
+        type: 3}
+      propertyPath: area
+      value: 
+      objectReference: {fileID: 7565593112241766594}
     - target: {fileID: 5229809530250264056, guid: 16266ae2c040142b1a996878d94ec3fb,
         type: 3}
       propertyPath: m_Name
@@ -551,6 +553,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2602957484348800521, guid: 16266ae2c040142b1a996878d94ec3fb,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorActionSize.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2602957484348800521, guid: 16266ae2c040142b1a996878d94ec3fb,
+        type: 3}
+      propertyPath: m_BrainParameters.m_ActionSpec.m_NumContinuousActions
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2602957484348800521, guid: 16266ae2c040142b1a996878d94ec3fb,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorActionSpaceType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2602957484348800521, guid: 16266ae2c040142b1a996878d94ec3fb,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorActionSize.Array.data[0]
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 9204493211719777360, guid: 16266ae2c040142b1a996878d94ec3fb, type: 3}

@@ -49,7 +49,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         )
 
         self.optimizer = torch.optim.Adam(
-            params, lr=self.trainer_settings.hyperparameters.learning_rate
+            params, lr=self.trainer_settings.hyperparameters.learning_rate, weight_decay=1E-6
         )
         self.stats_name_to_update_name = {
             "Losses/Value Loss": "value_loss",
@@ -196,12 +196,12 @@ class TorchPPOOptimizer(TorchOptimizer):
             update_stats["Policy/" + name + '_mean'] = torch.mean(params).item()
             update_stats["Policy/" + name + '_std'] = torch.std(params).item()
             update_stats["Policy/" + name + '_grad_mag'] = torch.norm(params.grad).item()
-            #update_stats["Policy/" + name + '_grad_mean'] = torch.mean(params.grad).item()
-            #update_stats["Policy/" + name + '_grad_std'] = torch.std(params.grad).item()
+            update_stats["Policy/" + name + '_grad_mean'] = torch.mean(params.grad).item()
+            update_stats["Policy/" + name + '_grad_std'] = torch.std(params.grad).item()
         for name, params in list(self.policy.actor_critic.network_body.linear_encoder.named_parameters()):
             update_stats["Policy/" + name + '_grad_mag'] = torch.norm(params.grad).item()
-            #update_stats["Policy/" + name + '_grad_mean'] = torch.mean(params.grad).item()
-            #update_stats["Policy/" + name + '_grad_std'] = torch.std(params.grad).item()
+            update_stats["Policy/" + name + '_grad_mean'] = torch.mean(params.grad).item()
+            update_stats["Policy/" + name + '_grad_std'] = torch.std(params.grad).item()
 
 
         for reward_provider in self.reward_signals.values():

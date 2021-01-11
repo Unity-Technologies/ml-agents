@@ -158,10 +158,10 @@ class LinearEncoder(torch.nn.Module):
                     kernel_gain=1.0,
                 )
             )
+            self.layers.append(Swish())
             if layer_norm:
                 self.layers.append(torch.nn.LayerNorm(hidden_size, elementwise_affine=True))
 
-            self.layers.append(Swish())
         self.seq_layers = torch.nn.Sequential(*self.layers)
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:

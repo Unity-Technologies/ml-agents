@@ -14,7 +14,7 @@ from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
-from mlagents.trainers.torch.attention import SimpleTransformer, SmallestAttention
+from mlagents.trainers.torch.attention import SimpleTransformer
 
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
@@ -36,6 +36,7 @@ class NetworkBody(nn.Module):
         self.normalize = network_settings.normalize
         self.use_lstm = network_settings.memory is not None
         self.h_size = network_settings.hidden_units
+        self.n_embd = 128
         self.m_size = (
             network_settings.memory.memory_size
             if network_settings.memory is not None
@@ -68,16 +69,15 @@ class NetworkBody(nn.Module):
             self.transformer = SimpleTransformer(
                  x_self_len,
                  entities_sizes,
-                 self.h_size,
-                 self.h_size,
+                 self.n_embd,
                  )
             #self.transformer = SmallestAttention(x_self_len, entities_sizes, self.h_size, self.h_size)
             # self.transformer = SmallestAttention(64, [64], self.h_size, self.h_size)
             # self.use_fc = True
 
-            total_enc_size = self.h_size #+ sum(self.embedding_sizes)
+            total_enc_size = self.n_embd + sum(self.embedding_sizes)
             # total_enc_size = 128#self.h_size + sum(self.embedding_sizes)
-            n_layers = 1
+            n_layers = 2
             if self.use_fc:
                 self.transformer = None
                 total_enc_size = 80  + sum(self.embedding_sizes)
@@ -94,7 +94,7 @@ class NetworkBody(nn.Module):
             tens.retain_grad()
         total_enc_size += encoded_act_size
         self.linear_encoder = LinearEncoder(
-            total_enc_size, n_layers, self.h_size
+            total_enc_size, n_layers, self.h_size, layer_norm=False
         )
         for _,tens in list(self.linear_encoder.named_parameters()):
             tens.retain_grad()

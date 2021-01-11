@@ -138,8 +138,10 @@ public class DodgeAgent : Agent
         Vector3 dirToGo = new Vector3(1,0,0) * forwardForce + new Vector3(0,0,1)*lateralForce;
         m_AgentRb.AddForce(dirToGo * m_BulletSettings.agentRunSpeed,
             ForceMode.VelocityChange);
-
+        //Vector3 dirToCenter = new Vector3((transform.position.x - area.transform.position.x) / 10f, 0f, (transform.position.z - area.transform.position.z) / 10f);
+        //AddReward(.001f / (dirToCenter.magnitude + .0000001f));
         AddReward(.001f);
+
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
