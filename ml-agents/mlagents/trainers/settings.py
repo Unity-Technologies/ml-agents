@@ -134,6 +134,7 @@ class HyperparamSettings:
     buffer_size: int = 10240
     learning_rate: float = 3.0e-4
     learning_rate_schedule: ScheduleType = ScheduleType.CONSTANT
+    weight_decay: float = 0.0
 
 
 @attr.s(auto_attribs=True)
