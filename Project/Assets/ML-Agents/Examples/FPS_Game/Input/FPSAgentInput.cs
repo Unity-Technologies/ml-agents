@@ -20,7 +20,7 @@ public class FPSAgentInput : MonoBehaviour
     public bool dashInput;
     public float rotateInput;
     public bool shieldInput;
-
+    public Vector2 rotateVector2;
     public Camera Cam;
     // Start is called before the first frame update
     void Awake()
@@ -82,7 +82,9 @@ public class FPSAgentInput : MonoBehaviour
         shieldInput = actionMap.Shield.ReadValue<float>() > 0;
         //        rotateInput = actionMap.RotateBody.ReadValue<Vector2>();
         //        rotateInput = actionMap.Rotate.ReadValue<float>() * .1f;
-        rotateInput = actionMap.Rotate.ReadValue<float>();
+        // rotateInput = actionMap.Rotate.ReadValue<float>();
+        rotateVector2 = actionMap.Rotate.ReadValue<Vector2>();
+        rotateInput = rotateVector2.x;
         //        rotateInput = actionMap.RotateBody.ReadValue<Vector2>();
         //        jumpInput = actionMap.Jump.ReadValue<float>() > 0;
         //        jumpInput = actionMap.Jump.triggered;

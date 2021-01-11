@@ -46,10 +46,18 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Rotate",
+                    "name": "RotateOld",
                     "type": "Value",
                     "id": "b309ca48-95aa-4032-bd7d-46dcaeb138d0",
                     "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Rotate",
+                    "type": "Value",
+                    "id": "7172bb7c-a5ae-46b9-af48-2f521eb69773",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": ""
                 }
@@ -222,12 +230,23 @@
                 },
                 {
                     "name": "",
-                    "id": "ac165f0a-fa27-4311-b148-2689537b942b",
-                    "path": "<Mouse>/delta/x",
+                    "id": "3eaa9db8-9821-49ea-b640-0434a871fb19",
+                    "path": "<Mouse>/rightButton",
                     "interactions": "",
-                    "processors": "Clamp(min=-1,max=1)",
+                    "processors": "",
                     "groups": "",
-                    "action": "Rotate",
+                    "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ac165f0a-fa27-4311-b148-2689537b942b",
+                    "path": "<Pointer>/delta/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RotateOld",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -238,7 +257,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Rotate",
+                    "action": "RotateOld",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -249,7 +268,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Rotate",
+                    "action": "RotateOld",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -260,9 +279,86 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
+                    "action": "RotateOld",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "4e9015a8-9ef1-4f5b-8776-ed1f246ce741",
+                    "path": "<Pointer>/delta",
+                    "interactions": "",
+                    "processors": "ScaleVector2(x=2,y=2)",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "2D Vector",
+                    "id": "d57815af-cec9-4306-87c4-568f60807b45",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "b6d18645-6807-4991-b13d-6e1addc4e093",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "Rotate",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "be675877-3d2f-4642-9224-2c1fe51b714f",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "277acb78-4db0-4c29-aa86-7777017df8d6",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "f92a1f57-10ef-4a5e-adcf-d8fdfa581ed6",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "bf1e5311-a90f-41fa-a9ed-c1359df17f24",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },

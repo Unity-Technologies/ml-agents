@@ -51,6 +51,8 @@ namespace MLAgents
         //body rotation speed
         public bool invertRotationIfWalkingBackwards = true;
         public float agentRotationSpeed = 35f;
+        private Vector2 m_Rotation;
+
 
         [Header("JUMPING")] public bool canJump = true;
         //upward jump velocity magnitude
@@ -197,16 +199,40 @@ namespace MLAgents
 
         public void RotateBody(float rotateAxis, float forwardAxis)
         {
-            var walkingBackwardsCoeff = 1;
-            if (invertRotationIfWalkingBackwards && forwardAxis < 0)
-            {
-                walkingBackwardsCoeff = -1;
-            }
-            var amount = Quaternion.Euler(0, rotateAxis * agentRotationSpeed * walkingBackwardsCoeff * Time.fixedDeltaTime, 0);
-            rb.MoveRotation(rb.rotation * amount);
+            // var walkingBackwardsCoeff = 1;
+            // if (invertRotationIfWalkingBackwards && forwardAxis < 0)
+            // {
+            //     walkingBackwardsCoeff = -1;
+            // }
+            // var scaledRotateSpeed = agentRotationSpeed * Time.fixedDeltaTime;
+            // var amount = Quaternion.Euler(0, rotateAxis * walkingBackwardsCoeff , 0);
+
+            // var amount = Quaternion.Euler(0, rotateAxis * agentRotationSpeed * walkingBackwardsCoeff * Time.fixedDeltaTime, 0);
+            var amount = Quaternion.Euler(0, rotateAxis * agentRotationSpeed * Time.fixedDeltaTime, 0);
+            rb.rotation *= amount;
+            // rb.MoveRotation(rb.rotation * amount);
         }
 
+        // private void Look(Vector2 rotate)
+        // {
+        //     if (rotate.sqrMagnitude < 0.01)
+        //         return;
+        //     var scaledRotateSpeed = agentRotationSpeed * Time.deltaTime;
+        //     m_Rotation.y += rotate.x * scaledRotateSpeed;
+        //     m_Rotation.x = Mathf.Clamp(m_Rotation.x - rotate.y * scaledRotateSpeed, -89, 89);
+        //     transform.localEulerAngles = m_Rotation;
+        // }
 
+        public void Look(float rotate)
+        {
+            if (Mathf.Abs(rotate) < 0.01)
+                return;
+            // var scaledRotateSpeed = agentRotationSpeed * Time.deltaTime;
+            var scaledRotateSpeed = agentRotationSpeed * Time.fixedDeltaTime;
+            m_Rotation.y += rotate * scaledRotateSpeed;
+            // m_Rotation.x = Mathf.Clamp(m_Rotation.x - rotate.y * scaledRotateSpeed, -89, 89);
+            transform.localEulerAngles = m_Rotation;
+        }
 
         public bool applyStandingForce = false;
         public float standingForce = 10;
@@ -450,6 +476,8 @@ namespace MLAgents
             velToUse.y = agentJumpVelocity;
             rb.velocity = velToUse;
         }
+
+
 
         public void RotateBody(Rigidbody rb, Vector3 rotationAxis)
         {

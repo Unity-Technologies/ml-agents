@@ -59,10 +59,18 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Rotate"",
+                    ""name"": ""RotateOld"",
                     ""type"": ""Value"",
                     ""id"": ""b309ca48-95aa-4032-bd7d-46dcaeb138d0"",
                     ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Rotate"",
+                    ""type"": ""Value"",
+                    ""id"": ""7172bb7c-a5ae-46b9-af48-2f521eb69773"",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
                 }
@@ -235,12 +243,23 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""ac165f0a-fa27-4311-b148-2689537b942b"",
-                    ""path"": ""<Mouse>/delta/x"",
+                    ""id"": ""3eaa9db8-9821-49ea-b640-0434a871fb19"",
+                    ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
-                    ""processors"": ""Clamp(min=-1,max=1)"",
+                    ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Rotate"",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ac165f0a-fa27-4311-b148-2689537b942b"",
+                    ""path"": ""<Pointer>/delta/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RotateOld"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -251,7 +270,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Rotate"",
+                    ""action"": ""RotateOld"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -262,7 +281,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Rotate"",
+                    ""action"": ""RotateOld"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -273,9 +292,86 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
+                    ""action"": ""RotateOld"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4e9015a8-9ef1-4f5b-8776-ed1f246ce741"",
+                    ""path"": ""<Pointer>/delta"",
+                    ""interactions"": """",
+                    ""processors"": ""ScaleVector2(x=2,y=2)"",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""d57815af-cec9-4306-87c4-568f60807b45"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""b6d18645-6807-4991-b13d-6e1addc4e093"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
                     ""action"": ""Rotate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""be675877-3d2f-4642-9224-2c1fe51b714f"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""277acb78-4db0-4c29-aa86-7777017df8d6"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""f92a1f57-10ef-4a5e-adcf-d8fdfa581ed6"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bf1e5311-a90f-41fa-a9ed-c1359df17f24"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -357,6 +453,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
         m_Player_Shoot = m_Player.FindAction("Shoot", throwIfNotFound: true);
         m_Player_Shield = m_Player.FindAction("Shield", throwIfNotFound: true);
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
+        m_Player_RotateOld = m_Player.FindAction("RotateOld", throwIfNotFound: true);
         m_Player_Rotate = m_Player.FindAction("Rotate", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
@@ -416,6 +513,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Shoot;
     private readonly InputAction m_Player_Shield;
     private readonly InputAction m_Player_Dash;
+    private readonly InputAction m_Player_RotateOld;
     private readonly InputAction m_Player_Rotate;
     public struct PlayerActions
     {
@@ -426,6 +524,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
         public InputAction @Shoot => m_Wrapper.m_Player_Shoot;
         public InputAction @Shield => m_Wrapper.m_Player_Shield;
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
+        public InputAction @RotateOld => m_Wrapper.m_Player_RotateOld;
         public InputAction @Rotate => m_Wrapper.m_Player_Rotate;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
@@ -451,6 +550,9 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                 @Dash.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
                 @Dash.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
                 @Dash.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
+                @RotateOld.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateOld;
+                @RotateOld.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateOld;
+                @RotateOld.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateOld;
                 @Rotate.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotate;
                 @Rotate.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotate;
                 @Rotate.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotate;
@@ -473,6 +575,9 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
                 @Dash.started += instance.OnDash;
                 @Dash.performed += instance.OnDash;
                 @Dash.canceled += instance.OnDash;
+                @RotateOld.started += instance.OnRotateOld;
+                @RotateOld.performed += instance.OnRotateOld;
+                @RotateOld.canceled += instance.OnRotateOld;
                 @Rotate.started += instance.OnRotate;
                 @Rotate.performed += instance.OnRotate;
                 @Rotate.canceled += instance.OnRotate;
@@ -528,6 +633,7 @@ public class @FPSPlayerInputActions : IInputActionCollection, IDisposable
         void OnShoot(InputAction.CallbackContext context);
         void OnShield(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
+        void OnRotateOld(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
     }
     public interface IUIActions
