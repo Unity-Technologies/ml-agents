@@ -14,7 +14,7 @@ from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
-from mlagents.trainers.torch.attention import SmallestAttention, SimpleTransformer
+from mlagents.trainers.torch.attention import SmallestAttention, EntityEmbeddings
 
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
@@ -192,7 +192,7 @@ class MultiInputNetworkBody(nn.Module):
         concat_entites = torch.stack(concat_encoded_obs, dim=1)
 
         encoded_state = self.transformer(
-            x_self, [concat_entites], SimpleTransformer.get_masks([concat_entites])
+            x_self, [concat_entites], EntityEmbeddings.get_masks([concat_entites])
         )
 
         if len(concat_encoded_obs) == 0:

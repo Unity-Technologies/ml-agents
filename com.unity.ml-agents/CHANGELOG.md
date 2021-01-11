@@ -15,11 +15,15 @@ and this project adheres to
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- `StatAggregationMethod.Sum` can now be passed to `StatsRecorder.Add()`. This
+will result in the values being summed (instead of averaged) when written to
+TensorBoard. Thanks to @brccabral for the contribution! (#4816)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
+- Fix a compile warning about using an obsolete enum in `GrpcExtensions.cs`. (#4812)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 

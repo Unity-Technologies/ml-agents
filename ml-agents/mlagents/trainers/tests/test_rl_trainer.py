@@ -9,6 +9,7 @@ from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.tests.dummy_config import create_sensor_specs_with_shapes
 from mlagents_envs.base_env import ActionSpec
+import os.path
 
 
 # Add concrete implementations of abstract methods
@@ -34,9 +35,6 @@ class FakeTrainer(RLTrainer):
         mock_model_saver.model_path = self.artifact_path
         mock_model_saver.save_checkpoint.side_effect = checkpoint_path
         self.model_saver = mock_model_saver
-
-    def create_tf_policy(self, parsed_behavior_id, behavior_spec):
-        return mock.Mock()
 
     def create_torch_policy(self, parsed_behavior_id, behavior_spec):
         return mock.Mock()
@@ -171,7 +169,7 @@ def test_summary_checkpoint(mock_add_checkpoint, mock_write_summary):
             trainer.brain_name,
             ModelCheckpoint(
                 step,
-                f"{trainer.model_saver.model_path}/{trainer.brain_name}-{step}.{export_ext}",
+                f"{trainer.model_saver.model_path}{os.path.sep}{trainer.brain_name}-{step}.{export_ext}",
                 None,
                 mock.ANY,
             ),

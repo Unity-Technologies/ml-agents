@@ -69,7 +69,6 @@ def deep_update_dict(d: Dict, update_d: Mapping) -> None:
 
 
 class SerializationSettings:
-    convert_to_barracuda = True
     convert_to_onnx = True
     onnx_opset = 9
 

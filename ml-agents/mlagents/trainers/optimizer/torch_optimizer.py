@@ -13,7 +13,7 @@ from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.torch.utils import ModelUtils
 
 
-class TorchOptimizer(Optimizer):  # pylint: disable=W0223
+class TorchOptimizer(Optimizer):
     def __init__(self, policy: TorchPolicy, trainer_settings: TrainerSettings):
         super().__init__()
         self.policy = policy

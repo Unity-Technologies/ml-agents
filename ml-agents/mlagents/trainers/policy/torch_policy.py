@@ -99,7 +99,8 @@ class TorchPolicy(Policy):
     def _extract_masks(self, decision_requests: DecisionSteps) -> np.ndarray:
         mask = None
         if self.behavior_spec.action_spec.discrete_size > 0:
-            mask = torch.ones([len(decision_requests), np.sum(self.act_size)])
+            num_discrete_flat = np.sum(self.behavior_spec.action_spec.discrete_branches)
+            mask = torch.ones([len(decision_requests), num_discrete_flat])
             if decision_requests.action_mask is not None:
                 mask = torch.as_tensor(
                     1 - np.concatenate(decision_requests.action_mask, axis=1)
@@ -112,7 +113,8 @@ class TorchPolicy(Policy):
         :param buffer: The buffer with the observations to add to the running estimate
         of the distribution.
         """
-        if self.use_vec_obs and self.normalize:
+
+        if self.normalize:
             self.actor_critic.update_normalization(buffer)
 
     @timed
@@ -203,9 +205,7 @@ class TorchPolicy(Policy):
             for agent_id in decision_requests.agent_id
         ]  # For 1-D array, the iterator order is correct.
 
-        run_out = self.evaluate(
-            decision_requests, global_agent_ids
-        )  # pylint: disable=assignment-from-no-return
+        run_out = self.evaluate(decision_requests, global_agent_ids)
         self.save_memories(global_agent_ids, run_out.get("memory_out"))
         self.check_nan_action(run_out.get("action"))
         return ActionInfo(
@@ -215,14 +215,6 @@ class TorchPolicy(Policy):
             outputs=run_out,
             agent_ids=list(decision_requests.agent_id),
         )
-
-    @property
-    def use_vis_obs(self):
-        return self.vis_obs_size > 0
-
-    @property
-    def use_vec_obs(self):
-        return self.vec_obs_size > 0
 
     def get_current_step(self):
         """
