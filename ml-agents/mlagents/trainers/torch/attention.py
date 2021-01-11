@@ -97,7 +97,7 @@ class EntityEmbeddings(torch.nn.Module):
         self.ent_encoders = torch.nn.ModuleList(
             [
                 LinearEncoder(self.self_size + ent_size, 2, embedding_size)
-                for ent_size in self.entities_sizes
+                for ent_size in self.entity_sizes
             ]
         )
 
@@ -107,7 +107,7 @@ class EntityEmbeddings(torch.nn.Module):
         if self.concat_self:
             # Concatenate all observations with self
             self_and_ent: List[torch.Tensor] = []
-            for num_entities, ent in zip(self.entities_num_max_elements, entities):
+            for num_entities, ent in zip(self.entity_num_max_elements, entities):
                 expanded_self = x_self.reshape(-1, 1, self.self_size)
                 expanded_self = torch.cat([expanded_self] * num_entities, dim=1)
                 self_and_ent.append(torch.cat([expanded_self, ent], dim=2))
