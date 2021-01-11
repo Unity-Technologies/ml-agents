@@ -1,6 +1,8 @@
 from mlagents.torch_utils import torch
 from typing import Tuple, Optional, List
 from mlagents.trainers.torch.layers import LinearEncoder, Initialization, linear_layer
+from mlagents.trainers.torch.model_serialization import exporting_to_onnx
+from mlagents.trainers.exception import UnityTrainerException
 
 
 class MultiHeadAttention(torch.nn.Module):
@@ -112,6 +114,11 @@ class EntityEmbeddings(torch.nn.Module):
             self_and_ent: List[torch.Tensor] = []
             for num_entities, ent in zip(self.entity_num_max_elements, entities):
                 if num_entities < 0:
+                    if exporting_to_onnx.is_exporting():
+                        raise UnityTrainerException(
+                            "Trying to export an attention mechanism that doesn't have a set max \
+                            number of elements."
+                        )
                     num_entities = ent.shape[1]
                 expanded_self = x_self.reshape(-1, 1, self.self_size)
                 expanded_self = torch.cat([expanded_self] * num_entities, dim=1)
@@ -200,7 +207,15 @@ class ResidualSelfAttention(torch.nn.Module):
         value = self.fc_v(inp)  # (b, n_k, emb)
 
         # Only use max num if provided
-        num_ent = self.max_num_ent if self.max_num_ent is not None else inp.shape[1]
+        if self.max_num_ent is not None:
+            num_ent = self.max_num_ent
+        else:
+            num_ent = inp.shape[1]
+            if exporting_to_onnx.is_exporting():
+                raise UnityTrainerException(
+                    "Trying to export an attention mechanism that doesn't have a set max \
+                    number of elements."
+                )
 
         output, _ = self.attention(query, key, value, num_ent, num_ent, mask)
         # Residual
