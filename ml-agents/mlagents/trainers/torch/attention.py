@@ -115,9 +115,16 @@ class EntityEmbeddings(torch.nn.Module):
         # If not concatenating self, input to encoder is just entity size
         if not concat_self:
             self.self_size = 0
+        # Initialization scheme from http://www.cs.toronto.edu/~mvolkovs/ICML2020_tfixup.pdf
         self.ent_encoders = torch.nn.ModuleList(
             [
-                LinearEncoder(self.self_size + ent_size, 1, embedding_size)
+                LinearEncoder(
+                    self.self_size + ent_size,
+                    1,
+                    embedding_size,
+                    kernel_init=Initialization.Normal,
+                    kernel_gain=(0.125 / embedding_size) ** 0.5,
+                )
                 for ent_size in self.entity_sizes
             ]
         )
@@ -199,6 +206,7 @@ class ResidualSelfAttention(torch.nn.Module):
             num_heads=num_heads, embedding_size=embedding_size
         )
 
+        # Initialization scheme from http://www.cs.toronto.edu/~mvolkovs/ICML2020_tfixup.pdf
         self.fc_q = linear_layer(
             embedding_size,
             embedding_size,
