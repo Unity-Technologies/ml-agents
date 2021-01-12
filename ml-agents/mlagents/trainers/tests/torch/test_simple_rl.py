@@ -212,7 +212,7 @@ def test_recurrent_sac(action_sizes):
         SAC_TORCH_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=2000,
+        max_steps=3000,
     )
     check_environment_trains(env, {BRAIN_NAME: config})
 
