@@ -115,19 +115,40 @@ class MemoryModule(torch.nn.Module):
         pass
 
 
+class LayerNorm(torch.nn.Module):
+    """
+    A vanilla implementation of layer normalization  https://arxiv.org/pdf/1607.06450.pdf
+    norm_x = (x - mean) / sqrt((x - mean) ^ 2)
+    This does not include the trainable parameters gamma and beta for performance speed.
+    Typically, this is norm_x * gamma + beta
+    """
+
+    def forward(self, layer_activations: torch.Tensor) -> torch.Tensor:
+        mean = torch.mean(layer_activations, dim=-1, keepdim=True)
+        var = torch.mean((layer_activations - mean) ** 2, dim=-1, keepdim=True)
+        return (layer_activations - mean) / (torch.sqrt(var + 1e-5))
+
+
 class LinearEncoder(torch.nn.Module):
     """
     Linear layers.
     """
 
-    def __init__(self, input_size: int, num_layers: int, hidden_size: int):
+    def __init__(
+        self,
+        input_size: int,
+        num_layers: int,
+        hidden_size: int,
+        kernel_init: Initialization = Initialization.KaimingHeNormal,
+        kernel_gain: float = 1.0,
+    ):
         super().__init__()
         self.layers = [
             linear_layer(
                 input_size,
                 hidden_size,
-                kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=1.0,
+                kernel_init=kernel_init,
+                kernel_gain=kernel_gain,
             )
         ]
         self.layers.append(Swish())
@@ -136,8 +157,8 @@ class LinearEncoder(torch.nn.Module):
                 linear_layer(
                     hidden_size,
                     hidden_size,
-                    kernel_init=Initialization.KaimingHeNormal,
-                    kernel_gain=1.0,
+                    kernel_init=kernel_init,
+                    kernel_gain=kernel_gain,
                 )
             )
             self.layers.append(Swish())
