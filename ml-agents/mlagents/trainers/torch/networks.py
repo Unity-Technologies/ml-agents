@@ -94,7 +94,7 @@ class NetworkBody(nn.Module):
             tens.retain_grad()
         total_enc_size += encoded_act_size
         self.linear_encoder = LinearEncoder(
-            total_enc_size, n_layers, self.h_size, layer_norm=False
+            total_enc_size, n_layers, self.h_size
         )
         for _,tens in list(self.linear_encoder.named_parameters()):
             tens.retain_grad()

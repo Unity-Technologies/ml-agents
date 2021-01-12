@@ -136,32 +136,27 @@ class LinearEncoder(torch.nn.Module):
     Linear layers.
     """
 
-    def __init__(self, input_size: int, num_layers: int, hidden_size: int, layer_norm=False):
+    def __init__(self, input_size: int, num_layers: int, hidden_size: int, kernel_init=Initialization.KaimingHeNormal, kernel_gain=1.0):
         super().__init__()
         self.layers = [
             linear_layer(
                 input_size,
                 hidden_size,
-                kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=1.0,
+                kernel_init=kernel_init,
+                kernel_gain=kernel_gain,
             )
         ]
         self.layers.append(Swish())
-        if layer_norm:
-            self.layers.append(torch.nn.LayerNorm(hidden_size, elementwise_affine=True))
         for _ in range(num_layers - 1):
             self.layers.append(
                 linear_layer(
                     hidden_size,
                     hidden_size,
-                    kernel_init=Initialization.KaimingHeNormal,
-                    kernel_gain=1.0,
+                    kernel_init=kernel_init,
+                    kernel_gain=kernel_gain,
                 )
             )
             self.layers.append(Swish())
-            if layer_norm:
-                self.layers.append(torch.nn.LayerNorm(hidden_size, elementwise_affine=True))
-
         self.seq_layers = torch.nn.Sequential(*self.layers)
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:

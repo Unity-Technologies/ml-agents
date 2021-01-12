@@ -149,8 +149,9 @@ class SimpleTransformer(torch.nn.Module):
                 # LinearEncoder(self.self_size + ent_size, 2, embedding_size)
                 # from http://www.cs.toronto.edu/~mvolkovs/ICML2020_tfixup.pdf
                 # linear_layer(self.self_size + ent_size, embedding_size, Initialization.Normal, kernel_gain=(.125 / (self.self_size + ent_size)) ** 0.5)
-                 linear_layer(ent_size, embedding_size, Initialization.Normal, kernel_gain=(.125 / (self.self_size + ent_size)) ** 0.5)
-        #         LinearEncoder(self.self_size + ent_size, 1, embedding_size, layer_norm=False)
+                 #linear_layer(ent_size, embedding_size, Initialization.Normal, kernel_gain=(.125 / (self.self_size + ent_size)) ** 0.5)
+                 LinearEncoder(ent_size, 1, embedding_size, kernel_init=Initialization.Normal, kernel_gain=(.125 / embedding_size) ** 0.5)
+                 #LinearEncoder(self.self_size + ent_size, 1, embedding_size, layer_norm=False)
                 for ent_size in self.entities_sizes
             ]
         )
