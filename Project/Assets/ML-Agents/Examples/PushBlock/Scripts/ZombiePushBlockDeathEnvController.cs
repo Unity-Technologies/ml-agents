@@ -15,6 +15,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         public Quaternion StartingRot;
         [HideInInspector]
         public Rigidbody Rb;
+        [HideInInspector]
         public Collider Col;
     }
 
@@ -28,6 +29,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         public Quaternion StartingRot;
         [HideInInspector]
         public Rigidbody Rb;
+        [HideInInspector]
         public Collider Col;
     }
 
@@ -128,7 +130,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     //Kill/disable an agent
     public void KillAgent(Collision col, Transform t)
     {
-        print($"killed by {col.collider.name} by {t.name}");
+        print($"zombie {t.name} ate {col.collider.name}");
         //End Episode
         foreach (var item in AgentsList)
         {
