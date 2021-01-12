@@ -47,7 +47,7 @@ namespace Unity.MLAgentsExamples
         public TriggerEvent onTriggerExitEvent = new TriggerEvent();
 
         [System.Serializable]
-        public class CollisionEvent : UnityEvent<Collision>
+        public class CollisionEvent : UnityEvent<Collision, Transform>
         {
         }
 
@@ -92,7 +92,7 @@ namespace Unity.MLAgentsExamples
         {
             if (col.transform.CompareTag(tagToDetect))
             {
-                onCollisionEnterEvent.Invoke(col);
+                onCollisionEnterEvent.Invoke(col, transform);
                 //                if (respawnIfTouched)
                 //                {
                 //                    MoveTargetToRandomPosition();
@@ -104,7 +104,7 @@ namespace Unity.MLAgentsExamples
         {
             if (col.transform.CompareTag(tagToDetect))
             {
-                onCollisionStayEvent.Invoke(col);
+                onCollisionStayEvent.Invoke(col, transform);
             }
         }
 
@@ -112,7 +112,7 @@ namespace Unity.MLAgentsExamples
         {
             if (col.transform.CompareTag(tagToDetect))
             {
-                onCollisionExitEvent.Invoke(col);
+                onCollisionExitEvent.Invoke(col, transform);
             }
         }
 
