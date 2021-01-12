@@ -3,7 +3,7 @@
 If you are not familiar with the [Unity Engine](https://unity3d.com/unity), we
 highly recommend the [Unity Manual](https://docs.unity3d.com/Manual/index.html)
 and [Tutorials page](https://unity3d.com/learn/tutorials). The
-[Roll-a-ball tutorial](https://unity3d.com/learn/tutorials/s/roll-ball-tutorial)
+[Roll-a-ball tutorial](https://learn.unity.com/project/roll-a-ball)
 is a fantastic resource to learn all the basic concepts of Unity to get started
 with the ML-Agents Toolkit:
 
