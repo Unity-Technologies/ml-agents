@@ -29,7 +29,7 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// The number of continuous actions that an Agent can take.
         /// </summary>
-        public int NumContinuousActions { get { return BranchSizes == null ? 0 : BranchSizes.Length; } }
+        public int NumContinuousActions { get { return m_NumContinuousActions; } set { m_NumContinuousActions = value; } }
 
         /// <summary>
         /// The number of branches for discrete actions that an Agent can take.
