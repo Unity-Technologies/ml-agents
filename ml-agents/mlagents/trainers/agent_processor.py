@@ -94,7 +94,6 @@ class AgentProcessor:
                 self.last_take_action_outputs[global_id] = take_action_outputs
 
         # Iterate over all the terminal steps
-        # print("processing terminal_step")
         for terminal_step in terminal_steps.values():
             local_id = terminal_step.agent_id
             global_id = get_global_agent_id(worker_id, local_id)
@@ -106,7 +105,6 @@ class AgentProcessor:
             global_id = get_global_agent_id(worker_id, local_id)
             self._assemble_trajectory(terminal_step, global_id)
         self.current_group_obs.clear()
-        # print("clear terminal_step")
 
         # Clean the last experience dictionary for terminal steps
         for terminal_step in terminal_steps.values():
@@ -115,7 +113,6 @@ class AgentProcessor:
             self._safe_delete(self.last_experience, global_id)
 
         # Iterate over all the decision steps
-        # print("processing decision_steps")
         for ongoing_step in decision_steps.values():
             local_id = ongoing_step.agent_id
             global_id = get_global_agent_id(worker_id, local_id)
@@ -127,7 +124,6 @@ class AgentProcessor:
             global_id = get_global_agent_id(worker_id, local_id)
             self._assemble_trajectory(ongoing_step, global_id)
         self.current_group_obs.clear()
-        # print("clear decision_steps")
 
         for _gid in action_global_agent_ids:
             # If the ID doesn't have a last step result, the agent just reset,

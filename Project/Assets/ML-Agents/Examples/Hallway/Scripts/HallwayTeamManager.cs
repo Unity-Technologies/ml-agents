@@ -13,7 +13,6 @@ public class HallwayTeamManager : BaseTeamManager
     public override void RegisterAgent(Agent agent)
     {
         m_AgentList.Add(agent);
-        Debug.Log($"Total # of agents registered for team manager {GetId()}: {m_AgentList.Count}");
     }
 
     public override void OnAgentDone(Agent agent, Agent.DoneReason doneReason, List<ISensor> sensors)
