@@ -1,7 +1,3 @@
-# pylint: skip-file
-# flake8: noqa
-
-# TODO re-enable flake8 and pylint
 import sys
 from typing import Optional
 import uuid
@@ -34,7 +30,7 @@ class TrainingAnalyticsSideChannel(SideChannel):
     def on_message_received(self, msg: IncomingMessage) -> None:
         raise UnityCommunicationException(
             "The TrainingAnalyticsSideChannel received a message from Unity, "
-            + "this should not have happend."
+            + "this should not have happened."
         )
 
     def environment_initialized(self, run_options: RunOptions) -> None:
@@ -62,13 +58,16 @@ class TrainingAnalyticsSideChannel(SideChannel):
 
     def training_started(self, behavior_name: str, config: TrainerSettings) -> None:
         msg = TrainingBehaviorInitialized(
+            behavior_name=behavior_name,
             trainer_type=config.trainer_type.value,
-            extrinsic_reward_enabled=RewardSignalType.EXTRINSIC
-            in config.reward_signals,
-            gail_reward_enabled=RewardSignalType.GAIL in config.reward_signals,
-            curiosity_reward_enabled=RewardSignalType.CURIOSITY
-            in config.reward_signals,
-            rnd_reward_enabled=RewardSignalType.RND in config.reward_signals,
+            extrinsic_reward_enabled=(
+                RewardSignalType.EXTRINSIC in config.reward_signals
+            ),
+            gail_reward_enabled=(RewardSignalType.GAIL in config.reward_signals),
+            curiosity_reward_enabled=(
+                RewardSignalType.CURIOSITY in config.reward_signals
+            ),
+            rnd_reward_enabled=(RewardSignalType.RND in config.reward_signals),
             behavioral_cloning_enabled=config.behavioral_cloning is not None,
             recurrent_enabled=config.network_settings.memory is not None,
             visual_encoder=config.network_settings.vis_encode_type.value,
@@ -76,7 +75,7 @@ class TrainingAnalyticsSideChannel(SideChannel):
             num_network_hidden_units=config.network_settings.hidden_units,
             trainer_threaded=config.threaded,
             self_play_enabled=config.self_play is not None,
-            uses_curriculum=self._behavior_uses_curriculum(behavior_name),
+            curriculum_enabled=self._behavior_uses_curriculum(behavior_name),
         )
 
         any_message = Any()
@@ -91,10 +90,7 @@ class TrainingAnalyticsSideChannel(SideChannel):
         if not self.run_options or not self.run_options.environment_parameters:
             return False
 
-        for (
-            param_name,
-            param_settings,
-        ) in self.run_options.environment_parameters.items():
+        for param_settings in self.run_options.environment_parameters.values():
             for lesson in param_settings.curriculum:
                 cc = lesson.completion_criteria
                 if cc and cc.behavior == behavior_name:

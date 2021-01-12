@@ -21,6 +21,5 @@ message UnityRLCapabilitiesProto {
     bool hybridActions = 4;
 
     // support for training analytics
-    // TODO don't need this if we don't use a side channel
     bool trainingAnalytics = 5;
 }

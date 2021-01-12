@@ -26,29 +26,18 @@ namespace Unity.MLAgents.SideChannels
             if (anyMessage.Is(TrainingEnvironmentInitialized.Descriptor))
             {
                 var envInitProto = anyMessage.Unpack<TrainingEnvironmentInitialized>();
-
-                Debug.Log($"envInitProto init: {envInitProto}");
-
-                var envInitEvent = new TrainingEnvironmentInitializedEvent
-                {
-
-                };
+                var envInitEvent = envInitProto.ToTrainingEnvironmentInitializedEvent();
                 TrainingAnalytics.TrainingEnvironmentInitialized(envInitEvent);
             }
             else if (anyMessage.Is(TrainingBehaviorInitialized.Descriptor))
             {
                 var behaviorInitProto = anyMessage.Unpack<TrainingBehaviorInitialized>();
-                Debug.Log($"behaviorInitProto ({behaviorInitProto.BehaviorName}): {behaviorInitProto}");
-
-                var behaviorTrainingEvent = new TrainingBehaviorInitializedEvent
-                {
-                    BehaviorName = behaviorInitProto.BehaviorName,
-                };
+                var behaviorTrainingEvent = behaviorInitProto.ToTrainingBehaviorInitializedEvent();
                 TrainingAnalytics.TrainingBehaviorInitialized(behaviorTrainingEvent);
             }
             else
             {
-
+                // TODO WARN?
             }
         }
     }

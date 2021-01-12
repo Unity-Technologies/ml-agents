@@ -120,6 +120,7 @@ class UnityEnvironment(BaseEnv):
         capabilities.concatenatedPngObservations = True
         capabilities.compressedChannelMapping = True
         capabilities.hybridActions = True
+        capabilities.trainingAnalytics = True
         return capabilities
 
     @staticmethod

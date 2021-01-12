@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Inference;
-using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 using UnityEngine.Analytics;
@@ -134,8 +131,8 @@ namespace Unity.MLAgents.Analytics
             if (!EnableAnalytics())
                 return;
 
-            // TODO extract base behavior name (no team ID)
-            var behaviorName = fullyQualifiedBehaviorName;
+            // Extract base behavior name (no team ID)
+            var behaviorName = ParseBehaviorName(fullyQualifiedBehaviorName);
             var added = s_SentRemotePolicyInitialized.Add(fullyQualifiedBehaviorName);
 
             if (!added)
@@ -154,6 +151,18 @@ namespace Unity.MLAgents.Analytics
 #else
             return;
 #endif
+        }
+
+        internal static string ParseBehaviorName(string fullyQualifiedBehaviorName)
+        {
+            var lastQuestionIndex = fullyQualifiedBehaviorName.LastIndexOf("?");
+            if (lastQuestionIndex < 0)
+            {
+                // Nothing to remove
+                return fullyQualifiedBehaviorName;
+            }
+
+            return fullyQualifiedBehaviorName.Substring(0, lastQuestionIndex);
         }
 
         public static void TrainingBehaviorInitialized(TrainingBehaviorInitializedEvent tbiEvent)

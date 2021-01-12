@@ -27,5 +27,5 @@ message TrainingBehaviorInitialized {
     int32 num_network_hidden_units = 11;
     bool trainer_threaded = 12;
     bool self_play_enabled = 13;
-    bool uses_curriculum = 14;
+    bool curriculum_enabled = 14;
 }

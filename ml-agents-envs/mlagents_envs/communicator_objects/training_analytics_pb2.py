@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/training_analytics.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n;mlagents_envs/communicator_objects/training_analytics.proto\x12\x14\x63ommunicator_objects\"\xd9\x01\n\x1eTrainingEnvironmentInitialized\x12\x18\n\x10mlagents_version\x18\x01 \x01(\t\x12\x1d\n\x15mlagents_envs_version\x18\x02 \x01(\t\x12\x16\n\x0epython_version\x18\x03 \x01(\t\x12\x15\n\rtorch_version\x18\x04 \x01(\t\x12\x19\n\x11torch_device_type\x18\x05 \x01(\t\x12\x10\n\x08num_envs\x18\x06 \x01(\x05\x12\"\n\x1anum_environment_parameters\x18\x07 \x01(\x05\"\xaa\x03\n\x1bTrainingBehaviorInitialized\x12\x15\n\rbehavior_name\x18\x01 \x01(\t\x12\x14\n\x0ctrainer_type\x18\x02 \x01(\t\x12 \n\x18\x65xtrinsic_reward_enabled\x18\x03 \x01(\x08\x12\x1b\n\x13gail_reward_enabled\x18\x04 \x01(\x08\x12 \n\x18\x63uriosity_reward_enabled\x18\x05 \x01(\x08\x12\x1a\n\x12rnd_reward_enabled\x18\x06 \x01(\x08\x12\"\n\x1a\x62\x65havioral_cloning_enabled\x18\x07 \x01(\x08\x12\x19\n\x11recurrent_enabled\x18\x08 \x01(\x08\x12\x16\n\x0evisual_encoder\x18\t \x01(\t\x12\x1a\n\x12num_network_layers\x18\n \x01(\x05\x12 \n\x18num_network_hidden_units\x18\x0b \x01(\x05\x12\x18\n\x10trainer_threaded\x18\x0c \x01(\x08\x12\x19\n\x11self_play_enabled\x18\r \x01(\x08\x12\x17\n\x0fuses_curriculum\x18\x0e \x01(\x08\x42%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n;mlagents_envs/communicator_objects/training_analytics.proto\x12\x14\x63ommunicator_objects\"\xd9\x01\n\x1eTrainingEnvironmentInitialized\x12\x18\n\x10mlagents_version\x18\x01 \x01(\t\x12\x1d\n\x15mlagents_envs_version\x18\x02 \x01(\t\x12\x16\n\x0epython_version\x18\x03 \x01(\t\x12\x15\n\rtorch_version\x18\x04 \x01(\t\x12\x19\n\x11torch_device_type\x18\x05 \x01(\t\x12\x10\n\x08num_envs\x18\x06 \x01(\x05\x12\"\n\x1anum_environment_parameters\x18\x07 \x01(\x05\"\xad\x03\n\x1bTrainingBehaviorInitialized\x12\x15\n\rbehavior_name\x18\x01 \x01(\t\x12\x14\n\x0ctrainer_type\x18\x02 \x01(\t\x12 \n\x18\x65xtrinsic_reward_enabled\x18\x03 \x01(\x08\x12\x1b\n\x13gail_reward_enabled\x18\x04 \x01(\x08\x12 \n\x18\x63uriosity_reward_enabled\x18\x05 \x01(\x08\x12\x1a\n\x12rnd_reward_enabled\x18\x06 \x01(\x08\x12\"\n\x1a\x62\x65havioral_cloning_enabled\x18\x07 \x01(\x08\x12\x19\n\x11recurrent_enabled\x18\x08 \x01(\x08\x12\x16\n\x0evisual_encoder\x18\t \x01(\t\x12\x1a\n\x12num_network_layers\x18\n \x01(\x05\x12 \n\x18num_network_hidden_units\x18\x0b \x01(\x05\x12\x18\n\x10trainer_threaded\x18\x0c \x01(\x08\x12\x19\n\x11self_play_enabled\x18\r \x01(\x08\x12\x1a\n\x12\x63urriculum_enabled\x18\x0e \x01(\x08\x42%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 
@@ -197,7 +197,7 @@ _TRAININGBEHAVIORINITIALIZED = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='uses_curriculum', full_name='communicator_objects.TrainingBehaviorInitialized.uses_curriculum', index=13,
+      name='curriculum_enabled', full_name='communicator_objects.TrainingBehaviorInitialized.curriculum_enabled', index=13,
       number=14, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
@@ -216,7 +216,7 @@ _TRAININGBEHAVIORINITIALIZED = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=306,
-  serialized_end=732,
+  serialized_end=735,
 )
 
 DESCRIPTOR.message_types_by_name['TrainingEnvironmentInitialized'] = _TRAININGENVIRONMENTINITIALIZED

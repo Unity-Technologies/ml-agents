@@ -113,23 +113,35 @@ namespace Unity.MLAgents.Analytics
         public int NumEnvironmentParameters;
     }
 
+    [Flags]
+    internal enum RewardSignals
+    {
+        Extrinsic = 1 << 0,
+        Gail = 1 << 1,
+        Curiosity = 1 << 2,
+        Rnd = 1 << 3,
+    }
+
+    [Flags]
+    internal enum TrainingFeatures
+    {
+        BehavioralCloning = 1 << 0,
+        Recurrent = 1 << 1,
+        Threaded = 1 << 2,
+        SelfPlay = 1 << 3,
+        Curriculum = 1 << 4,
+    }
+
     internal struct TrainingBehaviorInitializedEvent
     {
         public string TrainingSessionGuid;
 
         public string BehaviorName;
         public string TrainerType;
-        public bool ExtrinsicRewardEnabled;
-        public bool GailRewardEnabled;
-        public bool CuriosityRewardEnabled;
-        public bool RndRewardEnabled;
-        public bool BehavioralCloningEnabled;
-        public bool RecurrentEnabled;
+        public RewardSignals RewardSignalFlags;
+        public TrainingFeatures TrainingFeatureFlags;
         public string VisualEncoder;
         public int NumNetworkLayers;
         public int NumNetworkHiddenUnits;
-        public bool Threaded;
-        public bool SelfPlayEnabled;
-        public bool UsesCurriculum;
     }
 }

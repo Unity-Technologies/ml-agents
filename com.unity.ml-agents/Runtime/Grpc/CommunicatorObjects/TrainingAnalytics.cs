@@ -30,7 +30,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
             "aW9uGAEgASgJEh0KFW1sYWdlbnRzX2VudnNfdmVyc2lvbhgCIAEoCRIWCg5w",
             "eXRob25fdmVyc2lvbhgDIAEoCRIVCg10b3JjaF92ZXJzaW9uGAQgASgJEhkK",
             "EXRvcmNoX2RldmljZV90eXBlGAUgASgJEhAKCG51bV9lbnZzGAYgASgFEiIK",
-            "Gm51bV9lbnZpcm9ubWVudF9wYXJhbWV0ZXJzGAcgASgFIqoDChtUcmFpbmlu",
+            "Gm51bV9lbnZpcm9ubWVudF9wYXJhbWV0ZXJzGAcgASgFIq0DChtUcmFpbmlu",
             "Z0JlaGF2aW9ySW5pdGlhbGl6ZWQSFQoNYmVoYXZpb3JfbmFtZRgBIAEoCRIU",
             "Cgx0cmFpbmVyX3R5cGUYAiABKAkSIAoYZXh0cmluc2ljX3Jld2FyZF9lbmFi",
             "bGVkGAMgASgIEhsKE2dhaWxfcmV3YXJkX2VuYWJsZWQYBCABKAgSIAoYY3Vy",
@@ -39,14 +39,14 @@ namespace Unity.MLAgents.CommunicatorObjects {
             "CBIZChFyZWN1cnJlbnRfZW5hYmxlZBgIIAEoCBIWCg52aXN1YWxfZW5jb2Rl",
             "chgJIAEoCRIaChJudW1fbmV0d29ya19sYXllcnMYCiABKAUSIAoYbnVtX25l",
             "dHdvcmtfaGlkZGVuX3VuaXRzGAsgASgFEhgKEHRyYWluZXJfdGhyZWFkZWQY",
-            "DCABKAgSGQoRc2VsZl9wbGF5X2VuYWJsZWQYDSABKAgSFwoPdXNlc19jdXJy",
-            "aWN1bHVtGA4gASgIQiWqAiJVbml0eS5NTEFnZW50cy5Db21tdW5pY2F0b3JP",
-            "YmplY3RzYgZwcm90bzM="));
+            "DCABKAgSGQoRc2VsZl9wbGF5X2VuYWJsZWQYDSABKAgSGgoSY3VycmljdWx1",
+            "bV9lbmFibGVkGA4gASgIQiWqAiJVbml0eS5NTEFnZW50cy5Db21tdW5pY2F0",
+            "b3JPYmplY3RzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.TrainingEnvironmentInitialized), global::Unity.MLAgents.CommunicatorObjects.TrainingEnvironmentInitialized.Parser, new[]{ "MlagentsVersion", "MlagentsEnvsVersion", "PythonVersion", "TorchVersion", "TorchDeviceType", "NumEnvs", "NumEnvironmentParameters" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.TrainingBehaviorInitialized), global::Unity.MLAgents.CommunicatorObjects.TrainingBehaviorInitialized.Parser, new[]{ "BehaviorName", "TrainerType", "ExtrinsicRewardEnabled", "GailRewardEnabled", "CuriosityRewardEnabled", "RndRewardEnabled", "BehavioralCloningEnabled", "RecurrentEnabled", "VisualEncoder", "NumNetworkLayers", "NumNetworkHiddenUnits", "TrainerThreaded", "SelfPlayEnabled", "UsesCurriculum" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.TrainingBehaviorInitialized), global::Unity.MLAgents.CommunicatorObjects.TrainingBehaviorInitialized.Parser, new[]{ "BehaviorName", "TrainerType", "ExtrinsicRewardEnabled", "GailRewardEnabled", "CuriosityRewardEnabled", "RndRewardEnabled", "BehavioralCloningEnabled", "RecurrentEnabled", "VisualEncoder", "NumNetworkLayers", "NumNetworkHiddenUnits", "TrainerThreaded", "SelfPlayEnabled", "CurriculumEnabled" }, null, null, null)
           }));
     }
     #endregion
@@ -388,7 +388,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       numNetworkHiddenUnits_ = other.numNetworkHiddenUnits_;
       trainerThreaded_ = other.trainerThreaded_;
       selfPlayEnabled_ = other.selfPlayEnabled_;
-      usesCurriculum_ = other.usesCurriculum_;
+      curriculumEnabled_ = other.curriculumEnabled_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -540,14 +540,14 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
     }
 
-    /// <summary>Field number for the "uses_curriculum" field.</summary>
-    public const int UsesCurriculumFieldNumber = 14;
-    private bool usesCurriculum_;
+    /// <summary>Field number for the "curriculum_enabled" field.</summary>
+    public const int CurriculumEnabledFieldNumber = 14;
+    private bool curriculumEnabled_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool UsesCurriculum {
-      get { return usesCurriculum_; }
+    public bool CurriculumEnabled {
+      get { return curriculumEnabled_; }
       set {
-        usesCurriculum_ = value;
+        curriculumEnabled_ = value;
       }
     }
 
@@ -577,7 +577,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (NumNetworkHiddenUnits != other.NumNetworkHiddenUnits) return false;
       if (TrainerThreaded != other.TrainerThreaded) return false;
       if (SelfPlayEnabled != other.SelfPlayEnabled) return false;
-      if (UsesCurriculum != other.UsesCurriculum) return false;
+      if (CurriculumEnabled != other.CurriculumEnabled) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -597,7 +597,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (NumNetworkHiddenUnits != 0) hash ^= NumNetworkHiddenUnits.GetHashCode();
       if (TrainerThreaded != false) hash ^= TrainerThreaded.GetHashCode();
       if (SelfPlayEnabled != false) hash ^= SelfPlayEnabled.GetHashCode();
-      if (UsesCurriculum != false) hash ^= UsesCurriculum.GetHashCode();
+      if (CurriculumEnabled != false) hash ^= CurriculumEnabled.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -663,9 +663,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
         output.WriteRawTag(104);
         output.WriteBool(SelfPlayEnabled);
       }
-      if (UsesCurriculum != false) {
+      if (CurriculumEnabled != false) {
         output.WriteRawTag(112);
-        output.WriteBool(UsesCurriculum);
+        output.WriteBool(CurriculumEnabled);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -714,7 +714,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (SelfPlayEnabled != false) {
         size += 1 + 1;
       }
-      if (UsesCurriculum != false) {
+      if (CurriculumEnabled != false) {
         size += 1 + 1;
       }
       if (_unknownFields != null) {
@@ -767,8 +767,8 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (other.SelfPlayEnabled != false) {
         SelfPlayEnabled = other.SelfPlayEnabled;
       }
-      if (other.UsesCurriculum != false) {
-        UsesCurriculum = other.UsesCurriculum;
+      if (other.CurriculumEnabled != false) {
+        CurriculumEnabled = other.CurriculumEnabled;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -834,7 +834,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
             break;
           }
           case 112: {
-            UsesCurriculum = input.ReadBool();
+            CurriculumEnabled = input.ReadBool();
             break;
           }
         }

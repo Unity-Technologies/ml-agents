@@ -145,7 +145,6 @@ namespace Unity.MLAgents.CommunicatorObjects {
     private bool trainingAnalytics_;
     /// <summary>
     /// support for training analytics
-    /// TODO don't need this if we don't use a side channel
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool TrainingAnalytics {
