@@ -1,5 +1,6 @@
 import attr
 import cattr
+import pickle
 import pytest
 import yaml
 
@@ -516,3 +517,10 @@ def test_default_settings():
     test1_settings.max_steps = 1
     test1_settings.network_settings.hidden_units == default_settings_cls.network_settings.hidden_units
     check_if_different(test1_settings, default_settings_cls)
+
+
+def test_pickle():
+    # Make sure RunOptions is pickle-able.
+    run_options = RunOptions()
+    p = pickle.dumps(run_options)
+    pickle.loads(p)

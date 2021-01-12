@@ -22,8 +22,9 @@ class MultiHeadAttention(torch.nn.Module):
 
     def __init__(self, embedding_size: int, num_heads: int):
         super().__init__()
-        self.n_heads, self.embedding_size = num_heads, embedding_size
-        self.head_size: int = self.embedding_size // self.n_heads
+        self.n_heads = num_heads
+        self.head_size: int = embedding_size // self.n_heads
+        self.embedding_size: int = self.head_size * self.n_heads
 
     def forward(
         self,
@@ -116,7 +117,7 @@ class EntityEmbeddings(torch.nn.Module):
             self.self_size = 0
         self.ent_encoders = torch.nn.ModuleList(
             [
-                LinearEncoder(self.self_size + ent_size, 2, embedding_size)
+                LinearEncoder(self.self_size + ent_size, 1, embedding_size)
                 for ent_size in self.entity_sizes
             ]
         )
