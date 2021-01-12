@@ -99,7 +99,7 @@ class EntityEmbeddings(torch.nn.Module):
             self.self_size = 0
         self.ent_encoders = torch.nn.ModuleList(
             [
-                LinearEncoder(self.self_size + ent_size, 2, embedding_size)
+                LinearEncoder(self.self_size + ent_size, 1, embedding_size)
                 for ent_size in self.entity_sizes
             ]
         )
