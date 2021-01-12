@@ -24,7 +24,7 @@ _init_methods = {
     Initialization.XavierGlorotUniform: torch.nn.init.xavier_uniform_,
     Initialization.KaimingHeNormal: torch.nn.init.kaiming_normal_,
     Initialization.KaimingHeUniform: torch.nn.init.kaiming_uniform_,
-    Initialization.Normal: torch.nn.init.normal_
+    Initialization.Normal: torch.nn.init.normal_,
 }
 
 
@@ -93,22 +93,23 @@ def lstm_layer(
                     )
     return lstm
 
+
 class LayerNorm(torch.nn.Module):
-    def __init__(self, input_size: int, elementwise_affine: bool=False):
+    def __init__(self, input_size: int, elementwise_affine: bool = False):
         super().__init__()
         self.gamma = torch.nn.Parameter(
-             torch.ones(input_size, requires_grad=elementwise_affine)
+            torch.ones(input_size, requires_grad=elementwise_affine)
         )
         self.beta = torch.nn.Parameter(
-             torch.zeros(input_size, requires_grad=elementwise_affine)
+            torch.zeros(input_size, requires_grad=elementwise_affine)
         )
 
     def forward(self, layer_activations: torch.Tensor):
         mean = torch.mean(layer_activations, dim=-1, keepdim=True)
         centered_activations = layer_activations - mean
-        var = torch.mean(centered_activations**2, dim=-1, keepdim=True)
-        return centered_activations / (torch.sqrt(var + 1E-5)) * self.gamma + self.beta
-        
+        var = torch.mean(centered_activations ** 2, dim=-1, keepdim=True)
+        return centered_activations / (torch.sqrt(var + 1e-5)) * self.gamma + self.beta
+
 
 class MemoryModule(torch.nn.Module):
     @abc.abstractproperty
@@ -136,7 +137,14 @@ class LinearEncoder(torch.nn.Module):
     Linear layers.
     """
 
-    def __init__(self, input_size: int, num_layers: int, hidden_size: int, kernel_init=Initialization.KaimingHeNormal, kernel_gain=1.0):
+    def __init__(
+        self,
+        input_size: int,
+        num_layers: int,
+        hidden_size: int,
+        kernel_init=Initialization.KaimingHeNormal,
+        kernel_gain=1.0,
+    ):
         super().__init__()
         self.layers = [
             linear_layer(

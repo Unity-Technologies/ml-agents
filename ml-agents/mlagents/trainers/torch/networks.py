@@ -54,7 +54,7 @@ class NetworkBody(nn.Module):
         if len(var_len_indices) > 0:
             # there are some variable length observations
             x_self_len = sum(self.embedding_sizes)
-            entities_sizes = [] # TODO : More robust
+            entities_sizes = []  # TODO : More robust
             for idx in var_len_indices:
                 entities_sizes.append(sensor_specs[idx].shape[1])
 
@@ -67,11 +67,9 @@ class NetworkBody(nn.Module):
             #     self.h_size
             #     )
             self.transformer = SimpleTransformer(
-                 x_self_len,
-                 entities_sizes,
-                 self.n_embd,
-                 )
-            #self.transformer = SmallestAttention(x_self_len, entities_sizes, self.h_size, self.h_size)
+                x_self_len, entities_sizes, self.n_embd
+            )
+            # self.transformer = SmallestAttention(x_self_len, entities_sizes, self.h_size, self.h_size)
             # self.transformer = SmallestAttention(64, [64], self.h_size, self.h_size)
             # self.use_fc = True
 
@@ -80,27 +78,24 @@ class NetworkBody(nn.Module):
             n_layers = 2
             if self.use_fc:
                 self.transformer = None
-                total_enc_size = 80  + sum(self.embedding_sizes)
+                total_enc_size = 80 + sum(self.embedding_sizes)
                 n_layers = max(1, network_settings.num_layers + 1)
         else:
             self.transformer = None
             total_enc_size = sum(self.embedding_sizes)
             n_layers = max(1, network_settings.num_layers)
 
-
         if total_enc_size == 0:
             raise Exception("No valid inputs to network.")
-        for _,tens in list(self.transformer.named_parameters()):
+        for _, tens in list(self.transformer.named_parameters()):
             tens.retain_grad()
         total_enc_size += encoded_act_size
-        self.linear_encoder = LinearEncoder(
-            total_enc_size, n_layers, self.h_size
-        )
-        for _,tens in list(self.linear_encoder.named_parameters()):
+        self.linear_encoder = LinearEncoder(total_enc_size, n_layers, self.h_size)
+        for _, tens in list(self.linear_encoder.named_parameters()):
             tens.retain_grad()
         for processor in self.processors:
             if processor is not None:
-                for _,tens in list(processor.named_parameters()):
+                for _, tens in list(processor.named_parameters()):
                     tens.retain_grad()
 
         if self.use_lstm:
@@ -152,7 +147,7 @@ class NetworkBody(nn.Module):
             encoded_state = self.transformer(
                 x_self_encoded,
                 var_len_inputs,
-                SimpleTransformer.get_masks(var_len_inputs)
+                SimpleTransformer.get_masks(var_len_inputs),
             )
             # print("\n\n\nUsing transformer ", self.transformer, "use fc = ", self.use_fc, " x_self.shape=",x_self_encoded.shape," var_len_inputs[0].shape=",var_len_inputs[0].shape," len(var_len_inputs)=",len(var_len_inputs))
         else:
@@ -160,7 +155,9 @@ class NetworkBody(nn.Module):
 
         if self.use_fc:
             x_self = torch.cat(encodes, dim=1)
-            encoded_state = torch.cat([x_self, inputs[0].reshape(x_self.shape[0], 80)], dim=1)
+            encoded_state = torch.cat(
+                [x_self, inputs[0].reshape(x_self.shape[0], 80)], dim=1
+            )
 
         if actions is not None:
             encoded_state = torch.cat([encoded_state, actions], dim=1)
@@ -409,7 +406,7 @@ class SimpleActor(nn.Module, Actor):
                 vis_index += 1
             else:
                 inputs.append(var_len_inputs[var_len_index])
-                var_len_index+=1
+                var_len_index += 1
         # End of code to convert the vec and vis obs into a list of inputs for the network
         encoding, memories_out = self.network_body(
             inputs, memories=memories, sequence_length=1
