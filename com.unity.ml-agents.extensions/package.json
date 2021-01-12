@@ -5,6 +5,6 @@
   "unity": "2018.4",
   "description": "A source-only package for new features based on ML-Agents",
   "dependencies": {
-    "com.unity.ml-agents": "1.6.0-preview"
+    "com.unity.ml-agents": "1.7.2-preview"
   }
 }

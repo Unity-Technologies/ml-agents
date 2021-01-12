@@ -29,15 +29,15 @@ namespace Unity.MLAgents
 
             var agentActionProto = new AgentActionProto();
 
-            if (!ai.storedVectorActions.IsEmpty())
+            if (!ai.storedActions.IsEmpty())
             {
-                if (!ai.storedVectorActions.ContinuousActions.IsEmpty())
+                if (!ai.storedActions.ContinuousActions.IsEmpty())
                 {
-                    agentActionProto.ContinuousActions.AddRange(ai.storedVectorActions.ContinuousActions.Array);
+                    agentActionProto.ContinuousActions.AddRange(ai.storedActions.ContinuousActions.Array);
                 }
-                if (!ai.storedVectorActions.DiscreteActions.IsEmpty())
+                if (!ai.storedActions.DiscreteActions.IsEmpty())
                 {
-                    agentActionProto.DiscreteActions.AddRange(ai.storedVectorActions.DiscreteActions.Array);
+                    agentActionProto.DiscreteActions.AddRange(ai.storedActions.DiscreteActions.Array);
                 }
             }
 
@@ -101,6 +101,8 @@ namespace Unity.MLAgents
         /// <param name="isTraining">Whether or not the Brain is training.</param>
         public static BrainParametersProto ToProto(this BrainParameters bp, string name, bool isTraining)
         {
+            // Disable deprecation warnings so we can set legacy fields
+#pragma warning disable CS0618
             var brainParametersProto = new BrainParametersProto
             {
                 VectorActionSpaceTypeDeprecated = (SpaceTypeProto)bp.VectorActionSpaceType,
@@ -116,6 +118,7 @@ namespace Unity.MLAgents
             {
                 brainParametersProto.VectorActionDescriptionsDeprecated.AddRange(bp.VectorActionDescriptions);
             }
+#pragma warning restore CS0618
             return brainParametersProto;
         }
 
@@ -123,7 +126,7 @@ namespace Unity.MLAgents
         /// Converts an ActionSpec into to a Protobuf BrainInfoProto so it can be sent.
         /// </summary>
         /// <returns>The BrainInfoProto generated.</returns>
-        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         /// <param name="name">The name of the brain.</param>
         /// <param name="isTraining">Whether or not the Brain is training.</param>
         public static BrainParametersProto ToBrainParametersProto(this ActionSpec actionSpec, string name, bool isTraining)
@@ -162,10 +165,30 @@ namespace Unity.MLAgents
         /// <returns>A BrainParameters struct.</returns>
         public static BrainParameters ToBrainParameters(this BrainParametersProto bpp)
         {
+            ActionSpec actionSpec;
+            if (bpp.ActionSpec == null)
+            {
+                // Disable deprecation warnings so we can set legacy fields
+#pragma warning disable CS0618
+                var spaceType = (SpaceType)bpp.VectorActionSpaceTypeDeprecated;
+                if (spaceType == SpaceType.Continuous)
+                {
+                    actionSpec = ActionSpec.MakeContinuous(bpp.VectorActionSizeDeprecated.ToArray()[0]);
+                }
+                else
+                {
+                    actionSpec = ActionSpec.MakeDiscrete(bpp.VectorActionSizeDeprecated.ToArray());
+                }
+#pragma warning restore CS0618
+            }
+            else
+            {
+                actionSpec = ToActionSpec(bpp.ActionSpec);
+            }
             var bp = new BrainParameters
             {
                 VectorActionDescriptions = bpp.VectorActionDescriptionsDeprecated.ToArray(),
-                ActionSpec = ToActionSpec(bpp.ActionSpec),
+                ActionSpec = actionSpec,
             };
             return bp;
         }
@@ -188,7 +211,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// Convert a ActionSpec struct to a ActionSpecProto.
         /// </summary>
-        /// <param name="actionSpecProto">An instance of an action spec struct.</param>
+        /// <param name="actionSpec">An instance of an action spec struct.</param>
         /// <returns>An ActionSpecProto.</returns>
         public static ActionSpecProto ToActionSpecProto(this ActionSpec actionSpec)
         {
@@ -302,7 +325,11 @@ namespace Unity.MLAgents
                 {
                     if (!s_HaveWarnedTrainerCapabilitiesMultiPng)
                     {
-                        Debug.LogWarning($"Attached trainer doesn't support multiple PNGs. Switching to uncompressed observations for sensor {sensor.GetName()}.");
+                        Debug.LogWarning(
+                            $"Attached trainer doesn't support multiple PNGs. Switching to uncompressed observations for sensor {sensor.GetName()}. " +
+                            "Please find the versions that work best together from our release page: " +
+                            "https://github.com/Unity-Technologies/ml-agents/releases"
+                        );
                         s_HaveWarnedTrainerCapabilitiesMultiPng = true;
                     }
                     compressionType = SensorCompressionType.None;
@@ -317,9 +344,13 @@ namespace Unity.MLAgents
                 {
                     if (!s_HaveWarnedTrainerCapabilitiesMapping)
                     {
-                        Debug.LogWarning($"The sensor {sensor.GetName()} is using non-trivial mapping and " +
+                        Debug.LogWarning(
+                            $"The sensor {sensor.GetName()} is using non-trivial mapping and " +
                             "the attached trainer doesn't support compression mapping. " +
-                            "Switching to uncompressed observations.");
+                            "Switching to uncompressed observations. " +
+                            "Please find the versions that work best together from our release page: " +
+                            "https://github.com/Unity-Technologies/ml-agents/releases"
+                        );
                         s_HaveWarnedTrainerCapabilitiesMapping = true;
                     }
                     compressionType = SensorCompressionType.None;
@@ -366,6 +397,17 @@ namespace Unity.MLAgents
                 if (compressibleSensor != null)
                 {
                     observationProto.CompressedChannelMapping.AddRange(compressibleSensor.GetCompressedChannelMapping());
+                }
+            }
+            // Add the dimension properties if any to the observationProto
+            var dimensionPropertySensor = sensor as IDimensionPropertiesSensor;
+            if (dimensionPropertySensor != null)
+            {
+                var dimensionProperties = dimensionPropertySensor.GetDimensionProperties();
+                int[] intDimensionProperties = new int[dimensionProperties.Length];
+                for (int i = 0; i < dimensionProperties.Length; i++)
+                {
+                    observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
                 }
             }
             observationProto.Shape.AddRange(shape);

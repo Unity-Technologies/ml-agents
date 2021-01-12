@@ -10,6 +10,7 @@ from mlagents.trainers.settings import TrainerSettings, PPOSettings
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.trajectory import ObsUtil
 
 
 class TorchPPOOptimizer(TorchOptimizer):
@@ -17,7 +18,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         """
         Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy.
         The PPO optimizer has a value estimator and a loss function.
-        :param policy: A TFPolicy object that will be updated by this PPO Optimizer.
+        :param policy: A TorchPolicy object that will be updated by this PPO Optimizer.
         :param trainer_params: Trainer parameters dictionary that specifies the
         properties of the trainer.
         """
@@ -134,9 +135,10 @@ class TorchPPOOptimizer(TorchOptimizer):
             )
             returns[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns"])
 
-        obs = ModelUtils.list_to_tensor_list(
-            AgentBuffer.obs_list_to_obs_batch(batch["obs"])
-        )
+        n_obs = len(self.policy.behavior_spec.sensor_specs)
+        current_obs = ObsUtil.from_buffer(batch, n_obs)
+        # Convert to tensors
+        current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
         critic_obs_np = AgentBuffer.obs_list_list_to_obs_batch(batch["critic_obs"])
         critic_obs = [
             ModelUtils.list_to_tensor_list(_agent_obs) for _agent_obs in critic_obs_np
@@ -153,7 +155,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             memories = torch.stack(memories).unsqueeze(0)
 
         log_probs, entropy, values = self.policy.evaluate_actions(
-            obs,
+            current_obs,
             masks=act_masks,
             actions=actions,
             memories=memories,

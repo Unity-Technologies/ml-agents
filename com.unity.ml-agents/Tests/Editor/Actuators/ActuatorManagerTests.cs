@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Assert = UnityEngine.Assertions.Assert;
@@ -62,6 +59,18 @@ namespace Unity.MLAgents.Tests.Actuators
             Assert.IsTrue(13 == manager.SumOfDiscreteBranchSizes);
             Assert.IsTrue(0 == manager.StoredActions.ContinuousActions.Length);
             Assert.IsTrue(7 == manager.StoredActions.DiscreteActions.Length);
+        }
+
+        [Test]
+        public void TestAllowMixedActions()
+        {
+            // Make sure discrete + continuous actuators are allowed.
+            var manager = new ActuatorManager();
+            var actuator1 = new TestActuator(ActionSpec.MakeDiscrete(new[] { 1, 2, 3, 4 }), "actuator1");
+            var actuator2 = new TestActuator(ActionSpec.MakeContinuous(3), "actuator2");
+            manager.Add(actuator1);
+            manager.Add(actuator2);
+            manager.ReadyActuatorsForExecution(new[] { actuator1, actuator2 }, 3, 10, 4);
         }
 
         [Test]

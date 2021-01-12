@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Policies;
 using Assert = UnityEngine.Assertions.Assert;
 
 namespace Unity.MLAgents.Tests.Actuators

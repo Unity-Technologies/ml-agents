@@ -36,7 +36,7 @@ you would like to contribute environments, please see our
   - +1.0 for arriving at optimal state.
 - Behavior Parameters:
   - Vector Observation space: One variable corresponding to current state.
-  - Vector Action space: (Discrete) Two possible actions (Move left, move
+  - Actions: 1 discrete action branch with 3 actions (Move left, do nothing, move
     right).
   - Visual Observations: None
 - Float Properties: None
@@ -58,7 +58,7 @@ you would like to contribute environments, please see our
     cube, and position and velocity of ball.
   - Vector Observation space (Hard Version): 5 variables corresponding to
     rotation of the agent cube and position of ball.
-  - Vector Action space: (Continuous) Size of 2, with one value corresponding to
+  - Actions: 2 continuous actions, with one value corresponding to
     X-rotation, and the other to Z-rotation.
   - Visual Observations: Third-person view from the upper-front of the agent. Use
     `Visual3DBall` scene.
@@ -94,8 +94,8 @@ you would like to contribute environments, please see our
   - -1.0 if the agent navigates to an obstacle (episode ends).
 - Behavior Parameters:
   - Vector Observation space: None
-  - Vector Action space: (Discrete) Size of 4, corresponding to movement in
-    cardinal directions. Note that for this environment,
+  - Actions: 1 discrete action branch with 5 actions, corresponding to movement in
+    cardinal directions or not moving. Note that for this environment,
     [action masking](Learning-Environment-Design-Agents.md#masking-discrete-actions)
     is turned on by default (this option can be toggled using the `Mask Actions`
     checkbox within the `trueAgent` GameObject). The trained model file provided
@@ -123,7 +123,7 @@ you would like to contribute environments, please see our
 - Behavior Parameters:
   - Vector Observation space: 9 variables corresponding to position, velocity
     and orientation of ball and racket.
-  - Vector Action space: (Continuous) Size of 3, corresponding to movement
+  - Actions: 3 continuous actions, corresponding to movement
     toward net or away from net, jumping and rotation.
   - Visual Observations: None
 - Float Properties: Three
@@ -151,8 +151,8 @@ you would like to contribute environments, please see our
   - Vector Observation space: (Continuous) 70 variables corresponding to 14
     ray-casts each detecting one of three possible objects (wall, goal, or
     block).
-  - Vector Action space: (Discrete) Size of 6, corresponding to turn clockwise
-    and counterclockwise and move along four different face directions.
+  - Actions: 1 discrete action branch with 7 actions, corresponding to turn clockwise
+    and counterclockwise, move along four different face directions, or do nothing.
   - Visual Observations (Optional): One first-person camera. Use
     `VisualPushBlock` scene. **The visual observation version of this
     environment does not train with the provided default training parameters.**
@@ -194,7 +194,7 @@ you would like to contribute environments, please see our
   - Vector Observation space: Size of 74, corresponding to 14 ray casts each
     detecting 4 possible objects. plus the global position of the agent and
     whether or not the agent is grounded.
-  - Vector Action space: (Discrete) 4 Branches:
+  - Actions: 4 discrete action branches:
     - Forward Motion (3 possible actions: Forward, Backwards, No Action)
     - Rotation (3 possible actions: Rotate Left, Rotate Right, No Action)
     - Side Motion (3 possible actions: Left, Right, No Action)
@@ -215,7 +215,7 @@ you would like to contribute environments, please see our
 - Behavior Parameters:
   - Vector Observation space: 26 variables corresponding to position, rotation,
     velocity, and angular velocities of the two arm rigid bodies.
-  - Vector Action space: (Continuous) Size of 4, corresponding to torque
+  - Actions: 4 continuous actions, corresponding to torque
     applicable to two joints.
   - Visual Observations: None.
 - Float Properties: Five
@@ -264,7 +264,7 @@ you would like to contribute environments, please see our
   - Vector Observation space: 172 variables corresponding to position, rotation,
     velocity, and angular velocities of each limb plus the acceleration and
     angular acceleration of the body.
-  - Vector Action space: (Continuous) Size of 20, corresponding to target
+  - Actions: 20 continuous actions, corresponding to target
     rotations for joints.
   - Visual Observations: None
 - Float Properties: None
@@ -292,7 +292,7 @@ you would like to contribute environments, please see our
   - Vector Observation space: 64 variables corresponding to position, rotation,
     velocity, and angular velocities of each limb plus the acceleration and
     angular acceleration of the body.
-  - Vector Action space: (Continuous) Size of 9, corresponding to target
+  - Actions: 9 continuous actions, corresponding to target
     rotations for joints.
   - Visual Observations: None
 - Float Properties: None
@@ -315,11 +315,10 @@ you would like to contribute environments, please see our
     agent is frozen and/or shot its laser (2), plus ray-based perception of
     objects around agent's forward direction (49; 7 raycast angles with 7
     measurements for each).
-  - Vector Action space: (Discrete) 4 Branches:
-    - Forward Motion (3 possible actions: Forward, Backwards, No Action)
-    - Side Motion (3 possible actions: Left, Right, No Action)
-    - Rotation (3 possible actions: Rotate Left, Rotate Right, No Action)
-    - Laser (2 possible actions: Laser, No Action)
+  - Actions:
+    - 3 continuous actions correspond to Forward Motion, Side Motion and Rotation
+    - 1 discrete acion branch for Laser with 2 possible actions corresponding to
+      Shoot Laser or No Action
   - Visual Observations (Optional): First-person camera per-agent, plus one vector
     flag representing the frozen state of the agent. This scene uses a combination
     of vector and visual observations and the training will not succeed without
@@ -352,7 +351,7 @@ you would like to contribute environments, please see our
 - Behavior Parameters:
   - Vector Observation space: 30 corresponding to local ray-casts detecting
     objects, goals, and walls.
-  - Vector Action space: (Discrete) 1 Branch, 4 actions corresponding to agent
+  - Actions: 1 discrete action Branch, with 4 actions corresponding to agent
     rotation and forward/backward movement.
   - Visual Observations (Optional): First-person view for the agent. Use
     `VisualHallway` scene. **The visual observation version of this environment
@@ -377,7 +376,7 @@ you would like to contribute environments, please see our
 - Behavior Parameters:
   - Vector Observation space: 6 corresponding to local position of agent and
     green cube.
-  - Vector Action space: (Continuous) 3 corresponding to agent force applied for
+  - Actions: 3 continuous actions corresponding to agent force applied for
     the jump.
   - Visual Observations: None
 - Float Properties: Two
@@ -408,7 +407,7 @@ you would like to contribute environments, please see our
     degrees each detecting 6 possible object types, along with the object's
     distance. The forward ray-casts contribute 264 state dimensions and backward
     72 state dimensions over three observation stacks.
-  - Vector Action space: (Discrete) Three branched actions corresponding to
+  - Actions: 3 discrete branched actions corresponding to
     forward, backward, sideways movement, as well as rotation.
   - Visual Observations: None
 - Float Properties: Two
@@ -444,12 +443,12 @@ you would like to contribute environments, please see our
     degrees each detecting 5 possible object types, along with the object's
     distance. The forward ray-casts contribute 231 state dimensions and backward
     63 state dimensions over three observation stacks.
-  - Striker Vector Action space: (Discrete) Three branched actions corresponding
+  - Striker Actions: 3 discrete branched actions corresponding
     to forward, backward, sideways movement, as well as rotation.
   - Goalie Vector Observation space: 738 corresponding to 41 ray-casts
     distributed over 360 degrees each detecting 4 possible object types, along
     with the object's distance and 3 observation stacks.
-  - Goalie Vector Action space: (Discrete) Three branched actions corresponding
+  - Goalie Actions: 3 discrete branched actions corresponding
     to forward, backward, sideways movement, as well as rotation.
   - Visual Observations: None
 - Float Properties: Two
@@ -487,7 +486,7 @@ you would like to contribute environments, please see our
 - Behavior Parameters:
   - Vector Observation space: 243 variables corresponding to position, rotation,
     velocity, and angular velocities of each limb, along with goal direction.
-  - Vector Action space: (Continuous) Size of 39, corresponding to target
+  - Actions: 39 continuous actions, corresponding to target
     rotations and strength applicable to the joints.
   - Visual Observations: None
 - Float Properties: Four
@@ -529,7 +528,7 @@ you would like to contribute environments, please see our
   - Vector Observation space: 148 corresponding to local ray-casts detecting
     switch, bricks, golden brick, and walls, plus variable indicating switch
     state.
-  - Vector Action space: (Discrete) 4 corresponding to agent rotation and
+  - Actions: 1 discrete action branch, with 4 actions corresponding to agent rotation and
     forward/backward movement.
   - Visual Observations (Optional): First-person camera per-agent. Us
     `VisualPyramids` scene. **The visual observation version of this environment

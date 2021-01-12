@@ -47,13 +47,13 @@ namespace Unity.MLAgents.Tests
 
             var infoA = new AgentInfo
             {
-                storedVectorActions = new ActionBuffers(null, new[] { 1, 2 }),
+                storedActions = new ActionBuffers(null, new[] { 1, 2 }),
                 discreteActionMasks = null,
             };
 
             var infoB = new AgentInfo
             {
-                storedVectorActions = new ActionBuffers(null, new[] { 3, 4 }),
+                storedActions = new ActionBuffers(null, new[] { 3, 4 }),
                 discreteActionMasks = new[] { true, false, false, false, false },
             };
 

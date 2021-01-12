@@ -1,6 +1,5 @@
 using UnityEngine;
 using Unity.MLAgents.Sensors;
-using Unity.MLAgents;
 
 public class TestTextureSensor : ISensor
 {

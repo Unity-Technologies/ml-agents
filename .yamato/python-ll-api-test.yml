@@ -1,23 +1,26 @@
 {% metadata_file .yamato/test_versions.metafile %}
 ---
 {% for editor in test_editors %}
-test_mac_ll_api_{{ editor.version }}:
-  name: Test Mac LL-API {{ editor.version }}
+test_linux_ll_api_{{ editor.version }}:
+  name: Test Linux LL-API {{ editor.version }}
   agent:
-    type: Unity::VM::osx
-    image: ml-agents/ml-agents-bokken-mac:0.1.4-492264
-    flavor: b1.small
+    type: Unity::VM
+    image: package-ci/ubuntu:stable
+    flavor: b1.medium
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
-    - pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
-    - python -u -m ml-agents.tests.yamato.setup_venv
-    - ./venv/bin/python ml-agents/tests/yamato/scripts/run_llapi.py
-    - ./venv/bin/python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-Basic
-    - ./venv/bin/python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-WallJump
-    - ./venv/bin/python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-Bouncer
+    - |
+      sudo apt-get update && sudo apt-get install -y python3-venv
+      python3 -m venv venv && source venv/bin/activate
+      python -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+      python -u -m ml-agents.tests.yamato.setup_venv
+      python ml-agents/tests/yamato/scripts/run_llapi.py
+      python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-Basic
+      python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-WallJump
+      python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-Bouncer
   dependencies:
-    - .yamato/standalone-build-test.yml#test_mac_standalone_{{ editor.version }}
+    - .yamato/standalone-build-test.yml#test_linux_standalone_{{ editor.version }}
   triggers:
     cancel_old_ci: true
     expression: |

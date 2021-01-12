@@ -13,7 +13,7 @@ from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.stats import StatsReporter, StatsSummary
 from mlagents.trainers.behavior_id_utils import get_global_agent_id
 from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
-
+from mlagents.trainers.tests.dummy_config import create_sensor_specs_with_shapes
 from mlagents_envs.base_env import ActionSpec, ActionTuple
 
 
@@ -45,7 +45,9 @@ def test_agentprocessor(num_vis_obs):
     }
     mock_decision_steps, mock_terminal_steps = mb.create_mock_steps(
         num_agents=2,
-        observation_shapes=[(8,)] + num_vis_obs * [(84, 84, 3)],
+        sensor_specs=create_sensor_specs_with_shapes(
+            [(8,)] + num_vis_obs * [(84, 84, 3)]
+        ),
         action_spec=ActionSpec.create_continuous(2),
     )
     fake_action_info = ActionInfo(
@@ -78,7 +80,9 @@ def test_agentprocessor(num_vis_obs):
     # Test empty steps
     mock_decision_steps, mock_terminal_steps = mb.create_mock_steps(
         num_agents=0,
-        observation_shapes=[(8,)] + num_vis_obs * [(84, 84, 3)],
+        sensor_specs=create_sensor_specs_with_shapes(
+            [(8,)] + num_vis_obs * [(84, 84, 3)]
+        ),
         action_spec=ActionSpec.create_continuous(2),
     )
     processor.add_experiences(
@@ -107,12 +111,12 @@ def test_agent_deletion():
 
     mock_decision_step, mock_terminal_step = mb.create_mock_steps(
         num_agents=1,
-        observation_shapes=[(8,)],
+        sensor_specs=create_sensor_specs_with_shapes([(8,)]),
         action_spec=ActionSpec.create_continuous(2),
     )
     mock_done_decision_step, mock_done_terminal_step = mb.create_mock_steps(
         num_agents=1,
-        observation_shapes=[(8,)],
+        sensor_specs=create_sensor_specs_with_shapes([(8,)]),
         action_spec=ActionSpec.create_continuous(2),
         done=True,
     )
@@ -186,7 +190,7 @@ def test_end_episode():
 
     mock_decision_step, mock_terminal_step = mb.create_mock_steps(
         num_agents=1,
-        observation_shapes=[(8,)],
+        sensor_specs=create_sensor_specs_with_shapes([(8,)]),
         action_spec=ActionSpec.create_continuous(2),
     )
     fake_action_info = ActionInfo(
@@ -258,18 +262,39 @@ def test_agent_manager_stats():
         {
             "averaged": [(1.0, StatsAggregationMethod.AVERAGE)],
             "most_recent": [(2.0, StatsAggregationMethod.MOST_RECENT)],
+            "summed": [(3.1, StatsAggregationMethod.SUM)],
         },
         {
             "averaged": [(3.0, StatsAggregationMethod.AVERAGE)],
             "most_recent": [(4.0, StatsAggregationMethod.MOST_RECENT)],
+            "summed": [(1.1, StatsAggregationMethod.SUM)],
         },
     ]
     for env_stats in all_env_stats:
         manager.record_environment_stats(env_stats, worker_id=0)
 
     expected_stats = {
-        "averaged": StatsSummary(mean=2.0, std=mock.ANY, num=2),
-        "most_recent": StatsSummary(mean=4.0, std=0.0, num=1),
+        "averaged": StatsSummary(
+            mean=2.0,
+            std=mock.ANY,
+            num=2,
+            sum=4.0,
+            aggregation_method=StatsAggregationMethod.AVERAGE,
+        ),
+        "most_recent": StatsSummary(
+            mean=4.0,
+            std=0.0,
+            num=1,
+            sum=4.0,
+            aggregation_method=StatsAggregationMethod.MOST_RECENT,
+        ),
+        "summed": StatsSummary(
+            mean=2.1,
+            std=mock.ANY,
+            num=2,
+            sum=4.2,
+            aggregation_method=StatsAggregationMethod.SUM,
+        ),
     }
     stats_reporter.write_stats(123)
     writer.write_stats.assert_any_call("FakeCategory", expected_stats, 123)

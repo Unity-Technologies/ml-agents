@@ -2180,10 +2180,14 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 0
     NumStackedVectorObservations: 1
-    VectorActionSize: 03000000030000000300000002000000
+    m_ActionSpec:
+      m_NumContinuousActions: 3
+      BranchSizes: 02000000
+    VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 699f852e79b5ba642871514fb1fb9843, type: 3}
+    hasUpgradedBrainParametersWithActionSpec: 1
+  m_Model: {fileID: 11400000, guid: 75910f45f20be49b18e2b95879a217b2, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -2217,6 +2221,7 @@ MonoBehaviour:
   myLaser: {fileID: 1081721624670010}
   contribute: 0
   useVectorObs: 0
+  useVectorFrozenFlag: 0
 --- !u!114 &8297075921230369060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2286,6 +2291,7 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 0, a: 0}
   GizmoYOffset: 0
   ShowGizmos: 0
+  CompressionType: 1
 --- !u!1 &1482701732800114
 GameObject:
   m_ObjectHideFlags: 0
@@ -2532,10 +2538,14 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 0
     NumStackedVectorObservations: 1
-    VectorActionSize: 03000000030000000300000002000000
+    m_ActionSpec:
+      m_NumContinuousActions: 3
+      BranchSizes: 02000000
+    VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 699f852e79b5ba642871514fb1fb9843, type: 3}
+    hasUpgradedBrainParametersWithActionSpec: 1
+  m_Model: {fileID: 11400000, guid: 75910f45f20be49b18e2b95879a217b2, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -2569,6 +2579,7 @@ MonoBehaviour:
   myLaser: {fileID: 1941433838307300}
   contribute: 0
   useVectorObs: 0
+  useVectorFrozenFlag: 0
 --- !u!114 &259154752087955944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2625,6 +2636,7 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 0, a: 0}
   GizmoYOffset: 0
   ShowGizmos: 0
+  CompressionType: 1
 --- !u!1 &1528397385587768
 GameObject:
   m_ObjectHideFlags: 0
@@ -2875,10 +2887,14 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 0
     NumStackedVectorObservations: 1
-    VectorActionSize: 03000000030000000300000002000000
+    m_ActionSpec:
+      m_NumContinuousActions: 3
+      BranchSizes: 02000000
+    VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 699f852e79b5ba642871514fb1fb9843, type: 3}
+    hasUpgradedBrainParametersWithActionSpec: 1
+  m_Model: {fileID: 11400000, guid: 75910f45f20be49b18e2b95879a217b2, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -2912,6 +2928,7 @@ MonoBehaviour:
   myLaser: {fileID: 1421240237750412}
   contribute: 0
   useVectorObs: 0
+  useVectorFrozenFlag: 0
 --- !u!114 &5519119940433428255
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2968,6 +2985,7 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 0, a: 0}
   GizmoYOffset: 0
   ShowGizmos: 0
+  CompressionType: 1
 --- !u!1 &1617924810425504
 GameObject:
   m_ObjectHideFlags: 0
@@ -3481,10 +3499,14 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 0
     NumStackedVectorObservations: 1
-    VectorActionSize: 03000000030000000300000002000000
+    m_ActionSpec:
+      m_NumContinuousActions: 3
+      BranchSizes: 02000000
+    VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 699f852e79b5ba642871514fb1fb9843, type: 3}
+    hasUpgradedBrainParametersWithActionSpec: 1
+  m_Model: {fileID: 11400000, guid: 75910f45f20be49b18e2b95879a217b2, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -3518,6 +3540,7 @@ MonoBehaviour:
   myLaser: {fileID: 1617924810425504}
   contribute: 0
   useVectorObs: 0
+  useVectorFrozenFlag: 0
 --- !u!114 &5884750436653390196
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3574,6 +3597,7 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 0, a: 0}
   GizmoYOffset: 0
   ShowGizmos: 0
+  CompressionType: 1
 --- !u!1 &1688105343773098
 GameObject:
   m_ObjectHideFlags: 0
@@ -3810,10 +3834,14 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 0
     NumStackedVectorObservations: 1
-    VectorActionSize: 03000000030000000300000002000000
+    m_ActionSpec:
+      m_NumContinuousActions: 3
+      BranchSizes: 02000000
+    VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 699f852e79b5ba642871514fb1fb9843, type: 3}
+    hasUpgradedBrainParametersWithActionSpec: 1
+  m_Model: {fileID: 11400000, guid: 75910f45f20be49b18e2b95879a217b2, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -3847,6 +3875,7 @@ MonoBehaviour:
   myLaser: {fileID: 1045923826166930}
   contribute: 0
   useVectorObs: 0
+  useVectorFrozenFlag: 0
 --- !u!114 &4768752321433982785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3903,6 +3932,7 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 0, a: 0}
   GizmoYOffset: 0
   ShowGizmos: 0
+  CompressionType: 1
 --- !u!1 &1729825611722018
 GameObject:
   m_ObjectHideFlags: 0
@@ -4172,7 +4202,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1819751139121548}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 12.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:

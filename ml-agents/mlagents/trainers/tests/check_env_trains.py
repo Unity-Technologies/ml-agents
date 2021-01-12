@@ -28,8 +28,8 @@ class DebugWriter(StatsWriter):
     ) -> None:
         for val, stats_summary in values.items():
             if val == "Environment/Cumulative Reward":
-                print(step, val, stats_summary.mean)
-                self._last_reward_summary[category] = stats_summary.mean
+                print(step, val, stats_summary.aggregated_value)
+                self._last_reward_summary[category] = stats_summary.aggregated_value
 
 
 # The reward processor is passed as an argument to _check_environment_trains.
@@ -51,13 +51,14 @@ def check_environment_trains(
     env_parameter_manager=None,
     success_threshold=0.9,
     env_manager=None,
+    training_seed=None,
 ):
     if env_parameter_manager is None:
         env_parameter_manager = EnvironmentParameterManager()
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
         run_id = "id"
-        seed = 1337
+        seed = 1337 if training_seed is None else training_seed
         StatsReporter.writers.clear()  # Clear StatsReporters so we don't write to file
         debug_writer = DebugWriter()
         StatsReporter.add_writer(debug_writer)

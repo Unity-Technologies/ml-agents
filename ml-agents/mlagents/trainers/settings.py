@@ -69,7 +69,6 @@ def deep_update_dict(d: Dict, update_d: Mapping) -> None:
 
 
 class SerializationSettings:
-    convert_to_barracuda = True
     convert_to_onnx = True
     onnx_opset = 9
 
@@ -592,11 +591,6 @@ class TrainerType(Enum):
         return _mapping[self]
 
 
-class FrameworkType(Enum):
-    TENSORFLOW: str = "tensorflow"
-    PYTORCH: str = "pytorch"
-
-
 @attr.s(auto_attribs=True)
 class TrainerSettings(ExportableSettings):
     default_override: ClassVar[Optional["TrainerSettings"]] = None
@@ -620,7 +614,6 @@ class TrainerSettings(ExportableSettings):
     threaded: bool = True
     self_play: Optional[SelfPlaySettings] = None
     behavioral_cloning: Optional[BehavioralCloningSettings] = None
-    framework: FrameworkType = FrameworkType.PYTORCH
 
     cattr.register_structure_hook(
         Dict[RewardSignalType, RewardSignalSettings], RewardSignalSettings.structure
@@ -662,6 +655,10 @@ class TrainerSettings(ExportableSettings):
 
         deep_update_dict(d_copy, d)
 
+        if "framework" in d_copy:
+            logger.warning("Framework option was deprecated but was specified")
+            d_copy.pop("framework", None)
+
         for key, val in d_copy.items():
             if attr.has(type(val)):
                 # Don't convert already-converted attrs classes.
@@ -684,7 +681,13 @@ class TrainerSettings(ExportableSettings):
 
     class DefaultTrainerDict(collections.defaultdict):
         def __init__(self, *args):
-            super().__init__(TrainerSettings, *args)
+            # Depending on how this is called, args may have the defaultdict
+            # callable at the start of the list or not. In particular, unpickling
+            # will pass [TrainerSettings].
+            if args and args[0] == TrainerSettings:
+                super().__init__(*args)
+            else:
+                super().__init__(TrainerSettings, *args)
 
         def __missing__(self, key: Any) -> "TrainerSettings":
             if TrainerSettings.default_override is not None:
