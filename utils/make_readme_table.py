@@ -76,10 +76,14 @@ versions = [
     ReleaseInfo("release_8", "1.5.0", "0.21.0", "October 14, 2020"),
     ReleaseInfo("release_9", "1.5.0", "0.21.1", "November 4, 2020"),
     ReleaseInfo("release_10", "1.6.0", "0.22.0", "November 18, 2020"),
+    ReleaseInfo("release_11", "1.7.0", "0.23.0", "December 21, 2020"),
+    ReleaseInfo("release_12", "1.7.2", "0.23.0", "December 22, 2020"),
 ]
 
 MAX_DAYS = 150  # do not print releases older than this many days
-sorted_versions = sorted(versions, key=lambda x: x.loose_version, reverse=True)
+sorted_versions = sorted(
+    versions, key=lambda x: (x.loose_version, x.csharp_version), reverse=True
+)
 
 print(table_line("master (unstable)", "master", "--"))
 highlight = True  # whether to bold the line or not

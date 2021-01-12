@@ -69,7 +69,7 @@ After launching your EC2 instance using the ami and ssh into it:
 2. Clone the ML-Agents repo and install the required Python packages
 
    ```sh
-   git clone --branch release_10 https://github.com/Unity-Technologies/ml-agents.git
+   git clone --branch release_12 https://github.com/Unity-Technologies/ml-agents.git
    cd ml-agents/ml-agents/
    pip3 install -e .
    ```

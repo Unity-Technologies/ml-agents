@@ -1,7 +1,3 @@
-using System;
-
-using Unity.MLAgents.Policies;
-
 namespace Unity.MLAgents.Actuators
 {
     /// <summary>

@@ -28,14 +28,14 @@ The ML-Agents Extensions package is not currently available in the Package Manag
 recommended ways to install the package:
 
 ### Local Installation
-[Clone the repository](https://github.com/Unity-Technologies/ml-agents/tree/release_10_docs/docs/Installation.md#clone-the-ml-agents-toolkit-repository-optional) and follow the
-[Local Installation for Development](https://github.com/Unity-Technologies/ml-agents/tree/release_10_docs/docs/Installation.md#advanced-local-installation-for-development-1)
+[Clone the repository](https://github.com/Unity-Technologies/ml-agents/tree/release_12_docs/docs/Installation.md#clone-the-ml-agents-toolkit-repository-optional) and follow the
+[Local Installation for Development](https://github.com/Unity-Technologies/ml-agents/tree/release_12_docs/docs/Installation.md#advanced-local-installation-for-development-1)
 directions (substituting `com.unity.ml-agents.extensions` for the package name).
 
 ### Github via Package Manager
 In Unity 2019.4 or later, open the Package Manager, hit the "+" button, and select "Add package from git URL".
 
-![Package Manager git URL](https://github.com/Unity-Technologies/ml-agents/tree/release_10_docs/docs/images/unity_package_manager_git_url.png)
+![Package Manager git URL](https://github.com/Unity-Technologies/ml-agents/tree/release_12_docs/docs/images/unity_package_manager_git_url.png)
 In the dialog that appears, enter
  ```
  git+https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents.extensions
@@ -60,4 +60,4 @@ following versions of the Unity Editor:
 none
 
 ## Need Help?
-The main [README](https://github.com/Unity-Technologies/ml-agents/tree/release_10_docs/README.md) contains links for contacting the team or getting support.
+The main [README](https://github.com/Unity-Technologies/ml-agents/tree/release_12_docs/README.md) contains links for contacting the team or getting support.

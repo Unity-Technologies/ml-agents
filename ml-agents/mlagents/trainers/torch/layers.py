@@ -15,6 +15,7 @@ class Initialization(Enum):
     XavierGlorotUniform = 2
     KaimingHeNormal = 3  # also known as Variance scaling
     KaimingHeUniform = 4
+    Normal = 5
 
 
 _init_methods = {
@@ -23,6 +24,7 @@ _init_methods = {
     Initialization.XavierGlorotUniform: torch.nn.init.xavier_uniform_,
     Initialization.KaimingHeNormal: torch.nn.init.kaiming_normal_,
     Initialization.KaimingHeUniform: torch.nn.init.kaiming_uniform_,
+    Initialization.Normal: torch.nn.init.normal_,
 }
 
 
@@ -118,14 +120,21 @@ class LinearEncoder(torch.nn.Module):
     Linear layers.
     """
 
-    def __init__(self, input_size: int, num_layers: int, hidden_size: int):
+    def __init__(
+        self,
+        input_size: int,
+        num_layers: int,
+        hidden_size: int,
+        kernel_init: Initialization = Initialization.KaimingHeNormal,
+        kernel_gain: float = 1.0,
+    ):
         super().__init__()
         self.layers = [
             linear_layer(
                 input_size,
                 hidden_size,
-                kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=1.0,
+                kernel_init=kernel_init,
+                kernel_gain=kernel_gain,
             )
         ]
         self.layers.append(Swish())
@@ -134,8 +143,8 @@ class LinearEncoder(torch.nn.Module):
                 linear_layer(
                     hidden_size,
                     hidden_size,
-                    kernel_init=Initialization.KaimingHeNormal,
-                    kernel_gain=1.0,
+                    kernel_init=kernel_init,
+                    kernel_gain=kernel_gain,
                 )
             )
             self.layers.append(Swish())
@@ -181,8 +190,8 @@ class LSTM(MemoryModule):
         self, input_tensor: torch.Tensor, memories: torch.Tensor
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         # We don't use torch.split here since it is not supported by Barracuda
-        h0 = memories[:, :, : self.hidden_size]
-        c0 = memories[:, :, self.hidden_size :]
+        h0 = memories[:, :, : self.hidden_size].contiguous()
+        c0 = memories[:, :, self.hidden_size :].contiguous()
         hidden = (h0, c0)
         lstm_out, hidden_out = self.lstm(input_tensor, hidden)
         output_mem = torch.cat(hidden_out, dim=-1)

@@ -2,51 +2,6 @@
 
 ## Installation problems
 
-### Tensorflow dependency
-
-ML Agents requires TensorFlow; if you don't already have it installed, `pip`
-will try to install it when you install the ml-agents package.
-
-If you see a message like this
-
-```console
-ERROR: Could not find a version that satisfies the requirement tensorflow<2.0,>=1.7 (from mlagents) (from versions: none)
-ERROR: No matching distribution found for tensorflow<2.0,>=1.7 (from mlagents)
-```
-
-it means that there is no version of TensorFlow for your python environment.
-Some known potential causes are:
-
-- You're using 32-bit python instead of 64-bit. See the answer
-  [here](https://stackoverflow.com/a/1405971/224264) for how to tell which you
-  have installed.
-- You have the `tensorflow-gpu` package installed. This is equivalent to
-  `tensorflow`, however `pip` doesn't recognize this. The best way to resolve
-  this is to update to `tensorflow==1.15.0` which provides GPU support in the
-  same package (see the
-  [release notes](https://github.com/tensorflow/tensorflow/issues/33374) for
-  more details.)
-- You're on another architecture (e.g. ARM) which requires vendor provided
-  packages.
-
-In all of these cases, the issue is a pip/python environment setup issue. Please
-search the tensorflow github issues for similar problems and solutions before
-creating a new issue.
-
-#### Visual C++ Dependency (Windows Users)
-When running `mlagents-learn`, if you see a stack trace with a message like this:
-
-```console
-ImportError: DLL load failed: The specified module could not be found.
-```
-
-then either of the required DLLs, `msvcp140.dll` (old) or `msvcp140_1.dll` (new), are missing on your machine. The `import tensorflow` command will print this warning message.
-
-To solve it, download and install (with a reboot) the install [Microsoft Visual C++ Redistributable for Visual Studio 2015, 2017 and 2019](https://support.microsoft.com/en-my/help/2977003/the-latest-supported-visual-c-downloads).
-
-For more details, please see the [TensorFlow 2.1.0 release notes](https://github.com/tensorflow/tensorflow/releases/tag/v2.1.0)
-and the [TensorFlow github issue](https://github.com/tensorflow/tensorflow/issues/22794#issuecomment-573297027).
-
 ## Environment Permission Error
 
 If you directly import your Unity environment without building it in the editor,

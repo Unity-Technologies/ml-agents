@@ -95,7 +95,7 @@ namespace Unity.MLAgents.Editor
         /// to make the custom GUI for.</param>
         static void DrawVectorAction(Rect position, SerializedProperty property)
         {
-            EditorGUI.LabelField(position, "Vector Action");
+            EditorGUI.LabelField(position, "Actions");
             position.y += k_LineHeight;
             EditorGUI.indentLevel++;
             var actionSpecProperty = property.FindPropertyRelative(k_ActionSpecName);
@@ -116,7 +116,7 @@ namespace Unity.MLAgents.Editor
             EditorGUI.PropertyField(
                 position,
                 continuousActionSize,
-                new GUIContent("Continuous Action Size", "Length of continuous action vector."));
+                new GUIContent("Continuous Actions", "Number of continuous actions."));
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace Unity.MLAgents.Editor
         {
             var branchSizes = property.FindPropertyRelative(k_DiscreteBranchSizeName);
             var newSize = EditorGUI.IntField(
-                position, "Discrete Branch Size", branchSizes.arraySize);
+                position, "Discrete Branches", branchSizes.arraySize);
 
             // This check is here due to:
             // https://fogbugz.unity3d.com/f/cases/1246524/

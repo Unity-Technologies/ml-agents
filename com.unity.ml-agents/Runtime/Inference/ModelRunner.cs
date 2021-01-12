@@ -41,7 +41,7 @@ namespace Unity.MLAgents.Inference
         /// the agents
         /// </summary>
         /// <param name="model"> The Barracuda model to load </param>
-        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         /// <param name="inferenceDevice"> Inference execution device. CPU is the fastest
         /// option for most of ML Agents models. </param>
         /// <param name="seed"> The seed that will be used to initialize the RandomNormal
@@ -84,6 +84,16 @@ namespace Unity.MLAgents.Inference
                 seed, m_TensorAllocator, m_Memories, barracudaModel);
             m_TensorApplier = new TensorApplier(
                 actionSpec, seed, m_TensorAllocator, m_Memories, barracudaModel);
+        }
+
+        public InferenceDevice InferenceDevice
+        {
+            get { return m_InferenceDevice; }
+        }
+
+        public NNModel Model
+        {
+            get { return m_Model; }
         }
 
         static Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)

@@ -4,6 +4,7 @@ import numpy as np
 
 from mlagents_envs.base_env import (
     ActionSpec,
+    SensorSpec,
     ActionTuple,
     BaseEnv,
     BehaviorSpec,
@@ -15,6 +16,7 @@ from mlagents_envs.tests.test_rpc_utils import proto_from_steps_and_action
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
+from mlagents.trainers.tests.dummy_config import create_sensor_specs_with_shapes
 
 OBS_SIZE = 1
 VIS_OBS_SIZE = (20, 20, 3)
@@ -57,7 +59,7 @@ class SimpleEnvironment(BaseEnv):
             continuous_action_size + discrete_action_size
         )  # to set the goals/positions
         self.action_spec = action_spec
-        self.behavior_spec = BehaviorSpec(self._make_obs_spec(), action_spec)
+        self.behavior_spec = BehaviorSpec(self._make_sensor_specs(), action_spec)
         self.action_spec = action_spec
         self.names = brain_names
         self.positions: Dict[str, List[float]] = {}
@@ -80,13 +82,14 @@ class SimpleEnvironment(BaseEnv):
             self.action[name] = None
             self.step_result[name] = None
 
-    def _make_obs_spec(self) -> List[Any]:
-        obs_spec: List[Any] = []
+    def _make_sensor_specs(self) -> SensorSpec:
+        obs_shape: List[Any] = []
         for _ in range(self.num_vector):
-            obs_spec.append((self.vec_obs_size,))
+            obs_shape.append((self.vec_obs_size,))
         for _ in range(self.num_visual):
-            obs_spec.append(self.vis_obs_size)
-        return obs_spec
+            obs_shape.append(self.vis_obs_size)
+        sen_spec = create_sensor_specs_with_shapes(obs_shape)
+        return sen_spec
 
     def _make_obs(self, value: float) -> List[np.ndarray]:
         obs = []

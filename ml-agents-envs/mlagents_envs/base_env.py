@@ -28,6 +28,7 @@ from typing import (
     Any,
     Mapping as MappingType,
 )
+from enum import IntFlag
 import numpy as np
 
 from mlagents_envs.exception import UnityActionException
@@ -45,7 +46,7 @@ class DecisionStep(NamedTuple):
      since the last simulation step.
      - agent_id is an int and an unique identifier for the corresponding Agent.
      - action_mask is an optional list of one dimensional array of booleans.
-     Only available in multi-discrete action space type.
+     Only available when using multi-discrete actions.
      Each array corresponds to an action branch. Each array contains a mask
      for each action of the branch. If true, the action is not available for
      the agent during this simulation step.
@@ -74,7 +75,7 @@ class DecisionSteps(Mapping):
      identifier for the corresponding Agent. This is used to track Agents
      across simulation steps.
      - action_mask is an optional list of two dimensional array of booleans.
-     Only available in multi-discrete action space type.
+     Only available when using multi-discrete actions.
      Each array corresponds to an action branch. The first dimension of each
      array is the batch size and the second contains a mask for each action of
      the branch. If true, the action is not available for the agent during
@@ -142,8 +143,8 @@ class DecisionSteps(Mapping):
         :param spec: The BehaviorSpec for the DecisionSteps
         """
         obs: List[np.ndarray] = []
-        for shape in spec.observation_shapes:
-            obs += [np.zeros((0,) + shape, dtype=np.float32)]
+        for sen_spec in spec.sensor_specs:
+            obs += [np.zeros((0,) + sen_spec.shape, dtype=np.float32)]
         return DecisionSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
@@ -247,8 +248,8 @@ class TerminalSteps(Mapping):
         :param spec: The BehaviorSpec for the TerminalSteps
         """
         obs: List[np.ndarray] = []
-        for shape in spec.observation_shapes:
-            obs += [np.zeros((0,) + shape, dtype=np.float32)]
+        for sen_spec in spec.sensor_specs:
+            obs += [np.zeros((0,) + sen_spec.shape, dtype=np.float32)]
         return TerminalSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
@@ -449,17 +450,53 @@ class ActionSpec(NamedTuple):
         return ActionSpec(0, discrete_branches)
 
 
+class DimensionProperty(IntFlag):
+    """
+    No properties specified.
+    """
+
+    UNSPECIFIED = 0
+    """
+    No Property of the observation in that dimension. Observation can be processed with
+    Fully connected networks.
+    """
+    NONE = 1
+    """
+    Means it is suitable to do a convolution in this dimension.
+    """
+    TRANSLATIONAL_EQUIVARIANCE = 2
+    """
+    Means that there can be a variable number of observations in this dimension.
+    The observations are unordered.
+    """
+    VARIABLE_SIZE = 4
+
+
+class SensorSpec(NamedTuple):
+    """
+    A NamedTuple containing information about the observation of Agents.
+    - shape is a Tuple of int : It corresponds to the shape of
+    an observation's dimensions.
+    - dimension_property is a Tuple of DimensionProperties flag, one flag for each
+    dimension.
+    """
+
+    shape: Tuple[int, ...]
+    dimension_property: Tuple[DimensionProperty, ...]
+
+
 class BehaviorSpec(NamedTuple):
     """
     A NamedTuple containing information about the observation and action
     spaces for a group of Agents under the same behavior.
-    - observation_shapes is a List of Tuples of int : Each Tuple corresponds
-    to an observation's dimensions. The shape tuples have the same ordering as
-    the ordering of the DecisionSteps and TerminalSteps.
-    - action_spec is an ActionSpec NamedTuple
+    - sensor_specs is a List of SensorSpec NamedTuple containing
+    information about the information of the Agent's observations such as their shapes.
+    The order of the SensorSpec is the same as the order of the observations of an
+    agent.
+    - action_spec is an ActionSpec NamedTuple.
     """
 
-    observation_shapes: List[Tuple]
+    sensor_specs: List[SensorSpec]
     action_spec: ActionSpec
 
 

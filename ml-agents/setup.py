@@ -80,5 +80,4 @@ setup(
         ]
     },
     cmdclass={"verify": VerifyVersionCommand},
-    extras_require={"tensorflow": ["tensorflow>=1.14,<3.0", "six>=1.12.0"]},
 )

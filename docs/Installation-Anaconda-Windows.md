@@ -123,10 +123,10 @@ commands in an Anaconda Prompt _(if you open a new prompt, be sure to activate
 the ml-agents Conda environment by typing `activate ml-agents`)_:
 
 ```sh
-git clone --branch release_10 https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch release_12 https://github.com/Unity-Technologies/ml-agents.git
 ```
 
-The `--branch release_10` option will switch to the tag of the latest stable
+The `--branch release_12` option will switch to the tag of the latest stable
 release. Omitting that will get the `master` branch which is potentially
 unstable.
 

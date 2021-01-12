@@ -133,9 +133,6 @@ Unity brain name: Ball3DLearning
         Number of Visual Observations (per agent): 0
         Vector Observation space size (per agent): 8
         Number of stacked Vector Observation: 1
-        Vector Action space type: continuous
-        Vector Action space size (per agent): [2]
-        Vector Action descriptions: ,
 INFO:mlagents_envs:Hyperparameters for the PPO Trainer of brain Ball3DLearning:
         batch_size:          64
         beta:                0.001

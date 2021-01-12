@@ -9,6 +9,7 @@ from mlagents.trainers.settings import BehavioralCloningSettings, ScheduleType
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.trajectory import ObsUtil
 
 
 class BCModule:
@@ -41,7 +42,6 @@ class BCModule:
         _, self.demonstration_buffer = demo_to_buffer(
             settings.demo_path, policy.sequence_length, policy.behavior_spec
         )
-
         self.batch_size = (
             settings.batch_size if settings.batch_size else default_batch_size
         )
@@ -138,14 +138,16 @@ class BCModule:
         return bc_loss
 
     def _update_batch(
-        self, mini_batch_demo: Dict[str, np.ndarray], n_sequences: int
+        self, mini_batch_demo: AgentBuffer, n_sequences: int
     ) -> Dict[str, float]:
         """
         Helper function for update_batch.
         """
-        obs = ModelUtils.list_to_tensor_list(
-            AgentBuffer.obs_list_to_obs_batch(mini_batch_demo["obs"]), dtype=torch.float
+        np_obs = ObsUtil.from_buffer(
+            mini_batch_demo, len(self.policy.behavior_spec.sensor_specs)
         )
+        # Convert to tensors
+        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
         act_masks = None
         expert_actions = AgentAction.from_dict(mini_batch_demo)
         if self.policy.behavior_spec.action_spec.discrete_size > 0:
@@ -165,7 +167,10 @@ class BCModule:
             memories = torch.zeros(1, self.n_sequences, self.policy.m_size)
 
         selected_actions, log_probs, _, _ = self.policy.sample_actions(
-            obs, masks=act_masks, memories=memories, seq_len=self.policy.sequence_length
+            tensor_obs,
+            masks=act_masks,
+            memories=memories,
+            seq_len=self.policy.sequence_length,
         )
         bc_loss = self._behavioral_cloning_loss(
             selected_actions, log_probs, expert_actions

@@ -19,8 +19,8 @@ from dependencies of other projects. This has a few advantages:
 
 ## Python Version Requirement (Required)
 
-This guide has been tested with Python 3.6 and 3.7. Python 3.8 is not supported
-at this time.
+This guide has been tested with Python 3.6 through Python 3.8. Newer versions might not
+have support for the dependent libraries, so are not recommended.
 
 ## Installing Pip (Required)
 

@@ -1,4 +1,4 @@
-from typing import Optional, Dict, List, Tuple
+from typing import Optional, Dict, List
 import numpy as np
 from mlagents.torch_utils import torch, default_device
 
@@ -15,6 +15,7 @@ from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.torch.layers import linear_layer, Initialization
 from mlagents.trainers.settings import NetworkSettings, EncoderType
 from mlagents.trainers.demo_loader import demo_to_buffer
+from mlagents.trainers.trajectory import ObsUtil
 
 
 class GAILRewardProvider(BaseRewardProvider):
@@ -82,9 +83,7 @@ class DiscriminatorNetwork(torch.nn.Module):
         unencoded_size = (
             self._action_flattener.flattened_size + 1 if settings.use_actions else 0
         )  # +1 is for dones
-        self.encoder = NetworkBody(
-            specs.observation_shapes, encoder_settings, unencoded_size
-        )
+        self.encoder = NetworkBody(specs.sensor_specs, encoder_settings, unencoded_size)
 
         estimator_input_size = settings.encoding_size
         if settings.use_vail:
@@ -103,7 +102,7 @@ class DiscriminatorNetwork(torch.nn.Module):
             )
 
         self._estimator = torch.nn.Sequential(
-            linear_layer(estimator_input_size, 1), torch.nn.Sigmoid()
+            linear_layer(estimator_input_size, 1, kernel_gain=0.2), torch.nn.Sigmoid()
         )
 
     def get_action_input(self, mini_batch: AgentBuffer) -> torch.Tensor:
@@ -113,16 +112,15 @@ class DiscriminatorNetwork(torch.nn.Module):
         """
         return self._action_flattener.forward(AgentAction.from_dict(mini_batch))
 
-    def get_state_inputs(
-        self, mini_batch: AgentBuffer
-    ) -> Tuple[List[torch.Tensor], List[torch.Tensor]]:
+    def get_state_inputs(self, mini_batch: AgentBuffer) -> List[torch.Tensor]:
         """
         Creates the observation input.
         """
-        net_inputs = ModelUtils.list_to_tensor_list(
-            AgentBuffer.obs_list_to_obs_batch(mini_batch["obs"]), dtype=torch.float
-        )
-        return net_inputs
+        n_obs = len(self.encoder.processors)
+        np_obs = ObsUtil.from_buffer(mini_batch, n_obs)
+        # Convert to tensors
+        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
+        return tensor_obs
 
     def compute_estimate(
         self, mini_batch: AgentBuffer, use_vail_noise: bool = False
@@ -134,14 +132,14 @@ class DiscriminatorNetwork(torch.nn.Module):
         :param use_vail_noise: Only when using VAIL : If true, will sample the code, if
         false, will return the mean of the code.
         """
-        net_inputs = self.get_state_inputs(mini_batch)
+        inputs = self.get_state_inputs(mini_batch)
         if self._settings.use_actions:
             actions = self.get_action_input(mini_batch)
             dones = torch.as_tensor(mini_batch["done"], dtype=torch.float).unsqueeze(1)
             action_inputs = torch.cat([actions, dones], dim=1)
-            hidden, _ = self.encoder(net_inputs, action_inputs)
+            hidden, _ = self.encoder(inputs, action_inputs)
         else:
-            hidden, _ = self.encoder(net_inputs)
+            hidden, _ = self.encoder(inputs)
         z_mu: Optional[torch.Tensor] = None
         if self._settings.use_vail:
             z_mu = self._z_mu_layer(hidden)

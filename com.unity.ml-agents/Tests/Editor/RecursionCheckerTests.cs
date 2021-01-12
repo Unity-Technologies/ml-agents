@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Tests
         class InfiniteRecurser
         {
             RecursionChecker m_checker = new RecursionChecker("InfiniteRecurser");
-            public int NumCalls = 0;
+            public int NumCalls;
 
             public void Implode()
             {

@@ -100,16 +100,13 @@ class UnityEnvironment(BaseEnv):
         elif unity_communicator_version.version[0] != api_version.version[0]:
             # Major versions mismatch.
             return False
-        elif unity_communicator_version.version[1] != api_version.version[1]:
-            # Non-beta minor versions mismatch.  Log a warning but allow execution to continue.
-            logger.warning(
-                f"WARNING: The communication API versions between Unity and python differ at the minor version level. "
-                f"Python API: {python_api_version}, Unity API: {unity_communicator_version}.\n"
-                f"This means that some features may not work unless you upgrade the package with the lower version."
-                f"Please find the versions that work best together from our release page.\n"
-                "https://github.com/Unity-Technologies/ml-agents/releases"
-            )
         else:
+            # Major versions match, so either:
+            # 1) The versions are identical, in which case there's no compatibility issues
+            # 2) The Unity version is newer, in which case we'll warn or fail on the Unity side if trying to use
+            #    unsupported features
+            # 3) The trainer version is newer, in which case new trainer features might be available but unused by C#
+            # In any of the cases, there's no reason to warn about mismatch here.
             logger.info(
                 f"Connected to Unity environment with package version {unity_package_version} "
                 f"and communication version {unity_com_ver}"
@@ -471,7 +468,7 @@ class UnityEnvironment(BaseEnv):
         """
         try:
             # A negative value -N indicates that the child was terminated by signal N (POSIX only).
-            s = signal.Signals(-returncode)  # pylint: disable=no-member
+            s = signal.Signals(-returncode)
             return s.name
         except Exception:
             # Should generally be a ValueError, but catch everything just in case.

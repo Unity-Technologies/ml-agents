@@ -10,7 +10,6 @@ from typing import Callable, Optional, List
 
 import mlagents.trainers
 import mlagents_envs
-from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.trainer import TrainerFactory
@@ -21,7 +20,7 @@ from mlagents.trainers.stats import (
     GaugeWriter,
     ConsoleWriter,
 )
-from mlagents.trainers.cli_utils import parser, DetectDefault
+from mlagents.trainers.cli_utils import parser
 from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.settings import RunOptions
 
@@ -43,7 +42,6 @@ TRAINING_STATUS_FILE_NAME = "training_status.json"
 
 
 def get_version_string() -> str:
-    # pylint: disable=no-member
     return f""" Version information:
   ml-agents: {mlagents.trainers.__version__},
   ml-agents-envs: {mlagents_envs.__version__},
@@ -135,8 +133,6 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             param_manager=env_parameter_manager,
             init_path=maybe_init_path,
             multi_gpu=False,
-            force_torch="torch" in DetectDefault.non_default_args,
-            force_tensorflow="tensorflow" in DetectDefault.non_default_args,
         )
         # Create controller and begin training.
         tc = TrainerController(
@@ -242,8 +238,6 @@ def run_cli(options: RunOptions) -> None:
         log_level = logging_util.DEBUG
     else:
         log_level = logging_util.INFO
-        # disable noisy warnings from tensorflow
-        tf_utils.set_warnings_enabled(False)
 
     logging_util.set_log_level(log_level)
 
