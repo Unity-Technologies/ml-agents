@@ -13,8 +13,7 @@ namespace Unity.MLAgents.Policies
     /// </summary>
     internal class HeuristicPolicy : IPolicy
     {
-        public delegate void ActionGenerator(in ActionBuffers actionBuffers);
-        ActionGenerator m_Heuristic;
+        IHeuristic m_Heuristic;
         ActionBuffers m_ActionBuffers;
         bool m_Done;
         bool m_DecisionRequested;
@@ -24,7 +23,7 @@ namespace Unity.MLAgents.Policies
 
 
         /// <inheritdoc />
-        public HeuristicPolicy(ActionGenerator heuristic, ActionSpec actionSpec)
+        public HeuristicPolicy(IHeuristic heuristic, ActionSpec actionSpec)
         {
             m_Heuristic = heuristic;
             var numContinuousActions = actionSpec.NumContinuousActions;
@@ -47,7 +46,7 @@ namespace Unity.MLAgents.Policies
         {
             if (!m_Done && m_DecisionRequested)
             {
-                m_Heuristic.Invoke(m_ActionBuffers);
+                m_Heuristic.Heuristic(m_ActionBuffers);
             }
             m_DecisionRequested = false;
             return ref m_ActionBuffers;

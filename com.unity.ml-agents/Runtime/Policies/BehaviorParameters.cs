@@ -196,7 +196,7 @@ namespace Unity.MLAgents.Policies
             get { return m_BehaviorName + "?team=" + TeamId; }
         }
 
-        internal IPolicy GeneratePolicy(ActionSpec actionSpec, HeuristicPolicy.ActionGenerator heuristic)
+        internal IPolicy GeneratePolicy(ActionSpec actionSpec, IHeuristic heuristic)
         {
             switch (m_BehaviorType)
             {
@@ -241,6 +241,5 @@ namespace Unity.MLAgents.Policies
             }
             agent.ReloadPolicy();
         }
-
     }
 }

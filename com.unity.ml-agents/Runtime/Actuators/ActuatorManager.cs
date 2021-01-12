@@ -206,6 +206,45 @@ namespace Unity.MLAgents.Actuators
 
         /// <summary>
         /// Iterates through all of the IActuators in this list and calls their
+        /// <see cref="IHeuristic.Heuristic"/> method on them, if implemented, with the appropriate
+        /// <see cref="ActionSegment{T}"/>s depending on their <see cref="ActionSpec"/>.
+        /// </summary>
+        public void ExecuteHeuristic()
+        {
+            ReadyActuatorsForExecution();
+            var continuousStart = 0;
+            var discreteStart = 0;
+            for (var i = 0; i < m_Actuators.Count; i++)
+            {
+                var actuator = m_Actuators[i];
+                var numContinuousActions = actuator.ActionSpec.NumContinuousActions;
+                var numDiscreteActions = actuator.ActionSpec.NumDiscreteActions;
+
+                var continuousActions = ActionSegment<float>.Empty;
+                if (numContinuousActions > 0)
+                {
+                    continuousActions = new ActionSegment<float>(StoredActions.ContinuousActions.Array,
+                        continuousStart,
+                        numContinuousActions);
+                }
+
+                var discreteActions = ActionSegment<int>.Empty;
+                if (numDiscreteActions > 0)
+                {
+                    discreteActions = new ActionSegment<int>(StoredActions.DiscreteActions.Array,
+                        discreteStart,
+                        numDiscreteActions);
+                }
+
+                var heuristic = actuator as IHeuristic;
+                heuristic?.Heuristic(new ActionBuffers(continuousActions, discreteActions));
+                continuousStart += numContinuousActions;
+                discreteStart += numDiscreteActions;
+            }
+        }
+
+        /// <summary>
+        /// Iterates through all of the IActuators in this list and calls their
         /// <see cref="IActionReceiver.OnActionReceived"/> method on them with the appropriate
         /// <see cref="ActionSegment{T}"/>s depending on their <see cref="ActionSpec"/>.
         /// </summary>

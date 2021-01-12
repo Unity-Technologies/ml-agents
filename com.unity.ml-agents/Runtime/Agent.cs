@@ -166,7 +166,7 @@ namespace Unity.MLAgents
         "docs/Learning-Environment-Design-Agents.md")]
     [Serializable]
     [RequireComponent(typeof(BehaviorParameters))]
-    public partial class Agent : MonoBehaviour, ISerializationCallbackReceiver, IActionReceiver
+    public partial class Agent : MonoBehaviour, ISerializationCallbackReceiver, IActionReceiver, IHeuristic
     {
         IPolicy m_Brain;
         BehaviorParameters m_PolicyFactory;
@@ -313,6 +313,11 @@ namespace Unity.MLAgents
         float[] m_LegacyActionCache;
 
         /// <summary>
+        /// This is used to avoid allocation of a float array during legacy calls to Heuristic.
+        /// </summary>
+        float[] m_LegacyHeuristicCache;
+
+        /// <summary>
         /// Called when the attached [GameObject] becomes enabled and active.
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </summary>
@@ -429,7 +434,7 @@ namespace Unity.MLAgents
                 InitializeActuators();
             }
 
-            m_Brain = m_PolicyFactory.GeneratePolicy(m_ActuatorManager.GetCombinedActionSpec(), Heuristic);
+            m_Brain = m_PolicyFactory.GeneratePolicy(m_ActuatorManager.GetCombinedActionSpec(), this);
             ResetData();
             Initialize();
 
@@ -606,7 +611,7 @@ namespace Unity.MLAgents
                 return;
             }
             m_Brain?.Dispose();
-            m_Brain = m_PolicyFactory.GeneratePolicy(m_ActuatorManager.GetCombinedActionSpec(), Heuristic);
+            m_Brain = m_PolicyFactory.GeneratePolicy(m_ActuatorManager.GetCombinedActionSpec(), this);
         }
 
         /// <summary>
@@ -889,27 +894,30 @@ namespace Unity.MLAgents
             // Disable deprecation warnings so we can call the legacy overload.
 #pragma warning disable CS0618
 
+            Array.Clear(m_LegacyHeuristicCache, 0, m_LegacyHeuristicCache.Length);
             // The default implementation of Heuristic calls the
             // obsolete version for backward compatibility
             switch (m_PolicyFactory.BrainParameters.VectorActionSpaceType)
             {
                 case SpaceType.Continuous:
-                    Heuristic(actionsOut.ContinuousActions.Array);
+                    Heuristic(m_LegacyHeuristicCache);
+                    Array.Copy(m_LegacyHeuristicCache, actionsOut.ContinuousActions.Array, m_LegacyActionCache.Length);
                     actionsOut.DiscreteActions.Clear();
                     break;
                 case SpaceType.Discrete:
-                    var convertedOut = Array.ConvertAll(actionsOut.DiscreteActions.Array, x => (float)x);
-                    Heuristic(convertedOut);
+                    Heuristic(m_LegacyHeuristicCache);
                     var discreteActionSegment = actionsOut.DiscreteActions;
                     for (var i = 0; i < actionsOut.DiscreteActions.Length; i++)
                     {
-                        discreteActionSegment[i] = (int)convertedOut[i];
+                        discreteActionSegment[i] = (int)m_LegacyHeuristicCache[i];
                     }
                     actionsOut.ContinuousActions.Clear();
                     break;
             }
 #pragma warning restore CS0618
 
+            // Send heuristic buffers to actuators if they implement IHeuristic
+            m_ActuatorManager.ExecuteHeuristic();
         }
 
         /// <summary>
@@ -995,7 +1003,12 @@ namespace Unity.MLAgents
             var param = m_PolicyFactory.BrainParameters;
             m_VectorActuator = new VectorActuator(this, param.ActionSpec);
             m_ActuatorManager = new ActuatorManager(attachedActuators.Length + 1);
-            m_LegacyActionCache = new float[m_VectorActuator.TotalNumberOfActions()];
+#pragma warning disable 618
+            m_LegacyActionCache = new float[param.VectorActionSpaceType == SpaceType.Continuous
+                                            ? param.ActionSpec.NumContinuousActions
+                                            : param.ActionSpec.NumDiscreteActions];
+            m_LegacyHeuristicCache = new float[m_LegacyActionCache.Length];
+#pragma warning restore 618
 
             m_ActuatorManager.Add(m_VectorActuator);
 
@@ -1241,11 +1254,18 @@ namespace Unity.MLAgents
 
             if (!actions.ContinuousActions.IsEmpty())
             {
-                m_LegacyActionCache = actions.ContinuousActions.Array;
+                Array.Copy(actions.ContinuousActions.Array,
+                    m_LegacyActionCache,
+                    actionSpec.NumContinuousActions);
             }
             else
             {
-                m_LegacyActionCache = Array.ConvertAll(actions.DiscreteActions.Array, x => (float)x);
+                var discreteArray = Array.ConvertAll(actions.DiscreteActions.Array, x => (float)x);
+                Array.Copy(discreteArray,
+                    0,
+                    m_LegacyActionCache,
+                    actionSpec.NumContinuousActions,
+                    actionSpec.NumDiscreteActions);
             }
             // Disable deprecation warnings so we can call the legacy overload.
 #pragma warning disable CS0618

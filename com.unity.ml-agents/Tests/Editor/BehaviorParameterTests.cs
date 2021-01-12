@@ -6,9 +6,9 @@ using Unity.MLAgents.Policies;
 namespace Unity.MLAgents.Tests
 {
     [TestFixture]
-    public class BehaviorParameterTests
+    public class BehaviorParameterTests : IHeuristic
     {
-        static void DummyHeuristic(in ActionBuffers actionsOut)
+        public void Heuristic(in ActionBuffers actionsOut)
         {
             // No-op
         }
@@ -23,7 +23,7 @@ namespace Unity.MLAgents.Tests
 
             Assert.Throws<UnityAgentsException>(() =>
             {
-                bp.GeneratePolicy(actionSpec, DummyHeuristic);
+                bp.GeneratePolicy(actionSpec, this);
             });
         }
     }
