@@ -87,7 +87,7 @@ def test_simple_transformer_training():
     torch.manual_seed(1336)
     size, n_k, = 3, 5
     embedding_size = 64
-    entity_embeddings = EntityEmbeddings(size, [size], [n_k], embedding_size)
+    entity_embeddings = EntityEmbeddings(size, [size], embedding_size, [n_k])
     transformer = ResidualSelfAttention(embedding_size, [n_k])
     l_layer = linear_layer(embedding_size, size)
     optimizer = torch.optim.Adam(
