@@ -95,20 +95,10 @@ def lstm_layer(
 
 
 class LayerNorm(torch.nn.Module):
-    def __init__(self, input_size: int, elementwise_affine: bool = False):
-        super().__init__()
-        self.gamma = torch.nn.Parameter(
-            torch.ones(input_size, requires_grad=elementwise_affine)
-        )
-        self.beta = torch.nn.Parameter(
-            torch.zeros(input_size, requires_grad=elementwise_affine)
-        )
-
     def forward(self, layer_activations: torch.Tensor):
         mean = torch.mean(layer_activations, dim=-1, keepdim=True)
-        centered_activations = layer_activations - mean
-        var = torch.mean(centered_activations ** 2, dim=-1, keepdim=True)
-        return centered_activations / (torch.sqrt(var + 1e-5)) * self.gamma + self.beta
+        var = torch.mean((layer_activations - mean) ** 2, dim=-1, keepdim=True)
+        return (layer_activations - mean) / (torch.sqrt(var + 1e-5))
 
 
 class MemoryModule(torch.nn.Module):

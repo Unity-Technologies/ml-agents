@@ -14,7 +14,7 @@ from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
-from mlagents.trainers.torch.attention import SimpleTransformer
+from mlagents.trainers.torch.attention import ResidualSelfAttention, EntityEmbeddings
 
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
@@ -66,9 +66,12 @@ class NetworkBody(nn.Module):
             #     self.h_size,
             #     self.h_size
             #     )
-            self.transformer = SimpleTransformer(
-                x_self_len, entities_sizes, self.n_embd
+            self.entity_embedding = EntityEmbeddings(
+                x_self_len, entities_sizes, [20], self.n_embd, concat_self=False
             )
+
+            # self.embedding_norm = torch.nn.LayerNorm(self.n_embd)
+            self.transformer = ResidualSelfAttention(self.n_embd, [20])
             # self.transformer = SmallestAttention(x_self_len, entities_sizes, self.h_size, self.h_size)
             # self.transformer = SmallestAttention(64, [64], self.h_size, self.h_size)
             # self.use_fc = True
@@ -89,6 +92,11 @@ class NetworkBody(nn.Module):
             raise Exception("No valid inputs to network.")
         for _, tens in list(self.transformer.named_parameters()):
             tens.retain_grad()
+        for _, tens in list(self.entity_embedding.named_parameters()):
+            tens.retain_grad()
+        # for _, tens in list(self.embedding_norm.named_parameters()):
+        #    tens.retain_grad()
+
         total_enc_size += encoded_act_size
         self.linear_encoder = LinearEncoder(total_enc_size, n_layers, self.h_size)
         for _, tens in list(self.linear_encoder.named_parameters()):
@@ -144,11 +152,12 @@ class NetworkBody(nn.Module):
             x_self_encoded = x_self
             # x_self_encoded = self.x_self_enc(x_self)
 
+            embedded_entities = self.entity_embedding(x_self_encoded, var_len_inputs)
+            # embedded_entities = self.embedding_norm(embedded_entities)
             encoded_state = self.transformer(
-                x_self_encoded,
-                var_len_inputs,
-                SimpleTransformer.get_masks(var_len_inputs),
+                embedded_entities, EntityEmbeddings.get_masks(var_len_inputs)
             )
+            encoded_state = torch.cat([x_self_encoded, encoded_state], dim=1)
             # print("\n\n\nUsing transformer ", self.transformer, "use fc = ", self.use_fc, " x_self.shape=",x_self_encoded.shape," var_len_inputs[0].shape=",var_len_inputs[0].shape," len(var_len_inputs)=",len(var_len_inputs))
         else:
             encoded_state = torch.cat(encodes, dim=1)
