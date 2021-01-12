@@ -158,7 +158,10 @@ def worker(
             side_channels.append(training_analytics_channel)
 
         env = env_factory(worker_id, side_channels)
-        if not env.academy_capabilities.trainingAnalytics:
+        if (
+            not env.academy_capabilities
+            or not env.academy_capabilities.trainingAnalytics
+        ):
             # Make sure we don't try to send training analytics if the environment doesn't know how to process
             # them. This wouldn't be catastrophic, but would result in unknown SideChannel UUIDs being used.
             training_analytics_channel = None

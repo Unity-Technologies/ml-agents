@@ -72,6 +72,8 @@ class SimpleEnvironment(BaseEnv):
         self.step_result: Dict[str, Tuple[DecisionSteps, TerminalSteps]] = {}
         self.agent_id: Dict[str, int] = {}
         self.step_size = step_size  # defines the difficulty of the test
+        # Allow to be used as a UnityEnvironment during tests
+        self.academy_capabilities = None
 
         for name in self.names:
             self.agent_id[name] = 0
