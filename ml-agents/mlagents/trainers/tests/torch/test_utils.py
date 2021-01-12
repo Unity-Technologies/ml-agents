@@ -7,6 +7,7 @@ from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.tests.dummy_config import create_sensor_specs_with_shapes
+from mlagents_envs.base_env import SensorSpec, DimensionProperty
 
 
 def test_min_visual_size():
@@ -189,3 +190,75 @@ def test_soft_update():
 
     ModelUtils.soft_update(tm1, tm2, tau=1.0)
     assert torch.equal(tm2.parameter, tm1.parameter)
+
+
+def test_can_train_dim_property():
+    spec = SensorSpec(
+        (5, 5, 3),
+        (
+            DimensionProperty.UNSPECIFIED,
+            DimensionProperty.UNSPECIFIED,
+            DimensionProperty.UNSPECIFIED,
+        ),
+    )
+    assert ModelUtils.can_encode_visual(spec)
+    assert not ModelUtils.can_encode_vector(spec)
+    assert not ModelUtils.can_encode_attention(spec)
+
+    spec = SensorSpec(
+        (5, 5, 3),
+        (
+            DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
+            DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
+            DimensionProperty.NONE,
+        ),
+    )
+    assert ModelUtils.can_encode_visual(spec)
+    assert not ModelUtils.can_encode_vector(spec)
+    assert not ModelUtils.can_encode_attention(spec)
+
+    spec = SensorSpec(
+        (5, 5, 3, 5),
+        (
+            DimensionProperty.UNSPECIFIED,
+            DimensionProperty.UNSPECIFIED,
+            DimensionProperty.UNSPECIFIED,
+            DimensionProperty.UNSPECIFIED,
+        ),
+    )
+    assert not ModelUtils.can_encode_visual(spec)
+    assert not ModelUtils.can_encode_vector(spec)
+    assert not ModelUtils.can_encode_attention(spec)
+
+    spec = SensorSpec(
+        (5, 6), (DimensionProperty.UNSPECIFIED, DimensionProperty.UNSPECIFIED)
+    )
+    assert not ModelUtils.can_encode_visual(spec)
+    assert not ModelUtils.can_encode_vector(spec)
+    assert not ModelUtils.can_encode_attention(spec)
+
+    spec = SensorSpec(
+        (5, 6),
+        (
+            DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
+            DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
+        ),
+    )
+    assert not ModelUtils.can_encode_visual(spec)
+    assert not ModelUtils.can_encode_vector(spec)
+    assert not ModelUtils.can_encode_attention(spec)
+
+    spec = SensorSpec((5, 6), (DimensionProperty.VARIABLE_SIZE, DimensionProperty.NONE))
+    assert not ModelUtils.can_encode_visual(spec)
+    assert not ModelUtils.can_encode_vector(spec)
+    assert ModelUtils.can_encode_attention(spec)
+
+    spec = SensorSpec((5,), (DimensionProperty.UNSPECIFIED,))
+    assert not ModelUtils.can_encode_visual(spec)
+    assert ModelUtils.can_encode_vector(spec)
+    assert not ModelUtils.can_encode_attention(spec)
+
+    spec = SensorSpec((5,), (DimensionProperty.NONE,))
+    assert not ModelUtils.can_encode_visual(spec)
+    assert ModelUtils.can_encode_vector(spec)
+    assert not ModelUtils.can_encode_attention(spec)

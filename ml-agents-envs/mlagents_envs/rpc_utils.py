@@ -37,6 +37,12 @@ def behavior_spec_from_proto(
         tuple(DimensionProperty(dim) for dim in obs.dimension_properties)
         for obs in agent_info.observations
     ]
+    dim_props = [
+        dim_prop
+        if len(dim_prop) > 0
+        else (DimensionProperty.UNSPECIFIED,) * len(observation_shape[idx])
+        for idx, dim_prop in enumerate(dim_props)
+    ]
     sensor_specs = [
         SensorSpec(obs_shape, dim_p)
         for obs_shape, dim_p in zip(observation_shape, dim_props)

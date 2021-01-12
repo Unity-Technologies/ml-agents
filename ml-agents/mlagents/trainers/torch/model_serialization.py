@@ -68,6 +68,13 @@ class ModelSerializer:
             for sen_spec in self.policy.behavior_spec.sensor_specs
             if len(sen_spec.shape) == 3
         ]
+
+        dummy_var_len_obs = [
+            torch.zeros(batch_dim + [sen_spec.shape[0], sen_spec.shape[1]])
+            for sen_spec in self.policy.behavior_spec.sensor_specs
+            if len(sen_spec.shape) == 2
+        ]
+
         dummy_masks = torch.ones(
             batch_dim + [sum(self.policy.behavior_spec.action_spec.discrete_branches)]
         )
@@ -75,11 +82,22 @@ class ModelSerializer:
             batch_dim + seq_len_dim + [self.policy.export_memory_size]
         )
 
-        self.dummy_input = (dummy_vec_obs, dummy_vis_obs, dummy_masks, dummy_memories)
+        self.dummy_input = (
+            dummy_vec_obs,
+            dummy_vis_obs,
+            dummy_var_len_obs,
+            dummy_masks,
+            dummy_memories,
+        )
 
         self.input_names = (
             ["vector_observation"]
             + [f"visual_observation_{i}" for i in range(num_vis_obs)]
+            + [
+                f"obs_{i}"
+                for i, sens_spec in enumerate(self.policy.behavior_spec.sensor_specs)
+                if len(sens_spec.shape) == 2
+            ]
             + ["action_masks", "memories"]
         )
         self.dynamic_axes = {name: {0: "batch"} for name in self.input_names}
