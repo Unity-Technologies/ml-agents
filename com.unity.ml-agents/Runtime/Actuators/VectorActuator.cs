@@ -21,7 +21,6 @@ namespace Unity.MLAgents.Actuators
         /// <param name="actionSpec"></param>
         /// <param name="name"></param>
         public VectorActuator(IActionReceiver actionReceiver,
-
                               ActionSpec actionSpec,
                               string name = "VectorActuator")
         {
