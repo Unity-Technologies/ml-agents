@@ -227,7 +227,11 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         //Give Agent Rewards
         foreach (var item in AgentsList)
         {
-            item.Agent.AddReward(score);
+            if (item.Agent.gameObject.activeInHierarchy)
+            {
+                print($"{item.Agent.name} scored");
+                item.Agent.AddReward(score);
+            }
         }
 
         // Swap ground material for a bit to indicate we scored.
