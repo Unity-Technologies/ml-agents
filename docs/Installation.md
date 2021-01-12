@@ -125,7 +125,7 @@ On Windows, you'll have to install the PyTorch package separately prior to
 installing ML-Agents. Activate your virtual environment and run from the command line:
 
 ```sh
-pip3 install torch==1.7.0 -f https://download.pytorch.org/whl/torch_stable.html
+pip3 install torch~=1.7.1 -f https://download.pytorch.org/whl/torch_stable.html
 ```
 
 Note that on Windows, you may also need Microsoft's
