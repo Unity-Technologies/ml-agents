@@ -50,6 +50,11 @@ namespace Unity.MLAgents
         /// </summary>
         public int episodeId;
 
+        /// <summary>
+        /// Team Manager identifier.
+        /// </summary>
+        public string teamManagerId;
+
         public void ClearActions()
         {
             storedVectorActions.Clear();
@@ -445,6 +450,11 @@ namespace Unity.MLAgents
                 new int[m_ActuatorManager.NumDiscreteActions]
             );
 
+            if (m_TeamManager != null)
+            {
+                m_Info.teamManagerId = m_TeamManager.GetId();
+            }
+
             // The first time the Academy resets, all Agents in the scene will be
             // forced to reset through the <see cref="AgentForceReset"/> event.
             // To avoid the Agent resetting twice, the Agents will not begin their
@@ -546,10 +556,9 @@ namespace Unity.MLAgents
             }
             else
             {
-                // We request a decision so Python knows the Agent is done immediately
-                m_Brain?.RequestDecision(m_Info, sensors);
-                ResetSensors();
+                SendDoneToTrainer();
             }
+            ResetSensors();
 
             // We also have to write any to any DemonstationStores so that they get the "done" flag.
             foreach (var demoWriter in DemonstrationWriters)
@@ -570,6 +579,12 @@ namespace Unity.MLAgents
             m_RequestAction = false;
             m_RequestDecision = false;
             m_Info.storedVectorActions.Clear();
+        }
+
+        public void SendDoneToTrainer()
+        {
+            // We request a decision so Python knows the Agent is done immediately
+            m_Brain?.RequestDecision(m_Info, sensors);
         }
 
         /// <summary>
@@ -1342,6 +1357,7 @@ namespace Unity.MLAgents
         public void SetTeamManager(ITeamManager teamManager)
         {
             m_TeamManager = teamManager;
+            m_Info.teamManagerId = teamManager?.GetId();
             teamManager?.RegisterAgent(this);
         }
     }

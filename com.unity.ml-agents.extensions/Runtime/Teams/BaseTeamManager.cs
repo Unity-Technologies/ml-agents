@@ -2,17 +2,17 @@ using System.Collections.Generic;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 
-namespace Teams
+namespace Unity.MLAgents.Extensions.Teams
 {
-    // TODO abstract? inherit from MonoBehavior?
     public class BaseTeamManager : ITeamManager
     {
-        public void RegisterAgent(Agent agent)
+        string m_Id = System.Guid.NewGuid().ToString();
+        public virtual void RegisterAgent(Agent agent)
         {
             throw new System.NotImplementedException();
         }
 
-        public void OnAgentDone(Agent agent, Agent.DoneReason doneReason, List<ISensor> sensors)
+        public virtual void OnAgentDone(Agent agent, Agent.DoneReason doneReason, List<ISensor> sensors)
         {
             // Possible implementation - save reference to Agent's IPolicy so that we can repeatedly
             // call IPolicy.RequestDecision on behalf of the Agent after it's dead
@@ -20,9 +20,14 @@ namespace Teams
             throw new System.NotImplementedException();
         }
 
-        public void AddTeamReward(float reward)
+        public virtual void AddTeamReward(float reward)
         {
 
+        }
+
+        public string GetId()
+        {
+            return m_Id;
         }
 
     }
