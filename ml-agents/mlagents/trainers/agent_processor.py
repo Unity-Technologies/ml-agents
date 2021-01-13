@@ -51,7 +51,8 @@ class AgentProcessor:
         self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
         self.last_experience: Dict[str, AgentExperience] = {}
         self.last_step_result: Dict[str, Tuple[DecisionStep, int]] = {}
-        # current_group_obs is used to collect the last seen obs of all the agents, and assemble the next_collab_obs.
+        # current_group_obs is used to collect the last seen obs of all the agents in the same group,
+        # and assemble the next_collab_obs.
         self.current_group_obs: Dict[str, Dict[str, List[np.ndarray]]] = defaultdict(
             lambda: defaultdict(list)
         )
@@ -210,9 +211,7 @@ class AgentProcessor:
                 next_obs = step.obs
                 next_collab_obs = []
                 for _id, _exp in self.current_group_obs[step.team_manager_id].items():
-                    if _id == global_id:
-                        continue
-                    else:
+                    if _id != global_id:
                         next_collab_obs.append(_exp)
 
                 trajectory = Trajectory(

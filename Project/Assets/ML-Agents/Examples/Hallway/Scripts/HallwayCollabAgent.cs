@@ -12,15 +12,13 @@ public class HallwayCollabAgent : HallwayAgent
     public bool isSpotter = true;
     int m_Message = 0;
 
+
     [HideInInspector]
     public int selection = 0;
 
     public override void Initialize()
     {
-        m_HallwaySettings = FindObjectOfType<HallwaySettings>();
-        m_AgentRb = GetComponent<Rigidbody>();
-        m_GroundRenderer = ground.GetComponent<Renderer>();
-        m_GroundMaterial = m_GroundRenderer.material;
+        base.Initialize();
         if (isSpotter)
         {
             var teamManager = new HallwayTeamManager();

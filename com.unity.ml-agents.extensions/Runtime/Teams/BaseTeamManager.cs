@@ -6,7 +6,8 @@ namespace Unity.MLAgents.Extensions.Teams
 {
     public class BaseTeamManager : ITeamManager
     {
-        string m_Id = System.Guid.NewGuid().ToString();
+        readonly string m_Id = System.Guid.NewGuid().ToString();
+
         public virtual void RegisterAgent(Agent agent)
         {
             throw new System.NotImplementedException();

@@ -558,7 +558,6 @@ namespace Unity.MLAgents
             {
                 SendDoneToTrainer();
             }
-            ResetSensors();
 
             // We also have to write any to any DemonstationStores so that they get the "done" flag.
             foreach (var demoWriter in DemonstrationWriters)
@@ -585,6 +584,7 @@ namespace Unity.MLAgents
         {
             // We request a decision so Python knows the Agent is done immediately
             m_Brain?.RequestDecision(m_Info, sensors);
+            ResetSensors();
         }
 
         /// <summary>
