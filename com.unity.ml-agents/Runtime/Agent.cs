@@ -1000,12 +1000,8 @@ namespace Unity.MLAgents
             var param = m_PolicyFactory.BrainParameters;
             m_VectorActuator = new VectorActuator(this, this, param.ActionSpec);
             m_ActuatorManager = new ActuatorManager(attachedActuators.Length + 1);
-#pragma warning disable 618
-            m_LegacyActionCache = new float[param.VectorActionSpaceType == SpaceType.Continuous
-                                            ? param.ActionSpec.NumContinuousActions
-                                            : param.ActionSpec.NumDiscreteActions];
-            m_LegacyHeuristicCache = new float[m_LegacyActionCache.Length];
-#pragma warning restore 618
+            m_LegacyActionCache = new float[m_VectorActuator.TotalNumberOfActions()];
+            m_LegacyHeuristicCache = new float[m_VectorActuator.TotalNumberOfActions()];
 
             m_ActuatorManager.Add(m_VectorActuator);
 
@@ -1257,12 +1253,10 @@ namespace Unity.MLAgents
             }
             else
             {
-                var discreteArray = Array.ConvertAll(actions.DiscreteActions.Array, x => (float)x);
-                Array.Copy(discreteArray,
-                    0,
-                    m_LegacyActionCache,
-                    actionSpec.NumContinuousActions,
-                    actionSpec.NumDiscreteActions);
+                for (var i = 0; i < m_LegacyActionCache.Length; i++)
+                {
+                    m_LegacyActionCache[i] = (float)actions.DiscreteActions[i];
+                }
             }
             // Disable deprecation warnings so we can call the legacy overload.
 #pragma warning disable CS0618
