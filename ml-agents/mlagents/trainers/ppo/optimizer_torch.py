@@ -135,7 +135,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             )
             returns[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns"])
 
-        n_obs = len(self.policy.behavior_spec.sensor_specs)
+        n_obs = len(self.policy.behavior_spec.observation_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
         # Convert to tensors
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]

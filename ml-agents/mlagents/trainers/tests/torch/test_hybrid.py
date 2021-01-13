@@ -31,7 +31,9 @@ def test_hybrid_ppo(action_size):
         network_settings=new_network_settings,
         max_steps=10000,
     )
-    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
+    check_environment_trains(
+        env, {BRAIN_NAME: config}, success_threshold=0.9, training_seed=1212
+    )
 
 
 @pytest.mark.parametrize("num_visual", [1, 2])
@@ -121,4 +123,4 @@ def test_hybrid_recurrent_sac():
         network_settings=new_networksettings,
         max_steps=3500,
     )
-    check_environment_trains(env, {BRAIN_NAME: config})
+    check_environment_trains(env, {BRAIN_NAME: config}, training_seed=1212)

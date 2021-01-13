@@ -77,7 +77,9 @@ class CuriosityNetwork(torch.nn.Module):
             vis_encode_type=EncoderType.SIMPLE,
             memory=None,
         )
-        self._state_encoder = NetworkBody(specs.sensor_specs, state_encoder_settings)
+        self._state_encoder = NetworkBody(
+            specs.observation_specs, state_encoder_settings
+        )
 
         self._action_flattener = ActionFlattener(self._action_spec)
 

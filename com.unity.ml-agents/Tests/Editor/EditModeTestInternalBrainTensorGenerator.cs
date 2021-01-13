@@ -109,7 +109,7 @@ namespace Unity.MLAgents.Tests
             const int batchSize = 4;
             var agentInfos = GetFakeAgents(ObservableAttributeOptions.ExamineAll);
             var alloc = new TensorCachingAllocator();
-            var generator = new VectorObservationGenerator(alloc);
+            var generator = new ObservationGenerator(alloc);
             generator.AddSensorIndex(0); // ObservableAttribute (size 1)
             generator.AddSensorIndex(1); // TestSensor (size 0)
             generator.AddSensorIndex(2); // TestSensor (size 0)
