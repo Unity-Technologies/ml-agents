@@ -26,7 +26,6 @@ namespace Unity.MLAgents.Editor
         const string k_InferenceDeviceName = "m_InferenceDevice";
         const string k_BehaviorTypeName = "m_BehaviorType";
         const string k_TeamIdName = "TeamId";
-        const string k_GroupIdName = "GroupId";
         const string k_UseChildSensorsName = "m_UseChildSensors";
         const string k_ObservableAttributeHandlingName = "m_ObservableAttributeHandling";
 
@@ -68,7 +67,6 @@ namespace Unity.MLAgents.Editor
             }
             needPolicyUpdate = needPolicyUpdate || EditorGUI.EndChangeCheck();
 
-            EditorGUILayout.PropertyField(so.FindProperty(k_GroupIdName));
             EditorGUILayout.PropertyField(so.FindProperty(k_TeamIdName));
             EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {

@@ -26,17 +26,18 @@ namespace Unity.MLAgents.CommunicatorObjects {
           string.Concat(
             "CjNtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2FnZW50X2lu",
             "Zm8ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzGjRtbGFnZW50c19lbnZz",
-            "L2NvbW11bmljYXRvcl9vYmplY3RzL29ic2VydmF0aW9uLnByb3RvItEBCg5B",
+            "L2NvbW11bmljYXRvcl9vYmplY3RzL29ic2VydmF0aW9uLnByb3RvIuoBCg5B",
             "Z2VudEluZm9Qcm90bxIOCgZyZXdhcmQYByABKAISDAoEZG9uZRgIIAEoCBIY",
             "ChBtYXhfc3RlcF9yZWFjaGVkGAkgASgIEgoKAmlkGAogASgFEhMKC2FjdGlv",
             "bl9tYXNrGAsgAygIEjwKDG9ic2VydmF0aW9ucxgNIAMoCzImLmNvbW11bmlj",
-            "YXRvcl9vYmplY3RzLk9ic2VydmF0aW9uUHJvdG9KBAgBEAJKBAgCEANKBAgD",
-            "EARKBAgEEAVKBAgFEAZKBAgGEAdKBAgMEA1CJaoCIlVuaXR5Lk1MQWdlbnRz",
-            "LkNvbW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
+            "YXRvcl9vYmplY3RzLk9ic2VydmF0aW9uUHJvdG8SFwoPdGVhbV9tYW5hZ2Vy",
+            "X2lkGA4gASgJSgQIARACSgQIAhADSgQIAxAESgQIBBAFSgQIBRAGSgQIBhAH",
+            "SgQIDBANQiWqAiJVbml0eS5NTEFnZW50cy5Db21tdW5pY2F0b3JPYmplY3Rz",
+            "YgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Unity.MLAgents.CommunicatorObjects.ObservationReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.AgentInfoProto), global::Unity.MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "Reward", "Done", "MaxStepReached", "Id", "ActionMask", "Observations" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.AgentInfoProto), global::Unity.MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "Reward", "Done", "MaxStepReached", "Id", "ActionMask", "Observations", "TeamManagerId" }, null, null, null)
           }));
     }
     #endregion
@@ -74,6 +75,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       id_ = other.id_;
       actionMask_ = other.actionMask_.Clone();
       observations_ = other.observations_.Clone();
+      teamManagerId_ = other.teamManagerId_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -146,6 +148,17 @@ namespace Unity.MLAgents.CommunicatorObjects {
       get { return observations_; }
     }
 
+    /// <summary>Field number for the "team_manager_id" field.</summary>
+    public const int TeamManagerIdFieldNumber = 14;
+    private string teamManagerId_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string TeamManagerId {
+      get { return teamManagerId_; }
+      set {
+        teamManagerId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as AgentInfoProto);
@@ -165,6 +178,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (Id != other.Id) return false;
       if(!actionMask_.Equals(other.actionMask_)) return false;
       if(!observations_.Equals(other.observations_)) return false;
+      if (TeamManagerId != other.TeamManagerId) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -177,6 +191,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (Id != 0) hash ^= Id.GetHashCode();
       hash ^= actionMask_.GetHashCode();
       hash ^= observations_.GetHashCode();
+      if (TeamManagerId.Length != 0) hash ^= TeamManagerId.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -208,6 +223,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
       actionMask_.WriteTo(output, _repeated_actionMask_codec);
       observations_.WriteTo(output, _repeated_observations_codec);
+      if (TeamManagerId.Length != 0) {
+        output.WriteRawTag(114);
+        output.WriteString(TeamManagerId);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -230,6 +249,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
       size += actionMask_.CalculateSize(_repeated_actionMask_codec);
       size += observations_.CalculateSize(_repeated_observations_codec);
+      if (TeamManagerId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(TeamManagerId);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -255,6 +277,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
       actionMask_.Add(other.actionMask_);
       observations_.Add(other.observations_);
+      if (other.TeamManagerId.Length != 0) {
+        TeamManagerId = other.TeamManagerId;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -289,6 +314,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
           }
           case 106: {
             observations_.AddEntriesFrom(input, _repeated_observations_codec);
+            break;
+          }
+          case 114: {
+            TeamManagerId = input.ReadString();
             break;
           }
         }

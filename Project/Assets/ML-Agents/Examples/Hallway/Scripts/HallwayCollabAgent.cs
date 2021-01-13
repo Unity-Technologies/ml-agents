@@ -15,6 +15,17 @@ public class HallwayCollabAgent : HallwayAgent
 
     [HideInInspector]
     public int selection = 0;
+
+    public override void Initialize()
+    {
+        base.Initialize();
+        if (isSpotter)
+        {
+            var teamManager = new HallwayTeamManager();
+            SetTeamManager(teamManager);
+            teammate.SetTeamManager(teamManager);
+        }
+    }
     public override void OnEpisodeBegin()
     {
         m_Message = -1;
