@@ -138,19 +138,29 @@ namespace Unity.MLAgents.Inference
             for (var sensorIndex = 0; sensorIndex < sensorComponents.Length; sensorIndex++)
             {
                 var sensor = sensorComponents[sensorIndex];
-                if (sensor.GetObservationShape().Length != 3)
+                if (sensor.GetObservationShape().Length == 3)
                 {
-                    continue;
+                    if (!tensorsNames.Contains(
+                        TensorNames.VisualObservationPlaceholderPrefix + visObsIndex))
+                    {
+                        failedModelChecks.Add(
+                            "The model does not contain a Visual Observation Placeholder Input " +
+                            $"for sensor component {visObsIndex} ({sensor.GetType().Name}).");
+                    }
+                    visObsIndex++;
                 }
-                if (!tensorsNames.Contains(
-                    TensorNames.VisualObservationPlaceholderPrefix + visObsIndex))
+                if (sensor.GetObservationShape().Length == 2)
                 {
-                    failedModelChecks.Add(
-                        "The model does not contain a Visual Observation Placeholder Input " +
-                        $"for sensor component {visObsIndex} ({sensor.GetType().Name}).");
+                    if (!tensorsNames.Contains(
+                        TensorNames.ObservationPlaceholderPrefix + sensorIndex))
+                    {
+                        failedModelChecks.Add(
+                            "The model does not contain an Observation Placeholder Input " +
+                            $"for sensor component {sensorIndex} ({sensor.GetType().Name}).");
+                    }
+                    visObsIndex++;
                 }
 
-                visObsIndex++;
             }
 
             var expectedVisualObs = model.GetNumVisualInputs();

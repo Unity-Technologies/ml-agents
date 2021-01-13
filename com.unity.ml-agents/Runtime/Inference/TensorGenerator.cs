@@ -102,8 +102,9 @@ namespace Unity.MLAgents.Inference
             {
                 var sensor = sensors[sensorIndex];
                 var shape = sensor.GetObservationShape();
-                // TODO generalize - we currently only have vector or visual, but can't handle "2D" observations
                 var rank = shape.Length;
+                ObservationGenerator obsGen = null;
+                string obsGenName = null;
                 switch (rank)
                 {
                     case 1:
@@ -111,28 +112,28 @@ namespace Unity.MLAgents.Inference
                         {
                             vecObsGen = new ObservationGenerator(allocator);
                         }
-                        vecObsGen.AddSensorIndex(sensorIndex);
+                        obsGen = vecObsGen;
+                        obsGenName = TensorNames.VectorObservationPlaceholder;
                         break;
                     case 2:
-                        var gen = new ObservationGenerator(allocator);
-                        gen.AddSensorIndex(sensorIndex);
-                        m_Dict[TensorNames.ObservationPlaceholderPrefix + sensorIndex] = gen;
+                        // If the tensor is of rank 2, we use the index of the sensor
+                        // to create the name
+                        obsGen = new ObservationGenerator(allocator);
+                        obsGenName = TensorNames.ObservationPlaceholderPrefix + sensorIndex;
                         break;
                     case 3:
-                        var visgen = new ObservationGenerator(allocator);
-                        visgen.AddSensorIndex(sensorIndex);
-                        m_Dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] = visgen;
+                        // If the tensor is of rank 3, we use the "visual observation
+                        // index", which only counts the rank 3 sensors
+                        obsGen = new ObservationGenerator(allocator);
+                        obsGenName = TensorNames.VisualObservationPlaceholderPrefix + visIndex;
                         visIndex++;
                         break;
                     default:
-                        break;
-
+                        throw new UnityAgentsException(
+                            $"Sensor {sensor.GetName()} have an invalid rank {rank}");
                 }
-            }
-
-            if (vecObsGen != null)
-            {
-                m_Dict[TensorNames.VectorObservationPlaceholder] = vecObsGen;
+                obsGen.AddSensorIndex(sensorIndex);
+                m_Dict[obsGenName] = obsGen;
             }
         }
 
