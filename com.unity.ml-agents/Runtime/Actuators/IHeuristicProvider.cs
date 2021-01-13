@@ -2,7 +2,7 @@ namespace Unity.MLAgents.Actuators
 {
     /// <summary>
     /// Interface that allows objects to fill out an <see cref="ActionBuffers"/> data structure for controlling
-    /// behavior of Agents.
+    /// behavior of Agents or Actuators.
     /// </summary>
     public interface IHeuristicProvider
     {
