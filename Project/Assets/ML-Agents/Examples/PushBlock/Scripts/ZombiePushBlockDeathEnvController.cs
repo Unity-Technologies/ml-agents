@@ -82,6 +82,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     PushBlockSettings m_PushBlockSettings;
 
     private int m_NumberOfRemainingBlocks;
+    private PushBlockTeamManager m_TeamManager;
 
     void Start()
     {
@@ -99,12 +100,16 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.StartingRot = item.T.transform.rotation;
             item.Rb = item.T.GetComponent<Rigidbody>();
         }
+        // Initialize TeamManager
+        m_TeamManager = new PushBlockTeamManager();
         foreach (var item in AgentsList)
         {
             item.StartingPos = item.Agent.transform.position;
             item.StartingRot = item.Agent.transform.rotation;
             item.Rb = item.Agent.GetComponent<Rigidbody>();
             item.Col = item.Agent.GetComponent<Collider>();
+            // Add to team manager
+            item.Agent.SetTeamManager(m_TeamManager);
         }
         foreach (var item in ZombiesList)
         {
