@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Actuators
     /// <summary>
     /// A class that manages the delegation of events, action buffers, and action mask for a list of IActuators.
     /// </summary>
-    internal class ActuatorManager : IList<IActuator>, IHeuristicProvider
+    internal class ActuatorManager : IList<IActuator>
     {
         // IActuators managed by this object.
         IList<IActuator> m_Actuators;

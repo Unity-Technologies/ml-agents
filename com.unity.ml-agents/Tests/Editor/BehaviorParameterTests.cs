@@ -23,7 +23,7 @@ namespace Unity.MLAgents.Tests
 
             Assert.Throws<UnityAgentsException>(() =>
             {
-                bp.GeneratePolicy(actionSpec, this);
+                bp.GeneratePolicy(actionSpec, new ActuatorManager());
             });
         }
     }

@@ -611,7 +611,7 @@ namespace Unity.MLAgents
                 return;
             }
             m_Brain?.Dispose();
-            m_Brain = m_PolicyFactory.GeneratePolicy(m_ActuatorManager.GetCombinedActionSpec(), this);
+            m_Brain = m_PolicyFactory.GeneratePolicy(m_ActuatorManager.GetCombinedActionSpec(), m_ActuatorManager);
         }
 
         /// <summary>
