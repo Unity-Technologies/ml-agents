@@ -114,7 +114,10 @@ namespace Unity.MLAgents.Analytics
             // Note - to debug, use JsonUtility.ToJson on the event.
             // Debug.Log(JsonUtility.ToJson(data, true));
 #if UNITY_EDITOR
-            EditorAnalytics.SendEventWithLimit(k_EventName, data);
+            if (AnalyticsUtils.s_SendEditorAnalytics)
+            {
+                EditorAnalytics.SendEventWithLimit(k_EventName, data);
+            }
 #else
             return;
 #endif
@@ -141,8 +144,7 @@ namespace Unity.MLAgents.Analytics
             var inferenceEvent = new InferenceEvent();
 
             // Hash the behavior name so that there's no concern about PII or "secret" data being leaked.
-            var behaviorNameHash = Hash128.Compute(behaviorName);
-            inferenceEvent.BehaviorName = behaviorNameHash.ToString();
+            inferenceEvent.BehaviorName = AnalyticsUtils.Hash(behaviorName);
 
             inferenceEvent.BarracudaModelSource = barracudaModel.IrSource;
             inferenceEvent.BarracudaModelVersion = barracudaModel.IrVersion;

@@ -26,6 +26,11 @@ namespace Unity.MLAgents.Tests.Analytics
         [SetUp]
         public void SetUp()
         {
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.Dispose();
+            }
+
             continuousONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(NNModel));
             var go = new GameObject("SensorA");
             sensor_21_20_3 = go.AddComponent<Test3DSensorComponent>();
@@ -63,6 +68,19 @@ namespace Unity.MLAgents.Tests.Analytics
             Assert.IsTrue(jsonString.Contains("NumDiscreteActions"));
             Assert.IsTrue(jsonString.Contains("SensorName"));
             Assert.IsTrue(jsonString.Contains("Flags"));
+        }
+
+        [Test]
+        public void TestBarracudaPolicy()
+        {
+            // Explicitly request decisions for a policy so we get code coverage on the event sending
+            using (new AnalyticsUtils.DisableAnalyticsSending())
+            {
+                var sensors = new List<ISensor> { sensor_21_20_3.Sensor, sensor_20_22_3.Sensor };
+                var policy = new BarracudaPolicy(GetContinuous2vis8vec2actionActionSpec(), continuousONNXModel, InferenceDevice.CPU, "testBehavior");
+                policy.RequestDecision(new AgentInfo(), sensors);
+            }
+            Academy.Instance.Dispose();
         }
     }
 }

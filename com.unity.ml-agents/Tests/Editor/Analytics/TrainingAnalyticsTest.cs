@@ -20,5 +20,23 @@ namespace Unity.MLAgents.Tests.Analytics
         {
             return TrainingAnalytics.ParseBehaviorName(fullyQualifiedBehaviorName);
         }
+
+        [Test]
+        public void TestRemotePolicy()
+        {
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.Dispose();
+            }
+
+            using (new AnalyticsUtils.DisableAnalyticsSending())
+            {
+                var actionSpec = ActionSpec.MakeContinuous(3);
+                var policy = new RemotePolicy(actionSpec, "TestBehavior?team=42");
+                policy.RequestDecision(new AgentInfo(), new List<ISensor>());
+            }
+
+            Academy.Instance.Dispose();
+        }
     }
 }

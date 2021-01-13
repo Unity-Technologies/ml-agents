@@ -27,7 +27,7 @@ namespace Unity.MLAgents.Policies
         {
             m_FullyQualifiedBehaviorName = fullyQualifiedBehaviorName;
             m_Communicator = Academy.Instance.Communicator;
-            m_Communicator.SubscribeBrain(m_FullyQualifiedBehaviorName, actionSpec);
+            m_Communicator?.SubscribeBrain(m_FullyQualifiedBehaviorName, actionSpec);
             m_ActionSpec = actionSpec;
         }
 

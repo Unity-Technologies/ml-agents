@@ -68,7 +68,6 @@ namespace Unity.MLAgents.Analytics
                 {
                     return false;
                 }
-
             }
             s_EventsRegistered = true;
 
@@ -113,7 +112,10 @@ namespace Unity.MLAgents.Analytics
                 $"Would send event {k_TrainingEnvironmentInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
             );
 #if UNITY_EDITOR
-            //EditorAnalytics.SendEventWithLimit(k_TrainingEnvironmentInitializedEventName, tbiEvent);
+            if (AnalyticsUtils.s_SendEditorAnalytics)
+            {
+                EditorAnalytics.SendEventWithLimit(k_TrainingEnvironmentInitializedEventName, tbiEvent);
+            }
 #else
             return;
 #endif
@@ -145,9 +147,12 @@ namespace Unity.MLAgents.Analytics
             // Note - to debug, use JsonUtility.ToJson on the event.
             Debug.Log(
                 $"Would send event {k_RemotePolicyInitializedEventName} with body {JsonUtility.ToJson(data, true)}"
-                );
+            );
 #if UNITY_EDITOR
-            //EditorAnalytics.SendEventWithLimit(k_RemotePolicyInitializedEventName, data);
+            if (AnalyticsUtils.s_SendEditorAnalytics)
+            {
+                EditorAnalytics.SendEventWithLimit(k_RemotePolicyInitializedEventName, data);
+            }
 #else
             return;
 #endif
@@ -190,7 +195,10 @@ namespace Unity.MLAgents.Analytics
                 $"Would send event {k_TrainingBehaviorInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
             );
 #if UNITY_EDITOR
-            //EditorAnalytics.SendEventWithLimit(k_TrainingBehaviorInitializedEventName, tbiEvent);
+            if (AnalyticsUtils.s_SendEditorAnalytics)
+            {
+                EditorAnalytics.SendEventWithLimit(k_TrainingBehaviorInitializedEventName, tbiEvent);
+            }
 #else
             return;
 #endif
@@ -218,7 +226,6 @@ namespace Unity.MLAgents.Analytics
             }
 
             return remotePolicyEvent;
-
         }
     }
 }

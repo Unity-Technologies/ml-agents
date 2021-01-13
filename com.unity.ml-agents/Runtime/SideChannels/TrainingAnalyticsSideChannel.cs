@@ -21,7 +21,16 @@ namespace Unity.MLAgents.SideChannels
         /// <inheritdoc/>
         protected override void OnMessageReceived(IncomingMessage msg)
         {
-            var anyMessage = Google.Protobuf.WellKnownTypes.Any.Parser.ParseFrom(msg.GetRawBytes());
+            Google.Protobuf.WellKnownTypes.Any anyMessage = null;
+            try
+            {
+                anyMessage = Google.Protobuf.WellKnownTypes.Any.Parser.ParseFrom(msg.GetRawBytes());
+            }
+            catch (Google.Protobuf.InvalidProtocolBufferException)
+            {
+                // Bad message, nothing we can do about it, so just ignore.
+                return;
+            }
 
             if (anyMessage.Is(TrainingEnvironmentInitialized.Descriptor))
             {
@@ -35,10 +44,7 @@ namespace Unity.MLAgents.SideChannels
                 var behaviorTrainingEvent = behaviorInitProto.ToTrainingBehaviorInitializedEvent();
                 TrainingAnalytics.TrainingBehaviorInitialized(behaviorTrainingEvent);
             }
-            else
-            {
-                // TODO WARN?
-            }
+            // Don't do anything for unknown types, since the user probably can't do anything about it.
         }
     }
 }
