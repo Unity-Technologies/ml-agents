@@ -73,65 +73,6 @@ namespace Unity.MLAgents.Inference
     }
 
     /// <summary>
-    /// Generates the Tensor corresponding to the VectorObservation input : Will be a two
-    /// dimensional float array of dimension [batchSize x vectorObservationSize].
-    /// It will use the Vector Observation data contained in the agentInfo to fill the data
-    /// of the tensor.
-    /// </summary>
-    internal class VectorObservationGenerator : TensorGenerator.IGenerator
-    {
-        readonly ITensorAllocator m_Allocator;
-        List<int> m_SensorIndices = new List<int>();
-        ObservationWriter m_ObservationWriter = new ObservationWriter();
-
-        public VectorObservationGenerator(ITensorAllocator allocator)
-        {
-            m_Allocator = allocator;
-        }
-
-        public void AddSensorIndex(int sensorIndex)
-        {
-            m_SensorIndices.Add(sensorIndex);
-        }
-
-        public void Generate(TensorProxy tensorProxy, int batchSize, IEnumerable<AgentInfoSensorsPair> infos)
-        {
-            TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
-            var vecObsSizeT = tensorProxy.shape[tensorProxy.shape.Length - 1];
-            var agentIndex = 0;
-            foreach (var info in infos)
-            {
-                if (info.agentInfo.done)
-                {
-                    // If the agent is done, we might have a stale reference to the sensors
-                    // e.g. a dependent object might have been disposed.
-                    // To avoid this, just fill observation with zeroes instead of calling sensor.Write.
-                    TensorUtils.FillTensorBatch(tensorProxy, agentIndex, 0.0f);
-                }
-                else
-                {
-                    var tensorOffset = 0;
-                    // Write each sensor consecutively to the tensor
-                    foreach (var sensorIndex in m_SensorIndices)
-                    {
-                        var sensor = info.sensors[sensorIndex];
-                        m_ObservationWriter.SetTarget(tensorProxy, agentIndex, tensorOffset);
-                        var numWritten = sensor.Write(m_ObservationWriter);
-                        tensorOffset += numWritten;
-                    }
-                    Debug.AssertFormat(
-                        tensorOffset == vecObsSizeT,
-                        "mismatch between vector observation size ({0}) and number of observations written ({1})",
-                        vecObsSizeT, tensorOffset
-                    );
-                }
-
-                agentIndex++;
-            }
-        }
-    }
-
-    /// <summary>
     /// Generates the Tensor corresponding to the Recurrent input : Will be a two
     /// dimensional float array of dimension [batchSize x memorySize].
     /// It will use the Memory data contained in the agentInfo to fill the data
@@ -341,32 +282,34 @@ namespace Unity.MLAgents.Inference
     }
 
     /// <summary>
-    /// Generates the Tensor corresponding to the Visual Observation input : Will be a 4
-    /// dimensional float array of dimension [batchSize x width x height x numChannels].
-    /// It will use the Texture input data contained in the agentInfo to fill the data
+    /// Generates the Tensor corresponding to the Observation input : Will be a multi
+    /// dimensional float array.
+    /// It will use the Observation data contained in the sensors to fill the data
     /// of the tensor.
     /// </summary>
-    internal class NonVectorObservationInputGenerator : TensorGenerator.IGenerator
+    internal class ObservationGenerator : TensorGenerator.IGenerator
     {
-        readonly int m_SensorIndex;
         readonly ITensorAllocator m_Allocator;
+        List<int> m_SensorIndices = new List<int>();
         ObservationWriter m_ObservationWriter = new ObservationWriter();
 
-        public NonVectorObservationInputGenerator(
-            int sensorIndex, ITensorAllocator allocator)
+        public ObservationGenerator(ITensorAllocator allocator)
         {
-            m_SensorIndex = sensorIndex;
             m_Allocator = allocator;
+        }
+
+        public void AddSensorIndex(int sensorIndex)
+        {
+            m_SensorIndices.Add(sensorIndex);
         }
 
         public void Generate(TensorProxy tensorProxy, int batchSize, IEnumerable<AgentInfoSensorsPair> infos)
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
             var agentIndex = 0;
-            foreach (var infoSensorPair in infos)
+            foreach (var info in infos)
             {
-                var sensor = infoSensorPair.sensors[m_SensorIndex];
-                if (infoSensorPair.agentInfo.done)
+                if (info.agentInfo.done)
                 {
                     // If the agent is done, we might have a stale reference to the sensors
                     // e.g. a dependent object might have been disposed.
@@ -375,8 +318,15 @@ namespace Unity.MLAgents.Inference
                 }
                 else
                 {
-                    m_ObservationWriter.SetTarget(tensorProxy, agentIndex, 0);
-                    sensor.Write(m_ObservationWriter);
+                    var tensorOffset = 0;
+                    // Write each sensor consecutively to the tensor
+                    foreach (var sensorIndex in m_SensorIndices)
+                    {
+                        var sensor = info.sensors[sensorIndex];
+                        m_ObservationWriter.SetTarget(tensorProxy, agentIndex, tensorOffset);
+                        var numWritten = sensor.Write(m_ObservationWriter);
+                        tensorOffset += numWritten;
+                    }
                 }
                 agentIndex++;
             }

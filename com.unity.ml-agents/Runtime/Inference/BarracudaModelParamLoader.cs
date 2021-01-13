@@ -138,7 +138,7 @@ namespace Unity.MLAgents.Inference
             for (var sensorIndex = 0; sensorIndex < sensorComponents.Length; sensorIndex++)
             {
                 var sensor = sensorComponents[sensorIndex];
-                if (!sensor.IsVisual())
+                if (sensor.GetObservationShape().Length != 3)
                 {
                     continue;
                 }
@@ -308,7 +308,7 @@ namespace Unity.MLAgents.Inference
             for (var sensorIndex = 0; sensorIndex < sensorComponents.Length; sensorIndex++)
             {
                 var sensorComponent = sensorComponents[sensorIndex];
-                if (sensorComponent.IsVisual())
+                if (sensorComponent.GetObservationShape().Length == 3)
                 {
 
                     tensorTester[TensorNames.VisualObservationPlaceholderPrefix + visObsIndex] =
@@ -371,7 +371,7 @@ namespace Unity.MLAgents.Inference
             var totalVectorSensorSize = 0;
             foreach (var sensorComp in sensorComponents)
             {
-                if (sensorComp.IsVector())
+                if (sensorComp.GetObservationShape().Length == 1)
                 {
                     totalVectorSensorSize += sensorComp.GetObservationShape()[0];
                 }
@@ -384,7 +384,7 @@ namespace Unity.MLAgents.Inference
                 var sensorSizes = "";
                 foreach (var sensorComp in sensorComponents)
                 {
-                    if (sensorComp.IsVector())
+                    if (sensorComp.GetObservationShape().Length == 1)
                     {
                         var vecSize = sensorComp.GetObservationShape()[0];
                         if (sensorSizes.Length == 0)

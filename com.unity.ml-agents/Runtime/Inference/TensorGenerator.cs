@@ -94,10 +94,10 @@ namespace Unity.MLAgents.Inference
         public void InitializeObservations(List<ISensor> sensors, ITensorAllocator allocator)
         {
             // Loop through the sensors on a representative agent.
-            // For vector observations, add the index to the (single) VectorObservationGenerator
+            // For vector observations, add the index to the (single) ObservationGenerator
             // For visual observations, make a NonVectorObservationInputGenerator
             var visIndex = 0;
-            VectorObservationGenerator vecObsGen = null;
+            ObservationGenerator vecObsGen = null;
             for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
             {
                 var sensor = sensors[sensorIndex];
@@ -109,17 +109,19 @@ namespace Unity.MLAgents.Inference
                     case 1:
                         if (vecObsGen == null)
                         {
-                            vecObsGen = new VectorObservationGenerator(allocator);
+                            vecObsGen = new ObservationGenerator(allocator);
                         }
                         vecObsGen.AddSensorIndex(sensorIndex);
                         break;
                     case 2:
-                        m_Dict[TensorNames.ObservationPlaceholderPrefix + sensorIndex] =
-                        new NonVectorObservationInputGenerator(sensorIndex, allocator);
+                        var gen = new ObservationGenerator(allocator);
+                        gen.AddSensorIndex(sensorIndex);
+                        m_Dict[TensorNames.ObservationPlaceholderPrefix + sensorIndex] = gen;
                         break;
                     case 3:
-                        m_Dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] =
-                        new NonVectorObservationInputGenerator(sensorIndex, allocator);
+                        var visgen = new ObservationGenerator(allocator);
+                        visgen.AddSensorIndex(sensorIndex);
+                        m_Dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] = visgen;
                         visIndex++;
                         break;
                     default:

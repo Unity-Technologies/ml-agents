@@ -28,8 +28,6 @@ namespace Unity.MLAgents.Tests
 
                     var expectedShape = new[] { height, width, grayscale ? 1 : 3 };
                     Assert.AreEqual(expectedShape, renderTexComponent.GetObservationShape());
-                    Assert.IsTrue(renderTexComponent.IsVisual());
-                    Assert.IsFalse(renderTexComponent.IsVector());
 
                     var sensor = renderTexComponent.CreateSensor();
                     Assert.AreEqual(expectedShape, sensor.GetObservationShape());
