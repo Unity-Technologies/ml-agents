@@ -1,11 +1,12 @@
 namespace Unity.MLAgents.Actuators
 {
     /// <summary>
-    /// IActuator implementation that forwards to an <see cref="IActionReceiver"/>.
+    /// IActuator implementation that forwards calls to an <see cref="IActionReceiver"/> and an <see cref="IHeuristicProvider"/>.
     /// </summary>
-    internal class VectorActuator : IActuator
+    internal class VectorActuator : IActuator, IHeuristicProvider
     {
         IActionReceiver m_ActionReceiver;
+        IHeuristicProvider m_HeuristicProvider;
 
         ActionBuffers m_ActionBuffers;
         internal ActionBuffers ActionBuffers
@@ -17,14 +18,31 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Create a VectorActuator that forwards to the provided IActionReceiver.
         /// </summary>
-        /// <param name="actionReceiver">The <see cref="IActionReceiver"/> used for OnActionReceived and WriteDiscreteActionMask.</param>
+        /// <param name="actionReceiver">The <see cref="IActionReceiver"/> used for OnActionReceived and WriteDiscreteActionMask.
+        /// If this parameter also implements <see cref="IHeuristicProvider"/> it will be cast and used to forward calls to
+        /// <see cref="IHeuristicProvider.Heuristic"/>.</param>
         /// <param name="actionSpec"></param>
         /// <param name="name"></param>
         public VectorActuator(IActionReceiver actionReceiver,
                               ActionSpec actionSpec,
                               string name = "VectorActuator")
+            : this(actionReceiver, actionReceiver as IHeuristicProvider, actionSpec, name) { }
+
+        /// <summary>
+        /// Create a VectorActuator that forwards to the provided IActionReceiver.
+        /// </summary>
+        /// <param name="actionReceiver">The <see cref="IActionReceiver"/> used for OnActionReceived and WriteDiscreteActionMask.</param>
+        /// <param name="heuristicProvider">The <see cref="IHeuristicProvider"/> used to fill the <see cref="ActionBuffers"/>
+        /// for Heuristic Policies.</param>
+        /// <param name="actionSpec"></param>
+        /// <param name="name"></param>
+        public VectorActuator(IActionReceiver actionReceiver,
+                              IHeuristicProvider heuristicProvider,
+                              ActionSpec actionSpec,
+                              string name = "VectorActuator")
         {
             m_ActionReceiver = actionReceiver;
+            m_HeuristicProvider = heuristicProvider;
             ActionSpec = actionSpec;
             string suffix;
             if (actionSpec.NumContinuousActions == 0)
@@ -53,6 +71,11 @@ namespace Unity.MLAgents.Actuators
         {
             ActionBuffers = actionBuffers;
             m_ActionReceiver.OnActionReceived(ActionBuffers);
+        }
+
+        public void Heuristic(in ActionBuffers actionBuffersOut)
+        {
+            m_HeuristicProvider.Heuristic(actionBuffersOut);
         }
 
         /// <inheritdoc />

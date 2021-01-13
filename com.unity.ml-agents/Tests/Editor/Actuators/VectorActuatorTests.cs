@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Tests.Actuators
     [TestFixture]
     public class VectorActuatorTests
     {
-        class TestActionReceiver : IActionReceiver
+        class TestActionReceiver : IActionReceiver, IHeuristicProvider
         {
             public ActionBuffers LastActionBuffers;
             public int Branch;
@@ -24,6 +24,10 @@ namespace Unity.MLAgents.Tests.Actuators
             public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
             {
                 actionMask.WriteMask(Branch, Mask);
+            }
+
+            public void Heuristic(in ActionBuffers actionBuffersOut)
+            {
             }
         }
 

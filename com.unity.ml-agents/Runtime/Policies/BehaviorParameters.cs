@@ -196,12 +196,12 @@ namespace Unity.MLAgents.Policies
             get { return m_BehaviorName + "?team=" + TeamId; }
         }
 
-        internal IPolicy GeneratePolicy(ActionSpec actionSpec, IHeuristic heuristic)
+        internal IPolicy GeneratePolicy(ActionSpec actionSpec, IHeuristicProvider heuristicProvider)
         {
             switch (m_BehaviorType)
             {
                 case BehaviorType.HeuristicOnly:
-                    return new HeuristicPolicy(heuristic, actionSpec);
+                    return new HeuristicPolicy(heuristicProvider, actionSpec);
                 case BehaviorType.InferenceOnly:
                     {
                         if (m_Model == null)
@@ -225,10 +225,10 @@ namespace Unity.MLAgents.Policies
                     }
                     else
                     {
-                        return new HeuristicPolicy(heuristic, actionSpec);
+                        return new HeuristicPolicy(heuristicProvider, actionSpec);
                     }
                 default:
-                    return new HeuristicPolicy(heuristic, actionSpec);
+                    return new HeuristicPolicy(heuristicProvider, actionSpec);
             }
         }
 

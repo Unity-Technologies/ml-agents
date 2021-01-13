@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Actuators
     /// <summary>
     /// A class that manages the delegation of events, action buffers, and action mask for a list of IActuators.
     /// </summary>
-    internal class ActuatorManager : IList<IActuator>
+    internal class ActuatorManager : IList<IActuator>, IHeuristicProvider
     {
         // IActuators managed by this object.
         IList<IActuator> m_Actuators;
@@ -206,12 +206,11 @@ namespace Unity.MLAgents.Actuators
 
         /// <summary>
         /// Iterates through all of the IActuators in this list and calls their
-        /// <see cref="IHeuristic.Heuristic"/> method on them, if implemented, with the appropriate
+        /// <see cref="IHeuristicProvider.Heuristic"/> method on them, if implemented, with the appropriate
         /// <see cref="ActionSegment{T}"/>s depending on their <see cref="ActionSpec"/>.
         /// </summary>
-        public void ExecuteHeuristic()
+        public void Heuristic(in ActionBuffers actionBuffersOut)
         {
-            ReadyActuatorsForExecution();
             var continuousStart = 0;
             var discreteStart = 0;
             for (var i = 0; i < m_Actuators.Count; i++)
@@ -223,7 +222,7 @@ namespace Unity.MLAgents.Actuators
                 var continuousActions = ActionSegment<float>.Empty;
                 if (numContinuousActions > 0)
                 {
-                    continuousActions = new ActionSegment<float>(StoredActions.ContinuousActions.Array,
+                    continuousActions = new ActionSegment<float>(actionBuffersOut.ContinuousActions.Array,
                         continuousStart,
                         numContinuousActions);
                 }
@@ -231,12 +230,12 @@ namespace Unity.MLAgents.Actuators
                 var discreteActions = ActionSegment<int>.Empty;
                 if (numDiscreteActions > 0)
                 {
-                    discreteActions = new ActionSegment<int>(StoredActions.DiscreteActions.Array,
+                    discreteActions = new ActionSegment<int>(actionBuffersOut.DiscreteActions.Array,
                         discreteStart,
                         numDiscreteActions);
                 }
 
-                var heuristic = actuator as IHeuristic;
+                var heuristic = actuator as IHeuristicProvider;
                 heuristic?.Heuristic(new ActionBuffers(continuousActions, discreteActions));
                 continuousStart += numContinuousActions;
                 discreteStart += numDiscreteActions;

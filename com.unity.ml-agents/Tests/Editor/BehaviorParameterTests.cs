@@ -6,7 +6,7 @@ using Unity.MLAgents.Policies;
 namespace Unity.MLAgents.Tests
 {
     [TestFixture]
-    public class BehaviorParameterTests : IHeuristic
+    public class BehaviorParameterTests : IHeuristicProvider
     {
         public void Heuristic(in ActionBuffers actionsOut)
         {

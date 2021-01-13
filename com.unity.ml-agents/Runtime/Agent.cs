@@ -166,7 +166,7 @@ namespace Unity.MLAgents
         "docs/Learning-Environment-Design-Agents.md")]
     [Serializable]
     [RequireComponent(typeof(BehaviorParameters))]
-    public partial class Agent : MonoBehaviour, ISerializationCallbackReceiver, IActionReceiver, IHeuristic
+    public partial class Agent : MonoBehaviour, ISerializationCallbackReceiver, IActionReceiver, IHeuristicProvider
     {
         IPolicy m_Brain;
         BehaviorParameters m_PolicyFactory;
@@ -434,7 +434,7 @@ namespace Unity.MLAgents
                 InitializeActuators();
             }
 
-            m_Brain = m_PolicyFactory.GeneratePolicy(m_ActuatorManager.GetCombinedActionSpec(), this);
+            m_Brain = m_PolicyFactory.GeneratePolicy(m_ActuatorManager.GetCombinedActionSpec(), m_ActuatorManager);
             ResetData();
             Initialize();
 
@@ -831,11 +831,11 @@ namespace Unity.MLAgents
         public virtual void Initialize() { }
 
         /// <summary>
-        /// Implement `Heuristic()` to choose an action for this agent using a custom heuristic.
+        /// Implement <see cref="IHeuristicProvider"/> to choose an action for this agent using a custom heuristic.
         /// </summary>
         /// <remarks>
         /// Implement this function to provide custom decision making logic or to support manual
-        /// control of an agent using keyboard, mouse, or game controller input.
+        /// control of an agent using keyboard, mouse, game controller input, or a script.
         ///
         /// Your heuristic implementation can use any decision making logic you specify. Assign decision
         /// values to the <see cref="ActionBuffers.ContinuousActions"/>  and <see cref="ActionBuffers.DiscreteActions"/>
@@ -915,9 +915,6 @@ namespace Unity.MLAgents
                     break;
             }
 #pragma warning restore CS0618
-
-            // Send heuristic buffers to actuators if they implement IHeuristic
-            m_ActuatorManager.ExecuteHeuristic();
         }
 
         /// <summary>
@@ -1001,7 +998,7 @@ namespace Unity.MLAgents
             // Support legacy OnActionReceived
             // TODO don't set this up if the sizes are 0?
             var param = m_PolicyFactory.BrainParameters;
-            m_VectorActuator = new VectorActuator(this, param.ActionSpec);
+            m_VectorActuator = new VectorActuator(this, this, param.ActionSpec);
             m_ActuatorManager = new ActuatorManager(attachedActuators.Length + 1);
 #pragma warning disable 618
             m_LegacyActionCache = new float[param.VectorActionSpaceType == SpaceType.Continuous
@@ -1191,7 +1188,7 @@ namespace Unity.MLAgents
         /// three values in ActionBuffers.ContinuousActions array to use as the force components.
         /// During training, the agent's  policy learns to set those particular elements of
         /// the array to maximize the training rewards the agent receives. (Of course,
-        /// if you implement a <seealso cref="Heuristic(in ActionBuffers)"/> function, it must use the same
+        /// if you implement a <seealso cref="IHeuristicProvider.Heuristic"/> function, it must use the same
         /// elements of the action array for the same purpose since there is no learning
         /// involved.)
         ///
