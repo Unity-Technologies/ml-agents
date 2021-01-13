@@ -75,7 +75,7 @@ namespace Unity.MLAgents.Actuators
 
         public void Heuristic(in ActionBuffers actionBuffersOut)
         {
-            m_HeuristicProvider.Heuristic(actionBuffersOut);
+            m_HeuristicProvider?.Heuristic(actionBuffersOut);
         }
 
         /// <inheritdoc />
