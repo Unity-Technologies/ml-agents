@@ -67,7 +67,7 @@ class NetworkBody(nn.Module):
             #     self.h_size
             #     )
             self.entity_embedding = EntityEmbeddings(
-                x_self_len, entities_sizes, [20], self.n_embd, concat_self=False
+                x_self_len, entities_sizes, [20], self.n_embd  # , concat_self=False
             )
 
             # self.embedding_norm = torch.nn.LayerNorm(self.n_embd)
