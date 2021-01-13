@@ -158,7 +158,6 @@ namespace Unity.MLAgents.Inference
                             "The model does not contain an Observation Placeholder Input " +
                             $"for sensor component {sensorIndex} ({sensor.GetType().Name}).");
                     }
-                    visObsIndex++;
                 }
 
             }
