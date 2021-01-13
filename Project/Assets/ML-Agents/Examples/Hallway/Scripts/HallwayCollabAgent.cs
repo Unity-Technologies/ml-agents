@@ -1,6 +1,5 @@
-using System.Collections;
 using UnityEngine;
-using Unity.MLAgents;
+using Unity.MLAgents.Extensions.Teams;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 

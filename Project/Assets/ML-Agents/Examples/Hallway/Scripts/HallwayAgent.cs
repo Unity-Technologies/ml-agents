@@ -18,6 +18,7 @@ public class HallwayAgent : Agent
     protected Renderer m_GroundRenderer;
     protected HallwaySettings m_HallwaySettings;
     protected int m_Selection;
+    StatsRecorder m_statsRecorder;
 
     public override void Initialize()
     {
