@@ -94,8 +94,8 @@ namespace Unity.MLAgents.Inference
         public void InitializeObservations(List<ISensor> sensors, ITensorAllocator allocator)
         {
             // Loop through the sensors on a representative agent.
-            // For vector observations, add the index to the (single) ObservationGenerator
-            // For visual observations, make a NonVectorObservationInputGenerator
+            // All vector observations use a shared ObservationGenerator since they are concatenated.
+            // All other observations use a unique ObservationInputGenerator
             var visIndex = 0;
             ObservationGenerator vecObsGen = null;
             for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
