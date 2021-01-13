@@ -20,7 +20,7 @@ public class HallwayCollabAgent : HallwayAgent
         base.Initialize();
         if (isSpotter)
         {
-            var teamManager = new BaseTeamManager();
+            var teamManager = new HallwayTeamManager();
             SetTeamManager(teamManager);
             teammate.SetTeamManager(teamManager);
         }
