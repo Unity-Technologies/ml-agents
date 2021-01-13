@@ -1,6 +1,5 @@
-using System.Collections;
 using UnityEngine;
-using Unity.MLAgents;
+using Unity.MLAgents.Extensions.Teams;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 
@@ -21,7 +20,7 @@ public class HallwayCollabAgent : HallwayAgent
         base.Initialize();
         if (isSpotter)
         {
-            var teamManager = new HallwayTeamManager();
+            var teamManager = new BaseTeamManager();
             SetTeamManager(teamManager);
             teammate.SetTeamManager(teamManager);
         }
