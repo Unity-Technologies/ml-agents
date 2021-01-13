@@ -12,14 +12,4 @@ public class PushBlockTeamManager : BaseTeamManager
     {
         m_AgentList.Add(agent);
     }
-
-    public override void OnAgentDone(Agent agent, Agent.DoneReason doneReason, List<ISensor> sensors)
-    {
-        agent.SendDoneToTrainer();
-    }
-
-    public override void AddTeamReward(float reward)
-    {
-
-    }
 }
