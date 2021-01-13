@@ -30,6 +30,5 @@ namespace Unity.MLAgents.Extensions.Teams
         {
             return m_Id;
         }
-
     }
 }
