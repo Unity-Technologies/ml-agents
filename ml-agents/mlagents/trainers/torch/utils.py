@@ -11,7 +11,7 @@ from mlagents.trainers.torch.encoders import (
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents_envs.base_env import SensorSpec, DimensionProperty
+from mlagents_envs.base_env import ObservationSpec, DimensionProperty
 
 
 class ModelUtils:
@@ -142,7 +142,7 @@ class ModelUtils:
         raise UnityTrainerException(f"Unsupported shape of {shape} for observation")
 
     @staticmethod
-    def can_encode_visual(sensor_spec: SensorSpec) -> bool:
+    def can_encode_visual(sensor_spec: ObservationSpec) -> bool:
         """
         Returns True if it is possible to create a visual embedding for the sensor
         """
@@ -164,7 +164,7 @@ class ModelUtils:
         return True
 
     @staticmethod
-    def can_encode_vector(sensor_spec: SensorSpec) -> bool:
+    def can_encode_vector(sensor_spec: ObservationSpec) -> bool:
         """
         Returns True if it is possible to create a vector embedding for the sensor
         """
@@ -176,7 +176,7 @@ class ModelUtils:
         return True
 
     @staticmethod
-    def can_encode_attention(sensor_spec: SensorSpec) -> bool:
+    def can_encode_attention(sensor_spec: ObservationSpec) -> bool:
         """
         Returns True if it is possible to create an attention embedding for the sensor
         """
@@ -190,14 +190,14 @@ class ModelUtils:
 
     @staticmethod
     def create_input_processors(
-        sensor_specs: List[SensorSpec],
+        observation_specs: List[ObservationSpec],
         h_size: int,
         vis_encode_type: EncoderType,
         normalize: bool = False,
     ) -> Tuple[nn.ModuleList, List[int], List[int]]:
         """
         Creates visual and vector encoders, along with their normalizers.
-        :param sensor_specs: List of SensorSpec that represent the observation dimensions.
+        :param observation_specs: List of ObservationSpec that represent the observation dimensions.
         :param action_size: Number of additional un-normalized inputs to each vector encoder. Used for
             conditioning network on other values (e.g. actions for a Q function)
         :param h_size: Number of hidden units per layer.
@@ -215,18 +215,18 @@ class ModelUtils:
         encoders: List[nn.Module] = []
         embedding_sizes: List[int] = []
         var_len_indices: List[int] = []
-        for idx, sen_spec in enumerate(sensor_specs):
-            if ModelUtils.can_encode_attention(sen_spec):
+        for idx, obs_spec in enumerate(observation_specs):
+            if ModelUtils.can_encode_attention(obs_spec):
                 # This is a 2D tensor
                 # TODO : better if condition
                 var_len_indices.append(idx)
                 encoders.append(None)
                 embedding_sizes.append(0)
-            elif ModelUtils.can_encode_vector(sen_spec) or ModelUtils.can_encode_visual(
-                sen_spec
+            elif ModelUtils.can_encode_vector(obs_spec) or ModelUtils.can_encode_visual(
+                obs_spec
             ):
                 encoder, embedding_size = ModelUtils.get_encoder_for_obs(
-                    sen_spec.shape, normalize, h_size, vis_encode_type
+                    obs_spec.shape, normalize, h_size, vis_encode_type
                 )
                 encoders.append(encoder)
                 embedding_sizes.append(embedding_size)

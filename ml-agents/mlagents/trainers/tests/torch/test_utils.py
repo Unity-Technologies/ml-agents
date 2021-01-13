@@ -6,8 +6,8 @@ from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.torch.encoders import VectorInput
-from mlagents.trainers.tests.dummy_config import create_sensor_specs_with_shapes
-from mlagents_envs.base_env import SensorSpec, DimensionProperty
+from mlagents_envs.base_env import ObservationSpec, DimensionProperty, ObservationType
+from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
 
 
 def test_min_visual_size():
@@ -50,9 +50,9 @@ def test_create_inputs(encoder_type, normalize, num_vector, num_visual):
     for _ in range(num_visual):
         obs_shapes.append(vis_obs_shape)
     h_size = 128
-    sen_spec = create_sensor_specs_with_shapes(obs_shapes)
+    obs_spec = create_observation_specs_with_shapes(obs_shapes)
     encoders, embedding_sizes, _ = ModelUtils.create_input_processors(
-        sen_spec, h_size, encoder_type, normalize
+        obs_spec, h_size, encoder_type, normalize
     )
     total_output = sum(embedding_sizes)
     vec_enc = []
@@ -193,31 +193,33 @@ def test_soft_update():
 
 
 def test_can_train_dim_property():
-    spec = SensorSpec(
+    spec = ObservationSpec(
         (5, 5, 3),
         (
             DimensionProperty.UNSPECIFIED,
             DimensionProperty.UNSPECIFIED,
             DimensionProperty.UNSPECIFIED,
         ),
+        ObservationType.DEFAULT,
     )
     assert ModelUtils.can_encode_visual(spec)
     assert not ModelUtils.can_encode_vector(spec)
     assert not ModelUtils.can_encode_attention(spec)
 
-    spec = SensorSpec(
+    spec = ObservationSpec(
         (5, 5, 3),
         (
             DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
             DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
             DimensionProperty.NONE,
         ),
+        ObservationType.DEFAULT,
     )
     assert ModelUtils.can_encode_visual(spec)
     assert not ModelUtils.can_encode_vector(spec)
     assert not ModelUtils.can_encode_attention(spec)
 
-    spec = SensorSpec(
+    spec = ObservationSpec(
         (5, 5, 3, 5),
         (
             DimensionProperty.UNSPECIFIED,
@@ -225,19 +227,22 @@ def test_can_train_dim_property():
             DimensionProperty.UNSPECIFIED,
             DimensionProperty.UNSPECIFIED,
         ),
+        ObservationType.DEFAULT,
     )
     assert not ModelUtils.can_encode_visual(spec)
     assert not ModelUtils.can_encode_vector(spec)
     assert not ModelUtils.can_encode_attention(spec)
 
-    spec = SensorSpec(
-        (5, 6), (DimensionProperty.UNSPECIFIED, DimensionProperty.UNSPECIFIED)
+    spec = ObservationSpec(
+        (5, 6),
+        (DimensionProperty.UNSPECIFIED, DimensionProperty.UNSPECIFIED),
+        ObservationType.DEFAULT,
     )
     assert not ModelUtils.can_encode_visual(spec)
     assert not ModelUtils.can_encode_vector(spec)
     assert not ModelUtils.can_encode_attention(spec)
 
-    spec = SensorSpec(
+    spec = ObservationSpec(
         (5, 6),
         (
             DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
@@ -248,17 +253,23 @@ def test_can_train_dim_property():
     assert not ModelUtils.can_encode_vector(spec)
     assert not ModelUtils.can_encode_attention(spec)
 
-    spec = SensorSpec((5, 6), (DimensionProperty.VARIABLE_SIZE, DimensionProperty.NONE))
+    spec = ObservationSpec(
+        (5, 6),
+        (DimensionProperty.VARIABLE_SIZE, DimensionProperty.NONE),
+        ObservationType.DEFAULT,
+    )
     assert not ModelUtils.can_encode_visual(spec)
     assert not ModelUtils.can_encode_vector(spec)
     assert ModelUtils.can_encode_attention(spec)
 
-    spec = SensorSpec((5,), (DimensionProperty.UNSPECIFIED,))
+    spec = ObservationSpec(
+        (5,), (DimensionProperty.UNSPECIFIED,), ObservationType.DEFAULT
+    )
     assert not ModelUtils.can_encode_visual(spec)
     assert ModelUtils.can_encode_vector(spec)
     assert not ModelUtils.can_encode_attention(spec)
 
-    spec = SensorSpec((5,), (DimensionProperty.NONE,))
+    spec = ObservationSpec((5,), (DimensionProperty.NONE,), ObservationType.DEFAULT)
     assert not ModelUtils.can_encode_visual(spec)
     assert ModelUtils.can_encode_vector(spec)
     assert not ModelUtils.can_encode_attention(spec)

@@ -52,7 +52,7 @@ class TorchOptimizer(Optimizer):
     def get_trajectory_value_estimates(
         self, batch: AgentBuffer, next_obs: List[np.ndarray], done: bool
     ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:
-        n_obs = len(self.policy.behavior_spec.sensor_specs)
+        n_obs = len(self.policy.behavior_spec.observation_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
 
         # Convert to tensors
