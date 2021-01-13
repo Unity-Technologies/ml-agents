@@ -15,6 +15,7 @@ and this project adheres to
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Added the IHeuristicProvider interface to allow IActuators as well as Agent implement the Heuristic function to generate actions.
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
