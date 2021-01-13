@@ -248,6 +248,7 @@ def test_can_train_dim_property():
             DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
             DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
         ),
+        ObservationType.DEFAULT,
     )
     assert not ModelUtils.can_encode_visual(spec)
     assert not ModelUtils.can_encode_vector(spec)
