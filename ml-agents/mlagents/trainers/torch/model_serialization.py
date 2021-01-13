@@ -70,9 +70,9 @@ class ModelSerializer:
         ]
 
         dummy_var_len_obs = [
-            torch.zeros(batch_dim + [sen_spec.shape[0], sen_spec.shape[1]])
-            for sen_spec in self.policy.behavior_spec.observation_specs
-            if len(sen_spec.shape) == 2
+            torch.zeros(batch_dim + [obs_spec.shape[0], obs_spec.shape[1]])
+            for obs_spec in self.policy.behavior_spec.observation_specs
+            if len(obs_spec.shape) == 2
         ]
 
         dummy_masks = torch.ones(

@@ -118,7 +118,7 @@ class ModelUtils:
 
     @staticmethod
     def get_encoder_for_obs(
-        shape: Tuple[int, ...],
+        obs_spec: ObservationSpec,
         normalize: bool,
         h_size: int,
         vis_encode_type: EncoderType,
@@ -130,63 +130,31 @@ class ModelUtils:
         :param h_size: Number of hidden units per layer.
         :param vis_encode_type: Type of visual encoder to use.
         """
-        if len(shape) == 1:
-            # Case rank 1 tensor
-            return (VectorInput(shape[0], normalize), shape[0])
-        if len(shape) == 3:
-            ModelUtils._check_resolution_for_encoder(
-                shape[0], shape[1], vis_encode_type
-            )
+        shape = obs_spec.shape
+        dim_prop = obs_spec.dimension_property
+
+        # VISUAL
+        valid_visual = (
+            DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
+            DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
+            DimensionProperty.NONE,
+        )
+        valid_visual_unspecified = (DimensionProperty.UNSPECIFIED,) * 3
+        if dim_prop == valid_visual or dim_prop == valid_visual_unspecified:
             visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
             return (visual_encoder_class(shape[0], shape[1], shape[2], h_size), h_size)
-        raise UnityTrainerException(f"Unsupported shape of {shape} for observation")
-
-    @staticmethod
-    def can_encode_visual(sensor_spec: ObservationSpec) -> bool:
-        """
-        Returns True if it is possible to create a visual embedding for the sensor
-        """
-        if len(sensor_spec.shape) != 3:
-            return False
-        for conv_dim in [0, 1]:
-            prop = sensor_spec.dimension_property[conv_dim]
-            if (prop != DimensionProperty.UNSPECIFIED) and (
-                prop != DimensionProperty.TRANSLATIONAL_EQUIVARIANCE
-            ):
-                return False
-        prop = sensor_spec.dimension_property[2]
-        if (
-            (prop != DimensionProperty.UNSPECIFIED)
-            and (prop != DimensionProperty.TRANSLATIONAL_EQUIVARIANCE)
-            and (prop != DimensionProperty.NONE)
-        ):
-            return False
-        return True
-
-    @staticmethod
-    def can_encode_vector(sensor_spec: ObservationSpec) -> bool:
-        """
-        Returns True if it is possible to create a vector embedding for the sensor
-        """
-        if len(sensor_spec.shape) != 1:
-            return False
-        prop = sensor_spec.dimension_property[0]
-        if (prop != DimensionProperty.UNSPECIFIED) and (prop != DimensionProperty.NONE):
-            return False
-        return True
-
-    @staticmethod
-    def can_encode_attention(sensor_spec: ObservationSpec) -> bool:
-        """
-        Returns True if it is possible to create an attention embedding for the sensor
-        """
-        if len(sensor_spec.shape) != 2:
-            return False
-        if sensor_spec.dimension_property[0] != DimensionProperty.VARIABLE_SIZE:
-            return False
-        if sensor_spec.dimension_property[1] != DimensionProperty.NONE:
-            return False
-        return True
+        # VECTOR
+        valid_vector = (DimensionProperty.NONE,)
+        valid_vector_unspecified = (DimensionProperty.UNSPECIFIED,)
+        if dim_prop == valid_vector or dim_prop == valid_vector_unspecified:
+            return (VectorInput(shape[0], normalize), shape[0])
+        # VARIABLE LENGTH
+        valid_var_len = (DimensionProperty.VARIABLE_SIZE, DimensionProperty.NONE)
+        if dim_prop == valid_var_len:
+            # None means the residual self attention must be used
+            return (None, 0)
+        # OTHER
+        raise UnityTrainerException(f"Unsupported Sensor with specs {obs_spec}")
 
     @staticmethod
     def create_input_processors(
@@ -210,31 +178,19 @@ class ModelUtils:
          observation encoder)
          - A list of embedding sizes (0 if the input requires to be processed with a variable length
          observation encoder)
-         - A list of the inputs that need to be processed by a variable length observation encder.
+         - A list of the inputs that need to be processed by a variable length observation encoder.
         """
         encoders: List[nn.Module] = []
         embedding_sizes: List[int] = []
         var_len_indices: List[int] = []
         for idx, obs_spec in enumerate(observation_specs):
-            if ModelUtils.can_encode_attention(obs_spec):
-                # This is a 2D tensor
-                # TODO : better if condition
+            encoder, embedding_size = ModelUtils.get_encoder_for_obs(
+                obs_spec, normalize, h_size, vis_encode_type
+            )
+            encoders.append(encoder)
+            embedding_sizes.append(embedding_size)
+            if encoder is None:
                 var_len_indices.append(idx)
-                encoders.append(None)
-                embedding_sizes.append(0)
-            elif ModelUtils.can_encode_vector(obs_spec) or ModelUtils.can_encode_visual(
-                obs_spec
-            ):
-                encoder, embedding_size = ModelUtils.get_encoder_for_obs(
-                    obs_spec.shape, normalize, h_size, vis_encode_type
-                )
-                encoders.append(encoder)
-                embedding_sizes.append(embedding_size)
-            else:
-                raise UnityTrainerException(
-                    "The following Sensor is incompatible with the trainer {sen_spec}"
-                )
-
         return (nn.ModuleList(encoders), embedding_sizes, var_len_indices)
 
     @staticmethod
