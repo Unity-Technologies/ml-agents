@@ -1,6 +1,6 @@
 using System;
 
-namespace Unity.MLAgents.Extensions.Match3
+namespace Unity.MLAgents.Extensions.Board
 {
     /// <summary>
     /// Directions for a Move.

@@ -1,14 +1,14 @@
 using Unity.MLAgents.Sensors;
 
-namespace Unity.MLAgents.Extensions.Match3
+namespace Unity.MLAgents.Extensions.Board
 {
     /// <summary>
     /// Sensor component for a Match3 game.
     /// </summary>
-    public class Match3SensorComponent : SensorComponent
+    public class BoardSensorComponent : SensorComponent
     {
         /// <summary>
-        /// Name of the generated Match3Sensor object.
+        /// Name of the generated BoardSensor object.
         /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
         /// </summary>
         public string SensorName = "Match3 Sensor";
@@ -16,13 +16,13 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <summary>
         /// Type of observation to generate.
         /// </summary>
-        public Match3ObservationType ObservationType = Match3ObservationType.Vector;
+        public BoardObservationType ObservationType = BoardObservationType.Vector;
 
         /// <inheritdoc/>
         public override ISensor CreateSensor()
         {
             var board = GetComponent<AbstractBoard>();
-            return new Match3Sensor(board, ObservationType, SensorName);
+            return new BoardSensor(board, ObservationType, SensorName);
         }
 
         /// <inheritdoc/>
@@ -35,7 +35,7 @@ namespace Unity.MLAgents.Extensions.Match3
             }
 
             var specialSize = board.NumSpecialTypes == 0 ? 0 : board.NumSpecialTypes + 1;
-            return ObservationType == Match3ObservationType.Vector ?
+            return ObservationType == BoardObservationType.Vector ?
                 new[] { board.Rows * board.Columns * (board.NumCellTypes + specialSize) } :
                 new[] { board.Rows, board.Columns, board.NumCellTypes + specialSize };
         }

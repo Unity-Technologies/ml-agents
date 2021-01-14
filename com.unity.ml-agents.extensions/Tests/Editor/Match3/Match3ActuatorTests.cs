@@ -57,7 +57,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             var gameObj = new GameObject();
             var board = gameObj.AddComponent<SimpleBoard>();
             var agent = gameObj.AddComponent<Agent>();
-            gameObj.AddComponent<Match3ActuatorComponent>();
+            gameObj.AddComponent<BoardActuatorComponent>();
 
             board.Rows = 5;
             board.Columns = 5;
@@ -88,7 +88,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         {
             var gameObj = new GameObject();
             var board = gameObj.AddComponent<SimpleBoard>();
-            var actuator = gameObj.AddComponent<Match3ActuatorComponent>();
+            var actuator = gameObj.AddComponent<BoardActuatorComponent>();
 
             board.Rows = 5;
             board.Columns = 5;
@@ -104,7 +104,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         public void TestActionSpecNullBoard()
         {
             var gameObj = new GameObject();
-            var actuator = gameObj.AddComponent<Match3ActuatorComponent>();
+            var actuator = gameObj.AddComponent<BoardActuatorComponent>();
 
             var actionSpec = actuator.ActionSpec;
             Assert.AreEqual(0, actionSpec.NumDiscreteActions);

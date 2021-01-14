@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Unity.MLAgents.Extensions.Match3
+namespace Unity.MLAgents.Extensions.Board
 {
     public abstract class AbstractBoard : MonoBehaviour
     {

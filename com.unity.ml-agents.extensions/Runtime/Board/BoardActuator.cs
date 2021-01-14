@@ -3,13 +3,13 @@ using Unity.MLAgents.Actuators;
 using UnityEngine;
 
 
-namespace Unity.MLAgents.Extensions.Match3
+namespace Unity.MLAgents.Extensions.Board
 {
     /// <summary>
     /// Actuator for a Match3 game. It translates valid moves (defined by AbstractBoard.IsMoveValid())
     /// in action masks, and applies the action to the board via AbstractBoard.MakeMove().
     /// </summary>
-    public class Match3Actuator : IActuator
+    public class BoardActuator : IActuator
     {
         private AbstractBoard m_Board;
         private ActionSpec m_ActionSpec;
@@ -22,14 +22,14 @@ namespace Unity.MLAgents.Extensions.Match3
         private int m_NumCellTypes;
 
         /// <summary>
-        /// Create a Match3Actuator.
+        /// Create a BoardActuator.
         /// </summary>
         /// <param name="board"></param>
         /// <param name="forceHeuristic">Whether the inference action should be ignored and the Agent's Heuristic
         /// should be called. This should only be used for generating comparison stats of the Heuristic.</param>
         /// <param name="agent"></param>
         /// <param name="name"></param>
-        public Match3Actuator(AbstractBoard board, bool forceHeuristic, Agent agent, string name)
+        public BoardActuator(AbstractBoard board, bool forceHeuristic, Agent agent, string name)
         {
             m_Board = board;
             m_Rows = board.Rows;

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Extensions.Match3;
+using Unity.MLAgents.Extensions.Board;
 
 namespace Unity.MLAgentsExamples
 {
