@@ -93,7 +93,11 @@ https://github.com/Unity-Technologies/ml-agents.
 
 ## Additional Resources
 
-We have published a series of blog posts that are relevant for ML-Agents:
+We have a Unity Learn course,
+[ML-Agents: Hummingsbird](https://learn.unity.com/course/ml-agents-hummingbirds),
+that provides a gentle introduction to Unity and the ML-Agents Toolkit.
+
+We have also published a series of blog posts that are relevant for ML-Agents:
 
 - (December 28, 2020)
   [Happy holidays from the Unity ML-Agents team!](https://blogs.unity3d.com/2020/12/28/happy-holidays-from-the-unity-ml-agents-team/)
@@ -137,13 +141,6 @@ We have published a series of blog posts that are relevant for ML-Agents:
   ([multi-armed bandit](https://blogs.unity3d.com/2017/06/26/unity-ai-themed-blog-entries/)
   and
   [Q-learning](https://blogs.unity3d.com/2017/08/22/unity-ai-reinforcement-learning-with-q-learning/))
-
-In addition to our own documentation, here are some additional, relevant
-articles:
-
-- [A Game Developer Learns Machine Learning](https://mikecann.co.uk/posts/a-game-developer-learns-machine-learning-intent)
-- [Explore Unity Technologies ML-Agents Exclusively on Intel Architecture](https://software.intel.com/en-us/articles/explore-unity-technologies-ml-agents-exclusively-on-intel-architecture)
-- [ML-Agents Penguins tutorial](https://learn.unity.com/project/ml-agents-penguins)
 
 ## Community and Feedback
 
