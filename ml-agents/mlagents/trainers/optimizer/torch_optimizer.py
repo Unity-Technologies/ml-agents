@@ -3,7 +3,7 @@ from mlagents.torch_utils import torch
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.trajectory import ObsUtil
+from mlagents.trainers.trajectory import ObsUtil, TeamObsUtil
 from mlagents.trainers.torch.components.bc.module import BCModule
 from mlagents.trainers.torch.components.reward_providers import create_reward_provider
 
@@ -67,11 +67,11 @@ class TorchOptimizer(Optimizer):
 
         next_obs = [obs.unsqueeze(0) for obs in next_obs]
 
-        critic_obs_np = AgentBuffer.obs_list_list_to_obs_batch(batch["critic_obs"])
+        critic_obs = TeamObsUtil.from_buffer(batch, n_obs)
         critic_obs = [
-            ModelUtils.list_to_tensor_list(_agent_obs) for _agent_obs in critic_obs_np
+            [ModelUtils.list_to_tensor(obs) for obs in _teammate_obs]
+            for _teammate_obs in critic_obs
         ]
-
         next_critic_obs = [
             ModelUtils.list_to_tensor_list(_list_obs) for _list_obs in next_critic_obs
         ]

@@ -183,6 +183,11 @@ class MultiInputNetworkBody(nn.Module):
             self_encodes.append(processed_obs)
         x_self = torch.cat(self_encodes, dim=-1)
 
+        # Get attention masks by grabbing an arbitrary obs across all the agents
+        # Since these are raw obs, the padded values are still 0
+        only_first_obs = [_all_obs[0] for _all_obs in all_net_inputs]
+        obs_for_mask = torch.stack(only_first_obs, dim=1)
+
         # Get the self encoding separately, but keep it in the entities
         concat_encoded_obs = [x_self]
         for inputs in all_net_inputs[1:]:
@@ -197,7 +202,7 @@ class MultiInputNetworkBody(nn.Module):
 
         encoded_entity = self.entity_encoder(x_self, [concat_entites])
         encoded_state = self.self_attn(
-            encoded_entity, EntityEmbeddings.get_masks([concat_entites])
+            encoded_entity, EntityEmbeddings.get_masks([obs_for_mask])
         )
 
         if len(concat_encoded_obs) == 0:
