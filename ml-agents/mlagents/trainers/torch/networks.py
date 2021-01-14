@@ -134,7 +134,7 @@ class MultiInputNetworkBody(nn.Module):
 
         # Modules for self-attention
         self.entity_encoder = EntityEmbeddings(
-            sum(_input_size), [sum(_input_size)], self.h_size
+            sum(_input_size), [sum(_input_size)], self.h_size, concat_self=False
         )
         self.self_attn = ResidualSelfAttention(self.h_size)
 
