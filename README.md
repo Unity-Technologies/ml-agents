@@ -95,6 +95,12 @@ https://github.com/Unity-Technologies/ml-agents.
 
 We have published a series of blog posts that are relevant for ML-Agents:
 
+- (December 28, 2020)
+  [Happy holidays from the Unity ML-Agents team!](https://blogs.unity3d.com/2020/12/28/happy-holidays-from-the-unity-ml-agents-team/)
+- (November 20, 2020)
+  [How Eidos-Montréal created Grid Sensors to improve observations for training agents](https://blogs.unity3d.com/2020/11/20/how-eidos-montreal-created-grid-sensors-to-improve-observations-for-training-agents/)
+- (November 11, 2020)
+  [2020 AI@Unity interns shoutout]https://blogs.unity3d.com/2020/11/11/2020-aiunity-interns-shoutout/)
 - (May 12, 2020)
   [Announcing ML-Agents Unity Package v1.0!](https://blogs.unity3d.com/2020/05/12/announcing-ml-agents-unity-package-v1-0/)
 - (February 28, 2020)
