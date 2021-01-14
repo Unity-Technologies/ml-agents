@@ -125,7 +125,6 @@ class EntityEmbedding(torch.nn.Module):
             kernel_init=Initialization.Normal,
             kernel_gain=(0.125 / embedding_size) ** 0.5,
         )
-        self.embedding_norm = LayerNorm()
 
     def forward(self, x_self: torch.Tensor, entities: torch.Tensor) -> torch.Tensor:
         if self.concat_self:
@@ -141,9 +140,8 @@ class EntityEmbedding(torch.nn.Module):
             expanded_self = torch.cat([expanded_self] * num_entities, dim=1)
             # Concatenate all observations with self
             entities = torch.cat([expanded_self, entities], dim=2)
-        # Encode and entities
+        # Encode entities
         encoded_entities = self.ent_encoder(entities)
-        encoded_entities = self.embedding_norm(encoded_entities)
         return encoded_entities
 
 
