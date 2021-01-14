@@ -50,12 +50,8 @@ class NetworkBody(nn.Module):
         )
 
         if len(self.var_processors) > 0:
-            # There are some variable length observations and they need to be processed separately
             self.rsa = ResidualSelfAttention(self.h_size, entity_num_max)
-
-            x_self_len = sum(self.embedding_sizes)  # The size of the "self" embedding
-            total_enc_size = x_self_len + self.h_size
-
+            total_enc_size = sum(self.embedding_sizes) + self.h_size
             n_layers = max(1, network_settings.num_layers - 2)
         else:
             total_enc_size = sum(self.embedding_sizes)

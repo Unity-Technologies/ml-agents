@@ -108,7 +108,7 @@ class EntityEmbedding(torch.nn.Module):
         """
         super().__init__()
         self.self_size: int = x_self_size
-        self.entity_sizes: int = entity_size
+        self.entity_size: int = entity_size
         self.entity_num_max_elements: int = -1
         if entity_num_max_elements is not None:
             self.entity_num_max_elements = entity_num_max_elements
