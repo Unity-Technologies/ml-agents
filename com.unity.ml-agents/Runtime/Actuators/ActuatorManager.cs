@@ -219,6 +219,11 @@ namespace Unity.MLAgents.Actuators
                 var numContinuousActions = actuator.ActionSpec.NumContinuousActions;
                 var numDiscreteActions = actuator.ActionSpec.NumDiscreteActions;
 
+                if (numContinuousActions == 0 && numDiscreteActions == 0)
+                {
+                    continue;
+                }
+
                 var continuousActions = ActionSegment<float>.Empty;
                 if (numContinuousActions > 0)
                 {
