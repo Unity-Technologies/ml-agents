@@ -67,6 +67,8 @@ public class PushBlockEnvController : MonoBehaviour
 
     private int m_NumberOfRemainingBlocks;
 
+    private PushBlockTeamManager m_TeamManager;
+
     void Start()
     {
 
@@ -83,11 +85,14 @@ public class PushBlockEnvController : MonoBehaviour
             item.StartingRot = item.T.transform.rotation;
             item.Rb = item.T.GetComponent<Rigidbody>();
         }
+        // Initialize TeamManager
+        m_TeamManager = new PushBlockTeamManager();
         foreach (var item in AgentsList)
         {
             item.StartingPos = item.Agent.transform.position;
             item.StartingRot = item.Agent.transform.rotation;
             item.Rb = item.Agent.GetComponent<Rigidbody>();
+            item.Agent.SetTeamManager(m_TeamManager);
         }
 
         ResetScene();
