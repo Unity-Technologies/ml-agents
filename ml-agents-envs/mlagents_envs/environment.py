@@ -62,7 +62,8 @@ class UnityEnvironment(BaseEnv):
     #  * 1.1.0 - support concatenated PNGs for compressed observations.
     #  * 1.2.0 - support compression mapping for stacked compressed observations.
     #  * 1.3.0 - support action spaces with both continuous and discrete actions.
-    API_VERSION = "1.3.0"
+    #  * 1.4.0 - support training analytics sent from python trainer to the editor.
+    API_VERSION = "1.4.0"
 
     # Default port that the editor listens on. If an environment executable
     # isn't specified, this port will be used.

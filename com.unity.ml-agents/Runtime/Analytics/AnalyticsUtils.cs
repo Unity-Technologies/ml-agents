@@ -5,6 +5,11 @@ namespace Unity.MLAgents.Analytics
 {
     internal static class AnalyticsUtils
     {
+        /// <summary>
+        /// Hash a string to remove PII or secret info before sending to analytics
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public static string Hash(string s)
         {
             var behaviorNameHash = Hash128.Compute(s);
@@ -13,6 +18,9 @@ namespace Unity.MLAgents.Analytics
 
         internal static bool s_SendEditorAnalytics = true;
 
+        /// <summary>
+        /// Helper class to temporarily disable sending analytics from unit tests.
+        /// </summary>
         internal class DisableAnalyticsSending : IDisposable
         {
             private bool m_PreviousSendEditorAnalytics;
