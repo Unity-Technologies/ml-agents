@@ -143,7 +143,6 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             {
                 return;
             }
-            item.Agent.EndEpisode();
         }
 
         //Disable killed Agent
@@ -151,20 +150,22 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         {
             if (item.Col == col.collider)
             {
-                item.Col.gameObject.SetActive(false);
-                break;
+                // Disable collider
+                item.Agent.frozen = true;
+                item.Rb.constraints |= RigidbodyConstraints.FreezePositionY;
+                item.Col.enabled = false;
             }
         }
 
-        //End Episode
-        foreach (var item in ZombiesList)
-        {
-            if (item.Agent.transform == t)
-            {
-                item.Agent.gameObject.SetActive(false);
-                break;
-            }
-        }
+        // //End Episode
+        // foreach (var item in ZombiesList)
+        // {
+        //     if (item.Agent.transform == t)
+        //     {
+        //         item.Agent.gameObject.SetActive(false);
+        //         break;
+        //     }
+        // }
     }
 
 
@@ -296,7 +297,10 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.Agent.transform.SetPositionAndRotation(pos, rot);
             item.Rb.velocity = Vector3.zero;
             item.Rb.angularVelocity = Vector3.zero;
+            item.Col.enabled = true;
+            item.Agent.frozen = false;
             item.Agent.gameObject.SetActive(true);
+            item.Rb.constraints &= ~RigidbodyConstraints.FreezePositionY;
         }
 
         //Reset Blocks

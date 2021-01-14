@@ -14,6 +14,8 @@ public class PushAgentCollab : Agent
     //    Rigidbody m_BlockRb;  //cached on initialization
     Rigidbody m_AgentRb;  //cached on initialization
 
+    public bool frozen = false;
+
     public bool useVectorObs = true;
     void Awake()
     {
@@ -76,8 +78,11 @@ public class PushAgentCollab : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
-        // Move the agent using the action.
-        MoveAgent(actionBuffers.DiscreteActions);
+        if (!frozen)
+        {
+            // Move the agent using the action.
+            MoveAgent(actionBuffers.DiscreteActions);
+        }
 
         // Penalty given each step to encourage agent to finish task quickly.
         AddReward(-1f / MaxStep);
