@@ -50,6 +50,10 @@ namespace Unity.MLAgents.Analytics
 
         private static Guid s_TrainingSessionGuid;
 
+        // These are set when the RpcCommunicator connects
+        private static string s_TrainerPackageVersion = "";
+        private static string s_TrainerCommunicationVersion = "";
+
         static bool EnableAnalytics()
         {
             if (s_EventsRegistered)
@@ -81,6 +85,17 @@ namespace Unity.MLAgents.Analytics
             return s_EventsRegistered;
         }
 
+        /// <summary>
+        /// Cache information about the trainer when it becomes available in the RpcCommunicator.
+        /// </summary>
+        /// <param name="communicationVersion"></param>
+        /// <param name="packageVersion"></param>
+        public static void SetTrainerInformation(string packageVersion, string communicationVersion)
+        {
+            s_TrainerPackageVersion = packageVersion;
+            s_TrainerCommunicationVersion = communicationVersion;
+        }
+
         public static bool IsAnalyticsEnabled()
         {
 #if UNITY_EDITOR
@@ -108,9 +123,9 @@ namespace Unity.MLAgents.Analytics
             tbiEvent.TrainingSessionGuid = s_TrainingSessionGuid.ToString();
 
             // Note - to debug, use JsonUtility.ToJson on the event.
-            Debug.Log(
-                $"Would send event {k_TrainingEnvironmentInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
-            );
+            // Debug.Log(
+            //     $"Would send event {k_TrainingEnvironmentInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
+            // );
 #if UNITY_EDITOR
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
@@ -135,7 +150,7 @@ namespace Unity.MLAgents.Analytics
 
             // Extract base behavior name (no team ID)
             var behaviorName = ParseBehaviorName(fullyQualifiedBehaviorName);
-            var added = s_SentRemotePolicyInitialized.Add(fullyQualifiedBehaviorName);
+            var added = s_SentRemotePolicyInitialized.Add(behaviorName);
 
             if (!added)
             {
@@ -145,9 +160,9 @@ namespace Unity.MLAgents.Analytics
 
             var data = GetEventForRemotePolicy(behaviorName, sensors, actionSpec);
             // Note - to debug, use JsonUtility.ToJson on the event.
-            Debug.Log(
-                $"Would send event {k_RemotePolicyInitializedEventName} with body {JsonUtility.ToJson(data, true)}"
-            );
+            // Debug.Log(
+            //     $"Would send event {k_RemotePolicyInitializedEventName} with body {JsonUtility.ToJson(data, true)}"
+            // );
 #if UNITY_EDITOR
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
@@ -187,13 +202,14 @@ namespace Unity.MLAgents.Analytics
                 return;
             }
 
-            // TODO hash behavior name before shipping.
+            // Hash the behavior name so that there's no concern about PII or "secret" data being leaked.
             tbiEvent.TrainingSessionGuid = s_TrainingSessionGuid.ToString();
+            tbiEvent.BehaviorName = AnalyticsUtils.Hash(tbiEvent.BehaviorName);
 
             // Note - to debug, use JsonUtility.ToJson on the event.
-            Debug.Log(
-                $"Would send event {k_TrainingBehaviorInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
-            );
+            // Debug.Log(
+            //     $"Would send event {k_TrainingBehaviorInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
+            // );
 #if UNITY_EDITOR
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
@@ -212,10 +228,7 @@ namespace Unity.MLAgents.Analytics
             var remotePolicyEvent = new RemotePolicyInitializedEvent();
 
             // Hash the behavior name so that there's no concern about PII or "secret" data being leaked.
-            //var behaviorNameHash = Hash128.Compute(behaviorName);
-            //remotePolicyEvent.BehaviorName = behaviorNameHash.ToString();
-            // TODO hash before shipping
-            remotePolicyEvent.BehaviorName = behaviorName;
+            remotePolicyEvent.BehaviorName = AnalyticsUtils.Hash(behaviorName);
 
             remotePolicyEvent.TrainingSessionGuid = s_TrainingSessionGuid.ToString();
             remotePolicyEvent.ActionSpec = EventActionSpec.FromActionSpec(actionSpec);
@@ -225,6 +238,8 @@ namespace Unity.MLAgents.Analytics
                 remotePolicyEvent.ObservationSpecs.Add(EventObservationSpec.FromSensor(sensor));
             }
 
+            remotePolicyEvent.MLAgentsEnvsVersion = s_TrainerPackageVersion;
+            remotePolicyEvent.TrainerCommunicationVersion = s_TrainerCommunicationVersion;
             return remotePolicyEvent;
         }
     }

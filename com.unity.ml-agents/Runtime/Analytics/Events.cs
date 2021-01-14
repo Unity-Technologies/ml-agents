@@ -97,7 +97,12 @@ namespace Unity.MLAgents.Analytics
         public List<EventObservationSpec> ObservationSpecs;
         public EventActionSpec ActionSpec;
 
-        // TODO get python versions from RpcCommunicator?
+        /// <summary>
+        /// This will be the same as TrainingEnvironmentInitializedEvent if available, but
+        /// TrainingEnvironmentInitializedEvent maybe not always be available with older trainers.
+        /// </summary>
+        public string MLAgentsEnvsVersion;
+        public string TrainerCommunicationVersion;
     }
 
     internal struct TrainingEnvironmentInitializedEvent

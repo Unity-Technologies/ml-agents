@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Analytics;
 using Unity.MLAgents.CommunicatorObjects;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.SideChannels;
@@ -114,9 +115,11 @@ namespace Unity.MLAgents
                     },
                     out input);
 
-                var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
                 var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
+                var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
                 var unityCommunicationVersion = initParameters.unityCommunicationVersion;
+
+                TrainingAnalytics.SetTrainerInformation(pythonPackageVersion, pythonCommunicationVersion);
 
                 var communicationIsCompatible = CheckCommunicationVersionsAreCompatible(unityCommunicationVersion,
                     pythonCommunicationVersion,
