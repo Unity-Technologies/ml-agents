@@ -3,7 +3,7 @@ using Unity.MLAgents.Sensors;
 namespace Unity.MLAgents.Extensions.Board
 {
     /// <summary>
-    /// Sensor component for a Match3 game.
+    /// Sensor component for a Board game.
     /// </summary>
     public class BoardSensorComponent : SensorComponent
     {
@@ -11,7 +11,7 @@ namespace Unity.MLAgents.Extensions.Board
         /// Name of the generated BoardSensor object.
         /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
         /// </summary>
-        public string SensorName = "Match3 Sensor";
+        public string SensorName = "Board Sensor";
 
         /// <summary>
         /// Type of observation to generate.

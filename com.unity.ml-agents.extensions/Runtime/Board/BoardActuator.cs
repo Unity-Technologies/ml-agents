@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Unity.MLAgents.Extensions.Board
 {
     /// <summary>
-    /// Actuator for a Match3 game. It translates valid moves (defined by AbstractBoard.IsMoveValid())
+    /// Actuator for a Board game. It translates valid moves (defined by AbstractBoard.IsMoveValid())
     /// in action masks, and applies the action to the board via AbstractBoard.MakeMove().
     /// </summary>
     public class BoardActuator : IActuator

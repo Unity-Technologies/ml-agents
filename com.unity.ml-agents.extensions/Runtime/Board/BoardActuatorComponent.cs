@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 namespace Unity.MLAgents.Extensions.Board
 {
     /// <summary>
-    /// Actuator component for a Match 3 game. Generates a BoardActuator at runtime.
+    /// Actuator component for a Board game. Generates a BoardActuator at runtime.
     /// </summary>
     public class BoardActuatorComponent : ActuatorComponent
     {
@@ -13,7 +13,7 @@ namespace Unity.MLAgents.Extensions.Board
         /// Name of the generated BoardActuator object.
         /// Note that changing this at runtime does not affect how the Agent sorts the actuators.
         /// </summary>
-        public string ActuatorName = "Match3 Actuator";
+        public string ActuatorName = "Board Actuator";
 
         /// <summary>
         /// Force using the Agent's Heuristic() method to decide the action. This should only be used in testing.
