@@ -74,7 +74,7 @@ class TeamObsUtil:
         Convert an AgentBufferField of List of obs, where one of the dimension is time and the other is number (e.g.
         in the case of a variable number of critic observations) to a List of obs, where time is in the batch dimension
         of the obs, and the List is the variable number of agents. For cases where there are varying number of agents,
-        pad the non-existent agents with 0.
+        pad the non-existent agents with NaN.
         """
         # Find the first observation. This should be USUALLY O(1)
         obs_shape = None
@@ -90,7 +90,7 @@ class TeamObsUtil:
             map(
                 lambda x: np.asanyarray(x),
                 itertools.zip_longest(
-                    *agent_buffer_field, fillvalue=np.zeros(obs_shape)
+                    *agent_buffer_field, fillvalue=np.full(obs_shape, np.nan)
                 ),
             )
         )
