@@ -15,7 +15,10 @@ and this project adheres to
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- Added the IHeuristicProvider interface to allow IActuators as well as Agent implement the Heuristic function to generate actions.
+- `StatAggregationMethod.Sum` can now be passed to `StatsRecorder.Add()`. This
+will result in the values being summed (instead of averaged) when written to
+TensorBoard. Thanks to @brccabral for the contribution! (#4816)
+- Added the IHeuristicProvider interface to allow IActuators as well as Agent implement the Heuristic function to generate actions. (#4849)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
@@ -23,6 +26,7 @@ and this project adheres to
 #### com.unity.ml-agents (C#)
 - Fix a compile warning about using an obsolete enum in `GrpcExtensions.cs`. (#4812)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Fixed a bug that would cause an exception when `RunOptions` was deserialized via `pickle`. (#4842)
 
 
 ## [1.7.2-preview] - 2020-12-22

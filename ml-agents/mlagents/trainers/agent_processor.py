@@ -40,6 +40,7 @@ class AgentProcessor:
     ):
         """
         Create an AgentProcessor.
+
         :param trainer: Trainer instance connected to this AgentProcessor. Trainer is given trajectory
         when it is finished.
         :param policy: Policy instance associated with this AgentProcessor.
@@ -318,7 +319,8 @@ class AgentManager(AgentProcessor):
         """
         Pass stats from the environment to the StatsReporter.
         Depending on the StatsAggregationMethod, either StatsReporter.add_stat or StatsReporter.set_stat is used.
-        The worker_id is used to determin whether StatsReporter.set_stat should be used.
+        The worker_id is used to determine whether StatsReporter.set_stat should be used.
+
         :param env_stats:
         :param worker_id:
         :return:
@@ -326,7 +328,9 @@ class AgentManager(AgentProcessor):
         for stat_name, value_list in env_stats.items():
             for val, agg_type in value_list:
                 if agg_type == StatsAggregationMethod.AVERAGE:
-                    self.stats_reporter.add_stat(stat_name, val)
+                    self.stats_reporter.add_stat(stat_name, val, agg_type)
+                elif agg_type == StatsAggregationMethod.SUM:
+                    self.stats_reporter.add_stat(stat_name, val, agg_type)
                 elif agg_type == StatsAggregationMethod.MOST_RECENT:
                     # In order to prevent conflicts between multiple environments,
                     # only stats from the first environment are recorded.

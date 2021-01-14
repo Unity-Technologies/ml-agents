@@ -266,6 +266,6 @@ class ResNetVisualEncoder(nn.Module):
         if not exporting_to_onnx.is_exporting():
             visual_obs = visual_obs.permute([0, 3, 1, 2])
         batch_size = visual_obs.shape[0]
-        hidden = self.sequential(visual_obs)
+        hidden = self.sequential(visual_obs).contiguous()
         before_out = hidden.view(batch_size, -1)
         return torch.relu(self.dense(before_out))

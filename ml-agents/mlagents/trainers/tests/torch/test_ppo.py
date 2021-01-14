@@ -8,7 +8,7 @@ from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disable=unused-variable
+from mlagents.trainers.tests.dummy_config import (  # noqa: F401
     ppo_dummy_config,
     curiosity_dummy_config,
     gail_dummy_config,
@@ -168,7 +168,7 @@ def test_ppo_get_value_estimates(dummy_config, rnn, visual, discrete):
     time_horizon = 15
     trajectory = make_fake_trajectory(
         length=time_horizon,
-        sensor_specs=optimizer.policy.behavior_spec.sensor_specs,
+        observation_specs=optimizer.policy.behavior_spec.observation_specs,
         action_spec=DISCRETE_ACTION_SPEC if discrete else CONTINUOUS_ACTION_SPEC,
         max_step_complete=True,
     )

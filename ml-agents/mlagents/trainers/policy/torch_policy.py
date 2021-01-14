@@ -73,7 +73,7 @@ class TorchPolicy(Policy):
         else:
             ac_class = SharedActorCritic
         self.actor_critic = ac_class(
-            sensor_specs=self.behavior_spec.sensor_specs,
+            observation_specs=self.behavior_spec.observation_specs,
             network_settings=trainer_settings.network_settings,
             action_spec=behavior_spec.action_spec,
             stream_names=reward_signal_names,
@@ -204,9 +204,7 @@ class TorchPolicy(Policy):
             for agent_id in decision_requests.agent_id
         ]  # For 1-D array, the iterator order is correct.
 
-        run_out = self.evaluate(
-            decision_requests, global_agent_ids
-        )  # pylint: disable=assignment-from-no-return
+        run_out = self.evaluate(decision_requests, global_agent_ids)
         self.save_memories(global_agent_ids, run_out.get("memory_out"))
         self.check_nan_action(run_out.get("action"))
         return ActionInfo(
