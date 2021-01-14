@@ -10,7 +10,7 @@ from mlagents.trainers.settings import TrainerSettings, PPOSettings
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
-from mlagents.trainers.trajectory import ObsUtil
+from mlagents.trainers.trajectory import ObsUtil, TeamObsUtil
 
 
 class TorchPPOOptimizer(TorchOptimizer):
@@ -139,9 +139,11 @@ class TorchPPOOptimizer(TorchOptimizer):
         current_obs = ObsUtil.from_buffer(batch, n_obs)
         # Convert to tensors
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
-        critic_obs_np = AgentBuffer.obs_list_list_to_obs_batch(batch["critic_obs"])
+
+        critic_obs = TeamObsUtil.from_buffer(batch, n_obs)
         critic_obs = [
-            ModelUtils.list_to_tensor_list(_agent_obs) for _agent_obs in critic_obs_np
+            [ModelUtils.list_to_tensor(obs) for obs in _teammate_obs]
+            for _teammate_obs in critic_obs
         ]
 
         act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
