@@ -12,6 +12,17 @@ double-check that the versions are in the same. The versions can be found in
 - `UnityEnvironment.API_VERSION` in environment.py
   ([example](https://github.com/Unity-Technologies/ml-agents/blob/b255661084cb8f701c716b040693069a3fb9a257/ml-agents-envs/mlagents/envs/environment.py#L45))
 
+
+# Migrating
+## Migrating to Release 13
+### ML-Agents Extensions Experimental Package namespace and file name changes
+ - The `Unity.MLAgents.Extensions.Match3` namespace was changed to `Unity.MLAgents.Extensions.Board`
+ - `Match3Actuator.cs` was renamed to `BoardActuator.cs`
+ - `Match3ActuatorComponent.cs` was renamed to `BoardActuatorComponent.cs`
+ - `Match3Sensor.cs` was renamed to `BoardSensor.cs`
+ - `Match3SensorComponent.cs` was renamed to `BoardSensorComponent.cs`
+
+
 # Migrating
 ## Migrating to Release 11
 ### Agent virtual method deprecation
