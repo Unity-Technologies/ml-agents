@@ -25,4 +25,4 @@ behaviors:
     summary_freq: 60000
     threaded: true
 env_settings:
-    num_envs: 3
+    num_envs: 4
