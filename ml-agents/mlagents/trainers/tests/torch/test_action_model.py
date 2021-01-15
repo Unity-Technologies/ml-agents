@@ -71,11 +71,11 @@ def test_get_probs_and_entropy():
     for _disc in log_probs.all_discrete_list:
         assert _disc.shape == (1, 2)
 
-    for clp in log_probs.continuous_tensor[0]:
+    for clp in log_probs.continuous_tensor[0].tolist():
         # Log prob of standard normal at 0
         assert clp == pytest.approx(-0.919, abs=0.01)
 
     assert log_probs.discrete_list[0] > log_probs.discrete_list[1]
 
-    for ent, val in zip(entropies[0], [1.4189, 0.6191, 0.6191]):
+    for ent, val in zip(entropies[0].tolist(), [1.4189, 0.6191, 0.6191]):
         assert ent == pytest.approx(val, abs=0.01)

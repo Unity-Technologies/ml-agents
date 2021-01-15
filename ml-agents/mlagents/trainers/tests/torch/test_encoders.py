@@ -36,7 +36,7 @@ def test_normalizer():
     norm.update(vec_input3)
 
     # Test normalization
-    for val in norm(vec_input1)[0]:
+    for val in norm(vec_input1)[0].tolist():
         assert val == pytest.approx(0.707, abs=0.001)
 
     # Test copy normalization
