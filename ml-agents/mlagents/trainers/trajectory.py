@@ -13,6 +13,7 @@ class AgentExperience:
     obs: List[np.ndarray]
     collab_obs: List[List[np.ndarray]]
     reward: float
+    team_rewards: List[float]
     done: bool
     action: ActionTuple
     action_probs: LogProbsTuple
@@ -155,6 +156,8 @@ class Trajectory(NamedTuple):
                     # Assume teammates have same obs space
                     ith_team_obs.append(_team_obs[i])
                 agent_buffer_trajectory[TeamObsUtil.get_name_at(i)].append(ith_team_obs)
+
+            agent_buffer_trajectory["team_rewards"].append(exp.team_rewards)
 
             if exp.memory is not None:
                 agent_buffer_trajectory["memory"].append(exp.memory)
