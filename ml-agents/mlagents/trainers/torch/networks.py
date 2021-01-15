@@ -619,17 +619,25 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
         actor_mem, critic_mem = self._get_actor_critic_mem(memories)
         all_net_inputs = [inputs]
-        if critic_obs is not None:
+        if critic_obs is not None and critic_obs:
             all_net_inputs.extend(critic_obs)
+            mar_value_outputs, _ = self.critic(
+                critic_obs, memories=critic_mem, sequence_length=sequence_length
+            )
+        else:
+            mar_value_outputs = None
         value_outputs, critic_mem_out = self.critic(
             all_net_inputs, memories=critic_mem, sequence_length=sequence_length
         )
+        if mar_value_outputs is None:
+            mar_value_outputs = value_outputs
+
         if actor_mem is not None:
             # Make memories with the actor mem unchanged
             memories_out = torch.cat([actor_mem, critic_mem_out], dim=-1)
         else:
             memories_out = None
-        return value_outputs, memories_out
+        return value_outputs, mar_value_outputs, memories_out
 
     def get_stats_and_value(
         self,
@@ -646,13 +654,16 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         )
         log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
         all_net_inputs = [inputs]
-        if critic_obs is not None:
+        if critic_obs is not None and critic_obs:
             all_net_inputs.extend(critic_obs)
+            mar_value_outputs, _ = self.critic(
+                critic_obs, memories=critic_mem, sequence_length=sequence_length
+            )
         value_outputs, critic_mem_outs = self.critic(
             all_net_inputs, memories=critic_mem, sequence_length=sequence_length
         )
 
-        return log_probs, entropies, value_outputs
+        return log_probs, entropies, value_outputs, mar_value_outputs
 
     def get_action_stats(
         self,

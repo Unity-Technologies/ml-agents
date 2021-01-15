@@ -82,14 +82,14 @@ class TorchOptimizer(Optimizer):
 
         memory = torch.zeros([1, 1, self.policy.m_size])
 
-        value_estimates, next_memory = self.policy.actor_critic.critic_pass(
+        value_estimates, marg_val_estimates, next_memory = self.policy.actor_critic.critic_pass(
             current_obs,
             memory,
             sequence_length=batch.num_experiences,
             critic_obs=critic_obs,
         )
 
-        next_value_estimate, _ = self.policy.actor_critic.critic_pass(
+        next_value_estimate, next_marg_val_estimate, _ = self.policy.actor_critic.critic_pass(
             next_obs, next_memory, sequence_length=1, critic_obs=next_critic_obs
         )
 
@@ -97,9 +97,13 @@ class TorchOptimizer(Optimizer):
             value_estimates[name] = ModelUtils.to_numpy(estimate)
             next_value_estimate[name] = ModelUtils.to_numpy(next_value_estimate[name])
 
+        for name, estimate in marg_val_estimates.items():
+            marg_val_estimates[name] = ModelUtils.to_numpy(estimate)
+            next_marg_val_estimate[name] = ModelUtils.to_numpy(next_marg_val_estimate[name])
+
         if done:
             for k in next_value_estimate:
                 if not self.reward_signals[k].ignore_done:
                     next_value_estimate[k] = 0.0
 
-        return value_estimates, next_value_estimate
+        return value_estimates, marg_val_estimates, next_value_estimate, next_marg_val_estimate

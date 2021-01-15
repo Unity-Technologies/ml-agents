@@ -72,7 +72,12 @@ class PPOTrainer(RLTrainer):
             self.policy.update_normalization(agent_buffer_trajectory)
 
         # Get all value estimates
-        value_estimates, value_next = self.optimizer.get_trajectory_value_estimates(
+        (
+            value_estimates,
+            marginalized_value_estimates,
+            value_next,
+            marg_value_next,
+        ) = self.optimizer.get_trajectory_value_estimates(
             agent_buffer_trajectory,
             trajectory.next_obs,
             trajectory.next_collab_obs,
@@ -81,6 +86,9 @@ class PPOTrainer(RLTrainer):
 
         for name, v in value_estimates.items():
             agent_buffer_trajectory[f"{name}_value_estimates"].extend(v)
+            agent_buffer_trajectory[f"{name}_marginalized_value_estimates"].extend(
+                marginalized_value_estimates[name]
+            )
             self._stats_reporter.add_stat(
                 f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value Estimate",
                 np.mean(v),
@@ -108,10 +116,14 @@ class PPOTrainer(RLTrainer):
             local_value_estimates = agent_buffer_trajectory[
                 f"{name}_value_estimates"
             ].get_batch()
+            m_value_estimates = agent_buffer_trajectory[
+                f"{name}_marginalized_value_estimates"
+            ].get_batch()
 
-            local_advantage = get_gae(
+            local_advantage = get_team_gae(
                 rewards=local_rewards,
                 value_estimates=local_value_estimates,
+                marginalized_value_estimates=m_value_estimates,
                 value_next=bootstrap_value,
                 gamma=self.optimizer.reward_signals[name].gamma,
                 lambd=self.hyperparameters.lambd,
@@ -284,5 +296,28 @@ def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
     """
     value_estimates = np.append(value_estimates, value_next)
     delta_t = rewards + gamma * value_estimates[1:] - value_estimates[:-1]
+    advantage = discount_rewards(r=delta_t, gamma=gamma * lambd)
+    return advantage
+
+
+def get_team_gae(
+    rewards,
+    value_estimates,
+    marginalized_value_estimates,
+    value_next=0.0,
+    gamma=0.99,
+    lambd=0.95,
+):
+    """
+    Computes generalized advantage estimate for use in updating policy.
+    :param rewards: list of rewards for time-steps t to T.
+    :param value_next: Value estimate for time-step T+1.
+    :param value_estimates: list of value estimates for time-steps t to T.
+    :param gamma: Discount factor.
+    :param lambd: GAE weighing factor.
+    :return: list of advantage estimates for time-steps t to T.
+    """
+    value_estimates = np.append(value_estimates, value_next)
+    delta_t = rewards + gamma * value_estimates[1:] - marginalized_value_estimates
     advantage = discount_rewards(r=delta_t, gamma=gamma * lambd)
     return advantage
