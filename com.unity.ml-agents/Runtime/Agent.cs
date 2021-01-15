@@ -894,7 +894,6 @@ namespace Unity.MLAgents
             // Disable deprecation warnings so we can call the legacy overload.
 #pragma warning disable CS0618
 
-            Array.Clear(m_LegacyHeuristicCache, 0, m_LegacyHeuristicCache.Length);
             // The default implementation of Heuristic calls the
             // obsolete version for backward compatibility
             switch (m_PolicyFactory.BrainParameters.VectorActionSpaceType)
