@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
-using Unity.MLAgents.Extensions.Board;
+using Unity.MLAgents.Extensions.Match3;
 using UnityEngine;
 using Unity.MLAgents.Extensions.Tests.Sensors;
 using Unity.MLAgents.Sensors;
@@ -25,8 +25,8 @@ namespace Unity.MLAgents.Extensions.Tests.Board
             var board = gameObj.AddComponent<StringBoard>();
             board.SetBoard(boardString);
 
-            var sensorComponent = gameObj.AddComponent<BoardSensorComponent>();
-            sensorComponent.ObservationType = BoardObservationType.Vector;
+            var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
+            sensorComponent.ObservationType = Match3ObservationType.Vector;
             var sensor = sensorComponent.CreateSensor();
 
             var expectedShape = new[] { 3 * 3 * 2 };
@@ -59,8 +59,8 @@ namespace Unity.MLAgents.Extensions.Tests.Board
             board.SetBoard(boardString);
             board.SetSpecial(specialString);
 
-            var sensorComponent = gameObj.AddComponent<BoardSensorComponent>();
-            sensorComponent.ObservationType = BoardObservationType.Vector;
+            var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
+            sensorComponent.ObservationType = Match3ObservationType.Vector;
             var sensor = sensorComponent.CreateSensor();
 
             var expectedShape = new[] { 3 * 3 * (2 + 3) };
@@ -88,8 +88,8 @@ namespace Unity.MLAgents.Extensions.Tests.Board
             var board = gameObj.AddComponent<StringBoard>();
             board.SetBoard(boardString);
 
-            var sensorComponent = gameObj.AddComponent<BoardSensorComponent>();
-            sensorComponent.ObservationType = BoardObservationType.UncompressedVisual;
+            var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
+            sensorComponent.ObservationType = Match3ObservationType.UncompressedVisual;
             var sensor = sensorComponent.CreateSensor();
 
             var expectedShape = new[] { 3, 3, 2 };
@@ -132,8 +132,8 @@ namespace Unity.MLAgents.Extensions.Tests.Board
             board.SetBoard(boardString);
             board.SetSpecial(specialString);
 
-            var sensorComponent = gameObj.AddComponent<BoardSensorComponent>();
-            sensorComponent.ObservationType = BoardObservationType.UncompressedVisual;
+            var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
+            sensorComponent.ObservationType = Match3ObservationType.UncompressedVisual;
             var sensor = sensorComponent.CreateSensor();
 
             var expectedShape = new[] { 3, 3, 2 + 3 };
@@ -170,8 +170,8 @@ namespace Unity.MLAgents.Extensions.Tests.Board
             var board = gameObj.AddComponent<StringBoard>();
             board.SetBoard(boardString);
 
-            var sensorComponent = gameObj.AddComponent<BoardSensorComponent>();
-            sensorComponent.ObservationType = BoardObservationType.CompressedVisual;
+            var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
+            sensorComponent.ObservationType = Match3ObservationType.CompressedVisual;
             var sensor = sensorComponent.CreateSensor();
 
             var expectedShape = new[] { 3, 3, 2 };
@@ -210,8 +210,8 @@ namespace Unity.MLAgents.Extensions.Tests.Board
             board.SetBoard(boardString);
             board.SetSpecial(specialString);
 
-            var sensorComponent = gameObj.AddComponent<BoardSensorComponent>();
-            sensorComponent.ObservationType = BoardObservationType.CompressedVisual;
+            var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
+            sensorComponent.ObservationType = Match3ObservationType.CompressedVisual;
             var sensor = sensorComponent.CreateSensor();
 
             var expectedShape = new[] { 3, 3, 2 + 3 };

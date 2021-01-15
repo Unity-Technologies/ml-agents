@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
-namespace Unity.MLAgents.Extensions.Board
+namespace Unity.MLAgents.Extensions.Match3
 {
     /// <summary>
     /// Type of observations to generate.
     ///
     /// </summary>
-    public enum BoardObservationType
+    public enum Match3ObservationType
     {
         /// <summary>
         /// Generate a one-hot encoding of the cell type for each cell on the board. If there are special types,
@@ -35,9 +35,9 @@ namespace Unity.MLAgents.Extensions.Board
     /// or uncompressed visual observations. Uses AbstractBoard.GetCellType()
     /// and AbstractBoard.GetSpecialType() to determine the observation values.
     /// </summary>
-    public class BoardSensor : ISparseChannelSensor
+    public class Match3Sensor : ISparseChannelSensor
     {
-        private BoardObservationType m_ObservationType;
+        private Match3ObservationType m_ObservationType;
         private AbstractBoard m_Board;
         private int[] m_Shape;
         private int[] m_SparseChannelMapping;
@@ -60,7 +60,7 @@ namespace Unity.MLAgents.Extensions.Board
         /// <param name="board"></param>
         /// <param name="obsType"></param>
         /// <param name="name"></param>
-        public BoardSensor(AbstractBoard board, BoardObservationType obsType, string name)
+        public Match3Sensor(AbstractBoard board, Match3ObservationType obsType, string name)
         {
             m_Board = board;
             m_Name = name;
@@ -70,7 +70,7 @@ namespace Unity.MLAgents.Extensions.Board
             m_NumSpecialTypes = board.NumSpecialTypes;
 
             m_ObservationType = obsType;
-            m_Shape = obsType == BoardObservationType.Vector ?
+            m_Shape = obsType == Match3ObservationType.Vector ?
                 new[] { m_Rows * m_Columns * (m_NumCellTypes + SpecialTypeSize) } :
                 new[] { m_Rows, m_Columns, m_NumCellTypes + SpecialTypeSize };
 
@@ -113,7 +113,7 @@ namespace Unity.MLAgents.Extensions.Board
                 );
             }
 
-            if (m_ObservationType == BoardObservationType.Vector)
+            if (m_ObservationType == Match3ObservationType.Vector)
             {
                 int offset = 0;
                 for (var r = 0; r < m_Rows; r++)
@@ -217,7 +217,7 @@ namespace Unity.MLAgents.Extensions.Board
         /// <inheritdoc/>
         public SensorCompressionType GetCompressionType()
         {
-            return m_ObservationType == BoardObservationType.CompressedVisual ?
+            return m_ObservationType == Match3ObservationType.CompressedVisual ?
                 SensorCompressionType.PNG :
                 SensorCompressionType.None;
         }

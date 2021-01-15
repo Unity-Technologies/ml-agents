@@ -15,12 +15,9 @@ double-check that the versions are in the same. The versions can be found in
 
 # Migrating
 ## Migrating to Release 13
-### ML-Agents Extensions Experimental Package namespace and file name changes
- - The `Unity.MLAgents.Extensions.Match3` namespace was changed to `Unity.MLAgents.Extensions.Board`
- - `Match3Actuator.cs` was renamed to `BoardActuator.cs`
- - `Match3ActuatorComponent.cs` was renamed to `BoardActuatorComponent.cs`
- - `Match3Sensor.cs` was renamed to `BoardSensor.cs`
- - `Match3SensorComponent.cs` was renamed to `BoardSensorComponent.cs`
+### Implementing IHeuristic in your IActuator implementations
+ - If you have any custom actuators, you can now implement the `IHeuristicProvider` interface to have your actuator
+handle the generation of actions when an Agent is running in heuristic mode.
 
 
 # Migrating

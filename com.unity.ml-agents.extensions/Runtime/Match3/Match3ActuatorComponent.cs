@@ -2,15 +2,15 @@ using Unity.MLAgents.Actuators;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Unity.MLAgents.Extensions.Board
+namespace Unity.MLAgents.Extensions.Match3
 {
     /// <summary>
-    /// Actuator component for a Board game. Generates a BoardActuator at runtime.
+    /// Actuator component for a Board game. Generates a Match3Actuator at runtime.
     /// </summary>
-    public class BoardActuatorComponent : ActuatorComponent
+    public class Match3ActuatorComponent : ActuatorComponent
     {
         /// <summary>
-        /// Name of the generated BoardActuator object.
+        /// Name of the generated Match3Actuator object.
         /// Note that changing this at runtime does not affect how the Agent sorts the actuators.
         /// </summary>
         public string ActuatorName = "Board Actuator";
@@ -30,7 +30,7 @@ namespace Unity.MLAgents.Extensions.Board
             var board = GetComponent<AbstractBoard>();
             var agent = GetComponentInParent<Agent>();
             var seed = board.RandomSeed == -1 ? gameObject.GetInstanceID() : board.RandomSeed + 1;
-            return new BoardActuator(board, ForceHeuristic, HeuristicQuality, seed, agent, ActuatorName);
+            return new Match3Actuator(board, ForceHeuristic, HeuristicQuality, seed, agent, ActuatorName);
         }
 
         /// <inheritdoc/>

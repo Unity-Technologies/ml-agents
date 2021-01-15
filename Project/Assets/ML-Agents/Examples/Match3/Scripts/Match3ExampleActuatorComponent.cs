@@ -1,10 +1,10 @@
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Extensions.Board;
+using Unity.MLAgents.Extensions.Match3;
 
 namespace Unity.MLAgentsExamples
 {
-    public class Match3ActuatorComponent : BoardActuatorComponent
+    public class Match3ExampleActuatorComponent : Match3ActuatorComponent
     {
         /// <inheritdoc/>
         public override IActuator CreateActuator()
@@ -12,7 +12,7 @@ namespace Unity.MLAgentsExamples
             var board = GetComponent<Match3Board>();
             var agent = GetComponentInParent<Agent>();
             var seed = board.RandomSeed == -1 ? gameObject.GetInstanceID() : board.RandomSeed + 1;
-            return new Match3Actuator(board, ForceHeuristic, agent, ActuatorName, HeuristicQuality, seed);
+            return new Match3ExampleActuator(board, ForceHeuristic, agent, ActuatorName, HeuristicQuality, seed);
         }
     }
 }

@@ -1,4 +1,4 @@
-using Unity.MLAgents.Extensions.Board;
+using Unity.MLAgents.Extensions.Match3;
 using UnityEngine;
 
 namespace Unity.MLAgentsExamples

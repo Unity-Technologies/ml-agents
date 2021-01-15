@@ -1,15 +1,13 @@
-using System.Text.RegularExpressions;
 using Unity.MLAgents;
-using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Extensions.Board;
+using Unity.MLAgents.Extensions.Match3;
 
 namespace Unity.MLAgentsExamples
 {
-    public class Match3Actuator : BoardActuator, IHeuristicProvider
+    public class Match3ExampleActuator : Match3Actuator
     {
         Match3Board Board => (Match3Board)m_Board;
 
-        public Match3Actuator(Match3Board board,
+        public Match3ExampleActuator(Match3Board board,
             bool forceHeuristic,
             Agent agent,
             string name,

@@ -3,7 +3,7 @@ using Unity.MLAgents.Actuators;
 using UnityEngine;
 
 
-namespace Unity.MLAgents.Extensions.Board
+namespace Unity.MLAgents.Extensions.Match3
 {
     public enum HeuristicQuality
     {
@@ -23,7 +23,7 @@ namespace Unity.MLAgents.Extensions.Board
     /// Actuator for a Board game. It translates valid moves (defined by AbstractBoard.IsMoveValid())
     /// in action masks, and applies the action to the board via AbstractBoard.MakeMove().
     /// </summary>
-    public class BoardActuator : IActuator, IHeuristicProvider
+    public class Match3Actuator : IActuator, IHeuristicProvider
     {
         protected AbstractBoard m_Board;
         protected HeuristicQuality m_HeuristicQuality;
@@ -37,14 +37,14 @@ namespace Unity.MLAgents.Extensions.Board
         private int m_NumCellTypes;
 
         /// <summary>
-        /// Create a BoardActuator.
+        /// Create a Match3Actuator.
         /// </summary>
         /// <param name="board"></param>
         /// <param name="forceHeuristic">Whether the inference action should be ignored and the Agent's Heuristic
         /// should be called. This should only be used for generating comparison stats of the Heuristic.</param>
         /// <param name="agent"></param>
         /// <param name="name"></param>
-        public BoardActuator(AbstractBoard board,
+        public Match3Actuator(AbstractBoard board,
             bool forceHeuristic,
             HeuristicQuality heuristicQuality,
             int seed,
