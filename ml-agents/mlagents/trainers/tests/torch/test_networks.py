@@ -123,8 +123,8 @@ def test_valuenetwork():
         loss.backward()
         optimizer.step()
     # In the last step, values should be close to 1
-    for value in values.values().tolist():
-        for _out in value:
+    for value in values.values():
+        for _out in value.tolist():
             assert _out[0] == pytest.approx(1.0, abs=0.1)
 
 
