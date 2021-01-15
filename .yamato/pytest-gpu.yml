@@ -12,6 +12,7 @@ pytest_gpu:
       python -m pip install --upgrade setuptools
       python -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python -u -m ml-agents.tests.yamato.setup_venv
+      python -m pip install --progress-bar=off -r test_requirements.txt
       python -m pytest
   triggers:
     cancel_old_ci: true
