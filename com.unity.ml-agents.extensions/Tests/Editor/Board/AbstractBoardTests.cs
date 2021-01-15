@@ -4,7 +4,7 @@ using UnityEngine;
 using NUnit.Framework;
 using Unity.MLAgents.Extensions.Board;
 
-namespace Unity.MLAgents.Extensions.Tests.Match3
+namespace Unity.MLAgents.Extensions.Tests.Board
 {
     internal class StringBoard : AbstractBoard
     {
