@@ -97,6 +97,11 @@ We have a Unity Learn course,
 [ML-Agents: Hummingsbird](https://learn.unity.com/course/ml-agents-hummingbirds),
 that provides a gentle introduction to Unity and the ML-Agents Toolkit.
 
+We've also partnered with
+[CodeMonkeyUnity](https://www.youtube.com/c/CodeMonkeyUnity) to create a
+[series of tutorial videos](https://www.youtube.com/playlist?list=PLzDRvYVwl53vehwiN_odYJkPBzcqFw110)
+on how to implement and use the ML-Agents Toolkit.
+
 We have also published a series of blog posts that are relevant for ML-Agents:
 
 - (December 28, 2020)
