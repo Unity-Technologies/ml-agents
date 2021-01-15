@@ -5,16 +5,31 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Board
 {
+    public enum HeuristicQuality
+    {
+        /// <summary>
+        /// The heuristic will pick any valid move at random.
+        /// </summary>
+        RandomValidMove,
+
+        /// <summary>
+        /// The heuristic will pick the move that scores the most points.
+        /// This only looks at the immediate move, and doesn't consider where cells will fall.
+        /// </summary>
+        Greedy
+    }
+
     /// <summary>
     /// Actuator for a Board game. It translates valid moves (defined by AbstractBoard.IsMoveValid())
     /// in action masks, and applies the action to the board via AbstractBoard.MakeMove().
     /// </summary>
-    public class BoardActuator : IActuator
+    public class BoardActuator : IActuator, IHeuristicProvider
     {
-        private AbstractBoard m_Board;
+        protected AbstractBoard m_Board;
+        protected HeuristicQuality m_HeuristicQuality;
+        protected System.Random m_Random;
         private ActionSpec m_ActionSpec;
         private bool m_ForceHeuristic;
-        private System.Random m_Random;
         private Agent m_Agent;
 
         private int m_Rows;
@@ -29,7 +44,12 @@ namespace Unity.MLAgents.Extensions.Board
         /// should be called. This should only be used for generating comparison stats of the Heuristic.</param>
         /// <param name="agent"></param>
         /// <param name="name"></param>
-        public BoardActuator(AbstractBoard board, bool forceHeuristic, Agent agent, string name)
+        public BoardActuator(AbstractBoard board,
+            bool forceHeuristic,
+            HeuristicQuality heuristicQuality,
+            int seed,
+            Agent agent,
+            string name)
         {
             m_Board = board;
             m_Rows = board.Rows;
@@ -42,6 +62,7 @@ namespace Unity.MLAgents.Extensions.Board
 
             var numMoves = Move.NumPotentialMoves(m_Board.Rows, m_Board.Columns);
             m_ActionSpec = ActionSpec.MakeDiscrete(numMoves);
+            m_Random = new System.Random(seed);
         }
 
         /// <inheritdoc/>
@@ -52,7 +73,7 @@ namespace Unity.MLAgents.Extensions.Board
         {
             if (m_ForceHeuristic)
             {
-                m_Agent.Heuristic(actions);
+                Heuristic(actions);
             }
             var moveIndex = actions.DiscreteActions[0];
 
@@ -116,5 +137,63 @@ namespace Unity.MLAgents.Extensions.Board
                 yield return move.MoveIndex;
             }
         }
+
+        public void Heuristic(in ActionBuffers actionsOut)
+        {
+            var discreteActions = actionsOut.DiscreteActions;
+            discreteActions[0] = GreedyMove();
+        }
+
+
+        protected int GreedyMove()
+        {
+
+            var bestMoveIndex = 0;
+            var bestMovePoints = -1;
+            var numMovesAtCurrentScore = 0;
+
+            foreach (var move in m_Board.ValidMoves())
+            {
+                var movePoints = m_HeuristicQuality == HeuristicQuality.Greedy ? EvalMovePoints(move) : 1;
+                if (movePoints < bestMovePoints)
+                {
+                    // Worse, skip
+                    continue;
+                }
+
+                if (movePoints > bestMovePoints)
+                {
+                    // Better, keep
+                    bestMovePoints = movePoints;
+                    bestMoveIndex = move.MoveIndex;
+                    numMovesAtCurrentScore = 1;
+                }
+                else
+                {
+                    // Tied for best - use reservoir sampling to make sure we select from equal moves uniformly.
+                    // See https://en.wikipedia.org/wiki/Reservoir_sampling#Simple_algorithm
+                    numMovesAtCurrentScore++;
+                    var randVal = m_Random.Next(0, numMovesAtCurrentScore);
+                    if (randVal == 0)
+                    {
+                        // Keep the new one
+                        bestMoveIndex = move.MoveIndex;
+                    }
+                }
+            }
+
+            return bestMoveIndex;
+        }
+
+        /// <summary>
+        /// Method to be overridden when evaluating how many points a specific move will generate.
+        /// </summary>
+        /// <param name="move">The move to evaluate.</param>
+        /// <returns>The number of points the move generates.</returns>
+        protected virtual int EvalMovePoints(Move move)
+        {
+            return 1;
+        }
+
     }
 }

@@ -7,8 +7,6 @@ namespace Unity.MLAgentsExamples
 
     public class Match3Board : AbstractBoard
     {
-        public int RandomSeed = -1;
-
         public const int k_EmptyCell = -1;
         [Tooltip("Points earned for clearing a basic cell (cube)")]
         public int BasicCellPoints = 1;

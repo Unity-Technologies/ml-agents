@@ -22,12 +22,15 @@ namespace Unity.MLAgents.Extensions.Board
         [Tooltip("Force using the Agent's Heuristic() method to decide the action. This should only be used in testing.")]
         public bool ForceHeuristic;
 
+        public HeuristicQuality HeuristicQuality;
+
         /// <inheritdoc/>
         public override IActuator CreateActuator()
         {
             var board = GetComponent<AbstractBoard>();
             var agent = GetComponentInParent<Agent>();
-            return new BoardActuator(board, ForceHeuristic, agent, ActuatorName);
+            var seed = board.RandomSeed == -1 ? gameObject.GetInstanceID() : board.RandomSeed + 1;
+            return new BoardActuator(board, ForceHeuristic, HeuristicQuality, seed, agent, ActuatorName);
         }
 
         /// <inheritdoc/>

@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using Unity.MLAgents.Extensions.Match3;
+using Unity.MLAgents.Extensions.Board;
 using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Tests.Match3
