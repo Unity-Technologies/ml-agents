@@ -9997,6 +9997,7 @@ MonoBehaviour:
   - {fileID: 1849940690}
   CurrentlyVisibleTilesList: []
   m_UsedPositionsList: 
+  m_NextExpectedTileIndex: 0
   TileMaterial: {fileID: 2100000, guid: eaad04b0e0dec42229c9cb00a981d7ac, type: 2}
   SuccessMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
 --- !u!114 &1489717564321788
@@ -10517,7 +10518,7 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: 70db47ab276e44fe0beb677ff8d69382, type: 3}
   m_InferenceDevice: 0
-  m_BehaviorType: 1
+  m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
   m_UseChildSensors: 1
