@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Analytics
         /// Hash a string to remove PII or secret info before sending to analytics
         /// </summary>
         /// <param name="s"></param>
-        /// <returns></returns>
+        /// <returns>A string containing the Hash128 of the input string.</returns>
         public static string Hash(string s)
         {
             var behaviorNameHash = Hash128.Compute(s);
