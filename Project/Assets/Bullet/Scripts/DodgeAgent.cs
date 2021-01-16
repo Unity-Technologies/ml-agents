@@ -89,10 +89,13 @@ public class DodgeAgent : Agent
         sensor.AddObservation((transform.position.x - area.transform.position.x) / 10f);
         sensor.AddObservation((transform.position.z - area.transform.position.z) / 10f);
 
+        sensor.AddObservation(transform.forward.x);
+        sensor.AddObservation(transform.forward.z);
+
         // Collect observation about the 20 closest Bullets
         var bullets = transform.parent.GetComponentsInChildren<Bullet>();
         // Sort by closest :
-        System.Array.Sort(bullets , (a, b) => (Vector3.Distance(a.transform.position, transform.position)).CompareTo(Vector3.Distance(b.transform.position, transform.position)));
+        System.Array.Sort(bullets, (a, b) => (Vector3.Distance(a.transform.position, transform.position)).CompareTo(Vector3.Distance(b.transform.position, transform.position)));
         int numBulletAdded = 0;
 
         // foreach (Bullet b in bullets)
@@ -102,7 +105,8 @@ public class DodgeAgent : Agent
 
         foreach (Bullet b in bullets)
         {
-            if (numBulletAdded >= 20){
+            if (numBulletAdded >= 40)
+            {
                 break;
             }
 
@@ -112,7 +116,7 @@ public class DodgeAgent : Agent
                 b.transform.forward.x,
                 b.transform.forward.z
             };
-            numBulletAdded +=1;
+            numBulletAdded += 1;
 
             m_BufferSensor.AppendObservation(bulletObservation);
 
@@ -129,13 +133,13 @@ public class DodgeAgent : Agent
     {
         var forwardForce = Mathf.Clamp(actionBuffers.ContinuousActions[0], -1f, 1f);
         var lateralForce = Mathf.Clamp(actionBuffers.ContinuousActions[1], -1f, 1f);
-        // var rotationForce = Mathf.Clamp(actionBuffers.ContinuousActions[2], -1f, 1f);
+        var rotationForce = Mathf.Clamp(actionBuffers.ContinuousActions[2], -1f, 1f);
 
-        // Vector3 dirToGo = transform.forward * forwardForce + transform.right * lateralForce;
-        // Vector3 rotateDir = transform.up * rotationForce;
+        //Vector3 dirToGo = transform.forward * forwardForce + transform.right * lateralForce;
+        Vector3 rotateDir = transform.up * rotationForce;
 
-        // transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
-        Vector3 dirToGo = new Vector3(1,0,0) * forwardForce + new Vector3(0,0,1)*lateralForce;
+        transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
+        Vector3 dirToGo = new Vector3(1, 0, 0) * forwardForce + new Vector3(0, 0, 1) * lateralForce;
         m_AgentRb.AddForce(dirToGo * m_BulletSettings.agentRunSpeed,
             ForceMode.VelocityChange);
         //Vector3 dirToCenter = new Vector3((transform.position.x - area.transform.position.x) / 10f, 0f, (transform.position.z - area.transform.position.z) / 10f);

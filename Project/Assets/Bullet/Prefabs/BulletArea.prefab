@@ -562,7 +562,7 @@ PrefabInstance:
     - target: {fileID: 2602957484348800521, guid: 16266ae2c040142b1a996878d94ec3fb,
         type: 3}
       propertyPath: m_BrainParameters.m_ActionSpec.m_NumContinuousActions
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2602957484348800521, guid: 16266ae2c040142b1a996878d94ec3fb,
         type: 3}
@@ -572,7 +572,22 @@ PrefabInstance:
     - target: {fileID: 2602957484348800521, guid: 16266ae2c040142b1a996878d94ec3fb,
         type: 3}
       propertyPath: m_BrainParameters.VectorActionSize.Array.data[0]
-      value: 2
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2602957484348800521, guid: 16266ae2c040142b1a996878d94ec3fb,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 968348991679639432, guid: 16266ae2c040142b1a996878d94ec3fb,
+        type: 3}
+      propertyPath: DecisionPeriod
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5260467540845178092, guid: 16266ae2c040142b1a996878d94ec3fb,
+        type: 3}
+      propertyPath: MaxNumObservables
+      value: 40
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 9204493211719777360, guid: 16266ae2c040142b1a996878d94ec3fb, type: 3}
