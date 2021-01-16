@@ -649,5 +649,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Area
       objectReference: {fileID: 0}
+    - target: {fileID: 3647717279211344790, guid: 1cf3ef0a332884c299335f3fbe8a21fc,
+        type: 3}
+      propertyPath: Settings.UseModelSpaceTranslations
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1cf3ef0a332884c299335f3fbe8a21fc, type: 3}
