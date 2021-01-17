@@ -5,7 +5,7 @@ from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disable=unused-variable
+from mlagents.trainers.tests.dummy_config import (  # noqa: F401
     sac_dummy_config,
     curiosity_dummy_config,
 )

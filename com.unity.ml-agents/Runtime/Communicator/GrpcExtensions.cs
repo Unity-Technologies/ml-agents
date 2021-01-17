@@ -168,6 +168,8 @@ namespace Unity.MLAgents
             ActionSpec actionSpec;
             if (bpp.ActionSpec == null)
             {
+                // Disable deprecation warnings so we can set legacy fields
+#pragma warning disable CS0618
                 var spaceType = (SpaceType)bpp.VectorActionSpaceTypeDeprecated;
                 if (spaceType == SpaceType.Continuous)
                 {
@@ -177,6 +179,7 @@ namespace Unity.MLAgents
                 {
                     actionSpec = ActionSpec.MakeDiscrete(bpp.VectorActionSizeDeprecated.ToArray());
                 }
+#pragma warning restore CS0618
             }
             else
             {
@@ -408,6 +411,17 @@ namespace Unity.MLAgents
                 }
             }
             observationProto.Shape.AddRange(shape);
+
+            // Add the observation type, if any, to the observationProto
+            var typeSensor = sensor as ITypedSensor;
+            if (typeSensor != null)
+            {
+                observationProto.ObservationType = (ObservationTypeProto)typeSensor.GetObservationType();
+            }
+            else
+            {
+                observationProto.ObservationType = ObservationTypeProto.Default;
+            }
             return observationProto;
         }
 

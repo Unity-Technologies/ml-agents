@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 namespace Unity.MLAgents.Sensors
 {
@@ -24,6 +25,7 @@ namespace Unity.MLAgents.Sensors
         /// Whether the observation is visual or not.
         /// </summary>
         /// <returns>True if the observation is visual, false otherwise.</returns>
+        [Obsolete("IsVisual is deprecated, please use GetObservationShape() instead.")]
         public virtual bool IsVisual()
         {
             var shape = GetObservationShape();
@@ -34,6 +36,7 @@ namespace Unity.MLAgents.Sensors
         /// Whether the observation is vector or not.
         /// </summary>
         /// <returns>True if the observation is vector, false otherwise.</returns>
+        [Obsolete("IsVisual is deprecated, please use GetObservationShape() instead.")]
         public virtual bool IsVector()
         {
             var shape = GetObservationShape();

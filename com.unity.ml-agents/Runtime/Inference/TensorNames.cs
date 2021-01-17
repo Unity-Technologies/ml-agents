@@ -12,6 +12,7 @@ namespace Unity.MLAgents.Inference
         public const string recurrentInPlaceholderH = "recurrent_in_h";
         public const string recurrentInPlaceholderC = "recurrent_in_c";
         public const string VisualObservationPlaceholderPrefix = "visual_observation_";
+        public const string ObservationPlaceholderPrefix = "obs_";
         public const string PreviousActionPlaceholder = "prev_action";
         public const string ActionMaskPlaceholder = "action_masks";
         public const string RandomNormalEpsilonPlaceholder = "epsilon";

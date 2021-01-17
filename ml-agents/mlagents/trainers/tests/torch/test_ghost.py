@@ -10,7 +10,7 @@ from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers.settings import TrainerSettings, SelfPlaySettings
-from mlagents.trainers.tests.dummy_config import create_sensor_specs_with_shapes
+from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
 
 
 @pytest.fixture
@@ -134,7 +134,7 @@ def test_process_trajectory(dummy_config):
     trajectory = make_fake_trajectory(
         length=time_horizon,
         max_step_complete=True,
-        sensor_specs=create_sensor_specs_with_shapes([(1,)]),
+        observation_specs=create_observation_specs_with_shapes([(1,)]),
         action_spec=mock_specs.action_spec,
     )
     trajectory_queue0.put(trajectory)

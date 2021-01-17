@@ -18,6 +18,7 @@ public class HallwayAgent : Agent
     Renderer m_GroundRenderer;
     HallwaySettings m_HallwaySettings;
     int m_Selection;
+    StatsRecorder m_statsRecorder;
 
     public override void Initialize()
     {
@@ -25,6 +26,7 @@ public class HallwayAgent : Agent
         m_AgentRb = GetComponent<Rigidbody>();
         m_GroundRenderer = ground.GetComponent<Renderer>();
         m_GroundMaterial = m_GroundRenderer.material;
+        m_statsRecorder = Academy.Instance.StatsRecorder;
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -83,11 +85,13 @@ public class HallwayAgent : Agent
             {
                 SetReward(1f);
                 StartCoroutine(GoalScoredSwapGroundMaterial(m_HallwaySettings.goalScoredMaterial, 0.5f));
+                m_statsRecorder.Add("Goal/Correct", 1, StatAggregationMethod.Sum);
             }
             else
             {
                 SetReward(-0.1f);
                 StartCoroutine(GoalScoredSwapGroundMaterial(m_HallwaySettings.failMaterial, 0.5f));
+                m_statsRecorder.Add("Goal/Wrong", 1, StatAggregationMethod.Sum);
             }
             EndEpisode();
         }
@@ -156,5 +160,7 @@ public class HallwayAgent : Agent
             symbolXGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
             symbolOGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
         }
+        m_statsRecorder.Add("Goal/Correct", 0, StatAggregationMethod.Sum);
+        m_statsRecorder.Add("Goal/Wrong", 0, StatAggregationMethod.Sum);
     }
 }

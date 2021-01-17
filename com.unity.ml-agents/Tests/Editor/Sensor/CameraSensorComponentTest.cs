@@ -31,8 +31,6 @@ namespace Unity.MLAgents.Tests
 
                     var expectedShape = new[] { height, width, grayscale ? 1 : 3 };
                     Assert.AreEqual(expectedShape, cameraComponent.GetObservationShape());
-                    Assert.IsTrue(cameraComponent.IsVisual());
-                    Assert.IsFalse(cameraComponent.IsVector());
 
                     var sensor = cameraComponent.CreateSensor();
                     Assert.AreEqual(expectedShape, sensor.GetObservationShape());
