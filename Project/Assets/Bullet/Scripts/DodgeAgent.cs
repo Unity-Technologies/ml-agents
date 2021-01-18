@@ -105,7 +105,7 @@ public class DodgeAgent : Agent
 
         foreach (Bullet b in bullets)
         {
-            if (numBulletAdded >= 40)
+            if (numBulletAdded >= 20)
             {
                 break;
             }

@@ -587,7 +587,7 @@ PrefabInstance:
     - target: {fileID: 5260467540845178092, guid: 16266ae2c040142b1a996878d94ec3fb,
         type: 3}
       propertyPath: MaxNumObservables
-      value: 40
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 9204493211719777360, guid: 16266ae2c040142b1a996878d94ec3fb, type: 3}
