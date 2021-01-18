@@ -5,6 +5,8 @@ using UnityEngine;
 public class SequenceTile : MonoBehaviour
 {
     public int NumberValue;
+    [HideInInspector]
+    public bool visited = false;
 
     // [HideInInspector]
     public MeshRenderer rend;

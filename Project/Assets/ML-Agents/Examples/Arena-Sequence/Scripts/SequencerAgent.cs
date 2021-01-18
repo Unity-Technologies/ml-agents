@@ -19,10 +19,12 @@ public class SequencerAgent : Agent
     // }
     public bool SelectNewTiles;
 
-    public int NumberOfTilesToSpawn;
+    int m_NumberOfTilesToSpawn;
+    public int MaxNumberOfTiles;
     PushBlockSettings m_PushBlockSettings;
     Rigidbody m_AgentRb;  //cached on initialization
 
+    BufferSensorComponent m_BufferSensor;
     public List<SequenceTile> SequenceTilesList = new List<SequenceTile>();
     public List<SequenceTile> CurrentlyVisibleTilesList = new List<SequenceTile>();
     private List<Transform> AlreadyTouchedList = new List<Transform>();
@@ -30,6 +32,7 @@ public class SequencerAgent : Agent
     public List<int> m_UsedPositionsList = new List<int>();
     private Vector3 m_StartingPos;
 
+    public GameObject area;
 
 
     // private SequenceTile m_NextExpectedTile;
@@ -38,6 +41,7 @@ public class SequencerAgent : Agent
     public Material SuccessMaterial;
     public override void Initialize()
     {
+        m_BufferSensor = GetComponent<BufferSensorComponent>();
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
         m_AgentRb = GetComponent<Rigidbody>();
         m_StartingPos = transform.position;
@@ -51,6 +55,7 @@ public class SequencerAgent : Agent
     public override void OnEpisodeBegin()
     {
 
+        m_NumberOfTilesToSpawn = Random.Range(1, MaxNumberOfTiles);
         SelectTilesToShow();
         SetTilePositions();
 
@@ -62,13 +67,13 @@ public class SequencerAgent : Agent
 
     private void Update()
     {
-        //DEBUG
-        if (SelectNewTiles)
-        {
-            SelectNewTiles = false;
-            SelectTilesToShow();
-            SetTilePositions();
-        }
+        ////DEBUG
+        //if (SelectNewTiles)
+        //{
+        //    SelectNewTiles = false;
+        //    SelectTilesToShow();
+        //    SetTilePositions();
+        //}
     }
 
 
@@ -78,6 +83,26 @@ public class SequencerAgent : Agent
         // {
         //     sensor.AddObservation(item.transform.localRotation.y / 360);
         // }
+        sensor.AddObservation((transform.position.x - area.transform.position.x) / 20f);
+        sensor.AddObservation((transform.position.z - area.transform.position.z) / 20f);
+
+        sensor.AddObservation(transform.forward.x);
+        sensor.AddObservation(transform.forward.z);
+
+        foreach (var item in CurrentlyVisibleTilesList)
+        {
+       
+            float[] listObservation = new float[MaxNumberOfTiles + 2];
+            listObservation[item.NumberValue] = 1.0f;
+            listObservation[MaxNumberOfTiles] = (item.transform.localRotation.eulerAngles.y / 360f);
+            listObservation[MaxNumberOfTiles + 1] = item.visited ? 1.0f : 0.0f; 
+            //Debug.Log(listObservation[20]);
+            //Debug.Log(listObservation[21]);
+            //Debug.Log(listObservation[22]);
+            m_BufferSensor.AppendObservation(listObservation);
+
+        };
+
     }
 
     private void OnCollisionEnter(Collision col)
@@ -95,20 +120,21 @@ public class SequencerAgent : Agent
             //failed
             AddReward(-1);
             EndEpisode();
-            print("no");
+            //print("no");
         }
         else
         {
             //success
-            print("yes");
+            //print("yes");
             AddReward(1);
             var tile = col.gameObject.GetComponentInParent<SequenceTile>();
             tile.rend.sharedMaterial = SuccessMaterial;
+            tile.visited = true;
             m_NextExpectedTileIndex++;
 
             AlreadyTouchedList.Add(col.transform);
             //We got all of them. Can reset now.
-            if (m_NextExpectedTileIndex == NumberOfTilesToSpawn)
+            if (m_NextExpectedTileIndex == m_NumberOfTilesToSpawn)
             {
                 EndEpisode();
             }
@@ -123,6 +149,7 @@ public class SequencerAgent : Agent
         //Disable all. We will enable the ones selected
         foreach (var item in SequenceTilesList)
         {
+            item.visited = false;
             item.gameObject.SetActive(false);
         }
 
@@ -155,10 +182,10 @@ public class SequencerAgent : Agent
         CurrentlyVisibleTilesList.Clear();
         AlreadyTouchedList.Clear();
 
-        int numLeft = NumberOfTilesToSpawn;
+        int numLeft = m_NumberOfTilesToSpawn;
         while (numLeft > 0)
         {
-            int rndInt = Random.Range(0, SequenceTilesList.Count);
+            int rndInt = Random.Range(0, MaxNumberOfTiles);
             var tmp = SequenceTilesList[rndInt];
             if (!CurrentlyVisibleTilesList.Contains(tmp))
             {
@@ -169,6 +196,7 @@ public class SequencerAgent : Agent
 
         //Sort Ascending
         CurrentlyVisibleTilesList.Sort((x, y) => x.NumberValue.CompareTo(y.NumberValue));
+
         // m_NextExpectedTile = CurrentlyVisibleTilesList[0];
         m_NextExpectedTileIndex = 0;
     }
@@ -182,9 +210,11 @@ public class SequencerAgent : Agent
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
 
-        var action = act[0];
+        var forwardAxis = act[0];
+        var rightAxis = act[1];
+        var rotateAxis = act[2];
 
-        switch (action)
+        switch (forwardAxis)
         {
             case 1:
                 dirToGo = transform.forward * 1f;
@@ -192,23 +222,33 @@ public class SequencerAgent : Agent
             case 2:
                 dirToGo = transform.forward * -1f;
                 break;
-            case 3:
-                rotateDir = transform.up * 1f;
+        }
+
+        switch (rightAxis)
+        {
+            case 1:
+                dirToGo = transform.right * 1f;
                 break;
-            case 4:
-                rotateDir = transform.up * -1f;
-                break;
-            case 5:
-                dirToGo = transform.right * -0.75f;
-                break;
-            case 6:
-                dirToGo = transform.right * 0.75f;
+            case 2:
+                dirToGo = transform.right * -1f;
                 break;
         }
-        transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
+
+        switch (rotateAxis)
+        {
+            case 1:
+                rotateDir = transform.up * -1f;
+                break;
+            case 2:
+                rotateDir = transform.up * 1f;
+                break;
+        }
+
+        transform.Rotate(rotateDir, Time.deltaTime * 200f);
         m_AgentRb.AddForce(dirToGo * m_PushBlockSettings.agentRunSpeed,
             ForceMode.VelocityChange);
-    }
+
+        }
 
     /// <summary>
     /// Called every step of the engine. Here the agent takes an action.
@@ -225,23 +265,34 @@ public class SequencerAgent : Agent
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        var discreteActionsOut = actionsOut.DiscreteActions;
-        discreteActionsOut[0] = 0;
-        if (Input.GetKey(KeyCode.D))
-        {
-            discreteActionsOut[0] = 3;
-        }
-        else if (Input.GetKey(KeyCode.W))
+            var discreteActionsOut = actionsOut.DiscreteActions;
+        discreteActionsOut.Clear();
+        //forward
+        if (Input.GetKey(KeyCode.W))
         {
             discreteActionsOut[0] = 1;
         }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            discreteActionsOut[0] = 4;
-        }
-        else if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(KeyCode.S))
         {
             discreteActionsOut[0] = 2;
+        }
+        //rotate
+        if (Input.GetKey(KeyCode.A))
+        {
+            discreteActionsOut[2] = 1;
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            discreteActionsOut[2] = 2;
+        }
+        //right
+        if (Input.GetKey(KeyCode.E))
+        {
+            discreteActionsOut[1] = 1;
+        }
+        if (Input.GetKey(KeyCode.Q))
+        {
+            discreteActionsOut[1] = 2;
         }
     }
 }
