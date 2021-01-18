@@ -90,21 +90,21 @@ class NetworkBody(nn.Module):
 
         if total_enc_size == 0:
             raise Exception("No valid inputs to network.")
-        for _, tens in list(self.transformer.named_parameters()):
-            tens.retain_grad()
-        for _, tens in list(self.entity_embedding.named_parameters()):
-            tens.retain_grad()
+        #for _, tens in list(self.transformer.named_parameters()):
+        #    tens.retain_grad()
+        #for _, tens in list(self.entity_embedding.named_parameters()):
+        #    tens.retain_grad()
         # for _, tens in list(self.embedding_norm.named_parameters()):
         #    tens.retain_grad()
 
         total_enc_size += encoded_act_size
         self.linear_encoder = LinearEncoder(total_enc_size, n_layers, self.h_size)
-        for _, tens in list(self.linear_encoder.named_parameters()):
-            tens.retain_grad()
-        for processor in self.processors:
-            if processor is not None:
-                for _, tens in list(processor.named_parameters()):
-                    tens.retain_grad()
+        #for _, tens in list(self.linear_encoder.named_parameters()):
+        #    tens.retain_grad()
+        #for processor in self.processors:
+        #    if processor is not None:
+        #        for _, tens in list(processor.named_parameters()):
+        #            tens.retain_grad()
 
         if self.use_lstm:
             self.lstm = LSTM(self.h_size, self.m_size)

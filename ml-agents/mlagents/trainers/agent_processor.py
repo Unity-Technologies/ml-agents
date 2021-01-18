@@ -101,8 +101,8 @@ class AgentProcessor:
             self._process_step(
                 ongoing_step, global_id, decision_steps.agent_id_to_index[local_id]
             )
-            if decision_steps.agent_id_to_index[local_id] == 9:
-                print("wrong index", ongoing_step, global_id, decision_steps.agent_id, decision_steps.obs, decision_steps.reward, terminal_steps.obs, terminal_steps.agent_id)
+            #if decision_steps.agent_id_to_index[local_id] == 9:
+            #    print("wrong index", ongoing_step, global_id, decision_steps.agent_id, decision_steps.obs, decision_steps.reward, terminal_steps.obs, terminal_steps.agent_id)
 
         for _gid in action_global_agent_ids:
             # If the ID doesn't have a last step result, the agent just reset,
@@ -118,8 +118,8 @@ class AgentProcessor:
     ) -> None:
         terminated = isinstance(step, TerminalStep)
         stored_decision_step, idx = self.last_step_result.get(global_id, (None, None))
-        if idx == 9:
-            print("Index was 9", global_id, stored_decision_step.agent_id)
+        #if idx == 9:
+        #    print("Index was 9", global_id, stored_decision_step.agent_id)
         stored_take_action_outputs = self.last_take_action_outputs.get(global_id, None)
         if not terminated:
             # Index is needed to grab from last_take_action_outputs
