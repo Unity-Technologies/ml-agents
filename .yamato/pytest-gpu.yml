@@ -8,8 +8,6 @@ pytest_gpu:
     - |
       sudo apt-get update && sudo apt-get install -y python3-venv
       python3 -m venv venv && source venv/bin/activate
-      python -m pip install pip==20.2
-      python -m pip install --upgrade setuptools
       python -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python -u -m ml-agents.tests.yamato.setup_venv
       python -m pip install --progress-bar=off -r test_requirements.txt
