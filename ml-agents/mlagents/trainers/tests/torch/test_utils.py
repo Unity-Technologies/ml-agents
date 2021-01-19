@@ -1,3 +1,4 @@
+import os
 import pytest
 from mlagents.torch_utils import torch
 import numpy as np
@@ -10,6 +11,7 @@ from mlagents.trainers.tests.dummy_config import create_observation_specs_with_s
 
 
 def test_device():
+    os.system("nvidia-smi")
     print(torch.rand(1).type())
     raise AssertionError()
 

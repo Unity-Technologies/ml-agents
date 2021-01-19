@@ -11,7 +11,8 @@ pytest_gpu:
       python3 -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python3 -u -m ml-agents.tests.yamato.setup_venv
       python3 -m pip install --progress-bar=off -r test_requirements.txt --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
-      python3 -m pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings
+      python3 -m pytest ml-agents/mlagents/trainers/tests/torch/test_utils.py::test_device
+  # python3 -m pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings
   triggers:
     cancel_old_ci: true
     expression: pull_request.source match "pytest-gpu" # TODO: temporary trigger, delete before merge
