@@ -21,7 +21,6 @@ namespace Unity.MLAgentsExamples
         /// <summary>
         /// Seed to initialize the <see cref="System.Random"/> object.
         /// </summary>
-        [HideInInspector]
         public int RandomSeed;
 
         (int, int)[,] m_Cells;

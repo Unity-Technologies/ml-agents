@@ -13,7 +13,7 @@ namespace Unity.MLAgents.Extensions.Match3
         /// Name of the generated Match3Actuator object.
         /// Note that changing this at runtime does not affect how the Agent sorts the actuators.
         /// </summary>
-        public string ActuatorName = "Board Actuator";
+        public string ActuatorName = "Match3 Actuator";
 
         /// <summary>
         /// A random seed used to generate a board, if needed.

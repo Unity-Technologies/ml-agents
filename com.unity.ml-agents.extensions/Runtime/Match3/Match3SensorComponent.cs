@@ -11,7 +11,7 @@ namespace Unity.MLAgents.Extensions.Match3
         /// Name of the generated Match3Sensor object.
         /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
         /// </summary>
-        public string SensorName = "Board Sensor";
+        public string SensorName = "Match3 Sensor";
 
         /// <summary>
         /// Type of observation to generate.
