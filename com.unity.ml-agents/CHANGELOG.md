@@ -26,6 +26,7 @@ TensorBoard. Thanks to @brccabral for the contribution! (#4816)
 - Fix a compile warning about using an obsolete enum in `GrpcExtensions.cs`. (#4812)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed a bug that would cause an exception when `RunOptions` was deserialized via `pickle`. (#4842)
+- Fixed the computation of entropy for continuous actions. (#4869)
 
 
 ## [1.7.2-preview] - 2020-12-22
