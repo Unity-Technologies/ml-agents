@@ -3,7 +3,7 @@ using Unity.MLAgents.Sensors;
 namespace Unity.MLAgents.Extensions.Match3
 {
     /// <summary>
-    /// Sensor component for a Board game.
+    /// Sensor component for a Match3 game.
     /// </summary>
     public class Match3SensorComponent : SensorComponent
     {

@@ -2,7 +2,7 @@ using System;
 using NUnit.Framework;
 using Unity.MLAgents.Extensions.Match3;
 
-namespace Unity.MLAgents.Extensions.Tests.Board
+namespace Unity.MLAgents.Extensions.Tests.Match3
 {
     public class MoveTests
     {

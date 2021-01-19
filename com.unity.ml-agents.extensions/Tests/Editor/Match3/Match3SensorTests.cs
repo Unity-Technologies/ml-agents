@@ -6,7 +6,7 @@ using UnityEngine;
 using Unity.MLAgents.Extensions.Tests.Sensors;
 using Unity.MLAgents.Sensors;
 
-namespace Unity.MLAgents.Extensions.Tests.Board
+namespace Unity.MLAgents.Extensions.Tests.Match3
 {
     public class Match3SensorTests
     {
@@ -284,7 +284,7 @@ namespace Unity.MLAgents.Extensions.Tests.Board
             for (var i = 0; i < splitPngs.Count; i++)
             {
                 var pngData = splitPngs[i];
-                var path = $"Packages/com.unity.ml-agents.extensions/Tests/Editor/Board/{pathPrefix}{i}.png";
+                var path = $"Packages/com.unity.ml-agents.extensions/Tests/Editor/Match3/{pathPrefix}{i}.png";
                 using (var sw = File.Create(path))
                 {
                     foreach (var b in pngData)
@@ -300,7 +300,7 @@ namespace Unity.MLAgents.Extensions.Tests.Board
             var bytesOut = new List<byte>();
             for (var i = 0; i < numExpected; i++)
             {
-                var path = $"Packages/com.unity.ml-agents.extensions/Tests/Editor/Board/{pathPrefix}{i}.png";
+                var path = $"Packages/com.unity.ml-agents.extensions/Tests/Editor/Match3/{pathPrefix}{i}.png";
                 var res = File.ReadAllBytes(path);
                 bytesOut.AddRange(res);
             }

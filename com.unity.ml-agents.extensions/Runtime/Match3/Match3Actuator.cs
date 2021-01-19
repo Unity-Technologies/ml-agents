@@ -20,7 +20,7 @@ namespace Unity.MLAgents.Extensions.Match3
     }
 
     /// <summary>
-    /// Actuator for a Board game. It translates valid moves (defined by AbstractBoard.IsMoveValid())
+    /// Actuator for a Match3 game. It translates valid moves (defined by AbstractBoard.IsMoveValid())
     /// in action masks, and applies the action to the board via AbstractBoard.MakeMove().
     /// </summary>
     public class Match3Actuator : IActuator, IHeuristicProvider

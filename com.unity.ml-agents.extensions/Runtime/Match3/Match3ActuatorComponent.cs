@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 namespace Unity.MLAgents.Extensions.Match3
 {
     /// <summary>
-    /// Actuator component for a Board game. Generates a Match3Actuator at runtime.
+    /// Actuator component for a Match3 game. Generates a Match3Actuator at runtime.
     /// </summary>
     public class Match3ActuatorComponent : ActuatorComponent
     {

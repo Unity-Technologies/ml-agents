@@ -31,7 +31,7 @@ namespace Unity.MLAgents.Extensions.Match3
     }
 
     /// <summary>
-    /// Sensor for Board games. Can generate either vector, compressed visual,
+    /// Sensor for Match3 games. Can generate either vector, compressed visual,
     /// or uncompressed visual observations. Uses AbstractBoard.GetCellType()
     /// and AbstractBoard.GetSpecialType() to determine the observation values.
     /// </summary>

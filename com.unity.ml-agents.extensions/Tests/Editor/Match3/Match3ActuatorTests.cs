@@ -2,7 +2,7 @@ using NUnit.Framework;
 using Unity.MLAgents.Extensions.Match3;
 using UnityEngine;
 
-namespace Unity.MLAgents.Extensions.Tests.Board
+namespace Unity.MLAgents.Extensions.Tests.Match3
 {
     internal class SimpleBoard : AbstractBoard
     {
