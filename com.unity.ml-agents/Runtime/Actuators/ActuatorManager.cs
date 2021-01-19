@@ -209,7 +209,7 @@ namespace Unity.MLAgents.Actuators
         /// <see cref="IHeuristicProvider.Heuristic"/> method on them, if implemented, with the appropriate
         /// <see cref="ActionSegment{T}"/>s depending on their <see cref="ActionSpec"/>.
         /// </summary>
-        public void Heuristic(in ActionBuffers actionBuffersOut)
+        public void ApplyHeuristic(in ActionBuffers actionBuffersOut)
         {
             var continuousStart = 0;
             var discreteStart = 0;

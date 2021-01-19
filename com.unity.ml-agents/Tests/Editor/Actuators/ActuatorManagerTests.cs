@@ -314,7 +314,7 @@ namespace Unity.MLAgents.Tests.Actuators
             manager.Add(va2);
 
             var actionBuf = new ActionBuffers(Array.Empty<float>(), new[] { 0, 0, 0, 0, 0, 0, 0 });
-            manager.Heuristic(actionBuf);
+            manager.ApplyHeuristic(actionBuf);
 
             Assert.IsTrue(va1.m_HeuristicCalled);
             Assert.AreEqual(va1.m_DiscreteBufferSize, 3);

@@ -46,7 +46,7 @@ namespace Unity.MLAgents.Policies
         {
             if (!m_Done && m_DecisionRequested)
             {
-                m_ActuatorManager.Heuristic(m_ActionBuffers);
+                m_ActuatorManager.ApplyHeuristic(m_ActionBuffers);
             }
             m_DecisionRequested = false;
             return ref m_ActionBuffers;
