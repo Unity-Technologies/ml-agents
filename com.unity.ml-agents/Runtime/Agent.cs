@@ -1183,7 +1183,7 @@ namespace Unity.MLAgents
         /// three values in ActionBuffers.ContinuousActions array to use as the force components.
         /// During training, the agent's  policy learns to set those particular elements of
         /// the array to maximize the training rewards the agent receives. (Of course,
-        /// if you implement a <seealso cref="IHeuristicProvider.Heuristic"/> function, it must use the same
+        /// if you implement a <seealso cref="Agent.Heuristic(in ActionBuffers)"/> function, it must use the same
         /// elements of the action array for the same purpose since there is no learning
         /// involved.)
         ///
