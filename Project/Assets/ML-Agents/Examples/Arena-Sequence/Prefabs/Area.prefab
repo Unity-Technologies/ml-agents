@@ -9882,7 +9882,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   SelectNewTiles: 0
-  MaxNumberOfTiles: 5
+  MaxNumberOfTiles: 20
   SequenceTilesList:
   - {fileID: 3646228404148452640}
   - {fileID: 3646228403214730312}
@@ -9962,7 +9962,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd8012d5925524537b27131fef517017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservableSize: 7
+  ObservableSize: 22
   MaxNumObservables: 20
 --- !u!1 &3647816068884681782
 GameObject:

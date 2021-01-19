@@ -18,6 +18,7 @@ public class SequencerAgent : Agent
     //     public int SpawnIndexPos;
     // }
     public bool SelectNewTiles;
+    EnvironmentParameters m_ResetParams;
 
     int m_NumberOfTilesToSpawn;
     public int MaxNumberOfTiles;
@@ -45,6 +46,7 @@ public class SequencerAgent : Agent
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
         m_AgentRb = GetComponent<Rigidbody>();
         m_StartingPos = transform.position;
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
 
 
@@ -55,7 +57,8 @@ public class SequencerAgent : Agent
     public override void OnEpisodeBegin()
     {
 
-        m_NumberOfTilesToSpawn = Random.Range(1, MaxNumberOfTiles);
+        MaxNumberOfTiles = (int)m_ResetParams.GetWithDefault("num_tiles", 5);
+        m_NumberOfTilesToSpawn = Random.Range(1, MaxNumberOfTiles + 1);
         SelectTilesToShow();
         SetTilePositions();
 
@@ -92,10 +95,10 @@ public class SequencerAgent : Agent
         foreach (var item in CurrentlyVisibleTilesList)
         {
        
-            float[] listObservation = new float[MaxNumberOfTiles + 2];
+            float[] listObservation = new float[20 + 2];
             listObservation[item.NumberValue] = 1.0f;
-            listObservation[MaxNumberOfTiles] = (item.transform.localRotation.eulerAngles.y / 360f);
-            listObservation[MaxNumberOfTiles + 1] = item.visited ? 1.0f : 0.0f; 
+            listObservation[20] = (item.transform.localRotation.eulerAngles.y / 360f);
+            listObservation[21] = item.visited ? 1.0f : 0.0f; 
             //Debug.Log(listObservation[20]);
             //Debug.Log(listObservation[21]);
             //Debug.Log(listObservation[22]);
@@ -185,7 +188,7 @@ public class SequencerAgent : Agent
         int numLeft = m_NumberOfTilesToSpawn;
         while (numLeft > 0)
         {
-            int rndInt = Random.Range(0, MaxNumberOfTiles);
+            int rndInt = Random.Range(0, SequenceTilesList.Count);// MaxNumberOfTiles);
             var tmp = SequenceTilesList[rndInt];
             if (!CurrentlyVisibleTilesList.Contains(tmp))
             {

@@ -2,8 +2,8 @@ behaviors:
   Sorter:
     trainer_type: ppo
     hyperparameters:
-      batch_size: 256
-      buffer_size: 10240
+      batch_size: 512
+      buffer_size: 40960
       learning_rate: 0.0003
       beta: 0.005
       epsilon: 0.2
@@ -12,7 +12,7 @@ behaviors:
       learning_rate_schedule: linear
     network_settings:
       normalize: False
-      hidden_units: 128
+      hidden_units: 256
       num_layers: 2
       vis_encode_type: simple
     reward_signals:
@@ -20,9 +20,14 @@ behaviors:
         gamma: 0.99
         strength: 1.0
     keep_checkpoints: 5
-    max_steps: 50000000
-    time_horizon: 512
+    max_steps: 100000000
+    time_horizon: 256
     summary_freq: 10000
     threaded: true
+environment_parameters:
+  num_tiles:
+    curriculum:
+      - name: Lesson9
+        value: 12.0
 env_settings:
-  num_envs: 8
+  num_envs: 1
