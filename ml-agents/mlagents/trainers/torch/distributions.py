@@ -74,7 +74,7 @@ class GaussianDistInstance(DistInstance):
 
     def entropy(self):
         return torch.mean(
-            0.5 * torch.log(2 * math.pi * math.e * self.std + EPSILON),
+            0.5 * torch.log(2 * math.pi * math.e * self.std ** 2 + EPSILON),
             dim=1,
             keepdim=True,
         )  # Use equivalent behavior to TF
@@ -87,6 +87,8 @@ class TanhGaussianDistInstance(GaussianDistInstance):
     def __init__(self, mean, std):
         super().__init__(mean, std)
         self.transform = torch.distributions.transforms.TanhTransform(cache_size=1)
+        if torch.isnan(torch.mean(std)):
+            print("Nan in TanhGaussianDistInstance init, std")
 
     def sample(self):
         unsquashed_sample = super().sample()
@@ -94,14 +96,28 @@ class TanhGaussianDistInstance(GaussianDistInstance):
         return squashed
 
     def _inverse_tanh(self, value):
-        capped_value = torch.clamp(value, -1 + EPSILON, 1 - EPSILON)
+        # capped_value = torch.clamp(value, -1 + EPSILON, 1 - EPSILON)
+        capped_value = (1-EPSILON) * value
         return 0.5 * torch.log((1 + capped_value) / (1 - capped_value) + EPSILON)
 
     def log_prob(self, value):
-        unsquashed = self.transform.inv(value)
-        return super().log_prob(unsquashed) - self.transform.log_abs_det_jacobian(
-            unsquashed, value
+        # capped_value = torch.clamp(value, -1 + EPSILON, 1 - EPSILON)
+        capped_value = 0.1 * value
+        unsquashed = self.transform.inv(capped_value)
+        # capped_unsqached = self.transform.inv(capped_value)
+        tmp=  super().log_prob(unsquashed) - self.transform.log_abs_det_jacobian(
+            unsquashed, None
         )
+        print("tmp decomposition", value, capped_value, unsquashed, super().log_prob(unsquashed) , self.transform.log_abs_det_jacobian(
+            unsquashed, None
+        ))
+        if torch.isnan(torch.mean(value)):
+            print("Nan in log_prob(self, value), value")
+        if torch.isnan(torch.mean(super().log_prob(unsquashed))):
+            print("Nan in log_prob(self, value), super().log_prob(unsquashed)")
+        if torch.isnan(torch.mean(self.transform.log_abs_det_jacobian(unsquashed, None ))):
+            print("Nan in log_prob(self, value), log_abs_det_jacobian")
+        return tmp
 
 
 class CategoricalDistInstance(DiscreteDistInstance):
@@ -170,14 +186,26 @@ class GaussianDistribution(nn.Module):
     def forward(self, inputs: torch.Tensor) -> List[DistInstance]:
         mu = self.mu(inputs)
         if self.conditional_sigma:
+            if torch.isnan(torch.mean(inputs)):
+                print("GaussianDistribution conditional log sigma inputs")
             log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)
         else:
             # Expand so that entropy matches batch size. Note that we're using
             # mu*0 here to get the batch size implicitly since Barracuda 1.2.1
             # throws error on runtime broadcasting due to unknown reason. We
-            # use this to replace torch.expand() becuase it is not supported in
+            # use this to replace torch.expand() because it is not supported in
             # the verified version of Barracuda (1.0.X).
             log_sigma = mu * 0 + self.log_sigma
+            if torch.isnan(torch.mean(self.log_sigma)):
+                print("GaussianDistribution self.log_sigma")
+            if torch.isnan(torch.mean(mu)):
+                print("GaussianDistribution mu")
+            if torch.isnan(torch.mean(inputs)):
+                print("GaussianDistribution inputs")
+
+        if torch.isnan(torch.mean(log_sigma)):
+            print("GaussianDistribution log sigma NaN")
+
         if self.tanh_squash:
             return TanhGaussianDistInstance(mu, torch.exp(log_sigma))
         else:
