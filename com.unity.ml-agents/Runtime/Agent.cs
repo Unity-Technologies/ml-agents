@@ -831,7 +831,7 @@ namespace Unity.MLAgents
         public virtual void Initialize() { }
 
         /// <summary>
-        /// Implement <see cref="IHeuristicProvider"/> to choose an action for this agent using a custom heuristic.
+        /// Implement <see cref="Heuristic"/> to choose an action for this agent using a custom heuristic.
         /// </summary>
         /// <remarks>
         /// Implement this function to provide custom decision making logic or to support manual

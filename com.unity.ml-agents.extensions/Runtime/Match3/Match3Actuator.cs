@@ -5,20 +5,6 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
-    public enum HeuristicQuality
-    {
-        /// <summary>
-        /// The heuristic will pick any valid move at random.
-        /// </summary>
-        RandomValidMove,
-
-        /// <summary>
-        /// The heuristic will pick the move that scores the most points.
-        /// This only looks at the immediate move, and doesn't consider where cells will fall.
-        /// </summary>
-        Greedy
-    }
-
     /// <summary>
     /// Actuator for a Match3 game. It translates valid moves (defined by AbstractBoard.IsMoveValid())
     /// in action masks, and applies the action to the board via AbstractBoard.MakeMove().
@@ -26,7 +12,6 @@ namespace Unity.MLAgents.Extensions.Match3
     public class Match3Actuator : IActuator, IHeuristicProvider
     {
         protected AbstractBoard m_Board;
-        protected HeuristicQuality m_HeuristicQuality;
         protected System.Random m_Random;
         private ActionSpec m_ActionSpec;
         private bool m_ForceHeuristic;
@@ -42,11 +27,11 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <param name="board"></param>
         /// <param name="forceHeuristic">Whether the inference action should be ignored and the Agent's Heuristic
         /// should be called. This should only be used for generating comparison stats of the Heuristic.</param>
+        /// <param name="seed">The seed used to initialize <see cref="System.Random"/>.</param>
         /// <param name="agent"></param>
         /// <param name="name"></param>
         public Match3Actuator(AbstractBoard board,
             bool forceHeuristic,
-            HeuristicQuality heuristicQuality,
             int seed,
             Agent agent,
             string name)
@@ -154,7 +139,7 @@ namespace Unity.MLAgents.Extensions.Match3
 
             foreach (var move in m_Board.ValidMoves())
             {
-                var movePoints = m_HeuristicQuality == HeuristicQuality.Greedy ? EvalMovePoints(move) : 1;
+                var movePoints = EvalMovePoints(move);
                 if (movePoints < bestMovePoints)
                 {
                     // Worse, skip

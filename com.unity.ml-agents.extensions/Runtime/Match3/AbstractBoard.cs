@@ -28,11 +28,6 @@ namespace Unity.MLAgents.Extensions.Match3
         public int NumSpecialTypes;
 
         /// <summary>
-        /// A random seed used to generate a board, if needed.
-        /// </summary>
-        public int RandomSeed = -1;
-
-        /// <summary>
         /// Returns the "color" of the piece at the given row and column.
         /// This should be between 0 and NumCellTypes-1 (inclusive).
         /// The actual order of the values doesn't matter.

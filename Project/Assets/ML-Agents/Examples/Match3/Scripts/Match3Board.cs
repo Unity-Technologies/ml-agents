@@ -1,3 +1,4 @@
+using System;
 using Unity.MLAgents.Extensions.Match3;
 using UnityEngine;
 
@@ -17,6 +18,12 @@ namespace Unity.MLAgentsExamples
         [Tooltip("Points earned for clearing an extra special cell (plus)")]
         public int SpecialCell2Points = 3;
 
+        /// <summary>
+        /// Seed to initialize the <see cref="System.Random"/> object.
+        /// </summary>
+        [HideInInspector]
+        public int RandomSeed;
+
         (int, int)[,] m_Cells;
         bool[,] m_Matched;
 
@@ -27,8 +34,11 @@ namespace Unity.MLAgentsExamples
             m_Cells = new (int, int)[Columns, Rows];
             m_Matched = new bool[Columns, Rows];
 
-            m_Random = new System.Random(RandomSeed == -1 ? gameObject.GetInstanceID() : RandomSeed);
+        }
 
+        void Start()
+        {
+            m_Random = new System.Random(RandomSeed == -1 ? gameObject.GetInstanceID() : RandomSeed);
             InitRandom();
         }
 

@@ -11,10 +11,9 @@ namespace Unity.MLAgentsExamples
             bool forceHeuristic,
             Agent agent,
             string name,
-            HeuristicQuality heuristicQuality,
             int seed
             )
-            : base(board, forceHeuristic, heuristicQuality, seed, agent, name) { }
+            : base(board, forceHeuristic, seed, agent, name) { }
 
 
         protected override int EvalMovePoints(Move move)
