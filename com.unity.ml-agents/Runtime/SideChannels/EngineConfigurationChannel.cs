@@ -52,7 +52,7 @@ namespace Unity.MLAgents.SideChannels
 #if UNITY_EDITOR
                     const float maxTimeScale = 100f;
 #else
-                    const cloat maxTimeScale = float.PositiveInfinity;
+                    const float maxTimeScale = float.PositiveInfinity;
 #endif
                     timeScale = Mathf.Clamp(timeScale, 1, maxTimeScale);
                     Time.timeScale = timeScale;
