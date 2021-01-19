@@ -9,6 +9,11 @@ from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
 
 
+def test_device():
+    print(torch.rand(1).type())
+    AssertionError()
+
+
 def test_min_visual_size():
     # Make sure each EncoderType has an entry in MIS_RESOLUTION_FOR_ENCODER
     assert set(ModelUtils.MIN_RESOLUTION_FOR_ENCODER.keys()) == set(EncoderType)
