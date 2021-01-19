@@ -11,7 +11,7 @@ from mlagents.trainers.tests.dummy_config import create_observation_specs_with_s
 
 def test_device():
     print(torch.rand(1).type())
-    AssertionError()
+    raise AssertionError()
 
 
 def test_min_visual_size():
