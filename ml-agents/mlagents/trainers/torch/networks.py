@@ -456,6 +456,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         if self.use_lstm and memories is not None:
             # Use only the back half of memories for critic and actor
             actor_mem, critic_mem = torch.split(memories, self.memory_size // 2, dim=-1)
+            actor_mem, critic_mem = actor_mem.contiguous(), critic_mem.contiguous()
         else:
             critic_mem = None
             actor_mem = None
