@@ -95,22 +95,23 @@ class TanhGaussianDistInstance(GaussianDistInstance):
         squashed = self.transform(unsquashed_sample)
         return squashed
 
-    def _inverse_tanh(self, value):
-        # capped_value = torch.clamp(value, -1 + EPSILON, 1 - EPSILON)
-        capped_value = (1-EPSILON) * value
-        return 0.5 * torch.log((1 + capped_value) / (1 - capped_value) + EPSILON)
+    # def _inverse_tanh(self, value):
+    #     # capped_value = torch.clamp(value, -1 + EPSILON, 1 - EPSILON)
+    #     capped_value = (1-EPSILON) * value
+    #     return 0.5 * torch.log((1 + capped_value) / (1 - capped_value) + EPSILON)
 
     def log_prob(self, value):
-        # capped_value = torch.clamp(value, -1 + EPSILON, 1 - EPSILON)
-        capped_value = 0.1 * value
-        unsquashed = self.transform.inv(capped_value)
+        unsquashed = self.transform.inv(value)
+        # unsquashed = self.transform.inv(value * 0.85)
+
+
         # capped_unsqached = self.transform.inv(capped_value)
         tmp=  super().log_prob(unsquashed) - self.transform.log_abs_det_jacobian(
             unsquashed, None
         )
-        print("tmp decomposition", value, capped_value, unsquashed, super().log_prob(unsquashed) , self.transform.log_abs_det_jacobian(
-            unsquashed, None
-        ))
+        # print("tmp decomposition", value, capped_value, unsquashed, super().log_prob(unsquashed) , self.transform.log_abs_det_jacobian(
+        #     unsquashed, None
+        # ))
         if torch.isnan(torch.mean(value)):
             print("Nan in log_prob(self, value), value")
         if torch.isnan(torch.mean(super().log_prob(unsquashed))):
@@ -118,6 +119,9 @@ class TanhGaussianDistInstance(GaussianDistInstance):
         if torch.isnan(torch.mean(self.transform.log_abs_det_jacobian(unsquashed, None ))):
             print("Nan in log_prob(self, value), log_abs_det_jacobian")
         return tmp
+
+        def exported_model_output(self):
+            return self.sample()
 
 
 class CategoricalDistInstance(DiscreteDistInstance):
