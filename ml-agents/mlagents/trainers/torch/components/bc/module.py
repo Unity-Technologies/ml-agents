@@ -165,7 +165,6 @@ class BCModule:
         memories = []
         if self.policy.use_recurrent:
             memories = torch.zeros(1, self.n_sequences, self.policy.m_size)
-
         selected_actions, log_probs, _, _ = self.policy.sample_actions(
             tensor_obs,
             masks=act_masks,

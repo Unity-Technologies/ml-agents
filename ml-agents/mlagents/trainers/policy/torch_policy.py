@@ -30,7 +30,7 @@ class TorchPolicy(Policy):
         seed: int,
         behavior_spec: BehaviorSpec,
         trainer_settings: TrainerSettings,
-        tanh_squash: bool = True,
+        tanh_squash: bool = False,
         reparameterize: bool = False,
         separate_critic: bool = True,
         condition_sigma_on_obs: bool = True,

@@ -29,7 +29,7 @@ def test_hybrid_ppo(action_size):
         PPO_TORCH_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_network_settings,
-        max_steps=10000,
+        max_steps=15000,
     )
     check_environment_trains(
         env, {BRAIN_NAME: config}, success_threshold=0.9
@@ -71,7 +71,7 @@ def test_hybrid_recurrent_ppo():
 
 @pytest.mark.parametrize("action_size", [(1, 1), (2, 2), (1, 2), (2, 1)])
 def test_hybrid_sac(action_size):
-    env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_size, step_size=0.8)
+    env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_size, step_size=0.5)
 
     new_hyperparams = attr.evolve(
         SAC_TORCH_CONFIG.hyperparameters,
@@ -80,10 +80,10 @@ def test_hybrid_sac(action_size):
         buffer_init_steps=0,
     )
     config = attr.evolve(
-        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=2200
+        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=2500
     )
     check_environment_trains(
-        env, {BRAIN_NAME: config}, success_threshold=0.9, training_seed=1336
+        env, {BRAIN_NAME: config}, success_threshold=0.9
     )
 
 

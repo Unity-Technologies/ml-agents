@@ -76,14 +76,14 @@ class NetworkBody(nn.Module):
 
     def forward(
         self,
-        inputs_: List[torch.Tensor],
+        inputs: List[torch.Tensor],
         actions: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         encodes = []
         for idx, processor in enumerate(self.processors):
-            obs_input = inputs_[idx]
+            obs_input = inputs[idx]
             processed_obs = processor(obs_input)
             encodes.append(processed_obs)
 
@@ -103,15 +103,6 @@ class NetworkBody(nn.Module):
             encoding, memories = self.lstm(encoding, memories)
             encoding = encoding.reshape([-1, self.m_size // 2])
 
-        if torch.isnan(torch.mean(encoding)):
-            print("NaN in Netowrk Body :")
-            print(torch.mean(inputs_[0]), torch.mean(self.processors[0](inputs_[0])))
-
-            print(self.processors[0].conv_layers[0].weight.data)
-            print(self.processors[0].conv_layers[2].weight.data)
-
-            print("\n\n\n\n\n")
-            raise _
         return encoding, memories
 
 
@@ -313,8 +304,6 @@ class SimpleActor(nn.Module, Actor):
         encoding, memories = self.network_body(
             inputs, memories=memories, sequence_length=sequence_length
         )
-        if torch.isnan(torch.mean(encoding)):
-            print("SimpleActor encoding in get_action_stats")
         action, log_probs, entropies = self.action_model(encoding, masks)
         return action, log_probs, entropies, memories
 
@@ -415,8 +404,6 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         encoding, memories = self.network_body(
             inputs, memories=memories, sequence_length=sequence_length
         )
-        if torch.isnan(torch.mean(encoding)):
-            print("SharedActorCritic, get_stats_and_value, encoding")
         log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
         value_outputs = self.value_heads(encoding)
         return log_probs, entropies, value_outputs
@@ -502,14 +489,9 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         sequence_length: int = 1,
     ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
         actor_mem, critic_mem = self._get_actor_critic_mem(memories)
-        for i in inputs:
-            if torch.isnan(torch.mean(i)):
-                print("Nan input to network body in SeparateActorCritic")
         encoding, actor_mem_outs = self.network_body(
             inputs, memories=actor_mem, sequence_length=sequence_length
         )
-        if torch.isnan(torch.mean(encoding)):
-            print("SeparateActorCritic, get_stats_and_value, encoding")
         log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
         value_outputs, critic_mem_outs = self.critic(
             inputs, memories=critic_mem, sequence_length=sequence_length

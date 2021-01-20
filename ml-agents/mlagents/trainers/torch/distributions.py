@@ -87,8 +87,6 @@ class TanhGaussianDistInstance(GaussianDistInstance):
     def __init__(self, mean, std):
         super().__init__(mean, std)
         self.transform = torch.distributions.transforms.TanhTransform(cache_size=1)
-        if torch.isnan(torch.mean(std)):
-            print("Nan in TanhGaussianDistInstance init, std")
 
     def sample(self):
         unsquashed_sample = super().sample()
@@ -99,27 +97,12 @@ class TanhGaussianDistInstance(GaussianDistInstance):
         return 0.5 * torch.log((1 + value) / (1 - value) + EPSILON)
 
     def log_prob(self, value):
-        unsquashed = self._inverse_tanh(value * 0.95)
-        # unsquashed = self.transform.inv(value * 0.85)
-
-
-        # capped_unsqached = self.transform.inv(capped_value)
-        tmp=  super().log_prob(unsquashed) - self.transform.log_abs_det_jacobian(
+        value = torch.clamp(value, -1 + EPSILON, 1 - EPSILON)
+        unsquashed = self.transform.inv(value)
+        result = super().log_prob(unsquashed) - self.transform.log_abs_det_jacobian(
             unsquashed, value
         )
-        # print("tmp decomposition", value, capped_value, unsquashed, super().log_prob(unsquashed) , self.transform.log_abs_det_jacobian(
-        #     unsquashed, None
-        # ))
-        if torch.isnan(torch.mean(value)):
-            print("Nan in log_prob(self, value), value")
-        if torch.isnan(torch.mean(super().log_prob(unsquashed))):
-            print("Nan in log_prob(self, value), super().log_prob(unsquashed)")
-        if torch.isnan(torch.mean(self.transform.log_abs_det_jacobian(unsquashed, None ))):
-            print("Nan in log_prob(self, value), log_abs_det_jacobian")
-        return tmp
-
-        def exported_model_output(self):
-            return self.sample()
+        return torch.clamp(result, -1e6, 0)
 
 
 class CategoricalDistInstance(DiscreteDistInstance):
@@ -172,7 +155,7 @@ class GaussianDistribution(nn.Module):
             bias_init=Initialization.Zero,
         )
         self.tanh_squash = tanh_squash
-        if conditional_sigma:
+        if self.conditional_sigma:
             self.log_sigma = linear_layer(
                 hidden_size,
                 num_outputs,
@@ -180,19 +163,17 @@ class GaussianDistribution(nn.Module):
                 kernel_gain=0.2,
                 bias_init=Initialization.Zero,
             )
-            torch.nn.init.constant_(self.log_sigma.bias.data, -1)
 
         else:
             self.log_sigma = nn.Parameter(
                 torch.ones(1, num_outputs, requires_grad=True)
             )
-            torch.nn.init.constant_(self.log_sigma.data, -1)
+            torch.nn.init.constant_(self.log_sigma.data, -1.1)
+            # Note: we initialize the output of log_sigma around log(1/3)
 
     def forward(self, inputs: torch.Tensor) -> List[DistInstance]:
         mu = self.mu(inputs)
         if self.conditional_sigma:
-            if torch.isnan(torch.mean(inputs)):
-                print("GaussianDistribution conditional log sigma inputs")
             log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)
         else:
             # Expand so that entropy matches batch size. Note that we're using
@@ -200,16 +181,8 @@ class GaussianDistribution(nn.Module):
             # throws error on runtime broadcasting due to unknown reason. We
             # use this to replace torch.expand() because it is not supported in
             # the verified version of Barracuda (1.0.X).
-            log_sigma = mu * 0 + self.log_sigma
-            if torch.isnan(torch.mean(self.log_sigma)):
-                print("GaussianDistribution self.log_sigma")
-            if torch.isnan(torch.mean(mu)):
-                print("GaussianDistribution mu")
-            if torch.isnan(torch.mean(inputs)):
-                print("GaussianDistribution inputs")
-
-        if torch.isnan(torch.mean(log_sigma)):
-            print("GaussianDistribution log sigma NaN")
+            # log_sigma = mu * 0 + self.log_sigma
+            log_sigma = mu * 0 + torch.clamp(self.log_sigma, -20, 2)
         if self.tanh_squash:
             return TanhGaussianDistInstance(mu, torch.exp(log_sigma))
         else:
