@@ -198,7 +198,11 @@ class ModelUtils:
         for idx in var_len_indices:
             var_encoders.append(
                 EntityEmbedding(
-                    x_self_size, obs_spec[idx].shape[1], obs_spec[idx].shape[0], h_size
+                    x_self_size,
+                    observation_specs[idx].shape[1],
+                    observation_specs[idx].shape[0],
+                    h_size,
+                    concat_self=True,
                 )
             )
         return (nn.ModuleList(encoders), nn.ModuleList(var_encoders), embedding_sizes)

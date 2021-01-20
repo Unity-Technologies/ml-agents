@@ -126,8 +126,6 @@ class EntityEmbedding(torch.nn.Module):
         self.entity_num_max_elements: int = -1
         if entity_num_max_elements is not None:
             self.entity_num_max_elements = entity_num_max_elements
-
-        self.concat_self: bool = concat_self
         # If not concatenating self, input to encoder is just entity size
         if not concat_self:
             self.self_size = 0
@@ -141,7 +139,7 @@ class EntityEmbedding(torch.nn.Module):
         )
 
     def forward(self, x_self: torch.Tensor, entities: torch.Tensor) -> torch.Tensor:
-        if self.concat_self:
+        if self.self_size > 0:
             num_entities = self.entity_num_max_elements
             if num_entities < 0:
                 if exporting_to_onnx.is_exporting():
