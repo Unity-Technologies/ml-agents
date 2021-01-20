@@ -92,22 +92,29 @@ class TorchOptimizer(Optimizer):
             critic_obs=critic_obs,
         )
 
-        # Actions is a hack here, we need the next actions
-        next_value_estimate, next_marg_val_estimate, _ = self.policy.actor_critic.critic_pass(
-            next_obs, actions, next_memory, sequence_length=1, critic_obs=next_critic_obs
-        )
+        # # Actions is a hack here, we need the next actions
+        # next_value_estimate, next_marg_val_estimate, _ = self.policy.actor_critic.critic_pass(
+        #     next_obs, actions, next_memory, sequence_length=1, critic_obs=next_critic_obs
+        # )
+        # These aren't used in COMAttention
+        next_value_estimate, next_marg_val_estimate = {}, {}
 
         for name, estimate in value_estimates.items():
             value_estimates[name] = ModelUtils.to_numpy(estimate)
-            next_value_estimate[name] = ModelUtils.to_numpy(next_value_estimate[name])
+            next_value_estimate[name] = 0.0
 
         for name, estimate in marg_val_estimates.items():
             marg_val_estimates[name] = ModelUtils.to_numpy(estimate)
-            next_marg_val_estimate[name] = ModelUtils.to_numpy(next_marg_val_estimate[name])
+            next_marg_val_estimate[name] = 0.0
 
         if done:
             for k in next_value_estimate:
                 if not self.reward_signals[k].ignore_done:
                     next_value_estimate[k] = 0.0
 
-        return value_estimates, marg_val_estimates, next_value_estimate, next_marg_val_estimate
+        return (
+            value_estimates,
+            marg_val_estimates,
+            next_value_estimate,
+            next_marg_val_estimate,
+        )

@@ -1,4 +1,6 @@
 from typing import Dict, cast
+import itertools
+import numpy as np
 from mlagents.torch_utils import torch
 
 from mlagents.trainers.buffer import AgentBuffer
@@ -129,11 +131,35 @@ class TorchPPOOptimizer(TorchOptimizer):
         decay_bet = self.decay_beta.get_value(self.policy.get_current_step())
         returns = {}
         old_values = {}
+        old_marg_values = {}
         for name in self.reward_signals:
             old_values[name] = ModelUtils.list_to_tensor(
                 batch[f"{name}_value_estimates"]
             )
+            old_marg_values[name] = ModelUtils.list_to_tensor(
+                batch[f"{name}_marginalized_value_estimates"]
+            )
             returns[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns"])
+
+        padded_team_rewards = list(
+            map(
+                lambda x: np.asanyarray(x),
+                itertools.zip_longest(*batch["team_rewards"], fillvalue=np.nan),
+            )
+        )
+        padded_team_rewards = torch.tensor(
+            np.array(
+                list(itertools.zip_longest(*batch["team_rewards"], fillvalue=np.nan))
+            )
+        )
+        # Average team rewards
+        if "extrinsic" in returns:
+            all_rewards = torch.cat(
+                [torch.unsqueeze(returns["extrinsic"], 0), padded_team_rewards], dim=0
+            )
+            returns["extrinsic"] = torch.mean(
+                all_rewards[~torch.isnan(all_rewards)], dim=0
+            )
 
         n_obs = len(self.policy.behavior_spec.sensor_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
@@ -170,6 +196,9 @@ class TorchPPOOptimizer(TorchOptimizer):
         value_loss = self.ppo_value_loss(
             values, old_values, returns, decay_eps, loss_masks
         )
+        marg_value_loss = self.ppo_value_loss(
+            marginalized_vals, old_marg_values, returns, decay_eps, loss_masks
+        )
         policy_loss = self.ppo_policy_loss(
             ModelUtils.list_to_tensor(batch["advantages"]),
             log_probs,
@@ -178,7 +207,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         )
         loss = (
             policy_loss
-            + 0.5 * value_loss
+            + 0.5 * (value_loss + marg_value_loss)
             - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
         )
 

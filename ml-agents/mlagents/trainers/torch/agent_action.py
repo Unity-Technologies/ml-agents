@@ -64,4 +64,5 @@ class AgentAction(NamedTuple):
         discrete_oh = ModelUtils.actions_to_onehot(
             self.discrete_tensor, discrete_branches
         )
+        discrete_oh = torch.cat(discrete_oh, dim=1)
         return torch.cat([self.continuous_tensor, discrete_oh], dim=-1)

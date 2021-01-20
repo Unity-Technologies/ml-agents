@@ -147,10 +147,10 @@ class TorchPolicy(Policy):
         seq_len: int = 1,
         critic_obs: Optional[List[List[torch.Tensor]]] = None,
     ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
-        log_probs, entropies, value_heads = self.actor_critic.get_stats_and_value(
+        log_probs, entropies, value_heads, marg_vals = self.actor_critic.get_stats_and_value(
             obs, actions, masks, memories, seq_len, critic_obs
         )
-        return log_probs, entropies, value_heads
+        return log_probs, entropies, value_heads, marg_vals
 
     @timed
     def evaluate(
