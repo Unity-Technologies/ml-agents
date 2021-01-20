@@ -4,7 +4,7 @@ import numpy as np
 from mlagents.trainers.torch.layers import linear_layer
 from mlagents.trainers.torch.attention import (
     MultiHeadAttention,
-    EntityEmbeddings,
+    EntityEmbedding,
     ResidualSelfAttention,
 )
 
@@ -70,7 +70,7 @@ def test_zero_mask_layer():
     input_1 = generate_input_helper(masking_pattern_1)
     input_2 = generate_input_helper(masking_pattern_2)
 
-    masks = EntityEmbeddings.get_masks([input_1, input_2])
+    masks = ResidualSelfAttention.get_masks([input_1, input_2])
     assert len(masks) == 2
     masks_1 = masks[0]
     masks_2 = masks[1]
@@ -87,18 +87,16 @@ def test_simple_transformer_training():
     torch.manual_seed(1336)
     size, n_k, = 3, 5
     embedding_size = 64
-    entity_embeddings = EntityEmbeddings(size, [size], embedding_size, [n_k])
-    transformer = ResidualSelfAttention(embedding_size, [n_k])
+    entity_embeddings = EntityEmbedding(size, size, n_k, embedding_size)
+    transformer = ResidualSelfAttention(embedding_size, n_k)
     l_layer = linear_layer(embedding_size, size)
     optimizer = torch.optim.Adam(
         list(transformer.parameters()) + list(l_layer.parameters()), lr=0.001
     )
     batch_size = 200
-    point_range = 3
-    init_error = -1.0
-    for _ in range(250):
-        center = torch.rand((batch_size, size)) * point_range * 2 - point_range
-        key = torch.rand((batch_size, n_k, size)) * point_range * 2 - point_range
+    for _ in range(200):
+        center = torch.rand((batch_size, size))
+        key = torch.rand((batch_size, n_k, size))
         with torch.no_grad():
             # create the target : The key closest to the query in euclidean distance
             distance = torch.sum(
@@ -111,19 +109,15 @@ def test_simple_transformer_training():
             target = torch.stack(target, dim=0)
             target = target.detach()
 
-        embeddings = entity_embeddings(center, [key])
-        masks = EntityEmbeddings.get_masks([key])
+        embeddings = entity_embeddings(center, key)
+        masks = ResidualSelfAttention.get_masks([key])
         prediction = transformer.forward(embeddings, masks)
         prediction = l_layer(prediction)
         prediction = prediction.reshape((batch_size, size))
         error = torch.mean((prediction - target) ** 2, dim=1)
         error = torch.mean(error) / 2
-        if init_error == -1.0:
-            init_error = error.item()
-        else:
-            assert error.item() < init_error
         print(error.item())
         optimizer.zero_grad()
         error.backward()
         optimizer.step()
-    assert error.item() < 0.3
+    assert error.item() < 0.02

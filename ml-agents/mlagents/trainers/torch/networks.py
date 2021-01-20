@@ -14,7 +14,7 @@ from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
-from mlagents.trainers.torch.attention import ResidualSelfAttention, EntityEmbeddings
+from mlagents.trainers.torch.attention import ResidualSelfAttention, EntityEmbedding
 
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
@@ -139,9 +139,13 @@ class MultiInputNetworkBody(nn.Module):
             + sum(self.action_spec.discrete_branches)
             + self.action_spec.continuous_size
         )
-        self.entity_encoder = EntityEmbeddings(
-            0, [obs_only_ent_size, q_ent_size], self.h_size, concat_self=False
+        self.obs_encoder = EntityEmbedding(
+            0, obs_only_ent_size, None, self.h_size, concat_self=False
         )
+        self.obs_action_encoder = EntityEmbedding(
+            0, q_ent_size, None, self.h_size, concat_self=False
+        )
+
         self.self_attn = ResidualSelfAttention(self.h_size)
 
         encoder_input_size = self.h_size
@@ -223,7 +227,9 @@ class MultiInputNetworkBody(nn.Module):
         value_masks = self._get_masks_from_nans(value_inputs)
         q_masks = self._get_masks_from_nans(q_inputs)
 
-        encoded_entity = self.entity_encoder(None, [value_input_concat, q_input_concat])
+        encoded_obs = self.obs_encoder(None, value_input_concat)
+        encoded_obs_action = self.obs_action_encoder(None, q_input_concat)
+        encoded_entity = torch.cat([encoded_obs, encoded_obs_action], dim=1)
         encoded_state = self.self_attn(encoded_entity, [value_masks, q_masks])
 
         if len(concat_encoded_obs) == 0:
@@ -643,7 +649,11 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             all_net_inputs, [], [], memories=critic_mem, sequence_length=sequence_length
         )
         value_outputs, critic_mem_out = self.critic(
-            critic_obs, [inputs], [actions], memories=critic_mem, sequence_length=sequence_length
+            critic_obs,
+            [inputs],
+            [actions],
+            memories=critic_mem,
+            sequence_length=sequence_length,
         )
         if mar_value_outputs is None:
             mar_value_outputs = value_outputs
@@ -678,7 +688,11 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         )
 
         value_outputs, critic_mem_outs = self.critic(
-            [inputs], critic_obs, actions, memories=critic_mem, sequence_length=sequence_length
+            [inputs],
+            critic_obs,
+            actions,
+            memories=critic_mem,
+            sequence_length=sequence_length,
         )
 
         return log_probs, entropies, value_outputs, mar_value_outputs
