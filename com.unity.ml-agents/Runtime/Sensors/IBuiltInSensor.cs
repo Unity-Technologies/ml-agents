@@ -3,6 +3,8 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// Identifiers for "built in" sensor types.
     /// These are only used for analytics, and should not be used for any runtime decisions.
+    ///
+    /// NOTE: Do not renumber these, since the values are used for analytics. Renaming is allowed though.
     /// </summary>
     public enum BuiltInSensorType
     {
