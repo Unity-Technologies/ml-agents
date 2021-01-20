@@ -102,7 +102,6 @@ class NetworkBody(nn.Module):
             encoding = encoding.reshape([-1, sequence_length, self.h_size])
             encoding, memories = self.lstm(encoding, memories)
             encoding = encoding.reshape([-1, self.m_size // 2])
-
         return encoding, memories
 
 
