@@ -122,12 +122,12 @@ class NetworkBody(nn.Module):
                 embeddings.append(var_len_processor(encoded_self, var_len_input))
             qkv = torch.cat(embeddings, dim=1)
             attention_embedding = self.rsa(qkv, masks)
-            if encoded_self is None:
+            if encoded_self.shape[1] == 0:
                 encoded_self = torch.cat([attention_embedding], dim=1)
             else:
                 encoded_self = torch.cat([encoded_self, attention_embedding], dim=1)
 
-        if encoded_self is None:
+        if encoded_self.shape[1] == 0:
             raise Exception("No valid inputs to network.")
 
         # Constants don't work in Barracuda
