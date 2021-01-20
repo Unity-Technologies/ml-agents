@@ -14,7 +14,7 @@ from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
-from mlagents.trainers.torch.attention import EntityEmbeddings, ResidualSelfAttention
+from mlagents.trainers.torch.attention import ResidualSelfAttention
 
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
@@ -42,29 +42,22 @@ class NetworkBody(nn.Module):
             else 0
         )
 
-        self.processors, self.embedding_sizes, var_len_indices = ModelUtils.create_input_processors(
+        self.processors, self.var_processors, self.embedding_sizes = ModelUtils.create_input_processors(
             observation_specs,
             self.h_size,
             network_settings.vis_encode_type,
             normalize=self.normalize,
         )
 
-        if len(var_len_indices) > 0:
-            # There are some variable length observations and they need to be processed separately
-            x_self_len = sum(self.embedding_sizes)  # The size of the "self" embedding
-            entities_sizes = [
-                observation_specs[idx].shape[1] for idx in var_len_indices
-            ]
-            entities_max_len = [
-                observation_specs[idx].shape[0] for idx in var_len_indices
-            ]
-            self.entities_embeddings = EntityEmbeddings(
-                self.h_size, entities_sizes, entities_max_len, self.h_size, False
-            )
-            self.rsa = ResidualSelfAttention(self.h_size, sum(entities_max_len))
-
-            total_enc_size = x_self_len + self.h_size
-
+        entity_num_max: int = 0
+        for var_processor in self.var_processors:
+            entity_max: int = var_processor.entity_num_max_elements
+            # Only adds entity max if it was known at construction
+            if entity_max > 0:
+                entity_num_max += entity_max
+        if len(self.var_processors) > 0:
+            self.rsa = ResidualSelfAttention(self.h_size, entity_num_max)
+            total_enc_size = sum(self.embedding_sizes) + self.h_size
             n_layers = max(1, network_settings.num_layers - 2)
         else:
             total_enc_size = sum(self.embedding_sizes)
@@ -115,8 +108,13 @@ class NetworkBody(nn.Module):
         encoded_self = torch.cat(encodes, dim=1)
         if len(var_len_inputs) > 0:
             # Some inputs need to be processed with a variable length encoder
-            masks = EntityEmbeddings.get_masks(var_len_inputs)
-            qkv = self.entities_embeddings(encoded_self, var_len_inputs)
+            masks = ResidualSelfAttention.get_masks(var_len_inputs)
+            embeddings: List[torch.Tensor] = []
+            for var_len_input, var_len_processor in zip(
+                var_len_inputs, self.var_processors
+            ):
+                embeddings.append(var_len_processor(encoded_self, var_len_input))
+            qkv = torch.cat(embeddings, dim=1)
             attention_embedding = self.rsa(qkv, masks)
             encoded_self = torch.cat([encoded_self, attention_embedding], dim=1)
 

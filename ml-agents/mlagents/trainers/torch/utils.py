@@ -10,6 +10,7 @@ from mlagents.trainers.torch.encoders import (
     VectorInput,
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
+from mlagents.trainers.attention import EntityEmbedding
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents_envs.base_env import ObservationSpec, DimensionProperty
 
@@ -162,7 +163,7 @@ class ModelUtils:
         h_size: int,
         vis_encode_type: EncoderType,
         normalize: bool = False,
-    ) -> Tuple[nn.ModuleList, List[int], List[int]]:
+    ) -> Tuple[nn.ModuleList, nn.ModuleList, List[int]]:
         """
         Creates visual and vector encoders, along with their normalizers.
         :param observation_specs: List of ObservationSpec that represent the observation dimensions.
@@ -181,6 +182,7 @@ class ModelUtils:
          - A list of the inputs that need to be processed by a variable length observation encoder.
         """
         encoders: List[nn.Module] = []
+        var_encoders: List[nn.Module] = []
         embedding_sizes: List[int] = []
         var_len_indices: List[int] = []
         for idx, obs_spec in enumerate(observation_specs):
@@ -191,7 +193,15 @@ class ModelUtils:
             embedding_sizes.append(embedding_size)
             if encoder is None:
                 var_len_indices.append(idx)
-        return (nn.ModuleList(encoders), embedding_sizes, var_len_indices)
+
+        x_self_size = sum(embedding_sizes)  # The size of the "self" embedding
+        for idx in var_len_indices:
+            var_encoders.append(
+                EntityEmbedding(
+                    x_self_size, obs_spec[idx].shape[1], obs_spec[idx].shape[0], h_size
+                )
+            )
+        return (nn.ModuleList(encoders), nn.ModuleList(var_encoders), embedding_sizes)
 
     @staticmethod
     def list_to_tensor(
