@@ -59,3 +59,9 @@ class AgentAction(NamedTuple):
                 discrete_tensor[..., i] for i in range(discrete_tensor.shape[-1])
             ]
         return AgentAction(continuous, discrete)
+
+    def to_flat(self, discrete_branches: List[int]) -> torch.Tensor:
+        discrete_oh = ModelUtils.actions_to_onehot(
+            self.discrete_tensor, discrete_branches
+        )
+        return torch.cat([self.continuous_tensor, discrete_oh], dim=-1)
