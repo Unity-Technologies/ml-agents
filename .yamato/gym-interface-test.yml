@@ -13,6 +13,7 @@ test_gym_interface_{{ editor.version }}:
     - |
       sudo apt-get update && sudo apt-get install -y python3-venv
       python3 -m venv venv && source venv/bin/activate
+      python -m pip install wheel --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python -u -m ml-agents.tests.yamato.setup_venv
       python ml-agents/tests/yamato/scripts/run_gym.py --env=artifacts/testPlayer-Basic

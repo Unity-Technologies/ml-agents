@@ -14,7 +14,10 @@ from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
-from mlagents.trainers.torch.attention import ResidualSelfAttention
+from mlagents.trainers.torch.attention import (
+    ResidualSelfAttention,
+    get_zero_entities_mask,
+)
 
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
@@ -108,7 +111,7 @@ class NetworkBody(nn.Module):
         encoded_self = torch.cat(encodes, dim=1)
         if len(var_len_inputs) > 0:
             # Some inputs need to be processed with a variable length encoder
-            masks = ResidualSelfAttention.get_masks(var_len_inputs)
+            masks = get_zero_entities_mask(var_len_inputs)
             embeddings: List[torch.Tensor] = []
             for var_len_input, var_len_processor in zip(
                 var_len_inputs, self.var_processors
@@ -491,6 +494,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         if self.use_lstm and memories is not None:
             # Use only the back half of memories for critic and actor
             actor_mem, critic_mem = torch.split(memories, self.memory_size // 2, dim=-1)
+            actor_mem, critic_mem = actor_mem.contiguous(), critic_mem.contiguous()
         else:
             critic_mem = None
             actor_mem = None

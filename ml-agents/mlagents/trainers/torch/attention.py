@@ -10,6 +10,20 @@ from mlagents.trainers.torch.model_serialization import exporting_to_onnx
 from mlagents.trainers.exception import UnityTrainerException
 
 
+def get_zero_entities_mask(observations: List[torch.Tensor]) -> List[torch.Tensor]:
+    """
+    Takes a List of Tensors and returns a List of mask Tensor with 1 if the input was
+    all zeros (on dimension 2) and 0 otherwise. This is used in the Attention
+    layer to mask the padding observations.
+    """
+    with torch.no_grad():
+        # Generate the masking tensors for each entities tensor (mask only if all zeros)
+        key_masks: List[torch.Tensor] = [
+            (torch.sum(ent ** 2, axis=2) < 0.01).float() for ent in observations
+        ]
+    return key_masks
+
+
 class MultiHeadAttention(torch.nn.Module):
 
     NEG_INF = -1e6
@@ -97,7 +111,7 @@ class EntityEmbedding(torch.nn.Module):
         concat_self: bool = True,
     ):
         """
-        Constructs an EntityEmbeddings module.
+        Constructs an EntityEmbedding module.
         :param x_self_size: Size of "self" entity.
         :param entity_size: Size of other entitiy.
         :param entity_num_max_elements: Maximum elements for a given entity, None for unrestricted.
@@ -148,7 +162,7 @@ class EntityEmbedding(torch.nn.Module):
 class ResidualSelfAttention(torch.nn.Module):
     """
     Residual self attentioninspired from https://arxiv.org/pdf/1909.07528.pdf. Can be used
-    with an EntityEmbeddings module, to apply multi head self attention to encode information
+    with an EntityEmbedding module, to apply multi head self attention to encode information
     about a "Self" and a list of relevant "Entities".
     """
 
@@ -237,18 +251,3 @@ class ResidualSelfAttention(torch.nn.Module):
         denominator = torch.sum(1 - mask, dim=1, keepdim=True) + self.EPSILON
         output = numerator / denominator
         return output
-
-    @staticmethod
-    def get_masks(observations: List[torch.Tensor]) -> List[torch.Tensor]:
-        """
-        Takes a List of Tensors and returns a List of mask Tensor with 1 if the input was
-        all zeros (on dimension 2) and 0 otherwise. This is used in the Attention
-        layer to mask the padding observations.
-        """
-        with torch.no_grad():
-            # Generate the masking tensors for each entities tensor (mask only if all zeros)
-            key_masks: List[torch.Tensor] = [
-                (torch.sum(ent ** 2, axis=2) < 0.01).type(torch.FloatTensor)
-                for ent in observations
-            ]
-        return key_masks

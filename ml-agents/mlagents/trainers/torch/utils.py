@@ -10,7 +10,7 @@ from mlagents.trainers.torch.encoders import (
     VectorInput,
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
-from mlagents.trainers.attention import EntityEmbedding
+from mlagents.trainers.torch.attention import EntityEmbedding
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents_envs.base_env import ObservationSpec, DimensionProperty
 
