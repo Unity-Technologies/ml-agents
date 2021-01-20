@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Linq;
 using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
 using UnityEngine.Serialization;
 
@@ -17,6 +18,15 @@ public class GridAgent : Agent
         "a camera to render before making a decision. Place the agentCam here if using " +
         "RenderTexture as observations.")]
     public Camera renderCamera;
+    GoalSensorComponent goalSensor;
+
+    public enum GridGoal
+    {
+        Plus,
+        Cross,
+    }
+
+    public GridGoal gridGoal;
 
     [Tooltip("Selecting will turn on action masking. Note that a model trained with action " +
         "masking turned on may not behave optimally when action masking is turned off.")]
@@ -33,6 +43,14 @@ public class GridAgent : Agent
     public override void Initialize()
     {
         m_ResetParams = Academy.Instance.EnvironmentParameters;
+    }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        Array values = Enum.GetValues(typeof(GridGoal));
+        int goalNum = (int)gridGoal;
+        goalSensor = this.GetComponent<GoalSensorComponent>();
+        goalSensor.AddOneHotGoal(goalNum, values.Length);
     }
 
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
@@ -104,14 +122,26 @@ public class GridAgent : Agent
 
             if (hit.Where(col => col.gameObject.CompareTag("goal")).ToArray().Length == 1)
             {
-                SetReward(1f);
+                ProvideReward(GridGoal.Plus);
                 EndEpisode();
             }
             else if (hit.Where(col => col.gameObject.CompareTag("pit")).ToArray().Length == 1)
             {
-                SetReward(-1f);
+                ProvideReward(GridGoal.Cross);
                 EndEpisode();
             }
+        }
+    }
+
+    private void ProvideReward(GridGoal hitObject)
+    {
+        if (gridGoal == hitObject)
+        {
+            SetReward(1f);
+        }
+        else
+        {
+            SetReward(-1f);
         }
     }
 

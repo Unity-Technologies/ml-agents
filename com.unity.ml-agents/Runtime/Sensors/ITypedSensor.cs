@@ -4,7 +4,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// The ObservationType enum of the Sensor.
     /// </summary>
-    internal enum ObservationType
+    public enum ObservationType
     {
         // Collected observations are generic.
         Default = 0,
@@ -20,7 +20,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// Sensor interface for sensors with variable types.
     /// </summary>
-    internal interface ITypedSensor
+    public interface ITypedSensor
     {
         /// <summary>
         /// Returns the ObservationType enum corresponding to the type of the sensor.
