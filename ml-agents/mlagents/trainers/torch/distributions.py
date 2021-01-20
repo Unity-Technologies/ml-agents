@@ -102,7 +102,7 @@ class TanhGaussianDistInstance(GaussianDistInstance):
         result = super().log_prob(unsquashed) - self.transform.log_abs_det_jacobian(
             unsquashed, value
         )
-        return torch.clamp(result, -1e6, 0)
+        return torch.clamp(result, -20, 20)
 
 
 class CategoricalDistInstance(DiscreteDistInstance):
