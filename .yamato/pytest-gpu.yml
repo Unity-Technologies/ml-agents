@@ -1,5 +1,5 @@
 pytest_gpu:
-  name: Pytest on GPU machine
+  name: Pytest GPU
   agent:
     type: Unity::VM::GPU
     image: package-ci/ubuntu:stable
