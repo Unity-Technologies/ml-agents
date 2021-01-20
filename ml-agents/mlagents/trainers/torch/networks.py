@@ -42,13 +42,19 @@ class NetworkBody(nn.Module):
             else 0
         )
 
-        self.processors, self.var_processors, self.embedding_sizes, entity_num_max = ModelUtils.create_input_processors(
+        self.processors, self.var_processors, self.embedding_sizes = ModelUtils.create_input_processors(
             observation_specs,
             self.h_size,
             network_settings.vis_encode_type,
             normalize=self.normalize,
         )
 
+        entity_num_max: int = 0
+        for var_processor in self.var_processors:
+            entity_max: int = var_processor.entity_num_max_elements
+            # Only adds entity max if it was known at construction
+            if entity_max > 0:
+                entity_num_max += entity_max
         if len(self.var_processors) > 0:
             self.embedding_norm = LayerNorm()
             self.rsa = ResidualSelfAttention(self.h_size, entity_num_max)
