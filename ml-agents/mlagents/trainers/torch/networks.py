@@ -104,7 +104,7 @@ class NetworkBody(nn.Module):
             processed_obs = processor(obs_input)
             if self.obs_types[idx] == ObservationType.DEFAULT:
                 encodes.append(processed_obs)
-            else:
+            elif self.obs_types[idx] == ObservationType.GOAL:
                 goal_signal = processed_obs
 
         if len(encodes) == 0:
