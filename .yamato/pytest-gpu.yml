@@ -3,7 +3,7 @@ pytest_gpu:
   agent:
     type: Unity::VM::GPU
     image: package-ci/ubuntu:stable
-    flavor: b1.medium
+    flavor: b1.large
   commands:
     - |
       sudo apt-get update && sudo apt-get install -y python3-venv
