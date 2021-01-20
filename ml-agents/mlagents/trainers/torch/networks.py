@@ -10,7 +10,7 @@ from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
-from mlagents.trainers.torch.layers import LSTM, LinearEncoder, LayerNorm
+from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
@@ -56,7 +56,6 @@ class NetworkBody(nn.Module):
             if entity_max > 0:
                 entity_num_max += entity_max
         if len(self.var_processors) > 0:
-            self.embedding_norm = LayerNorm()
             self.rsa = ResidualSelfAttention(self.h_size, entity_num_max)
             total_enc_size = sum(self.embedding_sizes) + self.h_size
             n_layers = max(1, network_settings.num_layers - 2)
@@ -116,7 +115,6 @@ class NetworkBody(nn.Module):
             ):
                 embeddings.append(var_len_processor(encoded_self, var_len_input))
             qkv = torch.cat(embeddings, dim=1)
-            qkv = self.embedding_norm(qkv)
             attention_embedding = self.rsa(qkv, masks)
             encoded_self = torch.cat([encoded_self, attention_embedding], dim=1)
 

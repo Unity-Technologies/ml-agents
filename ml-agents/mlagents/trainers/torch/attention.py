@@ -204,11 +204,14 @@ class ResidualSelfAttention(torch.nn.Module):
             kernel_init=Initialization.Normal,
             kernel_gain=(0.125 / embedding_size) ** 0.5,
         )
+        self.embedding_norm = LayerNorm()
         self.residual_norm = LayerNorm()
 
     def forward(self, inp: torch.Tensor, key_masks: List[torch.Tensor]) -> torch.Tensor:
         # Gather the maximum number of entities information
         mask = torch.cat(key_masks, dim=1)
+
+        inp = self.embedding_norm(inp)
         # Feed to self attention
         query = self.fc_q(inp)  # (b, n_q, emb)
         key = self.fc_k(inp)  # (b, n_k, emb)
