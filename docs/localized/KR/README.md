@@ -1,18 +1,39 @@
-<img src="docs/images/unity-wide.png" align="middle" width="3000"/>
-
 <img src="docs/images/image-banner.png" align="middle" width="3000"/>
 
-# Unity ML-Agents Toolkit (Beta) v0.9
-[![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](docs/Readme.md)
+# 유니티 ML-Agents 툴킷
+
+[![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/release_12_docs/docs/)
+
 [![license badge](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
 
-**Unity Machine Learning Agents Toolkit** (ML-Agents) 은 지능형 에이전트를 학습시키기 위한
-환경을 제공하여 게임 또는 시뮬레이션을 만들 수 있게 해주는 오픈소스 유니티 플러그인 입니다. 사용하기 쉬운
-파이썬 API를 통해 강화학습, 모방학습, 신경진화 또는 다른 기계학습 방법론을 사용하여 에이전트들을 학습시킬 수 있습니다.
-우리는 또한 게임 개발자와 개발에 대해 취미를 가지신 분들이 2D, 3D 그리고 VR/AR 게임들에 사용할 지능형 에이전트를
-쉽게 훈련시킬 수 있도록하는 최신 알고리즘 구현체를 ([텐서플로우]([https://www.tensorflow.org/](https://www.tensorflow.org/)) 기반)을 제공합니다. 학습된 에이전트들은
-NPC의 행동 제어(다중 에이전트, 적대적 에이전트 등), 게임 빌드 테스트 자동화, 그리고 출시 전 게임 설계 검증 등을 포함한 다양한 목적을 위해 사용될 수 있습니다.
-ML-Agents toolkit은 유니티의 풍부한 환경에서 인공지능 에이전트 개발을 위한 중심 플랫폼을 제공함으로써 더욱 광범위한 연구와 게임 개발이 진행되도록 하며 이에 따라 게임 개발자들과 AI 연구원들 모두에게 도움을 줍니다.
+([latest release](https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release))
+([all releases](https://github.com/Unity-Technologies/ml-agents/releases))
+
+**유니티 기계 학습 에이전트 툴킷** (ML-Agents) 은 게임과 시뮬레이션이 지능적인 에이전트를 훈련시키는 환경을 역할을 할 수 있도록 하는 오픈 소스 프로젝트입니다.
+게임 개발자등이 2D, 3D 및 가상현실/증강현실 게임 지능형 에이전트를 쉽게 교육할 수 있도록 최신 알고리즘 구현(PyTorch 기반)을 제공합니다.
+연구원들은 제공된 간단한 파이썬 API를 사용하여 강화 학습, 모방 학습, 신경 진화 또는 다른 방법을 사용하여 에이전트를 교육할 수 있습니다.
+훈련된 에이전트는 NPC 행동 제어(다중 에이전트 및 적대적(Adversarial)과 같은 다양한 설정), 게임 빌드 테스트 자동화, 그리고 출시 전 게임 설계 검증 등을 포함한 다양한 목적을 위해 사용될 수 있습니다.
+ML-Agents 툴킷은 유니티의 풍부한 환경에서 인공지능 에이전트를 개발하기 위한 중심 플랫폼을 제공하여 광범위한 연구 및 게임 개발자 커뮤니티에 접근할 수 있도록 하기 때문에 게임 개발자와 인공지능 연구원 모두에게 상호 이익이 됩니다.
+
+## 특징
+
+- 15+ [유니티 환경 예제](docs/Learning-Environment-Examples.md)
+- 다양한 환경 구성 및 교육 시나리오 지원
+- 게임이나 커스텀 유니티 씬에 통합될 수 있는 유연한 유니티 SDK
+- Proximal Policy Optimization (PPO) 와 Soft Actor-Critic (SAC) 라는 두 가지 심층 강화 학습 알고리즘을 이용한 훈련
+- Behavioral Cloning 이나 Generative Adversarial Imitation Learning 을 통한 모방 학습에 대한 내장 지원
+- 적대적(Adversarial) 시나리오에서 에이전트를 교육하기 위한 Self-play 메커니즘
+- Easily definable Curriculum Learning scenarios for complex tasks
+- Train robust agents using environment randomization
+- Flexible agent control with On Demand Decision Making
+- Train using multiple concurrent Unity environment instances
+- Utilizes the [Unity Inference Engine](docs/Unity-Inference-Engine.md) to
+  provide native cross-platform support
+- Unity environment [control from Python](docs/Python-API.md)
+- Wrap Unity learning environments as a [gym](gym-unity/README.md)
+
+See our [ML-Agents Overview](docs/ML-Agents-Overview.md) page for detailed
+descriptions of all these features.
 
 ## 특징
 
@@ -83,4 +104,6 @@ Juliani, A., Berges, V., Vckay, E., Gao, Y., Henry, H., Mattar, M., Lange, D. (2
 
 장현준: totok682@naver.com
 
-민규식:  kyushikmin@gmail.com
+민규식: kyushikmin@gmail.com
+
+최태혁: chlxogur_@naver.com
