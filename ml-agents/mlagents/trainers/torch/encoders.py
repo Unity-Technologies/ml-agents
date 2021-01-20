@@ -143,7 +143,7 @@ class SmallVisualEncoder(nn.Module):
         if not exporting_to_onnx.is_exporting():
             visual_obs = visual_obs.permute([0, 3, 1, 2])
         hidden = self.conv_layers(visual_obs)
-        hidden = hidden.view(-1, self.final_flat)
+        hidden = hidden.reshape(-1, self.final_flat)
         return self.dense(hidden)
 
 
@@ -177,7 +177,7 @@ class SimpleVisualEncoder(nn.Module):
         if not exporting_to_onnx.is_exporting():
             visual_obs = visual_obs.permute([0, 3, 1, 2])
         hidden = self.conv_layers(visual_obs)
-        hidden = hidden.view(-1, self.final_flat)
+        hidden = hidden.reshape(-1, self.final_flat)
         return self.dense(hidden)
 
 
@@ -214,7 +214,7 @@ class NatureVisualEncoder(nn.Module):
         if not exporting_to_onnx.is_exporting():
             visual_obs = visual_obs.permute([0, 3, 1, 2])
         hidden = self.conv_layers(visual_obs)
-        hidden = hidden.view([-1, self.final_flat])
+        hidden = hidden.reshape([-1, self.final_flat])
         return self.dense(hidden)
 
 
