@@ -20,6 +20,7 @@ namespace Unity.MLAgents.Analytics
     {
         const string k_VendorKey = "unity.ml-agents";
         const string k_EventName = "ml_agents_inferencemodelset";
+        const int k_EventVersion = 1;
 
         /// <summary>
         /// Whether or not we've registered this particular event yet
@@ -36,6 +37,7 @@ namespace Unity.MLAgents.Analytics
         /// </summary>
         const int k_MaxNumberOfElements = 1000;
 
+
         /// <summary>
         /// Models that we've already sent events for.
         /// </summary>
@@ -49,7 +51,7 @@ namespace Unity.MLAgents.Analytics
             }
 
 #if UNITY_EDITOR
-            AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(k_EventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
+            AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(k_EventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey, k_EventVersion);
 #else
             AnalyticsResult result = AnalyticsResult.UnsupportedPlatform;
 #endif
@@ -112,9 +114,9 @@ namespace Unity.MLAgents.Analytics
 
             var data = GetEventForModel(nnModel, behaviorName, inferenceDevice, sensors, actionSpec);
             // Note - to debug, use JsonUtility.ToJson on the event.
-            // Debug.Log(JsonUtility.ToJson(data, true));
+            //Debug.Log(JsonUtility.ToJson(data, true));
 #if UNITY_EDITOR
-            EditorAnalytics.SendEventWithLimit(k_EventName, data);
+            EditorAnalytics.SendEventWithLimit(k_EventName, data, k_EventVersion);
 #else
             return;
 #endif
