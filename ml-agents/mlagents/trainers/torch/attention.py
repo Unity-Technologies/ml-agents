@@ -172,8 +172,7 @@ class EntityEmbeddings(torch.nn.Module):
         with torch.no_grad():
             # Generate the masking tensors for each entities tensor (mask only if all zeros)
             key_masks: List[torch.Tensor] = [
-                (torch.sum(ent ** 2, axis=2) < 0.01).type(torch.FloatTensor)
-                for ent in observations
+                (torch.sum(ent ** 2, axis=2) < 0.01).float() for ent in observations
             ]
         return key_masks
 
