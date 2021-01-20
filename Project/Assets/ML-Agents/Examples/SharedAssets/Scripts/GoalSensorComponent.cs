@@ -1,4 +1,4 @@
-﻿using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
 
 public class GoalSensorComponent : SensorComponent
