@@ -171,6 +171,8 @@ public class GridAgent : Agent
     public override void OnEpisodeBegin()
     {
         area.AreaReset();
+        Array values = Enum.GetValues(typeof(GridGoal));
+        gridGoal = (GridGoal)values.GetValue(UnityEngine.Random.Range(0, values.Length));
     }
 
     public void FixedUpdate()
