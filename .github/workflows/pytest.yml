@@ -2,7 +2,6 @@ name: pytest
 
 on:
   pull_request:
-    types: [ready_for_review] # TODO: temporary disable this, delete before merge
     paths:  # This action will only run if the PR modifies a file in one of these directories
     - 'ml-agents/**'
     - 'ml-agents-envs/**'
