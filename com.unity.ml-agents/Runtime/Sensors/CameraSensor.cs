@@ -5,7 +5,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// A sensor that wraps a Camera object to generate visual observations for an agent.
     /// </summary>
-    public class CameraSensor : ISensor
+    public class CameraSensor : ISensor, IBuiltInSensor
     {
         Camera m_Camera;
         int m_Width;
@@ -182,5 +182,12 @@ namespace Unity.MLAgents.Sensors
                 Object.Destroy(texture);
             }
         }
+
+        /// <inheritdoc/>
+        public BuiltInSensorType GetBuiltInSensorType()
+        {
+            return BuiltInSensorType.CameraSensor;
+        }
+
     }
 }

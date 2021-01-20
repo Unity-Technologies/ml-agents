@@ -7,7 +7,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// A sensor implementation for vector observations.
     /// </summary>
-    public class VectorSensor : ISensor
+    public class VectorSensor : ISensor, IBuiltInSensor
     {
         // TODO use float[] instead
         // TODO allow setting float[]
@@ -104,6 +104,12 @@ namespace Unity.MLAgents.Sensors
         public virtual SensorCompressionType GetCompressionType()
         {
             return SensorCompressionType.None;
+        }
+
+        /// <inheritdoc/>
+        public BuiltInSensorType GetBuiltInSensorType()
+        {
+            return BuiltInSensorType.VectorSensor;
         }
 
         void Clear()
