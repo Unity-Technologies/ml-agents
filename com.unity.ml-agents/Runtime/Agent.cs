@@ -582,6 +582,7 @@ namespace Unity.MLAgents
 
         public void SendDoneToTrainer()
         {
+            m_Info.reward = m_Reward;
             // We request a decision so Python knows the Agent is done immediately
             m_Brain?.RequestDecision(m_Info, sensors);
             ResetSensors();

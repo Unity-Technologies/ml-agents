@@ -232,14 +232,16 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         // col.gameObject.SetActive(false);
 
         //Give Agent Rewards
-        foreach (var item in AgentsList)
-        {
-            if (item.Agent.gameObject.activeInHierarchy)
-            {
-                print($"{item.Agent.name} scored");
-                item.Agent.AddReward(score);
-            }
-        }
+        // foreach (var item in AgentsList)
+        // {
+        //     if (item.Agent.gameObject.activeInHierarchy)
+        //     {
+        //         print($"{item.Agent.name} scored");
+        //         item.Agent.AddReward(score);
+        //     }
+        // }
+
+        m_TeamManager.AddTeamReward(score);
 
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
@@ -254,10 +256,11 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     public void ZombieTouchedBlock()
     {
         //Give Agent Rewards
-        foreach (var item in AgentsList)
-        {
-            item.Agent.AddReward(-1);
-        }
+        // foreach (var item in AgentsList)
+        // {
+        //     item.Agent.AddReward(-1);
+        // }
+        m_TeamManager.AddTeamReward(-1);
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.failMaterial, 0.5f));
         ResetScene();
@@ -297,6 +300,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.Rb.velocity = Vector3.zero;
             item.Rb.angularVelocity = Vector3.zero;
             item.Agent.gameObject.SetActive(true);
+            m_TeamManager.ResetAgent(item.Agent);
         }
 
         //Reset Blocks
