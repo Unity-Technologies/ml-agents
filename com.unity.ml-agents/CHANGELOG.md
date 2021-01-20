@@ -20,6 +20,10 @@ will result in the values being summed (instead of averaged) when written to
 TensorBoard. Thanks to @brccabral for the contribution! (#4816)
 - The upper limit for the time scale (by setting the `--time-scale` paramater in mlagents-learn) was
 removed when training with a player. The Editor still requires it to be clamped to 100. (#4867)
+- Added the IHeuristicProvider interface to allow IActuators as well as Agent implement the Heuristic function to generate actions.
+  Updated the Basic example and the Match3 Example to use Actuators.
+  Changed the namespace and file names of classes in com.unity.ml-agents.extensions. (#4849)
+
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
