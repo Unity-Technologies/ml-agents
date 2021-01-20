@@ -3,14 +3,14 @@ import abc
 
 from mlagents.torch_utils import torch, nn
 
-from mlagents_envs.base_env import ActionSpec, ObservationSpec
+from mlagents_envs.base_env import ActionSpec, ObservationSpec, ObservationType
 from mlagents.trainers.torch.action_model import ActionModel
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
-from mlagents.trainers.torch.layers import LSTM, LinearEncoder
+from mlagents.trainers.torch.layers import LSTM, LinearEncoder, HyperNetwork
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
@@ -41,17 +41,33 @@ class NetworkBody(nn.Module):
             else 0
         )
 
-        self.processors, self.embedding_sizes = ModelUtils.create_input_processors(
+        self.processors, self.embedding_sizes, self.obs_types = ModelUtils.create_input_processors(
             observation_specs,
             self.h_size,
             network_settings.vis_encode_type,
             normalize=self.normalize,
         )
 
-        total_enc_size = sum(self.embedding_sizes) + encoded_act_size
-        self.linear_encoder = LinearEncoder(
-            total_enc_size, network_settings.num_layers, self.h_size
-        )
+        total_enc_size, total_goal_size = 0, 0
+        for idx, embedding_size in enumerate(self.embedding_sizes):
+            if self.obs_types[idx] == ObservationType.DEFAULT:
+                total_enc_size += embedding_size
+            if self.obs_types[idx] == ObservationType.GOAL:
+                total_goal_size += embedding_size
+        total_enc_size += encoded_act_size
+
+        if ObservationType.GOAL in self.obs_types:
+            self.linear_encoder = HyperNetwork(
+                total_enc_size,
+                self.h_size,
+                total_goal_size,
+                network_settings.num_layers,
+                self.h_size,
+            )
+        else:
+            self.linear_encoder = LinearEncoder(
+                total_enc_size, network_settings.num_layers, self.h_size
+            )
 
         if self.use_lstm:
             self.lstm = LSTM(self.h_size, self.m_size)
@@ -82,10 +98,14 @@ class NetworkBody(nn.Module):
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         encodes = []
+        goal_signal = None
         for idx, processor in enumerate(self.processors):
             obs_input = inputs[idx]
             processed_obs = processor(obs_input)
-            encodes.append(processed_obs)
+            if self.obs_types[idx] == ObservationType.DEFAULT:
+                encodes.append(processed_obs)
+            else:
+                goal_signal = processed_obs
 
         if len(encodes) == 0:
             raise Exception("No valid inputs to network.")
@@ -95,7 +115,11 @@ class NetworkBody(nn.Module):
             inputs = torch.cat(encodes + [actions], dim=-1)
         else:
             inputs = torch.cat(encodes, dim=-1)
-        encoding = self.linear_encoder(inputs)
+
+        if goal_signal is None:
+            encoding = self.linear_encoder(inputs)
+        else:
+            encoding = self.linear_encoder(inputs, goal_signal)
 
         if self.use_lstm:
             # Resize to (batch, sequence length, encoding size)

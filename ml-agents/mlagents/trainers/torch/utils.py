@@ -11,7 +11,7 @@ from mlagents.trainers.torch.encoders import (
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents_envs.base_env import ObservationSpec
+from mlagents_envs.base_env import ObservationSpec, ObservationType
 
 
 class ModelUtils:
@@ -147,7 +147,7 @@ class ModelUtils:
         h_size: int,
         vis_encode_type: EncoderType,
         normalize: bool = False,
-    ) -> Tuple[nn.ModuleList, List[int]]:
+    ) -> Tuple[nn.ModuleList, List[int], List[ObservationType]]:
         """
         Creates visual and vector encoders, along with their normalizers.
         :param observation_specs: List of ObservationSpec that represent the observation dimensions.
@@ -162,14 +162,16 @@ class ModelUtils:
         """
         encoders: List[nn.Module] = []
         embedding_sizes: List[int] = []
+        obs_types: List[ObservationType] = []
         for obs_spec in observation_specs:
             encoder, embedding_size = ModelUtils.get_encoder_for_obs(
                 obs_spec.shape, normalize, h_size, vis_encode_type
             )
             encoders.append(encoder)
             embedding_sizes.append(embedding_size)
+            obs_types.append(obs_spec.observation_type)
 
-        return (nn.ModuleList(encoders), embedding_sizes)
+        return (nn.ModuleList(encoders), embedding_sizes, obs_types)
 
     @staticmethod
     def list_to_tensor(
