@@ -1,5 +1,6 @@
 from typing import Dict, Optional, Tuple, List
 from mlagents.torch_utils import torch
+from mlagents.trainers.torch.agent_action import AgentAction
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
@@ -65,6 +66,7 @@ class TorchOptimizer(Optimizer):
 
         memory = torch.zeros([1, 1, self.policy.m_size])
 
+        actions = AgentAction.from_dict(batch)
         next_obs = [obs.unsqueeze(0) for obs in next_obs]
 
         critic_obs = TeamObsUtil.from_buffer(batch, n_obs)
@@ -84,13 +86,15 @@ class TorchOptimizer(Optimizer):
 
         value_estimates, marg_val_estimates, next_memory = self.policy.actor_critic.critic_pass(
             current_obs,
+            actions,
             memory,
             sequence_length=batch.num_experiences,
             critic_obs=critic_obs,
         )
 
+        # Actions is a hack here, we need the next actions
         next_value_estimate, next_marg_val_estimate, _ = self.policy.actor_critic.critic_pass(
-            next_obs, next_memory, sequence_length=1, critic_obs=next_critic_obs
+            next_obs, actions, next_memory, sequence_length=1, critic_obs=next_critic_obs
         )
 
         for name, estimate in value_estimates.items():

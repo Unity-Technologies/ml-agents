@@ -317,7 +317,5 @@ def get_team_gae(
     :param lambd: GAE weighing factor.
     :return: list of advantage estimates for time-steps t to T.
     """
-    value_estimates = np.append(value_estimates, value_next)
-    delta_t = rewards + gamma * value_estimates[1:] - marginalized_value_estimates
-    advantage = discount_rewards(r=delta_t, gamma=gamma * lambd)
+    advantage = value_estimates - marginalized_value_estimates
     return advantage
