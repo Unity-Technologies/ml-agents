@@ -95,19 +95,17 @@ class TanhGaussianDistInstance(GaussianDistInstance):
         squashed = self.transform(unsquashed_sample)
         return squashed
 
-    # def _inverse_tanh(self, value):
-    #     # capped_value = torch.clamp(value, -1 + EPSILON, 1 - EPSILON)
-    #     capped_value = (1-EPSILON) * value
-    #     return 0.5 * torch.log((1 + capped_value) / (1 - capped_value) + EPSILON)
+    def _inverse_tanh(self, value):
+        return 0.5 * torch.log((1 + value) / (1 - value) + EPSILON)
 
     def log_prob(self, value):
-        unsquashed = self.transform.inv(value)
+        unsquashed = self._inverse_tanh(value * 0.95)
         # unsquashed = self.transform.inv(value * 0.85)
 
 
         # capped_unsqached = self.transform.inv(capped_value)
         tmp=  super().log_prob(unsquashed) - self.transform.log_abs_det_jacobian(
-            unsquashed, None
+            unsquashed, value
         )
         # print("tmp decomposition", value, capped_value, unsquashed, super().log_prob(unsquashed) , self.transform.log_abs_det_jacobian(
         #     unsquashed, None
@@ -182,10 +180,13 @@ class GaussianDistribution(nn.Module):
                 kernel_gain=0.2,
                 bias_init=Initialization.Zero,
             )
+            torch.nn.init.constant_(self.log_sigma.bias.data, -1)
+
         else:
             self.log_sigma = nn.Parameter(
-                torch.zeros(1, num_outputs, requires_grad=True)
+                torch.ones(1, num_outputs, requires_grad=True)
             )
+            torch.nn.init.constant_(self.log_sigma.data, -1)
 
     def forward(self, inputs: torch.Tensor) -> List[DistInstance]:
         mu = self.mu(inputs)
@@ -209,7 +210,6 @@ class GaussianDistribution(nn.Module):
 
         if torch.isnan(torch.mean(log_sigma)):
             print("GaussianDistribution log sigma NaN")
-
         if self.tanh_squash:
             return TanhGaussianDistInstance(mu, torch.exp(log_sigma))
         else:
