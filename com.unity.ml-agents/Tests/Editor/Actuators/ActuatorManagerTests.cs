@@ -303,5 +303,23 @@ namespace Unity.MLAgents.Tests.Actuators
             manager.WriteActionMask();
             Assert.IsTrue(groundTruthMask.SequenceEqual(manager.DiscreteActionMask.GetMask()));
         }
+
+        [Test]
+        public void TestHeuristic()
+        {
+            var manager = new ActuatorManager(2);
+            var va1 = new TestActuator(ActionSpec.MakeDiscrete(1, 2, 3), "name");
+            var va2 = new TestActuator(ActionSpec.MakeDiscrete(3, 2, 1, 8), "name1");
+            manager.Add(va1);
+            manager.Add(va2);
+
+            var actionBuf = new ActionBuffers(Array.Empty<float>(), new[] { 0, 0, 0, 0, 0, 0, 0 });
+            manager.ApplyHeuristic(actionBuf);
+
+            Assert.IsTrue(va1.m_HeuristicCalled);
+            Assert.AreEqual(va1.m_DiscreteBufferSize, 3);
+            Assert.IsTrue(va2.m_HeuristicCalled);
+            Assert.AreEqual(va2.m_DiscreteBufferSize, 4);
+        }
     }
 }

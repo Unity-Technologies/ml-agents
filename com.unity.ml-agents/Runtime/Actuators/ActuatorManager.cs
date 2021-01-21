@@ -206,6 +206,49 @@ namespace Unity.MLAgents.Actuators
 
         /// <summary>
         /// Iterates through all of the IActuators in this list and calls their
+        /// <see cref="IHeuristicProvider.Heuristic"/> method on them, if implemented, with the appropriate
+        /// <see cref="ActionSegment{T}"/>s depending on their <see cref="ActionSpec"/>.
+        /// </summary>
+        public void ApplyHeuristic(in ActionBuffers actionBuffersOut)
+        {
+            var continuousStart = 0;
+            var discreteStart = 0;
+            for (var i = 0; i < m_Actuators.Count; i++)
+            {
+                var actuator = m_Actuators[i];
+                var numContinuousActions = actuator.ActionSpec.NumContinuousActions;
+                var numDiscreteActions = actuator.ActionSpec.NumDiscreteActions;
+
+                if (numContinuousActions == 0 && numDiscreteActions == 0)
+                {
+                    continue;
+                }
+
+                var continuousActions = ActionSegment<float>.Empty;
+                if (numContinuousActions > 0)
+                {
+                    continuousActions = new ActionSegment<float>(actionBuffersOut.ContinuousActions.Array,
+                        continuousStart,
+                        numContinuousActions);
+                }
+
+                var discreteActions = ActionSegment<int>.Empty;
+                if (numDiscreteActions > 0)
+                {
+                    discreteActions = new ActionSegment<int>(actionBuffersOut.DiscreteActions.Array,
+                        discreteStart,
+                        numDiscreteActions);
+                }
+
+                var heuristic = actuator as IHeuristicProvider;
+                heuristic?.Heuristic(new ActionBuffers(continuousActions, discreteActions));
+                continuousStart += numContinuousActions;
+                discreteStart += numDiscreteActions;
+            }
+        }
+
+        /// <summary>
+        /// Iterates through all of the IActuators in this list and calls their
         /// <see cref="IActionReceiver.OnActionReceived"/> method on them with the appropriate
         /// <see cref="ActionSegment{T}"/>s depending on their <see cref="ActionSpec"/>.
         /// </summary>
