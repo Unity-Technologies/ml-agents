@@ -136,21 +136,12 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     public void KillAgent(Collision col, Transform t)
     {
         print($"zombie {t.name} ate {col.collider.name}");
-        //End Episode
-        foreach (var item in AgentsList)
-        {
-            if (!item.Agent)
-            {
-                return;
-            }
-            item.Agent.EndEpisode();
-        }
-
         //Disable killed Agent
         foreach (var item in AgentsList)
         {
             if (item.Col == col.collider)
             {
+                item.Agent.EndEpisode();
                 item.Col.gameObject.SetActive(false);
                 break;
             }
