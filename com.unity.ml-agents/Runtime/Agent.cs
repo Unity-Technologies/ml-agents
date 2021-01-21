@@ -586,6 +586,7 @@ namespace Unity.MLAgents
             // We request a decision so Python knows the Agent is done immediately
             m_Brain?.RequestDecision(m_Info, sensors);
             ResetSensors();
+            m_Reward = 0f;
         }
 
         /// <summary>

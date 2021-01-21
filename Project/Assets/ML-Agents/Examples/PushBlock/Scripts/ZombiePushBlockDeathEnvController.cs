@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.MLAgents;
+using Unity.MLAgents.Extensions.Teams;
 using UnityEngine;
 
 public class ZombiePushBlockDeathEnvController : MonoBehaviour
@@ -79,10 +80,12 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     public bool UseRandomAgentPosition = true;
     public bool UseRandomBlockRotation = true;
     public bool UseRandomBlockPosition = true;
+    public bool UseTeamManager = true;
+    public bool UseTeamReward = true;
     PushBlockSettings m_PushBlockSettings;
 
     private int m_NumberOfRemainingBlocks;
-    private PushBlockTeamManager m_TeamManager;
+    private BaseTeamManager m_TeamManager;
 
     void Start()
     {
@@ -101,7 +104,18 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.Rb = item.T.GetComponent<Rigidbody>();
         }
         // Initialize TeamManager
-        m_TeamManager = new PushBlockTeamManager();
+        if (UseTeamManager)
+        {
+            if (UseTeamReward)
+            {
+                m_TeamManager = new PushBlockTeamManager();
+            }
+            else
+            {
+                m_TeamManager = new BaseTeamManager();
+            }
+        }
+
         foreach (var item in AgentsList)
         {
             item.StartingPos = item.Agent.transform.position;
@@ -135,7 +149,16 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     //Kill/disable an agent
     public void KillAgent(Collision col, Transform t)
     {
-        print($"Zombie {t.gameObject.GetInstanceID()} ate Agent {col.gameObject.GetInstanceID()}");
+        // print($"Zombie {t.gameObject.GetInstanceID()} ate Agent {col.gameObject.GetInstanceID()}");
+        //End Episode
+        foreach (var item in AgentsList)
+        {
+            if (!item.Agent)
+            {
+                return;
+            }
+            // item.Agent.EndEpisode();
+        }
 
         //Disable killed Agent
         foreach (var item in AgentsList)
@@ -224,16 +247,21 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         // col.gameObject.SetActive(false);
 
         //Give Agent Rewards
-        // foreach (var item in AgentsList)
-        // {
-        //     if (item.Agent.gameObject.activeInHierarchy)
-        //     {
-        //         print($"{item.Agent.name} scored");
-        //         item.Agent.AddReward(score);
-        //     }
-        // }
-
-        m_TeamManager.AddTeamReward(score);
+        if (UseTeamManager && UseTeamReward)
+        {
+            m_TeamManager.AddTeamReward(score);
+        }
+        else
+        {
+            foreach (var item in AgentsList)
+            {
+                if (item.Agent.gameObject.activeInHierarchy)
+                {
+                    // print($"{item.Agent.name} scored");
+                    item.Agent.AddReward(score);
+                }
+            }
+        }
 
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
@@ -248,11 +276,18 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     public void ZombieTouchedBlock()
     {
         //Give Agent Rewards
-        // foreach (var item in AgentsList)
-        // {
-        //     item.Agent.AddReward(-1);
-        // }
-        m_TeamManager.AddTeamReward(-1);
+        if (UseTeamManager && UseTeamReward)
+        {
+            m_TeamManager.AddTeamReward(-1);
+        }
+        else
+        {
+            foreach (var item in AgentsList)
+            {
+                item.Agent.AddReward(-1);
+            }
+        }
+
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.failMaterial, 0.5f));
         ResetScene();
@@ -292,7 +327,6 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.Rb.velocity = Vector3.zero;
             item.Rb.angularVelocity = Vector3.zero;
             item.Agent.gameObject.SetActive(true);
-            m_TeamManager.ResetAgent(item.Agent);
         }
 
         //Reset Blocks

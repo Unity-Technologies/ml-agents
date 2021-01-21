@@ -21,19 +21,8 @@ public class PushBlockTeamManager : BaseTeamManager
             foreach (var doneAgent in m_AgentDoneState.Keys)
             {
                 doneAgent.SendDoneToTrainer();
+                m_AgentDoneState[doneAgent] = false;
             }
-        }
-    }
-
-    public void ResetAgent(Agent agent)
-    {
-        if (!m_AgentDoneState.ContainsKey(agent))
-        {
-            RegisterAgent(agent);
-        }
-        else
-        {
-            m_AgentDoneState[agent] = false;
         }
     }
 
