@@ -1469,7 +1469,7 @@ Transform:
   m_GameObject: {fileID: 180376172}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.8199997, y: 1, z: -1.43}
-  m_LocalScale: {x: 2, y: 0.75, z: 2}
+  m_LocalScale: {x: 4, y: 0.75, z: 4}
   m_Children: []
   m_Father: {fileID: 35422107}
   m_RootOrder: 6
@@ -3149,12 +3149,11 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207, type: 3}
+  m_Model: {fileID: 11400000, guid: 2c785861dab4f42309917b4d04e2c8e7, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -3549,12 +3548,11 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207, type: 3}
+  m_Model: {fileID: 11400000, guid: 95c3b98e2aad84cefbd6f82ee7805789, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 1
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -3859,7 +3857,6 @@ MonoBehaviour:
   m_BehaviorType: 2
   m_BehaviorName: 
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -4524,12 +4521,11 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207, type: 3}
+  m_Model: {fileID: 11400000, guid: 95c3b98e2aad84cefbd6f82ee7805789, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 1
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -5084,7 +5080,6 @@ MonoBehaviour:
   m_BehaviorType: 2
   m_BehaviorName: 
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -6261,7 +6256,6 @@ MonoBehaviour:
   m_BehaviorType: 2
   m_BehaviorName: 
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -7454,7 +7448,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 2
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -8284,7 +8277,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 2
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -9345,7 +9337,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 3
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -10102,12 +10093,11 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207, type: 3}
+  m_Model: {fileID: 11400000, guid: 95c3b98e2aad84cefbd6f82ee7805789, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 1
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -12200,7 +12190,7 @@ Transform:
   m_GameObject: {fileID: 997359139}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.8199997, y: 1, z: -1.43}
-  m_LocalScale: {x: 2, y: 0.75, z: 2}
+  m_LocalScale: {x: 4, y: 0.75, z: 4}
   m_Children: []
   m_Father: {fileID: 1056693890}
   m_RootOrder: 6
@@ -18153,7 +18143,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 2
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -20594,7 +20583,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 3
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -23725,7 +23713,7 @@ Transform:
   m_GameObject: {fileID: 1906676962}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.8199997, y: 1, z: -1.43}
-  m_LocalScale: {x: 2, y: 0.75, z: 2}
+  m_LocalScale: {x: 4, y: 0.75, z: 4}
   m_Children: []
   m_Father: {fileID: 2124347356}
   m_RootOrder: 6
@@ -24479,7 +24467,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 3
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -25873,12 +25860,11 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207, type: 3}
+  m_Model: {fileID: 11400000, guid: 2c785861dab4f42309917b4d04e2c8e7, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -28046,7 +28032,7 @@ MonoBehaviour:
     StartingRot: {x: 0, y: 0, z: 0, w: 0}
     Rb: {fileID: 0}
   UseRandomAgentRotation: 1
-  UseRandomAgentPosition: 1
+  UseRandomAgentPosition: 0
   UseRandomBlockRotation: 1
   UseRandomBlockPosition: 1
 --- !u!1 &1257456948449766
@@ -29128,12 +29114,11 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207, type: 3}
+  m_Model: {fileID: 11400000, guid: 2c785861dab4f42309917b4d04e2c8e7, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -30103,7 +30088,7 @@ Transform:
   m_GameObject: {fileID: 8120829477783372687}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.8199997, y: 1, z: -1.43}
-  m_LocalScale: {x: 2, y: 0.75, z: 2}
+  m_LocalScale: {x: 4, y: 0.75, z: 4}
   m_Children: []
   m_Father: {fileID: 4006991767121726}
   m_RootOrder: 6
@@ -30770,7 +30755,6 @@ MonoBehaviour:
   m_BehaviorType: 2
   m_BehaviorName: 
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
