@@ -171,9 +171,10 @@ namespace Unity.MLAgents.Actuators
             }
             else
             {
-                Debug.Assert(sourceActionBuffer.Length == destination.Length,
-                    $"sourceActionBuffer:{sourceActionBuffer.Length} is a different" +
-                    $" size than destination: {destination.Length}.");
+                Debug.AssertFormat(sourceActionBuffer.Length == destination.Length,
+                    "sourceActionBuffer: {0} is a different size than destination: {1}.",
+                    sourceActionBuffer.Length,
+                    destination.Length);
 
                 Array.Copy(sourceActionBuffer.Array,
                     sourceActionBuffer.Offset,
