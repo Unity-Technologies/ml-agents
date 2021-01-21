@@ -105,10 +105,15 @@ class SubprocessEnvManagerTest(unittest.TestCase):
     @mock.patch(
         "mlagents.trainers.subprocess_env_manager.SubprocessEnvManager.create_worker"
     )
-    def test_training_behaviors_collects_results_from_all_envs(self, mock_create_worker):
+    def test_training_behaviors_collects_results_from_all_envs(
+        self, mock_create_worker
+    ):
         def create_worker_mock(worker_id, step_queue, env_factor, engine_c):
             return MockEnvWorker(
-                worker_id, EnvironmentResponse(EnvironmentCommand.RESET, worker_id, {f"key{worker_id}" : worker_id})
+                worker_id,
+                EnvironmentResponse(
+                    EnvironmentCommand.RESET, worker_id, {f"key{worker_id}": worker_id}
+                ),
             )
 
         mock_create_worker.side_effect = create_worker_mock
@@ -116,15 +121,13 @@ class SubprocessEnvManagerTest(unittest.TestCase):
             mock_env_factory, EngineConfig.default_config(), 4
         )
 
-        params = {"test": "params"}
         res = manager.training_behaviors
-        for i, env in enumerate(manager.env_workers):
+        for env in manager.env_workers:
             env.send.assert_called_with(EnvironmentCommand.BEHAVIOR_SPECS)
             env.recv.assert_called()
         for worker_id in range(4):
             assert f"key{worker_id}" in res
             assert res[f"key{worker_id}"] == worker_id
-
 
     @mock.patch(
         "mlagents.trainers.subprocess_env_manager.SubprocessEnvManager.create_worker"
