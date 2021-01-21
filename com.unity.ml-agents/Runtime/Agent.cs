@@ -450,11 +450,6 @@ namespace Unity.MLAgents
                 new int[m_ActuatorManager.NumDiscreteActions]
             );
 
-            if (m_TeamManager != null)
-            {
-                m_Info.teamManagerId = m_TeamManager.GetId();
-            }
-
             // The first time the Academy resets, all Agents in the scene will be
             // forced to reset through the <see cref="AgentForceReset"/> event.
             // To avoid the Agent resetting twice, the Agents will not begin their
@@ -556,7 +551,9 @@ namespace Unity.MLAgents
             }
             else
             {
-                SendDoneToTrainer();
+                // We request a decision so Python knows the Agent is done immediately
+                m_Brain?.RequestDecision(m_Info, sensors);
+                ResetSensors();
             }
 
             // We also have to write any to any DemonstationStores so that they get the "done" flag.
