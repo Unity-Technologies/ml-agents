@@ -50,7 +50,7 @@ def test_create_inputs(encoder_type, normalize, num_vector, num_visual):
         obs_shapes.append(vis_obs_shape)
     h_size = 128
     obs_spec = create_observation_specs_with_shapes(obs_shapes)
-    encoders, embedding_sizes, _ = ModelUtils.create_input_processors(
+    encoders, _, embedding_sizes = ModelUtils.create_input_processors(
         obs_spec, h_size, encoder_type, normalize
     )
     total_output = sum(embedding_sizes)
