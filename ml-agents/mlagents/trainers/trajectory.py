@@ -9,11 +9,21 @@ from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 
 
 @attr.s(auto_attribs=True)
+class TeammateStatus:
+    """
+    Stores data related to an agent's teammate.
+    """
+
+    obs: List[np.ndarray]
+    reward: float
+    action: ActionTuple
+
+
+@attr.s(auto_attribs=True)
 class AgentExperience:
     obs: List[np.ndarray]
-    collab_obs: List[List[np.ndarray]]
+    teammate_status: List[TeammateStatus]
     reward: float
-    team_rewards: List[float]
     done: bool
     action: ActionTuple
     action_probs: LogProbsTuple
@@ -150,14 +160,24 @@ class Trajectory(NamedTuple):
                 agent_buffer_trajectory[ObsUtil.get_name_at(i)].append(obs[i])
                 agent_buffer_trajectory[ObsUtil.get_name_at_next(i)].append(next_obs[i])
 
+            teammate_continuous_actions, teammate_discrete_actions, teammate_rewards = (
+                [],
+                [],
+                [],
+            )
+            for teammate_status in exp.teammate_status:
+                teammate_rewards.append(teammate_status.reward)
+                teammate_continuous_actions.append(teammate_status.action.continuous)
+                teammate_discrete_actions.append(teammate_status.action.discrete)
+
             for i in range(num_obs):
                 ith_team_obs = []
-                for _team_obs in exp.collab_obs:
+                for _teammate_status in exp.teammate_status:
                     # Assume teammates have same obs space
-                    ith_team_obs.append(_team_obs[i])
+                    ith_team_obs.append(_teammate_status.obs[i])
                 agent_buffer_trajectory[TeamObsUtil.get_name_at(i)].append(ith_team_obs)
 
-            agent_buffer_trajectory["team_rewards"].append(exp.team_rewards)
+            agent_buffer_trajectory["team_rewards"].append(teammate_rewards)
 
             if exp.memory is not None:
                 agent_buffer_trajectory["memory"].append(exp.memory)
@@ -168,6 +188,15 @@ class Trajectory(NamedTuple):
             # Adds the log prob and action of continuous/discrete separately
             agent_buffer_trajectory["continuous_action"].append(exp.action.continuous)
             agent_buffer_trajectory["discrete_action"].append(exp.action.discrete)
+
+            # Team actions
+            agent_buffer_trajectory["team_continuous_action"].append(
+                teammate_continuous_actions
+            )
+            agent_buffer_trajectory["team_discrete_action"].append(
+                teammate_discrete_actions
+            )
+
             agent_buffer_trajectory["continuous_log_probs"].append(
                 exp.action_probs.continuous
             )
