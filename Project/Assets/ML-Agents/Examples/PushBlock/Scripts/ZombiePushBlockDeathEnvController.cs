@@ -147,13 +147,29 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             }
         }
 
-        //End Episode
+        bool allZombiesDead = true;
+        // Kill zombies
         foreach (var item in ZombiesList)
         {
             if (item.Agent.transform == t)
             {
                 item.Agent.gameObject.SetActive(false);
-                break;
+                //break;
+            }
+            if (item.Agent.gameObject.activeSelf)
+            {
+                allZombiesDead = false;
+            }
+        }
+
+        // If all zombies dead, unfreeze block
+        if (allZombiesDead)
+        {
+            foreach (var item in BlocksList)
+            {
+                // Unfreeze block's motion when zombies are killed
+                item.Rb.constraints &= RigidbodyConstraints.FreezePositionX;
+                item.Rb.constraints &= RigidbodyConstraints.FreezePositionZ;
             }
         }
     }
@@ -245,10 +261,10 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     public void ZombieTouchedBlock()
     {
         //Give Agent Rewards
-        foreach (var item in AgentsList)
-        {
-            item.Agent.AddReward(-1);
-        }
+        // foreach (var item in AgentsList)
+        // {
+        //     item.Agent.AddReward(-1);
+        // }
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.failMaterial, 0.5f));
         ResetScene();
@@ -300,6 +316,11 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.Rb.velocity = Vector3.zero;
             item.Rb.angularVelocity = Vector3.zero;
             item.T.gameObject.SetActive(true);
+
+
+            // Freeze block's motion until zombies are killed
+            item.Rb.constraints |= RigidbodyConstraints.FreezePositionX;
+            item.Rb.constraints |= RigidbodyConstraints.FreezePositionZ;
         }
         //End Episode
         foreach (var item in ZombiesList)
