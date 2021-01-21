@@ -19,7 +19,3 @@ pytest_gpu:
     recurring:
       - branch: master
         frequency: daily
-  artifacts:
-    logs:
-      paths:
-        - "artifacts/standalone_build.txt"
