@@ -129,6 +129,54 @@ class LayerNorm(torch.nn.Module):
         return (layer_activations - mean) / (torch.sqrt(var + 1e-5))
 
 
+class ConditionalEncoder(torch.nn.Module):
+    """
+    Linear layers.
+    """
+
+    def __init__(
+        self,
+        input_size: int,
+        goal_size: int,
+        num_layers: int,
+        hidden_size: int,
+        kernel_init: Initialization = Initialization.KaimingHeNormal,
+        kernel_gain: float = 1.0,
+    ):
+        super().__init__()
+        self.goal_encoder = LinearEncoder(goal_size, 2, hidden_size)
+        self.layers = [
+            linear_layer(
+                input_size,
+                hidden_size,
+                kernel_init=kernel_init,
+                kernel_gain=kernel_gain,
+            )
+        ]
+        self.layers.append(Swish())
+        for _ in range(num_layers - 1):
+            self.layers.append(
+                linear_layer(
+                    hidden_size,
+                    hidden_size,
+                    kernel_init=kernel_init,
+                    kernel_gain=kernel_gain,
+                )
+            )
+            self.layers.append(Swish())
+
+    def forward(
+        self, input_tensor: torch.Tensor, goal_tensor: torch.Tensor
+    ) -> torch.Tensor:
+        activation = input_tensor
+        goal_activation = self.goal_encoder(goal_tensor)
+        for layer in self.layers:
+            activation = layer(activation)
+            if layer is not Swish():
+                activation *= goal_activation
+        return activation
+
+
 class LinearEncoder(torch.nn.Module):
     """
     Linear layers.
