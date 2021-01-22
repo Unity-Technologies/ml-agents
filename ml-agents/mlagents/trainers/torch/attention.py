@@ -102,13 +102,20 @@ class MultiHeadAttention(torch.nn.Module):
 
 
 class EntityEmbedding(torch.nn.Module):
+    """
+    A module used to embed entities before passing them to a self-attention block.
+    Used in conjunction with ResidualSelfAttention to encode information about a self
+    and additional entities. Can also concatenate self to entities for ego-centric self-
+    attention. Inspired by architecture used in https://arxiv.org/pdf/1909.07528.pdf.
+    """
+
     def __init__(
         self,
         x_self_size: int,
         entity_size: int,
         entity_num_max_elements: Optional[int],
         embedding_size: int,
-        concat_self: bool = True,
+        concat_self: bool,
     ):
         """
         Constructs an EntityEmbedding module.

@@ -89,7 +89,7 @@ def test_predict_closest_training():
     torch.manual_seed(1336)
     size, n_k, = 3, 5
     embedding_size = 64
-    entity_embeddings = EntityEmbedding(size, size, n_k, embedding_size)
+    entity_embeddings = EntityEmbedding(size, size, n_k, embedding_size, True)
     transformer = ResidualSelfAttention(embedding_size, n_k)
     l_layer = linear_layer(embedding_size, size)
     optimizer = torch.optim.Adam(
