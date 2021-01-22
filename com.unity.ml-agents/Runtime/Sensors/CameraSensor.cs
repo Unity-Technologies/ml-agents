@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Unity.MLAgents.Sensors
 {
@@ -145,6 +146,10 @@ namespace Unity.MLAgents.Sensors
             RenderTexture.active = tempRt;
             obsCamera.targetTexture = tempRt;
 
+            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
+            {
+                Debug.LogError("GraphicsDeviceType is Null. This will likely crash when trying to render.");
+            }
             obsCamera.Render();
 
             texture2D.ReadPixels(new Rect(0, 0, texture2D.width, texture2D.height), 0, 0);
