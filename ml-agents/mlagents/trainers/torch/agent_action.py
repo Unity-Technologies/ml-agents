@@ -48,10 +48,14 @@ class AgentAction(NamedTuple):
         agent_buffer_field: AgentBuffer.AgentBufferField,
         dtype: torch.dtype = torch.float32,
     ) -> List[torch.Tensor]:
+        """
+        Pad actions and convert to tensor. Note that data is padded by 0's, not NaNs
+        as the observations are.
+        """
         action_shape = None
         for _action in agent_buffer_field:
             if _action:
-                action_shape = _action.shape
+                action_shape = _action[0].shape
                 break
         # If there were no critic obs at all
         if action_shape is None:
@@ -61,7 +65,7 @@ class AgentAction(NamedTuple):
             map(
                 lambda x: ModelUtils.list_to_tensor(x, dtype=dtype),
                 itertools.zip_longest(
-                    *agent_buffer_field, fillvalue=np.full(action_shape, np.nan)
+                    *agent_buffer_field, fillvalue=np.full(action_shape, 0)
                 ),
             )
         )
