@@ -654,7 +654,8 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-        critic_obs: Optional[List[List[torch.Tensor]]] = None,
+        team_obs: Optional[List[List[torch.Tensor]]] = None,
+        team_act: Optional[List[List[torch.Tensor]]] = None,
     ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
         encoding, memories = self.network_body(
             inputs, memories=memories, sequence_length=sequence_length
@@ -762,27 +763,22 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-        critic_obs: Optional[List[List[torch.Tensor]]] = None,
+        team_obs: Optional[List[List[torch.Tensor]]] = None,
+        team_act: Optional[List[List[torch.Tensor]]] = None,
     ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
         actor_mem, critic_mem = self._get_actor_critic_mem(memories)
         encoding, actor_mem_outs = self.network_body(
             inputs, memories=actor_mem, sequence_length=sequence_length
         )
         log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
-        all_net_inputs = [inputs]
-        if critic_obs is not None and critic_obs:
-            all_net_inputs.extend(critic_obs)
-            critic_obs = []
-        mar_value_outputs, _ = self.critic(
-            all_net_inputs, [], [], memories=critic_mem, sequence_length=sequence_length
-        )
 
-        value_outputs, critic_mem_outs = self.critic(
-            [inputs],
-            critic_obs,
+        value_outputs, mar_value_outputs, _ = self.critic_pass(
+            inputs,
             actions,
             memories=critic_mem,
             sequence_length=sequence_length,
+            team_obs=team_obs,
+            team_act=team_act,
         )
 
         return log_probs, entropies, value_outputs, mar_value_outputs

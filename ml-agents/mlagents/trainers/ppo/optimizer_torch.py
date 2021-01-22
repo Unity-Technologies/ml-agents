@@ -79,13 +79,14 @@ class TorchPPOOptimizer(TorchOptimizer):
         value_losses = []
         for name, head in values.items():
             old_val_tensor = old_values[name]
-            returns_tensor = returns[name]
-            clipped_value_estimate = old_val_tensor + torch.clamp(
-                head - old_val_tensor, -1 * epsilon, epsilon
-            )
-            v_opt_a = (returns_tensor - head) ** 2
-            v_opt_b = (returns_tensor - clipped_value_estimate) ** 2
-            value_loss = ModelUtils.masked_mean(torch.max(v_opt_a, v_opt_b), loss_masks)
+            returns_tensor = returns[name] + 0.99 * old_val_tensor
+            # clipped_value_estimate = old_val_tensor + torch.clamp(
+            #    head - old_val_tensor, -1 * epsilon, epsilon
+            # )
+            value_loss = (returns_tensor - head) ** 2
+            # v_opt_a = (returns_tensor - head) ** 2
+            # v_opt_b = (returns_tensor - clipped_value_estimate) ** 2
+            # value_loss = ModelUtils.masked_mean(torch.max(v_opt_a, v_opt_b), loss_masks)
             value_losses.append(value_loss)
         value_loss = torch.mean(torch.stack(value_losses))
         return value_loss
@@ -134,10 +135,10 @@ class TorchPPOOptimizer(TorchOptimizer):
         old_marg_values = {}
         for name in self.reward_signals:
             old_values[name] = ModelUtils.list_to_tensor(
-                batch[f"{name}_value_estimates"]
+                batch[f"{name}_value_estimates_next"]
             )
             old_marg_values[name] = ModelUtils.list_to_tensor(
-                batch[f"{name}_marginalized_value_estimates"]
+                batch[f"{name}_marginalized_value_estimates_next"]
             )
             returns[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns"])
 
@@ -166,16 +167,16 @@ class TorchPPOOptimizer(TorchOptimizer):
         # Convert to tensors
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
 
-        critic_obs = TeamObsUtil.from_buffer(batch, n_obs)
-        critic_obs = [
+        team_obs = TeamObsUtil.from_buffer(batch, n_obs)
+        team_obs = [
             [ModelUtils.list_to_tensor(obs) for obs in _teammate_obs]
-            for _teammate_obs in critic_obs
+            for _teammate_obs in team_obs
         ]
 
         act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
         actions = AgentAction.from_dict(batch)
         team_actions = AgentAction.from_team_dict(batch)
-        next_team_actions = AgentAction.from_team_dict_next(batch)
+        # next_team_actions = AgentAction.from_team_dict_next(batch)
 
         memories = [
             ModelUtils.list_to_tensor(batch["memory"][i])
@@ -189,7 +190,8 @@ class TorchPPOOptimizer(TorchOptimizer):
             masks=act_masks,
             actions=actions,
             memories=memories,
-            critic_obs=critic_obs,
+            team_obs=team_obs,
+            team_act=team_actions,
             seq_len=self.policy.sequence_length,
         )
         old_log_probs = ActionLogProbs.from_dict(batch).flatten()

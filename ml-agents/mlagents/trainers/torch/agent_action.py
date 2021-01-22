@@ -91,6 +91,25 @@ class AgentAction(NamedTuple):
         return AgentAction(continuous, discrete)
 
     @staticmethod
+    def from_dict_next(buff: Dict[str, np.ndarray]) -> "AgentAction":
+        """
+        A static method that accesses continuous and discrete action fields in an AgentBuffer
+        and constructs the corresponding AgentAction from the retrieved np arrays.
+        """
+        continuous: torch.Tensor = None
+        discrete: List[torch.Tensor] = None  # type: ignore
+        if "next_continuous_action" in buff:
+            continuous = ModelUtils.list_to_tensor(buff["continuous_action"])
+        if "next_discrete_action" in buff:
+            discrete_tensor = ModelUtils.list_to_tensor(
+                buff["discrete_action"], dtype=torch.long
+            )
+            discrete = [
+                discrete_tensor[..., i] for i in range(discrete_tensor.shape[-1])
+            ]
+        return AgentAction(continuous, discrete)
+
+    @staticmethod
     def _from_team_dict(
         buff: Dict[str, np.ndarray], cont_action_key: str, disc_action_key: str
     ):

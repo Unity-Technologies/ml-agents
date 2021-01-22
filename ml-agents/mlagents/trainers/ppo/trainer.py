@@ -93,6 +93,11 @@ class PPOTrainer(RLTrainer):
                 f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value Estimate",
                 np.mean(v),
             )
+        for name, v in value_next.items():
+            agent_buffer_trajectory[f"{name}_value_estimates_next"].extend(v)
+            agent_buffer_trajectory[f"{name}_marginalized_value_estimates_next"].extend(
+                marg_value_next[name]
+            )
 
         # Evaluate all reward functions
         self.collected_rewards["environment"][agent_id] += np.sum(

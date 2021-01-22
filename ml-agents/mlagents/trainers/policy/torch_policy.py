@@ -145,10 +145,11 @@ class TorchPolicy(Policy):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
-        critic_obs: Optional[List[List[torch.Tensor]]] = None,
+        team_obs: Optional[List[List[torch.Tensor]]] = None,
+        team_act: Optional[List[AgentAction]] = None,
     ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
         log_probs, entropies, value_heads, marg_vals = self.actor_critic.get_stats_and_value(
-            obs, actions, masks, memories, seq_len, critic_obs
+            obs, actions, masks, memories, seq_len, team_obs, team_act
         )
         return log_probs, entropies, value_heads, marg_vals
 
