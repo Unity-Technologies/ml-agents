@@ -194,10 +194,10 @@ class TorchSACOptimizer(TorchOptimizer):
             self.trainer_settings.max_steps,
         )
         self.policy_optimizer = torch.optim.Adam(
-            policy_params, lr=hyperparameters.learning_rate
+            policy_params, lr=hyperparameters.learning_rate, weight_decay=1e-6
         )
         self.value_optimizer = torch.optim.Adam(
-            value_params, lr=hyperparameters.learning_rate
+            value_params, lr=hyperparameters.learning_rate, weight_decay=1e-6
         )
         self.entropy_optimizer = torch.optim.Adam(
             self._log_ent_coef.parameters(), lr=hyperparameters.learning_rate

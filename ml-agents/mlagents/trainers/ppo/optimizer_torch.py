@@ -49,7 +49,9 @@ class TorchPPOOptimizer(TorchOptimizer):
         )
 
         self.optimizer = torch.optim.Adam(
-            params, lr=self.trainer_settings.hyperparameters.learning_rate
+            params,
+            lr=self.trainer_settings.hyperparameters.learning_rate,
+            weight_decay=1e-6,
         )
         self.stats_name_to_update_name = {
             "Losses/Value Loss": "value_loss",
