@@ -177,7 +177,7 @@ class UnityEnvironment(BaseEnv):
         # If true, this means the environment was successfully loaded
         self._loaded = False
         # The process that is started. If None, no process was started
-        self._proc1 = None
+        self._proc1: Optional[subprocess.Popen] = None
         self._timeout_wait: int = timeout_wait
         self._communicator = self._get_communicator(worker_id, base_port, timeout_wait)
         self._worker_id = worker_id
@@ -249,7 +249,11 @@ class UnityEnvironment(BaseEnv):
         if self._no_graphics:
             args += ["-nographics", "-batchmode"]
         args += [UnityEnvironment._PORT_COMMAND_LINE_ARG, str(self._port)]
-        if self._log_folder:
+
+        # If the logfile arg isn't already set in the env args,
+        # try to set it to an output directory
+        logfile_set = "-logfile" in (arg.lower() for arg in self._additional_args)
+        if self._log_folder and not logfile_set:
             log_file_path = os.path.join(
                 self._log_folder, f"Player-{self._worker_id}.log"
             )
