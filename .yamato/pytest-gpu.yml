@@ -15,7 +15,6 @@ pytest_gpu:
       python3 -m pytest -m "not check_environment_trains" --junitxml=junit/test-results.xml -p no:warnings
   triggers:
     cancel_old_ci: true
-    expression: pull_request.source match "pytest-gpu" # TODO: temporary trigger, delete before merge
     recurring:
       - branch: master
         frequency: daily
