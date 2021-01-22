@@ -2743,6 +2743,7 @@ GameObject:
   - component: {fileID: 4845971001715176663}
   - component: {fileID: 4845971001715176660}
   - component: {fileID: 8968436865147081600}
+  - component: {fileID: 1768700195492406288}
   m_Layer: 0
   m_Name: CrawlerBase
   m_TagString: Untagged
@@ -2780,11 +2781,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 32
+    VectorObservationSize: 29
     NumStackedVectorObservations: 1
+    m_ActionSpec:
+      m_NumContinuousActions: 20
+      BranchSizes: 
     VectorActionSize: 14000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
+    hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: c6509001ba679447fba27f894761c3ba, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
@@ -2902,6 +2907,19 @@ MonoBehaviour:
     UseJointPositionsAndAngles: 0
     UseJointForces: 0
   sensorName: 
+--- !u!114 &1768700195492406288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4845971001715176661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd48a95d788a348b0b7a8cefd39e7c27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  observationSize: 3
 --- !u!1 &4845971001730692034
 GameObject:
   m_ObjectHideFlags: 0

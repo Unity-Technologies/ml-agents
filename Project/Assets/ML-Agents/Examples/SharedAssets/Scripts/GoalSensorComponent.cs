@@ -1,4 +1,7 @@
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Unity.MLAgents.Sensors;
+using UnityEngine;
 
 
 public class GoalSensorComponent : SensorComponent
@@ -21,6 +24,14 @@ public class GoalSensorComponent : SensorComponent
         return new[] { observationSize };
     }
 
+    public void AddGoal(IEnumerable<float> goal)
+    {
+        if (goalSensor != null)
+        {
+            goalSensor.AddObservation(goal);
+        }
+    }
+
     public void AddGoal(float goal)
     {
         if (goalSensor != null)
@@ -34,6 +45,14 @@ public class GoalSensorComponent : SensorComponent
         if (goalSensor != null)
         {
             goalSensor.AddOneHotObservation(goal, range);
+        }
+    }
+
+    public void AddGoal(Vector3 goal)
+    {
+        if (goalSensor != null)
+        {
+            goalSensor.AddObservation(goal);
         }
     }
 }

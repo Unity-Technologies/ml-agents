@@ -15,12 +15,11 @@ from mlagents.trainers.torch.layers import (
     LSTM,
     LinearEncoder,
     HyperNetwork,
-    ConditionalEncoder,
+    ConditionalEncoder, HyperEncoder,
 )
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
-
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
 EncoderFunction = Callable[
@@ -44,7 +43,7 @@ class NetworkBody(nn.Module):
         encoded_act_size: int = 0,
     ):
         super().__init__()
-        self.conditioning_mode = ConditioningMode.HYPER
+        self.conditioning_mode = ConditioningMode.SOFT
         self.normalize = network_settings.normalize
         self.use_lstm = network_settings.memory is not None
         self.h_size = network_settings.hidden_units
@@ -79,12 +78,12 @@ class NetworkBody(nn.Module):
             ObservationType.GOAL in self.obs_types
             and self.conditioning_mode == ConditioningMode.HYPER
         ):
-            self.linear_encoder = HyperNetwork(
+            self.linear_encoder = HyperEncoder(
                 total_enc_size,
-                self.h_size,
                 total_goal_size,
                 network_settings.num_layers,
                 self.h_size,
+                num_hyper_layers=0
             )
         elif (
             ObservationType.GOAL in self.obs_types
@@ -478,7 +477,6 @@ class SharedActorCritic(SimpleActor, ActorCritic):
     ) -> Tuple[
         AgentAction, ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
     ]:
-
         encoding, memories = self.network_body(
             inputs, memories=memories, sequence_length=sequence_length
         )
