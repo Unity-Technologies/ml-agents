@@ -1,9 +1,10 @@
 import grpc
 from typing import Optional
 
+from multiprocessing import Pipe
 from sys import platform
 import socket
-from multiprocessing import Pipe
+import time
 from concurrent.futures import ThreadPoolExecutor
 
 from .communicator import Communicator, PollCallback
@@ -96,16 +97,15 @@ class RpcCommunicator(Communicator):
         This is used to detect the case when the environment dies without cleaning up the connection,
         so that we can stop sooner and raise a more appropriate error.
         """
-        wait_time_remaining = self.timeout_wait
+        deadline = time.monotonic() + self.timeout_wait
         callback_timeout_wait = self.timeout_wait // 10
-        while wait_time_remaining > 0:
+        while time.monotonic() < deadline:
             if self.unity_to_external.parent_conn.poll(callback_timeout_wait):
                 # Got an acknowledgment from the connection
                 return
             if poll_callback:
                 # Fire the callback - if it detects something wrong, it should raise an exception.
                 poll_callback()
-            wait_time_remaining -= callback_timeout_wait
 
         # Got this far without reading any data from the connection, so it must be dead.
         raise UnityTimeOutException(

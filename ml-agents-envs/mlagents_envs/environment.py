@@ -177,7 +177,7 @@ class UnityEnvironment(BaseEnv):
         # If true, this means the environment was successfully loaded
         self._loaded = False
         # The process that is started. If None, no process was started
-        self._proc1: Optional[subprocess.Popen] = None
+        self._process: Optional[subprocess.Popen] = None
         self._timeout_wait: int = timeout_wait
         self._communicator = self._get_communicator(worker_id, base_port, timeout_wait)
         self._worker_id = worker_id
@@ -194,7 +194,7 @@ class UnityEnvironment(BaseEnv):
             )
         if file_name is not None:
             try:
-                self._proc1 = env_utils.launch_executable(
+                self._process = env_utils.launch_executable(
                     file_name, self._executable_args()
                 )
             except UnityEnvironmentException:
@@ -388,11 +388,11 @@ class UnityEnvironment(BaseEnv):
         Check the status of the subprocess. If it has exited, raise a UnityEnvironmentException
         :return: None
         """
-        if not self._proc1:
+        if not self._process:
             return
-        poll_res = self._proc1.poll()
+        poll_res = self._process.poll()
         if poll_res is not None:
-            exc_msg = self._returncode_to_env_message(self._proc1.returncode)
+            exc_msg = self._returncode_to_env_message(self._process.returncode)
             raise UnityEnvironmentException(exc_msg)
 
     def close(self):
@@ -415,16 +415,16 @@ class UnityEnvironment(BaseEnv):
             timeout = self._timeout_wait
         self._loaded = False
         self._communicator.close()
-        if self._proc1 is not None:
+        if self._process is not None:
             # Wait a bit for the process to shutdown, but kill it if it takes too long
             try:
-                self._proc1.wait(timeout=timeout)
-                logger.info(self._returncode_to_env_message(self._proc1.returncode))
+                self._process.wait(timeout=timeout)
+                logger.info(self._returncode_to_env_message(self._process.returncode))
             except subprocess.TimeoutExpired:
                 logger.info("Environment timed out shutting down. Killing...")
-                self._proc1.kill()
+                self._process.kill()
             # Set to None so we don't try to close multiple times.
-            self._proc1 = None
+            self._process = None
 
     @timed
     def _generate_step_input(
