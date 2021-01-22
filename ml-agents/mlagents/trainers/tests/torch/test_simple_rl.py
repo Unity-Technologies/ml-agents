@@ -38,8 +38,10 @@ BRAIN_NAME = "1D"
 PPO_TORCH_CONFIG = ppo_dummy_config()
 SAC_TORCH_CONFIG = sac_dummy_config()
 
+# tests in this file won't be tested on GPU machine
+pytestmark = pytest.mark.check_environment_trains
 
-@pytest.mark.check_environment_trains
+
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_simple_ppo(action_sizes):
     env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_sizes)
@@ -47,7 +49,6 @@ def test_simple_ppo(action_sizes):
     check_environment_trains(env, {BRAIN_NAME: config})
 
 
-@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("action_sizes", [(0, 2), (2, 0)])
 def test_2d_ppo(action_sizes):
     env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_sizes, step_size=0.8)
@@ -60,7 +61,6 @@ def test_2d_ppo(action_sizes):
     check_environment_trains(env, {BRAIN_NAME: config})
 
 
-@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 @pytest.mark.parametrize("num_visual", [1, 2])
 def test_visual_ppo(num_visual, action_sizes):
@@ -78,7 +78,6 @@ def test_visual_ppo(num_visual, action_sizes):
     check_environment_trains(env, {BRAIN_NAME: config})
 
 
-@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("num_visual", [1, 2])
 @pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn", "match3"])
 def test_visual_advanced_ppo(vis_encode_type, num_visual):
@@ -107,7 +106,6 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.5)
 
 
-@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_recurrent_ppo(action_sizes):
     env = MemoryEnvironment([BRAIN_NAME], action_sizes=action_sizes)
@@ -130,7 +128,6 @@ def test_recurrent_ppo(action_sizes):
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
 
-@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_simple_sac(action_sizes):
     env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_sizes)
@@ -138,7 +135,6 @@ def test_simple_sac(action_sizes):
     check_environment_trains(env, {BRAIN_NAME: config})
 
 
-@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("action_sizes", [(0, 2), (2, 0)])
 def test_2d_sac(action_sizes):
     env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_sizes, step_size=0.8)
@@ -151,7 +147,6 @@ def test_2d_sac(action_sizes):
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.8)
 
 
-@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 @pytest.mark.parametrize("num_visual", [1, 2])
 def test_visual_sac(num_visual, action_sizes):
@@ -169,7 +164,6 @@ def test_visual_sac(num_visual, action_sizes):
     check_environment_trains(env, {BRAIN_NAME: config})
 
 
-@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("num_visual", [1, 2])
 @pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn", "match3"])
 def test_visual_advanced_sac(vis_encode_type, num_visual):
@@ -200,7 +194,6 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.5)
 
 
-@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_recurrent_sac(action_sizes):
     step_size = 0.2 if action_sizes == (0, 1) else 0.5
@@ -227,7 +220,6 @@ def test_recurrent_sac(action_sizes):
     check_environment_trains(env, {BRAIN_NAME: config}, training_seed=1213)
 
 
-@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_simple_ghost(action_sizes):
     env = SimpleEnvironment(
@@ -240,7 +232,6 @@ def test_simple_ghost(action_sizes):
     check_environment_trains(env, {BRAIN_NAME: config})
 
 
-@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_simple_ghost_fails(action_sizes):
     env = SimpleEnvironment(
@@ -262,7 +253,6 @@ def test_simple_ghost_fails(action_sizes):
     )
 
 
-@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_simple_asymm_ghost(action_sizes):
     # Make opponent for asymmetric case
@@ -280,7 +270,6 @@ def test_simple_asymm_ghost(action_sizes):
     check_environment_trains(env, {BRAIN_NAME: config, brain_name_opp: config})
 
 
-@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_simple_asymm_ghost_fails(action_sizes):
     # Make opponent for asymmetric case
@@ -342,7 +331,6 @@ def simple_record(tmpdir_factory):
     return record_demo
 
 
-@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 @pytest.mark.parametrize("trainer_config", [PPO_TORCH_CONFIG, SAC_TORCH_CONFIG])
 def test_gail(simple_record, action_sizes, trainer_config):
@@ -361,7 +349,6 @@ def test_gail(simple_record, action_sizes, trainer_config):
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
 
-@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_gail_visual_ppo(simple_record, action_sizes):
     demo_path = simple_record(action_sizes, num_visual=1, num_vector=0)
@@ -387,7 +374,6 @@ def test_gail_visual_ppo(simple_record, action_sizes):
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
 
-@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_gail_visual_sac(simple_record, action_sizes):
     demo_path = simple_record(action_sizes, num_visual=1, num_vector=0)
