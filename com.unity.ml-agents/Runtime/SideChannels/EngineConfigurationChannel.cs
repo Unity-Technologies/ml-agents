@@ -9,7 +9,7 @@ namespace Unity.MLAgents.SideChannels
     /// </summary>
     internal class EngineConfigurationChannel : SideChannel
     {
-        enum ConfigurationType : int
+        internal enum ConfigurationType : int
         {
             ScreenResolution = 0,
             QualityLevel = 1,
@@ -46,7 +46,15 @@ namespace Unity.MLAgents.SideChannels
                     break;
                 case ConfigurationType.TimeScale:
                     var timeScale = msg.ReadFloat32();
-                    timeScale = Mathf.Clamp(timeScale, 1, 100);
+
+                    // There's an upper limit for the timeScale in the editor (but not in the player)
+                    // Always ensure that timeScale >= 1 also,
+#if UNITY_EDITOR
+                    const float maxTimeScale = 100f;
+#else
+                    const float maxTimeScale = float.PositiveInfinity;
+#endif
+                    timeScale = Mathf.Clamp(timeScale, 1, maxTimeScale);
                     Time.timeScale = timeScale;
                     break;
                 case ConfigurationType.TargetFrameRate:

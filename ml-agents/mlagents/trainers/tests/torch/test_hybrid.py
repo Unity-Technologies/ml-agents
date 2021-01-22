@@ -24,7 +24,10 @@ def test_hybrid_ppo(action_size):
     env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_size, step_size=0.8)
     new_network_settings = attr.evolve(PPO_TORCH_CONFIG.network_settings)
     new_hyperparams = attr.evolve(
-        PPO_TORCH_CONFIG.hyperparameters, batch_size=64, buffer_size=1024
+        PPO_TORCH_CONFIG.hyperparameters,
+        batch_size=64,
+        buffer_size=1024,
+        learning_rate=1e-3,
     )
     config = attr.evolve(
         PPO_TORCH_CONFIG,
@@ -32,9 +35,7 @@ def test_hybrid_ppo(action_size):
         network_settings=new_network_settings,
         max_steps=10000,
     )
-    check_environment_trains(
-        env, {BRAIN_NAME: config}, success_threshold=0.9, training_seed=1212
-    )
+    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
 
 @pytest.mark.check_environment_trains
