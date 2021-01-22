@@ -245,7 +245,7 @@ def test_subprocess_env_raises_errors(num_envs):
         # Sleep momentarily to allow time for the EnvManager to be waiting for the
         # subprocess response.  We won't be able to capture failures from the subprocess
         # that cause it to close the pipe before we can send the first message.
-        time.sleep(1)
+        time.sleep(0.5)
         raise UnityEnvironmentException()
 
     env_manager = SubprocessEnvManager(
