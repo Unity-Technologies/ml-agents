@@ -135,7 +135,7 @@ class TorchOptimizer(Optimizer):
         if done:
             for k in next_value_estimates:
                 if not self.reward_signals[k].ignore_done:
-                    next_value_estimates[k] = np.array([0])
+                    next_value_estimates[k][-1] = 0.0
 
         return (
             value_estimates,

@@ -149,6 +149,7 @@ class AgentBuffer(dict):
             if key not in self.keys():
                 return False
             if (length is not None) and (length != len(self[key])):
+                print(length, key, len(self[key]))
                 return False
             length = len(self[key])
         return True
