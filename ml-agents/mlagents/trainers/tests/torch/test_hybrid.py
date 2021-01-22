@@ -65,7 +65,7 @@ def test_hybrid_recurrent_ppo():
         PPO_TORCH_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_network_settings,
-        max_steps=4000,
+        max_steps=5000,
     )
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 

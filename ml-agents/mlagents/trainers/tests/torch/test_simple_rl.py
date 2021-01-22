@@ -77,13 +77,14 @@ def test_visual_ppo(num_visual, action_sizes):
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 @pytest.mark.parametrize("num_var_len", [1, 2])
-@pytest.mark.parametrize("num_visual", [0, 1])
-def test_var_len_obs_ppo(num_visual, num_var_len, action_sizes):
+@pytest.mark.parametrize("num_vector", [0, 1])
+@pytest.mark.parametrize("num_vis", [0, 1])
+def test_var_len_obs_ppo(num_vis, num_vector, num_var_len, action_sizes):
     env = SimpleEnvironment(
         [BRAIN_NAME],
         action_sizes=action_sizes,
-        num_visual=num_visual,
-        num_vector=0,
+        num_visual=num_vis,
+        num_vector=num_vector,
         num_var_len=num_var_len,
         step_size=0.2,
     )
