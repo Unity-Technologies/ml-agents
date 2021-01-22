@@ -91,20 +91,18 @@ class AgentAction(NamedTuple):
         return AgentAction(continuous, discrete)
 
     @staticmethod
-    def from_team_dict(buff: Dict[str, np.ndarray]) -> List["AgentAction"]:
-        """
-        A static method that accesses continuous and discrete action fields in an AgentBuffer
-        and constructs the corresponding AgentAction from the retrieved np arrays.
-        """
+    def _from_team_dict(
+        buff: Dict[str, np.ndarray], cont_action_key: str, disc_action_key: str
+    ):
         continuous_tensors: List[torch.Tensor] = []
         discrete_tensors: List[torch.Tensor] = []  # type: ignore
-        if "team_continuous_action" in buff:
+        if cont_action_key in buff:
             continuous_tensors = AgentAction._padded_time_to_batch(
-                buff["team_continuous_action"]
+                buff[cont_action_key]
             )
-        if "team_discrete_action" in buff:
+        if disc_action_key in buff:
             discrete_tensors = AgentAction._padded_time_to_batch(
-                buff["team_discrete_action"], dtype=torch.long
+                buff[disc_action_key], dtype=torch.long
             )
 
         actions_list = []
@@ -115,6 +113,26 @@ class AgentAction(NamedTuple):
                 _disc = [_disc[..., i] for i in range(_disc.shape[-1])]
             actions_list.append(AgentAction(_cont, _disc))
         return actions_list
+
+    @staticmethod
+    def from_team_dict(buff: Dict[str, np.ndarray]) -> List["AgentAction"]:
+        """
+        A static method that accesses continuous and discrete action fields in an AgentBuffer
+        and constructs the corresponding AgentAction from the retrieved np arrays.
+        """
+        return AgentAction._from_team_dict(
+            buff, "team_continuous_action", "team_discrete_action"
+        )
+
+    @staticmethod
+    def from_team_dict_next(buff: Dict[str, np.ndarray]) -> List["AgentAction"]:
+        """
+        A static method that accesses next continuous and discrete action fields in an AgentBuffer
+        and constructs the corresponding AgentAction from the retrieved np arrays.
+        """
+        return AgentAction._from_team_dict(
+            buff, "team_next_continuous_action", "team_next_discrete_action"
+        )
 
     def to_flat(self, discrete_branches: List[int]) -> torch.Tensor:
         discrete_oh = ModelUtils.actions_to_onehot(

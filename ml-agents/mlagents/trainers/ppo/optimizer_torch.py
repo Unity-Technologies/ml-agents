@@ -175,6 +175,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
         actions = AgentAction.from_dict(batch)
         team_actions = AgentAction.from_team_dict(batch)
+        next_team_actions = AgentAction.from_team_dict_next(batch)
 
         memories = [
             ModelUtils.list_to_tensor(batch["memory"][i])
