@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -9,12 +10,13 @@ namespace Unity.MLAgents.Tests.Actuators
     [TestFixture]
     public class VectorActuatorTests
     {
-        class TestActionReceiver : IActionReceiver
+        class TestActionReceiver : IActionReceiver, IHeuristicProvider
         {
             public ActionBuffers LastActionBuffers;
             public int Branch;
             public IList<int> Mask;
             public ActionSpec ActionSpec { get; }
+            public bool HeuristicCalled;
 
             public void OnActionReceived(ActionBuffers actionBuffers)
             {
@@ -24,6 +26,11 @@ namespace Unity.MLAgents.Tests.Actuators
             public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
             {
                 actionMask.WriteMask(Branch, Mask);
+            }
+
+            public void Heuristic(in ActionBuffers actionBuffersOut)
+            {
+                HeuristicCalled = true;
             }
         }
 
@@ -92,6 +99,16 @@ namespace Unity.MLAgents.Tests.Actuators
             va.WriteDiscreteActionMask(bdam);
 
             Assert.IsTrue(groundTruthMask.SequenceEqual(bdam.GetMask()));
+        }
+
+        [Test]
+        public void TestHeuristic()
+        {
+            var ar = new TestActionReceiver();
+            var va = new VectorActuator(ar, ActionSpec.MakeDiscrete(1, 2, 3), "name");
+
+            va.Heuristic(new ActionBuffers(Array.Empty<float>(), va.ActionSpec.BranchSizes));
+            Assert.IsTrue(ar.HeuristicCalled);
         }
     }
 }
