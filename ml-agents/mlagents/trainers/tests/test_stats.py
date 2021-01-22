@@ -80,6 +80,7 @@ def test_tensorboard_writer(mock_summary):
             std=1.0,
             num=1,
             sum=1.0,
+            full_dist=[0.0],
             aggregation_method=StatsAggregationMethod.AVERAGE,
         )
         tb_writer.write_stats("category1", {"key1": statssummary1}, 10)
@@ -109,6 +110,7 @@ def test_tensorboard_writer_clear(tmp_path):
         std=1.0,
         num=1,
         sum=1.0,
+        full_dist=[0.0],
         aggregation_method=StatsAggregationMethod.AVERAGE,
     )
     tb_writer.write_stats("category1", {"key1": statssummary1}, 10)
@@ -147,6 +149,7 @@ class ConsoleWriterTest(unittest.TestCase):
                 std=1.0,
                 num=1,
                 sum=1.0,
+                full_dist=[1.0],
                 aggregation_method=StatsAggregationMethod.AVERAGE,
             )
             console_writer.write_stats(
@@ -162,6 +165,7 @@ class ConsoleWriterTest(unittest.TestCase):
                 std=0.0,
                 num=1,
                 sum=0.0,
+                full_dist=[0.0],
                 aggregation_method=StatsAggregationMethod.AVERAGE,
             )
             console_writer.write_stats(
@@ -195,6 +199,7 @@ class ConsoleWriterTest(unittest.TestCase):
                 std=1.0,
                 num=1,
                 sum=1.0,
+                full_dist=[1.0],
                 aggregation_method=StatsAggregationMethod.AVERAGE,
             )
             console_writer.write_stats(

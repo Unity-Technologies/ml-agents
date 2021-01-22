@@ -279,6 +279,7 @@ def test_agent_manager_stats():
             std=mock.ANY,
             num=2,
             sum=4.0,
+            full_dist=mock.ANY,
             aggregation_method=StatsAggregationMethod.AVERAGE,
         ),
         "most_recent": StatsSummary(
@@ -286,6 +287,7 @@ def test_agent_manager_stats():
             std=0.0,
             num=1,
             sum=4.0,
+            full_dist=mock.ANY,
             aggregation_method=StatsAggregationMethod.MOST_RECENT,
         ),
         "summed": StatsSummary(
@@ -293,6 +295,7 @@ def test_agent_manager_stats():
             std=mock.ANY,
             num=2,
             sum=4.2,
+            full_dist=mock.ANY,
             aggregation_method=StatsAggregationMethod.SUM,
         ),
     }

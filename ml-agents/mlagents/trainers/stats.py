@@ -45,14 +45,12 @@ class StatsSummary(NamedTuple):
     std: float
     num: int
     sum: float
-    full_dist: np.array
+    full_dist: List[float]
     aggregation_method: StatsAggregationMethod
 
     @staticmethod
     def empty() -> "StatsSummary":
-        return StatsSummary(
-            0.0, 0.0, 0, 0.0, np.zeros(1), StatsAggregationMethod.AVERAGE
-        )
+        return StatsSummary(0.0, 0.0, 0, 0.0, [0.0], StatsAggregationMethod.AVERAGE)
 
     @property
     def aggregated_value(self):
@@ -196,7 +194,7 @@ class TensorboardWriter(StatsWriter):
             )
             if key == "Environment/Cumulative Reward":
                 self.summary_writers[category].add_histogram(
-                    f"{key}_hist", value.full_dist, step
+                    f"{key}_hist", np.array(value.full_dist), step
                 )
             self.summary_writers[category].flush()
 
@@ -332,15 +330,11 @@ class StatsReporter:
         if len(stat_values) == 0:
             return StatsSummary.empty()
 
-        if key == "Environment/Cumulative Reward":
-            full = np.array(stat_values)
-        else:
-            full = np.zeros(1)
         return StatsSummary(
             mean=np.mean(stat_values),
             std=np.std(stat_values),
             num=len(stat_values),
             sum=np.sum(stat_values),
-            full_dist=full,
+            full_dist=stat_values,
             aggregation_method=StatsReporter.stats_aggregation[self.category][key],
         )
