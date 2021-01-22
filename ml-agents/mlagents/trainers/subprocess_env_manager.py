@@ -310,8 +310,11 @@ class SubprocessEnvManager(EnvManager):
 
     @property
     def training_behaviors(self) -> Dict[BehaviorName, BehaviorSpec]:
-        self.env_workers[0].send(EnvironmentCommand.BEHAVIOR_SPECS)
-        return self.env_workers[0].recv().payload
+        result: Dict[BehaviorName, BehaviorSpec] = {}
+        for worker in self.env_workers:
+            worker.send(EnvironmentCommand.BEHAVIOR_SPECS)
+            result.update(worker.recv().payload)
+        return result
 
     def close(self) -> None:
         logger.debug("SubprocessEnvManager closing.")

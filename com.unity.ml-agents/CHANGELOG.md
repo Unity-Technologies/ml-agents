@@ -32,6 +32,7 @@ removed when training with a player. The Editor still requires it to be clamped 
 - Fix a compile warning about using an obsolete enum in `GrpcExtensions.cs`. (#4812)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed a bug that would cause an exception when `RunOptions` was deserialized via `pickle`. (#4842)
+- Fixed a bug that can cause a crash if a behavior can appear during training in multi-environment training. (#4872)
 - Fixed the computation of entropy for continuous actions. (#4869)
 
 
