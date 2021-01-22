@@ -24,15 +24,21 @@ removed when training with a player. The Editor still requires it to be clamped 
   Updated the Basic example and the Match3 Example to use Actuators.
   Changed the namespace and file names of classes in com.unity.ml-agents.extensions. (#4849)
 
-
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 - Fix a compile warning about using an obsolete enum in `GrpcExtensions.cs`. (#4812)
+- CameraSensor now logs an error if the GraphicsDevice is null. (#4880)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed a bug that would cause an exception when `RunOptions` was deserialized via `pickle`. (#4842)
 - Fixed the computation of entropy for continuous actions. (#4869)
+- Fixed a bug that would cause `UnityEnvironment` to wait the full timeout
+  period and report a misleading error message if the executable crashed
+  without closing the connection. It now periodically checks the process status
+  while waiting for a connection, and raises a better error message if it crashes. (#4880)
+- Passing a `-logfile` option in the `--env-args` option to `mlagents-learn` is
+  no longer overwritten. (#4880)
 
 
 ## [1.7.2-preview] - 2020-12-22
