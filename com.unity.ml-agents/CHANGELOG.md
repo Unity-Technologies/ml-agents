@@ -26,6 +26,7 @@ removed when training with a player. The Editor still requires it to be clamped 
 
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Tensorboard now logs the Environment Reward as both a scalar and a histogram. (#4878)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
