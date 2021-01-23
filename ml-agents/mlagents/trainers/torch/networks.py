@@ -699,6 +699,10 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         self.critic = CentralizedValueNetwork(
             stream_names, sensor_specs, network_settings, action_spec=action_spec
         )
+        self.target = CentralizedValueNetwork(
+            stream_names, sensor_specs, network_settings, action_spec=action_spec
+        )
+
 
     @property
     def memory_size(self) -> int:
@@ -714,6 +718,46 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             critic_mem = None
             actor_mem = None
         return actor_mem, critic_mem
+
+    def target_critic_pass(
+        self,
+        inputs: List[torch.Tensor],
+        actions: AgentAction,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+        team_obs: List[List[torch.Tensor]] = None,
+        team_act: List[AgentAction] = None,
+    ) -> Tuple[Dict[str, torch.Tensor], Dict[str, torch.Tensor], torch.Tensor]:
+        actor_mem, critic_mem = self._get_actor_critic_mem(memories)
+
+        all_obs = [inputs]
+        if team_obs is not None and team_obs:
+            all_obs.extend(team_obs)
+        all_acts = [actions]
+        if team_act is not None and team_act:
+            all_acts.extend(team_act)
+
+        baseline_outputs, _ = self.target.baseline(
+            inputs,
+            team_obs,
+            team_act,
+            memories=critic_mem,
+            sequence_length=sequence_length,
+        )
+
+        value_outputs, critic_mem_out = self.target.q_net(
+            all_obs, all_acts, memories=critic_mem, sequence_length=sequence_length
+        )
+
+        # if mar_value_outputs is None:
+        #    mar_value_outputs = value_outputs
+
+        if actor_mem is not None:
+            # Make memories with the actor mem unchanged
+            memories_out = torch.cat([actor_mem, critic_mem_out], dim=-1)
+        else:
+            memories_out = None
+        return value_outputs, baseline_outputs, memories_out
 
     def critic_pass(
         self,

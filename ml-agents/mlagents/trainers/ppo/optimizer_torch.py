@@ -14,6 +14,8 @@ from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.trajectory import ObsUtil, TeamObsUtil
 
+from mlagents.trainers.torch.networks import CentralizedValueNetwork
+
 
 class TorchPPOOptimizer(TorchOptimizer):
     def __init__(self, policy: TorchPolicy, trainer_settings: TrainerSettings):
@@ -60,6 +62,11 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         self.stream_names = list(self.reward_signals.keys())
 
+        ModelUtils.soft_update(
+            self.policy.actor_critic.critic, self.policy.actor_critic.target, 1.0
+        )
+
+
     def ppo_value_loss(
         self,
         values: Dict[str, torch.Tensor],
@@ -78,15 +85,16 @@ class TorchPPOOptimizer(TorchOptimizer):
         """
         value_losses = []
         for name, head in values.items():
-            old_val_tensor = old_values[name]
-            returns_tensor = returns[name] + 0.99 * old_val_tensor
-            # clipped_value_estimate = old_val_tensor + torch.clamp(
+            #old_val_tensor = old_values[name]
+            returns_tensor = returns[name]# + 0.99 * old_val_tensor
+            #clipped_value_estimate = old_val_tensor + torch.clamp(
             #    head - old_val_tensor, -1 * epsilon, epsilon
-            # )
-            value_loss = (returns_tensor - head) ** 2
-            # v_opt_a = (returns_tensor - head) ** 2
-            # v_opt_b = (returns_tensor - clipped_value_estimate) ** 2
-            # value_loss = ModelUtils.masked_mean(torch.max(v_opt_a, v_opt_b), loss_masks)
+            #)
+            #value_loss = (returns_tensor - head) ** 2
+            v_opt_a = (returns_tensor - head) ** 2
+            #v_opt_b = (returns_tensor - clipped_value_estimate) ** 2
+            #value_loss = ModelUtils.masked_mean(torch.max(v_opt_a, v_opt_b), loss_masks)
+            value_loss = ModelUtils.masked_mean(v_opt_a, loss_masks)
             value_losses.append(value_loss)
         value_loss = torch.mean(torch.stack(value_losses))
         return value_loss
@@ -130,7 +138,8 @@ class TorchPPOOptimizer(TorchOptimizer):
         decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
         decay_eps = self.decay_epsilon.get_value(self.policy.get_current_step())
         decay_bet = self.decay_beta.get_value(self.policy.get_current_step())
-        returns = {}
+        returns_q = {}
+        returns_b = {}
         old_values = {}
         old_marg_values = {}
         for name in self.reward_signals:
@@ -140,27 +149,40 @@ class TorchPPOOptimizer(TorchOptimizer):
             old_marg_values[name] = ModelUtils.list_to_tensor(
                 batch[f"{name}_marginalized_value_estimates_next"]
             )
-            returns[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns"])
+            returns_q[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns_q"])
+            returns_b[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns_b"])
+#
+#        padded_team_rewards = list(
+#            map(
+#                lambda x: np.asanyarray(x),
+#                itertools.zip_longest(*batch["team_rewards"], fillvalue=np.nan),
+#            )
+#        )
+        #padded_team_rewards = torch.tensor(
+        #    np.array(
+        #        list(itertools.zip_longest(*batch["team_rewards"], fillvalue=np.nan))
+        #    )
+        #)
+        #padded_team_rewards = np.array(
+        #        list(itertools.zip_longest(*batch["team_rewards"], fillvalue=np.nan))
+        #    )
 
-        padded_team_rewards = list(
-            map(
-                lambda x: np.asanyarray(x),
-                itertools.zip_longest(*batch["team_rewards"], fillvalue=np.nan),
-            )
-        )
-        padded_team_rewards = torch.tensor(
-            np.array(
-                list(itertools.zip_longest(*batch["team_rewards"], fillvalue=np.nan))
-            )
-        )
-        # Average team rewards
-        if "extrinsic" in returns:
-            all_rewards = torch.cat(
-                [torch.unsqueeze(returns["extrinsic"], 0), padded_team_rewards], dim=0
-            )
-            returns["extrinsic"] = torch.mean(
-                all_rewards[~torch.isnan(all_rewards)], dim=0
-            )
+        #all_rewards = np.concatenate((np.expand_dims(batch["environment_rewards"], axis=0), padded_team_rewards), axis=0)
+        #average_team_rewards = batch["average_team_reward"]
+        #returns["extrinsic"] = torch.tensor(average_team_rewards)
+
+        ## Average team rewards
+        #if "extrinsic" in returns:
+        #    env_rewards = ModelUtils.list_to_tensor(batch["environment_rewards"])
+        #    all_rewards = torch.cat(
+        #        [torch.unsqueeze(env_rewards, 0), padded_team_rewards], dim=0
+        #    )
+        #    returns["extrinsic"] = torch.mean(
+        #        all_rewards[~torch.isnan(all_rewards)], dim=0
+        #    )
+        #    print(all_rewards[~torch.isnan(all_rewards)].shape)
+        #    print(all_rewards.shape)
+
 
         n_obs = len(self.policy.behavior_spec.sensor_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
@@ -198,10 +220,10 @@ class TorchPPOOptimizer(TorchOptimizer):
         log_probs = log_probs.flatten()
         loss_masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.bool)
         value_loss = self.ppo_value_loss(
-            values, old_values, returns, decay_eps, loss_masks
+            values, old_values, returns_q, decay_eps, loss_masks
         )
         marg_value_loss = self.ppo_value_loss(
-            marginalized_vals, old_marg_values, returns, decay_eps, loss_masks
+            marginalized_vals, old_marg_values, returns_b, decay_eps, loss_masks
         )
         policy_loss = self.ppo_policy_loss(
             ModelUtils.list_to_tensor(batch["advantages"]),
@@ -221,11 +243,17 @@ class TorchPPOOptimizer(TorchOptimizer):
         loss.backward()
 
         self.optimizer.step()
+
+        ModelUtils.soft_update(
+            self.policy.actor_critic.critic, self.policy.actor_critic.target, .001
+        )
+
         update_stats = {
             # NOTE: abs() is not technically correct, but matches the behavior in TensorFlow.
             # TODO: After PyTorch is default, change to something more correct.
             "Losses/Policy Loss": torch.abs(policy_loss).item(),
             "Losses/Value Loss": value_loss.item(),
+            "Losses/Baseline Value Loss": marg_value_loss.item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/Epsilon": decay_eps,
             "Policy/Beta": decay_bet,

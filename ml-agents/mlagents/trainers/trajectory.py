@@ -204,6 +204,8 @@ class Trajectory(NamedTuple):
                 teammate_discrete_actions
             )
             agent_buffer_trajectory["team_rewards"].append(teammate_rewards)
+            team_reward = teammate_rewards + [exp.reward]
+            agent_buffer_trajectory["average_team_reward"].append(sum(team_reward)/len(team_reward))
 
             # Next actions
             teammate_cont_next_actions = []

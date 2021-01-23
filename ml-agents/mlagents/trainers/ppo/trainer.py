@@ -124,18 +124,27 @@ class PPOTrainer(RLTrainer):
             m_value_estimates = agent_buffer_trajectory[
                 f"{name}_marginalized_value_estimates"
             ].get_batch()
+            next_value_estimates = agent_buffer_trajectory[
+                f"{name}_value_estimates_next"
+            ].get_batch()
+            next_m_value_estimates = agent_buffer_trajectory[
+                f"{name}_marginalized_value_estimates_next"
+            ].get_batch()
 
-            local_advantage = get_team_gae(
+            returns_q, returns_b = get_team_returns(
                 rewards=local_rewards,
-                value_estimates=local_value_estimates,
-                marginalized_value_estimates=m_value_estimates,
+                next_value_estimates=next_value_estimates,
+                next_marginalized_value_estimates=next_m_value_estimates,
                 value_next=bootstrap_value,
                 gamma=self.optimizer.reward_signals[name].gamma,
                 lambd=self.hyperparameters.lambd,
             )
+            local_advantage = np.array(local_value_estimates) - np.array(m_value_estimates)
             local_return = local_advantage + local_value_estimates
             # This is later use as target for the different value estimates
-            agent_buffer_trajectory[f"{name}_returns"].set(local_return)
+            #agent_buffer_trajectory[f"{name}_returns"].set(local_return)
+            agent_buffer_trajectory[f"{name}_returns_q"].set(returns_q)
+            agent_buffer_trajectory[f"{name}_returns_b"].set(returns_b)
             agent_buffer_trajectory[f"{name}_advantage"].set(local_advantage)
             tmp_advantages.append(local_advantage)
             tmp_returns.append(local_return)
@@ -288,6 +297,12 @@ def discount_rewards(r, gamma=0.99, value_next=0.0):
         discounted_r[t] = running_add
     return discounted_r
 
+def lambd_return(r, next_value_estimates, gamma=0.99, lambd=0.8, value_next=0.0):
+    returns = np.zeros_like(r)
+    returns[-1] = r[-1] + gamma * next_value_estimates[-1]
+    for t in reversed(range(0, r.size - 1)):
+        returns[t] = gamma * lambd * returns[t+1] +  (1 - lambd) * (r[t] + gamma * next_value_estimates[t]) 
+    return returns
 
 def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
     """
@@ -305,13 +320,13 @@ def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
     return advantage
 
 
-def get_team_gae(
+def get_team_returns(
     rewards,
-    value_estimates,
-    marginalized_value_estimates,
+    next_value_estimates,
+    next_marginalized_value_estimates,
     value_next=0.0,
     gamma=0.99,
-    lambd=0.95,
+    lambd=0.8,
 ):
     """
     Computes generalized advantage estimate for use in updating policy.
@@ -322,5 +337,7 @@ def get_team_gae(
     :param lambd: GAE weighing factor.
     :return: list of advantage estimates for time-steps t to T.
     """
-    advantage = np.array(value_estimates) - np.array(marginalized_value_estimates)
-    return advantage
+    rewards = np.array(rewards)
+    returns_q = lambd_return(rewards, next_value_estimates, gamma=gamma, lambd=lambd)
+    returns_b = lambd_return(rewards, next_marginalized_value_estimates, gamma=gamma, lambd=lambd)
+    return returns_q, returns_b
