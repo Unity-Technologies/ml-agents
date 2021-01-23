@@ -213,6 +213,11 @@ class Trajectory(NamedTuple):
                 for teammate_status in next_exp.teammate_status:
                     teammate_cont_next_actions.append(teammate_status.action.continuous)
                     teammate_disc_next_actions.append(teammate_status.action.discrete)
+            else:
+                for teammate_status in exp.teammate_status:
+                    teammate_cont_next_actions.append(teammate_status.action.continuous)
+                    teammate_disc_next_actions.append(teammate_status.action.discrete)
+
             agent_buffer_trajectory["team_next_continuous_action"].append(
                 teammate_cont_next_actions
             )
