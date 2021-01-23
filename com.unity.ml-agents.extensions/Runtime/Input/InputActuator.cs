@@ -24,14 +24,14 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 
         static Dictionary<InputAction, ActionSpec> s_InputActionToActionSpec = new Dictionary<InputAction, ActionSpec>();
 
-        PlayerInput m_playerInput;
+        PlayerInput m_PlayerInput;
         public InputActuator(PlayerInput playerInput)
         {
             Name = "Input System Actuator";
             Debug.Assert(playerInput != null,
                 "PlayerInput component is required to use the InputSystemActuator");
-            m_playerInput = playerInput;
-            ActionSpec = GenerateActionSpecFromAsset(m_playerInput);
+            m_PlayerInput = playerInput;
+            ActionSpec = GenerateActionSpecFromAsset(m_PlayerInput);
         }
 
         static ActionSpec GenerateActionSpecFromAsset(PlayerInput playerInput)
@@ -87,7 +87,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             //  Write to actionBuffers
             int continuousOffset = 0;
             int discreteOffset = 0;
-            foreach (var action in GetDefaultActionMap(m_playerInput))
+            foreach (var action in GetDefaultActionMap(m_PlayerInput))
             {
                 s_HeuristicWriters[GetInputActionValueType(action)].WriteToHeuristic(action, actionBuffersOut, continuousOffset, discreteOffset);
                 var spec = s_InputActionToActionSpec[action];
