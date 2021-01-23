@@ -3065,7 +3065,6 @@ GameObject:
   - component: {fileID: 261815317}
   - component: {fileID: 261815316}
   - component: {fileID: 261815315}
-  - component: {fileID: 2416809913911815188}
   m_Layer: 0
   m_Name: Agent (1)
   m_TagString: agent
@@ -3440,7 +3439,6 @@ GameObject:
   - component: {fileID: 265967285}
   - component: {fileID: 265967284}
   - component: {fileID: 265967283}
-  - component: {fileID: 265967282}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -3465,30 +3463,6 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   useVectorObs: 1
---- !u!114 &265967282
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 265967280}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df0f8be9a37d6486498061e2cbc4cd94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RootBody: {fileID: 265967289}
-  VirtualRoot: {fileID: 265967280}
-  Settings:
-    UseModelSpaceTranslations: 0
-    UseModelSpaceRotations: 0
-    UseLocalSpaceTranslations: 0
-    UseLocalSpaceRotations: 0
-    UseModelSpaceLinearVelocity: 1
-    UseLocalSpaceLinearVelocity: 0
-    UseJointPositionsAndAngles: 0
-    UseJointForces: 0
-  sensorName: RBSensor
 --- !u!114 &265967283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4419,7 +4393,6 @@ GameObject:
   - component: {fileID: 344861067}
   - component: {fileID: 344861066}
   - component: {fileID: 344861065}
-  - component: {fileID: 344861064}
   m_Layer: 0
   m_Name: Agent (1)
   m_TagString: agent
@@ -4444,30 +4417,6 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   useVectorObs: 1
---- !u!114 &344861064
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 344861062}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df0f8be9a37d6486498061e2cbc4cd94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RootBody: {fileID: 344861071}
-  VirtualRoot: {fileID: 344861062}
-  Settings:
-    UseModelSpaceTranslations: 0
-    UseModelSpaceRotations: 0
-    UseLocalSpaceTranslations: 0
-    UseLocalSpaceRotations: 0
-    UseModelSpaceLinearVelocity: 1
-    UseLocalSpaceLinearVelocity: 0
-    UseJointPositionsAndAngles: 0
-    UseJointForces: 0
-  sensorName: RBSensor
 --- !u!114 &344861065
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7430,7 +7379,6 @@ GameObject:
   - component: {fileID: 557898667}
   - component: {fileID: 557898666}
   - component: {fileID: 557898665}
-  - component: {fileID: 557898664}
   m_Layer: 0
   m_Name: Agent (2)
   m_TagString: agent
@@ -7455,30 +7403,6 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   useVectorObs: 1
---- !u!114 &557898664
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 557898662}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df0f8be9a37d6486498061e2cbc4cd94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RootBody: {fileID: 557898671}
-  VirtualRoot: {fileID: 557898662}
-  Settings:
-    UseModelSpaceTranslations: 0
-    UseModelSpaceRotations: 0
-    UseLocalSpaceTranslations: 0
-    UseLocalSpaceRotations: 0
-    UseModelSpaceLinearVelocity: 1
-    UseLocalSpaceLinearVelocity: 0
-    UseJointPositionsAndAngles: 0
-    UseJointForces: 0
-  sensorName: RBSensor
 --- !u!114 &557898665
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8281,7 +8205,6 @@ GameObject:
   - component: {fileID: 607937520}
   - component: {fileID: 607937519}
   - component: {fileID: 607937518}
-  - component: {fileID: 607937517}
   m_Layer: 0
   m_Name: Agent (1)
   m_TagString: agent
@@ -8306,30 +8229,6 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   useVectorObs: 1
---- !u!114 &607937517
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 607937515}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df0f8be9a37d6486498061e2cbc4cd94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RootBody: {fileID: 607937524}
-  VirtualRoot: {fileID: 607937515}
-  Settings:
-    UseModelSpaceTranslations: 0
-    UseModelSpaceRotations: 0
-    UseLocalSpaceTranslations: 0
-    UseLocalSpaceRotations: 0
-    UseModelSpaceLinearVelocity: 1
-    UseLocalSpaceLinearVelocity: 0
-    UseJointPositionsAndAngles: 0
-    UseJointForces: 0
-  sensorName: RBSensor
 --- !u!114 &607937518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9349,7 +9248,6 @@ GameObject:
   - component: {fileID: 742698651}
   - component: {fileID: 742698650}
   - component: {fileID: 742698649}
-  - component: {fileID: 742698648}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -9374,30 +9272,6 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   useVectorObs: 1
---- !u!114 &742698648
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 742698646}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df0f8be9a37d6486498061e2cbc4cd94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RootBody: {fileID: 742698655}
-  VirtualRoot: {fileID: 742698646}
-  Settings:
-    UseModelSpaceTranslations: 0
-    UseModelSpaceRotations: 0
-    UseLocalSpaceTranslations: 0
-    UseLocalSpaceRotations: 0
-    UseModelSpaceLinearVelocity: 1
-    UseLocalSpaceLinearVelocity: 0
-    UseJointPositionsAndAngles: 0
-    UseJointForces: 0
-  sensorName: RBSensor
 --- !u!114 &742698649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10114,7 +9988,6 @@ GameObject:
   - component: {fileID: 816508916}
   - component: {fileID: 816508915}
   - component: {fileID: 816508914}
-  - component: {fileID: 816508913}
   m_Layer: 0
   m_Name: Agent (2)
   m_TagString: agent
@@ -10139,30 +10012,6 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   useVectorObs: 1
---- !u!114 &816508913
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 816508911}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df0f8be9a37d6486498061e2cbc4cd94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RootBody: {fileID: 816508920}
-  VirtualRoot: {fileID: 816508911}
-  Settings:
-    UseModelSpaceTranslations: 0
-    UseModelSpaceRotations: 0
-    UseLocalSpaceTranslations: 0
-    UseLocalSpaceRotations: 0
-    UseModelSpaceLinearVelocity: 1
-    UseLocalSpaceLinearVelocity: 0
-    UseJointPositionsAndAngles: 0
-    UseJointForces: 0
-  sensorName: RBSensor
 --- !u!114 &816508914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18276,7 +18125,6 @@ GameObject:
   - component: {fileID: 1504325952}
   - component: {fileID: 1504325951}
   - component: {fileID: 1504325950}
-  - component: {fileID: 1504325949}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -18301,30 +18149,6 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   useVectorObs: 1
---- !u!114 &1504325949
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1504325947}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df0f8be9a37d6486498061e2cbc4cd94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RootBody: {fileID: 1504325956}
-  VirtualRoot: {fileID: 1504325947}
-  Settings:
-    UseModelSpaceTranslations: 0
-    UseModelSpaceRotations: 0
-    UseLocalSpaceTranslations: 0
-    UseLocalSpaceRotations: 0
-    UseModelSpaceLinearVelocity: 1
-    UseLocalSpaceLinearVelocity: 0
-    UseJointPositionsAndAngles: 0
-    UseJointForces: 0
-  sensorName: RBSensor
 --- !u!114 &1504325950
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20796,7 +20620,6 @@ GameObject:
   - component: {fileID: 1614947137}
   - component: {fileID: 1614947136}
   - component: {fileID: 1614947135}
-  - component: {fileID: 1614947134}
   m_Layer: 0
   m_Name: Agent (2)
   m_TagString: agent
@@ -20821,30 +20644,6 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   useVectorObs: 1
---- !u!114 &1614947134
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1614947132}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df0f8be9a37d6486498061e2cbc4cd94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RootBody: {fileID: 1614947141}
-  VirtualRoot: {fileID: 1614947132}
-  Settings:
-    UseModelSpaceTranslations: 0
-    UseModelSpaceRotations: 0
-    UseLocalSpaceTranslations: 0
-    UseLocalSpaceRotations: 0
-    UseModelSpaceLinearVelocity: 1
-    UseLocalSpaceLinearVelocity: 0
-    UseJointPositionsAndAngles: 0
-    UseJointForces: 0
-  sensorName: RBSensor
 --- !u!114 &1614947135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24765,7 +24564,6 @@ GameObject:
   - component: {fileID: 1914183274}
   - component: {fileID: 1914183273}
   - component: {fileID: 1914183272}
-  - component: {fileID: 1914183271}
   m_Layer: 0
   m_Name: Agent (1)
   m_TagString: agent
@@ -24790,30 +24588,6 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   useVectorObs: 1
---- !u!114 &1914183271
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1914183269}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df0f8be9a37d6486498061e2cbc4cd94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RootBody: {fileID: 1914183278}
-  VirtualRoot: {fileID: 1914183269}
-  Settings:
-    UseModelSpaceTranslations: 0
-    UseModelSpaceRotations: 0
-    UseLocalSpaceTranslations: 0
-    UseLocalSpaceRotations: 0
-    UseModelSpaceLinearVelocity: 1
-    UseLocalSpaceLinearVelocity: 0
-    UseJointPositionsAndAngles: 0
-    UseJointForces: 0
-  sensorName: RBSensor
 --- !u!114 &1914183272
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26160,7 +25934,6 @@ GameObject:
   - component: {fileID: 2029153696}
   - component: {fileID: 2029153695}
   - component: {fileID: 2029153694}
-  - component: {fileID: 2029153693}
   m_Layer: 0
   m_Name: Agent (2)
   m_TagString: agent
@@ -26183,30 +25956,6 @@ Transform:
   m_Father: {fileID: 4006991767121726}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!114 &2029153693
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2029153691}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df0f8be9a37d6486498061e2cbc4cd94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RootBody: {fileID: 2029153701}
-  VirtualRoot: {fileID: 2029153691}
-  Settings:
-    UseModelSpaceTranslations: 0
-    UseModelSpaceRotations: 0
-    UseLocalSpaceTranslations: 0
-    UseLocalSpaceRotations: 0
-    UseModelSpaceLinearVelocity: 1
-    UseLocalSpaceLinearVelocity: 0
-    UseJointPositionsAndAngles: 0
-    UseJointForces: 0
-  sensorName: RBSensor
 --- !u!114 &2029153694
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28629,7 +28378,6 @@ GameObject:
   - component: {fileID: 114451318913206688}
   - component: {fileID: 8964598782516923882}
   - component: {fileID: 4081319789279346458}
-  - component: {fileID: 2418275959552442365}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -30383,30 +30131,6 @@ Transform:
   m_Father: {fileID: 2416809914280425214}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2416809913911815188
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 261815313}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df0f8be9a37d6486498061e2cbc4cd94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RootBody: {fileID: 261815322}
-  VirtualRoot: {fileID: 261815313}
-  Settings:
-    UseModelSpaceTranslations: 0
-    UseModelSpaceRotations: 0
-    UseLocalSpaceTranslations: 0
-    UseLocalSpaceRotations: 0
-    UseModelSpaceLinearVelocity: 1
-    UseLocalSpaceLinearVelocity: 0
-    UseJointPositionsAndAngles: 0
-    UseJointForces: 0
-  sensorName: RBSensor
 --- !u!1 &2416809914280425201
 GameObject:
   m_ObjectHideFlags: 0
@@ -30625,30 +30349,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2416809914412970331}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &2418275959552442365
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1489717564321786}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df0f8be9a37d6486498061e2cbc4cd94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RootBody: {fileID: 54817352185271872}
-  VirtualRoot: {fileID: 1489717564321786}
-  Settings:
-    UseModelSpaceTranslations: 0
-    UseModelSpaceRotations: 0
-    UseLocalSpaceTranslations: 0
-    UseLocalSpaceRotations: 0
-    UseModelSpaceLinearVelocity: 1
-    UseLocalSpaceLinearVelocity: 0
-    UseJointPositionsAndAngles: 0
-    UseJointForces: 0
-  sensorName: RBSensor
 --- !u!4 &2643213249194734082
 Transform:
   m_ObjectHideFlags: 0
