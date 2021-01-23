@@ -28303,7 +28303,7 @@ MonoBehaviour:
     StartingRot: {x: 0, y: 0, z: 0, w: 0}
     Rb: {fileID: 0}
   UseRandomAgentRotation: 1
-  UseRandomAgentPosition: 0
+  UseRandomAgentPosition: 1
   UseRandomBlockRotation: 1
   UseRandomBlockPosition: 1
 --- !u!1 &1257456948449766
