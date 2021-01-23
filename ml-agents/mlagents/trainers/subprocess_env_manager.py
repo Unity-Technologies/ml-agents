@@ -189,7 +189,7 @@ def worker(
         )
         _send_response(EnvironmentCommand.ENV_EXITED, ex)
     except Exception as ex:
-        logger.error(
+        logger.exception(
             f"UnityEnvironment worker {worker_id}: environment raised an unexpected exception."
         )
         step_queue.put(
