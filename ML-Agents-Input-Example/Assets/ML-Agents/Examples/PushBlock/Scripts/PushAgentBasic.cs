@@ -1,9 +1,12 @@
 //Put this script on your blue cube.
 
+using System;
 using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using UnityEngine.InputSystem;
+using Random = UnityEngine.Random;
 
 public class PushAgentBasic : Agent
 {
@@ -51,9 +54,13 @@ public class PushAgentBasic : Agent
 
     EnvironmentParameters m_ResetParams;
 
+    PushBlockActions m_PushblockActions;
+
     void Awake()
     {
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
+        m_PushblockActions = new PushBlockActions();
+        m_PushblockActions.Enable();
     }
 
     public override void Initialize()
@@ -84,7 +91,8 @@ public class PushAgentBasic : Agent
     {
         var foundNewSpawnLocation = false;
         var randomSpawnPos = Vector3.zero;
-        while (foundNewSpawnLocation == false)
+        var tries = 0;
+        while (foundNewSpawnLocation == false && tries < 50)
         {
             var randomPosX = Random.Range(-areaBounds.extents.x * m_PushBlockSettings.spawnAreaMarginMultiplier,
                 areaBounds.extents.x * m_PushBlockSettings.spawnAreaMarginMultiplier);
@@ -96,6 +104,7 @@ public class PushAgentBasic : Agent
             {
                 foundNewSpawnLocation = true;
             }
+            tries++;
         }
         return randomSpawnPos;
     }
@@ -156,7 +165,7 @@ public class PushAgentBasic : Agent
                 dirToGo = transform.right * 0.75f;
                 break;
         }
-        transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
+        transform.Rotate(rotateDir, Time.deltaTime * 200f);
         m_AgentRb.AddForce(dirToGo * m_PushBlockSettings.agentRunSpeed,
             ForceMode.VelocityChange);
     }
@@ -165,7 +174,6 @@ public class PushAgentBasic : Agent
     /// Called every step of the engine. Here the agent takes an action.
     /// </summary>
     public override void OnActionReceived(ActionBuffers actionBuffers)
-
     {
         // Move the agent using the action.
         MoveAgent(actionBuffers.DiscreteActions);
@@ -174,27 +182,16 @@ public class PushAgentBasic : Agent
         AddReward(-1f / MaxStep);
     }
 
-    // public override void Heuristic(in ActionBuffers actionsOut)
-    // {
-    //     var discreteActionsOut = actionsOut.DiscreteActions;
-    //     discreteActionsOut[0] = 0;
-    //     if (Input.GetKey(KeyCode.D))
-    //     {
-    //         discreteActionsOut[0] = 3;
-    //     }
-    //     else if (Input.GetKey(KeyCode.W))
-    //     {
-    //         discreteActionsOut[0] = 1;
-    //     }
-    //     else if (Input.GetKey(KeyCode.A))
-    //     {
-    //         discreteActionsOut[0] = 4;
-    //     }
-    //     else if (Input.GetKey(KeyCode.S))
-    //     {
-    //         discreteActionsOut[0] = 2;
-    //     }
-    // }
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        var value = m_PushblockActions.Movement.movement.ReadValue<Vector2>();
+        var discreteActionsOut = actionsOut.DiscreteActions;
+        discreteActionsOut.Clear();
+        if (!Mathf.Approximately(0f, value.x))
+            discreteActionsOut[0] = value.x > 0 ? 3 : 4;
+        else if (!Mathf.Approximately(0, value.y))
+            discreteActionsOut[0] = value.y > 0 ? 1 : 2;
+    }
 
     /// <summary>
     /// Resets the block position and velocities.

@@ -94,5 +94,35 @@ namespace Unity.MLAgents.Actuators
                 );
             }
         }
+
+        public static ActionSpec Combine(ActionSpec[] specs)
+        {
+            var numContinuous = 0;
+            var numDiscrete = 0;
+            foreach (var spec in specs)
+            {
+                numContinuous += spec.NumContinuousActions;
+                numDiscrete += spec.NumDiscreteActions;
+            }
+
+            if (numDiscrete <= 0)
+            {
+                return MakeContinuous(numContinuous);
+            }
+
+            var branchSizes = new int[numDiscrete];
+            var offset = 0;
+            foreach (var spec in specs)
+            {
+                var branchSizesLength = spec.BranchSizes.Length;
+                Array.Copy(spec.BranchSizes,
+                    0,
+                    branchSizes,
+                    offset,
+                    branchSizesLength);
+                offset += branchSizesLength;
+            }
+            return new ActionSpec(numContinuous, branchSizes);
+        }
     }
 }

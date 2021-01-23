@@ -2,7 +2,8 @@
     "name": "Unity.ML-Agents.Extensions",
     "references": [
         "Unity.Barracuda",
-        "Unity.ML-Agents"
+        "Unity.ML-Agents",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": []
