@@ -142,7 +142,7 @@ def test_2d_sac(action_sizes):
         SAC_TORCH_CONFIG.hyperparameters,
         buffer_init_steps=2000,
         learning_rate=0.023,
-        batch_size=1
+        batch_size=1,
     )
     config = attr.evolve(
         SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=2300
