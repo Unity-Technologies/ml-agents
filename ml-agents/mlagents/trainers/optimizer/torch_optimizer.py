@@ -61,45 +61,45 @@ class TorchOptimizer(Optimizer):
         n_obs = len(self.policy.behavior_spec.sensor_specs)
 
         current_obs = ObsUtil.from_buffer(batch, n_obs)
-        next_obs = ObsUtil.from_buffer_next(batch, n_obs)
         team_obs = TeamObsUtil.from_buffer(batch, n_obs)
-        next_team_obs = TeamObsUtil.from_buffer_next(batch, n_obs)
+        #next_obs = ObsUtil.from_buffer_next(batch, n_obs)
+        #next_team_obs = TeamObsUtil.from_buffer_next(batch, n_obs)
 
         # Convert to tensors
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
-        next_obs = [ModelUtils.list_to_tensor(obs) for obs in next_obs]
         team_obs = [
             [ModelUtils.list_to_tensor(obs) for obs in _teammate_obs]
             for _teammate_obs in team_obs
         ]
-        next_team_obs = [
-            [ModelUtils.list_to_tensor(obs) for obs in _teammate_obs]
-            for _teammate_obs in next_team_obs
-        ]
+        #next_team_obs = [
+        #    [ModelUtils.list_to_tensor(obs) for obs in _teammate_obs]
+        #    for _teammate_obs in next_team_obs
+        #]
 
         actions = AgentAction.from_dict(batch)
-        next_actions = AgentAction.from_dict_next(batch)
         team_actions = AgentAction.from_team_dict(batch)
-        next_team_actions = AgentAction.from_team_dict_next(batch)
+        #next_actions = AgentAction.from_dict_next(batch)
+        #next_team_actions = AgentAction.from_team_dict_next(batch)
 
-        # next_obs = [obs.unsqueeze(0) for obs in next_obs]
+        next_obs = [ModelUtils.list_to_tensor(obs) for obs in next_obs]
+        next_obs = [obs.unsqueeze(0) for obs in next_obs]
 
         # critic_obs = TeamObsUtil.from_buffer(batch, n_obs)
         # critic_obs = [
         #    [ModelUtils.list_to_tensor(obs) for obs in _teammate_obs]
         #    for _teammate_obs in critic_obs
         # ]
-        # next_critic_obs = [
-        #    ModelUtils.list_to_tensor_list(_list_obs) for _list_obs in next_critic_obs
-        # ]
+        next_critic_obs = [
+            ModelUtils.list_to_tensor_list(_list_obs) for _list_obs in next_critic_obs
+         ]
         # Expand dimensions of next critic obs
-        # next_critic_obs = [
-        #    [_obs.unsqueeze(0) for _obs in _list_obs] for _list_obs in next_critic_obs
-        # ]
+        next_critic_obs = [
+            [_obs.unsqueeze(0) for _obs in _list_obs] for _list_obs in next_critic_obs
+         ]
 
         memory = torch.zeros([1, 1, self.policy.m_size])
 
-        value_estimates, marg_val_estimates, mem = self.policy.actor_critic.target_critic_pass(
+        q_estimates, baseline_estimates, mem = self.policy.actor_critic.target_critic_pass(
             current_obs,
             actions,
             memory,
@@ -107,14 +107,29 @@ class TorchOptimizer(Optimizer):
             team_obs=team_obs,
             team_act=team_actions,
         )
-        next_value_estimates, next_marg_val_estimates, next_mem = self.policy.actor_critic.target_critic_pass(
-            next_obs,
-            next_actions,
+
+        value_estimates, mem = self.policy.actor_critic.target_critic_value(
+            current_obs,
             memory,
             sequence_length=batch.num_experiences,
-            team_obs=next_team_obs,
-            team_act=next_team_actions,
+            team_obs=team_obs,
         )
+
+        boot_value_estimates, mem = self.policy.actor_critic.target_critic_value(
+            next_obs,
+            memory,
+            sequence_length=batch.num_experiences,
+            team_obs=next_critic_obs,
+        )
+
+        #next_value_estimates, next_marg_val_estimates, next_mem = self.policy.actor_critic.target_critic_pass(
+        #    next_obs,
+        #    next_actions,
+        #    memory,
+        #    sequence_length=batch.num_experiences,
+        #    team_obs=next_team_obs,
+        #    team_act=next_team_actions,
+        #)
 
         # # Actions is a hack here, we need the next actions
         # next_value_estimate, next_marg_val_estimate, _ = self.policy.actor_critic.critic_pass(
@@ -122,24 +137,25 @@ class TorchOptimizer(Optimizer):
         # )
         # These aren't used in COMAttention
 
+        for name, estimate in q_estimates.items():
+            q_estimates[name] = ModelUtils.to_numpy(estimate)
+        for name, estimate in baseline_estimates.items():
+            baseline_estimates[name] = ModelUtils.to_numpy(estimate)
+
         for name, estimate in value_estimates.items():
             value_estimates[name] = ModelUtils.to_numpy(estimate)
-        for name, estimate in next_value_estimates.items():
-            next_value_estimates[name] = ModelUtils.to_numpy(estimate)
 
-        for name, estimate in marg_val_estimates.items():
-            marg_val_estimates[name] = ModelUtils.to_numpy(estimate)
-        for name, estimate in next_marg_val_estimates.items():
-            next_marg_val_estimates[name] = ModelUtils.to_numpy(estimate)
+        for name, estimate in boot_value_estimates.items():
+            boot_value_estimates[name] = ModelUtils.to_numpy(estimate)
 
         if done:
-            for k in next_value_estimates:
+            for k in boot_value_estimates:
                 if not self.reward_signals[k].ignore_done:
-                    next_value_estimates[k][-1] = 0.0
+                    boot_value_estimates[k][-1] = 0.0
 
         return (
+            q_estimates,
+            baseline_estimates,
             value_estimates,
-            marg_val_estimates,
-            next_value_estimates,
-            next_marg_val_estimates,
+            boot_value_estimates,
         )

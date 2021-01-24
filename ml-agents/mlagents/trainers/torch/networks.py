@@ -270,6 +270,36 @@ class MultiInputNetworkBody(nn.Module):
         )
         return encoding, memories
 
+    def value(
+        self,
+        obs: List[List[torch.Tensor]],
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+
+        self_attn_masks = []
+        concat_encoded_obs = []
+        for inputs in obs:
+            encodes = []
+            for idx, processor in enumerate(self.processors):
+                obs_input = inputs[idx]
+                obs_input[obs_input.isnan()] = 0.0  # Remove NaNs
+                processed_obs = processor(obs_input)
+                encodes.append(processed_obs)
+            concat_encoded_obs.append(torch.cat(encodes, dim=-1))
+        g_inp = torch.stack(concat_encoded_obs, dim=1)
+        # Get the mask from nans
+        self_attn_masks.append(self._get_masks_from_nans(obs))
+        encoding, memories = self.forward(
+            None,
+            g_inp,
+            self_attn_masks,
+            memories=memories,
+            sequence_length=sequence_length,
+        )
+        return encoding, memories
+
+
     def forward(
         self,
         f_enc: torch.Tensor,
@@ -368,6 +398,18 @@ class CentralizedValueNetwork(ValueNetwork):
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         encoding, memories = self.network_body.q_net(
             obs, actions, memories, sequence_length
+        )
+        output = self.value_heads(encoding)
+        return output, memories
+
+    def value(
+        self,
+        obs: List[List[torch.Tensor]],
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        encoding, memories = self.network_body.value(
+            obs, memories, sequence_length
         )
         output = self.value_heads(encoding)
         return output, memories
@@ -719,6 +761,64 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             actor_mem = None
         return actor_mem, critic_mem
 
+    def target_critic_value(
+        self,
+        inputs: List[torch.Tensor],
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+        team_obs: List[List[torch.Tensor]] = None,
+    ) -> Tuple[Dict[str, torch.Tensor], Dict[str, torch.Tensor], torch.Tensor]:
+        actor_mem, critic_mem = self._get_actor_critic_mem(memories)
+
+        all_obs = [inputs]
+        if team_obs is not None and team_obs:
+            all_obs.extend(team_obs)
+
+        value_outputs, _ = self.target.value(
+            all_obs,
+            memories=critic_mem,
+            sequence_length=sequence_length,
+        )
+
+        # if mar_value_outputs is None:
+        #    mar_value_outputs = value_outputs
+
+        if actor_mem is not None:
+            # Make memories with the actor mem unchanged
+            memories_out = torch.cat([actor_mem, critic_mem_out], dim=-1)
+        else:
+            memories_out = None
+        return value_outputs, memories_out
+
+    def critic_value(
+        self,
+        inputs: List[torch.Tensor],
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+        team_obs: List[List[torch.Tensor]] = None,
+    ) -> Tuple[Dict[str, torch.Tensor], Dict[str, torch.Tensor], torch.Tensor]:
+        actor_mem, critic_mem = self._get_actor_critic_mem(memories)
+
+        all_obs = [inputs]
+        if team_obs is not None and team_obs:
+            all_obs.extend(team_obs)
+
+        value_outputs, _ = self.critic.value(
+            all_obs,
+            memories=critic_mem,
+            sequence_length=sequence_length,
+        )
+
+        # if mar_value_outputs is None:
+        #    mar_value_outputs = value_outputs
+
+        if actor_mem is not None:
+            # Make memories with the actor mem unchanged
+            memories_out = torch.cat([actor_mem, critic_mem_out], dim=-1)
+        else:
+            memories_out = None
+        return value_outputs, memories_out
+
     def target_critic_pass(
         self,
         inputs: List[torch.Tensor],
@@ -815,7 +915,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         )
         log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
 
-        value_outputs, mar_value_outputs, _ = self.critic_pass(
+        q_outputs, baseline_outputs, _ = self.critic_pass(
             inputs,
             actions,
             memories=critic_mem,
@@ -823,8 +923,9 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             team_obs=team_obs,
             team_act=team_act,
         )
+        value_outputs, _ = self.critic_value(inputs, memories=critic_mem, sequence_length=sequence_length, team_obs=team_obs)
 
-        return log_probs, entropies, value_outputs, mar_value_outputs
+        return log_probs, entropies, q_outputs, baseline_outputs, value_outputs
 
     def get_action_stats(
         self,

@@ -140,6 +140,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         decay_bet = self.decay_beta.get_value(self.policy.get_current_step())
         returns_q = {}
         returns_b = {}
+        returns_v = {}
         old_values = {}
         old_marg_values = {}
         for name in self.reward_signals:
@@ -151,38 +152,8 @@ class TorchPPOOptimizer(TorchOptimizer):
             )
             returns_q[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns_q"])
             returns_b[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns_b"])
+            returns_v[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns_v"])
 #
-#        padded_team_rewards = list(
-#            map(
-#                lambda x: np.asanyarray(x),
-#                itertools.zip_longest(*batch["team_rewards"], fillvalue=np.nan),
-#            )
-#        )
-        #padded_team_rewards = torch.tensor(
-        #    np.array(
-        #        list(itertools.zip_longest(*batch["team_rewards"], fillvalue=np.nan))
-        #    )
-        #)
-        #padded_team_rewards = np.array(
-        #        list(itertools.zip_longest(*batch["team_rewards"], fillvalue=np.nan))
-        #    )
-
-        #all_rewards = np.concatenate((np.expand_dims(batch["environment_rewards"], axis=0), padded_team_rewards), axis=0)
-        #average_team_rewards = batch["average_team_reward"]
-        #returns["extrinsic"] = torch.tensor(average_team_rewards)
-
-        ## Average team rewards
-        #if "extrinsic" in returns:
-        #    env_rewards = ModelUtils.list_to_tensor(batch["environment_rewards"])
-        #    all_rewards = torch.cat(
-        #        [torch.unsqueeze(env_rewards, 0), padded_team_rewards], dim=0
-        #    )
-        #    returns["extrinsic"] = torch.mean(
-        #        all_rewards[~torch.isnan(all_rewards)], dim=0
-        #    )
-        #    print(all_rewards[~torch.isnan(all_rewards)].shape)
-        #    print(all_rewards.shape)
-
 
         n_obs = len(self.policy.behavior_spec.sensor_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
@@ -207,7 +178,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         if len(memories) > 0:
             memories = torch.stack(memories).unsqueeze(0)
 
-        log_probs, entropy, values, marginalized_vals = self.policy.evaluate_actions(
+        log_probs, entropy, qs, baseline_vals, values = self.policy.evaluate_actions(
             current_obs,
             masks=act_masks,
             actions=actions,
@@ -219,12 +190,16 @@ class TorchPPOOptimizer(TorchOptimizer):
         old_log_probs = ActionLogProbs.from_dict(batch).flatten()
         log_probs = log_probs.flatten()
         loss_masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.bool)
+        q_loss = self.ppo_value_loss(
+            qs, old_values, returns_q, decay_eps, loss_masks
+        )
+        baseline_loss = self.ppo_value_loss(
+            baseline_vals, old_marg_values, returns_b, decay_eps, loss_masks
+        )
         value_loss = self.ppo_value_loss(
-            values, old_values, returns_q, decay_eps, loss_masks
+            values, old_values, returns_v, decay_eps, loss_masks
         )
-        marg_value_loss = self.ppo_value_loss(
-            marginalized_vals, old_marg_values, returns_b, decay_eps, loss_masks
-        )
+
         policy_loss = self.ppo_policy_loss(
             ModelUtils.list_to_tensor(batch["advantages"]),
             log_probs,
@@ -233,7 +208,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         )
         loss = (
             policy_loss
-            + 0.5 * (value_loss + marg_value_loss)
+            + 0.5 * (q_loss + value_loss + baseline_loss)
             - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
         )
 
@@ -245,16 +220,15 @@ class TorchPPOOptimizer(TorchOptimizer):
         self.optimizer.step()
 
         ModelUtils.soft_update(
-            self.policy.actor_critic.critic, self.policy.actor_critic.target, 0.005
+            self.policy.actor_critic.critic, self.policy.actor_critic.target, 1.0
         )
-
         update_stats = {
             # NOTE: abs() is not technically correct, but matches the behavior in TensorFlow.
             # TODO: After PyTorch is default, change to something more correct.
             "Losses/Policy Loss": torch.abs(policy_loss).item(),
             "Losses/Value Loss": value_loss.item(),
-            "Losses/Baseline Value Loss": marg_value_loss.item(),
-            "Policy/Advantages": torch.mean(ModelUtils.list_to_tensor(batch["advantages"])).item(),
+            "Losses/Q Loss": q_loss.item(),
+            "Losses/Baseline Value Loss": baseline_loss.item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/Epsilon": decay_eps,
             "Policy/Beta": decay_bet,
