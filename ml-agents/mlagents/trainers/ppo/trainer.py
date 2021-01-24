@@ -379,8 +379,8 @@ def get_team_returns(
     returns_v = lambd_return(
         rewards, v_estimates, gamma=gamma, lambd=lambd, value_next=value_next
     )
-    if rewards[-1] > 0:
-        print(returns_v)
-        print(rewards)
+    #if rewards[-1] > 0:
+    #    print(returns_v)
+    #    print(rewards)
 
     return returns_q, returns_b, returns_v
