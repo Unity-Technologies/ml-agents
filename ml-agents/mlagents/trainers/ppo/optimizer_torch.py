@@ -245,7 +245,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         self.optimizer.step()
 
         ModelUtils.soft_update(
-            self.policy.actor_critic.critic, self.policy.actor_critic.target, .001
+            self.policy.actor_critic.critic, self.policy.actor_critic.target, 1.
         )
 
         update_stats = {

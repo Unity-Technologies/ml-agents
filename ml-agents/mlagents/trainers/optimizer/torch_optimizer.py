@@ -99,7 +99,7 @@ class TorchOptimizer(Optimizer):
 
         memory = torch.zeros([1, 1, self.policy.m_size])
 
-        value_estimates, marg_val_estimates, mem = self.policy.actor_critic.target_critic_pass(
+        value_estimates, marg_val_estimates, mem = self.policy.actor_critic.critic_pass(
             current_obs,
             actions,
             memory,
@@ -107,7 +107,7 @@ class TorchOptimizer(Optimizer):
             team_obs=team_obs,
             team_act=team_actions,
         )
-        next_value_estimates, next_marg_val_estimates, next_mem = self.policy.actor_critic.target_critic_pass(
+        next_value_estimates, next_marg_val_estimates, next_mem = self.policy.actor_critic.critic_pass(
             next_obs,
             next_actions,
             memory,
