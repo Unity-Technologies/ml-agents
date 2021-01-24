@@ -139,7 +139,10 @@ def test_simple_sac(action_sizes):
 def test_2d_sac(action_sizes):
     env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_sizes, step_size=0.8)
     new_hyperparams = attr.evolve(
-        SAC_TORCH_CONFIG.hyperparameters, buffer_init_steps=2000, learning_rate=0.023, batch_size=1
+        SAC_TORCH_CONFIG.hyperparameters,
+        buffer_init_steps=2000,
+        learning_rate=0.023,
+        batch_size=1
     )
     config = attr.evolve(
         SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=2300
