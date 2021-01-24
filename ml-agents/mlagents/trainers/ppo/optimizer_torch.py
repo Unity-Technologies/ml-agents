@@ -245,7 +245,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         self.optimizer.step()
 
         ModelUtils.soft_update(
-            self.policy.actor_critic.critic, self.policy.actor_critic.target, 1.
+            self.policy.actor_critic.critic, self.policy.actor_critic.target, 0.005
         )
 
         update_stats = {
@@ -254,6 +254,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             "Losses/Policy Loss": torch.abs(policy_loss).item(),
             "Losses/Value Loss": value_loss.item(),
             "Losses/Baseline Value Loss": marg_value_loss.item(),
+            "Policy/Advantages": torch.mean(ModelUtils.list_to_tensor(batch["advantages"])).item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/Epsilon": decay_eps,
             "Policy/Beta": decay_bet,
