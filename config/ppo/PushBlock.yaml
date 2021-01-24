@@ -7,7 +7,7 @@ behaviors:
       learning_rate: 0.0003
       beta: 0.01
       epsilon: 0.2
-      lambd: 0.8
+      lambd: 0.95
       num_epoch: 3
       learning_rate_schedule: linear
     network_settings:
