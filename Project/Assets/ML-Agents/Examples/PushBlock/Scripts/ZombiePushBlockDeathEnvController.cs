@@ -170,6 +170,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
                 // Unfreeze block's motion when zombies are killed
                 item.Rb.constraints &= RigidbodyConstraints.FreezePositionX;
                 item.Rb.constraints &= RigidbodyConstraints.FreezePositionZ;
+                item.Rb.constraints &= RigidbodyConstraints.FreezeRotationY;
             }
         }
     }
@@ -178,7 +179,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     /// <summary>
     /// Use the ground's bounds to pick a random spawn position.
     /// </summary>
-    public Vector3 GetRandomSpawnPos()
+    public Vector3 GetRandomSpawnPos(float boundsX = 2.5f, float boundsZ = 2.5f)
     {
         var foundNewSpawnLocation = false;
         var randomSpawnPos = Vector3.zero;
@@ -190,7 +191,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             var randomPosZ = Random.Range(-areaBounds.extents.z * m_PushBlockSettings.spawnAreaMarginMultiplier,
                 areaBounds.extents.z * m_PushBlockSettings.spawnAreaMarginMultiplier);
             randomSpawnPos = ground.transform.position + new Vector3(randomPosX, 1f, randomPosZ);
-            if (Physics.CheckBox(randomSpawnPos, new Vector3(2.5f, 0.01f, 2.5f)) == false)
+            if (Physics.CheckBox(randomSpawnPos, new Vector3(boundsX, 0.01f, boundsZ)) == false)
             {
                 foundNewSpawnLocation = true;
             }
@@ -204,7 +205,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     void ResetBlock(BlockInfo block)
     {
         // Get a random position for the block.
-        block.T.position = GetRandomSpawnPos();
+        block.T.position = GetRandomSpawnPos(3f, 3f);
 
         // Reset block velocity back to zero.
         block.Rb.velocity = Vector3.zero;
@@ -294,6 +295,23 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             }
             item.Agent.EndEpisode();
         }
+        //Reset Blocks
+        foreach (var item in BlocksList)
+        {
+            var pos = UseRandomBlockPosition ? GetRandomSpawnPos(3f, 3f) : item.StartingPos;
+            var rot = UseRandomBlockRotation ? GetRandomRot() : item.StartingRot;
+
+            item.T.transform.SetPositionAndRotation(pos, rot);
+            item.Rb.velocity = Vector3.zero;
+            item.Rb.angularVelocity = Vector3.zero;
+            item.T.gameObject.SetActive(true);
+
+
+            // Freeze block's motion until zombies are killed
+            item.Rb.constraints |= RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
+            item.Rb.constraints |= RigidbodyConstraints.FreezeRotationY;
+        }
+
         //Reset Agents
         foreach (var item in AgentsList)
         {
@@ -306,22 +324,6 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.Agent.gameObject.SetActive(true);
         }
 
-        //Reset Blocks
-        foreach (var item in BlocksList)
-        {
-            var pos = UseRandomBlockPosition ? GetRandomSpawnPos() : item.StartingPos;
-            var rot = UseRandomBlockRotation ? GetRandomRot() : item.StartingRot;
-
-            item.T.transform.SetPositionAndRotation(pos, rot);
-            item.Rb.velocity = Vector3.zero;
-            item.Rb.angularVelocity = Vector3.zero;
-            item.T.gameObject.SetActive(true);
-
-
-            // Freeze block's motion until zombies are killed
-            item.Rb.constraints |= RigidbodyConstraints.FreezePositionX;
-            item.Rb.constraints |= RigidbodyConstraints.FreezePositionZ;
-        }
         //End Episode
         foreach (var item in ZombiesList)
         {

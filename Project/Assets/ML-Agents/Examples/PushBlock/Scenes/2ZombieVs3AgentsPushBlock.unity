@@ -542,7 +542,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9fa4d08b7d4d198d5165b07ddd47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnvironmentSteps: 25000
+  MaxEnvironmentSteps: 500
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -582,7 +582,7 @@ MonoBehaviour:
     Rb: {fileID: 0}
   UseRandomAgentRotation: 1
   UseRandomAgentPosition: 1
-  UseRandomBlockRotation: 1
+  UseRandomBlockRotation: 0
   UseRandomBlockPosition: 1
 --- !u!4 &35422107
 Transform:
@@ -1469,7 +1469,7 @@ Transform:
   m_GameObject: {fileID: 180376172}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.8199997, y: 1, z: -1.43}
-  m_LocalScale: {x: 4, y: 0.75, z: 4}
+  m_LocalScale: {x: 3.5, y: 1.5, z: 3.5}
   m_Children: []
   m_Father: {fileID: 35422107}
   m_RootOrder: 6
@@ -3149,7 +3149,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 2c785861dab4f42309917b4d04e2c8e7, type: 3}
+  m_Model: {fileID: 11400000, guid: e0908206441554d6b8031e20e7bba934, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -3189,7 +3189,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  frozen: 0
   useVectorObs: 1
 --- !u!1 &263418408
 GameObject:
@@ -3400,7 +3399,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &265967282
 MonoBehaviour:
@@ -4374,7 +4372,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &344861064
 MonoBehaviour:
@@ -7297,7 +7294,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &557898664
 MonoBehaviour:
@@ -8127,7 +8123,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &607937517
 MonoBehaviour:
@@ -9188,7 +9183,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &742698648
 MonoBehaviour:
@@ -9950,7 +9944,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &816508913
 MonoBehaviour:
@@ -12197,7 +12190,7 @@ Transform:
   m_GameObject: {fileID: 997359139}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.8199997, y: 1, z: -1.43}
-  m_LocalScale: {x: 4, y: 0.75, z: 4}
+  m_LocalScale: {x: 3.5, y: 1.5, z: 3.5}
   m_Children: []
   m_Father: {fileID: 1056693890}
   m_RootOrder: 6
@@ -13221,7 +13214,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9fa4d08b7d4d198d5165b07ddd47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnvironmentSteps: 25000
+  MaxEnvironmentSteps: 500
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -13261,7 +13254,7 @@ MonoBehaviour:
     Rb: {fileID: 0}
   UseRandomAgentRotation: 1
   UseRandomAgentPosition: 1
-  UseRandomBlockRotation: 1
+  UseRandomBlockRotation: 0
   UseRandomBlockPosition: 1
 --- !u!4 &1056693890
 Transform:
@@ -17996,7 +17989,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &1504325949
 MonoBehaviour:
@@ -20437,7 +20429,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &1614947134
 MonoBehaviour:
@@ -23722,7 +23713,7 @@ Transform:
   m_GameObject: {fileID: 1906676962}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.8199997, y: 1, z: -1.43}
-  m_LocalScale: {x: 4, y: 0.75, z: 4}
+  m_LocalScale: {x: 3.5, y: 1.5, z: 3.5}
   m_Children: []
   m_Father: {fileID: 2124347356}
   m_RootOrder: 6
@@ -24322,7 +24313,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &1914183271
 MonoBehaviour:
@@ -25847,7 +25837,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &2029153700
 MonoBehaviour:
@@ -25871,7 +25860,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 2c785861dab4f42309917b4d04e2c8e7, type: 3}
+  m_Model: {fileID: 11400000, guid: e0908206441554d6b8031e20e7bba934, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -27890,7 +27879,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9fa4d08b7d4d198d5165b07ddd47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnvironmentSteps: 25000
+  MaxEnvironmentSteps: 500
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -27930,7 +27919,7 @@ MonoBehaviour:
     Rb: {fileID: 0}
   UseRandomAgentRotation: 1
   UseRandomAgentPosition: 1
-  UseRandomBlockRotation: 1
+  UseRandomBlockRotation: 0
   UseRandomBlockPosition: 1
 --- !u!4 &2124347356
 Transform:
@@ -28004,7 +27993,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9fa4d08b7d4d198d5165b07ddd47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnvironmentSteps: 25000
+  MaxEnvironmentSteps: 500
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -28043,8 +28032,8 @@ MonoBehaviour:
     StartingRot: {x: 0, y: 0, z: 0, w: 0}
     Rb: {fileID: 0}
   UseRandomAgentRotation: 1
-  UseRandomAgentPosition: 0
-  UseRandomBlockRotation: 1
+  UseRandomAgentPosition: 1
+  UseRandomBlockRotation: 0
   UseRandomBlockPosition: 1
 --- !u!1 &1257456948449766
 GameObject:
@@ -28142,7 +28131,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  frozen: 0
   useVectorObs: 0
 --- !u!1 &1500989827241484
 GameObject:
@@ -29126,7 +29114,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 2c785861dab4f42309917b4d04e2c8e7, type: 3}
+  m_Model: {fileID: 11400000, guid: e0908206441554d6b8031e20e7bba934, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -30100,7 +30088,7 @@ Transform:
   m_GameObject: {fileID: 8120829477783372687}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.8199997, y: 1, z: -1.43}
-  m_LocalScale: {x: 4, y: 0.75, z: 4}
+  m_LocalScale: {x: 3.5, y: 1.5, z: 3.5}
   m_Children: []
   m_Father: {fileID: 4006991767121726}
   m_RootOrder: 6
