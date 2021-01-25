@@ -64,13 +64,13 @@ public class PushAgentCollab : Agent
             ForceMode.VelocityChange);
     }
 
-    public override void CollectObservations(VectorSensor sensor)
-    {
-        if (useVectorObs)
-        {
-            sensor.AddObservation(StepCount / (float)MaxStep);
-        }
-    }
+    // public override void CollectObservations(VectorSensor sensor)
+    // {
+    //     if (useVectorObs)
+    //     {
+    //         sensor.AddObservation(StepCount / (float)MaxStep);
+    //     }
+    // }
 
     /// <summary>
     /// Called every step of the engine. Here the agent takes an action.
