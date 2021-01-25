@@ -207,7 +207,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     void ResetBlock(BlockInfo block)
     {
         // Get a random position for the block.
-        block.T.position = GetRandomSpawnPos(3f, 3f);
+        block.T.position = GetRandomSpawnPos();
 
         // Reset block velocity back to zero.
         block.Rb.velocity = Vector3.zero;
@@ -300,7 +300,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         //Reset Blocks
         foreach (var item in BlocksList)
         {
-            var pos = UseRandomBlockPosition ? GetRandomSpawnPos(2.5f, 2.5f) : item.StartingPos;
+            var pos = UseRandomBlockPosition ? GetRandomSpawnPos() : item.StartingPos;
             var rot = UseRandomBlockRotation ? GetRandomRot() : item.StartingRot;
 
             item.T.transform.SetPositionAndRotation(pos, rot);
