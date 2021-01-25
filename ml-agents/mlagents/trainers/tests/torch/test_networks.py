@@ -36,7 +36,7 @@ def test_networkbody_vector():
         loss.backward()
         optimizer.step()
     # In the last step, values should be close to 1
-    for _enc in encoded.flatten():
+    for _enc in encoded.flatten().tolist():
         assert _enc == pytest.approx(1.0, abs=0.1)
 
 
@@ -63,7 +63,7 @@ def test_networkbody_lstm():
         loss.backward()
         optimizer.step()
     # In the last step, values should be close to 1
-    for _enc in encoded.flatten():
+    for _enc in encoded.flatten().tolist():
         assert _enc == pytest.approx(1.0, abs=0.1)
 
 
@@ -91,7 +91,7 @@ def test_networkbody_visual():
         loss.backward()
         optimizer.step()
     # In the last step, values should be close to 1
-    for _enc in encoded.flatten():
+    for _enc in encoded.flatten().tolist():
         assert _enc == pytest.approx(1.0, abs=0.1)
 
 
@@ -124,7 +124,7 @@ def test_valuenetwork():
         optimizer.step()
     # In the last step, values should be close to 1
     for value in values.values():
-        for _out in value:
+        for _out in value.tolist():
             assert _out[0] == pytest.approx(1.0, abs=0.1)
 
 

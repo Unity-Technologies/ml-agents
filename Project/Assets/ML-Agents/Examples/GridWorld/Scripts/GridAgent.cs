@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
+using UnityEngine.Rendering;
 using UnityEngine.Serialization;
 
 public class GridAgent : Agent
@@ -182,7 +183,7 @@ public class GridAgent : Agent
 
     void WaitTimeInference()
     {
-        if (renderCamera != null)
+        if (renderCamera != null && SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null)
         {
             renderCamera.Render();
         }
