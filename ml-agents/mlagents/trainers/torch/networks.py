@@ -14,8 +14,8 @@ from mlagents.trainers.torch.decoders import ValueHeads
 from mlagents.trainers.torch.layers import (
     LSTM,
     LinearEncoder,
-    HyperNetwork,
-    ConditionalEncoder, HyperEncoder,
+    ConditionalEncoder,
+    HyperEncoder,
 )
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
@@ -83,7 +83,7 @@ class NetworkBody(nn.Module):
                 total_goal_size,
                 network_settings.num_layers,
                 self.h_size,
-                num_hyper_layers=0
+                num_hyper_layers=1,
             )
         elif (
             ObservationType.GOAL in self.obs_types

@@ -146,8 +146,8 @@ class ConditionalEncoder(torch.nn.Module):
         super().__init__()
         self.layers = []
         self.goal_encoders = []
-        prev_size = input_size
-        for i in range(num_layers):
+        prev_size = input_size + goal_size
+        for _ in range(num_layers):
             self.layers.append(
                 linear_layer(
                     prev_size,
@@ -156,19 +156,25 @@ class ConditionalEncoder(torch.nn.Module):
                     kernel_gain=kernel_gain,
                 )
             )
-            self.goal_encoders.append(LinearEncoder(goal_size, 2, hidden_size, final_activation=False))
+            self.goal_encoders.append(
+                LinearEncoder(goal_size, 2, hidden_size, final_activation=True)
+            )
             self.layers.append(Swish())
             prev_size = hidden_size
+        self.layers = torch.nn.ModuleList(self.layers)
+        self.goal_encoders = torch.nn.ModuleList(self.goal_encoders)
 
     def forward(
         self, input_tensor: torch.Tensor, goal_tensor: torch.Tensor
     ) -> torch.Tensor:
-        activation = input_tensor
+        activation = torch.cat([input_tensor, goal_tensor], dim=-1)
         for idx, layer in enumerate(self.layers):
             if isinstance(layer, Swish):
                 activation = layer(activation)
             else:
-                activation = layer(activation) * self.goal_encoders[idx//2](goal_tensor)
+                activation = layer(activation) + self.goal_encoders[idx // 2](
+                    goal_tensor
+                )
         return activation
 
 
@@ -205,6 +211,7 @@ class HyperEncoder(torch.nn.Module):
                     HyperNetwork(prev_size, hidden_size, goal_size, 2, hidden_size)
                 )
             self.layers.append(Swish())
+            self.layers = torch.nn.ModuleList(self.layers)
             prev_size = hidden_size
 
     def forward(
