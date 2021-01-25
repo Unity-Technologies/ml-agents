@@ -295,6 +295,19 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             }
             item.Agent.EndEpisode();
         }
+
+        //Reset Agents
+        foreach (var item in AgentsList)
+        {
+            var pos = UseRandomAgentPosition ? GetRandomSpawnPos() : item.StartingPos;
+            var rot = UseRandomAgentRotation ? GetRandomRot() : item.StartingRot;
+
+            item.Agent.transform.SetPositionAndRotation(pos, rot);
+            item.Rb.velocity = Vector3.zero;
+            item.Rb.angularVelocity = Vector3.zero;
+            item.Agent.gameObject.SetActive(true);
+        }
+
         //Reset Blocks
         foreach (var item in BlocksList)
         {
@@ -310,18 +323,6 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             // Freeze block's motion until zombies are killed
             item.Rb.constraints |= RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
             item.Rb.constraints |= RigidbodyConstraints.FreezeRotationY;
-        }
-
-        //Reset Agents
-        foreach (var item in AgentsList)
-        {
-            var pos = UseRandomAgentPosition ? GetRandomSpawnPos() : item.StartingPos;
-            var rot = UseRandomAgentRotation ? GetRandomRot() : item.StartingRot;
-
-            item.Agent.transform.SetPositionAndRotation(pos, rot);
-            item.Rb.velocity = Vector3.zero;
-            item.Rb.angularVelocity = Vector3.zero;
-            item.Agent.gameObject.SetActive(true);
         }
 
         //End Episode
