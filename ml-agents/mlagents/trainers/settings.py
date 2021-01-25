@@ -734,6 +734,11 @@ class EngineSettings:
 
 
 @attr.s(auto_attribs=True)
+class TorchSettings:
+    device: Optional[str] = parser.get_default("torch_device")
+
+
+@attr.s(auto_attribs=True)
 class RunOptions(ExportableSettings):
     default_settings: Optional[TrainerSettings] = None
     behaviors: DefaultDict[str, TrainerSettings] = attr.ib(

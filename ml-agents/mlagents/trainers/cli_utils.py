@@ -252,6 +252,13 @@ def _create_parser() -> argparse.ArgumentParser:
         help="Whether to run the Unity executable in no-graphics mode (i.e. without initializing "
         "the graphics driver. Use this only if your agents don't use visual observations.",
     )
+
+    torch_conf = argparser.add_argument_group(title="Torch Configuration")
+    torch_conf.add_argument(
+        "--torch-device",
+        default=None,
+        help='Settings for the default torch.device used in training, for example, "cpu", "cuda", or "cuda:0"',
+    )
     return argparser
 
 
