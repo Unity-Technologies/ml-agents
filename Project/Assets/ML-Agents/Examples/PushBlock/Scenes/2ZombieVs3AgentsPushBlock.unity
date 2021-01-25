@@ -582,7 +582,7 @@ MonoBehaviour:
     Rb: {fileID: 0}
   UseRandomAgentRotation: 1
   UseRandomAgentPosition: 1
-  UseRandomBlockRotation: 1
+  UseRandomBlockRotation: 0
   UseRandomBlockPosition: 1
 --- !u!4 &35422107
 Transform:
@@ -1469,7 +1469,7 @@ Transform:
   m_GameObject: {fileID: 180376172}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.8199997, y: 1, z: -1.43}
-  m_LocalScale: {x: 4, y: 0.75, z: 4}
+  m_LocalScale: {x: 3.5, y: 1.5, z: 3.5}
   m_Children: []
   m_Father: {fileID: 35422107}
   m_RootOrder: 6
@@ -3140,7 +3140,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
+    VectorObservationSize: 0
     NumStackedVectorObservations: 2
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -3541,7 +3541,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
+    VectorObservationSize: 0
     NumStackedVectorObservations: 2
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -4515,7 +4515,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
+    VectorObservationSize: 0
     NumStackedVectorObservations: 2
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -7438,7 +7438,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
+    VectorObservationSize: 0
     NumStackedVectorObservations: 2
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -8268,7 +8268,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
+    VectorObservationSize: 0
     NumStackedVectorObservations: 2
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -9329,7 +9329,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
+    VectorObservationSize: 0
     NumStackedVectorObservations: 2
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -10091,7 +10091,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
+    VectorObservationSize: 0
     NumStackedVectorObservations: 2
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -12197,7 +12197,7 @@ Transform:
   m_GameObject: {fileID: 997359139}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.8199997, y: 1, z: -1.43}
-  m_LocalScale: {x: 4, y: 0.75, z: 4}
+  m_LocalScale: {x: 3.5, y: 1.5, z: 3.5}
   m_Children: []
   m_Father: {fileID: 1056693890}
   m_RootOrder: 6
@@ -13261,7 +13261,7 @@ MonoBehaviour:
     Rb: {fileID: 0}
   UseRandomAgentRotation: 1
   UseRandomAgentPosition: 1
-  UseRandomBlockRotation: 1
+  UseRandomBlockRotation: 0
   UseRandomBlockPosition: 1
 --- !u!4 &1056693890
 Transform:
@@ -18137,7 +18137,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
+    VectorObservationSize: 0
     NumStackedVectorObservations: 2
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -20578,7 +20578,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
+    VectorObservationSize: 0
     NumStackedVectorObservations: 2
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -23722,7 +23722,7 @@ Transform:
   m_GameObject: {fileID: 1906676962}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.8199997, y: 1, z: -1.43}
-  m_LocalScale: {x: 4, y: 0.75, z: 4}
+  m_LocalScale: {x: 3.5, y: 1.5, z: 3.5}
   m_Children: []
   m_Father: {fileID: 2124347356}
   m_RootOrder: 6
@@ -24463,7 +24463,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
+    VectorObservationSize: 0
     NumStackedVectorObservations: 2
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -25862,7 +25862,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
+    VectorObservationSize: 0
     NumStackedVectorObservations: 2
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -27930,7 +27930,7 @@ MonoBehaviour:
     Rb: {fileID: 0}
   UseRandomAgentRotation: 1
   UseRandomAgentPosition: 1
-  UseRandomBlockRotation: 1
+  UseRandomBlockRotation: 0
   UseRandomBlockPosition: 1
 --- !u!4 &2124347356
 Transform:
@@ -28043,8 +28043,8 @@ MonoBehaviour:
     StartingRot: {x: 0, y: 0, z: 0, w: 0}
     Rb: {fileID: 0}
   UseRandomAgentRotation: 1
-  UseRandomAgentPosition: 0
-  UseRandomBlockRotation: 1
+  UseRandomAgentPosition: 1
+  UseRandomBlockRotation: 0
   UseRandomBlockPosition: 1
 --- !u!1 &1257456948449766
 GameObject:
@@ -29117,7 +29117,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
+    VectorObservationSize: 0
     NumStackedVectorObservations: 2
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -30100,7 +30100,7 @@ Transform:
   m_GameObject: {fileID: 8120829477783372687}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.8199997, y: 1, z: -1.43}
-  m_LocalScale: {x: 4, y: 0.75, z: 4}
+  m_LocalScale: {x: 3.5, y: 1.5, z: 3.5}
   m_Children: []
   m_Father: {fileID: 4006991767121726}
   m_RootOrder: 6
