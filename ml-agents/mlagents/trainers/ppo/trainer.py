@@ -77,7 +77,7 @@ class PPOTrainer(RLTrainer):
             baseline_estimates,
             value_estimates,
             value_next,
-            baseline_next,
+            died,
         ) = self.optimizer.get_trajectory_value_estimates(
             agent_buffer_trajectory,
             trajectory.next_obs,
@@ -146,21 +146,25 @@ class PPOTrainer(RLTrainer):
             #    f"{name}_marginalized_value_estimates_next"
             #].get_batch()
 
+            #print(local_rewards[-1])
+            #print(died)
+            #print(value_next[name])
             returns_q, returns_b, returns_v = get_team_returns(
                 rewards=local_rewards,
                 q_estimates=q_estimates,
                 baseline_estimates=baseline_estimates,
                 v_estimates=v_estimates,
                 value_next=value_next[name],
-                baseline_next=baseline_next[name],
+                died=died,
                 gamma=self.optimizer.reward_signals[name].gamma,
                 lambd=self.hyperparameters.lambd,
             )
-            #gae_advantage = get_team_gae(
+
+            #local_advantage = get_team_gae(
             #    rewards=local_rewards,
             #    value_estimates=v_estimates,
             #    baseline=baseline_estimates,
-            #    value_next=bootstrap_value,
+            #    value_next=value_next[name],
             #    gamma=self.optimizer.reward_signals[name].gamma,
             #    lambd=self.hyperparameters.lambd,
             #)
@@ -345,11 +349,11 @@ def discount_rewards(r, gamma=0.99, value_next=0.0):
     return discounted_r
 
 
-def lambd_return(r, value_estimates, gamma=0.99, lambd=0.8, value_next=0.0, baseline=False):
+def lambd_return(r, value_estimates, gamma=0.99, lambd=0.8, value_next=0.0, baseline=False, died=False):
     returns = np.zeros_like(r)
     if baseline:
         # this is incorrect
-        if value_next == 0.0:
+        if died:
             returns[-1] = r[-1]
         else:
             returns[-1] = value_estimates[-1]
@@ -399,7 +403,7 @@ def get_team_returns(
     baseline_estimates,
     v_estimates,
     value_next=0.0,
-    baseline_next=0.0,
+    died=False,
     gamma=0.99,
     lambd=0.8,
 ):
@@ -415,13 +419,10 @@ def get_team_returns(
     rewards = np.array(rewards)
     returns_q = lambd_return(rewards, q_estimates, gamma=gamma, lambd=lambd, value_next=value_next)
     returns_b = lambd_return(
-        rewards, baseline_estimates, gamma=gamma, lambd=lambd, value_next=baseline_next, baseline=True
+        rewards, baseline_estimates, gamma=gamma, lambd=lambd, baseline=True, died=died
     )
     returns_v = lambd_return(
         rewards, v_estimates, gamma=gamma, lambd=lambd, value_next=value_next
     )
-    #if rewards[-1] > 0:
-    #    print(returns_v)
-    #    print(rewards)
 
     return returns_q, returns_b, returns_v

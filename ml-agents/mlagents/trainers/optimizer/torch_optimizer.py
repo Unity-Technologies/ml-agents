@@ -99,7 +99,7 @@ class TorchOptimizer(Optimizer):
 
         memory = torch.zeros([1, 1, self.policy.m_size])
 
-        q_estimates, baseline_estimates, mem = self.policy.actor_critic.target_critic_pass(
+        q_estimates, baseline_estimates, mem = self.policy.actor_critic.critic_pass(
             current_obs,
             actions,
             memory,
@@ -146,22 +146,26 @@ class TorchOptimizer(Optimizer):
             value_estimates[name] = ModelUtils.to_numpy(estimate)
 
         # the base line and V shpuld  not be on the same done flag
-        boot_value_baseline = {}
         for name, estimate in boot_value_estimates.items():
             boot_value_estimates[name] = ModelUtils.to_numpy(estimate)
-            boot_value_baseline[name] = ModelUtils.to_numpy(estimate)
 
+        died = False
         if done:
             for k in boot_value_estimates:
                 if not self.reward_signals[k].ignore_done:
-                    boot_value_baseline[k][-1] = 0.0
+                    died = True
                     if len(next_critic_obs) == 0:
                         boot_value_estimates[k][-1] = 0.0
+        #            else:
+        #                print(len(next_critic_obs))
+        #                print(baseline_estimates)
+        #                print(value_estimates)
+        #                print(boot_value_baseline[k][-1])
 
         return (
             q_estimates,
             baseline_estimates,
             value_estimates,
             boot_value_estimates,
-            boot_value_baseline,
+            died
         )
