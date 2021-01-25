@@ -1232,6 +1232,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!65 &127335608
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1476,6 +1507,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &180376175
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5922,6 +5984,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &439361305
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6629,6 +6722,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &503889792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6870,6 +6994,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &534235135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7033,6 +7188,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &552839272
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7656,6 +7842,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &566724086
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12011,6 +12228,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &997359142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13217,6 +13465,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1125451440611344}
+        m_MethodName: KillAgent
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &1064249680
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17577,6 +17867,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &1481637319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18263,6 +18584,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &1514418415
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19242,6 +19594,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!65 &1585199925
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -19846,6 +20229,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!65 &1611730329
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -19938,6 +20352,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &1614386375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20849,6 +21294,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!65 &1698810250
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -21484,6 +21960,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!65 &1763865359
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -21657,6 +22164,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!65 &1764512594
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -23307,6 +23845,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &1906676965
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26405,6 +26974,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &2082590055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27852,6 +28452,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!1 &1948184009346040
 GameObject:
   m_ObjectHideFlags: 0
@@ -29002,6 +29633,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1125451440611344}
+        m_MethodName: ZombieTouchedBlock
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!33 &1922045957787112834
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -32947,6 +33620,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1125451440611344}
+        m_MethodName: KillAgent
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!20 &7252038608701153172
 Camera:
   m_ObjectHideFlags: 0
@@ -33148,6 +33863,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!4 &7252038609138608141
 Transform:
   m_ObjectHideFlags: 0
@@ -33459,6 +34205,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506de7b261f374159a5cdfdb0ff48c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tagToDetect: agent
+  onTriggerEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onTriggerExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+TriggerEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionEnterEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionStayEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onCollisionExitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Unity.MLAgentsExamples.CollisionCallbacks+CollisionEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!4 &7252038609625461253
 Transform:
   m_ObjectHideFlags: 0
