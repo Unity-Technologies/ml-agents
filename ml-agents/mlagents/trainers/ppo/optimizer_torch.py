@@ -217,7 +217,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         self.optimizer.step()
 
         ModelUtils.soft_update(
-            self.policy.actor_critic.critic, self.policy.actor_critic.target, 1.0
+            self.policy.actor_critic.critic, self.policy.actor_critic.target, 0.005
         )
         update_stats = {
             # NOTE: abs() is not technically correct, but matches the behavior in TensorFlow.
