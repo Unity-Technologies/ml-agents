@@ -145,17 +145,23 @@ class TorchOptimizer(Optimizer):
         for name, estimate in value_estimates.items():
             value_estimates[name] = ModelUtils.to_numpy(estimate)
 
+        # the base line and V shpuld  not be on the same done flag
+        boot_value_baseline = {}
         for name, estimate in boot_value_estimates.items():
             boot_value_estimates[name] = ModelUtils.to_numpy(estimate)
+            boot_value_baseline[name] = ModelUtils.to_numpy(estimate)
 
         if done:
             for k in boot_value_estimates:
                 if not self.reward_signals[k].ignore_done:
-                    boot_value_estimates[k][-1] = 0.0
+                    boot_value_baseline[k][-1] = 0.0
+                    if len(next_critic_obs) == 0:
+                        boot_value_estimates[k][-1] = 0.0
 
         return (
             q_estimates,
             baseline_estimates,
             value_estimates,
             boot_value_estimates,
+            boot_value_baseline,
         )
