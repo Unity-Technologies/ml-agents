@@ -298,7 +298,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         //Reset Blocks
         foreach (var item in BlocksList)
         {
-            var pos = UseRandomBlockPosition ? GetRandomSpawnPos(3f, 3f) : item.StartingPos;
+            var pos = UseRandomBlockPosition ? GetRandomSpawnPos(2.5f, 2.5f) : item.StartingPos;
             var rot = UseRandomBlockRotation ? GetRandomRot() : item.StartingRot;
 
             item.T.transform.SetPositionAndRotation(pos, rot);
