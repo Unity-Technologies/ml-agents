@@ -62,9 +62,9 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         self.stream_names = list(self.reward_signals.keys())
 
-        ModelUtils.soft_update(
-            self.policy.actor_critic.critic, self.policy.actor_critic.target, 1.0
-        )
+        #ModelUtils.soft_update(
+        #    self.policy.actor_critic.critic, self.policy.actor_critic.target, 1.0
+        #)
 
     def ppo_value_loss(
         self,
@@ -177,7 +177,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         if len(memories) > 0:
             memories = torch.stack(memories).unsqueeze(0)
 
-        log_probs, entropy, qs, baseline_vals, values = self.policy.evaluate_actions(
+        log_probs, entropy, values, baseline_vals,  = self.policy.evaluate_actions(
             current_obs,
             masks=act_masks,
             actions=actions,

@@ -99,37 +99,19 @@ class TorchOptimizer(Optimizer):
 
         memory = torch.zeros([1, 1, self.policy.m_size])
 
-        q_estimates, baseline_estimates, mem = self.policy.actor_critic.critic_pass(
-            current_obs,
-            actions,
-            memory,
-            sequence_length=batch.num_experiences,
-            team_obs=team_obs,
-            team_act=team_actions,
-        )
-
-        value_estimates, mem = self.policy.actor_critic.target_critic_value(
+        value_estimates, baseline_estimates, mem = self.policy.actor_critic.critic_pass(
             current_obs,
             memory,
             sequence_length=batch.num_experiences,
             team_obs=team_obs,
         )
 
-        boot_value_estimates, mem = self.policy.actor_critic.target_critic_value(
+        next_value_estimates, next_baseline_estimates, mem = self.policy.actor_critic.critic_pass(
             next_obs,
             memory,
             sequence_length=batch.num_experiences,
             team_obs=next_critic_obs,
         )
-
-        #next_value_estimates, next_marg_val_estimates, next_mem = self.policy.actor_critic.target_critic_pass(
-        #    next_obs,
-        #    next_actions,
-        #    memory,
-        #    sequence_length=batch.num_experiences,
-        #    team_obs=next_team_obs,
-        #    team_act=next_team_actions,
-        #)
 
         # # Actions is a hack here, we need the next actions
         # next_value_estimate, next_marg_val_estimate, _ = self.policy.actor_critic.critic_pass(
@@ -137,25 +119,24 @@ class TorchOptimizer(Optimizer):
         # )
         # These aren't used in COMAttention
 
-        for name, estimate in q_estimates.items():
-            q_estimates[name] = ModelUtils.to_numpy(estimate)
         for name, estimate in baseline_estimates.items():
             baseline_estimates[name] = ModelUtils.to_numpy(estimate)
 
         for name, estimate in value_estimates.items():
             value_estimates[name] = ModelUtils.to_numpy(estimate)
 
-        # the base line and V shpuld  not be on the same done flag
-        for name, estimate in boot_value_estimates.items():
-            boot_value_estimates[name] = ModelUtils.to_numpy(estimate)
+        for name, estimate in next_baseline_estimates.items():
+            next_baseline_estimates[name] = ModelUtils.to_numpy(estimate)
 
-        died = False
+        for name, estimate in next_value_estimates.items():
+            next_value_estimates[name] = ModelUtils.to_numpy(estimate)
+
         if done:
-            for k in boot_value_estimates:
+            for k in next_baseline_estimates:
                 if not self.reward_signals[k].ignore_done:
-                    died = True
+                    next_baseline_estimates[k][-1] = 0.0
                     if len(next_critic_obs) == 0:
-                        boot_value_estimates[k][-1] = 0.0
+                        next_value_estimates[k][-1] = 0.0
         #            else:
         #                print(len(next_critic_obs))
         #                print(baseline_estimates)
@@ -163,9 +144,8 @@ class TorchOptimizer(Optimizer):
         #                print(boot_value_baseline[k][-1])
 
         return (
-            q_estimates,
-            baseline_estimates,
             value_estimates,
-            boot_value_estimates,
-            died
+            baseline_estimates,
+            next_value_estimates,
+            next_baseline_estimates,
         )
