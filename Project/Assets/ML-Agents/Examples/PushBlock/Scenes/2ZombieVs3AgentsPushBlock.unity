@@ -3071,8 +3071,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -3149,7 +3149,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 2c785861dab4f42309917b4d04e2c8e7, type: 3}
+  m_Model: {fileID: 11400000, guid: d8cc4835b78f3487585c15806acd9439, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -3472,8 +3472,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -4446,8 +4446,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -7369,8 +7369,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -8199,8 +8199,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -9260,8 +9260,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -10022,8 +10022,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -18068,8 +18068,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -20509,8 +20509,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -24394,8 +24394,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -25775,8 +25775,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -25871,7 +25871,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 2c785861dab4f42309917b4d04e2c8e7, type: 3}
+  m_Model: {fileID: 11400000, guid: d8cc4835b78f3487585c15806acd9439, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -29126,7 +29126,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 2c785861dab4f42309917b4d04e2c8e7, type: 3}
+  m_Model: {fileID: 11400000, guid: d8cc4835b78f3487585c15806acd9439, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -29153,8 +29153,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
