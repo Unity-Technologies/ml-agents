@@ -33,24 +33,17 @@ def behavior_spec_from_proto(
     :param agent_info: protobuf object.
     :return: BehaviorSpec object.
     """
-    observation_shape = [tuple(obs.shape) for obs in agent_info.observations]
-    dim_props = [
-        tuple(DimensionProperty(dim) for dim in obs.dimension_properties)
-        for obs in agent_info.observations
-    ]
-    dim_props = [
-        dim_prop
-        if len(dim_prop) > 0
-        else (DimensionProperty.UNSPECIFIED,) * len(observation_shape[idx])
-        for idx, dim_prop in enumerate(dim_props)
-    ]
-    obs_types = [
-        ObservationType(obs.observation_type) for obs in agent_info.observations
-    ]
-    observation_specs = [
-        ObservationSpec(obs_shape, dim_p, obs_type)
-        for obs_shape, dim_p, obs_type in zip(observation_shape, dim_props, obs_types)
-    ]
+    observation_specs = []
+    for obs in agent_info.observations:
+        observation_specs.append(
+            ObservationSpec(
+                tuple(obs.shape),
+                tuple(DimensionProperty(dim) for dim in obs.dimension_properties)
+                if len(obs.dimension_properties) > 0
+                else (DimensionProperty.UNSPECIFIED,) * len(obs.shape),
+                ObservationType(obs.observation_type),
+            )
+        )
 
     # proto from communicator < v1.3 does not set action spec, use deprecated fields instead
     if (
