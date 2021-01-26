@@ -193,7 +193,7 @@ class PPOTrainer(RLTrainer):
             # This is later use as target for the different value estimates
             # agent_buffer_trajectory[f"{name}_returns"].set(local_return)
             agent_buffer_trajectory[f"{name}_returns_q"].set(returns_v)
-            agent_buffer_trajectory[f"{name}_returns_b"].set(returns_b)
+            agent_buffer_trajectory[f"{name}_returns_b"].set(returns_v)
             agent_buffer_trajectory[f"{name}_returns_v"].set(returns_v)
             agent_buffer_trajectory[f"{name}_advantage"].set(local_advantage)
             tmp_advantages.append(local_advantage)
