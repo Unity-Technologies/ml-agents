@@ -17,6 +17,7 @@ class TeammateStatus:
     obs: List[np.ndarray]
     reward: float
     action: ActionTuple
+    done: bool
 
 
 @attr.s(auto_attribs=True)
@@ -205,7 +206,9 @@ class Trajectory(NamedTuple):
             )
             agent_buffer_trajectory["team_rewards"].append(teammate_rewards)
             team_reward = teammate_rewards + [exp.reward]
-            agent_buffer_trajectory["average_team_reward"].append(sum(team_reward)/len(team_reward))
+            agent_buffer_trajectory["average_team_reward"].append(
+                sum(team_reward) / len(team_reward)
+            )
 
             # Next actions
             teammate_cont_next_actions = []
@@ -252,6 +255,9 @@ class Trajectory(NamedTuple):
 
             agent_buffer_trajectory["masks"].append(1.0)
             agent_buffer_trajectory["done"].append(exp.done)
+            agent_buffer_trajectory["team_dones"].append(
+                [_status.done for _status in exp.teammate_status]
+            )
 
             # Adds the log prob and action of continuous/discrete separately
             agent_buffer_trajectory["continuous_action"].append(exp.action.continuous)
@@ -301,6 +307,14 @@ class Trajectory(NamedTuple):
         Returns true if trajectory is terminated with a Done.
         """
         return self.steps[-1].done
+
+    @property
+    def teammate_dones_reached(self) -> bool:
+        """
+        Returns true if all teammates are done at the end of the trajectory.
+        Combine with done_reached to check if the whole team is done.
+        """
+        return all(_status.done for _status in self.steps[-1].teammate_status)
 
     @property
     def interrupted(self) -> bool:

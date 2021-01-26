@@ -157,6 +157,7 @@ class AgentProcessor:
                     obs=stored_decision_step.obs,
                     reward=step.reward,
                     action=action_tuple,
+                    done=isinstance(step, TerminalStep),
                 )
                 self.teammate_status[step.team_manager_id][global_id] = teammate_status
                 self.current_group_obs[step.team_manager_id][global_id] = step.obs
