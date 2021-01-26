@@ -76,7 +76,9 @@ class PPOTrainer(RLTrainer):
             agent_buffer_trajectory,
             trajectory.next_obs,
             trajectory.next_collab_obs,
-            trajectory.done_reached and not trajectory.interrupted,
+            trajectory.done_reached
+            and trajectory.teammate_dones_reached
+            and not trajectory.interrupted,
         )
 
         for name, v in value_estimates.items():
