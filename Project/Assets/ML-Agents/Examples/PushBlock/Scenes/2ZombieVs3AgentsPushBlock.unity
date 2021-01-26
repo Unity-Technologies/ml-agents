@@ -3102,8 +3102,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -3188,7 +3188,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!1 &263418408
 GameObject:
@@ -3398,7 +3398,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!114 &265967282
 MonoBehaviour:
@@ -3501,8 +3501,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -4371,7 +4371,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!114 &344861064
 MonoBehaviour:
@@ -4474,8 +4474,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -7293,7 +7293,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!114 &557898664
 MonoBehaviour:
@@ -7396,8 +7396,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -8122,7 +8122,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!114 &607937517
 MonoBehaviour:
@@ -8225,8 +8225,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -9182,7 +9182,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!114 &742698648
 MonoBehaviour:
@@ -9285,8 +9285,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -9943,7 +9943,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!114 &816508913
 MonoBehaviour:
@@ -10046,8 +10046,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -17988,7 +17988,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!114 &1504325949
 MonoBehaviour:
@@ -18091,8 +18091,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -20428,7 +20428,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!114 &1614947134
 MonoBehaviour:
@@ -20531,8 +20531,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -24312,7 +24312,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!114 &1914183271
 MonoBehaviour:
@@ -24415,8 +24415,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -25796,8 +25796,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
@@ -25836,7 +25836,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!114 &2029153700
 MonoBehaviour:
@@ -28130,7 +28130,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 0
 --- !u!1 &1500989827241484
 GameObject:
@@ -29172,8 +29172,8 @@ MonoBehaviour:
   - blockLarge
   - zombie
   - agent
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 25
   m_RayLayerMask:
