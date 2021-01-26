@@ -129,9 +129,6 @@ class PPOTrainer(RLTrainer):
             #    f"{name}_marginalized_value_estimates_next"
             #].get_batch()
 
-            #print(local_rewards[-1])
-            #print(died)
-            #print(value_next[name])
             returns_v, returns_b = get_team_returns(
                 rewards=local_rewards,
                 baseline_estimates=baseline_estimates,
@@ -140,6 +137,8 @@ class PPOTrainer(RLTrainer):
                 gamma=self.optimizer.reward_signals[name].gamma,
                 lambd=self.hyperparameters.lambd,
             )
+            #print("loc", local_rewards[-1])
+            #print("tdlam", returns_v)
 
             #local_advantage = get_team_gae(
             #    rewards=local_rewards,
@@ -156,9 +155,8 @@ class PPOTrainer(RLTrainer):
             
 
 
-            local_advantage = np.array(returns_v) - np.array(
-                baseline_estimates
-            )
+            #local_advantage = np.array(returns_v) - baseline_estimates
+            local_advantage = np.array(returns_v) - np.array(baseline_estimates)
             #self._stats_reporter.add_stat(
             #    f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} GAE Advantage Estimate",
             #    np.mean(gae_advantage),
@@ -168,8 +166,10 @@ class PPOTrainer(RLTrainer):
                 f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} TD Advantage Estimate",
                 np.mean(local_advantage),
             )
-            #local_return = local_advantage + q_estimates
+
             local_return = local_advantage + baseline_estimates
+
+            #local_return = local_advantage + q_estimates
             # This is later use as target for the different value estimates
             # agent_buffer_trajectory[f"{name}_returns"].set(local_return)
             agent_buffer_trajectory[f"{name}_returns_b"].set(returns_v)

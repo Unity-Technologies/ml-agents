@@ -157,6 +157,15 @@ class TorchOptimizer(Optimizer):
         #                print(baseline_estimates)
         #                print(value_estimates)
         #                print(boot_value_baseline[k][-1])
+        #if done and not all_dones:
+        #    print("agent finished but team going")
+        #elif all_dones:
+        #    print("alldone")
+        #else:
+        #    print("neither")
+        #print("final", boot_value_estimates)
+        #print("value", value_estimates)
+        #print("base", baseline_estimates)
 
         return (
             value_estimates,

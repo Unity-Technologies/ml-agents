@@ -885,7 +885,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             sequence_length=sequence_length,
         )
 
-        value_outputs, critic_mem_out = self.critic.q_net(
+        q_out, critic_mem_out = self.critic.q_net(
             all_obs, all_acts, memories=critic_mem, sequence_length=sequence_length
         )
 
@@ -897,7 +897,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             memories_out = torch.cat([actor_mem, critic_mem_out], dim=-1)
         else:
             memories_out = None
-        return value_outputs, baseline_outputs, memories_out
+        return q_out, baseline_outputs, memories_out
 
     def get_stats_and_value(
         self,
