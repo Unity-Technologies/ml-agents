@@ -11,10 +11,11 @@ from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
 from mlagents.trainers.torch.layers import LSTM, LinearEncoder, Initialization
-from mlagents.trainers.torch.encoders import VectorInput, Identity
+from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
 from mlagents.trainers.torch.attention import (
+    EntityEmbedding,
     ResidualSelfAttention,
     get_zero_entities_mask,
 )
@@ -45,7 +46,7 @@ class NetworkBody(nn.Module):
             else 0
         )
 
-        self.processors, self.var_processors, self.embedding_sizes = ModelUtils.create_input_processors(
+        self.processors, self.embedding_sizes = ModelUtils.create_input_processors(
             observation_specs,
             self.h_size,
             network_settings.vis_encode_type,
@@ -53,12 +54,13 @@ class NetworkBody(nn.Module):
         )
 
         entity_num_max: int = 0
-        for var_processor in self.var_processors:
-            entity_max: int = var_processor.entity_num_max_elements
+        var_processors = [p for p in self.processors if isinstance(p, EntityEmbedding)]
+        for processor in var_processors:
+            entity_max: int = processor.entity_num_max_elements
             # Only adds entity max if it was known at construction
             if entity_max > 0:
                 entity_num_max += entity_max
-        if len(self.var_processors) > 0:
+        if len(var_processors) > 0:
             if sum(self.embedding_sizes):
                 self.x_self_encoder = LinearEncoder(
                     sum(self.embedding_sizes),
@@ -107,9 +109,12 @@ class NetworkBody(nn.Module):
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         encodes = []
         var_len_inputs = []  # The list of variable length inputs
+        var_len_processors = [
+            p for p in self.processors if isinstance(p, EntityEmbedding)
+        ]
 
         for idx, processor in enumerate(self.processors):
-            if not isinstance(processor, Identity):
+            if not isinstance(processor, EntityEmbedding):
                 # The input can be encoded without having to process other inputs
                 obs_input = inputs[idx]
                 processed_obs = processor(obs_input)
@@ -126,10 +131,8 @@ class NetworkBody(nn.Module):
             masks = get_zero_entities_mask(var_len_inputs)
             embeddings: List[torch.Tensor] = []
             processed_self = self.x_self_encoder(encoded_self) if input_exist else None
-            for var_len_input, var_len_processor in zip(
-                var_len_inputs, self.var_processors
-            ):
-                embeddings.append(var_len_processor(processed_self, var_len_input))
+            for var_len_input, processor in zip(var_len_inputs, var_len_processors):
+                embeddings.append(processor(processed_self, var_len_input))
             qkv = torch.cat(embeddings, dim=1)
             attention_embedding = self.rsa(qkv, masks)
             if not input_exist:
@@ -387,12 +390,13 @@ class SimpleActor(nn.Module, Actor):
                 end = start + vec_size
                 inputs.append(concatenated_vec_obs[:, start:end])
                 start = end
-            elif enc is not None:
-                inputs.append(vis_inputs[vis_index])
-                vis_index += 1
-            else:
+            elif isinstance(enc, EntityEmbedding):
                 inputs.append(var_len_inputs[var_len_index])
                 var_len_index += 1
+            else:  # visual input
+                inputs.append(vis_inputs[vis_index])
+                vis_index += 1
+
         # End of code to convert the vec and vis obs into a list of inputs for the network
         encoding, memories_out = self.network_body(
             inputs, memories=memories, sequence_length=1

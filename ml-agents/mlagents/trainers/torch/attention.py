@@ -111,11 +111,9 @@ class EntityEmbedding(torch.nn.Module):
 
     def __init__(
         self,
-        x_self_size: int,
         entity_size: int,
         entity_num_max_elements: Optional[int],
         embedding_size: int,
-        concat_self: bool,
     ):
         """
         Constructs an EntityEmbedding module.
@@ -128,21 +126,29 @@ class EntityEmbedding(torch.nn.Module):
             self-attention.
         """
         super().__init__()
-        self.self_size: int = x_self_size
+        self.self_size: int = 0
         self.entity_size: int = entity_size
         self.entity_num_max_elements: int = -1
         if entity_num_max_elements is not None:
             self.entity_num_max_elements = entity_num_max_elements
-        # If not concatenating self, input to encoder is just entity size
-        if not concat_self:
-            self.self_size = 0
+        self.embedding_size = embedding_size
         # Initialization scheme from http://www.cs.toronto.edu/~mvolkovs/ICML2020_tfixup.pdf
+        self.self_ent_encoder = LinearEncoder(
+            self.entity_size,
+            1,
+            self.embedding_size,
+            kernel_init=Initialization.Normal,
+            kernel_gain=(0.125 / self.embedding_size) ** 0.5,
+        )
+
+    def add_self_embedding(self, size: int) -> None:
+        self.self_size = size
         self.self_ent_encoder = LinearEncoder(
             self.self_size + self.entity_size,
             1,
-            embedding_size,
+            self.embedding_size,
             kernel_init=Initialization.Normal,
-            kernel_gain=(0.125 / embedding_size) ** 0.5,
+            kernel_gain=(0.125 / self.embedding_size) ** 0.5,
         )
 
     def forward(self, x_self: torch.Tensor, entities: torch.Tensor) -> torch.Tensor:

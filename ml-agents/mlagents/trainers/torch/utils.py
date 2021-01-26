@@ -8,7 +8,6 @@ from mlagents.trainers.torch.encoders import (
     NatureVisualEncoder,
     SmallVisualEncoder,
     VectorInput,
-    Identity,
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.torch.attention import EntityEmbedding
@@ -163,7 +162,14 @@ class ModelUtils:
             return (VectorInput(shape[0], normalize), shape[0])
         # VARIABLE LENGTH
         if dim_prop in ModelUtils.VALID_VAR_LEN_PROP:
-            return (Identity, 0)
+            return (
+                EntityEmbedding(
+                    entity_size=shape[1],
+                    entity_num_max_elements=shape[0],
+                    embedding_size=h_size,
+                ),
+                0,
+            )
         # OTHER
         raise UnityTrainerException(f"Unsupported Sensor with specs {obs_spec}")
 
@@ -173,7 +179,7 @@ class ModelUtils:
         h_size: int,
         vis_encode_type: EncoderType,
         normalize: bool = False,
-    ) -> Tuple[nn.ModuleList, nn.ModuleList, List[int]]:
+    ) -> Tuple[nn.ModuleList, List[int]]:
         """
         Creates visual and vector encoders, along with their normalizers.
         :param observation_specs: List of ObservationSpec that represent the observation dimensions.
@@ -185,37 +191,25 @@ class ModelUtils:
             obs.
         :param normalize: Normalize all vector inputs.
         :return: Tuple of :
-         - ModuleList of the encoders (Identity if the input requires to be processed with a variable length
-         observation encoder)
+         - ModuleList of the encoders
          - A list of embedding sizes (0 if the input requires to be processed with a variable length
          observation encoder)
-         - A list of the inputs that need to be processed by a variable length observation encoder.
         """
         encoders: List[nn.Module] = []
-        var_encoders: List[nn.Module] = []
         embedding_sizes: List[int] = []
-        var_len_indices: List[int] = []
-        for idx, obs_spec in enumerate(observation_specs):
+        for obs_spec in observation_specs:
             encoder, embedding_size = ModelUtils.get_encoder_for_obs(
                 obs_spec, normalize, h_size, vis_encode_type
             )
             encoders.append(encoder)
             embedding_sizes.append(embedding_size)
-            if encoder is Identity:
-                var_len_indices.append(idx)
 
         x_self_size = sum(embedding_sizes)  # The size of the "self" embedding
-        for idx in var_len_indices:
-            var_encoders.append(
-                EntityEmbedding(
-                    x_self_size=0 if x_self_size == 0 else h_size,
-                    entity_size=observation_specs[idx].shape[1],
-                    entity_num_max_elements=observation_specs[idx].shape[0],
-                    embedding_size=h_size,
-                    concat_self=True,
-                )
-            )
-        return (nn.ModuleList(encoders), nn.ModuleList(var_encoders), embedding_sizes)
+        if x_self_size > 0:
+            for enc in encoders:
+                if isinstance(enc, EntityEmbedding):
+                    enc.add_self_embedding(h_size)
+        return (nn.ModuleList(encoders), embedding_sizes)
 
     @staticmethod
     def list_to_tensor(
