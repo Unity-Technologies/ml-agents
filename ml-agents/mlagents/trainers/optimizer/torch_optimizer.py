@@ -56,6 +56,7 @@ class TorchOptimizer(Optimizer):
         next_obs: List[np.ndarray],
         next_critic_obs: List[List[np.ndarray]],
         done: bool,
+        all_dones: bool,
     ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:
 
         n_obs = len(self.policy.behavior_spec.sensor_specs)
@@ -137,8 +138,6 @@ class TorchOptimizer(Optimizer):
         # )
         # These aren't used in COMAttention
 
-        for name, estimate in q_estimates.items():
-            q_estimates[name] = ModelUtils.to_numpy(estimate)
         for name, estimate in baseline_estimates.items():
             baseline_estimates[name] = ModelUtils.to_numpy(estimate)
 
@@ -149,13 +148,10 @@ class TorchOptimizer(Optimizer):
         for name, estimate in boot_value_estimates.items():
             boot_value_estimates[name] = ModelUtils.to_numpy(estimate)
 
-        died = False
-        if done:
+        if all_dones:
             for k in boot_value_estimates:
                 if not self.reward_signals[k].ignore_done:
-                    died = True
-                    if len(next_critic_obs) == 0:
-                        boot_value_estimates[k][-1] = 0.0
+                    boot_value_estimates[k][-1] = 0.0
         #            else:
         #                print(len(next_critic_obs))
         #                print(baseline_estimates)
@@ -163,9 +159,7 @@ class TorchOptimizer(Optimizer):
         #                print(boot_value_baseline[k][-1])
 
         return (
-            q_estimates,
-            baseline_estimates,
             value_estimates,
+            baseline_estimates,
             boot_value_estimates,
-            died
         )
