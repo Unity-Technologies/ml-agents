@@ -18,12 +18,16 @@ PPO_TORCH_CONFIG = ppo_dummy_config()
 SAC_TORCH_CONFIG = sac_dummy_config()
 
 
+@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("action_size", [(1, 1), (2, 2), (1, 2), (2, 1)])
 def test_hybrid_ppo(action_size):
     env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_size, step_size=0.8)
     new_network_settings = attr.evolve(PPO_TORCH_CONFIG.network_settings)
     new_hyperparams = attr.evolve(
-        PPO_TORCH_CONFIG.hyperparameters, batch_size=64, buffer_size=1024
+        PPO_TORCH_CONFIG.hyperparameters,
+        batch_size=64,
+        buffer_size=1024,
+        learning_rate=1e-3,
     )
     config = attr.evolve(
         PPO_TORCH_CONFIG,
@@ -31,11 +35,10 @@ def test_hybrid_ppo(action_size):
         network_settings=new_network_settings,
         max_steps=10000,
     )
-    check_environment_trains(
-        env, {BRAIN_NAME: config}, success_threshold=0.9, training_seed=1212
-    )
+    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
 
+@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("num_visual", [1, 2])
 def test_hybrid_visual_ppo(num_visual):
     env = SimpleEnvironment(
@@ -48,6 +51,7 @@ def test_hybrid_visual_ppo(num_visual):
     check_environment_trains(env, {BRAIN_NAME: config}, training_seed=1336)
 
 
+@pytest.mark.check_environment_trains
 def test_hybrid_recurrent_ppo():
     env = MemoryEnvironment([BRAIN_NAME], action_sizes=(1, 1), step_size=0.5)
     new_network_settings = attr.evolve(
@@ -69,6 +73,7 @@ def test_hybrid_recurrent_ppo():
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
 
+@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("action_size", [(1, 1), (2, 2), (1, 2), (2, 1)])
 def test_hybrid_sac(action_size):
     env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_size, step_size=0.8)
@@ -87,6 +92,7 @@ def test_hybrid_sac(action_size):
     )
 
 
+@pytest.mark.check_environment_trains
 @pytest.mark.parametrize("num_visual", [1, 2])
 def test_hybrid_visual_sac(num_visual):
     env = SimpleEnvironment(
@@ -104,6 +110,7 @@ def test_hybrid_visual_sac(num_visual):
     check_environment_trains(env, {BRAIN_NAME: config})
 
 
+@pytest.mark.check_environment_trains
 def test_hybrid_recurrent_sac():
     env = MemoryEnvironment([BRAIN_NAME], action_sizes=(1, 1), step_size=0.5)
     new_networksettings = attr.evolve(
