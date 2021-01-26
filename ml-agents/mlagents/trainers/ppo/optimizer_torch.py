@@ -84,16 +84,15 @@ class TorchPPOOptimizer(TorchOptimizer):
         """
         value_losses = []
         for name, head in values.items():
-            # old_val_tensor = old_values[name]
-            returns_tensor = returns[name]  # + 0.99 * old_val_tensor
-            # clipped_value_estimate = old_val_tensor + torch.clamp(
-            #    head - old_val_tensor, -1 * epsilon, epsilon
-            # )
-            # value_loss = (returns_tensor - head) ** 2
+            old_val_tensor = old_values[name]
+            returns_tensor = returns[name]
+            clipped_value_estimate = old_val_tensor + torch.clamp(
+               head - old_val_tensor, -1 * epsilon, epsilon
+            )
             v_opt_a = (returns_tensor - head) ** 2
-            # v_opt_b = (returns_tensor - clipped_value_estimate) ** 2
-            # value_loss = ModelUtils.masked_mean(torch.max(v_opt_a, v_opt_b), loss_masks)
-            value_loss = ModelUtils.masked_mean(v_opt_a, loss_masks)
+            v_opt_b = (returns_tensor - clipped_value_estimate) ** 2
+            value_loss = ModelUtils.masked_mean(torch.max(v_opt_a, v_opt_b), loss_masks)
+            #value_loss = ModelUtils.masked_mean(v_opt_a, loss_masks)
             value_losses.append(value_loss)
         value_loss = torch.mean(torch.stack(value_losses))
         return value_loss
@@ -137,21 +136,19 @@ class TorchPPOOptimizer(TorchOptimizer):
         decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
         decay_eps = self.decay_epsilon.get_value(self.policy.get_current_step())
         decay_bet = self.decay_beta.get_value(self.policy.get_current_step())
-        returns_q = {}
         returns_b = {}
         returns_v = {}
         old_values = {}
         old_marg_values = {}
         for name in self.reward_signals:
             old_values[name] = ModelUtils.list_to_tensor(
-                batch[f"{name}_value_estimates_next"]
+                batch[f"{name}_value_estimates"]
             )
             old_marg_values[name] = ModelUtils.list_to_tensor(
-                batch[f"{name}_marginalized_value_estimates_next"]
+                batch[f"{name}_baseline_estimates"]
             )
-            returns_q[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns_q"])
-            returns_b[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns_b"])
             returns_v[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns_v"])
+            returns_b[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns_b"])
         #
 
         n_obs = len(self.policy.behavior_spec.sensor_specs)
