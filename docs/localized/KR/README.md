@@ -23,33 +23,21 @@ ML-Agents 툴킷은 유니티의 풍부한 환경에서 인공지능 에이전�
 - Proximal Policy Optimization (PPO) 와 Soft Actor-Critic (SAC) 라는 두 가지 심층 강화 학습 알고리즘을 이용한 훈련
 - Behavioral Cloning 이나 Generative Adversarial Imitation Learning 을 통한 모방 학습에 대한 내장 지원
 - 적대적(Adversarial) 시나리오에서 에이전트를 교육하기 위한 Self-play 메커니즘
-- Easily definable Curriculum Learning scenarios for complex tasks
-- Train robust agents using environment randomization
-- Flexible agent control with On Demand Decision Making
-- Train using multiple concurrent Unity environment instances
-- Utilizes the [Unity Inference Engine](docs/Unity-Inference-Engine.md) to
-  provide native cross-platform support
-- Unity environment [control from Python](docs/Python-API.md)
-- Wrap Unity learning environments as a [gym](gym-unity/README.md)
+- 복잡한 작업에 대해 쉽게 정의할 수 있는 커리큘럼 학습 시나리오
+- 환경 랜덤화를 사용하여 강력한 에이전트 학습
+- 온 디맨드 의사 결정을 통한 유연한 에이전트 제어
+- 여러 개의 유니티 환경 인스턴스를 동시에 사용하는 학습
+- 네이티브 크로스 플랫폼을 지원하기 위해 [유니티 추론(Inference) 엔진](docs/Unity-Inference-Engine.md) 이용
+- 유니티 환경 [파이썬에서 제어](docs/Python-API.md)
+- [gym](gym-unity/README.md) 과 같은 유니티 학습 환경 제공
 
-See our [ML-Agents Overview](docs/ML-Agents-Overview.md) page for detailed
-descriptions of all these features.
+이 모든 기능에 대한 자세한 설명은 [ML-Agents 개요](docs/ML-Agents-Overview.md) 페이지를 참조하십시오.
 
-## 특징
+## Releases & Documentation
 
-* 파이썬을 통한 유니티 환경 제어
-* 10가지 이상의 유니티 환경 샘플
-* 여러 환경 구성 및 학습 시나리오 제공
-* 심층 강화 학습을 사용하여 기억력이 향상된 에이전트 학습
-* 쉽게 정의 가능한 커리큘럼 학습 시나리오
-* 지도 학습을 위한 에이전트 행동 브로드캐스팅
-* 모방 학습 지원 기본 제공
-* 온 디맨드 의사 결정을 통한 유연한 에이전트 제어
-* 환경 속 네트워크 출력의 시각화
-* [도커(Docker)]([https://www.docker.com/](https://www.docker.com/))를 통한 설정 단순화
-* [gym]([https://gym.openai.com/](https://gym.openai.com/))과 같은 학습 환경
-* 유니티 인터페이스 엔진 활용
-* 유니티 환경 인스턴스를 동시에 사용하는 학습
+**Our latest, stable release is `Release 12`. Click
+[here](https://github.com/Unity-Technologies/ml-agents/tree/release_12_docs/docs/Readme.md)
+to get started with the latest release of ML-Agents.**
 
 ## 문서화
 
@@ -57,7 +45,54 @@ descriptions of all these features.
 * 만약 유니티 AI 플랫폼에 관한 토론에 관심있는 연구원이라면 유니티와 ML-Agents Toolkit에 관한 [논문](https://arxiv.org/abs/1809.02627)을 참고해 주십시오. 또한 이 논문을 인용하는 것에 관한 사항은 아래의 인용 부분을 참조하십시오.
 * 만약 이전 버전의 ML-Agents toolkit을 사용하고 있다면 [이전 버전 마이그레이션 가이드](docs/Migrating.md)를 확인해주십시오.
 
+The table below lists all our releases, including our `master` branch which is
+under active development and may be unstable. A few helpful guidelines:
+- The [Versioning page](docs/Versioning.md) overviews how we manage our GitHub
+  releases and the versioning process for each of the ML-Agents components.
+- The [Releases page](https://github.com/Unity-Technologies/ml-agents/releases)
+  contains details of the changes between releases.
+- The [Migration page](docs/Migrating.md) contains details on how to upgrade
+  from earlier releases of the ML-Agents Toolkit.
+- The **Documentation** links in the table below include installation and usage
+  instructions specific to each release. Remember to always use the
+  documentation that corresponds to the release version you're using.
+
+| **Version** | **Release Date** | **Source** | **Documentation** | **Download** |
+|:-------:|:------:|:-------------:|:-------:|:------------:|
+| **master (unstable)** | -- | [source](https://github.com/Unity-Technologies/ml-agents/tree/master) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/master/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/master.zip) |
+| **Release 12** | **December 22, 2020** | **[source](https://github.com/Unity-Technologies/ml-agents/tree/release_12)** | **[docs](https://github.com/Unity-Technologies/ml-agents/tree/release_12_docs/docs/Readme.md)** | **[download](https://github.com/Unity-Technologies/ml-agents/archive/release_12.zip)** |
+| **Release 11** | December 21, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/release_11) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/release_11_docs/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/release_11.zip) |
+| **Release 10** | November 18, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/release_10) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/release_10_docs/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/release_10.zip) |
+| **Release 9** | November 4, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/release_9) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/release_9_docs/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/release_9.zip) |
+| **Release 8** | October 14, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/release_8) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/release_8_docs/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/release_8.zip) |
+| **Release 7** | September 16, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/release_7) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/release_7.zip) |
+| **Release 6** | August 12, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/release_6) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/release_6_docs/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/release_6.zip) |
+| **Release 5** | July 31, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/release_5) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/release_5_docs/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/release_5.zip) |
+
+## 인용
+
+인공지능 플랫폼으로서의 유니티에 대한 논의에 관심이 있는 연구자라면, 프리프린트를 참조하시오.
+[reference paper on Unity and the ML-Agents Toolkit](https://arxiv.org/abs/1809.02627).
+
+유니티 또는 ML-Agents 툴킷을 사용하여 연구를 수행하는 경우, 다음 논문을 참조 자료로 인용할 것을 요청합니다.
+Juliani, A., Berges, V., Teng, E., Cohen, A., Harper, J., Elion, C., Goy, C.,
+Gao, Y., Henry, H., Mattar, M., Lange, D. (2020). Unity: A General Platform for
+Intelligent Agents. _arXiv preprint
+[arXiv:1809.02627](https://arxiv.org/abs/1809.02627)._
+https://github.com/Unity-Technologies/ml-agents.
+
 ## 추가 리소스
+
+We have a Unity Learn course,
+[ML-Agents: Hummingsbird](https://learn.unity.com/course/ml-agents-hummingbirds),
+that provides a gentle introduction to Unity and the ML-Agents Toolkit.
+
+We've also partnered with
+[CodeMonkeyUnity](https://www.youtube.com/c/CodeMonkeyUnity) to create a
+[series of tutorial videos](https://www.youtube.com/playlist?list=PLzDRvYVwl53vehwiN_odYJkPBzcqFw110)
+on how to implement and use the ML-Agents Toolkit.
+
+We have also published a series of blog posts that are relevant for ML-Agents:
 
 블로그에 ML-Agents와 관련된 시리즈의 게시물을 게시하였습니다(영어).
 
@@ -72,30 +107,76 @@ descriptions of all these features.
 * [머신러닝을 배우는 게임 개발자](https://mikecann.co.uk/machine-learning/a-game-developer-learns-machine-learning-intent/)
 * [인텔 아키텍쳐 전용 Unity Technologies ML-Agents 둘러보기](https://software.intel.com/en-us/articles/explore-unity-technologies-ml-agents-exclusively-on-intel-architecture)
 
+
+- (December 28, 2020)
+  [Happy holidays from the Unity ML-Agents team!](https://blogs.unity3d.com/2020/12/28/happy-holidays-from-the-unity-ml-agents-team/)
+- (November 20, 2020)
+  [How Eidos-Montréal created Grid Sensors to improve observations for training agents](https://blogs.unity3d.com/2020/11/20/how-eidos-montreal-created-grid-sensors-to-improve-observations-for-training-agents/)
+- (November 11, 2020)
+  [2020 AI@Unity interns shoutout](https://blogs.unity3d.com/2020/11/11/2020-aiunity-interns-shoutout/)
+- (May 12, 2020)
+  [Announcing ML-Agents Unity Package v1.0!](https://blogs.unity3d.com/2020/05/12/announcing-ml-agents-unity-package-v1-0/)
+- (February 28, 2020)
+  [Training intelligent adversaries using self-play with ML-Agents](https://blogs.unity3d.com/2020/02/28/training-intelligent-adversaries-using-self-play-with-ml-agents/)
+- (November 11, 2019)
+  [Training your agents 7 times faster with ML-Agents](https://blogs.unity3d.com/2019/11/11/training-your-agents-7-times-faster-with-ml-agents/)
+- (October 21, 2019)
+  [The AI@Unity interns help shape the world](https://blogs.unity3d.com/2019/10/21/the-aiunity-interns-help-shape-the-world/)
+- (April 15, 2019)
+  [Unity ML-Agents Toolkit v0.8: Faster training on real games](https://blogs.unity3d.com/2019/04/15/unity-ml-agents-toolkit-v0-8-faster-training-on-real-games/)
+- (March 1, 2019)
+  [Unity ML-Agents Toolkit v0.7: A leap towards cross-platform inference](https://blogs.unity3d.com/2019/03/01/unity-ml-agents-toolkit-v0-7-a-leap-towards-cross-platform-inference/)
+- (December 17, 2018)
+  [ML-Agents Toolkit v0.6: Improved usability of Brains and Imitation Learning](https://blogs.unity3d.com/2018/12/17/ml-agents-toolkit-v0-6-improved-usability-of-brains-and-imitation-learning/)
+- (October 2, 2018)
+  [Puppo, The Corgi: Cuteness Overload with the Unity ML-Agents Toolkit](https://blogs.unity3d.com/2018/10/02/puppo-the-corgi-cuteness-overload-with-the-unity-ml-agents-toolkit/)
+- (September 11, 2018)
+  [ML-Agents Toolkit v0.5, new resources for AI researchers available now](https://blogs.unity3d.com/2018/09/11/ml-agents-toolkit-v0-5-new-resources-for-ai-researchers-available-now/)
+- (June 26, 2018)
+  [Solving sparse-reward tasks with Curiosity](https://blogs.unity3d.com/2018/06/26/solving-sparse-reward-tasks-with-curiosity/)
+- (June 19, 2018)
+  [Unity ML-Agents Toolkit v0.4 and Udacity Deep Reinforcement Learning Nanodegree](https://blogs.unity3d.com/2018/06/19/unity-ml-agents-toolkit-v0-4-and-udacity-deep-reinforcement-learning-nanodegree/)
+- (May 24, 2018)
+  [Imitation Learning in Unity: The Workflow](https://blogs.unity3d.com/2018/05/24/imitation-learning-in-unity-the-workflow/)
+- (March 15, 2018)
+  [ML-Agents Toolkit v0.3 Beta released: Imitation Learning, feedback-driven features, and more](https://blogs.unity3d.com/2018/03/15/ml-agents-v0-3-beta-released-imitation-learning-feedback-driven-features-and-more/)
+- (December 11, 2017)
+  [Using Machine Learning Agents in a real game: a beginner’s guide](https://blogs.unity3d.com/2017/12/11/using-machine-learning-agents-in-a-real-game-a-beginners-guide/)
+- (December 8, 2017)
+  [Introducing ML-Agents Toolkit v0.2: Curriculum Learning, new environments, and more](https://blogs.unity3d.com/2017/12/08/introducing-ml-agents-v0-2-curriculum-learning-new-environments-and-more/)
+- (September 19, 2017)
+  [Introducing: Unity Machine Learning Agents Toolkit](https://blogs.unity3d.com/2017/09/19/introducing-unity-machine-learning-agents/)
+- Overviewing reinforcement learning concepts
+  ([multi-armed bandit](https://blogs.unity3d.com/2017/06/26/unity-ai-themed-blog-entries/)
+  and
+  [Q-learning](https://blogs.unity3d.com/2017/08/22/unity-ai-reinforcement-learning-with-q-learning/))
+
+
 ## 커뮤니티 그리고 피드백
 
-ML-Agents toolkit은 오픈소스 프로젝트이며 컨트리뷰션을 환영합니다. 만약 컨트리뷰션을 원하시는 경우
-[컨트리뷰션 가이드라인](com/unity.ml-agents/CONTRIBUTING.md)과 [행동 규칙](CODE_OF_CONDUCT.md)을 검토해주십시오.
+ML-Agents 툴킷은 오픈소스 프로젝트이며 컨트리뷰션을 환영합니다. 만약 컨트리뷰션을 원하시는 경우
+[컨트리뷰션 가이드라인](com.unity.ml-agents/CONTRIBUTING.md) 과 [행동 규칙](CODE_OF_CONDUCT.md) 을 검토해주십시오.
 
-만약 ML-Agents toolkit을 사용하며 문제가 생긴다면, 가능한 많은 세부 사항을 포함하여 [이슈 제출](https://github.com/Unity-Technologies/ml-agents/issues)을 해주십시오.
+ML-Agents 툴킷 설치 및 설정과 관련된 문제 또는 에이전트를 가장 잘 설정하거나 교육하는 방법에 대한 논의는 [Unity ML-Agents forum](https://forum.unity.com/forums/ml-agents.453/) 에 새 스레드를 작성하십시오. 가능한 많은 세부 정보를 포함해야 합니다.
+ML-Agents 툴킷을 사용하여 다른 문제가 발생하거나 특정 기능 요청이 있는 경우 [이슈 제출](https://github.com/Unity-Technologies/ml-agents/issues) 부탁합니다.
 
+[let us know about it](https://github.com/Unity-Technologies/ml-agents/issues/1454).
 여러분의 의견은 저희에게 매우 중요합니다. Unity ML-Agents Toolkit에 관련된 여러분의 의견을 통해서 저희는 계속해서
 발전하고 성장할 수 있습니다. 단 몇 분만 사용하여 [저희에게 알려주세요](https://github.com/Unity-Technologies/ml-agents/issues/1454).
 
-
 다른 의견과 피드백은 ML-Agents 팀과 직접 연락부탁드립니다. (ml-agents@unity3d.com)
+
+
+## Privacy
+
+In order to improve the developer experience for Unity ML-Agents Toolkit, we have added in-editor analytics.
+Please refer to "Information that is passively collected by Unity" in the
+[Unity Privacy Policy](https://unity3d.com/legal/privacy-policy).
 
 
 ## 라이센스
 
 [Apache License 2.0](LICENSE)
-
-## 인용
-
-만약 Unity 또는 the ML-Agents Toolkit을 사용하여 연구를 수행할 경우 다음 논문을 참고 자료로 인용하여 주시길 바랍니다:
-
-Juliani, A., Berges, V., Vckay, E., Gao, Y., Henry, H., Mattar, M., Lange, D. (2018). Unity: A General Platform for Intelligent Agents. *arXiv preprint arXiv:1809.02627.* https://github.com/Unity-Technologies/ml-agents.
-
 
 
 ## 한글 번역
