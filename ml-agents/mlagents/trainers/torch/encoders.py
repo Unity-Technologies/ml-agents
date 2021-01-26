@@ -6,6 +6,14 @@ from mlagents.torch_utils import torch, nn
 from mlagents.trainers.torch.model_serialization import exporting_to_onnx
 
 
+class Identity(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+        return inputs
+
+
 class Normalizer(nn.Module):
     def __init__(self, vec_obs_size: int):
         super().__init__()

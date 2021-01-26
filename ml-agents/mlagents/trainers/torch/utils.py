@@ -8,6 +8,7 @@ from mlagents.trainers.torch.encoders import (
     NatureVisualEncoder,
     SmallVisualEncoder,
     VectorInput,
+    Identity,
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.torch.attention import EntityEmbedding
@@ -24,6 +25,25 @@ class ModelUtils:
         EncoderType.NATURE_CNN: 36,
         EncoderType.RESNET: 15,
     }
+
+    VALID_VISUAL_PROP = frozenset(
+        [
+            (
+                DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
+                DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
+                DimensionProperty.NONE,
+            ),
+            (DimensionProperty.UNSPECIFIED,) * 3,
+        ]
+    )
+
+    VALID_VECTOR_PROP = frozenset(
+        [(DimensionProperty.NONE,), (DimensionProperty.UNSPECIFIED,)]
+    )
+
+    VALID_VAR_LEN_PROP = frozenset(
+        [(DimensionProperty.VARIABLE_SIZE, DimensionProperty.NONE)]
+    )
 
     @staticmethod
     def update_learning_rate(optim: torch.optim.Optimizer, lr: float) -> None:
@@ -135,25 +155,15 @@ class ModelUtils:
         dim_prop = obs_spec.dimension_property
 
         # VISUAL
-        valid_visual = (
-            DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
-            DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
-            DimensionProperty.NONE,
-        )
-        valid_visual_unspecified = (DimensionProperty.UNSPECIFIED,) * 3
-        if dim_prop == valid_visual or dim_prop == valid_visual_unspecified:
+        if dim_prop in ModelUtils.VALID_VISUAL_PROP:
             visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
             return (visual_encoder_class(shape[0], shape[1], shape[2], h_size), h_size)
         # VECTOR
-        valid_vector = (DimensionProperty.NONE,)
-        valid_vector_unspecified = (DimensionProperty.UNSPECIFIED,)
-        if dim_prop == valid_vector or dim_prop == valid_vector_unspecified:
+        if dim_prop in ModelUtils.VALID_VECTOR_PROP:
             return (VectorInput(shape[0], normalize), shape[0])
         # VARIABLE LENGTH
-        valid_var_len = (DimensionProperty.VARIABLE_SIZE, DimensionProperty.NONE)
-        if dim_prop == valid_var_len:
-            # None means the residual self attention must be used
-            return (None, 0)
+        if dim_prop in ModelUtils.VALID_VAR_LEN_PROP:
+            return (Identity, 0)
         # OTHER
         raise UnityTrainerException(f"Unsupported Sensor with specs {obs_spec}")
 
@@ -175,7 +185,7 @@ class ModelUtils:
             obs.
         :param normalize: Normalize all vector inputs.
         :return: Tuple of :
-         - ModuleList of the encoders (None if the input requires to be processed with a variable length
+         - ModuleList of the encoders (Identity if the input requires to be processed with a variable length
          observation encoder)
          - A list of embedding sizes (0 if the input requires to be processed with a variable length
          observation encoder)
@@ -191,7 +201,7 @@ class ModelUtils:
             )
             encoders.append(encoder)
             embedding_sizes.append(embedding_size)
-            if encoder is None:
+            if encoder is Identity:
                 var_len_indices.append(idx)
 
         x_self_size = sum(embedding_sizes)  # The size of the "self" embedding
