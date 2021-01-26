@@ -144,7 +144,6 @@ class NetworkBody(nn.Module):
                 "Make sure the trained agents has at least one sensor attached to them."
             )
 
-        # Constants don't work in Barracuda
         if actions is not None:
             encoded_self = torch.cat([encoded_self, actions], dim=1)
         encoding = self.linear_encoder(encoded_self)
