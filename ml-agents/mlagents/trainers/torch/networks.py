@@ -10,7 +10,7 @@ from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
-from mlagents.trainers.torch.layers import LSTM, LinearEncoder
+from mlagents.trainers.torch.layers import LSTM, LinearEncoder, Initialization
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
@@ -147,8 +147,13 @@ class MultiInputNetworkBody(nn.Module):
         encoder_input_size = self.h_size
         if baseline:
             self.self_encoder = LinearEncoder(
-                obs_only_ent_size, 1, self.h_size
+                obs_only_ent_size,
+                1,
+                self.h_size,
+                kernel_init=Initialization.Normal,
+                kernel_gain=(0.125 / self.h_size) ** 0.5,
             )
+
 
             self.obs_encoder = EntityEmbedding(
                 self.h_size, obs_only_ent_size, None, self.h_size, concat_self=True

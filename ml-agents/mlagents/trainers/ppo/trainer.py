@@ -149,8 +149,14 @@ class PPOTrainer(RLTrainer):
 
 
             #local_advantage = np.array(q_estimates) - np.array(
-            local_advantage = np.array(returns_v) - np.array(returns_b)
-            
+            #local_advantage = np.array(returns_v) - baseline_estimates#np.array(returns_b)
+            local_advantage = get_gae(
+                rewards=local_rewards,
+                value_estimates=v_estimates,
+                value_next=value_next[name],
+                gamma=self.optimizer.reward_signals[name].gamma,
+                lambd=self.hyperparameters.lambd,
+            )
             #self._stats_reporter.add_stat(
             #    f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} GAE Advantage Estimate",
             #    np.mean(gae_advantage),
@@ -164,7 +170,7 @@ class PPOTrainer(RLTrainer):
             local_return = local_advantage + baseline_estimates
             # This is later use as target for the different value estimates
             # agent_buffer_trajectory[f"{name}_returns"].set(local_return)
-            agent_buffer_trajectory[f"{name}_returns_b"].set(returns_b)
+            agent_buffer_trajectory[f"{name}_returns_b"].set(returns_v)
             agent_buffer_trajectory[f"{name}_returns_v"].set(returns_v)
             agent_buffer_trajectory[f"{name}_advantage"].set(local_advantage)
             tmp_advantages.append(local_advantage)
