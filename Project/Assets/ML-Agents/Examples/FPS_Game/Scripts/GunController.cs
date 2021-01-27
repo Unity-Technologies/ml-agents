@@ -132,7 +132,7 @@ public class GunController : MonoBehaviour
 
     public void Shoot()
     {
-        if (coolDownWait)
+        if (coolDownWait || !gameObject.activeSelf)
         {
             return;
         }
