@@ -923,7 +923,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             team_obs=team_obs,
             team_act=team_act,
         )
-        value_outputs, _ = self.target_critic_value(inputs, memories=critic_mem, sequence_length=sequence_length, team_obs=team_obs)
+        value_outputs, _ = self.critic_value(inputs, memories=critic_mem, sequence_length=sequence_length, team_obs=team_obs)
 
         return log_probs, entropies, q_outputs, baseline_outputs, value_outputs
 

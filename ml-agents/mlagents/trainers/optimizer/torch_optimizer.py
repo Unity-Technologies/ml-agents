@@ -109,14 +109,14 @@ class TorchOptimizer(Optimizer):
             team_act=team_actions,
         )
 
-        value_estimates, mem = self.policy.actor_critic.target_critic_value(
+        value_estimates, mem = self.policy.actor_critic.critic_value(
             current_obs,
             memory,
             sequence_length=batch.num_experiences,
             team_obs=team_obs,
         )
 
-        boot_value_estimates, mem = self.policy.actor_critic.target_critic_value(
+        boot_value_estimates, mem = self.policy.actor_critic.critic_value(
             next_obs,
             memory,
             sequence_length=batch.num_experiences,
