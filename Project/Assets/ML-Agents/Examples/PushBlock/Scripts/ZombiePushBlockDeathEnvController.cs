@@ -251,15 +251,15 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
                     item.Agent.AddReward(score);
                 }
             }
-        }
         // Swap ground material for a bit to indicate we scored.
-        StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
+            StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
 
         // if (done)
         // {
         //Reset assets
-        ResetScene();
+            ResetScene();
         // }
+        }
     }
 
     public void ZombieTouchedBlock()
