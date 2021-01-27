@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
@@ -164,11 +165,24 @@ namespace Unity.MLAgents.Sensors
         /// Adds a collection of float observations to the vector observations of the agent.
         /// </summary>
         /// <param name="observation">Observation.</param>
+        [Obsolete("Use AddObservation(IList<float>) for better performance.")]
         public void AddObservation(IEnumerable<float> observation)
         {
             foreach (var f in observation)
             {
                 AddFloatObs(f);
+            }
+        }
+
+        /// <summary>
+        /// Adds a list or array of float observations to the vector observations of the agent.
+        /// </summary>
+        /// <param name="observation">Observation.</param>
+        public void AddObservation(IList<float> observation)
+        {
+            for (var i = 0; i < observation.Count; i++)
+            {
+                AddFloatObs(observation[i]);
             }
         }
 
