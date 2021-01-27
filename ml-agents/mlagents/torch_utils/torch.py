@@ -37,6 +37,7 @@ import torch  # noqa I201
 torch.set_num_threads(cpu_utils.get_num_threads_to_use())
 os.environ["KMP_BLOCKTIME"] = "0"
 
+
 _device = torch.device("cpu")
 
 
@@ -56,6 +57,9 @@ def set_torch_config(torch_settings: TorchSettings) -> None:
         torch.set_default_tensor_type(torch.FloatTensor)
     logger.info(f"default Torch device: {_device}")
 
+
+# Initialize to default settings
+set_torch_config(TorchSettings(device=None))
 
 nn = torch.nn
 

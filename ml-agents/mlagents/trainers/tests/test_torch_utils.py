@@ -24,11 +24,18 @@ def test_set_torch_device(
     expected_index,
     expected_tensor_type,
 ):
-    torch_settings = TorchSettings(device=device_str)
-    set_torch_config(torch_settings)
-    assert default_device().type == expected_type
-    if expected_index is None:
-        assert default_device().index is None
-    else:
-        assert default_device().index == expected_index
-    mock_set_default_tensor_type.assert_called_once_with(expected_tensor_type)
+    try:
+        torch_settings = TorchSettings(device=device_str)
+        set_torch_config(torch_settings)
+        assert default_device().type == expected_type
+        if expected_index is None:
+            assert default_device().index is None
+        else:
+            assert default_device().index == expected_index
+        mock_set_default_tensor_type.assert_called_once_with(expected_tensor_type)
+    except Exception:
+        raise
+    finally:
+        # restore the defaults
+        torch_settings = TorchSettings(device=None)
+        set_torch_config(torch_settings)
