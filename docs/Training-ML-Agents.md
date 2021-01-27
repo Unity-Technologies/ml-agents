@@ -229,9 +229,10 @@ checkpoint_settings:
 ```
 
 #### Torch settings:
+
 ```yaml
 torch_settings:
-  device: null
+  device: cpu
 ```
 
 ### Behavior Configurations
