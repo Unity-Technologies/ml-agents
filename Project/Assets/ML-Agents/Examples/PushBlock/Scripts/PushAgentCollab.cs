@@ -76,16 +76,12 @@ public class PushAgentCollab : Agent
     /// Called every step of the engine. Here the agent takes an action.
     /// </summary>
     public override void OnActionReceived(ActionBuffers actionBuffers)
-
     {
         if (!frozen)
         {
             // Move the agent using the action.
             MoveAgent(actionBuffers.DiscreteActions);
         }
-
-        // Penalty given each step to encourage agent to finish task quickly.
-        AddReward(-0.1f / 5000);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
