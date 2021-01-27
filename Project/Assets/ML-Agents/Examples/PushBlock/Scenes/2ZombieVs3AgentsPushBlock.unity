@@ -542,7 +542,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9fa4d08b7d4d198d5165b07ddd47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnvironmentSteps: 25000
+  MaxEnvironmentSteps: 10000
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -1558,8 +1558,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 180376172}
   serializedVersion: 2
-  m_Mass: 50
-  m_Drag: 0.5
+  m_Mass: 5
+  m_Drag: 0.001
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -3149,7 +3149,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: d8cc4835b78f3487585c15806acd9439, type: 3}
+  m_Model: {fileID: 11400000, guid: a6df89b741ed6469ab4cb729f81a4f1e, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -3189,7 +3189,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  frozen: 0
   useVectorObs: 1
 --- !u!1 &263418408
 GameObject:
@@ -3400,7 +3399,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &265967282
 MonoBehaviour:
@@ -3550,7 +3548,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 95c3b98e2aad84cefbd6f82ee7805789, type: 3}
+  m_Model: {fileID: 11400000, guid: a6df89b741ed6469ab4cb729f81a4f1e, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -4374,7 +4372,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &344861064
 MonoBehaviour:
@@ -4524,7 +4521,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 95c3b98e2aad84cefbd6f82ee7805789, type: 3}
+  m_Model: {fileID: 11400000, guid: a6df89b741ed6469ab4cb729f81a4f1e, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -7297,7 +7294,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &557898664
 MonoBehaviour:
@@ -7447,7 +7443,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207, type: 3}
+  m_Model: {fileID: 11400000, guid: a6df89b741ed6469ab4cb729f81a4f1e, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -8127,7 +8123,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &607937517
 MonoBehaviour:
@@ -8277,7 +8272,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207, type: 3}
+  m_Model: {fileID: 11400000, guid: a6df89b741ed6469ab4cb729f81a4f1e, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -9188,7 +9183,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &742698648
 MonoBehaviour:
@@ -9338,7 +9332,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207, type: 3}
+  m_Model: {fileID: 11400000, guid: a6df89b741ed6469ab4cb729f81a4f1e, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -9950,7 +9944,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &816508913
 MonoBehaviour:
@@ -10100,7 +10093,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 95c3b98e2aad84cefbd6f82ee7805789, type: 3}
+  m_Model: {fileID: 11400000, guid: a6df89b741ed6469ab4cb729f81a4f1e, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -12286,8 +12279,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 997359139}
   serializedVersion: 2
-  m_Mass: 50
-  m_Drag: 0.5
+  m_Mass: 5
+  m_Drag: 0.001
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -13221,7 +13214,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9fa4d08b7d4d198d5165b07ddd47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnvironmentSteps: 25000
+  MaxEnvironmentSteps: 10000
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -17996,7 +17989,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &1504325949
 MonoBehaviour:
@@ -18146,7 +18138,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207, type: 3}
+  m_Model: {fileID: 11400000, guid: a6df89b741ed6469ab4cb729f81a4f1e, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -20437,7 +20429,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &1614947134
 MonoBehaviour:
@@ -20587,7 +20578,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207, type: 3}
+  m_Model: {fileID: 11400000, guid: a6df89b741ed6469ab4cb729f81a4f1e, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -23811,8 +23802,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1906676962}
   serializedVersion: 2
-  m_Mass: 50
-  m_Drag: 0.5
+  m_Mass: 5
+  m_Drag: 0.001
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -24322,7 +24313,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &1914183271
 MonoBehaviour:
@@ -24472,7 +24462,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 9a4ea4894b7fb49859cfa9c16652b207, type: 3}
+  m_Model: {fileID: 11400000, guid: a6df89b741ed6469ab4cb729f81a4f1e, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -25847,7 +25837,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  frozen: 0
   useVectorObs: 1
 --- !u!114 &2029153700
 MonoBehaviour:
@@ -25871,7 +25860,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: d8cc4835b78f3487585c15806acd9439, type: 3}
+  m_Model: {fileID: 11400000, guid: a6df89b741ed6469ab4cb729f81a4f1e, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -27890,7 +27879,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9fa4d08b7d4d198d5165b07ddd47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnvironmentSteps: 25000
+  MaxEnvironmentSteps: 10000
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -28004,7 +27993,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9fa4d08b7d4d198d5165b07ddd47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnvironmentSteps: 25000
+  MaxEnvironmentSteps: 10000
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -28142,7 +28131,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  frozen: 0
   useVectorObs: 0
 --- !u!1 &1500989827241484
 GameObject:
@@ -29126,7 +29114,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: d8cc4835b78f3487585c15806acd9439, type: 3}
+  m_Model: {fileID: 11400000, guid: a6df89b741ed6469ab4cb729f81a4f1e, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -29479,8 +29467,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8120829477783372687}
   serializedVersion: 2
-  m_Mass: 50
-  m_Drag: 0.5
+  m_Mass: 5
+  m_Drag: 0.001
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
