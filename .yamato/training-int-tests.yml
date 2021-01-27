@@ -14,8 +14,6 @@ test_linux_training_int_{{ editor.version }}:
       sudo apt-get update && sudo apt-get install -y python3-venv
       python3 -m venv venv && source venv/bin/activate
       python -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
-      python -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
-      unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
       python -u -m ml-agents.tests.yamato.training_int_tests
   dependencies:
     - .yamato/standalone-build-test.yml#test_linux_standalone_{{ editor.version }}

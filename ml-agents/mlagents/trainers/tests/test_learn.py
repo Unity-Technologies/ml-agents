@@ -8,6 +8,7 @@ from mlagents.trainers.cli_utils import DetectDefault
 from mlagents_envs.exception import UnityEnvironmentException
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
+import os.path
 
 
 def basic_options(extra_args=None):
@@ -75,17 +76,24 @@ def test_run_training(
                 learn.run_training(0, options)
                 mock_init.assert_called_once_with(
                     trainer_factory_mock.return_value,
-                    "results/ppo",
+                    os.path.join("results", "ppo"),
                     "ppo",
                     "mock_param_manager",
                     True,
                     0,
                 )
                 handle_dir_mock.assert_called_once_with(
-                    "results/ppo", False, False, "results/notuselessrun"
+                    os.path.join("results", "ppo"),
+                    False,
+                    False,
+                    os.path.join("results", "notuselessrun"),
                 )
-                write_timing_tree_mock.assert_called_once_with("results/ppo/run_logs")
-                write_run_options_mock.assert_called_once_with("results/ppo", options)
+                write_timing_tree_mock.assert_called_once_with(
+                    os.path.join("results", "ppo", "run_logs")
+                )
+                write_run_options_mock.assert_called_once_with(
+                    os.path.join("results", "ppo"), options
+                )
     StatsReporter.writers.clear()  # make sure there aren't any writers as added by learn.py
 
 

@@ -17,7 +17,7 @@
     - [Visual Observation Summary & Best Practices](#visual-observation-summary--best-practices)
   - [Raycast Observations](#raycast-observations)
     - [RayCast Observation Summary & Best Practices](#raycast-observation-summary--best-practices)
-- [Actions](#actions)
+- [Actions and Actuators](#actions-and-actuators)
   - [Continuous Actions](#continuous-actions)
   - [Discrete Actions](#discrete-actions)
     - [Masking Discrete Actions](#masking-discrete-actions)
@@ -507,12 +507,13 @@ setting the State Size.
 - Use as few rays and tags as necessary to solve the problem in order to improve
   learning stability and agent performance.
 
-## Actions
+## Actions and Actuators
 
 An action is an instruction from the Policy that the agent carries out. The
-action is passed to the Agent as the `ActionBuffers` parameter when the Academy invokes the
-agent's `OnActionReceived()` function. There are two types of actions that an Agent can use:
- **Continuous** and **Discrete**.
+action is passed to the an `IActionReceiver` (either an `Agent` or an `IActuator`)
+as the `ActionBuffers` parameter when the Academy invokes the
+`IActionReciever.OnActionReceived()` function.
+There are two types of actions supported: **Continuous** and **Discrete**.
 
 Neither the Policy nor the training algorithm know anything about what the
 action values themselves mean. The training algorithm simply tries different
@@ -646,6 +647,29 @@ Notes:
   branches.
 - You cannot mask all the actions of a branch.
 - You cannot mask actions in continuous control.
+
+
+### IActuator interface and ActuatorComponents
+The Actuator API allows users to abstract behavior out of Agents and in to
+components (similar to the ISensor API).  The `IActuator` interface and `Agent`
+class both implement the `IActionReceiver` interface to allow for backward compatibility
+with the current `Agent.OnActionReceived` and `Agent.CollectDiscreteActionMasks` APIs.
+This means you will not have to change your code until you decide to use the `IActuator` API.
+
+Like the `ISensor` interface, the `IActuator` interface is intended for advanced users.
+
+The `ActuatorComponent` abstract class is used to create the actual `IActuator` at
+runtime. It must be attached to the same `GameObject` as the `Agent`, or to a
+child `GameObject`.  Actuators and all of their data structures are initialized
+during `Agent.Initialize`.  This was done to prevent an unexpected allocations at runtime.
+
+You can find an example of an `IActuator` implementation in the `Basic` example scene.
+**NOTE**: you do not need to adjust the Actions in the Agent's
+`Behavior Parameters` when using an `IActuator` and `ActuatorComponents`.
+
+Internally, `Agent.OnActionReceived` uses an `IActuator` to send actions to the Agent,
+although this is mostly abstracted from the user.
+
 
 ### Actions Summary & Best Practices
 

@@ -42,7 +42,6 @@ TRAINING_STATUS_FILE_NAME = "training_status.json"
 
 
 def get_version_string() -> str:
-    # pylint: disable=no-member
     return f""" Version information:
   ml-agents: {mlagents.trainers.__version__},
   ml-agents-envs: {mlagents_envs.__version__},

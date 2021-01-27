@@ -69,7 +69,6 @@ def deep_update_dict(d: Dict, update_d: Mapping) -> None:
 
 
 class SerializationSettings:
-    convert_to_barracuda = True
     convert_to_onnx = True
     onnx_opset = 9
 
@@ -682,7 +681,13 @@ class TrainerSettings(ExportableSettings):
 
     class DefaultTrainerDict(collections.defaultdict):
         def __init__(self, *args):
-            super().__init__(TrainerSettings, *args)
+            # Depending on how this is called, args may have the defaultdict
+            # callable at the start of the list or not. In particular, unpickling
+            # will pass [TrainerSettings].
+            if args and args[0] == TrainerSettings:
+                super().__init__(*args)
+            else:
+                super().__init__(TrainerSettings, *args)
 
         def __missing__(self, key: Any) -> "TrainerSettings":
             if TrainerSettings.default_override is not None:
