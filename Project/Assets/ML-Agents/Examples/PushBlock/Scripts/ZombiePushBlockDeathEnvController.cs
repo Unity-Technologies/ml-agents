@@ -82,6 +82,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     public bool UseRandomBlockPosition = true;
     public bool UseTeamManager = true;
     public bool UseTeamReward = true;
+    public float TeamRewardDiscountRate = 1;
     PushBlockSettings m_PushBlockSettings;
 
     private int m_NumberOfRemainingBlocks;
@@ -108,7 +109,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         {
             if (UseTeamReward)
             {
-                m_TeamManager = new PushBlockTeamManager();
+                m_TeamManager = new PushBlockTeamManager(TeamRewardDiscountRate);
             }
             else
             {
