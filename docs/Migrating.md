@@ -17,7 +17,10 @@ double-check that the versions are in the same. The versions can be found in
 ## Migrating to Release 13
 ### Implementing IHeuristic in your IActuator implementations
  - If you have any custom actuators, you can now implement the `IHeuristicProvider` interface to have your actuator
-handle the generation of actions when an Agent is running in heuristic mode.
+  handle the generation of actions when an Agent is running in heuristic mode.
+- `VectorSensor.AddObservation(IEnumerable<float>)` is deprecated. Use `VectorSensor.AddObservation(IList<float>)`
+  instead.
+- `ObservationWriter.AddRange()` is deprecated. Use `ObservationWriter.AddList()` instead.
 
 
 # Migrating

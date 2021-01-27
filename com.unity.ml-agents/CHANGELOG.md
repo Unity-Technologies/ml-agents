@@ -23,6 +23,11 @@ removed when training with a player. The Editor still requires it to be clamped 
 - Added the IHeuristicProvider interface to allow IActuators as well as Agent implement the Heuristic function to generate actions.
   Updated the Basic example and the Match3 Example to use Actuators.
   Changed the namespace and file names of classes in com.unity.ml-agents.extensions. (#4849)
+- Added `VectorSensor.AddObservation(IList<float>)`. `VectorSensor.AddObservation(IEnumerable<float>)`
+  is deprecated. The `IList` version is recommended, as it does not generate any
+  additional memory allocations. (#4887)
+- Added `ObservationWriter.AddList()` and deprecated `ObservationWriter.AddRange()`.
+  `AddList()` is recommended, as it does not generate any additional memory allocations. (#4887)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
@@ -33,6 +38,9 @@ removed when training with a player. The Editor still requires it to be clamped 
 - Removed unnecessary memory allocations in `ActuatorManager.UpdateActionArray()` (#4877)
 - Removed unnecessary memory allocations in `SensorShapeValidator.ValidateSensors()` (#4879)
 - Removed unnecessary memory allocations in `SideChannelManager.GetSideChannelMessage()` (#4886)
+- Removed several memory allocations that happened during inference. On a test scene, this
+  reduced the amount of memory allocated by approximately 25%. (#4887)
+
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed a bug that would cause an exception when `RunOptions` was deserialized via `pickle`. (#4842)
 - Fixed a bug that can cause a crash if a behavior can appear during training in multi-environment training. (#4872)
