@@ -35,6 +35,9 @@ removed when training with a player. The Editor still requires it to be clamped 
 #### com.unity.ml-agents (C#)
 - Fix a compile warning about using an obsolete enum in `GrpcExtensions.cs`. (#4812)
 - CameraSensor now logs an error if the GraphicsDevice is null. (#4880)
+- Removed unnecessary memory allocations in `ActuatorManager.UpdateActionArray()` (#4877)
+- Removed unnecessary memory allocations in `SensorShapeValidator.ValidateSensors()` (#4879)
+- Removed unnecessary memory allocations in `SideChannelManager.GetSideChannelMessage()` (#4886)
 - Removed several memory allocations that happened during inference. On a test scene, this
   reduced the amount of memory allocated by approximately 25%. (#4887)
 
