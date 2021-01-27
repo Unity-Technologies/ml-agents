@@ -178,12 +178,6 @@ def _create_parser() -> argparse.ArgumentParser:
         action=DetectDefault,
     )
     argparser.add_argument(
-        "--cpu",
-        default=False,
-        action=DetectDefaultStoreTrue,
-        help="Forces training using CPU only",
-    )
-    argparser.add_argument(
         "--torch",
         default=False,
         action=RaiseRemovedWarning,

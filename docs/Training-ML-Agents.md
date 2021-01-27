@@ -188,7 +188,8 @@ using the help utility:
 mlagents-learn --help
 ```
 
-These additional CLI arguments are grouped into environment, engine and checkpoint. The available settings and example values are shown below.
+These additional CLI arguments are grouped into environment, engine, checkpoint and torch.
+The available settings and example values are shown below.
 
 #### Environment settings
 
@@ -225,6 +226,12 @@ checkpoint_settings:
   force: true
   train_model: false
   inference: false
+```
+
+#### Torch settings:
+```yaml
+torch_settings:
+  device: null
 ```
 
 ### Behavior Configurations
