@@ -579,11 +579,9 @@ namespace Unity.MLAgents
 
         public void SendDoneToTrainer()
         {
-            // m_Info.reward = m_Reward;
             // We request a decision so Python knows the Agent is done immediately
             m_Brain?.RequestDecision(m_Info, sensors);
             ResetSensors();
-            // m_Reward = 0f;
         }
 
         /// <summary>
@@ -717,6 +715,11 @@ namespace Unity.MLAgents
 #endif
             m_Reward += increment;
             m_CumulativeReward += increment;
+        }
+
+        public void AddRewardAfterDeath(float increment)
+        {
+            m_Info.reward += increment;
         }
 
         /// <summary>

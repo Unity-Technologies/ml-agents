@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Unity.MLAgents;
+using System.Linq;
+using UnityEngine;
 using Unity.MLAgents.Extensions.Teams;
 using Unity.MLAgents.Sensors;
 
@@ -16,21 +18,32 @@ public class PushBlockTeamManager : BaseTeamManager
     public override void OnAgentDone(Agent agent, Agent.DoneReason doneReason, List<ISensor> sensors)
     {
         m_AgentDoneState[agent] = true;
-        if (!m_AgentDoneState.ContainsValue(false))
+    }
+
+    public void OnTeamDone()
+    {
+        foreach (var agent in m_AgentDoneState.Keys.ToList())
         {
-            foreach (var doneAgent in m_AgentDoneState.Keys)
+            if (m_AgentDoneState[agent])
             {
-                doneAgent.SendDoneToTrainer();
-                m_AgentDoneState[doneAgent] = false;
+                agent.SendDoneToTrainer();
+                m_AgentDoneState[agent] = false;
             }
         }
     }
 
-    public override void AddTeamReward(float reward)
+    public void AddTeamReward(float reward)
     {
         foreach (var agent in m_AgentDoneState.Keys)
         {
-            agent.AddReward(reward);
+            if (m_AgentDoneState[agent])
+            {
+                agent.AddRewardAfterDeath(reward);
+            }
+            else
+            {
+                agent.AddReward(reward);
+            }
         }
     }
 }

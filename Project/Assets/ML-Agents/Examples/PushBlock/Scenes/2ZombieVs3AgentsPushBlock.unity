@@ -542,7 +542,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9fa4d08b7d4d198d5165b07ddd47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnvironmentSteps: 25000
+  MaxEnvironmentSteps: 5000
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -584,6 +584,8 @@ MonoBehaviour:
   UseRandomAgentPosition: 1
   UseRandomBlockRotation: 1
   UseRandomBlockPosition: 1
+  UseTeamManager: 1
+  UseTeamReward: 1
 --- !u!4 &35422107
 Transform:
   m_ObjectHideFlags: 0
@@ -3154,7 +3156,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -3554,7 +3555,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 1
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -3859,7 +3859,6 @@ MonoBehaviour:
   m_BehaviorType: 2
   m_BehaviorName: 
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -4529,7 +4528,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 1
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -5084,7 +5082,6 @@ MonoBehaviour:
   m_BehaviorType: 2
   m_BehaviorName: 
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -6261,7 +6258,6 @@ MonoBehaviour:
   m_BehaviorType: 2
   m_BehaviorName: 
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -7454,7 +7450,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 2
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -8284,7 +8279,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 2
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -9345,7 +9339,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 3
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -10107,7 +10100,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 1
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -13224,7 +13216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9fa4d08b7d4d198d5165b07ddd47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnvironmentSteps: 25000
+  MaxEnvironmentSteps: 5000
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -13266,6 +13258,8 @@ MonoBehaviour:
   UseRandomAgentPosition: 1
   UseRandomBlockRotation: 1
   UseRandomBlockPosition: 1
+  UseTeamManager: 1
+  UseTeamReward: 1
 --- !u!4 &1056693890
 Transform:
   m_ObjectHideFlags: 0
@@ -18153,7 +18147,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 2
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -20594,7 +20587,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 3
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -24479,7 +24471,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 3
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -25878,7 +25869,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -27893,7 +27883,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9fa4d08b7d4d198d5165b07ddd47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnvironmentSteps: 25000
+  MaxEnvironmentSteps: 5000
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -27935,6 +27925,8 @@ MonoBehaviour:
   UseRandomAgentPosition: 1
   UseRandomBlockRotation: 1
   UseRandomBlockPosition: 1
+  UseTeamManager: 1
+  UseTeamReward: 1
 --- !u!4 &2124347356
 Transform:
   m_ObjectHideFlags: 0
@@ -28007,7 +27999,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9fa4d08b7d4d198d5165b07ddd47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnvironmentSteps: 25000
+  MaxEnvironmentSteps: 5000
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -28049,6 +28041,8 @@ MonoBehaviour:
   UseRandomAgentPosition: 1
   UseRandomBlockRotation: 1
   UseRandomBlockPosition: 1
+  UseTeamManager: 1
+  UseTeamReward: 1
 --- !u!1 &1257456948449766
 GameObject:
   m_ObjectHideFlags: 0
@@ -29133,7 +29127,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -30770,7 +30763,6 @@ MonoBehaviour:
   m_BehaviorType: 2
   m_BehaviorName: 
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0

@@ -140,7 +140,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     void FixedUpdate()
     {
         m_ResetTimer += 1;
-        if (m_ResetTimer > MaxEnvironmentSteps)
+        if (m_ResetTimer >= MaxEnvironmentSteps)
         {
             ResetScene();
         }
@@ -150,15 +150,6 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     public void KillAgent(Collision col, Transform t)
     {
         // print($"Zombie {t.gameObject.GetInstanceID()} ate Agent {col.gameObject.GetInstanceID()}");
-        //End Episode
-        foreach (var item in AgentsList)
-        {
-            if (!item.Agent)
-            {
-                return;
-            }
-            // item.Agent.EndEpisode();
-        }
 
         //Disable killed Agent
         foreach (var item in AgentsList)
@@ -249,7 +240,8 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         //Give Agent Rewards
         if (UseTeamManager && UseTeamReward)
         {
-            m_TeamManager.AddTeamReward(score);
+            var pushManager = (PushBlockTeamManager)m_TeamManager;
+            pushManager.AddTeamReward(score);
         }
         else
         {
@@ -278,7 +270,8 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         //Give Agent Rewards
         if (UseTeamManager && UseTeamReward)
         {
-            m_TeamManager.AddTeamReward(-1);
+            var pushManager = (PushBlockTeamManager)m_TeamManager;
+            pushManager.AddTeamReward(-1);
         }
         else
         {
@@ -315,8 +308,19 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             {
                 return;
             }
-            item.Agent.EndEpisode();
+
+            // not disabling agent here might cause problem with the done state
+            // item.Agent.EndEpisode();
+            item.Agent.gameObject.SetActive(false);
         }
+
+        // OnTeamDone has to be called after agents has called EndEpisode or been disabled.
+        if (UseTeamManager && UseTeamReward)
+        {
+            var pushManager = (PushBlockTeamManager)m_TeamManager;
+            pushManager.OnTeamDone();
+        }
+
         //Reset Agents
         foreach (var item in AgentsList)
         {
