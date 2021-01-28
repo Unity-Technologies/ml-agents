@@ -11,5 +11,10 @@
     "com.unity.modules.physics": "1.0.0",
     "com.unity.modules.physics2d": "1.0.0",
     "com.unity.modules.unityanalytics": "1.0.0"
+  },
+  "author": {
+    "name": "Unity Technologies Inc.",
+    "email": "ml-agents@unity3d.com",
+    "url": "https://github.com/Unity-Technologies/ml-agents/tree/com.unity.ml-agents_1.7.2"
   }
 }
