@@ -110,9 +110,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
             )
 
         mock_create_worker.side_effect = create_worker_mock
-        manager = SubprocessEnvManager(
-            mock_env_factory, EngineConfig.default_config(), 4
-        )
+        manager = SubprocessEnvManager(mock_env_factory, RunOptions(), 4)
 
         res = manager.training_behaviors
         for env in manager.env_workers:
