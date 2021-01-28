@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// <summary>
     /// ISensor implementation that generates observations for a group of Rigidbodies or ArticulationBodies.
     /// </summary>
-    public class PhysicsBodySensor : ISensor
+    public class PhysicsBodySensor : ISensor, IBuiltInSensor
     {
         int[] m_Shape;
         string m_SensorName;
@@ -120,5 +120,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             return m_SensorName;
         }
+
+        /// <inheritdoc/>
+        public BuiltInSensorType GetBuiltInSensorType()
+        {
+            return BuiltInSensorType.PhysicsBodySensor;
+        }
+
     }
 }
