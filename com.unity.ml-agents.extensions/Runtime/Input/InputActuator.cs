@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Layouts;
 
 namespace Unity.MLAgents.Extensions.Runtime.Input
 {
@@ -23,14 +25,23 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         };
 
         static Dictionary<InputAction, ActionSpec> s_InputActionToActionSpec = new Dictionary<InputAction, ActionSpec>();
+        static Dictionary<InputAction, InputControlLayout> s_InputActionToLayout = new Dictionary<InputAction, InputControlLayout>();
 
-        PlayerInput m_PlayerInput;
-        public InputActuator(PlayerInput playerInput)
+        readonly PlayerInput m_PlayerInput;
+        readonly BehaviorParameters m_BehaviorParameters;
+        readonly Agent m_Agent;
+        InputDevice m_VirtualDevice;
+
+        public InputActuator(PlayerInput playerInput, BehaviorParameters behaviorParameters, Agent agent)
         {
             Name = "Input System Actuator";
             Debug.Assert(playerInput != null,
                 "PlayerInput component is required to use the InputSystemActuator");
             m_PlayerInput = playerInput;
+            m_VirtualDevice = new Gamepad();
+
+            m_BehaviorParameters = behaviorParameters;
+            m_Agent = agent;
             ActionSpec = GenerateActionSpecFromAsset(m_PlayerInput);
         }
 
@@ -55,7 +66,13 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 
         static Type GetInputActionValueType(InputAction action)
         {
-            return InputSystem.LoadLayout(action.expectedControlType).GetValueType();
+            if (!s_InputActionToLayout.TryGetValue(action, out var layout))
+            {
+                layout = InputSystem.LoadLayout(action.expectedControlType);
+                s_InputActionToLayout[action] = layout;
+            }
+
+            return layout.GetValueType();
         }
 
         static InputActionMap GetDefaultActionMap(PlayerInput playerInput)
@@ -66,6 +83,31 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         public void OnActionReceived(ActionBuffers actionBuffers)
         {
             // Queue Input Event (if we aren't in heuristic mode)?
+            if (IsInHeuristicMode())
+            {
+                m_Agent.OnActionReceived(actionBuffers);
+            }
+            foreach (var action in GetDefaultActionMap(m_PlayerInput))
+            {
+                // blah
+                if (action.activeControl != null)
+                {
+                    var adaptor = s_Adaptors[GetInputActionValueType(action)];
+                    adaptor.QueueInputEventForAction(m_VirtualDevice, action, ActionSpec, actionBuffers);
+                }
+            }
+        }
+
+        bool IsInHeuristicMode()
+        {
+            return m_BehaviorParameters.BehaviorType == BehaviorType.HeuristicOnly ||
+                m_BehaviorParameters.BehaviorType == BehaviorType.Default &&
+                ReferenceEquals(m_BehaviorParameters.Model, null);
+        }
+
+        bool IsTraining()
+        {
+            return !IsInHeuristicMode() && Academy.Instance.IsCommunicatorOn;
         }
 
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)

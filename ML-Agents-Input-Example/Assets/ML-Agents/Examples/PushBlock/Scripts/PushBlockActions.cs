@@ -22,14 +22,14 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
                     ""name"": ""movement"",
                     ""type"": ""Value"",
                     ""id"": ""5f47cbc6-de46-4d33-93e2-2b1af4f5996d"",
-                    ""expectedControlType"": ""Vector2"",
+                    ""expectedControlType"": ""Dpad"",
                     ""processors"": """",
                     ""interactions"": """"
                 }
             ],
             ""bindings"": [
                 {
-                    ""name"": ""move"",
+                    ""name"": ""keyboard_move"",
                     ""id"": ""6bcba4bf-5ce0-4005-9e6a-0de2487211b0"",
                     ""path"": ""2DVector"",
                     ""interactions"": """",
@@ -82,6 +82,28 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
                     ""action"": ""movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e811e1d7-af77-4314-912d-a46582b4e521"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": ""StickDeadzone"",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8dd5f83f-d468-4132-8eba-86c2ce0fb8b7"",
+                    ""path"": ""<Gamepad>/dpad"",
+                    ""interactions"": """",
+                    ""processors"": ""StickDeadzone"",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -93,6 +115,11 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
             ""devices"": [
                 {
                     ""devicePath"": ""<Keyboard>"",
+                    ""isOptional"": true,
+                    ""isOR"": false
+                },
+                {
+                    ""devicePath"": ""<Gamepad>"",
                     ""isOptional"": false,
                     ""isOR"": false
                 }

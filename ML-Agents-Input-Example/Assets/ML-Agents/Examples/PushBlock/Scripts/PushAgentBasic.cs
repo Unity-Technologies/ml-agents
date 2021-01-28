@@ -137,35 +137,14 @@ public class PushAgentBasic : Agent
     /// <summary>
     /// Moves the agent according to the selected action.
     /// </summary>
-    public void MoveAgent(ActionSegment<int> act)
+    public void MoveAgent(ActionSegment<float> act)
     {
-        var dirToGo = Vector3.zero;
-        var rotateDir = Vector3.zero;
-
-        var action = act[0];
-
-        switch (action)
-        {
-            case 1:
-                dirToGo = transform.forward * 1f;
-                break;
-            case 2:
-                dirToGo = transform.forward * -1f;
-                break;
-            case 3:
-                rotateDir = transform.up * 1f;
-                break;
-            case 4:
-                rotateDir = transform.up * -1f;
-                break;
-            case 5:
-                dirToGo = transform.right * -0.75f;
-                break;
-            case 6:
-                dirToGo = transform.right * 0.75f;
-                break;
-        }
-        transform.Rotate(rotateDir, Time.deltaTime * 200f);
+        var transform1 = transform;
+        var forward = Mathf.Abs(act[1]) > Mathf.Abs(act[0]) ? act[1] : 0f;
+        var up = Mathf.Abs(act[0]) > Mathf.Abs(act[1]) ? act[0] : 0f;
+        var dirToGo = transform1.forward * forward;
+        var rotateDir = transform1.up * up;
+        transform1.Rotate(rotateDir, Time.deltaTime * 200f);
         m_AgentRb.AddForce(dirToGo * m_PushBlockSettings.agentRunSpeed,
             ForceMode.VelocityChange);
     }
@@ -175,8 +154,10 @@ public class PushAgentBasic : Agent
     /// </summary>
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
+        if (actionBuffers.ContinuousActions.IsEmpty())
+            return;
         // Move the agent using the action.
-        MoveAgent(actionBuffers.DiscreteActions);
+        MoveAgent(actionBuffers.ContinuousActions);
 
         // Penalty given each step to encourage agent to finish task quickly.
         AddReward(-1f / MaxStep);
@@ -184,13 +165,14 @@ public class PushAgentBasic : Agent
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        var value = m_PushblockActions.Movement.movement.ReadValue<Vector2>();
-        var discreteActionsOut = actionsOut.DiscreteActions;
-        discreteActionsOut.Clear();
-        if (!Mathf.Approximately(0f, value.x))
-            discreteActionsOut[0] = value.x > 0 ? 3 : 4;
-        else if (!Mathf.Approximately(0, value.y))
-            discreteActionsOut[0] = value.y > 0 ? 1 : 2;
+        // do nothing
+        // var value = m_PushblockActions.Movement.movement.ReadValue<Vector2>();
+        // var discreteActionsOut = actionsOut.DiscreteActions;
+        // discreteActionsOut.Clear();
+        // if (!Mathf.Approximately(0f, value.x))
+        //     discreteActionsOut[0] = value.x > 0 ? 3 : 4;
+        // else if (!Mathf.Approximately(0, value.y))
+        //     discreteActionsOut[0] = value.y > 0 ? 1 : 2;
     }
 
     /// <summary>

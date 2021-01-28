@@ -1,6 +1,7 @@
 using System;
 using Unity.MLAgents.Actuators;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Layouts;
 
 namespace Unity.MLAgents.Extensions.Runtime.Input
 {
@@ -8,6 +9,6 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
     {
         ActionSpec GetActionSpecForInputAction(InputAction action);
 
-        void QueueInputEventForAction(InputAction action, ActionSpec actionSpec, in ActionBuffers actionBuffers);
+        void QueueInputEventForAction(InputDevice device, InputAction action, ActionSpec actionSpec, in ActionBuffers actionBuffers);
     }
 }
