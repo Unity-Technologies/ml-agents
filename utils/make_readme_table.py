@@ -21,8 +21,12 @@ def table_line(version_info, bold=False):
         f"{bold_str}[download]({version_info.download_link}){bold_str}",
     ]
     if version_info.is_master:
-        cells.append("--")
+        cells.append("--")  # python
+        cells.append("--")  # Unity
     else:
+        cells.append(
+            f"{bold_str}[{version_info.python_verion}]({version_info.pypi_link}){bold_str}"
+        )
         cells.append(
             f"{bold_str}[{version_info.csharp_version}]({version_info.package_link}){bold_str}"
         )
@@ -102,6 +106,10 @@ class ReleaseInfo(NamedTuple):
             return f"https://docs.unity3d.com/Packages/com.unity.ml-agents@{v[0]}.{v[1]}/manual/index.html"
         except ValueError:
             return "--"
+
+    @property
+    def pypi_link(self):
+        return f"https://pypi.org/project/mlagents/{self.python_verion}/"
 
 
 versions = [
