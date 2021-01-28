@@ -16,7 +16,7 @@ public class WJPBAgent : Agent
     public GameObject ground;
     public GameObject spawnArea;
     Bounds m_SpawnAreaBounds;
-
+    GoalSensorComponent goalSensor;
 
     public GameObject wallJumpGoal;
     public GameObject pushBlockGoal;
@@ -169,7 +169,8 @@ public class WJPBAgent : Agent
 
         sensor.AddObservation(agentPos / 20f);
         sensor.AddObservation(DoGroundCheck(true) ? 1 : 0);
-        sensor.AddObservation(m_GoalOneHot);
+        goalSensor = this.GetComponent<GoalSensorComponent>();
+        goalSensor.AddGoal(m_GoalOneHot);
     }
 
     /// <summary>
@@ -190,7 +191,7 @@ public class WJPBAgent : Agent
 
     public void MoveAgent(ActionSegment<int> act)
     {
-        AddReward(-0.0005f);
+        AddReward(-0.0002f);
         var smallGrounded = DoGroundCheck(true);
         var largeGrounded = DoGroundCheck(false);
 
@@ -288,6 +289,11 @@ public class WJPBAgent : Agent
                 SetReward(1f);
                 EndEpisode();
             }
+            else
+            {
+                SetReward(-1f);
+                EndEpisode();
+            }
         }
     }
 
@@ -296,6 +302,11 @@ public class WJPBAgent : Agent
         if (m_Goal == 1)
         {
             SetReward(1f);
+            EndEpisode();
+        }
+        else
+        {
+            SetReward(-1f);
             EndEpisode();
         }
     }
@@ -330,7 +341,7 @@ public class WJPBAgent : Agent
             m_PushRenderer.material = goalMaterial;
         }
 
-        var height = m_ResetParams.GetWithDefault("big_wall_height", 8);
+        var height = m_ResetParams.GetWithDefault("big_wall_height", 4);
         var localScale = wall.transform.localScale;
         localScale = new Vector3(
             localScale.x,

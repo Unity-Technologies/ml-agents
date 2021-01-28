@@ -172,7 +172,7 @@ class ConditionalEncoder(torch.nn.Module):
             if isinstance(layer, Swish):
                 activation = layer(activation)
             else:
-                activation = layer(activation) + self.goal_encoders[idx // 2](
+                activation = layer(activation) * self.goal_encoders[idx // 2](
                     goal_tensor
                 )
         return activation
