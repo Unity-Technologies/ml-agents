@@ -234,7 +234,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// A sensor implementation that supports ray cast-based observations.
     /// </summary>
-    public class RayPerceptionSensor : ISensor
+    public class RayPerceptionSensor : ISensor, IBuiltInSensor
     {
         float[] m_Observations;
         int[] m_Shape;
@@ -364,6 +364,12 @@ namespace Unity.MLAgents.Sensors
         public virtual SensorCompressionType GetCompressionType()
         {
             return SensorCompressionType.None;
+        }
+
+        /// <inheritdoc/>
+        public BuiltInSensorType GetBuiltInSensorType()
+        {
+            return BuiltInSensorType.RayPerceptionSensor;
         }
 
         /// <summary>

@@ -59,6 +59,7 @@ namespace Unity.MLAgents.Tests.Analytics
             Assert.AreEqual(3, continuousEvent.ObservationSpecs[0].DimensionInfos.Length);
             Assert.AreEqual(20, continuousEvent.ObservationSpecs[0].DimensionInfos[0].Size);
             Assert.AreEqual("None", continuousEvent.ObservationSpecs[0].CompressionType);
+            Assert.AreEqual(Test3DSensor.k_BuiltInSensorType, continuousEvent.ObservationSpecs[0].BuiltInSensorType);
             Assert.AreNotEqual(null, continuousEvent.ModelHash);
 
             // Make sure nested fields get serialized
