@@ -99,7 +99,8 @@ def set_package_version(new_version: str) -> None:
     if "version" in package_json:
         package_json["version"] = new_version
     if "author" in package_json:
-        url = f"https://github.com/Unity-Technologies/ml-agents/tree/com.unity.ml-agents_{new_version}"
+        tag_version = new_version.replace("-preview", "")
+        url = f"https://github.com/Unity-Technologies/ml-agents/tree/com.unity.ml-agents_{tag_version}"
         package_json["author"]["url"] = url
     with open(MLAGENTS_PACKAGE_JSON_PATH, "w") as f:
         json.dump(package_json, f, indent=2)
