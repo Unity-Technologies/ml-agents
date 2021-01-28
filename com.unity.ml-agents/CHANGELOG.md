@@ -30,6 +30,9 @@ removed when training with a player. The Editor still requires it to be clamped 
   `AddList()` is recommended, as it does not generate any additional memory allocations. (#4887)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Added a `--torch-device` commandline option to `mlagents-learn`, which sets the default
+  [`torch.device`](https://pytorch.org/docs/stable/tensor_attributes.html#torch.torch.device) used for training. (#4888)
+- The `--cpu` commandline option had no effect and was removed. Use `--torch-device=cpu` to force CPU training. (#4888)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)

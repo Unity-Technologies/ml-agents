@@ -62,6 +62,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
     :param run_options: Command line arguments for training.
     """
     with hierarchical_timer("run_training.setup"):
+        torch_utils.set_torch_config(options.torch_settings)
         checkpoint_settings = options.checkpoint_settings
         env_settings = options.env_settings
         engine_settings = options.engine_settings
