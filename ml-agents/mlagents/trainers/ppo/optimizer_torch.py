@@ -1,6 +1,4 @@
 from typing import Dict, cast
-import itertools
-import numpy as np
 from mlagents.torch_utils import torch
 
 from mlagents.trainers.buffer import AgentBuffer
@@ -13,8 +11,6 @@ from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.trajectory import ObsUtil, TeamObsUtil
-
-from mlagents.trainers.torch.networks import CentralizedValueNetwork
 
 
 class TorchPPOOptimizer(TorchOptimizer):
@@ -86,13 +82,12 @@ class TorchPPOOptimizer(TorchOptimizer):
         for name, head in values.items():
             old_val_tensor = old_values[name]
             returns_tensor = returns[name]
-            #clipped_value_estimate = old_val_tensor + torch.clamp(
-            #   head - old_val_tensor, -1 * epsilon, epsilon
-            #)
+            clipped_value_estimate = old_val_tensor + torch.clamp(
+                head - old_val_tensor, -1 * epsilon, epsilon
+            )
             v_opt_a = (returns_tensor - head) ** 2
-            #v_opt_b = (returns_tensor - clipped_value_estimate) ** 2
-            #value_loss = ModelUtils.masked_mean(torch.max(v_opt_a, v_opt_b), loss_masks)
-            value_loss = ModelUtils.masked_mean(v_opt_a, loss_masks)
+            v_opt_b = (returns_tensor - clipped_value_estimate) ** 2
+            value_loss = ModelUtils.masked_mean(torch.max(v_opt_a, v_opt_b), loss_masks)
             value_losses.append(value_loss)
         value_loss = torch.mean(torch.stack(value_losses))
         return value_loss
