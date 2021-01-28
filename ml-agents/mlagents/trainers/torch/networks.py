@@ -3,7 +3,7 @@ import abc
 
 from mlagents.torch_utils import torch, nn
 
-from mlagents_envs.base_env import ActionSpec, SensorSpec
+from mlagents_envs.base_env import ActionSpec, ObservationSpec
 from mlagents.trainers.torch.action_model import ActionModel
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
@@ -27,7 +27,7 @@ EPSILON = 1e-7
 class NetworkBody(nn.Module):
     def __init__(
         self,
-        sensor_specs: List[SensorSpec],
+        observation_specs: List[ObservationSpec],
         network_settings: NetworkSettings,
         encoded_act_size: int = 0,
     ):
@@ -42,7 +42,7 @@ class NetworkBody(nn.Module):
         )
 
         self.processors, self.embedding_sizes = ModelUtils.create_input_processors(
-            sensor_specs,
+            observation_specs,
             self.h_size,
             network_settings.vis_encode_type,
             normalize=self.normalize,
@@ -109,7 +109,7 @@ class ValueNetwork(nn.Module):
     def __init__(
         self,
         stream_names: List[str],
-        sensor_specs: List[SensorSpec],
+        observation_specs: List[ObservationSpec],
         network_settings: NetworkSettings,
         encoded_act_size: int = 0,
         outputs_per_stream: int = 1,
@@ -118,7 +118,7 @@ class ValueNetwork(nn.Module):
         # This is not a typo, we want to call __init__ of nn.Module
         nn.Module.__init__(self)
         self.network_body = NetworkBody(
-            sensor_specs, network_settings, encoded_act_size=encoded_act_size
+            observation_specs, network_settings, encoded_act_size=encoded_act_size
         )
         if network_settings.memory is not None:
             encoding_size = network_settings.memory.memory_size // 2
@@ -239,7 +239,7 @@ class ActorCritic(Actor):
 class SimpleActor(nn.Module, Actor):
     def __init__(
         self,
-        sensor_specs: List[SensorSpec],
+        observation_specs: List[ObservationSpec],
         network_settings: NetworkSettings,
         action_spec: ActionSpec,
         conditional_sigma: bool = False,
@@ -269,7 +269,7 @@ class SimpleActor(nn.Module, Actor):
             ),
             requires_grad=False,
         )
-        self.network_body = NetworkBody(sensor_specs, network_settings)
+        self.network_body = NetworkBody(observation_specs, network_settings)
         if network_settings.memory is not None:
             self.encoding_size = network_settings.memory.memory_size // 2
         else:
@@ -363,7 +363,7 @@ class SimpleActor(nn.Module, Actor):
 class SharedActorCritic(SimpleActor, ActorCritic):
     def __init__(
         self,
-        sensor_specs: List[SensorSpec],
+        observation_specs: List[ObservationSpec],
         network_settings: NetworkSettings,
         action_spec: ActionSpec,
         stream_names: List[str],
@@ -372,7 +372,11 @@ class SharedActorCritic(SimpleActor, ActorCritic):
     ):
         self.use_lstm = network_settings.memory is not None
         super().__init__(
-            sensor_specs, network_settings, action_spec, conditional_sigma, tanh_squash
+            observation_specs,
+            network_settings,
+            action_spec,
+            conditional_sigma,
+            tanh_squash,
         )
         self.stream_names = stream_names
         self.value_heads = ValueHeads(stream_names, self.encoding_size)
@@ -424,7 +428,7 @@ class SharedActorCritic(SimpleActor, ActorCritic):
 class SeparateActorCritic(SimpleActor, ActorCritic):
     def __init__(
         self,
-        sensor_specs: List[SensorSpec],
+        observation_specs: List[ObservationSpec],
         network_settings: NetworkSettings,
         action_spec: ActionSpec,
         stream_names: List[str],
@@ -433,10 +437,14 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
     ):
         self.use_lstm = network_settings.memory is not None
         super().__init__(
-            sensor_specs, network_settings, action_spec, conditional_sigma, tanh_squash
+            observation_specs,
+            network_settings,
+            action_spec,
+            conditional_sigma,
+            tanh_squash,
         )
         self.stream_names = stream_names
-        self.critic = ValueNetwork(stream_names, sensor_specs, network_settings)
+        self.critic = ValueNetwork(stream_names, observation_specs, network_settings)
 
     @property
     def memory_size(self) -> int:
@@ -448,6 +456,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         if self.use_lstm and memories is not None:
             # Use only the back half of memories for critic and actor
             actor_mem, critic_mem = torch.split(memories, self.memory_size // 2, dim=-1)
+            actor_mem, critic_mem = actor_mem.contiguous(), critic_mem.contiguous()
         else:
             critic_mem = None
             actor_mem = None

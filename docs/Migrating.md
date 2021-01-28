@@ -12,6 +12,17 @@ double-check that the versions are in the same. The versions can be found in
 - `UnityEnvironment.API_VERSION` in environment.py
   ([example](https://github.com/Unity-Technologies/ml-agents/blob/b255661084cb8f701c716b040693069a3fb9a257/ml-agents-envs/mlagents/envs/environment.py#L45))
 
+
+# Migrating
+## Migrating to Release 13
+### Implementing IHeuristic in your IActuator implementations
+ - If you have any custom actuators, you can now implement the `IHeuristicProvider` interface to have your actuator
+  handle the generation of actions when an Agent is running in heuristic mode.
+- `VectorSensor.AddObservation(IEnumerable<float>)` is deprecated. Use `VectorSensor.AddObservation(IList<float>)`
+  instead.
+- `ObservationWriter.AddRange()` is deprecated. Use `ObservationWriter.AddList()` instead.
+
+
 # Migrating
 ## Migrating to Release 11
 ### Agent virtual method deprecation
