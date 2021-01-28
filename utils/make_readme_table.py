@@ -23,7 +23,9 @@ def table_line(version_info, bold=False):
     if version_info.is_master:
         cells.append("--")
     else:
-        cells.append(f"{bold_str}[package]({version_info.package_link}){bold_str}")
+        cells.append(
+            f"{bold_str}[{version_info.csharp_version}]({version_info.package_link}){bold_str}"
+        )
     joined_cells = " | ".join(cells)
     return f"| {joined_cells} |"
 
