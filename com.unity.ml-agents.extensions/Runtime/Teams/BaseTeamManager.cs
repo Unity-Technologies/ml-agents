@@ -21,11 +21,6 @@ namespace Unity.MLAgents.Extensions.Teams
             agent.SendDoneToTrainer();
         }
 
-        public virtual void AddTeamReward(float reward)
-        {
-
-        }
-
         public string GetId()
         {
             return m_Id;

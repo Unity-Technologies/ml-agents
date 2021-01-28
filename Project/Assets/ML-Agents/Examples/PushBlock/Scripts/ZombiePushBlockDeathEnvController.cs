@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.MLAgents;
+using Unity.MLAgents.Extensions.Teams;
 using UnityEngine;
 
 public class ZombiePushBlockDeathEnvController : MonoBehaviour
@@ -79,10 +80,12 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     public bool UseRandomAgentPosition = true;
     public bool UseRandomBlockRotation = true;
     public bool UseRandomBlockPosition = true;
+    public bool UseTeamManager = true;
+    // public bool UseTeamReward = true;
+    // public bool DiscountTeamReward = true;
     PushBlockSettings m_PushBlockSettings;
 
-    private int m_NumberOfRemainingBlocks;
-    private PushBlockTeamManager m_TeamManager;
+    private BaseTeamManager m_TeamManager;
 
     void Start()
     {
@@ -101,7 +104,11 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.Rb = item.T.GetComponent<Rigidbody>();
         }
         // Initialize TeamManager
-        m_TeamManager = new PushBlockTeamManager();
+        if (UseTeamManager)
+        {
+            m_TeamManager = new BaseTeamManager();
+        }
+
         foreach (var item in AgentsList)
         {
             item.StartingPos = item.Agent.transform.position;
@@ -109,7 +116,10 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.Rb = item.Agent.GetComponent<Rigidbody>();
             item.Col = item.Agent.GetComponent<Collider>();
             // Add to team manager
-            item.Agent.SetTeamManager(m_TeamManager);
+            if (UseTeamManager)
+            {
+                item.Agent.SetTeamManager(m_TeamManager);
+            }
         }
         foreach (var item in ZombiesList)
         {
@@ -126,17 +136,16 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     void FixedUpdate()
     {
         m_ResetTimer += 1;
-        if (m_ResetTimer > MaxEnvironmentSteps)
+        if (m_ResetTimer >= MaxEnvironmentSteps)
         {
             ResetScene();
         }
     }
 
-    //Kill/disable an agent
+    // Kill/disable an agent
     public void KillAgent(Collision col, Transform t)
     {
-        print($"zombie {t.name} ate {col.collider.name}");
-        //Disable killed Agent
+        // Disable killed Agent
         foreach (var item in AgentsList)
         {
             if (item.Col == col.collider)
@@ -147,7 +156,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             }
         }
 
-        //End Episode
+        // Disable killed Zombie
         foreach (var item in ZombiesList)
         {
             if (item.Agent.transform == t)
@@ -213,33 +222,18 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     /// </summary>
     public void ScoredAGoal(Collider col, float score)
     {
-        // //Decrement the counter
-        // m_NumberOfRemainingBlocks--;
-        //
-        // //Are we done?
-        // bool done = m_NumberOfRemainingBlocks == 0;
-        //
-        // //Disable the block
-        // col.gameObject.SetActive(false);
-
-        //Give Agent Rewards
+        // Give Agent Rewards
         foreach (var item in AgentsList)
         {
             if (item.Agent.gameObject.activeInHierarchy)
             {
-                print($"{item.Agent.name} scored");
                 item.Agent.AddReward(score);
             }
         }
 
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
-
-        // if (done)
-        // {
-        //Reset assets
         ResetScene();
-        // }
     }
 
     public void ZombieTouchedBlock()
@@ -247,12 +241,15 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         //Give Agent Rewards
         foreach (var item in AgentsList)
         {
-            item.Agent.AddReward(-1);
+            if (item.Agent.gameObject.activeInHierarchy)
+            {
+                item.Agent.AddReward(-1);
+            }
         }
+
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.failMaterial, 0.5f));
         ResetScene();
-
     }
 
     Quaternion GetRandomRot()
@@ -264,21 +261,22 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     {
         m_ResetTimer = 0;
 
-        //Random platform rot
+        // Random platform rot
         var rotation = Random.Range(0, 4);
         var rotationAngle = rotation * 90f;
         area.transform.Rotate(new Vector3(0f, rotationAngle, 0f));
 
-        //End Episode
+        // End Episode
         foreach (var item in AgentsList)
         {
             if (!item.Agent)
             {
                 return;
             }
-            item.Agent.EndEpisode();
+            item.Agent.gameObject.SetActive(false);
         }
-        //Reset Agents
+
+        // Reset Agents
         foreach (var item in AgentsList)
         {
             var pos = UseRandomAgentPosition ? GetRandomSpawnPos() : item.StartingPos;
@@ -290,7 +288,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.Agent.gameObject.SetActive(true);
         }
 
-        //Reset Blocks
+        // Reset Blocks
         foreach (var item in BlocksList)
         {
             var pos = UseRandomBlockPosition ? GetRandomSpawnPos() : item.StartingPos;
@@ -301,7 +299,8 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.Rb.angularVelocity = Vector3.zero;
             item.T.gameObject.SetActive(true);
         }
-        //End Episode
+
+        // Reset Zombies
         foreach (var item in ZombiesList)
         {
             if (!item.Agent)
@@ -313,9 +312,5 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.Agent.SetRandomWalkSpeed();
             item.Agent.gameObject.SetActive(true);
         }
-
-        //Reset counter
-        m_NumberOfRemainingBlocks = BlocksList.Count;
-        // m_NumberOfRemainingBlocks = 2;
     }
 }
