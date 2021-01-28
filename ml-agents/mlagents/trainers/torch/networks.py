@@ -43,7 +43,7 @@ class NetworkBody(nn.Module):
         encoded_act_size: int = 0,
     ):
         super().__init__()
-        self.conditioning_mode = ConditioningMode.SOFT
+        self.conditioning_mode = ConditioningMode.HYPER
         self.normalize = network_settings.normalize
         self.use_lstm = network_settings.memory is not None
         self.h_size = network_settings.hidden_units
