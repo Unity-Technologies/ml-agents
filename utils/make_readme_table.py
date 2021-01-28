@@ -65,6 +65,8 @@ class ReleaseInfo(NamedTuple):
         """
         if self.is_verified:
             return f"Verified Package {self.csharp_version}"
+        elif self.is_master:
+            return "master (unstable)"
         else:
             return self.release_tag.replace("_", " ").title()
 
@@ -140,3 +142,5 @@ for version_info in sorted_versions:
             continue
     print(table_line(version_info, highlight))
     count_by_verified[version_info.is_verified] += 1
+
+print("\n\n")
