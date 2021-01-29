@@ -85,7 +85,11 @@ class ReleaseInfo(NamedTuple):
 
     @property
     def download_link(self):
-        return f"https://github.com/Unity-Technologies/ml-agents/archive/{self.release_tag}.zip"
+        if self.is_verified:
+            tag = f"com.unity.ml-agents_{self.csharp_version}"
+        else:
+            tag = self.release_tag
+        return f"https://github.com/Unity-Technologies/ml-agents/archive/{tag}.zip"
 
     @property
     def doc_link(self):
