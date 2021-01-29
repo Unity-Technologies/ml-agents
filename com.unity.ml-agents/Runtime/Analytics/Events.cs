@@ -172,7 +172,7 @@ namespace Unity.MLAgents.Analytics
             if (stackingSensor != null)
             {
                 // Recurse on the wrapped sensor
-                stackingSensor.GetWrappedSensor().GetBuiltInSensorType() ;
+                return stackingSensor.GetWrappedSensor().GetBuiltInSensorType() ;
             }
             return BuiltInSensorType.Unknown;
         }
