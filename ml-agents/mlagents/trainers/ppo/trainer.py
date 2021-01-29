@@ -4,6 +4,7 @@
 
 from collections import defaultdict
 from typing import cast
+import statistics
 
 import numpy as np
 
@@ -352,7 +353,10 @@ def get_team_gae(
     :return: list of advantage estimates for time-steps t to T.
     """
     value_estimates = np.append(value_estimates, value_next)
-    delta_t = rewards + gamma * value_estimates[1:] - baseline
+    q_estimate = rewards + gamma * value_estimates[1:]
+    delta_t = (q_estimate - statistics.mean(q_estimate)) - (
+        baseline - statistics.mean(baseline)
+    )
     advantage = discount_rewards(r=delta_t, gamma=gamma * lambd)
     return advantage
 
