@@ -6,6 +6,7 @@ using Unity.MLAgents.CommunicatorObjects;
 using UnityEngine;
 using System.Runtime.CompilerServices;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Analytics;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Policies;
@@ -29,15 +30,15 @@ namespace Unity.MLAgents
 
             var agentActionProto = new AgentActionProto();
 
-            if (!ai.storedVectorActions.IsEmpty())
+            if (!ai.storedActions.IsEmpty())
             {
-                if (!ai.storedVectorActions.ContinuousActions.IsEmpty())
+                if (!ai.storedActions.ContinuousActions.IsEmpty())
                 {
-                    agentActionProto.ContinuousActions.AddRange(ai.storedVectorActions.ContinuousActions.Array);
+                    agentActionProto.ContinuousActions.AddRange(ai.storedActions.ContinuousActions.Array);
                 }
-                if (!ai.storedVectorActions.DiscreteActions.IsEmpty())
+                if (!ai.storedActions.DiscreteActions.IsEmpty())
                 {
-                    agentActionProto.DiscreteActions.AddRange(ai.storedVectorActions.DiscreteActions.Array);
+                    agentActionProto.DiscreteActions.AddRange(ai.storedActions.DiscreteActions.Array);
                 }
             }
 
@@ -126,7 +127,7 @@ namespace Unity.MLAgents
         /// Converts an ActionSpec into to a Protobuf BrainInfoProto so it can be sent.
         /// </summary>
         /// <returns>The BrainInfoProto generated.</returns>
-        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         /// <param name="name">The name of the brain.</param>
         /// <param name="isTraining">Whether or not the Brain is training.</param>
         public static BrainParametersProto ToBrainParametersProto(this ActionSpec actionSpec, string name, bool isTraining)
@@ -168,6 +169,8 @@ namespace Unity.MLAgents
             ActionSpec actionSpec;
             if (bpp.ActionSpec == null)
             {
+                // Disable deprecation warnings so we can set legacy fields
+#pragma warning disable CS0618
                 var spaceType = (SpaceType)bpp.VectorActionSpaceTypeDeprecated;
                 if (spaceType == SpaceType.Continuous)
                 {
@@ -177,6 +180,7 @@ namespace Unity.MLAgents
                 {
                     actionSpec = ActionSpec.MakeDiscrete(bpp.VectorActionSizeDeprecated.ToArray());
                 }
+#pragma warning restore CS0618
             }
             else
             {
@@ -208,7 +212,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// Convert a ActionSpec struct to a ActionSpecProto.
         /// </summary>
-        /// <param name="actionSpecProto">An instance of an action spec struct.</param>
+        /// <param name="actionSpec">An instance of an action spec struct.</param>
         /// <returns>An ActionSpecProto.</returns>
         public static ActionSpecProto ToActionSpecProto(this ActionSpec actionSpec)
         {
@@ -396,7 +400,29 @@ namespace Unity.MLAgents
                     observationProto.CompressedChannelMapping.AddRange(compressibleSensor.GetCompressedChannelMapping());
                 }
             }
+            // Add the dimension properties if any to the observationProto
+            var dimensionPropertySensor = sensor as IDimensionPropertiesSensor;
+            if (dimensionPropertySensor != null)
+            {
+                var dimensionProperties = dimensionPropertySensor.GetDimensionProperties();
+                int[] intDimensionProperties = new int[dimensionProperties.Length];
+                for (int i = 0; i < dimensionProperties.Length; i++)
+                {
+                    observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
+                }
+            }
             observationProto.Shape.AddRange(shape);
+
+            // Add the observation type, if any, to the observationProto
+            var typeSensor = sensor as ITypedSensor;
+            if (typeSensor != null)
+            {
+                observationProto.ObservationType = (ObservationTypeProto)typeSensor.GetObservationType();
+            }
+            else
+            {
+                observationProto.ObservationType = ObservationTypeProto.Default;
+            }
             return observationProto;
         }
 
@@ -410,6 +436,7 @@ namespace Unity.MLAgents
                 ConcatenatedPngObservations = proto.ConcatenatedPngObservations,
                 CompressedChannelMapping = proto.CompressedChannelMapping,
                 HybridActions = proto.HybridActions,
+                TrainingAnalytics = proto.TrainingAnalytics,
             };
         }
 
@@ -421,6 +448,7 @@ namespace Unity.MLAgents
                 ConcatenatedPngObservations = rlCaps.ConcatenatedPngObservations,
                 CompressedChannelMapping = rlCaps.CompressedChannelMapping,
                 HybridActions = rlCaps.HybridActions,
+                TrainingAnalytics = rlCaps.TrainingAnalytics,
             };
         }
 
@@ -451,5 +479,54 @@ namespace Unity.MLAgents
             }
             return true;
         }
+
+        #region Analytics
+
+        internal static TrainingEnvironmentInitializedEvent ToTrainingEnvironmentInitializedEvent(
+            this TrainingEnvironmentInitialized inputProto)
+        {
+            return new TrainingEnvironmentInitializedEvent
+            {
+                TrainerPythonVersion = inputProto.PythonVersion,
+                MLAgentsVersion = inputProto.MlagentsVersion,
+                MLAgentsEnvsVersion = inputProto.MlagentsEnvsVersion,
+                TorchVersion = inputProto.TorchVersion,
+                TorchDeviceType = inputProto.TorchDeviceType,
+                NumEnvironments = inputProto.NumEnvs,
+                NumEnvironmentParameters = inputProto.NumEnvironmentParameters,
+            };
+        }
+
+        internal static TrainingBehaviorInitializedEvent ToTrainingBehaviorInitializedEvent(
+            this TrainingBehaviorInitialized inputProto)
+        {
+            RewardSignals rewardSignals = 0;
+            rewardSignals |= inputProto.ExtrinsicRewardEnabled ? RewardSignals.Extrinsic : 0;
+            rewardSignals |= inputProto.GailRewardEnabled ? RewardSignals.Gail : 0;
+            rewardSignals |= inputProto.CuriosityRewardEnabled ? RewardSignals.Curiosity : 0;
+            rewardSignals |= inputProto.RndRewardEnabled ? RewardSignals.Rnd : 0;
+
+            TrainingFeatures trainingFeatures = 0;
+            trainingFeatures |= inputProto.BehavioralCloningEnabled ? TrainingFeatures.BehavioralCloning : 0;
+            trainingFeatures |= inputProto.RecurrentEnabled ? TrainingFeatures.Recurrent : 0;
+            trainingFeatures |= inputProto.TrainerThreaded ? TrainingFeatures.Threaded : 0;
+            trainingFeatures |= inputProto.SelfPlayEnabled ? TrainingFeatures.SelfPlay : 0;
+            trainingFeatures |= inputProto.CurriculumEnabled ? TrainingFeatures.Curriculum : 0;
+
+
+            return new TrainingBehaviorInitializedEvent
+            {
+                BehaviorName = inputProto.BehaviorName,
+                TrainerType = inputProto.TrainerType,
+                RewardSignalFlags = rewardSignals,
+                TrainingFeatureFlags = trainingFeatures,
+                VisualEncoder = inputProto.VisualEncoder,
+                NumNetworkLayers = inputProto.NumNetworkLayers,
+                NumNetworkHiddenUnits = inputProto.NumNetworkHiddenUnits,
+            };
+        }
+
+        #endregion
+
     }
 }

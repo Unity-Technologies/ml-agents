@@ -6,8 +6,9 @@ using Unity.MLAgents.Actuators;
 namespace Unity.MLAgents.Policies
 {
     /// <summary>
-    /// Whether the action space is discrete or continuous.
+    /// This is deprecated. Agents can now use both continuous and discrete actions together.
     /// </summary>
+    [Obsolete("Continuous and discrete actions on the same Agent are now supported; see ActionSpec.")]
     public enum SpaceType
     {
         /// <summary>
@@ -55,7 +56,7 @@ namespace Unity.MLAgents.Policies
         internal ActionSpec m_ActionSpec = new ActionSpec(0, null);
 
         /// <summary>
-        /// The specification of the Action space for the BrainParameters.
+        /// The specification of the Actions for the BrainParameters.
         /// </summary>
         public ActionSpec ActionSpec
         {
@@ -69,14 +70,14 @@ namespace Unity.MLAgents.Policies
         }
 
         /// <summary>
-        /// (Deprecated) The size of the action space.
+        /// (Deprecated) The number of possible actions.
         /// </summary>
         /// <remarks>The size specified is interpreted differently depending on whether
-        /// the agent uses the continuous or the discrete action space.</remarks>
+        /// the agent uses the continuous or the discrete actions.</remarks>
         /// <value>
-        /// For the continuous action space: the length of the float vector that represents
+        /// For the continuous actions: the length of the float vector that represents
         /// the action.
-        /// For the discrete action space: the number of branches in the action space.
+        /// For the discrete actions: the number of branches.
         /// </value>
         [Obsolete("VectorActionSize has been deprecated, please use ActionSpec instead.")]
         [FormerlySerializedAs("vectorActionSize")]

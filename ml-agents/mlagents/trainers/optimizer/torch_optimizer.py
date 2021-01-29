@@ -13,7 +13,7 @@ from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.torch.utils import ModelUtils
 
 
-class TorchOptimizer(Optimizer):  # pylint: disable=W0223
+class TorchOptimizer(Optimizer):
     def __init__(self, policy: TorchPolicy, trainer_settings: TrainerSettings):
         super().__init__()
         self.policy = policy
@@ -52,7 +52,7 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
     def get_trajectory_value_estimates(
         self, batch: AgentBuffer, next_obs: List[np.ndarray], done: bool
     ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:
-        n_obs = len(self.policy.behavior_spec.observation_shapes)
+        n_obs = len(self.policy.behavior_spec.observation_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
 
         # Convert to tensors

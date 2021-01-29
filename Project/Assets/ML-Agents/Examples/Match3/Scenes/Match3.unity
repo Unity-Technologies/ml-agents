@@ -690,6 +690,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2112317463290853299, guid: 2fafdcd0587684641b03b11f04454f1b,
+        type: 3}
+      propertyPath: HeuristicQuality
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3508723250470608011, guid: 2fafdcd0587684641b03b11f04454f1b,
         type: 3}
       propertyPath: cubeSpacing
@@ -1385,6 +1390,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2112317463290853299, guid: 2fafdcd0587684641b03b11f04454f1b,
+        type: 3}
+      propertyPath: HeuristicQuality
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3508723250470608011, guid: 2fafdcd0587684641b03b11f04454f1b,
         type: 3}
       propertyPath: cubeSpacing

@@ -122,8 +122,8 @@ def demo_to_buffer(
                 )
             )
         # check observations match
-        if len(behavior_spec.observation_shapes) != len(
-            expected_behavior_spec.observation_shapes
+        if len(behavior_spec.observation_specs) != len(
+            expected_behavior_spec.observation_specs
         ):
             raise RuntimeError(
                 "The demonstrations do not have the same number of observations as the policy."
@@ -131,11 +131,11 @@ def demo_to_buffer(
         else:
             for i, (demo_obs, policy_obs) in enumerate(
                 zip(
-                    behavior_spec.observation_shapes,
-                    expected_behavior_spec.observation_shapes,
+                    behavior_spec.observation_specs,
+                    expected_behavior_spec.observation_specs,
                 )
             ):
-                if demo_obs != policy_obs:
+                if demo_obs.shape != policy_obs.shape:
                     raise RuntimeError(
                         f"The shape {demo_obs} for observation {i} in demonstration \
                         do not match the policy's {policy_obs}."

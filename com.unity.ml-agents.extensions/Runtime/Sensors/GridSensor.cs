@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// <summary>
     /// Grid-based sensor.
     /// </summary>
-    public class GridSensor : SensorComponent, ISensor
+    public class GridSensor : SensorComponent, ISensor, IBuiltInSensor
     {
         /// <summary>
         /// Name of this grid sensor.
@@ -473,6 +473,13 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             return CompressionType;
         }
+
+        /// <inheritdoc/>
+        public BuiltInSensorType GetBuiltInSensorType()
+        {
+            return BuiltInSensorType.GridSensor;
+        }
+
 
         /// <summary>
         /// GetCompressedObservation - Calls Perceive then puts the data stored on the perception buffer

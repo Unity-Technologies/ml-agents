@@ -19,7 +19,7 @@ namespace Unity.MLAgents.Demonstrations
     /// See [Imitation Learning - Recording Demonstrations] for more information.
     ///
     /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
-    /// [Imitation Learning - Recording Demonstrations]: https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/docs//Learning-Environment-Design-Agents.md#recording-demonstrations
+    /// [Imitation Learning - Recording Demonstrations]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/docs//Learning-Environment-Design-Agents.md#recording-demonstrations
     /// </remarks>
     [RequireComponent(typeof(Agent))]
     [AddComponentMenu("ML Agents/Demonstration Recorder", (int)MenuGroup.Default)]
@@ -38,7 +38,7 @@ namespace Unity.MLAgents.Demonstrations
         /// </summary>
         [Tooltip("Number of steps to record. The editor will stop playing when it reaches this threshold. " +
                  "Set to zero to record indefinitely.")]
-        public int NumStepsToRecord = 0;
+        public int NumStepsToRecord;
 
         /// <summary>
         /// Base demonstration file name. If multiple files are saved, the additional filenames

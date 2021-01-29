@@ -73,7 +73,7 @@ namespace Unity.MLAgents.Actuators
         }
 
         /// <summary>
-        /// This method validates that all <see cref="IActuator"/>s have unique names and equivalent action space types
+        /// This method validates that all <see cref="IActuator"/>s have unique names
         /// if the `DEBUG` preprocessor macro is defined, and allocates the appropriate buffers to manage the actions for
         /// all of the <see cref="IActuator"/>s that may live on a particular object.
         /// </summary>
@@ -90,7 +90,6 @@ namespace Unity.MLAgents.Actuators
             }
 #if DEBUG
             // Make sure the names are actually unique
-            // Make sure all Actuators have the same SpaceType
             ValidateActuators();
 #endif
 
@@ -172,9 +171,10 @@ namespace Unity.MLAgents.Actuators
             }
             else
             {
-                Debug.Assert(sourceActionBuffer.Length == destination.Length,
-                    $"sourceActionBuffer:{sourceActionBuffer.Length} is a different" +
-                    $" size than destination: {destination.Length}.");
+                Debug.AssertFormat(sourceActionBuffer.Length == destination.Length,
+                    "sourceActionBuffer: {0} is a different size than destination: {1}.",
+                    sourceActionBuffer.Length,
+                    destination.Length);
 
                 Array.Copy(sourceActionBuffer.Array,
                     sourceActionBuffer.Offset,
@@ -207,8 +207,51 @@ namespace Unity.MLAgents.Actuators
 
         /// <summary>
         /// Iterates through all of the IActuators in this list and calls their
+        /// <see cref="IHeuristicProvider.Heuristic"/> method on them, if implemented, with the appropriate
+        /// <see cref="ActionSegment{T}"/>s depending on their <see cref="ActionSpec"/>.
+        /// </summary>
+        public void ApplyHeuristic(in ActionBuffers actionBuffersOut)
+        {
+            var continuousStart = 0;
+            var discreteStart = 0;
+            for (var i = 0; i < m_Actuators.Count; i++)
+            {
+                var actuator = m_Actuators[i];
+                var numContinuousActions = actuator.ActionSpec.NumContinuousActions;
+                var numDiscreteActions = actuator.ActionSpec.NumDiscreteActions;
+
+                if (numContinuousActions == 0 && numDiscreteActions == 0)
+                {
+                    continue;
+                }
+
+                var continuousActions = ActionSegment<float>.Empty;
+                if (numContinuousActions > 0)
+                {
+                    continuousActions = new ActionSegment<float>(actionBuffersOut.ContinuousActions.Array,
+                        continuousStart,
+                        numContinuousActions);
+                }
+
+                var discreteActions = ActionSegment<int>.Empty;
+                if (numDiscreteActions > 0)
+                {
+                    discreteActions = new ActionSegment<int>(actionBuffersOut.DiscreteActions.Array,
+                        discreteStart,
+                        numDiscreteActions);
+                }
+
+                var heuristic = actuator as IHeuristicProvider;
+                heuristic?.Heuristic(new ActionBuffers(continuousActions, discreteActions));
+                continuousStart += numContinuousActions;
+                discreteStart += numDiscreteActions;
+            }
+        }
+
+        /// <summary>
+        /// Iterates through all of the IActuators in this list and calls their
         /// <see cref="IActionReceiver.OnActionReceived"/> method on them with the appropriate
-        /// <see cref="ActionSegment{T}"/>s depending on their <see cref="IActionReceiver.ActionSpec"/>.
+        /// <see cref="ActionSegment{T}"/>s depending on their <see cref="ActionSpec"/>.
         /// </summary>
         public void ExecuteActions()
         {
@@ -272,7 +315,7 @@ namespace Unity.MLAgents.Actuators
         }
 
         /// <summary>
-        /// Validates that the IActuators managed by this object have unique names and equivalent action space types.
+        /// Validates that the IActuators managed by this object have unique names.
         /// Each Actuator needs to have a unique name in order for this object to ensure that the storage of action
         /// buffers, and execution of Actuators remains deterministic across different sessions of running.
         /// </summary>

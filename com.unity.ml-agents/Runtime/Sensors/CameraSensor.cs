@@ -1,11 +1,12 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// A sensor that wraps a Camera object to generate visual observations for an agent.
     /// </summary>
-    public class CameraSensor : ISensor
+    public class CameraSensor : ISensor, IBuiltInSensor
     {
         Camera m_Camera;
         int m_Width;
@@ -128,6 +129,11 @@ namespace Unity.MLAgents.Sensors
         /// <returns name="texture2D">Texture2D to render to.</returns>
         public static Texture2D ObservationToTexture(Camera obsCamera, int width, int height)
         {
+            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
+            {
+                Debug.LogError("GraphicsDeviceType is Null. This will likely crash when trying to render.");
+            }
+
             var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
             var oldRec = obsCamera.rect;
             obsCamera.rect = new Rect(0f, 0f, 1f, 1f);
@@ -182,5 +188,12 @@ namespace Unity.MLAgents.Sensors
                 Object.Destroy(texture);
             }
         }
+
+        /// <inheritdoc/>
+        public BuiltInSensorType GetBuiltInSensorType()
+        {
+            return BuiltInSensorType.CameraSensor;
+        }
+
     }
 }

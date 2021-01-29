@@ -72,14 +72,14 @@ def test_reset(mock_communicator, mock_launcher):
     env.close()
     assert isinstance(decision_steps, DecisionSteps)
     assert isinstance(terminal_steps, TerminalSteps)
-    assert len(spec.observation_shapes) == len(decision_steps.obs)
-    assert len(spec.observation_shapes) == len(terminal_steps.obs)
+    assert len(spec.observation_specs) == len(decision_steps.obs)
+    assert len(spec.observation_specs) == len(terminal_steps.obs)
     n_agents = len(decision_steps)
-    for shape, obs in zip(spec.observation_shapes, decision_steps.obs):
-        assert (n_agents,) + shape == obs.shape
+    for sen_spec, obs in zip(spec.observation_specs, decision_steps.obs):
+        assert (n_agents,) + sen_spec.shape == obs.shape
     n_agents = len(terminal_steps)
-    for shape, obs in zip(spec.observation_shapes, terminal_steps.obs):
-        assert (n_agents,) + shape == obs.shape
+    for sen_spec, obs in zip(spec.observation_specs, terminal_steps.obs):
+        assert (n_agents,) + sen_spec.shape == obs.shape
 
 
 @mock.patch("mlagents_envs.env_utils.launch_executable")
@@ -107,10 +107,10 @@ def test_step(mock_communicator, mock_launcher):
     env.close()
     assert isinstance(decision_steps, DecisionSteps)
     assert isinstance(terminal_steps, TerminalSteps)
-    assert len(spec.observation_shapes) == len(decision_steps.obs)
-    assert len(spec.observation_shapes) == len(terminal_steps.obs)
-    for shape, obs in zip(spec.observation_shapes, decision_steps.obs):
-        assert (n_agents,) + shape == obs.shape
+    assert len(spec.observation_specs) == len(decision_steps.obs)
+    assert len(spec.observation_specs) == len(terminal_steps.obs)
+    for spec, obs in zip(spec.observation_specs, decision_steps.obs):
+        assert (n_agents,) + spec.shape == obs.shape
     assert 0 in decision_steps
     assert 2 in terminal_steps
 

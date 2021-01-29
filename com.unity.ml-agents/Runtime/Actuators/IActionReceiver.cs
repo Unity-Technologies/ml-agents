@@ -75,7 +75,7 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         /// <param name="actionSpec"><see cref="ActionSpec"/> of the <see cref="ActionBuffers"/></param>
         /// <param name="actions">The float array of all actions, including discrete and continuous actions.</param>
-        /// <returns>An <see cref="ActionBuffers"/> instance initialized with a <see cref="ActionSpec"/> and a float array.
+        /// <returns>An <see cref="ActionBuffers"/> instance initialized with a <see cref="ActionSpec"/> and a float array.</returns>
         internal static ActionBuffers FromActionSpec(ActionSpec actionSpec, float[] actions)
         {
             if (actions == null)
@@ -121,6 +121,7 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Check if the <see cref="ActionBuffers"/> is empty.
         /// </summary>
+        /// <returns>Whether the buffers are empty.</returns>
         public bool IsEmpty()
         {
             return ContinuousActions.IsEmpty() && DiscreteActions.IsEmpty();
@@ -217,7 +218,7 @@ namespace Unity.MLAgents.Actuators
         ///
         /// See [Agents - Actions] for more information on masking actions.
         ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         void WriteDiscreteActionMask(IDiscreteActionMask actionMask);

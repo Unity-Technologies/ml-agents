@@ -6,6 +6,7 @@ from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.torch.encoders import VectorInput
+from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
 
 
 def test_min_visual_size():
@@ -48,8 +49,9 @@ def test_create_inputs(encoder_type, normalize, num_vector, num_visual):
     for _ in range(num_visual):
         obs_shapes.append(vis_obs_shape)
     h_size = 128
+    obs_spec = create_observation_specs_with_shapes(obs_shapes)
     encoders, embedding_sizes = ModelUtils.create_input_processors(
-        obs_shapes, h_size, encoder_type, normalize
+        obs_spec, h_size, encoder_type, normalize
     )
     total_output = sum(embedding_sizes)
     vec_enc = []

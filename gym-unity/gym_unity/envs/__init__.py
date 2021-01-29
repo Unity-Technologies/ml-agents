@@ -229,16 +229,16 @@ class UnityToGymWrapper(gym.Env):
 
     def _get_n_vis_obs(self) -> int:
         result = 0
-        for shape in self.group_spec.observation_shapes:
-            if len(shape) == 3:
+        for obs_spec in self.group_spec.observation_specs:
+            if len(obs_spec.shape) == 3:
                 result += 1
         return result
 
     def _get_vis_obs_shape(self) -> List[Tuple]:
         result: List[Tuple] = []
-        for shape in self.group_spec.observation_shapes:
-            if len(shape) == 3:
-                result.append(shape)
+        for obs_spec in self.group_spec.observation_specs:
+            if len(obs_spec.shape) == 3:
+                result.append(obs_spec.shape)
         return result
 
     def _get_vis_obs_list(
@@ -261,9 +261,9 @@ class UnityToGymWrapper(gym.Env):
 
     def _get_vec_obs_size(self) -> int:
         result = 0
-        for shape in self.group_spec.observation_shapes:
-            if len(shape) == 1:
-                result += shape[0]
+        for obs_spec in self.group_spec.observation_specs:
+            if len(obs_spec.shape) == 1:
+                result += obs_spec.shape[0]
         return result
 
     def render(self, mode="rgb_array"):

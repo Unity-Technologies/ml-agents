@@ -24,12 +24,14 @@ namespace Unity.MLAgents.Tests
             return Sensor.GetObservationShape();
         }
     }
-    public class Test3DSensor : ISensor
+    public class Test3DSensor : ISensor, IBuiltInSensor
     {
         int m_Width;
         int m_Height;
         int m_Channels;
         string m_Name;
+        // Dummy value for the IBuiltInSensor interface
+        public const int k_BuiltInSensorType = -42;
 
         public Test3DSensor(string name, int width, int height, int channels)
         {
@@ -69,6 +71,11 @@ namespace Unity.MLAgents.Tests
         public string GetName()
         {
             return m_Name;
+        }
+
+        public BuiltInSensorType GetBuiltInSensorType()
+        {
+            return (BuiltInSensorType)k_BuiltInSensorType;
         }
     }
 
@@ -114,7 +121,7 @@ namespace Unity.MLAgents.Tests
             var validBrainParameters = new BrainParameters();
             validBrainParameters.VectorObservationSize = 53;
             validBrainParameters.NumStackedVectorObservations = 1;
-            validBrainParameters.ActionSpec = new ActionSpec(3, new int[] { 2 });
+            validBrainParameters.ActionSpec = new ActionSpec(3, new[] { 2 });
             return validBrainParameters;
         }
 
@@ -360,7 +367,7 @@ namespace Unity.MLAgents.Tests
             var model = ModelLoader.Load(hybridONNXModel);
 
             var brainParameters = GetHybridBrainParameters();
-            brainParameters.ActionSpec = new ActionSpec(3, new int[] { 3 }); ; // Invalid discrete action size
+            brainParameters.ActionSpec = new ActionSpec(3, new[] { 3 }); // Invalid discrete action size
             var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 }, new ActuatorComponent[0]);
             Assert.Greater(errors.Count(), 0);
 

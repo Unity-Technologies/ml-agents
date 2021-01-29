@@ -69,7 +69,7 @@ namespace Unity.MLAgents.Tests
                 done = true,
                 episodeId = 5,
                 maxStepReached = true,
-                storedVectorActions = new ActionBuffers(null, new int[] { 0, 1 }),
+                storedActions = new ActionBuffers(null, new[] { 0, 1 }),
             };
 
 

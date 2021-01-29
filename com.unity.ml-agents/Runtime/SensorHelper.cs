@@ -1,4 +1,3 @@
-using UnityEngine;
 using Unity.Barracuda;
 
 namespace Unity.MLAgents.Sensors

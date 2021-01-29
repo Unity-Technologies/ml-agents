@@ -49,13 +49,24 @@ class ModelSerializer:
         self.policy = policy
         batch_dim = [1]
         seq_len_dim = [1]
-        dummy_vec_obs = [torch.zeros(batch_dim + [self.policy.vec_obs_size])]
+        vec_obs_size = 0
+        for sens_spec in self.policy.behavior_spec.observation_specs:
+            if len(sens_spec.shape) == 1:
+                vec_obs_size += sens_spec.shape[0]
+        num_vis_obs = sum(
+            1
+            for sens_spec in self.policy.behavior_spec.observation_specs
+            if len(sens_spec.shape) == 3
+        )
+        dummy_vec_obs = [torch.zeros(batch_dim + [vec_obs_size])]
         # create input shape of NCHW
-        # (It's NHWC in self.policy.behavior_spec.observation_shapes)
+        # (It's NHWC in self.policy.behavior_spec.observation_specs.shape)
         dummy_vis_obs = [
-            torch.zeros(batch_dim + [shape[2], shape[0], shape[1]])
-            for shape in self.policy.behavior_spec.observation_shapes
-            if len(shape) == 3
+            torch.zeros(
+                batch_dim + [obs_spec.shape[2], obs_spec.shape[0], obs_spec.shape[1]]
+            )
+            for obs_spec in self.policy.behavior_spec.observation_specs
+            if len(obs_spec.shape) == 3
         ]
         dummy_masks = torch.ones(
             batch_dim + [sum(self.policy.behavior_spec.action_spec.discrete_branches)]
@@ -68,7 +79,7 @@ class ModelSerializer:
 
         self.input_names = (
             ["vector_observation"]
-            + [f"visual_observation_{i}" for i in range(self.policy.vis_obs_size)]
+            + [f"visual_observation_{i}" for i in range(num_vis_obs)]
             + ["action_masks", "memories"]
         )
         self.dynamic_axes = {name: {0: "batch"} for name in self.input_names}

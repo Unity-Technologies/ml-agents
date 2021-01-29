@@ -1,3 +1,5 @@
+from typing import List, Tuple
+from mlagents_envs.base_env import ObservationSpec, DimensionProperty, ObservationType
 import pytest
 import copy
 import os
@@ -70,3 +72,14 @@ def curiosity_dummy_config():
 @pytest.fixture
 def extrinsic_dummy_config():
     return {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
+
+
+def create_observation_specs_with_shapes(
+    shapes: List[Tuple[int, ...]]
+) -> List[ObservationSpec]:
+    obs_specs: List[ObservationSpec] = []
+    for shape in shapes:
+        dim_prop = (DimensionProperty.UNSPECIFIED,) * len(shape)
+        spec = ObservationSpec(shape, dim_prop, ObservationType.DEFAULT)
+        obs_specs.append(spec)
+    return obs_specs

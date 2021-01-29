@@ -9,9 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Analytics;
 using Unity.MLAgents.CommunicatorObjects;
 using Unity.MLAgents.Sensors;
-using Unity.MLAgents.Policies;
 using Unity.MLAgents.SideChannels;
 using Google.Protobuf;
 
@@ -115,9 +115,11 @@ namespace Unity.MLAgents
                     },
                     out input);
 
-                var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
                 var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
+                var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
                 var unityCommunicationVersion = initParameters.unityCommunicationVersion;
+
+                TrainingAnalytics.SetTrainerInformation(pythonPackageVersion, pythonCommunicationVersion);
 
                 var communicationIsCompatible = CheckCommunicationVersionsAreCompatible(unityCommunicationVersion,
                     pythonCommunicationVersion,
@@ -173,7 +175,7 @@ namespace Unity.MLAgents
         /// Adds the brain to the list of brains which will be sending information to External.
         /// </summary>
         /// <param name="brainKey">Brain key.</param>
-        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         public void SubscribeBrain(string brainKey, ActionSpec actionSpec)
         {
             if (m_BehaviorNames.Contains(brainKey))

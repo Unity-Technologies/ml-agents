@@ -47,13 +47,13 @@ namespace Unity.MLAgents.Tests
 
             var infoA = new AgentInfo
             {
-                storedVectorActions = new ActionBuffers(null, new[] { 1, 2 }),
+                storedActions = new ActionBuffers(null, new[] { 1, 2 }),
                 discreteActionMasks = null,
             };
 
             var infoB = new AgentInfo
             {
-                storedVectorActions = new ActionBuffers(null, new[] { 3, 4 }),
+                storedActions = new ActionBuffers(null, new[] { 3, 4 }),
                 discreteActionMasks = new[] { true, false, false, false, false },
             };
 
@@ -109,7 +109,7 @@ namespace Unity.MLAgents.Tests
             const int batchSize = 4;
             var agentInfos = GetFakeAgents(ObservableAttributeOptions.ExamineAll);
             var alloc = new TensorCachingAllocator();
-            var generator = new VectorObservationGenerator(alloc);
+            var generator = new ObservationGenerator(alloc);
             generator.AddSensorIndex(0); // ObservableAttribute (size 1)
             generator.AddSensorIndex(1); // TestSensor (size 0)
             generator.AddSensorIndex(2); // TestSensor (size 0)

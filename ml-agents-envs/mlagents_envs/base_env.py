@@ -28,6 +28,7 @@ from typing import (
     Any,
     Mapping as MappingType,
 )
+from enum import IntFlag, Enum
 import numpy as np
 
 from mlagents_envs.exception import UnityActionException
@@ -136,8 +137,8 @@ class DecisionSteps(Mapping):
         :param spec: The BehaviorSpec for the DecisionSteps
         """
         obs: List[np.ndarray] = []
-        for shape in spec.observation_shapes:
-            obs += [np.zeros((0,) + shape, dtype=np.float32)]
+        for sen_spec in spec.observation_specs:
+            obs += [np.zeros((0,) + sen_spec.shape, dtype=np.float32)]
         return DecisionSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
@@ -234,8 +235,8 @@ class TerminalSteps(Mapping):
         :param spec: The BehaviorSpec for the TerminalSteps
         """
         obs: List[np.ndarray] = []
-        for shape in spec.observation_shapes:
-            obs += [np.zeros((0,) + shape, dtype=np.float32)]
+        for sen_spec in spec.observation_specs:
+            obs += [np.zeros((0,) + sen_spec.shape, dtype=np.float32)]
         return TerminalSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
@@ -435,17 +436,71 @@ class ActionSpec(NamedTuple):
         return ActionSpec(0, discrete_branches)
 
 
+class DimensionProperty(IntFlag):
+    """
+    No properties specified.
+    """
+
+    UNSPECIFIED = 0
+    """
+    No Property of the observation in that dimension. Observation can be processed with
+    Fully connected networks.
+    """
+    NONE = 1
+    """
+    Means it is suitable to do a convolution in this dimension.
+    """
+    TRANSLATIONAL_EQUIVARIANCE = 2
+    """
+    Means that there can be a variable number of observations in this dimension.
+    The observations are unordered.
+    """
+    VARIABLE_SIZE = 4
+
+
+class ObservationType(Enum):
+    """
+    An Enum which defines the type of information carried in the observation
+    of the agent.
+    """
+
+    # Observation information is generic.
+    DEFAULT = 0
+    # Observation contains goal information for current task.
+    GOAL = 1
+    # Observation contains reward information for current task.
+    REWARD = 2
+    # Observation contains a message from another agent.
+    MESSAGE = 3
+
+
+class ObservationSpec(NamedTuple):
+    """
+    A NamedTuple containing information about the observation of Agents.
+    - shape is a Tuple of int : It corresponds to the shape of
+    an observation's dimensions.
+    - dimension_property is a Tuple of DimensionProperties flag, one flag for each
+    dimension.
+    - observation_type is an enum of ObservationType.
+    """
+
+    shape: Tuple[int, ...]
+    dimension_property: Tuple[DimensionProperty, ...]
+    observation_type: ObservationType
+
+
 class BehaviorSpec(NamedTuple):
     """
     A NamedTuple containing information about the observation and action
     spaces for a group of Agents under the same behavior.
-    - observation_shapes is a List of Tuples of int : Each Tuple corresponds
-    to an observation's dimensions. The shape tuples have the same ordering as
-    the ordering of the DecisionSteps and TerminalSteps.
-    - action_spec is an ActionSpec NamedTuple
+    - observation_specs is a List of ObservationSpec NamedTuple containing
+    information about the information of the Agent's observations such as their shapes.
+    The order of the SensorSpec is the same as the order of the observations of an
+    agent.
+    - action_spec is an ActionSpec NamedTuple.
     """
 
-    observation_shapes: List[Tuple]
+    observation_specs: List[ObservationSpec]
     action_spec: ActionSpec
 
 
