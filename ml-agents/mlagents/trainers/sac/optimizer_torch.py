@@ -561,9 +561,6 @@ class TorchSACOptimizer(TorchOptimizer):
         policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks)
         entropy_loss = self.sac_entropy_loss(log_probs, masks)
 
-
-
-
         # Compute surrogate loss for predicting cube position :
 
         l_1 = self.value_network.q1_network.network_body.get_surrogate_loss(current_obs)
@@ -571,12 +568,11 @@ class TorchSACOptimizer(TorchOptimizer):
         l_v = self.target_network.network_body.get_surrogate_loss(current_obs)
         surrogate_loss_v = (l_1 + l_2 + l_v) * 0.05
 
-        surrogate_loss_p = self.policy.actor_critic.network_body.get_surrogate_loss(current_obs) * 0.05
+        surrogate_loss_p = (
+            self.policy.actor_critic.network_body.get_surrogate_loss(current_obs) * 0.05
+        )
 
         surrogate_loss = surrogate_loss_v + surrogate_loss_p
-
-
-
 
         total_value_loss = q1_loss + q2_loss + value_loss
 

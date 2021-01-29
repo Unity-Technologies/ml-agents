@@ -48,11 +48,9 @@ class NetworkBody(nn.Module):
             normalize=self.normalize,
         )
 
-
         total_enc_size = sum(self.embedding_sizes) + encoded_act_size - 9
 
         self.surrogate_predictor = torch.nn.Linear(self.h_size, 9)
-
 
         self.linear_encoder = LinearEncoder(
             total_enc_size, network_settings.num_layers, self.h_size
@@ -85,7 +83,7 @@ class NetworkBody(nn.Module):
         actions: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-        retrun_target = False
+        retrun_target=False,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         encodes = []
         for idx, processor in enumerate(self.processors):
@@ -121,7 +119,6 @@ class NetworkBody(nn.Module):
         loss = torch.sum((prediction - target) ** 2, dim=1)
         loss = torch.mean(loss)
         return loss
-
 
 
 class ValueNetwork(nn.Module):
