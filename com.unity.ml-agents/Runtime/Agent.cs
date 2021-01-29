@@ -720,6 +720,11 @@ namespace Unity.MLAgents
             m_CumulativeReward += increment;
         }
 
+        public void AddRewardAfterDeath(float increment)
+        {
+            m_Info.reward += increment;
+        }
+
         /// <summary>
         /// Retrieves the episode reward for the Agent.
         /// </summary>

@@ -81,7 +81,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     public bool UseRandomBlockRotation = true;
     public bool UseRandomBlockPosition = true;
     public bool UseTeamManager = true;
-    // public bool UseTeamReward = true;
+    public bool UseTeamReward = true;
     // public bool DiscountTeamReward = true;
     PushBlockSettings m_PushBlockSettings;
 
@@ -106,7 +106,14 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         // Initialize TeamManager
         if (UseTeamManager)
         {
-            m_TeamManager = new BaseTeamManager();
+            if (UseTeamReward)
+            {
+                m_TeamManager = new PushBlockTeamManager();
+            }
+            else
+            {
+                m_TeamManager = new BaseTeamManager();
+            }
         }
 
         foreach (var item in AgentsList)
@@ -223,11 +230,19 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     public void ScoredAGoal(Collider col, float score)
     {
         // Give Agent Rewards
-        foreach (var item in AgentsList)
+        if (UseTeamManager && UseTeamReward)
         {
-            if (item.Agent.gameObject.activeInHierarchy)
+            var pushManager = (PushBlockTeamManager)m_TeamManager;
+            pushManager.AddTeamReward(score);
+        }
+        else
+        {
+            foreach (var item in AgentsList)
             {
-                item.Agent.AddReward(score);
+                if (item.Agent.gameObject.activeInHierarchy)
+                {
+                    item.Agent.AddReward(score);
+                }
             }
         }
 
@@ -239,11 +254,19 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     public void ZombieTouchedBlock()
     {
         //Give Agent Rewards
-        foreach (var item in AgentsList)
+        if (UseTeamManager && UseTeamReward)
         {
-            if (item.Agent.gameObject.activeInHierarchy)
+            var pushManager = (PushBlockTeamManager)m_TeamManager;
+            pushManager.AddTeamReward(-1);
+        }
+        else
+        {
+            foreach (var item in AgentsList)
             {
-                item.Agent.AddReward(-1);
+                if (item.Agent.gameObject.activeInHierarchy)
+                {
+                    item.Agent.AddReward(-1);
+                }
             }
         }
 
@@ -274,6 +297,12 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
                 return;
             }
             item.Agent.gameObject.SetActive(false);
+        }
+
+        if (UseTeamManager && UseTeamReward)
+        {
+            var pushManager = (PushBlockTeamManager)m_TeamManager;
+            pushManager.OnTeamDone();
         }
 
         // Reset Agents
