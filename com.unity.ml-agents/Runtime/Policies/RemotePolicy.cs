@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Unity.MLAgents.Analytics;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Policies
@@ -14,6 +15,9 @@ namespace Unity.MLAgents.Policies
         int m_AgentId;
         string m_FullyQualifiedBehaviorName;
 
+        private bool m_AnalyticsSent = false;
+        private BrainParameters m_BrainParameters;
+
         internal ICommunicator m_Communicator;
 
         /// <inheritdoc />
@@ -23,12 +27,23 @@ namespace Unity.MLAgents.Policies
         {
             m_FullyQualifiedBehaviorName = fullyQualifiedBehaviorName;
             m_Communicator = Academy.Instance.Communicator;
-            m_Communicator.SubscribeBrain(m_FullyQualifiedBehaviorName, brainParameters);
+            m_Communicator?.SubscribeBrain(m_FullyQualifiedBehaviorName, brainParameters);
+            m_BrainParameters = brainParameters;
         }
 
         /// <inheritdoc />
         public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
+
+            if (!m_AnalyticsSent)
+            {
+                m_AnalyticsSent = true;
+                TrainingAnalytics.RemotePolicyInitialized(
+                    m_FullyQualifiedBehaviorName,
+                    sensors,
+                    m_BrainParameters
+                );
+            }
             m_AgentId = info.episodeId;
             m_Communicator?.PutObservations(m_FullyQualifiedBehaviorName, info, sensors);
         }

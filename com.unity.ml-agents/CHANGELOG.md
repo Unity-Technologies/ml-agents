@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Minor Changes
+#### com.unity.ml-agents (C#)
+In order to improve the developer experience for Unity ML-Agents Toolkit, we have added in-editor analytics.
+Please refer to "Information that is passively collected by Unity" in the
+[Unity Privacy Policy](https://unity3d.com/legal/privacy-policy).
+
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+
 
 ## [1.0.6] - 2020-11-13
 ### Minor Changes

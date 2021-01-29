@@ -37,19 +37,44 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         List<int[]> m_SensorShapes;
 
+        private string m_BehaviorName;
+        private BrainParameters m_BrainParameters;
+
+        /// <summary>
+        /// Whether or not we've tried to send analytics for this model. We only ever try to send once per policy,
+        /// and do additional deduplication in the analytics code.
+        /// </summary>
+        private bool m_AnalyticsSent;
+
         /// <inheritdoc />
         public BarracudaPolicy(
             BrainParameters brainParameters,
             NNModel model,
-            InferenceDevice inferenceDevice)
+            InferenceDevice inferenceDevice,
+            string behaviorName
+        )
         {
             var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, brainParameters, inferenceDevice);
             m_ModelRunner = modelRunner;
+            m_BehaviorName = behaviorName;
+            m_BrainParameters = brainParameters;
         }
 
         /// <inheritdoc />
         public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
+
+            if (!m_AnalyticsSent)
+            {
+                m_AnalyticsSent = true;
+                Analytics.InferenceAnalytics.InferenceModelSet(
+                    m_ModelRunner.Model,
+                    m_BehaviorName,
+                    m_ModelRunner.InferenceDevice,
+                    sensors,
+                    m_BrainParameters
+                );
+            }
             m_AgentId = info.episodeId;
             m_ModelRunner?.PutObservations(info, sensors);
         }
