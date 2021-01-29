@@ -86,6 +86,16 @@ namespace Unity.MLAgents.Inference
                 brainParameters, seed, m_TensorAllocator, m_Memories, barracudaModel);
         }
 
+        public InferenceDevice InferenceDevice
+        {
+            get { return m_InferenceDevice; }
+        }
+
+        public NNModel Model
+        {
+            get { return m_Model; }
+        }
+
         static Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)
         {
             var inputs = new Dictionary<string, Tensor>();

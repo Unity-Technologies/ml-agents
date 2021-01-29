@@ -153,7 +153,7 @@ namespace Unity.MLAgents.Policies
                             "Either assign a model, or change to a different Behavior Type."
                         );
                     }
-                    return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
+                    return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice, m_BehaviorName);
                 }
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
@@ -162,7 +162,7 @@ namespace Unity.MLAgents.Policies
                     }
                     if (m_Model != null)
                     {
-                        return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
+                        return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice, m_BehaviorName);
                     }
                     else
                     {

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Unity.MLAgents.Analytics;
 using Unity.MLAgents.CommunicatorObjects;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
@@ -152,6 +153,8 @@ namespace Unity.MLAgents
                 var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
                 var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
                 var unityCommunicationVersion = initParameters.unityCommunicationVersion;
+
+                TrainingAnalytics.SetTrainerInformation(pythonPackageVersion, pythonCommunicationVersion);
 
                 var communicationIsCompatible = CheckCommunicationVersionsAreCompatible(unityCommunicationVersion,
                     pythonCommunicationVersion,

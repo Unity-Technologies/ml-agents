@@ -139,6 +139,12 @@ namespace Unity.MLAgents.Sensors
             return SensorCompressionType.None;
         }
 
+        internal ISensor GetWrappedSensor()
+        {
+            return m_WrappedSensor;
+        }
+
+
         // TODO support stacked compressed observations (byte stream)
     }
 }
