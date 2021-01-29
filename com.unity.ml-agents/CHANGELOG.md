@@ -15,9 +15,11 @@ and this project adheres to
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- The `ActionSpec` constructor is now public. Previously, it was not possible to create an
+  ActionSpec with both continuous and discrete actions from code. (#4896)
 - `StatAggregationMethod.Sum` can now be passed to `StatsRecorder.Add()`. This
-will result in the values being summed (instead of averaged) when written to
-TensorBoard. Thanks to @brccabral for the contribution! (#4816)
+  will result in the values being summed (instead of averaged) when written to
+  TensorBoard. Thanks to @brccabral for the contribution! (#4816)
 - The upper limit for the time scale (by setting the `--time-scale` paramater in mlagents-learn) was
 removed when training with a player. The Editor still requires it to be clamped to 100. (#4867)
 - Added the IHeuristicProvider interface to allow IActuators as well as Agent implement the Heuristic function to generate actions.
