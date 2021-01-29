@@ -45,7 +45,7 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Creates a Continuous <see cref="ActionSpec"/> with the number of actions available.
         /// </summary>
-        /// <param name="numActions">The number of actions available.</param>
+        /// <param name="numActions">The number of continuous actions available.</param>
         /// <returns>An Continuous ActionSpec initialized with the number of actions available.</returns>
         public static ActionSpec MakeContinuous(int numActions)
         {
@@ -66,10 +66,17 @@ namespace Unity.MLAgents.Actuators
             return actuatorSpace;
         }
 
-        internal ActionSpec(int numContinuousActions, int[] branchSizes = null)
+        /// <summary>
+        /// Create an ActionSpec initialized with the specified action sizes.
+        /// </summary>
+        /// <param name="numContinuousActions">The number of continuous actions available.</param>
+        /// <param name="discreteBranchSizes">The array of branch sizes for the discrete actions.  Each index
+        /// contains the number of actions available for that branch.</param>
+        /// <returns>An ActionSpec initialized with the specified action sizes.</returns>
+        public ActionSpec(int numContinuousActions = 0, int[] discreteBranchSizes = null)
         {
             m_NumContinuousActions = numContinuousActions;
-            BranchSizes = branchSizes;
+            BranchSizes = discreteBranchSizes;
         }
 
         /// <summary>
