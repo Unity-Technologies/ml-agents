@@ -354,9 +354,7 @@ def get_team_gae(
     """
     value_estimates = np.append(value_estimates, value_next)
     q_estimate = rewards + gamma * value_estimates[1:]
-    delta_t = (q_estimate - statistics.mean(q_estimate)) - (
-        baseline - statistics.mean(baseline)
-    )
+    delta_t = (q_estimate) - (baseline)
     advantage = discount_rewards(r=delta_t, gamma=gamma * lambd)
     return advantage
 
