@@ -5,10 +5,11 @@ Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: WaterDropSmall
   m_Shader: {fileID: 210, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: _ALPHABLEND_ON _EMISSION _FADING_ON _NORMALMAP _REQUIRE_UV2
+  m_ShaderKeywords: _ALPHAPREMULTIPLY_ON _FADING_ON _REQUIRE_UV2
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -21,7 +22,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BumpMap:
-        m_Texture: {fileID: 2800000, guid: 0660389cc5a6f4947997407fb6945fa1, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -70,15 +71,15 @@ Material:
     - _DistortionEnabled: 0
     - _DistortionStrength: 1
     - _DistortionStrengthScaled: 0.1
-    - _DstBlend: 1
-    - _EmissionEnabled: 1
+    - _DstBlend: 10
+    - _EmissionEnabled: 0
     - _FlipbookMode: 1
     - _GlossMapScale: 1
     - _Glossiness: 1
     - _GlossyReflections: 1
     - _LightingEnabled: 1
-    - _Metallic: 0.97
-    - _Mode: 4
+    - _Metallic: 0
+    - _Mode: 3
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
@@ -86,12 +87,12 @@ Material:
     - _SoftParticlesFarFadeDistance: 0.1
     - _SoftParticlesNearFadeDistance: 0
     - _SpecularHighlights: 1
-    - _SrcBlend: 5
+    - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 0
     m_Colors:
     - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _ColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
-    - _EmissionColor: {r: 0.1509434, g: 0.1509434, b: 0.1509434, a: 1}
+    - _EmissionColor: {r: 0.58746636, g: 0.71687025, b: 0.78431374, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 10, b: 0, a: 0}

@@ -29,10 +29,13 @@ public class GunController : MonoBehaviour
     //FORCES
     [Header("FORCES")]
     public float forceToUse;
-    public ForceMode forceMode;
+
+    [Header("MUZZLE FLASH")]
+    public bool UseMuzzleFlash;
 
     [Header("SOUND")]
     public bool PlaySound;
+    public ForceMode forceMode;
     public GunSFX GunSFX;
     private AudioSource m_AudioSource;
 
@@ -183,7 +186,7 @@ public class GunController : MonoBehaviour
         m_TransformIsShaking = true;
         WaitForFixedUpdate wait = new WaitForFixedUpdate();
 
-        if (MuzzleFlashObject)
+        if (UseMuzzleFlash && MuzzleFlashObject)
         {
             MuzzleFlashObject.transform.localScale = Random.Range(.5f, 1.5f) * Vector3.one;
             MuzzleFlashObject.SetActive(true);
@@ -198,7 +201,7 @@ public class GunController : MonoBehaviour
             yield return wait;
         }
         transform.localPosition = startPos;
-        if (MuzzleFlashObject)
+        if (UseMuzzleFlash && MuzzleFlashObject)
         {
             MuzzleFlashObject.SetActive(false);
         }

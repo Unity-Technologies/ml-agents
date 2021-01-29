@@ -5,7 +5,8 @@ Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: WaterRipple
   m_Shader: {fileID: 210, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: EFFECT_BUMP _ALPHABLEND_ON _NORMALMAP
@@ -73,7 +74,7 @@ Material:
     - _EmissionEnabled: 0
     - _FlipbookMode: 0
     - _GlossMapScale: 1
-    - _Glossiness: 0.915
+    - _Glossiness: 0.522
     - _GlossyReflections: 1
     - _LightingEnabled: 1
     - _Metallic: 1

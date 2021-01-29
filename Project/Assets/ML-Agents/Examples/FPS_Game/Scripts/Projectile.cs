@@ -93,6 +93,9 @@ public class Projectile : MonoBehaviour
             if (!item.gameObject.activeInHierarchy)
             {
                 item.transform.position = rb.transform.position;
+                item.transform.rotation = Quaternion.LookRotation(col.contacts[0].normal);
+                print(col.contacts[0].normal);
+                // item.transform.rotation = Quaternion.Euler(col.contacts[0].normal);
                 item.gameObject.SetActive(true);
                 return;
             }
