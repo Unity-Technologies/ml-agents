@@ -169,7 +169,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         if len(memories) > 0:
             memories = torch.stack(memories).unsqueeze(0)
 
-        log_probs, entropy, qs, baseline_vals, values = self.policy.evaluate_actions(
+        log_probs, entropy, baseline_vals, values = self.policy.evaluate_actions(
             current_obs,
             masks=act_masks,
             actions=actions,
