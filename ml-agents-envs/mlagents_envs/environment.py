@@ -62,7 +62,8 @@ class UnityEnvironment(BaseEnv):
     #  * 1.1.0 - support concatenated PNGs for compressed observations.
     #  * 1.2.0 - support compression mapping for stacked compressed observations.
     #  * 1.3.0 - support action spaces with both continuous and discrete actions.
-    API_VERSION = "1.3.0"
+    #  * 1.4.0 - support training analytics sent from python trainer to the editor.
+    API_VERSION = "1.4.0"
 
     # Default port that the editor listens on. If an environment executable
     # isn't specified, this port will be used.
@@ -120,6 +121,7 @@ class UnityEnvironment(BaseEnv):
         capabilities.concatenatedPngObservations = True
         capabilities.compressedChannelMapping = True
         capabilities.hybridActions = True
+        capabilities.trainingAnalytics = True
         return capabilities
 
     @staticmethod
@@ -183,6 +185,7 @@ class UnityEnvironment(BaseEnv):
         self._worker_id = worker_id
         self._side_channel_manager = SideChannelManager(side_channels)
         self._log_folder = log_folder
+        self.academy_capabilities: UnityRLCapabilitiesProto = None  # type: ignore
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -239,6 +242,7 @@ class UnityEnvironment(BaseEnv):
         self._env_actions: Dict[str, ActionTuple] = {}
         self._is_first_message = True
         self._update_behavior_specs(aca_output)
+        self.academy_capabilities = aca_params.capabilities
 
     @staticmethod
     def _get_communicator(worker_id, base_port, timeout_wait):

@@ -16,6 +16,7 @@ from queue import Empty as EmptyQueueException
 from mlagents_envs.base_env import BaseEnv, BehaviorName, BehaviorSpec
 from mlagents_envs import logging_util
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
+from mlagents.trainers.settings import TrainerSettings
 from mlagents_envs.timers import (
     TimerNode,
     timed,
@@ -23,7 +24,7 @@ from mlagents_envs.timers import (
     reset_timers,
     get_timer_root,
 )
-from mlagents.trainers.settings import ParameterRandomizationSettings
+from mlagents.trainers.settings import ParameterRandomizationSettings, RunOptions
 from mlagents.trainers.action_info import ActionInfo
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
@@ -33,9 +34,10 @@ from mlagents_envs.side_channel.engine_configuration_channel import (
     EngineConfig,
 )
 from mlagents_envs.side_channel.stats_side_channel import (
-    StatsSideChannel,
     EnvironmentStats,
+    StatsSideChannel,
 )
+from mlagents.training_analytics_side_channel import TrainingAnalyticsSideChannel
 from mlagents_envs.side_channel.side_channel import SideChannel
 
 
@@ -51,6 +53,7 @@ class EnvironmentCommand(enum.Enum):
     CLOSE = 5
     ENV_EXITED = 6
     CLOSED = 7
+    TRAINING_STARTED = 8
 
 
 class EnvironmentRequest(NamedTuple):
@@ -112,17 +115,30 @@ def worker(
     step_queue: Queue,
     pickled_env_factory: str,
     worker_id: int,
-    engine_configuration: EngineConfig,
+    run_options: RunOptions,
     log_level: int = logging_util.INFO,
 ) -> None:
     env_factory: Callable[
         [int, List[SideChannel]], UnityEnvironment
     ] = cloudpickle.loads(pickled_env_factory)
     env_parameters = EnvironmentParametersChannel()
+
+    engine_config = EngineConfig(
+        width=run_options.engine_settings.width,
+        height=run_options.engine_settings.height,
+        quality_level=run_options.engine_settings.quality_level,
+        time_scale=run_options.engine_settings.time_scale,
+        target_frame_rate=run_options.engine_settings.target_frame_rate,
+        capture_frame_rate=run_options.engine_settings.capture_frame_rate,
+    )
     engine_configuration_channel = EngineConfigurationChannel()
-    engine_configuration_channel.set_configuration(engine_configuration)
+    engine_configuration_channel.set_configuration(engine_config)
+
     stats_channel = StatsSideChannel()
-    env: BaseEnv = None
+    training_analytics_channel: Optional[TrainingAnalyticsSideChannel] = None
+    if worker_id == 0:
+        training_analytics_channel = TrainingAnalyticsSideChannel()
+    env: UnityEnvironment = None
     # Set log level. On some platforms, the logger isn't common with the
     # main process, so we need to set it again.
     logging_util.set_log_level(log_level)
@@ -137,9 +153,21 @@ def worker(
         return all_step_result
 
     try:
-        env = env_factory(
-            worker_id, [env_parameters, engine_configuration_channel, stats_channel]
-        )
+        side_channels = [env_parameters, engine_configuration_channel, stats_channel]
+        if training_analytics_channel is not None:
+            side_channels.append(training_analytics_channel)
+
+        env = env_factory(worker_id, side_channels)
+        if (
+            not env.academy_capabilities
+            or not env.academy_capabilities.trainingAnalytics
+        ):
+            # Make sure we don't try to send training analytics if the environment doesn't know how to process
+            # them. This wouldn't be catastrophic, but would result in unknown SideChannel UUIDs being used.
+            training_analytics_channel = None
+        if training_analytics_channel:
+            training_analytics_channel.environment_initialized(run_options)
+
         while True:
             req: EnvironmentRequest = parent_conn.recv()
             if req.cmd == EnvironmentCommand.STEP:
@@ -170,6 +198,12 @@ def worker(
                 for k, v in req.payload.items():
                     if isinstance(v, ParameterRandomizationSettings):
                         v.apply(k, env_parameters)
+            elif req.cmd == EnvironmentCommand.TRAINING_STARTED:
+                behavior_name, trainer_config = req.payload
+                if training_analytics_channel:
+                    training_analytics_channel.training_started(
+                        behavior_name, trainer_config
+                    )
             elif req.cmd == EnvironmentCommand.RESET:
                 env.reset()
                 all_step_result = _generate_all_results()
@@ -210,7 +244,7 @@ class SubprocessEnvManager(EnvManager):
     def __init__(
         self,
         env_factory: Callable[[int, List[SideChannel]], BaseEnv],
-        engine_configuration: EngineConfig,
+        run_options: RunOptions,
         n_env: int = 1,
     ):
         super().__init__()
@@ -220,7 +254,7 @@ class SubprocessEnvManager(EnvManager):
         for worker_idx in range(n_env):
             self.env_workers.append(
                 self.create_worker(
-                    worker_idx, self.step_queue, env_factory, engine_configuration
+                    worker_idx, self.step_queue, env_factory, run_options
                 )
             )
             self.workers_alive += 1
@@ -230,7 +264,7 @@ class SubprocessEnvManager(EnvManager):
         worker_id: int,
         step_queue: Queue,
         env_factory: Callable[[int, List[SideChannel]], BaseEnv],
-        engine_configuration: EngineConfig,
+        run_options: RunOptions,
     ) -> UnityEnvWorker:
         parent_conn, child_conn = Pipe()
 
@@ -244,7 +278,7 @@ class SubprocessEnvManager(EnvManager):
                 step_queue,
                 pickled_env_factory,
                 worker_id,
-                engine_configuration,
+                run_options,
                 logger.level,
             ),
         )
@@ -307,6 +341,20 @@ class SubprocessEnvManager(EnvManager):
         """
         for ew in self.env_workers:
             ew.send(EnvironmentCommand.ENVIRONMENT_PARAMETERS, config)
+
+    def on_training_started(
+        self, behavior_name: str, trainer_settings: TrainerSettings
+    ) -> None:
+        """
+        Handle traing starting for a new behavior type. Generally nothing is necessary here.
+        :param behavior_name:
+        :param trainer_settings:
+        :return:
+        """
+        for ew in self.env_workers:
+            ew.send(
+                EnvironmentCommand.TRAINING_STARTED, (behavior_name, trainer_settings)
+            )
 
     @property
     def training_behaviors(self) -> Dict[BehaviorName, BehaviorSpec]:

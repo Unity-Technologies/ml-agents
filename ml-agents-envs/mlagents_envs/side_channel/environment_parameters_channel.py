@@ -28,7 +28,7 @@ class EnvironmentParametersChannel(SideChannel):
     def on_message_received(self, msg: IncomingMessage) -> None:
         raise UnityCommunicationException(
             "The EnvironmentParametersChannel received a message from Unity, "
-            + "this should not have happend."
+            + "this should not have happened."
         )
 
     def set_float_parameter(self, key: str, value: float) -> None:

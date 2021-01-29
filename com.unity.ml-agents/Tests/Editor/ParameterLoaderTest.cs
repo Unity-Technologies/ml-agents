@@ -24,12 +24,14 @@ namespace Unity.MLAgents.Tests
             return Sensor.GetObservationShape();
         }
     }
-    public class Test3DSensor : ISensor
+    public class Test3DSensor : ISensor, IBuiltInSensor
     {
         int m_Width;
         int m_Height;
         int m_Channels;
         string m_Name;
+        // Dummy value for the IBuiltInSensor interface
+        public const int k_BuiltInSensorType = -42;
 
         public Test3DSensor(string name, int width, int height, int channels)
         {
@@ -69,6 +71,11 @@ namespace Unity.MLAgents.Tests
         public string GetName()
         {
             return m_Name;
+        }
+
+        public BuiltInSensorType GetBuiltInSensorType()
+        {
+            return (BuiltInSensorType)k_BuiltInSensorType;
         }
     }
 

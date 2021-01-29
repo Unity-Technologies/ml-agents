@@ -91,9 +91,13 @@ namespace Unity.MLAgents
         ///         <term>1.3.0</term>
         ///         <description>Support both continuous and discrete actions.</description>
         ///     </item>
+        ///     <item>
+        ///         <term>1.4.0</term>
+        ///         <description>Support training analytics sent from python trainer to the editor.</description>
+        ///     </item>
         /// </list>
         /// </remarks>
-        const string k_ApiVersion = "1.3.0";
+        const string k_ApiVersion = "1.4.0";
 
         /// <summary>
         /// Unity package version of com.unity.ml-agents.
@@ -406,6 +410,7 @@ namespace Unity.MLAgents
             EnableAutomaticStepping();
 
             SideChannelManager.RegisterSideChannel(new EngineConfigurationChannel());
+            SideChannelManager.RegisterSideChannel(new TrainingAnalyticsSideChannel());
             m_EnvironmentParameters = new EnvironmentParameters();
             m_StatsRecorder = new StatsRecorder();
 

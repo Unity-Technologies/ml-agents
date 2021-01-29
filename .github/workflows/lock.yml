@@ -2,7 +2,7 @@ name: 'Lock Threads'
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0/4 * * *'
 
 jobs:
   lock:
@@ -11,7 +11,7 @@ jobs:
       - uses: dessant/lock-threads@v2
         with:
           github-token: ${{ github.token }}
-          issue-lock-inactive-days: '365'
+          issue-lock-inactive-days: '30'
           issue-exclude-created-before: ''
           issue-exclude-labels: ''
           issue-lock-labels: ''

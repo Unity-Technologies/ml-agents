@@ -19,4 +19,7 @@ message UnityRLCapabilitiesProto {
 
     // support for hybrid action spaces (discrete + continuous)
     bool hybridActions = 4;
+
+    // support for training analytics
+    bool trainingAnalytics = 5;
 }

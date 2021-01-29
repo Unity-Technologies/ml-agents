@@ -15,9 +15,11 @@ and this project adheres to
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- The `ActionSpec` constructor is now public. Previously, it was not possible to create an
+  ActionSpec with both continuous and discrete actions from code. (#4896)
 - `StatAggregationMethod.Sum` can now be passed to `StatsRecorder.Add()`. This
-will result in the values being summed (instead of averaged) when written to
-TensorBoard. Thanks to @brccabral for the contribution! (#4816)
+  will result in the values being summed (instead of averaged) when written to
+  TensorBoard. Thanks to @brccabral for the contribution! (#4816)
 - The upper limit for the time scale (by setting the `--time-scale` paramater in mlagents-learn) was
 removed when training with a player. The Editor still requires it to be clamped to 100. (#4867)
 - Added the IHeuristicProvider interface to allow IActuators as well as Agent implement the Heuristic function to generate actions.
@@ -31,11 +33,17 @@ removed when training with a player. The Editor still requires it to be clamped 
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - python 3.9 is now supported and tested. (#4821)
+- Added a `--torch-device` commandline option to `mlagents-learn`, which sets the default
+  [`torch.device`](https://pytorch.org/docs/stable/tensor_attributes.html#torch.torch.device) used for training. (#4888)
+- The `--cpu` commandline option had no effect and was removed. Use `--torch-device=cpu` to force CPU training. (#4888)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 - Fix a compile warning about using an obsolete enum in `GrpcExtensions.cs`. (#4812)
 - CameraSensor now logs an error if the GraphicsDevice is null. (#4880)
+- Removed unnecessary memory allocations in `ActuatorManager.UpdateActionArray()` (#4877)
+- Removed unnecessary memory allocations in `SensorShapeValidator.ValidateSensors()` (#4879)
+- Removed unnecessary memory allocations in `SideChannelManager.GetSideChannelMessage()` (#4886)
 - Removed several memory allocations that happened during inference. On a test scene, this
   reduced the amount of memory allocated by approximately 25%. (#4887)
 
