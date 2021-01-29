@@ -561,17 +561,34 @@ class TorchSACOptimizer(TorchOptimizer):
         policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks)
         entropy_loss = self.sac_entropy_loss(log_probs, masks)
 
+
+
+
+        # Compute surrogate loss for predicting cube position :
+
+        l_1 = self.value_network.q1_network.network_body.get_surrogate_loss(current_obs)
+        l_2 = self.value_network.q2_network.network_body.get_surrogate_loss(current_obs)
+        l_v = self.target_network.network_body.get_surrogate_loss(current_obs)
+        surrogate_loss_v = (l_1 + l_2 + l_v) * 0.05
+
+        surrogate_loss_p = self.policy.actor_critic.network_body.get_surrogate_loss(current_obs) * 0.05
+
+        surrogate_loss = surrogate_loss_v + surrogate_loss_p
+
+
+
+
         total_value_loss = q1_loss + q2_loss + value_loss
 
         decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
         ModelUtils.update_learning_rate(self.policy_optimizer, decay_lr)
         self.policy_optimizer.zero_grad()
-        policy_loss.backward()
+        (policy_loss + surrogate_loss_p).backward()
         self.policy_optimizer.step()
 
         ModelUtils.update_learning_rate(self.value_optimizer, decay_lr)
         self.value_optimizer.zero_grad()
-        total_value_loss.backward()
+        (total_value_loss + surrogate_loss_v).backward()
         self.value_optimizer.step()
 
         ModelUtils.update_learning_rate(self.entropy_optimizer, decay_lr)
@@ -588,6 +605,7 @@ class TorchSACOptimizer(TorchOptimizer):
             "Losses/Value Loss": value_loss.item(),
             "Losses/Q1 Loss": q1_loss.item(),
             "Losses/Q2 Loss": q2_loss.item(),
+            "Losses/Surrogate Loss": surrogate_loss.item(),
             "Policy/Discrete Entropy Coeff": torch.mean(
                 torch.exp(self._log_ent_coef.discrete)
             ).item(),
