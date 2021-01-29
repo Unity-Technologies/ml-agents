@@ -1102,6 +1102,8 @@ MonoBehaviour:
   UseRandomBlockRotation: 1
   UseRandomBlockPosition: 1
   UseTeamManager: 1
+  UseTeamReward: 1
+  TeamRewardDiscount: 0.995
 --- !u!1 &4478780967772121042
 GameObject:
   m_ObjectHideFlags: 0

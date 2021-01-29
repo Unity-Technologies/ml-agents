@@ -82,7 +82,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     public bool UseRandomBlockPosition = true;
     public bool UseTeamManager = true;
     public bool UseTeamReward = true;
-    // public bool DiscountTeamReward = true;
+    public float TeamRewardDiscount = 1;
     PushBlockSettings m_PushBlockSettings;
 
     private BaseTeamManager m_TeamManager;
@@ -109,6 +109,8 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             if (UseTeamReward)
             {
                 m_TeamManager = new PushBlockTeamManager();
+                var pushManager = (PushBlockTeamManager)m_TeamManager;
+                pushManager.SetRewardDiscount(TeamRewardDiscount);
             }
             else
             {
