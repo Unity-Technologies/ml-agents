@@ -124,7 +124,7 @@ public class PushBlockEnvController : MonoBehaviour
             var randomPosZ = Random.Range(-areaBounds.extents.z * m_PushBlockSettings.spawnAreaMarginMultiplier,
                 areaBounds.extents.z * m_PushBlockSettings.spawnAreaMarginMultiplier);
             randomSpawnPos = ground.transform.position + new Vector3(randomPosX, 1f, randomPosZ);
-            if (Physics.CheckBox(randomSpawnPos, new Vector3(2.5f, 0.01f, 2.5f)) == false)
+            if (Physics.CheckBox(randomSpawnPos, new Vector3(1.5f, 0.01f, 1.5f)) == false)
             {
                 foundNewSpawnLocation = true;
             }
