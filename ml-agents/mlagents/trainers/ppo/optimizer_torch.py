@@ -95,7 +95,7 @@ class TorchPPOOptimizer(TorchOptimizer):
     def coma_regularizer_loss(self, values: Dict[str, torch.Tensor], baseline_values: Dict[str, torch.Tensor]):
         reg_losses = []
         for name, head in values.items():
-            reg_loss = (baseline_values[name] - head) ** 2
+            reg_loss = torch.nn.functional.mse_loss(head, baseline_values[name])
             reg_losses.append(reg_loss)
         value_loss = torch.mean(torch.stack(reg_losses))
         return value_loss
@@ -126,8 +126,6 @@ class TorchPPOOptimizer(TorchOptimizer):
             torch.min(p_opt_a, p_opt_b), loss_masks
         )
         return policy_loss
-
-
 
     @timed
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
@@ -201,6 +199,8 @@ class TorchPPOOptimizer(TorchOptimizer):
             values, old_values, returns_v, decay_eps, loss_masks
         )
 
+        # Regularizer loss reduces bias between the baseline and values. Other
+        # regularizers are possible here.
         regularizer_loss = self.coma_regularizer_loss(values, baseline_vals)
 
         policy_loss = self.ppo_policy_loss(
@@ -212,7 +212,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         loss = (
             policy_loss
             + 0.25 * (value_loss + baseline_loss)
-            + 1.0 * regularizer_loss
+            + 0.25 * regularizer_loss
             - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
         )
 
