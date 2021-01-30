@@ -41,3 +41,15 @@ in the same python virtual environment that you have `mlagents` installed.
 ## Plugin Interfaces
 
 ### StatsWriter
+The StatsWriter class receives various information from the training process, such as the average Agent reward in
+each summary period. By default, we log this information to the console and write it to
+[TensorBoard](Using-Tensorboard.md).
+
+#### Interface
+The `StatsWriter.write_stats()` method must be implemented in any derived classes. It takes a "category" parameter,
+which typically is the behavior name of the Agents being trained, and a dictionary of `StatSummary` values with
+string keys.
+
+#### Registration
+The `StatsWriter` registration function takes a `RunOptions` argument and returns a list of `StatsWriter`s. An
+example implementation is provided in [`mlagents_plugin_examples`](../ml-agents-plugin-examples/example_stats_writer.py.)

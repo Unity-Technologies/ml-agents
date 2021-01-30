@@ -19,6 +19,12 @@ logger = logging_util.get_logger(__name__)
 
 
 def get_default_stats_writers(run_options: RunOptions) -> List[StatsWriter]:
+    """
+    The StatsWriters that mlagents-learn always uses:
+    * A TensorboardWriter to write information to TensorBoard
+    * A GaugeWriter to record our internal stats
+    * A ConsoleWriter to output to stdout.
+    """
     checkpoint_settings = run_options.checkpoint_settings
     return [
         TensorboardWriter(
@@ -31,6 +37,10 @@ def get_default_stats_writers(run_options: RunOptions) -> List[StatsWriter]:
 
 
 def register_stats_writer_plugins(run_options: RunOptions) -> List[StatsWriter]:
+    """
+    Registers all StatsWriter plugins (including the default one),
+    and evaluates them, and returns the list of all the StatsWriter implementations.
+    """
     all_stats_writers: List[StatsWriter] = []
     entry_points = importlib_metadata.entry_points()["mlagents.stats_writer"]
 
