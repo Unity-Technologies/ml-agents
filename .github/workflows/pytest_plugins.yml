@@ -1,0 +1,60 @@
+name: pytest plugins
+
+on:
+  pull_request:
+    paths:  # This action will only run if the PR modifies a file in one of these directories
+    - 'ml-agents/plugins/**'
+    - 'ml-agents-plugin-examples/**'
+    - '.github/workflows/pytest_plugins.yml'
+  push:
+    branches: [master]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6.x, 3.8.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        # This path is specific to Ubuntu
+        path: ~/.cache/pip
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'test_requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
+    - name: Display Python version
+      run: python -c "import sys; print(sys.version)"
+    - name: Install dependencies
+      run: |
+        # pin pip to workaround https://github.com/pypa/pip/issues/9180
+        python -m pip install pip==20.2
+        python -m pip install --upgrade setuptools
+        python -m pip install --progress-bar=off -e ./ml-agents-envs
+        python -m pip install --progress-bar=off -e ./ml-agents
+        python -m pip install --progress-bar=off -r test_requirements.txt
+        python -m pip install --progress-bar=off -e ./ml-agents-plugin-examples
+    - name: Save python dependencies
+      run: |
+        pip freeze > pip_versions-${{ matrix.python-version }}.txt
+        cat pip_versions-${{ matrix.python-version }}.txt
+    - name: Run pytest
+      run: pytest ml-agents-plugin-examples
+    - name: Upload pytest test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: artifacts-${{ matrix.python-version }}
+        path: |
+          htmlcov
+          pip_versions-${{ matrix.python-version }}.txt
+          junit/test-results-${{ matrix.python-version }}.xml
+      # Use always() to always run this step to publish test results when there are test failures
+      if: ${{ always() }}

@@ -52,4 +52,4 @@ string keys.
 
 #### Registration
 The `StatsWriter` registration function takes a `RunOptions` argument and returns a list of `StatsWriter`s. An
-example implementation is provided in [`mlagents_plugin_examples`](../ml-agents-plugin-examples/example_stats_writer.py.)
+example implementation is provided in [`mlagents_plugin_examples`](../ml-agents-plugin-examples/mlagents_plugin_examples/example_stats_writer.py)
