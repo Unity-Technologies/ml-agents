@@ -43,7 +43,7 @@ to get started with the latest release of ML-Agents.**
 
 * 설치와 사용법 외에 더 많은 정보는 [설명서 홈](docs/Readme.md)을 참고해주십시오.
 * 만약 유니티 AI 플랫폼에 관한 토론에 관심있는 연구원이라면 유니티와 ML-Agents Toolkit에 관한 [논문](https://arxiv.org/abs/1809.02627)을 참고해 주십시오. 또한 이 논문을 인용하는 것에 관한 사항은 아래의 인용 부분을 참조하십시오.
-* 만약 이전 버전의 ML-Agents toolkit을 사용하고 있다면 [이전 버전 마이그레이션 가이드](docs/Migrating.md)를 확인해주십시오.
+* 만약 이전 버전의 ML-Agents 툴킷을 사용하고 있다면 [이전 버전 마이그레이션 가이드](docs/Migrating.md)를 확인해주십시오.
 
 The table below lists all our releases, including our `master` branch which is
 under active development and may be unstable. A few helpful guidelines:
@@ -83,30 +83,11 @@ https://github.com/Unity-Technologies/ml-agents.
 
 ## 추가 리소스
 
-We have a Unity Learn course,
-[ML-Agents: Hummingsbird](https://learn.unity.com/course/ml-agents-hummingbirds),
-that provides a gentle introduction to Unity and the ML-Agents Toolkit.
+We have a Unity Learn course, [ML-Agents: Hummingsbird](https://learn.unity.com/course/ml-agents-hummingbirds), that provides a gentle introduction to Unity and the ML-Agents Toolkit.
 
-We've also partnered with
-[CodeMonkeyUnity](https://www.youtube.com/c/CodeMonkeyUnity) to create a
-[series of tutorial videos](https://www.youtube.com/playlist?list=PLzDRvYVwl53vehwiN_odYJkPBzcqFw110)
-on how to implement and use the ML-Agents Toolkit.
+We've also partnered with [CodeMonkeyUnity](https://www.youtube.com/c/CodeMonkeyUnity) to create a [series of tutorial videos](https://www.youtube.com/playlist?list=PLzDRvYVwl53vehwiN_odYJkPBzcqFw110) on how to implement and use the ML-Agents Toolkit.
 
 We have also published a series of blog posts that are relevant for ML-Agents:
-
-블로그에 ML-Agents와 관련된 시리즈의 게시물을 게시하였습니다(영어).
-
-* 강화 학습 개념 개요 ([multi-armed bandit](https://blogs.unity3d.com/kr/2017/06/26/unity-ai-themed-blog-entries/) 과 [Q-learning](https://blogs.unity3d.com/kr/2017/08/22/unity-ai-reinforcement-learning-with-q-learning/))
-* [실제 게임에서 Machine Learning 에이전트 사용하기: 초보자 가이드](https://blogs.unity3d.com/kr/2017/12/11/using-machine-learning-agents-in-a-real-game-a-beginners-guide/)
-* [첫번째 ML-Agents 챌린지](https://connect.unity.com/challenges/ml-agents-1)의 수상자 관련 [포스트](https://blogs.unity3d.com/kr/2018/02/28/introducing-the-winners-of-the-first-ml-agents-challenge/)
-* 안전한 도시 설계를 위한 유니티 사용 방법 개요 관련 [포스트](https://blogs.unity3d.com/kr/2018/01/23/designing-safer-cities-through-simulations/)
-
-유니티에서 제공하는 문서 뿐만 아니라 관련된 기사들이 있습니다:
-
-* [유니티 AI - 유니티의 3D 인공지능](https://www.youtube.com/watch?v=bqsfkGbBU6k)
-* [머신러닝을 배우는 게임 개발자](https://mikecann.co.uk/machine-learning/a-game-developer-learns-machine-learning-intent/)
-* [인텔 아키텍쳐 전용 Unity Technologies ML-Agents 둘러보기](https://software.intel.com/en-us/articles/explore-unity-technologies-ml-agents-exclusively-on-intel-architecture)
-
 
 - (December 28, 2020)
   [Happy holidays from the Unity ML-Agents team!](https://blogs.unity3d.com/2020/12/28/happy-holidays-from-the-unity-ml-agents-team/)
@@ -167,11 +148,10 @@ ML-Agents 툴킷을 사용하여 다른 문제가 발생하거나 특정 기능 
 다른 의견과 피드백은 ML-Agents 팀과 직접 연락부탁드립니다. (ml-agents@unity3d.com)
 
 
-## Privacy
+## 개인정보
 
-In order to improve the developer experience for Unity ML-Agents Toolkit, we have added in-editor analytics.
-Please refer to "Information that is passively collected by Unity" in the
-[Unity Privacy Policy](https://unity3d.com/legal/privacy-policy).
+Unity ML-Agents 툴킷에 대한 개발자 경험을 개선하기 위해, 우리는 에디터 내부 분석을 추가했습니다. 
+[유니티 개인 정보 보호 정책](https://unity3d.com/legal/privacy-policy) 의 "Unity가 기본적으로 수집하는 정보"를 참조하시기 바랍니다.
 
 
 ## 라이센스
