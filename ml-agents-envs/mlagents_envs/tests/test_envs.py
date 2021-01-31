@@ -45,6 +45,7 @@ def test_port_defaults(
     )
     env = UnityEnvironment(file_name=file_name, worker_id=0, base_port=base_port)
     assert expected == env._port
+    env.close()
 
 
 @mock.patch("mlagents_envs.env_utils.launch_executable")
@@ -57,6 +58,7 @@ def test_log_file_path_is_set(mock_communicator, mock_launcher):
     args = env._executable_args()
     log_file_index = args.index("-logFile")
     assert args[log_file_index + 1] == "./some-log-folder-path/Player-0.log"
+    env.close()
 
 
 @mock.patch("mlagents_envs.env_utils.launch_executable")
