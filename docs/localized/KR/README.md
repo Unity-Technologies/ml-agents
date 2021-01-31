@@ -33,25 +33,14 @@ ML-Agents 툴킷은 유니티의 풍부한 환경에서 인공지능 에이전�
 
 이 모든 기능에 대한 자세한 설명은 [ML-Agents 개요](docs/ML-Agents-Overview.md) 페이지를 참조하십시오.
 
-## Releases & Documentation
+## 릴리즈 & 설명서
 
-**Our latest, stable release is `Release 12`. Click
-[here](https://github.com/Unity-Technologies/ml-agents/tree/release_12_docs/docs/Readme.md)
-to get started with the latest release of ML-Agents.**
+**최신의 안정적 릴리즈는 `Release 12` 입니다. 클릭해서 ML-Agents의 최신 릴리스를 시작하세요.** [여기](https://github.com/Unity-Technologies/ml-agents/tree/release_12_docs/docs/Readme.md)
 
-## 문서화
-
-* 설치와 사용법 외에 더 많은 정보는 [설명서 홈](docs/Readme.md)을 참고해주십시오.
-* 만약 유니티 AI 플랫폼에 관한 토론에 관심있는 연구원이라면 유니티와 ML-Agents Toolkit에 관한 [논문](https://arxiv.org/abs/1809.02627)을 참고해 주십시오. 또한 이 논문을 인용하는 것에 관한 사항은 아래의 인용 부분을 참조하십시오.
-* 만약 이전 버전의 ML-Agents 툴킷을 사용하고 있다면 [이전 버전 마이그레이션 가이드](docs/Migrating.md)를 확인해주십시오.
-
-The table below lists all our releases, including our `master` branch which is
-under active development and may be unstable. A few helpful guidelines:
-- The [Versioning page](docs/Versioning.md) overviews how we manage our GitHub
-  releases and the versioning process for each of the ML-Agents components.
-- The [Releases page](https://github.com/Unity-Technologies/ml-agents/releases)
-  contains details of the changes between releases.
-- The [Migration page](docs/Migrating.md) contains details on how to upgrade
+아래 표에는 현재 개발이 진행 중이며 불안정할 수 있는 `master` 브랜치를 포함한 모든 릴리스가 나와 있습니다. 몇 가지 유용한 지침:
+- [버전 관리 페이지](docs/Versioning.md) 는 GitHub 릴리즈를 관리하는 방법과 각 ML-Agents 구성 요소에 대한 버전 관리 프로세스를 간략히 설명합니다.
+- [릴리즈 페이지](https://github.com/Unity-Technologies/ml-agents/releases) 는 릴리스 간의 변경 사항에 대한 세부 정보가 포함되어 있습니다.
+- [Migration page](docs/Migrating.md) contains details on how to upgrade
   from earlier releases of the ML-Agents Toolkit.
 - The **Documentation** links in the table below include installation and usage
   instructions specific to each release. Remember to always use the
@@ -75,15 +64,11 @@ under active development and may be unstable. A few helpful guidelines:
 [reference paper on Unity and the ML-Agents Toolkit](https://arxiv.org/abs/1809.02627).
 
 유니티 또는 ML-Agents 툴킷을 사용하여 연구를 수행하는 경우, 다음 논문을 참조 자료로 인용할 것을 요청합니다.
-Juliani, A., Berges, V., Teng, E., Cohen, A., Harper, J., Elion, C., Goy, C.,
-Gao, Y., Henry, H., Mattar, M., Lange, D. (2020). Unity: A General Platform for
-Intelligent Agents. _arXiv preprint
-[arXiv:1809.02627](https://arxiv.org/abs/1809.02627)._
-https://github.com/Unity-Technologies/ml-agents.
+Juliani, A., Berges, V., Teng, E., Cohen, A., Harper, J., Elion, C., Goy, C., Gao, Y., Henry, H., Mattar, M., Lange, D. (2020). Unity: A General Platform for Intelligent Agents. _arXiv preprint [arXiv:1809.02627](https://arxiv.org/abs/1809.02627)._ https://github.com/Unity-Technologies/ml-agents.
 
 ## 추가 리소스
 
-We have a Unity Learn course, [ML-Agents: Hummingsbird](https://learn.unity.com/course/ml-agents-hummingbirds), that provides a gentle introduction to Unity and the ML-Agents Toolkit.
+유니티 및 ML-Agents 툴킷에 대해 자세히 소개하는 유니티 학습 과정이 있습니다. [ML-Agents: Hummingsbird](https://learn.unity.com/course/ml-agents-hummingbirds)
 
 We've also partnered with [CodeMonkeyUnity](https://www.youtube.com/c/CodeMonkeyUnity) to create a [series of tutorial videos](https://www.youtube.com/playlist?list=PLzDRvYVwl53vehwiN_odYJkPBzcqFw110) on how to implement and use the ML-Agents Toolkit.
 
