@@ -369,6 +369,18 @@ namespace Unity.MLAgents.Actuators
             NumContinuousActions = NumDiscreteActions = SumOfDiscreteBranchSizes = 0;
         }
 
+        /// <summary>
+        /// Add an array of <see cref="IActuator"/>s at once.
+        /// </summary>
+        /// <param name="actuators">The array of <see cref="IActuator"/>s to add.</param>
+        public void AddRange(IActuator[] actuators)
+        {
+            for (var i = 0; i < actuators.Length; i++)
+            {
+                Add(actuators[i]);
+            }
+        }
+
         /*********************************************************************************
          * IList implementation that delegates to m_Actuators List.                      *
          *********************************************************************************/
@@ -432,7 +444,7 @@ namespace Unity.MLAgents.Actuators
         public int Count => m_Actuators.Count;
 
         /// <inheritdoc/>
-        public bool IsReadOnly => m_Actuators.IsReadOnly;
+        public bool IsReadOnly => false;
 
         /// <inheritdoc/>
         public int IndexOf(IActuator item)
