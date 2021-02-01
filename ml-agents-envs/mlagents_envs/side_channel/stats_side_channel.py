@@ -17,6 +17,9 @@ class StatsAggregationMethod(Enum):
     # Values within the summary period are summed up before reporting.
     SUM = 2
 
+    # All values within a summary period are reported as a histogram.
+    HISTOGRAM = 3
+
 
 StatList = List[Tuple[float, StatsAggregationMethod]]
 EnvironmentStats = Mapping[str, StatList]

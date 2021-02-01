@@ -23,6 +23,11 @@ namespace Unity.MLAgents
         /// Values within the summary period are summed up before reporting.
         /// </summary>
         Sum = 2
+
+        /// <summary>
+        /// Values within the summary period are reported as a histogram.
+        /// </summary>
+        Histogram = 3
     }
 
     /// <summary>

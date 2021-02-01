@@ -204,7 +204,7 @@ class TensorboardWriter(StatsWriter):
             self.summary_writers[category].add_scalar(
                 f"{key}", value.aggregated_value, step
             )
-            if key == "Environment/Cumulative Reward":
+            if value.aggregation_method == StatsAggregationMethod.HISTOGRAM:
                 self.summary_writers[category].add_histogram(
                     f"{key}_hist", np.array(value.full_dist), step
                 )
