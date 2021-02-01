@@ -38,6 +38,9 @@ BRAIN_NAME = "1D"
 PPO_TORCH_CONFIG = ppo_dummy_config()
 SAC_TORCH_CONFIG = sac_dummy_config()
 
+# tests in this file won't be tested on GPU machine
+pytestmark = pytest.mark.check_environment_trains
+
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_simple_ppo(action_sizes):

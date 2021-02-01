@@ -130,6 +130,9 @@ class TrainerController:
                     target=self.trainer_update_func, args=(trainer,), daemon=True
                 )
                 self.trainer_threads.append(trainerthread)
+            env_manager.on_training_started(
+                brain_name, self.trainer_factory.trainer_config[brain_name]
+            )
 
         policy = trainer.create_policy(
             parsed_behavior_id,

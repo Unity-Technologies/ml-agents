@@ -123,6 +123,7 @@ namespace Unity.MLAgents.Tests
             {
                 return Mapping;
             }
+
         }
 
         [Test]
@@ -211,6 +212,20 @@ namespace Unity.MLAgents.Tests
             var expected4 = sensor.CreateEmptyPNG();
             expected4 = expected4.Concat(Array.ConvertAll(new[] { 10f, 11f, 12f }, (z) => (byte)z)).ToArray();
             Assert.AreEqual(sensor.GetCompressedObservation(), expected4);
+        }
+
+        [Test]
+        public void TestStackingSensorBuiltInSensorType()
+        {
+            var dummySensor = new Dummy3DSensor();
+            dummySensor.Shape = new[] { 2, 2, 4 };
+            dummySensor.Mapping = new[] { 0, 1, 2, 3 };
+            var stackedDummySensor = new StackingSensor(dummySensor, 2);
+            Assert.AreEqual(stackedDummySensor.GetBuiltInSensorType(), BuiltInSensorType.Unknown);
+
+            var vectorSensor = new VectorSensor(4);
+            var stackedVectorSensor = new StackingSensor(vectorSensor, 4);
+            Assert.AreEqual(stackedVectorSensor.GetBuiltInSensorType(), BuiltInSensorType.VectorSensor);
         }
     }
 }
