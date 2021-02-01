@@ -184,7 +184,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
                 if (action.activeControl != null)
                 {
                     var adaptor = s_Adaptors[GetInputActionLayout(action).GetValueType()];
-                    adaptor.QueueInputEventForAction(m_Device, action, ActionSpec, actionBuffers);
+                    adaptor.QueueInputEventForAction(action, ActionSpec, actionBuffers);
                 }
             }
         }

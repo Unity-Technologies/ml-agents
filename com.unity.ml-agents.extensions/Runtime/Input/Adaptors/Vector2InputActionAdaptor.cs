@@ -26,24 +26,13 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             continuousActions[continuousOffset] = value.y;
         }
 
-        public void QueueInputEventForAction(InputDevice device, InputAction action, ActionSpec actionSpec, in ActionBuffers actionBuffers)
+        public void QueueInputEventForAction(InputAction action, ActionSpec actionSpec, in ActionBuffers actionBuffers)
         {
             // Debug.Assert(action.controls.Count == 1, "Vector2InputActionAdaptor should have exactly one control.");
             var x = actionBuffers.ContinuousActions[0];
             var y = actionBuffers.ContinuousActions[1];
             var control = action.activeControl;
-            if (control.valueType == typeof(Vector2))
-            {
-                using (StateEvent.From(control.device, out var eventPtr))
-                {
-                    action.activeControl.WriteValueIntoEvent(new Vector2(x, y), eventPtr);
-                    // InputSystem.QueueEvent(eventPtr);
-                }
-            }
-            else if (control.valueType == typeof(float))
-            {
-
-            }
+            InputSystem.QueueDeltaStateEvent(control, new Vector2(x, y));
         }
 
     }
