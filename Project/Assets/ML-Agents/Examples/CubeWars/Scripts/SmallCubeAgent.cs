@@ -54,7 +54,7 @@ public class SmallCubeAgent : Agent
             m_Damage = 0f;
             m_Heal = .7f;
             m_MoveSpeed = 10f;
-            m_turnSpeed = 150f;
+            m_TurnSpeed = 150f;
             m_Cooldown = .2f;
         }
         else if (role == Role.DPS)
@@ -63,7 +63,7 @@ public class SmallCubeAgent : Agent
             m_Damage = .05f;
             m_Heal = 0f;
             m_MoveSpeed = 10f;
-            m_turnSpeed = 200f;
+            m_TurnSpeed = 200f;
             m_Cooldown = .25f;
         }
         else if (role == Role.Tank)
@@ -72,7 +72,7 @@ public class SmallCubeAgent : Agent
             m_Damage = .02f;
             m_Heal = .2f;
             m_MoveSpeed = 6f;
-            m_turnSpeed = 100f;
+            m_TurnSpeed = 100f;
             m_Cooldown = .4f;
         }
 
@@ -91,10 +91,6 @@ public class SmallCubeAgent : Agent
         Vector3 dirToSelf = transform.position - m_LargeAgent.transform.position;
         float angle = Vector3.Dot(m_LargeAgent.transform.forward.normalized, dirToSelf.normalized);
         sensor.AddObservation(angle);
-        if (m_Dead)
-        {
-            AddReward(-.001f * m_Bonus);
-        }
     }
 
     public Color32 ToColor(int hexVal)
@@ -153,12 +149,25 @@ public class SmallCubeAgent : Agent
                 if (hit.collider.gameObject.CompareTag("StrongSmallAgent") || hit.collider.gameObject.CompareTag("WeakSmallAgent"))
                 {
                     hit.collider.gameObject.GetComponent<SmallCubeAgent>().HealAgent(m_Heal);
+                    if (role == Role.Healer)
+                    {
+                        AddReward(.05f);
+                    }
+
                 }
                 else if (hit.collider.gameObject.CompareTag("StrongLargeAgent") || hit.collider.gameObject.CompareTag("WeakLargeAgent"))
                 {
                     hit.collider.gameObject.GetComponent<LargeCubeAgent>().HitAgent(m_Damage);
 
-                    AddReward(.1f + .4f * m_Bonus);
+                    if (role == Role.DPS)
+                    {
+                        AddReward(.1f);
+                    }
+                    else if (role == Role.Tank)
+                    {
+                        AddReward(.05f);
+                    }
+
                 }
                 myLaser.isFired = true;
             }
@@ -203,7 +212,6 @@ public class SmallCubeAgent : Agent
         }
         else // Dead
         {
-            // AddReward(-.1f * m_Bonus);
             m_Dead = true;
             EndEpisode();
             gameObject.SetActive(false);
@@ -252,8 +260,6 @@ public class SmallCubeAgent : Agent
         m_Dead = false;
         m_Shoot = false;
         m_ShootTime = -.5f;
-        //m_Bonus = Academy.Instance.FloatProperties.GetPropertyWithDefault("bonus", 0);
-        m_Bonus = .2f;//SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("bonus", 0);
         m_AgentRb.velocity = Vector3.zero;
 
         float smallRange = 50f * m_MyArea.range;
