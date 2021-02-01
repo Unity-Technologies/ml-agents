@@ -15,22 +15,64 @@ public class SmallCubeAgent : Agent
     float m_ShootTime;
     Rigidbody m_AgentRb;
     //float m_LaserLength;
-    float m_HitPoints;
     // Speed of agent rotation.
     public float turnSpeed;
     float m_Bonus;
 
     // Speed of agent movement.
-    public float moveSpeed;
     public Material normalMaterial;
     public Material weakMaterial;
     public Material deadMaterial;
     public Laser myLaser;
     public GameObject myBody;
 
+    [HideInInspector]
+    float m_HitPoints;
+    [HideInInspector]
+    float m_Damage;
+    [HideInInspector]
+    float m_Heal;
+    [HideInInspector]
+    float m_MoveSpeed;
+    [HideInInspector]
+    float m_Cooldown;
+
+    public enum Role
+    {
+        Healer,
+        Tank,
+        DPS
+    }
+
+    public Role role;
 
     public override void Initialize()
     {
+        if (role == Role.Healer)
+        {
+            m_HitPoints = .7f;
+            m_Damage = 0f;
+            m_Heal = .7f;
+            m_MoveSpeed = 10f;
+            m_Cooldown = .2f;
+        }
+        else if (role == Role.DPS)
+        {
+            m_HitPoints = .5f;
+            m_Damage = .05f;
+            m_Heal = 0f;
+            m_MoveSpeed = 10f;
+            m_Cooldown = .25f;
+        }
+        else if (role == Role.Tank)
+        {
+            m_HitPoints = 1f;
+            m_Damage = .02f;
+            m_Heal = .2f;
+            m_MoveSpeed = 6f;
+            m_Cooldown = .4f;
+        }
+
         m_AgentRb = GetComponent<Rigidbody>();
         m_MyArea = area.GetComponent<CubeWarArea>();
         m_LargeAgent = largeAgent.GetComponent<LargeCubeAgent>();
@@ -95,7 +137,7 @@ public class SmallCubeAgent : Agent
                 }
             }
             transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
-            m_AgentRb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
+            m_AgentRb.AddForce(dirToGo * m_MoveSpeed, ForceMode.VelocityChange);
         }
 
         if (m_Shoot)
@@ -108,18 +150,18 @@ public class SmallCubeAgent : Agent
             {
                 if (hit.collider.gameObject.CompareTag("StrongSmallAgent") || hit.collider.gameObject.CompareTag("WeakSmallAgent"))
                 {
-                    hit.collider.gameObject.GetComponent<SmallCubeAgent>().HealAgent();
+                    hit.collider.gameObject.GetComponent<SmallCubeAgent>().HealAgent(m_Heal);
                 }
                 else if (hit.collider.gameObject.CompareTag("StrongLargeAgent") || hit.collider.gameObject.CompareTag("WeakLargeAgent"))
                 {
-                    hit.collider.gameObject.GetComponent<LargeCubeAgent>().HitAgent(.02f);
+                    hit.collider.gameObject.GetComponent<LargeCubeAgent>().HitAgent(m_Damage);
 
                     AddReward(.1f + .4f * m_Bonus);
                 }
                 myLaser.isFired = true;
             }
         }
-        else if (Time.time > m_ShootTime + .25f)
+        else if (Time.time > m_ShootTime + m_Cooldown)
         {
             myLaser.isFired = false;
         }
@@ -134,11 +176,11 @@ public class SmallCubeAgent : Agent
         }
     }
 
-    public void HealAgent()
+    public void HealAgent(float heal)
     {
         if (m_HitPoints < 1f)
         {
-            m_HitPoints = Mathf.Min(m_HitPoints + .25f, 1f);
+            m_HitPoints = Mathf.Min(m_HitPoints + heal, 1f);
             HealthStatus();
         }
     }
