@@ -319,6 +319,8 @@ namespace Unity.MLAgents
 
         ITeamManager m_TeamManager;
 
+        ITeamManager m_TeamManager;
+
         /// <summary>
         /// Called when the attached [GameObject] becomes enabled and active.
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
