@@ -794,6 +794,11 @@ PrefabInstance:
       propertyPath: largeAgent
       value: 
       objectReference: {fileID: 5707177387575911509}
+    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: role
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8083776131842293165, guid: 4dd35c7381e7445c99133a34a83e21db,
         type: 3}
       propertyPath: m_Name
@@ -975,6 +980,11 @@ PrefabInstance:
       propertyPath: area
       value: 
       objectReference: {fileID: 1819751139121548}
+    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: role
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8083776131842293165, guid: 4dd35c7381e7445c99133a34a83e21db,
         type: 3}
       propertyPath: m_Name
