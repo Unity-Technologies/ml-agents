@@ -1006,7 +1006,7 @@ namespace Unity.MLAgents
 
             foreach (var actuatorComponent in attachedActuators)
             {
-                m_ActuatorManager.AddRange(actuatorComponent.CreateActuators());
+                m_ActuatorManager.AddActuators(actuatorComponent.CreateActuators());
             }
         }
 

@@ -373,7 +373,7 @@ namespace Unity.MLAgents.Actuators
         /// Add an array of <see cref="IActuator"/>s at once.
         /// </summary>
         /// <param name="actuators">The array of <see cref="IActuator"/>s to add.</param>
-        public void AddRange(IActuator[] actuators)
+        public void AddActuators(IActuator[] actuators)
         {
             for (var i = 0; i < actuators.Length; i++)
             {
