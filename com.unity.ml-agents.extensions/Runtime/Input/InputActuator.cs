@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Extensions.Runtime.Input.Composites;
 using Unity.MLAgents.Policies;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
@@ -39,7 +37,6 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         static Dictionary<InputAction, InputControlLayout> s_InputActionToLayout = new Dictionary<InputAction, InputControlLayout>();
 
         readonly PlayerInput m_PlayerInput;
-        readonly InputActionAsset m_ActionAssetCopy;
         readonly InputActionMap m_DefaultMap;
         readonly BehaviorParameters m_BehaviorParameters;
         readonly Agent m_Agent;
@@ -57,8 +54,8 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             Debug.Assert(playerInput != null,
                 "PlayerInput component is required to use the InputSystemActuator");
             m_PlayerInput = playerInput;
-            m_ActionAssetCopy = InputActionAsset.FromJson(m_PlayerInput.actions.ToJson());
-            m_DefaultMap = m_ActionAssetCopy.FindActionMap(m_PlayerInput.defaultActionMap);
+            var actionAsset = m_PlayerInput.actions;
+            m_DefaultMap = actionAsset.FindActionMap(m_PlayerInput.defaultActionMap);
 
             m_BehaviorParameters = behaviorParameters;
             m_Agent = agent;
@@ -224,8 +221,8 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         public void Heuristic(in ActionBuffers actionBuffersOut)
         {
             //  Write to actionBuffers
-            int continuousOffset = 0;
-            int discreteOffset = 0;
+            var continuousOffset = 0;
+            var discreteOffset = 0;
             foreach (var action in m_DefaultMap)
             {
                 InputSystem.QueueDeltaStateEvent(m_Device.children[0], new Vector2(0f, 1f));
