@@ -41,16 +41,12 @@ def _dict_to_str(param_dict: Dict[str, Any], num_tabs: int) -> str:
 
 
 class StatsSummary(NamedTuple):
-    mean: float
-    std: float
-    num: int
-    sum: float
     full_dist: List[float]
     aggregation_method: StatsAggregationMethod
 
     @staticmethod
     def empty() -> "StatsSummary":
-        return StatsSummary(0.0, 0.0, 0, 0.0, [0.0], StatsAggregationMethod.AVERAGE)
+        return StatsSummary([0.0], StatsAggregationMethod.AVERAGE)
 
     @property
     def aggregated_value(self):
@@ -58,6 +54,22 @@ class StatsSummary(NamedTuple):
             return self.sum
         else:
             return self.mean
+
+    @property
+    def mean(self):
+        return np.mean(self.full_dist)
+
+    @property
+    def std(self):
+        return np.std(self.full_dist)
+
+    @property
+    def num(self):
+        return len(self.full_dist)
+
+    @property
+    def sum(self):
+        return np.sum(self.full_dist)
 
 
 class StatsPropertyType(Enum):
@@ -331,10 +343,6 @@ class StatsReporter:
             return StatsSummary.empty()
 
         return StatsSummary(
-            mean=np.mean(stat_values),
-            std=np.std(stat_values),
-            num=len(stat_values),
-            sum=np.sum(stat_values),
             full_dist=stat_values,
             aggregation_method=StatsReporter.stats_aggregation[self.category][key],
         )
