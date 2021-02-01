@@ -16,8 +16,6 @@ public class SmallCubeAgent : Agent
     Rigidbody m_AgentRb;
     //float m_LaserLength;
     // Speed of agent rotation.
-    public float turnSpeed;
-    float m_Bonus;
 
     // Speed of agent movement.
     public Material normalMaterial;
@@ -34,6 +32,8 @@ public class SmallCubeAgent : Agent
     float m_Heal;
     [HideInInspector]
     float m_MoveSpeed;
+    [HideInInspector]
+    float m_TurnSpeed;
     [HideInInspector]
     float m_Cooldown;
 
@@ -54,14 +54,16 @@ public class SmallCubeAgent : Agent
             m_Damage = 0f;
             m_Heal = .7f;
             m_MoveSpeed = 10f;
+            m_turnSpeed = 150f;
             m_Cooldown = .2f;
         }
         else if (role == Role.DPS)
         {
-            m_HitPoints = .5f;
+            m_HitPoints = .6f;
             m_Damage = .05f;
             m_Heal = 0f;
             m_MoveSpeed = 10f;
+            m_turnSpeed = 200f;
             m_Cooldown = .25f;
         }
         else if (role == Role.Tank)
@@ -70,6 +72,7 @@ public class SmallCubeAgent : Agent
             m_Damage = .02f;
             m_Heal = .2f;
             m_MoveSpeed = 6f;
+            m_turnSpeed = 100f;
             m_Cooldown = .4f;
         }
 
@@ -136,7 +139,7 @@ public class SmallCubeAgent : Agent
                     m_ShootTime = Time.time;
                 }
             }
-            transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
+            transform.Rotate(rotateDir, Time.fixedDeltaTime * m_TurnSpeed);
             m_AgentRb.AddForce(dirToGo * m_MoveSpeed, ForceMode.VelocityChange);
         }
 
