@@ -45,11 +45,14 @@ public class SmallCubeAgent : Agent
     }
 
     public Role role;
+    float[] m_RoleObs;
 
     public override void Initialize()
     {
+        m_RoleObs = new float[3];
         if (role == Role.Healer)
         {
+            m_RoleObs[0] = 1f;
             m_HitPoints = .7f;
             m_Damage = 0f;
             m_Heal = .7f;
@@ -59,6 +62,7 @@ public class SmallCubeAgent : Agent
         }
         else if (role == Role.DPS)
         {
+            m_RoleObs[1] = 1f;
             m_HitPoints = .6f;
             m_Damage = .05f;
             m_Heal = 0f;
@@ -68,6 +72,7 @@ public class SmallCubeAgent : Agent
         }
         else if (role == Role.Tank)
         {
+            m_RoleObs[2] = 1f;
             m_HitPoints = 1f;
             m_Damage = .02f;
             m_Heal = .2f;
@@ -91,6 +96,7 @@ public class SmallCubeAgent : Agent
         Vector3 dirToSelf = transform.position - m_LargeAgent.transform.position;
         float angle = Vector3.Dot(m_LargeAgent.transform.forward.normalized, dirToSelf.normalized);
         sensor.AddObservation(angle);
+        sensor.AddObservation(m_RoleObs);
     }
 
     public Color32 ToColor(int hexVal)

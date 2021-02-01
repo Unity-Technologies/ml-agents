@@ -471,7 +471,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 4
+    VectorObservationSize: 7
     NumStackedVectorObservations: 2
     m_ActionSpec:
       m_NumContinuousActions: 3
@@ -551,13 +551,12 @@ MonoBehaviour:
   MaxStep: 3000
   area: {fileID: 0}
   largeAgent: {fileID: 0}
-  turnSpeed: 300
-  moveSpeed: 6
   normalMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   weakMaterial: {fileID: 2100000, guid: ff14134b548ad4790809bd7ffdffbf32, type: 2}
   deadMaterial: {fileID: 2100000, guid: 69fefdd39d2b34b169e921910bed9c0d, type: 2}
   myLaser: {fileID: 476807081225894111}
   myBody: {fileID: 8083011482102967889}
+  role: 0
 --- !u!1 &8083875348725975067
 GameObject:
   m_ObjectHideFlags: 0
