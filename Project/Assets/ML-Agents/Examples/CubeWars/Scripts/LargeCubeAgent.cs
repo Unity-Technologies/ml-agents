@@ -1,6 +1,7 @@
 using UnityEngine;
-using MLAgents;
-using MLAgents.Sensors;
+using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Sensors;
 
 public class LargeCubeAgent : Agent
 {
@@ -13,7 +14,7 @@ public class LargeCubeAgent : Agent
     bool m_Shockwave;
     float m_ShockwaveTime;
     Rigidbody m_AgentRb;
-    float m_LaserLength;
+    //    float m_LaserLength;
     float m_HitPoints;
     // Speed of agent rotation.
     public float turnSpeed;
@@ -51,65 +52,29 @@ public class LargeCubeAgent : Agent
         return new Color32(r, g, b, 255);
     }
 
-    public void MoveAgent(float[] act)
+    public void MoveAgent(ActionBuffers actionBuffers)
     {
         m_Shoot = false;
         m_Shockwave = false;
 
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
+        var continuousActions = actionBuffers.ContinuousActions;
+        var discreteActions = actionBuffers.DiscreteActions;
 
         if (!m_Dead)
         {
-            var shootCommand = false;
-            var shockwaveCommand = false;
-            var forwardAxis = (int)act[0];
-            var rightAxis = (int)act[1];
-            var rotateAxis = (int)act[2];
-            var shootAxis = (int)act[3];
-            var shockwaveAxis = (int)act[4];
+            var forward = Mathf.Clamp(continuousActions[0], -1f, 1f);
+            var right = Mathf.Clamp(continuousActions[1], -1f, 1f);
+            var rotate = Mathf.Clamp(continuousActions[2], -1f, 1f);
 
-            switch (forwardAxis)
-            {
-                case 1:
-                    dirToGo = transform.forward;
-                    break;
-                case 2:
-                    dirToGo = -transform.forward;
-                    break;
-            }
+            dirToGo = transform.forward * forward;
+            dirToGo += transform.right * right;
+            rotateDir = -transform.up * rotate;
 
-            switch (rightAxis)
-            {
-                case 1:
-                    dirToGo = transform.right;
-                    break;
-                case 2:
-                    dirToGo = -transform.right;
-                    break;
-            }
+            var shootCommand = (int)discreteActions[0] > 0;
+            var shockwaveCommand = (int)discreteActions[1] > 0;
 
-            switch (rotateAxis)
-            {
-                case 1:
-                    rotateDir = -transform.up;
-                    break;
-                case 2:
-                    rotateDir = transform.up;
-                    break;
-            }
-            switch (shootAxis)
-            {
-                case 1:
-                    shootCommand = true;
-                    break;
-            }
-            switch (shockwaveAxis)
-            {
-                case 1:
-                    shockwaveCommand = true;
-                    break;
-            }
             if (shootCommand)
             {
                 if (Time.time > m_ShootTime + 1f)
@@ -243,41 +208,36 @@ public class LargeCubeAgent : Agent
         }
     }
 
-    public override void OnActionReceived(float[] vectorAction)
+    public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        MoveAgent(vectorAction);
+        MoveAgent(actionBuffers);
     }
 
-    public override float[] Heuristic()
+    public override void Heuristic(in ActionBuffers actionsOut)
     {
-        var action = new float[5];
+        var continuousActionsOut = actionsOut.ContinuousActions;
+        continuousActionsOut[0] = 0;
+        continuousActionsOut[1] = 0;
+        continuousActionsOut[2] = 0;
         if (Input.GetKey(KeyCode.D))
         {
-            action[2] = 2f;
+            continuousActionsOut[2] = 1;
         }
         if (Input.GetKey(KeyCode.W))
         {
-            action[0] = 1f;
-        }
-        if (Input.GetKey(KeyCode.E))
-        {
-            action[1] = 1f;
-        }
-        if (Input.GetKey(KeyCode.Q))
-        {
-            action[1] = 2f;
+            continuousActionsOut[0] = 1;
         }
         if (Input.GetKey(KeyCode.A))
         {
-            action[2] = 1f;
+            continuousActionsOut[2] = -1;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            action[0] = 2f;
+            continuousActionsOut[0] = -1;
         }
-        action[3] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
-        action[4] = Input.GetKey(KeyCode.O) ? 1.0f : 0.0f;
-        return action;
+        var discreteActionsOut = actionsOut.DiscreteActions;
+        discreteActionsOut[0] = Input.GetKey(KeyCode.Space) ? 1 : 0;
+        discreteActionsOut[1] = Input.GetKey(KeyCode.O) ? 1 : 0;
     }
 
     public override void OnEpisodeBegin()
@@ -303,10 +263,10 @@ public class LargeCubeAgent : Agent
         return m_Dead;
     }
 
-    public void SetLaserLengths()
-    {
-        m_LaserLength = 1f;
-    }
+    //public void SetLaserLengths()
+    //{
+    //    m_LaserLength = 1f;
+    //}
 
     public void SetAgentScale()
     {
@@ -316,7 +276,7 @@ public class LargeCubeAgent : Agent
 
     public void SetResetParameters()
     {
-        SetLaserLengths();
+        //    SetLaserLengths();
         SetAgentScale();
     }
 }

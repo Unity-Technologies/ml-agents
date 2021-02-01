@@ -1,7 +1,7 @@
 using UnityEngine;
-using MLAgents;
-using MLAgents.Sensors;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Sensors;
 
 public class SmallCubeAgent : Agent
 {
@@ -14,7 +14,7 @@ public class SmallCubeAgent : Agent
     bool m_Shoot;
     float m_ShootTime;
     Rigidbody m_AgentRb;
-    float m_LaserLength;
+    //float m_LaserLength;
     float m_HitPoints;
     // Speed of agent rotation.
     public float turnSpeed;
@@ -61,56 +61,29 @@ public class SmallCubeAgent : Agent
         return new Color32(r, g, b, 255);
     }
 
-    public void MoveAgent(float[] act)
+    public void MoveAgent(ActionBuffers actionBuffers)
     {
         m_Shoot = false;
 
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
 
+        var continuousActions = actionBuffers.ContinuousActions;
+        var discreteActions = actionBuffers.DiscreteActions;
+
         if (!m_Dead)
         {
-            var shootCommand = false;
-            var forwardAxis = (int)act[0];
-            var rightAxis = (int)act[1];
-            var rotateAxis = (int)act[2];
-            var shootAxis = (int)act[3];
+            var forward = Mathf.Clamp(continuousActions[0], -1f, 1f);
+            var right = Mathf.Clamp(continuousActions[1], -1f, 1f);
+            var rotate = Mathf.Clamp(continuousActions[2], -1f, 1f);
 
-            switch (forwardAxis)
-            {
-                case 1:
-                    dirToGo = transform.forward;
-                    break;
-                case 2:
-                    dirToGo = -transform.forward;
-                    break;
-            }
+            dirToGo = transform.forward * forward;
+            dirToGo += transform.right * right;
+            rotateDir = -transform.up * rotate;
 
-            switch (rightAxis)
-            {
-                case 1:
-                    dirToGo = transform.right;
-                    break;
-                case 2:
-                    dirToGo = -transform.right;
-                    break;
-            }
 
-            switch (rotateAxis)
-            {
-                case 1:
-                    rotateDir = -transform.up;
-                    break;
-                case 2:
-                    rotateDir = transform.up;
-                    break;
-            }
-            switch (shootAxis)
-            {
-                case 1:
-                    shootCommand = true;
-                    break;
-            }
+            var shootCommand = (int)discreteActions[0] > 0;
+
             if (shootCommand)
             {
                 if (Time.time > m_ShootTime + .4f)
@@ -124,11 +97,6 @@ public class SmallCubeAgent : Agent
             transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
             m_AgentRb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
         }
-
-        //if (m_AgentRb.velocity.sqrMagnitude > 25f) // slow it down
-        //{
-        //    m_AgentRb.velocity *= 0.95f;
-        //}
 
         if (m_Shoot)
         {
@@ -199,40 +167,35 @@ public class SmallCubeAgent : Agent
         }
     }
 
-    public override void OnActionReceived(float[] vectorAction)
+    public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        MoveAgent(vectorAction);
+        MoveAgent(actionBuffers);
     }
 
-    public override float[] Heuristic()
+    public override void Heuristic(in ActionBuffers actionsOut)
     {
-        var action = new float[4];
+        var continuousActionsOut = actionsOut.ContinuousActions;
+        continuousActionsOut[0] = 0;
+        continuousActionsOut[1] = 0;
+        continuousActionsOut[2] = 0;
         if (Input.GetKey(KeyCode.D))
         {
-            action[2] = 2f;
+            continuousActionsOut[2] = 1;
         }
         if (Input.GetKey(KeyCode.W))
         {
-            action[0] = 1f;
-        }
-        if (Input.GetKey(KeyCode.E))
-        {
-            action[1] = 1f;
-        }
-        if (Input.GetKey(KeyCode.Q))
-        {
-            action[1] = 2f;
+            continuousActionsOut[0] = 1;
         }
         if (Input.GetKey(KeyCode.A))
         {
-            action[2] = 1f;
+            continuousActionsOut[2] = -1;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            action[0] = 2f;
+            continuousActionsOut[0] = -1;
         }
-        action[3] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
-        return action;
+        var discreteActionsOut = actionsOut.DiscreteActions;
+        discreteActionsOut[0] = Input.GetKey(KeyCode.Space) ? 1 : 0;
     }
 
     public override void OnEpisodeBegin()
@@ -243,7 +206,7 @@ public class SmallCubeAgent : Agent
         m_Shoot = false;
         m_ShootTime = -.5f;
         //m_Bonus = Academy.Instance.FloatProperties.GetPropertyWithDefault("bonus", 0);
-        m_Bonus = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("bonus", 0);
+        m_Bonus = .2f;//SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("bonus", 0);
         m_AgentRb.velocity = Vector3.zero;
 
         float smallRange = 50f * m_MyArea.range;
@@ -260,10 +223,10 @@ public class SmallCubeAgent : Agent
         return m_Dead;
     }
 
-    public void SetLaserLengths()
-    {
-        m_LaserLength = 1f;
-    }
+    //public void SetLaserLengths()
+    //{
+    //    m_LaserLength = 1f;
+    //}
 
     public void SetAgentScale()
     {
@@ -273,7 +236,7 @@ public class SmallCubeAgent : Agent
 
     public void SetResetParameters()
     {
-        SetLaserLengths();
+        //SetLaserLengths();
         SetAgentScale();
     }
 }

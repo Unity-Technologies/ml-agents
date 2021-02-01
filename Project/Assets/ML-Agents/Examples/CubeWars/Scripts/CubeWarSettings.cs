@@ -1,8 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using MLAgents;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
 
 public class CubeWarSettings : MonoBehaviour
 {
@@ -13,8 +12,6 @@ public class CubeWarSettings : MonoBehaviour
 
     public int totalScore;
     public Text scoreText;
-
-    StatsSideChannel m_statsSideChannel;
 
     //    public void Awake()
     //    {
