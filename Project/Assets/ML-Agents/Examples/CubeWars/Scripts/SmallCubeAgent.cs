@@ -192,7 +192,7 @@ public class SmallCubeAgent : Agent
     {
         if (m_HitPoints < 1f)
         {
-            m_HitPoints = Mathf.Min(m_HitPoints + heal, 1f);
+            m_HitPoints = Mathf.Min(m_HitPoints + heal, m_HitPointsTotal);
             HealthStatus();
         }
     }
