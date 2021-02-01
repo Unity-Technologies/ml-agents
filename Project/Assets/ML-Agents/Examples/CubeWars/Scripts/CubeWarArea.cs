@@ -8,13 +8,25 @@ public class CubeWarArea : Area
     [HideInInspector]
     public LargeCubeAgent[] largeAgents;
     public float range;
+    private CubeWarsTeamManager m_SmallTeamManager;
+    private CubeWarsTeamManager m_LargeTeamManager;
 
 
     void Start()
     {
+        m_SmallTeamManager = new CubeWarsTeamManager();
+        m_LargeTeamManager = new CubeWarsTeamManager();
         range = 1.0f;
         smallAgents = GetComponentsInChildren<SmallCubeAgent>();
         largeAgents = GetComponentsInChildren<LargeCubeAgent>();
+        foreach (var agent in smallAgents)
+        {
+            agent.SetTeamManager(m_SmallTeamManager);
+        }
+        foreach (var agent in largeAgents)
+        {
+            agent.SetTeamManager(m_LargeTeamManager);
+        }
     }
 
     public void AgentDied()
