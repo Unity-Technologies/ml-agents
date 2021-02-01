@@ -41,7 +41,7 @@ class AgentInfoProto(google___protobuf___message___Message):
     max_step_reached = ... # type: builtin___bool
     id = ... # type: builtin___int
     action_mask = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___bool]
-    team_manager_id = ... # type: typing___Text
+    team_manager_id = ... # type: builtin___int
 
     @property
     def observations(self) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[mlagents_envs___communicator_objects___observation_pb2___ObservationProto]: ...
@@ -54,7 +54,7 @@ class AgentInfoProto(google___protobuf___message___Message):
         id : typing___Optional[builtin___int] = None,
         action_mask : typing___Optional[typing___Iterable[builtin___bool]] = None,
         observations : typing___Optional[typing___Iterable[mlagents_envs___communicator_objects___observation_pb2___ObservationProto]] = None,
-        team_manager_id : typing___Optional[typing___Text] = None,
+        team_manager_id : typing___Optional[builtin___int] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: builtin___bytes) -> AgentInfoProto: ...

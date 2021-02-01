@@ -6,12 +6,7 @@ namespace Unity.MLAgents.Extensions.Teams
 {
     public class BaseTeamManager : ITeamManager
     {
-        private readonly string m_Id = System.Guid.NewGuid().ToString();
-
-        public virtual void RegisterAgent(Agent agent)
-        {
-
-        }
+        readonly int m_Id = TeamManagerIdCounter.GetTeamManagerId();
 
         public virtual void OnAgentDone(Agent agent, Agent.DoneReason doneReason, List<ISensor> sensors)
         {
@@ -21,7 +16,9 @@ namespace Unity.MLAgents.Extensions.Teams
             agent.SendDoneToTrainer();
         }
 
-        public string GetId()
+        public virtual void RegisterAgent(Agent agent) { }
+
+        public int GetId()
         {
             return m_Id;
         }
