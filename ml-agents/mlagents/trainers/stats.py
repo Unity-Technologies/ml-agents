@@ -46,7 +46,7 @@ class StatsSummary(NamedTuple):
 
     @staticmethod
     def empty() -> "StatsSummary":
-        return StatsSummary([0.0], StatsAggregationMethod.AVERAGE)
+        return StatsSummary([], StatsAggregationMethod.AVERAGE)
 
     @property
     def aggregated_value(self):
