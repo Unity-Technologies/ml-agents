@@ -280,8 +280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
-  - block
-  - goal
+  - landmark
   - wall
   m_RaysPerDirection: 5
   m_MaxRayDegrees: 90
@@ -815,7 +814,7 @@ GameObject:
   - component: {fileID: 442815713140532408}
   m_Layer: 0
   m_Name: Cube (2)
-  m_TagString: wall
+  m_TagString: landmark
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -906,7 +905,7 @@ GameObject:
   - component: {fileID: 442815713286316666}
   m_Layer: 0
   m_Name: Cube (4)
-  m_TagString: wall
+  m_TagString: landmark
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -997,7 +996,7 @@ GameObject:
   - component: {fileID: 442815713363768447}
   m_Layer: 0
   m_Name: Cube (3)
-  m_TagString: wall
+  m_TagString: landmark
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1088,7 +1087,7 @@ GameObject:
   - component: {fileID: 442815713450986841}
   m_Layer: 0
   m_Name: Cube (9)
-  m_TagString: wall
+  m_TagString: landmark
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1179,7 +1178,7 @@ GameObject:
   - component: {fileID: 442815713661956298}
   m_Layer: 0
   m_Name: Cube
-  m_TagString: wall
+  m_TagString: landmark
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1270,7 +1269,7 @@ GameObject:
   - component: {fileID: 442815714158237997}
   m_Layer: 0
   m_Name: Cube (7)
-  m_TagString: wall
+  m_TagString: landmark
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1361,7 +1360,7 @@ GameObject:
   - component: {fileID: 442815714634641100}
   m_Layer: 0
   m_Name: Cube (1)
-  m_TagString: wall
+  m_TagString: landmark
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1452,7 +1451,7 @@ GameObject:
   - component: {fileID: 442815714852361520}
   m_Layer: 0
   m_Name: Cube (5)
-  m_TagString: wall
+  m_TagString: landmark
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1543,7 +1542,7 @@ GameObject:
   - component: {fileID: 442815714918045760}
   m_Layer: 0
   m_Name: Cube (6)
-  m_TagString: wall
+  m_TagString: landmark
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1634,7 +1633,7 @@ GameObject:
   - component: {fileID: 442815715049594808}
   m_Layer: 0
   m_Name: Cube (8)
-  m_TagString: wall
+  m_TagString: landmark
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
