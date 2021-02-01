@@ -12,6 +12,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         PlayerInput m_PlayerInput;
         BehaviorParameters m_BehaviorParameters;
         Agent m_Agent;
+        InputActuator m_lastCreatedActuator;
         void Awake()
         {
             FindNeededComponents();
@@ -38,10 +39,17 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             }
         }
 
+        void OnDisable()
+        {
+            m_lastCreatedActuator?.CleanupActionAsset();
+        }
+
         public override IActuator CreateActuator()
         {
             FindNeededComponents();
-            return new InputActuator(m_PlayerInput, m_BehaviorParameters, m_Agent);
+            m_lastCreatedActuator?.ResetData();
+            m_lastCreatedActuator = new InputActuator(m_PlayerInput, m_BehaviorParameters, m_Agent);
+            return m_lastCreatedActuator;
         }
 
         public override ActionSpec ActionSpec => ActionSpec.MakeContinuous(0);

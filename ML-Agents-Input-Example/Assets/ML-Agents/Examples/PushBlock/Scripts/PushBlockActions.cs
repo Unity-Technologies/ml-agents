@@ -22,7 +22,7 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
                     ""name"": ""movement"",
                     ""type"": ""Value"",
                     ""id"": ""5f47cbc6-de46-4d33-93e2-2b1af4f5996d"",
-                    ""expectedControlType"": ""Dpad"",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
                 }
@@ -82,28 +82,6 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
                     ""action"": ""movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""e811e1d7-af77-4314-912d-a46582b4e521"",
-                    ""path"": ""<Gamepad>/leftStick"",
-                    ""interactions"": """",
-                    ""processors"": ""StickDeadzone"",
-                    ""groups"": ""Keyboard"",
-                    ""action"": ""movement"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""8dd5f83f-d468-4132-8eba-86c2ce0fb8b7"",
-                    ""path"": ""<Gamepad>/dpad"",
-                    ""interactions"": """",
-                    ""processors"": ""StickDeadzone"",
-                    ""groups"": ""Keyboard"",
-                    ""action"": ""movement"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
                 }
             ]
         }
