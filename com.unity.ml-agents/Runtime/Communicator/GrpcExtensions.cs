@@ -61,6 +61,7 @@ namespace Unity.MLAgents
                 MaxStepReached = ai.maxStepReached,
                 Done = ai.done,
                 Id = ai.episodeId,
+                TeamManagerId = ai.teamManagerId,
             };
 
             if (ai.discreteActionMasks != null)

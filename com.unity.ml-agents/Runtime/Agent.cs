@@ -50,6 +50,11 @@ namespace Unity.MLAgents
         /// </summary>
         public int episodeId;
 
+        /// <summary>
+        /// Team Manager identifier.
+        /// </summary>
+        public int teamManagerId;
+
         public void ClearActions()
         {
             storedActions.Clear();
@@ -317,6 +322,8 @@ namespace Unity.MLAgents
         /// </summary>
         float[] m_LegacyHeuristicCache;
 
+        ITeamManager m_TeamManager;
+
         /// <summary>
         /// Called when the attached [GameObject] becomes enabled and active.
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
@@ -448,6 +455,8 @@ namespace Unity.MLAgents
                 new int[m_ActuatorManager.NumDiscreteActions]
             );
 
+            m_Info.teamManagerId = m_TeamManager == null ? -1 : m_TeamManager.GetId();
+
             // The first time the Academy resets, all Agents in the scene will be
             // forced to reset through the <see cref="AgentForceReset"/> event.
             // To avoid the Agent resetting twice, the Agents will not begin their
@@ -530,6 +539,7 @@ namespace Unity.MLAgents
             m_Info.reward = m_Reward;
             m_Info.done = true;
             m_Info.maxStepReached = doneReason == DoneReason.MaxStepReached;
+            m_Info.teamManagerId = m_TeamManager == null ? -1 : m_TeamManager.GetId();
             if (collectObservationsSensor != null)
             {
                 // Make sure the latest observations are being passed to training.
@@ -1053,6 +1063,7 @@ namespace Unity.MLAgents
             m_Info.done = false;
             m_Info.maxStepReached = false;
             m_Info.episodeId = m_EpisodeId;
+            m_Info.teamManagerId = m_TeamManager == null ? -1 : m_TeamManager.GetId();
 
             using (TimerStack.Instance.Scoped("RequestDecision"))
             {
@@ -1353,6 +1364,12 @@ namespace Unity.MLAgents
             var actions = m_Brain?.DecideAction() ?? new ActionBuffers();
             m_Info.CopyActions(actions);
             m_ActuatorManager.UpdateActions(actions);
+        }
+
+        public void SetTeamManager(ITeamManager teamManager)
+        {
+            m_TeamManager = teamManager;
+            teamManager?.RegisterAgent(this);
         }
     }
 }
