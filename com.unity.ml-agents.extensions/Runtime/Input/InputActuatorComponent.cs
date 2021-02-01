@@ -44,13 +44,17 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             m_lastCreatedActuator?.CleanupActionAsset();
         }
 
-        public override IActuator CreateActuator()
+        public override IActuator[] CreateActuators()
         {
             FindNeededComponents();
             m_lastCreatedActuator?.ResetData();
             m_lastCreatedActuator = new InputActuator(m_PlayerInput, m_BehaviorParameters, m_Agent);
-            return m_lastCreatedActuator;
+            return new IActuator[] { m_lastCreatedActuator };
         }
+
+#pragma warning disable 672
+        public override IActuator CreateActuator() { return null; }
+#pragma warning restore 672
 
         public override ActionSpec ActionSpec => ActionSpec.MakeContinuous(0);
     }
