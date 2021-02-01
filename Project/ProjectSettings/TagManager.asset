@@ -32,6 +32,13 @@ TagManager:
   - blockLarge
   - blockSmall
   - zombie
+  - StrongSmallAgent
+  - StrongLargeAgent
+  - symbol_S_Goal
+  - symbol_S
+  - WeakSmallAgent
+  - WeakLargeAgent
+  - DeadSmallAgent
   layers:
   - Default
   - TransparentFX
