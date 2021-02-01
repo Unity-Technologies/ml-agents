@@ -83,7 +83,6 @@ public class SmallCubeAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(System.Convert.ToInt32(m_Shoot));
-        sensor.AddObservation(System.Convert.ToInt32(m_Dead));
         sensor.AddObservation(m_HitPoints);
         // Direction big agent is looking
         Vector3 dirToSelf = transform.position - m_LargeAgent.transform.position;
@@ -201,8 +200,10 @@ public class SmallCubeAgent : Agent
         }
         else // Dead
         {
-            AddReward(-.1f * m_Bonus);
+            // AddReward(-.1f * m_Bonus);
             m_Dead = true;
+            EndEpisode();
+            gameObject.SetActive(false);
             gameObject.tag = "DeadSmallAgent";
             myBody.GetComponentInChildren<Renderer>().material = deadMaterial;
             m_MyArea.AgentDied();
@@ -242,6 +243,7 @@ public class SmallCubeAgent : Agent
 
     public override void OnEpisodeBegin()
     {
+        gameObject.SetActive(true);
         m_HitPoints = 1f;
         HealthStatus();
         m_Dead = false;
