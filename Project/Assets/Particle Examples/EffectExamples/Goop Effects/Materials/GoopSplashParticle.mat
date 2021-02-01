@@ -5,7 +5,8 @@ Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: GoopSplashParticle
   m_Shader: {fileID: 210, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: _ALPHABLEND_ON _EMISSION _NORMALMAP
@@ -95,8 +96,8 @@ Material:
     - _ZWrite: 0
     m_Colors:
     - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
-    - _Color: {r: 0.5000819, g: 0.6132076, b: 0.07809719, a: 1}
-    - _EmissionColor: {r: 0.25539842, g: 0.2830189, b: 0.076094694, a: 1}
+    - _Color: {r: 0.4198113, g: 0.7752962, b: 1, a: 1}
+    - _EmissionColor: {r: 0.24857603, g: 0.3255728, b: 0.3584906, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.30882353, g: 0.30882353, b: 0.30882353, a: 1}
     - _TintColor: {r: 0.3602941, g: 0, b: 0, a: 0.5}
