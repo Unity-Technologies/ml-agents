@@ -268,6 +268,7 @@ MonoBehaviour:
   largeAgents:
   - {fileID: 0}
   range: 1
+  MaxEnvironmentSteps: 10000
 --- !u!1 &3952752091333818756
 GameObject:
   m_ObjectHideFlags: 0
@@ -879,6 +880,11 @@ PrefabInstance:
       propertyPath: role
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: MaxStep
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8081094897351109481, guid: 4dd35c7381e7445c99133a34a83e21db,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1065,6 +1071,11 @@ PrefabInstance:
       propertyPath: role
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: MaxStep
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8081094897351109481, guid: 4dd35c7381e7445c99133a34a83e21db,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1219,6 +1230,11 @@ PrefabInstance:
       propertyPath: largeAgent
       value: 
       objectReference: {fileID: 5707177387575911509}
+    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: MaxStep
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8081094897351109481, guid: 4dd35c7381e7445c99133a34a83e21db,
         type: 3}
       propertyPath: m_LocalPosition.x

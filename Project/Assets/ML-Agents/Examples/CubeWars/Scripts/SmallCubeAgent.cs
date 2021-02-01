@@ -214,7 +214,6 @@ public class SmallCubeAgent : Agent
         else // Dead
         {
             m_Dead = true;
-            EndEpisode();
             gameObject.SetActive(false);
             gameObject.tag = "DeadSmallAgent";
             myBody.GetComponentInChildren<Renderer>().material = deadMaterial;
@@ -255,7 +254,6 @@ public class SmallCubeAgent : Agent
 
     public override void OnEpisodeBegin()
     {
-        gameObject.SetActive(true);
         m_HitPoints = m_HitPointsTotal;
         HealthStatus();
         m_Dead = false;

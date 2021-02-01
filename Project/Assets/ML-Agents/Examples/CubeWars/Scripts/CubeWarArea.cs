@@ -10,6 +10,8 @@ public class CubeWarArea : Area
     public float range;
     private CubeWarsTeamManager m_SmallTeamManager;
     private CubeWarsTeamManager m_LargeTeamManager;
+    [Header("Max Environment Steps")] public int MaxEnvironmentSteps = 10000;
+    private int m_ResetTimer = 0;
 
 
     void Start()
@@ -29,6 +31,29 @@ public class CubeWarArea : Area
         }
     }
 
+
+    void FixedUpdate()
+    {
+        m_ResetTimer += 1;
+        if (m_ResetTimer > MaxEnvironmentSteps)
+        {
+            ResetAllAgents();
+            m_ResetTimer = 0;
+        }
+    }
+
+    public void ResetAllAgents()
+    {
+        foreach (var smallAgent in smallAgents)
+        {
+            smallAgent.EndEpisode();
+            smallAgent.gameObject.SetActive(true);
+        }
+        foreach (var largeAgent in largeAgents)
+        {
+            largeAgent.EndEpisode();
+        }
+    }
     public void AgentDied()
     {
         bool smallAlive = false;
@@ -49,30 +74,30 @@ public class CubeWarArea : Area
         }
         if (!smallAlive)
         {
+            Debug.Log("Big Agent Wins");
             foreach (var smallAgent in smallAgents)
             {
                 smallAgent.SetReward(-1.0f);
-                smallAgent.EndEpisode();
             }
             foreach (var largeAgent in largeAgents)
             {
                 largeAgent.SetReward(1.0f);
-                largeAgent.EndEpisode();
             }
+            ResetAllAgents();
 
         }
         else if (!largeAlive)
         {
+            Debug.Log("Small Agents Win");
             foreach (var smallAgent in smallAgents)
             {
                 smallAgent.SetReward(1.0f);
-                smallAgent.EndEpisode();
             }
             foreach (var largeAgent in largeAgents)
             {
                 largeAgent.SetReward(-1.0f);
-                largeAgent.EndEpisode();
             }
+            ResetAllAgents();
         }
     }
 }
