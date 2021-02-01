@@ -24,17 +24,12 @@ public class SmallCubeAgent : Agent
     public Laser myLaser;
     public GameObject myBody;
 
-    [HideInInspector]
     float m_HitPoints;
-    [HideInInspector]
+    float m_HitPointsTotal;
     float m_Damage;
-    [HideInInspector]
     float m_Heal;
-    [HideInInspector]
     float m_MoveSpeed;
-    [HideInInspector]
     float m_TurnSpeed;
-    [HideInInspector]
     float m_Cooldown;
 
     public enum Role
@@ -53,7 +48,7 @@ public class SmallCubeAgent : Agent
         if (role == Role.Healer)
         {
             m_RoleObs[0] = 1f;
-            m_HitPoints = .7f;
+            m_HitPointsTotal = .7f;
             m_Damage = 0f;
             m_Heal = .7f;
             m_MoveSpeed = 10f;
@@ -63,7 +58,7 @@ public class SmallCubeAgent : Agent
         else if (role == Role.DPS)
         {
             m_RoleObs[1] = 1f;
-            m_HitPoints = .6f;
+            m_HitPointsTotal = .6f;
             m_Damage = .05f;
             m_Heal = 0f;
             m_MoveSpeed = 10f;
@@ -73,7 +68,7 @@ public class SmallCubeAgent : Agent
         else if (role == Role.Tank)
         {
             m_RoleObs[2] = 1f;
-            m_HitPoints = 1f;
+            m_HitPointsTotal = 1f;
             m_Damage = .02f;
             m_Heal = .2f;
             m_MoveSpeed = 6f;
@@ -261,7 +256,7 @@ public class SmallCubeAgent : Agent
     public override void OnEpisodeBegin()
     {
         gameObject.SetActive(true);
-        m_HitPoints = 1f;
+        m_HitPoints = m_HitPointsTotal;
         HealthStatus();
         m_Dead = false;
         m_Shoot = false;
