@@ -1,3 +1,3 @@
 # ML-Agents Plugins
 
-Details coming soon
+See the [Plugins documentation](../docs/Training-Plugins.md) for more information.
