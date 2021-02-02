@@ -48,9 +48,9 @@ public class SmallCubeAgent : Agent
         if (role == Role.Healer)
         {
             m_RoleObs[0] = 1f;
-            m_HitPointsTotal = .7f;
+            m_HitPointsTotal = .5f;
             m_Damage = 0f;
-            m_Heal = .7f;
+            m_Heal = .4f;
             m_MoveSpeed = 10f;
             m_TurnSpeed = 150f;
             m_Cooldown = .2f;
@@ -58,7 +58,7 @@ public class SmallCubeAgent : Agent
         else if (role == Role.DPS)
         {
             m_RoleObs[1] = 1f;
-            m_HitPointsTotal = .6f;
+            m_HitPointsTotal = .5f;
             m_Damage = .05f;
             m_Heal = 0f;
             m_MoveSpeed = 10f;
@@ -70,7 +70,7 @@ public class SmallCubeAgent : Agent
             m_RoleObs[2] = 1f;
             m_HitPointsTotal = 1f;
             m_Damage = .02f;
-            m_Heal = .2f;
+            m_Heal = .1f;
             m_MoveSpeed = 6f;
             m_TurnSpeed = 100f;
             m_Cooldown = .4f;
