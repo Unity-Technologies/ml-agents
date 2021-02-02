@@ -506,6 +506,7 @@ MonoBehaviour:
   area: {fileID: 1819751139121548}
   turnSpeed: 150
   moveSpeed: 1
+  fireDamage: 0.25
   normalMaterial: {fileID: 2100000, guid: 2dea38f51c97a415387d4bb76735822c, type: 2}
   weakMaterial: {fileID: 2100000, guid: 52eab8ab5010f438fab93da85735ba1d, type: 2}
   deadMaterial: {fileID: 2100000, guid: 69fefdd39d2b34b169e921910bed9c0d, type: 2}
