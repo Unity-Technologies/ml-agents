@@ -21,6 +21,8 @@ public class LargeCubeAgent : Agent
 
     // Speed of agent movement.
     public float moveSpeed;
+
+    public float fireDamage = 0.25f;
     public Material normalMaterial;
     public Material weakMaterial;
     public Material deadMaterial;
@@ -119,7 +121,7 @@ public class LargeCubeAgent : Agent
             {
                 if (hit.collider.gameObject.CompareTag("StrongSmallAgent") || hit.collider.gameObject.CompareTag("WeakSmallAgent"))
                 {
-                    hit.collider.gameObject.GetComponent<SmallCubeAgent>().HitAgent(.4f);
+                    hit.collider.gameObject.GetComponent<SmallCubeAgent>().HitAgent(fireDamage);
                     AddReward(.1f);
                 }
                 else if (hit.collider.gameObject.CompareTag("StrongLargeAgent") || hit.collider.gameObject.CompareTag("WeakLargeAgent"))
