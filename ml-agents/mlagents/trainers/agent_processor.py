@@ -146,7 +146,7 @@ class AgentProcessor:
     ) -> None:
         stored_decision_step, idx = self.last_step_result.get(global_id, (None, None))
         if stored_decision_step is not None:
-            if step.team_manager_id is not None:
+            if step.team_manager_id >= 0:
                 self.last_group_obs[step.team_manager_id][
                     global_id
                 ] = stored_decision_step.obs
