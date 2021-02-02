@@ -37,21 +37,35 @@ public class CubeWarArea : Area
         m_ResetTimer += 1;
         if (m_ResetTimer > MaxEnvironmentSteps)
         {
-            ResetAllAgents();
+            ResetAllAgents(true);
             m_ResetTimer = 0;
         }
     }
 
-    public void ResetAllAgents()
+    public void ResetAllAgents(bool terminated = false)
     {
         foreach (var smallAgent in smallAgents)
         {
-            smallAgent.EndEpisode();
+            if (terminated)
+            {
+                smallAgent.EpisodeInterrupted();
+            }
+            else
+            {
+                smallAgent.EndEpisode();
+            }
             smallAgent.gameObject.SetActive(true);
         }
         foreach (var largeAgent in largeAgents)
         {
-            largeAgent.EndEpisode();
+            if (terminated)
+            {
+                largeAgent.EpisodeInterrupted();
+            }
+            else
+            {
+                largeAgent.EndEpisode();
+            }
         }
     }
     public void AgentDied()
