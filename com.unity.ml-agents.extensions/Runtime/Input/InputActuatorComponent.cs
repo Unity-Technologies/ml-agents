@@ -12,7 +12,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         PlayerInput m_PlayerInput;
         BehaviorParameters m_BehaviorParameters;
         Agent m_Agent;
-        InputActuator m_lastCreatedActuator;
+        InputActuator m_LastCreatedActuator;
         void Awake()
         {
             FindNeededComponents();
@@ -41,15 +41,15 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 
         void OnDisable()
         {
-            m_lastCreatedActuator?.CleanupActionAsset();
+            m_LastCreatedActuator?.CleanupActionAsset();
         }
 
         public override IActuator[] CreateActuators()
         {
             FindNeededComponents();
-            m_lastCreatedActuator?.ResetData();
-            m_lastCreatedActuator = new InputActuator(m_PlayerInput, m_BehaviorParameters, m_Agent);
-            return new IActuator[] { m_lastCreatedActuator };
+            m_LastCreatedActuator?.ResetData();
+            m_LastCreatedActuator = new InputActuator(m_PlayerInput, m_BehaviorParameters, m_Agent);
+            return new IActuator[] { m_LastCreatedActuator };
         }
 
 #pragma warning disable 672

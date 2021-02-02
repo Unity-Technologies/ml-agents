@@ -1,22 +1,13 @@
-using System.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.Utilities;
 using UnityEngine.Scripting;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace Unity.MLAgents.Extensions.Runtime.Input.Composites
 {
-#if UNITY_EDITOR
-    [InitializeOnLoad]
-#endif
     [Preserve]
-    [DisplayStringFormat("{Vector2}")] // This results in WASD.
+    [DisplayStringFormat("{Vector2}")]
     public class Vector2ValueComposite : InputBindingComposite<Vector2>
     {
         // ReSharper disable once MemberCanBePrivate.Global

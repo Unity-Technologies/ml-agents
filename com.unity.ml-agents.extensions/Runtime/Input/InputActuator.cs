@@ -61,7 +61,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             m_Agent = agent;
 
 
-            ActionSpec = GenerateActionSpecFromAsset(m_DefaultMap, out var layout, out var groups);
+            ActionSpec = GenerateActionSpecFromAsset(m_DefaultMap, out var layout);
             InputSystem.RegisterLayout(layout.ToJson(), layout.name);
 
             var layoutName = InputSystem.TryFindMatchingLayout(new InputDeviceDescription
@@ -86,8 +86,6 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             {
                 playerInput.actions.AddControlScheme(
                     new InputControlScheme(
-
-
                         k_MlAgentsControlSchemeName,
                         new[]
                         {
@@ -97,19 +95,17 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
                                 isOptional = false,
                                 isOR = true
                             }
-                        },
-                        groups)
+                        })
                     );
             }
             m_DefaultMap.devices = new ReadOnlyArray<InputDevice>(new[] { m_Device });
             m_DefaultMap.Enable();
         }
 
-        static ActionSpec GenerateActionSpecFromAsset(InputActionMap actionMap, out InputControlLayout layout, out string deviceGroups)
+        static ActionSpec GenerateActionSpecFromAsset(InputActionMap actionMap, out InputControlLayout layout)
         {
             var specs = new ActionSpec[actionMap.actions.Count];
             var count = 0;
-            deviceGroups = default;
 
             var builder = new InputControlLayout.Builder()
                 .WithName(k_MlAgentsLayoutName)
