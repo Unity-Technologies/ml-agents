@@ -47,27 +47,33 @@ class ModelSerializer:
         # Any multi-dimentional input should follow that otherwise will
         # cause problem to barracuda import.
         self.policy = policy
+        observation_specs = self.policy.behavior_spec.observation_specs
         batch_dim = [1]
         seq_len_dim = [1]
         vec_obs_size = 0
-        for sens_spec in self.policy.behavior_spec.observation_specs:
-            if len(sens_spec.shape) == 1:
-                vec_obs_size += sens_spec.shape[0]
+        for obs_spec in observation_specs:
+            if len(obs_spec.shape) == 1:
+                vec_obs_size += obs_spec.shape[0]
         num_vis_obs = sum(
-            1
-            for sens_spec in self.policy.behavior_spec.observation_specs
-            if len(sens_spec.shape) == 3
+            1 for obs_spec in observation_specs if len(obs_spec.shape) == 3
         )
         dummy_vec_obs = [torch.zeros(batch_dim + [vec_obs_size])]
         # create input shape of NCHW
-        # (It's NHWC in self.policy.behavior_spec.observation_specs.shape)
+        # (It's NHWC in observation_specs.shape)
         dummy_vis_obs = [
             torch.zeros(
                 batch_dim + [obs_spec.shape[2], obs_spec.shape[0], obs_spec.shape[1]]
             )
-            for obs_spec in self.policy.behavior_spec.observation_specs
+            for obs_spec in observation_specs
             if len(obs_spec.shape) == 3
         ]
+
+        dummy_var_len_obs = [
+            torch.zeros(batch_dim + [obs_spec.shape[0], obs_spec.shape[1]])
+            for obs_spec in observation_specs
+            if len(obs_spec.shape) == 2
+        ]
+
         dummy_masks = torch.ones(
             batch_dim + [sum(self.policy.behavior_spec.action_spec.discrete_branches)]
         )
@@ -75,13 +81,22 @@ class ModelSerializer:
             batch_dim + seq_len_dim + [self.policy.export_memory_size]
         )
 
-        self.dummy_input = (dummy_vec_obs, dummy_vis_obs, dummy_masks, dummy_memories)
-
-        self.input_names = (
-            ["vector_observation"]
-            + [f"visual_observation_{i}" for i in range(num_vis_obs)]
-            + ["action_masks", "memories"]
+        self.dummy_input = (
+            dummy_vec_obs,
+            dummy_vis_obs,
+            dummy_var_len_obs,
+            dummy_masks,
+            dummy_memories,
         )
+
+        self.input_names = ["vector_observation"]
+        for i in range(num_vis_obs):
+            self.input_names.append(f"visual_observation_{i}")
+        for i, obs_spec in enumerate(observation_specs):
+            if len(obs_spec.shape) == 2:
+                self.input_names.append(f"obs_{i}")
+        self.input_names += ["action_masks", "memories"]
+
         self.dynamic_axes = {name: {0: "batch"} for name in self.input_names}
 
         self.output_names = ["version_number", "memory_size"]
