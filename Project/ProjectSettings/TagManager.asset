@@ -39,6 +39,7 @@ TagManager:
   - WeakSmallAgent
   - WeakLargeAgent
   - DeadSmallAgent
+  - DeadLargeAgent
   layers:
   - Default
   - TransparentFX
