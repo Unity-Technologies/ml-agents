@@ -1,5 +1,5 @@
 import numpy as np
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, AgentBufferField
 
 
 def assert_array(a, b):
@@ -153,4 +153,4 @@ def test_buffer_truncate():
     update_buffer.truncate(4, sequence_length=3)
     assert update_buffer.num_experiences == 3
     for buffer_field in update_buffer.values():
-        assert isinstance(buffer_field, AgentBuffer.AgentBufferField)
+        assert isinstance(buffer_field, AgentBufferField)
