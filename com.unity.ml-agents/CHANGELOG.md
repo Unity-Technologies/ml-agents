@@ -30,6 +30,8 @@ removed when training with a player. The Editor still requires it to be clamped 
   additional memory allocations. (#4887)
 - Added `ObservationWriter.AddList()` and deprecated `ObservationWriter.AddRange()`.
   `AddList()` is recommended, as it does not generate any additional memory allocations. (#4887)
+- Added `ActuatorComponent.CreateActuators`, and deprecate `ActuatorComponent.CreateActuator`.  The
+  default implementation will wrap `ActuatorComponent.CreateActuator` in an array and return that. (#4899)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Added a `--torch-device` commandline option to `mlagents-learn`, which sets the default
