@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: InputSystem.inputsettings
   m_EditorClassIdentifier: 
   m_SupportedDevices: []
-  m_UpdateMode: 2
+  m_UpdateMode: 1
   m_CompensateForScreenOrientation: 0
   m_FilterNoiseOnCurrent: 0
   m_DefaultDeadzoneMin: 0.125

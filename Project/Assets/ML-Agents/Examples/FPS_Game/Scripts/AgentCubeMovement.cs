@@ -48,11 +48,11 @@ namespace MLAgents
         private bool spinAttack;
 
         [Header("BODY ROTATION")]
+        public bool MatchCameraRotation;
         //body rotation speed
         public bool invertRotationIfWalkingBackwards = true;
         public float agentRotationSpeed = 35f;
         private Vector2 m_Rotation;
-
 
         [Header("JUMPING")] public bool canJump = true;
         //upward jump velocity magnitude
@@ -83,6 +83,12 @@ namespace MLAgents
 
         void Update()
         {
+            // if (MatchCameraRotation)
+            // {
+            //     var targetRot = cam.transform.rotation.eulerAngles;
+            //     // targetRot.y = 0;
+            //     transform.rotation = Quaternion.Euler(targetRot);
+            // }
             if (!allowKeyboardInput)
             {
                 return;
@@ -240,6 +246,7 @@ namespace MLAgents
         public float standingForcePositionOffset = .5f;
         void FixedUpdate()
         {
+
 
             if (groundCheck && !groundCheck.isGrounded)
             {

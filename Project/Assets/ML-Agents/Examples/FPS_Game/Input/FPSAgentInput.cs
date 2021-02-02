@@ -18,9 +18,9 @@ public class FPSAgentInput : MonoBehaviour
     public bool shootInput;
     public bool jumpInput;
     public bool dashInput;
-    public float rotateInput;
+    public Vector2 rotateInput;
     public bool shieldInput;
-    public Vector2 rotateVector2;
+    // public Vector2 rotateVector2;
     public Camera Cam;
     // Start is called before the first frame update
     void Awake()
@@ -83,8 +83,9 @@ public class FPSAgentInput : MonoBehaviour
         //        rotateInput = actionMap.RotateBody.ReadValue<Vector2>();
         //        rotateInput = actionMap.Rotate.ReadValue<float>() * .1f;
         // rotateInput = actionMap.Rotate.ReadValue<float>();
-        rotateVector2 = actionMap.Rotate.ReadValue<Vector2>();
-        rotateInput = rotateVector2.x;
+        // rotateVector2 = actionMap.Rotate.ReadValue<Vector2>();
+        rotateInput = actionMap.Rotate.ReadValue<Vector2>();
+        // rotateInput = rotateVector2.x;
         //        rotateInput = actionMap.RotateBody.ReadValue<Vector2>();
         //        jumpInput = actionMap.Jump.ReadValue<float>() > 0;
         //        jumpInput = actionMap.Jump.triggered;
@@ -96,16 +97,5 @@ public class FPSAgentInput : MonoBehaviour
         {
             jumpInput = true;
         }
-        //print($"AxisRAwX: {Input.GetAxisRaw ("Mouse X")}");
-        //        print($"ActionMapX: {actionMap.Rotate.ReadValue<float>() * .1f}");
-        //        if (jumpInput)
-        //        {
-        //        print($"Input: Jump: {jumpInput} : {Time.frameCount}");
-        //
-        //        }
-        //        jumpInput = gamepad.buttonSouth.isPressed;
-        //        dashInput = actionMap.Dash.ReadValue<float>() > 0;
-        //        actionMap.Dash.phase == InputActionPhase.
-        //        dashInput = gamepad.buttonWest.isPressed;
     }
 }
