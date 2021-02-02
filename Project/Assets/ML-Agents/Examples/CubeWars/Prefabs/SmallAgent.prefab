@@ -507,8 +507,8 @@ MonoBehaviour:
   - wall
   - StrongLargeAgent
   - WeakLargeAgent
-  m_RaysPerDirection: 10
-  m_MaxRayDegrees: 120
+  m_RaysPerDirection: 16
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 100
   m_RayLayerMask:
