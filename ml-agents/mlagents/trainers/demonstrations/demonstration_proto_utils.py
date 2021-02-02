@@ -20,10 +20,11 @@ from google.protobuf.internal.encoder import _EncodeVarint  # type: ignore
 INITIAL_POS = 33
 SUPPORTED_DEMONSTRATION_VERSIONS = frozenset([0, 1])
 
+
 @timed
 def load_demonstration(
     file_paths: List[str],
-) -> Tuple[BehaviorSpec, List[AgentInfoActionPairProto], int]:
+) -> Tuple[BehaviorSpec, List[AgentInfoActionPairProto]]:
     """
     Loads and parses a demonstration file.
     :param file_path: Location of demonstration file (.demo).
@@ -74,7 +75,7 @@ def load_demonstration(
         raise RuntimeError(
             f"No BrainParameters found in demonstration file(s) at {file_paths}."
         )
-    return behavior_spec, info_action_pairs, total_expected
+    return behavior_spec, info_action_pairs
 
 
 def write_delimited(f, message):
