@@ -155,7 +155,7 @@ class CuriosityNetwork(torch.nn.Module):
         Uses the current state embedding and the action of the mini_batch to predict
         the next state embedding.
         """
-        actions = AgentAction.from_dict(mini_batch)
+        actions = AgentAction.from_buffer(mini_batch)
         flattened_action = self._action_flattener.forward(actions)
         forward_model_input = torch.cat(
             (self.get_current_state(mini_batch), flattened_action), dim=1
@@ -169,7 +169,7 @@ class CuriosityNetwork(torch.nn.Module):
         action prediction (given the current and next state).
         """
         predicted_action = self.predict_action(mini_batch)
-        actions = AgentAction.from_dict(mini_batch)
+        actions = AgentAction.from_buffer(mini_batch)
         _inverse_loss = 0
         if self._action_spec.continuous_size > 0:
             sq_difference = (

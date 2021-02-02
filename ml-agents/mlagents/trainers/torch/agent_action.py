@@ -1,7 +1,7 @@
-from typing import List, Optional, NamedTuple, Dict
+from typing import List, Optional, NamedTuple
 from mlagents.torch_utils import torch
-import numpy as np
 
+from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents_envs.base_env import ActionTuple
 
@@ -42,7 +42,7 @@ class AgentAction(NamedTuple):
         return action_tuple
 
     @staticmethod
-    def from_dict(buff: Dict[str, np.ndarray]) -> "AgentAction":
+    def from_buffer(buff: AgentBuffer) -> "AgentAction":
         """
         A static method that accesses continuous and discrete action fields in an AgentBuffer
         and constructs the corresponding AgentAction from the retrieved np arrays.

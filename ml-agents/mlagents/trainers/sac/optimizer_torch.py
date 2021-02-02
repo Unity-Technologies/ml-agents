@@ -471,7 +471,7 @@ class TorchSACOptimizer(TorchOptimizer):
         next_obs = [ModelUtils.list_to_tensor(obs) for obs in next_obs]
 
         act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
-        actions = AgentAction.from_dict(batch)
+        actions = AgentAction.from_buffer(batch)
 
         memories_list = [
             ModelUtils.list_to_tensor(batch["memory"][i])

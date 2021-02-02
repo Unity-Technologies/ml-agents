@@ -112,7 +112,7 @@ class DiscriminatorNetwork(torch.nn.Module):
         Creates the action Tensor. In continuous case, corresponds to the action. In
         the discrete case, corresponds to the concatenation of one hot action Tensors.
         """
-        return self._action_flattener.forward(AgentAction.from_dict(mini_batch))
+        return self._action_flattener.forward(AgentAction.from_buffer(mini_batch))
 
     def get_state_inputs(self, mini_batch: AgentBuffer) -> List[torch.Tensor]:
         """

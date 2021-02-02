@@ -141,7 +141,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
 
         act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
-        actions = AgentAction.from_dict(batch)
+        actions = AgentAction.from_buffer(batch)
 
         memories = [
             ModelUtils.list_to_tensor(batch["memory"][i])
@@ -157,7 +157,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             memories=memories,
             seq_len=self.policy.sequence_length,
         )
-        old_log_probs = ActionLogProbs.from_dict(batch).flatten()
+        old_log_probs = ActionLogProbs.from_buffer(batch).flatten()
         log_probs = log_probs.flatten()
         loss_masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.bool)
         value_loss = self.ppo_value_loss(

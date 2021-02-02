@@ -1,8 +1,9 @@
-from typing import List, Optional, NamedTuple, Dict
+from typing import List, Optional, NamedTuple
 from mlagents.torch_utils import torch
 import numpy as np
 
 from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.base_env import _ActionTupleBase
 
 
@@ -88,7 +89,7 @@ class ActionLogProbs(NamedTuple):
         return torch.cat(self._to_tensor_list(), dim=1)
 
     @staticmethod
-    def from_dict(buff: Dict[str, np.ndarray]) -> "ActionLogProbs":
+    def from_buffer(buff: AgentBuffer) -> "ActionLogProbs":
         """
         A static method that accesses continuous and discrete log probs fields in an AgentBuffer
         and constructs the corresponding ActionLogProbs from the retrieved np arrays.
