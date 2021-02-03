@@ -179,7 +179,9 @@ class CuriosityNetwork(torch.nn.Module):
             _inverse_loss += torch.mean(
                 ModelUtils.dynamic_partition(
                     sq_difference,
-                    ModelUtils.list_to_tensor(mini_batch[AgentBufferKey.MASKS], dtype=torch.float),
+                    ModelUtils.list_to_tensor(
+                        mini_batch[AgentBufferKey.MASKS], dtype=torch.float
+                    ),
                     2,
                 )[1]
             )
@@ -223,7 +225,9 @@ class CuriosityNetwork(torch.nn.Module):
         return torch.mean(
             ModelUtils.dynamic_partition(
                 self.compute_reward(mini_batch),
-                ModelUtils.list_to_tensor(mini_batch[AgentBufferKey.MASKS], dtype=torch.float),
+                ModelUtils.list_to_tensor(
+                    mini_batch[AgentBufferKey.MASKS], dtype=torch.float
+                ),
                 2,
             )[1]
         )

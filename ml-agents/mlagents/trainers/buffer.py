@@ -33,6 +33,7 @@ class AgentBufferKey(enum.Enum):
     ADVANTAGES = "advantages"
     DISCOUNTED_RETURNS = "discounted_returns"
 
+
 class AgentBufferCompoundKey(enum.Enum):
     OBSERVATION = "obs"
     NEXT_OBSERVATION = "next_obs"
@@ -46,7 +47,11 @@ class AgentBufferCompoundKey(enum.Enum):
     ADVANTAGE = "advantage"
 
 
-BufferKey = Union[AgentBufferKey, Tuple[AgentBufferCompoundKey, int], Tuple[AgentBufferCompoundKey, str]]
+BufferKey = Union[
+    AgentBufferKey,
+    Tuple[AgentBufferCompoundKey, int],
+    Tuple[AgentBufferCompoundKey, str],
+]
 
 
 class AgentBufferField(list):
@@ -93,7 +98,10 @@ class AgentBufferField(list):
         self[:] = list(np.array(data, dtype=dtype))
 
     def get_batch(
-        self, batch_size: int = None, training_length: Optional[int] = 1, sequential: bool = True
+        self,
+        batch_size: int = None,
+        training_length: Optional[int] = 1,
+        sequential: bool = True,
     ) -> np.ndarray:
         """
         Retrieve the last batch_size elements of length training_length
@@ -165,7 +173,9 @@ class AgentBuffer(MutableMapping):
     def __init__(self):
         self.last_brain_info = None
         self.last_take_action_outputs = None
-        self._fields: DefaultDict[BufferKey, AgentBufferField] = defaultdict(AgentBufferField)
+        self._fields: DefaultDict[BufferKey, AgentBufferField] = defaultdict(
+            AgentBufferField
+        )
 
     def __str__(self):
         return ", ".join(

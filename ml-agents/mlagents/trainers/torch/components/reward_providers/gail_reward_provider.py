@@ -137,7 +137,9 @@ class DiscriminatorNetwork(torch.nn.Module):
         inputs = self.get_state_inputs(mini_batch)
         if self._settings.use_actions:
             actions = self.get_action_input(mini_batch)
-            dones = torch.as_tensor(mini_batch[AgentBufferKey.DONE], dtype=torch.float).unsqueeze(1)
+            dones = torch.as_tensor(
+                mini_batch[AgentBufferKey.DONE], dtype=torch.float
+            ).unsqueeze(1)
             action_inputs = torch.cat([actions, dones], dim=1)
             hidden, _ = self.encoder(inputs, action_inputs)
         else:

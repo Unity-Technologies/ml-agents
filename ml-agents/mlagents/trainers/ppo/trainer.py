@@ -80,7 +80,9 @@ class PPOTrainer(RLTrainer):
         )
 
         for name, v in value_estimates.items():
-            agent_buffer_trajectory[(AgentBufferCompoundKey.VALUE_ESTIMATES, name)].extend(v)
+            agent_buffer_trajectory[
+                (AgentBufferCompoundKey.VALUE_ESTIMATES, name)
+            ].extend(v)
             self._stats_reporter.add_stat(
                 f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value Estimate",
                 np.mean(v),
@@ -94,7 +96,9 @@ class PPOTrainer(RLTrainer):
             evaluate_result = (
                 reward_signal.evaluate(agent_buffer_trajectory) * reward_signal.strength
             )
-            agent_buffer_trajectory[(AgentBufferCompoundKey.REWARDS, name)].extend(evaluate_result)
+            agent_buffer_trajectory[(AgentBufferCompoundKey.REWARDS, name)].extend(
+                evaluate_result
+            )
             # Report the reward signals
             self.collected_rewards[name][agent_id] += np.sum(evaluate_result)
 
@@ -104,7 +108,9 @@ class PPOTrainer(RLTrainer):
         for name in self.optimizer.reward_signals:
             bootstrap_value = value_next[name]
 
-            local_rewards = agent_buffer_trajectory[(AgentBufferCompoundKey.REWARDS, name)].get_batch()
+            local_rewards = agent_buffer_trajectory[
+                (AgentBufferCompoundKey.REWARDS, name)
+            ].get_batch()
             local_value_estimates = agent_buffer_trajectory[
                 (AgentBufferCompoundKey.VALUE_ESTIMATES, name)
             ].get_batch()
@@ -118,8 +124,12 @@ class PPOTrainer(RLTrainer):
             )
             local_return = local_advantage + local_value_estimates
             # This is later use as target for the different value estimates
-            agent_buffer_trajectory[(AgentBufferCompoundKey.RETURNS, name)].set(local_return)
-            agent_buffer_trajectory[(AgentBufferCompoundKey.ADVANTAGE, name)].set(local_advantage)
+            agent_buffer_trajectory[(AgentBufferCompoundKey.RETURNS, name)].set(
+                local_return
+            )
+            agent_buffer_trajectory[(AgentBufferCompoundKey.ADVANTAGE, name)].set(
+                local_advantage
+            )
             tmp_advantages.append(local_advantage)
             tmp_returns.append(local_return)
 

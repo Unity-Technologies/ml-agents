@@ -33,7 +33,9 @@ def create_agent_buffer(
         for _act_type, _act in action.items():
             buffer[_act_type].append(_act[0, :])
         # TODO was "rewards"
-        buffer[AgentBufferKey.ENVIRONMENT_REWARDS].append(np.ones(1, dtype=np.float32) * reward)
+        buffer[AgentBufferKey.ENVIRONMENT_REWARDS].append(
+            np.ones(1, dtype=np.float32) * reward
+        )
         buffer[AgentBufferKey.MASKS].append(np.ones(1, dtype=np.float32))
     buffer[AgentBufferKey.DONE] = np.zeros(number, dtype=np.float32)
     return buffer

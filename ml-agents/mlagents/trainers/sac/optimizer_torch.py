@@ -459,7 +459,9 @@ class TorchSACOptimizer(TorchOptimizer):
         """
         rewards = {}
         for name in self.reward_signals:
-            rewards[name] = ModelUtils.list_to_tensor(batch[(AgentBufferCompoundKey.REWARDS, name)])
+            rewards[name] = ModelUtils.list_to_tensor(
+                batch[(AgentBufferCompoundKey.REWARDS, name)]
+            )
 
         n_obs = len(self.policy.behavior_spec.observation_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
@@ -475,7 +477,9 @@ class TorchSACOptimizer(TorchOptimizer):
 
         memories_list = [
             ModelUtils.list_to_tensor(batch[AgentBufferKey.MEMORY][i])
-            for i in range(0, len(batch[AgentBufferKey.MEMORY]), self.policy.sequence_length)
+            for i in range(
+                0, len(batch[AgentBufferKey.MEMORY]), self.policy.sequence_length
+            )
         ]
         # LSTM shouldn't have sequence length <1, but stop it from going out of the index if true.
         offset = 1 if self.policy.sequence_length > 1 else 0
@@ -483,7 +487,9 @@ class TorchSACOptimizer(TorchOptimizer):
             ModelUtils.list_to_tensor(
                 batch[AgentBufferKey.MEMORY][i][self.policy.m_size // 2 :]
             )  # only pass value part of memory to target network
-            for i in range(offset, len(batch[AgentBufferKey.MEMORY]), self.policy.sequence_length)
+            for i in range(
+                offset, len(batch[AgentBufferKey.MEMORY]), self.policy.sequence_length
+            )
         ]
 
         if len(memories_list) > 0:

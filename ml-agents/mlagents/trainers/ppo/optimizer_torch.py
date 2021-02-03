@@ -133,7 +133,9 @@ class TorchPPOOptimizer(TorchOptimizer):
             old_values[name] = ModelUtils.list_to_tensor(
                 batch[(AgentBufferCompoundKey.VALUE_ESTIMATES, name)]
             )
-            returns[name] = ModelUtils.list_to_tensor(batch[(AgentBufferCompoundKey.RETURNS, name)])
+            returns[name] = ModelUtils.list_to_tensor(
+                batch[(AgentBufferCompoundKey.RETURNS, name)]
+            )
 
         n_obs = len(self.policy.behavior_spec.observation_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
@@ -145,7 +147,9 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         memories = [
             ModelUtils.list_to_tensor(batch[AgentBufferKey.MEMORY][i])
-            for i in range(0, len(batch[AgentBufferKey.MEMORY]), self.policy.sequence_length)
+            for i in range(
+                0, len(batch[AgentBufferKey.MEMORY]), self.policy.sequence_length
+            )
         ]
         if len(memories) > 0:
             memories = torch.stack(memories).unsqueeze(0)
@@ -159,7 +163,9 @@ class TorchPPOOptimizer(TorchOptimizer):
         )
         old_log_probs = ActionLogProbs.from_buffer(batch).flatten()
         log_probs = log_probs.flatten()
-        loss_masks = ModelUtils.list_to_tensor(batch[AgentBufferKey.MASKS], dtype=torch.bool)
+        loss_masks = ModelUtils.list_to_tensor(
+            batch[AgentBufferKey.MASKS], dtype=torch.bool
+        )
         value_loss = self.ppo_value_loss(
             values, old_values, returns, decay_eps, loss_masks
         )

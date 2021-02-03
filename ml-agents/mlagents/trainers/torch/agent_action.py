@@ -50,7 +50,9 @@ class AgentAction(NamedTuple):
         continuous: torch.Tensor = None
         discrete: List[torch.Tensor] = None  # type: ignore
         if "continuous_action" in buff:
-            continuous = ModelUtils.list_to_tensor(buff[AgentBufferKey.CONTINUOUS_ACTION])
+            continuous = ModelUtils.list_to_tensor(
+                buff[AgentBufferKey.CONTINUOUS_ACTION]
+            )
         if "discrete_action" in buff:
             discrete_tensor = ModelUtils.list_to_tensor(
                 buff[AgentBufferKey.DISCRETE_ACTION], dtype=torch.long
