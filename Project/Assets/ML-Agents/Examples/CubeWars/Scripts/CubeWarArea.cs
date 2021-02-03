@@ -71,11 +71,13 @@ public class CubeWarArea : Area
     public void AgentDied()
     {
         bool smallAlive = false;
+        int numLiveAgents = 0;
         foreach (var smallAgent in smallAgents)
         {
             if (!smallAgent.IsDead())
             {
                 smallAlive = true;
+                numLiveAgents++;
             }
         }
         bool largeAlive = false;
@@ -91,7 +93,10 @@ public class CubeWarArea : Area
             Debug.Log("Big Agent Wins");
             foreach (var smallAgent in smallAgents)
             {
-                smallAgent.SetReward(-1.0f);
+                if (smallAgent.gameObject.activeInHierarchy)
+                {
+                    smallAgent.SetReward(-1.0f / numLiveAgents);
+                }
             }
             foreach (var largeAgent in largeAgents)
             {
@@ -105,7 +110,7 @@ public class CubeWarArea : Area
             Debug.Log("Small Agents Win");
             foreach (var smallAgent in smallAgents)
             {
-                smallAgent.SetReward(1.0f);
+                smallAgent.SetReward(1.0f / numLiveAgents);
             }
             foreach (var largeAgent in largeAgents)
             {
