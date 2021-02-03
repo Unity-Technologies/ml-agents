@@ -2,10 +2,12 @@
 
 using System;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 using Random = UnityEngine.Random;
 
 public class PushAgentBasic : Agent
@@ -56,11 +58,19 @@ public class PushAgentBasic : Agent
 
     PushBlockActions m_PushblockActions;
 
+    float m_JumpCoolDownStart;
+
     void Awake()
     {
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
         m_PushblockActions = new PushBlockActions();
         m_PushblockActions.Enable();
+        m_PushblockActions.Movement.jump.started += JumpOnperformed;
+    }
+
+    void JumpOnperformed(InputAction.CallbackContext callbackContext)
+    {
+        InnerJump(gameObject.transform);
     }
 
     public override void Initialize()
@@ -145,11 +155,7 @@ public class PushAgentBasic : Agent
         {
             var forward = Mathf.Abs(move[1]) > Mathf.Abs(move[0]) ? move[1] : 0f;
             var up = Mathf.Abs(move[0]) > Mathf.Abs(move[1]) ? move[0] : 0f;
-            var dirToGo = transform1.forward * forward;
-            var rotateDir = transform1.up * up;
-            transform1.Rotate(rotateDir, Time.deltaTime * 200f);
-            m_AgentRb.AddForce(dirToGo * m_PushBlockSettings.agentRunSpeed,
-                ForceMode.VelocityChange);
+            InnerMove(transform1, forward, up);
         }
 
         var jump = actionBuffers.DiscreteActions;
@@ -157,9 +163,27 @@ public class PushAgentBasic : Agent
         {
             if (jump[0] == 1)
             {
-                m_AgentRb.AddForce(transform1.up * m_PushBlockSettings.agentJumpForce, ForceMode.Impulse);
+                InnerJump(transform1);
             }
         }
+    }
+
+    void InnerJump(Transform t)
+    {
+        if (Time.realtimeSinceStartup - m_JumpCoolDownStart > m_PushBlockSettings.agentJumpCoolDown)
+        {
+            m_AgentRb.AddForce(t.up * m_PushBlockSettings.agentJumpForce, ForceMode.Impulse);
+            m_JumpCoolDownStart = Time.realtimeSinceStartup;
+        }
+    }
+
+    void InnerMove(Transform t, float forward, float up)
+    {
+        var dirToGo = t.forward * forward;
+        var rotateDir = t.up * up;
+        t.Rotate(rotateDir, Time.deltaTime * 200f);
+        m_AgentRb.AddForce(dirToGo * m_PushBlockSettings.agentRunSpeed,
+            ForceMode.VelocityChange);
     }
 
     /// <summary>
@@ -167,8 +191,6 @@ public class PushAgentBasic : Agent
     /// </summary>
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        if (actionBuffers.ContinuousActions.IsEmpty())
-            return;
         // Move the agent using the action.
         MoveAgent(actionBuffers);
 

@@ -127,8 +127,6 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
                 .WithName(k_MlAgentsLayoutName)
                 .WithFormat(k_MlAgentsLayoutFormat);
 
-            var byteOffset = 0;
-
             var actuators = new IActuator[actionMap.actions.Count];
             var count = 0;
 
@@ -138,7 +136,6 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 
                 builder.AddControl(action.name)
                     .WithLayout(action.expectedControlType)
-                    .WithByteOffset((uint)byteOffset)
                     .WithFormat(actionLayout.stateFormat);
 
                 var binding = action.bindings[0];
@@ -158,8 +155,6 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
                         null,
                         k_MlAgentsControlSchemeName);
                 }
-
-                byteOffset += actionLayout.stateSizeInBytes;
 
                 var adaptor = (IRLActionInputAdaptor)Activator.CreateInstance(
                     s_ControlTypeToAdaptorType[actionLayout.type]);

@@ -80,7 +80,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
                 m_Time = Time.realtimeSinceStartup;
                 if (m_Control.GetType() == typeof(ButtonControl))
                 {
-                    InputSystem.QueueDeltaStateEvent(m_Control, (byte)1);
+                    InputSystem.QueueDeltaStateEvent(m_Control, (byte)(m_Flip ? 1 : 0));
                 }
             }
             if (m_Control.GetType() == typeof(Vector2Control))

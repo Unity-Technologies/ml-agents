@@ -6,18 +6,18 @@
             "id": "03a2e5d4-ae81-47f1-a575-0779fb7da538",
             "actions": [
                 {
-                    "name": "movement",
-                    "type": "Value",
-                    "id": "5f47cbc6-de46-4d33-93e2-2b1af4f5996d",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
                     "name": "jump",
                     "type": "Button",
                     "id": "ca5eb833-5dfb-4b7c-880d-6118bd5d1378",
                     "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "movement",
+                    "type": "Value",
+                    "id": "5f47cbc6-de46-4d33-93e2-2b1af4f5996d",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": ""
                 }

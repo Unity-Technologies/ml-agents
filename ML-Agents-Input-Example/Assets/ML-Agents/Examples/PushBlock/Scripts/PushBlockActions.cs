@@ -19,18 +19,18 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
             ""id"": ""03a2e5d4-ae81-47f1-a575-0779fb7da538"",
             ""actions"": [
                 {
-                    ""name"": ""movement"",
-                    ""type"": ""Value"",
-                    ""id"": ""5f47cbc6-de46-4d33-93e2-2b1af4f5996d"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
                     ""name"": ""jump"",
                     ""type"": ""Button"",
                     ""id"": ""ca5eb833-5dfb-4b7c-880d-6118bd5d1378"",
                     ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""movement"",
+                    ""type"": ""Value"",
+                    ""id"": ""5f47cbc6-de46-4d33-93e2-2b1af4f5996d"",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
                 }
@@ -126,8 +126,8 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
 }");
         // Movement
         m_Movement = asset.FindActionMap("Movement", throwIfNotFound: true);
-        m_Movement_movement = m_Movement.FindAction("movement", throwIfNotFound: true);
         m_Movement_jump = m_Movement.FindAction("jump", throwIfNotFound: true);
+        m_Movement_movement = m_Movement.FindAction("movement", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -177,14 +177,14 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
     // Movement
     private readonly InputActionMap m_Movement;
     private IMovementActions m_MovementActionsCallbackInterface;
-    private readonly InputAction m_Movement_movement;
     private readonly InputAction m_Movement_jump;
+    private readonly InputAction m_Movement_movement;
     public struct MovementActions
     {
         private @PushBlockActions m_Wrapper;
         public MovementActions(@PushBlockActions wrapper) { m_Wrapper = wrapper; }
-        public InputAction @movement => m_Wrapper.m_Movement_movement;
         public InputAction @jump => m_Wrapper.m_Movement_jump;
+        public InputAction @movement => m_Wrapper.m_Movement_movement;
         public InputActionMap Get() { return m_Wrapper.m_Movement; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -194,22 +194,22 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
         {
             if (m_Wrapper.m_MovementActionsCallbackInterface != null)
             {
-                @movement.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnMovement;
-                @movement.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnMovement;
-                @movement.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnMovement;
                 @jump.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnJump;
                 @jump.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnJump;
                 @jump.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnJump;
+                @movement.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnMovement;
+                @movement.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnMovement;
+                @movement.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnMovement;
             }
             m_Wrapper.m_MovementActionsCallbackInterface = instance;
             if (instance != null)
             {
-                @movement.started += instance.OnMovement;
-                @movement.performed += instance.OnMovement;
-                @movement.canceled += instance.OnMovement;
                 @jump.started += instance.OnJump;
                 @jump.performed += instance.OnJump;
                 @jump.canceled += instance.OnJump;
+                @movement.started += instance.OnMovement;
+                @movement.performed += instance.OnMovement;
+                @movement.canceled += instance.OnMovement;
             }
         }
     }
@@ -225,7 +225,7 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
     }
     public interface IMovementActions
     {
-        void OnMovement(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnMovement(InputAction.CallbackContext context);
     }
 }
