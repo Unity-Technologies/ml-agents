@@ -5,28 +5,28 @@ using UnityEngine.InputSystem;
 
 namespace Unity.MLAgents.Extensions.Runtime.Input
 {
-    public class Vector2InputActionAdaptor : IRLActionInputAdaptor, IInputHeuristicWriter
+    public class Vector2InputActionAdaptor : IRLActionInputAdaptor
     {
         public ActionSpec GetActionSpecForInputAction(InputAction action)
         {
             return ActionSpec.MakeContinuous(2);
         }
 
-        public void WriteToHeuristic(InputAction action, in ActionBuffers actionBuffers, int continuousOffset, int discreteOffset)
+        public void WriteToHeuristic(InputAction action, in ActionBuffers actionBuffers)
         {
-            // Debug.Assert(action.controls.Count == 1, "Vector2InputActionAdaptor should have exactly one control.");
             var value = action.ReadValue<Vector2>();
             var continuousActions = actionBuffers.ContinuousActions;
-            continuousActions[continuousOffset++] = value.x;
-            continuousActions[continuousOffset] = value.y;
+            continuousActions[0] = value.x;
+            continuousActions[1] = value.y;
         }
 
-        public void QueueInputEventForAction(InputAction action, ActionSpec actionSpec, in ActionBuffers actionBuffers)
+        public void QueueInputEventForAction(InputAction action,
+            InputControl control,
+            ActionSpec actionSpec,
+            in ActionBuffers actionBuffers)
         {
-            // Debug.Assert(action.controls.Count == 1, "Vector2InputActionAdaptor should have exactly one control.");
             var x = actionBuffers.ContinuousActions[0];
             var y = actionBuffers.ContinuousActions[1];
-            var control = action.activeControl;
             InputSystem.QueueDeltaStateEvent(control, new Vector2(x, y));
         }
 

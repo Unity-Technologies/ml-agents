@@ -9,6 +9,8 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
     {
         ActionSpec GetActionSpecForInputAction(InputAction action);
 
-        void QueueInputEventForAction(InputAction action, ActionSpec actionSpec, in ActionBuffers actionBuffers);
+        void QueueInputEventForAction(InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers);
+
+        void WriteToHeuristic(InputAction action, in ActionBuffers actionBuffers);
     }
 }
