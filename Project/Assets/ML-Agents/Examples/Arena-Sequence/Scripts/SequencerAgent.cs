@@ -11,6 +11,8 @@ using Random = UnityEngine.Random;
 
 public class SequencerAgent : Agent
 {
+    private const int k_HighestTileValue = 20;
+
     public bool SelectNewTiles;
 
     int m_NumberOfTilesToSpawn;
@@ -27,6 +29,7 @@ public class SequencerAgent : Agent
     private Vector3 m_StartingPos;
 
     GameObject m_Area;
+    EnvironmentParameters m_ResetParams;
 
 
     // private SequenceTile m_NextExpectedTile;
@@ -36,7 +39,8 @@ public class SequencerAgent : Agent
     public override void Initialize()
     {
         m_Area = transform.parent.gameObject;
-        m_MaxNumberOfTiles = SequenceTilesList.Count;
+        m_MaxNumberOfTiles = k_HighestTileValue;
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
         m_BufferSensor = GetComponent<BufferSensorComponent>();
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
         m_AgentRb = GetComponent<Rigidbody>();
@@ -50,8 +54,10 @@ public class SequencerAgent : Agent
     /// </summary>
     public override void OnEpisodeBegin()
     {
+        m_MaxNumberOfTiles = (int)m_ResetParams.GetWithDefault("num_tiles", 5);
 
-        m_NumberOfTilesToSpawn = Random.Range(1, m_MaxNumberOfTiles);
+
+        m_NumberOfTilesToSpawn = Random.Range(1, m_MaxNumberOfTiles + 1);
         SelectTilesToShow();
         SetTilePositions();
 
@@ -84,10 +90,10 @@ public class SequencerAgent : Agent
         foreach (var item in CurrentlyVisibleTilesList)
         {
 
-            float[] listObservation = new float[m_MaxNumberOfTiles + 2];
+            float[] listObservation = new float[k_HighestTileValue + 2];
             listObservation[item.NumberValue] = 1.0f;
-            listObservation[m_MaxNumberOfTiles] = (item.transform.localRotation.eulerAngles.y / 360f);
-            listObservation[m_MaxNumberOfTiles + 1] = item.visited ? 1.0f : 0.0f;
+            listObservation[k_HighestTileValue] = (item.transform.localRotation.eulerAngles.y / 360f);
+            listObservation[k_HighestTileValue + 1] = item.visited ? 1.0f : 0.0f;
             //Debug.Log(listObservation[20]);
             //Debug.Log(listObservation[21]);
             //Debug.Log(listObservation[22]);
@@ -153,14 +159,14 @@ public class SequencerAgent : Agent
             int rndPosIndx = 0;
             while (!posChosen)
             {
-                rndPosIndx = Random.Range(0, SequenceTilesList.Count);
+                rndPosIndx = Random.Range(0, k_HighestTileValue);
                 if (!m_UsedPositionsList.Contains(rndPosIndx))
                 {
                     m_UsedPositionsList.Add(rndPosIndx);
                     posChosen = true;
                 }
             }
-            item.transform.localRotation = Quaternion.Euler(0, rndPosIndx * (360f / SequenceTilesList.Count), 0);
+            item.transform.localRotation = Quaternion.Euler(0, rndPosIndx * (360f / k_HighestTileValue), 0);
             item.rend.sharedMaterial = TileMaterial;
             item.gameObject.SetActive(true);
         }
@@ -177,7 +183,7 @@ public class SequencerAgent : Agent
         int numLeft = m_NumberOfTilesToSpawn;
         while (numLeft > 0)
         {
-            int rndInt = Random.Range(0, m_MaxNumberOfTiles);
+            int rndInt = Random.Range(0, k_HighestTileValue);
             var tmp = SequenceTilesList[rndInt];
             if (!CurrentlyVisibleTilesList.Contains(tmp))
             {
@@ -240,7 +246,7 @@ public class SequencerAgent : Agent
         m_AgentRb.AddForce(dirToGo * m_PushBlockSettings.agentRunSpeed,
             ForceMode.VelocityChange);
 
-        }
+    }
 
     /// <summary>
     /// Called every step of the engine. Here the agent takes an action.
@@ -257,7 +263,7 @@ public class SequencerAgent : Agent
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-            var discreteActionsOut = actionsOut.DiscreteActions;
+        var discreteActionsOut = actionsOut.DiscreteActions;
         discreteActionsOut.Clear();
         //forward
         if (Input.GetKey(KeyCode.W))
