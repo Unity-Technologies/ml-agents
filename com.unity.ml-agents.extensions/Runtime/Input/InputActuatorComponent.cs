@@ -14,6 +14,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 {
     public class InputActuatorComponent : ActuatorComponent
     {
+        InputActionAsset m_InputAsset;
         PlayerInput m_PlayerInput;
         BehaviorParameters m_BehaviorParameters;
         IActuator[] m_Actuators;
@@ -39,7 +40,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         const string k_MlAgentsDeviceName = "MLAgentsDevice";
         const string k_MlAgentsControlSchemeName = "ml-agents";
 
-        void OnEnable()
+        void Start()
         {
             FindNeededComponents();
         }
@@ -52,10 +53,15 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         public override IActuator[] CreateActuators()
         {
             FindNeededComponents();
-            var map = m_PlayerInput.actions.FindActionMap(m_PlayerInput.defaultActionMap);
+            var map = m_InputAsset.FindActionMap(m_PlayerInput.defaultActionMap);
             m_Actuators = GenerateActionActuatorsFromAsset(map, out var layout, IsInHeuristicMode());
             InputSystem.RegisterLayout(layout.ToJson());
-            m_Device = CreateDevice(m_PlayerInput, map);
+            m_Device = CreateDevice(m_InputAsset);
+
+            // Set our device as the only device for this map
+            // TODO maybe just add our device to the list?
+            map.devices = new ReadOnlyArray<InputDevice>(new[] { m_Device });
+            m_InputAsset.Enable();
             for (var i = 0; i < m_Actuators.Length; i++)
             {
                 ((InputActionActuator)m_Actuators[i]).SetDevice(m_Device);
@@ -70,7 +76,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         public override ActionSpec ActionSpec => ActionSpec.MakeContinuous(0);
 
 
-        static InputDevice CreateDevice(PlayerInput playerInput, InputActionMap defaultMap)
+        static InputDevice CreateDevice(InputActionAsset asset)
         {
             // See if our device layout was already registered.
             var layoutName = InputSystem.TryFindMatchingLayout(new InputDeviceDescription
@@ -96,9 +102,9 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             // If the control scheme isn't created, create it with our device registered
             // as required.
             // TODO this may need to be named differently per Agent?
-            if (playerInput.actions.FindControlSchemeIndex(k_MlAgentsControlSchemeName) == -1)
+            if (asset.FindControlSchemeIndex(k_MlAgentsControlSchemeName) == -1)
             {
-                playerInput.actions.AddControlScheme(
+                asset.AddControlScheme(
                     new InputControlScheme(
                         k_MlAgentsControlSchemeName,
                         new[]
@@ -112,11 +118,6 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
                         })
                 );
             }
-
-            // Set our device as the only device for this map
-            // TODO maybe just add our device to the list?
-            defaultMap.devices = new ReadOnlyArray<InputDevice>(new[] { device });
-            defaultMap.Enable();
             return device;
         }
 
@@ -151,8 +152,8 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
                 else
                 {
                     action.AddBinding(path,
-                        null,
-                        null,
+                        action.interactions,
+                        action.processors,
                         k_MlAgentsControlSchemeName);
                 }
 
@@ -171,6 +172,16 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 
         void FindNeededComponents()
         {
+
+            if (m_InputAsset == null)
+            {
+                var provider = GetComponent<IIntputActionAssetProvider>();
+                if (provider != null)
+                {
+                    m_InputAsset = provider.GetInputActionAsset();
+                }
+            }
+
             if (m_PlayerInput == null)
             {
                 m_PlayerInput = GetComponent<PlayerInput>();

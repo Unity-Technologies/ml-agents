@@ -6,11 +6,12 @@ using System.Linq;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Extensions.Runtime.Input;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using Random = UnityEngine.Random;
 
-public class PushAgentBasic : Agent
+public class PushAgentBasic : Agent, IIntputActionAssetProvider
 {
     /// <summary>
     /// The ground. The bounds are used to spawn the elements.
@@ -64,9 +65,9 @@ public class PushAgentBasic : Agent
     {
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
         m_PushblockActions = new PushBlockActions();
-        m_PushblockActions.Enable();
-        m_PushblockActions.Movement.jump.started += JumpOnperformed;
+        m_PushblockActions.Movement.jump.performed += JumpOnperformed;
     }
+
 
     void JumpOnperformed(InputAction.CallbackContext callbackContext)
     {
@@ -119,6 +120,11 @@ public class PushAgentBasic : Agent
         return randomSpawnPos;
     }
 
+    void Update()
+    {
+        InnerMove(gameObject.transform, m_PushblockActions.Movement.movement.ReadValue<Vector2>());
+    }
+
     /// <summary>
     /// Called when the agent moves the block into the goal.
     /// </summary>
@@ -153,9 +159,8 @@ public class PushAgentBasic : Agent
         var transform1 = transform;
         if (!move.IsEmpty())
         {
-            var forward = Mathf.Abs(move[1]) > Mathf.Abs(move[0]) ? move[1] : 0f;
-            var up = Mathf.Abs(move[0]) > Mathf.Abs(move[1]) ? move[0] : 0f;
-            InnerMove(transform1, forward, up);
+            var movement = new Vector2(move[0], move[1]);
+            InnerMove(transform1, movement);
         }
 
         var jump = actionBuffers.DiscreteActions;
@@ -168,6 +173,16 @@ public class PushAgentBasic : Agent
         }
     }
 
+    static float CreateUpVector(Vector2 move)
+    {
+        return Mathf.Abs(move.x) > Mathf.Abs(move.y) ? move.x : 0f;
+    }
+
+    static float CreateForwardVector(Vector2 move)
+    {
+        return Mathf.Abs(move.y) > Mathf.Abs(move.x) ? move.y : 0f;
+    }
+
     void InnerJump(Transform t)
     {
         if (Time.realtimeSinceStartup - m_JumpCoolDownStart > m_PushBlockSettings.agentJumpCoolDown)
@@ -177,8 +192,10 @@ public class PushAgentBasic : Agent
         }
     }
 
-    void InnerMove(Transform t, float forward, float up)
+    void InnerMove(Transform t, Vector2 v)
     {
+        var forward = CreateForwardVector(v);
+        var up = CreateUpVector(v);
         var dirToGo = t.forward * forward;
         var rotateDir = t.up * up;
         t.Rotate(rotateDir, Time.deltaTime * 200f);
@@ -191,9 +208,6 @@ public class PushAgentBasic : Agent
     /// </summary>
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        // Move the agent using the action.
-        MoveAgent(actionBuffers);
-
         // Penalty given each step to encourage agent to finish task quickly.
         AddReward(-1f / MaxStep);
     }
@@ -265,5 +279,10 @@ public class PushAgentBasic : Agent
     {
         SetGroundMaterialFriction();
         SetBlockProperties();
+    }
+
+    public InputActionAsset GetInputActionAsset()
+    {
+        return m_PushblockActions.asset;
     }
 }

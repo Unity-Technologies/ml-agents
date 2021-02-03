@@ -16,7 +16,7 @@
     "com.unity.multiplayer-hlapi": "1.0.6",
     "com.unity.purchasing": "2.0.6",
     "com.unity.test-framework": "1.1.14",
-    "com.unity.testtools.codecoverage": "0.4.1-preview",
+    "com.unity.testtools.codecoverage": "1.0.0-pre.3",
     "com.unity.ugui": "1.0.0",
     "com.unity.xr.legacyinputhelpers": "2.1.4",
     "com.unity.modules.ai": "1.0.0",

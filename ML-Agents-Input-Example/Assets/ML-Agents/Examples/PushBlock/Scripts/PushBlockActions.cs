@@ -8,7 +8,7 @@ using UnityEngine.InputSystem.Utilities;
 
 public class @PushBlockActions : IInputActionCollection, IDisposable
 {
-    public InputActionAsset asset { get; }
+    public InputActionAsset asset { get; set; }
     public @PushBlockActions()
     {
         asset = InputActionAsset.FromJson(@"{
@@ -101,6 +101,17 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
                     ""action"": ""jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7adcb138-5175-4cc4-addc-d2b02cb5f0de"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -128,6 +139,7 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
         m_Movement = asset.FindActionMap("Movement", throwIfNotFound: true);
         m_Movement_jump = m_Movement.FindAction("jump", throwIfNotFound: true);
         m_Movement_movement = m_Movement.FindAction("movement", throwIfNotFound: true);
+        m_MovementActions = new MovementActions(this);
     }
 
     public void Dispose()
@@ -175,10 +187,11 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
     }
 
     // Movement
-    private readonly InputActionMap m_Movement;
+    public InputActionMap m_Movement;
     private IMovementActions m_MovementActionsCallbackInterface;
-    private readonly InputAction m_Movement_jump;
-    private readonly InputAction m_Movement_movement;
+    MovementActions m_MovementActions;
+    public InputAction m_Movement_jump;
+    public InputAction m_Movement_movement;
     public struct MovementActions
     {
         private @PushBlockActions m_Wrapper;
@@ -213,7 +226,12 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
             }
         }
     }
-    public MovementActions @Movement => new MovementActions(this);
+    public MovementActions @Movement
+    {
+        get => m_MovementActions;
+        set => m_MovementActions = value;
+    }
+
     private int m_KeyboardSchemeIndex = -1;
     public InputControlScheme KeyboardScheme
     {

@@ -1549,6 +1549,25 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 4662886693952972, guid: 03bcc81e249714a22bb411dddcc5d15e, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 23386727129662884, guid: 03bcc81e249714a22bb411dddcc5d15e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 54817351390947638, guid: 03bcc81e249714a22bb411dddcc5d15e,
+        type: 3}
+      propertyPath: m_Drag
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 54817351390947638, guid: 03bcc81e249714a22bb411dddcc5d15e,
+        type: 3}
+      propertyPath: m_CollisionDetection
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 114306175693660464, guid: 03bcc81e249714a22bb411dddcc5d15e,
         type: 3}
       propertyPath: m_BehaviorType
@@ -1718,7 +1737,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agentRunSpeed: 3
   agentRotationSpeed: 15
-  agentJumpForce: 3
+  agentJumpForce: 100
+  agentJumpCoolDown: 3
   spawnAreaMarginMultiplier: 0.5
   goalScoredMaterial: {fileID: 2100000, guid: df32cc593804f42df97464dc455057b8, type: 2}
   failMaterial: {fileID: 2100000, guid: a1daf31cdf41e484ca9ac33a5c6f524a, type: 2}

@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 #if ACTUATOR_DEBUG
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.Controls;
-using Vector2 = System.Numerics.Vector2;
+using UnityEngine.InputSystem.LowLevel;
 #endif
 
 namespace Unity.MLAgents.Extensions.Runtime.Input
@@ -80,12 +80,22 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
                 m_Time = Time.realtimeSinceStartup;
                 if (m_Control.GetType() == typeof(ButtonControl))
                 {
-                    InputSystem.QueueDeltaStateEvent(m_Control, (byte)(m_Flip ? 1 : 0));
+                    using (StateEvent.From(m_Device, out var eventPtr))
+                    {
+                        m_Control.WriteValueIntoEvent(m_Flip ? 1f : 0f, eventPtr);
+                        InputSystem.QueueEvent(eventPtr);
+                        InputSystem.Update();
+                    }
                 }
             }
             if (m_Control.GetType() == typeof(Vector2Control))
             {
-                InputSystem.QueueDeltaStateEvent(m_Control, new Vector2(m_Flip ? 1 : 0, m_Flip ? 0 : 1));
+                using (StateEvent.From(m_Device, out var eventPtr))
+                {
+                    m_Control.WriteValueIntoEvent(new Vector2(m_Flip ? 1 : 0, m_Flip ? 0 : 1), eventPtr);
+                    InputSystem.QueueEvent(eventPtr);
+                    InputSystem.Update();
+                }
             }
 #endif
             m_InputAdaptor.WriteToHeuristic(m_Action, actionBuffersOut);

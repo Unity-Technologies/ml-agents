@@ -15,7 +15,7 @@ MonoBehaviour:
   m_SupportedDevices:
   - Keyboard
   - Gamepad
-  m_UpdateMode: 2
+  m_UpdateMode: 1
   m_CompensateForScreenOrientation: 1
   m_FilterNoiseOnCurrent: 1
   m_DefaultDeadzoneMin: 0.125
