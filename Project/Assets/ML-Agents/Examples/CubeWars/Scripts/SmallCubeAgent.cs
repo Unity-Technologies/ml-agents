@@ -31,6 +31,8 @@ public class SmallCubeAgent : Agent
     float m_MoveSpeed;
     float m_TurnSpeed;
     float m_Cooldown;
+    float m_Range = 25f;
+    float m_Splash = 2f;
 
     public enum Role
     {
@@ -50,10 +52,12 @@ public class SmallCubeAgent : Agent
             m_RoleObs[0] = 1f;
             m_HitPointsTotal = .5f;
             m_Damage = 0f;
-            m_Heal = .4f;
+            m_Heal = .2f;
             m_MoveSpeed = 10f;
             m_TurnSpeed = 150f;
-            m_Cooldown = .2f;
+            m_Cooldown = .4f;
+            m_Splash = 10f;
+            m_Range = 10f;
         }
         else if (role == Role.DPS)
         {
@@ -64,6 +68,8 @@ public class SmallCubeAgent : Agent
             m_MoveSpeed = 10f;
             m_TurnSpeed = 200f;
             m_Cooldown = .25f;
+            m_Splash = 2f;
+            m_Range = 25f;
         }
         else if (role == Role.Tank)
         {
@@ -74,6 +80,8 @@ public class SmallCubeAgent : Agent
             m_MoveSpeed = 6f;
             m_TurnSpeed = 100f;
             m_Cooldown = .4f;
+            m_Splash = 2f;
+            m_Range = 25f;
         }
 
         m_AgentRb = GetComponent<Rigidbody>();
@@ -81,6 +89,8 @@ public class SmallCubeAgent : Agent
         m_LargeAgent = largeAgent.GetComponent<LargeCubeAgent>();
         m_CubeWarSettings = FindObjectOfType<CubeWarSettings>();
         SetResetParameters();
+        myLaser.maxLength = m_Range;
+        myLaser.width = m_Splash / 2f;
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -127,7 +137,7 @@ public class SmallCubeAgent : Agent
 
             if (shootCommand)
             {
-                if (Time.time > m_ShootTime + .4f)
+                if (Time.time > m_ShootTime + m_Cooldown)
                 {
                     m_Shoot = true;
                     dirToGo *= 0.5f;
@@ -141,11 +151,12 @@ public class SmallCubeAgent : Agent
 
         if (m_Shoot)
         {
+            myLaser.isFired = true;
             var myTransform = transform;
-            var rayDir = 25.0f * myTransform.forward;
+            var rayDir = m_Range * myTransform.forward;
             Debug.DrawRay(myTransform.position, rayDir, Color.red, 0f, true);
             RaycastHit hit;
-            if (Physics.SphereCast(transform.position, 2f, rayDir, out hit, 28f))
+            if (Physics.SphereCast(transform.position, m_Splash, rayDir, out hit, m_Range))
             {
                 if (hit.collider.gameObject.CompareTag("StrongSmallAgent") || hit.collider.gameObject.CompareTag("WeakSmallAgent"))
                 {
@@ -164,12 +175,10 @@ public class SmallCubeAgent : Agent
                     {
                         AddReward(.1f);
                     }
-
                 }
-                myLaser.isFired = true;
             }
         }
-        else if (Time.time > m_ShootTime + m_Cooldown)
+        else if (Time.time > m_ShootTime + 0.1f) // This is just how long the graphic stays live
         {
             myLaser.isFired = false;
         }
@@ -199,13 +208,14 @@ public class SmallCubeAgent : Agent
 
     void HealthStatus()
     {
-        if (m_HitPoints <= 1f && m_HitPoints > .5f)
+        float hitPointRatio = m_HitPoints / m_HitPointsTotal;
+        if (hitPointRatio <= 1f && hitPointRatio > .5f)
         {
             gameObject.tag = "StrongSmallAgent";
             myBody.GetComponentInChildren<Renderer>().material = normalMaterial;
         }
 
-        else if (m_HitPoints <= .5f && m_HitPoints > 0.0f)
+        else if (hitPointRatio <= .5f && hitPointRatio > 0.0f)
         {
             gameObject.tag = "WeakSmallAgent";
             myBody.GetComponentInChildren<Renderer>().material = weakMaterial;
@@ -255,11 +265,11 @@ public class SmallCubeAgent : Agent
     public override void OnEpisodeBegin()
     {
         m_HitPoints = m_HitPointsTotal;
-        HealthStatus();
         m_Dead = false;
         m_Shoot = false;
         m_ShootTime = -.5f;
         m_AgentRb.velocity = Vector3.zero;
+        HealthStatus();
 
         float smallRange = 50f * m_MyArea.range;
         transform.position = new Vector3(Random.Range(-smallRange, smallRange),
