@@ -35,6 +35,7 @@ and this project adheres to
   default implementation will wrap `ActuatorComponent.CreateActuator` in an array and return that. (#4899)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Tensorboard now logs the Environment Reward as both a scalar and a histogram. (#4878)
 - Added a `--torch-device` commandline option to `mlagents-learn`, which sets the default
   [`torch.device`](https://pytorch.org/docs/stable/tensor_attributes.html#torch.torch.device) used for training. (#4888)
 - The `--cpu` commandline option had no effect and was removed. Use `--torch-device=cpu` to force CPU training. (#4888)
