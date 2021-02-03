@@ -25,6 +25,14 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""ca5eb833-5dfb-4b7c-880d-6118bd5d1378"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -82,6 +90,17 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
                     ""action"": ""movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ab696218-63cd-4eb8-9fe1-48a68e32e92f"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -108,6 +127,7 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
         // Movement
         m_Movement = asset.FindActionMap("Movement", throwIfNotFound: true);
         m_Movement_movement = m_Movement.FindAction("movement", throwIfNotFound: true);
+        m_Movement_jump = m_Movement.FindAction("jump", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -158,11 +178,13 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
     private readonly InputActionMap m_Movement;
     private IMovementActions m_MovementActionsCallbackInterface;
     private readonly InputAction m_Movement_movement;
+    private readonly InputAction m_Movement_jump;
     public struct MovementActions
     {
         private @PushBlockActions m_Wrapper;
         public MovementActions(@PushBlockActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @movement => m_Wrapper.m_Movement_movement;
+        public InputAction @jump => m_Wrapper.m_Movement_jump;
         public InputActionMap Get() { return m_Wrapper.m_Movement; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -175,6 +197,9 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
                 @movement.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnMovement;
                 @movement.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnMovement;
                 @movement.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnMovement;
+                @jump.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnJump;
+                @jump.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnJump;
+                @jump.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnJump;
             }
             m_Wrapper.m_MovementActionsCallbackInterface = instance;
             if (instance != null)
@@ -182,6 +207,9 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
                 @movement.started += instance.OnMovement;
                 @movement.performed += instance.OnMovement;
                 @movement.canceled += instance.OnMovement;
+                @jump.started += instance.OnJump;
+                @jump.performed += instance.OnJump;
+                @jump.canceled += instance.OnJump;
             }
         }
     }
@@ -198,5 +226,6 @@ public class @PushBlockActions : IInputActionCollection, IDisposable
     public interface IMovementActions
     {
         void OnMovement(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
     }
 }

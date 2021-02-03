@@ -137,16 +137,29 @@ public class PushAgentBasic : Agent
     /// <summary>
     /// Moves the agent according to the selected action.
     /// </summary>
-    public void MoveAgent(ActionSegment<float> act)
+    public void MoveAgent(ActionBuffers actionBuffers)
     {
+        var move = actionBuffers.ContinuousActions;
         var transform1 = transform;
-        var forward = Mathf.Abs(act[1]) > Mathf.Abs(act[0]) ? act[1] : 0f;
-        var up = Mathf.Abs(act[0]) > Mathf.Abs(act[1]) ? act[0] : 0f;
-        var dirToGo = transform1.forward * forward;
-        var rotateDir = transform1.up * up;
-        transform1.Rotate(rotateDir, Time.deltaTime * 200f);
-        m_AgentRb.AddForce(dirToGo * m_PushBlockSettings.agentRunSpeed,
-            ForceMode.VelocityChange);
+        if (!move.IsEmpty())
+        {
+            var forward = Mathf.Abs(move[1]) > Mathf.Abs(move[0]) ? move[1] : 0f;
+            var up = Mathf.Abs(move[0]) > Mathf.Abs(move[1]) ? move[0] : 0f;
+            var dirToGo = transform1.forward * forward;
+            var rotateDir = transform1.up * up;
+            transform1.Rotate(rotateDir, Time.deltaTime * 200f);
+            m_AgentRb.AddForce(dirToGo * m_PushBlockSettings.agentRunSpeed,
+                ForceMode.VelocityChange);
+        }
+
+        var jump = actionBuffers.DiscreteActions;
+        if (!jump.IsEmpty())
+        {
+            if (jump[0] == 1)
+            {
+                m_AgentRb.AddForce(transform1.up * m_PushBlockSettings.agentJumpForce, ForceMode.Impulse);
+            }
+        }
     }
 
     /// <summary>
@@ -157,7 +170,7 @@ public class PushAgentBasic : Agent
         if (actionBuffers.ContinuousActions.IsEmpty())
             return;
         // Move the agent using the action.
-        MoveAgent(actionBuffers.ContinuousActions);
+        MoveAgent(actionBuffers);
 
         // Penalty given each step to encourage agent to finish task quickly.
         AddReward(-1f / MaxStep);

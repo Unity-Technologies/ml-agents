@@ -13,6 +13,8 @@ public class PushBlockSettings : MonoBehaviour
     /// </summary>
     public float agentRotationSpeed;
 
+    public float agentJumpForce;
+
     /// <summary>
     /// The spawn area margin multiplier.
     /// ex: .9 means 90% of spawn area will be used.

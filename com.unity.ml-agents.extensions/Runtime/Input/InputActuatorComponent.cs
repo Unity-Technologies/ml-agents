@@ -5,8 +5,10 @@ using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.Utilities;
+using UnityEngine.UI;
 
 namespace Unity.MLAgents.Extensions.Runtime.Input
 {
@@ -27,7 +29,8 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 
         static Dictionary<Type, Type> s_ControlTypeToAdaptorType = new Dictionary<Type, Type>
         {
-            { typeof(Vector2), typeof(Vector2InputActionAdaptor) }
+            { typeof(Vector2Control), typeof(Vector2InputActionAdaptor) },
+            { typeof(ButtonControl), typeof(ButtonInputActionAdaptor) }
         };
 
         const string k_MlAgentsDevicePath = "/MLAgentsLayout";
@@ -132,7 +135,6 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             foreach (var action in actionMap)
             {
                 var actionLayout = InputSystem.LoadLayout(action.expectedControlType);
-                var compositeType = s_ControlTypeToCompositeType[action.expectedControlType];
 
                 builder.AddControl(action.name)
                     .WithLayout(action.expectedControlType)
@@ -143,6 +145,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
                 var path = $"{k_MlAgentsDevicePath}/{action.name}";
                 if (binding.isComposite)
                 {
+                    var compositeType = s_ControlTypeToCompositeType[action.expectedControlType];
                     action.AddCompositeBinding(compositeType)
                     .With(action.expectedControlType,
                         path,
@@ -155,10 +158,11 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
                         null,
                         k_MlAgentsControlSchemeName);
                 }
+
                 byteOffset += actionLayout.stateSizeInBytes;
 
                 var adaptor = (IRLActionInputAdaptor)Activator.CreateInstance(
-                    s_ControlTypeToAdaptorType[actionLayout.GetValueType()]);
+                    s_ControlTypeToAdaptorType[actionLayout.type]);
                 actuators[count++] = new InputActionActuator(
                     m_Agent,
                     action,

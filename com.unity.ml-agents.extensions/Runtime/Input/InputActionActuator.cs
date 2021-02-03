@@ -1,7 +1,15 @@
+#define ACTUATOR_DEBUG
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
+// #undef ACTUATOR_DEBUG
+
+#if ACTUATOR_DEBUG
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.Controls;
 using Vector2 = System.Numerics.Vector2;
+#endif
 
 namespace Unity.MLAgents.Extensions.Runtime.Input
 {
@@ -14,9 +22,10 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         InputControl m_Control;
         Agent m_Agent;
 
-        // DEBUG
+#if ACTUATOR_DEBUG
         float m_Time;
-        bool m_Flip = false;
+        bool m_Flip;
+#endif
 
         public InputActionActuator(Agent agent,
             InputAction action,
@@ -64,12 +73,21 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 
         public void Heuristic(in ActionBuffers actionBuffersOut)
         {
+#if ACTUATOR_DEBUG
             if (Time.realtimeSinceStartup - m_Time > 1.0f)
             {
                 m_Flip = !m_Flip;
                 m_Time = Time.realtimeSinceStartup;
+                if (m_Control.GetType() == typeof(ButtonControl))
+                {
+                    InputSystem.QueueDeltaStateEvent(m_Control, (byte)1);
+                }
             }
-            InputSystem.QueueDeltaStateEvent(m_Control, new Vector2(m_Flip ? 1 : 0, m_Flip ? 0 : 1));
+            if (m_Control.GetType() == typeof(Vector2Control))
+            {
+                InputSystem.QueueDeltaStateEvent(m_Control, new Vector2(m_Flip ? 1 : 0, m_Flip ? 0 : 1));
+            }
+#endif
             m_InputAdaptor.WriteToHeuristic(m_Action, actionBuffersOut);
         }
     }
