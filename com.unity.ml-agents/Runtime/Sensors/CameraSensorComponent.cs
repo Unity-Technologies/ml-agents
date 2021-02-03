@@ -36,6 +36,9 @@ namespace Unity.MLAgents.Sensors
             set { m_SensorName = value; }
         }
 
+        [HideInInspector, SerializeField, FormerlySerializedAs("observationType")]
+        ObservationType m_ObservationType = ObservationType.Goal;
+
         [HideInInspector, SerializeField, FormerlySerializedAs("width")]
         int m_Width = 84;
 
@@ -103,12 +106,21 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
+        /// The type of the observation.
+        /// </summary>
+        public ObservationType SensorObservationType
+        {
+            get { return m_ObservationType; }
+            set { m_ObservationType = value; UpdateSensor(); }
+        }
+
+        /// <summary>
         /// Creates the <see cref="CameraSensor"/>
         /// </summary>
         /// <returns>The created <see cref="CameraSensor"/> object for this component.</returns>
         public override ISensor CreateSensor()
         {
-            m_Sensor = new CameraSensor(m_Camera, m_Width, m_Height, Grayscale, m_SensorName, m_Compression);
+            m_Sensor = new CameraSensor(m_Camera, m_Width, m_Height, Grayscale, m_SensorName, m_Compression, m_ObservationType);
 
             if (ObservationStacks != 1)
             {
@@ -141,6 +153,7 @@ namespace Unity.MLAgents.Sensors
             {
                 m_Sensor.Camera = m_Camera;
                 m_Sensor.CompressionType = m_Compression;
+                m_Sensor.ObservationType = m_ObservationType;
             }
         }
     }

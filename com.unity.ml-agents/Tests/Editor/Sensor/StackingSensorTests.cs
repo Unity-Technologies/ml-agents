@@ -130,7 +130,7 @@ namespace Unity.MLAgents.Tests
         {
             // Test grayscale stacked mapping with CameraSensor
             var cameraSensor = new CameraSensor(new Camera(), 64, 64,
-                true, "grayscaleCamera", SensorCompressionType.PNG);
+                true, "grayscaleCamera", SensorCompressionType.PNG, ObservationType.Default);
             var stackedCameraSensor = new StackingSensor(cameraSensor, 2);
             Assert.AreEqual(stackedCameraSensor.GetCompressedChannelMapping(), new[] { 0, 0, 0, 1, 1, 1 });
 

@@ -240,8 +240,8 @@ MonoBehaviour:
     NumStackedVectorObservations: 2
     m_ActionSpec:
       m_NumContinuousActions: 0
-      BranchSizes: 07000000
-    VectorActionSize: 07000000
+      BranchSizes: 05000000
+    VectorActionSize: 05000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
@@ -283,7 +283,7 @@ MonoBehaviour:
   - landmark
   - wall
   m_RaysPerDirection: 5
-  m_MaxRayDegrees: 90
+  m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 15
   m_RayLayerMask:

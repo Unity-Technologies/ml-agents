@@ -68,8 +68,11 @@ public class GoalNavAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         goalSensor = this.GetComponent<GoalSensorComponent>();
-        goalSensor.AddGoal(goalLoc / 10f);
-        goalSensor.AddGoal(obstacleLoc/ 10f);
+        if (useVectorObs)
+        {
+            goalSensor.AddGoal(goalLoc / 10f);
+        }
+        goalSensor.AddGoal(obstacleLoc / 10f);
     }
 
 
@@ -115,19 +118,13 @@ public class GoalNavAgent : Agent
                 dirToGo = transform.forward * -1f;
                 break;
             case 3:
-                rotateDir = transform.up * 1f;
-                break;
-            case 4:
-                rotateDir = transform.up * -1f;
-                break;
-            case 5:
                 dirToGo = transform.right * -0.75f;
                 break;
-            case 6:
+            case 4:
                 dirToGo = transform.right * 0.75f;
                 break;
         }
-        transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
+        //transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
         m_AgentRb.AddForce(dirToGo * m_PushBlockSettings.agentRunSpeed,
             ForceMode.VelocityChange);
     }
@@ -172,7 +169,7 @@ public class GoalNavAgent : Agent
         discreteActionsOut[0] = 0;
         if (Input.GetKey(KeyCode.D))
         {
-            discreteActionsOut[0] = 3;
+            discreteActionsOut[0] = 4;
         }
         else if (Input.GetKey(KeyCode.W))
         {
@@ -180,7 +177,7 @@ public class GoalNavAgent : Agent
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            discreteActionsOut[0] = 4;
+            discreteActionsOut[0] = 3;
         }
         else if (Input.GetKey(KeyCode.S))
         {
@@ -194,9 +191,9 @@ public class GoalNavAgent : Agent
     /// </summary>
     public override void OnEpisodeBegin()
     {
-        var rotation = Random.Range(0, 4);
-        var rotationAngle = rotation * 90f;
-        area.transform.Rotate(new Vector3(0f, rotationAngle, 0f));
+        //var rotation = Random.Range(0, 4);
+        //var rotationAngle = rotation * 90f;
+        //area.transform.Rotate(new Vector3(0f, rotationAngle, 0f));
 
         transform.position = GetRandomSpawnPos();
         m_AgentRb.velocity = Vector3.zero;

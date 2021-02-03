@@ -7,13 +7,13 @@ namespace Unity.MLAgents.Sensors
     public enum ObservationType
     {
         // Collected observations are generic.
-        Default = 0,
+        Default,
         // Collected observations contain goal information.
-        Goal = 1,
+        Goal,
         // Collected observations contain reward information.
-        Reward = 2,
+        Reward,
         // Collected observations are messages from other agents.
-        Message = 3,
+        Message,
     }
 
 

@@ -11,12 +11,7 @@ from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
-from mlagents.trainers.torch.layers import (
-    LSTM,
-    LinearEncoder,
-    ConditionalEncoder,
-    HyperEncoder,
-)
+from mlagents.trainers.torch.layers import LSTM, LinearEncoder, ConditionalEncoder, ConditioningMode
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
@@ -27,12 +22,6 @@ EncoderFunction = Callable[
 ]
 
 EPSILON = 1e-7
-
-
-class ConditioningMode(Enum):
-    DEFAULT = 0
-    HYPER = 1
-    SOFT = 3
 
 
 class NetworkBody(nn.Module):
@@ -76,24 +65,15 @@ class NetworkBody(nn.Module):
 
         if (
             ObservationType.GOAL in self.obs_types
-            and self.conditioning_mode == ConditioningMode.HYPER
-        ):
-            self.linear_encoder = HyperEncoder(
-                total_enc_size,
-                total_goal_size,
-                network_settings.num_layers,
-                self.h_size,
-                num_hyper_layers=1,
-            )
-        elif (
-            ObservationType.GOAL in self.obs_types
-            and self.conditioning_mode == ConditioningMode.SOFT
+            and self.conditioning_mode != ConditioningMode.DEFAULT
         ):
             self.linear_encoder = ConditionalEncoder(
                 total_enc_size,
                 total_goal_size,
                 network_settings.num_layers,
                 self.h_size,
+                condition_type=self.conditioning_mode,
+                conditional_layers=1,
             )
         else:
             self.linear_encoder = LinearEncoder(

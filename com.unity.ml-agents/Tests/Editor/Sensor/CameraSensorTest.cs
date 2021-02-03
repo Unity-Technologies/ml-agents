@@ -19,7 +19,7 @@ namespace Unity.MLAgents.Tests
                     var width = 24;
                     var height = 16;
                     var camera = Camera.main;
-                    var sensor = new CameraSensor(camera, width, height, grayscale, "TestCameraSensor", compression);
+                    var sensor = new CameraSensor(camera, width, height, grayscale, "TestCameraSensor", compression, ObservationType.Default);
 
                     var obsWriter = new ObservationWriter();
                     var obs = sensor.GetObservationProto(obsWriter);
