@@ -9,6 +9,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
     {
         public ActionSpec GetActionSpecForInputAction(InputAction action)
         {
+            // TODO create the action spec based on what controls back the action
             return ActionSpec.MakeContinuous(2);
         }
 
