@@ -110,7 +110,10 @@ public class CubeWarArea : Area
             Debug.Log("Small Agents Win");
             foreach (var smallAgent in smallAgents)
             {
-                smallAgent.SetReward(1.0f / numLiveAgents);
+                if (smallAgent.gameObject.activeInHierarchy)
+                {
+                    smallAgent.SetReward(1.0f / numLiveAgents);
+                }
             }
             foreach (var largeAgent in largeAgents)
             {
