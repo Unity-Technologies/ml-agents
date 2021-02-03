@@ -1,7 +1,7 @@
 from typing import Dict, cast
 from mlagents.torch_utils import torch
 
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, AgentBufferKey, AgentBufferCompoundKey
 
 from mlagents_envs.timers import timed
 from mlagents.trainers.policy.torch_policy import TorchPolicy
@@ -131,21 +131,21 @@ class TorchPPOOptimizer(TorchOptimizer):
         old_values = {}
         for name in self.reward_signals:
             old_values[name] = ModelUtils.list_to_tensor(
-                batch[f"{name}_value_estimates"]
+                batch[(AgentBufferCompoundKey.VALUE_ESTIMATES, name)]
             )
-            returns[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns"])
+            returns[name] = ModelUtils.list_to_tensor(batch[(AgentBufferCompoundKey.RETURNS, name)])
 
         n_obs = len(self.policy.behavior_spec.observation_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
         # Convert to tensors
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
 
-        act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
+        act_masks = ModelUtils.list_to_tensor(batch[AgentBufferKey.ACTION_MASK])
         actions = AgentAction.from_buffer(batch)
 
         memories = [
-            ModelUtils.list_to_tensor(batch["memory"][i])
-            for i in range(0, len(batch["memory"]), self.policy.sequence_length)
+            ModelUtils.list_to_tensor(batch[AgentBufferKey.MEMORY][i])
+            for i in range(0, len(batch[AgentBufferKey.MEMORY]), self.policy.sequence_length)
         ]
         if len(memories) > 0:
             memories = torch.stack(memories).unsqueeze(0)
@@ -159,12 +159,12 @@ class TorchPPOOptimizer(TorchOptimizer):
         )
         old_log_probs = ActionLogProbs.from_buffer(batch).flatten()
         log_probs = log_probs.flatten()
-        loss_masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.bool)
+        loss_masks = ModelUtils.list_to_tensor(batch[AgentBufferKey.MASKS], dtype=torch.bool)
         value_loss = self.ppo_value_loss(
             values, old_values, returns, decay_eps, loss_masks
         )
         policy_loss = self.ppo_policy_loss(
-            ModelUtils.list_to_tensor(batch["advantages"]),
+            ModelUtils.list_to_tensor(batch[AgentBufferKey.ADVANTAGES]),
             log_probs,
             old_log_probs,
             loss_masks,

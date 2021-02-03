@@ -2,7 +2,7 @@ import numpy as np
 from typing import Dict, NamedTuple
 from mlagents.torch_utils import torch, default_device
 
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, AgentBufferKey
 from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
     BaseRewardProvider,
 )
@@ -179,7 +179,7 @@ class CuriosityNetwork(torch.nn.Module):
             _inverse_loss += torch.mean(
                 ModelUtils.dynamic_partition(
                     sq_difference,
-                    ModelUtils.list_to_tensor(mini_batch["masks"], dtype=torch.float),
+                    ModelUtils.list_to_tensor(mini_batch[AgentBufferKey.MASKS], dtype=torch.float),
                     2,
                 )[1]
             )
@@ -198,7 +198,7 @@ class CuriosityNetwork(torch.nn.Module):
                 ModelUtils.dynamic_partition(
                     cross_entropy,
                     ModelUtils.list_to_tensor(
-                        mini_batch["masks"], dtype=torch.float
+                        mini_batch[AgentBufferKey.MASKS], dtype=torch.float
                     ),  # use masks not action_masks
                     2,
                 )[1]
@@ -223,7 +223,7 @@ class CuriosityNetwork(torch.nn.Module):
         return torch.mean(
             ModelUtils.dynamic_partition(
                 self.compute_reward(mini_batch),
-                ModelUtils.list_to_tensor(mini_batch["masks"], dtype=torch.float),
+                ModelUtils.list_to_tensor(mini_batch[AgentBufferKey.MASKS], dtype=torch.float),
                 2,
             )[1]
         )

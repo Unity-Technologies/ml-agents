@@ -1,10 +1,11 @@
-import numpy as np
-import h5py
-from typing import List, BinaryIO
-import itertools
-from typing import DefaultDict
 from collections import defaultdict
 from collections.abc import MutableMapping
+import enum
+import itertools
+from typing import BinaryIO, DefaultDict, List, Tuple, Union, Optional
+
+import numpy as np
+import h5py
 
 from mlagents_envs.exception import UnityException
 
@@ -15,6 +16,37 @@ class BufferException(UnityException):
     """
 
     pass
+
+
+class AgentBufferKey(enum.Enum):
+    ACTION_MASK = "action_mask"
+    CONTINUOUS_ACTION = "continuous_action"
+    CONTINUOUS_LOG_PROBS = "continuous_log_probs"
+    DISCRETE_ACTION = "discrete_action"
+    DISCRETE_LOG_PROBS = "discrete_log_probs"
+    DONE = "done"
+    ENVIRONMENT_REWARDS = "environment_rewards"
+    MASKS = "masks"
+    MEMORY = "memory"
+    PREV_ACTION = "prev_action"
+
+    ADVANTAGES = "advantages"
+    DISCOUNTED_RETURNS = "discounted_returns"
+
+class AgentBufferCompoundKey(enum.Enum):
+    OBSERVATION = "obs"
+    NEXT_OBSERVATION = "next_obs"
+    VISUAL_OBSERVATION = "visual_obs"
+    NEXT_VISUAL_OBSERVATION = "next_visual_obs"
+
+    # Reward signals
+    REWARDS = "rewards"
+    VALUE_ESTIMATES = "value_estimates"
+    RETURNS = "returns"
+    ADVANTAGE = "advantage"
+
+
+BufferKey = Union[AgentBufferKey, Tuple[AgentBufferCompoundKey, int], Tuple[AgentBufferCompoundKey, str]]
 
 
 class AgentBufferField(list):
@@ -61,7 +93,7 @@ class AgentBufferField(list):
         self[:] = list(np.array(data, dtype=dtype))
 
     def get_batch(
-        self, batch_size: int = None, training_length: int = 1, sequential: bool = True
+        self, batch_size: int = None, training_length: Optional[int] = 1, sequential: bool = True
     ) -> np.ndarray:
         """
         Retrieve the last batch_size elements of length training_length
@@ -75,6 +107,8 @@ class AgentBufferField(list):
         sequential=True gives [[0,a],[b,c],[d,e]]. If sequential=False gives
         [[a,b],[b,c],[c,d],[d,e]]
         """
+        if training_length is None:
+            training_length = 1
         if sequential:
             # The sequences will not have overlapping elements (this involves padding)
             leftover = len(self) % training_length
@@ -131,7 +165,7 @@ class AgentBuffer(MutableMapping):
     def __init__(self):
         self.last_brain_info = None
         self.last_take_action_outputs = None
-        self._fields: DefaultDict[str, AgentBufferField] = defaultdict(AgentBufferField)
+        self._fields: DefaultDict[BufferKey, AgentBufferField] = defaultdict(AgentBufferField)
 
     def __str__(self):
         return ", ".join(
@@ -147,13 +181,14 @@ class AgentBuffer(MutableMapping):
         self.last_brain_info = None
         self.last_take_action_outputs = None
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: BufferKey) -> AgentBufferField:
+        # TODO assert type at runtime for tests
         return self._fields[key]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: BufferKey, value: AgentBufferField) -> None:
         self._fields[key] = value
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: BufferKey) -> None:
         self._fields.__delitem__(key)
 
     def __iter__(self):
@@ -163,9 +198,10 @@ class AgentBuffer(MutableMapping):
         return self._fields.__len__()
 
     def __contains__(self, key):
+        # TODO assert type at runtime for tests
         return self._fields.__contains__(key)
 
-    def check_length(self, key_list: List[str]) -> bool:
+    def check_length(self, key_list: List[BufferKey]) -> bool:
         """
         Some methods will require that some fields have the same length.
         check_length will return true if the fields in key_list
@@ -183,7 +219,7 @@ class AgentBuffer(MutableMapping):
             length = len(self[key])
         return True
 
-    def shuffle(self, sequence_length: int, key_list: List[str] = None) -> None:
+    def shuffle(self, sequence_length: int, key_list: List[BufferKey] = None) -> None:
         """
         Shuffles the fields in key_list in a consistent way: The reordering will
         be the same across fields.
@@ -212,7 +248,8 @@ class AgentBuffer(MutableMapping):
         """
         mini_batch = AgentBuffer()
         for key, field in self._fields.items():
-            mini_batch[key] = field[start:end]
+            # TODO override slice in AgentBufferField
+            mini_batch[key] = field[start:end]  # type: ignore
         return mini_batch
 
     def sample_mini_batch(
@@ -244,6 +281,7 @@ class AgentBuffer(MutableMapping):
         Saves the AgentBuffer to a file-like object.
         """
         with h5py.File(file_object, "w") as write_file:
+            # TODO convert to/from string enum values?
             for key, data in self.items():
                 write_file.create_dataset(key, data=data, dtype="f", compression="gzip")
 
@@ -275,7 +313,7 @@ class AgentBuffer(MutableMapping):
     def resequence_and_append(
         self,
         target_buffer: "AgentBuffer",
-        key_list: List[str] = None,
+        key_list: List[BufferKey] = None,
         batch_size: int = None,
         training_length: int = None,
     ) -> None:

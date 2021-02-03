@@ -9,6 +9,7 @@ import numpy as np
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.base_env import BehaviorSpec
+from mlagents.trainers.buffer import AgentBufferKey, AgentBufferCompoundKey
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.policy.torch_policy import TorchPolicy
@@ -79,7 +80,7 @@ class PPOTrainer(RLTrainer):
         )
 
         for name, v in value_estimates.items():
-            agent_buffer_trajectory[f"{name}_value_estimates"].extend(v)
+            agent_buffer_trajectory[(AgentBufferCompoundKey.VALUE_ESTIMATES, name)].extend(v)
             self._stats_reporter.add_stat(
                 f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value Estimate",
                 np.mean(v),
@@ -87,13 +88,13 @@ class PPOTrainer(RLTrainer):
 
         # Evaluate all reward functions
         self.collected_rewards["environment"][agent_id] += np.sum(
-            agent_buffer_trajectory["environment_rewards"]
+            agent_buffer_trajectory[AgentBufferKey.ENVIRONMENT_REWARDS]
         )
         for name, reward_signal in self.optimizer.reward_signals.items():
             evaluate_result = (
                 reward_signal.evaluate(agent_buffer_trajectory) * reward_signal.strength
             )
-            agent_buffer_trajectory[f"{name}_rewards"].extend(evaluate_result)
+            agent_buffer_trajectory[(AgentBufferCompoundKey.REWARDS, name)].extend(evaluate_result)
             # Report the reward signals
             self.collected_rewards[name][agent_id] += np.sum(evaluate_result)
 
@@ -103,9 +104,9 @@ class PPOTrainer(RLTrainer):
         for name in self.optimizer.reward_signals:
             bootstrap_value = value_next[name]
 
-            local_rewards = agent_buffer_trajectory[f"{name}_rewards"].get_batch()
+            local_rewards = agent_buffer_trajectory[(AgentBufferCompoundKey.REWARDS, name)].get_batch()
             local_value_estimates = agent_buffer_trajectory[
-                f"{name}_value_estimates"
+                (AgentBufferCompoundKey.VALUE_ESTIMATES, name)
             ].get_batch()
 
             local_advantage = get_gae(
@@ -117,8 +118,8 @@ class PPOTrainer(RLTrainer):
             )
             local_return = local_advantage + local_value_estimates
             # This is later use as target for the different value estimates
-            agent_buffer_trajectory[f"{name}_returns"].set(local_return)
-            agent_buffer_trajectory[f"{name}_advantage"].set(local_advantage)
+            agent_buffer_trajectory[(AgentBufferCompoundKey.RETURNS, name)].set(local_return)
+            agent_buffer_trajectory[(AgentBufferCompoundKey.ADVANTAGE, name)].set(local_advantage)
             tmp_advantages.append(local_advantage)
             tmp_returns.append(local_return)
 
@@ -127,8 +128,8 @@ class PPOTrainer(RLTrainer):
             np.mean(np.array(tmp_advantages, dtype=np.float32), axis=0)
         )
         global_returns = list(np.mean(np.array(tmp_returns, dtype=np.float32), axis=0))
-        agent_buffer_trajectory["advantages"].set(global_advantages)
-        agent_buffer_trajectory["discounted_returns"].set(global_returns)
+        agent_buffer_trajectory[AgentBufferKey.ADVANTAGES].set(global_advantages)
+        agent_buffer_trajectory[AgentBufferKey.DISCOUNTED_RETURNS].set(global_returns)
         # Append to update buffer
         agent_buffer_trajectory.resequence_and_append(
             self.update_buffer, training_length=self.policy.sequence_length
@@ -167,8 +168,8 @@ class PPOTrainer(RLTrainer):
             int(self.hyperparameters.batch_size / self.policy.sequence_length), 1
         )
 
-        advantages = self.update_buffer["advantages"].get_batch()
-        self.update_buffer["advantages"].set(
+        advantages = self.update_buffer[AgentBufferKey.ADVANTAGES].get_batch()
+        self.update_buffer[AgentBufferKey.ADVANTAGES].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10)
         )
         num_epoch = self.hyperparameters.num_epoch
