@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using UnityEngine;
@@ -8,7 +9,6 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.Utilities;
-using UnityEngine.UI;
 
 namespace Unity.MLAgents.Extensions.Runtime.Input
 {
@@ -53,19 +53,28 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         public override IActuator[] CreateActuators()
         {
             FindNeededComponents();
-            var map = m_InputAsset.FindActionMap(m_PlayerInput.defaultActionMap);
-            m_Actuators = GenerateActionActuatorsFromAsset(map, out var layout, IsInHeuristicMode());
-            InputSystem.RegisterLayout(layout.ToJson());
-            m_Device = CreateDevice(m_InputAsset);
 
-            // Set our device as the only device for this map
-            // TODO maybe just add our device to the list?
-            map.devices = new ReadOnlyArray<InputDevice>(new[] { m_Device });
-            m_InputAsset.Enable();
+            m_InputAsset.Disable();
+            m_Actuators = GenerateActionActuatorsFromAsset(m_InputAsset, out var layout, IsInHeuristicMode());
+            InputSystem.RegisterLayout(layout.ToJson());
+            m_Device = CreateDevice(m_InputAsset, m_PlayerInput.defaultActionMap);
+            InputSystem.AddDevice(m_Device);
+            // Add our device to the device list if there is one.
+            if (InputSystem.devices.Count > 0)
+            {
+                var devices = new List<InputDevice>(InputSystem.devices) { m_Device };
+                m_InputAsset.devices = new ReadOnlyArray<InputDevice>(devices.ToArray());
+            }
+            else
+            {
+                m_InputAsset.devices = new ReadOnlyArray<InputDevice>(new[] { m_Device });
+            }
+            // set the device on the actuator so it can get it's control.
             for (var i = 0; i < m_Actuators.Length; i++)
             {
                 ((InputActionActuator)m_Actuators[i]).SetDevice(m_Device);
             }
+            m_InputAsset.Enable();
             return m_Actuators;
         }
 
@@ -76,7 +85,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         public override ActionSpec ActionSpec => ActionSpec.MakeContinuous(0);
 
 
-        static InputDevice CreateDevice(InputActionAsset asset)
+        static InputDevice CreateDevice(InputActionAsset asset, string defaultMap)
         {
             // See if our device layout was already registered.
             var layoutName = InputSystem.TryFindMatchingLayout(new InputDeviceDescription
@@ -102,36 +111,46 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             // If the control scheme isn't created, create it with our device registered
             // as required.
             // TODO this may need to be named differently per Agent?
+            var deviceRequirements = new List<InputControlScheme.DeviceRequirement>();
+            deviceRequirements.Add(
+                new InputControlScheme.DeviceRequirement
+                {
+                    controlPath = device.path,
+                    isOptional = true,
+                    isOR = true
+                });
+
+            var map = asset.FindActionMap(defaultMap);
+            for (var i = 0; i < map.controlSchemes.Count; i++)
+            {
+                var cs = map.controlSchemes[i];
+                for (var ii = 0; ii < cs.deviceRequirements.Count; ii++)
+                {
+                    deviceRequirements.Add(cs.deviceRequirements[ii]);
+                }
+            }
+
+            var inputControlScheme = new InputControlScheme(
+                k_MlAgentsControlSchemeName,
+                deviceRequirements.ToArray());
+
             if (asset.FindControlSchemeIndex(k_MlAgentsControlSchemeName) == -1)
             {
-                asset.AddControlScheme(
-                    new InputControlScheme(
-                        k_MlAgentsControlSchemeName,
-                        new[]
-                        {
-                            new InputControlScheme.DeviceRequirement
-                            {
-                                controlPath = device.path,
-                                isOptional = false,
-                                isOR = true
-                            }
-                        })
-                );
+                asset.AddControlScheme(inputControlScheme);
             }
             return device;
         }
 
-        IActuator[] GenerateActionActuatorsFromAsset(InputActionMap actionMap, out InputControlLayout layout, bool isInHeuristicMode)
+        IActuator[] GenerateActionActuatorsFromAsset(InputActionAsset asset, out InputControlLayout layout, bool isInHeuristicMode)
         {
             // TODO does this need to change based on the action map we use?
             var builder = new InputControlLayout.Builder()
                 .WithName(k_MlAgentsLayoutName)
                 .WithFormat(k_MlAgentsLayoutFormat);
 
-            var actuators = new IActuator[actionMap.actions.Count];
-            var count = 0;
+            var actuators = new List<IActuator>();
 
-            foreach (var action in actionMap)
+            foreach (var action in asset)
             {
                 var actionLayout = InputSystem.LoadLayout(action.expectedControlType);
 
@@ -147,45 +166,48 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
                     action.AddCompositeBinding(compositeType)
                     .With(action.expectedControlType,
                         path,
-                        k_MlAgentsControlSchemeName);
+                        $"{action.bindings[1].groups};{k_MlAgentsControlSchemeName}");
                 }
                 else
                 {
                     action.AddBinding(path,
                         action.interactions,
                         action.processors,
-                        k_MlAgentsControlSchemeName);
+                        $"{binding.groups};{k_MlAgentsControlSchemeName}");
                 }
 
                 var adaptor = (IRLActionInputAdaptor)Activator.CreateInstance(
                     s_ControlTypeToAdaptorType[actionLayout.type]);
-                actuators[count++] = new InputActionActuator(
+                actuators.Add(new InputActionActuator(
                     m_Agent,
                     action,
                     adaptor,
-                    isInHeuristicMode);
+                    isInHeuristicMode));
 
             }
             layout = builder.Build();
-            return actuators;
+            return actuators.ToArray();
         }
 
         void FindNeededComponents()
         {
-
             if (m_InputAsset == null)
             {
-                var provider = GetComponent<IIntputActionAssetProvider>();
-                if (provider != null)
+                var assetProvider = GetComponent<IIntputActionAssetProvider>();
+                if (assetProvider != null)
                 {
-                    m_InputAsset = provider.GetInputActionAsset();
+                    m_InputAsset = assetProvider.GetInputActionAsset();
                 }
             }
-
             if (m_PlayerInput == null)
             {
                 m_PlayerInput = GetComponent<PlayerInput>();
                 Assert.IsNotNull(m_PlayerInput);
+                if (m_InputAsset == null)
+                {
+                    m_InputAsset = m_PlayerInput.actions;
+                }
+                Assert.IsNotNull(m_InputAsset);
             }
 
             if (m_BehaviorParameters == null)
@@ -210,9 +232,10 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 
         void CleanupActionAsset()
         {
-            m_PlayerInput.actions.RemoveControlScheme(k_MlAgentsControlSchemeName);
             InputSystem.RemoveLayout(k_MlAgentsLayoutName);
             InputSystem.RemoveDevice(m_Device);
+            m_InputAsset.RemoveControlScheme(k_MlAgentsControlSchemeName);
+            m_InputAsset = null;
             m_PlayerInput = null;
             m_BehaviorParameters = null;
             m_Device = null;

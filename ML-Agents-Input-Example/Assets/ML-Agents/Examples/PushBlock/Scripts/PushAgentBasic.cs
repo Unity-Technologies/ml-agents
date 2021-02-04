@@ -2,13 +2,11 @@
 
 using System;
 using System.Collections;
-using System.Linq;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Extensions.Runtime.Input;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.LowLevel;
 using Random = UnityEngine.Random;
 
 public class PushAgentBasic : Agent, IIntputActionAssetProvider
@@ -65,9 +63,9 @@ public class PushAgentBasic : Agent, IIntputActionAssetProvider
     {
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
         m_PushblockActions = new PushBlockActions();
+        m_PushblockActions.Enable();
         m_PushblockActions.Movement.jump.performed += JumpOnperformed;
     }
-
 
     void JumpOnperformed(InputAction.CallbackContext callbackContext)
     {
