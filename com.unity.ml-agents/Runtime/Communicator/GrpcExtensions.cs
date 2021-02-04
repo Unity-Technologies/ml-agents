@@ -417,7 +417,6 @@ namespace Unity.MLAgents
                     dimensionProperties[1] == DimensionProperty.None)
                     {
                         var trainerCanHandleVarLenObs = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.VariableLengthObservation;
-                        Debug.Log(trainerCanHandleVarLenObs);
                         if (!trainerCanHandleVarLenObs)
                         {
                             throw new UnityAgentsException("Variable Length Observations are not supported by the trainer");
