@@ -6,6 +6,7 @@ import attr
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.tests import mock_brain as mb
+from mlagents.trainers.tests.mock_brain import copy_buffer_fields
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.tests.dummy_config import (  # noqa: F401
@@ -69,15 +70,15 @@ def test_ppo_optimizer_update(dummy_config, rnn, visual, discrete):
         memory_size=optimizer.policy.m_size,
     )
     # Mock out reward signal eval
-    update_buffer[AgentBufferKey.ADVANTAGES] = update_buffer[
-        AgentBufferKey.ENVIRONMENT_REWARDS
-    ]
-    update_buffer[(AgentBufferCompoundKey.RETURNS, "extrinsic")] = update_buffer[
-        AgentBufferKey.ENVIRONMENT_REWARDS
-    ]
-    update_buffer[
-        (AgentBufferCompoundKey.VALUE_ESTIMATES, "extrinsic")
-    ] = update_buffer[AgentBufferKey.ENVIRONMENT_REWARDS]
+    copy_buffer_fields(
+        update_buffer,
+        AgentBufferKey.ENVIRONMENT_REWARDS,
+        [
+            AgentBufferKey.ADVANTAGES,
+            (AgentBufferCompoundKey.RETURNS, "extrinsic"),
+            (AgentBufferCompoundKey.VALUE_ESTIMATES, "extrinsic"),
+        ],
+    )
 
     return_stats = optimizer.update(
         update_buffer,
@@ -114,21 +115,18 @@ def test_ppo_optimizer_update_curiosity(
         memory_size=optimizer.policy.m_size,
     )
     # Mock out reward signal eval
-    update_buffer[AgentBufferKey.ADVANTAGES] = update_buffer[
-        AgentBufferKey.ENVIRONMENT_REWARDS
-    ]
-    update_buffer[(AgentBufferCompoundKey.RETURNS, "extrinsic")] = update_buffer[
-        AgentBufferKey.ENVIRONMENT_REWARDS
-    ]
-    update_buffer[
-        (AgentBufferCompoundKey.VALUE_ESTIMATES, "extrinsic")
-    ] = update_buffer[AgentBufferKey.ENVIRONMENT_REWARDS]
-    update_buffer[(AgentBufferCompoundKey.RETURNS, "curiosity")] = update_buffer[
-        AgentBufferKey.ENVIRONMENT_REWARDS
-    ]
-    update_buffer[
-        (AgentBufferCompoundKey.VALUE_ESTIMATES, "curiosity")
-    ] = update_buffer[AgentBufferKey.ENVIRONMENT_REWARDS]
+    copy_buffer_fields(
+        update_buffer,
+        src_key=AgentBufferKey.ENVIRONMENT_REWARDS,
+        dst_keys=[
+            AgentBufferKey.ADVANTAGES,
+            (AgentBufferCompoundKey.RETURNS, "extrinsic"),
+            (AgentBufferCompoundKey.VALUE_ESTIMATES, "extrinsic"),
+            (AgentBufferCompoundKey.RETURNS, "curiosity"),
+            (AgentBufferCompoundKey.VALUE_ESTIMATES, "curiosity"),
+        ],
+    )
+
     optimizer.update(
         update_buffer,
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
@@ -148,21 +146,18 @@ def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F8
         BUFFER_INIT_SAMPLES, optimizer.policy.behavior_spec
     )
     # Mock out reward signal eval
-    update_buffer[AgentBufferKey.ADVANTAGES] = update_buffer[
-        AgentBufferKey.ENVIRONMENT_REWARDS
-    ]
-    update_buffer[(AgentBufferCompoundKey.RETURNS, "extrinsic")] = update_buffer[
-        AgentBufferKey.ENVIRONMENT_REWARDS
-    ]
-    update_buffer[
-        (AgentBufferCompoundKey.VALUE_ESTIMATES, "extrinsic")
-    ] = update_buffer[AgentBufferKey.ENVIRONMENT_REWARDS]
-    update_buffer[(AgentBufferCompoundKey.RETURNS, "gail")] = update_buffer[
-        AgentBufferKey.ENVIRONMENT_REWARDS
-    ]
-    update_buffer[(AgentBufferCompoundKey.VALUE_ESTIMATES, "gail")] = update_buffer[
-        AgentBufferKey.ENVIRONMENT_REWARDS
-    ]
+    copy_buffer_fields(
+        update_buffer,
+        src_key=AgentBufferKey.ENVIRONMENT_REWARDS,
+        dst_keys=[
+            AgentBufferKey.ADVANTAGES,
+            (AgentBufferCompoundKey.RETURNS, "extrinsic"),
+            (AgentBufferCompoundKey.VALUE_ESTIMATES, "extrinsic"),
+            (AgentBufferCompoundKey.RETURNS, "gail"),
+            (AgentBufferCompoundKey.VALUE_ESTIMATES, "gail"),
+        ],
+    )
+
     update_buffer[AgentBufferKey.CONTINUOUS_LOG_PROBS] = np.ones_like(
         update_buffer[AgentBufferKey.CONTINUOUS_ACTION]
     )
@@ -174,21 +169,17 @@ def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F8
     # Check if buffer size is too big
     update_buffer = mb.simulate_rollout(3000, optimizer.policy.behavior_spec)
     # Mock out reward signal eval
-    update_buffer[AgentBufferKey.ADVANTAGES] = update_buffer[
-        AgentBufferKey.ENVIRONMENT_REWARDS
-    ]
-    update_buffer[(AgentBufferCompoundKey.RETURNS, "extrinsic")] = update_buffer[
-        AgentBufferKey.ENVIRONMENT_REWARDS
-    ]
-    update_buffer[
-        (AgentBufferCompoundKey.VALUE_ESTIMATES, "extrinsic")
-    ] = update_buffer[AgentBufferKey.ENVIRONMENT_REWARDS]
-    update_buffer[(AgentBufferCompoundKey.RETURNS, "gail")] = update_buffer[
-        AgentBufferKey.ENVIRONMENT_REWARDS
-    ]
-    update_buffer[(AgentBufferCompoundKey.VALUE_ESTIMATES, "gail")] = update_buffer[
-        AgentBufferKey.ENVIRONMENT_REWARDS
-    ]
+    copy_buffer_fields(
+        update_buffer,
+        src_key=AgentBufferKey.ENVIRONMENT_REWARDS,
+        dst_keys=[
+            AgentBufferKey.ADVANTAGES,
+            (AgentBufferCompoundKey.RETURNS, "extrinsic"),
+            (AgentBufferCompoundKey.VALUE_ESTIMATES, "extrinsic"),
+            (AgentBufferCompoundKey.RETURNS, "gail"),
+            (AgentBufferCompoundKey.VALUE_ESTIMATES, "gail"),
+        ],
+    )
     optimizer.update(
         update_buffer,
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,

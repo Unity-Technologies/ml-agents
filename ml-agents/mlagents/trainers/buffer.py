@@ -219,6 +219,7 @@ class AgentBuffer(MutableMapping):
 
     def __contains__(self, key):
         # TODO assert type at runtime for tests
+        self._check_key(key)
         return self._fields.__contains__(key)
 
     def check_length(self, key_list: List[BufferKey]) -> bool:

@@ -97,11 +97,11 @@ class ActionLogProbs(NamedTuple):
         continuous: torch.Tensor = None
         discrete: List[torch.Tensor] = None  # type: ignore
 
-        if "continuous_log_probs" in buff:
+        if AgentBufferKey.CONTINUOUS_LOG_PROBS in buff:
             continuous = ModelUtils.list_to_tensor(
                 buff[AgentBufferKey.CONTINUOUS_LOG_PROBS]
             )
-        if "discrete_log_probs" in buff:
+        if AgentBufferKey.DISCRETE_LOG_PROBS in buff:
             discrete_tensor = ModelUtils.list_to_tensor(
                 buff[AgentBufferKey.DISCRETE_LOG_PROBS]
             )
