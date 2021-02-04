@@ -1,5 +1,11 @@
 import numpy as np
-from mlagents.trainers.buffer import AgentBuffer, AgentBufferField, BufferKey
+from mlagents.trainers.buffer import (
+    AgentBuffer,
+    AgentBufferField,
+    BufferKey,
+    ObservationKeyPrefix,
+    RewardSignalKeyPrefix,
+)
 from mlagents.trainers.trajectory import ObsUtil
 
 
@@ -155,3 +161,28 @@ def test_buffer_truncate():
     assert update_buffer.num_experiences == 3
     for buffer_field in update_buffer.values():
         assert isinstance(buffer_field, AgentBufferField)
+
+
+def test_key_encode_decode():
+    keys = (
+        list(BufferKey)
+        + [(k, 42) for k in ObservationKeyPrefix]
+        + [(k, "gail") for k in RewardSignalKeyPrefix]
+    )
+    for k in keys:
+        assert k == AgentBuffer._decode_key(AgentBuffer._encode_key(k))
+
+
+def test_buffer_save_load():
+    original = construct_fake_buffer(3)
+    import io
+
+    write_buffer = io.BytesIO()
+    original.save_to_file(write_buffer)
+
+    loaded = AgentBuffer()
+    loaded.load_from_file(write_buffer)
+
+    assert len(original) == len(loaded)
+    for k in original.keys():
+        assert np.allclose(original[k], loaded[k])

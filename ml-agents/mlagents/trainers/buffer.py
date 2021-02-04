@@ -211,7 +211,8 @@ class AgentBuffer(MutableMapping):
         self.last_brain_info = None
         self.last_take_action_outputs = None
 
-    def _check_key(self, key):
+    @staticmethod
+    def _check_key(key):
         if isinstance(key, BufferKey):
             return
         if isinstance(key, tuple):
@@ -225,6 +226,42 @@ class AgentBuffer(MutableMapping):
                     return
                 raise KeyError(f"{key} has type ({type(key0)}, {type(key1)})")
         raise KeyError(f"{key} is a {type(key)}")
+
+    @staticmethod
+    def _encode_key(key: AgentBufferKey) -> str:
+        """
+        Convert the key to a string representation so that it can be used for serialization.
+        """
+        if isinstance(key, BufferKey):
+            return key.value
+        prefix, suffix = key
+        return f"{prefix.value}:{suffix}"
+
+    @staticmethod
+    def _decode_key(encoded_key: str) -> AgentBufferKey:
+        """
+        Convert the string representation back to a key after serialization.
+        """
+        # Simple case: convert the string directly to a BufferKey
+        try:
+            return BufferKey(encoded_key)
+        except ValueError:
+            pass
+
+        # Not a simple key, so split into two parts
+        prefix_str, _, suffix_str = encoded_key.partition(":")
+
+        # See if it's an ObservationKeyPrefix first
+        try:
+            return ObservationKeyPrefix(prefix_str), int(suffix_str)
+        except ValueError:
+            pass
+
+        # If not, it had better be a RewardSignalKeyPrefix
+        try:
+            return RewardSignalKeyPrefix(prefix_str), suffix_str
+        except ValueError:
+            raise ValueError(f"Unable to convert {encoded_key} to an AgentBufferKey")
 
     def __getitem__(self, key: AgentBufferKey) -> AgentBufferField:
         if self.CHECK_KEY_TYPES_AT_RUNTIME:
@@ -338,9 +375,10 @@ class AgentBuffer(MutableMapping):
         Saves the AgentBuffer to a file-like object.
         """
         with h5py.File(file_object, "w") as write_file:
-            # TODO convert to/from string enum values?
             for key, data in self.items():
-                write_file.create_dataset(key, data=data, dtype="f", compression="gzip")
+                write_file.create_dataset(
+                    self._encode_key(key), data=data, dtype="f", compression="gzip"
+                )
 
     def load_from_file(self, file_object: BinaryIO) -> None:
         """
@@ -348,9 +386,10 @@ class AgentBuffer(MutableMapping):
         """
         with h5py.File(file_object, "r") as read_file:
             for key in list(read_file.keys()):
-                self[key] = AgentBufferField()
+                decoded_key = self._decode_key(key)
+                self[decoded_key] = AgentBufferField()
                 # extend() will convert the numpy array's first dimension into list
-                self[key].extend(read_file[key][()])
+                self[decoded_key].extend(read_file[key][()])
 
     def truncate(self, max_length: int, sequence_length: int = 1) -> None:
         """
