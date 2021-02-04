@@ -163,7 +163,7 @@ public class SmallCubeAgent : Agent
                     hit.collider.gameObject.GetComponent<SmallCubeAgent>().HealAgent(m_Heal);
                     if (role == Role.Healer)
                     {
-                        AddReward(.1f);
+                        AddReward(.02f);
                     }
 
                 }
@@ -173,7 +173,7 @@ public class SmallCubeAgent : Agent
 
                     if (role == Role.DPS)
                     {
-                        AddReward(.1f);
+                        AddReward(.02f);
                     }
                 }
             }
@@ -184,16 +184,21 @@ public class SmallCubeAgent : Agent
         }
     }
 
-    public void HitAgent(float damage)
+    public bool HitAgent(float damage) // Returns true if agent dies.
     {
         if (!m_Dead)
         {
             if (role == Role.Tank)
             {
-                AddReward(.1f);
+                AddReward(.02f);
             }
             m_HitPoints -= damage;
             HealthStatus();
+            return m_HitPoints <= 0;
+        }
+        else
+        {
+            return true;
         }
     }
 
