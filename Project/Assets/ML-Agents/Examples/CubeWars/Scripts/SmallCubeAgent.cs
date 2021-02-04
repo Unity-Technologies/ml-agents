@@ -224,10 +224,13 @@ public class SmallCubeAgent : Agent
         else // Dead
         {
             m_Dead = true;
-            gameObject.SetActive(false);
-            gameObject.tag = "DeadSmallAgent";
-            myBody.GetComponentInChildren<Renderer>().material = deadMaterial;
-            m_MyArea.AgentDied();
+            var deactivate = m_MyArea.AgentDied();
+            if (deactivate)
+            {
+                gameObject.SetActive(false);
+                gameObject.tag = "DeadSmallAgent";
+                myBody.GetComponentInChildren<Renderer>().material = deadMaterial;
+            }
         }
     }
 

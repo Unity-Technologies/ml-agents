@@ -68,7 +68,7 @@ public class CubeWarArea : Area
             }
         }
     }
-    public void AgentDied()
+    public bool AgentDied()
     {
         bool smallAlive = false;
         int numLiveAgents = 0;
@@ -95,7 +95,7 @@ public class CubeWarArea : Area
             {
                 if (smallAgent.gameObject.activeInHierarchy)
                 {
-                    smallAgent.SetReward(-1.0f / numLiveAgents);
+                    smallAgent.SetReward(-1.0f);
                 }
             }
             foreach (var largeAgent in largeAgents)
@@ -118,5 +118,6 @@ public class CubeWarArea : Area
             }
             ResetAllAgents();
         }
+        return smallAlive && largeAlive;
     }
 }
