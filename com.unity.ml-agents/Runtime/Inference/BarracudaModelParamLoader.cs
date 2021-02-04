@@ -135,6 +135,7 @@ namespace Unity.MLAgents.Inference
             // If there are not enough Visual Observation Input compared to what the
             // sensors expect.
             var visObsIndex = 0;
+            var varLenIndex = 0;
             for (var sensorIndex = 0; sensorIndex < sensorComponents.Length; sensorIndex++)
             {
                 var sensor = sensorComponents[sensorIndex];
@@ -152,11 +153,12 @@ namespace Unity.MLAgents.Inference
                 if (sensor.GetObservationShape().Length == 2)
                 {
                     if (!tensorsNames.Contains(
-                        TensorNames.ObservationPlaceholderPrefix + sensorIndex))
+                        TensorNames.ObservationPlaceholderPrefix + varLenIndex))
                     {
                         failedModelChecks.Add(
                             "The model does not contain an Observation Placeholder Input " +
-                            $"for sensor component {sensorIndex} ({sensor.GetType().Name}).");
+                            $"for sensor component {varLenIndex} ({sensor.GetType().Name}).");
+                        varLenIndex++;
                     }
                 }
 
@@ -314,6 +316,7 @@ namespace Unity.MLAgents.Inference
             }
 
             var visObsIndex = 0;
+            var varLenIndex = 0;
             for (var sensorIndex = 0; sensorIndex < sensorComponents.Length; sensorIndex++)
             {
                 var sensorComponent = sensorComponents[sensorIndex];
@@ -326,8 +329,9 @@ namespace Unity.MLAgents.Inference
                 }
                 if (sensorComponent.GetObservationShape().Length == 2)
                 {
-                    tensorTester[TensorNames.ObservationPlaceholderPrefix + sensorIndex] =
+                    tensorTester[TensorNames.ObservationPlaceholderPrefix + varLenIndex] =
                         (bp, tensor, scs, i) => CheckRankTwoObsShape(tensor, sensorComponent);
+                    varLenIndex++;
                 }
             }
 
