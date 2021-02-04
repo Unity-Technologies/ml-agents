@@ -19,6 +19,7 @@ from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
 from mlagents.trainers.trajectory import Trajectory, ObsUtil
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, SACSettings
+from mlagents.trainers.buffer import AgentBufferKey
 
 logger = get_logger(__name__)
 
@@ -137,7 +138,7 @@ class SACTrainer(RLTrainer):
 
         # Evaluate all reward functions for reporting purposes
         self.collected_rewards["environment"][agent_id] += np.sum(
-            agent_buffer_trajectory["environment_rewards"]
+            agent_buffer_trajectory[AgentBufferKey.ENVIRONMENT_REWARDS]
         )
         for name, reward_signal in self.optimizer.reward_signals.items():
             evaluate_result = (

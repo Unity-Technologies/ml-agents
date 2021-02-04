@@ -16,6 +16,7 @@ from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
+from mlagents.trainers.buffer import AgentBufferKey
 
 logger = get_logger(__name__)
 
@@ -87,7 +88,7 @@ class PPOTrainer(RLTrainer):
 
         # Evaluate all reward functions
         self.collected_rewards["environment"][agent_id] += np.sum(
-            agent_buffer_trajectory["environment_rewards"]
+            agent_buffer_trajectory[AgentBufferKey.ENVIRONMENT_REWARDS]
         )
         for name, reward_signal in self.optimizer.reward_signals.items():
             evaluate_result = (

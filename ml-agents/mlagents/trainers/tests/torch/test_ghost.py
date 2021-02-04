@@ -11,6 +11,7 @@ from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers.settings import TrainerSettings, SelfPlaySettings
 from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
+from mlagents.trainers.buffer import AgentBufferKey
 
 
 @pytest.fixture
@@ -200,13 +201,13 @@ def test_publish_queue(dummy_config):
 
     buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, mock_specs)
     # Mock out reward signal eval
-    buffer["extrinsic_rewards"] = buffer["environment_rewards"]
-    buffer["extrinsic_returns"] = buffer["environment_rewards"]
-    buffer["extrinsic_value_estimates"] = buffer["environment_rewards"]
-    buffer["curiosity_rewards"] = buffer["environment_rewards"]
-    buffer["curiosity_returns"] = buffer["environment_rewards"]
-    buffer["curiosity_value_estimates"] = buffer["environment_rewards"]
-    buffer["advantages"] = buffer["environment_rewards"]
+    buffer["extrinsic_rewards"] = buffer[AgentBufferKey.ENVIRONMENT_REWARDS]
+    buffer["extrinsic_returns"] = buffer[AgentBufferKey.ENVIRONMENT_REWARDS]
+    buffer["extrinsic_value_estimates"] = buffer[AgentBufferKey.ENVIRONMENT_REWARDS]
+    buffer["curiosity_rewards"] = buffer[AgentBufferKey.ENVIRONMENT_REWARDS]
+    buffer["curiosity_returns"] = buffer[AgentBufferKey.ENVIRONMENT_REWARDS]
+    buffer["curiosity_value_estimates"] = buffer[AgentBufferKey.ENVIRONMENT_REWARDS]
+    buffer["advantages"] = buffer[AgentBufferKey.ENVIRONMENT_REWARDS]
     trainer.trainer.update_buffer = buffer
 
     # when ghost trainer advance and wrapped trainer buffers full

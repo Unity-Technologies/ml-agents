@@ -1,6 +1,7 @@
 from mlagents.trainers.tests.mock_brain import make_fake_trajectory
 from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
 from mlagents_envs.base_env import ActionSpec
+from mlagents.trainers.buffer import AgentBufferKey
 
 VEC_OBS_SIZE = 6
 ACTION_SIZE = 4
@@ -22,7 +23,7 @@ def test_trajectory_to_agentbuffer():
         "discrete_log_probs",
         "action_mask",
         "prev_action",
-        "environment_rewards",
+        AgentBufferKey.ENVIRONMENT_REWARDS,
     ]
     wanted_keys = set(wanted_keys)
     trajectory = make_fake_trajectory(

@@ -1,7 +1,7 @@
 from typing import List, NamedTuple
 import numpy as np
 
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, AgentBufferKey
 from mlagents_envs.base_env import ActionTuple
 from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 
@@ -113,7 +113,9 @@ class Trajectory(NamedTuple):
                     np.ones(action_shape, dtype=np.float32), padding_value=1
                 )
             agent_buffer_trajectory["prev_action"].append(exp.prev_action)
-            agent_buffer_trajectory["environment_rewards"].append(exp.reward)
+            agent_buffer_trajectory[AgentBufferKey.ENVIRONMENT_REWARDS].append(
+                exp.reward
+            )
 
             # Store the next visual obs as the current
             obs = next_obs

@@ -9,6 +9,7 @@ from mlagents.trainers.tests.dummy_config import (  # noqa: F401
     sac_dummy_config,
     curiosity_dummy_config,
 )
+from mlagents.trainers.buffer import AgentBufferKey
 
 
 @pytest.fixture
@@ -57,7 +58,9 @@ def test_sac_optimizer_update(dummy_config, rnn, visual, discrete):
         BUFFER_INIT_SAMPLES, optimizer.policy.behavior_spec, memory_size=24
     )
     # Mock out reward signal eval
-    update_buffer["extrinsic_rewards"] = update_buffer["environment_rewards"]
+    update_buffer["extrinsic_rewards"] = update_buffer[
+        AgentBufferKey.ENVIRONMENT_REWARDS
+    ]
     return_stats = optimizer.update(
         update_buffer,
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
@@ -92,8 +95,12 @@ def test_sac_update_reward_signals(
     )
 
     # Mock out reward signal eval
-    update_buffer["extrinsic_rewards"] = update_buffer["environment_rewards"]
-    update_buffer["curiosity_rewards"] = update_buffer["environment_rewards"]
+    update_buffer["extrinsic_rewards"] = update_buffer[
+        AgentBufferKey.ENVIRONMENT_REWARDS
+    ]
+    update_buffer["curiosity_rewards"] = update_buffer[
+        AgentBufferKey.ENVIRONMENT_REWARDS
+    ]
     return_stats = optimizer.update_reward_signals(
         {"curiosity": update_buffer}, num_sequences=update_buffer.num_experiences
     )
