@@ -6,7 +6,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// A sensor that wraps a Camera object to generate visual observations for an agent.
     /// </summary>
-    public class CameraSensor : ISensor, IBuiltInSensor
+    public class CameraSensor : ISensor, IBuiltInSensor, IDimensionPropertiesSensor
     {
         Camera m_Camera;
         int m_Width;
@@ -73,6 +73,17 @@ namespace Unity.MLAgents.Sensors
         public int[] GetObservationShape()
         {
             return m_Shape;
+        }
+
+        /// <summary>
+        /// Accessor for the dimension properties of a camera sensor. A camera sensor
+        /// Has translational equivariance along width and hight and no property along
+        /// the channels dimension.
+        /// </summary>
+        /// <returns></returns>
+        public DimensionProperty[] GetDimensionProperties()
+        {
+            return new DimensionProperty[] { DimensionProperty.TranslationalEquivariance, DimensionProperty.TranslationalEquivariance, DimensionProperty.None };
         }
 
         /// <summary>
