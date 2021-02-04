@@ -1,5 +1,5 @@
 #define ACTUATOR_DEBUG
-#undef ACTUATOR_DEBUG
+//#undef ACTUATOR_DEBUG
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -74,7 +74,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         public void Heuristic(in ActionBuffers actionBuffersOut)
         {
 #if ACTUATOR_DEBUG
-            if (Time.realtimeSinceStartup - m_Time > 1.0f)
+            if (Time.realtimeSinceStartup - m_Time > Random.Range(2, 5))
             {
                 m_Flip = !m_Flip;
                 m_Time = Time.realtimeSinceStartup;

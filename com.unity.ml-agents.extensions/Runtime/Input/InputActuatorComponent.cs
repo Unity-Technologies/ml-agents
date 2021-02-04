@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using UnityEngine;
@@ -20,6 +21,9 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         IActuator[] m_Actuators;
         InputDevice m_Device;
         Agent m_Agent;
+        uint m_LocalId;
+
+        static uint s_DeviceId = 0;
 
         static Dictionary<string, string> s_ControlTypeToCompositeType = new Dictionary<string, string>
         {
@@ -54,10 +58,16 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         {
             FindNeededComponents();
 
+            m_LocalId = s_DeviceId++;
+
             m_InputAsset.Disable();
             m_Actuators = GenerateActionActuatorsFromAsset(m_InputAsset, out var layout, IsInHeuristicMode());
-            InputSystem.RegisterLayout(layout.ToJson());
-            m_Device = CreateDevice(m_InputAsset, m_PlayerInput.defaultActionMap);
+
+            if (InputSystem.LoadLayout(layout.name) == null)
+            {
+                InputSystem.RegisterLayout(layout.ToJson(), layout.name);
+            }
+            m_Device = CreateDevice(m_InputAsset, m_PlayerInput.defaultActionMap, m_LocalId);
             InputSystem.AddDevice(m_Device);
             // Add our device to the device list if there is one.
             if (InputSystem.devices.Count > 0)
@@ -85,8 +95,9 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         public override ActionSpec ActionSpec => ActionSpec.MakeContinuous(0);
 
 
-        static InputDevice CreateDevice(InputActionAsset asset, string defaultMap)
+        static InputDevice CreateDevice(InputActionAsset asset, string defaultMap, uint localId)
         {
+            var mlAgentsInterfaceName = k_MlAgentsDeviceName;
             // See if our device layout was already registered.
             var layoutName = InputSystem.TryFindMatchingLayout(new InputDeviceDescription
             {
@@ -97,14 +108,15 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             if (string.IsNullOrEmpty(layoutName))
             {
                 InputSystem.RegisterLayoutMatcher(k_MlAgentsLayoutName, new InputDeviceMatcher()
-                    .WithInterface(k_MlAgentsDeviceName));
+                    .WithInterface($"^({k_MlAgentsDeviceName}[0-9]*)"));
             }
 
             // Actually create the device instance.
             var device = InputSystem.AddDevice(
                 new InputDeviceDescription
                 {
-                    interfaceName = k_MlAgentsDeviceName
+                    interfaceName = mlAgentsInterfaceName,
+                    serial = $"{localId}"
                 }
             );
 
@@ -159,7 +171,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
                     .WithFormat(actionLayout.stateFormat);
 
                 var binding = action.bindings[0];
-                var path = $"{k_MlAgentsDevicePath}/{action.name}";
+                var path = $"{k_MlAgentsDevicePath}{m_LocalId}/{action.name}";
                 if (binding.isComposite)
                 {
                     var compositeType = s_ControlTypeToCompositeType[action.expectedControlType];
