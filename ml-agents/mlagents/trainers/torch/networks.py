@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import Callable, List, Dict, Tuple, Optional, Union
 import abc
 
@@ -8,10 +7,10 @@ from mlagents_envs.base_env import ActionSpec, ObservationSpec, ObservationType
 from mlagents.trainers.torch.action_model import ActionModel
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
-from mlagents.trainers.settings import NetworkSettings
+from mlagents.trainers.settings import NetworkSettings, ConditioningType
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
-from mlagents.trainers.torch.layers import LSTM, LinearEncoder, ConditionalEncoder, ConditioningMode
+from mlagents.trainers.torch.layers import LSTM, LinearEncoder, ConditionalEncoder
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
@@ -32,7 +31,7 @@ class NetworkBody(nn.Module):
         encoded_act_size: int = 0,
     ):
         super().__init__()
-        self.conditioning_mode = ConditioningMode.HYPER
+        self.conditioning_type = network_settings.conditioning_type
         self.normalize = network_settings.normalize
         self.use_lstm = network_settings.memory is not None
         self.h_size = network_settings.hidden_units
@@ -53,26 +52,26 @@ class NetworkBody(nn.Module):
         for idx, embedding_size in enumerate(self.embedding_sizes):
             if (
                 self.obs_types[idx] == ObservationType.DEFAULT
-                or self.conditioning_mode == ConditioningMode.DEFAULT
+                or self.conditioning_type == ConditioningType.DEFAULT
             ):
                 total_enc_size += embedding_size
             if (
                 self.obs_types[idx] == ObservationType.GOAL
-                and self.conditioning_mode != ConditioningMode.DEFAULT
+                and self.conditioning_type != ConditioningType.DEFAULT
             ):
                 total_goal_size += embedding_size
         total_enc_size += encoded_act_size
 
         if (
             ObservationType.GOAL in self.obs_types
-            and self.conditioning_mode != ConditioningMode.DEFAULT
+            and self.conditioning_type != ConditioningType.DEFAULT
         ):
             self.linear_encoder = ConditionalEncoder(
                 total_enc_size,
                 total_goal_size,
                 network_settings.num_layers,
                 self.h_size,
-                condition_type=self.conditioning_mode,
+                condition_type=self.conditioning_type,
                 conditional_layers=1,
             )
         else:
@@ -115,12 +114,12 @@ class NetworkBody(nn.Module):
             processed_obs = processor(obs_input)
             if (
                 self.obs_types[idx] == ObservationType.DEFAULT
-                or self.conditioning_mode == ConditioningMode.DEFAULT
+                or self.conditioning_type == ConditioningType.DEFAULT
             ):
                 encodes.append(processed_obs)
             elif (
                 self.obs_types[idx] == ObservationType.GOAL
-                and self.conditioning_mode != ConditioningMode.DEFAULT
+                and self.conditioning_type != ConditioningType.DEFAULT
             ):
                 goal_signal = processed_obs
 

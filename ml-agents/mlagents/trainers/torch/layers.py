@@ -3,12 +3,7 @@ import abc
 from typing import Tuple
 from enum import Enum
 
-
-class ConditioningMode(Enum):
-    DEFAULT = 0
-    HYPER = 1
-    SOFT_MUL = 2
-    SOFT_SUM = 3
+from mlagents.trainers.settings import ConditioningType
 
 
 class Swish(torch.nn.Module):
@@ -143,11 +138,11 @@ class ConditionalLayer(torch.nn.Module):
         goal_size: int,
         num_layers: int,
         hidden_size: int,
-        condition_type: ConditioningMode,
+        condition_type: ConditioningType,
     ):
         super().__init__()
         self.condition_type = condition_type
-        if self.condition_type != ConditioningMode.HYPER:
+        if self.condition_type != ConditioningType.HYPER:
             self.goal_encoder = LinearEncoder(
                 goal_size, num_layers, hidden_size, final_activation=True
             )
@@ -160,9 +155,9 @@ class ConditionalLayer(torch.nn.Module):
     def forward(
         self, input_tensor: torch.Tensor, goal_tensor: torch.Tensor
     ) -> torch.Tensor:
-        if self.condition_type == ConditioningMode.SOFT_MUL:
+        if self.condition_type == ConditioningType.SOFT_MUL:
             return self.input_encoder(input_tensor) * self.goal_encoder(goal_tensor)
-        elif self.condition_type == ConditioningMode.SOFT_SUM:
+        elif self.condition_type == ConditioningType.SOFT_SUM:
             return self.input_encoder(input_tensor) + self.goal_encoder(goal_tensor)
         else:
             return self.input_encoder(input_tensor, goal_tensor)
@@ -179,7 +174,7 @@ class ConditionalEncoder(torch.nn.Module):
         goal_size: int,
         num_layers: int,
         hidden_size: int,
-        condition_type: ConditioningMode,
+        condition_type: ConditioningType,
         conditional_layers: int,
         kernel_init: Initialization = Initialization.KaimingHeNormal,
         kernel_gain: float = 1.0,
