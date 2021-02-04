@@ -153,6 +153,13 @@ class MultiInputNetworkBody(nn.Module):
         self.linear_encoder = LinearEncoder(
             encoder_input_size, network_settings.num_layers, self.h_size
         )
+        self.linear_encoder = LinearEncoder(
+            encoder_input_size,
+            network_settings.num_layers,
+            self.h_size,
+            kernel_gain=(0.125 / self.h_size) ** 0.5,
+        )
+
 
         if self.use_lstm:
             self.lstm = LSTM(self.h_size, self.m_size)

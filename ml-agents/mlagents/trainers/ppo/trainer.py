@@ -142,7 +142,7 @@ class PPOTrainer(RLTrainer):
                 baseline_estimates=baseline_estimates,
                 v_estimates=v_estimates,
                 value_next=value_next[name],
-                gamma=1,
+                gamma=self.optimizer.reward_signals[name].gamma,
                 lambd=1,
             )
 
@@ -157,6 +157,9 @@ class PPOTrainer(RLTrainer):
             #    gamma=self.optimizer.reward_signals[name].gamma,
             #    lambd=self.hyperparameters.lambd,
             #)
+            #print(local_rewards)
+            #print(test_v)
+            #print(value_next[name])
             self._stats_reporter.add_stat(
                 f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Sum Rewards",
                 np.mean(test_v),
