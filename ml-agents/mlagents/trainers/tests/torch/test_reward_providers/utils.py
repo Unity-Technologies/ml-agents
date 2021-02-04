@@ -1,5 +1,5 @@
 import numpy as np
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, AgentBufferKey
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.trajectory import ObsUtil
 
@@ -33,5 +33,5 @@ def create_agent_buffer(
             buffer[_act_type].append(_act[0, :])
         buffer["reward"].append(np.ones(1, dtype=np.float32) * reward)
         buffer["masks"].append(np.ones(1, dtype=np.float32))
-    buffer["done"] = np.zeros(number, dtype=np.float32)
+    buffer[AgentBufferKey.DONE] = np.zeros(number, dtype=np.float32)
     return buffer

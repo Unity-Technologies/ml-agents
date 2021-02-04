@@ -25,7 +25,7 @@ class AgentBufferKey(enum.Enum):
     DISCRETE_ACTION = "discrete_action"
     DISCRETE_LOG_PROBS = "discrete_log_probs"
     DONE = "done"
-    ENVIRONMENT_REWARDS = "environment_rewards"
+    ENVIRONMENT_REWARDS = "environment_rewards"  # converted
     MASKS = "masks"
     MEMORY = "memory"
     PREV_ACTION = "prev_action"

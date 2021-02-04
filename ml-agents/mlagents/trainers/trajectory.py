@@ -87,7 +87,7 @@ class Trajectory(NamedTuple):
                 agent_buffer_trajectory["memory"].append(exp.memory)
 
             agent_buffer_trajectory["masks"].append(1.0)
-            agent_buffer_trajectory["done"].append(exp.done)
+            agent_buffer_trajectory[AgentBufferKey.DONE].append(exp.done)
 
             # Adds the log prob and action of continuous/discrete separately
             agent_buffer_trajectory["continuous_action"].append(exp.action.continuous)

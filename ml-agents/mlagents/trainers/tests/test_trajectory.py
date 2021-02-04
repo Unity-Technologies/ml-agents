@@ -16,7 +16,7 @@ def test_trajectory_to_agentbuffer():
         "obs_1",
         "memory",
         "masks",
-        "done",
+        AgentBufferKey.DONE,
         "continuous_action",
         "discrete_action",
         "continuous_log_probs",

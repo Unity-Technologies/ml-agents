@@ -1,7 +1,7 @@
 import os
 from typing import List, Tuple
 import numpy as np
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, AgentBufferKey
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
@@ -64,7 +64,7 @@ def make_demo_buffer(
         else:
             current_obs = list(current_decision_step.values())[0].obs
 
-        demo_raw_buffer["done"].append(next_done)
+        demo_raw_buffer[AgentBufferKey.DONE].append(next_done)
         demo_raw_buffer["rewards"].append(next_reward)
         for i, obs in enumerate(current_obs):
             demo_raw_buffer[ObsUtil.get_name_at(i)].append(obs)

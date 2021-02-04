@@ -164,7 +164,7 @@ class SACTrainer(RLTrainer):
             last_step_obs = last_step.obs
             for i, obs in enumerate(last_step_obs):
                 agent_buffer_trajectory[ObsUtil.get_name_at_next(i)][-1] = obs
-            agent_buffer_trajectory["done"][-1] = False
+            agent_buffer_trajectory[AgentBufferKey.DONE][-1] = False
 
         # Append to update buffer
         agent_buffer_trajectory.resequence_and_append(

@@ -10,7 +10,7 @@ from mlagents.trainers.torch.networks import ValueNetwork
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, AgentBufferKey
 from mlagents_envs.timers import timed
 from mlagents_envs.base_env import ActionSpec, ObservationSpec
 from mlagents.trainers.exception import UnityTrainerException
@@ -550,7 +550,7 @@ class TorchSACOptimizer(TorchOptimizer):
                 sequence_length=self.policy.sequence_length,
             )
         masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.bool)
-        dones = ModelUtils.list_to_tensor(batch["done"])
+        dones = ModelUtils.list_to_tensor(batch[AgentBufferKey.DONE])
 
         q1_loss, q2_loss = self.sac_q_loss(
             q1_stream, q2_stream, target_values, dones, rewards, masks
