@@ -137,6 +137,15 @@ class PPOTrainer(RLTrainer):
                 gamma=self.optimizer.reward_signals[name].gamma,
                 lambd=self.hyperparameters.lambd,
             )
+            test_v, _ = get_team_returns(
+                rewards=local_rewards,
+                baseline_estimates=baseline_estimates,
+                v_estimates=v_estimates,
+                value_next=value_next[name],
+                gamma=1,
+                lambd=1,
+            )
+
             #print("loc", local_rewards[-1])
             #print("tdlam", returns_v)
 
@@ -148,6 +157,11 @@ class PPOTrainer(RLTrainer):
             #    gamma=self.optimizer.reward_signals[name].gamma,
             #    lambd=self.hyperparameters.lambd,
             #)
+            self._stats_reporter.add_stat(
+                f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Sum Rewards",
+                np.mean(test_v),
+            )
+
             self._stats_reporter.add_stat(
                 f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} TD Lam",
                 np.mean(returns_v),
