@@ -186,6 +186,10 @@ class AgentBuffer(MutableMapping):
     The keys correspond to the name of the field. Example: state, action
     """
 
+    # Whether or not to validate the types of keys at runtime
+    # This should be off for training, but enabled for testing
+    CHECK_KEY_TYPES_AT_RUNTIME = False
+
     def __init__(self):
         self.last_brain_info = None
         self.last_take_action_outputs = None
@@ -223,16 +227,18 @@ class AgentBuffer(MutableMapping):
         raise KeyError(f"{key} is a {type(key)}")
 
     def __getitem__(self, key: AgentBufferKey) -> AgentBufferField:
-        # TODO assert type at runtime for tests
-        self._check_key(key)
+        if self.CHECK_KEY_TYPES_AT_RUNTIME:
+            self._check_key(key)
         return self._fields[key]
 
     def __setitem__(self, key: AgentBufferKey, value: AgentBufferField) -> None:
-        self._check_key(key)
+        if self.CHECK_KEY_TYPES_AT_RUNTIME:
+            self._check_key(key)
         self._fields[key] = value
 
     def __delitem__(self, key: AgentBufferKey) -> None:
-        self._check_key(key)
+        if self.CHECK_KEY_TYPES_AT_RUNTIME:
+            self._check_key(key)
         self._fields.__delitem__(key)
 
     def __iter__(self):
@@ -242,8 +248,8 @@ class AgentBuffer(MutableMapping):
         return self._fields.__len__()
 
     def __contains__(self, key):
-        # TODO assert type at runtime for tests
-        self._check_key(key)
+        if self.CHECK_KEY_TYPES_AT_RUNTIME:
+            self._check_key(key)
         return self._fields.__contains__(key)
 
     def check_length(self, key_list: List[AgentBufferKey]) -> bool:
@@ -253,6 +259,10 @@ class AgentBuffer(MutableMapping):
         have the same length.
         :param key_list: The fields which length will be compared
         """
+        if self.CHECK_KEY_TYPES_AT_RUNTIME:
+            for k in key_list:
+                self._check_key(k)
+
         if len(key_list) < 2:
             return True
         length = None
@@ -295,7 +305,7 @@ class AgentBuffer(MutableMapping):
         """
         mini_batch = AgentBuffer()
         for key, field in self._fields.items():
-            # TODO override slice in AgentBufferField
+            # slicing AgentBufferField returns a List[Any}
             mini_batch[key] = field[start:end]  # type: ignore
         return mini_batch
 
