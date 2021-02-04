@@ -1,7 +1,7 @@
 from mlagents.trainers.tests.mock_brain import make_fake_trajectory
 from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
 from mlagents_envs.base_env import ActionSpec
-from mlagents.trainers.buffer import AgentBufferKey, AgentBufferCompoundKey
+from mlagents.trainers.buffer import BufferKey, ObservationKeyPrefix
 
 VEC_OBS_SIZE = 6
 ACTION_SIZE = 4
@@ -10,20 +10,20 @@ ACTION_SIZE = 4
 def test_trajectory_to_agentbuffer():
     length = 15
     wanted_keys = [
-        (AgentBufferCompoundKey.OBSERVATION, 0),
-        (AgentBufferCompoundKey.OBSERVATION, 1),
-        (AgentBufferCompoundKey.NEXT_OBSERVATION, 0),
-        (AgentBufferCompoundKey.NEXT_OBSERVATION, 1),
-        AgentBufferKey.MEMORY,
-        AgentBufferKey.MASKS,
-        AgentBufferKey.DONE,
-        AgentBufferKey.CONTINUOUS_ACTION,
-        AgentBufferKey.DISCRETE_ACTION,
-        AgentBufferKey.CONTINUOUS_LOG_PROBS,
-        AgentBufferKey.DISCRETE_LOG_PROBS,
-        AgentBufferKey.ACTION_MASK,
-        AgentBufferKey.PREV_ACTION,
-        AgentBufferKey.ENVIRONMENT_REWARDS,
+        (ObservationKeyPrefix.OBSERVATION, 0),
+        (ObservationKeyPrefix.OBSERVATION, 1),
+        (ObservationKeyPrefix.NEXT_OBSERVATION, 0),
+        (ObservationKeyPrefix.NEXT_OBSERVATION, 1),
+        BufferKey.MEMORY,
+        BufferKey.MASKS,
+        BufferKey.DONE,
+        BufferKey.CONTINUOUS_ACTION,
+        BufferKey.DISCRETE_ACTION,
+        BufferKey.CONTINUOUS_LOG_PROBS,
+        BufferKey.DISCRETE_LOG_PROBS,
+        BufferKey.ACTION_MASK,
+        BufferKey.PREV_ACTION,
+        BufferKey.ENVIRONMENT_REWARDS,
     ]
     wanted_keys = set(wanted_keys)
     trajectory = make_fake_trajectory(

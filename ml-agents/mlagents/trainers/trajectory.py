@@ -3,9 +3,9 @@ import numpy as np
 
 from mlagents.trainers.buffer import (
     AgentBuffer,
-    AgentBufferCompoundKey,
-    BufferKey,
+    ObservationKeyPrefix,
     AgentBufferKey,
+    BufferKey,
 )
 from mlagents_envs.base_env import ActionTuple
 from mlagents.trainers.torch.action_log_probs import LogProbsTuple
@@ -25,18 +25,18 @@ class AgentExperience(NamedTuple):
 
 class ObsUtil:
     @staticmethod
-    def get_name_at(index: int) -> BufferKey:
+    def get_name_at(index: int) -> AgentBufferKey:
         """
         returns the name of the observation given the index of the observation
         """
-        return AgentBufferCompoundKey.OBSERVATION, index
+        return ObservationKeyPrefix.OBSERVATION, index
 
     @staticmethod
-    def get_name_at_next(index: int) -> BufferKey:
+    def get_name_at_next(index: int) -> AgentBufferKey:
         """
         returns the name of the next observation given the index of the observation
         """
-        return AgentBufferCompoundKey.NEXT_OBSERVATION, index
+        return ObservationKeyPrefix.NEXT_OBSERVATION, index
 
     @staticmethod
     def from_buffer(batch: AgentBuffer, num_obs: int) -> List[np.array]:
@@ -89,22 +89,22 @@ class Trajectory(NamedTuple):
                 agent_buffer_trajectory[ObsUtil.get_name_at_next(i)].append(next_obs[i])
 
             if exp.memory is not None:
-                agent_buffer_trajectory[AgentBufferKey.MEMORY].append(exp.memory)
+                agent_buffer_trajectory[BufferKey.MEMORY].append(exp.memory)
 
-            agent_buffer_trajectory[AgentBufferKey.MASKS].append(1.0)
-            agent_buffer_trajectory[AgentBufferKey.DONE].append(exp.done)
+            agent_buffer_trajectory[BufferKey.MASKS].append(1.0)
+            agent_buffer_trajectory[BufferKey.DONE].append(exp.done)
 
             # Adds the log prob and action of continuous/discrete separately
-            agent_buffer_trajectory[AgentBufferKey.CONTINUOUS_ACTION].append(
+            agent_buffer_trajectory[BufferKey.CONTINUOUS_ACTION].append(
                 exp.action.continuous
             )
-            agent_buffer_trajectory[AgentBufferKey.DISCRETE_ACTION].append(
+            agent_buffer_trajectory[BufferKey.DISCRETE_ACTION].append(
                 exp.action.discrete
             )
-            agent_buffer_trajectory[AgentBufferKey.CONTINUOUS_LOG_PROBS].append(
+            agent_buffer_trajectory[BufferKey.CONTINUOUS_LOG_PROBS].append(
                 exp.action_probs.continuous
             )
-            agent_buffer_trajectory[AgentBufferKey.DISCRETE_LOG_PROBS].append(
+            agent_buffer_trajectory[BufferKey.DISCRETE_LOG_PROBS].append(
                 exp.action_probs.discrete
             )
 
@@ -112,7 +112,7 @@ class Trajectory(NamedTuple):
             # in AgentExperience False means active.
             if exp.action_mask is not None:
                 mask = 1 - np.concatenate(exp.action_mask)
-                agent_buffer_trajectory[AgentBufferKey.ACTION_MASK].append(
+                agent_buffer_trajectory[BufferKey.ACTION_MASK].append(
                     mask, padding_value=1
                 )
             else:
@@ -120,13 +120,11 @@ class Trajectory(NamedTuple):
                 # action mask in a discrete space.
 
                 action_shape = exp.action.discrete.shape
-                agent_buffer_trajectory[AgentBufferKey.ACTION_MASK].append(
+                agent_buffer_trajectory[BufferKey.ACTION_MASK].append(
                     np.ones(action_shape, dtype=np.float32), padding_value=1
                 )
-            agent_buffer_trajectory[AgentBufferKey.PREV_ACTION].append(exp.prev_action)
-            agent_buffer_trajectory[AgentBufferKey.ENVIRONMENT_REWARDS].append(
-                exp.reward
-            )
+            agent_buffer_trajectory[BufferKey.PREV_ACTION].append(exp.prev_action)
+            agent_buffer_trajectory[BufferKey.ENVIRONMENT_REWARDS].append(exp.reward)
 
             # Store the next visual obs as the current
             obs = next_obs

@@ -18,7 +18,7 @@ class BufferException(UnityException):
     pass
 
 
-class AgentBufferKey(enum.Enum):
+class BufferKey(enum.Enum):
     ACTION_MASK = "action_mask"
     CONTINUOUS_ACTION = "continuous_action"
     CONTINUOUS_LOG_PROBS = "continuous_log_probs"
@@ -34,10 +34,12 @@ class AgentBufferKey(enum.Enum):
     DISCOUNTED_RETURNS = "discounted_returns"
 
 
-class AgentBufferCompoundKey(enum.Enum):
+class ObservationKeyPrefix(enum.Enum):
     OBSERVATION = "obs"
     NEXT_OBSERVATION = "next_obs"
 
+
+class RewardSignalKeyPrefix(enum.Enum):
     # Reward signals
     REWARDS = "rewards"
     VALUE_ESTIMATES = "value_estimates"
@@ -45,11 +47,27 @@ class AgentBufferCompoundKey(enum.Enum):
     ADVANTAGE = "advantage"
 
 
-BufferKey = Union[
-    AgentBufferKey,
-    Tuple[AgentBufferCompoundKey, int],
-    Tuple[AgentBufferCompoundKey, str],
+AgentBufferKey = Union[
+    BufferKey, Tuple[ObservationKeyPrefix, int], Tuple[RewardSignalKeyPrefix, str]
 ]
+
+
+class RewardUtil:
+    @staticmethod
+    def rewards_key(name: str) -> AgentBufferKey:
+        return RewardSignalKeyPrefix.REWARDS, name
+
+    @staticmethod
+    def value_estimates_key(name: str) -> AgentBufferKey:
+        return RewardSignalKeyPrefix.RETURNS, name
+
+    @staticmethod
+    def returns_key(name: str) -> AgentBufferKey:
+        return RewardSignalKeyPrefix.RETURNS, name
+
+    @staticmethod
+    def advantage_key(name: str) -> AgentBufferKey:
+        return RewardSignalKeyPrefix.ADVANTAGE, name
 
 
 class AgentBufferField(list):
@@ -171,7 +189,7 @@ class AgentBuffer(MutableMapping):
     def __init__(self):
         self.last_brain_info = None
         self.last_take_action_outputs = None
-        self._fields: DefaultDict[BufferKey, AgentBufferField] = defaultdict(
+        self._fields: DefaultDict[AgentBufferKey, AgentBufferField] = defaultdict(
             AgentBufferField
         )
 
@@ -190,24 +208,30 @@ class AgentBuffer(MutableMapping):
         self.last_take_action_outputs = None
 
     def _check_key(self, key):
-        if isinstance(key, AgentBufferKey):
+        if isinstance(key, BufferKey):
             return
         if isinstance(key, tuple):
             key0, key1 = key
-            if isinstance(key0, AgentBufferCompoundKey):
-                return
+            if isinstance(key0, ObservationKeyPrefix):
+                if isinstance(key1, int):
+                    return
+                raise KeyError(f"{key} has type ({type(key0)}, {type(key1)})")
+            if isinstance(key0, RewardSignalKeyPrefix):
+                if isinstance(key1, str):
+                    return
+                raise KeyError(f"{key} has type ({type(key0)}, {type(key1)})")
         raise KeyError(f"{key} is a {type(key)}")
 
-    def __getitem__(self, key: BufferKey) -> AgentBufferField:
+    def __getitem__(self, key: AgentBufferKey) -> AgentBufferField:
         # TODO assert type at runtime for tests
         self._check_key(key)
         return self._fields[key]
 
-    def __setitem__(self, key: BufferKey, value: AgentBufferField) -> None:
+    def __setitem__(self, key: AgentBufferKey, value: AgentBufferField) -> None:
         self._check_key(key)
         self._fields[key] = value
 
-    def __delitem__(self, key: BufferKey) -> None:
+    def __delitem__(self, key: AgentBufferKey) -> None:
         self._check_key(key)
         self._fields.__delitem__(key)
 
@@ -222,7 +246,7 @@ class AgentBuffer(MutableMapping):
         self._check_key(key)
         return self._fields.__contains__(key)
 
-    def check_length(self, key_list: List[BufferKey]) -> bool:
+    def check_length(self, key_list: List[AgentBufferKey]) -> bool:
         """
         Some methods will require that some fields have the same length.
         check_length will return true if the fields in key_list
@@ -240,7 +264,9 @@ class AgentBuffer(MutableMapping):
             length = len(self[key])
         return True
 
-    def shuffle(self, sequence_length: int, key_list: List[BufferKey] = None) -> None:
+    def shuffle(
+        self, sequence_length: int, key_list: List[AgentBufferKey] = None
+    ) -> None:
         """
         Shuffles the fields in key_list in a consistent way: The reordering will
         be the same across fields.
@@ -334,7 +360,7 @@ class AgentBuffer(MutableMapping):
     def resequence_and_append(
         self,
         target_buffer: "AgentBuffer",
-        key_list: List[BufferKey] = None,
+        key_list: List[AgentBufferKey] = None,
         batch_size: int = None,
         training_length: int = None,
     ) -> None:

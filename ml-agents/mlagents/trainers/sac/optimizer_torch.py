@@ -10,7 +10,7 @@ from mlagents.trainers.torch.networks import ValueNetwork
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
-from mlagents.trainers.buffer import AgentBuffer, AgentBufferKey, AgentBufferCompoundKey
+from mlagents.trainers.buffer import AgentBuffer, BufferKey, RewardUtil
 from mlagents_envs.timers import timed
 from mlagents_envs.base_env import ActionSpec, ObservationSpec
 from mlagents.trainers.exception import UnityTrainerException
@@ -460,7 +460,7 @@ class TorchSACOptimizer(TorchOptimizer):
         rewards = {}
         for name in self.reward_signals:
             rewards[name] = ModelUtils.list_to_tensor(
-                batch[(AgentBufferCompoundKey.REWARDS, name)]
+                batch[RewardUtil.rewards_key(name)]
             )
 
         n_obs = len(self.policy.behavior_spec.observation_specs)
@@ -472,23 +472,21 @@ class TorchSACOptimizer(TorchOptimizer):
         # Convert to tensors
         next_obs = [ModelUtils.list_to_tensor(obs) for obs in next_obs]
 
-        act_masks = ModelUtils.list_to_tensor(batch[AgentBufferKey.ACTION_MASK])
+        act_masks = ModelUtils.list_to_tensor(batch[BufferKey.ACTION_MASK])
         actions = AgentAction.from_buffer(batch)
 
         memories_list = [
-            ModelUtils.list_to_tensor(batch[AgentBufferKey.MEMORY][i])
-            for i in range(
-                0, len(batch[AgentBufferKey.MEMORY]), self.policy.sequence_length
-            )
+            ModelUtils.list_to_tensor(batch[BufferKey.MEMORY][i])
+            for i in range(0, len(batch[BufferKey.MEMORY]), self.policy.sequence_length)
         ]
         # LSTM shouldn't have sequence length <1, but stop it from going out of the index if true.
         offset = 1 if self.policy.sequence_length > 1 else 0
         next_memories_list = [
             ModelUtils.list_to_tensor(
-                batch[AgentBufferKey.MEMORY][i][self.policy.m_size // 2 :]
+                batch[BufferKey.MEMORY][i][self.policy.m_size // 2 :]
             )  # only pass value part of memory to target network
             for i in range(
-                offset, len(batch[AgentBufferKey.MEMORY]), self.policy.sequence_length
+                offset, len(batch[BufferKey.MEMORY]), self.policy.sequence_length
             )
         ]
 
@@ -555,8 +553,8 @@ class TorchSACOptimizer(TorchOptimizer):
                 memories=next_memories,
                 sequence_length=self.policy.sequence_length,
             )
-        masks = ModelUtils.list_to_tensor(batch[AgentBufferKey.MASKS], dtype=torch.bool)
-        dones = ModelUtils.list_to_tensor(batch[AgentBufferKey.DONE])
+        masks = ModelUtils.list_to_tensor(batch[BufferKey.MASKS], dtype=torch.bool)
+        dones = ModelUtils.list_to_tensor(batch[BufferKey.DONE])
 
         q1_loss, q2_loss = self.sac_q_loss(
             q1_stream, q2_stream, target_values, dones, rewards, masks

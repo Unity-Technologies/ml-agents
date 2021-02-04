@@ -16,7 +16,7 @@ from mlagents.trainers.tests.dummy_config import (  # noqa: F401
 )
 
 from mlagents_envs.base_env import ActionSpec
-from mlagents.trainers.buffer import AgentBufferKey, AgentBufferCompoundKey
+from mlagents.trainers.buffer import BufferKey, RewardUtil
 
 
 @pytest.fixture
@@ -72,11 +72,11 @@ def test_ppo_optimizer_update(dummy_config, rnn, visual, discrete):
     # Mock out reward signal eval
     copy_buffer_fields(
         update_buffer,
-        AgentBufferKey.ENVIRONMENT_REWARDS,
+        BufferKey.ENVIRONMENT_REWARDS,
         [
-            AgentBufferKey.ADVANTAGES,
-            (AgentBufferCompoundKey.RETURNS, "extrinsic"),
-            (AgentBufferCompoundKey.VALUE_ESTIMATES, "extrinsic"),
+            BufferKey.ADVANTAGES,
+            RewardUtil.returns_key("extrinsic"),
+            RewardUtil.value_estimates_key("extrinsic"),
         ],
     )
 
@@ -117,13 +117,13 @@ def test_ppo_optimizer_update_curiosity(
     # Mock out reward signal eval
     copy_buffer_fields(
         update_buffer,
-        src_key=AgentBufferKey.ENVIRONMENT_REWARDS,
+        src_key=BufferKey.ENVIRONMENT_REWARDS,
         dst_keys=[
-            AgentBufferKey.ADVANTAGES,
-            (AgentBufferCompoundKey.RETURNS, "extrinsic"),
-            (AgentBufferCompoundKey.VALUE_ESTIMATES, "extrinsic"),
-            (AgentBufferCompoundKey.RETURNS, "curiosity"),
-            (AgentBufferCompoundKey.VALUE_ESTIMATES, "curiosity"),
+            BufferKey.ADVANTAGES,
+            RewardUtil.returns_key("extrinsic"),
+            RewardUtil.value_estimates_key("extrinsic"),
+            RewardUtil.returns_key("curiosity"),
+            RewardUtil.value_estimates_key("curiosity"),
         ],
     )
 
@@ -148,18 +148,18 @@ def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F8
     # Mock out reward signal eval
     copy_buffer_fields(
         update_buffer,
-        src_key=AgentBufferKey.ENVIRONMENT_REWARDS,
+        src_key=BufferKey.ENVIRONMENT_REWARDS,
         dst_keys=[
-            AgentBufferKey.ADVANTAGES,
-            (AgentBufferCompoundKey.RETURNS, "extrinsic"),
-            (AgentBufferCompoundKey.VALUE_ESTIMATES, "extrinsic"),
-            (AgentBufferCompoundKey.RETURNS, "gail"),
-            (AgentBufferCompoundKey.VALUE_ESTIMATES, "gail"),
+            BufferKey.ADVANTAGES,
+            RewardUtil.returns_key("extrinsic"),
+            RewardUtil.value_estimates_key("extrinsic"),
+            RewardUtil.returns_key("gail"),
+            RewardUtil.value_estimates_key("gail"),
         ],
     )
 
-    update_buffer[AgentBufferKey.CONTINUOUS_LOG_PROBS] = np.ones_like(
-        update_buffer[AgentBufferKey.CONTINUOUS_ACTION]
+    update_buffer[BufferKey.CONTINUOUS_LOG_PROBS] = np.ones_like(
+        update_buffer[BufferKey.CONTINUOUS_ACTION]
     )
     optimizer.update(
         update_buffer,
@@ -171,13 +171,13 @@ def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F8
     # Mock out reward signal eval
     copy_buffer_fields(
         update_buffer,
-        src_key=AgentBufferKey.ENVIRONMENT_REWARDS,
+        src_key=BufferKey.ENVIRONMENT_REWARDS,
         dst_keys=[
-            AgentBufferKey.ADVANTAGES,
-            (AgentBufferCompoundKey.RETURNS, "extrinsic"),
-            (AgentBufferCompoundKey.VALUE_ESTIMATES, "extrinsic"),
-            (AgentBufferCompoundKey.RETURNS, "gail"),
-            (AgentBufferCompoundKey.VALUE_ESTIMATES, "gail"),
+            BufferKey.ADVANTAGES,
+            RewardUtil.returns_key("extrinsic"),
+            RewardUtil.value_estimates_key("extrinsic"),
+            RewardUtil.returns_key("gail"),
+            RewardUtil.value_estimates_key("gail"),
         ],
     )
     optimizer.update(

@@ -3,7 +3,7 @@ from mlagents.torch_utils import torch
 import numpy as np
 
 from mlagents.trainers.torch.utils import ModelUtils
-from mlagents.trainers.buffer import AgentBuffer, AgentBufferKey
+from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents_envs.base_env import _ActionTupleBase
 
 
@@ -97,13 +97,11 @@ class ActionLogProbs(NamedTuple):
         continuous: torch.Tensor = None
         discrete: List[torch.Tensor] = None  # type: ignore
 
-        if AgentBufferKey.CONTINUOUS_LOG_PROBS in buff:
-            continuous = ModelUtils.list_to_tensor(
-                buff[AgentBufferKey.CONTINUOUS_LOG_PROBS]
-            )
-        if AgentBufferKey.DISCRETE_LOG_PROBS in buff:
+        if BufferKey.CONTINUOUS_LOG_PROBS in buff:
+            continuous = ModelUtils.list_to_tensor(buff[BufferKey.CONTINUOUS_LOG_PROBS])
+        if BufferKey.DISCRETE_LOG_PROBS in buff:
             discrete_tensor = ModelUtils.list_to_tensor(
-                buff[AgentBufferKey.DISCRETE_LOG_PROBS]
+                buff[BufferKey.DISCRETE_LOG_PROBS]
             )
             # This will keep discrete_list = None which enables flatten()
             if discrete_tensor.shape[1] > 0:

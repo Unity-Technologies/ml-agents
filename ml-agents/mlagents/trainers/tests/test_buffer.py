@@ -1,5 +1,5 @@
 import numpy as np
-from mlagents.trainers.buffer import AgentBuffer, AgentBufferField, AgentBufferKey
+from mlagents.trainers.buffer import AgentBuffer, AgentBufferField, BufferKey
 from mlagents.trainers.trajectory import ObsUtil
 
 
@@ -21,7 +21,7 @@ def construct_fake_buffer(fake_agent_id):
                 100 * fake_agent_id + 10 * step + 3,
             ]
         )
-        b[AgentBufferKey.CONTINUOUS_ACTION].append(
+        b[BufferKey.CONTINUOUS_ACTION].append(
             [100 * fake_agent_id + 10 * step + 4, 100 * fake_agent_id + 10 * step + 5]
         )
     return b
@@ -76,13 +76,13 @@ def test_buffer():
     agent_3_buffer.resequence_and_append(
         update_buffer, batch_size=None, training_length=2
     )
-    assert len(update_buffer[AgentBufferKey.CONTINUOUS_ACTION]) == 20
+    assert len(update_buffer[BufferKey.CONTINUOUS_ACTION]) == 20
 
-    assert np.array(update_buffer[AgentBufferKey.CONTINUOUS_ACTION]).shape == (20, 2)
+    assert np.array(update_buffer[BufferKey.CONTINUOUS_ACTION]).shape == (20, 2)
 
     c = update_buffer.make_mini_batch(start=0, end=1)
     assert c.keys() == update_buffer.keys()
-    assert np.array(c[AgentBufferKey.CONTINUOUS_ACTION]).shape == (1, 2)
+    assert np.array(c[BufferKey.CONTINUOUS_ACTION]).shape == (1, 2)
 
 
 def fakerandint(values):
@@ -102,14 +102,14 @@ def test_buffer_sample():
     # Test non-LSTM
     mb = update_buffer.sample_mini_batch(batch_size=4, sequence_length=1)
     assert mb.keys() == update_buffer.keys()
-    assert np.array(mb[AgentBufferKey.CONTINUOUS_ACTION]).shape == (4, 2)
+    assert np.array(mb[BufferKey.CONTINUOUS_ACTION]).shape == (4, 2)
 
     # Test LSTM
     # We need to check if we ever get a breaking start - this will maximize the probability
     mb = update_buffer.sample_mini_batch(batch_size=20, sequence_length=19)
     assert mb.keys() == update_buffer.keys()
     # Should only return one sequence
-    assert np.array(mb[AgentBufferKey.CONTINUOUS_ACTION]).shape == (19, 2)
+    assert np.array(mb[BufferKey.CONTINUOUS_ACTION]).shape == (19, 2)
 
 
 def test_num_experiences():
@@ -117,7 +117,7 @@ def test_num_experiences():
     agent_2_buffer = construct_fake_buffer(2)
     update_buffer = AgentBuffer()
 
-    assert len(update_buffer[AgentBufferKey.CONTINUOUS_ACTION]) == 0
+    assert len(update_buffer[BufferKey.CONTINUOUS_ACTION]) == 0
     assert update_buffer.num_experiences == 0
     agent_1_buffer.resequence_and_append(
         update_buffer, batch_size=None, training_length=2
@@ -126,7 +126,7 @@ def test_num_experiences():
         update_buffer, batch_size=None, training_length=2
     )
 
-    assert len(update_buffer[AgentBufferKey.CONTINUOUS_ACTION]) == 20
+    assert len(update_buffer[BufferKey.CONTINUOUS_ACTION]) == 20
     assert update_buffer.num_experiences == 20
 
 

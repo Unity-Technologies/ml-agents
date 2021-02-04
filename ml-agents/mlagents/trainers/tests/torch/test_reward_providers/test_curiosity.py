@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from mlagents.torch_utils import torch
-from mlagents.trainers.buffer import AgentBufferKey
+from mlagents.trainers.buffer import BufferKey
 from mlagents.trainers.torch.components.reward_providers import (
     CuriosityRewardProvider,
     create_reward_provider,
@@ -115,7 +115,7 @@ def test_continuous_action_prediction(behavior_spec: BehaviorSpec, seed: int) ->
     for _ in range(200):
         curiosity_rp.update(buffer)
     prediction = curiosity_rp._network.predict_action(buffer)[0]
-    target = torch.tensor(buffer[AgentBufferKey.CONTINUOUS_ACTION][0])
+    target = torch.tensor(buffer[BufferKey.CONTINUOUS_ACTION][0])
     error = torch.mean((prediction - target) ** 2).item()
     assert error < 0.001
 

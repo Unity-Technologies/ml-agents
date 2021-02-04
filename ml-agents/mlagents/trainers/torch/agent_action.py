@@ -1,7 +1,7 @@
 from typing import List, Optional, NamedTuple
 from mlagents.torch_utils import torch
 
-from mlagents.trainers.buffer import AgentBuffer, AgentBufferKey
+from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents_envs.base_env import ActionTuple
 
@@ -49,13 +49,11 @@ class AgentAction(NamedTuple):
         """
         continuous: torch.Tensor = None
         discrete: List[torch.Tensor] = None  # type: ignore
-        if AgentBufferKey.CONTINUOUS_ACTION in buff:
-            continuous = ModelUtils.list_to_tensor(
-                buff[AgentBufferKey.CONTINUOUS_ACTION]
-            )
-        if AgentBufferKey.DISCRETE_ACTION in buff:
+        if BufferKey.CONTINUOUS_ACTION in buff:
+            continuous = ModelUtils.list_to_tensor(buff[BufferKey.CONTINUOUS_ACTION])
+        if BufferKey.DISCRETE_ACTION in buff:
             discrete_tensor = ModelUtils.list_to_tensor(
-                buff[AgentBufferKey.DISCRETE_ACTION], dtype=torch.long
+                buff[BufferKey.DISCRETE_ACTION], dtype=torch.long
             )
             discrete = [
                 discrete_tensor[..., i] for i in range(discrete_tensor.shape[-1])

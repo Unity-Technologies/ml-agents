@@ -7,7 +7,7 @@ from mlagents.trainers.ghost.controller import GhostController
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.agent_processor import AgentManagerQueue
-from mlagents.trainers.buffer import AgentBufferKey, AgentBufferCompoundKey
+from mlagents.trainers.buffer import BufferKey, RewardUtil
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import copy_buffer_fields
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
@@ -204,15 +204,15 @@ def test_publish_queue(dummy_config):
     # Mock out reward signal eval
     copy_buffer_fields(
         buffer,
-        src_key=AgentBufferKey.ENVIRONMENT_REWARDS,
+        src_key=BufferKey.ENVIRONMENT_REWARDS,
         dst_keys=[
-            AgentBufferKey.ADVANTAGES,
-            (AgentBufferCompoundKey.REWARDS, "extrinsic"),
-            (AgentBufferCompoundKey.RETURNS, "extrinsic"),
-            (AgentBufferCompoundKey.VALUE_ESTIMATES, "extrinsic"),
-            (AgentBufferCompoundKey.REWARDS, "curiosity"),
-            (AgentBufferCompoundKey.RETURNS, "curiosity"),
-            (AgentBufferCompoundKey.VALUE_ESTIMATES, "curiosity"),
+            BufferKey.ADVANTAGES,
+            RewardUtil.rewards_key("extrinsic"),
+            RewardUtil.returns_key("extrinsic"),
+            RewardUtil.value_estimates_key("extrinsic"),
+            RewardUtil.rewards_key("curiosity"),
+            RewardUtil.returns_key("curiosity"),
+            RewardUtil.value_estimates_key("curiosity"),
         ],
     )
 

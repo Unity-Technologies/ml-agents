@@ -18,7 +18,7 @@ from mlagents.trainers.demo_loader import (
     get_demo_files,
     write_delimited,
 )
-from mlagents.trainers.buffer import AgentBufferKey
+from mlagents.trainers.buffer import BufferKey
 
 
 BEHAVIOR_SPEC = create_mock_3dball_behavior_specs()
@@ -34,8 +34,8 @@ def test_load_demo():
 
     _, demo_buffer = demo_to_buffer(path_prefix + "/test.demo", 1, BEHAVIOR_SPEC)
     assert (
-        len(demo_buffer[AgentBufferKey.CONTINUOUS_ACTION]) == total_expected - 1
-        or len(demo_buffer[AgentBufferKey.DISCRETE_ACTION]) == total_expected - 1
+        len(demo_buffer[BufferKey.CONTINUOUS_ACTION]) == total_expected - 1
+        or len(demo_buffer[BufferKey.DISCRETE_ACTION]) == total_expected - 1
     )
 
 
@@ -49,8 +49,8 @@ def test_load_demo_dir():
 
     _, demo_buffer = demo_to_buffer(path_prefix + "/test_demo_dir", 1, BEHAVIOR_SPEC)
     assert (
-        len(demo_buffer[AgentBufferKey.CONTINUOUS_ACTION]) == total_expected - 1
-        or len(demo_buffer[AgentBufferKey.DISCRETE_ACTION]) == total_expected - 1
+        len(demo_buffer[BufferKey.CONTINUOUS_ACTION]) == total_expected - 1
+        or len(demo_buffer[BufferKey.DISCRETE_ACTION]) == total_expected - 1
     )
 
 
