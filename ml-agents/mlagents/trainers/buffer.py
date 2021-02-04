@@ -37,8 +37,6 @@ class AgentBufferKey(enum.Enum):
 class AgentBufferCompoundKey(enum.Enum):
     OBSERVATION = "obs"
     NEXT_OBSERVATION = "next_obs"
-    VISUAL_OBSERVATION = "visual_obs"
-    NEXT_VISUAL_OBSERVATION = "next_visual_obs"
 
     # Reward signals
     REWARDS = "rewards"
@@ -191,14 +189,26 @@ class AgentBuffer(MutableMapping):
         self.last_brain_info = None
         self.last_take_action_outputs = None
 
+    def _check_key(self, key):
+        if isinstance(key, AgentBufferKey):
+            return
+        if isinstance(key, tuple):
+            key0, key1 = key
+            if isinstance(key0, AgentBufferCompoundKey):
+                return
+        raise KeyError(f"{key} is a {type(key)}")
+
     def __getitem__(self, key: BufferKey) -> AgentBufferField:
         # TODO assert type at runtime for tests
+        self._check_key(key)
         return self._fields[key]
 
     def __setitem__(self, key: BufferKey, value: AgentBufferField) -> None:
+        self._check_key(key)
         self._fields[key] = value
 
     def __delitem__(self, key: BufferKey) -> None:
+        self._check_key(key)
         self._fields.__delitem__(key)
 
     def __iter__(self):
