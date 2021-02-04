@@ -155,7 +155,7 @@ def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F8
     update_buffer["gail_value_estimates"] = update_buffer[
         AgentBufferKey.ENVIRONMENT_REWARDS
     ]
-    update_buffer["continuous_log_probs"] = np.ones_like(
+    update_buffer[AgentBufferKey.CONTINUOUS_LOG_PROBS] = np.ones_like(
         update_buffer["continuous_action"]
     )
     optimizer.update(

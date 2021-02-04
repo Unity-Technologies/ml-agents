@@ -92,7 +92,7 @@ class Trajectory(NamedTuple):
             # Adds the log prob and action of continuous/discrete separately
             agent_buffer_trajectory["continuous_action"].append(exp.action.continuous)
             agent_buffer_trajectory["discrete_action"].append(exp.action.discrete)
-            agent_buffer_trajectory["continuous_log_probs"].append(
+            agent_buffer_trajectory[AgentBufferKey.CONTINUOUS_LOG_PROBS].append(
                 exp.action_probs.continuous
             )
             agent_buffer_trajectory["discrete_log_probs"].append(

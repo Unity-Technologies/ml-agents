@@ -19,7 +19,7 @@ def test_trajectory_to_agentbuffer():
         AgentBufferKey.DONE,
         "continuous_action",
         "discrete_action",
-        "continuous_log_probs",
+        AgentBufferKey.CONTINUOUS_LOG_PROBS,
         "discrete_log_probs",
         "action_mask",
         "prev_action",
