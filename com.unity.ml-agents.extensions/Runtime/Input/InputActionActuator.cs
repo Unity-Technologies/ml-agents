@@ -1,5 +1,5 @@
 #define ACTUATOR_DEBUG
-//#undef ACTUATOR_DEBUG
+#undef ACTUATOR_DEBUG
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 using UnityEngine.InputSystem;

@@ -239,7 +239,8 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         {
             return m_BehaviorParameters.BehaviorType == BehaviorType.HeuristicOnly ||
                      m_BehaviorParameters.BehaviorType == BehaviorType.Default &&
-                     ReferenceEquals(m_BehaviorParameters.Model, null);
+                     ReferenceEquals(m_BehaviorParameters.Model, null) &&
+                     !Academy.Instance.IsCommunicatorOn;
         }
 
         void CleanupActionAsset()

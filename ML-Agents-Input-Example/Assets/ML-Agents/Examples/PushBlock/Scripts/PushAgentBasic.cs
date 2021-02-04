@@ -118,7 +118,7 @@ public class PushAgentBasic : Agent, IIntputActionAssetProvider
         return randomSpawnPos;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         InnerMove(gameObject.transform, m_PushblockActions.Movement.movement.ReadValue<Vector2>());
     }

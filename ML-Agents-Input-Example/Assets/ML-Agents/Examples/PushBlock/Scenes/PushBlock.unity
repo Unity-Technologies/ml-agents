@@ -1591,6 +1591,11 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 3771457336477374725, guid: 03bcc81e249714a22bb411dddcc5d15e,
+        type: 3}
+      propertyPath: m_DefaultControlScheme
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 03bcc81e249714a22bb411dddcc5d15e, type: 3}
 --- !u!1001 &1488759065
@@ -1763,7 +1768,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5ed63dbfa25542ecb8bc013adfba183, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agentRunSpeed: 1.5
+  agentRunSpeed: 2
   agentRotationSpeed: 15
   agentJumpForce: 150
   agentJumpCoolDown: 3
