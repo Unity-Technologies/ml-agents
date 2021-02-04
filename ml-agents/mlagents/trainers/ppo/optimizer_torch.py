@@ -201,7 +201,7 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         # Regularizer loss reduces bias between the baseline and values. Other
         # regularizers are possible here.
-        regularizer_loss = self.coma_regularizer_loss(values, baseline_vals)
+        # regularizer_loss = self.coma_regularizer_loss(values, baseline_vals)
 
         policy_loss = self.ppo_policy_loss(
             ModelUtils.list_to_tensor(batch["advantages"]),
@@ -211,8 +211,8 @@ class TorchPPOOptimizer(TorchOptimizer):
         )
         loss = (
             policy_loss
-            + 0.25 * (value_loss + baseline_loss)
-            + 0.25 * regularizer_loss
+            + 0.5 * (value_loss + 0.5 * baseline_loss)
+            # + 0.25 * regularizer_loss
             - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
         )
 
@@ -233,7 +233,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             "Losses/Value Loss": value_loss.item(),
             # "Losses/Q Loss": q_loss.item(),
             "Losses/Baseline Value Loss": baseline_loss.item(),
-            "Losses/Regularization Loss": regularizer_loss.item(),
+            # "Losses/Regularization Loss": regularizer_loss.item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/Epsilon": decay_eps,
             "Policy/Beta": decay_bet,
