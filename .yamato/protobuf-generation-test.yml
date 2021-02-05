@@ -1,5 +1,4 @@
-
-test_linux_protobuf_generation:
+- test_linux_protobuf_generation:
   name: Protobuf Generation Tests
   agent:
     type: Unity::VM
