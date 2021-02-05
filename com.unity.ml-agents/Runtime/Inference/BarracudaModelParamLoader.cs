@@ -386,8 +386,6 @@ namespace Unity.MLAgents.Inference
                 }
             }
 
-            totalVectorSensorSize += observableAttributeTotalSize;
-
             if (totalVectorSensorSize != totalVecObsSizeT)
             {
                 var sensorSizes = "";
