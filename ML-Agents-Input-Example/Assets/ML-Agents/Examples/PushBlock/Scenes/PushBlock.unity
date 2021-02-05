@@ -1729,6 +1729,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5022602860645237092, guid: 18b23669c7e59458a9b5ed01b828c7b0,
         type: 3}
+    - target: {fileID: 114306175693660464, guid: 03bcc81e249714a22bb411dddcc5d15e,
+        type: 3}
+      propertyPath: m_BehaviorType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3771457336477374725, guid: 03bcc81e249714a22bb411dddcc5d15e,
         type: 3}
       propertyPath: m_DefaultControlScheme
@@ -1920,7 +1925,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agentRunSpeed: 4
   agentRotationSpeed: 15
-  agentJumpForce: 150
+  agentJumpForce: 25
   agentJumpCoolDown: 3
   spawnAreaMarginMultiplier: 0.5
   goalScoredMaterial: {fileID: 2100000, guid: df32cc593804f42df97464dc455057b8, type: 2}

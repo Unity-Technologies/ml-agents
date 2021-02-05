@@ -36,6 +36,9 @@ public class PushAgentBasic : Agent, IIntputActionAssetProvider
     /// </summary>
     public GameObject block;
 
+    public float JumpTime = 0.5f;
+    float m_JumpTimeRemaining;
+
     /// <summary>
     /// Detects when the block touches the goal.
     /// </summary>
@@ -120,7 +123,13 @@ public class PushAgentBasic : Agent, IIntputActionAssetProvider
 
     void FixedUpdate()
     {
+
         InnerMove(gameObject.transform, m_PushblockActions.Movement.movement.ReadValue<Vector2>());
+        if (m_JumpTimeRemaining < 0)
+        {
+            m_AgentRb.AddForce(-transform.up * (m_PushBlockSettings.agentJumpForce * 3), ForceMode.Acceleration);
+        }
+        m_JumpTimeRemaining -= Time.fixedDeltaTime;
     }
 
     /// <summary>
@@ -185,7 +194,8 @@ public class PushAgentBasic : Agent, IIntputActionAssetProvider
     {
         if (Time.realtimeSinceStartup - m_JumpCoolDownStart > m_PushBlockSettings.agentJumpCoolDown)
         {
-            m_AgentRb.AddForce(t.up * m_PushBlockSettings.agentJumpForce, ForceMode.Impulse);
+            m_JumpTimeRemaining = JumpTime;
+            m_AgentRb.AddForce(t.up * m_PushBlockSettings.agentJumpForce, ForceMode.VelocityChange);
             m_JumpCoolDownStart = Time.realtimeSinceStartup;
         }
     }
