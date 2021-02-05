@@ -1,5 +1,5 @@
 behaviors:
-  SmallCubeSoldier:
+  Adventurer:
     trainer_type: ppo
     hyperparameters:
       batch_size: 2048
@@ -31,7 +31,7 @@ behaviors:
       window: 10
       play_against_latest_model_ratio: 0.5
       initial_elo: 1200.0
-  LargeCubeSoldier:
+  Dragon:
     trainer_type: ppo
     hyperparameters:
       batch_size: 2048

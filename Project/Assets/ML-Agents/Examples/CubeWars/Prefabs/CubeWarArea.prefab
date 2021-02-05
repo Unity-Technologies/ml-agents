@@ -439,7 +439,7 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: 94b4c8f1d024049fe9cb0b180fe00229, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: LargeCubeSoldier
+  m_BehaviorName: Dragon
   TeamId: 1
   m_UseChildSensors: 1
   m_UseChildActuators: 1

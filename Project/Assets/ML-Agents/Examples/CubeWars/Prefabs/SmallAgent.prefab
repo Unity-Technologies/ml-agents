@@ -478,7 +478,7 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: 697e3166f993b4e4cb890de8be9ec842, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: SmallCubeSoldier
+  m_BehaviorName: Adventurer
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
