@@ -56,7 +56,7 @@ public class SmallCubeAgent : Agent
             m_MoveSpeed = 10f;
             m_TurnSpeed = 150f;
             m_Cooldown = .4f;
-            m_Splash = 10f;
+            m_Splash = 3f;
             m_Range = 15f;
         }
         else if (role == Role.DPS)
