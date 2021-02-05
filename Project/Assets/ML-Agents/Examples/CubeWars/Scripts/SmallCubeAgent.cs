@@ -279,7 +279,7 @@ public class SmallCubeAgent : Agent
         m_AgentRb.velocity = Vector3.zero;
         HealthStatus();
 
-        float smallRange = 50f * m_MyArea.range;
+        float smallRange = 30f * m_MyArea.range;
         transform.position = new Vector3(Random.Range(-smallRange, smallRange),
             2f, Random.Range(-smallRange, smallRange))
             + area.transform.position;
