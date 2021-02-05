@@ -35,7 +35,7 @@ environment_parameters:
           min_lesson_length: 100
           threshold: 0.05
         value: 2.0
-      - name: Lesson1 # The '-' is important as this is a list
+      - name: Lesson1
         completion_criteria:
           measure: progress
           behavior: Sorter
@@ -43,7 +43,7 @@ environment_parameters:
           min_lesson_length: 100
           threshold: 0.1
         value: 4.0
-      - name: Lesson2 # This is the start of the second lesson
+      - name: Lesson2
         completion_criteria:
           measure: progress
           behavior: Sorter
@@ -59,7 +59,7 @@ environment_parameters:
           min_lesson_length: 100
           threshold: 0.2
         value: 8.0
-      - name: Lesson4 # The '-' is important as this is a list
+      - name: Lesson4
         completion_criteria:
           measure: progress
           behavior: Sorter
@@ -67,7 +67,7 @@ environment_parameters:
           min_lesson_length: 100
           threshold: 0.25
         value: 10.0
-      - name: Lesson5 # This is the start of the second lesson
+      - name: Lesson5
         completion_criteria:
           measure: progress
           behavior: Sorter
@@ -83,7 +83,7 @@ environment_parameters:
           min_lesson_length: 100
           threshold: 0.35
         value: 14.0
-      - name: Lesson7 # This is the start of the second lesson
+      - name: Lesson7
         completion_criteria:
           measure: progress
           behavior: Sorter
