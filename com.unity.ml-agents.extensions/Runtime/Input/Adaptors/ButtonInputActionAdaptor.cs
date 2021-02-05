@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
     {
         public ActionSpec GetActionSpecForInputAction(InputAction action)
         {
-            return ActionSpec.MakeDiscrete(1);
+            return ActionSpec.MakeDiscrete(2);
         }
 
         public void QueueInputEventForAction(InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
@@ -19,6 +19,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             using (StateEvent.From(control.device, out var eventPtr))
             {
                 control.WriteValueIntoEvent((float)val, eventPtr);
+                InputSystem.QueueEvent(eventPtr);
                 InputSystem.Update();
             }
         }
