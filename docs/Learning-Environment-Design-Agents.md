@@ -517,7 +517,7 @@ You can add a `BufferSensor` to your Agent by adding a `BufferSensorComponent` t
 its GameObject.
 The `BufferSensor` can be useful in situations in which the Agent must pay
 attention to a varying number of entities (for example, a varying number of
-tiles in the [Sorter environment](Learning-Environment-Examples.md#sorter)).
+enemies or projectiles).
 On the trainer side, the `BufferSensor`
 is processed using an attention module. More information about attention
 mechanisms can be found [here](https://arxiv.org/abs/1706.03762). Training or
