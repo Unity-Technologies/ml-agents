@@ -9,12 +9,14 @@ namespace Unity.MLAgents
     {
         const string k_OutputCommandLineFlag = "--mlagents-build-output-path";
         const string k_SceneCommandLineFlag = "--mlagents-build-scene-path";
+        const string k_BuildTargetFlag = "--mlagents-build-target";
 
         public static void BuildStandalonePlayerOSX()
         {
             // Read commandline arguments for options
             var outputPath = "testPlayer";
             var scenePath = "Assets/ML-Agents/Examples/3DBall/Scenes/3DBall.unity";
+            var buildTarget = BuildTarget.StandaloneOSX;
 
             var args = Environment.GetCommandLineArgs();
             for (var i = 0; i < args.Length - 1; i++)
@@ -28,13 +30,17 @@ namespace Unity.MLAgents
                 {
                     scenePath = args[i + 1];
                 }
+                else if (args[i] == k_BuildTargetFlag)
+                {
+                    buildTarget = (BuildTarget) Enum.Parse(typeof(BuildTarget), args[i + 1], ignoreCase: true);
+                }
             }
 
             string[] scenes = { scenePath };
             var buildResult = BuildPipeline.BuildPlayer(
                 scenes,
                 outputPath,
-                BuildTarget.StandaloneOSX,
+                buildTarget,
                 BuildOptions.None
             );
             var isOk = buildResult.summary.result == BuildResult.Succeeded;

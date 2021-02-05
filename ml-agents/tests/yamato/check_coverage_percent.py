@@ -3,8 +3,6 @@ import os
 
 SUMMARY_XML_FILENAME = "Summary.xml"
 
-# Note that this is python2 compatible, since that's currently what's installed on most CI images.
-
 
 def check_coverage(root_dir, min_percentage):
     # Walk the root directory looking for the summary file that
@@ -30,16 +28,12 @@ def check_coverage(root_dir, min_percentage):
                 pct = float(pct)
                 if pct < min_percentage:
                     print(
-                        "Coverage {} is below the min percentage of {}.".format(
-                            pct, min_percentage
-                        )
+                        f"Coverage {pct} is below the min percentage of {min_percentage}."
                     )
                     sys.exit(1)
                 else:
                     print(
-                        "Coverage {} is above the min percentage of {}.".format(
-                            pct, min_percentage
-                        )
+                        f"Coverage {pct} is above the min percentage of {min_percentage}."
                     )
                     sys.exit(0)
 

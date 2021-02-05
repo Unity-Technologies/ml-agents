@@ -267,6 +267,9 @@ class UnityEnvironment(BaseEnv):
                 candidates = glob.glob(env_path + ".x86_64")
             if len(candidates) == 0:
                 candidates = glob.glob(env_path + ".x86")
+            if len(candidates) == 0:
+                if os.path.isfile(env_path):
+                    candidates = [env_path]
             if len(candidates) > 0:
                 launch_string = candidates[0]
 

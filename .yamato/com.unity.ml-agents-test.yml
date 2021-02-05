@@ -77,7 +77,7 @@ test_{{ platform.name }}_{{ editor.version }}:
     - .yamato/com.unity.ml-agents-pack.yml#pack
   triggers:
     cancel_old_ci: true
-    {% if platform.name == "mac" %}
+    {% if platform.name == "linux" %}
     changes:
       only:
         - "com.unity.ml-agents/**"

@@ -1,5 +1,4 @@
 import argparse
-import numpy as np
 
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.engine_configuration_channel import (
@@ -17,7 +16,7 @@ def test_run_environment(env_name):
         file_name=env_name,
         side_channels=[engine_configuration_channel],
         no_graphics=True,
-        args=["-logFile", "-"],
+        additional_args=["-logFile", "-"],
     )
 
     try:
@@ -25,8 +24,8 @@ def test_run_environment(env_name):
         env.reset()
 
         # Set the default brain to work with
-        group_name = env.get_behavior_names()[0]
-        group_spec = env.get_behavior_spec(group_name)
+        group_name = list(env.behavior_specs.keys())[0]
+        group_spec = env.behavior_specs[group_name]
 
         # Set the time scale of the engine
         engine_configuration_channel.set_configuration_parameters(time_scale=3.0)
@@ -35,10 +34,12 @@ def test_run_environment(env_name):
         decision_steps, terminal_steps = env.get_steps(group_name)
 
         # Examine the number of observations per Agent
-        print("Number of observations : ", len(group_spec.observation_shapes))
+        print("Number of observations : ", len(group_spec.observation_specs))
 
         # Is there a visual observation ?
-        vis_obs = any(len(shape) == 3 for shape in group_spec.observation_shapes)
+        vis_obs = any(
+            len(obs_spec.shape) == 3 for obs_spec in group_spec.observation_specs
+        )
         print("Is there a visual observation ?", vis_obs)
 
         # Examine the state space for the first observation for the first agent
@@ -53,27 +54,10 @@ def test_run_environment(env_name):
             episode_rewards = 0
             tracked_agent = -1
             while not done:
-                if group_spec.is_action_continuous():
-                    action = np.random.randn(
-                        len(decision_steps), group_spec.action_size
-                    )
-
-                elif group_spec.is_action_discrete():
-                    branch_size = group_spec.discrete_action_branches
-                    action = np.column_stack(
-                        [
-                            np.random.randint(
-                                0, branch_size[i], size=(len(decision_steps))
-                            )
-                            for i in range(len(branch_size))
-                        ]
-                    )
-                else:
-                    # Should never happen
-                    action = None
+                action_tuple = group_spec.action_spec.random_action(len(decision_steps))
                 if tracked_agent == -1 and len(decision_steps) >= 1:
                     tracked_agent = decision_steps.agent_id[0]
-                env.set_actions(group_name, action)
+                env.set_actions(group_name, action_tuple)
                 env.step()
                 decision_steps, terminal_steps = env.get_steps(group_name)
                 done = False
@@ -94,14 +78,23 @@ def test_closing(env_name):
     """
     try:
         env1 = UnityEnvironment(
-            file_name=env_name, base_port=5006, no_graphics=True, args=["-logFile", "-"]
+            file_name=env_name,
+            base_port=5006,
+            no_graphics=True,
+            additional_args=["-logFile", "-"],
         )
         env1.close()
         env1 = UnityEnvironment(
-            file_name=env_name, base_port=5006, no_graphics=True, args=["-logFile", "-"]
+            file_name=env_name,
+            base_port=5006,
+            no_graphics=True,
+            additional_args=["-logFile", "-"],
         )
         env2 = UnityEnvironment(
-            file_name=env_name, base_port=5007, no_graphics=True, args=["-logFile", "-"]
+            file_name=env_name,
+            base_port=5007,
+            no_graphics=True,
+            additional_args=["-logFile", "-"],
         )
         env2.reset()
     finally:

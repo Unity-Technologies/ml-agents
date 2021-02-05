@@ -2,20 +2,18 @@ import os
 import shutil
 import subprocess
 import yaml
+from sys import platform
 from typing import List, Optional
 
 
 def get_unity_executable_path():
-    UNITY_VERSION = os.environ["UNITY_VERSION"]
-    BOKKEN_UNITY = f"/Users/bokken/{UNITY_VERSION}/Unity.app/Contents/MacOS/Unity"
-    HUB_UNITY = (
-        f"/Applications/Unity/Hub/Editor/{UNITY_VERSION}/Unity.app/Contents/MacOS/Unity"
-    )
-    if os.path.exists(BOKKEN_UNITY):
-        return BOKKEN_UNITY
-    if os.path.exists(HUB_UNITY):
-        return HUB_UNITY
-    raise FileNotFoundError("Can't find bokken or hub executables")
+    if platform == "darwin":
+        downloader_install_path = "./.Editor/Unity.app/Contents/MacOS/Unity"
+    else:  # if platform == "linux":
+        downloader_install_path = "./.Editor/Unity"
+    if os.path.exists(downloader_install_path):
+        return downloader_install_path
+    raise FileNotFoundError("Can't find executable from unity-downloader-cli")
 
 
 def get_base_path():
@@ -37,14 +35,22 @@ def run_standalone_build(
     verbose: bool = False,
     output_path: str = None,
     scene_path: str = None,
-    log_output_path: str = f"{get_base_output_path()}/standalone_build.txt",
+    build_target: str = None,
+    log_output_path: Optional[str] = f"{get_base_output_path()}/standalone_build.txt",
 ) -> int:
     """
     Run BuildStandalonePlayerOSX test to produce a player. The location defaults to
-    artifacts/standalone_build/testPlayer.
+    artifacts/standalonebuild/testPlayer.
     """
     unity_exe = get_unity_executable_path()
-    print(f"Running BuildStandalonePlayerOSX via {unity_exe}")
+    print(f"Running BuildStandalonePlayer via {unity_exe}")
+
+    # enum values from https://docs.unity3d.com/2019.4/Documentation/ScriptReference/BuildTarget.html
+    build_target_to_enum = {
+        "mac": "StandaloneOSX",
+        "osx": "StandaloneOSX",
+        "linux": "StandaloneLinux64",
+    }
 
     test_args = [
         unity_exe,
@@ -55,9 +61,13 @@ def run_standalone_build(
         "Unity.MLAgents.StandaloneBuildTest.BuildStandalonePlayerOSX",
     ]
 
-    os.makedirs(os.path.dirname(log_output_path), exist_ok=True)
-    subprocess.run(["touch", log_output_path])
-    test_args += ["-logfile", log_output_path]
+    if log_output_path:
+        os.makedirs(os.path.dirname(log_output_path), exist_ok=True)
+        subprocess.run(["touch", log_output_path])
+        test_args += ["-logfile", log_output_path]
+    else:
+        # Log to stdout
+        test_args += ["-logfile", "-"]
 
     if output_path is not None:
         output_path = os.path.join(get_base_output_path(), output_path)
@@ -65,6 +75,8 @@ def run_standalone_build(
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
     if scene_path is not None:
         test_args += ["--mlagents-build-scene-path", scene_path]
+    if build_target is not None:
+        test_args += ["--mlagents-build-target", build_target_to_enum[build_target]]
     print(f"{' '.join(test_args)} ...")
 
     timeout = 30 * 60  # 30 minutes, just in case
@@ -72,58 +84,74 @@ def run_standalone_build(
 
     # Copy the default build name into the artifacts folder.
     if output_path is None and res.returncode == 0:
+        exe_name = "testPlayer.app" if platform == "darwin" else "testPlayer"
         shutil.move(
-            os.path.join(base_path, "Project", "testPlayer.app"),
-            os.path.join(get_base_output_path(), "testPlayer.app"),
+            os.path.join(base_path, "Project", exe_name),
+            os.path.join(get_base_output_path(), exe_name),
         )
 
     # Print if we fail or want verbosity.
     if verbose or res.returncode != 0:
-        subprocess.run(["cat", log_output_path])
+        if log_output_path:
+            subprocess.run(["cat", log_output_path])
 
     return res.returncode
 
 
+def find_executables(root_dir: str) -> List[str]:
+    """
+    Try to find the player executable. This seems to vary between Unity versions.
+    """
+    ignored_extension = frozenset([".dll", ".dylib", ".bundle"])
+    ignored_files = frozenset(["macblas"])
+    exes = []
+    for root, _, files in os.walk(root_dir):
+        for filename in files:
+            file_root, ext = os.path.splitext(filename)
+            if ext in ignored_extension or filename in ignored_files:
+                continue
+            file_path = os.path.join(root, filename)
+            if os.access(file_path, os.X_OK):
+                exes.append(file_path)
+    # Also check the input path
+    if os.access(root_dir, os.X_OK):
+        exes.append(root_dir)
+    return exes
+
+
 def init_venv(
     mlagents_python_version: str = None, extra_packages: Optional[List[str]] = None
-) -> str:
+) -> None:
     """
-    Set up the virtual environment, and return the venv path.
+    Install the necessary packages for the venv
     :param mlagents_python_version: The version of mlagents python packcage to install.
         If None, will do a local install, otherwise will install from pypi
     :return:
     """
-    # Use a different venv path for different versions
-    venv_path = "venv"
-    if mlagents_python_version:
-        venv_path += "_" + mlagents_python_version
-
-    # Set up the venv and install mlagents
-    subprocess.check_call(f"python -m venv {venv_path}", shell=True)
-    pip_commands = [
-        "--upgrade pip",
-        "--upgrade setuptools",
-        # TODO build these and publish to internal pypi
-        "~/tensorflow_pkg/tensorflow-2.0.0-cp37-cp37m-macosx_10_14_x86_64.whl",
-    ]
+    pip_commands = ["--upgrade pip", "--upgrade setuptools"]
     if mlagents_python_version:
         # install from pypi
+        if platform != "darwin":
+            raise RuntimeError("Yamato can only run tensorflow on mac platforms!")
         pip_commands += [
             f"mlagents=={mlagents_python_version}",
             f"gym-unity=={mlagents_python_version}",
+            # TODO build these and publish to internal pypi
+            "~/tensorflow_pkg/tensorflow-2.0.0-cp37-cp37m-macosx_10_14_x86_64.whl",
+            "tf2onnx==1.6.1",
         ]
     else:
         # Local install
         pip_commands += ["-e ./ml-agents-envs", "-e ./ml-agents", "-e ./gym-unity"]
     if extra_packages:
         pip_commands += extra_packages
+
     for cmd in pip_commands:
         pip_index_url = "--index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple"
+        print(f'Running "python3 -m pip install -q {cmd} {pip_index_url}"')
         subprocess.check_call(
-            f"source {venv_path}/bin/activate; python -m pip install -q {cmd} {pip_index_url}",
-            shell=True,
+            f"python3 -m pip install -q {cmd} {pip_index_url}", shell=True
         )
-    return venv_path
 
 
 def checkout_csharp_version(csharp_version):
@@ -136,12 +164,12 @@ def checkout_csharp_version(csharp_version):
     if csharp_version is None:
         return
 
-    csharp_dirs = ["com.unity.ml-agents", "Project"]
+    csharp_tag = f"com.unity.ml-agents_{csharp_version}"
+    csharp_dirs = ["com.unity.ml-agents", "com.unity.ml-agents.extensions", "Project"]
     for csharp_dir in csharp_dirs:
         subprocess.check_call(f"rm -rf {csharp_dir}", shell=True)
-        subprocess.check_call(
-            f"git checkout {csharp_version} -- {csharp_dir}", shell=True
-        )
+        # Allow the checkout to fail, since the extensions folder isn't availabe in 1.0.0
+        subprocess.call(f"git checkout {csharp_tag} -- {csharp_dir}", shell=True)
 
 
 def undo_git_checkout():
@@ -154,12 +182,42 @@ def undo_git_checkout():
     subprocess.check_call("rm -rf Project/Library", shell=True)
 
 
-def override_config_file(src_path, dest_path, **kwargs):
+def override_config_file(src_path, dest_path, overrides):
     """
     Override settings in a trainer config file. For example,
         override_config_file(src_path, dest_path, max_steps=42)
     will copy the config file at src_path to dest_path, but override the max_steps field to 42 for all brains.
     """
+    with open(src_path) as f:
+        configs = yaml.safe_load(f)
+        behavior_configs = configs["behaviors"]
+
+    for config in behavior_configs.values():
+        _override_config_dict(config, overrides)
+
+    with open(dest_path, "w") as f:
+        yaml.dump(configs, f)
+
+
+def _override_config_dict(config, overrides):
+    for key, val in overrides.items():
+        if isinstance(val, dict):
+            _override_config_dict(config[key], val)
+        else:
+            config[key] = val
+
+
+def override_legacy_config_file(python_version, src_path, dest_path, **kwargs):
+    """
+    Override settings in a trainer config file, using an old version of the src_path. For example,
+        override_config_file("0.16.0", src_path, dest_path, max_steps=42)
+    will sync the file at src_path from version 0.16.0, copy it to dest_path, and override the
+    max_steps field to 42 for all brains.
+    """
+    # Sync the old version of the file
+    python_tag = f"python-packages_{python_version}"
+    subprocess.check_call(f"git checkout {python_tag} -- {src_path}", shell=True)
+
     with open(src_path) as f:
         configs = yaml.safe_load(f)
 
