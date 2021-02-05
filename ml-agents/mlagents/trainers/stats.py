@@ -87,6 +87,13 @@ class StatsWriter(abc.ABC):
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
     ) -> None:
+        """
+        Callback to record training information
+        :param category: Category of the statistics. Usually this is the behavior name.
+        :param values: Dictionary of statistics.
+        :param step: The current training step.
+        :return:
+        """
         pass
 
     def add_property(

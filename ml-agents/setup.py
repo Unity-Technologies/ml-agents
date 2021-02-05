@@ -3,6 +3,7 @@ import sys
 
 from setuptools import setup, find_packages
 from setuptools.command.install import install
+from mlagents.plugins import ML_AGENTS_STATS_WRITER
 import mlagents.trainers
 
 VERSION = mlagents.trainers.__version__
@@ -71,13 +72,18 @@ setup(
         "cattrs>=1.0.0,<1.1.0",
         "attrs>=19.3.0",
         'pypiwin32==223;platform_system=="Windows"',
+        "importlib_metadata; python_version<'3.8'",
     ],
     python_requires=">=3.6.1",
     entry_points={
         "console_scripts": [
             "mlagents-learn=mlagents.trainers.learn:main",
             "mlagents-run-experiment=mlagents.trainers.run_experiment:main",
-        ]
+        ],
+        # Plugins - each plugin type should have an entry here for the default behavior
+        ML_AGENTS_STATS_WRITER: [
+            "default=mlagents.plugins.stats_writer:get_default_stats_writers"
+        ],
     },
     cmdclass={"verify": VerifyVersionCommand},
 )
