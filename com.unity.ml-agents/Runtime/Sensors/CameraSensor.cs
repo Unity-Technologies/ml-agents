@@ -15,6 +15,10 @@ namespace Unity.MLAgents.Sensors
         string m_Name;
         int[] m_Shape;
         SensorCompressionType m_CompressionType;
+        static DimensionProperty[] m_DimensionProperties = new DimensionProperty[] {
+            DimensionProperty.TranslationalEquivariance,
+            DimensionProperty.TranslationalEquivariance,
+            DimensionProperty.None };
 
         /// <summary>
         /// The Camera used for rendering the sensor observations.
@@ -83,7 +87,7 @@ namespace Unity.MLAgents.Sensors
         /// <returns></returns>
         public DimensionProperty[] GetDimensionProperties()
         {
-            return new DimensionProperty[] { DimensionProperty.TranslationalEquivariance, DimensionProperty.TranslationalEquivariance, DimensionProperty.None };
+            return m_DimensionProperties;
         }
 
         /// <summary>
