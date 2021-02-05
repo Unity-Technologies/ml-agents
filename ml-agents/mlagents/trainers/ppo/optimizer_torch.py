@@ -1,7 +1,7 @@
 from typing import Dict, cast
 from mlagents.torch_utils import torch
 
-from mlagents.trainers.buffer import AgentBuffer, BufferKey, RewardUtil
+from mlagents.trainers.buffer import AgentBuffer, BufferKey, RewardSignalUtil
 
 from mlagents_envs.timers import timed
 from mlagents.trainers.policy.torch_policy import TorchPolicy
@@ -131,10 +131,10 @@ class TorchPPOOptimizer(TorchOptimizer):
         old_values = {}
         for name in self.reward_signals:
             old_values[name] = ModelUtils.list_to_tensor(
-                batch[RewardUtil.value_estimates_key(name)]
+                batch[RewardSignalUtil.value_estimates_key(name)]
             )
             returns[name] = ModelUtils.list_to_tensor(
-                batch[RewardUtil.returns_key(name)]
+                batch[RewardSignalUtil.returns_key(name)]
             )
 
         n_obs = len(self.policy.behavior_spec.observation_specs)

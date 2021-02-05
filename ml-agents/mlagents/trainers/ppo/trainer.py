@@ -9,7 +9,7 @@ import numpy as np
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.base_env import BehaviorSpec
-from mlagents.trainers.buffer import BufferKey, RewardUtil
+from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.policy.torch_policy import TorchPolicy
@@ -80,7 +80,9 @@ class PPOTrainer(RLTrainer):
         )
 
         for name, v in value_estimates.items():
-            agent_buffer_trajectory[RewardUtil.value_estimates_key(name)].extend(v)
+            agent_buffer_trajectory[RewardSignalUtil.value_estimates_key(name)].extend(
+                v
+            )
             self._stats_reporter.add_stat(
                 f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value Estimate",
                 np.mean(v),
@@ -94,7 +96,7 @@ class PPOTrainer(RLTrainer):
             evaluate_result = (
                 reward_signal.evaluate(agent_buffer_trajectory) * reward_signal.strength
             )
-            agent_buffer_trajectory[RewardUtil.rewards_key(name)].extend(
+            agent_buffer_trajectory[RewardSignalUtil.rewards_key(name)].extend(
                 evaluate_result
             )
             # Report the reward signals
@@ -107,10 +109,10 @@ class PPOTrainer(RLTrainer):
             bootstrap_value = value_next[name]
 
             local_rewards = agent_buffer_trajectory[
-                RewardUtil.rewards_key(name)
+                RewardSignalUtil.rewards_key(name)
             ].get_batch()
             local_value_estimates = agent_buffer_trajectory[
-                RewardUtil.value_estimates_key(name)
+                RewardSignalUtil.value_estimates_key(name)
             ].get_batch()
 
             local_advantage = get_gae(
@@ -122,8 +124,12 @@ class PPOTrainer(RLTrainer):
             )
             local_return = local_advantage + local_value_estimates
             # This is later use as target for the different value estimates
-            agent_buffer_trajectory[RewardUtil.returns_key(name)].set(local_return)
-            agent_buffer_trajectory[RewardUtil.advantage_key(name)].set(local_advantage)
+            agent_buffer_trajectory[RewardSignalUtil.returns_key(name)].set(
+                local_return
+            )
+            agent_buffer_trajectory[RewardSignalUtil.advantage_key(name)].set(
+                local_advantage
+            )
             tmp_advantages.append(local_advantage)
             tmp_returns.append(local_return)
 

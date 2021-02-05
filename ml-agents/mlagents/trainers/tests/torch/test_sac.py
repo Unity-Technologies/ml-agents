@@ -1,7 +1,7 @@
 import pytest
 from mlagents.torch_utils import torch
 
-from mlagents.trainers.buffer import BufferKey, RewardUtil
+from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.tests import mock_brain as mb
@@ -58,7 +58,7 @@ def test_sac_optimizer_update(dummy_config, rnn, visual, discrete):
         BUFFER_INIT_SAMPLES, optimizer.policy.behavior_spec, memory_size=24
     )
     # Mock out reward signal eval
-    update_buffer[RewardUtil.rewards_key("extrinsic")] = update_buffer[
+    update_buffer[RewardSignalUtil.rewards_key("extrinsic")] = update_buffer[
         BufferKey.ENVIRONMENT_REWARDS
     ]
     return_stats = optimizer.update(
@@ -95,10 +95,10 @@ def test_sac_update_reward_signals(
     )
 
     # Mock out reward signal eval
-    update_buffer[RewardUtil.rewards_key("extrinsic")] = update_buffer[
+    update_buffer[RewardSignalUtil.rewards_key("extrinsic")] = update_buffer[
         BufferKey.ENVIRONMENT_REWARDS
     ]
-    update_buffer[RewardUtil.rewards_key("curiosity")] = update_buffer[
+    update_buffer[RewardSignalUtil.rewards_key("curiosity")] = update_buffer[
         BufferKey.ENVIRONMENT_REWARDS
     ]
     return_stats = optimizer.update_reward_signals(

@@ -12,7 +12,7 @@ from mlagents.trainers.policy.checkpoint_manager import ModelCheckpoint
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
 from mlagents_envs.base_env import BehaviorSpec
-from mlagents.trainers.buffer import BufferKey, RewardUtil
+from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
@@ -255,7 +255,7 @@ class SACTrainer(RLTrainer):
                 )
                 # Get rewards for each reward
                 for name, signal in self.optimizer.reward_signals.items():
-                    sampled_minibatch[RewardUtil.rewards_key(name)] = (
+                    sampled_minibatch[RewardSignalUtil.rewards_key(name)] = (
                         signal.evaluate(sampled_minibatch) * signal.strength
                     )
 

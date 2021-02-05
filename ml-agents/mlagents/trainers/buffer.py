@@ -52,7 +52,7 @@ AgentBufferKey = Union[
 ]
 
 
-class RewardUtil:
+class RewardSignalUtil:
     @staticmethod
     def rewards_key(name: str) -> AgentBufferKey:
         return RewardSignalKeyPrefix.REWARDS, name

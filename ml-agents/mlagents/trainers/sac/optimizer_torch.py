@@ -10,7 +10,7 @@ from mlagents.trainers.torch.networks import ValueNetwork
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
-from mlagents.trainers.buffer import AgentBuffer, BufferKey, RewardUtil
+from mlagents.trainers.buffer import AgentBuffer, BufferKey, RewardSignalUtil
 from mlagents_envs.timers import timed
 from mlagents_envs.base_env import ActionSpec, ObservationSpec
 from mlagents.trainers.exception import UnityTrainerException
@@ -460,7 +460,7 @@ class TorchSACOptimizer(TorchOptimizer):
         rewards = {}
         for name in self.reward_signals:
             rewards[name] = ModelUtils.list_to_tensor(
-                batch[RewardUtil.rewards_key(name)]
+                batch[RewardSignalUtil.rewards_key(name)]
             )
 
         n_obs = len(self.policy.behavior_spec.observation_specs)
