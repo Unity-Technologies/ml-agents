@@ -49,7 +49,7 @@ namespace Unity.MLAgents.Sensors
                 throw new UnityAgentsException(
                     "The BufferSensor was expecting an observation of size " +
                     $"{m_ObsSize} but received {obs.Length} observations instead."
-                )
+                );
             }
             if (m_CurrentNumObservables >= m_MaxNumObs)
             {
