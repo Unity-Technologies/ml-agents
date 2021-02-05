@@ -11,12 +11,6 @@ public class NumberTile : MonoBehaviour
     private bool m_Visited = false;
     private MeshRenderer m_Renderer;
 
-    void Awake()
-    {
-        m_Renderer = GetComponentInChildren<MeshRenderer>();
-        ResetTile();
-    }
-
     public bool IsVisited
     {
         get { return m_Visited; }
@@ -30,6 +24,10 @@ public class NumberTile : MonoBehaviour
 
     public void ResetTile()
     {
+        if (m_Renderer is null)
+        {
+            m_Renderer = GetComponentInChildren<MeshRenderer>();
+        }
         m_Renderer.sharedMaterial = DefaultMaterial;
         m_Visited = false;
     }
