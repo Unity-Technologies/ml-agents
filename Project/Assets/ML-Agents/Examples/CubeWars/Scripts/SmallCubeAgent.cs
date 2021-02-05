@@ -184,7 +184,7 @@ public class SmallCubeAgent : Agent
         }
     }
 
-    public void HitAgent(float damage)
+    public bool HitAgent(float damage)
     {
         if (!m_Dead)
         {
@@ -194,6 +194,11 @@ public class SmallCubeAgent : Agent
             }
             m_HitPoints -= damage;
             HealthStatus();
+            return m_HitPoints <= 0;
+        }
+        else
+        {
+            return true;
         }
     }
 
