@@ -188,25 +188,36 @@ public class LargeCubeAgent : Agent
         }
     }
 
+    // Only change material of body and tail
+    private void ChangeMaterial(Material material)
+    {
+        myBody.GetComponentInChildren<Renderer>().material = material;
+        GameObject tail = transform.Find("DragonCube").Find("tail").gameObject;
+        if (tail != null)
+        {
+            tail.GetComponentInChildren<Renderer>().material = material;
+        }
+    }
+
     public void HealthStatus()
     {
         if (m_HitPoints <= 1f && m_HitPoints > .5f)
         {
             gameObject.tag = "StrongLargeAgent";
-            myBody.GetComponentInChildren<Renderer>().material = normalMaterial;
+            ChangeMaterial(normalMaterial);
         }
 
         else if (m_HitPoints <= .5f && m_HitPoints > 0.0f)
         {
             gameObject.tag = "WeakLargeAgent";
-            myBody.GetComponentInChildren<Renderer>().material = weakMaterial;
+            ChangeMaterial(weakMaterial);
 
         }
         else // Dead
         {
             m_Dead = true;
             gameObject.tag = "DeadLargeAgent";
-            myBody.GetComponentInChildren<Renderer>().material = deadMaterial;
+            ChangeMaterial(deadMaterial);
             m_MyArea.AgentDied();
         }
     }
