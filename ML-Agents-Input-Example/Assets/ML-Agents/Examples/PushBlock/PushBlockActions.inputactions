@@ -24,6 +24,17 @@
             ],
             "bindings": [
                 {
+                    "name": "gamepad_move",
+                    "id": "477500ef-6d32-4b84-b9f8-158f18bcb906",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "movement",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
                     "name": "keyboard_move",
                     "id": "6bcba4bf-5ce0-4005-9e6a-0de2487211b0",
                     "path": "2DVector",
@@ -77,17 +88,6 @@
                     "action": "movement",
                     "isComposite": false,
                     "isPartOfComposite": true
-                },
-                {
-                    "name": "gamepad_move",
-                    "id": "477500ef-6d32-4b84-b9f8-158f18bcb906",
-                    "path": "2DVector",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "movement",
-                    "isComposite": true,
-                    "isPartOfComposite": false
                 },
                 {
                     "name": "up",

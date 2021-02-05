@@ -25,7 +25,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input.Composites
         }
 
         [RuntimeInitializeOnLoadMethod]
-        static void Init() { }
+        public static void Init() { }
 
         public override Vector2 ReadValue(ref InputBindingCompositeContext context)
         {

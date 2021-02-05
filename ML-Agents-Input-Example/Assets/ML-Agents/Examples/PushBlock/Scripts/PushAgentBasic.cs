@@ -68,15 +68,7 @@ public class PushAgentBasic : Agent, IIntputActionAssetProvider
         m_PushblockActions = new PushBlockActions();
         m_PushblockActions.Enable();
         m_PushblockActions.Movement.jump.performed += JumpOnperformed;
-    }
 
-    void JumpOnperformed(InputAction.CallbackContext callbackContext)
-    {
-        InnerJump(gameObject.transform);
-    }
-
-    public override void Initialize()
-    {
         goalDetect = block.GetComponent<GoalDetect>();
         goalDetect.agent = this;
 
@@ -90,7 +82,15 @@ public class PushAgentBasic : Agent, IIntputActionAssetProvider
         m_GroundRenderer = ground.GetComponent<Renderer>();
         // Starting material
         m_GroundMaterial = m_GroundRenderer.material;
+    }
 
+    void JumpOnperformed(InputAction.CallbackContext callbackContext)
+    {
+        InnerJump(gameObject.transform);
+    }
+
+    public override void Initialize()
+    {
         m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
@@ -123,7 +123,6 @@ public class PushAgentBasic : Agent, IIntputActionAssetProvider
 
     void FixedUpdate()
     {
-
         InnerMove(gameObject.transform, m_PushblockActions.Movement.movement.ReadValue<Vector2>());
         if (m_JumpTimeRemaining < 0)
         {

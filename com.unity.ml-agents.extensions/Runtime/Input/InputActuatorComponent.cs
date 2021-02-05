@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Extensions.Runtime.Input.Composites;
 using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -23,7 +24,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         Agent m_Agent;
         uint m_LocalId;
 
-        static uint s_DeviceId = 0;
+        static uint s_DeviceId;
 
         static Dictionary<string, string> s_ControlTypeToCompositeType = new Dictionary<string, string>
         {
@@ -37,8 +38,9 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             { typeof(Vector2Control), typeof(Vector2InputActionAdaptor) },
             { typeof(ButtonControl), typeof(ButtonInputActionAdaptor) }
         };
+        string m_LayoutName;
+        string m_InterfaceName;
 
-        const string k_MlAgentsDevicePath = "/MLAgentsLayout";
         const string k_MlAgentsLayoutFormat = "MLAT";
         const string k_MlAgentsLayoutName = "MLAgentsLayout";
         const string k_MlAgentsDeviceName = "MLAgentsDevice";
@@ -46,6 +48,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 
         void Start()
         {
+            InputCompositeLoader.Instance.Init();
             FindNeededComponents();
         }
 
@@ -61,13 +64,24 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             m_LocalId = s_DeviceId++;
 
             m_InputAsset.Disable();
-            m_Actuators = GenerateActionActuatorsFromAsset(m_InputAsset, out var layout, IsInHeuristicMode());
+            m_Actuators = GenerateActionActuatorsFromAsset(m_InputAsset,
+                m_LayoutName,
+                m_LocalId,
+                m_Agent,
+                IsInHeuristicMode(),
+                out var layout);
 
             if (InputSystem.LoadLayout(layout.name) == null)
             {
                 InputSystem.RegisterLayout(layout.ToJson(), layout.name);
             }
-            m_Device = CreateDevice(m_InputAsset, m_PlayerInput.defaultActionMap, m_LocalId);
+
+            m_Device = CreateDevice(m_InputAsset,
+                m_LayoutName,
+                m_InterfaceName,
+                m_PlayerInput.defaultActionMap,
+                m_LocalId);
+
             InputSystem.AddDevice(m_Device);
             // Add our device to the device list if there is one.
             if (InputSystem.devices.Count > 0)
@@ -95,27 +109,26 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         public override ActionSpec ActionSpec => ActionSpec.MakeContinuous(0);
 
 
-        static InputDevice CreateDevice(InputActionAsset asset, string defaultMap, uint localId)
+        static InputDevice CreateDevice(InputActionAsset asset, string layoutName, string interfaceName, string defaultMap, uint localId)
         {
-            var mlAgentsInterfaceName = k_MlAgentsDeviceName;
             // See if our device layout was already registered.
-            var layoutName = InputSystem.TryFindMatchingLayout(new InputDeviceDescription
+            var existingLayout = InputSystem.TryFindMatchingLayout(new InputDeviceDescription
             {
-                interfaceName = k_MlAgentsDeviceName
+                interfaceName = interfaceName
             });
 
             // Load the device layout based on the controls we created previously.
-            if (string.IsNullOrEmpty(layoutName))
+            if (string.IsNullOrEmpty(existingLayout))
             {
-                InputSystem.RegisterLayoutMatcher(k_MlAgentsLayoutName, new InputDeviceMatcher()
-                    .WithInterface($"^({k_MlAgentsDeviceName}[0-9]*)"));
+                InputSystem.RegisterLayoutMatcher(layoutName, new InputDeviceMatcher()
+                    .WithInterface($"^({interfaceName}[0-9]*)"));
             }
 
             // Actually create the device instance.
             var device = InputSystem.AddDevice(
                 new InputDeviceDescription
                 {
-                    interfaceName = mlAgentsInterfaceName,
+                    interfaceName = interfaceName,
                     serial = $"{localId}"
                 }
             );
@@ -153,11 +166,16 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             return device;
         }
 
-        IActuator[] GenerateActionActuatorsFromAsset(InputActionAsset asset, out InputControlLayout layout, bool isInHeuristicMode)
+        static IActuator[] GenerateActionActuatorsFromAsset(InputActionAsset asset,
+            string layoutName,
+            uint localId,
+            Agent agent,
+            bool isInHeuristicMode,
+            out InputControlLayout layout)
         {
             // TODO does this need to change based on the action map we use?
             var builder = new InputControlLayout.Builder()
-                .WithName(k_MlAgentsLayoutName)
+                .WithName(layoutName)
                 .WithFormat(k_MlAgentsLayoutFormat);
 
             var actuators = new List<IActuator>();
@@ -171,27 +189,42 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
                     .WithFormat(actionLayout.stateFormat);
 
                 var binding = action.bindings[0];
-                var path = $"{k_MlAgentsDevicePath}{m_LocalId}/{action.name}";
+                var devicePath = InputControlPath.Separator + layoutName;
+                string deviceId = localId == 0 ? string.Empty : "" + localId;
+                var path = $"{devicePath}{deviceId}{InputControlPath.Separator}{action.name}";
                 if (binding.isComposite)
                 {
+                    InputBinding child = action.bindings[1];
+                    for (var i = 1; i < action.bindings.Count; i++)
+                    {
+                        var candidate = action.bindings[i];
+                        if (candidate.isComposite || binding.action != candidate.action)
+                        {
+                            continue;
+                        }
+
+                        child = candidate;
+                        break;
+
+                    }
                     var compositeType = s_ControlTypeToCompositeType[action.expectedControlType];
                     action.AddCompositeBinding(compositeType)
                     .With(action.expectedControlType,
                         path,
-                        $"{action.bindings[1].groups};{k_MlAgentsControlSchemeName}");
+                        $"{child.groups}{InputBinding.Separator}{k_MlAgentsControlSchemeName}");
                 }
                 else
                 {
                     action.AddBinding(path,
                         action.interactions,
                         action.processors,
-                        $"{binding.groups};{k_MlAgentsControlSchemeName}");
+                        $"{binding.groups}{InputBinding.Separator}{k_MlAgentsControlSchemeName}");
                 }
 
                 var adaptor = (IRLActionInputAdaptor)Activator.CreateInstance(
                     s_ControlTypeToAdaptorType[actionLayout.type]);
                 actuators.Add(new InputActionActuator(
-                    m_Agent,
+                    agent,
                     action,
                     adaptor,
                     isInHeuristicMode));
@@ -226,6 +259,8 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             {
                 m_BehaviorParameters = GetComponent<BehaviorParameters>();
                 Assert.IsNotNull(m_BehaviorParameters);
+                m_LayoutName = k_MlAgentsLayoutName + m_BehaviorParameters.BehaviorName;
+                m_InterfaceName = k_MlAgentsDeviceName + m_BehaviorParameters.BehaviorName;
             }
 
             // TODO remove
@@ -246,7 +281,10 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         void CleanupActionAsset()
         {
             InputSystem.RemoveLayout(k_MlAgentsLayoutName);
-            InputSystem.RemoveDevice(m_Device);
+            if (m_Device != null)
+            {
+                InputSystem.RemoveDevice(m_Device);
+            }
             m_InputAsset.RemoveControlScheme(k_MlAgentsControlSchemeName);
             m_InputAsset = null;
             m_PlayerInput = null;
