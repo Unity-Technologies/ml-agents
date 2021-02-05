@@ -35,6 +35,11 @@ namespace Unity.MLAgents
         public float reward;
 
         /// <summary>
+        /// The current team reward received by the agent.
+        /// </summary>
+        public float teamReward;
+
+        /// <summary>
         /// Whether the agent is done or not.
         /// </summary>
         public bool done;
@@ -247,6 +252,9 @@ namespace Unity.MLAgents
         /// when the agent performs a "bad" action that we wish to punish/deter.
         /// Additionally, the magnitude of the reward should not exceed 1.0
         float m_Reward;
+
+        /// Represents the team reward the agent accumulated during the current step.
+        float m_TeamReward;
 
         /// Keeps track of the cumulative reward in this episode.
         float m_CumulativeReward;
@@ -706,6 +714,22 @@ namespace Unity.MLAgents
 #endif
             m_Reward += increment;
             m_CumulativeReward += increment;
+        }
+
+        public void SetTeamReward(float reward)
+        {
+#if DEBUG
+            Utilities.DebugCheckNanAndInfinity(reward, nameof(reward), nameof(SetTeamReward));
+#endif
+            m_TeamReward += reward;
+        }
+
+        public void AddTeamReward(float increment)
+        {
+#if DEBUG
+            Utilities.DebugCheckNanAndInfinity(increment, nameof(increment), nameof(AddTeamReward));
+#endif
+            m_TeamReward += increment;
         }
 
         /// <summary>

@@ -20,4 +20,5 @@ message AgentInfoProto {
     reserved 12; // deprecated CustomObservationProto custom_observation = 12;
     repeated ObservationProto observations = 13;
     int32 team_manager_id = 14;
+    float team_reward = 15;
 }
