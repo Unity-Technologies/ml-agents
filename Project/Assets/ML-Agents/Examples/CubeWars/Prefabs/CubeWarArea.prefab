@@ -1063,6 +1063,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5022602860645237092, guid: 4295d3fcd852848f0ac0b99643e68b49,
         type: 3}
+    - target: {fileID: 8195483629779642977, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 8136121708948342693, guid: 4dd35c7381e7445c99133a34a83e21db,
         type: 3}
       propertyPath: m_Constraints
@@ -1376,6 +1381,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5022602860645237092, guid: 4295d3fcd852848f0ac0b99643e68b49,
         type: 3}
+    - target: {fileID: 8195483629779642977, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 8136121708948342693, guid: 4dd35c7381e7445c99133a34a83e21db,
         type: 3}
       propertyPath: m_Constraints
@@ -1546,6 +1556,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5022602860645237092, guid: 4295d3fcd852848f0ac0b99643e68b49,
         type: 3}
+    - target: {fileID: 8195483629779642977, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8136121708948342693, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: m_Constraints
+      value: 112
+      objectReference: {fileID: 0}
     - target: {fileID: 8705827100738960883, guid: 4dd35c7381e7445c99133a34a83e21db,
         type: 3}
       propertyPath: m_Parameters.colorGradient.key0.r
@@ -1566,11 +1586,6 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 07bc6a1dce9694cc49527eb9bc3f0345, type: 2}
-    - target: {fileID: 8136121708948342693, guid: 4dd35c7381e7445c99133a34a83e21db,
-        type: 3}
-      propertyPath: m_Constraints
-      value: 112
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4dd35c7381e7445c99133a34a83e21db, type: 3}
 --- !u!4 &4419274671784554 stripped
