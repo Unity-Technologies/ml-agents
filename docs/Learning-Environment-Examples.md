@@ -555,3 +555,30 @@ drop down. New pieces are spawned randomly at the top, with a chance of being
   - 37.6 for vector observations
   - 34.2 for simple heuristic (pick a random valid move)
   - 37.0 for greedy heuristic (pick the highest-scoring valid move)
+
+## Sorter
+![Sorter](images/sorter.png)
+
+ - Set-up: The Agent is in a circular room with numbered tiles. The values of the
+ tiles are random between 1 and 20. The tiles present in the room are randomized
+ at each episode. When the Agent visits a tile, it turns green.
+ - Goal: Visit all the tiles in ascending order.
+ - Agents: The environment contains a single Agent
+ - Agent Reward Function:
+  - -.0002 Existential penalty.
+  - +1 For visiting the right tile
+  - -1 For visiting the wrong tile
+ - BehaviorParameters:
+  - Vector Observations : 4 : 2 floats for Position and 2 floats for orientation
+  - Variable Length Observations : Between 1 and 20 entities (one for each tile)
+  each with 22 observations, the first 20 are one hot encoding of the value of the,
+  the 21st represents the position of the tile and the 22nd is 1 if the tile was
+  visited and zero otherwise.
+  - Actions: 3 discrete branched actions corresponding to forward, backward,
+  sideways movement, as well as rotation.
+  - Float Properties: One
+    - num_tiles: The maximum number of tiles to sample.
+      - Default: 2
+      - Recommended Minimum: 1
+      - Recommended Maximum: 20
+  - Benchmark Mean Reward: Depends on the number of tiles.
