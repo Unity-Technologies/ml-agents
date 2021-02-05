@@ -511,7 +511,7 @@ setting the State Size.
 
 ### Variable Length Observations
 
-It is possible to have observations be of variable size by using a `BufferSensor`,
+It is possible for agents to collect observations from a varying number of GameObjects by using a `BufferSensor`.
 You can add a `BufferSensor` to your Agent by adding a `BufferSensorComponent` to
 its GameObject.
 The `BufferSensor` can be useful in situations in which the Agent must pay
