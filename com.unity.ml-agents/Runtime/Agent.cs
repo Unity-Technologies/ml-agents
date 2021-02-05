@@ -35,6 +35,11 @@ namespace Unity.MLAgents
         public float reward;
 
         /// <summary>
+        /// The current team reward received by the agent.
+        /// </summary>
+        public float teamReward;
+
+        /// <summary>
         /// Whether the agent is done or not.
         /// </summary>
         public bool done;
@@ -248,6 +253,9 @@ namespace Unity.MLAgents
         /// Additionally, the magnitude of the reward should not exceed 1.0
         float m_Reward;
 
+        /// Represents the team reward the agent accumulated during the current step.
+        float m_TeamReward;
+
         /// Keeps track of the cumulative reward in this episode.
         float m_CumulativeReward;
 
@@ -316,8 +324,6 @@ namespace Unity.MLAgents
         /// OnActionReceived method.
         /// </summary>
         float[] m_LegacyActionCache;
-
-        ITeamManager m_TeamManager;
 
         ITeamManager m_TeamManager;
 
@@ -547,17 +553,9 @@ namespace Unity.MLAgents
                 }
             }
             // Request the last decision with no callbacks
-            if (m_TeamManager != null)
-            {
-                // Send final observations to TeamManager if it exists.
-                // The TeamManager is responsible to keeping track of the Agent after it's
-                // done, including propagating any "posthumous" rewards.
-                m_TeamManager.OnAgentDone(this, doneReason, sensors);
-            }
-            else
-            {
-                SendDoneToTrainer();
-            }
+            // We request a decision so Python knows the Agent is done immediately
+            m_Brain?.RequestDecision(m_Info, sensors);
+            ResetSensors();
 
             // We also have to write any to any DemonstationStores so that they get the "done" flag.
             foreach (var demoWriter in DemonstrationWriters)
@@ -578,13 +576,6 @@ namespace Unity.MLAgents
             m_RequestAction = false;
             m_RequestDecision = false;
             m_Info.storedActions.Clear();
-        }
-
-        public void SendDoneToTrainer()
-        {
-            // We request a decision so Python knows the Agent is done immediately
-            m_Brain?.RequestDecision(m_Info, sensors);
-            ResetSensors();
         }
 
         /// <summary>
@@ -720,9 +711,20 @@ namespace Unity.MLAgents
             m_CumulativeReward += increment;
         }
 
-        public void AddRewardAfterDeath(float increment)
+        public void SetTeamReward(float reward)
         {
-            m_Info.reward += increment;
+#if DEBUG
+            Utilities.DebugCheckNanAndInfinity(reward, nameof(reward), nameof(SetTeamReward));
+#endif
+            m_TeamReward += reward;
+        }
+
+        public void AddTeamReward(float increment)
+        {
+#if DEBUG
+            Utilities.DebugCheckNanAndInfinity(increment, nameof(increment), nameof(AddTeamReward));
+#endif
+            m_TeamReward += increment;
         }
 
         /// <summary>
