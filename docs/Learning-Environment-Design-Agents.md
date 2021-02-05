@@ -519,7 +519,7 @@ attention to a varying number of entities. On the trainer side, the `BufferSenso
 is processed using an attention module. More information about attention
 mechanisms can be found [here](https://arxiv.org/abs/1706.03762). Training or
 doing inference with variable length observations can be slower than using
-a flat vector observation, but can allow you to represent more complex problems
+a flat vector observation. However, attention mechanisms enable solving problems that require comparative reasoning between entities in a scene
 such as our [Sorter environmentt](Learning-Environment-Examples.md#sorter).
 Note that even though the `BufferSensor` can process a variable number of
 entities, you still need to define a maximum number of entities. This is
