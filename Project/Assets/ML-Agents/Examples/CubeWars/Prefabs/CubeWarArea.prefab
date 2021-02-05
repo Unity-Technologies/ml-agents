@@ -66,7 +66,6 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -190,7 +189,6 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -336,7 +334,6 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -467,7 +464,7 @@ MonoBehaviour:
   m_RaysPerDirection: 20
   m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
-  m_RayLength: 20
+  m_RayLength: 28
   m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
@@ -869,6 +866,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4688212428263696}
     m_Modifications:
+    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: area
+      value: 
+      objectReference: {fileID: 1819751139121548}
+    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: largeAgent
+      value: 
+      objectReference: {fileID: 5707177387575911509}
+    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: role
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: MaxStep
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8081094897351109481, guid: 4dd35c7381e7445c99133a34a83e21db,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -922,26 +939,6 @@ PrefabInstance:
     - target: {fileID: 8081094897351109481, guid: 4dd35c7381e7445c99133a34a83e21db,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
-        type: 3}
-      propertyPath: area
-      value: 
-      objectReference: {fileID: 1819751139121548}
-    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
-        type: 3}
-      propertyPath: largeAgent
-      value: 
-      objectReference: {fileID: 5707177387575911509}
-    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
-        type: 3}
-      propertyPath: role
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
-        type: 3}
-      propertyPath: MaxStep
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8083776131842293165, guid: 4dd35c7381e7445c99133a34a83e21db,
@@ -1066,6 +1063,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4688212428263696}
     m_Modifications:
+    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: largeAgent
+      value: 
+      objectReference: {fileID: 5707177387575911509}
+    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: area
+      value: 
+      objectReference: {fileID: 1819751139121548}
+    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: role
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: MaxStep
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8081094897351109481, guid: 4dd35c7381e7445c99133a34a83e21db,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1119,26 +1136,6 @@ PrefabInstance:
     - target: {fileID: 8081094897351109481, guid: 4dd35c7381e7445c99133a34a83e21db,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
-        type: 3}
-      propertyPath: largeAgent
-      value: 
-      objectReference: {fileID: 5707177387575911509}
-    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
-        type: 3}
-      propertyPath: area
-      value: 
-      objectReference: {fileID: 1819751139121548}
-    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
-        type: 3}
-      propertyPath: role
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
-        type: 3}
-      propertyPath: MaxStep
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8083776131842293165, guid: 4dd35c7381e7445c99133a34a83e21db,
@@ -1236,6 +1233,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4688212428263696}
     m_Modifications:
+    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: area
+      value: 
+      objectReference: {fileID: 1819751139121548}
+    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: largeAgent
+      value: 
+      objectReference: {fileID: 5707177387575911509}
+    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
+        type: 3}
+      propertyPath: MaxStep
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8081094897351109481, guid: 4dd35c7381e7445c99133a34a83e21db,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1289,21 +1301,6 @@ PrefabInstance:
     - target: {fileID: 8081094897351109481, guid: 4dd35c7381e7445c99133a34a83e21db,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
-        type: 3}
-      propertyPath: area
-      value: 
-      objectReference: {fileID: 1819751139121548}
-    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
-        type: 3}
-      propertyPath: largeAgent
-      value: 
-      objectReference: {fileID: 5707177387575911509}
-    - target: {fileID: 5940168890073970201, guid: 4dd35c7381e7445c99133a34a83e21db,
-        type: 3}
-      propertyPath: MaxStep
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8083776131842293165, guid: 4dd35c7381e7445c99133a34a83e21db,
