@@ -17,7 +17,9 @@ namespace Unity.MLAgentsExamples
         /// Creates a BasicActuator.
         /// </summary>
         /// <returns></returns>
+#pragma warning disable 672
         public override IActuator CreateActuator()
+#pragma warning restore 672
         {
             return new BasicActuator(basicController);
         }
