@@ -8,7 +8,7 @@ using Cinemachine;
 public class GunController : MonoBehaviour
 {
     public bool AllowKeyboardInput = true; //this mode ignores player input
-    private bool initialized; //has this robot been initialized
+    public bool initialized; //has this robot been initialized
     public KeyCode shootKey = KeyCode.J;
     [Header("AUTOSHOOT")] public bool autoShootEnabled;
 
@@ -24,7 +24,8 @@ public class GunController : MonoBehaviour
     public GameObject projectilePrefab;
     public int numberOfProjectilesToPool = 25;
     public Transform projectileOrigin; //the transform the projectile will originate from
-    private List<Projectile> projectilePoolList = new List<Projectile>(); //projectiles to shoot
+    // public List<Projectile> projectilePoolList = new List<Projectile>(); //projectiles to shoot
+    public List<Rigidbody> projectilePoolList = new List<Rigidbody>(); //projectiles to shoot
 
     //FORCES
     [Header("FORCES")]
@@ -75,7 +76,7 @@ public class GunController : MonoBehaviour
         {
             impulseSource = GetComponent<CinemachineImpulseSource>();
             GameObject obj = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
-            Projectile p = obj.GetComponent<Projectile>();
+            Rigidbody p = obj.GetComponent<Rigidbody>();
             projectilePoolList.Add(p);
             p.transform.position = projectileOrigin.position;
             //            p.projectileController = this;
@@ -147,7 +148,8 @@ public class GunController : MonoBehaviour
         {
             if (!item.gameObject.activeInHierarchy)
             {
-                FireProjectile(item.rb);
+                FireProjectile(item);
+                // FireProjectile(item.rb);
                 break;
             }
         }

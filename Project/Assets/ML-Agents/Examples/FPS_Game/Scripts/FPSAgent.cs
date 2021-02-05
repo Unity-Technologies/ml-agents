@@ -94,6 +94,7 @@ public class FPSAgent : Agent
         // m_CubeMovement.RotateBody(m_Rotate, m_InputV);
         m_CubeMovement.Look(m_Rotate);
         Vector3 moveDir = input.Cam.transform.TransformDirection(new Vector3(m_InputH, 0, m_InputV));
+        moveDir.y = 0;
         //        m_CubeMovement.RunOnGround(m_AgentRb, m_Cam.transform.TransformDirection(new Vector3(0, 0, m_InputV)));
         //        m_CubeMovement.RunOnGround(m_AgentRb, moveDir);
         m_CubeMovement.RunOnGround(moveDir);
