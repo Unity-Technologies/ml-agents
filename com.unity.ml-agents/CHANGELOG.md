@@ -24,7 +24,7 @@ and this project adheres to
   will result in the values being summed (instead of averaged) when written to
   TensorBoard. Thanks to @brccabral for the contribution! (#4816)
 - The upper limit for the time scale (by setting the `--time-scale` paramater in mlagents-learn) was
-removed when training with a player. The Editor still requires it to be clamped to 100. (#4867)
+  removed when training with a player. The Editor still requires it to be clamped to 100. (#4867)
 - Added the IHeuristicProvider interface to allow IActuators as well as Agent implement the Heuristic function to generate actions.
   Updated the Basic example and the Match3 Example to use Actuators.
   Changed the namespace and file names of classes in com.unity.ml-agents.extensions. (#4849)
@@ -33,8 +33,12 @@ removed when training with a player. The Editor still requires it to be clamped 
   additional memory allocations. (#4887)
 - Added `ObservationWriter.AddList()` and deprecated `ObservationWriter.AddRange()`.
   `AddList()` is recommended, as it does not generate any additional memory allocations. (#4887)
+- The Barracuda dependency was upgraded to 1.3.0. (#4898)
+- Added `ActuatorComponent.CreateActuators`, and deprecate `ActuatorComponent.CreateActuator`.  The
+  default implementation will wrap `ActuatorComponent.CreateActuator` in an array and return that. (#4899)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Tensorboard now logs the Environment Reward as both a scalar and a histogram. (#4878)
 - Added a `--torch-device` commandline option to `mlagents-learn`, which sets the default
   [`torch.device`](https://pytorch.org/docs/stable/tensor_attributes.html#torch.torch.device) used for training. (#4888)
 - The `--cpu` commandline option had no effect and was removed. Use `--torch-device=cpu` to force CPU training. (#4888)

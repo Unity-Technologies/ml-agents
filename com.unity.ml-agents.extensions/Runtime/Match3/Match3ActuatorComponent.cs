@@ -28,7 +28,9 @@ namespace Unity.MLAgents.Extensions.Match3
         public bool ForceHeuristic;
 
         /// <inheritdoc/>
+#pragma warning disable 672
         public override IActuator CreateActuator()
+#pragma warning restore 672
         {
             var board = GetComponent<AbstractBoard>();
             var agent = GetComponentInParent<Agent>();

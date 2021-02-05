@@ -7,7 +7,9 @@ namespace Unity.MLAgentsExamples
     public class Match3ExampleActuatorComponent : Match3ActuatorComponent
     {
         /// <inheritdoc/>
+#pragma warning disable 672
         public override IActuator CreateActuator()
+#pragma warning restore 672
         {
             var board = GetComponent<Match3Board>();
             var agent = GetComponentInParent<Agent>();
