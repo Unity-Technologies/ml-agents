@@ -524,9 +524,9 @@ such as our [Sorter environmentt](Learning-Environment-Examples.md#sorter).
 Note that even though the `BufferSensor` can process a variable number of
 entities, you still need to define a maximum number of entities. This is
 because our network architecture requires to know what the shape of the
-observations will be. If less entities are processed than the maximum, the
-observation will be padded with zeros, but the trainer will actually ignore
-the padding.
+observations will be. If fewer entities are observed than the maximum, the
+observation will be padded with zeros and the trainer will ignore
+the padded observations.
 
 The `BufferSensor` constructor and Editor inspector have two arguments:
  - `Observation Size` : This is how many floats each entities will be
