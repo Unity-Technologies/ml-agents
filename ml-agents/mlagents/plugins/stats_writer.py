@@ -11,6 +11,7 @@ else:
 from mlagents.trainers.stats import StatsWriter
 
 from mlagents_envs import logging_util
+from mlagents.plugins import ML_AGENTS_STATS_WRITER
 from mlagents.trainers.settings import RunOptions
 from mlagents.trainers.stats import TensorboardWriter, GaugeWriter, ConsoleWriter
 
@@ -42,7 +43,7 @@ def register_stats_writer_plugins(run_options: RunOptions) -> List[StatsWriter]:
     and evaluates them, and returns the list of all the StatsWriter implementations.
     """
     all_stats_writers: List[StatsWriter] = []
-    entry_points = importlib_metadata.entry_points()["mlagents.stats_writer"]
+    entry_points = importlib_metadata.entry_points()[ML_AGENTS_STATS_WRITER]
 
     for entry_point in entry_points:
 

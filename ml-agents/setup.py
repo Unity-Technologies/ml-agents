@@ -3,6 +3,7 @@ import sys
 
 from setuptools import setup, find_packages
 from setuptools.command.install import install
+from mlagents.plugins import ML_AGENTS_STATS_WRITER
 import mlagents.trainers
 
 VERSION = mlagents.trainers.__version__
@@ -80,7 +81,7 @@ setup(
             "mlagents-run-experiment=mlagents.trainers.run_experiment:main",
         ],
         # Plugins - each plugin type should have an entry here for the default behavior
-        "mlagents.stats_writer": [
+        ML_AGENTS_STATS_WRITER: [
             "default=mlagents.plugins.stats_writer:get_default_stats_writers"
         ],
     },

@@ -20,11 +20,14 @@ In the call to `setup()`, you'll need to add to the `entry_points` dictionary fo
 implement. The form of this is `{entry point name}={plugin module}:{plugin function}`. For example, in
  `ml-agents-plugin-examples`:
 ```python
-"mlagents.stats_writer": [
-    "example=mlagents_plugin_examples.example_stats_writer:get_example_stats_writer"
-]
+entry_points={
+    ML_AGENTS_STATS_WRITER: [
+        "example=mlagents_plugin_examples.example_stats_writer:get_example_stats_writer"
+    ]
+}
 ```
-* `mlagents.stats_writer` is the name of the plugin interface. This must be one of the provided interfaces (see below).
+* `ML_AGENTS_STATS_WRITER` (which is a string constant, `mlagents.stats_writer`) is the name of the plugin interface.
+This must be one of the provided interfaces ([see below](#plugin-interfaces)).
 * `example` is the plugin implementation name. This can be anything.
 * `mlagents_plugin_examples.example_stats_writer` is the plugin module. This points to the module where the
 plugin registration function is defined.
