@@ -198,6 +198,7 @@ namespace Unity.MLAgents
         // This will mark the Agent as Done if it has reached its maxSteps.
         internal event Action AgentIncrementStep;
 
+        internal event Action TeamManagerStep;
 
         /// <summary>
         /// Signals to all of the <see cref="Agent"/>s that their step is about to begin.
@@ -572,6 +573,8 @@ namespace Unity.MLAgents
                 {
                     AgentAct?.Invoke();
                 }
+
+                TeamManagerStep?.Invoke();
             }
         }
 
