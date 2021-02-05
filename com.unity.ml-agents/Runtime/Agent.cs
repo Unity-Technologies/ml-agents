@@ -536,6 +536,14 @@ namespace Unity.MLAgents
             m_Initialized = false;
         }
 
+        void OnDestroy()
+        {
+            if (m_TeamManager != null)
+            {
+                m_TeamManager.RemoveAgent(this);
+            }
+        }
+
         void NotifyAgentDone(DoneReason doneReason)
         {
             if (m_Info.done)
@@ -1396,6 +1404,10 @@ namespace Unity.MLAgents
 
         public void SetTeamManager(ITeamManager teamManager)
         {
+            if (m_TeamManager != null)
+            {
+                m_TeamManager.RemoveAgent(this);
+            }
             m_TeamManager = teamManager;
             teamManager?.RegisterAgent(this);
         }

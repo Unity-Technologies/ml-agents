@@ -8,5 +8,7 @@ namespace Unity.MLAgents
         int GetId();
 
         void RegisterAgent(Agent agent);
+
+        void RemoveAgent(Agent agent);
     }
 }
