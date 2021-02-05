@@ -511,22 +511,28 @@ setting the State Size.
 
 ### Variable Length Observations
 
-It is possible for agents to collect observations from a varying number of GameObjects by using a `BufferSensor`.
+It is possible for agents to collect observations from a varying number of
+GameObjects by using a `BufferSensor`.
 You can add a `BufferSensor` to your Agent by adding a `BufferSensorComponent` to
 its GameObject.
 The `BufferSensor` can be useful in situations in which the Agent must pay
-attention to a varying number of entities. On the trainer side, the `BufferSensor`
+attention to a varying number of entities (for example, a varying number of
+tiles in the [Sorter environment](Learning-Environment-Examples.md#sorter)).
+On the trainer side, the `BufferSensor`
 is processed using an attention module. More information about attention
 mechanisms can be found [here](https://arxiv.org/abs/1706.03762). Training or
 doing inference with variable length observations can be slower than using
-a flat vector observation. However, attention mechanisms enable solving problems that require comparative reasoning between entities in a scene
-such as our [Sorter environmentt](Learning-Environment-Examples.md#sorter).
+a flat vector observation. However, attention mechanisms enable solving
+problems that require comparative reasoning between entities in a scene
+such as our [Sorter environment](Learning-Environment-Examples.md#sorter).
 Note that even though the `BufferSensor` can process a variable number of
 entities, you still need to define a maximum number of entities. This is
 because our network architecture requires to know what the shape of the
 observations will be. If fewer entities are observed than the maximum, the
 observation will be padded with zeros and the trainer will ignore
-the padded observations.
+the padded observations. Note that attention layers are invariant to
+the order of the entities, so there is no need to properly "order" the
+entities before feeding them into the `BufferSensor`.
 
 The `BufferSensor` constructor and Editor inspector have two arguments:
  - `Observation Size` : This is how many floats each entities will be

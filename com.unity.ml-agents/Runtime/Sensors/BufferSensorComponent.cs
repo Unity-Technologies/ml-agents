@@ -4,13 +4,23 @@ namespace Unity.MLAgents.Sensors
 {
 
     /// <summary>
-    /// A component for BufferSensor.
+    /// A SensorComponent that creates a <see cref="BufferSensor"/>.
     /// </summary>
     [AddComponentMenu("ML Agents/Buffer Sensor", (int)MenuGroup.Sensors)]
     public class BufferSensorComponent : SensorComponent
     {
+        /// <summary>
+        /// This is how many floats each entities will be represented with. This number
+        /// is fixed and all entities must have the same representation.
+        /// </summary>
         public int ObservableSize;
+
+        /// <summary>
+        /// This is the maximum number of entities the `BufferSensor` will be able to
+        /// collect.
+        /// </summary>
         public int MaxNumObservables;
+
         private BufferSensor m_Sensor;
 
         /// <inheritdoc/>
