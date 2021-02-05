@@ -252,8 +252,9 @@ public class LargeCubeAgent : Agent
         m_ShockwaveTime = -3f;
         m_AgentRb.velocity = Vector3.zero;
         shockwave.transform.localScale = new Vector3(0f, 0f, 0f);
-        transform.position = new Vector3(Random.Range(-m_MyArea.range, m_MyArea.range),
-            2f, Random.Range(-m_MyArea.range, m_MyArea.range))
+        float largeSpawn = 20f * m_MyArea.range;
+        transform.position = new Vector3(Random.Range(-largeSpawn, largeSpawn),
+            2f, Random.Range(-largeSpawn, largeSpawn))
             + area.transform.position;
         transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
 
