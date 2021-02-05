@@ -11,7 +11,7 @@ namespace Unity.MLAgents.Sensors
         private int m_ObsSize;
         float[] m_ObservationBuffer;
         int m_CurrentNumObservables;
-        static DimensionProperty[] m_DimensionProperties = new DimensionProperty[]{
+        static DimensionProperty[] s_DimensionProperties = new DimensionProperty[]{
                 DimensionProperty.VariableSize,
                 DimensionProperty.None
             };
@@ -32,7 +32,7 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public DimensionProperty[] GetDimensionProperties()
         {
-            return m_DimensionProperties;
+            return s_DimensionProperties;
         }
 
         /// <summary>

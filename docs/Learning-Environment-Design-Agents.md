@@ -534,7 +534,7 @@ the padded observations. Note that attention layers are invariant to
 the order of the entities, so there is no need to properly "order" the
 entities before feeding them into the `BufferSensor`.
 
-The `BufferSensor` constructor and Editor inspector have two arguments:
+The  the `BufferSensorComponent` Editor inspector have two arguments:
  - `Observation Size` : This is how many floats each entities will be
  represented with. This number is fixed and all entities must
  have the same representation. For example, if the entities you want to
@@ -543,19 +543,19 @@ The `BufferSensor` constructor and Editor inspector have two arguments:
  - `Maximum Number of Entities` : This is the maximum number of entities
  the `BufferSensor` will be able to collect.
 
-To add an entity's observations to the `BufferSensor`, you need to call the
-`BufferSensor.AppendObservation()` (or `BufferSensorComponent.AppendObservation()`)
+To add an entity's observations to a `BufferSensorComponent`, you need
+to call `BufferSensorComponent.AppendObservation()`
 with a float array of size `Observation Size` as argument.
 
-__Note__: Currently, the observations put into the `Buffer Sensor` are
+__Note__: Currently, the observations put into the `BufferSensor` are
 not normalized, you will need to normalize your observations manually
 between -1 and 1.
 
 #### Variable Length Observation Summary & Best Practices
- - Attach `BufferSensorComponent` to use
- - Call `BufferSensor.AppendObservation()` to add the observations of an
- entity to the `BufferSensor`
- - Normalize the entities observations before feeding them into the `BufferSensor`
+ - Attach `BufferSensorComponent` to use.
+ - Call `BufferSensorComponent.AppendObservation()` to add the observations
+ of an entity to the `BufferSensor`.
+ - Normalize the entities observations before feeding them into the `BufferSensor`.
 
 
 ## Actions and Actuators
