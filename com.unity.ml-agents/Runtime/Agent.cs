@@ -540,6 +540,7 @@ namespace Unity.MLAgents
             }
             m_Info.episodeId = m_EpisodeId;
             m_Info.reward = m_Reward;
+            m_Info.teamReward = m_TeamReward;
             m_Info.done = true;
             m_Info.maxStepReached = doneReason == DoneReason.MaxStepReached;
             m_Info.teamManagerId = m_TeamManager == null ? -1 : m_TeamManager.GetId();
@@ -572,6 +573,7 @@ namespace Unity.MLAgents
             }
 
             m_Reward = 0f;
+            m_TeamReward = 0f;
             m_CumulativeReward = 0f;
             m_RequestAction = false;
             m_RequestDecision = false;
@@ -1079,6 +1081,7 @@ namespace Unity.MLAgents
 
             m_Info.discreteActionMasks = m_ActuatorManager.DiscreteActionMask?.GetMask();
             m_Info.reward = m_Reward;
+            m_Info.teamReward = m_TeamReward;
             m_Info.done = false;
             m_Info.maxStepReached = false;
             m_Info.episodeId = m_EpisodeId;
@@ -1344,6 +1347,7 @@ namespace Unity.MLAgents
             {
                 SendInfoToBrain();
                 m_Reward = 0f;
+                m_TeamReward = 0f;
                 m_RequestDecision = false;
             }
         }
