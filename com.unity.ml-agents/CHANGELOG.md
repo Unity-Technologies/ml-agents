@@ -15,8 +15,8 @@ Please refer to "Information that is passively collected by Unity" in the
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
-- Removed unnecessary memory allocations in `SensorShapeValidator.ValidateSensors()` (#)
-- Removed unnecessary memory allocations in `SideChannelManager.GetSideChannelMessage()` (#)
+- Removed unnecessary memory allocations in `SensorShapeValidator.ValidateSensors()` (#4915)
+- Removed unnecessary memory allocations in `SideChannelManager.GetSideChannelMessage()` (#4915)
 
 
 ## [1.0.6] - 2020-11-13
