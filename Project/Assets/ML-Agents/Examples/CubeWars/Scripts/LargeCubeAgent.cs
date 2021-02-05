@@ -56,7 +56,7 @@ public class LargeCubeAgent : Agent
 
     public void MoveAgent(ActionBuffers actionBuffers)
     {
-        AddReward(0.0001f);
+        AddReward(-0.0001f);
         m_Shoot = false;
         m_Shockwave = false;
 
