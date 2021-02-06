@@ -60,7 +60,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 
         public override IActuator[] CreateActuators()
         {
-            InputCompositeLoader.Instance.Init();
+            InputCompositeLoader.Init();
             FindNeededComponents();
 
             m_LocalId = s_DeviceId++;
