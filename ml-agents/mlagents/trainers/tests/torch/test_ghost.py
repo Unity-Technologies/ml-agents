@@ -7,7 +7,9 @@ from mlagents.trainers.ghost.controller import GhostController
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.agent_processor import AgentManagerQueue
+from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 from mlagents.trainers.tests import mock_brain as mb
+from mlagents.trainers.tests.mock_brain import copy_buffer_fields
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers.settings import TrainerSettings, SelfPlaySettings
 from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
@@ -200,13 +202,20 @@ def test_publish_queue(dummy_config):
 
     buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, mock_specs)
     # Mock out reward signal eval
-    buffer["extrinsic_rewards"] = buffer["environment_rewards"]
-    buffer["extrinsic_returns"] = buffer["environment_rewards"]
-    buffer["extrinsic_value_estimates"] = buffer["environment_rewards"]
-    buffer["curiosity_rewards"] = buffer["environment_rewards"]
-    buffer["curiosity_returns"] = buffer["environment_rewards"]
-    buffer["curiosity_value_estimates"] = buffer["environment_rewards"]
-    buffer["advantages"] = buffer["environment_rewards"]
+    copy_buffer_fields(
+        buffer,
+        src_key=BufferKey.ENVIRONMENT_REWARDS,
+        dst_keys=[
+            BufferKey.ADVANTAGES,
+            RewardSignalUtil.rewards_key("extrinsic"),
+            RewardSignalUtil.returns_key("extrinsic"),
+            RewardSignalUtil.value_estimates_key("extrinsic"),
+            RewardSignalUtil.rewards_key("curiosity"),
+            RewardSignalUtil.returns_key("curiosity"),
+            RewardSignalUtil.value_estimates_key("curiosity"),
+        ],
+    )
+
     trainer.trainer.update_buffer = buffer
 
     # when ghost trainer advance and wrapped trainer buffers full

@@ -15,6 +15,8 @@ on:
 jobs:
   pytest:
     runs-on: ubuntu-latest
+    env:
+        TEST_ENFORCE_BUFFER_KEY_TYPES: 1
     strategy:
       matrix:
         python-version: [3.6.x, 3.7.x, 3.8.x]

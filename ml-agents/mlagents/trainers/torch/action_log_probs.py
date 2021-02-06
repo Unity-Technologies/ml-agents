@@ -1,8 +1,9 @@
-from typing import List, Optional, NamedTuple, Dict
+from typing import List, Optional, NamedTuple
 from mlagents.torch_utils import torch
 import numpy as np
 
 from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents_envs.base_env import _ActionTupleBase
 
 
@@ -88,7 +89,7 @@ class ActionLogProbs(NamedTuple):
         return torch.cat(self._to_tensor_list(), dim=1)
 
     @staticmethod
-    def from_dict(buff: Dict[str, np.ndarray]) -> "ActionLogProbs":
+    def from_buffer(buff: AgentBuffer) -> "ActionLogProbs":
         """
         A static method that accesses continuous and discrete log probs fields in an AgentBuffer
         and constructs the corresponding ActionLogProbs from the retrieved np arrays.
@@ -96,10 +97,12 @@ class ActionLogProbs(NamedTuple):
         continuous: torch.Tensor = None
         discrete: List[torch.Tensor] = None  # type: ignore
 
-        if "continuous_log_probs" in buff:
-            continuous = ModelUtils.list_to_tensor(buff["continuous_log_probs"])
-        if "discrete_log_probs" in buff:
-            discrete_tensor = ModelUtils.list_to_tensor(buff["discrete_log_probs"])
+        if BufferKey.CONTINUOUS_LOG_PROBS in buff:
+            continuous = ModelUtils.list_to_tensor(buff[BufferKey.CONTINUOUS_LOG_PROBS])
+        if BufferKey.DISCRETE_LOG_PROBS in buff:
+            discrete_tensor = ModelUtils.list_to_tensor(
+                buff[BufferKey.DISCRETE_LOG_PROBS]
+            )
             # This will keep discrete_list = None which enables flatten()
             if discrete_tensor.shape[1] > 0:
                 discrete = [
