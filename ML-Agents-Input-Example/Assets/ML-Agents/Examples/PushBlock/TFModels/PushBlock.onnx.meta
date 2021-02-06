@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 18b23669c7e59458a9b5ed01b828c7b0
+guid: 87c47dcb7a4094305a128d38b1950a62
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -11,3 +11,4 @@ ScriptedImporter:
   optimizeModel: 1
   forceArbitraryBatchSize: 1
   treatErrorsAsWarnings: 0
+  importMode: 1
