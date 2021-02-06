@@ -66,11 +66,11 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             m_LocalId = s_DeviceId++;
 
             m_InputAsset.Disable();
-            m_Actuators = GenerateActionActuatorsFromAsset(m_InputAsset,
+            m_Actuators = GenerateActionActuatorsFromAsset(
+                m_InputAsset,
                 m_LayoutName,
                 m_LocalId,
-                m_Agent,
-                IsInHeuristicMode(),
+                m_BehaviorParameters,
                 out var layout);
 
             if (InputSystem.LoadLayout(layout.name) == null)
@@ -168,11 +168,11 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             return device;
         }
 
-        static IActuator[] GenerateActionActuatorsFromAsset(InputActionAsset asset,
+        static IActuator[] GenerateActionActuatorsFromAsset(
+            InputActionAsset asset,
             string layoutName,
             uint localId,
-            Agent agent,
-            bool isInHeuristicMode,
+            BehaviorParameters behaviorParameters,
             out InputControlLayout layout)
         {
             // TODO does this need to change based on the action map we use?
@@ -232,10 +232,9 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
                 var adaptor = (IRLActionInputAdaptor)Activator.CreateInstance(
                     s_ControlTypeToAdaptorType[actionLayout.type]);
                 actuators.Add(new InputActionActuator(
-                    agent,
+                    behaviorParameters,
                     action,
-                    adaptor,
-                    isInHeuristicMode));
+                    adaptor));
 
             }
             layout = builder.Build();
@@ -276,14 +275,6 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             {
                 m_Agent = GetComponent<Agent>();
             }
-        }
-
-        bool IsInHeuristicMode()
-        {
-            return m_BehaviorParameters.BehaviorType == BehaviorType.HeuristicOnly ||
-                     m_BehaviorParameters.BehaviorType == BehaviorType.Default &&
-                     ReferenceEquals(m_BehaviorParameters.Model, null) &&
-                     !Academy.Instance.IsCommunicatorOn;
         }
 
         void CleanupActionAsset()

@@ -1,41 +1,26 @@
 #if MLA_INPUT_SYSTEM
 
-#define ACTUATOR_DEBUG
-#undef ACTUATOR_DEBUG
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
-
-#if ACTUATOR_DEBUG
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem.Controls;
-using UnityEngine.InputSystem.LowLevel;
-#endif
 
 namespace Unity.MLAgents.Extensions.Runtime.Input
 {
     public class InputActionActuator : IActuator, IHeuristicProvider
     {
-        bool m_IsInHeuristicMode;
+        readonly BehaviorParameters m_BehaviorParameters;
         InputAction m_Action;
         IRLActionInputAdaptor m_InputAdaptor;
         InputDevice m_Device;
         InputControl m_Control;
-        Agent m_Agent;
 
-#if ACTUATOR_DEBUG
-        float m_Time;
-        bool m_Flip;
-#endif
-
-        public InputActionActuator(Agent agent,
+        public InputActionActuator(
+            BehaviorParameters behaviorParameters,
             InputAction action,
-            IRLActionInputAdaptor adaptor,
-            bool isInHeuristicMode)
+            IRLActionInputAdaptor adaptor)
         {
-            m_Agent = agent;
-            m_IsInHeuristicMode = isInHeuristicMode;
+            m_BehaviorParameters = behaviorParameters;
             Name = $"InputActionActuator-{action.name}";
             m_Action = action;
             m_InputAdaptor = adaptor;
@@ -50,14 +35,18 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 
         public void OnActionReceived(ActionBuffers actionBuffers)
         {
-            if (!m_IsInHeuristicMode)
+            if (!IsInHeuristicMode())
             {
                 m_InputAdaptor.QueueInputEventForAction(m_Action, m_Control, ActionSpec, actionBuffers);
             }
-            else
-            {
-                m_Agent.OnActionReceived(actionBuffers);
-            }
+        }
+
+        bool IsInHeuristicMode()
+        {
+            return m_BehaviorParameters.BehaviorType == BehaviorType.HeuristicOnly ||
+                     m_BehaviorParameters.BehaviorType == BehaviorType.Default &&
+                     ReferenceEquals(m_BehaviorParameters.Model, null) &&
+                     !Academy.Instance.IsCommunicatorOn;
         }
 
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
@@ -75,31 +64,6 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 
         public void Heuristic(in ActionBuffers actionBuffersOut)
         {
-#if ACTUATOR_DEBUG
-            if (Time.realtimeSinceStartup - m_Time > Random.Range(2, 5))
-            {
-                m_Flip = !m_Flip;
-                m_Time = Time.realtimeSinceStartup;
-                if (m_Control.GetType() == typeof(ButtonControl))
-                {
-                    using (StateEvent.From(m_Device, out var eventPtr))
-                    {
-                        m_Control.WriteValueIntoEvent(m_Flip ? 1f : 0f, eventPtr);
-                        InputSystem.QueueEvent(eventPtr);
-                        InputSystem.Update();
-                    }
-                }
-            }
-            if (m_Control.GetType() == typeof(Vector2Control))
-            {
-                using (StateEvent.From(m_Device, out var eventPtr))
-                {
-                    m_Control.WriteValueIntoEvent(new Vector2(m_Flip ? 1 : 0, m_Flip ? 0 : 1), eventPtr);
-                    InputSystem.QueueEvent(eventPtr);
-                    InputSystem.Update();
-                }
-            }
-#endif
             m_InputAdaptor.WriteToHeuristic(m_Action, actionBuffersOut);
         }
     }
