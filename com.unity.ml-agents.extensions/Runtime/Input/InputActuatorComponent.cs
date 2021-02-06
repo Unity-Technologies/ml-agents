@@ -27,16 +27,19 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 
         static Dictionary<string, string> s_ControlTypeToCompositeType = new Dictionary<string, string>
         {
-            {
-                "Vector2", "Vector2Value"
-            }
+            { "Vector2", "Vector2Value" },
+            { "Axis", "AxisValue" }
         };
 
         static Dictionary<Type, Type> s_ControlTypeToAdaptorType = new Dictionary<Type, Type>
         {
             { typeof(Vector2Control), typeof(Vector2InputActionAdaptor) },
-            { typeof(ButtonControl), typeof(ButtonInputActionAdaptor) }
+            { typeof(ButtonControl), typeof(ButtonInputActionAdaptor) },
+            { typeof(int), typeof(IntegerInputActionAdaptor) },
+            { typeof(float), typeof(FloatInputActionAdaptor) },
+            { typeof(double), typeof(DoubleInputActionAdaptor) }
         };
+
         string m_LayoutName;
         string m_InterfaceName;
 
@@ -181,6 +184,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 
             foreach (var action in asset)
             {
+
                 var actionLayout = InputSystem.LoadLayout(action.expectedControlType);
 
                 builder.AddControl(action.name)
@@ -189,10 +193,15 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 
                 var binding = action.bindings[0];
                 var devicePath = InputControlPath.Separator + layoutName;
-                string deviceId = localId == 0 ? string.Empty : "" + localId;
+
+                // Reasonably, the input system starts adding numbers after the first none numbered name
+                // is added.  So for device ID of 0, we use the empty string in the path.
+                var deviceId = localId == 0 ? string.Empty : "" + localId;
                 var path = $"{devicePath}{deviceId}{InputControlPath.Separator}{action.name}";
                 if (binding.isComposite)
                 {
+                    // search for a child of the composite so we can get the groups
+                    // this is not technically correct as each binding can have different groups
                     InputBinding child = action.bindings[1];
                     for (var i = 1; i < action.bindings.Count; i++)
                     {
