@@ -1,8 +1,6 @@
 #if MLA_INPUT_SYSTEM
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Extensions.Runtime.Input.Composites;
 using Unity.MLAgents.Policies;
