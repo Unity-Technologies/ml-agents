@@ -88,7 +88,7 @@ namespace Unity.MLAgents.Sensors
             for (var i = 0; i < m_NumStackedObservations; i++)
             {
                 var obsIndex = (m_CurrentIndex + 1 + i) % m_NumStackedObservations;
-                writer.AddRange(m_StackedObservations[obsIndex], numWritten);
+                writer.AddList(m_StackedObservations[obsIndex], numWritten);
                 numWritten += m_UnstackedObservationSize;
             }
 
