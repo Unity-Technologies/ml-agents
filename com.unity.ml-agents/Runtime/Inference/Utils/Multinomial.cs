@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Unity.MLAgents.Inference.Utils
 {
     /// <summary>
@@ -43,6 +45,27 @@ namespace Unity.MLAgents.Inference.Utils
             }
 
             return cls;
+        }
+
+        public int SampleLogProb(TensorProxy tensor, int batch)
+        {
+            // TODO check that sum(exp(probs)) == approx(1)
+            var target = (float)m_Random.NextDouble();
+
+            // Sum the log probabilities, and compute CDF as we go.
+            // When we find the target value, return immediately.
+            var sumProb = 0.0f;
+            for (var cls = 0; cls < tensor.data.channels; ++cls)
+            {
+                sumProb += Mathf.Exp(tensor.data[batch, cls]);
+                if (sumProb > target)
+                {
+                    return cls;
+                }
+            }
+
+            return tensor.data.channels - 1;
+
         }
     }
 }

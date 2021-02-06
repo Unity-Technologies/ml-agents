@@ -71,12 +71,12 @@ namespace Unity.MLAgents.Inference
             //var tensorDataProbabilities = tensorProxy.Data as float[,];
             var idActionPairList = actionIds as List<int> ?? actionIds.ToList();
             var batchSize = idActionPairList.Count;
-            var actionValues = new float[batchSize, m_ActionSize.Length];
+            var actionValues = new int[batchSize, m_ActionSize.Length];
             var startActionIndices = Utilities.CumSum(m_ActionSize);
             for (var actionIndex = 0; actionIndex < m_ActionSize.Length; actionIndex++)
             {
                 var nBranchAction = m_ActionSize[actionIndex];
-                var actionProbs = new TensorProxy()
+                var actionLogProbs = new TensorProxy()
                 {
                     valueType = TensorProxy.TensorType.FloatingPoint,
                     shape = new long[] { batchSize, nBranchAction },
@@ -89,26 +89,16 @@ namespace Unity.MLAgents.Inference
                          branchActionIndex < nBranchAction;
                          branchActionIndex++)
                     {
-                        actionProbs.data[batchIndex, branchActionIndex] =
+                        actionLogProbs.data[batchIndex, branchActionIndex] =
                             tensorProxy.data[batchIndex, startActionIndices[actionIndex] + branchActionIndex];
                     }
                 }
 
-                var outputTensor = new TensorProxy()
-                {
-                    valueType = TensorProxy.TensorType.FloatingPoint,
-                    shape = new long[] { batchSize, 1 },
-                    data = m_Allocator.Alloc(new TensorShape(batchSize, 1))
-                };
-
-                Eval(actionProbs, outputTensor, m_Multinomial);
-
                 for (var ii = 0; ii < batchSize; ii++)
                 {
-                    actionValues[ii, actionIndex] = outputTensor.data[ii, 0];
+                    actionValues[ii, actionIndex] = m_Multinomial.SampleLogProb(actionLogProbs, ii);
                 }
-                actionProbs.data.Dispose();
-                outputTensor.data.Dispose();
+                actionLogProbs.data.Dispose();
             }
 
             var agentIndex = 0;
@@ -126,7 +116,7 @@ namespace Unity.MLAgents.Inference
                     var discreteBuffer = actionBuffer.DiscreteActions;
                     for (var j = 0; j < m_ActionSize.Length; j++)
                     {
-                        discreteBuffer[j] = (int)actionValues[agentIndex, j];
+                        discreteBuffer[j] = actionValues[agentIndex, j];
                     }
                 }
                 agentIndex++;
@@ -170,29 +160,12 @@ namespace Unity.MLAgents.Inference
                 throw new ArgumentException("Batch size for input and output data is different!");
             }
 
-            var cdf = new float[src.data.channels];
-
             for (var batch = 0; batch < src.data.batch; ++batch)
             {
-                // Find the class maximum
-                var maxProb = float.NegativeInfinity;
-                for (var cls = 0; cls < src.data.channels; ++cls)
-                {
-                    maxProb = Mathf.Max(src.data[batch, cls], maxProb);
-                }
-
-                // Sum the log probabilities and compute CDF
-                var sumProb = 0.0f;
-                for (var cls = 0; cls < src.data.channels; ++cls)
-                {
-                    sumProb += Mathf.Exp(src.data[batch, cls] - maxProb);
-                    cdf[cls] = sumProb;
-                }
-
                 // Generate the samples
                 for (var sample = 0; sample < dst.data.channels; ++sample)
                 {
-                    dst.data[batch, sample] = multinomial.Sample(cdf);
+                    dst.data[batch, sample] = multinomial.SampleLogProb(src, batch);
                 }
             }
         }
