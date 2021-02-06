@@ -1,3 +1,4 @@
+#if MLA_INPUT_SYSTEM
 using System;
 
 namespace Unity.MLAgents.Extensions.Runtime.Input.Composites
@@ -18,3 +19,4 @@ namespace Unity.MLAgents.Extensions.Runtime.Input.Composites
 
     }
 }
+#endif // MLA_INPUT_SYSTEM

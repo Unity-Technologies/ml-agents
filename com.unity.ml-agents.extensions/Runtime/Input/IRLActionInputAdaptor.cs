@@ -1,3 +1,4 @@
+#if MLA_INPUT_SYSTEM
 using System;
 using Unity.MLAgents.Actuators;
 using UnityEngine.InputSystem;
@@ -14,3 +15,4 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         void WriteToHeuristic(InputAction action, in ActionBuffers actionBuffers);
     }
 }
+#endif // MLA_INPUT_SYSTEM

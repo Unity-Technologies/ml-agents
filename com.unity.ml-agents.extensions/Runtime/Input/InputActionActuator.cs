@@ -1,3 +1,5 @@
+#if MLA_INPUT_SYSTEM
+
 #define ACTUATOR_DEBUG
 #undef ACTUATOR_DEBUG
 using Unity.MLAgents.Actuators;
@@ -102,3 +104,5 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         }
     }
 }
+
+#endif // MLA_INPUT_SYSTEM

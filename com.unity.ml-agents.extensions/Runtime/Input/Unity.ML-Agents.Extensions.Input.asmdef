@@ -1,0 +1,23 @@
+{
+    "name": "NewAssembly",
+    "references": [
+        "GUID:85e0054f8e64b47309646d35f8851f81",
+        "GUID:5c2b5ba89f9e74e418232e154bc5cc7a",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "1.0.0",
+            "define": "MLA_INPUT_SYSTEM"
+        }
+    ],
+    "noEngineReferences": false
+}

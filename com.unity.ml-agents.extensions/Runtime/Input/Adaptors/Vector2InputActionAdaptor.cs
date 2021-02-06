@@ -1,3 +1,4 @@
+#if MLA_INPUT_SYSTEM
 using System;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
@@ -33,3 +34,4 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
 
     }
 }
+#endif // MLA_INPUT_SYSTEM
