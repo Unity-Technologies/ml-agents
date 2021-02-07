@@ -40,13 +40,10 @@ ML-Agents 툴킷은 유니티의 풍부한 환경에서 인공지능 에이전�
 아래 표에는 현재 개발이 진행 중이며 불안정할 수 있는 `master` 브랜치를 포함한 모든 릴리스가 나와 있습니다. 몇 가지 유용한 지침:
 - [버전 관리 페이지](docs/Versioning.md) 는 GitHub 릴리즈를 관리하는 방법과 각 ML-Agents 구성 요소에 대한 버전 관리 프로세스를 간략히 설명합니다.
 - [릴리즈 페이지](https://github.com/Unity-Technologies/ml-agents/releases) 는 릴리스 간의 변경 사항에 대한 세부 정보가 포함되어 있습니다.
-- [Migration page](docs/Migrating.md) contains details on how to upgrade
-  from earlier releases of the ML-Agents Toolkit.
-- The **Documentation** links in the table below include installation and usage
-  instructions specific to each release. Remember to always use the
-  documentation that corresponds to the release version you're using.
+- [마이그레이션(Migration) 페이지](docs/Migrating.md) 는 이전 릴리스의 ML-Agents 툴킷에서 업그레이드하는 방법에 대한 세부 정보가 포함되어 있습니다.
+- 아래 표의 **설명서** 링크에는 각 릴리스에 대한 설치 및 사용 지침이 포함되어 있습니다. 사용 중인 릴리스 버전에 해당하는 설명서를 항상 사용해야 합니다.
 
-| **Version** | **Release Date** | **Source** | **Documentation** | **Download** |
+| **버전** | **릴리즈 날짜** | **소스** | **설명서** | **다운로드** |
 |:-------:|:------:|:-------------:|:-------:|:------------:|
 | **master (unstable)** | -- | [source](https://github.com/Unity-Technologies/ml-agents/tree/master) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/master/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/master.zip) |
 | **Release 12** | **December 22, 2020** | **[source](https://github.com/Unity-Technologies/ml-agents/tree/release_12)** | **[docs](https://github.com/Unity-Technologies/ml-agents/tree/release_12_docs/docs/Readme.md)** | **[download](https://github.com/Unity-Technologies/ml-agents/archive/release_12.zip)** |
@@ -61,18 +58,18 @@ ML-Agents 툴킷은 유니티의 풍부한 환경에서 인공지능 에이전�
 ## 인용
 
 인공지능 플랫폼으로서의 유니티에 대한 논의에 관심이 있는 연구자라면, 프리프린트를 참조하시오.
-[reference paper on Unity and the ML-Agents Toolkit](https://arxiv.org/abs/1809.02627).
+[ 및 ML-Agents 툴킷에 대한 참조 문서](https://arxiv.org/abs/1809.02627).
 
 유니티 또는 ML-Agents 툴킷을 사용하여 연구를 수행하는 경우, 다음 논문을 참조 자료로 인용할 것을 요청합니다.
 Juliani, A., Berges, V., Teng, E., Cohen, A., Harper, J., Elion, C., Goy, C., Gao, Y., Henry, H., Mattar, M., Lange, D. (2020). Unity: A General Platform for Intelligent Agents. _arXiv preprint [arXiv:1809.02627](https://arxiv.org/abs/1809.02627)._ https://github.com/Unity-Technologies/ml-agents.
 
 ## 추가 리소스
 
-유니티 및 ML-Agents 툴킷에 대해 자세히 소개하는 유니티 학습 과정이 있습니다. [ML-Agents: Hummingsbird](https://learn.unity.com/course/ml-agents-hummingbirds)
+유니티 및 ML-Agents 툴킷에 대해 자세히 소개하는 유니티 학습 과정이 있습니다. [ML-Agents: 벌새](https://learn.unity.com/course/ml-agents-hummingbirds)
 
-We've also partnered with [CodeMonkeyUnity](https://www.youtube.com/c/CodeMonkeyUnity) to create a [series of tutorial videos](https://www.youtube.com/playlist?list=PLzDRvYVwl53vehwiN_odYJkPBzcqFw110) on how to implement and use the ML-Agents Toolkit.
+또한 [CodeMonkeyUnity](https://www.youtube.com/c/CodeMonkeyUnity)와 제휴하여 ML-Agents 툴킷의 구현 및 사용 방법에 대한 [튜토리얼 비디오](https://www.youtube.com/playlist?list=PLzDRvYVwl53vehwiN_odYJkPBzcqFw110)도 제작했습니다.
 
-We have also published a series of blog posts that are relevant for ML-Agents:
+또한 ML-Agents 관련 블로그 게시물도 게시했습니다.
 
 - (December 28, 2020)
   [Happy holidays from the Unity ML-Agents team!](https://blogs.unity3d.com/2020/12/28/happy-holidays-from-the-unity-ml-agents-team/)
@@ -123,12 +120,10 @@ We have also published a series of blog posts that are relevant for ML-Agents:
 ML-Agents 툴킷은 오픈소스 프로젝트이며 컨트리뷰션을 환영합니다. 만약 컨트리뷰션을 원하시는 경우
 [컨트리뷰션 가이드라인](com.unity.ml-agents/CONTRIBUTING.md) 과 [행동 규칙](CODE_OF_CONDUCT.md) 을 검토해주십시오.
 
-ML-Agents 툴킷 설치 및 설정과 관련된 문제 또는 에이전트를 가장 잘 설정하거나 교육하는 방법에 대한 논의는 [Unity ML-Agents forum](https://forum.unity.com/forums/ml-agents.453/) 에 새 스레드를 작성하십시오. 가능한 많은 세부 정보를 포함해야 합니다.
+ML-Agents 툴킷 설치 및 설정과 관련된 문제 또는 에이전트를 가장 잘 설정하거나 교육하는 방법에 대한 논의는 [유니티 ML-Agents 포럼](https://forum.unity.com/forums/ml-agents.453/) 에 새 스레드를 작성하십시오. 가능한 많은 세부 정보를 포함해야 합니다.
 ML-Agents 툴킷을 사용하여 다른 문제가 발생하거나 특정 기능 요청이 있는 경우 [이슈 제출](https://github.com/Unity-Technologies/ml-agents/issues) 부탁합니다.
 
-[let us know about it](https://github.com/Unity-Technologies/ml-agents/issues/1454).
-여러분의 의견은 저희에게 매우 중요합니다. Unity ML-Agents Toolkit에 관련된 여러분의 의견을 통해서 저희는 계속해서
-발전하고 성장할 수 있습니다. 단 몇 분만 사용하여 [저희에게 알려주세요](https://github.com/Unity-Technologies/ml-agents/issues/1454).
+여러분의 의견은 저희에게 매우 중요합니다. 유니티 ML-Agents 툴킷에 관련된 여러분의 의견을 통해서 저희는 계속해서 발전하고 성장할 수 있습니다. 단 몇 분만 사용하여 [저희에게 알려주세요](https://github.com/Unity-Technologies/ml-agents/issues/1454).
 
 다른 의견과 피드백은 ML-Agents 팀과 직접 연락부탁드립니다. (ml-agents@unity3d.com)
 
