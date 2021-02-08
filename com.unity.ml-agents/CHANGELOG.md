@@ -52,6 +52,7 @@ and this project adheres to
 - Removed unnecessary memory allocations in `SideChannelManager.GetSideChannelMessage()` (#4886)
 - Removed several memory allocations that happened during inference. On a test scene, this
   reduced the amount of memory allocated by approximately 25%. (#4887)
+- Properly catch permission errors when writing timer files. (#4921)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed a bug that would cause an exception when `RunOptions` was deserialized via `pickle`. (#4842)
