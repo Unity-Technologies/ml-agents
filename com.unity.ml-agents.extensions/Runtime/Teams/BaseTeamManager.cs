@@ -22,8 +22,7 @@ namespace Unity.MLAgents.Extensions.Teams
             {
                 foreach (var agent in m_Agents)
                 {
-                    // if (agent.gameObject.activeSelf)
-                    if (agent.gameObject.activeInHierarchy)
+                    if (agent.enabled)
                     {
                         agent.EpisodeInterrupted();
                     }
@@ -86,7 +85,7 @@ namespace Unity.MLAgents.Extensions.Teams
         {
             foreach (var agent in m_Agents)
             {
-                if (agent.gameObject.activeInHierarchy)
+                if (agent.enabled)
                 {
                     agent.AddTeamReward(reward);
                 }
@@ -101,7 +100,7 @@ namespace Unity.MLAgents.Extensions.Teams
         {
             foreach (var agent in m_Agents)
             {
-                if (agent.gameObject.activeInHierarchy)
+                if (agent.enabled)
                 {
                     agent.SetTeamReward(reward);
                 }
@@ -136,7 +135,7 @@ namespace Unity.MLAgents.Extensions.Teams
         {
             foreach (var agent in m_Agents)
             {
-                if (agent.gameObject.activeInHierarchy)
+                if (agent.enabled)
                 {
                     agent.EndEpisode();
                 }
