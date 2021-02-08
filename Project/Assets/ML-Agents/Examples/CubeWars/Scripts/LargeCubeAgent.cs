@@ -23,6 +23,8 @@ public class LargeCubeAgent : Agent
     public float moveSpeed;
 
     public float fireDamage = 0.25f;
+    public float burnDamage = 0.01f;
+    public float flameWidth = 7f;
     public Material normalMaterial;
     public Material weakMaterial;
     public Material deadMaterial;
@@ -36,6 +38,7 @@ public class LargeCubeAgent : Agent
         m_AgentRb = GetComponent<Rigidbody>();
         m_MyArea = area.GetComponent<CubeWarArea>();
         m_CubeWarSettings = FindObjectOfType<CubeWarSettings>();
+        myLaser.width = flameWidth;
         SetResetParameters();
     }
 
@@ -113,28 +116,33 @@ public class LargeCubeAgent : Agent
         float checkTime = Time.time;
         if (m_Shoot)
         {
-            var myTransform = transform;
             myLaser.isFired = true;
+        }
+        if (myLaser.isFired)
+        {
+            float damage = m_Shoot ? fireDamage : burnDamage;
+            var myTransform = transform;
             var rayDir = 120.0f * myTransform.forward;
             Debug.DrawRay(myTransform.position, rayDir, Color.red, 0f, true);
             RaycastHit hit;
-            if (Physics.SphereCast(transform.position, 10f, rayDir, out hit, 120f))
+            if (Physics.SphereCast(transform.position, flameWidth, rayDir, out hit, 120f))
             {
                 if (hit.collider.gameObject.CompareTag("StrongSmallAgent") || hit.collider.gameObject.CompareTag("WeakSmallAgent"))
                 {
-                    if (hit.collider.gameObject.GetComponent<SmallCubeAgent>().HitAgent(fireDamage))
+                    if (hit.collider.gameObject.GetComponent<SmallCubeAgent>().HitAgent(damage))
                     {
                         AddReward(0.1f);
                     }
-                    //AddReward(.1f);
                 }
                 else if (hit.collider.gameObject.CompareTag("StrongLargeAgent") || hit.collider.gameObject.CompareTag("WeakLargeAgent"))
                 {
                     hit.collider.gameObject.GetComponent<LargeCubeAgent>().HealAgent();
                 }
+                Debug.DrawRay(transform.position, hit.point - transform.position, Color.green, 0.3f, false);
+
             }
         }
-        else if (checkTime > m_ShootTime + .5f)
+        if (checkTime > m_ShootTime + .5f)
         {
             myLaser.isFired = false;
         }
@@ -152,8 +160,6 @@ public class LargeCubeAgent : Agent
             for (int i = 0; i < casts; i++)
             {
                 var rayDir = Quaternion.AngleAxis(angleRotation * i, Vector3.up) * myTransform.forward * 10f;
-                Debug.DrawRay(myTransform.position, rayDir, Color.green, 0f, true);
-
                 if (Physics.SphereCast(transform.position, 3f, rayDir, out hit, 7f))
                 {
                     if (hit.collider.gameObject.CompareTag("StrongSmallAgent") || hit.collider.gameObject.CompareTag("WeakSmallAgent"))
