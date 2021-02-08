@@ -477,9 +477,9 @@ namespace Unity.MLAgents
                 SaveJsonTimers(fs);
                 fs.Close();
             }
-            catch (IOException)
+            catch (SystemException)
             {
-                // It's possible we don't have write access to the directory.
+                // We may not have write access to the directory.
                 Debug.LogWarning($"Unable to save timers to file {filename}");
             }
 #endif
