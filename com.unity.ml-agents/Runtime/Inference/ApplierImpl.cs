@@ -56,7 +56,7 @@ namespace Unity.MLAgents.Inference
         readonly Multinomial m_Multinomial;
         readonly ActionSpec m_ActionSpec;
         readonly int[] m_StartActionIndices;
-        readonly float[] m_cdfBuffer;
+        readonly float[] m_CdfBuffer;
 
 
         public DiscreteActionOutputApplier(ActionSpec actionSpec, int seed, ITensorAllocator allocator)
@@ -69,7 +69,7 @@ namespace Unity.MLAgents.Inference
             // Scratch space for computing the cumulative distribution function.
             // In order to reuse it, make it the size of the largest branch.
             var largestBranch = Mathf.Max(m_ActionSize);
-            m_cdfBuffer = new float[largestBranch];
+            m_CdfBuffer = new float[largestBranch];
         }
 
         public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
@@ -90,7 +90,7 @@ namespace Unity.MLAgents.Inference
                     for (var j = 0; j < m_ActionSize.Length; j++)
                     {
                         ComputeCdf(tensorProxy, agentIndex, m_StartActionIndices[j], m_ActionSize[j]);
-                        discreteBuffer[j] = m_Multinomial.Sample(m_cdfBuffer, m_ActionSize[j]);
+                        discreteBuffer[j] = m_Multinomial.Sample(m_CdfBuffer, m_ActionSize[j]);
                     }
                 }
                 agentIndex++;
@@ -100,7 +100,7 @@ namespace Unity.MLAgents.Inference
         /// <summary>
         /// Compute the cumulative distribution function for a given agent's action
         /// given the log-probabilities.
-        /// The results are stored in m_cdfBuffer, which is the size of the largest action's number of branches.
+        /// The results are stored in m_CdfBuffer, which is the size of the largest action's number of branches.
         /// </summary>
         /// <param name="logProbs"></param>
         /// <param name="batch">Index of the agent being considered</param>
@@ -120,7 +120,7 @@ namespace Unity.MLAgents.Inference
             for (var cls = 0; cls < branchSize; ++cls)
             {
                 sumProb += Mathf.Exp(logProbs.data[batch, cls + channelOffset] - maxProb);
-                m_cdfBuffer[cls] = sumProb;
+                m_CdfBuffer[cls] = sumProb;
             }
         }
     }
