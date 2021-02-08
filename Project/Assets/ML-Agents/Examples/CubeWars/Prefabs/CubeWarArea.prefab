@@ -451,7 +451,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 94b4c8f1d024049fe9cb0b180fe00229, type: 3}
+  m_Model: {fileID: 11400000, guid: a858e07e05dae40e6aab6cefb8c710c7, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Dragon
@@ -522,6 +522,8 @@ MonoBehaviour:
   turnSpeed: 225
   moveSpeed: 1.5
   fireDamage: 0.25
+  burnDamage: 0.01
+  flameWidth: 7
   normalMaterial: {fileID: 2100000, guid: 2dea38f51c97a415387d4bb76735822c, type: 2}
   weakMaterial: {fileID: 2100000, guid: 52eab8ab5010f438fab93da85735ba1d, type: 2}
   deadMaterial: {fileID: 2100000, guid: 69fefdd39d2b34b169e921910bed9c0d, type: 2}
@@ -1061,7 +1063,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: 551d0363b1f054571bf47ab1fadceb56,
+      objectReference: {fileID: 11400000, guid: 022db6ad95f2245d5879a79536c5976b,
         type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4dd35c7381e7445c99133a34a83e21db, type: 3}
@@ -1414,7 +1416,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: 551d0363b1f054571bf47ab1fadceb56,
+      objectReference: {fileID: 11400000, guid: 022db6ad95f2245d5879a79536c5976b,
         type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4dd35c7381e7445c99133a34a83e21db, type: 3}
@@ -1584,7 +1586,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: 551d0363b1f054571bf47ab1fadceb56,
+      objectReference: {fileID: 11400000, guid: 022db6ad95f2245d5879a79536c5976b,
         type: 3}
     - target: {fileID: 8705827100738960883, guid: 4dd35c7381e7445c99133a34a83e21db,
         type: 3}
