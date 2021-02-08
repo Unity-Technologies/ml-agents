@@ -26,14 +26,14 @@ namespace Unity.MLAgents.Tests
             writer[0] = 3f;
             Assert.AreEqual(new[] { 1f, 3f, 2f }, buffer);
 
-            // AddRange
+            // AddList
             writer.SetTarget(buffer, shape, 0);
-            writer.AddRange(new[] {4f, 5f});
+            writer.AddList(new[] {4f, 5f});
             Assert.AreEqual(new[] { 4f, 5f, 2f }, buffer);
 
-            // AddRange with offset
+            // AddList with offset
             writer.SetTarget(buffer, shape, 1);
-            writer.AddRange(new[] {6f, 7f});
+            writer.AddList(new[] {6f, 7f});
             Assert.AreEqual(new[] { 4f, 6f, 7f }, buffer);
         }
 
@@ -60,7 +60,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(2f, t.data[1, 1]);
             Assert.AreEqual(3f, t.data[1, 2]);
 
-            // AddRange
+            // AddList
             t = new TensorProxy
             {
                 valueType = TensorProxy.TensorType.FloatingPoint,
@@ -68,7 +68,7 @@ namespace Unity.MLAgents.Tests
             };
 
             writer.SetTarget(t, 1, 1);
-            writer.AddRange(new[] {-1f, -2f});
+            writer.AddList(new[] {-1f, -2f});
             Assert.AreEqual(0f, t.data[0, 0]);
             Assert.AreEqual(0f, t.data[0, 1]);
             Assert.AreEqual(0f, t.data[0, 2]);

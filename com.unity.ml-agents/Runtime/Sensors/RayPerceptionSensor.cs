@@ -323,7 +323,7 @@ namespace Unity.MLAgents.Sensors
                     rayOutput.ToFloatArray(numDetectableTags, rayIndex, m_Observations);
                 }
                 // Finally, add the observations to the ObservationWriter
-                writer.AddRange(m_Observations);
+                writer.AddList(m_Observations);
             }
             return m_Observations.Length;
         }

@@ -31,7 +31,7 @@ namespace Unity.MLAgents.Inference
             /// the tensor's data.
             /// </param>
             void Generate(
-                TensorProxy tensorProxy, int batchSize, IEnumerable<AgentInfoSensorsPair> infos);
+                TensorProxy tensorProxy, int batchSize, IList<AgentInfoSensorsPair> infos);
         }
 
         readonly Dictionary<string, IGenerator> m_Dict = new Dictionary<string, IGenerator>();
@@ -129,10 +129,11 @@ namespace Unity.MLAgents.Inference
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated generator.</exception>
         public void GenerateTensors(
-            IEnumerable<TensorProxy> tensors, int currentBatchSize, IEnumerable<AgentInfoSensorsPair> infos)
+            IReadOnlyList<TensorProxy> tensors, int currentBatchSize, IList<AgentInfoSensorsPair> infos)
         {
-            foreach (var tensor in tensors)
+            for (var tensorIndex = 0; tensorIndex < tensors.Count; tensorIndex++)
             {
+                var tensor = tensors[tensorIndex];
                 if (!m_Dict.ContainsKey(tensor.name))
                 {
                     throw new UnityAgentsException(

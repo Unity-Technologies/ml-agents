@@ -59,7 +59,7 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
-        /// 1D write access at a specified index. Use AddRange if possible instead.
+        /// 1D write access at a specified index. Use AddList if possible instead.
         /// </summary>
         /// <param name="index">Index to write to.</param>
         public float this[int index]
@@ -135,6 +135,33 @@ namespace Unity.MLAgents.Sensors
                 {
                     m_Proxy.data[m_Batch, index + m_Offset + writeOffset] = val;
                     index++;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Write the range of floats
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="writeOffset">Optional write offset.</param>
+        internal void AddList(IList<float> data, int writeOffset = 0)
+
+        {
+            if (m_Data != null)
+            {
+                for (var index = 0; index < data.Count; index++)
+                {
+                    var val = data[index];
+                    m_Data[index + m_Offset + writeOffset] = val;
+
+                }
+            }
+            else
+            {
+                for (var index = 0; index < data.Count; index++)
+                {
+                    var val = data[index];
+                    m_Proxy.data[m_Batch, index + m_Offset + writeOffset] = val;
                 }
             }
         }

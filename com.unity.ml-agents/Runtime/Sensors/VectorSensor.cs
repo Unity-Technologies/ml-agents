@@ -57,7 +57,7 @@ namespace Unity.MLAgents.Sensors
                     m_Observations.Add(0);
                 }
             }
-            writer.AddRange(m_Observations);
+            writer.AddList(m_Observations);
             return expectedObservations;
         }
 
