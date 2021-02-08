@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace Unity.MLAgents.Inference.Utils
 {
     /// <summary>
@@ -36,11 +32,11 @@ namespace Unity.MLAgents.Inference.Utils
         /// to be monotonic (always increasing). If the CMF is scaled, then the last entry in
         /// the array will be 1.0.
         /// </param>
-        /// <param name="numBranches">The number of possible branches, i.e. the effective size of the cmf array.</param>
-        /// <returns>A sampled index from the CMF ranging from 0 to numBranches-1.</returns>
-        public int Sample(float[] cmf, int numBranches)
+        /// <param name="branchSize">The number of possible branches, i.e. the effective size of the cmf array.</param>
+        /// <returns>A sampled index from the CMF ranging from 0 to branchSize-1.</returns>
+        public int Sample(float[] cmf, int branchSize)
         {
-            var p = (float)m_Random.NextDouble() * cmf[numBranches - 1];
+            var p = (float)m_Random.NextDouble() * cmf[branchSize - 1];
             var cls = 0;
             while (cmf[cls] < p)
             {

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.MLAgents.Inference.Utils;
@@ -106,19 +105,19 @@ namespace Unity.MLAgents.Inference
         /// <param name="logProbs"></param>
         /// <param name="batch">Index of the agent being considered</param>
         /// <param name="channelOffset">Offset into the tensor's channel.</param>
-        /// <param name="numBranches"></param>
-        internal void ComputeCdf(TensorProxy logProbs, int batch, int channelOffset, int numBranches)
+        /// <param name="branchSize"></param>
+        internal void ComputeCdf(TensorProxy logProbs, int batch, int channelOffset, int branchSize)
         {
             // Find the class maximum
             var maxProb = float.NegativeInfinity;
-            for (var cls = 0; cls < numBranches; ++cls)
+            for (var cls = 0; cls < branchSize; ++cls)
             {
                 maxProb = Mathf.Max(logProbs.data[batch, cls + channelOffset], maxProb);
             }
 
             // Sum the log probabilities and compute CDF
             var sumProb = 0.0f;
-            for (var cls = 0; cls < numBranches; ++cls)
+            for (var cls = 0; cls < branchSize; ++cls)
             {
                 sumProb += Mathf.Exp(logProbs.data[batch, cls + channelOffset] - maxProb);
                 m_cdfBuffer[cls] = sumProb;
