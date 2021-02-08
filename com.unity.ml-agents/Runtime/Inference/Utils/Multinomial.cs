@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Unity.MLAgents.Inference.Utils
@@ -34,10 +36,11 @@ namespace Unity.MLAgents.Inference.Utils
         /// to be monotonic (always increasing). If the CMF is scaled, then the last entry in
         /// the array will be 1.0.
         /// </param>
-        /// <returns>A sampled index from the CMF ranging from 0 to cmf.Length-1.</returns>
-        public int Sample(float[] cmf)
+        /// <param name="numBranches">The number of possible branches, i.e. the effective size of the cmf array.</param>
+        /// <returns>A sampled index from the CMF ranging from 0 to numBranches-1.</returns>
+        public int Sample(float[] cmf, int numBranches)
         {
-            var p = (float)m_Random.NextDouble() * cmf[cmf.Length - 1];
+            var p = (float)m_Random.NextDouble() * cmf[numBranches - 1];
             var cls = 0;
             while (cmf[cls] < p)
             {
@@ -47,25 +50,14 @@ namespace Unity.MLAgents.Inference.Utils
             return cls;
         }
 
-        public int SampleLogProb(TensorProxy tensor, int batch, int channelOffset)
+        /// <summary>
+        /// Samples from the Multinomial distribution defined by the provided cumulative
+        /// mass function.
+        /// </summary>
+        /// <returns>A sampled index from the CMF ranging from 0 to cmf.Length-1.</returns>
+        public int Sample(float[] cmf)
         {
-            // TODO check that sum(exp(probs)) == approx(1)
-            var target = (float)m_Random.NextDouble();
-
-            // Sum the log probabilities, and compute CDF as we go.
-            // When we find the target value, return immediately.
-            var sumProb = 0.0f;
-            for (var cls = 0; cls < tensor.data.channels; ++cls)
-            {
-                sumProb += Mathf.Exp(tensor.data[batch, cls + channelOffset]);
-                if (sumProb > target)
-                {
-                    return cls;
-                }
-            }
-
-            return tensor.data.channels - 1;
-
+            return Sample(cmf, cmf.Length);
         }
     }
 }

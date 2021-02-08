@@ -55,33 +55,26 @@ namespace Unity.MLAgents.Inference
     {
         readonly int[] m_ActionSize;
         readonly Multinomial m_Multinomial;
-        readonly ITensorAllocator m_Allocator;
         readonly ActionSpec m_ActionSpec;
+        readonly int[] m_StartActionIndices;
+        readonly float[] m_cdfBuffer;
+
 
         public DiscreteActionOutputApplier(ActionSpec actionSpec, int seed, ITensorAllocator allocator)
         {
             m_ActionSize = actionSpec.BranchSizes;
             m_Multinomial = new Multinomial(seed);
-            m_Allocator = allocator;
             m_ActionSpec = actionSpec;
+            m_StartActionIndices = Utilities.CumSum(m_ActionSize);
+
+            // Scratch space for computing the cumulative distribution function.
+            // In order to reuse it, make it the size of the largest branch.
+            var largestBranch = Mathf.Max(m_ActionSize);
+            m_cdfBuffer = new float[largestBranch];
         }
 
         public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
-            //var tensorDataProbabilities = tensorProxy.Data as float[,];
-            var batchSize = actionIds.Count;
-            var actionValues = new int[batchSize, m_ActionSize.Length];
-            var startActionIndices = Utilities.CumSum(m_ActionSize); // TODO remove
-            for (var actionIndex = 0; actionIndex < m_ActionSize.Length; actionIndex++)
-            {
-                var nBranchAction = m_ActionSize[actionIndex];
-
-                for (var ii = 0; ii < batchSize; ii++)
-                {
-                    actionValues[ii, actionIndex] = m_Multinomial.SampleLogProb(tensorProxy, ii, startActionIndices[actionIndex]);
-                }
-            }
-
             var agentIndex = 0;
             for (var i = 0; i < actionIds.Count; i++)
             {
@@ -97,7 +90,8 @@ namespace Unity.MLAgents.Inference
                     var discreteBuffer = actionBuffer.DiscreteActions;
                     for (var j = 0; j < m_ActionSize.Length; j++)
                     {
-                        discreteBuffer[j] = actionValues[agentIndex, j];
+                        ComputeCdf(tensorProxy, agentIndex, m_StartActionIndices[j], m_ActionSize[j]);
+                        discreteBuffer[j] = m_Multinomial.Sample(m_cdfBuffer, m_ActionSize[j]);
                     }
                 }
                 agentIndex++;
@@ -105,49 +99,29 @@ namespace Unity.MLAgents.Inference
         }
 
         /// <summary>
-        /// Draw samples from a multinomial distribution based on log-probabilities specified
-        /// in tensor src. The samples will be saved in the dst tensor.
+        /// Compute the cumulative distribution function for a given agent's action
+        /// given the log-probabilities.
+        /// The results are stored in m_cdfBuffer, which is the size of the largest action's number of branches.
         /// </summary>
-        /// <param name="src">2-D tensor with shape batch_size x num_classes</param>
-        /// <param name="dst">Allocated tensor with size batch_size x num_samples</param>
-        /// <param name="multinomial">Multinomial object used to sample values</param>
-        /// <exception cref="NotImplementedException">
-        /// Multinomial doesn't support integer tensors
-        /// </exception>
-        /// <exception cref="ArgumentException">Issue with tensor shape or type</exception>
-        /// <exception cref="ArgumentNullException">
-        /// At least one of the tensors is not allocated
-        /// </exception>
-        public static void Eval(TensorProxy src, TensorProxy dst, Multinomial multinomial)
+        /// <param name="logProbs"></param>
+        /// <param name="batch">Index of the agent being considered</param>
+        /// <param name="channelOffset">Offset into the tensor's channel.</param>
+        /// <param name="numBranches"></param>
+        internal void ComputeCdf(TensorProxy logProbs, int batch, int channelOffset, int numBranches)
         {
-            if (src.DataType != typeof(float))
+            // Find the class maximum
+            var maxProb = float.NegativeInfinity;
+            for (var cls = 0; cls < numBranches; ++cls)
             {
-                throw new NotImplementedException("Only float tensors are currently supported");
+                maxProb = Mathf.Max(logProbs.data[batch, cls + channelOffset], maxProb);
             }
 
-            if (src.valueType != dst.valueType)
+            // Sum the log probabilities and compute CDF
+            var sumProb = 0.0f;
+            for (var cls = 0; cls < numBranches; ++cls)
             {
-                throw new ArgumentException(
-                    "Source and destination tensors have different types!");
-            }
-
-            if (src.data == null || dst.data == null)
-            {
-                throw new ArgumentNullException();
-            }
-
-            if (src.data.batch != dst.data.batch)
-            {
-                throw new ArgumentException("Batch size for input and output data is different!");
-            }
-
-            for (var batch = 0; batch < src.data.batch; ++batch)
-            {
-                // Generate the samples
-                for (var sample = 0; sample < dst.data.channels; ++sample)
-                {
-                    //dst.data[batch, sample] = multinomial.SampleLogProb(src, batch);
-                }
+                sumProb += Mathf.Exp(logProbs.data[batch, cls + channelOffset] - maxProb);
+                m_cdfBuffer[cls] = sumProb;
             }
         }
     }
