@@ -90,7 +90,7 @@ public class SmallCubeAgent : Agent
         m_CubeWarSettings = FindObjectOfType<CubeWarSettings>();
         SetResetParameters();
         myLaser.maxLength = m_Range;
-        myLaser.width = m_Splash / 2f;
+        myLaser.width = m_Splash;
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -161,20 +161,16 @@ public class SmallCubeAgent : Agent
                 if (hit.collider.gameObject.CompareTag("StrongSmallAgent") || hit.collider.gameObject.CompareTag("WeakSmallAgent"))
                 {
                     hit.collider.gameObject.GetComponent<SmallCubeAgent>().HealAgent(m_Heal);
-                    if (role == Role.Healer)
-                    {
-                        AddReward(.05f);
-                    }
-
+                    // if (role == Role.Healer)
+                    // {
+                    //     AddReward(.01f);
+                    // }
                 }
                 else if (hit.collider.gameObject.CompareTag("StrongLargeAgent") || hit.collider.gameObject.CompareTag("WeakLargeAgent"))
                 {
                     hit.collider.gameObject.GetComponent<LargeCubeAgent>().HitAgent(m_Damage);
-
-                    if (role == Role.DPS)
-                    {
-                        AddReward(.05f);
-                    }
+                    // Give reward proportional to damage
+                    AddReward(m_Damage);
                 }
             }
         }
@@ -188,10 +184,10 @@ public class SmallCubeAgent : Agent
     {
         if (!m_Dead)
         {
-            if (role == Role.Tank)
-            {
-                AddReward(.05f);
-            }
+            // if (role == Role.Tank)
+            // {
+            //     AddReward(.05f);
+            // }
             m_HitPoints -= damage;
             HealthStatus();
             return m_HitPoints <= 0;
