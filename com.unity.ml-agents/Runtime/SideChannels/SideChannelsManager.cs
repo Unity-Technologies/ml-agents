@@ -120,6 +120,13 @@ namespace Unity.MLAgents.SideChannels
         /// <returns></returns>
         internal static byte[] GetSideChannelMessage(Dictionary<Guid, SideChannel> sideChannels)
         {
+            if (!HasOutgoingMessages(sideChannels))
+            {
+                // Early out so that we don't create the MemoryStream or BinaryWriter.
+                // This is the most common case.
+                return Array.Empty<byte>();
+            }
+
             using (var memStream = new MemoryStream())
             {
                 using (var binaryWriter = new BinaryWriter(memStream))
@@ -138,6 +145,25 @@ namespace Unity.MLAgents.SideChannels
                     return memStream.ToArray();
                 }
             }
+        }
+
+        /// <summary>
+        /// Check whether any of the sidechannels have queued messages.
+        /// </summary>
+        /// <param name="sideChannels"></param>
+        /// <returns></returns>
+        static bool HasOutgoingMessages(Dictionary<Guid, SideChannel> sideChannels)
+        {
+            foreach (var sideChannel in sideChannels.Values)
+            {
+                var messageList = sideChannel.MessageQueue;
+                if (messageList.Count > 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
