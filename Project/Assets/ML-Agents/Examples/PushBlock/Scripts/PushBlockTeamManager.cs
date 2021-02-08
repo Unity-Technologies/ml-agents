@@ -5,11 +5,16 @@ using Unity.MLAgents.Sensors;
 
 public class PushBlockTeamManager : BaseTeamManager
 {
-    List<Agent> m_AgentList = new List<Agent> { };
 
+    PushBlockEnvController m_envController;
 
-    public override void RegisterAgent(Agent agent)
+    public PushBlockTeamManager(PushBlockEnvController envController)
     {
-        m_AgentList.Add(agent);
+        m_envController = envController;
+    }
+
+    public override void OnTeamEpisodeBegin()
+    {
+        m_envController.ResetScene();
     }
 }

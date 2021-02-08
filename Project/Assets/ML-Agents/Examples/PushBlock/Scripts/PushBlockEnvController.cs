@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.MLAgents;
+using Unity.MLAgents.Extensions.Teams;
 using UnityEngine;
 
 public class PushBlockEnvController : MonoBehaviour
@@ -35,7 +35,7 @@ public class PushBlockEnvController : MonoBehaviour
     /// </summary>
     /// <returns></returns>
     [Header("Max Environment Steps")] public int MaxEnvironmentSteps = 25000;
-    private int m_ResetTimer;
+    // private int m_ResetTimer;
 
     /// <summary>
     /// The area bounds.
@@ -86,7 +86,8 @@ public class PushBlockEnvController : MonoBehaviour
             item.Rb = item.T.GetComponent<Rigidbody>();
         }
         // Initialize TeamManager
-        m_TeamManager = new PushBlockTeamManager();
+        m_TeamManager = new PushBlockTeamManager(this);
+        m_TeamManager.SetTeamMaxStep(MaxEnvironmentSteps);
         foreach (var item in AgentsList)
         {
             item.StartingPos = item.Agent.transform.position;
@@ -97,16 +98,6 @@ public class PushBlockEnvController : MonoBehaviour
 
         ResetScene();
 
-    }
-
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        m_ResetTimer += 1;
-        if (m_ResetTimer > MaxEnvironmentSteps)
-        {
-            ResetScene();
-        }
     }
 
     /// <summary>
@@ -184,7 +175,7 @@ public class PushBlockEnvController : MonoBehaviour
         if (done)
         {
             //Reset assets
-            ResetScene();
+            m_TeamManager.EndTeamEpisode();
         }
     }
 
@@ -193,9 +184,9 @@ public class PushBlockEnvController : MonoBehaviour
         return Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
     }
 
-    void ResetScene()
+    public void ResetScene()
     {
-        m_ResetTimer = 0;
+        // m_ResetTimer = 0;
 
         //Random platform rot
         var rotation = Random.Range(0, 4);
@@ -203,14 +194,14 @@ public class PushBlockEnvController : MonoBehaviour
         area.transform.Rotate(new Vector3(0f, rotationAngle, 0f));
 
         //End Episode
-        foreach (var item in AgentsList)
-        {
-            if (!item.Agent)
-            {
-                return;
-            }
-            item.Agent.EndEpisode();
-        }
+        // foreach (var item in AgentsList)
+        // {
+        //     if (!item.Agent)
+        //     {
+        //         return;
+        //     }
+        //     item.Agent.EndEpisode();
+        // }
         //Reset Agents
         foreach (var item in AgentsList)
         {
