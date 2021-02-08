@@ -20,7 +20,7 @@ behaviors:
         gamma: 0.99
         strength: 1.0
     keep_checkpoints: 5
-    max_steps: 100000000
+    max_steps: 5000000
     time_horizon: 256
     summary_freq: 10000
     threaded: true
@@ -33,7 +33,7 @@ environment_parameters:
           behavior: Sorter
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.05
+          threshold: 0.5
         value: 2.0
       - name: Lesson1
         completion_criteria:
@@ -41,7 +41,7 @@ environment_parameters:
           behavior: Sorter
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.1
+          threshold: 0.6
         value: 4.0
       - name: Lesson2
         completion_criteria:
@@ -49,7 +49,7 @@ environment_parameters:
           behavior: Sorter
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.15
+          threshold: 0.65
         value: 6.0
       - name: Lesson3
         completion_criteria:
@@ -57,7 +57,7 @@ environment_parameters:
           behavior: Sorter
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.2
+          threshold: 0.7
         value: 8.0
       - name: Lesson4
         completion_criteria:
@@ -65,7 +65,7 @@ environment_parameters:
           behavior: Sorter
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.25
+          threshold: 0.75
         value: 10.0
       - name: Lesson5
         completion_criteria:
@@ -73,7 +73,7 @@ environment_parameters:
           behavior: Sorter
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.3
+          threshold: 0.8
         value: 12.0
       - name: Lesson6
         completion_criteria:
@@ -81,7 +81,7 @@ environment_parameters:
           behavior: Sorter
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.35
+          threshold: 0.85
         value: 14.0
       - name: Lesson7
         completion_criteria:
@@ -89,7 +89,7 @@ environment_parameters:
           behavior: Sorter
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.4
+          threshold: 0.9
         value: 16.0
       - name: Lesson8
         completion_criteria:
@@ -97,7 +97,7 @@ environment_parameters:
           behavior: Sorter
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.45
+          threshold: 0.95
         value: 18.0
       - name: Lesson9
         value: 20.0
