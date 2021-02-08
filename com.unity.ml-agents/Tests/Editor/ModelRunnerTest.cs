@@ -68,15 +68,16 @@ namespace Unity.MLAgents.Tests
         [Test]
         public void TestCreation()
         {
-            var modelRunner = new ModelRunner(continuousONNXModel, GetContinuous2vis8vec2actionActionSpec());
+            var inferenceDevice = InferenceDevice.Burst;
+            var modelRunner = new ModelRunner(continuousONNXModel, GetContinuous2vis8vec2actionActionSpec(), inferenceDevice);
             modelRunner.Dispose();
-            modelRunner = new ModelRunner(discreteONNXModel, GetDiscrete1vis0vec_2_3action_recurrModelActionSpec());
+            modelRunner = new ModelRunner(discreteONNXModel, GetDiscrete1vis0vec_2_3action_recurrModelActionSpec(), inferenceDevice);
             modelRunner.Dispose();
-            modelRunner = new ModelRunner(hybridONNXModel, GetHybrid0vis53vec_3c_2dActionSpec());
+            modelRunner = new ModelRunner(hybridONNXModel, GetHybrid0vis53vec_3c_2dActionSpec(), inferenceDevice);
             modelRunner.Dispose();
-            modelRunner = new ModelRunner(continuousNNModel, GetContinuous2vis8vec2actionActionSpec());
+            modelRunner = new ModelRunner(continuousNNModel, GetContinuous2vis8vec2actionActionSpec(), inferenceDevice);
             modelRunner.Dispose();
-            modelRunner = new ModelRunner(discreteNNModel, GetDiscrete1vis0vec_2_3action_recurrModelActionSpec());
+            modelRunner = new ModelRunner(discreteNNModel, GetDiscrete1vis0vec_2_3action_recurrModelActionSpec(), inferenceDevice);
             modelRunner.Dispose();
         }
 
@@ -94,7 +95,7 @@ namespace Unity.MLAgents.Tests
         public void TestRunModel()
         {
             var actionSpec = GetDiscrete1vis0vec_2_3action_recurrModelActionSpec();
-            var modelRunner = new ModelRunner(discreteONNXModel, actionSpec);
+            var modelRunner = new ModelRunner(discreteONNXModel, actionSpec, InferenceDevice.Burst);
             var info1 = new AgentInfo();
             info1.episodeId = 1;
             modelRunner.PutObservations(info1, new[] { sensor_21_20_3.CreateSensor() }.ToList());

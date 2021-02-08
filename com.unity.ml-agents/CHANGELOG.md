@@ -36,6 +36,9 @@ and this project adheres to
 - The Barracuda dependency was upgraded to 1.3.0. (#4898)
 - Added `ActuatorComponent.CreateActuators`, and deprecate `ActuatorComponent.CreateActuator`.  The
   default implementation will wrap `ActuatorComponent.CreateActuator` in an array and return that. (#4899)
+- `InferenceDevice.Burst` was added, indicating that Agent's model will be run using Barracuda's Burst backend.
+  This is the default for new Agents, but existing ones that use `InferenceDevice.CPU` should update to
+  `InferenceDevice.Burst`. (#4925)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Tensorboard now logs the Environment Reward as both a scalar and a histogram. (#4878)
