@@ -15,7 +15,7 @@
     "versionDefines": [
         {
             "name": "com.unity.inputsystem",
-            "expression": "1.0.0",
+            "expression": "1.1.0-preview",
             "define": "MLA_INPUT_SYSTEM"
         }
     ],
