@@ -9,7 +9,7 @@ using Unity.MLAgents.Extensions.Runtime.Input;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
 
-public class PushAgentBasic : Agent, IIntputActionAssetProvider
+public class PushAgentBasic : Agent, IInputActionAssetProvider
 {
     /// <summary>
     /// The ground. The bounds are used to spawn the elements.

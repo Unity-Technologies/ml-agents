@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace Unity.MLAgents.Extensions.Runtime.Input
 {
-    public interface IIntputActionAssetProvider
+    public interface IInputActionAssetProvider
     {
         InputActionAsset GetInputActionAsset();
     }

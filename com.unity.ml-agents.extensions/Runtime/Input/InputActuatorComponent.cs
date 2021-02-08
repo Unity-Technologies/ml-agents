@@ -245,7 +245,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         {
             if (m_InputAsset == null)
             {
-                var assetProvider = GetComponent<IIntputActionAssetProvider>();
+                var assetProvider = GetComponent<IInputActionAssetProvider>();
                 if (assetProvider != null)
                 {
                     m_InputAsset = assetProvider.GetInputActionAsset();
