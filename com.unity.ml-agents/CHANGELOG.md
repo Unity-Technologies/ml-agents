@@ -42,7 +42,7 @@ and this project adheres to
 - Added a `--torch-device` commandline option to `mlagents-learn`, which sets the default
   [`torch.device`](https://pytorch.org/docs/stable/tensor_attributes.html#torch.torch.device) used for training. (#4888)
 - The `--cpu` commandline option had no effect and was removed. Use `--torch-device=cpu` to force CPU training. (#4888)
-- The `mlagents_env` API has changed, `BehaviorSpec` is now has a `observation_specs` property containing a list of `ObservationSpec`. For more information on `ObservationSpec` see [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Python-API.md#behaviorspec). (#4763, #4825)
+- The `mlagents_env` API has changed, `BehaviorSpec` now has a `observation_specs` property containing a list of `ObservationSpec`. For more information on `ObservationSpec` see [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Python-API.md#behaviorspec). (#4763, #4825)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
