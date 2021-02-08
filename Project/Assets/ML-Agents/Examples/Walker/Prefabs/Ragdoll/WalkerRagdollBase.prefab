@@ -292,15 +292,20 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 243
     NumStackedVectorObservations: 1
+    m_ActionSpec:
+      m_NumContinuousActions: 39
+      BranchSizes: 
     VectorActionSize: 27000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
+    hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: f598eaeeef9f94691989a2cfaaafb565, type: 3}
-  m_InferenceDevice: 0
+  m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: WalkerDynamic
   TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &7408209125961349353
 MonoBehaviour:
@@ -318,11 +323,8 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  targetWalkingSpeed: 10
+  m_TargetWalkingSpeed: 10
   randomizeWalkSpeedEachEpisode: 1
-  walkDirectionMethod: 0
-  worldDirToWalk: {x: 1, y: 0, z: 0}
-  worldPosToWalkTo: {x: 0, y: 0, z: 0}
   target: {fileID: 0}
   hips: {fileID: 895268871264836332}
   chest: {fileID: 7933235354845945071}
