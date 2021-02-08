@@ -69,36 +69,17 @@ namespace Unity.MLAgents.Inference
         public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
             //var tensorDataProbabilities = tensorProxy.Data as float[,];
-            var idActionPairList = actionIds as List<int> ?? actionIds.ToList();
-            var batchSize = idActionPairList.Count;
+            var batchSize = actionIds.Count;
             var actionValues = new int[batchSize, m_ActionSize.Length];
-            var startActionIndices = Utilities.CumSum(m_ActionSize);
+            var startActionIndices = Utilities.CumSum(m_ActionSize); // TODO remove
             for (var actionIndex = 0; actionIndex < m_ActionSize.Length; actionIndex++)
             {
                 var nBranchAction = m_ActionSize[actionIndex];
-                var actionLogProbs = new TensorProxy()
-                {
-                    valueType = TensorProxy.TensorType.FloatingPoint,
-                    shape = new long[] { batchSize, nBranchAction },
-                    data = m_Allocator.Alloc(new TensorShape(batchSize, nBranchAction))
-                };
-
-                for (var batchIndex = 0; batchIndex < batchSize; batchIndex++)
-                {
-                    for (var branchActionIndex = 0;
-                         branchActionIndex < nBranchAction;
-                         branchActionIndex++)
-                    {
-                        actionLogProbs.data[batchIndex, branchActionIndex] =
-                            tensorProxy.data[batchIndex, startActionIndices[actionIndex] + branchActionIndex];
-                    }
-                }
 
                 for (var ii = 0; ii < batchSize; ii++)
                 {
-                    actionValues[ii, actionIndex] = m_Multinomial.SampleLogProb(actionLogProbs, ii);
+                    actionValues[ii, actionIndex] = m_Multinomial.SampleLogProb(tensorProxy, ii, startActionIndices[actionIndex]);
                 }
-                actionLogProbs.data.Dispose();
             }
 
             var agentIndex = 0;
@@ -165,7 +146,7 @@ namespace Unity.MLAgents.Inference
                 // Generate the samples
                 for (var sample = 0; sample < dst.data.channels; ++sample)
                 {
-                    dst.data[batch, sample] = multinomial.SampleLogProb(src, batch);
+                    //dst.data[batch, sample] = multinomial.SampleLogProb(src, batch);
                 }
             }
         }

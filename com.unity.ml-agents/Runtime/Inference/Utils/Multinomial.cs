@@ -47,7 +47,7 @@ namespace Unity.MLAgents.Inference.Utils
             return cls;
         }
 
-        public int SampleLogProb(TensorProxy tensor, int batch)
+        public int SampleLogProb(TensorProxy tensor, int batch, int channelOffset)
         {
             // TODO check that sum(exp(probs)) == approx(1)
             var target = (float)m_Random.NextDouble();
@@ -57,7 +57,7 @@ namespace Unity.MLAgents.Inference.Utils
             var sumProb = 0.0f;
             for (var cls = 0; cls < tensor.data.channels; ++cls)
             {
-                sumProb += Mathf.Exp(tensor.data[batch, cls]);
+                sumProb += Mathf.Exp(tensor.data[batch, cls + channelOffset]);
                 if (sumProb > target)
                 {
                     return cls;
