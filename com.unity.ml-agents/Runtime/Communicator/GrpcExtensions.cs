@@ -68,11 +68,6 @@ namespace Unity.MLAgents
                 agentInfoProto.ActionMask.AddRange(ai.discreteActionMasks);
             }
 
-            if (ai.teamManagerId != null)
-            {
-                agentInfoProto.TeamManagerId = ai.teamManagerId;
-            }
-
             return agentInfoProto;
         }
 

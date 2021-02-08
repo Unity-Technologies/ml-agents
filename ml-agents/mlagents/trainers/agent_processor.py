@@ -146,21 +146,23 @@ class AgentProcessor:
     ) -> None:
         stored_decision_step, idx = self.last_step_result.get(global_id, (None, None))
         if stored_decision_step is not None:
-            if step.team_manager_id is not None:
+            if step.team_manager_id > 0:
                 self.last_group_obs[step.team_manager_id][
                     global_id
                 ] = stored_decision_step.obs
                 self.current_group_obs[step.team_manager_id][global_id] = step.obs
 
     def _clear_teammate_obs(self, global_id: str) -> None:
-        for _manager_id, _team_group in self.current_group_obs.items():
+        for _manager_id in list(self.current_group_obs.keys()):
+            _team_group = self.current_group_obs[_manager_id]
             self._safe_delete(_team_group, global_id)
             if not _team_group:  # if dict is empty
-                self._safe_delete(_team_group, _manager_id)
-        for _manager_id, _team_group in self.last_group_obs.items():
+                self._safe_delete(self.current_group_obs, _manager_id)
+        for _manager_id in list(self.last_group_obs.keys()):
+            _team_group = self.last_group_obs[_manager_id]
             self._safe_delete(_team_group, global_id)
             if not _team_group:  # if dict is empty
-                self._safe_delete(_team_group, _manager_id)
+                self._safe_delete(self.last_group_obs, _manager_id)
 
     def _process_step(
         self, step: Union[TerminalStep, DecisionStep], global_id: str, index: int
