@@ -5,14 +5,19 @@ using UnityEngine.InputSystem.LowLevel;
 
 namespace Unity.MLAgents.Extensions.Runtime.Input
 {
+    /// <summary>
+    /// Translates data from a <see cref="UnityEngine.InputSystem.Controls.IntegerControl"/>.
+    /// </summary>
     public class IntegerInputActionAdaptor : IRLActionInputAdaptor
     {
         // TODO need to figure out how we can infer the branch size from here.
+        /// <inheritdoc cref="IRLActionInputAdaptor.GetActionSpecForInputAction"/>
         public ActionSpec GetActionSpecForInputAction(InputAction action)
         {
             return ActionSpec.MakeDiscrete(2);
         }
 
+        /// <inheritdoc cref="IRLActionInputAdaptor.QueueInputEventForAction"/>
         public void QueueInputEventForAction(InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
         {
             var val = actionBuffers.DiscreteActions[0];
@@ -24,6 +29,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             }
         }
 
+        /// <inheritdoc cref="IRLActionInputAdaptor.WriteToHeuristic"/>
         public void WriteToHeuristic(InputAction action, in ActionBuffers actionBuffers)
         {
             var actions = actionBuffers.DiscreteActions;

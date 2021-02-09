@@ -16,8 +16,8 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
     public class InputActionActuator : IActuator, IHeuristicProvider
     {
         readonly BehaviorParameters m_BehaviorParameters;
-        InputAction m_Action;
-        IRLActionInputAdaptor m_InputAdaptor;
+        readonly InputAction m_Action;
+        readonly IRLActionInputAdaptor m_InputAdaptor;
         InputDevice m_Device;
         InputControl m_Control;
 
@@ -64,7 +64,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             }
         }
 
-        bool IsInHeuristicMode()
+        internal bool IsInHeuristicMode()
         {
             return m_BehaviorParameters.BehaviorType == BehaviorType.HeuristicOnly ||
                      m_BehaviorParameters.BehaviorType == BehaviorType.Default &&

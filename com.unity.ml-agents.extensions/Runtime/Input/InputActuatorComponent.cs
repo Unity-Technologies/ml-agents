@@ -151,7 +151,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         /// <param name="defaultMap">The <see cref="InputActionMap"/> to pull
         /// <see cref="InputControlScheme.DeviceRequirement"/>s from</param>
         /// <param name="device">The virtual device to add to our custom control scheme.</param>
-        static void CreateControlScheme(InputActionAsset asset, string defaultMap, InputControl device)
+        internal static void CreateControlScheme(InputActionAsset asset, string defaultMap, InputControl device)
         {
             // If the control scheme isn't created, create it with our device registered
             // as required.  Devices with the same path get incremented automatically by the InputSystem
@@ -204,7 +204,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         /// it is equal to <see cref="mlAgentsDeviceName"/> + <see cref="BehaviorParameters.BehaviorName"/></param>
         /// <param name="localId"></param>
         /// <returns></returns>
-        static InputDevice CreateDevice(string layoutName, string interfaceName, uint localId)
+        internal static InputDevice CreateDevice(string layoutName, string interfaceName, uint localId)
         {
             // See if our device layout was already registered.
             var existingLayout = InputSystem.TryFindMatchingLayout(new InputDeviceDescription
@@ -238,7 +238,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         /// <param name="localId"></param>
         /// <param name="behaviorParameters"></param>
         /// <returns></returns>
-        static IActuator[] GenerateActionActuatorsFromAsset(
+        internal static IActuator[] GenerateActionActuatorsFromAsset(
             InputActionAsset asset,
             string layoutName,
             uint localId,
@@ -314,7 +314,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             return actuators.ToArray();
         }
 
-        void FindNeededComponents()
+        internal void FindNeededComponents()
         {
             if (m_InputAsset == null)
             {
@@ -350,7 +350,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             }
         }
 
-        void CleanupActionAsset()
+        internal void CleanupActionAsset()
         {
             InputSystem.RemoveLayout(mlAgentsLayoutName);
             if (m_Device != null)

@@ -7,14 +7,19 @@ using UnityEngine.InputSystem.LowLevel;
 
 namespace Unity.MLAgents.Extensions.Runtime.Input
 {
+    /// <summary>
+    /// Translates data from any control that extends from <see cref="InputControl{Vector2}"/>.
+    /// </summary>
     public class Vector2InputActionAdaptor : IRLActionInputAdaptor
     {
+        /// <inheritdoc cref="IRLActionInputAdaptor.GetActionSpecForInputAction"/>
         public ActionSpec GetActionSpecForInputAction(InputAction action)
         {
             // TODO create the action spec based on what controls back the action
             return ActionSpec.MakeContinuous(2);
         }
 
+        /// <inheritdoc cref="IRLActionInputAdaptor.QueueInputEventForAction"/>
         public void QueueInputEventForAction(InputAction action,
             InputControl control,
             ActionSpec actionSpec,
@@ -29,6 +34,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             }
         }
 
+        /// <inheritdoc cref="IRLActionInputAdaptor.WriteToHeuristic"/>
         public void WriteToHeuristic(InputAction action, in ActionBuffers actionBuffers)
         {
             var value = action.ReadValue<Vector2>();

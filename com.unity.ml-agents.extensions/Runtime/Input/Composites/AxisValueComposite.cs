@@ -10,7 +10,7 @@ using UnityEditor;
 namespace Unity.MLAgents.Extensions.Runtime.Input.Composites
 {
     /// <summary>
-    /// Custom binding for reading float values from an
+    /// Custom binding for reading float values from an <see cref="InputControl{Single}"/>.
     /// </summary>
 #if UNITY_EDITOR
     [InitializeOnLoad]

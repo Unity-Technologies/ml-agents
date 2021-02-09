@@ -5,13 +5,18 @@ using UnityEngine.InputSystem.LowLevel;
 
 namespace Unity.MLAgents.Extensions.Runtime.Input
 {
+    /// <summary>
+    /// Translates data from a <see cref="UnityEngine.InputSystem.Controls.DoubleControl"/>.
+    /// </summary>
     public class DoubleInputActionAdaptor : IRLActionInputAdaptor
     {
+        /// <inheritdoc cref="IRLActionInputAdaptor.GetActionSpecForInputAction"/>
         public ActionSpec GetActionSpecForInputAction(InputAction action)
         {
             return ActionSpec.MakeContinuous(1);
         }
 
+        /// <inheritdoc cref="IRLActionInputAdaptor.QueueInputEventForAction"/>
         public void QueueInputEventForAction(InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
         {
             var val = actionBuffers.ContinuousActions[0];
@@ -23,6 +28,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             }
         }
 
+        /// <inheritdoc cref="IRLActionInputAdaptor.WriteToHeuristic"/>
         public void WriteToHeuristic(InputAction action, in ActionBuffers actionBuffers)
         {
             var actions = actionBuffers.ContinuousActions;

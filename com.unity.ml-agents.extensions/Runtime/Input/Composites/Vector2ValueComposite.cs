@@ -9,6 +9,9 @@ using UnityEditor;
 #endif
 namespace Unity.MLAgents.Extensions.Runtime.Input.Composites
 {
+    /// <summary>
+    /// Custom composite class for reading values from <see cref="InputControl{Vector2}"/>s.
+    /// </summary>
 #if UNITY_EDITOR
     [InitializeOnLoad]
 #endif
