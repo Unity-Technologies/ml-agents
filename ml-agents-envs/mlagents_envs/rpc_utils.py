@@ -314,15 +314,26 @@ def steps_from_proto(
         [agent_info.reward for agent_info in terminal_agent_info_list], dtype=np.float32
     )
 
+    decision_team_rewards = np.array(
+        [agent_info.team_reward for agent_info in decision_agent_info_list],
+        dtype=np.float32,
+    )
+    terminal_team_rewards = np.array(
+        [agent_info.team_reward for agent_info in terminal_agent_info_list],
+        dtype=np.float32,
+    )
+
+    _raise_on_nan_and_inf(decision_rewards, "rewards")
+    _raise_on_nan_and_inf(terminal_rewards, "rewards")
+    _raise_on_nan_and_inf(decision_team_rewards, "rewards")
+    _raise_on_nan_and_inf(terminal_team_rewards, "rewards")
+
     decision_team_managers = [
         agent_info.team_manager_id for agent_info in decision_agent_info_list
     ]
     terminal_team_managers = [
         agent_info.team_manager_id for agent_info in terminal_agent_info_list
     ]
-
-    _raise_on_nan_and_inf(decision_rewards, "rewards")
-    _raise_on_nan_and_inf(terminal_rewards, "rewards")
 
     max_step = np.array(
         [agent_info.max_step_reached for agent_info in terminal_agent_info_list],
@@ -359,6 +370,7 @@ def steps_from_proto(
         DecisionSteps(
             decision_obs_list,
             decision_rewards,
+            decision_team_rewards,
             decision_agent_id,
             action_mask,
             decision_team_managers,
@@ -366,6 +378,7 @@ def steps_from_proto(
         TerminalSteps(
             terminal_obs_list,
             terminal_rewards,
+            terminal_team_rewards,
             max_step,
             terminal_agent_id,
             terminal_team_managers,
