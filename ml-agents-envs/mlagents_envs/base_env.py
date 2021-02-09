@@ -82,9 +82,12 @@ class DecisionSteps(Mapping):
      this simulation step.
     """
 
-    def __init__(self, obs, reward, agent_id, action_mask, team_manager_id):
+    def __init__(
+        self, obs, reward, team_reward, agent_id, action_mask, team_manager_id
+    ):
         self.obs: List[np.ndarray] = obs
         self.reward: np.ndarray = reward
+        self.team_reward: np.ndarray = team_reward
         self.agent_id: np.ndarray = agent_id
         self.action_mask: Optional[List[np.ndarray]] = action_mask
         self.team_manager_id: np.ndarray = team_manager_id
@@ -146,6 +149,7 @@ class DecisionSteps(Mapping):
         return DecisionSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
+            team_reward=np.zeros(0, dtype=np.float32),
             agent_id=np.zeros(0, dtype=np.int32),
             action_mask=None,
             team_manager_id=np.zeros(0, dtype=np.int32),
@@ -189,9 +193,12 @@ class TerminalSteps(Mapping):
      across simulation steps.
     """
 
-    def __init__(self, obs, reward, interrupted, agent_id, team_manager_id):
+    def __init__(
+        self, obs, reward, team_reward, interrupted, agent_id, team_manager_id
+    ):
         self.obs: List[np.ndarray] = obs
         self.reward: np.ndarray = reward
+        self.team_reward: np.ndarray = team_reward
         self.interrupted: np.ndarray = interrupted
         self.agent_id: np.ndarray = agent_id
         self.team_manager_id: np.ndarray = team_manager_id
@@ -249,6 +256,7 @@ class TerminalSteps(Mapping):
         return TerminalSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
+            team_reward=np.zeros(0, dtype=np.float32),
             interrupted=np.zeros(0, dtype=np.bool),
             agent_id=np.zeros(0, dtype=np.int32),
             team_manager_id=np.zeros(0, dtype=np.int32),
