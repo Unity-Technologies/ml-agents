@@ -458,7 +458,7 @@ namespace Unity.MLAgents
                 new int[m_ActuatorManager.NumDiscreteActions]
             );
 
-            m_Info.teamManagerId = m_TeamManager == null ? -1 : m_TeamManager.GetId();
+            m_Info.teamManagerId = m_TeamManager == null ? 0 : m_TeamManager.GetId();
 
             // The first time the Academy resets, all Agents in the scene will be
             // forced to reset through the <see cref="AgentForceReset"/> event.
@@ -551,7 +551,7 @@ namespace Unity.MLAgents
             m_Info.teamReward = m_TeamReward;
             m_Info.done = true;
             m_Info.maxStepReached = doneReason == DoneReason.MaxStepReached;
-            m_Info.teamManagerId = m_TeamManager == null ? -1 : m_TeamManager.GetId();
+            m_Info.teamManagerId = m_TeamManager == null ? 0 : m_TeamManager.GetId();
             if (collectObservationsSensor != null)
             {
                 // Make sure the latest observations are being passed to training.
@@ -1094,7 +1094,7 @@ namespace Unity.MLAgents
             m_Info.done = false;
             m_Info.maxStepReached = false;
             m_Info.episodeId = m_EpisodeId;
-            m_Info.teamManagerId = m_TeamManager == null ? -1 : m_TeamManager.GetId();
+            m_Info.teamManagerId = m_TeamManager == null ? 0 : m_TeamManager.GetId();
 
             using (TimerStack.Instance.Scoped("RequestDecision"))
             {
