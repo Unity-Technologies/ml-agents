@@ -25,16 +25,15 @@ class TorchPPOOptimizer(TorchOptimizer):
         """
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
 
-        super().__init__(policy, trainer_settings)
-
         reward_signal_configs = trainer_settings.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
 
-        self.critic = ValueNetwork(
+        critic = ValueNetwork(
             reward_signal_names,
             policy.behavior_spec.observation_specs,
             network_settings=trainer_settings.network_settings,
         )
+        super().__init__(policy, critic, trainer_settings)
 
         params = list(self.policy.actor.parameters()) + list(self.critic.parameters())
         self.hyperparameters: PPOSettings = cast(
