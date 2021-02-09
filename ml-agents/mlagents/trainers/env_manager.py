@@ -12,6 +12,7 @@ from mlagents_envs.side_channel.stats_side_channel import EnvironmentStats
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
 from mlagents.trainers.action_info import ActionInfo
+from mlagents.trainers.settings import TrainerSettings
 from mlagents_envs.logging_util import get_logger
 
 AllStepResult = Dict[BehaviorName, Tuple[DecisionSteps, TerminalSteps]]
@@ -73,6 +74,17 @@ class EnvManager(ABC):
         Sends environment parameter settings to C# via the
         EnvironmentParametersSideChannel.
         :param config: Dict of environment parameter keys and values
+        """
+        pass
+
+    def on_training_started(
+        self, behavior_name: str, trainer_settings: TrainerSettings
+    ) -> None:
+        """
+        Handle traing starting for a new behavior type. Generally nothing is necessary here.
+        :param behavior_name:
+        :param trainer_settings:
+        :return:
         """
         pass
 

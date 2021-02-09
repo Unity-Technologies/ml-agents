@@ -1,32 +1,13 @@
-using System.Collections.Generic;
-using Unity.MLAgents;
-using Unity.MLAgents.Sensors;
-
 namespace Unity.MLAgents.Extensions.Teams
 {
     public class BaseTeamManager : ITeamManager
     {
-        private readonly string m_Id = System.Guid.NewGuid().ToString();
+        readonly int m_Id = TeamManagerIdCounter.GetTeamManagerId();
 
-        public virtual void RegisterAgent(Agent agent)
-        {
 
-        }
+        public virtual void RegisterAgent(Agent agent) { }
 
-        public virtual void OnAgentDone(Agent agent, Agent.DoneReason doneReason, List<ISensor> sensors)
-        {
-            // Possible implementation - save reference to Agent's IPolicy so that we can repeatedly
-            // call IPolicy.RequestDecision on behalf of the Agent after it's dead
-            // If so, we'll need dummy sensor impls with the same shape as the originals.
-            agent.SendDoneToTrainer();
-        }
-
-        public virtual void AddTeamReward(float reward)
-        {
-
-        }
-
-        public string GetId()
+        public int GetId()
         {
             return m_Id;
         }

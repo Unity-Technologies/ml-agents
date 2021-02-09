@@ -118,13 +118,19 @@ class EntityEmbedding(torch.nn.Module):
         if not concat_self:
             self.self_size = 0
         # Initialization scheme from http://www.cs.toronto.edu/~mvolkovs/ICML2020_tfixup.pdf
-        self.ent_encoder = LinearEncoder(
-            self.self_size + self.entity_size,
-            1,
-            embedding_size,
-            kernel_init=Initialization.Normal,
-            kernel_gain=(0.125 / embedding_size) ** 0.5,
+        self.ent_encoders = torch.nn.ModuleList(
+            [
+                LinearEncoder(
+                    self.self_size + ent_size,
+                    1,
+                    embedding_size,
+                    kernel_init=Initialization.Normal,
+                    kernel_gain=(0.125 / embedding_size) ** 0.5,
+                )
+                for ent_size in self.entity_sizes
+            ]
         )
+        self.embedding_norm = LayerNorm()
 
     def forward(self, x_self: torch.Tensor, entities: torch.Tensor) -> torch.Tensor:
         if self.concat_self:
@@ -139,10 +145,41 @@ class EntityEmbedding(torch.nn.Module):
             expanded_self = x_self.reshape(-1, 1, self.self_size)
             expanded_self = torch.cat([expanded_self] * num_entities, dim=1)
             # Concatenate all observations with self
-            entities = torch.cat([expanded_self, entities], dim=2)
-        # Encode entities
-        encoded_entities = self.ent_encoder(entities)
+            self_and_ent: List[torch.Tensor] = []
+            for num_entities, ent in zip(self.entity_num_max_elements, entities):
+                if num_entities < 0:
+                    if exporting_to_onnx.is_exporting():
+                        raise UnityTrainerException(
+                            "Trying to export an attention mechanism that doesn't have a set max \
+                            number of elements."
+                        )
+                    num_entities = ent.shape[1]
+                expanded_self = x_self.reshape(-1, 1, self.self_size)
+                expanded_self = torch.cat([expanded_self] * num_entities, dim=1)
+                self_and_ent.append(torch.cat([expanded_self, ent], dim=2))
+        else:
+            self_and_ent = entities
+            # Encode and concatenate entites
+        encoded_entities = torch.cat(
+            [ent_encoder(x) for ent_encoder, x in zip(self.ent_encoders, self_and_ent)],
+            dim=1,
+        )
+        encoded_entities = self.embedding_norm(encoded_entities)
         return encoded_entities
+
+    @staticmethod
+    def get_masks(observations: List[torch.Tensor]) -> List[torch.Tensor]:
+        """
+        Takes a List of Tensors and returns a List of mask Tensor with 1 if the input was
+        all zeros (on dimension 2) and 0 otherwise. This is used in the Attention
+        layer to mask the padding observations.
+        """
+        with torch.no_grad():
+            # Generate the masking tensors for each entities tensor (mask only if all zeros)
+            key_masks: List[torch.Tensor] = [
+                (torch.sum(ent ** 2, axis=2) < 0.01).float() for ent in observations
+            ]
+        return key_masks
 
 
 class ResidualSelfAttention(torch.nn.Module):
@@ -204,7 +241,6 @@ class ResidualSelfAttention(torch.nn.Module):
             kernel_init=Initialization.Normal,
             kernel_gain=(0.125 / embedding_size) ** 0.5,
         )
-        self.embedding_norm = LayerNorm()
         self.residual_norm = LayerNorm()
 
     def forward(self, inp: torch.Tensor, key_masks: List[torch.Tensor]) -> torch.Tensor:

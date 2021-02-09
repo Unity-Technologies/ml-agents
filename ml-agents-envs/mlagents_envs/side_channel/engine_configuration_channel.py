@@ -53,7 +53,7 @@ class EngineConfigurationChannel(SideChannel):
         """
         raise UnityCommunicationException(
             "The EngineConfigurationChannel received a message from Unity, "
-            + "this should not have happend."
+            + "this should not have happened."
         )
 
     def set_configuration_parameters(

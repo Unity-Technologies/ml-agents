@@ -62,7 +62,8 @@ class UnityEnvironment(BaseEnv):
     #  * 1.1.0 - support concatenated PNGs for compressed observations.
     #  * 1.2.0 - support compression mapping for stacked compressed observations.
     #  * 1.3.0 - support action spaces with both continuous and discrete actions.
-    API_VERSION = "1.3.0"
+    #  * 1.4.0 - support training analytics sent from python trainer to the editor.
+    API_VERSION = "1.4.0"
 
     # Default port that the editor listens on. If an environment executable
     # isn't specified, this port will be used.
@@ -120,6 +121,7 @@ class UnityEnvironment(BaseEnv):
         capabilities.concatenatedPngObservations = True
         capabilities.compressedChannelMapping = True
         capabilities.hybridActions = True
+        capabilities.trainingAnalytics = True
         return capabilities
 
     @staticmethod
@@ -177,12 +179,13 @@ class UnityEnvironment(BaseEnv):
         # If true, this means the environment was successfully loaded
         self._loaded = False
         # The process that is started. If None, no process was started
-        self._proc1 = None
+        self._process: Optional[subprocess.Popen] = None
         self._timeout_wait: int = timeout_wait
         self._communicator = self._get_communicator(worker_id, base_port, timeout_wait)
         self._worker_id = worker_id
         self._side_channel_manager = SideChannelManager(side_channels)
         self._log_folder = log_folder
+        self.academy_capabilities: UnityRLCapabilitiesProto = None  # type: ignore
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -194,7 +197,7 @@ class UnityEnvironment(BaseEnv):
             )
         if file_name is not None:
             try:
-                self._proc1 = env_utils.launch_executable(
+                self._process = env_utils.launch_executable(
                     file_name, self._executable_args()
                 )
             except UnityEnvironmentException:
@@ -239,6 +242,7 @@ class UnityEnvironment(BaseEnv):
         self._env_actions: Dict[str, ActionTuple] = {}
         self._is_first_message = True
         self._update_behavior_specs(aca_output)
+        self.academy_capabilities = aca_params.capabilities
 
     @staticmethod
     def _get_communicator(worker_id, base_port, timeout_wait):
@@ -249,7 +253,11 @@ class UnityEnvironment(BaseEnv):
         if self._no_graphics:
             args += ["-nographics", "-batchmode"]
         args += [UnityEnvironment._PORT_COMMAND_LINE_ARG, str(self._port)]
-        if self._log_folder:
+
+        # If the logfile arg isn't already set in the env args,
+        # try to set it to an output directory
+        logfile_set = "-logfile" in (arg.lower() for arg in self._additional_args)
+        if self._log_folder and not logfile_set:
             log_file_path = os.path.join(
                 self._log_folder, f"Player-{self._worker_id}.log"
             )
@@ -289,7 +297,9 @@ class UnityEnvironment(BaseEnv):
 
     def reset(self) -> None:
         if self._loaded:
-            outputs = self._communicator.exchange(self._generate_reset_input())
+            outputs = self._communicator.exchange(
+                self._generate_reset_input(), self._poll_process
+            )
             if outputs is None:
                 raise UnityCommunicatorStoppedException("Communicator has exited.")
             self._update_behavior_specs(outputs)
@@ -317,7 +327,7 @@ class UnityEnvironment(BaseEnv):
                 ].action_spec.empty_action(n_agents)
         step_input = self._generate_step_input(self._env_actions)
         with hierarchical_timer("communicator.exchange"):
-            outputs = self._communicator.exchange(step_input)
+            outputs = self._communicator.exchange(step_input, self._poll_process)
         if outputs is None:
             raise UnityCommunicatorStoppedException("Communicator has exited.")
         self._update_behavior_specs(outputs)
@@ -377,6 +387,18 @@ class UnityEnvironment(BaseEnv):
         self._assert_behavior_exists(behavior_name)
         return self._env_state[behavior_name]
 
+    def _poll_process(self) -> None:
+        """
+        Check the status of the subprocess. If it has exited, raise a UnityEnvironmentException
+        :return: None
+        """
+        if not self._process:
+            return
+        poll_res = self._process.poll()
+        if poll_res is not None:
+            exc_msg = self._returncode_to_env_message(self._process.returncode)
+            raise UnityEnvironmentException(exc_msg)
+
     def close(self):
         """
         Sends a shutdown signal to the unity environment, and closes the socket connection.
@@ -397,19 +419,16 @@ class UnityEnvironment(BaseEnv):
             timeout = self._timeout_wait
         self._loaded = False
         self._communicator.close()
-        if self._proc1 is not None:
+        if self._process is not None:
             # Wait a bit for the process to shutdown, but kill it if it takes too long
             try:
-                self._proc1.wait(timeout=timeout)
-                signal_name = self._returncode_to_signal_name(self._proc1.returncode)
-                signal_name = f" ({signal_name})" if signal_name else ""
-                return_info = f"Environment shut down with return code {self._proc1.returncode}{signal_name}."
-                logger.info(return_info)
+                self._process.wait(timeout=timeout)
+                logger.info(self._returncode_to_env_message(self._process.returncode))
             except subprocess.TimeoutExpired:
                 logger.info("Environment timed out shutting down. Killing...")
-                self._proc1.kill()
+                self._process.kill()
             # Set to None so we don't try to close multiple times.
-            self._proc1 = None
+            self._process = None
 
     @timed
     def _generate_step_input(
@@ -452,7 +471,7 @@ class UnityEnvironment(BaseEnv):
     ) -> UnityOutputProto:
         inputs = UnityInputProto()
         inputs.rl_initialization_input.CopyFrom(init_parameters)
-        return self._communicator.initialize(inputs)
+        return self._communicator.initialize(inputs, self._poll_process)
 
     @staticmethod
     def _wrap_unity_input(rl_input: UnityRLInputProto) -> UnityInputProto:
@@ -473,3 +492,9 @@ class UnityEnvironment(BaseEnv):
         except Exception:
             # Should generally be a ValueError, but catch everything just in case.
             return None
+
+    @staticmethod
+    def _returncode_to_env_message(returncode: int) -> str:
+        signal_name = UnityEnvironment._returncode_to_signal_name(returncode)
+        signal_name = f" ({signal_name})" if signal_name else ""
+        return f"Environment shut down with return code {returncode}{signal_name}."

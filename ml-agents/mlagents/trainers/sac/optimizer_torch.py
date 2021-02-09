@@ -12,7 +12,7 @@ from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.timers import timed
-from mlagents_envs.base_env import ActionSpec, SensorSpec
+from mlagents_envs.base_env import ActionSpec, ObservationSpec
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.settings import TrainerSettings, SACSettings
 from contextlib import ExitStack
@@ -28,7 +28,7 @@ class TorchSACOptimizer(TorchOptimizer):
         def __init__(
             self,
             stream_names: List[str],
-            sensor_specs: List[SensorSpec],
+            observation_specs: List[ObservationSpec],
             network_settings: NetworkSettings,
             action_spec: ActionSpec,
         ):
@@ -38,14 +38,14 @@ class TorchSACOptimizer(TorchOptimizer):
 
             self.q1_network = ValueNetwork(
                 stream_names,
-                sensor_specs,
+                observation_specs,
                 network_settings,
                 num_action_ins,
                 num_value_outs,
             )
             self.q2_network = ValueNetwork(
                 stream_names,
-                sensor_specs,
+                observation_specs,
                 network_settings,
                 num_action_ins,
                 num_value_outs,
@@ -132,14 +132,14 @@ class TorchSACOptimizer(TorchOptimizer):
 
         self.value_network = TorchSACOptimizer.PolicyValueNetwork(
             self.stream_names,
-            self.policy.behavior_spec.sensor_specs,
+            self.policy.behavior_spec.observation_specs,
             policy_network_settings,
             self._action_spec,
         )
 
         self.target_network = ValueNetwork(
             self.stream_names,
-            self.policy.behavior_spec.sensor_specs,
+            self.policy.behavior_spec.observation_specs,
             policy_network_settings,
         )
         ModelUtils.soft_update(
@@ -461,7 +461,7 @@ class TorchSACOptimizer(TorchOptimizer):
         for name in self.reward_signals:
             rewards[name] = ModelUtils.list_to_tensor(batch[f"{name}_rewards"])
 
-        n_obs = len(self.policy.behavior_spec.sensor_specs)
+        n_obs = len(self.policy.behavior_spec.observation_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
         # Convert to tensors
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]

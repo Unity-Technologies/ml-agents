@@ -31,7 +31,7 @@ namespace Unity.MLAgents.Inference
             /// the tensor's data.
             /// </param>
             void Generate(
-                TensorProxy tensorProxy, int batchSize, IEnumerable<AgentInfoSensorsPair> infos);
+                TensorProxy tensorProxy, int batchSize, IList<AgentInfoSensorsPair> infos);
         }
 
         readonly Dictionary<string, IGenerator> m_Dict = new Dictionary<string, IGenerator>();
@@ -94,36 +94,46 @@ namespace Unity.MLAgents.Inference
         public void InitializeObservations(List<ISensor> sensors, ITensorAllocator allocator)
         {
             // Loop through the sensors on a representative agent.
-            // For vector observations, add the index to the (single) VectorObservationGenerator
-            // For visual observations, make a VisualObservationInputGenerator
+            // All vector observations use a shared ObservationGenerator since they are concatenated.
+            // All other observations use a unique ObservationInputGenerator
             var visIndex = 0;
-            VectorObservationGenerator vecObsGen = null;
+            ObservationGenerator vecObsGen = null;
             for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
             {
                 var sensor = sensors[sensorIndex];
                 var shape = sensor.GetObservationShape();
-                // TODO generalize - we currently only have vector or visual, but can't handle "2D" observations
-                var isVectorSensor = (shape.Length == 1);
-                if (isVectorSensor)
+                var rank = shape.Length;
+                ObservationGenerator obsGen = null;
+                string obsGenName = null;
+                switch (rank)
                 {
-                    if (vecObsGen == null)
-                    {
-                        vecObsGen = new VectorObservationGenerator(allocator);
-                    }
-
-                    vecObsGen.AddSensorIndex(sensorIndex);
+                    case 1:
+                        if (vecObsGen == null)
+                        {
+                            vecObsGen = new ObservationGenerator(allocator);
+                        }
+                        obsGen = vecObsGen;
+                        obsGenName = TensorNames.VectorObservationPlaceholder;
+                        break;
+                    case 2:
+                        // If the tensor is of rank 2, we use the index of the sensor
+                        // to create the name
+                        obsGen = new ObservationGenerator(allocator);
+                        obsGenName = TensorNames.ObservationPlaceholderPrefix + sensorIndex;
+                        break;
+                    case 3:
+                        // If the tensor is of rank 3, we use the "visual observation
+                        // index", which only counts the rank 3 sensors
+                        obsGen = new ObservationGenerator(allocator);
+                        obsGenName = TensorNames.VisualObservationPlaceholderPrefix + visIndex;
+                        visIndex++;
+                        break;
+                    default:
+                        throw new UnityAgentsException(
+                            $"Sensor {sensor.GetName()} have an invalid rank {rank}");
                 }
-                else
-                {
-                    m_Dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] =
-                        new VisualObservationInputGenerator(sensorIndex, allocator);
-                    visIndex++;
-                }
-            }
-
-            if (vecObsGen != null)
-            {
-                m_Dict[TensorNames.VectorObservationPlaceholder] = vecObsGen;
+                obsGen.AddSensorIndex(sensorIndex);
+                m_Dict[obsGenName] = obsGen;
             }
         }
 
@@ -139,10 +149,11 @@ namespace Unity.MLAgents.Inference
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated generator.</exception>
         public void GenerateTensors(
-            IEnumerable<TensorProxy> tensors, int currentBatchSize, IEnumerable<AgentInfoSensorsPair> infos)
+            IReadOnlyList<TensorProxy> tensors, int currentBatchSize, IList<AgentInfoSensorsPair> infos)
         {
-            foreach (var tensor in tensors)
+            for (var tensorIndex = 0; tensorIndex < tensors.Count; tensorIndex++)
             {
+                var tensor = tensors[tensorIndex];
                 if (!m_Dict.ContainsKey(tensor.name))
                 {
                     throw new UnityAgentsException(

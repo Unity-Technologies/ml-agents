@@ -4,7 +4,7 @@ import numpy as np
 
 from mlagents_envs.base_env import (
     ActionSpec,
-    SensorSpec,
+    ObservationSpec,
     ActionTuple,
     BaseEnv,
     BehaviorSpec,
@@ -16,7 +16,7 @@ from mlagents_envs.tests.test_rpc_utils import proto_from_steps_and_action
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
-from mlagents.trainers.tests.dummy_config import create_sensor_specs_with_shapes
+from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
 
 OBS_SIZE = 1
 VIS_OBS_SIZE = (20, 20, 3)
@@ -59,7 +59,7 @@ class SimpleEnvironment(BaseEnv):
             continuous_action_size + discrete_action_size
         )  # to set the goals/positions
         self.action_spec = action_spec
-        self.behavior_spec = BehaviorSpec(self._make_sensor_specs(), action_spec)
+        self.behavior_spec = BehaviorSpec(self._make_observation_specs(), action_spec)
         self.action_spec = action_spec
         self.names = brain_names
         self.positions: Dict[str, List[float]] = {}
@@ -72,6 +72,8 @@ class SimpleEnvironment(BaseEnv):
         self.step_result: Dict[str, Tuple[DecisionSteps, TerminalSteps]] = {}
         self.agent_id: Dict[str, int] = {}
         self.step_size = step_size  # defines the difficulty of the test
+        # Allow to be used as a UnityEnvironment during tests
+        self.academy_capabilities = None
 
         for name in self.names:
             self.agent_id[name] = 0
@@ -82,14 +84,14 @@ class SimpleEnvironment(BaseEnv):
             self.action[name] = None
             self.step_result[name] = None
 
-    def _make_sensor_specs(self) -> SensorSpec:
+    def _make_observation_specs(self) -> List[ObservationSpec]:
         obs_shape: List[Any] = []
         for _ in range(self.num_vector):
             obs_shape.append((self.vec_obs_size,))
         for _ in range(self.num_visual):
             obs_shape.append(self.vis_obs_size)
-        sen_spec = create_sensor_specs_with_shapes(obs_shape)
-        return sen_spec
+        obs_spec = create_observation_specs_with_shapes(obs_shape)
+        return obs_spec
 
     def _make_obs(self, value: float) -> List[np.ndarray]:
         obs = []

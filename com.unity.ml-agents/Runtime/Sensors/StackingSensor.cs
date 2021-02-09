@@ -17,7 +17,7 @@ namespace Unity.MLAgents.Sensors
     /// Internally, a circular buffer of arrays is used. The m_CurrentIndex represents the most recent observation.
     /// Currently, observations are stacked on the last dimension.
     /// </summary>
-    public class StackingSensor : ISparseChannelSensor
+    public class StackingSensor : ISparseChannelSensor, IBuiltInSensor
     {
         /// <summary>
         /// The wrapped sensor.
@@ -112,7 +112,7 @@ namespace Unity.MLAgents.Sensors
                 for (var i = 0; i < m_NumStackedObservations; i++)
                 {
                     var obsIndex = (m_CurrentIndex + 1 + i) % m_NumStackedObservations;
-                    writer.AddRange(m_StackedObservations[obsIndex], numWritten);
+                    writer.AddList(m_StackedObservations[obsIndex], numWritten);
                     numWritten += m_UnstackedObservationSize;
                 }
             }
@@ -281,6 +281,13 @@ namespace Unity.MLAgents.Sensors
                 }
             }
             return compressionMapping;
+        }
+
+        /// <inheritdoc/>
+        public BuiltInSensorType GetBuiltInSensorType()
+        {
+            IBuiltInSensor wrappedBuiltInSensor = m_WrappedSensor as IBuiltInSensor;
+            return wrappedBuiltInSensor?.GetBuiltInSensorType() ?? BuiltInSensorType.Unknown;
         }
     }
 }

@@ -72,13 +72,13 @@ def test_reset(mock_communicator, mock_launcher):
     env.close()
     assert isinstance(decision_steps, DecisionSteps)
     assert isinstance(terminal_steps, TerminalSteps)
-    assert len(spec.sensor_specs) == len(decision_steps.obs)
-    assert len(spec.sensor_specs) == len(terminal_steps.obs)
+    assert len(spec.observation_specs) == len(decision_steps.obs)
+    assert len(spec.observation_specs) == len(terminal_steps.obs)
     n_agents = len(decision_steps)
-    for sen_spec, obs in zip(spec.sensor_specs, decision_steps.obs):
+    for sen_spec, obs in zip(spec.observation_specs, decision_steps.obs):
         assert (n_agents,) + sen_spec.shape == obs.shape
     n_agents = len(terminal_steps)
-    for sen_spec, obs in zip(spec.sensor_specs, terminal_steps.obs):
+    for sen_spec, obs in zip(spec.observation_specs, terminal_steps.obs):
         assert (n_agents,) + sen_spec.shape == obs.shape
 
 
@@ -107,9 +107,9 @@ def test_step(mock_communicator, mock_launcher):
     env.close()
     assert isinstance(decision_steps, DecisionSteps)
     assert isinstance(terminal_steps, TerminalSteps)
-    assert len(spec.sensor_specs) == len(decision_steps.obs)
-    assert len(spec.sensor_specs) == len(terminal_steps.obs)
-    for spec, obs in zip(spec.sensor_specs, decision_steps.obs):
+    assert len(spec.observation_specs) == len(decision_steps.obs)
+    assert len(spec.observation_specs) == len(terminal_steps.obs)
+    for spec, obs in zip(spec.observation_specs, decision_steps.obs):
         assert (n_agents,) + spec.shape == obs.shape
     assert 0 in decision_steps
     assert 2 in terminal_steps

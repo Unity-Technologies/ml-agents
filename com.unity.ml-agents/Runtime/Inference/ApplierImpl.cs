@@ -21,12 +21,13 @@ namespace Unity.MLAgents.Inference
             m_ActionSpec = actionSpec;
         }
 
-        public void Apply(TensorProxy tensorProxy, IEnumerable<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
+        public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
             var actionSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
             var agentIndex = 0;
-            foreach (int agentId in actionIds)
+            for (var i = 0; i < actionIds.Count; i++)
             {
+                var agentId = actionIds[i];
                 if (lastActions.ContainsKey(agentId))
                 {
                     var actionBuffer = lastActions[agentId];
@@ -65,7 +66,7 @@ namespace Unity.MLAgents.Inference
             m_ActionSpec = actionSpec;
         }
 
-        public void Apply(TensorProxy tensorProxy, IEnumerable<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
+        public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
             //var tensorDataProbabilities = tensorProxy.Data as float[,];
             var idActionPairList = actionIds as List<int> ?? actionIds.ToList();
@@ -109,9 +110,11 @@ namespace Unity.MLAgents.Inference
                 actionProbs.data.Dispose();
                 outputTensor.data.Dispose();
             }
+
             var agentIndex = 0;
-            foreach (int agentId in actionIds)
+            for (var i = 0; i < actionIds.Count; i++)
             {
+                var agentId = actionIds[i];
                 if (lastActions.ContainsKey(agentId))
                 {
                     var actionBuffer = lastActions[agentId];
@@ -209,12 +212,13 @@ namespace Unity.MLAgents.Inference
             m_Memories = memories;
         }
 
-        public void Apply(TensorProxy tensorProxy, IEnumerable<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
+        public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
             var agentIndex = 0;
             var memorySize = (int)tensorProxy.shape[tensorProxy.shape.Length - 1];
-            foreach (int agentId in actionIds)
+            for (var i = 0; i < actionIds.Count; i++)
             {
+                var agentId = actionIds[i];
                 List<float> memory;
                 if (!m_Memories.TryGetValue(agentId, out memory)
                     || memory.Count < memorySize)
@@ -246,13 +250,14 @@ namespace Unity.MLAgents.Inference
             m_Memories = memories;
         }
 
-        public void Apply(TensorProxy tensorProxy, IEnumerable<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
+        public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
             var agentIndex = 0;
             var memorySize = (int)tensorProxy.shape[tensorProxy.shape.Length - 1];
 
-            foreach (int agentId in actionIds)
+            for (var i = 0; i < actionIds.Count; i++)
             {
+                var agentId = actionIds[i];
                 List<float> memory;
                 if (!m_Memories.TryGetValue(agentId, out memory)
                     || memory.Count < memorySize * m_MemoriesCount)

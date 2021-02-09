@@ -58,9 +58,7 @@ class TorchOptimizer(Optimizer):
         done: bool,
         all_dones: bool,
     ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:
-
-        n_obs = len(self.policy.behavior_spec.sensor_specs)
-
+        n_obs = len(self.policy.behavior_spec.observation_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
         team_obs = TeamObsUtil.from_buffer(batch, n_obs)
         # next_obs = ObsUtil.from_buffer_next(batch, n_obs)
