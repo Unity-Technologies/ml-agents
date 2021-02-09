@@ -219,18 +219,6 @@ public class PushAgentBasic : Agent, IInputActionAssetProvider
         AddReward(-1f / MaxStep);
     }
 
-    public override void Heuristic(in ActionBuffers actionsOut)
-    {
-        // do nothing
-        // var value = m_PushblockActions.Movement.movement.ReadValue<Vector2>();
-        // var discreteActionsOut = actionsOut.DiscreteActions;
-        // discreteActionsOut.Clear();
-        // if (!Mathf.Approximately(0f, value.x))
-        //     discreteActionsOut[0] = value.x > 0 ? 3 : 4;
-        // else if (!Mathf.Approximately(0, value.y))
-        //     discreteActionsOut[0] = value.y > 0 ? 1 : 2;
-    }
-
     /// <summary>
     /// Resets the block position and velocities.
     /// </summary>
