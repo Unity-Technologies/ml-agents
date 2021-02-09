@@ -19,6 +19,10 @@ namespace Unity.MLAgents.Extensions.Teams
         public void Dispose()
         {
             Academy.Instance.PostAgentAct -= _ManagerStep;
+            foreach (var agent in m_Agents)
+            {
+                agent.UnregisterFromTeamManager -= UnregisterAgent;
+            }
         }
 
         void _ManagerStep()
@@ -47,6 +51,8 @@ namespace Unity.MLAgents.Extensions.Teams
             if (!m_Agents.Contains(agent))
             {
                 m_Agents.Add(agent);
+                agent.UnregisterFromTeamManager += UnregisterAgent;
+                agent.SetTeamManager(this);
             }
         }
 
@@ -58,6 +64,7 @@ namespace Unity.MLAgents.Extensions.Teams
             if (m_Agents.Contains(agent))
             {
                 m_Agents.Remove(agent);
+                agent.UnregisterFromTeamManager -= UnregisterAgent;
             }
         }
 
