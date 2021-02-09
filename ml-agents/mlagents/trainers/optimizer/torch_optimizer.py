@@ -63,11 +63,11 @@ class TorchOptimizer(Optimizer):
 
         next_obs = [obs.unsqueeze(0) for obs in next_obs]
 
-        value_estimates, next_memory = self.policy.actor_critic.critic_pass(
+        value_estimates, next_memory = self.critic.critic_pass(
             current_obs, memory, sequence_length=batch.num_experiences
         )
 
-        next_value_estimate, _ = self.policy.actor_critic.critic_pass(
+        next_value_estimate, _ = self.critic.critic_pass(
             next_obs, next_memory, sequence_length=1
         )
 
