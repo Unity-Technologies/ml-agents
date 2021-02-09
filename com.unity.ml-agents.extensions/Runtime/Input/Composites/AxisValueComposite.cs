@@ -9,11 +9,13 @@ using UnityEditor;
 #endif
 namespace Unity.MLAgents.Extensions.Runtime.Input.Composites
 {
+    /// <summary>
+    /// Custom binding for reading float values from an
+    /// </summary>
 #if UNITY_EDITOR
     [InitializeOnLoad]
 #endif
-    [Preserve]
-    [DisplayStringFormat("{Axis}")]
+    [Preserve, DisplayStringFormat("{Axis}")]
     public class AxisValueComposite : InputBindingComposite<float>
     {
         // ReSharper disable once MemberCanBePrivate.Global
