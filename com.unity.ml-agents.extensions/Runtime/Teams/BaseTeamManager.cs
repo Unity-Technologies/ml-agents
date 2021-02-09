@@ -79,7 +79,7 @@ namespace Unity.MLAgents.Extensions.Teams
         /// <returns>
         /// List of agents belongs to the TeamManager.
         /// </returns>
-        public List<Agent> GetTeammates()
+        public List<Agent> GetRegisteredAgents()
         {
             return m_Agents;
         }
