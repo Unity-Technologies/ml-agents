@@ -727,7 +727,7 @@ namespace Unity.MLAgents
 #if DEBUG
             Utilities.DebugCheckNanAndInfinity(reward, nameof(reward), nameof(SetTeamReward));
 #endif
-            m_TeamReward += reward;
+            m_TeamReward = reward;
         }
 
         public void AddTeamReward(float increment)
