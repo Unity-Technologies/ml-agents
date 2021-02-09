@@ -325,7 +325,14 @@ namespace Unity.MLAgents
         /// </summary>
         float[] m_LegacyActionCache;
 
-        ITeamManager m_TeamManager;
+        /// <summary>
+        /// This is used to avoid allocation of a float array during legacy calls to Heuristic.
+        /// </summary>
+        float[] m_LegacyHeuristicCache;
+
+        int m_TeamManagerID;
+
+        internal event Action<Agent> UnregisterFromTeamManager;
 
         /// <summary>
         /// Called when the attached [GameObject] becomes enabled and active.
@@ -458,7 +465,7 @@ namespace Unity.MLAgents
                 new int[m_ActuatorManager.NumDiscreteActions]
             );
 
-            m_Info.teamManagerId = m_TeamManager == null ? 0 : m_TeamManager.GetId();
+            m_Info.teamManagerId = m_TeamManagerID;
 
             // The first time the Academy resets, all Agents in the scene will be
             // forced to reset through the <see cref="AgentForceReset"/> event.
@@ -533,10 +540,7 @@ namespace Unity.MLAgents
 
         void OnDestroy()
         {
-            if (m_TeamManager != null)
-            {
-                m_TeamManager.UnregisterAgent(this);
-            }
+            UnregisterFromTeamManager?.Invoke(this);
         }
 
         void NotifyAgentDone(DoneReason doneReason)
@@ -551,7 +555,7 @@ namespace Unity.MLAgents
             m_Info.teamReward = m_TeamReward;
             m_Info.done = true;
             m_Info.maxStepReached = doneReason == DoneReason.MaxStepReached;
-            m_Info.teamManagerId = m_TeamManager == null ? 0 : m_TeamManager.GetId();
+            m_Info.teamManagerId = m_TeamManagerID;
             if (collectObservationsSensor != null)
             {
                 // Make sure the latest observations are being passed to training.
@@ -1094,7 +1098,7 @@ namespace Unity.MLAgents
             m_Info.done = false;
             m_Info.maxStepReached = false;
             m_Info.episodeId = m_EpisodeId;
-            m_Info.teamManagerId = m_TeamManager == null ? 0 : m_TeamManager.GetId();
+            m_Info.teamManagerId = m_TeamManagerID;
 
             using (TimerStack.Instance.Scoped("RequestDecision"))
             {
@@ -1393,14 +1397,10 @@ namespace Unity.MLAgents
             m_ActuatorManager.UpdateActions(actions);
         }
 
-        public void SetTeamManager(ITeamManager teamManager)
+        internal void SetTeamManager(ITeamManager teamManager)
         {
-            if (m_TeamManager != null)
-            {
-                m_TeamManager.UnregisterAgent(this);
-            }
-            m_TeamManager = teamManager;
-            teamManager?.RegisterAgent(this);
+            UnregisterFromTeamManager?.Invoke(this);
+            m_TeamManagerID = teamManager.GetId();
         }
     }
 }
