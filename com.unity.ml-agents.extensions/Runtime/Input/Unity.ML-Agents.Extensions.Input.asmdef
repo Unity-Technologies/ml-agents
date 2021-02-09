@@ -1,5 +1,5 @@
 {
-    "name": "Unity.ML-Agents.Extentions.Input",
+    "name": "Unity.ML-Agents.Extensions.Input",
     "references": [
         "GUID:85e0054f8e64b47309646d35f8851f81",
         "GUID:5c2b5ba89f9e74e418232e154bc5cc7a",

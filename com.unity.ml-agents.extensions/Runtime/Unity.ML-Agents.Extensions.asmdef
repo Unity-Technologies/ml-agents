@@ -3,7 +3,7 @@
     "references": [
         "Unity.Barracuda",
         "Unity.ML-Agents",
-        "Unity.InputSystem"
+        "Unity.ML-Agents.Extensions.Input"
     ],
     "includePlatforms": [],
     "excludePlatforms": []
