@@ -35,6 +35,11 @@ namespace Unity.MLAgents
         public float reward;
 
         /// <summary>
+        /// The current team reward received by the agent.
+        /// </summary>
+        public float teamReward;
+
+        /// <summary>
         /// Whether the agent is done or not.
         /// </summary>
         public bool done;
@@ -248,6 +253,9 @@ namespace Unity.MLAgents
         /// Additionally, the magnitude of the reward should not exceed 1.0
         float m_Reward;
 
+        /// Represents the team reward the agent accumulated during the current step.
+        float m_TeamReward;
+
         /// Keeps track of the cumulative reward in this episode.
         float m_CumulativeReward;
 
@@ -457,7 +465,7 @@ namespace Unity.MLAgents
                 new int[m_ActuatorManager.NumDiscreteActions]
             );
 
-            m_Info.teamManagerId = m_TeamManager == null ? -1 : m_TeamManager.GetId();
+            m_Info.teamManagerId = m_TeamManager == null ? 0 : m_TeamManager.GetId();
 
             // The first time the Academy resets, all Agents in the scene will be
             // forced to reset through the <see cref="AgentForceReset"/> event.
@@ -530,6 +538,14 @@ namespace Unity.MLAgents
             m_Initialized = false;
         }
 
+        void OnDestroy()
+        {
+            if (m_TeamManager != null)
+            {
+                m_TeamManager.UnregisterAgent(this);
+            }
+        }
+
         void NotifyAgentDone(DoneReason doneReason)
         {
             if (m_Info.done)
@@ -539,9 +555,10 @@ namespace Unity.MLAgents
             }
             m_Info.episodeId = m_EpisodeId;
             m_Info.reward = m_Reward;
+            m_Info.teamReward = m_TeamReward;
             m_Info.done = true;
             m_Info.maxStepReached = doneReason == DoneReason.MaxStepReached;
-            m_Info.teamManagerId = m_TeamManager == null ? -1 : m_TeamManager.GetId();
+            m_Info.teamManagerId = m_TeamManager == null ? 0 : m_TeamManager.GetId();
             if (collectObservationsSensor != null)
             {
                 // Make sure the latest observations are being passed to training.
@@ -579,6 +596,7 @@ namespace Unity.MLAgents
             }
 
             m_Reward = 0f;
+            m_TeamReward = 0f;
             m_CumulativeReward = 0f;
             m_RequestAction = false;
             m_RequestDecision = false;
@@ -723,6 +741,22 @@ namespace Unity.MLAgents
 #endif
             m_Reward += increment;
             m_CumulativeReward += increment;
+        }
+
+        internal void SetTeamReward(float reward)
+        {
+#if DEBUG
+            Utilities.DebugCheckNanAndInfinity(reward, nameof(reward), nameof(SetTeamReward));
+#endif
+            m_TeamReward = reward;
+        }
+
+        internal void AddTeamReward(float increment)
+        {
+#if DEBUG
+            Utilities.DebugCheckNanAndInfinity(increment, nameof(increment), nameof(AddTeamReward));
+#endif
+            m_TeamReward += increment;
         }
 
         /// <summary>
@@ -1077,10 +1111,11 @@ namespace Unity.MLAgents
 
             m_Info.discreteActionMasks = m_ActuatorManager.DiscreteActionMask?.GetMask();
             m_Info.reward = m_Reward;
+            m_Info.teamReward = m_TeamReward;
             m_Info.done = false;
             m_Info.maxStepReached = false;
             m_Info.episodeId = m_EpisodeId;
-            m_Info.teamManagerId = m_TeamManager == null ? -1 : m_TeamManager.GetId();
+            m_Info.teamManagerId = m_TeamManager == null ? 0 : m_TeamManager.GetId();
 
             using (TimerStack.Instance.Scoped("RequestDecision"))
             {
@@ -1347,6 +1382,7 @@ namespace Unity.MLAgents
             {
                 SendInfoToBrain();
                 m_Reward = 0f;
+                m_TeamReward = 0f;
                 m_RequestDecision = false;
             }
         }
@@ -1385,6 +1421,10 @@ namespace Unity.MLAgents
 
         public void SetTeamManager(ITeamManager teamManager)
         {
+            if (m_TeamManager != null)
+            {
+                m_TeamManager.UnregisterAgent(this);
+            }
             m_TeamManager = teamManager;
             teamManager?.RegisterAgent(this);
         }
