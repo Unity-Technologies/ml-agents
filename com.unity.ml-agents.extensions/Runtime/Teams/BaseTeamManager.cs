@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Teams
 {
-    public class BaseTeamManager : ITeamManager
+    public class BaseTeamManager : ITeamManager, IDisposable
     {
         int m_StepCount;
         int m_TeamMaxStep;
@@ -14,6 +15,11 @@ namespace Unity.MLAgents.Extensions.Teams
         public BaseTeamManager()
         {
             Academy.Instance.TeamManagerStep += _ManagerStep;
+        }
+
+        public void Dispose()
+        {
+            Academy.Instance.TeamManagerStep -= _ManagerStep;
         }
 
         void _ManagerStep()
@@ -34,8 +40,8 @@ namespace Unity.MLAgents.Extensions.Teams
 
         /// <summary>
         /// Register the agent to the TeamManager.
-        /// Registered agents will be able to receive team rewards from the TeamManager.
-        /// All agents in the same training area should be added to the same TeamManager.
+        /// Registered agents will be able to receive team rewards from the TeamManager
+        /// and share observations during training.
         /// </summary>
         public virtual void RegisterAgent(Agent agent)
         {
@@ -48,7 +54,7 @@ namespace Unity.MLAgents.Extensions.Teams
         /// <summary>
         /// Remove the agent from the TeamManager.
         /// </summary>
-        public virtual void RemoveAgent(Agent agent)
+        public virtual void UnregisterAgent(Agent agent)
         {
             if (m_Agents.Contains(agent))
             {
