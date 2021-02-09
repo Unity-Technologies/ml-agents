@@ -3,6 +3,7 @@ using System;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 
 namespace Unity.MLAgents.Extensions.Runtime.Input
 {
@@ -21,7 +22,11 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         {
             var x = actionBuffers.ContinuousActions[0];
             var y = actionBuffers.ContinuousActions[1];
-            InputSystem.QueueDeltaStateEvent(control, new Vector2(x, y));
+            using (StateEvent.From(control.device, out var eventPtr))
+            {
+                control.WriteValueIntoEvent(new Vector2(x, y), eventPtr);
+                InputSystem.QueueEvent(eventPtr);
+            }
         }
 
         public void WriteToHeuristic(InputAction action, in ActionBuffers actionBuffers)

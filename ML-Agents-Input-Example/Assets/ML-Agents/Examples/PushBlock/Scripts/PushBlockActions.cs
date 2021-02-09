@@ -37,9 +37,9 @@ public partial class @PushBlockActions : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""jump"",
-                    ""type"": ""Button"",
+                    ""type"": ""Value"",
                     ""id"": ""ca5eb833-5dfb-4b7c-880d-6118bd5d1378"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": ""Integer"",
                     ""processors"": """",
                     ""interactions"": """"
                 }

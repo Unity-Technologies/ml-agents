@@ -21,7 +21,6 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             {
                 control.WriteValueIntoEvent((float)val, eventPtr);
                 InputSystem.QueueEvent(eventPtr);
-                InputSystem.Update();
             }
         }
 
