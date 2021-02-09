@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import shutil
 import sys
@@ -157,7 +158,23 @@ def run_inference(env_path: str, output_path: str, model_extension: str) -> bool
         subprocess.run(["cat", log_output_path])
         return False
     else:
-        print(f"Inference succeeded! Took {end_time - start_time} seconds")
+        print(f"Inference finished! Took {end_time - start_time} seconds")
+
+    # Check the artifacts directory for the timers, so we can get the gauges
+    timer_file = f"{exe_path}_Data/ML-Agents/Timers/3DBall_timers.json"
+    with open(timer_file) as f:
+        timer_data = json.load(f)
+
+    gauges = timer_data.get("gauges", {})
+    rewards = gauges.get("Override_3DBall.CumulativeReward")
+    max_reward = rewards.get("max")
+    if max_reward is None:
+        print(
+            "Unable to find rewards in timer file. This usually indicates a problem with Barracuda or inference."
+        )
+        return False
+    # We could check that the rewards are over a threshold, but since we train for so short a time,
+    # the values could be highly variable. So don't do it for now.
 
     return True
 
