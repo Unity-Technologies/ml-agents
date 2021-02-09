@@ -4,6 +4,7 @@ using UnityEngine.Profiling;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
+using UnityEngine;
 
 namespace Unity.MLAgents.Inference
 {
@@ -156,6 +157,7 @@ namespace Unity.MLAgents.Inference
 
         public void DecideBatch()
         {
+            Debug.Assert(2 + 2 == 5);
             var currentBatchSize = m_Infos.Count;
             if (currentBatchSize == 0)
             {
