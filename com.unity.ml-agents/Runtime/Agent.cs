@@ -325,8 +325,6 @@ namespace Unity.MLAgents
         /// </summary>
         float[] m_LegacyActionCache;
 
-        private ITeamManager m_TeamManager;
-
         /// <summary>
         /// This is used to avoid allocation of a float array during legacy calls to Heuristic.
         /// </summary>
@@ -483,7 +481,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// The reason that the Agent has been set to "done".
         /// </summary>
-        public enum DoneReason
+        enum DoneReason
         {
             /// <summary>
             /// The episode was ended manually by calling <see cref="EndEpisode"/>.
@@ -569,17 +567,9 @@ namespace Unity.MLAgents
                 }
             }
             // Request the last decision with no callbacks
-            if (m_TeamManager != null)
-            {
-                // Send final observations to TeamManager if it exists.
-                // The TeamManager is responsible to keeping track of the Agent after it's
-                // done, including propagating any "posthumous" rewards.
-                m_TeamManager.OnAgentDone(this, doneReason, sensors);
-            }
-            else
-            {
-                SendDoneToTrainer();
-            }
+            // We request a decision so Python knows the Agent is done immediately
+            m_Brain?.RequestDecision(m_Info, sensors);
+            ResetSensors();
 
             // We also have to write any to any DemonstationStores so that they get the "done" flag.
             foreach (var demoWriter in DemonstrationWriters)
@@ -601,13 +591,6 @@ namespace Unity.MLAgents
             m_RequestAction = false;
             m_RequestDecision = false;
             m_Info.storedActions.Clear();
-        }
-
-        public void SendDoneToTrainer()
-        {
-            // We request a decision so Python knows the Agent is done immediately
-            m_Brain?.RequestDecision(m_Info, sensors);
-            ResetSensors();
         }
 
         /// <summary>
