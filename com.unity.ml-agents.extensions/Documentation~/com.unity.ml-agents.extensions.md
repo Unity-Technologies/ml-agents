@@ -22,6 +22,7 @@ The Runtime directory currently contains three features:
  * [Match-3 sensor and actuator](Match3.md)
  * [Grid-based sensor](Grid-Sensor.md)
  * Physics-based sensors
+ * [Input System Package Integration](InputActuatorComponent.md)
 
 ## Installation
 The ML-Agents Extensions package is not currently available in the Package Manager. There are two
@@ -54,10 +55,15 @@ See [Git dependencies](https://docs.unity3d.com/Manual/upm-git.html#subfolder) f
 This version of the Unity ML-Agents Extensions package is compatible with the
 following versions of the Unity Editor:
 
-- 2018.4 and later
+- If using the `InputActuatorComponent`
+    - 2019.4 or later
+    - install the `com.unity.inputsystem` package version `1.1.0-preview.3` or later.
+- Else 2018.4 and later
 
 ## Known Limitations
-none
+- For the `InputActuatorComponent`
+    - Limited implementation of `InputControls`
+    - No way to customize the action space of the `InputActuatorComponent`
 
 ## Need Help?
 The main [README](https://github.com/Unity-Technologies/ml-agents/tree/release_12_docs/README.md) contains links for contacting the team or getting support.
