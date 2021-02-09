@@ -157,7 +157,7 @@ namespace Unity.MLAgents.Inference
 
         public void DecideBatch()
         {
-            Debug.Assert(2 + 2 == 5);
+            UnityEngine.Assertions.Assert.IsTrue(2 + 2 == 5);
             var currentBatchSize = m_Infos.Count;
             if (currentBatchSize == 0)
             {
