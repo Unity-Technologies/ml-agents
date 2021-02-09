@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using Unity.MLAgents.Sensors;
-
 namespace Unity.MLAgents
 {
     public interface ITeamManager
