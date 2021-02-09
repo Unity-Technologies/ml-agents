@@ -124,7 +124,6 @@ class TorchPolicy(Policy):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
-        critic_obs: Optional[List[List[torch.Tensor]]] = None,
     ) -> Tuple[AgentAction, ActionLogProbs, torch.Tensor, torch.Tensor]:
         """
         :param obs: List of observations.
@@ -145,13 +144,11 @@ class TorchPolicy(Policy):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
-        team_obs: Optional[List[List[torch.Tensor]]] = None,
-        team_act: Optional[List[AgentAction]] = None,
     ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
-        log_probs, entropies, baseline, values = self.actor_critic.get_stats_and_value(
-            obs, actions, masks, memories, seq_len, team_obs, team_act
+        log_probs, entropies, value_heads = self.actor_critic.get_stats_and_value(
+            obs, actions, masks, memories, seq_len
         )
-        return log_probs, entropies, baseline, values
+        return log_probs, entropies, value_heads
 
     @timed
     def evaluate(
@@ -170,6 +167,7 @@ class TorchPolicy(Policy):
         memories = torch.as_tensor(self.retrieve_memories(global_agent_ids)).unsqueeze(
             0
         )
+
         run_out = {}
         with torch.no_grad():
             action, log_probs, entropy, memories = self.sample_actions(

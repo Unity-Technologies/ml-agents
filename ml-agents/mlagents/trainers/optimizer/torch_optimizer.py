@@ -1,10 +1,9 @@
 from typing import Dict, Optional, Tuple, List
 from mlagents.torch_utils import torch
-from mlagents.trainers.torch.agent_action import AgentAction
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.trajectory import ObsUtil, TeamObsUtil
+from mlagents.trainers.trajectory import ObsUtil
 from mlagents.trainers.torch.components.bc.module import BCModule
 from mlagents.trainers.torch.components.reward_providers import create_reward_provider
 
@@ -51,118 +50,34 @@ class TorchOptimizer(Optimizer):
             )
 
     def get_trajectory_value_estimates(
-        self,
-        batch: AgentBuffer,
-        next_obs: List[np.ndarray],
-        next_critic_obs: List[List[np.ndarray]],
-        done: bool,
-        all_dones: bool,
+        self, batch: AgentBuffer, next_obs: List[np.ndarray], done: bool
     ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:
         n_obs = len(self.policy.behavior_spec.observation_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
-        team_obs = TeamObsUtil.from_buffer(batch, n_obs)
-        # next_obs = ObsUtil.from_buffer_next(batch, n_obs)
-        # next_team_obs = TeamObsUtil.from_buffer_next(batch, n_obs)
 
         # Convert to tensors
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
-        team_obs = [
-            [ModelUtils.list_to_tensor(obs) for obs in _teammate_obs]
-            for _teammate_obs in team_obs
-        ]
-        # next_team_obs = [
-        #    [ModelUtils.list_to_tensor(obs) for obs in _teammate_obs]
-        #    for _teammate_obs in next_team_obs
-        # ]
-
-        actions = AgentAction.from_dict(batch)
-        team_actions = AgentAction.from_team_dict(batch)
-        # next_actions = AgentAction.from_dict_next(batch)
-        # next_team_actions = AgentAction.from_team_dict_next(batch)
-
         next_obs = [ModelUtils.list_to_tensor(obs) for obs in next_obs]
-        next_obs = [obs.unsqueeze(0) for obs in next_obs]
-
-        # critic_obs = TeamObsUtil.from_buffer(batch, n_obs)
-        # critic_obs = [
-        #    [ModelUtils.list_to_tensor(obs) for obs in _teammate_obs]
-        #    for _teammate_obs in critic_obs
-        # ]
-        next_critic_obs = [
-            ModelUtils.list_to_tensor_list(_list_obs) for _list_obs in next_critic_obs
-        ]
-        # Expand dimensions of next critic obs
-        next_critic_obs = [
-            [_obs.unsqueeze(0) for _obs in _list_obs] for _list_obs in next_critic_obs
-        ]
 
         memory = torch.zeros([1, 1, self.policy.m_size])
 
-        baseline_estimates, _ = self.policy.actor_critic.critic_pass(
-            current_obs,
-            actions,
-            memory,
-            sequence_length=batch.num_experiences,
-            team_obs=team_obs,
-            team_act=team_actions,
+        next_obs = [obs.unsqueeze(0) for obs in next_obs]
+
+        value_estimates, next_memory = self.policy.actor_critic.critic_pass(
+            current_obs, memory, sequence_length=batch.num_experiences
         )
 
-        value_estimates, mem = self.policy.actor_critic.target_critic_value(
-            current_obs,
-            memory,
-            sequence_length=batch.num_experiences,
-            team_obs=team_obs,
+        next_value_estimate, _ = self.policy.actor_critic.critic_pass(
+            next_obs, next_memory, sequence_length=1
         )
-
-        boot_value_estimates, mem = self.policy.actor_critic.target_critic_value(
-            next_obs,
-            memory,
-            sequence_length=batch.num_experiences,
-            team_obs=next_critic_obs,
-        )
-
-        # next_value_estimates, next_marg_val_estimates, next_mem = self.policy.actor_critic.target_critic_pass(
-        #    next_obs,
-        #    next_actions,
-        #    memory,
-        #    sequence_length=batch.num_experiences,
-        #    team_obs=next_team_obs,
-        #    team_act=next_team_actions,
-        # )
-
-        # # Actions is a hack here, we need the next actions
-        # next_value_estimate, next_marg_val_estimate, _ = self.policy.actor_critic.critic_pass(
-        #     next_obs, actions, next_memory, sequence_length=1, critic_obs=next_critic_obs
-        # )
-        # These aren't used in COMAttention
-
-        for name, estimate in baseline_estimates.items():
-            baseline_estimates[name] = ModelUtils.to_numpy(estimate)
 
         for name, estimate in value_estimates.items():
             value_estimates[name] = ModelUtils.to_numpy(estimate)
+            next_value_estimate[name] = ModelUtils.to_numpy(next_value_estimate[name])
 
-        # the base line and V shpuld  not be on the same done flag
-        for name, estimate in boot_value_estimates.items():
-            boot_value_estimates[name] = ModelUtils.to_numpy(estimate)
-
-        if all_dones:
-            for k in boot_value_estimates:
+        if done:
+            for k in next_value_estimate:
                 if not self.reward_signals[k].ignore_done:
-                    boot_value_estimates[k][-1] = 0.0
-        #            else:
-        #                print(len(next_critic_obs))
-        #                print(baseline_estimates)
-        #                print(value_estimates)
-        #                print(boot_value_baseline[k][-1])
-        # if done and not all_dones:
-        #    print("agent finished but team going")
-        # elif all_dones:
-        #    print("alldone")
-        # else:
-        #    print("neither")
-        # print("final", boot_value_estimates)
-        # print("value", value_estimates)
-        # print("base", baseline_estimates)
+                    next_value_estimate[k] = 0.0
 
-        return (value_estimates, baseline_estimates, boot_value_estimates)
+        return value_estimates, next_value_estimate

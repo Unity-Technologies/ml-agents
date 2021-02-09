@@ -10,7 +10,7 @@ from mlagents.trainers.settings import TrainerSettings, PPOSettings
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
-from mlagents.trainers.trajectory import ObsUtil, TeamObsUtil
+from mlagents.trainers.trajectory import ObsUtil
 
 
 class TorchPPOOptimizer(TorchOptimizer):
@@ -49,9 +49,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         )
 
         self.optimizer = torch.optim.Adam(
-            params,
-            lr=self.trainer_settings.hyperparameters.learning_rate,
-            weight_decay=1e-6,
+            params, lr=self.trainer_settings.hyperparameters.learning_rate
         )
         self.stats_name_to_update_name = {
             "Losses/Value Loss": "value_loss",
@@ -59,10 +57,6 @@ class TorchPPOOptimizer(TorchOptimizer):
         }
 
         self.stream_names = list(self.reward_signals.keys())
-
-        # ModelUtils.soft_update(
-        #    self.policy.actor_critic.critic, self.policy.actor_critic.target, 1.0
-        # )
 
     def ppo_value_loss(
         self,
@@ -92,16 +86,6 @@ class TorchPPOOptimizer(TorchOptimizer):
             value_loss = ModelUtils.masked_mean(torch.max(v_opt_a, v_opt_b), loss_masks)
             value_losses.append(value_loss)
         value_loss = torch.mean(torch.stack(value_losses))
-        return value_loss
-
-    def coma_regularizer_loss(
-        self, values: Dict[str, torch.Tensor], baseline_values: Dict[str, torch.Tensor]
-    ):
-        reg_losses = []
-        for name, head in values.items():
-            reg_loss = torch.nn.functional.mse_loss(head, baseline_values[name])
-            reg_losses.append(reg_loss)
-        value_loss = torch.mean(torch.stack(reg_losses))
         return value_loss
 
     def ppo_policy_loss(
@@ -143,36 +127,21 @@ class TorchPPOOptimizer(TorchOptimizer):
         decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
         decay_eps = self.decay_epsilon.get_value(self.policy.get_current_step())
         decay_bet = self.decay_beta.get_value(self.policy.get_current_step())
-        # returns_b = {}
-        returns_v = {}
+        returns = {}
         old_values = {}
-        old_marg_values = {}
         for name in self.reward_signals:
             old_values[name] = ModelUtils.list_to_tensor(
                 batch[f"{name}_value_estimates"]
             )
-            old_marg_values[name] = ModelUtils.list_to_tensor(
-                batch[f"{name}_baseline_estimates"]
-            )
-            returns_v[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns_v"])
-            # returns_b[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns_b"])
-        #
+            returns[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns"])
 
         n_obs = len(self.policy.behavior_spec.observation_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
         # Convert to tensors
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
 
-        team_obs = TeamObsUtil.from_buffer(batch, n_obs)
-        team_obs = [
-            [ModelUtils.list_to_tensor(obs) for obs in _teammate_obs]
-            for _teammate_obs in team_obs
-        ]
-
         act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
         actions = AgentAction.from_dict(batch)
-        team_actions = AgentAction.from_team_dict(batch)
-        # next_team_actions = AgentAction.from_team_dict_next(batch)
 
         memories = [
             ModelUtils.list_to_tensor(batch["memory"][i])
@@ -181,32 +150,19 @@ class TorchPPOOptimizer(TorchOptimizer):
         if len(memories) > 0:
             memories = torch.stack(memories).unsqueeze(0)
 
-        log_probs, entropy, baseline_vals, values = self.policy.evaluate_actions(
+        log_probs, entropy, values = self.policy.evaluate_actions(
             current_obs,
             masks=act_masks,
             actions=actions,
             memories=memories,
-            team_obs=team_obs,
-            team_act=team_actions,
             seq_len=self.policy.sequence_length,
         )
         old_log_probs = ActionLogProbs.from_dict(batch).flatten()
         log_probs = log_probs.flatten()
         loss_masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.bool)
-        # q_loss = self.ppo_value_loss(qs, old_values, returns_q, decay_eps, loss_masks)
-
-        # Use trust region from value, not baseline
-        baseline_loss = self.ppo_value_loss(
-            baseline_vals, old_marg_values, returns_v, decay_eps, loss_masks
-        )
         value_loss = self.ppo_value_loss(
-            values, old_values, returns_v, decay_eps, loss_masks
+            values, old_values, returns, decay_eps, loss_masks
         )
-
-        # Regularizer loss reduces bias between the baseline and values. Other
-        # regularizers are possible here.
-        # regularizer_loss = self.coma_regularizer_loss(values, baseline_vals)
-
         policy_loss = self.ppo_policy_loss(
             ModelUtils.list_to_tensor(batch["advantages"]),
             log_probs,
@@ -215,8 +171,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         )
         loss = (
             policy_loss
-            + 0.5 * (value_loss + 0.5 * baseline_loss)
-            # + 0.25 * regularizer_loss
+            + 0.5 * value_loss
             - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
         )
 
@@ -226,18 +181,11 @@ class TorchPPOOptimizer(TorchOptimizer):
         loss.backward()
 
         self.optimizer.step()
-
-        # ModelUtils.soft_update(
-        #    self.policy.actor_critic.critic, self.policy.actor_critic.target, 1.0
-        # )
         update_stats = {
             # NOTE: abs() is not technically correct, but matches the behavior in TensorFlow.
             # TODO: After PyTorch is default, change to something more correct.
             "Losses/Policy Loss": torch.abs(policy_loss).item(),
             "Losses/Value Loss": value_loss.item(),
-            # "Losses/Q Loss": q_loss.item(),
-            "Losses/Baseline Value Loss": baseline_loss.item(),
-            # "Losses/Regularization Loss": regularizer_loss.item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/Epsilon": decay_eps,
             "Policy/Beta": decay_bet,

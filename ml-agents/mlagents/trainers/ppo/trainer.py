@@ -72,34 +72,20 @@ class PPOTrainer(RLTrainer):
             self.policy.update_normalization(agent_buffer_trajectory)
 
         # Get all value estimates
-        (
-            value_estimates,
-            baseline_estimates,
-            value_next,
-        ) = self.optimizer.get_trajectory_value_estimates(
+        value_estimates, value_next = self.optimizer.get_trajectory_value_estimates(
             agent_buffer_trajectory,
             trajectory.next_obs,
-            trajectory.next_collab_obs,
             trajectory.done_reached and not trajectory.interrupted,
-            trajectory.teammate_dones_reached
-            and trajectory.done_reached
-            and not trajectory.interrupted,
         )
 
         for name, v in value_estimates.items():
             agent_buffer_trajectory[f"{name}_value_estimates"].extend(v)
-            agent_buffer_trajectory[f"{name}_baseline_estimates"].extend(
-                baseline_estimates[name]
-            )
-            self._stats_reporter.add_stat(
-                f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Baseline Estimate",
-                np.mean(baseline_estimates[name]),
-            )
             self._stats_reporter.add_stat(
                 f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value Estimate",
-                np.mean(value_estimates[name]),
+                np.mean(v),
             )
 
+        # Evaluate all reward functions
         self.collected_rewards["environment"][agent_id] += np.sum(
             agent_buffer_trajectory["environment_rewards"]
         )
@@ -115,63 +101,23 @@ class PPOTrainer(RLTrainer):
         tmp_advantages = []
         tmp_returns = []
         for name in self.optimizer.reward_signals:
+            bootstrap_value = value_next[name]
 
             local_rewards = agent_buffer_trajectory[f"{name}_rewards"].get_batch()
-            baseline_estimates = agent_buffer_trajectory[
-                f"{name}_baseline_estimates"
+            local_value_estimates = agent_buffer_trajectory[
+                f"{name}_value_estimates"
             ].get_batch()
-            v_estimates = agent_buffer_trajectory[f"{name}_value_estimates"].get_batch()
 
-            # next_value_estimates = agent_buffer_trajectory[
-            #    f"{name}_value_estimates_next"
-            # ].get_batch()
-            # next_m_value_estimates = agent_buffer_trajectory[
-            #    f"{name}_marginalized_value_estimates_next"
-            # ].get_batch()
-
-            returns_v, returns_b = get_team_returns(
+            local_advantage = get_gae(
                 rewards=local_rewards,
-                baseline_estimates=baseline_estimates,
-                v_estimates=v_estimates,
-                value_next=value_next[name],
+                value_estimates=local_value_estimates,
+                value_next=bootstrap_value,
                 gamma=self.optimizer.reward_signals[name].gamma,
                 lambd=self.hyperparameters.lambd,
             )
-            # print("loc", local_rewards[-1])
-            # print("tdlam", returns_v)
-
-            # local_advantage = get_team_gae(
-            #    rewards=local_rewards,
-            #    value_estimates=v_estimates,
-            #    baseline=baseline_estimates,
-            #    value_next=value_next[name],
-            #    gamma=self.optimizer.reward_signals[name].gamma,
-            #    lambd=self.hyperparameters.lambd,
-            # )
-            self._stats_reporter.add_stat(
-                f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} TD Lam",
-                np.mean(returns_v),
-            )
-
-            # local_advantage = np.array(returns_v) - baseline_estimates
-            local_advantage = np.array(returns_v) - np.array(baseline_estimates)
-            # self._stats_reporter.add_stat(
-            #    f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} GAE Advantage Estimate",
-            #    np.mean(gae_advantage),
-            # )
-
-            self._stats_reporter.add_stat(
-                f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} TD Advantage Estimate",
-                np.mean(local_advantage),
-            )
-
-            local_return = local_advantage + baseline_estimates
-
-            # local_return = local_advantage + q_estimates
+            local_return = local_advantage + local_value_estimates
             # This is later use as target for the different value estimates
-            # agent_buffer_trajectory[f"{name}_returns"].set(local_return)
-            agent_buffer_trajectory[f"{name}_returns_b"].set(returns_v)
-            agent_buffer_trajectory[f"{name}_returns_v"].set(returns_v)
+            agent_buffer_trajectory[f"{name}_returns"].set(local_return)
             agent_buffer_trajectory[f"{name}_advantage"].set(local_advantage)
             tmp_advantages.append(local_advantage)
             tmp_returns.append(local_return)
@@ -182,7 +128,6 @@ class PPOTrainer(RLTrainer):
         )
         global_returns = list(np.mean(np.array(tmp_returns, dtype=np.float32), axis=0))
         agent_buffer_trajectory["advantages"].set(global_advantages)
-
         agent_buffer_trajectory["discounted_returns"].set(global_returns)
         # Append to update buffer
         agent_buffer_trajectory.resequence_and_append(
@@ -221,10 +166,10 @@ class PPOTrainer(RLTrainer):
         n_sequences = max(
             int(self.hyperparameters.batch_size / self.policy.sequence_length), 1
         )
-        # Normalize advantages
-        advantages = np.array(self.update_buffer["advantages"].get_batch())
+
+        advantages = self.update_buffer["advantages"].get_batch()
         self.update_buffer["advantages"].set(
-            list((advantages - advantages.mean()) / (advantages.std() + 1e-10))
+            (advantages - advantages.mean()) / (advantages.std() + 1e-10)
         )
         num_epoch = self.hyperparameters.num_epoch
         batch_update_stats = defaultdict(list)
@@ -326,37 +271,6 @@ def discount_rewards(r, gamma=0.99, value_next=0.0):
     return discounted_r
 
 
-def lambd_return(r, value_estimates, gamma=0.99, lambd=0.8, value_next=0.0):
-    returns = np.zeros_like(r)
-    returns[-1] = r[-1] + gamma * value_next
-    for t in reversed(range(0, r.size - 1)):
-        returns[t] = (
-            gamma * lambd * returns[t + 1]
-            + r[t]
-            + (1 - lambd) * gamma * value_estimates[t + 1]
-        )
-
-    return returns
-
-
-def get_team_gae(
-    rewards, value_estimates, baseline, value_next=0.0, gamma=0.99, lambd=0.95
-):
-    """
-    Computes generalized advantage estimate for use in updating policy.
-    :param rewards: list of rewards for time-steps t to T.
-    :param value_next: Value estimate for time-step T+1.
-    :param value_estimates: list of value estimates for time-steps t to T.
-    :param gamma: Discount factor.
-    :param lambd: GAE weighing factor.
-    :return: list of advantage estimates for time-steps t to T.
-    """
-    value_estimates = np.append(value_estimates, value_next)
-    delta_t = rewards + gamma * value_estimates[1:] - baseline
-    advantage = discount_rewards(r=delta_t, gamma=gamma * lambd)
-    return advantage
-
-
 def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
     """
     Computes generalized advantage estimate for use in updating policy.
@@ -371,32 +285,3 @@ def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
     delta_t = rewards + gamma * value_estimates[1:] - value_estimates[:-1]
     advantage = discount_rewards(r=delta_t, gamma=gamma * lambd)
     return advantage
-
-
-def get_team_returns(
-    rewards,
-    baseline_estimates,
-    v_estimates,
-    value_next=0.0,
-    died=False,
-    gamma=0.99,
-    lambd=0.8,
-):
-    """
-    Computes generalized advantage estimate for use in updating policy.
-    :param rewards: list of rewards for time-steps t to T.
-    :param value_next: Value estimate for time-step T+1.
-    :param value_estimates: list of value estimates for time-steps t to T.
-    :param gamma: Discount factor.
-    :param lambd: GAE weighing factor.
-    :return: list of advantage estimates for time-steps t to T.
-    """
-    rewards = np.array(rewards)
-    returns_b = lambd_return(
-        rewards, baseline_estimates, gamma=gamma, lambd=lambd, value_next=value_next
-    )
-    returns_v = lambd_return(
-        rewards, v_estimates, gamma=gamma, lambd=lambd, value_next=value_next
-    )
-
-    return returns_v, returns_b

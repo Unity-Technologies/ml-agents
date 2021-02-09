@@ -11,26 +11,21 @@ from mlagents.trainers.exception import UnityTrainerException
 
 
 class MultiHeadAttention(torch.nn.Module):
+    """
+    Multi Head Attention module. We do not use the regular Torch implementation since
+    Barracuda does not support some operators it uses.
+    Takes as input to the forward method 3 tensors:
+     - query: of dimensions (batch_size, number_of_queries, embedding_size)
+     - key: of dimensions (batch_size, number_of_keys, embedding_size)
+     - value: of dimensions (batch_size, number_of_keys, embedding_size)
+    The forward method will return 2 tensors:
+     - The output: (batch_size, number_of_queries, embedding_size)
+     - The attention matrix: (batch_size, num_heads, number_of_queries, number_of_keys)
+    """
 
     NEG_INF = -1e6
 
     def __init__(self, embedding_size: int, num_heads: int):
-        """
-        Multi Head Attention module. We do not use the regular Torch implementation since
-        Barracuda does not support some operators it uses.
-        Takes as input to the forward method 3 tensors:
-        - query: of dimensions (batch_size, number_of_queries, embedding_size)
-        - key: of dimensions (batch_size, number_of_keys, embedding_size)
-        - value: of dimensions (batch_size, number_of_keys, embedding_size)
-        The forward method will return 2 tensors:
-        - The output: (batch_size, number_of_queries, embedding_size)
-        - The attention matrix: (batch_size, num_heads, number_of_queries, number_of_keys)
-        :param embedding_size: The size of the embeddings that will be generated (should be
-        dividable by the num_heads)
-        :param total_max_elements: The maximum total number of entities that can be passed to
-        the module
-        :param num_heads: The number of heads of the attention module
-        """
         super().__init__()
         self.n_heads = num_heads
         self.head_size: int = embedding_size // self.n_heads
@@ -87,29 +82,37 @@ class MultiHeadAttention(torch.nn.Module):
         return value_attention, att
 
 
-class EntityEmbedding(torch.nn.Module):
+class EntityEmbeddings(torch.nn.Module):
+    """
+    A module used to embed entities before passing them to a self-attention block.
+    Used in conjunction with ResidualSelfAttention to encode information about a self
+    and additional entities. Can also concatenate self to entities for ego-centric self-
+    attention. Inspired by architecture used in https://arxiv.org/pdf/1909.07528.pdf.
+    """
+
     def __init__(
         self,
         x_self_size: int,
-        entity_size: int,
-        entity_num_max_elements: Optional[int],
+        entity_sizes: List[int],
         embedding_size: int,
+        entity_num_max_elements: Optional[List[int]] = None,
         concat_self: bool = True,
     ):
         """
         Constructs an EntityEmbeddings module.
         :param x_self_size: Size of "self" entity.
-        :param entity_size: Size of other entitiy.
-        :param entity_num_max_elements: Maximum elements for a given entity, None for unrestricted.
+        :param entity_sizes: List of sizes for other entities. Should be of length
+            equivalent to the number of entities.
+        :param embedding_size: Embedding size for entity encoders.
+        :param entity_num_max_elements: Maximum elements in an entity, None for unrestricted.
             Needs to be assigned in order for model to be exportable to ONNX and Barracuda.
-        :param embedding_size: Embedding size for the entity encoder.
-        :param concat_self: Whether to concatenate x_self to entities. Set True for ego-centric
+        :param concat_self: Whether to concatenate x_self to entites. Set True for ego-centric
             self-attention.
         """
         super().__init__()
         self.self_size: int = x_self_size
-        self.entity_size: int = entity_size
-        self.entity_num_max_elements: int = -1
+        self.entity_sizes: List[int] = entity_sizes
+        self.entity_num_max_elements: List[int] = [-1] * len(entity_sizes)
         if entity_num_max_elements is not None:
             self.entity_num_max_elements = entity_num_max_elements
 
@@ -132,18 +135,10 @@ class EntityEmbedding(torch.nn.Module):
         )
         self.embedding_norm = LayerNorm()
 
-    def forward(self, x_self: torch.Tensor, entities: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self, x_self: torch.Tensor, entities: List[torch.Tensor]
+    ) -> Tuple[torch.Tensor, int]:
         if self.concat_self:
-            num_entities = self.entity_num_max_elements
-            if num_entities < 0:
-                if exporting_to_onnx.is_exporting():
-                    raise UnityTrainerException(
-                        "Trying to export an attention mechanism that doesn't have a set max \
-                        number of elements."
-                    )
-                num_entities = entities.shape[1]
-            expanded_self = x_self.reshape(-1, 1, self.self_size)
-            expanded_self = torch.cat([expanded_self] * num_entities, dim=1)
             # Concatenate all observations with self
             self_and_ent: List[torch.Tensor] = []
             for num_entities, ent in zip(self.entity_num_max_elements, entities):
@@ -194,7 +189,7 @@ class ResidualSelfAttention(torch.nn.Module):
     def __init__(
         self,
         embedding_size: int,
-        entity_num_max_elements: Optional[int] = None,
+        entity_num_max_elements: Optional[List[int]] = None,
         num_heads: int = 4,
     ):
         """
@@ -210,7 +205,8 @@ class ResidualSelfAttention(torch.nn.Module):
         super().__init__()
         self.max_num_ent: Optional[int] = None
         if entity_num_max_elements is not None:
-            self.max_num_ent = entity_num_max_elements
+            _entity_num_max_elements = entity_num_max_elements
+            self.max_num_ent = sum(_entity_num_max_elements)
 
         self.attention = MultiHeadAttention(
             num_heads=num_heads, embedding_size=embedding_size
@@ -246,8 +242,6 @@ class ResidualSelfAttention(torch.nn.Module):
     def forward(self, inp: torch.Tensor, key_masks: List[torch.Tensor]) -> torch.Tensor:
         # Gather the maximum number of entities information
         mask = torch.cat(key_masks, dim=1)
-
-        inp = self.embedding_norm(inp)
         # Feed to self attention
         query = self.fc_q(inp)  # (b, n_q, emb)
         key = self.fc_k(inp)  # (b, n_k, emb)
@@ -273,18 +267,3 @@ class ResidualSelfAttention(torch.nn.Module):
         denominator = torch.sum(1 - mask, dim=1, keepdim=True) + self.EPSILON
         output = numerator / denominator
         return output
-
-    @staticmethod
-    def get_masks(observations: List[torch.Tensor]) -> List[torch.Tensor]:
-        """
-        Takes a List of Tensors and returns a List of mask Tensor with 1 if the input was
-        all zeros (on dimension 2) and 0 otherwise. This is used in the Attention
-        layer to mask the padding observations.
-        """
-        with torch.no_grad():
-            # Generate the masking tensors for each entities tensor (mask only if all zeros)
-            key_masks: List[torch.Tensor] = [
-                (torch.sum(ent ** 2, axis=2) < 0.01).type(torch.FloatTensor)
-                for ent in observations
-            ]
-        return key_masks
