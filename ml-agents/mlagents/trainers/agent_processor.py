@@ -147,7 +147,7 @@ class AgentProcessor:
         stored_decision_step, idx = self.last_step_result.get(global_id, (None, None))
         stored_take_action_outputs = self.last_take_action_outputs.get(global_id, None)
         if stored_decision_step is not None and stored_take_action_outputs is not None:
-            if step.team_manager_id is not None:
+            if step.team_manager_id > 0:
                 stored_actions = stored_take_action_outputs["action"]
                 action_tuple = ActionTuple(
                     continuous=stored_actions.continuous[idx],
@@ -167,10 +167,11 @@ class AgentProcessor:
         self._delete_in_nested_dict(self.teammate_status, global_id)
 
     def _delete_in_nested_dict(self, nested_dict, key):
-        for _manager_id, _team_group in nested_dict.items():
+        for _manager_id in list(nested_dict.keys()):
+            _team_group = nested_dict[_manager_id]
             self._safe_delete(_team_group, key)
             if not _team_group:  # if dict is empty
-                self._safe_delete(_team_group, _manager_id)
+                self._safe_delete(nested_dict, _manager_id)
 
     def _process_step(
         self, step: Union[TerminalStep, DecisionStep], global_id: str, index: int
