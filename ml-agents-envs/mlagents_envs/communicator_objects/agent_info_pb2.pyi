@@ -20,7 +20,6 @@ from mlagents_envs.communicator_objects.observation_pb2 import (
 from typing import (
     Iterable as typing___Iterable,
     Optional as typing___Optional,
-    Text as typing___Text,
 )
 
 from typing_extensions import (

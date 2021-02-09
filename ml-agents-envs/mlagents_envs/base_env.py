@@ -89,7 +89,6 @@ class DecisionSteps(Mapping):
         self.reward: np.ndarray = reward
         self.team_reward: np.ndarray = team_reward
         self.agent_id: np.ndarray = agent_id
-        self.team_manager_id: Optional[List[str]] = team_manager_id
         self.action_mask: Optional[List[np.ndarray]] = action_mask
         self.team_manager_id: np.ndarray = team_manager_id
         self._agent_id_to_index: Optional[Dict[AgentId, int]] = None
@@ -204,7 +203,6 @@ class TerminalSteps(Mapping):
         self.agent_id: np.ndarray = agent_id
         self.team_manager_id: np.ndarray = team_manager_id
         self._agent_id_to_index: Optional[Dict[AgentId, int]] = None
-        self.team_manager_id: Optional[List[str]] = team_manager_id
 
     @property
     def agent_id_to_index(self) -> Dict[AgentId, int]:

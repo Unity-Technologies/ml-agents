@@ -310,24 +310,9 @@ def steps_from_proto(
     decision_rewards = np.array(
         [agent_info.reward for agent_info in decision_agent_info_list], dtype=np.float32
     )
-    decision_team_manager = [
-        agent_info.team_manager_id
-        for agent_info in decision_agent_info_list
-        if agent_info.team_manager_id is not None
-    ]
-    if len(decision_team_manager) == 0:
-        decision_team_manager = None
-
     terminal_rewards = np.array(
         [agent_info.reward for agent_info in terminal_agent_info_list], dtype=np.float32
     )
-    terminal_team_manager = [
-        agent_info.team_manager_id
-        for agent_info in terminal_agent_info_list
-        if agent_info.team_manager_id is not None
-    ]
-    if len(terminal_team_manager) == 0:
-        terminal_team_manager = None
 
     decision_team_managers = [
         agent_info.team_manager_id for agent_info in decision_agent_info_list
