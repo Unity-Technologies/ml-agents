@@ -722,7 +722,7 @@ namespace Unity.MLAgents
             m_CumulativeReward += increment;
         }
 
-        public void SetTeamReward(float reward)
+        internal void SetTeamReward(float reward)
         {
 #if DEBUG
             Utilities.DebugCheckNanAndInfinity(reward, nameof(reward), nameof(SetTeamReward));
@@ -730,7 +730,7 @@ namespace Unity.MLAgents
             m_TeamReward = reward;
         }
 
-        public void AddTeamReward(float increment)
+        internal void AddTeamReward(float increment)
         {
 #if DEBUG
             Utilities.DebugCheckNanAndInfinity(increment, nameof(increment), nameof(AddTeamReward));

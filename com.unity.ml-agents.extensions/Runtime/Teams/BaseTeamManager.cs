@@ -14,12 +14,12 @@ namespace Unity.MLAgents.Extensions.Teams
 
         public BaseTeamManager()
         {
-            Academy.Instance.TeamManagerStep += _ManagerStep;
+            Academy.Instance.PostAgentAct += _ManagerStep;
         }
 
         public void Dispose()
         {
-            Academy.Instance.TeamManagerStep -= _ManagerStep;
+            Academy.Instance.PostAgentAct -= _ManagerStep;
         }
 
         void _ManagerStep()
