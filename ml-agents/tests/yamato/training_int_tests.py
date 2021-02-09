@@ -133,6 +133,11 @@ def run_inference(env_path: str, output_path: str, model_extension: str) -> bool
 
     log_output_path = f"{get_base_output_path()}/inference.{model_extension}.txt"
 
+    # 10 minutes for inference is more than enough
+    process_timeout = 10 * 60
+    # Try to gracefully exit a few seconds before that.
+    model_override_timeout = process_timeout - 15
+
     exe_path = exes[0]
     args = [
         exe_path,
@@ -147,10 +152,11 @@ def run_inference(env_path: str, output_path: str, model_extension: str) -> bool
         "1",
         "--mlagents-override-model-extension",
         model_extension,
+        "--mlagents-quit-after-seconds",
+        str(model_override_timeout),
     ]
     print(f"Starting inference with args {' '.join(args)}")
-    timeout = 15 * 60  # 15 minutes for inference is more than enough
-    res = subprocess.run(args, timeout=timeout)
+    res = subprocess.run(args, timeout=process_timeout)
     end_time = time.time()
     if res.returncode != 0:
         print("Error running inference!")
