@@ -540,7 +540,7 @@ namespace Unity.MLAgents
         {
             if (m_TeamManager != null)
             {
-                m_TeamManager.RemoveAgent(this);
+                m_TeamManager.UnregisterAgent(this);
             }
         }
 
@@ -1406,7 +1406,7 @@ namespace Unity.MLAgents
         {
             if (m_TeamManager != null)
             {
-                m_TeamManager.RemoveAgent(this);
+                m_TeamManager.UnregisterAgent(this);
             }
             m_TeamManager = teamManager;
             teamManager?.RegisterAgent(this);

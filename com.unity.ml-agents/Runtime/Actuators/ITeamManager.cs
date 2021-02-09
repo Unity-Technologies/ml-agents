@@ -9,6 +9,6 @@ namespace Unity.MLAgents
 
         void RegisterAgent(Agent agent);
 
-        void RemoveAgent(Agent agent);
+        void UnregisterAgent(Agent agent);
     }
 }
