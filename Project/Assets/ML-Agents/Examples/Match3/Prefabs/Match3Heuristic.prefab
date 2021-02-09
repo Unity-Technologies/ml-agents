@@ -59,7 +59,7 @@ MonoBehaviour:
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: c34da50737a3c4a50918002b20b2b927, type: 3}
-  m_InferenceDevice: 0
+  m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: Match3SmartHeuristic
   TeamId: 0
@@ -117,10 +117,10 @@ MonoBehaviour:
   Columns: 8
   NumCellTypes: 6
   NumSpecialTypes: 2
-  RandomSeed: -1
   BasicCellPoints: 1
   SpecialCell1Points: 2
   SpecialCell2Points: 3
+  RandomSeed: -1
 --- !u!114 &3508723250470608014
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,8 +148,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ActuatorName: Match3 Actuator
+  RandomSeed: -1
   ForceHeuristic: 1
-  HeuristicQuality: 0
 --- !u!1 &3508723250774301855
 GameObject:
   m_ObjectHideFlags: 0

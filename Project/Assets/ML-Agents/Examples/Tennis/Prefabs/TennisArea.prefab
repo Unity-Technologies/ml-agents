@@ -206,15 +206,21 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 9
     NumStackedVectorObservations: 3
+    m_ActionSpec:
+      m_NumContinuousActions: 3
+      BranchSizes: 
     VectorActionSize: 03000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
+    hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: d6c5e749e4ceb4cf79640a5955706d3d, type: 3}
-  m_InferenceDevice: 0
+  m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: Tennis
   TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_ObservableAttributeHandling: 0
 --- !u!114 &114915946461826994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -263,6 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugCommandLineOverride: 
 --- !u!1 &1194790474478638
 GameObject:
   m_ObjectHideFlags: 0
@@ -1361,15 +1368,21 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 9
     NumStackedVectorObservations: 3
+    m_ActionSpec:
+      m_NumContinuousActions: 3
+      BranchSizes: 
     VectorActionSize: 03000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
+    hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: d6c5e749e4ceb4cf79640a5955706d3d, type: 3}
-  m_InferenceDevice: 0
+  m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: Tennis
   TeamId: 1
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_ObservableAttributeHandling: 0
 --- !u!114 &114800310164848628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1418,6 +1431,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugCommandLineOverride: 
 --- !u!1 &1969551055586186
 GameObject:
   m_ObjectHideFlags: 0

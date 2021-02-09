@@ -593,7 +593,7 @@ MonoBehaviour:
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: d179c44c147aa4ffbbb725f009eca3b8, type: 3}
-  m_InferenceDevice: 0
+  m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: 3DBallHard
   TeamId: 0
