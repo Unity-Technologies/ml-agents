@@ -454,18 +454,19 @@ namespace Unity.MLAgents
                         TrainerCapabilities = unityRlInitParameters.TrainerCapabilities;
                         TrainerCapabilities.WarnOnPythonMissingBaseRLCapabilities();
                     }
+                    else
+                    {
+                        Debug.Log($"Couldn't connect to trainer on port {port} using API version {k_ApiVersion}. Will perform inference instead.");
+                        Communicator = null;
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Debug.Log($"Unexpected exception when trying to initialize communication: {ex}");
-                }
-
-                if (!initSuccessful)
-                {
-                    Debug.Log($"Couldn't connect to trainer on port {port} using API version {k_ApiVersion}. Will perform inference instead.");
+                    Debug.Log($"Unexpected exception when trying to initialize communication: {ex}\nWill perform inference instead.");
                     Communicator = null;
                 }
             }
+
             if (Communicator != null)
             {
                 Communicator.QuitCommandReceived += OnQuitCommandReceived;

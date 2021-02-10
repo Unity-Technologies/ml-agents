@@ -119,9 +119,9 @@ namespace Unity.MLAgents
             }
             catch (Exception ex)
             {
-                if (ex is RpcException)
+                if (ex is RpcException rpcException)
                 {
-                    var rpcException = ex as RpcException;
+
                     switch (rpcException.Status.StatusCode)
                     {
                         case StatusCode.Unavailable:
@@ -470,9 +470,8 @@ namespace Unity.MLAgents
             }
             catch (Exception ex)
             {
-                if (ex is RpcException)
+                if (ex is RpcException rpcException)
                 {
-                    var rpcException = ex as RpcException;
                     // Log more verbose errors if they're something the user can possibly do something about.
                     switch (rpcException.Status.StatusCode)
                     {
