@@ -93,7 +93,7 @@ public class PushBlockEnvController : MonoBehaviour
             item.StartingPos = item.Agent.transform.position;
             item.StartingRot = item.Agent.transform.rotation;
             item.Rb = item.Agent.GetComponent<Rigidbody>();
-            item.Agent.SetTeamManager(m_TeamManager);
+            m_TeamManager.RegisterAgent(item.Agent);
         }
 
         ResetScene();

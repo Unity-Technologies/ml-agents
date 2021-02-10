@@ -21,8 +21,8 @@ public class HallwayCollabAgent : HallwayAgent
         if (isSpotter)
         {
             var teamManager = new HallwayTeamManager();
-            SetTeamManager(teamManager);
-            teammate.SetTeamManager(teamManager);
+            teamManager.RegisterAgent(this);
+            teamManager.RegisterAgent(teammate);
         }
     }
     public override void OnEpisodeBegin()
