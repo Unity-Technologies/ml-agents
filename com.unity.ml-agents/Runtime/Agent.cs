@@ -535,12 +535,8 @@ namespace Unity.MLAgents
                 NotifyAgentDone(DoneReason.Disabled);
             }
             m_Brain?.Dispose();
-            m_Initialized = false;
-        }
-
-        void OnDestroy()
-        {
             UnregisterFromTeamManager?.Invoke(this);
+            m_Initialized = false;
         }
 
         void NotifyAgentDone(DoneReason doneReason)
