@@ -1399,7 +1399,9 @@ namespace Unity.MLAgents
 
         internal void SetTeamManager(ITeamManager teamManager)
         {
+            // unregister current TeamManager if this agent has been assigned one before
             UnregisterFromTeamManager?.Invoke(this);
+
             m_TeamManagerID = teamManager.GetId();
         }
     }
