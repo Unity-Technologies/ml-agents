@@ -1162,7 +1162,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 960518523084491425}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -6951,7 +6951,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 4fe6928f1bf4c433db84b8de4e1732ef, type: 3}
+  m_Model: {fileID: 11400000, guid: a2b17bcb0df4d448893e800c34d87c4c, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Sorter
@@ -6975,7 +6975,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  DefaultMaxNumTiles: 2
+  DefaultMaxNumTiles: 8
   NumberTilesList:
   - {fileID: 1917831257363183701}
   - {fileID: 7854509637219396240}
@@ -7073,7 +7073,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd8012d5925524537b27131fef517017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservableSize: 22
+  ObservableSize: 23
   MaxNumObservables: 20
 --- !u!1 &6000518840957865293
 GameObject:
