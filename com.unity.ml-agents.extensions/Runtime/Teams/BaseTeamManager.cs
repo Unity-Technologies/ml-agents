@@ -156,18 +156,9 @@ namespace Unity.MLAgents.Extensions.Teams
             Reset();
         }
 
-        /// <summary>
-        /// End Episode for all agents under this TeamManager.
-        /// </summary>
-        public virtual void OnTeamEpisodeBegin()
-        {
-
-        }
-
         void Reset()
         {
             m_StepCount = 0;
-            OnTeamEpisodeBegin();
         }
     }
 }
