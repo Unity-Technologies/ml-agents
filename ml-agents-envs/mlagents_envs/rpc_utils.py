@@ -325,8 +325,8 @@ def steps_from_proto(
 
     _raise_on_nan_and_inf(decision_rewards, "rewards")
     _raise_on_nan_and_inf(terminal_rewards, "rewards")
-    _raise_on_nan_and_inf(decision_team_rewards, "rewards")
-    _raise_on_nan_and_inf(terminal_team_rewards, "rewards")
+    _raise_on_nan_and_inf(decision_team_rewards, "team_rewards")
+    _raise_on_nan_and_inf(terminal_team_rewards, "team_rewards")
 
     decision_team_managers = [
         agent_info.team_manager_id for agent_info in decision_agent_info_list
