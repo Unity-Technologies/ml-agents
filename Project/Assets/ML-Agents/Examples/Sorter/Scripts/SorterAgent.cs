@@ -72,14 +72,13 @@ public class SorterAgent : Agent
         {
             // Each observation / tile in the BufferSensor will have 22 values
             // The first 20 are one hot encoding of the value of the tile
-            // The 21st is the angle of the tile on the circle wall
-            // The 22nd is a boolean : 1 if the tile was visited already and 0 otherwise
+            // The 21st and 22nd are the position of the tile relative to the agent
+            // The 23rd is a boolean : 1 if the tile was visited already and 0 otherwise
             float[] listObservation = new float[k_HighestTileValue + 3];
             listObservation[item.NumberValue] = 1.0f;
             var tileTransform = item.transform.GetChild(1);
             listObservation[k_HighestTileValue] = (tileTransform.position.x - transform.position.x) / 20f;
             listObservation[k_HighestTileValue + 1] = (tileTransform.position.z - transform.position.z) / 20f;
-            // listObservation[k_HighestTileValue] = (item.transform.localRotation.eulerAngles.y / 360f);
             listObservation[k_HighestTileValue + 2] = item.IsVisited ? 1.0f : 0.0f;
             // Here, the observation for the tile is added to the BufferSensor
             m_BufferSensor.AppendObservation(listObservation);

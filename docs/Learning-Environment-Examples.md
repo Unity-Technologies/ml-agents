@@ -572,8 +572,8 @@ drop down. New pieces are spawned randomly at the top, with a chance of being
   - Vector Observations : 4 : 2 floats for Position and 2 floats for orientation
   - Variable Length Observations : Between 1 and 20 entities (one for each tile)
   each with 22 observations, the first 20 are one hot encoding of the value of the tile,
-  the 21st represents the position of the tile and the 22nd is 1 if the tile was
-  visited and zero otherwise.
+  the 21st and 22nd represent the position of the tile relative to the Agent and the 23rd
+  is `1` if the tile was visited and `0` otherwise.
   - Actions: 3 discrete branched actions corresponding to forward, backward,
   sideways movement, as well as rotation.
   - Float Properties: One
