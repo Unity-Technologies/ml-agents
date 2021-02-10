@@ -23,7 +23,7 @@ def dummy_config():
 VECTOR_ACTION_SPACE = 1
 VECTOR_OBS_SPACE = 8
 DISCRETE_ACTION_SPACE = [3, 3, 3, 2]
-BUFFER_INIT_SAMPLES = 513
+BUFFER_INIT_SAMPLES = 10241
 NUM_AGENTS = 12
 
 
@@ -192,13 +192,6 @@ def test_publish_queue(dummy_config):
     assert policy_queue0.empty() and not policy_queue1.empty()
     # clear
     policy_queue1.get_nowait()
-
-    mock_specs = mb.setup_test_behavior_specs(
-        False,
-        False,
-        vector_action_space=VECTOR_ACTION_SPACE,
-        vector_obs_space=VECTOR_OBS_SPACE,
-    )
 
     buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, mock_specs)
     # Mock out reward signal eval
