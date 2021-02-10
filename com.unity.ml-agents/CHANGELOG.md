@@ -69,6 +69,7 @@ and this project adheres to
   while waiting for a connection, and raises a better error message if it crashes. (#4880)
 - Passing a `-logfile` option in the `--env-args` option to `mlagents-learn` is
   no longer overwritten. (#4880)
+- The `load_weights` function was being called unnecessarily often in the Ghost Trainer leading to training slowdowns. (#4934)
 
 
 ## [1.7.2-preview] - 2020-12-22
