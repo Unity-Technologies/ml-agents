@@ -54,6 +54,7 @@ class DecisionStep(NamedTuple):
 
     obs: List[np.ndarray]
     reward: float
+    team_reward: float
     agent_id: AgentId
     action_mask: Optional[List[np.ndarray]]
     team_manager_id: int
@@ -129,6 +130,7 @@ class DecisionSteps(Mapping):
         return DecisionStep(
             obs=agent_obs,
             reward=self.reward[agent_index],
+            team_reward=self.team_reward[agent_index],
             agent_id=agent_id,
             action_mask=agent_mask,
             team_manager_id=team_manager_id,
@@ -170,6 +172,7 @@ class TerminalStep(NamedTuple):
 
     obs: List[np.ndarray]
     reward: float
+    team_reward: float
     interrupted: bool
     agent_id: AgentId
     team_manager_id: int
@@ -236,6 +239,7 @@ class TerminalSteps(Mapping):
         return TerminalStep(
             obs=agent_obs,
             reward=self.reward[agent_index],
+            team_reward=self.team_reward[agent_index],
             interrupted=self.interrupted[agent_index],
             agent_id=agent_id,
             team_manager_id=team_manager_id,
