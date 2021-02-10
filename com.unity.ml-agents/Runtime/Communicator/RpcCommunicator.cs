@@ -440,6 +440,7 @@ namespace Unity.MLAgents
             {
                 return null;
             }
+
             try
             {
                 var message = m_Client.Exchange(WrapMessage(unityOutput, 200));
@@ -455,8 +456,33 @@ namespace Unity.MLAgents
                 QuitCommandReceived?.Invoke();
                 return message.UnityInput;
             }
-            catch
+            catch (RpcException rpcException)
             {
+                // Log more verbose errors if they're something the user can possibly do something about.
+                switch (rpcException.Status.StatusCode)
+                {
+                    case StatusCode.Unavailable:
+                        // This can happen when python disconnects. Ignore it to avoid noisy logs.
+                        break;
+                    case StatusCode.ResourceExhausted:
+                        // This happens is the message body is too large. There's no way to
+                        // gracefully handle this, but at least we can show the message and the
+                        // user can try to reduce the number of agents or observation sizes.
+                        Debug.LogError($"GRPC Exception: {rpcException.Message}. Disconnecting from trainer.");
+                        break;
+                    default:
+                        // Other unknown errors. Log at INFO level.
+                        Debug.Log($"GRPC Exception: {rpcException.Message}. Disconnecting from trainer.");
+                        break;
+                }
+                m_IsOpen = false;
+                QuitCommandReceived?.Invoke();
+                return null;
+            }
+            catch (Exception ex)
+            {
+                // Fall-through for other error types
+                Debug.LogError($"GRPC Exception: {ex.Message}. Disconnecting from trainer.");
                 m_IsOpen = false;
                 QuitCommandReceived?.Invoke();
                 return null;

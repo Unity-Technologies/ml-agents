@@ -58,6 +58,8 @@ and this project adheres to
   reduced the amount of memory allocated by approximately 25%. (#4887)
 - Removed several memory allocations that happened during inference with discrete actions. (#4922)
 - Properly catch permission errors when writing timer files. (#4921)
+- Unexpected gRPC exceptions during training are now logged before stopping training. If you see
+  "noisy" log, please let us know! (#4930)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed a bug that would cause an exception when `RunOptions` was deserialized via `pickle`. (#4842)
