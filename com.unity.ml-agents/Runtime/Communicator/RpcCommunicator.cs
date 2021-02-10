@@ -468,19 +468,21 @@ namespace Unity.MLAgents
                         // This happens is the message body is too large. There's no way to
                         // gracefully handle this, but at least we can show the message and the
                         // user can try to reduce the number of agents or observation sizes.
-                        Debug.LogError($"GRPC Exception: {rpcException.Message}. Exiting communicator.");
+                        Debug.LogError($"GRPC Exception: {rpcException.Message}. Disconnecting from trainer.");
                         break;
                     default:
-                        // Other unknown errors. Keep these quiet for now.
+                        // Other unknown errors. Log at INFO level.
+                        Debug.Log($"GRPC Exception: {rpcException.Message}. Disconnecting from trainer.");
                         break;
                 }
                 m_IsOpen = false;
                 QuitCommandReceived?.Invoke();
                 return null;
             }
-            catch
+            catch (Exception ex)
             {
                 // Fall-through for other error types
+                Debug.LogError($"GRPC Exception: {ex.Message}. Disconnecting from trainer.");
                 m_IsOpen = false;
                 QuitCommandReceived?.Invoke();
                 return null;
