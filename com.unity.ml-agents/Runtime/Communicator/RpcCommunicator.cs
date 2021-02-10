@@ -92,8 +92,9 @@ namespace Unity.MLAgents
         /// Sends the initialization parameters through the Communicator.
         /// Is used by the academy to send initialization parameters to the communicator.
         /// </summary>
-        /// <returns>The External Initialization Parameters received.</returns>
+        /// <returns>Whether the connection was successful.</returns>
         /// <param name="initParameters">The Unity Initialization Parameters to be sent.</param>
+        /// <param name="initParametersOut">The External Initialization Parameters received.</param>
         public bool Initialize(CommunicatorInitParameters initParameters, out UnityRLInitParameters initParametersOut)
         {
             var academyParameters = new UnityRLInitializationOutputProto
