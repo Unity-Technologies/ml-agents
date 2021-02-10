@@ -67,6 +67,7 @@ public class FPSAgentInput : MonoBehaviour
         }
     }
 
+    public bool shootPressed;
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -78,6 +79,7 @@ public class FPSAgentInput : MonoBehaviour
         }
         moveInput = actionMap.Walk.ReadValue<Vector2>();
         shootInput = actionMap.Shoot.ReadValue<float>() > 0;
+        shootPressed = actionMap.Shoot.triggered;
         //        shootInput = gamepad.rightTrigger.isPressed;
         shieldInput = actionMap.Shield.ReadValue<float>() > 0;
         //        rotateInput = actionMap.RotateBody.ReadValue<Vector2>();

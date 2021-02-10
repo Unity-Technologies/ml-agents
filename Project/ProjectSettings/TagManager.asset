@@ -30,6 +30,7 @@ TagManager:
   - purpleAgent
   - purpleGoal
   - projectile
+  - dodgeBall
   layers:
   - Default
   - TransparentFX

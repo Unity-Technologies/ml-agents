@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using MLAgents;
@@ -6,6 +7,7 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine.InputSystem;
+using Random = UnityEngine.Random;
 
 public class FPSAgent : Agent
 {
@@ -22,6 +24,9 @@ public class FPSAgent : Agent
     [Header("SHIELD")] public ShieldController AgentShield;
 
     public FPSAgentInput input;
+    private DodgeBallGameController m_GameController;
+
+
     // Start is called before the first frame update
     public override void Initialize()
     {
@@ -29,6 +34,7 @@ public class FPSAgent : Agent
         //        m_Cam = Camera.main;
         m_AgentRb = GetComponent<Rigidbody>();
         input = GetComponent<FPSAgentInput>();
+        m_GameController = FindObjectOfType<DodgeBallGameController>();
     }
 
     public override void OnEpisodeBegin()
@@ -226,6 +232,18 @@ public class FPSAgent : Agent
             print("cancelled" + Time.frameCount + m_ShootInput);
         }
     }
+
+
+    private void OnCollisionEnter(Collision col)
+    {
+
+        if (col.transform.CompareTag("dodgeBall"))
+        {
+
+        }
+    }
+
+
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {

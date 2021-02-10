@@ -243,7 +243,7 @@ GameObject:
   - component: {fileID: 4341296992446652170}
   m_Layer: 10
   m_Name: Projectile - BALL
-  m_TagString: projectile
+  m_TagString: dodgeBall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -295,7 +295,7 @@ GameObject:
   - component: {fileID: 4977931146242317046}
   m_Layer: 10
   m_Name: Sphere
-  m_TagString: Untagged
+  m_TagString: dodgeBall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
