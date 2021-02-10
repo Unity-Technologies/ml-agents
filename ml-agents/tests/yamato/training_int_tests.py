@@ -172,7 +172,7 @@ def run_inference(env_path: str, output_path: str, model_extension: str) -> bool
         timer_data = json.load(f)
 
     gauges = timer_data.get("gauges", {})
-    rewards = gauges.get("Override_3DBall.CumulativeReward")
+    rewards = gauges.get("Override_3DBall.CumulativeReward", {})
     max_reward = rewards.get("max")
     if max_reward is None:
         print(
