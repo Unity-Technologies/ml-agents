@@ -25,17 +25,19 @@ class TorchPPOOptimizer(TorchOptimizer):
         """
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
 
+        super().__init__(policy, trainer_settings)
         reward_signal_configs = trainer_settings.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
 
-        critic = ValueNetwork(
+        self.value_net = ValueNetwork(
             reward_signal_names,
             policy.behavior_spec.observation_specs,
             network_settings=trainer_settings.network_settings,
         )
-        super().__init__(policy, critic, trainer_settings)
 
-        params = list(self.policy.actor.parameters()) + list(self.critic.parameters())
+        params = list(self.policy.actor.parameters()) + list(
+            self.value_net.parameters()
+        )
         self.hyperparameters: PPOSettings = cast(
             PPOSettings, trainer_settings.hyperparameters
         )
@@ -67,6 +69,10 @@ class TorchPPOOptimizer(TorchOptimizer):
         }
 
         self.stream_names = list(self.reward_signals.keys())
+
+    @property
+    def critic(self):
+        return self.value_net
 
     def ppo_value_loss(
         self,

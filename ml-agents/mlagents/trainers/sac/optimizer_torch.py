@@ -106,6 +106,7 @@ class TorchSACOptimizer(TorchOptimizer):
             self.continuous = continuous
 
     def __init__(self, policy: TorchPolicy, trainer_params: TrainerSettings):
+        super().__init__(policy, trainer_params)
         reward_signal_configs = trainer_params.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
 
@@ -115,7 +116,6 @@ class TorchSACOptimizer(TorchOptimizer):
             policy.network_settings,
         )
 
-        super().__init__(policy, self.value_network, trainer_params)
         hyperparameters: SACSettings = cast(SACSettings, trainer_params.hyperparameters)
         self.tau = hyperparameters.tau
         self.init_entcoef = hyperparameters.init_entcoef
@@ -208,6 +208,10 @@ class TorchSACOptimizer(TorchOptimizer):
             self._log_ent_coef.parameters(), lr=hyperparameters.learning_rate
         )
         self._move_to_device(default_device())
+
+    @property
+    def critic(self):
+        return self.value_network
 
     def _move_to_device(self, device: torch.device) -> None:
         self._log_ent_coef.to(device)
