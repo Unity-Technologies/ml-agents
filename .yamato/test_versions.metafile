@@ -4,8 +4,8 @@
 # editor to reduce the number of yamato jobs
 test_editors:
   - version: 2018.4
-    extra_test = llapi
+    extra_test: llapi
   - version: 2019.4
-    extra_test = gym
+    extra_test: gym
   - version: 2020.2
-    extra_test = sensor
+    extra_test: sensor
