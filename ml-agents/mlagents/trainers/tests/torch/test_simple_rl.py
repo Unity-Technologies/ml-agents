@@ -255,7 +255,7 @@ def test_recurrent_sac(action_sizes):
         network_settings=new_networksettings,
         max_steps=4000,
     )
-    check_environment_trains(env, {BRAIN_NAME: config}, training_seed=1213)
+    check_environment_trains(env, {BRAIN_NAME: config}, training_seed=1337)
 
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
