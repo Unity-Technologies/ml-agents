@@ -216,6 +216,7 @@ class TorchSACOptimizer(TorchOptimizer):
     def _move_to_device(self, device: torch.device) -> None:
         self._log_ent_coef.to(device)
         self.target_network.to(device)
+        self.value_network.to(device)
         self.q_network.to(device)
 
     def sac_q_loss(
