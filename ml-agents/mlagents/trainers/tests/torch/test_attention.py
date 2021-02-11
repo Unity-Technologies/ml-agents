@@ -1,3 +1,4 @@
+import pytest
 from mlagents.torch_utils import torch
 import numpy as np
 
@@ -7,6 +8,7 @@ from mlagents.trainers.torch.attention import (
     MultiHeadAttention,
     EntityEmbedding,
     ResidualSelfAttention,
+    get_zero_entities_mask,
 )
 
 
@@ -71,7 +73,7 @@ def test_zero_mask_layer():
     input_1 = generate_input_helper(masking_pattern_1)
     input_2 = generate_input_helper(masking_pattern_2)
 
-    masks = ResidualSelfAttention.get_masks([input_1, input_2])
+    masks = get_zero_entities_mask([input_1, input_2])
     assert len(masks) == 2
     masks_1 = masks[0]
     masks_2 = masks[1]
@@ -83,12 +85,59 @@ def test_zero_mask_layer():
         assert masks_2[0, 1] == 0 if i % 2 == 0 else 1
 
 
+@pytest.mark.parametrize("mask_value", [0, 1])
+def test_all_masking(mask_value):
+    # We make sure that a mask of all zeros or all ones will not trigger an error
+    np.random.seed(1336)
+    torch.manual_seed(1336)
+    size, n_k, = 3, 5
+    embedding_size = 64
+    entity_embeddings = EntityEmbedding(size, n_k, embedding_size)
+    entity_embeddings.add_self_embedding(size)
+    transformer = ResidualSelfAttention(embedding_size, n_k)
+    l_layer = linear_layer(embedding_size, size)
+    optimizer = torch.optim.Adam(
+        list(entity_embeddings.parameters())
+        + list(transformer.parameters())
+        + list(l_layer.parameters()),
+        lr=0.001,
+        weight_decay=1e-6,
+    )
+    batch_size = 20
+    for _ in range(5):
+        center = torch.rand((batch_size, size))
+        key = torch.rand((batch_size, n_k, size))
+        with torch.no_grad():
+            # create the target : The key closest to the query in euclidean distance
+            distance = torch.sum(
+                (center.reshape((batch_size, 1, size)) - key) ** 2, dim=2
+            )
+            argmin = torch.argmin(distance, dim=1)
+            target = []
+            for i in range(batch_size):
+                target += [key[i, argmin[i], :]]
+            target = torch.stack(target, dim=0)
+            target = target.detach()
+
+        embeddings = entity_embeddings(center, key)
+        masks = [torch.ones_like(key[:, :, 0]) * mask_value]
+        prediction = transformer.forward(embeddings, masks)
+        prediction = l_layer(prediction)
+        prediction = prediction.reshape((batch_size, size))
+        error = torch.mean((prediction - target) ** 2, dim=1)
+        error = torch.mean(error) / 2
+        optimizer.zero_grad()
+        error.backward()
+        optimizer.step()
+
+
 def test_predict_closest_training():
     np.random.seed(1336)
     torch.manual_seed(1336)
     size, n_k, = 3, 5
     embedding_size = 64
-    entity_embeddings = EntityEmbedding(size, size, n_k, embedding_size)
+    entity_embeddings = EntityEmbedding(size, n_k, embedding_size)
+    entity_embeddings.add_self_embedding(size)
     transformer = ResidualSelfAttention(embedding_size, n_k)
     l_layer = linear_layer(embedding_size, size)
     optimizer = torch.optim.Adam(
@@ -115,7 +164,7 @@ def test_predict_closest_training():
             target = target.detach()
 
         embeddings = entity_embeddings(center, key)
-        masks = ResidualSelfAttention.get_masks([key])
+        masks = get_zero_entities_mask([key])
         prediction = transformer.forward(embeddings, masks)
         prediction = l_layer(prediction)
         prediction = prediction.reshape((batch_size, size))
@@ -135,14 +184,12 @@ def test_predict_minimum_training():
     n_k = 5
     size = n_k + 1
     embedding_size = 64
-    entity_embeddings = EntityEmbeddings(
-        size, [size], embedding_size, [n_k], concat_self=False
-    )
+    entity_embedding = EntityEmbedding(size, n_k, embedding_size)  # no self
     transformer = ResidualSelfAttention(embedding_size)
     l_layer = LinearEncoder(embedding_size, 2, n_k)
     loss = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(
-        list(entity_embeddings.parameters())
+        list(entity_embedding.parameters())
         + list(transformer.parameters())
         + list(l_layer.parameters()),
         lr=0.001,
@@ -166,8 +213,8 @@ def test_predict_minimum_training():
         sliced_oh = onehots[:, : num + 1]
         inp = torch.cat([inp, sliced_oh], dim=2)
 
-        embeddings = entity_embeddings(inp, [inp])
-        masks = EntityEmbeddings.get_masks([inp])
+        embeddings = entity_embedding(inp, inp)
+        masks = get_zero_entities_mask([inp])
         prediction = transformer(embeddings, masks)
         prediction = l_layer(prediction)
         ce = loss(prediction, argmin)
