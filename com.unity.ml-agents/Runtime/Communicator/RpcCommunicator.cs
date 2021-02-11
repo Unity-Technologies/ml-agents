@@ -64,8 +64,8 @@ namespace Unity.MLAgents
 
         internal static bool CheckCommunicationVersionsAreCompatible(
             string unityCommunicationVersion,
-            string pythonApiVersion,
-            string pythonLibraryVersion)
+            string pythonApiVersion
+            )
         {
             var unityVersion = new Version(unityCommunicationVersion);
             var pythonVersion = new Version(pythonApiVersion);
@@ -92,9 +92,10 @@ namespace Unity.MLAgents
         /// Sends the initialization parameters through the Communicator.
         /// Is used by the academy to send initialization parameters to the communicator.
         /// </summary>
-        /// <returns>The External Initialization Parameters received.</returns>
+        /// <returns>Whether the connection was successful.</returns>
         /// <param name="initParameters">The Unity Initialization Parameters to be sent.</param>
-        public UnityRLInitParameters Initialize(CommunicatorInitParameters initParameters)
+        /// <param name="initParametersOut">The External Initialization Parameters received.</param>
+        public bool Initialize(CommunicatorInitParameters initParameters, out UnityRLInitParameters initParametersOut)
         {
             var academyParameters = new UnityRLInitializationOutputProto
             {
@@ -113,62 +114,75 @@ namespace Unity.MLAgents
                     {
                         RlInitializationOutput = academyParameters
                     },
-                    out input);
-
-                var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
-                var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
-                var unityCommunicationVersion = initParameters.unityCommunicationVersion;
-
-                TrainingAnalytics.SetTrainerInformation(pythonPackageVersion, pythonCommunicationVersion);
-
-                var communicationIsCompatible = CheckCommunicationVersionsAreCompatible(unityCommunicationVersion,
-                    pythonCommunicationVersion,
-                    pythonPackageVersion);
-
-                // Initialization succeeded part-way. The most likely cause is a mismatch between the communicator
-                // API strings, so log an explicit warning if that's the case.
-                if (initializationInput != null && input == null)
-                {
-                    if (!communicationIsCompatible)
-                    {
-                        Debug.LogWarningFormat(
-                            "Communication protocol between python ({0}) and Unity ({1}) have different " +
-                            "versions which make them incompatible. Python library version: {2}.",
-                            pythonCommunicationVersion, initParameters.unityCommunicationVersion,
-                            pythonPackageVersion
-                        );
-                    }
-                    else
-                    {
-                        Debug.LogWarningFormat(
-                            "Unknown communication error between Python. Python communication protocol: {0}, " +
-                            "Python library version: {1}.",
-                            pythonCommunicationVersion,
-                            pythonPackageVersion
-                        );
-                    }
-
-                    throw new UnityAgentsException("ICommunicator.Initialize() failed.");
-                }
+                    out input
+                );
             }
-            catch
+            catch (Exception ex)
             {
-                var exceptionMessage = "The Communicator was unable to connect. Please make sure the External " +
-                    "process is ready to accept communication with Unity.";
-
-                // Check for common error condition and add details to the exception message.
-                var httpProxy = Environment.GetEnvironmentVariable("HTTP_PROXY");
-                var httpsProxy = Environment.GetEnvironmentVariable("HTTPS_PROXY");
-                if (httpProxy != null || httpsProxy != null)
+                if (ex is RpcException rpcException)
                 {
-                    exceptionMessage += " Try removing HTTP_PROXY and HTTPS_PROXY from the" +
-                        "environment variables and try again.";
+
+                    switch (rpcException.Status.StatusCode)
+                    {
+                        case StatusCode.Unavailable:
+                            // This is the common case where there's no trainer to connect to.
+                            break;
+                        case StatusCode.DeadlineExceeded:
+                            // We don't currently set a deadline for connection, but likely will in the future.
+                            break;
+                        default:
+                            Debug.Log($"Unexpected gRPC exception when trying to initialize communication: {rpcException}");
+                            break;
+                    }
                 }
-                throw new UnityAgentsException(exceptionMessage);
+                else
+                {
+                    Debug.Log($"Unexpected exception when trying to initialize communication: {ex}");
+                }
+                initParametersOut = new UnityRLInitParameters();
+                return false;
+            }
+
+            var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
+            var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
+
+            TrainingAnalytics.SetTrainerInformation(pythonPackageVersion, pythonCommunicationVersion);
+
+            var communicationIsCompatible = CheckCommunicationVersionsAreCompatible(
+                initParameters.unityCommunicationVersion,
+                pythonCommunicationVersion
+            );
+
+            // Initialization succeeded part-way. The most likely cause is a mismatch between the communicator
+            // API strings, so log an explicit warning if that's the case.
+            if (initializationInput != null && input == null)
+            {
+                if (!communicationIsCompatible)
+                {
+                    Debug.LogWarningFormat(
+                        "Communication protocol between python ({0}) and Unity ({1}) have different " +
+                        "versions which make them incompatible. Python library version: {2}.",
+                        pythonCommunicationVersion, initParameters.unityCommunicationVersion,
+                        pythonPackageVersion
+                    );
+                }
+                else
+                {
+                    Debug.LogWarningFormat(
+                        "Unknown communication error between Python. Python communication protocol: {0}, " +
+                        "Python library version: {1}.",
+                        pythonCommunicationVersion,
+                        pythonPackageVersion
+                    );
+                }
+
+                initParametersOut = new UnityRLInitParameters();
+                return false;
             }
 
             UpdateEnvironmentWithInput(input.RlInput);
-            return initializationInput.RlInitializationInput.ToUnityRLInitParameters();
+            initParametersOut = initializationInput.RlInitializationInput.ToUnityRLInitParameters();
+            return true;
         }
 
         /// <summary>
@@ -197,8 +211,7 @@ namespace Unity.MLAgents
             SendCommandEvent(rlInput.Command);
         }
 
-        UnityInputProto Initialize(UnityOutputProto unityOutput,
-            out UnityInputProto unityInput)
+        UnityInputProto Initialize(UnityOutputProto unityOutput, out UnityInputProto unityInput)
         {
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             m_IsOpen = true;
@@ -220,8 +233,7 @@ namespace Unity.MLAgents
             }
             return result.UnityInput;
 #else
-            throw new UnityAgentsException(
-                "You cannot perform training on this platform.");
+            throw new UnityAgentsException("You cannot perform training on this platform.");
 #endif
         }
 
@@ -456,33 +468,34 @@ namespace Unity.MLAgents
                 QuitCommandReceived?.Invoke();
                 return message.UnityInput;
             }
-            catch (RpcException rpcException)
-            {
-                // Log more verbose errors if they're something the user can possibly do something about.
-                switch (rpcException.Status.StatusCode)
-                {
-                    case StatusCode.Unavailable:
-                        // This can happen when python disconnects. Ignore it to avoid noisy logs.
-                        break;
-                    case StatusCode.ResourceExhausted:
-                        // This happens is the message body is too large. There's no way to
-                        // gracefully handle this, but at least we can show the message and the
-                        // user can try to reduce the number of agents or observation sizes.
-                        Debug.LogError($"GRPC Exception: {rpcException.Message}. Disconnecting from trainer.");
-                        break;
-                    default:
-                        // Other unknown errors. Log at INFO level.
-                        Debug.Log($"GRPC Exception: {rpcException.Message}. Disconnecting from trainer.");
-                        break;
-                }
-                m_IsOpen = false;
-                QuitCommandReceived?.Invoke();
-                return null;
-            }
             catch (Exception ex)
             {
-                // Fall-through for other error types
-                Debug.LogError($"GRPC Exception: {ex.Message}. Disconnecting from trainer.");
+                if (ex is RpcException rpcException)
+                {
+                    // Log more verbose errors if they're something the user can possibly do something about.
+                    switch (rpcException.Status.StatusCode)
+                    {
+                        case StatusCode.Unavailable:
+                            // This can happen when python disconnects. Ignore it to avoid noisy logs.
+                            break;
+                        case StatusCode.ResourceExhausted:
+                            // This happens is the message body is too large. There's no way to
+                            // gracefully handle this, but at least we can show the message and the
+                            // user can try to reduce the number of agents or observation sizes.
+                            Debug.LogError($"GRPC Exception: {rpcException.Message}. Disconnecting from trainer.");
+                            break;
+                        default:
+                            // Other unknown errors. Log at INFO level.
+                            Debug.Log($"GRPC Exception: {rpcException.Message}. Disconnecting from trainer.");
+                            break;
+                    }
+                }
+                else
+                {
+                    // Fall-through for other error types
+                    Debug.LogError($"Communication Exception: {ex.Message}. Disconnecting from trainer.");
+                }
+
                 m_IsOpen = false;
                 QuitCommandReceived?.Invoke();
                 return null;
