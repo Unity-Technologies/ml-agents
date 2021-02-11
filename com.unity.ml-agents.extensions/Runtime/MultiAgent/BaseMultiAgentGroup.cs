@@ -1,30 +1,37 @@
 using System;
 using System.Collections.Generic;
 
-namespace Unity.MLAgents.Extensions.Teams
+namespace Unity.MLAgents.Extensions.MultiAgent
 {
-    public class BaseTeamManager : ITeamManager, IDisposable
+    /// <summary>
+    /// A base class implementation of MultiAgentGroup.
+    /// </summary>
+    public class BaseMultiAgentGroup : IMultiAgentGroup, IDisposable
     {
         int m_StepCount;
-        int m_TeamMaxStep;
-        readonly int m_Id = TeamManagerIdCounter.GetTeamManagerId();
+        int m_GroupMaxStep;
+        readonly int m_Id = MultiAgentGroupIdCounter.GetGroupId();
         List<Agent> m_Agents = new List<Agent> { };
 
 
-        public BaseTeamManager()
+        public BaseMultiAgentGroup()
         {
-            Academy.Instance.PostAgentAct += _ManagerStep;
+            Academy.Instance.PostAgentAct += _GroupStep;
         }
 
         public void Dispose()
         {
-            Academy.Instance.PostAgentAct -= _ManagerStep;
+            Academy.Instance.PostAgentAct -= _GroupStep;
+            while (m_Agents.Count > 0)
+            {
+                UnregisterAgent(m_Agents[0]);
+            }
         }
 
-        void _ManagerStep()
+        void _GroupStep()
         {
             m_StepCount += 1;
-            if ((m_StepCount >= m_TeamMaxStep) && (m_TeamMaxStep > 0))
+            if ((m_StepCount >= m_GroupMaxStep) && (m_GroupMaxStep > 0))
             {
                 foreach (var agent in m_Agents)
                 {
@@ -38,45 +45,42 @@ namespace Unity.MLAgents.Extensions.Teams
         }
 
         /// <summary>
-        /// Register the agent to the TeamManager.
-        /// Registered agents will be able to receive team rewards from the TeamManager
+        /// Register the agent to the MultiAgentGroup.
+        /// Registered agents will be able to receive group rewards from the MultiAgentGroup
         /// and share observations during training.
         /// </summary>
         public virtual void RegisterAgent(Agent agent)
         {
             if (!m_Agents.Contains(agent))
             {
+                agent.SetMultiAgentGroup(this);
                 m_Agents.Add(agent);
+                agent.UnregisterFromGroup += UnregisterAgent;
             }
         }
 
         /// <summary>
-        /// Remove the agent from the TeamManager.
+        /// Remove the agent from the MultiAgentGroup.
         /// </summary>
         public virtual void UnregisterAgent(Agent agent)
         {
             if (m_Agents.Contains(agent))
             {
                 m_Agents.Remove(agent);
+                agent.UnregisterFromGroup -= UnregisterAgent;
             }
         }
 
-        /// <summary>
-        /// Get the ID of the TeamManager.
-        /// </summary>
-        /// <returns>
-        /// TeamManager ID.
-        /// </returns>
         public int GetId()
         {
             return m_Id;
         }
 
         /// <summary>
-        /// Get list of all agents registered to this TeamManager.
+        /// Get list of all agents registered to this MultiAgentGroup.
         /// </summary>
         /// <returns>
-        /// List of agents belongs to the TeamManager.
+        /// List of agents belongs to the MultiAgentGroup.
         /// </returns>
         public List<Agent> GetRegisteredAgents()
         {
@@ -84,31 +88,31 @@ namespace Unity.MLAgents.Extensions.Teams
         }
 
         /// <summary>
-        /// Add team reward for all agents under this Teammanager.
+        /// Add group reward for all agents under this MultiAgentGroup.
         /// Disabled agent will not receive this reward.
         /// </summary>
-        public void AddTeamReward(float reward)
+        public void AddGroupReward(float reward)
         {
             foreach (var agent in m_Agents)
             {
                 if (agent.enabled)
                 {
-                    agent.AddTeamReward(reward);
+                    agent.AddGroupReward(reward);
                 }
             }
         }
 
         /// <summary>
-        /// Set team reward for all agents under this Teammanager.
+        /// Set group reward for all agents under this MultiAgentGroup.
         /// Disabled agent will not receive this reward.
         /// </summary>
-        public void SetTeamReward(float reward)
+        public void SetGroupReward(float reward)
         {
             foreach (var agent in m_Agents)
             {
                 if (agent.enabled)
                 {
-                    agent.SetTeamReward(reward);
+                    agent.SetGroupReward(reward);
                 }
             }
         }
@@ -124,20 +128,20 @@ namespace Unity.MLAgents.Extensions.Teams
             get { return m_StepCount; }
         }
 
-        public int TeamMaxStep
+        public int GroupMaxStep
         {
-            get { return m_TeamMaxStep; }
+            get { return m_GroupMaxStep; }
         }
 
-        public void SetTeamMaxStep(int maxStep)
+        public void SetGroupMaxStep(int maxStep)
         {
-            m_TeamMaxStep = maxStep;
+            m_GroupMaxStep = maxStep;
         }
 
         /// <summary>
-        /// End Episode for all agents under this TeamManager.
+        /// End Episode for all agents under this MultiAgentGroup.
         /// </summary>
-        public void EndTeamEpisode()
+        public void EndGroupEpisode()
         {
             foreach (var agent in m_Agents)
             {
@@ -149,18 +153,9 @@ namespace Unity.MLAgents.Extensions.Teams
             Reset();
         }
 
-        /// <summary>
-        /// End Episode for all agents under this TeamManager.
-        /// </summary>
-        public virtual void OnTeamEpisodeBegin()
-        {
-
-        }
-
         void Reset()
         {
             m_StepCount = 0;
-            OnTeamEpisodeBegin();
         }
     }
 }

@@ -58,11 +58,11 @@ namespace Unity.MLAgents
             var agentInfoProto = new AgentInfoProto
             {
                 Reward = ai.reward,
-                TeamReward = ai.teamReward,
+                GroupReward = ai.groupReward,
                 MaxStepReached = ai.maxStepReached,
                 Done = ai.done,
                 Id = ai.episodeId,
-                TeamManagerId = ai.teamManagerId,
+                GroupId = ai.groupId,
             };
 
             if (ai.discreteActionMasks != null)
