@@ -366,18 +366,18 @@ def steps_from_proto(
         DecisionSteps(
             decision_obs_list,
             decision_rewards,
-            decision_group_rewards,
             decision_agent_id,
             action_mask,
             decision_group_id,
+            decision_group_rewards,
         ),
         TerminalSteps(
             terminal_obs_list,
             terminal_rewards,
-            terminal_group_rewards,
             max_step,
             terminal_agent_id,
             terminal_group_id,
+            terminal_group_rewards,
         ),
     )
 
