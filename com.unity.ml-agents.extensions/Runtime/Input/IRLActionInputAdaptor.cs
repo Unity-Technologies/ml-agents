@@ -1,4 +1,4 @@
-#if MLA_INPUT_SYSTEM
+#if MLA_INPUT_SYSTEM && UNITY_2019_4_OR_NEWER
 using System;
 using Unity.MLAgents.Actuators;
 using UnityEngine.InputSystem;
@@ -32,4 +32,4 @@ namespace Unity.MLAgents.Extensions.Input
         void WriteToHeuristic(InputAction action, in ActionBuffers actionBuffers);
     }
 }
-#endif // MLA_INPUT_SYSTEM
+#endif // MLA_INPUT_SYSTEM && UNITY_2019_4_OR_NEWER

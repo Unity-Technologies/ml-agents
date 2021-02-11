@@ -1,4 +1,4 @@
-#if MLA_INPUT_SYSTEM
+#if MLA_INPUT_SYSTEM && UNITY_2019_4_OR_NEWER
 using UnityEngine.InputSystem;
 
 namespace Unity.MLAgents.Extensions.Input
@@ -22,4 +22,4 @@ namespace Unity.MLAgents.Extensions.Input
         InputActionAsset GetInputActionAsset();
     }
 }
-#endif // MLA_INPUT_SYSTEM
+#endif // MLA_INPUT_SYSTEM && UNITY_2019_4_OR_NEWER
