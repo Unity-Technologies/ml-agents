@@ -138,6 +138,13 @@ class MemoryModule(torch.nn.Module):
         """
         pass
 
+    @abc.abstractproperty
+    def output_size(self) -> int:
+        """
+        Size of output per timestep of this memory module.
+        """
+        pass
+
     @abc.abstractmethod
     def forward(
         self, input_tensor: torch.Tensor, memories: torch.Tensor
@@ -221,7 +228,7 @@ class GRU(MemoryModule):
         super().__init__()
         # We set hidden size to half of memory_size since the initial memory
         # will be divided between the hidden state and initial cell state.
-        self.hidden_size = memory_size // 2
+        self.hidden_size = memory_size
         self.gru = gru_layer(
             input_size,
             self.hidden_size,
@@ -234,6 +241,10 @@ class GRU(MemoryModule):
 
     @property
     def memory_size(self) -> int:
+        return self.hidden_size
+
+    @property
+    def output_size(self) -> int:
         return self.hidden_size
 
     def forward(
@@ -276,6 +287,10 @@ class LSTM(MemoryModule):
     @property
     def memory_size(self) -> int:
         return 2 * self.hidden_size
+
+    @property
+    def output_size(self) -> int:
+        return self.hidden_size
 
     def forward(
         self, input_tensor: torch.Tensor, memories: torch.Tensor

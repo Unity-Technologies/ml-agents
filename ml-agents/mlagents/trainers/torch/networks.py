@@ -38,7 +38,7 @@ class NetworkBody(nn.Module):
     ):
         super().__init__()
         self.normalize = network_settings.normalize
-        self.use_lstm = network_settings.memory is not None
+        self.use_memory = network_settings.memory is not None
         self.h_size = network_settings.hidden_units
         self.m_size = (
             network_settings.memory.memory_size
@@ -79,10 +79,10 @@ class NetworkBody(nn.Module):
             total_enc_size, network_settings.num_layers, self.h_size
         )
 
-        if self.use_lstm:
-            self.lstm = GRU(self.h_size, self.m_size)
+        if self.use_memory:
+            self.memory = GRU(self.h_size, self.m_size)
         else:
-            self.lstm = None  # type: ignore
+            self.memory = None  # type: ignore
 
     def update_normalization(self, buffer: AgentBuffer) -> None:
         obs = ObsUtil.from_buffer(buffer, len(self.processors))
@@ -98,7 +98,7 @@ class NetworkBody(nn.Module):
 
     @property
     def memory_size(self) -> int:
-        return self.lstm.memory_size if self.use_lstm else 0
+        return self.memory.memory_size if self.use_memory else 0
 
     def forward(
         self,
@@ -148,11 +148,11 @@ class NetworkBody(nn.Module):
             encoded_self = torch.cat([encoded_self, actions], dim=1)
         encoding = self.linear_encoder(encoded_self)
 
-        if self.use_lstm:
+        if self.use_memory:
             # Resize to (batch, sequence length, encoding size)
             encoding = encoding.reshape([-1, sequence_length, self.h_size])
-            encoding, memories = self.lstm(encoding, memories)
-            encoding = encoding.reshape([-1, self.lstm.hidden_size])
+            encoding, memories = self.memory(encoding, memories)
+            encoding = encoding.reshape([-1, self.memory.output_size])
         return encoding, memories
 
 
@@ -171,8 +171,8 @@ class ValueNetwork(nn.Module):
         self.network_body = NetworkBody(
             observation_specs, network_settings, encoded_act_size=encoded_act_size
         )
-        if network_settings.memory is not None:
-            encoding_size = network_settings.memory.memory_size // 2
+        if self.network_body.memory is not None:
+            encoding_size = self.network_body.memory.output_size
         else:
             encoding_size = network_settings.hidden_units
         self.value_heads = ValueHeads(stream_names, encoding_size, outputs_per_stream)
@@ -322,8 +322,8 @@ class SimpleActor(nn.Module, Actor):
             requires_grad=False,
         )
         self.network_body = NetworkBody(observation_specs, network_settings)
-        if network_settings.memory is not None:
-            self.encoding_size = network_settings.memory.memory_size // 2
+        if self.network_body.memory is not None:
+            self.encoding_size = self.network_body.memory.output_size
         else:
             self.encoding_size = network_settings.hidden_units
         self.memory_size_vector = torch.nn.Parameter(
