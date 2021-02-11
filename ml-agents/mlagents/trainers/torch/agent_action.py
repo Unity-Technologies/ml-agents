@@ -112,7 +112,7 @@ class AgentAction(NamedTuple):
     @staticmethod
     def _from_team_dict(
         buff: Dict[str, np.ndarray], cont_action_key: str, disc_action_key: str
-    ):
+    ) -> List["AgentAction"]:
         continuous_tensors: List[torch.Tensor] = []
         discrete_tensors: List[torch.Tensor] = []  # type: ignore
         if cont_action_key in buff:

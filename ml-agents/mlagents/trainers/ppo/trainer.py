@@ -167,7 +167,7 @@ class PPOTrainer(RLTrainer):
             int(self.hyperparameters.batch_size / self.policy.sequence_length), 1
         )
 
-        advantages = self.update_buffer["advantages"].get_batch()
+        advantages = np.array(self.update_buffer["advantages"].get_batch())
         self.update_buffer["advantages"].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10)
         )

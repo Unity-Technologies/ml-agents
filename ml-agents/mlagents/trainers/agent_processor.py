@@ -147,7 +147,7 @@ class AgentProcessor:
         stored_decision_step, idx = self.last_step_result.get(global_id, (None, None))
         stored_take_action_outputs = self.last_take_action_outputs.get(global_id, None)
         if stored_decision_step is not None and stored_take_action_outputs is not None:
-            if step.team_manager_id > 0:
+            if step.group_id > 0:
                 stored_actions = stored_take_action_outputs["action"]
                 action_tuple = ActionTuple(
                     continuous=stored_actions.continuous[idx],
@@ -159,8 +159,8 @@ class AgentProcessor:
                     action=action_tuple,
                     done=isinstance(step, TerminalStep),
                 )
-                self.group_status[step.team_manager_id][global_id] = group_status
-                self.current_group_obs[step.team_manager_id][global_id] = step.obs
+                self.group_status[step.group_id][global_id] = group_status
+                self.current_group_obs[step.group_id][global_id] = step.obs
 
     def _clear_teammate_obs(self, global_id: str) -> None:
         self._delete_in_nested_dict(self.current_group_obs, global_id)
@@ -208,7 +208,7 @@ class AgentProcessor:
 
             # Assemble teammate_obs. If none saved, then it will be an empty list.
             group_statuses = []
-            for _id, _obs in self.group_status[step.team_manager_id].items():
+            for _id, _obs in self.group_status[step.group_id].items():
                 if _id != global_id:
                     group_statuses.append(_obs)
 
@@ -238,7 +238,7 @@ class AgentProcessor:
             ):
                 next_obs = step.obs
                 next_group_obs = []
-                for _id, _exp in self.current_group_obs[step.team_manager_id].items():
+                for _id, _exp in self.current_group_obs[step.group_id].items():
                     if _id != global_id:
                         next_group_obs.append(_exp)
 
