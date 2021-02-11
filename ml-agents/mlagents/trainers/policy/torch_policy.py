@@ -10,7 +10,7 @@ from mlagents_envs.base_env import DecisionSteps, BehaviorSpec
 from mlagents_envs.timers import timed
 
 from mlagents.trainers.settings import TrainerSettings
-from mlagents.trainers.torch.networks import SimpleActor, GlobalSteps
+from mlagents.trainers.torch.networks import SimpleActor, SharedActorCritic, GlobalSteps
 
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.buffer import AgentBuffer
@@ -61,13 +61,30 @@ class TorchPolicy(Policy):
             "Losses/Value Loss": "value_loss",
             "Losses/Policy Loss": "policy_loss",
         }
-        self.actor = SimpleActor(
-            observation_specs=self.behavior_spec.observation_specs,
-            network_settings=trainer_settings.network_settings,
-            action_spec=behavior_spec.action_spec,
-            conditional_sigma=self.condition_sigma_on_obs,
-            tanh_squash=tanh_squash,
-        )
+        if separate_critic:
+            self.actor = SimpleActor(
+                observation_specs=self.behavior_spec.observation_specs,
+                network_settings=trainer_settings.network_settings,
+                action_spec=behavior_spec.action_spec,
+                conditional_sigma=self.condition_sigma_on_obs,
+                tanh_squash=tanh_squash,
+            )
+            self.shared_critic = False
+        else:
+            reward_signal_configs = trainer_settings.reward_signals
+            reward_signal_names = [
+                key.value for key, _ in reward_signal_configs.items()
+            ]
+            self.actor = SharedActorCritic(
+                observation_specs=self.behavior_spec.observation_specs,
+                network_settings=trainer_settings.network_settings,
+                action_spec=behavior_spec.action_spec,
+                stream_names=reward_signal_names,
+                conditional_sigma=self.condition_sigma_on_obs,
+                tanh_squash=tanh_squash,
+            )
+            self.shared_critic = False
+
         # Save the m_size needed for export
         self._export_m_size = self.m_size
         # m_size needed for training is determined by network, not trainer settings

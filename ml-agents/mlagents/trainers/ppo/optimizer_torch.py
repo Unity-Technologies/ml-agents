@@ -29,11 +29,14 @@ class TorchPPOOptimizer(TorchOptimizer):
         reward_signal_configs = trainer_settings.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
 
-        self.value_net = ValueNetwork(
-            reward_signal_names,
-            policy.behavior_spec.observation_specs,
-            network_settings=trainer_settings.network_settings,
-        )
+        if policy.shared_critic:
+            self.value_net = policy.actor
+        else:
+            self.value_net = ValueNetwork(
+                reward_signal_names,
+                policy.behavior_spec.observation_specs,
+                network_settings=trainer_settings.network_settings,
+            )
 
         params = list(self.policy.actor.parameters()) + list(
             self.value_net.parameters()

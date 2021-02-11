@@ -109,12 +109,14 @@ class TorchSACOptimizer(TorchOptimizer):
         super().__init__(policy, trainer_params)
         reward_signal_configs = trainer_params.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
-
-        self.value_network = ValueNetwork(
-            reward_signal_names,
-            policy.behavior_spec.observation_specs,
-            policy.network_settings,
-        )
+        if policy.shared_critic:
+            self.value_network = policy.actor
+        else:
+            self.value_network = ValueNetwork(
+                reward_signal_names,
+                policy.behavior_spec.observation_specs,
+                policy.network_settings,
+            )
 
         hyperparameters: SACSettings = cast(SACSettings, trainer_params.hyperparameters)
         self.tau = hyperparameters.tau
