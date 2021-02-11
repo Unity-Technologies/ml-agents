@@ -7,7 +7,7 @@ using UnityEngine.Scripting;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-namespace Unity.MLAgents.Extensions.Runtime.Input.Composites
+namespace Unity.MLAgents.Extensions.Input.Composites
 {
     /// <summary>
     /// Custom binding for reading float values from an <see cref="InputControl{Single}"/>.

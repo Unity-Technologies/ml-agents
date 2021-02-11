@@ -2,7 +2,7 @@
 using System;
 using UnityEngine.Scripting;
 
-namespace Unity.MLAgents.Extensions.Runtime.Input.Composites
+namespace Unity.MLAgents.Extensions.Input.Composites
 {
     /// <summary>
     /// Class that loads custom <see cref="UnityEngine.InputSystem.InputBindingComposite"/>s.

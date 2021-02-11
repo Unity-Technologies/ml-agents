@@ -53,6 +53,7 @@
   },
   "testables": [
     "com.unity.ml-agents",
-    "com.unity.ml-agents.extensions"
+    "com.unity.ml-agents.extensions",
+    "com.unity.inputsystem"
   ]
 }

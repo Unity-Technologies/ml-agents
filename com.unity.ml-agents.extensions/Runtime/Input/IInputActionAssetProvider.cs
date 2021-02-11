@@ -1,7 +1,7 @@
 #if MLA_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 
-namespace Unity.MLAgents.Extensions.Runtime.Input
+namespace Unity.MLAgents.Extensions.Input
 {
     /// <summary>
     /// Implement this interface if you are listening to C# events from the generated C# class from the

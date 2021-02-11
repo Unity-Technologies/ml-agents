@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 
-namespace Unity.MLAgents.Extensions.Runtime.Input
+namespace Unity.MLAgents.Extensions.Input
 {
     /// <summary>
     /// Translates data from any control that extends from <see cref="InputControl{Vector2}"/>.

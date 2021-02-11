@@ -2,16 +2,15 @@
 using System;
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Extensions.Runtime.Input.Composites;
+using Unity.MLAgents.Extensions.Input.Composites;
 using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.Layouts;
-using UnityEngine.InputSystem.Utilities;
 
-namespace Unity.MLAgents.Extensions.Runtime.Input
+namespace Unity.MLAgents.Extensions.Input
 {
     /// <summary>
     /// Component class that handles the parsing of the <see cref="InputActionAsset"/> and translates that into
@@ -144,8 +143,8 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
         }
 
         /// <summary>
-        /// This method creates a control scheme we can add our device to in order for it to be discovered by
-        /// the <see cref="InputSystem"/>.
+        /// This method creates a control scheme and adds it to the <see cref="InputActionAsset"/> passed in so
+        /// we can add our device to in order for it to be discovered by the <see cref="InputSystem"/>.
         /// </summary>
         /// <param name="asset">The <see cref="InputAction"/> to add the <see cref="InputControlScheme"/> to.</param>
         /// <param name="defaultMap">The <see cref="InputActionMap"/> to pull
@@ -271,7 +270,7 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
                 {
                     // search for a child of the composite so we can get the groups
                     // this is not technically correct as each binding can have different groups
-                    InputBinding child = action.bindings[1];
+                    InputBinding? child = null;
                     for (var i = 1; i < action.bindings.Count; i++)
                     {
                         var candidate = action.bindings[i];
@@ -284,11 +283,17 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
                         break;
 
                     }
+
+                    var groups = string.Empty;
+                    if (child != null)
+                    {
+                        groups = child.Value.groups;
+                    }
                     var compositeType = controlTypeToCompositeType[action.expectedControlType];
                     action.AddCompositeBinding(compositeType)
                     .With(action.expectedControlType,
                         path,
-                        $"{child.groups}{InputBinding.Separator}{mlAgentsControlSchemeName}");
+                        $"{groups}{InputBinding.Separator}{mlAgentsControlSchemeName}");
                 }
                 else
                 {
@@ -327,18 +332,18 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             if (m_PlayerInput == null)
             {
                 m_PlayerInput = GetComponent<PlayerInput>();
-                Assert.IsNotNull(m_PlayerInput);
+                Assert.IsNotNull(m_PlayerInput, "PlayerInput component could not be found on this GameObject.");
                 if (m_InputAsset == null)
                 {
                     m_InputAsset = m_PlayerInput.actions;
                 }
-                Assert.IsNotNull(m_InputAsset);
+                Assert.IsNotNull(m_InputAsset, "An InputActionAsset could not be found on IInputActionAssetProvider or PlayerInput.");
             }
 
             if (m_BehaviorParameters == null)
             {
                 m_BehaviorParameters = GetComponent<BehaviorParameters>();
-                Assert.IsNotNull(m_BehaviorParameters);
+                Assert.IsNotNull(m_BehaviorParameters, "BehaviorParameters were not on the current GameObject.");
                 m_LayoutName = mlAgentsLayoutName + m_BehaviorParameters.BehaviorName;
                 m_InterfaceName = mlAgentsDeviceName + m_BehaviorParameters.BehaviorName;
             }
@@ -357,7 +362,12 @@ namespace Unity.MLAgents.Extensions.Runtime.Input
             {
                 InputSystem.RemoveDevice(m_Device);
             }
-            m_InputAsset.RemoveControlScheme(mlAgentsControlSchemeName);
+
+            if (m_InputAsset != null
+                && m_InputAsset.FindControlSchemeIndex(mlAgentsControlSchemeName) != -1)
+            {
+                m_InputAsset.RemoveControlScheme(mlAgentsControlSchemeName);
+            }
             m_InputAsset = null;
             m_PlayerInput = null;
             m_BehaviorParameters = null;

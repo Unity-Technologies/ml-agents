@@ -3,7 +3,7 @@ using System;
 using Unity.MLAgents.Actuators;
 using UnityEngine.InputSystem;
 
-namespace Unity.MLAgents.Extensions.Runtime.Input
+namespace Unity.MLAgents.Extensions.Input
 {
     public interface IRLActionInputAdaptor
     {

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 
-namespace Unity.MLAgents.Extensions.Runtime.Input
+namespace Unity.MLAgents.Extensions.Input
 {
     /// <summary>
     /// Class that translates data between the a <see cref="UnityEngine.InputSystem.Controls.ButtonControl"/> and

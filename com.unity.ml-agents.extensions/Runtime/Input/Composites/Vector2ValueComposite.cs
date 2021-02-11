@@ -7,7 +7,7 @@ using UnityEngine.Scripting;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-namespace Unity.MLAgents.Extensions.Runtime.Input.Composites
+namespace Unity.MLAgents.Extensions.Input.Composites
 {
     /// <summary>
     /// Custom composite class for reading values from <see cref="InputControl{Vector2}"/>s.

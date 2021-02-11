@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Unity.MLAgents.Policies;
 using UnityEngine;
 
 namespace Unity.MLAgents.Actuators
