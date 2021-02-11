@@ -33,7 +33,9 @@ public class DodgeBallAgent : Agent
     private Rigidbody m_AgentRb;
 
 
-    public List<Transform> ActiveBallsList = new List<Transform>();
+    public Queue<DodgeBall> ActiveBallsQueue = new Queue<DodgeBall>();
+    // public List<DodgeBall> ActiveBallsList = new List<DodgeBall>();
+    public List<Transform> BallUIList = new List<Transform>();
     // Start is called before the first frame update
     public override void Initialize()
     {
@@ -70,10 +72,10 @@ public class DodgeBallAgent : Agent
     void SetActiveBalls(int numOfBalls)
     {
         int i = 0;
-        foreach (var item in ActiveBallsList)
+        foreach (var item in BallUIList)
         {
             var active = i < numOfBalls;
-            ActiveBallsList[i].gameObject.SetActive(active);
+            BallUIList[i].gameObject.SetActive(active);
             i++;
         }
         // for (int i = 0; i < numOfBalls; i++)
@@ -163,8 +165,23 @@ public class DodgeBallAgent : Agent
         // }
         if (input.shootPressed && currentNumberOfBalls > 0)
         {
-            ThrowController.Shoot();
+            // ThrowController.Shoot();
+            // for (int i = 0; i < ActiveBallsList.Count; i++)
+            // {
+            //
+            // }
+            ThrowController.Throw(ActiveBallsQueue.Peek());
+            ActiveBallsQueue.Dequeue();
+            // foreach (var item in ActiveBallsList)
+            // {
+            //     if (!item.gameObject.activeInHierarchy)
+            //     {
+            //         ThrowController.Throw(item);
+            //         break;
+            //     }
+            // }
             currentNumberOfBalls--;
+            SetActiveBalls(currentNumberOfBalls);
         }
 
 
@@ -272,14 +289,34 @@ public class DodgeBallAgent : Agent
 
     private void OnCollisionEnter(Collision col)
     {
-
-        if (col.transform.CompareTag("dodgeBall"))
+        DodgeBall db = col.gameObject.GetComponent<DodgeBall>();
+        if (!db)
         {
-            if (currentNumberOfBalls < 3)
+            return;
+        }
+
+
+        if (db.inPlay) //HIT BY LIVE BALL
+        {
+
+        }
+        else //TRY TO PICK IT UP
+        {
+            if (currentNumberOfBalls < 4)
             {
+                //update counter
                 currentNumberOfBalls++;
+                SetActiveBalls(currentNumberOfBalls);
+
+                //add to our inventory
+                ActiveBallsQueue.Enqueue(db);
+                db.gameObject.SetActive(false);
+                // ActiveBallsList.Add(db);
             }
         }
+        // if (col.transform.CompareTag("dodgeBall"))
+        // {
+        // }
     }
 
 

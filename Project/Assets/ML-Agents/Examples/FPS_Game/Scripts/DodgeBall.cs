@@ -8,6 +8,8 @@ public class DodgeBall : MonoBehaviour
 
     public bool inPlay;
 
+    [HideInInspector]
+    public Rigidbody rb;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,7 +19,8 @@ public class DodgeBall : MonoBehaviour
 
     private void OnEnable()
     {
-        inPlay = true;
+        inPlay = false;
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -26,9 +29,13 @@ public class DodgeBall : MonoBehaviour
 
     }
 
-    private void OnCollisionEnter(Collision other)
+    private void OnCollisionEnter(Collision col)
     {
         //IF NOT MY TEAM
         //PLAYER GOES TO TIMEOUT
+        if (!col.gameObject.CompareTag("agent"))
+        {
+            inPlay = false;
+        }
     }
 }

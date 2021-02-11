@@ -241,6 +241,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3911029810215854904}
   - component: {fileID: 4341296992446652170}
+  - component: {fileID: 4188137103012002061}
   m_Layer: 10
   m_Name: Projectile - BALL
   m_TagString: dodgeBall
@@ -281,6 +282,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 2
+--- !u!114 &4188137103012002061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3911029810215854908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8b2e05bf50164776a329a7dd22be653, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inPlay: 0
+  rb: {fileID: 0}
 --- !u!1 &6461313653667732308
 GameObject:
   m_ObjectHideFlags: 0

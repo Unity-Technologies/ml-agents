@@ -91,18 +91,18 @@ public class ThrowBall : MonoBehaviour
         initialized = true;
     }
 
-    void Update()
-    {
-        if (!AllowKeyboardInput)
-        {
-            return;
-        }
-        if (Input.GetKeyDown(shootKey))
-        {
-            Shoot();
-            //            ShootQuantity(1);
-        }
-    }
+    // void Update()
+    // {
+    //     if (!AllowKeyboardInput)
+    //     {
+    //         return;
+    //     }
+    //     if (Input.GetKeyDown(shootKey))
+    //     {
+    //         Shoot();
+    //         //            ShootQuantity(1);
+    //     }
+    // }
 
     // void FixedUpdate()
     // {
@@ -134,27 +134,32 @@ public class ThrowBall : MonoBehaviour
     //        }
     //    }
 
-    public void Shoot()
+    public void Throw(DodgeBall db)
     {
-        if (coolDownWait || !gameObject.activeSelf)
-        {
-            return;
-        }
-
-        // shootTimer = 0; //reset timer
-
-        //shoot first available projectile in the pool
-        foreach (var item in projectilePoolList)
-        {
-            if (!item.gameObject.activeInHierarchy)
-            {
-                FireProjectile(item);
-                // FireProjectile(item.rb);
-                break;
-            }
-        }
-
+        db.inPlay = true;
+        FireProjectile(db.rb);
     }
+
+    // public void Shoot()
+    // {
+    //     if (coolDownWait || !gameObject.activeSelf)
+    //     {
+    //         return;
+    //     }
+    //
+    //     // shootTimer = 0; //reset timer
+    //
+    //     //shoot first available projectile in the pool
+    //     foreach (var item in projectilePoolList)
+    //     {
+    //         if (!item.gameObject.activeInHierarchy)
+    //         {
+    //             FireProjectile(item);
+    //             // FireProjectile(item.rb);
+    //             break;
+    //         }
+    //     }
+    // }
 
     public void FireProjectile(Rigidbody rb)
     {
