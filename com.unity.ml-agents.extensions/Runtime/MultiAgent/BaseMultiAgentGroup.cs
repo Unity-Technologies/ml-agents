@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Unity.MLAgents.Extensions.MultiAgent
 {
+    /// <summary>
+    /// A base class implementation of MultiAgentGroup.
+    /// </summary>
     public class BaseMultiAgentGroup : IMultiAgentGroup, IDisposable
     {
         int m_StepCount;
@@ -13,19 +16,19 @@ namespace Unity.MLAgents.Extensions.MultiAgent
 
         public BaseMultiAgentGroup()
         {
-            Academy.Instance.PostAgentAct += _ManagerStep;
+            Academy.Instance.PostAgentAct += _GroupStep;
         }
 
         public void Dispose()
         {
-            Academy.Instance.PostAgentAct -= _ManagerStep;
+            Academy.Instance.PostAgentAct -= _GroupStep;
             while (m_Agents.Count > 0)
             {
                 UnregisterAgent(m_Agents[0]);
             }
         }
 
-        void _ManagerStep()
+        void _GroupStep()
         {
             m_StepCount += 1;
             if ((m_StepCount >= m_GroupMaxStep) && (m_GroupMaxStep > 0))
@@ -68,12 +71,6 @@ namespace Unity.MLAgents.Extensions.MultiAgent
             }
         }
 
-        /// <summary>
-        /// Get the ID of the MultiAgentGroup.
-        /// </summary>
-        /// <returns>
-        /// MultiAgentGroup ID.
-        /// </returns>
         public int GetId()
         {
             return m_Id;
