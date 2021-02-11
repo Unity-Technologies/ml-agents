@@ -15,7 +15,7 @@ from mlagents_envs.side_channel.stats_side_channel import (
     StatsAggregationMethod,
     EnvironmentStats,
 )
-from mlagents.trainers.trajectory import TeammateStatus, Trajectory, AgentExperience
+from mlagents.trainers.trajectory import GroupmateStatus, Trajectory, AgentExperience
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo, ActionInfoOutputs
 from mlagents.trainers.torch.action_log_probs import LogProbsTuple
@@ -51,13 +51,13 @@ class AgentProcessor:
         self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
         self.last_step_result: Dict[str, Tuple[DecisionStep, int]] = {}
         # current_group_obs is used to collect the last seen obs of all the agents in the same group,
-        # and assemble the collab_obs.
+        # and assemble the group obs.
         self.current_group_obs: Dict[str, Dict[str, List[np.ndarray]]] = defaultdict(
             lambda: defaultdict(list)
         )
         # last_group_obs is used to collect the last seen obs of all the agents in the same group,
-        # and assemble the collab_obs.
-        self.teammate_status: Dict[str, Dict[str, TeammateStatus]] = defaultdict(
+        # and assemble the group obs.
+        self.group_status: Dict[str, Dict[str, GroupmateStatus]] = defaultdict(
             lambda: defaultdict(None)
         )
         # last_take_action_outputs stores the action a_t taken before the current observation s_(t+1), while
@@ -153,18 +153,18 @@ class AgentProcessor:
                     continuous=stored_actions.continuous[idx],
                     discrete=stored_actions.discrete[idx],
                 )
-                teammate_status = TeammateStatus(
+                group_status = GroupmateStatus(
                     obs=stored_decision_step.obs,
                     reward=step.reward,
                     action=action_tuple,
                     done=isinstance(step, TerminalStep),
                 )
-                self.teammate_status[step.team_manager_id][global_id] = teammate_status
+                self.group_status[step.team_manager_id][global_id] = group_status
                 self.current_group_obs[step.team_manager_id][global_id] = step.obs
 
     def _clear_teammate_obs(self, global_id: str) -> None:
         self._delete_in_nested_dict(self.current_group_obs, global_id)
-        self._delete_in_nested_dict(self.teammate_status, global_id)
+        self._delete_in_nested_dict(self.group_status, global_id)
 
     def _delete_in_nested_dict(self, nested_dict, key):
         for _manager_id in list(nested_dict.keys()):
@@ -207,14 +207,14 @@ class AgentProcessor:
             prev_action = self.policy.retrieve_previous_action([global_id])[0, :]
 
             # Assemble teammate_obs. If none saved, then it will be an empty list.
-            teammate_statuses = []
-            for _id, _obs in self.teammate_status[step.team_manager_id].items():
+            group_statuses = []
+            for _id, _obs in self.group_status[step.team_manager_id].items():
                 if _id != global_id:
-                    teammate_statuses.append(_obs)
+                    group_statuses.append(_obs)
 
             experience = AgentExperience(
                 obs=obs,
-                teammate_status=teammate_statuses,
+                group_status=group_statuses,
                 reward=step.reward,
                 done=done,
                 action=action_tuple,
@@ -236,16 +236,16 @@ class AgentProcessor:
                 or terminated
             ):
                 next_obs = step.obs
-                next_collab_obs = []
+                next_group_obs = []
                 for _id, _exp in self.current_group_obs[step.team_manager_id].items():
                     if _id != global_id:
-                        next_collab_obs.append(_exp)
+                        next_group_obs.append(_exp)
 
                 trajectory = Trajectory(
                     steps=self.experience_buffers[global_id],
                     agent_id=global_id,
                     next_obs=next_obs,
-                    next_collab_obs=next_collab_obs,
+                    next_group_obs=next_group_obs,
                     behavior_id=self.behavior_id,
                 )
                 for traj_queue in self.trajectory_queues:

@@ -9,7 +9,7 @@ from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 
 
 @attr.s(auto_attribs=True)
-class TeammateStatus:
+class GroupmateStatus:
     """
     Stores data related to an agent's teammate.
     """
@@ -23,7 +23,7 @@ class TeammateStatus:
 @attr.s(auto_attribs=True)
 class AgentExperience:
     obs: List[np.ndarray]
-    teammate_status: List[TeammateStatus]
+    group_status: List[GroupmateStatus]
     reward: float
     done: bool
     action: ActionTuple
@@ -70,20 +70,20 @@ class ObsUtil:
         return result
 
 
-class TeamObsUtil:
+class GroupObsUtil:
     @staticmethod
     def get_name_at(index: int) -> str:
         """
         returns the name of the observation given the index of the observation
         """
-        return f"team_obs_{index}"
+        return f"group_obs_{index}"
 
     @staticmethod
     def get_name_at_next(index: int) -> str:
         """
         returns the name of the next team observation given the index of the observation
         """
-        return f"team_obs_next_{index}"
+        return f"group_obs_next_{index}"
 
     @staticmethod
     def _padded_time_to_batch(
@@ -97,9 +97,9 @@ class TeamObsUtil:
         """
         # Find the first observation. This should be USUALLY O(1)
         obs_shape = None
-        for _team_obs in agent_buffer_field:
-            if _team_obs:
-                obs_shape = _team_obs[0].shape
+        for _group_obs in agent_buffer_field:
+            if _group_obs:
+                obs_shape = _group_obs[0].shape
                 break
         # If there were no critic obs at all
         if obs_shape is None:
@@ -130,11 +130,11 @@ class TeamObsUtil:
         separated_obs: List[np.array] = []
         for i in range(num_obs):
             separated_obs.append(
-                TeamObsUtil._padded_time_to_batch(batch[TeamObsUtil.get_name_at(i)])
+                GroupObsUtil._padded_time_to_batch(batch[GroupObsUtil.get_name_at(i)])
             )
         # separated_obs contains a List(num_obs) of Lists(num_agents), we want to flip
         # that and get a List(num_agents) of Lists(num_obs)
-        result = TeamObsUtil._transpose_list_of_lists(separated_obs)
+        result = GroupObsUtil._transpose_list_of_lists(separated_obs)
         return result
 
     @staticmethod
@@ -145,13 +145,13 @@ class TeamObsUtil:
         separated_obs: List[np.array] = []
         for i in range(num_obs):
             separated_obs.append(
-                TeamObsUtil._padded_time_to_batch(
-                    batch[TeamObsUtil.get_name_at_next(i)]
+                GroupObsUtil._padded_time_to_batch(
+                    batch[GroupObsUtil.get_name_at_next(i)]
                 )
             )
         # separated_obs contains a List(num_obs) of Lists(num_agents), we want to flip
         # that and get a List(num_agents) of Lists(num_obs)
-        result = TeamObsUtil._transpose_list_of_lists(separated_obs)
+        result = GroupObsUtil._transpose_list_of_lists(separated_obs)
         return result
 
 
@@ -160,7 +160,7 @@ class Trajectory(NamedTuple):
     next_obs: List[
         np.ndarray
     ]  # Observation following the trajectory, for bootstrapping
-    next_collab_obs: List[List[np.ndarray]]
+    next_group_obs: List[List[np.ndarray]]
     agent_id: str
     behavior_id: str
 
@@ -192,10 +192,10 @@ class Trajectory(NamedTuple):
                 [],
                 [],
             )
-            for teammate_status in exp.teammate_status:
-                teammate_rewards.append(teammate_status.reward)
-                teammate_continuous_actions.append(teammate_status.action.continuous)
-                teammate_discrete_actions.append(teammate_status.action.discrete)
+            for group_status in exp.group_status:
+                teammate_rewards.append(group_status.reward)
+                teammate_continuous_actions.append(group_status.action.continuous)
+                teammate_discrete_actions.append(group_status.action.discrete)
 
             # Team actions
             agent_buffer_trajectory["team_continuous_action"].append(
@@ -215,13 +215,13 @@ class Trajectory(NamedTuple):
             teammate_disc_next_actions = []
             if not is_last_step:
                 next_exp = self.steps[step + 1]
-                for teammate_status in next_exp.teammate_status:
-                    teammate_cont_next_actions.append(teammate_status.action.continuous)
-                    teammate_disc_next_actions.append(teammate_status.action.discrete)
+                for group_status in next_exp.group_status:
+                    teammate_cont_next_actions.append(group_status.action.continuous)
+                    teammate_disc_next_actions.append(group_status.action.discrete)
             else:
-                for teammate_status in exp.teammate_status:
-                    teammate_cont_next_actions.append(teammate_status.action.continuous)
-                    teammate_disc_next_actions.append(teammate_status.action.discrete)
+                for group_status in exp.group_status:
+                    teammate_cont_next_actions.append(group_status.action.continuous)
+                    teammate_disc_next_actions.append(group_status.action.discrete)
 
             agent_buffer_trajectory["team_next_continuous_action"].append(
                 teammate_cont_next_actions
@@ -231,23 +231,25 @@ class Trajectory(NamedTuple):
             )
 
             for i in range(num_obs):
-                ith_team_obs = []
-                for _teammate_status in exp.teammate_status:
+                ith_group_obs = []
+                for _group_status in exp.group_status:
                     # Assume teammates have same obs space
-                    ith_team_obs.append(_teammate_status.obs[i])
-                agent_buffer_trajectory[TeamObsUtil.get_name_at(i)].append(ith_team_obs)
+                    ith_group_obs.append(_group_status.obs[i])
+                agent_buffer_trajectory[GroupObsUtil.get_name_at(i)].append(
+                    ith_group_obs
+                )
 
-                ith_team_obs_next = []
+                ith_group_obs_next = []
                 if is_last_step:
-                    for _obs in self.next_collab_obs:
-                        ith_team_obs_next.append(_obs[i])
+                    for _obs in self.next_group_obs:
+                        ith_group_obs_next.append(_obs[i])
                 else:
-                    next_teammate_status = self.steps[step + 1].teammate_status
-                    for _teammate_status in next_teammate_status:
+                    next_group_status = self.steps[step + 1].group_status
+                    for _group_status in next_group_status:
                         # Assume teammates have same obs space
-                        ith_team_obs_next.append(_teammate_status.obs[i])
-                agent_buffer_trajectory[TeamObsUtil.get_name_at_next(i)].append(
-                    ith_team_obs_next
+                        ith_group_obs_next.append(_group_status.obs[i])
+                agent_buffer_trajectory[GroupObsUtil.get_name_at_next(i)].append(
+                    ith_group_obs_next
                 )
 
             if exp.memory is not None:
@@ -256,7 +258,7 @@ class Trajectory(NamedTuple):
             agent_buffer_trajectory["masks"].append(1.0)
             agent_buffer_trajectory["done"].append(exp.done)
             agent_buffer_trajectory["team_dones"].append(
-                [_status.done for _status in exp.teammate_status]
+                [_status.done for _status in exp.group_status]
             )
 
             # Adds the log prob and action of continuous/discrete separately
@@ -314,7 +316,7 @@ class Trajectory(NamedTuple):
         Returns true if all teammates are done at the end of the trajectory.
         Combine with done_reached to check if the whole team is done.
         """
-        return all(_status.done for _status in self.steps[-1].teammate_status)
+        return all(_status.done for _status in self.steps[-1].group_status)
 
     @property
     def interrupted(self) -> bool:
