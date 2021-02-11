@@ -6,7 +6,8 @@
         "Unity.InputSystem.TestFramework",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.Barracuda"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

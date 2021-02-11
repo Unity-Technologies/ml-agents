@@ -66,8 +66,11 @@ namespace Unity.MLAgents.Extensions.Input
 
         internal bool IsInHeuristicMode()
         {
-            return m_BehaviorParameters.BehaviorType == BehaviorType.HeuristicOnly ||
-                     m_BehaviorParameters.BehaviorType == BehaviorType.Default &&
+            if (m_BehaviorParameters.BehaviorType == BehaviorType.HeuristicOnly)
+            {
+                return true;
+            }
+            return m_BehaviorParameters.BehaviorType == BehaviorType.Default &&
                      ReferenceEquals(m_BehaviorParameters.Model, null) &&
                      !Academy.Instance.IsCommunicatorOn;
         }

@@ -21,12 +21,7 @@ namespace Unity.MLAgents.Extensions.Input
         public void QueueInputEventForAction(InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
         {
             var val = actionBuffers.DiscreteActions[0];
-
-            using (StateEvent.From(control.device, out var eventPtr))
-            {
-                control.WriteValueIntoEvent(val, eventPtr);
-                InputSystem.QueueEvent(eventPtr);
-            }
+            InputSystem.QueueDeltaStateEvent(control, val);
         }
 
         /// <inheritdoc cref="IRLActionInputAdaptor.WriteToHeuristic"/>

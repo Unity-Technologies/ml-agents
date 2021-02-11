@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Extensions.Input.Composites;
 using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -27,16 +26,6 @@ namespace Unity.MLAgents.Extensions.Input
         uint m_LocalId;
 
         static uint s_DeviceId;
-
-        /// <summary>
-        /// Mapping of <see cref="InputAction.expectedControlType"/> to a string representing a custom
-        /// <see cref="InputBindingComposite{TValue}"/>.
-        /// </summary>
-        public static Dictionary<string, string> controlTypeToCompositeType = new Dictionary<string, string>
-        {
-            { "Vector2", "Vector2Value" },
-            { "Axis", "AxisValue" }
-        };
 
         /// <summary>
         /// Mapping of <see cref="InputControl"/> types to types of <see cref="IRLActionInputAdaptor"/> concrete classes.
@@ -111,11 +100,6 @@ namespace Unity.MLAgents.Extensions.Input
         {
             // TODO cgoy better way to create ids?
             m_LocalId = s_DeviceId++;
-
-            // RuntimeInitializeOnLoadMethod was not sufficient to have our composites loaded
-            // by the time this method was called.  So this is a workaround to ensure that
-            // our custom composites get registered with the InputSystem.
-            InputCompositeLoader.Init();
 
             FindNeededComponents();
 
@@ -289,10 +273,10 @@ namespace Unity.MLAgents.Extensions.Input
                     {
                         groups = child.Value.groups;
                     }
-                    var compositeType = controlTypeToCompositeType[action.expectedControlType];
-                    action.AddCompositeBinding(compositeType)
-                    .With(action.expectedControlType,
-                        path,
+                    // var compositeType = controlTypeToCompositeType[action.expectedControlType];
+                    action.AddBinding(path,
+                        action.interactions,
+                        action.processors,
                         $"{groups}{InputBinding.Separator}{mlAgentsControlSchemeName}");
                 }
                 else

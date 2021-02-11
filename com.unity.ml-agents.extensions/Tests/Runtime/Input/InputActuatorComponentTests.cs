@@ -1,15 +1,11 @@
 #if MLA_INPUT_TESTS
 using System;
-using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Extensions.Input;
-using Unity.MLAgents.Extensions.Input.Composites;
 using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.TestTools;
-using Object = UnityEngine.Object;
 
 namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
 {
@@ -17,18 +13,15 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
     {
         InputActionAsset m_Asset;
         GameObject m_GameObject;
-        PlayerInput m_playerInput;
+        PlayerInput m_PlayerInput;
         BehaviorParameters m_BehaviorParameters;
         InputActuatorComponent m_ActuatorComponent;
         public override void Setup()
         {
             base.Setup();
-            // guess this needs to happen before anything else.
-            InputSystem.RegisterBindingComposite<Vector2ValueComposite>();
-            InputSystem.RegisterBindingComposite<AxisValueComposite>();
             m_Asset = TestInputActionAsset.GetTestAsset();
             m_GameObject = new GameObject();
-            m_playerInput = m_GameObject.AddComponent<PlayerInput>();
+            m_PlayerInput = m_GameObject.AddComponent<PlayerInput>();
             m_ActuatorComponent = m_GameObject.AddComponent<InputActuatorComponent>();
             m_BehaviorParameters = m_GameObject.AddComponent<BehaviorParameters>();
             m_BehaviorParameters.BehaviorName = "InputTest";
@@ -45,8 +38,8 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
         public void InputActuatorComponentTestCreateActuators()
         {
             // Use the Assert class to test conditions.
-            m_playerInput.actions = m_Asset;
-            m_playerInput.defaultActionMap = m_Asset.actionMaps[0].name;
+            m_PlayerInput.actions = m_Asset;
+            m_PlayerInput.defaultActionMap = m_Asset.actionMaps[0].name;
             var actuators = m_ActuatorComponent.CreateActuators();
             Assert.IsTrue(actuators.Length == 2);
             Assert.IsTrue(actuators[0].ActionSpec.Equals(ActionSpec.MakeContinuous(2)));
@@ -57,8 +50,8 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
         public void InputActuatorComponentTestGenerateActuatorsFromAsset()
         {
             // Use the Assert class to test conditions.
-            m_playerInput.actions = m_Asset;
-            m_playerInput.defaultActionMap = m_Asset.actionMaps[0].name;
+            m_PlayerInput.actions = m_Asset;
+            m_PlayerInput.defaultActionMap = m_Asset.actionMaps[0].name;
             var actuators = InputActuatorComponent.GenerateActionActuatorsFromAsset(
                 m_Asset,
                 "TestLayout",
@@ -74,8 +67,8 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
         public void InputActuatorComponentTestCreateDevice()
         {
             // Use the Assert class to test conditions.
-            m_playerInput.actions = m_Asset;
-            m_playerInput.defaultActionMap = m_Asset.actionMaps[0].name;
+            m_PlayerInput.actions = m_Asset;
+            m_PlayerInput.defaultActionMap = m_Asset.actionMaps[0].name;
 
             // need to call this to load the layout in the input system
             _ = InputActuatorComponent.GenerateActionActuatorsFromAsset(
