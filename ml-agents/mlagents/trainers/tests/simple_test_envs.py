@@ -267,7 +267,9 @@ class MemoryEnvironment(SimpleEnvironment):
         m_group_id = np.array([0], dtype=np.int32)
         m_group_reward = np.array([group_reward], dtype=np.float32)
         action_mask = self._generate_mask()
-        decision_step = DecisionSteps(m_vector_obs, m_reward, m_agent_id, action_mask)
+        decision_step = DecisionSteps(
+            m_vector_obs, m_reward, m_agent_id, action_mask, m_group_id, m_group_reward
+        )
         terminal_step = TerminalSteps.empty(self.behavior_spec)
         if done:
             self.final_rewards[name].append(self.rewards[name])
