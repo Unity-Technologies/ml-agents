@@ -1,6 +1,6 @@
 namespace Unity.MLAgents
 {
-    public interface ITeamManager
+    public interface IMultiAgentGroup
     {
         int GetId();
 

@@ -54,10 +54,10 @@ class DecisionStep(NamedTuple):
 
     obs: List[np.ndarray]
     reward: float
-    team_reward: float
+    group_reward: float
     agent_id: AgentId
     action_mask: Optional[List[np.ndarray]]
-    team_manager_id: int
+    group_id: int
 
 
 class DecisionSteps(Mapping):
@@ -83,15 +83,13 @@ class DecisionSteps(Mapping):
      this simulation step.
     """
 
-    def __init__(
-        self, obs, reward, team_reward, agent_id, action_mask, team_manager_id
-    ):
+    def __init__(self, obs, reward, group_reward, agent_id, action_mask, group_id):
         self.obs: List[np.ndarray] = obs
         self.reward: np.ndarray = reward
-        self.team_reward: np.ndarray = team_reward
+        self.group_reward: np.ndarray = group_reward
         self.agent_id: np.ndarray = agent_id
         self.action_mask: Optional[List[np.ndarray]] = action_mask
-        self.team_manager_id: np.ndarray = team_manager_id
+        self.group_id: np.ndarray = group_id
         self._agent_id_to_index: Optional[Dict[AgentId, int]] = None
 
     @property
@@ -126,14 +124,14 @@ class DecisionSteps(Mapping):
             agent_mask = []
             for mask in self.action_mask:
                 agent_mask.append(mask[agent_index])
-        team_manager_id = self.team_manager_id[agent_index]
+        group_id = self.group_id[agent_index]
         return DecisionStep(
             obs=agent_obs,
             reward=self.reward[agent_index],
-            team_reward=self.team_reward[agent_index],
+            group_reward=self.group_reward[agent_index],
             agent_id=agent_id,
             action_mask=agent_mask,
-            team_manager_id=team_manager_id,
+            group_id=group_id,
         )
 
     def __iter__(self) -> Iterator[Any]:
@@ -151,10 +149,10 @@ class DecisionSteps(Mapping):
         return DecisionSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
-            team_reward=np.zeros(0, dtype=np.float32),
+            group_reward=np.zeros(0, dtype=np.float32),
             agent_id=np.zeros(0, dtype=np.int32),
             action_mask=None,
-            team_manager_id=np.zeros(0, dtype=np.int32),
+            group_id=np.zeros(0, dtype=np.int32),
         )
 
 
@@ -172,10 +170,10 @@ class TerminalStep(NamedTuple):
 
     obs: List[np.ndarray]
     reward: float
-    team_reward: float
+    group_reward: float
     interrupted: bool
     agent_id: AgentId
-    team_manager_id: int
+    group_id: int
 
 
 class TerminalSteps(Mapping):
@@ -196,15 +194,13 @@ class TerminalSteps(Mapping):
      across simulation steps.
     """
 
-    def __init__(
-        self, obs, reward, team_reward, interrupted, agent_id, team_manager_id
-    ):
+    def __init__(self, obs, reward, group_reward, interrupted, agent_id, group_id):
         self.obs: List[np.ndarray] = obs
         self.reward: np.ndarray = reward
-        self.team_reward: np.ndarray = team_reward
+        self.group_reward: np.ndarray = group_reward
         self.interrupted: np.ndarray = interrupted
         self.agent_id: np.ndarray = agent_id
-        self.team_manager_id: np.ndarray = team_manager_id
+        self.group_id: np.ndarray = group_id
         self._agent_id_to_index: Optional[Dict[AgentId, int]] = None
 
     @property
@@ -235,14 +231,14 @@ class TerminalSteps(Mapping):
         agent_obs = []
         for batched_obs in self.obs:
             agent_obs.append(batched_obs[agent_index])
-        team_manager_id = self.team_manager_id[agent_index]
+        group_id = self.group_id[agent_index]
         return TerminalStep(
             obs=agent_obs,
             reward=self.reward[agent_index],
-            team_reward=self.team_reward[agent_index],
+            group_reward=self.group_reward[agent_index],
             interrupted=self.interrupted[agent_index],
             agent_id=agent_id,
-            team_manager_id=team_manager_id,
+            group_id=group_id,
         )
 
     def __iter__(self) -> Iterator[Any]:
@@ -260,10 +256,10 @@ class TerminalSteps(Mapping):
         return TerminalSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
-            team_reward=np.zeros(0, dtype=np.float32),
+            group_reward=np.zeros(0, dtype=np.float32),
             interrupted=np.zeros(0, dtype=np.bool),
             agent_id=np.zeros(0, dtype=np.int32),
-            team_manager_id=np.zeros(0, dtype=np.int32),
+            group_id=np.zeros(0, dtype=np.int32),
         )
 
 
