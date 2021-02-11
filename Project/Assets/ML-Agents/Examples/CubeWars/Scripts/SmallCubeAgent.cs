@@ -66,7 +66,7 @@ public class SmallCubeAgent : Agent
             m_Damage = .05f;
             m_Heal = 0f;
             m_MoveSpeed = 10f;
-            m_TurnSpeed = 200f;
+            m_TurnSpeed = 150f;
             m_Cooldown = .25f;
             m_Splash = 2f;
             m_Range = 25f;
@@ -76,9 +76,9 @@ public class SmallCubeAgent : Agent
             m_RoleObs[2] = 1f;
             m_HitPointsTotal = 1f;
             m_Damage = .02f;
-            m_Heal = .1f;
-            m_MoveSpeed = 6f;
-            m_TurnSpeed = 100f;
+            m_Heal = 0f;
+            m_MoveSpeed = 10f;
+            m_TurnSpeed = 150f;
             m_Cooldown = .4f;
             m_Splash = 2f;
             m_Range = 25f;
@@ -161,10 +161,10 @@ public class SmallCubeAgent : Agent
                 if (hit.collider.gameObject.CompareTag("StrongSmallAgent") || hit.collider.gameObject.CompareTag("WeakSmallAgent"))
                 {
                     hit.collider.gameObject.GetComponent<SmallCubeAgent>().HealAgent(m_Heal);
-                    if (role == Role.Healer)
-                    {
-                        AddReward(.05f);
-                    }
+                    //if (role == Role.Healer)
+                    //{
+                    //    AddReward(.05f);
+                    //}
 
                 }
                 else if (hit.collider.gameObject.CompareTag("StrongLargeAgent") || hit.collider.gameObject.CompareTag("WeakLargeAgent"))
@@ -173,7 +173,7 @@ public class SmallCubeAgent : Agent
 
                     if (role == Role.DPS)
                     {
-                        AddReward(.05f);
+                        AddReward(.2f);
                     }
                 }
             }
@@ -188,10 +188,10 @@ public class SmallCubeAgent : Agent
     {
         if (!m_Dead)
         {
-            if (role == Role.Tank)
-            {
-                AddReward(.05f);
-            }
+            //if (role == Role.Tank)
+            //{
+            //    AddReward(.05f);
+            //}
             m_HitPoints -= damage;
             HealthStatus();
             return m_HitPoints <= 0;

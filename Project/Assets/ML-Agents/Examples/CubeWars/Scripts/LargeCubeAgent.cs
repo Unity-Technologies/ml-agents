@@ -118,7 +118,7 @@ public class LargeCubeAgent : Agent
             var rayDir = 120.0f * myTransform.forward;
             Debug.DrawRay(myTransform.position, rayDir, Color.red, 0f, true);
             RaycastHit hit;
-            if (Physics.SphereCast(transform.position, 10f, rayDir, out hit, 120f))
+            if (Physics.SphereCast(transform.position, 4f, rayDir, out hit, 120f))
             {
                 if (hit.collider.gameObject.CompareTag("StrongSmallAgent") || hit.collider.gameObject.CompareTag("WeakSmallAgent"))
                 {
