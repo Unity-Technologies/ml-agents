@@ -214,7 +214,6 @@ class AgentProcessor:
 
             experience = AgentExperience(
                 obs=obs,
-                group_status=group_statuses,
                 reward=step.reward,
                 done=done,
                 action=action_tuple,
@@ -223,6 +222,8 @@ class AgentProcessor:
                 prev_action=prev_action,
                 interrupted=interrupted,
                 memory=memory,
+                group_status=group_statuses,
+                group_reward=step.group_reward,
             )
             # Add the value outputs if needed
             self.experience_buffers[global_id].append(experience)

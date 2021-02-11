@@ -1,6 +1,5 @@
 from typing import List, NamedTuple
 import itertools
-import attr
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
@@ -8,8 +7,7 @@ from mlagents_envs.base_env import ActionTuple
 from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 
 
-@attr.s(auto_attribs=True)
-class GroupmateStatus:
+class GroupmateStatus(NamedTuple):
     """
     Stores data related to an agent's teammate.
     """
@@ -20,10 +18,8 @@ class GroupmateStatus:
     done: bool
 
 
-@attr.s(auto_attribs=True)
-class AgentExperience:
+class AgentExperience(NamedTuple):
     obs: List[np.ndarray]
-    group_status: List[GroupmateStatus]
     reward: float
     done: bool
     action: ActionTuple
@@ -32,6 +28,8 @@ class AgentExperience:
     prev_action: np.ndarray
     interrupted: bool
     memory: np.ndarray
+    group_status: List[GroupmateStatus]
+    group_reward: float
 
 
 class ObsUtil:
