@@ -10,7 +10,7 @@ from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
-from mlagents.trainers.torch.layers import LSTM, LinearEncoder, Initialization
+from mlagents.trainers.torch.layers import GRU, LinearEncoder, Initialization
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
@@ -80,7 +80,7 @@ class NetworkBody(nn.Module):
         )
 
         if self.use_lstm:
-            self.lstm = LSTM(self.h_size, self.m_size)
+            self.lstm = GRU(self.h_size, self.m_size)
         else:
             self.lstm = None  # type: ignore
 
@@ -152,7 +152,7 @@ class NetworkBody(nn.Module):
             # Resize to (batch, sequence length, encoding size)
             encoding = encoding.reshape([-1, sequence_length, self.h_size])
             encoding, memories = self.lstm(encoding, memories)
-            encoding = encoding.reshape([-1, self.m_size // 2])
+            encoding = encoding.reshape([-1, self.lstm.hidden_size])
         return encoding, memories
 
 

@@ -94,6 +94,42 @@ def lstm_layer(
     return lstm
 
 
+def gru_layer(
+    input_size: int,
+    hidden_size: int,
+    num_layers: int = 1,
+    batch_first: bool = True,
+    forget_bias: float = 1.0,
+    kernel_init: Initialization = Initialization.XavierGlorotUniform,
+    bias_init: Initialization = Initialization.Zero,
+) -> torch.nn.Module:
+    """
+    Creates a torch.nn.LSTM and initializes its weights and biases. Provides a
+    forget_bias offset like is done in TensorFlow.
+    """
+    lstm = torch.nn.GRU(input_size, hidden_size, num_layers, batch_first=batch_first)
+    # Add forget_bias to forget gate bias
+    for name, param in lstm.named_parameters():
+        # Each weight and bias is a concatenation of 2 matrices
+        if "weight" in name:
+            for idx in range(4):
+                block_size = param.shape[0] // 2
+                _init_methods[kernel_init](
+                    param.data[idx * block_size : (idx + 1) * block_size]
+                )
+        if "bias" in name:
+            for idx in range(4):
+                block_size = param.shape[0] // 2
+                _init_methods[bias_init](
+                    param.data[idx * block_size : (idx + 1) * block_size]
+                )
+                if idx == 1:
+                    param.data[idx * block_size : (idx + 1) * block_size].add_(
+                        forget_bias
+                    )
+    return lstm
+
+
 class MemoryModule(torch.nn.Module):
     @abc.abstractproperty
     def memory_size(self) -> int:
@@ -166,6 +202,47 @@ class LinearEncoder(torch.nn.Module):
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         return self.seq_layers(input_tensor)
+
+
+class GRU(MemoryModule):
+    """
+    Memory module that implements GRU
+    """
+
+    def __init__(
+        self,
+        input_size: int,
+        memory_size: int,
+        num_layers: int = 1,
+        forget_bias: float = 1.0,
+        kernel_init: Initialization = Initialization.XavierGlorotUniform,
+        bias_init: Initialization = Initialization.Zero,
+    ):
+        super().__init__()
+        # We set hidden size to half of memory_size since the initial memory
+        # will be divided between the hidden state and initial cell state.
+        self.hidden_size = memory_size // 2
+        self.gru = gru_layer(
+            input_size,
+            self.hidden_size,
+            num_layers,
+            True,
+            forget_bias,
+            kernel_init,
+            bias_init,
+        )
+
+    @property
+    def memory_size(self) -> int:
+        return self.hidden_size
+
+    def forward(
+        self, input_tensor: torch.Tensor, memories: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        # We don't use torch.split here since it is not supported by Barracuda
+        h0 = memories.contiguous()
+        gru_out, hidden_out = self.gru(input_tensor, h0)
+        return gru_out, hidden_out
 
 
 class LSTM(MemoryModule):
