@@ -14,33 +14,11 @@ namespace Unity.MLAgents.Extensions.MultiAgent
         List<Agent> m_Agents = new List<Agent> { };
 
 
-        public BaseMultiAgentGroup()
-        {
-            Academy.Instance.PostAgentAct += _GroupStep;
-        }
-
         public void Dispose()
         {
-            Academy.Instance.PostAgentAct -= _GroupStep;
             while (m_Agents.Count > 0)
             {
                 UnregisterAgent(m_Agents[0]);
-            }
-        }
-
-        void _GroupStep()
-        {
-            m_StepCount += 1;
-            if ((m_StepCount >= m_GroupMaxStep) && (m_GroupMaxStep > 0))
-            {
-                foreach (var agent in m_Agents)
-                {
-                    if (agent.enabled)
-                    {
-                        agent.EpisodeInterrupted();
-                    }
-                }
-                Reset();
             }
         }
 
@@ -95,10 +73,7 @@ namespace Unity.MLAgents.Extensions.MultiAgent
         {
             foreach (var agent in m_Agents)
             {
-                if (agent.enabled)
-                {
-                    agent.AddGroupReward(reward);
-                }
+                agent.AddGroupReward(reward);
             }
         }
 
@@ -110,52 +85,30 @@ namespace Unity.MLAgents.Extensions.MultiAgent
         {
             foreach (var agent in m_Agents)
             {
-                if (agent.enabled)
-                {
-                    agent.SetGroupReward(reward);
-                }
+                agent.SetGroupReward(reward);
             }
         }
 
         /// <summary>
         /// Returns the current step counter (within the current episode).
         /// </summary>
-        /// <returns>
-        /// Current step count.
-        /// </returns>
-        public int StepCount
+        public void EndGroupEpisode()
         {
-            get { return m_StepCount; }
-        }
-
-        public int GroupMaxStep
-        {
-            get { return m_GroupMaxStep; }
-        }
-
-        public void SetGroupMaxStep(int maxStep)
-        {
-            m_GroupMaxStep = maxStep;
+            foreach (var agent in m_Agents)
+            {
+                agent.EndEpisode();
+            }
         }
 
         /// <summary>
         /// End Episode for all agents under this MultiAgentGroup.
         /// </summary>
-        public void EndGroupEpisode()
+        public void GroupEpisodeInterrupted()
         {
             foreach (var agent in m_Agents)
             {
-                if (agent.enabled)
-                {
-                    agent.EndEpisode();
-                }
+                agent.EpisodeInterrupted();
             }
-            Reset();
-        }
-
-        void Reset()
-        {
-            m_StepCount = 0;
         }
     }
 }
