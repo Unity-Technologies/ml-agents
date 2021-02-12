@@ -83,7 +83,7 @@ class TorchPolicy(Policy):
                 conditional_sigma=self.condition_sigma_on_obs,
                 tanh_squash=tanh_squash,
             )
-            self.shared_critic = False
+            self.shared_critic = True
 
         # Save the m_size needed for export
         self._export_m_size = self.m_size
