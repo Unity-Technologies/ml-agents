@@ -52,6 +52,7 @@ and this project adheres to
 - `InferenceDevice.Burst` was added, indicating that Agent's model will be run using Barracuda's Burst backend.
   This is the default for new Agents, but existing ones that use `InferenceDevice.CPU` should update to
   `InferenceDevice.Burst`. (#4925)
+- Add an InputActuatorComponent to allow the generation of Agent action spaces from an InputActionAsset. (#4881)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Tensorboard now logs the Environment Reward as both a scalar and a histogram. (#4878)
