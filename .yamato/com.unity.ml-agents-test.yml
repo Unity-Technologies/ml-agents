@@ -39,7 +39,7 @@ packages:
     assembly: Unity.ML-Agents
     minCoveragePct: 72
   - name: com.unity.ml-agents.extensions
-    assembly: Unity.ML-Agents.Extensions
+    assembly: Unity.ML-Agents.Extensions*
     minCoveragePct: 75
 ---
 
@@ -68,7 +68,7 @@ all_package_tests:
     {% for platform in test_platforms %}
 
 {% if editor.enableCodeCoverage %}
-  {% capture coverageOptions %} --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+{{ package.assembly }}*'{% endcapture %}
+  {% capture coverageOptions %} --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+{{ package.assembly }}'{% endcapture %}
 {% else %}
   {% assign coverageOptions = "" %}
 {% endif %}
