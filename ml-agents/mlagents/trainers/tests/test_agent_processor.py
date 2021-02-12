@@ -103,10 +103,10 @@ def test_agent_deletion():
         stats_reporter=StatsReporter("testcat"),
     )
     fake_action_outputs = {
-        "action": ActionTuple(continuous=np.array([[0.1]])),
+        "action": ActionTuple(continuous=np.array([[0.1]], dtype=np.float32)),
         "entropy": np.array([1.0], dtype=np.float32),
         "learning_rate": 1.0,
-        "log_probs": LogProbsTuple(continuous=np.array([[0.1]])),
+        "log_probs": LogProbsTuple(continuous=np.array([[0.1]], dtype=np.float32)),
     }
 
     mock_decision_step, mock_terminal_step = mb.create_mock_steps(
@@ -121,8 +121,8 @@ def test_agent_deletion():
         done=True,
     )
     fake_action_info = ActionInfo(
-        action=ActionTuple(continuous=np.array([[0.1]])),
-        env_action=ActionTuple(continuous=np.array([[0.1]])),
+        action=ActionTuple(continuous=np.array([[0.1]], dtype=np.float32)),
+        env_action=ActionTuple(continuous=np.array([[0.1]], dtype=np.float32)),
         value=[0.1],
         outputs=fake_action_outputs,
         agent_ids=mock_decision_step.agent_id,
@@ -182,10 +182,10 @@ def test_end_episode():
         stats_reporter=StatsReporter("testcat"),
     )
     fake_action_outputs = {
-        "action": ActionTuple(continuous=np.array([[0.1]])),
+        "action": ActionTuple(continuous=np.array([[0.1]], dtype=np.float32)),
         "entropy": np.array([1.0], dtype=np.float32),
         "learning_rate": 1.0,
-        "log_probs": LogProbsTuple(continuous=np.array([[0.1]])),
+        "log_probs": LogProbsTuple(continuous=np.array([[0.1]], dtype=np.float32)),
     }
 
     mock_decision_step, mock_terminal_step = mb.create_mock_steps(
@@ -194,8 +194,8 @@ def test_end_episode():
         action_spec=ActionSpec.create_continuous(2),
     )
     fake_action_info = ActionInfo(
-        action=ActionTuple(continuous=np.array([[0.1]])),
-        env_action=ActionTuple(continuous=np.array([[0.1]])),
+        action=ActionTuple(continuous=np.array([[0.1]], dtype=np.float32)),
+        env_action=ActionTuple(continuous=np.array([[0.1]], dtype=np.float32)),
         value=[0.1],
         outputs=fake_action_outputs,
         agent_ids=mock_decision_step.agent_id,
