@@ -67,7 +67,9 @@ public class PushBlockEnvController : MonoBehaviour
 
     private int m_NumberOfRemainingBlocks;
 
-    private PushBlockAgentGroup m_AgentGroup;
+    private BaseMultiAgentGroup m_AgentGroup;
+
+    private int m_ResetTimer;
 
     void Start()
     {
@@ -86,8 +88,7 @@ public class PushBlockEnvController : MonoBehaviour
             item.Rb = item.T.GetComponent<Rigidbody>();
         }
         // Initialize TeamManager
-        m_AgentGroup = new PushBlockAgentGroup(this);
-        m_AgentGroup.SetGroupMaxStep(MaxEnvironmentSteps);
+        m_AgentGroup = new BaseMultiAgentGroup();
         foreach (var item in AgentsList)
         {
             item.StartingPos = item.Agent.transform.position;
@@ -98,6 +99,16 @@ public class PushBlockEnvController : MonoBehaviour
 
         ResetScene();
 
+    }
+
+    void FixedUpdate()
+    {
+        m_ResetTimer += 1;
+        if (m_ResetTimer >= MaxEnvironmentSteps && MaxEnvironmentSteps > 0)
+        {
+            m_AgentGroup.GroupEpisodeInterrupted();
+            ResetScene();
+        }
     }
 
     /// <summary>
@@ -186,7 +197,7 @@ public class PushBlockEnvController : MonoBehaviour
 
     public void ResetScene()
     {
-        // m_ResetTimer = 0;
+        m_ResetTimer = 0;
 
         //Random platform rot
         var rotation = Random.Range(0, 4);
