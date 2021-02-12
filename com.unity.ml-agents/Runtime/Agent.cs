@@ -1395,7 +1395,7 @@ namespace Unity.MLAgents
 
         internal void SetMultiAgentGroup(IMultiAgentGroup multiAgentGroup)
         {
-            // unregister from current group if this agent has been assigned one before
+            // Unregister from current group if this agent has been assigned one before
             UnregisterFromGroup?.Invoke(this);
 
             m_GroupId = multiAgentGroup.GetId();
