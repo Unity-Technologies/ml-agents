@@ -75,7 +75,8 @@ class Policy:
 
         # Pass old memories into previous_memory_dict
         for agent_id in agent_ids:
-            self.previous_memory_dict[agent_id] = self.memory_dict[agent_id]
+            if agent_id in self.memory_dict:
+                self.previous_memory_dict[agent_id] = self.memory_dict[agent_id]
 
         for index, agent_id in enumerate(agent_ids):
             self.memory_dict[agent_id] = memory_matrix[index, :]
@@ -90,7 +91,7 @@ class Policy:
     def retrieve_previous_memories(self, agent_ids: List[str]) -> np.ndarray:
         memory_matrix = np.zeros((len(agent_ids), self.m_size), dtype=np.float32)
         for index, agent_id in enumerate(agent_ids):
-            if agent_id in self.memory_dict:
+            if agent_id in self.previous_memory_dict:
                 memory_matrix[index, :] = self.previous_memory_dict[agent_id]
         return memory_matrix
 
