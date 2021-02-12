@@ -2,7 +2,7 @@ from typing import Dict, Optional, Tuple, List
 from mlagents.torch_utils import torch
 import numpy as np
 
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents.trainers.trajectory import ObsUtil
 from mlagents.trainers.torch.components.bc.module import BCModule
 from mlagents.trainers.torch.components.reward_providers import create_reward_provider
@@ -59,7 +59,13 @@ class TorchOptimizer(Optimizer):
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
         next_obs = [ModelUtils.list_to_tensor(obs) for obs in next_obs]
 
-        memory = torch.zeros([1, 1, self.policy.m_size])
+        memory = (
+            ModelUtils.list_to_tensor(batch[BufferKey.MEMORY][0])
+            .unsqueeze(0)
+            .unsqueeze(0)
+            if self.policy.use_recurrent
+            else None
+        )
 
         next_obs = [obs.unsqueeze(0) for obs in next_obs]
 

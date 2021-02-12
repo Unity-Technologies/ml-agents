@@ -568,8 +568,11 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             inputs, masks=masks, memories=actor_mem, sequence_length=sequence_length
         )
         if critic_mem is not None:
-            # Make memories with the actor mem unchanged
-            memories_out = torch.cat([actor_mem_out, critic_mem], dim=-1)
+            # Get value memories with the actor mem unchanged
+            _, critic_mem_outs = self.critic(
+                inputs, memories=critic_mem, sequence_length=sequence_length
+            )
+            memories_out = torch.cat([actor_mem_out, critic_mem_outs], dim=-1)
         else:
             memories_out = None
         return action, log_probs, entropies, memories_out
