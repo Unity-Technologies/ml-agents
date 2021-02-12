@@ -54,6 +54,7 @@ public class DodgeBallAgent : Agent
         m_AgentRb = GetComponent<Rigidbody>();
         input = GetComponent<FPSAgentInput>();
         m_GameController = FindObjectOfType<DodgeBallGameController>();
+        ActiveBallsQueue.Clear();
         //        Unfreeze();
         //        Unpoison();
         //        Unsatiate();
@@ -64,6 +65,7 @@ public class DodgeBallAgent : Agent
         //                                 2f, Random.Range(-m_MyArea.range, m_MyArea.range))
         //                             + area.transform.position;
         transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
+        currentNumberOfBalls = 0;
         SetActiveBalls(0);
 
         //        SetResetParameters();
@@ -78,6 +80,7 @@ public class DodgeBallAgent : Agent
             BallUIList[i].gameObject.SetActive(active);
             i++;
         }
+
         // for (int i = 0; i < numOfBalls; i++)
         // {
         //     var active = i < numOfBalls;

@@ -33,7 +33,7 @@ public class DodgeBall : MonoBehaviour
     {
         //IF NOT MY TEAM
         //PLAYER GOES TO TIMEOUT
-        if (!col.gameObject.CompareTag("agent"))
+        if (col.gameObject.CompareTag("ground"))
         {
             inPlay = false;
         }
