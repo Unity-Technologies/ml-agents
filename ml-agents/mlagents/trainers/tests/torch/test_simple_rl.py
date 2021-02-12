@@ -395,7 +395,7 @@ def test_gail_visual_ppo(simple_record, action_sizes):
         num_visual=1,
         num_vector=0,
         action_sizes=action_sizes,
-        step_size=0.2,
+        step_size=0.3,
     )
     bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1500)
     reward_signals = {
