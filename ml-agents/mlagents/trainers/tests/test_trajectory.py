@@ -23,14 +23,24 @@ def test_trajectory_to_agentbuffer():
         "action_mask",
         "prev_action",
         "environment_rewards",
+        "group_reward",
     ]
-    wanted_keys = set(wanted_keys)
+    wanted_group_keys = [
+        "group_obs_0",
+        "group_obs_1",
+        "group_obs_next_0",
+        "group_obs_next_1",
+        "groupmate_rewards",
+        "group_dones",
+    ]
+    wanted_keys = set(wanted_keys + wanted_group_keys)
     trajectory = make_fake_trajectory(
         length=length,
         observation_specs=create_observation_specs_with_shapes(
             [(VEC_OBS_SIZE,), (84, 84, 3)]
         ),
         action_spec=ActionSpec.create_continuous(ACTION_SIZE),
+        num_other_agents_in_group=4,
     )
     agentbuffer = trajectory.to_agentbuffer()
     seen_keys = set()
@@ -38,4 +48,8 @@ def test_trajectory_to_agentbuffer():
         assert len(field) == length
         seen_keys.add(key)
 
-    assert seen_keys == wanted_keys
+    assert seen_keys.issuperset(wanted_keys)
+
+    for _key in wanted_group_keys:
+        for step in agentbuffer[_key]:
+            assert len(step) == 4

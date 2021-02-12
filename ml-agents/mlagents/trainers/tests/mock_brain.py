@@ -3,7 +3,7 @@ import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.torch.action_log_probs import LogProbsTuple
-from mlagents.trainers.trajectory import Trajectory, AgentExperience
+from mlagents.trainers.trajectory import GroupmateStatus, Trajectory, AgentExperience
 from mlagents_envs.base_env import (
     DecisionSteps,
     TerminalSteps,
@@ -80,6 +80,7 @@ def make_fake_trajectory(
     action_spec: ActionSpec,
     max_step_complete: bool = False,
     memory_size: int = 10,
+    num_other_agents_in_group: int = 0,
 ) -> Trajectory:
     """
     Makes a fake trajectory of length length. If max_step_complete,
@@ -119,6 +120,9 @@ def make_fake_trajectory(
         memory = np.ones(memory_size, dtype=np.float32)
         agent_id = "test_agent"
         behavior_id = "test_brain"
+        group_status = []
+        for _ in range(num_other_agents_in_group):
+            group_status.append(GroupmateStatus(obs, reward, action, done))
         experience = AgentExperience(
             obs=obs,
             reward=reward,
@@ -129,7 +133,7 @@ def make_fake_trajectory(
             prev_action=prev_action,
             interrupted=max_step,
             memory=memory,
-            group_status=[],
+            group_status=group_status,
             group_reward=0,
         )
         steps_list.append(experience)
@@ -146,7 +150,7 @@ def make_fake_trajectory(
         prev_action=prev_action,
         interrupted=max_step_complete,
         memory=memory,
-        group_status=[],
+        group_status=group_status,
         group_reward=0,
     )
     steps_list.append(last_experience)
@@ -155,7 +159,7 @@ def make_fake_trajectory(
         agent_id=agent_id,
         behavior_id=behavior_id,
         next_obs=obs,
-        next_group_obs=[],
+        next_group_obs=[obs] * num_other_agents_in_group,
     )
 
 

@@ -196,17 +196,15 @@ class Trajectory(NamedTuple):
                 teammate_discrete_actions.append(group_status.action.discrete)
 
             # Team actions
-            agent_buffer_trajectory["team_continuous_action"].append(
+            agent_buffer_trajectory["group_continuous_action"].append(
                 teammate_continuous_actions
             )
-            agent_buffer_trajectory["team_discrete_action"].append(
+            agent_buffer_trajectory["group_discrete_action"].append(
                 teammate_discrete_actions
             )
-            agent_buffer_trajectory["team_rewards"].append(teammate_rewards)
-            team_reward = teammate_rewards + [exp.reward]
-            agent_buffer_trajectory["average_team_reward"].append(
-                sum(team_reward) / len(team_reward)
-            )
+            agent_buffer_trajectory["groupmate_rewards"].append(teammate_rewards)
+
+            agent_buffer_trajectory["group_reward"].append(exp.group_reward)
 
             # Next actions
             teammate_cont_next_actions = []
@@ -221,10 +219,10 @@ class Trajectory(NamedTuple):
                     teammate_cont_next_actions.append(group_status.action.continuous)
                     teammate_disc_next_actions.append(group_status.action.discrete)
 
-            agent_buffer_trajectory["team_next_continuous_action"].append(
+            agent_buffer_trajectory["group_next_continuous_action"].append(
                 teammate_cont_next_actions
             )
-            agent_buffer_trajectory["team_next_discrete_action"].append(
+            agent_buffer_trajectory["group_next_discrete_action"].append(
                 teammate_disc_next_actions
             )
 
@@ -255,7 +253,7 @@ class Trajectory(NamedTuple):
 
             agent_buffer_trajectory["masks"].append(1.0)
             agent_buffer_trajectory["done"].append(exp.done)
-            agent_buffer_trajectory["team_dones"].append(
+            agent_buffer_trajectory["group_dones"].append(
                 [_status.done for _status in exp.group_status]
             )
 
