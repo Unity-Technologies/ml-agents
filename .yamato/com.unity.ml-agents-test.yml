@@ -68,7 +68,7 @@ all_package_tests:
     {% for platform in test_platforms %}
 
 {% if editor.enableCodeCoverage %}
-  {% capture coverageOptions %} --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+{{ package.assembly }}'{% endcapture %}
+  {% capture coverageOptions %} --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+{{ package.assembly }}*'{% endcapture %}
 {% else %}
   {% assign coverageOptions = "" %}
 {% endif %}
