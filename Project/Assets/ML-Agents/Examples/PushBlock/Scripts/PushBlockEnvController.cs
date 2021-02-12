@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.MLAgents.Extensions.Teams;
+using Unity.MLAgents.Extensions.MultiAgent;
 using UnityEngine;
 
 public class PushBlockEnvController : MonoBehaviour
@@ -67,7 +67,7 @@ public class PushBlockEnvController : MonoBehaviour
 
     private int m_NumberOfRemainingBlocks;
 
-    private PushBlockTeamManager m_TeamManager;
+    private PushBlockAgentGroup m_AgentGroup;
 
     void Start()
     {
@@ -86,14 +86,14 @@ public class PushBlockEnvController : MonoBehaviour
             item.Rb = item.T.GetComponent<Rigidbody>();
         }
         // Initialize TeamManager
-        m_TeamManager = new PushBlockTeamManager(this);
-        m_TeamManager.SetTeamMaxStep(MaxEnvironmentSteps);
+        m_AgentGroup = new PushBlockAgentGroup(this);
+        m_AgentGroup.SetGroupMaxStep(MaxEnvironmentSteps);
         foreach (var item in AgentsList)
         {
             item.StartingPos = item.Agent.transform.position;
             item.StartingRot = item.Agent.transform.rotation;
             item.Rb = item.Agent.GetComponent<Rigidbody>();
-            m_TeamManager.RegisterAgent(item.Agent);
+            m_AgentGroup.RegisterAgent(item.Agent);
         }
 
         ResetScene();
@@ -175,7 +175,7 @@ public class PushBlockEnvController : MonoBehaviour
         if (done)
         {
             //Reset assets
-            m_TeamManager.EndTeamEpisode();
+            m_AgentGroup.EndGroupEpisode();
         }
     }
 

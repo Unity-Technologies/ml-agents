@@ -154,9 +154,15 @@ namespace Unity.MLAgents.Extensions.MultiAgent
             Reset();
         }
 
+        public virtual void OnGroupEpisodeBegin()
+        {
+
+        }
+
         void Reset()
         {
             m_StepCount = 0;
+            OnGroupEpisodeBegin();
         }
     }
 }

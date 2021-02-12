@@ -82,7 +82,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     PushBlockSettings m_PushBlockSettings;
 
     private int m_NumberOfRemainingBlocks;
-    private PushBlockTeamManager m_TeamManager;
+    private PushBlockAgentGroup m_TeamManager;
 
     void Start()
     {
