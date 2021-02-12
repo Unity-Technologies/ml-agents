@@ -127,6 +127,8 @@ def make_fake_trajectory(
             prev_action=prev_action,
             interrupted=max_step,
             memory=memory,
+            group_status=[],
+            group_reward=0,
         )
         steps_list.append(experience)
     obs = []
@@ -142,10 +144,16 @@ def make_fake_trajectory(
         prev_action=prev_action,
         interrupted=max_step_complete,
         memory=memory,
+        group_status=[],
+        group_reward=0,
     )
     steps_list.append(last_experience)
     return Trajectory(
-        steps=steps_list, agent_id=agent_id, behavior_id=behavior_id, next_obs=obs
+        steps=steps_list,
+        agent_id=agent_id,
+        behavior_id=behavior_id,
+        next_obs=obs,
+        next_group_obs=[],
     )
 
 
