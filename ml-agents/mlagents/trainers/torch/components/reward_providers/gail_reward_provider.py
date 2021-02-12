@@ -2,7 +2,7 @@ from typing import Optional, Dict, List
 import numpy as np
 from mlagents.torch_utils import torch, default_device
 
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
     BaseRewardProvider,
 )
@@ -112,7 +112,7 @@ class DiscriminatorNetwork(torch.nn.Module):
         Creates the action Tensor. In continuous case, corresponds to the action. In
         the discrete case, corresponds to the concatenation of one hot action Tensors.
         """
-        return self._action_flattener.forward(AgentAction.from_dict(mini_batch))
+        return self._action_flattener.forward(AgentAction.from_buffer(mini_batch))
 
     def get_state_inputs(self, mini_batch: AgentBuffer) -> List[torch.Tensor]:
         """
@@ -137,7 +137,9 @@ class DiscriminatorNetwork(torch.nn.Module):
         inputs = self.get_state_inputs(mini_batch)
         if self._settings.use_actions:
             actions = self.get_action_input(mini_batch)
-            dones = torch.as_tensor(mini_batch["done"], dtype=torch.float).unsqueeze(1)
+            dones = torch.as_tensor(
+                mini_batch[BufferKey.DONE], dtype=torch.float
+            ).unsqueeze(1)
             action_inputs = torch.cat([actions, dones], dim=1)
             hidden, _ = self.encoder(inputs, action_inputs)
         else:
@@ -221,10 +223,10 @@ class DiscriminatorNetwork(torch.nn.Module):
             expert_action = self.get_action_input(expert_batch)
             action_epsilon = torch.rand(policy_action.shape)
             policy_dones = torch.as_tensor(
-                policy_batch["done"], dtype=torch.float
+                policy_batch[BufferKey.DONE], dtype=torch.float
             ).unsqueeze(1)
             expert_dones = torch.as_tensor(
-                expert_batch["done"], dtype=torch.float
+                expert_batch[BufferKey.DONE], dtype=torch.float
             ).unsqueeze(1)
             dones_epsilon = torch.rand(policy_dones.shape)
             action_inputs = torch.cat(

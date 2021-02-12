@@ -14,12 +14,7 @@ from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.trainer import TrainerFactory
 from mlagents.trainers.directory_utils import validate_existing_directories
-from mlagents.trainers.stats import (
-    TensorboardWriter,
-    StatsReporter,
-    GaugeWriter,
-    ConsoleWriter,
-)
+from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.cli_utils import parser
 from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.settings import RunOptions
@@ -34,6 +29,7 @@ from mlagents_envs.timers import (
     add_metadata as add_timer_metadata,
 )
 from mlagents_envs import logging_util
+from mlagents.plugins.stats_writer import register_stats_writer_plugins
 
 logger = logging_util.get_logger(__name__)
 
@@ -65,21 +61,15 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         checkpoint_settings = options.checkpoint_settings
         env_settings = options.env_settings
         engine_settings = options.engine_settings
-        base_path = "results"
-        write_path = os.path.join(base_path, checkpoint_settings.run_id)
-        maybe_init_path = (
-            os.path.join(base_path, checkpoint_settings.initialize_from)
-            if checkpoint_settings.initialize_from is not None
-            else None
-        )
-        run_logs_dir = os.path.join(write_path, "run_logs")
+
+        run_logs_dir = checkpoint_settings.run_logs_dir
         port: Optional[int] = env_settings.base_port
         # Check if directory exists
         validate_existing_directories(
-            write_path,
+            checkpoint_settings.write_path,
             checkpoint_settings.resume,
             checkpoint_settings.force,
-            maybe_init_path,
+            checkpoint_settings.maybe_init_path,
         )
         # Make run logs directory
         os.makedirs(run_logs_dir, exist_ok=True)
@@ -90,14 +80,9 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             )
 
         # Configure Tensorboard Writers and StatsReporter
-        tb_writer = TensorboardWriter(
-            write_path, clear_past_data=not checkpoint_settings.resume
-        )
-        gauge_write = GaugeWriter()
-        console_writer = ConsoleWriter()
-        StatsReporter.add_writer(tb_writer)
-        StatsReporter.add_writer(gauge_write)
-        StatsReporter.add_writer(console_writer)
+        stats_writers = register_stats_writer_plugins(options)
+        for sw in stats_writers:
+            StatsReporter.add_writer(sw)
 
         if env_settings.env_path is None:
             port = None
@@ -117,18 +102,18 @@ def run_training(run_seed: int, options: RunOptions) -> None:
 
         trainer_factory = TrainerFactory(
             trainer_config=options.behaviors,
-            output_path=write_path,
+            output_path=checkpoint_settings.write_path,
             train_model=not checkpoint_settings.inference,
             load_model=checkpoint_settings.resume,
             seed=run_seed,
             param_manager=env_parameter_manager,
-            init_path=maybe_init_path,
+            init_path=checkpoint_settings.maybe_init_path,
             multi_gpu=False,
         )
         # Create controller and begin training.
         tc = TrainerController(
             trainer_factory,
-            write_path,
+            checkpoint_settings.write_path,
             checkpoint_settings.run_id,
             env_parameter_manager,
             not checkpoint_settings.inference,
@@ -140,7 +125,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         tc.start_learning(env_manager)
     finally:
         env_manager.close()
-        write_run_options(write_path, options)
+        write_run_options(checkpoint_settings.write_path, options)
         write_timing_tree(run_logs_dir)
         write_training_status(run_logs_dir)
 

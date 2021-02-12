@@ -28,6 +28,7 @@ namespace Unity.MLAgentsExamples
         const string k_CommandLineModelOverrideDirectoryFlag = "--mlagents-override-model-directory";
         const string k_CommandLineModelOverrideExtensionFlag = "--mlagents-override-model-extension";
         const string k_CommandLineQuitAfterEpisodesFlag = "--mlagents-quit-after-episodes";
+        const string k_CommandLineQuitAfterSeconds = "--mlagents-quit-after-seconds";
         const string k_CommandLineQuitOnLoadFailure = "--mlagents-quit-on-load-failure";
 
         // The attached Agent
@@ -44,6 +45,9 @@ namespace Unity.MLAgentsExamples
         // Max episodes to run. Only used if > 0
         // Will default to 1 if override models are specified, otherwise 0.
         int m_MaxEpisodes;
+
+        // Deadline - exit if the time exceeds this
+        DateTime m_Deadline = DateTime.MaxValue;
 
         int m_NumSteps;
         int m_PreviousNumSteps;
@@ -89,6 +93,8 @@ namespace Unity.MLAgentsExamples
         void GetAssetPathFromCommandLine()
         {
             var maxEpisodes = 0;
+            var timeoutSeconds = 0;
+
             string[] commandLineArgsOverride = null;
             if (!string.IsNullOrEmpty(debugCommandLineOverride) && Application.isEditor)
             {
@@ -120,6 +126,10 @@ namespace Unity.MLAgentsExamples
                 {
                     Int32.TryParse(args[i + 1], out maxEpisodes);
                 }
+                else if (args[i] == k_CommandLineQuitAfterSeconds && i < args.Length - 1)
+                {
+                    Int32.TryParse(args[i + 1], out timeoutSeconds);
+                }
                 else if (args[i] == k_CommandLineQuitOnLoadFailure)
                 {
                     m_QuitOnLoadFailure = true;
@@ -131,6 +141,13 @@ namespace Unity.MLAgentsExamples
                 // If overriding models, set maxEpisodes to 1 or the command line value
                 m_MaxEpisodes = maxEpisodes > 0 ? maxEpisodes : 1;
                 Debug.Log($"setting m_MaxEpisodes to {maxEpisodes}");
+            }
+
+            if (timeoutSeconds > 0)
+            {
+                m_Deadline = DateTime.Now + TimeSpan.FromSeconds(timeoutSeconds);
+                Debug.Log($"setting deadline to {timeoutSeconds} from now.");
+
             }
         }
 
@@ -174,7 +191,19 @@ namespace Unity.MLAgentsExamples
                     EditorApplication.isPlaying = false;
 #endif
                 }
+                else if (DateTime.Now >= m_Deadline)
+                {
+                    Debug.Log(
+                        $"Deadline exceeded. " +
+                        $"{TotalCompletedEpisodes}/{m_MaxEpisodes} episodes and " +
+                        $"{TotalNumSteps}/{m_MaxEpisodes * m_Agent.MaxStep} steps completed. Exiting.");
+                    Application.Quit(0);
+#if UNITY_EDITOR
+                    EditorApplication.isPlaying = false;
+#endif
+                }
             }
+
             m_NumSteps++;
         }
 

@@ -583,17 +583,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 5
-    numStackedVectorObservations: 9
-    vectorActionSize: 02000000
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: 27d49984757ed46b181090a532ef48e5, type: 3}
-  m_InferenceDevice: 0
+    VectorObservationSize: 0
+    NumStackedVectorObservations: 1
+    m_ActionSpec:
+      m_NumContinuousActions: 2
+      BranchSizes: 
+    VectorActionSize: 02000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 1
+    hasUpgradedBrainParametersWithActionSpec: 1
+  m_Model: {fileID: 11400000, guid: d179c44c147aa4ffbbb725f009eca3b8, type: 3}
+  m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: 3DBallHard
   TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_ObservableAttributeHandling: 1
 --- !u!114 &114466000339026140
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -609,7 +615,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  maxStep: 5000
+  MaxStep: 5000
   ball: {fileID: 1142513601053358}
 --- !u!114 &8193279139064749781
 MonoBehaviour:
@@ -625,7 +631,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
-  offsetStep: 0
 --- !u!114 &7923264721978289873
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -638,6 +643,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugCommandLineOverride: 
 --- !u!1 &1978072206102878
 GameObject:
   m_ObjectHideFlags: 0

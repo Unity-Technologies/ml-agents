@@ -6,12 +6,28 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-
 ## [Unreleased]
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+
+## [1.8.0-preview] - 2021-02-17
+### Major Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 - TensorFlow trainers have been removed, please use the Torch trainers instead. (#4707)
+- A plugin system for `mlagents-learn` has been added. You can now define custom
+  `StatsWriter` implementations and register them to be called during training.
+  More types of plugins will be added in the future. (#4788)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
@@ -33,12 +49,16 @@ and this project adheres to
 - The Barracuda dependency was upgraded to 1.3.0. (#4898)
 - Added `ActuatorComponent.CreateActuators`, and deprecate `ActuatorComponent.CreateActuator`.  The
   default implementation will wrap `ActuatorComponent.CreateActuator` in an array and return that. (#4899)
+- `InferenceDevice.Burst` was added, indicating that Agent's model will be run using Barracuda's Burst backend.
+  This is the default for new Agents, but existing ones that use `InferenceDevice.CPU` should update to
+  `InferenceDevice.Burst`. (#4925)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Tensorboard now logs the Environment Reward as both a scalar and a histogram. (#4878)
 - Added a `--torch-device` commandline option to `mlagents-learn`, which sets the default
   [`torch.device`](https://pytorch.org/docs/stable/tensor_attributes.html#torch.torch.device) used for training. (#4888)
 - The `--cpu` commandline option had no effect and was removed. Use `--torch-device=cpu` to force CPU training. (#4888)
+- The `mlagents_env` API has changed, `BehaviorSpec` now has a `observation_specs` property containing a list of `ObservationSpec`. For more information on `ObservationSpec` see [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Python-API.md#behaviorspec). (#4763, #4825)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
@@ -49,6 +69,10 @@ and this project adheres to
 - Removed unnecessary memory allocations in `SideChannelManager.GetSideChannelMessage()` (#4886)
 - Removed several memory allocations that happened during inference. On a test scene, this
   reduced the amount of memory allocated by approximately 25%. (#4887)
+- Removed several memory allocations that happened during inference with discrete actions. (#4922)
+- Properly catch permission errors when writing timer files. (#4921)
+- Unexpected exceptions during training initialization and shutdown are now logged. If you see
+  "noisy" logs, please let us know! (#4930, #4935)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed a bug that would cause an exception when `RunOptions` was deserialized via `pickle`. (#4842)
@@ -60,6 +84,7 @@ and this project adheres to
   while waiting for a connection, and raises a better error message if it crashes. (#4880)
 - Passing a `-logfile` option in the `--env-args` option to `mlagents-learn` is
   no longer overwritten. (#4880)
+- The `load_weights` function was being called unnecessarily often in the Ghost Trainer leading to training slowdowns. (#4934)
 
 
 ## [1.7.2-preview] - 2020-12-22

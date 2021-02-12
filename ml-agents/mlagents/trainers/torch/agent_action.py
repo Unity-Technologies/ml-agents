@@ -1,7 +1,7 @@
-from typing import List, Optional, NamedTuple, Dict
+from typing import List, Optional, NamedTuple
 from mlagents.torch_utils import torch
-import numpy as np
 
+from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents_envs.base_env import ActionTuple
 
@@ -42,18 +42,18 @@ class AgentAction(NamedTuple):
         return action_tuple
 
     @staticmethod
-    def from_dict(buff: Dict[str, np.ndarray]) -> "AgentAction":
+    def from_buffer(buff: AgentBuffer) -> "AgentAction":
         """
         A static method that accesses continuous and discrete action fields in an AgentBuffer
         and constructs the corresponding AgentAction from the retrieved np arrays.
         """
         continuous: torch.Tensor = None
         discrete: List[torch.Tensor] = None  # type: ignore
-        if "continuous_action" in buff:
-            continuous = ModelUtils.list_to_tensor(buff["continuous_action"])
-        if "discrete_action" in buff:
+        if BufferKey.CONTINUOUS_ACTION in buff:
+            continuous = ModelUtils.list_to_tensor(buff[BufferKey.CONTINUOUS_ACTION])
+        if BufferKey.DISCRETE_ACTION in buff:
             discrete_tensor = ModelUtils.list_to_tensor(
-                buff["discrete_action"], dtype=torch.long
+                buff[BufferKey.DISCRETE_ACTION], dtype=torch.long
             )
             discrete = [
                 discrete_tensor[..., i] for i in range(discrete_tensor.shape[-1])

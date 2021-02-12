@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Barracuda;
 using UnityEngine.Profiling;
@@ -53,7 +54,7 @@ namespace Unity.MLAgents.Inference
         public ModelRunner(
             NNModel model,
             ActionSpec actionSpec,
-            InferenceDevice inferenceDevice = InferenceDevice.CPU,
+            InferenceDevice inferenceDevice,
             int seed = 0)
         {
             Model barracudaModel;
@@ -70,9 +71,22 @@ namespace Unity.MLAgents.Inference
                 D.logEnabled = m_Verbose;
 
                 barracudaModel = ModelLoader.Load(model);
-                var executionDevice = inferenceDevice == InferenceDevice.GPU
-                    ? WorkerFactory.Type.ComputePrecompiled
-                    : WorkerFactory.Type.CSharp;
+                WorkerFactory.Type executionDevice;
+                switch (inferenceDevice)
+                {
+                    case InferenceDevice.CPU:
+                        executionDevice = WorkerFactory.Type.CSharp;
+                        break;
+                    case InferenceDevice.GPU:
+                        executionDevice = WorkerFactory.Type.ComputePrecompiled;
+                        break;
+                    case InferenceDevice.Burst:
+                        executionDevice = WorkerFactory.Type.CSharpBurst;
+                        break;
+                    default:
+                        executionDevice = WorkerFactory.Type.CSharpBurst;
+                        break;
+                }
                 m_Engine = WorkerFactory.CreateWorker(executionDevice, barracudaModel, m_Verbose);
             }
             else

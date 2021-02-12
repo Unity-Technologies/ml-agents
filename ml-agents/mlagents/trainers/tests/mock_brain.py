@@ -1,7 +1,7 @@
 from typing import List, Tuple
 import numpy as np
 
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, AgentBufferKey
 from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents_envs.base_env import (
@@ -141,6 +141,13 @@ def make_fake_trajectory(
     return Trajectory(
         steps=steps_list, agent_id=agent_id, behavior_id=behavior_id, next_obs=obs
     )
+
+
+def copy_buffer_fields(
+    buffer: AgentBuffer, src_key: AgentBufferKey, dst_keys: List[AgentBufferKey]
+) -> None:
+    for dst_key in dst_keys:
+        buffer[dst_key] = buffer[src_key]
 
 
 def simulate_rollout(
