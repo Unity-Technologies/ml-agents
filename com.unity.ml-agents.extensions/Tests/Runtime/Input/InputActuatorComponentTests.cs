@@ -1,9 +1,11 @@
 #if MLA_INPUT_TESTS
 using System;
+using System.Linq;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Extensions.Input;
 using Unity.MLAgents.Policies;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -44,6 +46,10 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
             Assert.IsTrue(actuators.Length == 2);
             Assert.IsTrue(actuators[0].ActionSpec.Equals(ActionSpec.MakeContinuous(2)));
             Assert.IsTrue(actuators[1].ActionSpec.NumDiscreteActions == 1);
+
+            var actuatorComponentActionSpec = m_ActuatorComponent.ActionSpec;
+            Assert.IsTrue(actuatorComponentActionSpec.BranchSizes.SequenceEqual(new[] {2}));
+            Assert.IsTrue(actuatorComponentActionSpec.NumContinuousActions == 2);
         }
 
         [Test]
@@ -89,7 +95,6 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
             Assert.AreEqual(device.description.interfaceName, "TestInterface");
             Assert.NotNull(InputSystem.LoadLayout("TestLayout"));
         }
-
     }
 }
 #endif // MLA_INPUT_TESTS

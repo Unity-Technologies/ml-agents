@@ -75,7 +75,7 @@ namespace Unity.MLAgents.Actuators
         public ActionSpec(int numContinuousActions = 0, int[] discreteBranchSizes = null)
         {
             m_NumContinuousActions = numContinuousActions;
-            BranchSizes = discreteBranchSizes;
+            BranchSizes = discreteBranchSizes ?? Array.Empty<int>();
         }
 
         /// <summary>
@@ -113,6 +113,10 @@ namespace Unity.MLAgents.Actuators
             var offset = 0;
             foreach (var spec in specs)
             {
+                if (spec.BranchSizes.Length == 0)
+                {
+                    continue;
+                }
                 var branchSizesLength = spec.BranchSizes.Length;
                 Array.Copy(spec.BranchSizes,
                     0,

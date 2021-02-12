@@ -41,16 +41,12 @@ namespace Unity.MLAgents.Extensions.Input
 
         string m_LayoutName;
         string m_InterfaceName;
+        ActionSpec m_ActionSpec;
 
         public const string mlAgentsLayoutFormat = "MLAT";
         public const string mlAgentsLayoutName = "MLAgentsLayout";
         public const string mlAgentsDeviceName = "MLAgentsDevice";
         public const string mlAgentsControlSchemeName = "ml-agents";
-
-        void Start()
-        {
-            FindNeededComponents();
-        }
 
         void OnDisable()
         {
@@ -117,10 +113,15 @@ namespace Unity.MLAgents.Extensions.Input
 
             InputSystem.AddDevice(m_Device);
 
+            var specs = new ActionSpec[m_Actuators.Length];
             for (var i = 0; i < m_Actuators.Length; i++)
             {
-                ((InputActionActuator)m_Actuators[i]).SetDevice(m_Device);
+                var actuator = m_Actuators[i];
+                ((InputActionActuator)actuator).SetDevice(m_Device);
+                specs[i] = actuator.ActionSpec;
             }
+
+            m_ActionSpec = ActionSpec.Combine(specs);
 
             m_InputAsset.Enable();
             return m_Actuators;
@@ -175,8 +176,7 @@ namespace Unity.MLAgents.Extensions.Input
 #pragma warning restore 672
 
         /// <inheritdoc cref="IActuator.ActionSpec"/>
-        public override ActionSpec ActionSpec => ActionSpec.MakeContinuous(0);
-
+        public override ActionSpec ActionSpec => m_ActionSpec;
 
         /// <summary>
         /// Creates a virtual <see cref="InputDevice"/> with a layout that is based on the <see cref="InputAction"/>s
@@ -236,7 +236,6 @@ namespace Unity.MLAgents.Extensions.Input
 
             foreach (var action in asset)
             {
-
                 var actionLayout = InputSystem.LoadLayout(action.expectedControlType);
 
                 builder.AddControl(action.name)
@@ -265,7 +264,6 @@ namespace Unity.MLAgents.Extensions.Input
 
                         child = candidate;
                         break;
-
                     }
 
                     var groups = string.Empty;
@@ -293,7 +291,6 @@ namespace Unity.MLAgents.Extensions.Input
                     behaviorParameters,
                     action,
                     adaptor));
-
             }
             var layout = builder.Build();
             if (InputSystem.LoadLayout(layout.name) == null)
@@ -357,7 +354,6 @@ namespace Unity.MLAgents.Extensions.Input
             m_BehaviorParameters = null;
             m_Device = null;
         }
-
     }
 }
 #endif // MLA_INPUT_SYSTEM && UNITY_2019_4_OR_NEWER
