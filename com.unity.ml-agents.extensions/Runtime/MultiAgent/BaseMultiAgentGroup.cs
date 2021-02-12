@@ -64,14 +64,14 @@ namespace Unity.MLAgents.Extensions.MultiAgent
         /// Increments the group rewards for all agents in this MultiAgentGroup.
         /// </summary>
         /// <remarks>
-        /// This function increase or decrease the group rewards by given amount for all agents
+        /// This function increases or decreases the group rewards by a given amount for all agents
         /// in the group. Use <see cref="SetGroupReward(float)"/> to set the group reward assigned
         /// to the current step with a specific value rather than increasing or decreasing it.
         ///
         /// A positive group reward indicates the whole group's accomplishments or desired behaviors.
         /// Every agent in the group will receive the same group reward no matter whether the
         /// agent's act directly leads to the reward. Group rewards are meant to reinforce agents
-        /// to act in the group's best interest instead of indivisual ones.
+        /// to act in the group's best interest instead of individual ones.
         /// Group rewards are treated differently than individual agent rewards during training, so
         /// calling AddGroupReward() is not equivalent to calling agent.AddReward() on each agent in the group.
         /// </remarks>
@@ -130,7 +130,7 @@ namespace Unity.MLAgents.Extensions.MultiAgent
         /// </summary>
         /// <remarks>
         /// This should be used when the episode could continue, but has gone on for
-        /// a sufficient number of steps.
+        /// a sufficient number of steps, such as if the environment hits some maximum number of steps.
         /// </remarks>
         public void GroupEpisodeInterrupted()
         {
