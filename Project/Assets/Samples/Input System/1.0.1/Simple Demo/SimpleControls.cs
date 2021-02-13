@@ -137,7 +137,7 @@ public class @SimpleControls : IInputActionCollection, IDisposable
                     ""id"": ""578caa03-6827-4797-adfc-a59770c437fe"",
                     ""path"": ""<Pointer>/delta"",
                     ""interactions"": """",
-                    ""processors"": ""ScaleVector2(x=2,y=2)"",
+                    ""processors"": """",
                     ""groups"": """",
                     ""action"": ""look"",
                     ""isComposite"": false,

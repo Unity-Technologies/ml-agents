@@ -271,8 +271,12 @@ namespace MLAgents
         public void Look(float xRot = 0, float yRot = 0)
         {
                 // Read the mouse input axis
-                rotationX += Input.GetAxis("Mouse X") * sensitivityX;
-                rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
+                rotationX += xRot * sensitivityX;
+                rotationY += yRot * sensitivityY;
+                // rotationX += xRot * sensitivityX * Time.deltaTime;
+                // rotationY += yRot * sensitivityY * Time.deltaTime;
+                // rotationX += Input.GetAxis("Mouse X") * sensitivityX;
+                // rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
                 rotationX = ClampAngle(rotationX, minimumX, maximumX);
                 rotationY = ClampAngle(rotationY, minimumY, maximumY);
 
