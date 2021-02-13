@@ -70,4 +70,4 @@ def get_global_group_id(worker_id: int, group_id: int) -> str:
     """
     Create an agent id that is unique across environment workers using the worker_id.
     """
-    return f"${worker_id}-{group_id}"
+    return f"#{worker_id}-{group_id}"
