@@ -47,6 +47,7 @@ namespace Unity.MLAgents.Extensions.Input
         string m_LayoutName;
         string m_InterfaceName;
         ActionSpec m_ActionSpec;
+        InputControlScheme m_ControlScheme;
 
         public const string mlAgentsLayoutFormat = "MLAT";
         public const string mlAgentsLayoutName = "MLAgentsLayout";
@@ -116,16 +117,10 @@ namespace Unity.MLAgents.Extensions.Input
                 m_BehaviorParameters);
 
             m_Device = CreateDevice(m_LayoutName, m_InterfaceName, m_LocalId);
-            var controlScheme = CreateControlScheme(m_InputAsset, m_Device, m_LocalId);
-            if (m_InputAsset.FindControlSchemeIndex(controlScheme.name) == -1)
-            {
-                m_InputAsset.AddControlScheme(controlScheme);
-            }
-
-            m_InputAssetCollection.bindingMask = InputBinding.MaskByGroup(controlScheme.bindingGroup);
             InputSystem.AddDevice(m_Device);
-            m_InputAssetCollection.devices = new ReadOnlyArray<InputDevice>(new[] { m_Device });
-            inputActionMap.devices = m_InputAssetCollection.devices;
+
+            UpdateDeviceBinding(m_BehaviorParameters.IsInHeuristicMode());
+
             inputActionMap.Enable();
 
             var specs = new ActionSpec[m_Actuators.Length];
@@ -142,19 +137,38 @@ namespace Unity.MLAgents.Extensions.Input
             return m_Actuators;
         }
 
+        void UpdateDeviceBinding(bool isInHeuristicMode)
+        {
+            m_ControlScheme = CreateControlScheme(m_Device, m_LocalId, isInHeuristicMode, m_InputAsset);
+            if (m_InputAsset.FindControlSchemeIndex(m_ControlScheme.name) != -1)
+            {
+                m_InputAsset.RemoveControlScheme(m_ControlScheme.name);
+            }
+            m_InputAsset.AddControlScheme(m_ControlScheme);
+
+            var inputActionMap = m_InputAsset.FindActionMap(m_PlayerInput.defaultActionMap);
+            if (!isInHeuristicMode)
+            {
+                m_InputAssetCollection.bindingMask = InputBinding.MaskByGroup(m_ControlScheme.bindingGroup);
+                m_InputAssetCollection.devices = new ReadOnlyArray<InputDevice>(new[] { m_Device });
+                inputActionMap.devices = m_InputAssetCollection.devices;
+            }
+        }
+
         /// <summary>
         /// This method creates a control scheme and adds it to the <see cref="InputActionAsset"/> passed in so
         /// we can add our device to in order for it to be discovered by the <see cref="InputSystem"/>.
         /// </summary>
-        /// <param name="asset">The <see cref="InputAction"/> to add the <see cref="InputControlScheme"/> to.</param>
         /// <param name="device">The virtual device to add to our custom control scheme.</param>
         /// <param name="localId">id of device</param>
-        internal static InputControlScheme CreateControlScheme(InputActionAsset asset, InputControl device, uint localId)
+        /// <param name="isInHeuristicMode">if we are in heuristic mode, we need to add other other device requirements.</param>
+        /// <param name="asset">The InputActionAsset to get the device requirements from</param>
+        internal static InputControlScheme CreateControlScheme(InputControl device,
+            uint localId,
+            bool isInHeuristicMode,
+            InputActionAsset asset)
         {
-            // If the control scheme isn't created, create it with our device registered
-            // as required.  Devices with the same path get incremented automatically by the InputSystem
-            // after the first one.
-            var deviceRequirements = new[]
+            var deviceRequirements = new List<InputControlScheme.DeviceRequirement>
             {
                 new InputControlScheme.DeviceRequirement
                 {
@@ -164,6 +178,19 @@ namespace Unity.MLAgents.Extensions.Input
                     isOR = true
                 }
             };
+
+            if (isInHeuristicMode)
+            {
+                for (var i = 0; i < asset.controlSchemes.Count; i++)
+                {
+                    var scheme = asset.controlSchemes[i];
+                    for (var ii = 0; ii < scheme.deviceRequirements.Count; ii++)
+                    {
+                        deviceRequirements.Add(scheme.deviceRequirements[ii]);
+                    }
+                }
+            }
+
             var controlSchemeName = mlAgentsControlSchemeName + localId;
             var inputControlScheme = new InputControlScheme(
                 controlSchemeName,
@@ -245,7 +272,6 @@ namespace Unity.MLAgents.Extensions.Input
                     .WithFormat(actionLayout.stateFormat)
                     .WithUsages($"MLAgentPlayer-{localId}");
 
-                var binding = action.bindings[0];
                 var devicePath = InputControlPath.Separator + layoutName;
 
                 // Reasonably, the input system starts adding numbers after the first none numbered name
@@ -324,6 +350,7 @@ namespace Unity.MLAgents.Extensions.Input
             {
                 m_BehaviorParameters = GetComponent<BehaviorParameters>();
                 Assert.IsNotNull(m_BehaviorParameters, "BehaviorParameters were not on the current GameObject.");
+                m_BehaviorParameters.OnPolicyUpdated += UpdateDeviceBinding;
                 m_LayoutName = mlAgentsLayoutName + m_BehaviorParameters.BehaviorName;
                 m_InterfaceName = mlAgentsDeviceName + m_BehaviorParameters.BehaviorName;
             }
@@ -338,12 +365,12 @@ namespace Unity.MLAgents.Extensions.Input
         internal void CleanupActionAsset()
         {
             InputSystem.RemoveLayout(mlAgentsLayoutName);
-            if (m_Device != null)
+            if (!ReferenceEquals(m_Device, null))
             {
                 InputSystem.RemoveDevice(m_Device);
             }
 
-            if (m_InputAsset != null
+            if (!ReferenceEquals(m_InputAsset, null)
                 && m_InputAsset.FindControlSchemeIndex(mlAgentsControlSchemeName + m_LocalId) != -1)
             {
                 m_InputAsset.RemoveControlScheme(mlAgentsControlSchemeName + m_LocalId);
@@ -353,6 +380,12 @@ namespace Unity.MLAgents.Extensions.Input
             {
                 Array.Clear(m_Actuators, 0, m_Actuators.Length);
             }
+            if (!ReferenceEquals(m_BehaviorParameters, null))
+            {
+                m_BehaviorParameters.OnPolicyUpdated -= UpdateDeviceBinding;
+            }
+
+
             m_InputAsset = null;
             m_PlayerInput = null;
             m_BehaviorParameters = null;

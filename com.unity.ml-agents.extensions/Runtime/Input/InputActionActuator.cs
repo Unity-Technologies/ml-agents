@@ -58,21 +58,10 @@ namespace Unity.MLAgents.Extensions.Input
         /// <inheritdoc cref="IActionReceiver.OnActionReceived"/>
         public void OnActionReceived(ActionBuffers actionBuffers)
         {
-            if (!IsInHeuristicMode())
+            if (!m_BehaviorParameters.IsInHeuristicMode())
             {
                 m_InputAdaptor.QueueInputEventForAction(m_Action, m_Control, ActionSpec, actionBuffers);
             }
-        }
-
-        internal bool IsInHeuristicMode()
-        {
-            if (m_BehaviorParameters.BehaviorType == BehaviorType.HeuristicOnly)
-            {
-                return true;
-            }
-            return m_BehaviorParameters.BehaviorType == BehaviorType.Default &&
-                     ReferenceEquals(m_BehaviorParameters.Model, null) &&
-                     !Academy.Instance.IsCommunicatorOn;
         }
 
         /// <inheritdoc cref="IActionReceiver.WriteDiscreteActionMask"/>
