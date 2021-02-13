@@ -8,6 +8,10 @@ using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.Layouts;
+using UnityEngine.InputSystem.Utilities;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Unity.MLAgents.Extensions.Input
 {
@@ -18,6 +22,7 @@ namespace Unity.MLAgents.Extensions.Input
     public class InputActuatorComponent : ActuatorComponent
     {
         InputActionAsset m_InputAsset;
+        IInputActionCollection2 m_InputAssetCollection;
         PlayerInput m_PlayerInput;
         BehaviorParameters m_BehaviorParameters;
         IActuator[] m_Actuators;
@@ -47,6 +52,12 @@ namespace Unity.MLAgents.Extensions.Input
         public const string mlAgentsLayoutName = "MLAgentsLayout";
         public const string mlAgentsDeviceName = "MLAgentsDevice";
         public const string mlAgentsControlSchemeName = "ml-agents";
+
+        void Awake()
+        {
+            // TODO cgoy better way to create ids?
+            m_LocalId = s_DeviceId++;
+        }
 
         void OnDisable()
         {
@@ -94,24 +105,28 @@ namespace Unity.MLAgents.Extensions.Input
         /// <returns>A list of </returns>
         public override IActuator[] CreateActuators()
         {
-            // TODO cgoy better way to create ids?
-            m_LocalId = s_DeviceId++;
-
             FindNeededComponents();
-
             m_InputAsset.Disable();
+            var inputActionMap = m_InputAsset.FindActionMap(m_PlayerInput.defaultActionMap);
 
             m_Actuators = GenerateActionActuatorsFromAsset(
-                m_InputAsset,
+                inputActionMap,
                 m_LayoutName,
                 m_LocalId,
                 m_BehaviorParameters);
 
             m_Device = CreateDevice(m_LayoutName, m_InterfaceName, m_LocalId);
+            var controlScheme = CreateControlScheme(m_InputAsset, m_Device, m_LocalId);
+            if (m_InputAsset.FindControlSchemeIndex(controlScheme.name) == -1)
+            {
+                m_InputAsset.AddControlScheme(controlScheme);
+            }
 
-            CreateControlScheme(m_InputAsset, m_PlayerInput.defaultActionMap, m_Device);
-
+            m_InputAssetCollection.bindingMask = InputBinding.MaskByGroup(controlScheme.bindingGroup);
             InputSystem.AddDevice(m_Device);
+            m_InputAssetCollection.devices = new ReadOnlyArray<InputDevice>(new[] { m_Device });
+            inputActionMap.devices = m_InputAssetCollection.devices;
+            inputActionMap.Enable();
 
             var specs = new ActionSpec[m_Actuators.Length];
             for (var i = 0; i < m_Actuators.Length; i++)
@@ -121,8 +136,8 @@ namespace Unity.MLAgents.Extensions.Input
                 specs[i] = actuator.ActionSpec;
             }
 
-            m_ActionSpec = ActionSpec.Combine(specs);
 
+            m_ActionSpec = ActionSpec.Combine(specs);
             m_InputAsset.Enable();
             return m_Actuators;
         }
@@ -132,42 +147,29 @@ namespace Unity.MLAgents.Extensions.Input
         /// we can add our device to in order for it to be discovered by the <see cref="InputSystem"/>.
         /// </summary>
         /// <param name="asset">The <see cref="InputAction"/> to add the <see cref="InputControlScheme"/> to.</param>
-        /// <param name="defaultMap">The <see cref="InputActionMap"/> to pull
-        /// <see cref="InputControlScheme.DeviceRequirement"/>s from</param>
         /// <param name="device">The virtual device to add to our custom control scheme.</param>
-        internal static void CreateControlScheme(InputActionAsset asset, string defaultMap, InputControl device)
+        /// <param name="localId">id of device</param>
+        internal static InputControlScheme CreateControlScheme(InputActionAsset asset, InputControl device, uint localId)
         {
             // If the control scheme isn't created, create it with our device registered
             // as required.  Devices with the same path get incremented automatically by the InputSystem
             // after the first one.
-            var deviceRequirements = new List<InputControlScheme.DeviceRequirement>
+            var deviceRequirements = new[]
             {
                 new InputControlScheme.DeviceRequirement
                 {
                     controlPath = device.path,
                     isOptional = true,
+                    isAND = false,
                     isOR = true
                 }
             };
-
-            var map = asset.FindActionMap(defaultMap);
-            for (var i = 0; i < map.controlSchemes.Count; i++)
-            {
-                var cs = map.controlSchemes[i];
-                for (var ii = 0; ii < cs.deviceRequirements.Count; ii++)
-                {
-                    deviceRequirements.Add(cs.deviceRequirements[ii]);
-                }
-            }
-
+            var controlSchemeName = mlAgentsControlSchemeName + localId;
             var inputControlScheme = new InputControlScheme(
-                mlAgentsControlSchemeName,
-                deviceRequirements.ToArray());
+                controlSchemeName,
+                deviceRequirements);
 
-            if (asset.FindControlSchemeIndex(mlAgentsControlSchemeName) == -1)
-            {
-                asset.AddControlScheme(inputControlScheme);
-            }
+            return inputControlScheme;
         }
 
 #pragma warning disable 672
@@ -216,13 +218,13 @@ namespace Unity.MLAgents.Extensions.Input
         /// <summary>
         ///
         /// </summary>
-        /// <param name="asset"></param>
+        /// <param name="defaultMap"></param>
         /// <param name="layoutName"></param>
         /// <param name="localId"></param>
         /// <param name="behaviorParameters"></param>
         /// <returns></returns>
         internal static IActuator[] GenerateActionActuatorsFromAsset(
-            InputActionAsset asset,
+            InputActionMap defaultMap,
             string layoutName,
             uint localId,
             BehaviorParameters behaviorParameters)
@@ -234,13 +236,14 @@ namespace Unity.MLAgents.Extensions.Input
 
             var actuators = new List<IActuator>();
 
-            foreach (var action in asset)
+            foreach (var action in defaultMap)
             {
                 var actionLayout = InputSystem.LoadLayout(action.expectedControlType);
 
                 builder.AddControl(action.name)
                     .WithLayout(action.expectedControlType)
-                    .WithFormat(actionLayout.stateFormat);
+                    .WithFormat(actionLayout.stateFormat)
+                    .WithUsages($"MLAgentPlayer-{localId}");
 
                 var binding = action.bindings[0];
                 var devicePath = InputControlPath.Separator + layoutName;
@@ -249,41 +252,42 @@ namespace Unity.MLAgents.Extensions.Input
                 // is added.  So for device ID of 0, we use the empty string in the path.
                 var deviceId = localId == 0 ? string.Empty : "" + localId;
                 var path = $"{devicePath}{deviceId}{InputControlPath.Separator}{action.name}";
-                if (binding.isComposite)
-                {
-                    // search for a child of the composite so we can get the groups
-                    // this is not technically correct as each binding can have different groups
-                    InputBinding? child = null;
-                    for (var i = 1; i < action.bindings.Count; i++)
-                    {
-                        var candidate = action.bindings[i];
-                        if (candidate.isComposite || binding.action != candidate.action)
-                        {
-                            continue;
-                        }
-
-                        child = candidate;
-                        break;
-                    }
-
-                    var groups = string.Empty;
-                    if (child != null)
-                    {
-                        groups = child.Value.groups;
-                    }
-                    // var compositeType = controlTypeToCompositeType[action.expectedControlType];
-                    action.AddBinding(path,
-                        action.interactions,
-                        action.processors,
-                        $"{groups}{InputBinding.Separator}{mlAgentsControlSchemeName}");
-                }
-                else
-                {
-                    action.AddBinding(path,
-                        action.interactions,
-                        action.processors,
-                        $"{binding.groups}{InputBinding.Separator}{mlAgentsControlSchemeName}");
-                }
+                // if (binding.isComposite)
+                // {
+                //     // search for a child of the composite so we can get the groups
+                //     // this is not technically correct as each binding can have different groups
+                //     InputBinding? child = null;
+                //     for (var i = 1; i < action.bindings.Count; i++)
+                //     {
+                //         var candidate = action.bindings[i];
+                //         if (candidate.isComposite || binding.action != candidate.action)
+                //         {
+                //             continue;
+                //         }
+                //
+                //         child = candidate;
+                //         break;
+                //     }
+                //
+                //     var groups = string.Empty;
+                //     // if (child != null)
+                //     // {
+                //     //     groups = child.Value.groups;
+                //     // }
+                //     // var compositeType = controlTypeToCompositeType[action.expectedControlType];
+                //     action.AddBinding(path,
+                //         action.interactions,
+                //         action.processors,
+                //          mlAgentsControlSchemeName);
+                //         // $"{groups}{InputBinding.Separator}{mlAgentsControlSchemeName}");
+                // }
+                // else
+                // {
+                action.AddBinding(path,
+                    action.interactions,
+                    action.processors,
+                    mlAgentsControlSchemeName + localId);
+                // }
 
                 var adaptor = (IRLActionInputAdaptor)Activator.CreateInstance(
                     controlTypeToAdaptorType[actionLayout.type]);
@@ -305,20 +309,15 @@ namespace Unity.MLAgents.Extensions.Input
             if (m_InputAsset == null)
             {
                 var assetProvider = GetComponent<IInputActionAssetProvider>();
-                if (assetProvider != null)
-                {
-                    m_InputAsset = assetProvider.GetInputActionAsset();
-                }
+                Assert.IsNotNull(assetProvider);
+                (m_InputAsset, m_InputAssetCollection) = assetProvider.GetInputActionAsset();
+                Assert.IsNotNull(m_InputAsset, "An InputActionAsset could not be found on IInputActionAssetProvider or PlayerInput.");
+                Assert.IsNotNull(m_InputAssetCollection, "An IInputActionCollection2 could not be found on IInputActionAssetProvider or PlayerInput.");
             }
             if (m_PlayerInput == null)
             {
                 m_PlayerInput = GetComponent<PlayerInput>();
                 Assert.IsNotNull(m_PlayerInput, "PlayerInput component could not be found on this GameObject.");
-                if (m_InputAsset == null)
-                {
-                    m_InputAsset = m_PlayerInput.actions;
-                }
-                Assert.IsNotNull(m_InputAsset, "An InputActionAsset could not be found on IInputActionAssetProvider or PlayerInput.");
             }
 
             if (m_BehaviorParameters == null)
@@ -345,9 +344,14 @@ namespace Unity.MLAgents.Extensions.Input
             }
 
             if (m_InputAsset != null
-                && m_InputAsset.FindControlSchemeIndex(mlAgentsControlSchemeName) != -1)
+                && m_InputAsset.FindControlSchemeIndex(mlAgentsControlSchemeName + m_LocalId) != -1)
             {
-                m_InputAsset.RemoveControlScheme(mlAgentsControlSchemeName);
+                m_InputAsset.RemoveControlScheme(mlAgentsControlSchemeName + m_LocalId);
+            }
+
+            if (m_Actuators != null)
+            {
+                Array.Clear(m_Actuators, 0, m_Actuators.Length);
             }
             m_InputAsset = null;
             m_PlayerInput = null;

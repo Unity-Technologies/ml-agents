@@ -19,7 +19,7 @@ namespace Unity.MLAgents.Extensions.Input
         /// <see cref="InputActionAsset"/> in order to correctly fire events when simulating input from ML-Agents.
         /// </summary>
         /// <returns>The instance of the <see cref="InputActionAsset"/> you are listening for events on.</returns>
-        InputActionAsset GetInputActionAsset();
+        (InputActionAsset, IInputActionCollection2) GetInputActionAsset();
     }
 }
 #endif // MLA_INPUT_SYSTEM && UNITY_2019_4_OR_NEWER

@@ -27,7 +27,12 @@ namespace Unity.MLAgents.Extensions.Input
         {
             var x = actionBuffers.ContinuousActions[0];
             var y = actionBuffers.ContinuousActions[1];
-            InputSystem.QueueDeltaStateEvent(control, new Vector2(x, y));
+            using (StateEvent.From(control.device, out var eventPtr))
+            {
+                control.WriteValueIntoEvent(new Vector2(x, y), eventPtr);
+                InputSystem.QueueEvent(eventPtr);
+            }
+            InputSystem.Update();
         }
 
         /// <inheritdoc cref="IRLActionInputAdaptor.WriteToHeuristic"/>
