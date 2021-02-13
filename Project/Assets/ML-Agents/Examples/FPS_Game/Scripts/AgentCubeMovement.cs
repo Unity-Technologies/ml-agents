@@ -47,6 +47,23 @@ namespace MLAgents
         public float spinAttackSpeed = 20f;
         private bool spinAttack;
 
+        public enum RotationAxes { MouseXAndY = 0, MouseX = 1, 	MouseY = 2 };
+        [Header("BODY ROTATION")]
+        public RotationAxes axes = RotationAxes.MouseXAndY;
+        public float sensitivityX = 15F;
+        public float sensitivityY = 15F;
+
+        public float minimumX = -360F;
+        public float maximumX = 360F;
+
+        public float minimumY = -60F;
+        public float maximumY = 60F;
+
+        float rotationX = 0F;
+        float rotationY = 0F;
+
+        Quaternion originalRotation;
+
         [Header("BODY ROTATION")]
         public bool MatchCameraRotation;
         //body rotation speed
@@ -79,6 +96,8 @@ namespace MLAgents
             rb = GetComponent<Rigidbody>();
             groundCheck = GetComponent<AgentCubeGroundCheck>();
             rb.maxAngularVelocity = maxAngularVel;
+            originalRotation = transform.localRotation;
+
         }
 
         void Update()
@@ -229,15 +248,34 @@ namespace MLAgents
         //     transform.localEulerAngles = m_Rotation;
         // }
 
-        public void Look(float rotate)
+        // public void Look(float rotate)
+        // {
+        //     if (Mathf.Abs(rotate) < 0.01)
+        //         return;
+        //     // var scaledRotateSpeed = agentRotationSpeed * Time.deltaTime;
+        //     var scaledRotateSpeed = agentRotationSpeed * Time.fixedDeltaTime;
+        //     m_Rotation.y += rotate * scaledRotateSpeed;
+        //     // m_Rotation.x = Mathf.Clamp(m_Rotation.x - rotate.y * scaledRotateSpeed, -89, 89);
+        //     transform.localEulerAngles = m_Rotation;
+        // }
+
+        public static float ClampAngle(float angle, float min, float max)
         {
-            if (Mathf.Abs(rotate) < 0.01)
-                return;
-            // var scaledRotateSpeed = agentRotationSpeed * Time.deltaTime;
-            var scaledRotateSpeed = agentRotationSpeed * Time.fixedDeltaTime;
-            m_Rotation.y += rotate * scaledRotateSpeed;
-            // m_Rotation.x = Mathf.Clamp(m_Rotation.x - rotate.y * scaledRotateSpeed, -89, 89);
-            transform.localEulerAngles = m_Rotation;
+            if (angle < -360F)
+                angle += 360F;
+            if (angle > 360F)
+                angle -= 360F;
+            return Mathf.Clamp(angle, min, max);
+        }
+
+        public void Look(float xRot = 0, float yRot = 0)
+        {
+                // Read the mouse input axis
+                rotationX += Input.GetAxis("Mouse X") * sensitivityX;
+                rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
+                rotationX = ClampAngle(rotationX, minimumX, maximumX);
+                rotationY = ClampAngle(rotationY, minimumY, maximumY);
+
         }
 
         public bool applyStandingForce = false;
@@ -246,6 +284,37 @@ namespace MLAgents
         public float standingForcePositionOffset = .5f;
         void FixedUpdate()
         {
+
+
+            if (axes == RotationAxes.MouseXAndY)
+            {
+
+
+                Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
+                Quaternion yQuaternion = Quaternion.AngleAxis(rotationY, -Vector3.right);
+
+                transform.localRotation = originalRotation * xQuaternion * yQuaternion;
+            }
+            else if (axes == RotationAxes.MouseX)
+            {
+                // rotationX += Input.GetAxis("Mouse X") * sensitivityX;
+                // rotationX = ClampAngle(rotationX, minimumX, maximumX);
+
+                Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
+                transform.localRotation = originalRotation * xQuaternion;
+            }
+            else
+            {
+                // rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
+                // rotationY = ClampAngle(rotationY, minimumY, maximumY);
+
+                Quaternion yQuaternion = Quaternion.AngleAxis(-rotationY, Vector3.right);
+                transform.localRotation = originalRotation * yQuaternion;
+            }
+
+
+
+
 
 
             if (groundCheck && !groundCheck.isGrounded)

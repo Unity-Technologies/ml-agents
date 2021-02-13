@@ -128,7 +128,6 @@ public class DodgeBallAgent : Agent
         m_InputH = act[1];
         m_Rotate = act[2];
         m_ShootInput = act[3];
-        // m_CubeMovement.RotateBody(m_Rotate, m_InputV);
         m_CubeMovement.Look(m_Rotate);
         Vector3 moveDir = input.Cam.transform.TransformDirection(new Vector3(m_InputH, 0, m_InputV));
         moveDir.y = 0;
