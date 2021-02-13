@@ -173,17 +173,20 @@ to equal the number of floats that are written by `CollectObservations()`.
 #### Observable Fields and Properties
 Another approach is to define the relevant observations as fields or properties
 on your Agent class, and annotate them with an `ObservableAttribute`. For
-example, in the 3DBall example above, the rigid body velocity could be observed
+example, in the Ball3DHardAgent, the difference between positions could be observed
 by adding a property to the Agent:
 ```csharp
 using Unity.MLAgents.Sensors.Reflection;
 
-public class Ball3DAgent : Agent {
+public class Ball3DHardAgent : Agent {
 
-    [Observable]
-    public Vector3 RigidBodyVelocity
+    [Observable(numStackedObservations: 9)]
+    Vector3 PositionDelta
     {
-        get { return m_BallRb.velocity;  }
+        get
+        {
+            return ball.transform.position - gameObject.transform.position;
+        }
     }
 }
 ```

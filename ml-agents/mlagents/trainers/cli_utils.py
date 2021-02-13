@@ -189,6 +189,9 @@ def _create_parser() -> argparse.ArgumentParser:
         action=RaiseRemovedWarning,
         help="(Removed) Use the TensorFlow framework.",
     )
+    argparser.add_argument(
+        "--results-dir", default="results", help="Results base directory"
+    )
 
     eng_conf = argparser.add_argument_group(title="Engine Configuration")
     eng_conf.add_argument(

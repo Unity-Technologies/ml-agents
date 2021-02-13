@@ -38,10 +38,13 @@ def behavior_spec_from_proto(
         observation_specs.append(
             ObservationSpec(
                 tuple(obs.shape),
-                tuple(DimensionProperty(dim) for dim in obs.dimension_properties),
+                tuple(DimensionProperty(dim) for dim in obs.dimension_properties)
+                if len(obs.dimension_properties) > 0
+                else (DimensionProperty.UNSPECIFIED,) * len(obs.shape),
                 ObservationType(obs.observation_type),
             )
         )
+
     # proto from communicator < v1.3 does not set action spec, use deprecated fields instead
     if (
         brain_param_proto.action_spec.num_continuous_actions == 0

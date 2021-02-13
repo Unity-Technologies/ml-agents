@@ -12,37 +12,30 @@ namespace Unity.MLAgents.Tests.Communicator
         {
             var unityVerStr = "1.0.0";
             var pythonVerStr = "1.0.0";
-            var pythonPackageVerStr = "0.16.0";
 
             Assert.IsTrue(RpcCommunicator.CheckCommunicationVersionsAreCompatible(unityVerStr,
-                pythonVerStr,
-                pythonPackageVerStr));
+                pythonVerStr));
             LogAssert.NoUnexpectedReceived();
 
             pythonVerStr = "1.1.0";
             Assert.IsTrue(RpcCommunicator.CheckCommunicationVersionsAreCompatible(unityVerStr,
-                pythonVerStr,
-                pythonPackageVerStr));
+                pythonVerStr));
             LogAssert.NoUnexpectedReceived();
 
             unityVerStr = "2.0.0";
             Assert.IsFalse(RpcCommunicator.CheckCommunicationVersionsAreCompatible(unityVerStr,
-                pythonVerStr,
-                pythonPackageVerStr));
+                pythonVerStr));
 
             unityVerStr = "0.15.0";
             pythonVerStr = "0.15.0";
             Assert.IsTrue(RpcCommunicator.CheckCommunicationVersionsAreCompatible(unityVerStr,
-                pythonVerStr,
-                pythonPackageVerStr));
+                pythonVerStr));
             unityVerStr = "0.16.0";
             Assert.IsFalse(RpcCommunicator.CheckCommunicationVersionsAreCompatible(unityVerStr,
-                pythonVerStr,
-                pythonPackageVerStr));
+                pythonVerStr));
             unityVerStr = "1.15.0";
             Assert.IsFalse(RpcCommunicator.CheckCommunicationVersionsAreCompatible(unityVerStr,
-                pythonVerStr,
-                pythonPackageVerStr));
+                pythonVerStr));
 
         }
     }
