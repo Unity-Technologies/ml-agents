@@ -961,6 +961,10 @@ namespace Unity.MLAgents
         /// </summary>
         internal void InitializeSensors()
         {
+            if (m_PolicyFactory == null)
+            {
+                m_PolicyFactory = GetComponent<BehaviorParameters>();
+            }
             if (m_PolicyFactory.ObservableAttributeHandling != ObservableAttributeOptions.Ignore)
             {
                 var excludeInherited =
