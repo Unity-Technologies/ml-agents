@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System;
+using UnityEngine;
 
 namespace Unity.MLAgents.SideChannels
 {
@@ -34,9 +35,18 @@ namespace Unity.MLAgents.SideChannels
 
         internal void ProcessMessage(byte[] msg)
         {
-            using (var incomingMsg = new IncomingMessage(msg))
+            try
             {
-                OnMessageReceived(incomingMsg);
+                using (var incomingMsg = new IncomingMessage(msg))
+                {
+                    OnMessageReceived(incomingMsg);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Catch all errors in the sidechannel processing, so that a single
+                // bad SideChannel implementation doesn't take everything down with it.
+                Debug.LogError($"Error processing SideChannel message: {ex}.\nThe message will be skipped.");
             }
         }
 
