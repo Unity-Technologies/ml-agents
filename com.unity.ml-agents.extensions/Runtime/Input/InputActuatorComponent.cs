@@ -290,42 +290,10 @@ namespace Unity.MLAgents.Extensions.Input
                 // is added.  So for device ID of 0, we use the empty string in the path.
                 var deviceId = localId == 0 ? string.Empty : "" + localId;
                 var path = $"{devicePath}{deviceId}{InputControlPath.Separator}{action.name}";
-                // if (binding.isComposite)
-                // {
-                //     // search for a child of the composite so we can get the groups
-                //     // this is not technically correct as each binding can have different groups
-                //     InputBinding? child = null;
-                //     for (var i = 1; i < action.bindings.Count; i++)
-                //     {
-                //         var candidate = action.bindings[i];
-                //         if (candidate.isComposite || binding.action != candidate.action)
-                //         {
-                //             continue;
-                //         }
-                //
-                //         child = candidate;
-                //         break;
-                //     }
-                //
-                //     var groups = string.Empty;
-                //     // if (child != null)
-                //     // {
-                //     //     groups = child.Value.groups;
-                //     // }
-                //     // var compositeType = controlTypeToCompositeType[action.expectedControlType];
-                //     action.AddBinding(path,
-                //         action.interactions,
-                //         action.processors,
-                //          mlAgentsControlSchemeName);
-                //         // $"{groups}{InputBinding.Separator}{mlAgentsControlSchemeName}");
-                // }
-                // else
-                // {
                 action.AddBinding(path,
                     action.interactions,
                     action.processors,
                     mlAgentsControlSchemeName + localId);
-                // }
 
                 var adaptor = (IRLActionInputAdaptor)Activator.CreateInstance(
                     controlTypeToAdaptorType[actionLayout.type]);
