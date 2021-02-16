@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Unity.MLAgents.Extensions.MultiAgent
@@ -11,14 +12,14 @@ namespace Unity.MLAgents.Extensions.MultiAgent
         int m_StepCount;
         int m_GroupMaxStep;
         readonly int m_Id = MultiAgentGroupIdCounter.GetGroupId();
-        List<Agent> m_Agents = new List<Agent> { };
+        HashSet<Agent> m_Agents = new HashSet<Agent>();
 
 
         public void Dispose()
         {
             while (m_Agents.Count > 0)
             {
-                UnregisterAgent(m_Agents[0]);
+                UnregisterAgent(m_Agents.First());
             }
         }
 
@@ -55,7 +56,7 @@ namespace Unity.MLAgents.Extensions.MultiAgent
         /// <returns>
         /// List of agents registered to the MultiAgentGroup.
         /// </returns>
-        public List<Agent> GetRegisteredAgents()
+        public HashSet<Agent> GetRegisteredAgents()
         {
             return m_Agents;
         }
