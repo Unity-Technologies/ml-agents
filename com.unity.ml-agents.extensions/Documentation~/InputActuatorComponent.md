@@ -19,7 +19,7 @@ most developers would use.  Please let us know if you want more control types im
 forum.](https://forum.unity.com/forums/ml-agents.453/)
 
 ## Getting started
-The C# code for the `InputActuatorComponent` exists inside of the extensions package (com.unity.ml-agents.extensions).  A good first step would be to familiarize with the extensions package by reading the document [here](com.unity.ml-agents.extensions.md).  The second step would be to take a look at how we have implemented the C# code in the example Input Integratin scene (located under  ML-Agents-Input-Example/Assets/ML-Agents/Examples/PushBlock/).  Once you have some familiarity, then the next step would be to add the InputActuatorComponent to your player Agent.  The example we have implemented uses C# Events to send information from the Input System.
+The C# code for the `InputActuatorComponent` exists inside of the extensions package (com.unity.ml-agents.extensions).  A good first step would be to familiarize with the extensions package by reading the document [here](com.unity.ml-agents.extensions.md).  The second step would be to take a look at how we have implemented the C# code in the example Input Integration scene (located under  ML-Agents-Input-Example/Assets/ML-Agents/Examples/PushBlock/).  Once you have some familiarity, then the next step would be to add the InputActuatorComponent to your player Agent.  The example we have implemented uses C# Events to send information from the Input System.
 
 Additionally, see below for additional technical specifications on the C# code for the InputActuatorComponent.
 
