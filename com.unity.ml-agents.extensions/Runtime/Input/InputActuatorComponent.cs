@@ -30,6 +30,10 @@ namespace Unity.MLAgents.Extensions.Input
         Agent m_Agent;
         uint m_LocalId;
 
+        /// <summary>
+        /// This is used to generate paths and control schemes for devices unique to an Agent based
+        /// on how the input system names devices with the same layout.
+        /// </summary>
         static uint s_DeviceId;
 
         /// <summary>
