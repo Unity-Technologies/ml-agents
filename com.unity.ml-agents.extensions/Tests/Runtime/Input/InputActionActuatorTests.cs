@@ -47,26 +47,11 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
         [SetUp]
         public void Setup()
         {
-
             var go = new GameObject();
             m_BehaviorParameters = go.AddComponent<BehaviorParameters>();
             var action = new InputAction("action");
             m_Adaptor = new TestAdaptor();
             m_Actuator = new InputActionActuator(m_BehaviorParameters, action, m_Adaptor);
-
-        }
-
-        [Test]
-        public void TestIsInHeuristicMode()
-        {
-            m_BehaviorParameters.BehaviorType = BehaviorType.HeuristicOnly;
-            Assert.IsTrue(m_Actuator.IsInHeuristicMode());
-
-            m_BehaviorParameters.BehaviorType = BehaviorType.Default;
-            Assert.IsTrue(m_Actuator.IsInHeuristicMode());
-
-            m_BehaviorParameters.Model = ScriptableObject.CreateInstance<NNModel>();
-            Assert.IsFalse(m_Actuator.IsInHeuristicMode());
         }
 
         [Test]
@@ -93,7 +78,6 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
             m_Actuator.ResetData();
             m_Actuator.WriteDiscreteActionMask(null);
         }
-
     }
 }
 #endif // MLA_INPUT_TESTS && UNITY_2019_4_OR_NEWER

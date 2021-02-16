@@ -124,7 +124,7 @@ namespace Unity.MLAgents.Policies
         public BehaviorType BehaviorType
         {
             get { return m_BehaviorType; }
-            set { m_BehaviorType = value; UpdateAgentPolicy(); OnPolicyUpdated?.Invoke(IsInHeuristicMode()); }
+            set { m_BehaviorType = value; UpdateAgentPolicy(); }
         }
 
         [HideInInspector, SerializeField]
@@ -252,8 +252,8 @@ namespace Unity.MLAgents.Policies
                 return true;
             }
             return BehaviorType == BehaviorType.Default &&
-                     ReferenceEquals(Model, null) &&
-                     !Academy.Instance.IsCommunicatorOn;
+                ReferenceEquals(Model, null) &&
+                !Academy.Instance.IsCommunicatorOn;
         }
 
         internal void UpdateAgentPolicy()
@@ -264,7 +264,7 @@ namespace Unity.MLAgents.Policies
                 return;
             }
             agent.ReloadPolicy();
-
+            OnPolicyUpdated?.Invoke(IsInHeuristicMode());
         }
     }
 }
