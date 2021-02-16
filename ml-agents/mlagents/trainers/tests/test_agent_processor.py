@@ -275,25 +275,13 @@ def test_agent_manager_stats():
 
     expected_stats = {
         "averaged": StatsSummary(
-            mean=2.0,
-            std=mock.ANY,
-            num=2,
-            sum=4.0,
-            aggregation_method=StatsAggregationMethod.AVERAGE,
+            full_dist=[1.0, 3.0], aggregation_method=StatsAggregationMethod.AVERAGE
         ),
         "most_recent": StatsSummary(
-            mean=4.0,
-            std=0.0,
-            num=1,
-            sum=4.0,
-            aggregation_method=StatsAggregationMethod.MOST_RECENT,
+            full_dist=[4.0], aggregation_method=StatsAggregationMethod.MOST_RECENT
         ),
         "summed": StatsSummary(
-            mean=2.1,
-            std=mock.ANY,
-            num=2,
-            sum=4.2,
-            aggregation_method=StatsAggregationMethod.SUM,
+            full_dist=[3.1, 1.1], aggregation_method=StatsAggregationMethod.SUM
         ),
     }
     stats_reporter.write_stats(123)

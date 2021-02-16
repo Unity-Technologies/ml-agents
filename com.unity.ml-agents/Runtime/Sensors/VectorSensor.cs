@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
@@ -7,7 +8,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// A sensor implementation for vector observations.
     /// </summary>
-    public class VectorSensor : ISensor
+    public class VectorSensor : ISensor, IBuiltInSensor
     {
         // TODO use float[] instead
         // TODO allow setting float[]
@@ -57,7 +58,7 @@ namespace Unity.MLAgents.Sensors
                     m_Observations.Add(0);
                 }
             }
-            writer.AddRange(m_Observations);
+            writer.AddList(m_Observations);
             return expectedObservations;
         }
 
@@ -104,6 +105,12 @@ namespace Unity.MLAgents.Sensors
         public virtual SensorCompressionType GetCompressionType()
         {
             return SensorCompressionType.None;
+        }
+
+        /// <inheritdoc/>
+        public BuiltInSensorType GetBuiltInSensorType()
+        {
+            return BuiltInSensorType.VectorSensor;
         }
 
         void Clear()
@@ -164,11 +171,24 @@ namespace Unity.MLAgents.Sensors
         /// Adds a collection of float observations to the vector observations of the agent.
         /// </summary>
         /// <param name="observation">Observation.</param>
+        [Obsolete("Use AddObservation(IList<float>) for better performance.")]
         public void AddObservation(IEnumerable<float> observation)
         {
             foreach (var f in observation)
             {
                 AddFloatObs(f);
+            }
+        }
+
+        /// <summary>
+        /// Adds a list or array of float observations to the vector observations of the agent.
+        /// </summary>
+        /// <param name="observation">Observation.</param>
+        public void AddObservation(IList<float> observation)
+        {
+            for (var i = 0; i < observation.Count; i++)
+            {
+                AddFloatObs(observation[i]);
             }
         }
 

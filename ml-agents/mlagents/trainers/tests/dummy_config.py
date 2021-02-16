@@ -80,6 +80,8 @@ def create_observation_specs_with_shapes(
     obs_specs: List[ObservationSpec] = []
     for shape in shapes:
         dim_prop = (DimensionProperty.UNSPECIFIED,) * len(shape)
+        if len(shape) == 2:
+            dim_prop = (DimensionProperty.VARIABLE_SIZE, DimensionProperty.NONE)
         spec = ObservationSpec(shape, dim_prop, ObservationType.DEFAULT)
         obs_specs.append(spec)
     return obs_specs

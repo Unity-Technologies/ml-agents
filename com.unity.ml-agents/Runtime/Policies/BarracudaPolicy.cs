@@ -12,14 +12,20 @@ namespace Unity.MLAgents.Policies
     public enum InferenceDevice
     {
         /// <summary>
-        /// CPU inference
+        /// CPU inference. Corresponds to in WorkerFactory.Type.CSharp Barracuda.
+        /// Burst is recommended instead; this is kept for legacy compatibility.
         /// </summary>
         CPU = 0,
 
         /// <summary>
-        /// GPU inference
+        /// GPU inference. Corresponds to WorkerFactory.Type.ComputePrecompiled in Barracuda.
         /// </summary>
-        GPU = 1
+        GPU = 1,
+
+        /// <summary>
+        /// CPU inference using Burst. Corresponds to WorkerFactory.Type.CSharpBurst in Barracuda.
+        /// </summary>
+        Burst = 2,
     }
 
     /// <summary>

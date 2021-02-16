@@ -20,6 +20,7 @@ from mlagents.trainers.tests.dummy_config import create_observation_specs_with_s
 
 OBS_SIZE = 1
 VIS_OBS_SIZE = (20, 20, 3)
+VAR_LEN_SIZE = (10, 5)
 STEP_SIZE = 0.2
 
 TIME_PENALTY = 0.01
@@ -43,15 +44,19 @@ class SimpleEnvironment(BaseEnv):
         step_size=STEP_SIZE,
         num_visual=0,
         num_vector=1,
+        num_var_len=0,
         vis_obs_size=VIS_OBS_SIZE,
         vec_obs_size=OBS_SIZE,
+        var_len_obs_size=VAR_LEN_SIZE,
         action_sizes=(1, 0),
     ):
         super().__init__()
         self.num_visual = num_visual
         self.num_vector = num_vector
+        self.num_var_len = num_var_len
         self.vis_obs_size = vis_obs_size
         self.vec_obs_size = vec_obs_size
+        self.var_len_obs_size = var_len_obs_size
         continuous_action_size, discrete_action_size = action_sizes
         discrete_tuple = tuple(2 for _ in range(discrete_action_size))
         action_spec = ActionSpec(continuous_action_size, discrete_tuple)
@@ -72,6 +77,8 @@ class SimpleEnvironment(BaseEnv):
         self.step_result: Dict[str, Tuple[DecisionSteps, TerminalSteps]] = {}
         self.agent_id: Dict[str, int] = {}
         self.step_size = step_size  # defines the difficulty of the test
+        # Allow to be used as a UnityEnvironment during tests
+        self.academy_capabilities = None
 
         for name in self.names:
             self.agent_id[name] = 0
@@ -88,6 +95,8 @@ class SimpleEnvironment(BaseEnv):
             obs_shape.append((self.vec_obs_size,))
         for _ in range(self.num_visual):
             obs_shape.append(self.vis_obs_size)
+        for _ in range(self.num_var_len):
+            obs_shape.append(self.var_len_obs_size)
         obs_spec = create_observation_specs_with_shapes(obs_shape)
         return obs_spec
 
@@ -97,6 +106,8 @@ class SimpleEnvironment(BaseEnv):
             obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * value)
         for _ in range(self.num_visual):
             obs.append(np.ones((1,) + self.vis_obs_size, dtype=np.float32) * value)
+        for _ in range(self.num_var_len):
+            obs.append(np.ones((1,) + self.var_len_obs_size, dtype=np.float32) * value)
         return obs
 
     @property

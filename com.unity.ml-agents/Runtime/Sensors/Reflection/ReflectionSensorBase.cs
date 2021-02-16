@@ -24,7 +24,7 @@ namespace Unity.MLAgents.Sensors.Reflection
     /// <summary>
     /// Abstract base class for reflection-based sensors.
     /// </summary>
-    internal abstract class ReflectionSensorBase : ISensor
+    internal abstract class ReflectionSensorBase : ISensor, IBuiltInSensor
     {
         protected object m_Object;
 
@@ -99,5 +99,12 @@ namespace Unity.MLAgents.Sensors.Reflection
         {
             return m_SensorName;
         }
+
+        /// <inheritdoc/>
+        public BuiltInSensorType GetBuiltInSensorType()
+        {
+            return BuiltInSensorType.ReflectionSensor;
+        }
+
     }
 }

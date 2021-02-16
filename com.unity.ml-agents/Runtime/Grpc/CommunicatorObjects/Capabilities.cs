@@ -25,16 +25,17 @@ namespace Unity.MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjVtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2NhcGFiaWxp",
-            "dGllcy5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMilAEKGFVuaXR5UkxD",
+            "dGllcy5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMi0gEKGFVuaXR5UkxD",
             "YXBhYmlsaXRpZXNQcm90bxIaChJiYXNlUkxDYXBhYmlsaXRpZXMYASABKAgS",
             "IwobY29uY2F0ZW5hdGVkUG5nT2JzZXJ2YXRpb25zGAIgASgIEiAKGGNvbXBy",
             "ZXNzZWRDaGFubmVsTWFwcGluZxgDIAEoCBIVCg1oeWJyaWRBY3Rpb25zGAQg",
-            "ASgIQiWqAiJVbml0eS5NTEFnZW50cy5Db21tdW5pY2F0b3JPYmplY3RzYgZw",
-            "cm90bzM="));
+            "ASgIEhkKEXRyYWluaW5nQW5hbHl0aWNzGAUgASgIEiEKGXZhcmlhYmxlTGVu",
+            "Z3RoT2JzZXJ2YXRpb24YBiABKAhCJaoCIlVuaXR5Lk1MQWdlbnRzLkNvbW11",
+            "bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto.Parser, new[]{ "BaseRLCapabilities", "ConcatenatedPngObservations", "CompressedChannelMapping", "HybridActions" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto.Parser, new[]{ "BaseRLCapabilities", "ConcatenatedPngObservations", "CompressedChannelMapping", "HybridActions", "TrainingAnalytics", "VariableLengthObservation" }, null, null, null)
           }));
     }
     #endregion
@@ -75,6 +76,8 @@ namespace Unity.MLAgents.CommunicatorObjects {
       concatenatedPngObservations_ = other.concatenatedPngObservations_;
       compressedChannelMapping_ = other.compressedChannelMapping_;
       hybridActions_ = other.hybridActions_;
+      trainingAnalytics_ = other.trainingAnalytics_;
+      variableLengthObservation_ = other.variableLengthObservation_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -139,6 +142,34 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "trainingAnalytics" field.</summary>
+    public const int TrainingAnalyticsFieldNumber = 5;
+    private bool trainingAnalytics_;
+    /// <summary>
+    /// support for training analytics
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool TrainingAnalytics {
+      get { return trainingAnalytics_; }
+      set {
+        trainingAnalytics_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "variableLengthObservation" field.</summary>
+    public const int VariableLengthObservationFieldNumber = 6;
+    private bool variableLengthObservation_;
+    /// <summary>
+    /// Support for variable length observations of rank 2
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool VariableLengthObservation {
+      get { return variableLengthObservation_; }
+      set {
+        variableLengthObservation_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as UnityRLCapabilitiesProto);
@@ -156,6 +187,8 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (ConcatenatedPngObservations != other.ConcatenatedPngObservations) return false;
       if (CompressedChannelMapping != other.CompressedChannelMapping) return false;
       if (HybridActions != other.HybridActions) return false;
+      if (TrainingAnalytics != other.TrainingAnalytics) return false;
+      if (VariableLengthObservation != other.VariableLengthObservation) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -166,6 +199,8 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (ConcatenatedPngObservations != false) hash ^= ConcatenatedPngObservations.GetHashCode();
       if (CompressedChannelMapping != false) hash ^= CompressedChannelMapping.GetHashCode();
       if (HybridActions != false) hash ^= HybridActions.GetHashCode();
+      if (TrainingAnalytics != false) hash ^= TrainingAnalytics.GetHashCode();
+      if (VariableLengthObservation != false) hash ^= VariableLengthObservation.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -195,6 +230,14 @@ namespace Unity.MLAgents.CommunicatorObjects {
         output.WriteRawTag(32);
         output.WriteBool(HybridActions);
       }
+      if (TrainingAnalytics != false) {
+        output.WriteRawTag(40);
+        output.WriteBool(TrainingAnalytics);
+      }
+      if (VariableLengthObservation != false) {
+        output.WriteRawTag(48);
+        output.WriteBool(VariableLengthObservation);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -213,6 +256,12 @@ namespace Unity.MLAgents.CommunicatorObjects {
         size += 1 + 1;
       }
       if (HybridActions != false) {
+        size += 1 + 1;
+      }
+      if (TrainingAnalytics != false) {
+        size += 1 + 1;
+      }
+      if (VariableLengthObservation != false) {
         size += 1 + 1;
       }
       if (_unknownFields != null) {
@@ -237,6 +286,12 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
       if (other.HybridActions != false) {
         HybridActions = other.HybridActions;
+      }
+      if (other.TrainingAnalytics != false) {
+        TrainingAnalytics = other.TrainingAnalytics;
+      }
+      if (other.VariableLengthObservation != false) {
+        VariableLengthObservation = other.VariableLengthObservation;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -263,6 +318,14 @@ namespace Unity.MLAgents.CommunicatorObjects {
           }
           case 32: {
             HybridActions = input.ReadBool();
+            break;
+          }
+          case 40: {
+            TrainingAnalytics = input.ReadBool();
+            break;
+          }
+          case 48: {
+            VariableLengthObservation = input.ReadBool();
             break;
           }
         }

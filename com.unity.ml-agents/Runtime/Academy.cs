@@ -91,9 +91,17 @@ namespace Unity.MLAgents
         ///         <term>1.3.0</term>
         ///         <description>Support both continuous and discrete actions.</description>
         ///     </item>
+        ///     <item>
+        ///         <term>1.4.0</term>
+        ///         <description>Support training analytics sent from python trainer to the editor.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term>1.5.0</term>
+        ///         <description>Support variable length observation training.</description>
+        ///     </item>
         /// </list>
         /// </remarks>
-        const string k_ApiVersion = "1.3.0";
+        const string k_ApiVersion = "1.5.0";
 
         /// <summary>
         /// Unity package version of com.unity.ml-agents.
@@ -406,6 +414,7 @@ namespace Unity.MLAgents
             EnableAutomaticStepping();
 
             SideChannelManager.RegisterSideChannel(new EngineConfigurationChannel());
+            SideChannelManager.RegisterSideChannel(new TrainingAnalyticsSideChannel());
             m_EnvironmentParameters = new EnvironmentParameters();
             m_StatsRecorder = new StatsRecorder();
 
@@ -425,32 +434,43 @@ namespace Unity.MLAgents
             {
                 // We try to exchange the first message with Python. If this fails, it means
                 // no Python Process is ready to train the environment. In this case, the
-                //environment must use Inference.
+                // environment must use Inference.
+                bool initSuccessful = false;
+                var communicatorInitParams = new CommunicatorInitParameters
+                {
+                    unityCommunicationVersion = k_ApiVersion,
+                    unityPackageVersion = k_PackageVersion,
+                    name = "AcademySingleton",
+                    CSharpCapabilities = new UnityRLCapabilities()
+                };
+
                 try
                 {
-                    var unityRlInitParameters = Communicator.Initialize(
-                        new CommunicatorInitParameters
-                        {
-                            unityCommunicationVersion = k_ApiVersion,
-                            unityPackageVersion = k_PackageVersion,
-                            name = "AcademySingleton",
-                            CSharpCapabilities = new UnityRLCapabilities()
-                        });
-                    UnityEngine.Random.InitState(unityRlInitParameters.seed);
-                    // We might have inference-only Agents, so set the seed for them too.
-                    m_InferenceSeed = unityRlInitParameters.seed;
-                    TrainerCapabilities = unityRlInitParameters.TrainerCapabilities;
-                    TrainerCapabilities.WarnOnPythonMissingBaseRLCapabilities();
-                }
-                catch
-                {
-                    Debug.Log($"" +
-                        $"Couldn't connect to trainer on port {port} using API version {k_ApiVersion}. " +
-                        "Will perform inference instead."
+                    initSuccessful = Communicator.Initialize(
+                        communicatorInitParams,
+                        out var unityRlInitParameters
                     );
+                    if (initSuccessful)
+                    {
+                        UnityEngine.Random.InitState(unityRlInitParameters.seed);
+                        // We might have inference-only Agents, so set the seed for them too.
+                        m_InferenceSeed = unityRlInitParameters.seed;
+                        TrainerCapabilities = unityRlInitParameters.TrainerCapabilities;
+                        TrainerCapabilities.WarnOnPythonMissingBaseRLCapabilities();
+                    }
+                    else
+                    {
+                        Debug.Log($"Couldn't connect to trainer on port {port} using API version {k_ApiVersion}. Will perform inference instead.");
+                        Communicator = null;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log($"Unexpected exception when trying to initialize communication: {ex}\nWill perform inference instead.");
                     Communicator = null;
                 }
             }
+
             if (Communicator != null)
             {
                 Communicator.QuitCommandReceived += OnQuitCommandReceived;

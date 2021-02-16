@@ -161,8 +161,6 @@ A few considerations when deciding to use memory:
 
 - LSTM does not work well with continuous actions. Please use
   discrete actions for better results.
-- Since the memories must be sent back and forth between Python and Unity, using
-  too large `memory_size` will slow down training.
 - Adding a recurrent layer increases the complexity of the neural network, it is
   recommended to decrease `num_layers` when using recurrent.
 - It is required that `memory_size` be divisible by 2.

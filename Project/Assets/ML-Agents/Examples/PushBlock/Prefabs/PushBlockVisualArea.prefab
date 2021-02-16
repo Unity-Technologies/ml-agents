@@ -861,15 +861,20 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 0
     NumStackedVectorObservations: 1
+    m_ActionSpec:
+      m_NumContinuousActions: 0
+      BranchSizes: 07000000
     VectorActionSize: 07000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
+    hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
-  m_InferenceDevice: 0
+  m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: VisualPushBlock
   TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &114812843792483960
 MonoBehaviour:
@@ -926,6 +931,7 @@ MonoBehaviour:
   m_Width: 84
   m_Height: 84
   m_Grayscale: 0
+  m_ObservationStacks: 1
   m_Compression: 1
 --- !u!114 &9049837659352187721
 MonoBehaviour:

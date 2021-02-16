@@ -17,7 +17,19 @@ double-check that the versions are in the same. The versions can be found in
 ## Migrating to Release 13
 ### Implementing IHeuristic in your IActuator implementations
  - If you have any custom actuators, you can now implement the `IHeuristicProvider` interface to have your actuator
-handle the generation of actions when an Agent is running in heuristic mode.
+  handle the generation of actions when an Agent is running in heuristic mode.
+- `VectorSensor.AddObservation(IEnumerable<float>)` is deprecated. Use `VectorSensor.AddObservation(IList<float>)`
+  instead.
+- `ObservationWriter.AddRange()` is deprecated. Use `ObservationWriter.AddList()` instead.
+- `ActuatorComponent.CreateAcuator()` is deprecated.  Please use override `ActuatorComponent.CreateActuators`
+  instead.  Since `ActuatorComponent.CreateActuator()` is abstract, you will still need to override it in your
+  class until it is removed.  It is only ever called if you don't override `ActuatorComponent.CreateActuators`.
+  You can suppress the warnings by surrounding the method with the following pragma:
+    ```c#
+    #pragma warning disable 672
+    public IActuator CreateActuator() { ... }
+    #pragma warning restore 672
+    ```
 
 
 # Migrating

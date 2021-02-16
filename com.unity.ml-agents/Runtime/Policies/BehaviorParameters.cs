@@ -98,7 +98,7 @@ namespace Unity.MLAgents.Policies
         }
 
         [HideInInspector, SerializeField]
-        InferenceDevice m_InferenceDevice;
+        InferenceDevice m_InferenceDevice = InferenceDevice.Burst;
 
         /// <summary>
         /// How inference is performed for this Agent's model.
