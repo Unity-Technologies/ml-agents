@@ -95,9 +95,13 @@ namespace Unity.MLAgents
         ///         <term>1.4.0</term>
         ///         <description>Support training analytics sent from python trainer to the editor.</description>
         ///     </item>
+        ///     <item>
+        ///         <term>1.5.0</term>
+        ///         <description>Support variable length observation training.</description>
+        ///     </item>
         /// </list>
         /// </remarks>
-        const string k_ApiVersion = "1.4.0";
+        const string k_ApiVersion = "1.5.0";
 
         /// <summary>
         /// Unity package version of com.unity.ml-agents.
