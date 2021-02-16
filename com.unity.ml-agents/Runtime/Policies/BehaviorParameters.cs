@@ -253,6 +253,7 @@ namespace Unity.MLAgents.Policies
             }
             return BehaviorType == BehaviorType.Default &&
                 ReferenceEquals(Model, null) &&
+                Academy.IsInitialized &&
                 !Academy.Instance.IsCommunicatorOn;
         }
 

@@ -1,4 +1,4 @@
-# Integrating the Input System Package with ML-Agents
+# Integration of the Input System Package with ML-Agents
 
 ## Overview
 One area we are always trying to improve is getting developers up and running with ML-Agents.  With this in mind,
