@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -94,12 +95,18 @@ namespace Unity.MLAgents.Actuators
             }
         }
 
-        public static ActionSpec Combine(ActionSpec[] specs)
+        /// <summary>
+        /// Combines a list of actions specs and allocates a new array of branch sizes if needed.
+        /// </summary>
+        /// <param name="specs">The list of action specs to combine.</param>
+        /// <returns>An ActionSpec which represents the aggregate of the ActionSpecs passed in.</returns>
+        public static ActionSpec Combine(IList<ActionSpec> specs)
         {
             var numContinuous = 0;
             var numDiscrete = 0;
-            foreach (var spec in specs)
+            for (var i = 0; i < specs.Count; i++)
             {
+                var spec = specs[i];
                 numContinuous += spec.NumContinuousActions;
                 numDiscrete += spec.NumDiscreteActions;
             }
@@ -111,8 +118,9 @@ namespace Unity.MLAgents.Actuators
 
             var branchSizes = new int[numDiscrete];
             var offset = 0;
-            foreach (var spec in specs)
+            for (var i = 0; i < specs.Count; i++)
             {
+                var spec = specs[i];
                 if (spec.BranchSizes.Length == 0)
                 {
                     continue;
