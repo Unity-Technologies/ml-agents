@@ -126,7 +126,7 @@ class AgentProcessor:
         if stored_decision_step is not None and stored_take_action_outputs is not None:
             obs = stored_decision_step.obs
             if self.policy.use_recurrent:
-                memory = self.policy.retrieve_memories([global_id])[0, :]
+                memory = self.policy.retrieve_previous_memories([global_id])[0, :]
             else:
                 memory = None
             done = terminated  # Since this is an ongoing step

@@ -58,6 +58,8 @@ and this project adheres to
   reduced the amount of memory allocated by approximately 25%. (#4887)
 - Removed several memory allocations that happened during inference with discrete actions. (#4922)
 - Properly catch permission errors when writing timer files. (#4921)
+- Unexpected exceptions during training initialization and shutdown are now logged. If you see
+  "noisy" logs, please let us know! (#4930, #4935)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed a bug that would cause an exception when `RunOptions` was deserialized via `pickle`. (#4842)
@@ -69,6 +71,7 @@ and this project adheres to
   while waiting for a connection, and raises a better error message if it crashes. (#4880)
 - Passing a `-logfile` option in the `--env-args` option to `mlagents-learn` is
   no longer overwritten. (#4880)
+- The `load_weights` function was being called unnecessarily often in the Ghost Trainer leading to training slowdowns. (#4934)
 
 
 ## [1.7.2-preview] - 2020-12-22
