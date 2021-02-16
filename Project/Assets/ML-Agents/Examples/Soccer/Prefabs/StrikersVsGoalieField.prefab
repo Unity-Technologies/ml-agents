@@ -237,15 +237,20 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 0
     NumStackedVectorObservations: 1
+    m_ActionSpec:
+      m_NumContinuousActions: 0
+      BranchSizes: 030000000300000003000000
     VectorActionSize: 030000000300000003000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
+    hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: e9c10c18f4eb745d19186a54dbe3ca2e, type: 3}
-  m_InferenceDevice: 0
+  m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: Goalie
   TeamId: 1
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &114492261207303438
 MonoBehaviour:
@@ -615,15 +620,20 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 0
     NumStackedVectorObservations: 1
+    m_ActionSpec:
+      m_NumContinuousActions: 0
+      BranchSizes: 030000000300000003000000
     VectorActionSize: 030000000300000003000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
+    hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: 75a830685bf8e43918adc4783a2abebf, type: 3}
-  m_InferenceDevice: 0
+  m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: Striker
   TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &114850431417842684
 MonoBehaviour:
@@ -3655,15 +3665,20 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 0
     NumStackedVectorObservations: 1
+    m_ActionSpec:
+      m_NumContinuousActions: 0
+      BranchSizes: 030000000300000003000000
     VectorActionSize: 030000000300000003000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
+    hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: 75a830685bf8e43918adc4783a2abebf, type: 3}
-  m_InferenceDevice: 0
+  m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: Striker
   TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &5379409612883756837
 MonoBehaviour:

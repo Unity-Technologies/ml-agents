@@ -47,3 +47,9 @@ if os.getenv("TEST_ENFORCE_NUMPY_FLOAT32"):
     np.array = np_array_no_float64
     np.zeros = np_zeros_no_float64
     np.ones = np_ones_no_float64
+
+
+if os.getenv("TEST_ENFORCE_BUFFER_KEY_TYPES"):
+    from mlagents.trainers.buffer import AgentBuffer
+
+    AgentBuffer.CHECK_KEY_TYPES_AT_RUNTIME = True

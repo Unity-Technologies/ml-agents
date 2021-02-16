@@ -90,7 +90,7 @@ MonoBehaviour:
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: 48d14da88fea74d0693c691c6e3f2e34, type: 3}
-  m_InferenceDevice: 0
+  m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: Match3VisualObs
   TeamId: 0
@@ -148,10 +148,10 @@ MonoBehaviour:
   Columns: 8
   NumCellTypes: 6
   NumSpecialTypes: 2
-  RandomSeed: -1
   BasicCellPoints: 1
   SpecialCell1Points: 2
   SpecialCell2Points: 3
+  RandomSeed: -1
 --- !u!114 &3019509692332007783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,5 +179,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ActuatorName: Match3 Actuator
+  RandomSeed: -1
   ForceHeuristic: 0
-  HeuristicQuality: 0

@@ -442,17 +442,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 33
-    numStackedVectorObservations: 1
-    vectorActionSize: 04000000
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 1
+    VectorObservationSize: 33
+    NumStackedVectorObservations: 1
+    m_ActionSpec:
+      m_NumContinuousActions: 4
+      BranchSizes: 
+    VectorActionSize: 04000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 1
+    hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: d7bdb6a78154f4cf99437d67e4a569a8, type: 3}
-  m_InferenceDevice: 0
+  m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: Reacher
   TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_ObservableAttributeHandling: 0
 --- !u!114 &114955921823023820
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -468,7 +474,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  maxStep: 4000
+  MaxStep: 4000
   pendulumA: {fileID: 1644872085946016}
   pendulumB: {fileID: 1053261483945176}
   hand: {fileID: 1654288206095398}
@@ -487,7 +493,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 4
   TakeActionsBetweenDecisions: 1
-  offsetStep: 0
 --- !u!114 &7840105453417110232
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -500,6 +505,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugCommandLineOverride: 
 --- !u!1 &1644872085946016
 GameObject:
   m_ObjectHideFlags: 0

@@ -922,6 +922,10 @@ namespace Unity.MLAgents
         /// </summary>
         internal void InitializeSensors()
         {
+            if (m_PolicyFactory == null)
+            {
+                m_PolicyFactory = GetComponent<BehaviorParameters>();
+            }
             if (m_PolicyFactory.ObservableAttributeHandling != ObservableAttributeOptions.Ignore)
             {
                 var excludeInherited =
@@ -1006,7 +1010,7 @@ namespace Unity.MLAgents
 
             foreach (var actuatorComponent in attachedActuators)
             {
-                m_ActuatorManager.Add(actuatorComponent.CreateActuator());
+                m_ActuatorManager.AddActuators(actuatorComponent.CreateActuators());
             }
         }
 

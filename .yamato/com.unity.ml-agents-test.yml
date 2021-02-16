@@ -9,10 +9,6 @@ test_editors:
     enableCodeCoverage: !!bool true
     testProject: DevProject
     enableNoDefaultPackages: !!bool true
-  - version: 2020.1
-    enableCodeCoverage: !!bool true
-    testProject: DevProject
-    enableNoDefaultPackages: !!bool true
   - version: 2020.2
     enableCodeCoverage: !!bool true
     testProject: DevProject
