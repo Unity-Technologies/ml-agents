@@ -36,6 +36,8 @@ namespace Unity.MLAgents.Tests
         {
             var gameObj = new GameObject();
             var bp = gameObj.AddComponent<BehaviorParameters>();
+            bp.Model = null;
+            gameObj.AddComponent<Agent>();
             bp.BehaviorType = BehaviorType.HeuristicOnly;
             Assert.IsTrue(bp.IsInHeuristicMode());
 

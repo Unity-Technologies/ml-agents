@@ -251,10 +251,12 @@ namespace Unity.MLAgents.Policies
             {
                 return true;
             }
+
             return BehaviorType == BehaviorType.Default &&
                 ReferenceEquals(Model, null) &&
-                Academy.IsInitialized &&
-                !Academy.Instance.IsCommunicatorOn;
+                (!Academy.IsInitialized ||
+                    Academy.IsInitialized &&
+                    !Academy.Instance.IsCommunicatorOn);
         }
 
         internal void UpdateAgentPolicy()
