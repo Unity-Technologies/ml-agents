@@ -187,6 +187,7 @@ public class PushBlockEnvController : MonoBehaviour
         {
             //Reset assets
             m_AgentGroup.EndGroupEpisode();
+            ResetScene();
         }
     }
 
