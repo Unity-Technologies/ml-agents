@@ -9,8 +9,6 @@ namespace Unity.MLAgents.Extensions.MultiAgent
     /// </summary>
     public class BaseMultiAgentGroup : IMultiAgentGroup, IDisposable
     {
-        int m_StepCount;
-        int m_GroupMaxStep;
         readonly int m_Id = MultiAgentGroupIdCounter.GetGroupId();
         HashSet<Agent> m_Agents = new HashSet<Agent>();
 
