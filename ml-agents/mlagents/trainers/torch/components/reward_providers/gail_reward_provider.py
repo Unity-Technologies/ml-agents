@@ -63,6 +63,7 @@ class GAILRewardProvider(BaseRewardProvider):
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
+        stats_dict["Policy/GAIL Learning Rate"] = decay_lr
         return stats_dict
 
     def get_modules(self):
