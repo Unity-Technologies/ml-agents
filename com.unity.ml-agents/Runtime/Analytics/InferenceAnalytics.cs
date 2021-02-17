@@ -87,6 +87,7 @@ namespace Unity.MLAgents.Analytics
         /// <param name="inferenceDevice">Whether inference is being performed on the CPU or GPU</param>
         /// <param name="sensors">List of ISensors for the Agent. Used to generate information about the observation space.</param>
         /// <param name="actionSpec">ActionSpec for the Agent. Used to generate information about the action space.</param>
+        /// <param name="actuators">List of IActuators for the Agent. Used to generate information about the action space.</param>
         /// <returns></returns>
         public static void InferenceModelSet(
             NNModel nnModel,
@@ -115,9 +116,9 @@ namespace Unity.MLAgents.Analytics
 
             var data = GetEventForModel(nnModel, behaviorName, inferenceDevice, sensors, actionSpec, actuators);
             // Note - to debug, use JsonUtility.ToJson on the event.
-            Debug.Log(JsonUtility.ToJson(data, true));
+            // Debug.Log(JsonUtility.ToJson(data, true));
 #if UNITY_EDITOR
-            if (false && AnalyticsUtils.s_SendEditorAnalytics)
+            if (AnalyticsUtils.s_SendEditorAnalytics)
             {
                 EditorAnalytics.SendEventWithLimit(k_EventName, data, k_EventVersion);
             }
