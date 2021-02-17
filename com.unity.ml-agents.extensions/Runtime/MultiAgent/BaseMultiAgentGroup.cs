@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Unity.MLAgents.Extensions.MultiAgent
@@ -8,47 +9,19 @@ namespace Unity.MLAgents.Extensions.MultiAgent
     /// </summary>
     public class BaseMultiAgentGroup : IMultiAgentGroup, IDisposable
     {
-        int m_StepCount;
-        int m_GroupMaxStep;
         readonly int m_Id = MultiAgentGroupIdCounter.GetGroupId();
-        List<Agent> m_Agents = new List<Agent> { };
+        HashSet<Agent> m_Agents = new HashSet<Agent>();
 
-
-        public BaseMultiAgentGroup()
-        {
-            Academy.Instance.PostAgentAct += _GroupStep;
-        }
 
         public void Dispose()
         {
-            Academy.Instance.PostAgentAct -= _GroupStep;
             while (m_Agents.Count > 0)
             {
-                UnregisterAgent(m_Agents[0]);
+                UnregisterAgent(m_Agents.First());
             }
         }
 
-        void _GroupStep()
-        {
-            m_StepCount += 1;
-            if ((m_StepCount >= m_GroupMaxStep) && (m_GroupMaxStep > 0))
-            {
-                foreach (var agent in m_Agents)
-                {
-                    if (agent.enabled)
-                    {
-                        agent.EpisodeInterrupted();
-                    }
-                }
-                Reset();
-            }
-        }
-
-        /// <summary>
-        /// Register the agent to the MultiAgentGroup.
-        /// Registered agents will be able to receive group rewards from the MultiAgentGroup
-        /// and share observations during training.
-        /// </summary>
+        /// <inheritdoc />
         public virtual void RegisterAgent(Agent agent)
         {
             if (!m_Agents.Contains(agent))
@@ -59,9 +32,7 @@ namespace Unity.MLAgents.Extensions.MultiAgent
             }
         }
 
-        /// <summary>
-        /// Remove the agent from the MultiAgentGroup.
-        /// </summary>
+        /// <inheritdoc />
         public virtual void UnregisterAgent(Agent agent)
         {
             if (m_Agents.Contains(agent))
@@ -71,91 +42,101 @@ namespace Unity.MLAgents.Extensions.MultiAgent
             }
         }
 
+        /// <inheritdoc />
         public int GetId()
         {
             return m_Id;
         }
 
         /// <summary>
-        /// Get list of all agents registered to this MultiAgentGroup.
+        /// Get list of all agents currently registered to this MultiAgentGroup.
         /// </summary>
         /// <returns>
-        /// List of agents belongs to the MultiAgentGroup.
+        /// List of agents registered to the MultiAgentGroup.
         /// </returns>
-        public List<Agent> GetRegisteredAgents()
+        public HashSet<Agent> GetRegisteredAgents()
         {
             return m_Agents;
         }
 
         /// <summary>
-        /// Add group reward for all agents under this MultiAgentGroup.
-        /// Disabled agent will not receive this reward.
+        /// Increments the group rewards for all agents in this MultiAgentGroup.
         /// </summary>
+        /// <remarks>
+        /// This function increases or decreases the group rewards by a given amount for all agents
+        /// in the group. Use <see cref="SetGroupReward(float)"/> to set the group reward assigned
+        /// to the current step with a specific value rather than increasing or decreasing it.
+        ///
+        /// A positive group reward indicates the whole group's accomplishments or desired behaviors.
+        /// Every agent in the group will receive the same group reward no matter whether the
+        /// agent's act directly leads to the reward. Group rewards are meant to reinforce agents
+        /// to act in the group's best interest instead of individual ones.
+        /// Group rewards are treated differently than individual agent rewards during training, so
+        /// calling AddGroupReward() is not equivalent to calling agent.AddReward() on each agent in the group.
+        /// </remarks>
+        /// <param name="reward">Incremental group reward value.</param>
         public void AddGroupReward(float reward)
         {
             foreach (var agent in m_Agents)
             {
-                if (agent.enabled)
-                {
-                    agent.AddGroupReward(reward);
-                }
+                agent.AddGroupReward(reward);
             }
         }
 
         /// <summary>
-        /// Set group reward for all agents under this MultiAgentGroup.
-        /// Disabled agent will not receive this reward.
+        /// Set the group rewards for all agents in this MultiAgentGroup.
         /// </summary>
+        /// <remarks>
+        /// This function replaces any group rewards given during the current step for all agents in the group.
+        /// Use <see cref="AddGroupReward(float)"/> to incrementally change the group reward rather than
+        /// overriding it.
+        ///
+        /// A positive group reward indicates the whole group's accomplishments or desired behaviors.
+        /// Every agent in the group will receive the same group reward no matter whether the
+        /// agent's act directly leads to the reward. Group rewards are meant to reinforce agents
+        /// to act in the group's best interest instead of indivisual ones.
+        /// Group rewards are treated differently than individual agent rewards during training, so
+        /// calling SetGroupReward() is not equivalent to calling agent.SetReward() on each agent in the group.
+        /// </remarks>
+        /// <param name="reward">The new value of the group reward.</param>
         public void SetGroupReward(float reward)
         {
             foreach (var agent in m_Agents)
             {
-                if (agent.enabled)
-                {
-                    agent.SetGroupReward(reward);
-                }
+                agent.SetGroupReward(reward);
             }
         }
 
         /// <summary>
-        /// Returns the current step counter (within the current episode).
+        /// End episodes for all agents in this MultiAgentGroup.
         /// </summary>
-        /// <returns>
-        /// Current step count.
-        /// </returns>
-        public int StepCount
-        {
-            get { return m_StepCount; }
-        }
-
-        public int GroupMaxStep
-        {
-            get { return m_GroupMaxStep; }
-        }
-
-        public void SetGroupMaxStep(int maxStep)
-        {
-            m_GroupMaxStep = maxStep;
-        }
-
-        /// <summary>
-        /// End Episode for all agents under this MultiAgentGroup.
-        /// </summary>
+        /// <remarks>
+        /// This should be used when the episode can no longer continue, such as when the group
+        /// reaches the goal or fails at the task.
+        /// </remarks>
         public void EndGroupEpisode()
         {
             foreach (var agent in m_Agents)
             {
-                if (agent.enabled)
-                {
-                    agent.EndEpisode();
-                }
+                agent.EndEpisode();
             }
-            Reset();
         }
 
-        void Reset()
+        /// <summary>
+        /// Indicate that the episode is over but not due to the "fault" of the group.
+        /// This has the same end result as calling <see cref="EndGroupEpisode"/>, but has a
+        /// slightly different effect on training.
+        /// </summary>
+        /// <remarks>
+        /// This should be used when the episode could continue, but has gone on for
+        /// a sufficient number of steps, such as if the environment hits some maximum number of steps.
+        /// </remarks>
+        public void GroupEpisodeInterrupted()
         {
-            m_StepCount = 0;
+            foreach (var agent in m_Agents)
+            {
+                agent.EpisodeInterrupted();
+            }
         }
     }
 }

@@ -4,6 +4,8 @@ from collections import defaultdict
 import abc
 import time
 import attr
+from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
+
 from mlagents.trainers.policy.checkpoint_manager import (
     ModelCheckpoint,
     ModelCheckpointManager,
@@ -70,7 +72,9 @@ class RLTrainer(Trainer):
         for name, rewards in self.collected_rewards.items():
             if name == "environment":
                 self.stats_reporter.add_stat(
-                    "Environment/Cumulative Reward", rewards.get(agent_id, 0)
+                    "Environment/Cumulative Reward",
+                    rewards.get(agent_id, 0),
+                    aggregation=StatsAggregationMethod.HISTOGRAM,
                 )
                 self.cumulative_returns_since_policy_update.append(
                     rewards.get(agent_id, 0)

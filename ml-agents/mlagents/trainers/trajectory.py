@@ -2,7 +2,13 @@ from typing import List, NamedTuple
 import itertools
 import numpy as np
 
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import (
+    AgentBuffer,
+    AgentBufferField,
+    ObservationKeyPrefix,
+    AgentBufferKey,
+    BufferKey,
+)
 from mlagents_envs.base_env import ActionTuple
 from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 
@@ -34,18 +40,18 @@ class AgentExperience(NamedTuple):
 
 class ObsUtil:
     @staticmethod
-    def get_name_at(index: int) -> str:
+    def get_name_at(index: int) -> AgentBufferKey:
         """
         returns the name of the observation given the index of the observation
         """
-        return f"obs_{index}"
+        return ObservationKeyPrefix.OBSERVATION, index
 
     @staticmethod
-    def get_name_at_next(index: int) -> str:
+    def get_name_at_next(index: int) -> AgentBufferKey:
         """
         returns the name of the next observation given the index of the observation
         """
-        return f"next_obs_{index}"
+        return ObservationKeyPrefix.NEXT_OBSERVATION, index
 
     @staticmethod
     def from_buffer(batch: AgentBuffer, num_obs: int) -> List[np.array]:
@@ -70,22 +76,22 @@ class ObsUtil:
 
 class GroupObsUtil:
     @staticmethod
-    def get_name_at(index: int) -> str:
+    def get_name_at(index: int) -> AgentBufferKey:
         """
         returns the name of the observation given the index of the observation
         """
-        return f"group_obs_{index}"
+        return ObservationKeyPrefix.GROUP_OBSERVATION, index
 
     @staticmethod
-    def get_name_at_next(index: int) -> str:
+    def get_name_at_next(index: int) -> AgentBufferKey:
         """
         returns the name of the next team observation given the index of the observation
         """
-        return f"group_obs_next_{index}"
+        return ObservationKeyPrefix.NEXT_GROUP_OBSERVATION, index
 
     @staticmethod
     def _padded_time_to_batch(
-        agent_buffer_field: AgentBuffer.AgentBufferField,
+        agent_buffer_field: AgentBufferField,
     ) -> List[np.ndarray]:
         """
         Convert an AgentBufferField of List of obs, where one of the dimension is time and the other is number (e.g.
@@ -196,15 +202,16 @@ class Trajectory(NamedTuple):
                 teammate_discrete_actions.append(group_status.action.discrete)
 
             # Team actions
-            agent_buffer_trajectory["group_continuous_action"].append(
+            agent_buffer_trajectory[BufferKey.GROUP_CONTINUOUS_ACTION].append(
                 teammate_continuous_actions
             )
-            agent_buffer_trajectory["group_discrete_action"].append(
+            agent_buffer_trajectory[BufferKey.GROUP_DISCRETE_ACTION].append(
                 teammate_discrete_actions
             )
-            agent_buffer_trajectory["groupmate_rewards"].append(teammate_rewards)
-
-            agent_buffer_trajectory["group_reward"].append(exp.group_reward)
+            agent_buffer_trajectory[BufferKey.GROUPMATE_REWARDS].append(
+                teammate_rewards
+            )
+            agent_buffer_trajectory[BufferKey.GROUP_REWARD].append(exp.group_reward)
 
             # Next actions
             teammate_cont_next_actions = []
@@ -219,10 +226,10 @@ class Trajectory(NamedTuple):
                     teammate_cont_next_actions.append(group_status.action.continuous)
                     teammate_disc_next_actions.append(group_status.action.discrete)
 
-            agent_buffer_trajectory["group_next_continuous_action"].append(
+            agent_buffer_trajectory[BufferKey.GROUP_NEXT_CONT_ACTION].append(
                 teammate_cont_next_actions
             )
-            agent_buffer_trajectory["group_next_discrete_action"].append(
+            agent_buffer_trajectory[BufferKey.GROUP_NEXT_DISC_ACTION].append(
                 teammate_disc_next_actions
             )
 
@@ -249,17 +256,21 @@ class Trajectory(NamedTuple):
                 )
 
             if exp.memory is not None:
-                agent_buffer_trajectory["memory"].append(exp.memory)
+                agent_buffer_trajectory[BufferKey.MEMORY].append(exp.memory)
 
-            agent_buffer_trajectory["masks"].append(1.0)
-            agent_buffer_trajectory["done"].append(exp.done)
-            agent_buffer_trajectory["group_dones"].append(
+            agent_buffer_trajectory[BufferKey.MASKS].append(1.0)
+            agent_buffer_trajectory[BufferKey.DONE].append(exp.done)
+            agent_buffer_trajectory[BufferKey.GROUP_DONES].append(
                 [_status.done for _status in exp.group_status]
             )
 
             # Adds the log prob and action of continuous/discrete separately
-            agent_buffer_trajectory["continuous_action"].append(exp.action.continuous)
-            agent_buffer_trajectory["discrete_action"].append(exp.action.discrete)
+            agent_buffer_trajectory[BufferKey.CONTINUOUS_ACTION].append(
+                exp.action.continuous
+            )
+            agent_buffer_trajectory[BufferKey.DISCRETE_ACTION].append(
+                exp.action.discrete
+            )
 
             cont_next_actions = np.zeros_like(exp.action.continuous)
             disc_next_actions = np.zeros_like(exp.action.discrete)
@@ -269,13 +280,17 @@ class Trajectory(NamedTuple):
                 cont_next_actions = next_action.continuous
                 disc_next_actions = next_action.discrete
 
-            agent_buffer_trajectory["next_continuous_action"].append(cont_next_actions)
-            agent_buffer_trajectory["next_discrete_action"].append(disc_next_actions)
+            agent_buffer_trajectory[BufferKey.NEXT_CONT_ACTION].append(
+                cont_next_actions
+            )
+            agent_buffer_trajectory[BufferKey.NEXT_DISC_ACTION].append(
+                disc_next_actions
+            )
 
-            agent_buffer_trajectory["continuous_log_probs"].append(
+            agent_buffer_trajectory[BufferKey.CONTINUOUS_LOG_PROBS].append(
                 exp.action_probs.continuous
             )
-            agent_buffer_trajectory["discrete_log_probs"].append(
+            agent_buffer_trajectory[BufferKey.DISCRETE_LOG_PROBS].append(
                 exp.action_probs.discrete
             )
 
@@ -283,17 +298,19 @@ class Trajectory(NamedTuple):
             # in AgentExperience False means active.
             if exp.action_mask is not None:
                 mask = 1 - np.concatenate(exp.action_mask)
-                agent_buffer_trajectory["action_mask"].append(mask, padding_value=1)
+                agent_buffer_trajectory[BufferKey.ACTION_MASK].append(
+                    mask, padding_value=1
+                )
             else:
                 # This should never be needed unless the environment somehow doesn't supply the
                 # action mask in a discrete space.
 
                 action_shape = exp.action.discrete.shape
-                agent_buffer_trajectory["action_mask"].append(
+                agent_buffer_trajectory[BufferKey.ACTION_MASK].append(
                     np.ones(action_shape, dtype=np.float32), padding_value=1
                 )
-            agent_buffer_trajectory["prev_action"].append(exp.prev_action)
-            agent_buffer_trajectory["environment_rewards"].append(exp.reward)
+            agent_buffer_trajectory[BufferKey.PREV_ACTION].append(exp.prev_action)
+            agent_buffer_trajectory[BufferKey.ENVIRONMENT_REWARDS].append(exp.reward)
 
             # Store the next visual obs as the current
             obs = next_obs

@@ -412,6 +412,19 @@ namespace Unity.MLAgents
                 {
                     observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
                 }
+                // Checking trainer compatibility with variable length observations
+                if (dimensionProperties.Length == 2)
+                {
+                    if (dimensionProperties[0] == DimensionProperty.VariableSize &&
+                    dimensionProperties[1] == DimensionProperty.None)
+                    {
+                        var trainerCanHandleVarLenObs = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.VariableLengthObservation;
+                        if (!trainerCanHandleVarLenObs)
+                        {
+                            throw new UnityAgentsException("Variable Length Observations are not supported by the trainer");
+                        }
+                    }
+                }
             }
             observationProto.Shape.AddRange(shape);
 
@@ -439,6 +452,7 @@ namespace Unity.MLAgents
                 CompressedChannelMapping = proto.CompressedChannelMapping,
                 HybridActions = proto.HybridActions,
                 TrainingAnalytics = proto.TrainingAnalytics,
+                VariableLengthObservation = proto.VariableLengthObservation,
             };
         }
 
@@ -451,6 +465,7 @@ namespace Unity.MLAgents
                 CompressedChannelMapping = rlCaps.CompressedChannelMapping,
                 HybridActions = rlCaps.HybridActions,
                 TrainingAnalytics = rlCaps.TrainingAnalytics,
+                VariableLengthObservation = rlCaps.VariableLengthObservation,
             };
         }
 

@@ -2,12 +2,19 @@ using System;
 
 namespace Unity.MLAgents.Sensors
 {
-    internal class BufferSensor : ISensor, IDimensionPropertiesSensor, IBuiltInSensor
+    /// <summary>
+    /// A Sensor that allows to observe a variable number of entities.
+    /// </summary>
+    public class BufferSensor : ISensor, IDimensionPropertiesSensor, IBuiltInSensor
     {
         private int m_MaxNumObs;
         private int m_ObsSize;
         float[] m_ObservationBuffer;
         int m_CurrentNumObservables;
+        static DimensionProperty[] s_DimensionProperties = new DimensionProperty[]{
+                DimensionProperty.VariableSize,
+                DimensionProperty.None
+            };
         public BufferSensor(int maxNumberObs, int obsSize)
         {
             m_MaxNumObs = maxNumberObs;
@@ -25,10 +32,7 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public DimensionProperty[] GetDimensionProperties()
         {
-            return new DimensionProperty[]{
-                DimensionProperty.VariableSize,
-                DimensionProperty.None
-            };
+            return s_DimensionProperties;
         }
 
         /// <summary>
@@ -40,6 +44,13 @@ namespace Unity.MLAgents.Sensors
         /// <param name="obs"> The float array observation</param>
         public void AppendObservation(float[] obs)
         {
+            if (obs.Length != m_ObsSize)
+            {
+                throw new UnityAgentsException(
+                    "The BufferSensor was expecting an observation of size " +
+                    $"{m_ObsSize} but received {obs.Length} observations instead."
+                );
+            }
             if (m_CurrentNumObservables >= m_MaxNumObs)
             {
                 return;
