@@ -72,7 +72,6 @@ namespace Unity.MLAgents.Actuators
         /// <param name="numContinuousActions">The number of continuous actions available.</param>
         /// <param name="discreteBranchSizes">The array of branch sizes for the discrete actions.  Each index
         /// contains the number of actions available for that branch.</param>
-        /// <returns>An ActionSpec initialized with the specified action sizes.</returns>
         public ActionSpec(int numContinuousActions = 0, int[] discreteBranchSizes = null)
         {
             m_NumContinuousActions = numContinuousActions;

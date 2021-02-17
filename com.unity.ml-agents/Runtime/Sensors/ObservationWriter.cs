@@ -19,7 +19,7 @@ namespace Unity.MLAgents.Sensors
 
         TensorShape m_TensorShape;
 
-        internal ObservationWriter() { }
+        internal ObservationWriter() {}
 
         /// <summary>
         /// Set the writer to write to an IList at the given channelOffset.
@@ -145,6 +145,11 @@ namespace Unity.MLAgents.Sensors
             }
         }
 
+        /// <summary>
+        /// Write the list of floats.
+        /// </summary>
+        /// <param name="data">The actual list of floats to write.</param>
+        /// <param name="writeOffset">Optional write offset to start writing from.</param>
         public void AddList(IList<float> data, int writeOffset = 0)
         {
             if (m_Data != null)
@@ -153,7 +158,6 @@ namespace Unity.MLAgents.Sensors
                 {
                     var val = data[index];
                     m_Data[index + m_Offset + writeOffset] = val;
-
                 }
             }
             else
