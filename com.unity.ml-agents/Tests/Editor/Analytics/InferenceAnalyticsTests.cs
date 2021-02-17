@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using Unity.MLAgents.Sensors;
@@ -47,7 +48,8 @@ namespace Unity.MLAgents.Tests.Analytics
 
             var continuousEvent = InferenceAnalytics.GetEventForModel(
                 continuousONNXModel, behaviorName,
-                InferenceDevice.CPU, sensors, GetContinuous2vis8vec2actionActionSpec()
+                InferenceDevice.CPU, sensors, GetContinuous2vis8vec2actionActionSpec(),
+                Array.Empty<IActuator>()
             );
 
             // The behavior name should be hashed, not pass-through.
@@ -78,7 +80,13 @@ namespace Unity.MLAgents.Tests.Analytics
             using (new AnalyticsUtils.DisableAnalyticsSending())
             {
                 var sensors = new List<ISensor> { sensor_21_20_3.Sensor, sensor_20_22_3.Sensor };
-                var policy = new BarracudaPolicy(GetContinuous2vis8vec2actionActionSpec(), continuousONNXModel, InferenceDevice.CPU, "testBehavior");
+                var policy = new BarracudaPolicy(
+                    GetContinuous2vis8vec2actionActionSpec(),
+                    Array.Empty<IActuator>(),
+                    continuousONNXModel,
+                    InferenceDevice.CPU,
+                    "testBehavior"
+                );
                 policy.RequestDecision(new AgentInfo(), sensors);
             }
             Academy.Instance.Dispose();
