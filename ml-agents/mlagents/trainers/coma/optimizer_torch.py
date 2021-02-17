@@ -7,8 +7,8 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
-from mlagents.trainers.torch.networks import Critic
-from mlagents.trainers.torch.layers import EntityEmbedding, ResidualSelfAttention, LinearEncoder
+from mlagents.trainers.torch.networks import Critic, MultiInputNetworkBody
+from mlagents.trainers.torch.decoders import ValueHeads
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
@@ -24,80 +24,24 @@ class TorchCOMAOptimizer(TorchOptimizer):
             network_settings: NetworkSettings,
             action_spec: ActionSpec,
         ):
-            super().__init__()
-            self.normalize = network_settings.normalize
-            self.use_lstm = network_settings.memory is not None
-            # Scale network depending on num agents
-            self.h_size = network_settings.hidden_units
-            self.m_size = (
-                network_settings.memory.memory_size
-                if network_settings.memory is not None
-                else 0
+            torch.nn.Module.__init__(self)
+            self.network_body = MultiInputNetworkBody(
+                observation_specs, network_settings, action_spec
             )
-            self.processors, _input_size = ModelUtils.create_input_processors(
-                sensor_specs,
-                self.h_size,
-                network_settings.vis_encode_type,
-                normalize=self.normalize,
-            )
-            self.action_spec = action_spec
-
-            # Modules for self-attention
-            obs_only_ent_size = sum(_input_size)
-            q_ent_size = (
-                sum(_input_size)
-                + sum(self.action_spec.discrete_branches)
-                + self.action_spec.continuous_size
-            )
-            self.obs_encoder = EntityEmbedding(
-                0, obs_only_ent_size, None, self.h_size, concat_self=False
-            )
-            self.obs_action_encoder = EntityEmbedding(
-                0, q_ent_size, None, self.h_size, concat_self=False
-            )
-
-            self.self_attn = ResidualSelfAttention(self.h_size)
-
-            self.linear_encoder = LinearEncoder(
-                self.h_size,
-                network_settings.num_layers,
-                self.h_size,
-                kernel_gain=(0.125 / self.h_size) ** 0.5,
-            )
-
-            if self.use_lstm:
-                self.lstm = LSTM(self.h_size, self.m_size)
+            if network_settings.memory is not None:
+                encoding_size = network_settings.memory.memory_size // 2
             else:
-                self.lstm = None  # type: ignorek
+                encoding_size = network_settings.hidden_units
 
+            self.value_heads = ValueHeads(stream_names, encoding_size, outputs_per_stream)
 
     @property
     def memory_size(self) -> int:
-        return self.lstm.memory_size if self.use_lstm else 0
+        return self.network_body.memory_size
 
     def update_normalization(self, buffer: AgentBuffer) -> None:
-        obs = ObsUtil.from_buffer(buffer, len(self.processors))
-        for vec_input, enc in zip(obs, self.processors):
-            if isinstance(enc, VectorInput):
-                enc.update_normalization(torch.as_tensor(vec_input))
-
-    def copy_normalization(self, other_network: "NetworkBody") -> None:
-        if self.normalize:
-            for n1, n2 in zip(self.processors, other_network.processors):
-                if isinstance(n1, VectorInput) and isinstance(n2, VectorInput):
-                    n1.copy_normalization(n2)
-
-    def _get_masks_from_nans(self, obs_tensors: List[torch.Tensor]) -> torch.Tensor:
-        """
-        Get attention masks by grabbing an arbitrary obs across all the agents
-        Since these are raw obs, the padded values are still NaN
-        """
-        only_first_obs = [_all_obs[0] for _all_obs in obs_tensors]
-        obs_for_mask = torch.stack(only_first_obs, dim=1)
-        # Get the mask from nans
-        attn_mask = torch.any(obs_for_mask.isnan(), dim=2).type(torch.FloatTensor)
-        return attn_mask
-
+        self.network_body.update_normalization(buffer)
+    
     def baseline(
         self,
         self_obs: List[List[torch.Tensor]],
@@ -107,47 +51,11 @@ class TorchCOMAOptimizer(TorchOptimizer):
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
 
-        self_attn_masks = []
+        encoding, memories = self.network_body(obs_only=self_obs, obs=obs, actions=actions, memories, sequence_length)
+        value_outputs, critic_mem_out = self.forward(encoding, memories, sequence_length)
+        return value_outputs, critic_mem_out
 
-        f_inp = None
-        concat_f_inp = []
-        for inputs, action in zip(obs, actions):
-            encodes = []
-            for idx, processor in enumerate(self.processors):
-                obs_input = inputs[idx]
-                obs_input[obs_input.isnan()] = 0.0  # Remove NaNs
-                processed_obs = processor(obs_input)
-                encodes.append(processed_obs)
-            cat_encodes = [
-                torch.cat(encodes, dim=-1),
-                action.to_flat(self.action_spec.discrete_branches),
-            ]
-            concat_f_inp.append(torch.cat(cat_encodes, dim=1))
-
-        if concat_f_inp:
-            f_inp = torch.stack(concat_f_inp, dim=1)
-            self_attn_masks.append(self._get_masks_from_nans(obs))
-
-        concat_encoded_obs = []
-        encodes = []
-        for idx, processor in enumerate(self.processors):
-            obs_input = self_obs[idx]
-            obs_input[obs_input.isnan()] = 0.0  # Remove NaNs
-            processed_obs = processor(obs_input)
-            encodes.append(processed_obs)
-        concat_encoded_obs.append(torch.cat(encodes, dim=-1))
-        g_inp = torch.stack(concat_encoded_obs, dim=1)
-        # Get the mask from nans
-        self_attn_masks.append(self._get_masks_from_nans([self_obs]))
-        encoding, memories = self.forward(
-            f_inp,
-            g_inp,
-            self_attn_masks,
-            memories=memories,
-            sequence_length=sequence_length,
-        )
-        return encoding, memories
-
+  
     def critic_pass(
         self,
         obs: List[List[torch.Tensor]],
@@ -155,57 +63,19 @@ class TorchCOMAOptimizer(TorchOptimizer):
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
 
-        self_attn_masks = []
-        concat_encoded_obs = []
-        for inputs in obs:
-            encodes = []
-            for idx, processor in enumerate(self.processors):
-                obs_input = inputs[idx]
-                obs_input[obs_input.isnan()] = 0.0  # Remove NaNs
-                processed_obs = processor(obs_input)
-                encodes.append(processed_obs)
-            concat_encoded_obs.append(torch.cat(encodes, dim=-1))
-        g_inp = torch.stack(concat_encoded_obs, dim=1)
-        # Get the mask from nans
-        self_attn_masks.append(self._get_masks_from_nans(obs))
-        encoding, memories = self.forward(
-            None,
-            g_inp,
-            self_attn_masks,
-            memories=memories,
-            sequence_length=sequence_length,
-        )
-        return encoding, memories
-
+        encoding, memories = self.network_body(obs_only=obs, obs=None, actions=None, memories, sequence_length)
+        value_outputs, critic_mem_out = self.forward(encoding, memories, sequence_length)
+        return value_outputs, critic_mem_out
 
     def forward(
         self,
-        f_enc: torch.Tensor,
-        g_enc: torch.Tensor,
-        self_attn_masks: List[torch.Tensor],
+        encoding: torch.Tensor,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
 
-        self_attn_inputs = []
-
-        if f_enc is not None:
-            self_attn_inputs.append(self.obs_action_encoder(None, f_enc))
-        if g_enc is not None:
-            self_attn_inputs.append(self.obs_encoder(None, g_enc))
-
-        encoded_entity = torch.cat(self_attn_inputs, dim=1)
-        encoded_state = self.self_attn(encoded_entity, self_attn_masks)
-
-        inputs = encoded_state
-        encoding = self.linear_encoder(inputs)
-
-        if self.use_lstm:
-            # Resize to (batch, sequence length, encoding size)
-            encoding = encoding.reshape([-1, sequence_length, self.h_size])
-            encoding, memories = self.lstm(encoding, memories)
-            encoding = encoding.reshape([-1, self.m_size // 2])
-        return encoding, memories
+        output = self.value_heads(encoding)
+        return output, memories
 
     def __init__(self, policy: TorchPolicy, trainer_settings: TrainerSettings):
         """
@@ -221,14 +91,12 @@ class TorchCOMAOptimizer(TorchOptimizer):
         reward_signal_configs = trainer_settings.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
 
-        if policy.shared_critic:
-            self.value_net = policy.actor
-        else:
-            self.value_net = ValueNetwork(
-                reward_signal_names,
-                policy.behavior_spec.observation_specs,
-                network_settings=trainer_settings.network_settings,
-            )
+        self._critic = COMAValueNetwork(
+            reward_signal_names,
+            policy.behavior_spec.observation_specs,
+            network_settings=trainer_settings.network_settings,
+            policy.behavior_spec.action_spec,
+        )
 
         params = list(self.policy.actor.parameters()) + list(
             self.value_net.parameters()
@@ -267,9 +135,9 @@ class TorchCOMAOptimizer(TorchOptimizer):
 
     @property
     def critic(self):
-        return self.value_net
+        return self._critic
 
-    def ppo_value_loss(
+    def coma_value_loss(
         self,
         values: Dict[str, torch.Tensor],
         old_values: Dict[str, torch.Tensor],
@@ -299,7 +167,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
         value_loss = torch.mean(torch.stack(value_losses))
         return value_loss
 
-    def ppo_policy_loss(
+    def policy_policy_loss(
         self,
         advantages: torch.Tensor,
         log_probs: torch.Tensor,
