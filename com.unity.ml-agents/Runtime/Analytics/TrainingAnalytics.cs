@@ -221,7 +221,7 @@ namespace Unity.MLAgents.Analytics
 #endif
         }
 
-        static RemotePolicyInitializedEvent GetEventForRemotePolicy(
+        internal static RemotePolicyInitializedEvent GetEventForRemotePolicy(
             string behaviorName,
             IList<ISensor> sensors,
             ActionSpec actionSpec,
