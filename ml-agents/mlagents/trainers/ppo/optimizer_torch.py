@@ -194,7 +194,9 @@ class TorchPPOOptimizer(TorchOptimizer):
         }
 
         for reward_provider in self.reward_signals.values():
-            update_stats.update(reward_provider.update(batch))
+            update_stats.update(
+                reward_provider.update(batch, self.policy.get_current_step())
+            )
 
         return update_stats
 

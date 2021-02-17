@@ -36,7 +36,9 @@ class RNDRewardProvider(BaseRewardProvider):
             rewards = torch.sum((prediction - target) ** 2, dim=1)
         return rewards.detach().cpu().numpy()
 
-    def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
+    def update(
+        self, mini_batch: AgentBuffer, global_step: int
+    ) -> Dict[str, np.ndarray]:
         with torch.no_grad():
             target = self._random_network(mini_batch)
         prediction = self._training_network(mini_batch)

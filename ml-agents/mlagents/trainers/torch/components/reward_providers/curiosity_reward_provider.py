@@ -44,7 +44,9 @@ class CuriosityRewardProvider(BaseRewardProvider):
         rewards = np.minimum(rewards, 1.0 / self.strength)
         return rewards * self._has_updated_once
 
-    def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
+    def update(
+        self, mini_batch: AgentBuffer, global_step: int
+    ) -> Dict[str, np.ndarray]:
         self._has_updated_once = True
         forward_loss = self._network.compute_forward_loss(mini_batch)
         inverse_loss = self._network.compute_inverse_loss(mini_batch)

@@ -205,6 +205,8 @@ class RewardSignalSettings:
 class GAILSettings(RewardSignalSettings):
     encoding_size: int = 64
     learning_rate: float = 3e-4
+    learning_rate_schedule: ScheduleType = ScheduleType.CONSTANT
+    decay_steps: int = 0
     use_actions: bool = False
     use_vail: bool = False
     demo_path: str = attr.ib(kw_only=True)

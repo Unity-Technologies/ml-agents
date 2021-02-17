@@ -310,7 +310,7 @@ class SACTrainer(RLTrainer):
                         sequence_length=self.policy.sequence_length,
                     )
             update_stats = self.optimizer.update_reward_signals(
-                reward_signal_minibatches, n_sequences
+                reward_signal_minibatches, n_sequences, self.step
             )
             for stat_name, value in update_stats.items():
                 batch_update_stats[stat_name].append(value)

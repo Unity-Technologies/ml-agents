@@ -11,5 +11,7 @@ class ExtrinsicRewardProvider(BaseRewardProvider):
     def evaluate(self, mini_batch: AgentBuffer) -> np.ndarray:
         return np.array(mini_batch[BufferKey.ENVIRONMENT_REWARDS], dtype=np.float32)
 
-    def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
+    def update(
+        self, mini_batch: AgentBuffer, global_step: int
+    ) -> Dict[str, np.ndarray]:
         return {}

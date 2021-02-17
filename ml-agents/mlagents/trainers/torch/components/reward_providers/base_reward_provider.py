@@ -60,12 +60,15 @@ class BaseRewardProvider(ABC):
         )
 
     @abstractmethod
-    def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
+    def update(
+        self, mini_batch: AgentBuffer, global_step: int
+    ) -> Dict[str, np.ndarray]:
         """
         Update the reward for the data present in the Dict mini_batch. Use this when updating a reward
         function drawn straight from a Buffer.
         :param mini_batch: A Dict of numpy arrays (the format used by our Buffer)
             when drawing from the update buffer.
+        :param global_step: The trainer's global step. Used to decay reward signals over time.
         :return: A dictionary from string to stats values
         """
         raise NotImplementedError(

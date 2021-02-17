@@ -604,11 +604,18 @@ class TorchSACOptimizer(TorchOptimizer):
         return update_stats
 
     def update_reward_signals(
-        self, reward_signal_minibatches: Mapping[str, AgentBuffer], num_sequences: int
+        self,
+        reward_signal_minibatches: Mapping[str, AgentBuffer],
+        num_sequences: int,
+        global_step: int,
     ) -> Dict[str, float]:
         update_stats: Dict[str, float] = {}
         for name, update_buffer in reward_signal_minibatches.items():
-            update_stats.update(self.reward_signals[name].update(update_buffer))
+            update_stats.update(
+                self.reward_signals[name].update(
+                    update_buffer, self.policy.get_current_step()
+                )
+            )
         return update_stats
 
     def get_modules(self):
