@@ -1,9 +1,12 @@
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
 using Grpc.Core;
+using Google.Protobuf;
 #endif
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +16,11 @@ using Unity.MLAgents.Analytics;
 using Unity.MLAgents.CommunicatorObjects;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.SideChannels;
-using Google.Protobuf;
 
 namespace Unity.MLAgents
 {
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+
     /// Responsible for communication with External using gRPC.
     internal class RpcCommunicator : ICommunicator
     {
@@ -43,11 +47,9 @@ namespace Unity.MLAgents
         HashSet<string> m_SentBrainKeys = new HashSet<string>();
         Dictionary<string, ActionSpec> m_UnsentBrainKeys = new Dictionary<string, ActionSpec>();
 
-
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
         /// The Unity to External client.
         UnityToExternalProto.UnityToExternalProtoClient m_Client;
-#endif
+
         /// The communicator parameters sent at construction
         CommunicatorInitParameters m_CommunicatorInitParameters;
 
@@ -60,7 +62,7 @@ namespace Unity.MLAgents
             m_CommunicatorInitParameters = communicatorInitParameters;
         }
 
-        #region Initialization
+    #region Initialization
 
         internal static bool CheckCommunicationVersionsAreCompatible(
             string unityCommunicationVersion,
@@ -213,7 +215,6 @@ namespace Unity.MLAgents
 
         UnityInputProto Initialize(UnityOutputProto unityOutput, out UnityInputProto unityInput)
         {
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             m_IsOpen = true;
             var channel = new Channel(
                 "localhost:" + m_CommunicatorInitParameters.port,
@@ -232,21 +233,17 @@ namespace Unity.MLAgents
                 QuitCommandReceived?.Invoke();
             }
             return result.UnityInput;
-#else
-            throw new UnityAgentsException("You cannot perform training on this platform.");
-#endif
         }
 
-        #endregion
+    #endregion
 
-        #region Destruction
+    #region Destruction
 
         /// <summary>
         /// Close the communicator gracefully on both sides of the communication.
         /// </summary>
         public void Dispose()
         {
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_IsOpen)
             {
                 return;
@@ -261,15 +258,11 @@ namespace Unity.MLAgents
             {
                 // ignored
             }
-#else
-            throw new UnityAgentsException(
-                "You cannot perform training on this platform.");
-#endif
         }
 
-        #endregion
+    #endregion
 
-        #region Sending Events
+    #region Sending Events
 
         void SendCommandEvent(CommandProto command)
         {
@@ -296,9 +289,9 @@ namespace Unity.MLAgents
             }
         }
 
-        #endregion
+    #endregion
 
-        #region Sending and retreiving data
+    #region Sending and retreiving data
 
         public void DecideBatch()
         {
@@ -447,7 +440,6 @@ namespace Unity.MLAgents
         /// <param name="unityOutput">The UnityOutput to be sent.</param>
         UnityInputProto Exchange(UnityOutputProto unityOutput)
         {
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_IsOpen)
             {
                 return null;
@@ -500,10 +492,6 @@ namespace Unity.MLAgents
                 QuitCommandReceived?.Invoke();
                 return null;
             }
-#else
-            throw new UnityAgentsException(
-                "You cannot perform training on this platform.");
-#endif
         }
 
         /// <summary>
@@ -573,7 +561,7 @@ namespace Unity.MLAgents
             }
         }
 
-        #endregion
+    #endregion
 
 #if UNITY_EDITOR
         /// <summary>
@@ -588,7 +576,44 @@ namespace Unity.MLAgents
                 Dispose();
             }
         }
-
 #endif
     }
+
+#else
+    // no-op interface for non-desktop platforms
+    internal class RpcCommunicator : ICommunicator
+    {
+        public event QuitCommandHandler QuitCommandReceived;
+        public event ResetCommandHandler ResetCommandReceived;
+
+        /// <inheritdoc/>
+        public RpcCommunicator(CommunicatorInitParameters communicatorInitParameters)
+        { }
+
+        /// <inheritdoc/>
+        public bool Initialize(CommunicatorInitParameters initParameters, out UnityRLInitParameters initParametersOut)
+        {
+            throw new UnityAgentsException("You cannot perform training on this platform.");
+        }
+
+        /// <inheritdoc/>
+        public void SubscribeBrain(string name, ActionSpec actionSpec) { }
+
+        /// <inheritdoc/>
+        public void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors) { }
+
+        /// <inheritdoc/>
+        public void DecideBatch() { }
+
+        /// <inheritdoc/>
+        public ActionBuffers GetActions(string key, int agentId)
+        {
+            return ActionBuffers.Empty;
+        }
+
+        /// <inheritdoc/>
+        public void Dispose() { }
+    }
+#endif
+
 }
