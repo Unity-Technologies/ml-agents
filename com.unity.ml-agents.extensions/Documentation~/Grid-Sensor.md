@@ -23,7 +23,7 @@ This is simple to implement and provides enough information for most simple game
 
 **Camera**
 
-The Camera provides the agent with either a grayscale or an RGB image of the game environment. It goes without saying that there non-linear relationships between nearby pixels in an image. It is this intuition that helps form the basis of Convolutional Neural Networks (CNNs) and established the literature of designing networks that take advantage of these relationships between pixels. Following this established literature of CNNs on image based data, the MLAgent's Camera Sensor provides a means by which the agent can include high dimensional inputs (images) into its observation stream.
+The Camera provides the agent with either a grayscale or an RGB image of the game environment. It goes without saying that there's non-linear relationships between nearby pixels in an image. It is this intuition that helps form the basis of Convolutional Neural Networks (CNNs) and established the literature of designing networks that take advantage of these relationships between pixels. Following this established literature of CNNs on image based data, the MLAgent's Camera Sensor provides a means by which the agent can include high dimensional inputs (images) into its observation stream.
 However the Camera Sensor has its own drawbacks as well.
 * It requires render the scene and thus is computationally slower than alternatives that do not use rendering
 * It has yet been shown that the Camera Sensor can be used on a headless machine which means it is not yet possible (if at all) to train an agent on a headless infrastructure.
@@ -41,7 +41,7 @@ Before jumping into the details of the Grid Sensor, an important thing to note i
 The Food Collector environment can be described as:
 * Set-up: A multi-agent environment where agents compete to collect food.
 * Goal: The agents must learn to collect as many green food spheres as possible while avoiding red spheres.
-* Agents: The environment contains 5 agents with same Behavior Parameters.
+* Agents: The environment contains 5 agents with the same Behavior Parameters.
 
 When applying the Grid Sensor to this environment, in place of the Raycast Vector Sensor or the Camera Sensor, a Mean Reward of 40-50 is observed. This performance is on par with what is seen by agents trained with RayCasts but the side-by-side comparison of trained agents, shows a qualitative difference in behavior. A deeper study and interpretation of the qualitative differences between agents trained with Raycasts and Vector Sensors verses Grid Sensors is left to future studies.
 
@@ -70,12 +70,12 @@ Just like the Raycasts mentioned earlier, the Grid Sensor can extract any kind o
 ### Example of Grid Observations
 A Grid Observation is best described using an example and a side by side comparison with the Raycasts and the Camera.
 
-Lets imagine a scenario where an agent is faced with 2 enemies and there are 2 "equipable" weapons somewhat behind the agent. Lets also keep in mind some important properties of the enemies and weapons that would be useful for the agent to know. For simplicity, lets assume enemies represent their health as a percentage (0-100%). Lets also assume that enemies and weapons are the only 2 kind of objects that the agent would see in the entire game.
+Let's imagine a scenario where an agent is faced with 2 enemies and there are 2 "equipable" weapons somewhat behind the agent. Some important properties of the enemies and weapons would be useful for the agent to know. For simplicity, let's assume enemies represent their health as a percentage (0-100%). Also assume that enemies and weapons are the only two kinds of objects that the agent would see in the entire game.
 
 <img src="images/gridsensor-example.png" align="middle" width="3000"/>
 
 #### Raycasts
-If a raycast hits an object, not only could we get the distance (normalized by the maximum raycast distance) we would be able to extract its type (enemy vs weapon) and if its an enemy then we could get its health (e.g., .6).
+If a raycast hits an object, not only could we get the distance (normalized by the maximum raycast distance) we would be able to extract its type (enemy vs weapon) and any attribute associate with it (e.g. an enemy's health).
 
 There are many ways in which one could encode this information but one reasonable encoding is this:
 ```
@@ -85,7 +85,7 @@ raycastData = [isWeapon, isEnemy, health, normalizedDistance]
 For example, if the raycast hit nothing then this would be represented by `[0, 0, 0, 1]`.
 If instead the raycast hit an enemy with 60% health that is 50% of the maximum raycast distance, the data would be represented by `[0, 1, .6, .5]`.
 
-The limitations of raycasts which were presented above are easy to visualize in the below image. The agent is unable to see where the weapons are and only sees one of the enemies. Typically in the MLAgents examples, this situation is mitigated by including previous frames of data so that the agent observes changes through time. However, in more complex games, it is not difficult to imagine scenarios where an agent would not be able to observe important information using only Raycasts.
+The limitations of raycasts which were presented above are easy to visualize in the below image. The agent is unable to see where the weapons are and only sees one of the enemies. Typically in the ML-Agents examples, this situation is mitigated by including previous frames of data so that the agent observes changes through time. However, in more complex games, it is not difficult to imagine scenarios where an agent would not be able to observe important information using only Raycasts.
 
 <img src="images/gridsensor-example-raycast.png" align="middle" width="3000"/>
 
@@ -105,13 +105,28 @@ The data extraction method of the Grid Sensor is as open-ended as using the Rayc
 
 Following the same data extraction method presented in the section on raycasts, if a Grid Sensor was used instead of Raycasts or a Camera, then not only would the agent be able to extract the health value of the enemies but it would also be able to encode the relative positions of those objects as is done with Camera. Additionally, as the texture of the objects is not used, this data can be collected without rendering the scene.
 
+In our example, we can collect data in the form of [objectType, health] by overriding `GetObjectData` as the following:
+```csharp
+    protected override float[] GetObjectData(GameObject currentColliderGo, float type_index, float normalized_distance)
+    {
+        float[] channelValues = new float[ChannelDepth.Length]; // ChannelDepth.Length = 2 in this example
+        channelValues[0] = type_index; // this is the observation collected in default implementation
+        if (currentColliderGo.tag == "enemy")
+        {
+            var enemy = currentColliderGo.GetComponent<EnemyClass>();
+            channelValues[1] = enemy.health; // the value may have to be normalized depends on the type of GridSensor encoding you use (see sections below)
+        }
+        return channelValues;
+    }
+```
+
 <img src="images/gridsensor-example-gridsensor.png" align="middle" width="3000"/>
 
-At the end of the Collection phase, each cell with an object inside of it has `GetObjectData` called and the returned values (named `channelValues`) is then processed in the Encoding phase which is described in the next section.
+At the end of the Collection phase, each cell with an object inside of it has `GetObjectData` called and the returned values is then processed in the Encoding phase which is described in the next section.
 
 #### CountingGridSensor
 
-The CountingGridSensor builds on the GridSesnor to perform the specific job of counting the number of object types that are based on the different detectable object tags. The encoding and is meant to exploit a key feature of the Grid Sensor. In both the Channel and the Channel Hot DepthTypes, the closest detectable object, in relation to the agent, that lays within a cell is used for encoding the value for that cell. In the CountingGridSensor, the number of each type of object is recorded and then normalized according to a max count, stored in the ChannelDepth.
+The CountingGridSensor builds on the GridSensor to perform the specific job of counting the number of object types that are based on the different detectable object tags. The encoding is meant to exploit a key feature of the Grid Sensor. In original GridSensor, only the closest detectable object, in relation to the agent, that lies within a cell is used for encoding the value for that cell. In the CountingGridSensor, the number of each type of object is recorded and then normalized according to a max count.
 
 An example of the CountingGridSensor can be found below.
 
@@ -120,38 +135,38 @@ An example of the CountingGridSensor can be found below.
 
 In order to support different ways of representing the data extracted from an object, multiple "depth types" were implemented. Each has pros and cons and, depending on the use-case of the Grid Sensor, one may be more beneficial than the others.
 
-The data stored that is extracted during the *Collection* phase, and stored in `channelValues`, may come from different sources. For instance, going back the Enemy/Weapon example in the previous section, an enemy's health is continuous whereas the object type (enemy or weapon) is categorical data. This distinction is important as categorical data requires a different encoding mechanism than continuous data.
+The data stored that is extracted during the *Collection* phase may come from different sources. For instance, going back to the Enemy/Weapon example in the previous section, an enemy's health is continuous whereas the object type (enemy or weapon) is categorical data. This distinction is important as categorical data requires a different encoding mechanism than continuous data.
 
-The Grid Sensor handles this distinction with 4 properties that define how this data is to be encoded:
+The Grid Sensor handles this distinction with 2 user defined properties that define how this data is to be encoded:
 * DepthType - Enum signifying the encoding mode: Channel, ChannelHot
-* ObservationPerCell - the total number of values that are in each cell of the grid observation
-* ChannelDepth - int[] describing the range of each data within the `channelValues`
-* ChannelOffset - int[] describing the number of encoded values that come before each data within `channelValues`
+* ChannelDepth - int[] describing the range of each data and is used differently with different DepthType
 
-The ChannelDepth and the DepthType are user defined and gives control to the developer to how they can encode their data. The ChannelDepth and ChannelOffset are both initialized and used in different ways depending on the ChannelDepth and the DepthType.
-
-How categorical and continuous data is treated is different between the different DepthTypes as will be explored in the sections below. The sections will use an on-going example similar to example mentioned earlier where, within a cell, the sensor observes: `an enemy with 60% health`. Thus the cell contains 2 kinds of data: categorical data (object type) and the continuous data (health). Additionally, the order of the observed tags is important as it allows one to encode the tag of the observed object by its index within list of observed tags. Note that in the example, the observed tags is defined as ["weapon", "enemy"].
+How categorical and continuous data is treated is different between the different DepthTypes as will be explored in the sections below. The sections will use an on-going example similar to the example mentioned earlier where, within a cell, the sensor observes: `an enemy with 60% health`. Thus the cell contains 2 kinds of data: categorical data (object type) and the continuous data (health). Additionally, the order of the observed tags is important as it allows one to encode the tag of the observed object by its index within the list of observed tags. Note that in the example, the observed tags is defined as ["weapon", "enemy"].
 
 ### Channel Based
 
-The Channel Based Grid Observations is perhaps the simplest in terms of usability and similarity with other machine learning applications. Each grid is of size WxHxC where C is the number of channels. To distinguish between categorical and continuous data, one would use the ChannelDepth array to signify the ranges that the values in the `channelValues` array could take. If one sets ChannelDepth[i] to be 1, it is assumed that the value of `channelValues[i]` is already normalized. Else ChannelDepth[i] represents the total number of possible values that `channelValues[i]` can take.
+The Channel Based Grid Observations represent obsevations in a normalized form with 0 to 1. To distinguish between categorical and continuous data, one would use the ChannelDepth array to signify the ranges that the values in the `channelValues` array could take. If one sets ChannelDepth[i] to be 1, it is assumed that the value of `channelValues[i]` is already normalized. Else ChannelDepth[i] represents the total number of possible values that `channelValues[i]` can take and will be used for normalizztion.
 
-Using the example described earlier, if one was using Channel Based Grid Observations, they would have a ChannelDepth = {2, 1} to describe that there are two possible values for the first channel and the 1 represents that the second channel is already normalized.
-As the "enemy" is in the second position of the observed tags, its value can be normalized by:
+For continuous data, you should specify `ChannelDepth[i]` to 1 and the collected data should be already normalized by its min/max range. For discrete data, you should specify `ChannelDepth[i]` to the total number of possible values, and the collected data should be an interger value within range of `ChannelDepth[i]`.
+
+Using the example described earlier, if one was using Channel Based Grid Observations, they would have a ChannelDepth = {2, 1} to describe that there are two possible values for the first channel (ObjectType) and the 1 represents that the second channel (EnemyHealth) is continuous and should be already normalized.
+
+For ObjectType, "weapon", "enemy" will be represented respectively as:
 ```
-num = detectableObjects.IndexOfTag("enemy")/ChannelDepth[0] = 2/2 = 1;
+weapon = DetectableObjects.IndexOfTag("weapon")/ChannelDepth[0] = 1/2 = 0.5;
+enemy = DetectableObjects.IndexOfTag("enemy")/ChannelDepth[0] = 2/2 = 1;
 ```
 
 By using this formula, if there wasn't an object within the cell then the value would be 0.
 
 As the ChannelDepth for the second channel is defined as 1, the collected health value (60% = 0.6) can be encoded directly. Thus the encoded data at this cell is:
-`[1, .6]`
+`[1, .6]`. If the health in the game is not represented in a normalized form, for example if the health is represented in an integer ranging from -100 to 100, you'll need to manully nomalize it during collection. That is, If you get value 50, you need to normalize it by `50/(100- (-100))=0.25` and collect 0.25 instead of 50.
 
 At the end of the Encoding phase, the resulting Grid Observation would be a WxHx2 matrix.
 
 ### Channel Hot
 
-The Channel Hot DepthType generalizes the classic OneHot encoding to differentiate combinations of different data. Rather than normalizing the data like in the Channel Based section, each element of `channelValues` is represented by an encoding based on the ChannelDepth. If ChannelDepth[i] = 1, then this represents that `channelValues[i]` is already normalized (between 0-1) and will be used directly within the encoding. However if ChannelDepth[i] is an integer greater than 1, then the value in `channelValues[i]` will be converted into a OneHot encoding based on the following:
+The Channel Hot DepthType generalizes the classic OneHot encoding to differentiate combinations of different data. Rather than normalizing the data like in the Channel Based section, each element of `channelValues` is represented by an encoding based on the ChannelDepth. If ChannelDepth[i] = 1, then this represents that `channelValues[i]` is already normalized (between 0-1) and will be used directly within the encoding which is same as with Channel Based. However if ChannelDepth[i] is an integer greater than 1, then the value in `channelValues[i]` will be converted into a OneHot encoding based on the following:
 
 ```
 float[] arr = new float[ChannelDepth[i] + 1];
