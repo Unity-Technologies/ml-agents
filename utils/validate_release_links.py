@@ -89,16 +89,16 @@ def check_file(
         with open(new_file_name, "w+") as new_file:
             with open(filename) as f:
                 for line in f:
-                    keepLine = True
-                    keepLine = not RELEASE_PATTERN.search(line)
-                    keepLine |= global_allow_pattern.search(line) is not None
+                    keep_line = True
+                    keep_line = not RELEASE_PATTERN.search(line)
+                    keep_line |= global_allow_pattern.search(line) is not None
                     if filename in ALLOW_LIST:
-                        keepLine |= (
+                        keep_line |= (
                             ALLOW_LIST[filename] is None
                             or ALLOW_LIST[filename].search(line) is not None
                         )
 
-                    if keepLine:
+                    if keep_line:
                         new_file.write(line)
                     else:
                         bad_lines.append(f"{filename}: {line}")
