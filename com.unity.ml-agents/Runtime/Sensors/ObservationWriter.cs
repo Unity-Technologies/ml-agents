@@ -19,7 +19,7 @@ namespace Unity.MLAgents.Sensors
 
         TensorShape m_TensorShape;
 
-        internal ObservationWriter() {}
+        internal ObservationWriter() { }
 
         /// <summary>
         /// Set the writer to write to an IList at the given channelOffset.
