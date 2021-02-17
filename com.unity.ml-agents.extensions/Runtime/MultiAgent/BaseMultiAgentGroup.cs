@@ -28,7 +28,7 @@ namespace Unity.MLAgents.Extensions.MultiAgent
             {
                 agent.SetMultiAgentGroup(this);
                 m_Agents.Add(agent);
-                agent.UnregisterFromGroup += UnregisterAgent;
+                agent.OnAgentDisabled += UnregisterAgent;
             }
         }
 
@@ -38,7 +38,7 @@ namespace Unity.MLAgents.Extensions.MultiAgent
             if (m_Agents.Contains(agent))
             {
                 m_Agents.Remove(agent);
-                agent.UnregisterFromGroup -= UnregisterAgent;
+                agent.OnAgentDisabled -= UnregisterAgent;
             }
         }
 
