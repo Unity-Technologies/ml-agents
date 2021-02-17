@@ -10,18 +10,17 @@ from typing import List, Optional, Pattern
 
 RELEASE_PATTERN = re.compile(r"release_[0-9]+(_docs)*")
 TRAINER_INIT_FILE = "ml-agents/mlagents/trainers/__init__.py"
-ESCAPE_TRANSLATION = str.maketrans(
-    {"]": r"\\]", "[": r"\\[", "(": r"\\(", ")": r"\\)", "*": r"\*"}
-)
+
+MATCH_ANY = re.compile(r"(?s).*")
 # Filename -> regex list to allow specific lines.
 # To allow everything in the file, use None for the value
 ALLOW_LIST = {
     # Previous release table
     "README.md": re.compile(r"\*\*(Verified Package ([0-9]\.?)*|Release [0-9]+)\*\*"),
-    "docs/Versioning.md": None,
-    "com.unity.ml-agents/CHANGELOG.md": None,
-    "utils/make_readme_table.py": None,
-    "utils/validate_release_links.py": None,
+    "docs/Versioning.md": MATCH_ANY,
+    "com.unity.ml-agents/CHANGELOG.md": MATCH_ANY,
+    "utils/make_readme_table.py": MATCH_ANY,
+    "utils/validate_release_links.py": MATCH_ANY,
 }
 
 
@@ -87,16 +86,14 @@ def check_file(
             os.makedirs(tempdir)
         new_file_name = os.path.join(tempdir, os.path.basename(filename))
         with open(new_file_name, "w+") as new_file:
+            # default to match everything if there is nothing in the ALLOW_LIST
+            allow_list_pattern = ALLOW_LIST.get(filename, MATCH_ANY)
             with open(filename) as f:
                 for line in f:
                     keep_line = True
                     keep_line = not RELEASE_PATTERN.search(line)
                     keep_line |= global_allow_pattern.search(line) is not None
-                    if filename in ALLOW_LIST:
-                        keep_line |= (
-                            ALLOW_LIST[filename] is None
-                            or ALLOW_LIST[filename].search(line) is not None
-                        )
+                    keep_line |= allow_list_pattern.search(line) is not None
 
                     if keep_line:
                         new_file.write(line)
