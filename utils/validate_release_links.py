@@ -83,6 +83,8 @@ def check_file(
     """
     bad_lines = []
     with tempfile.TemporaryDirectory() as tempdir:
+        if not os.path.exists(tempdir):
+            os.makedirs(tempdir)
         new_file_name = os.path.join(tempdir, os.path.basename(filename))
         with open(new_file_name, "w+") as new_file:
             with open(filename) as f:
