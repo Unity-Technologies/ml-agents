@@ -48,7 +48,8 @@ namespace MLAgents
         private bool spinAttack;
 
         public enum RotationAxes { MouseXAndY = 0, MouseX = 1, 	MouseY = 2 };
-        [Header("BODY ROTATION")]
+
+        [Header("BODY ROTATION")] public bool UseMouseRotation = true;
         public RotationAxes axes = RotationAxes.MouseXAndY;
         public float sensitivityX = 15F;
         public float sensitivityY = 15F;
@@ -289,32 +290,36 @@ namespace MLAgents
         void FixedUpdate()
         {
 
-
-            if (axes == RotationAxes.MouseXAndY)
+            if (UseMouseRotation)
             {
+                if (axes == RotationAxes.MouseXAndY)
+                {
 
 
-                Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
-                Quaternion yQuaternion = Quaternion.AngleAxis(rotationY, -Vector3.right);
+                    Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
+                    Quaternion yQuaternion = Quaternion.AngleAxis(rotationY, -Vector3.right);
 
-                transform.localRotation = originalRotation * xQuaternion * yQuaternion;
+                    transform.localRotation = originalRotation * xQuaternion * yQuaternion;
+                }
+                else if (axes == RotationAxes.MouseX)
+                {
+                    // rotationX += Input.GetAxis("Mouse X") * sensitivityX;
+                    // rotationX = ClampAngle(rotationX, minimumX, maximumX);
+
+                    Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
+                    transform.localRotation = originalRotation * xQuaternion;
+                }
+                else
+                {
+                    // rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
+                    // rotationY = ClampAngle(rotationY, minimumY, maximumY);
+
+                    Quaternion yQuaternion = Quaternion.AngleAxis(-rotationY, Vector3.right);
+                    transform.localRotation = originalRotation * yQuaternion;
+                }
+
             }
-            else if (axes == RotationAxes.MouseX)
-            {
-                // rotationX += Input.GetAxis("Mouse X") * sensitivityX;
-                // rotationX = ClampAngle(rotationX, minimumX, maximumX);
 
-                Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
-                transform.localRotation = originalRotation * xQuaternion;
-            }
-            else
-            {
-                // rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
-                // rotationY = ClampAngle(rotationY, minimumY, maximumY);
-
-                Quaternion yQuaternion = Quaternion.AngleAxis(-rotationY, Vector3.right);
-                transform.localRotation = originalRotation * yQuaternion;
-            }
 
 
 
@@ -589,6 +594,7 @@ namespace MLAgents
                 var rot = Quaternion.LookRotation(dir);
                 var smoothedRot = Quaternion.RotateTowards(rb.rotation, rot, maxRotationRate * Time.deltaTime);
                 rb.MoveRotation(smoothedRot);
+                // print($"rot {gameObject.name} {dir.normalized}");
             }
         }
 

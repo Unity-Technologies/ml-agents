@@ -32,10 +32,16 @@ public class DodgeBallAgent : Agent
     private DodgeBallGameController m_GameController;
     private Rigidbody m_AgentRb;
 
-
+    [Header("HIT EFFECTS")] public ParticleSystem HitByParticles;
+    public AudioSource HitSoundAudioSource;
     public Queue<DodgeBall> ActiveBallsQueue = new Queue<DodgeBall>();
     // public List<DodgeBall> ActiveBallsList = new List<DodgeBall>();
     public List<Transform> BallUIList = new List<Transform>();
+
+    public bool AnimateEyes;
+    public Transform NormalEyes;
+    public Transform HitEyes;
+
     // Start is called before the first frame update
     public override void Initialize()
     {
@@ -165,25 +171,9 @@ public class DodgeBallAgent : Agent
         //     gunController.Shoot();
         //     currentNumberOfBalls--;
         // }
-        if (input.shootPressed && currentNumberOfBalls > 0)
+        if (input.shootPressed)
         {
-            // ThrowController.Shoot();
-            // for (int i = 0; i < ActiveBallsList.Count; i++)
-            // {
-            //
-            // }
-            ThrowController.Throw(ActiveBallsQueue.Peek());
-            ActiveBallsQueue.Dequeue();
-            // foreach (var item in ActiveBallsList)
-            // {
-            //     if (!item.gameObject.activeInHierarchy)
-            //     {
-            //         ThrowController.Throw(item);
-            //         break;
-            //     }
-            // }
-            currentNumberOfBalls--;
-            SetActiveBalls(currentNumberOfBalls);
+            ThrowTheBall();
         }
 
 
@@ -200,6 +190,17 @@ public class DodgeBallAgent : Agent
         if (m_AgentRb.velocity.sqrMagnitude > 25f) // slow it down
         {
             m_AgentRb.velocity *= 0.95f;
+        }
+    }
+
+    public void ThrowTheBall()
+    {
+        if (currentNumberOfBalls > 0)
+        {
+            ThrowController.Throw(ActiveBallsQueue.Peek());
+            ActiveBallsQueue.Dequeue();
+            currentNumberOfBalls--;
+            SetActiveBalls(currentNumberOfBalls);
         }
     }
 
@@ -289,6 +290,21 @@ public class DodgeBallAgent : Agent
     }
 
 
+    IEnumerator ShowHitFace()
+    {
+        WaitForFixedUpdate wait = new WaitForFixedUpdate();
+        float timer = 0;
+        NormalEyes.gameObject.SetActive(false);
+        HitEyes.gameObject.SetActive(true);
+        while (timer < .25f)
+        {
+            timer += Time.deltaTime;
+            yield return wait;
+        }
+        NormalEyes.gameObject.SetActive(true);
+        HitEyes.gameObject.SetActive(false);
+    }
+
     private void OnCollisionEnter(Collision col)
     {
         DodgeBall db = col.gameObject.GetComponent<DodgeBall>();
@@ -300,7 +316,15 @@ public class DodgeBallAgent : Agent
 
         if (db.inPlay) //HIT BY LIVE BALL
         {
-
+            print("HIT BY LIVE BALL");
+            // if(HitByParticles.isPlaying)
+            ThrowController.impulseSource.GenerateImpulse();
+            HitSoundAudioSource.Play();
+            HitByParticles.Play();
+            if (AnimateEyes)
+            {
+                StartCoroutine(ShowHitFace());
+            }
         }
         else //TRY TO PICK IT UP
         {

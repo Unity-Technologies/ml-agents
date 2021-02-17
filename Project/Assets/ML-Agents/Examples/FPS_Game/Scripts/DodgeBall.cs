@@ -19,7 +19,7 @@ public class DodgeBall : MonoBehaviour
 
     private void OnEnable()
     {
-        inPlay = false;
+        // inPlay = false;
         rb = GetComponent<Rigidbody>();
     }
 

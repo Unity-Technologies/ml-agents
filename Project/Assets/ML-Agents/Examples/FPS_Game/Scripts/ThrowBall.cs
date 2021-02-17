@@ -50,7 +50,7 @@ public class ThrowBall : MonoBehaviour
     private Vector3 startPos;
     private bool m_TransformIsShaking;
 
-    CinemachineImpulseSource impulseSource;
+    public CinemachineImpulseSource impulseSource;
 
     // Start is called before the first frame update
     void Awake()
@@ -71,10 +71,10 @@ public class ThrowBall : MonoBehaviour
 
     void Initialize()
     {
+        impulseSource = GetComponent<CinemachineImpulseSource>();
         projectilePoolList.Clear(); //clear list in case it's not empty
         for (var i = 0; i < numberOfProjectilesToPool; i++)
         {
-            impulseSource = GetComponent<CinemachineImpulseSource>();
             GameObject obj = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
             Rigidbody p = obj.GetComponent<Rigidbody>();
             projectilePoolList.Add(p);
@@ -174,6 +174,7 @@ public class ThrowBall : MonoBehaviour
         rb.AddForce(projectileOrigin.forward * forceToUse, forceMode);
         if (UseScreenShake && impulseSource)
         {
+            print("fireimpulse");
             impulseSource.GenerateImpulse();
         }
         if (ShakeTransform && !m_TransformIsShaking)
