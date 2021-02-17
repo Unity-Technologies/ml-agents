@@ -5,6 +5,7 @@ import sys
 import os
 import re
 import subprocess
+import tempfile
 from typing import List, Optional, Pattern
 
 RELEASE_PATTERN = re.compile(r"release_[0-9]+(_docs)*")
@@ -81,35 +82,31 @@ def check_file(
     Validate a single file and return any offending lines.
     """
     bad_lines = []
-    new_file_name = f"{filename}.orig"
-    with open(new_file_name, "a") as new_file:
-        with open(filename) as f:
-            for line in f:
-                keepLine = True
-                keepLine = not RELEASE_PATTERN.search(line)
-                keepLine |= global_allow_pattern.search(line) is not None
-                if filename in ALLOW_LIST:
-                    keepLine |= (
-                        ALLOW_LIST[filename] is None
-                        or ALLOW_LIST[filename].search(line) is not None
-                    )
+    with tempfile.TemporaryDirectory() as tempdir:
+        new_file_name = os.path.join(tempdir, os.path.basename(filename))
+        with open(new_file_name, "w+") as new_file:
+            with open(filename) as f:
+                for line in f:
+                    keepLine = True
+                    keepLine = not RELEASE_PATTERN.search(line)
+                    keepLine |= global_allow_pattern.search(line) is not None
+                    if filename in ALLOW_LIST:
+                        keepLine |= (
+                            ALLOW_LIST[filename] is None
+                            or ALLOW_LIST[filename].search(line) is not None
+                        )
 
-                if keepLine:
-                    new_file.write(line)
-                else:
-                    bad_lines.append(f"{filename}: {line}")
-                    new_file.write(re.sub(r"release_[0-9]+", fr"{release_tag}", line))
-    if bad_lines:
-        if os.path.exists(filename):
-            os.remove(filename)
-            os.rename(new_file_name, filename)
-    elif os.path.exists(new_file_name):
-        try:
-            os.remove(new_file_name)
-        except FileNotFoundError:
-            print(
-                "Could not remove file: {new_file_name}.  Please make sure not to accidentally commit it."
-            )
+                    if keepLine:
+                        new_file.write(line)
+                    else:
+                        bad_lines.append(f"{filename}: {line}")
+                        new_file.write(
+                            re.sub(r"release_[0-9]+", fr"{release_tag}", line)
+                        )
+        if bad_lines:
+            if os.path.exists(filename):
+                os.remove(filename)
+                os.rename(new_file_name, filename)
 
     return bad_lines
 
