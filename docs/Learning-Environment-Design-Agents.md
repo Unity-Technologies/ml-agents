@@ -623,7 +623,7 @@ decide to perform the masked action. In order to mask an action, override the
 ```csharp
 public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
 {
-    actionMasker.WriteMask(branch, actionIndices)
+    actionMask.WriteMask(branch, actionIndices);
 }
 ```
 
@@ -641,7 +641,7 @@ nothing"_ or _"change weapon"_ for his next decision (since action index 1 and 2
 are masked)
 
 ```csharp
-WriteMask(0, new int[2]{1,2})
+WriteMask(0, new int[2]{1,2});
 ```
 
 Notes:
