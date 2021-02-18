@@ -686,14 +686,14 @@ the available computational resources.
 
 ### Learning from Variable Length Observations using Attention
 
-Using the ML-Agents toolkit, it is possible to have agents learn from a
+Using the ML-Agents Toolkit, it is possible to have agents learn from a
 varying number of inputs. To do so, each agent can keep track of a buffer
 of vector observations. At each step, the agent will go through all the
 elements in the buffer and extract information but the elements
 in the buffer can change at every step.
 This can be useful in scenarios in which the agents must keep track of
 a varying number of elements throughout the episode. You can learn more
-about variable length observations and the BufferSensor 
+about variable length observations and the BufferSensor
 [here](Learning-Environment-Design-Agents.md#variable-length-observations)
 When variable length observations are utilized, the ML-Agents Toolkit
 leverages attention networks to learn from a varying number of entities.
