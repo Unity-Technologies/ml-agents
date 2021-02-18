@@ -2,11 +2,13 @@
 
 ## Overview
 One area we are always trying to improve is getting developers up and running with ML-Agents.  With this in mind,
-we have implemented an `InputActuatorComponent` that sets up an action space for your `Agent` based on
-an `InputActionAsset` that is referenced by the `IInputActionAssetProvider` interface, or the `PlayerInput` component
-that may be living on your player controlled `Agent`.  This means that if you have code outside of your agent that
-handles input, you will not need to implement the Heuristic function in agent as well.  The `InputActuatorComponent`
-will handle this for you.  You can now train and run inference on `Agents` with an action space defined by an `InputActionAsset`.
+we have implemented an `InputActuatorComponent`.  This component integrates with the
+[Input System Package](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.1/manual/QuickStartGuide.html)
+to set up an action space for your `Agent` based on an `InputActionAsset` that is referenced by the
+`IInputActionAssetProvider` interface, or the `PlayerInput` component that may be living on your player controlled
+`Agent`.  This means that if you have code outside of your agent that handles input, you will not need to implement
+the Heuristic function in agent as well.  The `InputActuatorComponent` will handle this for you.  You can now train and
+run inference on `Agents` with an action space defined by an `InputActionAsset`.
 
 This implementation includes:
 
