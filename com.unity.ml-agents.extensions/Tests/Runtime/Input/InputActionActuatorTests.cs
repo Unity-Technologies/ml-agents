@@ -4,7 +4,6 @@ using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Extensions.Input;
 using Unity.MLAgents.Policies;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,8 +11,8 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
 {
     class TestAdaptor : IRLActionInputAdaptor
     {
-        public bool m_EventQueued;
-        public bool m_WrittenToHeuristic;
+        public bool eventQueued;
+        public bool writtenToHeuristic;
 
         public ActionSpec GetActionSpecForInputAction(InputAction action)
         {
@@ -22,18 +21,18 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
 
         public void QueueInputEventForAction(InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
         {
-            m_EventQueued = true;
+            eventQueued = true;
         }
 
         public void WriteToHeuristic(InputAction action, in ActionBuffers actionBuffers)
         {
-            m_WrittenToHeuristic = true;
+            writtenToHeuristic = true;
         }
 
         public void Reset()
         {
-            m_EventQueued = false;
-            m_WrittenToHeuristic = false;
+            eventQueued = false;
+            writtenToHeuristic = false;
         }
     }
 
@@ -60,18 +59,18 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
             m_BehaviorParameters.BehaviorType = BehaviorType.HeuristicOnly;
             m_Actuator.OnActionReceived(new ActionBuffers());
             m_Actuator.Heuristic(new ActionBuffers());
-            Assert.IsFalse(m_Adaptor.m_EventQueued);
-            Assert.IsTrue(m_Adaptor.m_WrittenToHeuristic);
+            Assert.IsFalse(m_Adaptor.eventQueued);
+            Assert.IsTrue(m_Adaptor.writtenToHeuristic);
             m_Adaptor.Reset();
 
             m_BehaviorParameters.BehaviorType = BehaviorType.Default;
             m_Actuator.OnActionReceived(new ActionBuffers());
-            Assert.IsFalse(m_Adaptor.m_EventQueued);
+            Assert.IsFalse(m_Adaptor.eventQueued);
             m_Adaptor.Reset();
 
             m_BehaviorParameters.Model = ScriptableObject.CreateInstance<NNModel>();
             m_Actuator.OnActionReceived(new ActionBuffers());
-            Assert.IsTrue(m_Adaptor.m_EventQueued);
+            Assert.IsTrue(m_Adaptor.eventQueued);
             m_Adaptor.Reset();
 
             Assert.AreEqual(m_Actuator.Name, "InputActionActuator-action");

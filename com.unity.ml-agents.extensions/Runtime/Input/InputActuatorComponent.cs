@@ -11,8 +11,6 @@ using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.Utilities;
 #if UNITY_EDITOR
 using UnityEditor;
-using UnityEngine.iOS;
-
 #endif
 
 namespace Unity.MLAgents.Extensions.Input
