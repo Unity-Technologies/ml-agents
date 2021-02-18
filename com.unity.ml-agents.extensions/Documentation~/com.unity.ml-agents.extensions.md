@@ -35,7 +35,8 @@ directions (substituting `com.unity.ml-agents.extensions` for the package name).
 ### Github via Package Manager
 In Unity 2019.4 or later, open the Package Manager, hit the "+" button, and select "Add package from git URL".
 
-![Package Manager git URL](https://github.com/Unity-Technologies/ml-agents/tree/release_13_docs/docs/images/unity_package_manager_git_url.png)
+![Package Manager git URL](https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/docs/images/unity_package_manager_git_url.png)
+
 In the dialog that appears, enter
  ```
  git+https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents.extensions
