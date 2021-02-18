@@ -1,0 +1,45 @@
+Mono path[0] = '/Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Resources/Data/Managed'
+Mono config path = '/Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/MonoBleedingEdge/etc'
+Initialize engine version: 2018.4.20f1 (008688490035)
+GfxDevice: creating device client; threaded=1
+Initializing Metal device caps: AMD Radeon Pro 5500M
+Begin MonoManager ReloadAssembly
+- Completed reload, in  0.147 seconds
+The referenced script on this Behaviour (Game Object 'EventSystem') is missing!
+ 
+(Filename:  Line: 294)
+
+The referenced script on this Behaviour (Game Object 'EventSystem') is missing!
+ 
+(Filename:  Line: 294)
+
+UnloadTime: 0.613437 ms
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so.dylib
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so.bundle
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so.dylib
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so.bundle
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so.dylib
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so.bundle
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so.dylib
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so.bundle
+Fallback handler could not load library /Users/vincentpierre/Downloads/ml-agents/envs/mantas-bullet.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so
+Setting up 8 worker threads for Enlighten.
+  Thread -> id: 700008e1e000 -> priority: 1 
+  Thread -> id: 700008fa7000 -> priority: 1 
+  Thread -> id: 7000090ad000 -> priority: 1 
+  Thread -> id: 700008f24000 -> priority: 1 
+  Thread -> id: 700009130000 -> priority: 1 
+  Thread -> id: 7000091b3000 -> priority: 1 
+  Thread -> id: 70000902a000 -> priority: 1 
+  Thread -> id: 700008ea1000 -> priority: 1 

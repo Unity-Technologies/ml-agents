@@ -1,0 +1,23 @@
+{
+    "Dodge": {
+        "checkpoints": [
+            {
+                "steps": 61585,
+                "file_path": "results/Bullet-New/Dodge/Dodge-61585.onnx",
+                "reward": null,
+                "creation_time": 1613677731.7092428
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 61585,
+            "file_path": "results/Bullet-New/Dodge.onnx",
+            "reward": null,
+            "creation_time": 1613677731.7092428
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.2.0",
+        "mlagents_version": "0.25.0.dev0",
+        "torch_version": "1.7.1"
+    }
+}
