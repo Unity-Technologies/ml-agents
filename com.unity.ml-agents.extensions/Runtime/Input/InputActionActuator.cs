@@ -47,16 +47,6 @@ namespace Unity.MLAgents.Extensions.Input
             m_Control = m_Device?.GetChildControl(m_Action.name);
         }
 
-        /// <summary>
-        /// Sets the virtual device for this actuator and looks for it's corresponding control.
-        /// </summary>
-        /// <param name="device">The virtual device with the control associated with this actuator.</param>
-        internal void SetDevice(InputDevice device)
-        {
-            m_Device = device;
-            m_Control = m_Device.GetChildControl(m_Action.name);
-        }
-
         /// <inheritdoc cref="IActionReceiver.OnActionReceived"/>
         public void OnActionReceived(ActionBuffers actionBuffers)
         {

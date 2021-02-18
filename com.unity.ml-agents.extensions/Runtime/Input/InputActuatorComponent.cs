@@ -111,16 +111,19 @@ namespace Unity.MLAgents.Extensions.Input
             UpdateDeviceBinding(m_BehaviorParameters.IsInHeuristicMode());
             inputActionMap.Enable();
 
-            var specs = new ActionSpec[m_Actuators.Length];
-            for (var i = 0; i < m_Actuators.Length; i++)
-            {
-                var actuator = m_Actuators[i];
-                ((InputActionActuator)actuator).SetDevice(m_Device);
-                specs[i] = actuator.ActionSpec;
-            }
-            m_ActionSpec = ActionSpec.Combine(specs);
+            m_ActionSpec = CombineActuatorActionSpecs(m_Actuators);
             collection.Enable();
             return m_Actuators;
+        }
+
+        internal static ActionSpec CombineActuatorActionSpecs(IActuator[] actuators)
+        {
+            var specs = new ActionSpec[actuators.Length];
+            for (var i = 0; i < actuators.Length; i++)
+            {
+                specs[i] = actuators[i].ActionSpec;
+            }
+            return ActionSpec.Combine(specs);
         }
 
         internal static IActuator[] CreateActuatorsFromMap(InputActionMap inputActionMap,
@@ -137,7 +140,7 @@ namespace Unity.MLAgents.Extensions.Input
 
                 // Reasonably, the input system starts adding numbers after the first none numbered name
                 // is added.  So for device ID of 0, we use the empty string in the path.
-                var path = $"{inputDevice.path}{InputControlPath.Separator}{action.name}";
+                var path = $"{inputDevice?.path}{InputControlPath.Separator}{action.name}";
                 action.AddBinding(path,
                     action.interactions,
                     action.processors,
@@ -220,8 +223,18 @@ namespace Unity.MLAgents.Extensions.Input
 #pragma warning restore 672
 
         /// <inheritdoc cref="IActuator.ActionSpec"/>
-        public override ActionSpec ActionSpec => m_ActionSpec;
-
+        public override ActionSpec ActionSpec
+        {
+            get
+            {
+#if UNITY_EDITOR
+                FindNeededComponents();
+                var actuators = CreateActuatorsFromMap(m_InputAsset.FindActionMap(m_PlayerInput.defaultActionMap), m_BehaviorParameters, null);
+                m_ActionSpec = CombineActuatorActionSpecs(actuators);
+#endif
+                return m_ActionSpec;
+            }
+        }
 
         /// <summary>
         ///
