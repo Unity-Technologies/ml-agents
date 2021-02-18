@@ -30,7 +30,6 @@ namespace Unity.MLAgents.Extensions.Input
         BehaviorParameters m_BehaviorParameters;
         IActuator[] m_Actuators;
         InputDevice m_Device;
-        Agent m_Agent;
 
         /// <summary>
         /// Mapping of <see cref="InputControl"/> types to types of <see cref="IRLActionInputAdaptor"/> concrete classes.
@@ -116,7 +115,7 @@ namespace Unity.MLAgents.Extensions.Input
             return m_Actuators;
         }
 
-        internal static ActionSpec CombineActuatorActionSpecs(IActuator[] actuators)
+        static ActionSpec CombineActuatorActionSpecs(IActuator[] actuators)
         {
             var specs = new ActionSpec[actuators.Length];
             for (var i = 0; i < actuators.Length; i++)
@@ -149,8 +148,20 @@ namespace Unity.MLAgents.Extensions.Input
             return actuators;
         }
 
-        public void UpdateDeviceBinding(bool isInHeuristicMode)
+        /// <summary>
+        /// Set up bindings based on whether or not the BehaviorParameters are working in Heuristic mode or not.
+        /// If we are working in Heuristic mode, we want the input system to handle everything.  If not, we
+        /// want the neural network to send input from virtual devices.
+        /// </summary>
+        /// <param name="isInHeuristicMode">true if the Agent connected to this GameObject is working in
+        /// Heuristic mode.</param>
+        /// <seealso cref="BehaviorParameters.IsInHeuristicMode"/>
+        internal void UpdateDeviceBinding(bool isInHeuristicMode)
         {
+            if (ReferenceEquals(m_Device, null))
+            {
+                return;
+            }
             var collection = m_AssetCollection ?? m_InputAsset;
             m_ControlScheme = CreateControlScheme(m_Device, isInHeuristicMode, m_InputAsset);
             if (m_InputAsset.FindControlSchemeIndex(m_ControlScheme.name) != -1)
@@ -163,9 +174,9 @@ namespace Unity.MLAgents.Extensions.Input
                 var inputActionMap = m_InputAsset.FindActionMap(m_PlayerInput.defaultActionMap);
                 m_InputAsset.AddControlScheme(m_ControlScheme);
                 collection.bindingMask = InputBinding.MaskByGroup(m_ControlScheme.bindingGroup);
-                inputActionMap.bindingMask = collection.bindingMask;
                 collection.devices = new ReadOnlyArray<InputDevice>(new[] { m_Device });
-                inputActionMap.devices = m_InputAsset.devices;
+                inputActionMap.bindingMask = collection.bindingMask;
+                inputActionMap.devices = collection.devices;
             }
             else
             {
@@ -209,9 +220,8 @@ namespace Unity.MLAgents.Extensions.Input
                 }
             }
 
-            var controlSchemeName = mlAgentsControlSchemeName;
             var inputControlScheme = new InputControlScheme(
-                controlSchemeName,
+                 mlAgentsControlSchemeName,
                 deviceRequirements);
 
             return inputControlScheme;
@@ -242,9 +252,7 @@ namespace Unity.MLAgents.Extensions.Input
         /// <param name="defaultMap"></param>
         /// <param name="layoutName"></param>
         /// <returns></returns>
-        internal static void RegisterLayoutBuilder(
-            InputActionMap defaultMap,
-            string layoutName)
+        internal static void RegisterLayoutBuilder(InputActionMap defaultMap, string layoutName)
         {
             if (InputSystem.LoadLayout(layoutName) == null)
             {
@@ -257,7 +265,6 @@ namespace Unity.MLAgents.Extensions.Input
                     for(var i = 0; i < defaultMap.actions.Count; i++)
                     {
                         var action = defaultMap.actions[i];
-
                         builder.AddControl(action.name)
                             .WithLayout(action.expectedControlType);
                     }
@@ -288,12 +295,6 @@ namespace Unity.MLAgents.Extensions.Input
                 Assert.IsNotNull(m_BehaviorParameters, "BehaviorParameters were not on the current GameObject.");
                 m_BehaviorParameters.OnPolicyUpdated += UpdateDeviceBinding;
                 m_LayoutName = mlAgentsLayoutName + m_BehaviorParameters.BehaviorName;
-            }
-
-            // TODO remove
-            if (m_Agent == null)
-            {
-                m_Agent = GetComponent<Agent>();
             }
         }
 
