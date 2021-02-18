@@ -129,4 +129,4 @@ Please refer to "Information that is passively collected by Unity" in the
 [execution order of event functions]: https://docs.unity3d.com/Manual/ExecutionOrder.html
 [connect with us]: https://github.com/Unity-Technologies/ml-agents#community-and-feedback
 [ml-agents forum]: https://forum.unity.com/forums/ml-agents.453/
-[ML-Agents GitHub repo]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/com.unity.ml-agents.extensions
+[ML-Agents GitHub repo]: https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/com.unity.ml-agents.extensions
