@@ -41,7 +41,10 @@ public class DodgeBallAgent : Agent
     public bool AnimateEyes;
     public Transform NormalEyes;
     public Transform HitEyes;
-
+    [Header("SOUNDS")] public AudioClip BallPickupAudioClip;
+    public AudioClip TauntVoiceAudioClip;
+    public AudioClip HurtVoiceAudioClip;
+    public AudioClip BallImpactAudioClip;
     // Start is called before the first frame update
     public override void Initialize()
     {
@@ -319,7 +322,9 @@ public class DodgeBallAgent : Agent
             print("HIT BY LIVE BALL");
             // if(HitByParticles.isPlaying)
             ThrowController.impulseSource.GenerateImpulse();
-            HitSoundAudioSource.Play();
+            // HitSoundAudioSource.Play();
+            HitSoundAudioSource.PlayOneShot(BallImpactAudioClip, 1f);
+            HitSoundAudioSource.PlayOneShot(HurtVoiceAudioClip, .2f);
             HitByParticles.Play();
             if (AnimateEyes)
             {
@@ -330,6 +335,7 @@ public class DodgeBallAgent : Agent
         {
             if (currentNumberOfBalls < 4)
             {
+                HitSoundAudioSource.PlayOneShot(BallPickupAudioClip, .1f);
                 //update counter
                 currentNumberOfBalls++;
                 SetActiveBalls(currentNumberOfBalls);
