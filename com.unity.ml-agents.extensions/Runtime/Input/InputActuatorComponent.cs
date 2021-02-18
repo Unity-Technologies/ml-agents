@@ -44,12 +44,27 @@ namespace Unity.MLAgents.Extensions.Input
         };
 
         string m_LayoutName;
+        [SerializeField]
         ActionSpec m_ActionSpec;
         InputControlScheme m_ControlScheme;
 
         public const string mlAgentsLayoutFormat = "MLAT";
         public const string mlAgentsLayoutName = "MLAgentsLayout";
         public const string mlAgentsControlSchemeName = "ml-agents";
+
+        /// <inheritdoc cref="IActuator.ActionSpec"/>
+        public override ActionSpec ActionSpec
+        {
+            get
+            {
+#if UNITY_EDITOR
+                FindNeededComponents();
+                var actuators = CreateActuatorsFromMap(m_InputAsset.FindActionMap(m_PlayerInput.defaultActionMap), m_BehaviorParameters, null);
+                m_ActionSpec = CombineActuatorActionSpecs(actuators);
+#endif
+                return m_ActionSpec;
+            }
+        }
 
         void OnDisable()
         {
@@ -231,20 +246,6 @@ namespace Unity.MLAgents.Extensions.Input
         /// <inheritdoc cref="ActuatorComponent.CreateActuator"/>
         public override IActuator CreateActuator() { return null; }
 #pragma warning restore 672
-
-        /// <inheritdoc cref="IActuator.ActionSpec"/>
-        public override ActionSpec ActionSpec
-        {
-            get
-            {
-#if UNITY_EDITOR
-                FindNeededComponents();
-                var actuators = CreateActuatorsFromMap(m_InputAsset.FindActionMap(m_PlayerInput.defaultActionMap), m_BehaviorParameters, null);
-                m_ActionSpec = CombineActuatorActionSpecs(actuators);
-#endif
-                return m_ActionSpec;
-            }
-        }
 
         /// <summary>
         ///
