@@ -76,7 +76,7 @@ namespace Unity.MLAgents.Policies
 
         public delegate void PolicyUpdated(bool isInHeuristicMode);
 
-        public event PolicyUpdated OnPolicyUpdated;
+        internal event PolicyUpdated OnPolicyUpdated;
 
         /// <summary>
         /// The associated <see cref="Policies.BrainParameters"/> for this behavior.

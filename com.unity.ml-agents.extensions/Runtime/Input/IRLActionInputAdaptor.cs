@@ -5,6 +5,10 @@ using UnityEngine.InputSystem;
 
 namespace Unity.MLAgents.Extensions.Input
 {
+    /// <summary>
+    /// Implement this interface in order to customize how information is translated <see cref="InputControl"/>s
+    /// and <see cref="ActionBuffers"/>.
+    /// </summary>
     public interface IRLActionInputAdaptor
     {
         /// <summary>

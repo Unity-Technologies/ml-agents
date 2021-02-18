@@ -100,11 +100,11 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         /// <param name="specs">The list of action specs to combine.</param>
         /// <returns>An ActionSpec which represents the aggregate of the ActionSpecs passed in.</returns>
-        public static ActionSpec Combine(IList<ActionSpec> specs)
+        public static ActionSpec Combine(params ActionSpec[] specs)
         {
             var numContinuous = 0;
             var numDiscrete = 0;
-            for (var i = 0; i < specs.Count; i++)
+            for (var i = 0; i < specs.Length; i++)
             {
                 var spec = specs[i];
                 numContinuous += spec.NumContinuousActions;
@@ -118,7 +118,7 @@ namespace Unity.MLAgents.Actuators
 
             var branchSizes = new int[numDiscrete];
             var offset = 0;
-            for (var i = 0; i < specs.Count; i++)
+            for (var i = 0; i < specs.Length; i++)
             {
                 var spec = specs[i];
                 if (spec.BranchSizes.Length == 0)
