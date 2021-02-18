@@ -1,6 +1,5 @@
-# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
 using Grpc.Core;
-#endif
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -44,23 +43,17 @@ namespace Unity.MLAgents
         Dictionary<string, ActionSpec> m_UnsentBrainKeys = new Dictionary<string, ActionSpec>();
 
 
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
         /// The Unity to External client.
         UnityToExternalProto.UnityToExternalProtoClient m_Client;
-#endif
-        /// The communicator parameters sent at construction
-        CommunicatorInitParameters m_CommunicatorInitParameters;
 
         /// <summary>
         /// Initializes a new instance of the RPCCommunicator class.
         /// </summary>
-        /// <param name="communicatorInitParameters">Communicator parameters.</param>
-        public RpcCommunicator(CommunicatorInitParameters communicatorInitParameters)
+        public RpcCommunicator()
         {
-            m_CommunicatorInitParameters = communicatorInitParameters;
         }
 
-        #region Initialization
+#region Initialization
 
         internal static bool CheckCommunicationVersionsAreCompatible(
             string unityCommunicationVersion,
@@ -110,6 +103,7 @@ namespace Unity.MLAgents
             try
             {
                 initializationInput = Initialize(
+                    initParameters.port,
                     new UnityOutputProto
                     {
                         RlInitializationOutput = academyParameters
@@ -211,13 +205,10 @@ namespace Unity.MLAgents
             SendCommandEvent(rlInput.Command);
         }
 
-        UnityInputProto Initialize(UnityOutputProto unityOutput, out UnityInputProto unityInput)
+        UnityInputProto Initialize(int port, UnityOutputProto unityOutput, out UnityInputProto unityInput)
         {
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             m_IsOpen = true;
-            var channel = new Channel(
-                "localhost:" + m_CommunicatorInitParameters.port,
-                ChannelCredentials.Insecure);
+            var channel = new Channel($"localhost:{port}", ChannelCredentials.Insecure);
 
             m_Client = new UnityToExternalProto.UnityToExternalProtoClient(channel);
             var result = m_Client.Exchange(WrapMessage(unityOutput, 200));
@@ -232,21 +223,17 @@ namespace Unity.MLAgents
                 QuitCommandReceived?.Invoke();
             }
             return result.UnityInput;
-#else
-            throw new UnityAgentsException("You cannot perform training on this platform.");
-#endif
         }
 
-        #endregion
+#endregion
 
-        #region Destruction
+#region Destruction
 
         /// <summary>
         /// Close the communicator gracefully on both sides of the communication.
         /// </summary>
         public void Dispose()
         {
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_IsOpen)
             {
                 return;
@@ -261,15 +248,11 @@ namespace Unity.MLAgents
             {
                 // ignored
             }
-#else
-            throw new UnityAgentsException(
-                "You cannot perform training on this platform.");
-#endif
         }
 
-        #endregion
+#endregion
 
-        #region Sending Events
+#region Sending Events
 
         void SendCommandEvent(CommandProto command)
         {
@@ -296,9 +279,9 @@ namespace Unity.MLAgents
             }
         }
 
-        #endregion
+#endregion
 
-        #region Sending and retreiving data
+#region Sending and retreiving data
 
         public void DecideBatch()
         {
@@ -447,7 +430,6 @@ namespace Unity.MLAgents
         /// <param name="unityOutput">The UnityOutput to be sent.</param>
         UnityInputProto Exchange(UnityOutputProto unityOutput)
         {
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_IsOpen)
             {
                 return null;
@@ -500,10 +482,6 @@ namespace Unity.MLAgents
                 QuitCommandReceived?.Invoke();
                 return null;
             }
-#else
-            throw new UnityAgentsException(
-                "You cannot perform training on this platform.");
-#endif
         }
 
         /// <summary>
@@ -573,7 +551,7 @@ namespace Unity.MLAgents
             }
         }
 
-        #endregion
+#endregion
 
 #if UNITY_EDITOR
         /// <summary>
@@ -592,3 +570,4 @@ namespace Unity.MLAgents
 #endif
     }
 }
+#endif // UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
