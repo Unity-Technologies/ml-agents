@@ -21,12 +21,13 @@ from mlagents.trainers.trajectory import ObsUtil
 class GAILRewardProvider(BaseRewardProvider):
     def __init__(self, specs: BehaviorSpec, settings: GAILSettings) -> None:
         super().__init__(specs, settings)
-        self._ignore_done = True
+        self._ignore_done = False
         self._discriminator_network = DiscriminatorNetwork(specs, settings)
         self._discriminator_network.to(default_device())
         _, self._demo_buffer = demo_to_buffer(
             settings.demo_path, 1, specs
         )  # This is supposed to be the sequence length but we do not have access here
+        self._discriminator_network.encoder.update_normalization(self._demo_buffer)
         params = list(self._discriminator_network.parameters())
         self.optimizer = torch.optim.Adam(params, lr=settings.learning_rate)
 
@@ -44,6 +45,7 @@ class GAILRewardProvider(BaseRewardProvider):
             )
 
     def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
+
         expert_batch = self._demo_buffer.sample_mini_batch(
             mini_batch.num_experiences, 1
         )
@@ -73,7 +75,7 @@ class DiscriminatorNetwork(torch.nn.Module):
         self._settings = settings
 
         encoder_settings = NetworkSettings(
-            normalize=False,
+            normalize=True,
             hidden_units=settings.encoding_size,
             num_layers=2,
             vis_encode_type=EncoderType.SIMPLE,
