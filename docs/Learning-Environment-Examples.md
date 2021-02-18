@@ -421,7 +421,7 @@ you would like to contribute environments, please see our
     - Recommended minimum: 6
     - Recommended maximum: 20
 
-# Strikers Vs. Goalie
+## Strikers Vs. Goalie
 
 ![StrikersVsGoalie](images/strikersvsgoalie.png)
 
