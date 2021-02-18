@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Unity.MLAgents.Actuators
 {
@@ -157,9 +158,11 @@ namespace Unity.MLAgents.Actuators
         /// actions for the IActuators in this list.</param>
         public void UpdateActions(ActionBuffers actions)
         {
+            Profiler.BeginSample("ActuatorManager.UpdateActions");
             ReadyActuatorsForExecution();
             UpdateActionArray(actions.ContinuousActions, StoredActions.ContinuousActions);
             UpdateActionArray(actions.DiscreteActions, StoredActions.DiscreteActions);
+            Profiler.EndSample();
         }
 
         static void UpdateActionArray<T>(ActionSegment<T> sourceActionBuffer, ActionSegment<T> destination)
@@ -212,6 +215,7 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         public void ApplyHeuristic(in ActionBuffers actionBuffersOut)
         {
+            Profiler.BeginSample("ActuatorManager.ApplyHeuristic");
             var continuousStart = 0;
             var discreteStart = 0;
             for (var i = 0; i < m_Actuators.Count; i++)
@@ -246,6 +250,7 @@ namespace Unity.MLAgents.Actuators
                 continuousStart += numContinuousActions;
                 discreteStart += numDiscreteActions;
             }
+            Profiler.EndSample();
         }
 
         /// <summary>
@@ -255,6 +260,7 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         public void ExecuteActions()
         {
+            Profiler.BeginSample("ActuatorManager.ExecuteActions");
             ReadyActuatorsForExecution();
             var continuousStart = 0;
             var discreteStart = 0;
@@ -263,6 +269,11 @@ namespace Unity.MLAgents.Actuators
                 var actuator = m_Actuators[i];
                 var numContinuousActions = actuator.ActionSpec.NumContinuousActions;
                 var numDiscreteActions = actuator.ActionSpec.NumDiscreteActions;
+
+                if (numContinuousActions == 0 && numDiscreteActions == 0)
+                {
+                    continue;
+                }
 
                 var continuousActions = ActionSegment<float>.Empty;
                 if (numContinuousActions > 0)
@@ -284,6 +295,7 @@ namespace Unity.MLAgents.Actuators
                 continuousStart += numContinuousActions;
                 discreteStart += numDiscreteActions;
             }
+            Profiler.EndSample();
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Profiling;
 
 namespace Unity.MLAgents.Extensions.Input
 {
@@ -59,10 +60,12 @@ namespace Unity.MLAgents.Extensions.Input
         /// <inheritdoc cref="IActionReceiver.OnActionReceived"/>
         public void OnActionReceived(ActionBuffers actionBuffers)
         {
+            Profiler.BeginSample("InputActionActuator.OnActionReceived");
             if (!m_BehaviorParameters.IsInHeuristicMode())
             {
                 m_InputAdaptor.QueueInputEventForAction(m_Action, m_Control, ActionSpec, actionBuffers);
             }
+            Profiler.EndSample();
         }
 
         /// <inheritdoc cref="IActionReceiver.WriteDiscreteActionMask"/>
@@ -86,7 +89,9 @@ namespace Unity.MLAgents.Extensions.Input
         /// <inheritdoc cref="IHeuristicProvider.Heuristic"/>
         public void Heuristic(in ActionBuffers actionBuffersOut)
         {
+            Profiler.BeginSample("InputActionActuator.Heuristic");
             m_InputAdaptor.WriteToHeuristic(m_Action, actionBuffersOut);
+            Profiler.EndSample();
         }
     }
 }
