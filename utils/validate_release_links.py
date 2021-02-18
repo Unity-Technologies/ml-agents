@@ -87,13 +87,16 @@ def check_file(
         new_file_name = os.path.join(tempdir, os.path.basename(filename))
         with open(new_file_name, "w+") as new_file:
             # default to match everything if there is nothing in the ALLOW_LIST
-            allow_list_pattern = ALLOW_LIST.get(filename, MATCH_ANY)
+            allow_list_pattern = ALLOW_LIST.get(filename, None)
             with open(filename) as f:
                 for line in f:
                     keep_line = True
                     keep_line = not RELEASE_PATTERN.search(line)
                     keep_line |= global_allow_pattern.search(line) is not None
-                    keep_line |= allow_list_pattern.search(line) is not None
+                    keep_line |= (
+                        allow_list_pattern is not None
+                        and allow_list_pattern.search(line) is not None
+                    )
 
                     if keep_line:
                         new_file.write(line)
