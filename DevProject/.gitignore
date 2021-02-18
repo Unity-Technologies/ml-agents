@@ -10,7 +10,6 @@
 /Assets/ML-Agents/Timers*
 /csharp_timers.json
 /CodeCoverage/
-/Packages/packages-lock.json
 
 # Environemnt logfile
 *Project.log
