@@ -211,21 +211,6 @@ encoding = [0 weapons/ 50 weapons, 1 enemy / 10 enemies] = [0, .1]
 
 ## Communication
 
-At the end of the Encoding phase, all of the data for a Grid Observation is placed into a `float[]` referred to as the perception buffer. Now the data is ready to be sent to either the python side for training or to be used by a trained model within Unity. This is where the Grid Sensor takes advantage of 2D textures and the PNG encoding schema to reduce the number of bytes that are being sent.
-
-The 2D texture is a Unity class that encodes the colors of an image. It is used for many ways through out Unity but it has two specific methods that the Grid Sensor takes advantage of:
-
-`SetPixels` takes a 2D array of Colors and assigns the color values to the texture.
-
-`EncodeToPNG` returns a `byte[]` containing the PNG encoding of the colors of the texture.
-
-Together these 2 functions allow one to "push" a WxHx3 normalized array to a PNG `byte[]`. And indeed, this is how the Camera Sensor in Unity ML-Agents sends its data to python. However, the grid sensor can have N channels so there needs to be a more generic way to send the data.
-
-The core idea behind how a Grid Observation is encoded is the following:
-
-1. Split the channels of a Grid Observation into groups of three
-2. Encode each of these groups as a PNG `byte[]`
-3. Concatenate all `byte[]` and send the combined array to python
-4. Reconstruct the Grid Observation by splitting up the array and decoding the sections
+At the end of the Encoding phase, all the Grid Observations will be sent to either the python side for training or to be used by a trained model within Unity. Since the data format is similar to images collected by Camera Sensors, Grid Observations also have the CompressionType option to specify whether to send the data directly or send in PNG compressed form for better communication efficiency.
 
 Once the bytes are sent to Python, they are then decoded and provided as a tensor of the correct shape.
