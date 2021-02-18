@@ -51,7 +51,7 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
             m_BehaviorParameters = go.AddComponent<BehaviorParameters>();
             var action = new InputAction("action");
             m_Adaptor = new TestAdaptor();
-            m_Actuator = new InputActionActuator(m_BehaviorParameters, action, m_Adaptor);
+            m_Actuator = new InputActionActuator(null, m_BehaviorParameters, action, m_Adaptor);
         }
 
         [Test]

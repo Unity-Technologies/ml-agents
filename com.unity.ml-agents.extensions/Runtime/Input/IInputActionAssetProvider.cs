@@ -10,7 +10,9 @@ namespace Unity.MLAgents.Extensions.Input
     /// used to listen to events.  If you implement this interface the <see cref="InputActuatorComponent"/> will use
     /// what is returned from <see cref="GetInputActionAsset"/> as the asset to base it's simulated input for.
     /// Otherwise, the <see cref="InputActuatorComponent"/> will look for the <see cref="PlayerInput"/> component
-    /// and use the asset from there.
+    /// and use the asset from there.  If you have multiple components handling PlayerInput on the same GameObject
+    /// they will need to share the same instance of the <see cref="InputActionAsset"/> in order to get the simulated
+    /// input.
     /// </summary>
     public interface IInputActionAssetProvider
     {

@@ -5,10 +5,8 @@ using NUnit.Framework;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Extensions.Input;
 using Unity.MLAgents.Policies;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
 {
@@ -76,12 +74,14 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
             // Use the Assert class to test conditions.
             m_PlayerInput.actions = m_Asset;
             m_PlayerInput.defaultActionMap = m_Asset.actionMaps[0].name;
-            var actuators = InputActuatorComponent.GenerateActionActuatorsFromAsset(
-                m_Asset.FindActionMap(m_PlayerInput.defaultActionMap),
-                "TestLayout",
-                0,
-                m_BehaviorParameters);
+            var inputActionMap = m_Asset.FindActionMap(m_PlayerInput.defaultActionMap);
+            InputActuatorComponent.RegisterLayoutBuilder(
+                inputActionMap,
+                "TestLayout");
 
+            var device = InputSystem.AddDevice("TestLayout");
+
+            var actuators = InputActuatorComponent.CreateActuatorsFromMap(inputActionMap, m_BehaviorParameters, device);
             Assert.IsTrue(actuators.Length == 2);
             Assert.IsTrue(actuators[0].ActionSpec.Equals(ActionSpec.MakeContinuous(2)));
             Assert.IsTrue(actuators[1].ActionSpec.NumDiscreteActions == 1);
@@ -95,22 +95,16 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
             m_PlayerInput.defaultActionMap = m_Asset.actionMaps[0].name;
 
             // need to call this to load the layout in the input system
-            _ = InputActuatorComponent.GenerateActionActuatorsFromAsset(
+            InputActuatorComponent.RegisterLayoutBuilder(
                 m_Asset.FindActionMap(m_PlayerInput.defaultActionMap),
-                "TestLayout",
-                0,
-                m_BehaviorParameters);
+                "TestLayout");
 
-            var device = InputActuatorComponent.CreateDevice(
-                "TestLayout",
-                "TestInterface",
-                0);
-
-            Assert.AreEqual(device.layout, "TestLayout");
+            InputSystem.LoadLayout("TestLayout");
+            var device = InputSystem.AddDevice("TestLayout");
+            Assert.AreEqual("TestLayout", device.layout);
             Assert.IsTrue(device.children.Count == 2);
             Assert.AreEqual(device.children[0].path, $"{device.path}{InputControlPath.Separator}movement");
             Assert.AreEqual(device.children[1].path, $"{device.path}{InputControlPath.Separator}jump");
-            Assert.AreEqual(device.description.interfaceName, "TestInterface");
             Assert.NotNull(InputSystem.LoadLayout("TestLayout"));
         }
     }

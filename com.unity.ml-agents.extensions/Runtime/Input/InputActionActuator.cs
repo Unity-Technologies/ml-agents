@@ -21,20 +21,19 @@ namespace Unity.MLAgents.Extensions.Input
         InputDevice m_Device;
         InputControl m_Control;
 
-
         /// <summary>
         /// Construct an <see cref="InputActionActuator"/> with the <see cref="BehaviorParameters"/> of the
         /// <see cref="Agent"/> component, the relevant <see cref="InputAction"/>, and the relevant
         /// <see cref="IRLActionInputAdaptor"/> to convert between ml-agents &lt;--&gt; <see cref="InputSystem"/>.
         /// </summary>
+        /// <param name="inputDevice">The input device this action is bound to.</param>
         /// <param name="behaviorParameters">Used to determine if the <see cref="Agent"/> is running in
-        /// heuristic mode.</param>
+        ///     heuristic mode.</param>
         /// <param name="action">The <see cref="InputAction"/> this <see cref="IActuator"/> we read/write data to/from
-        /// via the <see cref="IRLActionInputAdaptor"/>.</param>
+        ///     via the <see cref="IRLActionInputAdaptor"/>.</param>
         /// <param name="adaptor">The <see cref="IRLActionInputAdaptor"/> that will convert data between ML-Agents
-        /// and the <see cref="InputSystem"/>.</param>
-        public InputActionActuator(
-            BehaviorParameters behaviorParameters,
+        ///     and the <see cref="InputSystem"/>.</param>
+        public InputActionActuator(InputDevice inputDevice, BehaviorParameters behaviorParameters,
             InputAction action,
             IRLActionInputAdaptor adaptor)
         {
@@ -43,6 +42,8 @@ namespace Unity.MLAgents.Extensions.Input
             m_Action = action;
             m_InputAdaptor = adaptor;
             ActionSpec = adaptor.GetActionSpecForInputAction(m_Action);
+            m_Device = inputDevice;
+            m_Control = m_Device?.GetChildControl(m_Action.name);
         }
 
         /// <summary>
