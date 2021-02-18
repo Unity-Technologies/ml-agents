@@ -694,7 +694,7 @@ in the buffer can change at every step.
 This can be useful in scenarios in which the agents must keep track of
 a varying number of elements throughout the episode. You can learn more
 about variable length observations and the BufferSensor
-[here](Learning-Environment-Design-Agents.md#variable-length-observations)
+[here](Learning-Environment-Design-Agents.md#variable-length-observations).
 When variable length observations are utilized, the ML-Agents Toolkit
 leverages attention networks to learn from a varying number of entities.
 Agents using attention will ignore entities that are deemed not relevant
