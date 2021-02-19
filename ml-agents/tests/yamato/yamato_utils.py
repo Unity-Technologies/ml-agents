@@ -3,7 +3,7 @@ import shutil
 import subprocess
 import yaml
 from sys import platform
-from typing import List, Optional
+from typing import List, Optional, Mapping
 
 
 def get_unity_executable_path():
@@ -46,11 +46,14 @@ def run_standalone_build(
     print(f"Running BuildStandalonePlayer via {unity_exe}")
 
     # enum values from https://docs.unity3d.com/2019.4/Documentation/ScriptReference/BuildTarget.html
-    build_target_to_enum = {
+    build_target_to_enum: Mapping[Optional[str], str] = {
         "mac": "StandaloneOSX",
         "osx": "StandaloneOSX",
         "linux": "StandaloneLinux64",
     }
+    # Convert the short name to the official enum
+    # Just pass through if it's not on the list.
+    build_target_enum = build_target_to_enum.get(build_target, build_target)
 
     test_args = [
         unity_exe,
@@ -75,8 +78,8 @@ def run_standalone_build(
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
     if scene_path is not None:
         test_args += ["--mlagents-build-scene-path", scene_path]
-    if build_target is not None:
-        test_args += ["--mlagents-build-target", build_target_to_enum[build_target]]
+    if build_target_enum is not None:
+        test_args += ["--mlagents-build-target", build_target_enum]
     print(f"{' '.join(test_args)} ...")
 
     timeout = 30 * 60  # 30 minutes, just in case
