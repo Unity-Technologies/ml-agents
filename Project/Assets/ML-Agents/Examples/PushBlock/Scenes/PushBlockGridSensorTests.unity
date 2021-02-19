@@ -1829,6 +1829,46 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 883120566}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!28 &925615322
+Texture2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  serializedVersion: 2
+  m_Width: 21
+  m_Height: 12
+  m_CompleteImageSize: 756
+  m_TextureFormat: 3
+  m_MipCount: 1
+  m_IsReadable: 1
+  m_StreamingMipmaps: 0
+  m_StreamingMipmapsPriority: 0
+  m_AlphaIsTransparency: 0
+  m_ImageCount: 1
+  m_TextureDimension: 2
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 0
+    m_WrapV: 0
+    m_WrapW: 0
+  m_LightmapFormat: 0
+  m_ColorSpace: 1
+  image data: 756
+  _typelessdata: cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd
+  m_StreamData:
+    offset: 0
+    size: 0
+    path: 
 --- !u!1 &1000868278
 GameObject:
   m_ObjectHideFlags: 0
@@ -2582,6 +2622,46 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1269664316}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!28 &1302709320
+Texture2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  serializedVersion: 2
+  m_Width: 25
+  m_Height: 25
+  m_CompleteImageSize: 1875
+  m_TextureFormat: 3
+  m_MipCount: 1
+  m_IsReadable: 1
+  m_StreamingMipmaps: 0
+  m_StreamingMipmapsPriority: 0
+  m_AlphaIsTransparency: 0
+  m_ImageCount: 1
+  m_TextureDimension: 2
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 0
+    m_WrapV: 0
+    m_WrapW: 0
+  m_LightmapFormat: 0
+  m_ColorSpace: 1
+  image data: 1875
+  _typelessdata: cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd
+  m_StreamData:
+    offset: 0
+    size: 0
+    path: 
 --- !u!1 &1392935781
 GameObject:
   m_ObjectHideFlags: 0
@@ -3614,6 +3694,7 @@ MonoBehaviour:
   ObservationPerCell: 6
   NumberOfObservations: 38400
   ChannelOffsets: 00000000
+  m_perceptionTexture2D: {fileID: 0}
   DebugColors:
   - {r: 0.31731597, g: 0.72000253, b: 0.853, a: 0}
   - {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
@@ -3623,6 +3704,8 @@ MonoBehaviour:
   GizmoYOffset: 0
   ShowGizmos: 0
   DebugDefaultColor: {r: 1, g: 1, b: 1, a: 0.55}
+  testTexture: {fileID: 0}
+  showGridObservationGUI: 0
   overlapBoxScale: 0.5
 --- !u!1 &1982960596
 GameObject:
@@ -3942,6 +4025,12 @@ MonoBehaviour:
   goal: {fileID: 1679403518}
   block: {fileID: 1831339105991534}
   useVectorObs: 1
+  useAutoFocus: 0
+  raySensorsList: []
+  focusAngle: 90
+  canLookAround: 0
+  lookAngle: 0
+  maxLookAngle: 45
 --- !u!1 &1500989827241484
 GameObject:
   m_ObjectHideFlags: 0
@@ -5178,6 +5267,12 @@ MonoBehaviour:
   goal: {fileID: 1679403518}
   block: {fileID: 5955089666703113881}
   useVectorObs: 1
+  useAutoFocus: 0
+  raySensorsList: []
+  focusAngle: 90
+  canLookAround: 0
+  lookAngle: 0
+  maxLookAngle: 45
 --- !u!1 &1043895181648710661
 GameObject:
   m_ObjectHideFlags: 0
@@ -5283,6 +5378,7 @@ MonoBehaviour:
   ObservationPerCell: 6
   NumberOfObservations: 2400
   ChannelOffsets: 00000000
+  m_perceptionTexture2D: {fileID: 0}
   DebugColors:
   - {r: 0.31731597, g: 0.72000253, b: 0.853, a: 0}
   - {r: 1, g: 1, b: 1, a: 1}
@@ -5292,6 +5388,8 @@ MonoBehaviour:
   GizmoYOffset: 0
   ShowGizmos: 0
   DebugDefaultColor: {r: 1, g: 1, b: 1, a: 0.09803922}
+  testTexture: {fileID: 0}
+  showGridObservationGUI: 0
   overlapBoxScale: 0.5
 --- !u!23 &1253889802932042417
 MeshRenderer:
@@ -5412,6 +5510,12 @@ MonoBehaviour:
   goal: {fileID: 1679403518}
   block: {fileID: 5543198381434018406}
   useVectorObs: 1
+  useAutoFocus: 0
+  raySensorsList: []
+  focusAngle: 90
+  canLookAround: 0
+  lookAngle: 0
+  maxLookAngle: 45
 --- !u!23 &1710831923093478272
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5622,6 +5726,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PlayerCubeWithGun
+      objectReference: {fileID: 0}
+    - target: {fileID: 2170513384791859417, guid: 497c5a1fa56ff4204a66acfb42a8ebde,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 497c5a1fa56ff4204a66acfb42a8ebde, type: 3}
@@ -6169,6 +6278,7 @@ MonoBehaviour:
   ObservationPerCell: 6
   NumberOfObservations: 1512
   ChannelOffsets: 00000000
+  m_perceptionTexture2D: {fileID: 0}
   DebugColors:
   - {r: 0.31731597, g: 0.72000253, b: 0.853, a: 0}
   - {r: 1, g: 1, b: 1, a: 1}
@@ -6178,6 +6288,8 @@ MonoBehaviour:
   GizmoYOffset: 0
   ShowGizmos: 1
   DebugDefaultColor: {r: 1, g: 1, b: 1, a: 0.09803922}
+  testTexture: {fileID: 925615322}
+  showGridObservationGUI: 0
   overlapBoxScale: 0.5
 --- !u!65 &4422813903708446681
 BoxCollider:
@@ -7066,6 +7178,12 @@ MonoBehaviour:
   goal: {fileID: 1679403518}
   block: {fileID: 8248194767798768305}
   useVectorObs: 1
+  useAutoFocus: 0
+  raySensorsList: []
+  focusAngle: 90
+  canLookAround: 0
+  lookAngle: 0
+  maxLookAngle: 45
 --- !u!114 &5955089666482966601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7316,6 +7434,12 @@ MonoBehaviour:
   goal: {fileID: 1679403518}
   block: {fileID: 5955089667322165132}
   useVectorObs: 1
+  useAutoFocus: 0
+  raySensorsList: []
+  focusAngle: 90
+  canLookAround: 0
+  lookAngle: 0
+  maxLookAngle: 45
 --- !u!114 &5955089666619935907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7369,7 +7493,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &5955089666703113874
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7824,6 +7948,12 @@ MonoBehaviour:
   goal: {fileID: 1679403518}
   block: {fileID: 5955089667896294610}
   useVectorObs: 1
+  useAutoFocus: 0
+  raySensorsList: []
+  focusAngle: 90
+  canLookAround: 0
+  lookAngle: 0
+  maxLookAngle: 45
 --- !u!114 &5955089667013270655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8334,6 +8464,7 @@ MonoBehaviour:
   ObservationPerCell: 6
   NumberOfObservations: 2646
   ChannelOffsets: 00000000
+  m_perceptionTexture2D: {fileID: 0}
   DebugColors:
   - {r: 0.31731597, g: 0.72000253, b: 0.853, a: 0}
   - {r: 1, g: 1, b: 1, a: 1}
@@ -8343,6 +8474,8 @@ MonoBehaviour:
   GizmoYOffset: 0
   ShowGizmos: 1
   DebugDefaultColor: {r: 1, g: 1, b: 1, a: 0.09803922}
+  testTexture: {fileID: 0}
+  showGridObservationGUI: 0
   overlapBoxScale: 0.75
 --- !u!1 &5955089667375172816
 GameObject:
@@ -8411,6 +8544,7 @@ MonoBehaviour:
   ObservationPerCell: 6
   NumberOfObservations: 2400
   ChannelOffsets: 00000000
+  m_perceptionTexture2D: {fileID: 0}
   DebugColors:
   - {r: 0.31731597, g: 0.72000253, b: 0.853, a: 0}
   - {r: 1, g: 1, b: 1, a: 1}
@@ -8420,6 +8554,8 @@ MonoBehaviour:
   GizmoYOffset: 0
   ShowGizmos: 0
   DebugDefaultColor: {r: 1, g: 1, b: 1, a: 0.09803922}
+  testTexture: {fileID: 0}
+  showGridObservationGUI: 0
   overlapBoxScale: 0.5
 --- !u!1 &5955089667539038608
 GameObject:
@@ -9378,6 +9514,7 @@ MonoBehaviour:
   ObservationPerCell: 6
   NumberOfObservations: 2646
   ChannelOffsets: 00000000
+  m_perceptionTexture2D: {fileID: 0}
   DebugColors:
   - {r: 0.31731597, g: 0.72000253, b: 0.853, a: 0}
   - {r: 1, g: 1, b: 1, a: 1}
@@ -9387,6 +9524,8 @@ MonoBehaviour:
   GizmoYOffset: 0
   ShowGizmos: 1
   DebugDefaultColor: {r: 1, g: 1, b: 1, a: 0.09803922}
+  testTexture: {fileID: 0}
+  showGridObservationGUI: 0
   overlapBoxScale: 0.15
 --- !u!1 &5955089668000285120
 GameObject:
@@ -9487,6 +9626,7 @@ MonoBehaviour:
   ObservationPerCell: 7
   NumberOfObservations: 4375
   ChannelOffsets: 00000000
+  m_perceptionTexture2D: {fileID: 0}
   DebugColors:
   - {r: 0.31731597, g: 0.72000253, b: 0.853, a: 0}
   - {r: 1, g: 1, b: 1, a: 1}
@@ -9497,6 +9637,8 @@ MonoBehaviour:
   GizmoYOffset: 0
   ShowGizmos: 1
   DebugDefaultColor: {r: 1, g: 1, b: 1, a: 0.09803922}
+  testTexture: {fileID: 1302709320}
+  showGridObservationGUI: 0
   overlapBoxScale: 0.5
 --- !u!23 &5955089668311327758
 MeshRenderer:
@@ -10237,6 +10379,12 @@ MonoBehaviour:
   goal: {fileID: 1679403518}
   block: {fileID: 5831382368194824122}
   useVectorObs: 1
+  useAutoFocus: 0
+  raySensorsList: []
+  focusAngle: 90
+  canLookAround: 0
+  lookAngle: 0
+  maxLookAngle: 45
 --- !u!1 &8618561385489788116
 GameObject:
   m_ObjectHideFlags: 0
