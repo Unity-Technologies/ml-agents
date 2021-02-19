@@ -515,7 +515,6 @@ actions. In addition to learning purely from demonstrations, the GAIL reward
 signal can be mixed with an extrinsic reward signal to guide the learning
 process.
 
-
 #### Behavioral Cloning (BC)
 
 BC trains the Agent's policy to exactly mimic the actions shown in a set of
