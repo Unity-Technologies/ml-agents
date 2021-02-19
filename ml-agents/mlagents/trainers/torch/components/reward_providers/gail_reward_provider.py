@@ -75,7 +75,6 @@ class DiscriminatorNetwork(torch.nn.Module):
         self._settings = settings
 
         encoder_settings = settings.network_settings
-        print(encoder_settings.hidden_units)
         self._action_flattener = ActionFlattener(specs.action_spec)
         unencoded_size = (
             self._action_flattener.flattened_size + 1 if settings.use_actions else 0
