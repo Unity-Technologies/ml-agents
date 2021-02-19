@@ -1,4 +1,8 @@
-# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#define MLA_SUPPORTED_TRAINING_PLATFORM
+#endif
+
+# if MLA_SUPPORTED_TRAINING_PLATFORM
 using Grpc.Core;
 #endif
 #if UNITY_EDITOR
@@ -44,7 +48,7 @@ namespace Unity.MLAgents
         Dictionary<string, ActionSpec> m_UnsentBrainKeys = new Dictionary<string, ActionSpec>();
 
 
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if MLA_SUPPORTED_TRAINING_PLATFORM
         /// The Unity to External client.
         UnityToExternalProto.UnityToExternalProtoClient m_Client;
 #endif
@@ -97,6 +101,7 @@ namespace Unity.MLAgents
         /// <param name="initParametersOut">The External Initialization Parameters received.</param>
         public bool Initialize(CommunicatorInitParameters initParameters, out UnityRLInitParameters initParametersOut)
         {
+#if MLA_SUPPORTED_TRAINING_PLATFORM
             var academyParameters = new UnityRLInitializationOutputProto
             {
                 Name = initParameters.name,
@@ -183,6 +188,10 @@ namespace Unity.MLAgents
             UpdateEnvironmentWithInput(input.RlInput);
             initParametersOut = initializationInput.RlInitializationInput.ToUnityRLInitParameters();
             return true;
+#else
+            initParametersOut = new UnityRLInitParameters();
+            return false;
+#endif
         }
 
         /// <summary>
@@ -213,7 +222,7 @@ namespace Unity.MLAgents
 
         UnityInputProto Initialize(UnityOutputProto unityOutput, out UnityInputProto unityInput)
         {
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if MLA_SUPPORTED_TRAINING_PLATFORM
             m_IsOpen = true;
             var channel = new Channel(
                 "localhost:" + m_CommunicatorInitParameters.port,
@@ -246,7 +255,7 @@ namespace Unity.MLAgents
         /// </summary>
         public void Dispose()
         {
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if MLA_SUPPORTED_TRAINING_PLATFORM
             if (!m_IsOpen)
             {
                 return;
@@ -447,7 +456,7 @@ namespace Unity.MLAgents
         /// <param name="unityOutput">The UnityOutput to be sent.</param>
         UnityInputProto Exchange(UnityOutputProto unityOutput)
         {
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if MLA_SUPPORTED_TRAINING_PLATFORM
             if (!m_IsOpen)
             {
                 return null;
