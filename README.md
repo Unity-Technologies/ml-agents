@@ -27,6 +27,8 @@ developer communities.
 ## Features
 
 - 18+ [example Unity environments](docs/Learning-Environment-Examples.md)
+- Support for multiple environment configurations and training scenarios
+- Flexible Unity SDK that can be integrated into your game or custom Unity scene
 - Training using two deep reinforcement learning algorithms, Proximal Policy
   Optimization (PPO) and Soft Actor-Critic (SAC)
 - Built-in support for Imitation Learning through Behavioral Cloning (BC) or
@@ -34,6 +36,7 @@ developer communities.
 - Self-play mechanism for training agents in adversarial scenarios
 - Easily definable Curriculum Learning scenarios for complex tasks
 - Train robust agents using environment randomization
+- Flexible agent control with On Demand Decision Making
 - Train using multiple concurrent Unity environment instances
 - Utilizes the [Unity Inference Engine](docs/Unity-Inference-Engine.md) to
   provide native cross-platform support

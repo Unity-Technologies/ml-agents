@@ -26,6 +26,7 @@
 - [Model Types](#model-types)
   - [Learning from Vector Observations](#learning-from-vector-observations)
   - [Learning from Cameras using Convolutional Neural Networks](#learning-from-cameras-using-convolutional-neural-networks)
+  - [Learning from Variable Length Observations using Attention](#learning-from-ariable-length-observations-using-attention)
   - [Memory-enhanced Agents using Recurrent Neural Networks](#memory-enhanced-agents-using-recurrent-neural-networks)
 - [Additional Features](#additional-features)
 - [Summary and Next Steps](#summary-and-next-steps)
@@ -692,8 +693,13 @@ of vector observations. At each step, the agent will go through all the
 elements in the buffer and extract information but the elements
 in the buffer can change at every step.
 This can be useful in scenarios in which the agents must keep track of
-a varying number of elements throughout the episode. You can learn more
-about variable length observations and the BufferSensor
+a varying number of elements throughout the episode. For example in a game
+where an agent must learn to avoid projectiles, but the projectiles can vary in
+numbers.
+
+![Variable Length Observations Illustrated](images/variable-length-observation-illustrated.png)
+
+You can learn more about variable length observations
 [here](Learning-Environment-Design-Agents.md#variable-length-observations).
 When variable length observations are utilized, the ML-Agents Toolkit
 leverages attention networks to learn from a varying number of entities.
