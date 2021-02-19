@@ -422,12 +422,7 @@ namespace Unity.MLAgents
             var port = ReadPortFromArgs();
             if (port > 0)
             {
-                Communicator = new RpcCommunicator(
-                    new CommunicatorInitParameters
-                    {
-                        port = port
-                    }
-                );
+                Communicator = CommunicatorFactory.Create();
             }
 
             if (Communicator != null)
@@ -438,6 +433,7 @@ namespace Unity.MLAgents
                 bool initSuccessful = false;
                 var communicatorInitParams = new CommunicatorInitParameters
                 {
+                    port = port,
                     unityCommunicationVersion = k_ApiVersion,
                     unityPackageVersion = k_PackageVersion,
                     name = "AcademySingleton",
