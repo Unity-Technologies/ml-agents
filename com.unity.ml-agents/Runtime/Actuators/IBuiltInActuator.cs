@@ -12,7 +12,8 @@ namespace Unity.MLAgents.Actuators
         // VectorActuator used by the Agent
         AgentVectorActuator = 1,
         VectorActuator = 2,
-        Match3Actuator = 3
+        Match3Actuator = 3,
+        InputActionActuator = 4,
     }
 
     /// <summary>
