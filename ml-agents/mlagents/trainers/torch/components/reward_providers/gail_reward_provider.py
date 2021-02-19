@@ -27,7 +27,6 @@ class GAILRewardProvider(BaseRewardProvider):
         _, self._demo_buffer = demo_to_buffer(
             settings.demo_path, 1, specs
         )  # This is supposed to be the sequence length but we do not have access here
-        self._discriminator_network.encoder.update_normalization(self._demo_buffer)
         params = list(self._discriminator_network.parameters())
         self.optimizer = torch.optim.Adam(params, lr=settings.learning_rate)
 
@@ -49,6 +48,8 @@ class GAILRewardProvider(BaseRewardProvider):
         expert_batch = self._demo_buffer.sample_mini_batch(
             mini_batch.num_experiences, 1
         )
+        self._discriminator_network.encoder.update_normalization(expert_batch)
+
         loss, stats_dict = self._discriminator_network.compute_loss(
             mini_batch, expert_batch
         )
@@ -74,8 +75,9 @@ class DiscriminatorNetwork(torch.nn.Module):
         self._use_vail = settings.use_vail
         self._settings = settings
 
+        # This will be replaced by own NetworkSettings so ignoring type for now
         encoder_settings = NetworkSettings(
-            normalize=True,
+            normalize=settings.normalize,  # type: ignore
             hidden_units=settings.encoding_size,
             num_layers=2,
             vis_encode_type=EncoderType.SIMPLE,

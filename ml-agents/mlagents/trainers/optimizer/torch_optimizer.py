@@ -44,6 +44,9 @@ class TorchOptimizer(Optimizer):
         :param reward_signal_configs: Reward signal config.
         """
         for reward_signal, settings in reward_signal_configs.items():
+            # Get normalization from policy. Will be replaced by RewardSettings own
+            # NetworkSettings
+            settings.normalize = self.policy.normalize
             # Name reward signals by string in case we have duplicates later
             self.reward_signals[reward_signal.value] = create_reward_provider(
                 reward_signal, self.policy.behavior_spec, settings
