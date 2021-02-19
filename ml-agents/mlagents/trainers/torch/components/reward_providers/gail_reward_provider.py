@@ -90,7 +90,7 @@ class DiscriminatorNetwork(torch.nn.Module):
                 torch.ones((self.z_size), dtype=torch.float), requires_grad=True
             )
             self._z_mu_layer = linear_layer(
-                settings.encoding_size,
+                encoder_settings.hidden_units,
                 self.z_size,
                 kernel_init=Initialization.KaimingHeNormal,
                 kernel_gain=0.1,
