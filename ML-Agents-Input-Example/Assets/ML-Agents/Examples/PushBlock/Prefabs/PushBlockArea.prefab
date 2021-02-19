@@ -451,7 +451,7 @@ MonoBehaviour:
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 5022602860645237092, guid: bee50ae7fd03e4e16a4ac45db4d96f6e, type: 3}
-  m_InferenceDevice: 0
+  m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
@@ -622,6 +622,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33005b124d7f841a191249baf2bacb2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_ActionSpec:
+    m_NumContinuousActions: 2
+    BranchSizes: 02000000
 --- !u!114 &6641003793403090299
 MonoBehaviour:
   m_ObjectHideFlags: 0
