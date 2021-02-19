@@ -37,6 +37,7 @@ namespace Unity.MLAgents.Extensions.MultiAgent
         {
             if (m_Agents.Contains(agent))
             {
+                agent.SetMultiAgentGroup(null);
                 m_Agents.Remove(agent);
                 agent.OnAgentDisabled -= UnregisterAgent;
             }

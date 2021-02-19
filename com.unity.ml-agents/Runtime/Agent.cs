@@ -1406,14 +1406,21 @@ namespace Unity.MLAgents
 
         internal void SetMultiAgentGroup(IMultiAgentGroup multiAgentGroup)
         {
-            var newGroupId = multiAgentGroup.GetId();
-            if (m_GroupId == 0 || m_GroupId == newGroupId)
+            if (multiAgentGroup == null)
             {
-                m_GroupId = newGroupId;
+                m_GroupId = 0;
             }
             else
             {
-                throw new UnityAgentsException("Agent is already registered with a group. Unregister it first.");
+                var newGroupId = multiAgentGroup.GetId();
+                if (m_GroupId == 0 || m_GroupId == newGroupId)
+                {
+                    m_GroupId = newGroupId;
+                }
+                else
+                {
+                    throw new UnityAgentsException("Agent is already registered with a group. Unregister it first.");
+                }
             }
         }
     }
