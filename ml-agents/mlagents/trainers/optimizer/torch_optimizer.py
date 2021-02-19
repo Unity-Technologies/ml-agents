@@ -65,7 +65,7 @@ class TorchOptimizer(Optimizer):
         num_experiences = tensor_obs[0].shape[0]
         all_next_memories = AgentBufferField()
         # The 1st sequence are the ones that are padded. So if seq_len = 3 and
-        # trajectory is of length 10, the ist sequence is [pad,pad,obs].
+        # trajectory is of length 10, the 1st sequence is [pad,pad,obs].
         # Compute the number of elements in this padded seq.
         leftover = num_experiences % self.policy.sequence_length
         first_seq_len = self.policy.sequence_length if leftover == 0 else leftover
