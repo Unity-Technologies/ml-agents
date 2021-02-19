@@ -22,11 +22,11 @@ behaviors:
       curiosity:
         strength: 0.02
         gamma: 0.99
-        encoding_size: 256
+        network_settings:
+          hidden_units: 256
       gail:
         strength: 0.01
         gamma: 0.99
-        encoding_size: 128
         demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
     behavioral_cloning:
       demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo

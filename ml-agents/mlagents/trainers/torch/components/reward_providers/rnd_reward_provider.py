@@ -11,7 +11,6 @@ from mlagents.trainers.settings import RNDSettings
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.networks import NetworkBody
-from mlagents.trainers.settings import NetworkSettings, EncoderType
 from mlagents.trainers.trajectory import ObsUtil
 
 
@@ -58,13 +57,7 @@ class RNDNetwork(torch.nn.Module):
 
     def __init__(self, specs: BehaviorSpec, settings: RNDSettings) -> None:
         super().__init__()
-        state_encoder_settings = NetworkSettings(
-            normalize=True,
-            hidden_units=settings.encoding_size,
-            num_layers=3,
-            vis_encode_type=EncoderType.SIMPLE,
-            memory=None,
-        )
+        state_encoder_settings = settings.network_settings
         self._encoder = NetworkBody(specs.observation_specs, state_encoder_settings)
 
     def forward(self, mini_batch: AgentBuffer) -> torch.Tensor:

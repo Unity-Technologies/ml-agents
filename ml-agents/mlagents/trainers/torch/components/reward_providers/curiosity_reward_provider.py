@@ -14,7 +14,6 @@ from mlagents.trainers.torch.action_flattener import ActionFlattener
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.torch.layers import LinearEncoder, linear_layer
-from mlagents.trainers.settings import NetworkSettings, EncoderType
 from mlagents.trainers.trajectory import ObsUtil
 
 
@@ -70,13 +69,8 @@ class CuriosityNetwork(torch.nn.Module):
     def __init__(self, specs: BehaviorSpec, settings: CuriositySettings) -> None:
         super().__init__()
         self._action_spec = specs.action_spec
-        state_encoder_settings = NetworkSettings(
-            normalize=False,
-            hidden_units=settings.encoding_size,
-            num_layers=2,
-            vis_encode_type=EncoderType.SIMPLE,
-            memory=None,
-        )
+
+        state_encoder_settings = settings.network_settings
         self._state_encoder = NetworkBody(
             specs.observation_specs, state_encoder_settings
         )
@@ -84,7 +78,7 @@ class CuriosityNetwork(torch.nn.Module):
         self._action_flattener = ActionFlattener(self._action_spec)
 
         self.inverse_model_action_encoding = torch.nn.Sequential(
-            LinearEncoder(2 * settings.encoding_size, 1, 256)
+            LinearEncoder(2 * state_encoder_settings.hidden_units, 1, 256)
         )
 
         if self._action_spec.continuous_size > 0:
@@ -98,9 +92,12 @@ class CuriosityNetwork(torch.nn.Module):
 
         self.forward_model_next_state_prediction = torch.nn.Sequential(
             LinearEncoder(
-                settings.encoding_size + self._action_flattener.flattened_size, 1, 256
+                state_encoder_settings.hidden_units
+                + self._action_flattener.flattened_size,
+                1,
+                256,
             ),
-            linear_layer(256, settings.encoding_size),
+            linear_layer(256, state_encoder_settings.hidden_units),
         )
 
     def get_current_state(self, mini_batch: AgentBuffer) -> torch.Tensor:

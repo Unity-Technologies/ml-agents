@@ -183,7 +183,7 @@ class RewardSignalType(Enum):
 class RewardSignalSettings:
     gamma: float = 0.99
     strength: float = 1.0
-    normalize: bool = False
+    network_settings: NetworkSettings = attr.ib(factory=NetworkSettings)
 
     @staticmethod
     def structure(d: Mapping, t: type) -> Any:
@@ -199,13 +199,22 @@ class RewardSignalSettings:
             enum_key = RewardSignalType(key)
             t = enum_key.to_settings()
             d_final[enum_key] = strict_to_cls(val, t)
+            if "encoding_size" in val:
+                logger.warning(
+                    "'encoding_size' was deprecated for RewardSignals. Please use network_settings."
+                )
+                # If network settings was not specified, use the encoding size. Otherwise, use hidden_units
+                if "network_settings" not in val:
+                    d_final[enum_key].network_settings.hidden_units = val[
+                        "encoding_size"
+                    ]
         return d_final
 
 
 @attr.s(auto_attribs=True)
 class GAILSettings(RewardSignalSettings):
-    encoding_size: int = 64
     learning_rate: float = 3e-4
+    encoding_size: int = 0
     use_actions: bool = False
     use_vail: bool = False
     demo_path: str = attr.ib(kw_only=True)
@@ -213,14 +222,14 @@ class GAILSettings(RewardSignalSettings):
 
 @attr.s(auto_attribs=True)
 class CuriositySettings(RewardSignalSettings):
-    encoding_size: int = 64
     learning_rate: float = 3e-4
+    encoding_size: int = 0
 
 
 @attr.s(auto_attribs=True)
 class RNDSettings(RewardSignalSettings):
-    encoding_size: int = 64
     learning_rate: float = 1e-4
+    encoding_size: int = 0
 
 
 # SAMPLERS #############################################################################

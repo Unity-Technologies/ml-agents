@@ -13,7 +13,6 @@ from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_flattener import ActionFlattener
 from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.torch.layers import linear_layer, Initialization
-from mlagents.trainers.settings import NetworkSettings, EncoderType
 from mlagents.trainers.demo_loader import demo_to_buffer
 from mlagents.trainers.trajectory import ObsUtil
 
@@ -75,13 +74,8 @@ class DiscriminatorNetwork(torch.nn.Module):
         self._use_vail = settings.use_vail
         self._settings = settings
 
-        encoder_settings = NetworkSettings(
-            normalize=settings.normalize,
-            hidden_units=settings.encoding_size,
-            num_layers=2,
-            vis_encode_type=EncoderType.SIMPLE,
-            memory=None,
-        )
+        encoder_settings = settings.network_settings
+        print(encoder_settings.hidden_units)
         self._action_flattener = ActionFlattener(specs.action_spec)
         unencoded_size = (
             self._action_flattener.flattened_size + 1 if settings.use_actions else 0
@@ -90,7 +84,7 @@ class DiscriminatorNetwork(torch.nn.Module):
             specs.observation_specs, encoder_settings, unencoded_size
         )
 
-        estimator_input_size = settings.encoding_size
+        estimator_input_size = encoder_settings.hidden_units
         if settings.use_vail:
             estimator_input_size = self.z_size
             self._z_sigma = torch.nn.Parameter(
