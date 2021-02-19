@@ -10,6 +10,8 @@ public class DodgeBall : MonoBehaviour
 
     [HideInInspector]
     public Rigidbody rb;
+
+    public Collider BallCollider;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,13 +31,30 @@ public class DodgeBall : MonoBehaviour
 
     }
 
+    //Set ball to either a pickup item or an active ball that is in play
+    //inPlay = true means the ball can hurt other players
+    public void BallIsInPlay(bool p)
+    {
+        if (p)
+        {
+            gameObject.tag = "dodgeBallActive";
+            BallCollider.gameObject.tag = "dodgeBallActive";
+        }
+        else
+        {
+            gameObject.tag = "dodgeBallPickup";
+            BallCollider.gameObject.tag = "dodgeBallPickup";
+        }
+        inPlay = p;
+
+    }
     private void OnCollisionEnter(Collision col)
     {
         //IF NOT MY TEAM
         //PLAYER GOES TO TIMEOUT
         if (col.gameObject.CompareTag("ground"))
         {
-            inPlay = false;
+            BallIsInPlay(false);
         }
     }
 }

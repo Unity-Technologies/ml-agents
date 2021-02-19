@@ -90,6 +90,15 @@ public class DodgeBallGameController : MonoBehaviour
         m_Initialized = true;
     }
 
+    void PlayerWasHit(DodgeBallAgent agent)
+    {
+        // var team
+
+
+    }
+
+
+
     void ResetScene()
     {
         m_ResetTimer = 0;

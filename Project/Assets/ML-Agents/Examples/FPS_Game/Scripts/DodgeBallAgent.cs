@@ -45,6 +45,13 @@ public class DodgeBallAgent : Agent
     public AudioClip TauntVoiceAudioClip;
     public AudioClip HurtVoiceAudioClip;
     public AudioClip BallImpactAudioClip;
+
+
+    [Header("HIT DAMAGE")] public int NumberOfTimesPlayerCanBeHit = 5;
+    public int HitPointsRemaining; //how many more times can we be hit
+
+    //PLAYER STATE TO OBSERVE
+
     // Start is called before the first frame update
     public override void Initialize()
     {
@@ -64,6 +71,7 @@ public class DodgeBallAgent : Agent
         input = GetComponent<FPSAgentInput>();
         m_GameController = FindObjectOfType<DodgeBallGameController>();
         ActiveBallsQueue.Clear();
+        HitPointsRemaining = NumberOfTimesPlayerCanBeHit;
         //        Unfreeze();
         //        Unpoison();
         //        Unsatiate();
@@ -319,17 +327,30 @@ public class DodgeBallAgent : Agent
 
         if (db.inPlay) //HIT BY LIVE BALL
         {
+            if (HitPointsRemaining == 1)
+            {
+                //RESET ENV
+                print($"{gameObject.name} Lost.{gameObject.name} was weak:");
+                //ASSIGN REWARDS
+                EndEpisode();
+            }
+            else
+            {
+                HitPointsRemaining--;
+                //ASSIGN REWARDS
+            }
             print("HIT BY LIVE BALL");
             // if(HitByParticles.isPlaying)
             ThrowController.impulseSource.GenerateImpulse();
             // HitSoundAudioSource.Play();
             HitSoundAudioSource.PlayOneShot(BallImpactAudioClip, 1f);
-            HitSoundAudioSource.PlayOneShot(HurtVoiceAudioClip, .2f);
+            HitSoundAudioSource.PlayOneShot(HurtVoiceAudioClip, 1f);
             HitByParticles.Play();
             if (AnimateEyes)
             {
                 StartCoroutine(ShowHitFace());
             }
+            db.BallIsInPlay(false);
         }
         else //TRY TO PICK IT UP
         {
@@ -342,6 +363,7 @@ public class DodgeBallAgent : Agent
 
                 //add to our inventory
                 ActiveBallsQueue.Enqueue(db);
+                db.BallIsInPlay(true);
                 db.gameObject.SetActive(false);
                 // ActiveBallsList.Add(db);
             }

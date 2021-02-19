@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1657024916}
   m_Layer: 0
   m_Name: TrailRenderer (1)
-  m_TagString: Untagged
+  m_TagString: dodgeBallPickup
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -149,9 +149,9 @@ GameObject:
   - component: {fileID: 6779490827046006232}
   - component: {fileID: 418425099599415636}
   - component: {fileID: 3525145920380393505}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Cylinder
-  m_TagString: Untagged
+  m_TagString: dodgeBallPickup
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -242,13 +242,13 @@ GameObject:
   - component: {fileID: 3911029810215854904}
   - component: {fileID: 4341296992446652170}
   - component: {fileID: 4188137103012002061}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Projectile - BALL
-  m_TagString: dodgeBall
+  m_TagString: dodgeBallPickup
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3911029810215854904
 Transform:
   m_ObjectHideFlags: 0
@@ -296,6 +296,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inPlay: 0
   rb: {fileID: 0}
+  BallCollider: {fileID: 4977931146242317046}
 --- !u!1 &6461313653667732308
 GameObject:
   m_ObjectHideFlags: 0
@@ -308,9 +309,9 @@ GameObject:
   - component: {fileID: 6333385540820070532}
   - component: {fileID: 4569169311316799599}
   - component: {fileID: 4977931146242317046}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Sphere
-  m_TagString: dodgeBall
+  m_TagString: dodgeBallPickup
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

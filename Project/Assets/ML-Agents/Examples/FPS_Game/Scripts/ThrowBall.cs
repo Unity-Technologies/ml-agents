@@ -136,7 +136,7 @@ public class ThrowBall : MonoBehaviour
 
     public void Throw(DodgeBall db)
     {
-        db.inPlay = true;
+        db.BallIsInPlay(true);
         FireProjectile(db.rb);
     }
 
