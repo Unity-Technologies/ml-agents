@@ -74,6 +74,10 @@ namespace Unity.MLAgents.Policies
         [HideInInspector, SerializeField]
         BrainParameters m_BrainParameters = new BrainParameters();
 
+        public delegate void PolicyUpdated(bool isInHeuristicMode);
+
+        internal event PolicyUpdated OnPolicyUpdated;
+
         /// <summary>
         /// The associated <see cref="Policies.BrainParameters"/> for this behavior.
         /// </summary>
@@ -196,6 +200,11 @@ namespace Unity.MLAgents.Policies
             get { return m_BehaviorName + "?team=" + TeamId; }
         }
 
+        void Awake()
+        {
+            OnPolicyUpdated += mode => { };
+        }
+
         internal IPolicy GeneratePolicy(ActionSpec actionSpec, ActuatorManager actuatorManager)
         {
             switch (m_BehaviorType)
@@ -232,6 +241,24 @@ namespace Unity.MLAgents.Policies
             }
         }
 
+        /// <summary>
+        /// Query the behavior parameters in order to see if the Agent is running in Heuristic Mode.
+        /// </summary>
+        /// <returns>true if the Agent is running in Heuristic mode.</returns>
+        public bool IsInHeuristicMode()
+        {
+            if (BehaviorType == BehaviorType.HeuristicOnly)
+            {
+                return true;
+            }
+
+            return BehaviorType == BehaviorType.Default &&
+                ReferenceEquals(Model, null) &&
+                (!Academy.IsInitialized ||
+                    Academy.IsInitialized &&
+                    !Academy.Instance.IsCommunicatorOn);
+        }
+
         internal void UpdateAgentPolicy()
         {
             var agent = GetComponent<Agent>();
@@ -240,6 +267,7 @@ namespace Unity.MLAgents.Policies
                 return;
             }
             agent.ReloadPolicy();
+            OnPolicyUpdated?.Invoke(IsInHeuristicMode());
         }
     }
 }
