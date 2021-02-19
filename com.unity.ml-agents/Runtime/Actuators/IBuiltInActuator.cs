@@ -8,11 +8,29 @@ namespace Unity.MLAgents.Actuators
     /// </summary>
     public enum BuiltInActuatorType
     {
+        /// <summary>
+        /// Default Sensor type if it cannot be determined.
+        /// </summary>
         Unknown = 0,
-        // VectorActuator used by the Agent
+
+        /// <summary>
+        /// VectorActuator used by the Agent
+        /// </summary>
         AgentVectorActuator = 1,
+
+        /// <summary>
+        /// Corresponds to <see cref="VectorActuator"/>
+        /// </summary>
         VectorActuator = 2,
+
+        /// <summary>
+        /// Corresponds to the Match3Actuator in com.unity.ml-agents.extensions.
+        /// </summary>
         Match3Actuator = 3,
+
+        /// <summary>
+        /// Corresponds to the InputActionActuator in com.unity.ml-agents.extensions.
+        /// </summary>
         InputActionActuator = 4,
     }
 
@@ -20,7 +38,7 @@ namespace Unity.MLAgents.Actuators
     /// Interface for actuators that are provided as part of ML-Agents.
     /// User-implemented actuators don't need to use this interface.
     /// </summary>
-    public interface IBuiltInActuator
+    internal interface IBuiltInActuator
     {
         /// <summary>
         /// Return the corresponding BuiltInActuatorType for the actuator.
