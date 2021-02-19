@@ -75,9 +75,8 @@ class DiscriminatorNetwork(torch.nn.Module):
         self._use_vail = settings.use_vail
         self._settings = settings
 
-        # This will be replaced by own NetworkSettings so ignoring type for now
         encoder_settings = NetworkSettings(
-            normalize=settings.normalize,  # type: ignore
+            normalize=settings.normalize,
             hidden_units=settings.encoding_size,
             num_layers=2,
             vis_encode_type=EncoderType.SIMPLE,

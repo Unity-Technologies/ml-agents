@@ -183,6 +183,7 @@ class RewardSignalType(Enum):
 class RewardSignalSettings:
     gamma: float = 0.99
     strength: float = 1.0
+    normalize: bool = False
 
     @staticmethod
     def structure(d: Mapping, t: type) -> Any:
