@@ -218,7 +218,7 @@ class RewardSignalSettings:
 @attr.s(auto_attribs=True)
 class GAILSettings(RewardSignalSettings):
     learning_rate: float = 3e-4
-    encoding_size: int = 0
+    encoding_size: Optional[int] = None
     use_actions: bool = False
     use_vail: bool = False
     demo_path: str = attr.ib(kw_only=True)
@@ -227,13 +227,13 @@ class GAILSettings(RewardSignalSettings):
 @attr.s(auto_attribs=True)
 class CuriositySettings(RewardSignalSettings):
     learning_rate: float = 3e-4
-    encoding_size: int = 0
+    encoding_size: Optional[int] = None
 
 
 @attr.s(auto_attribs=True)
 class RNDSettings(RewardSignalSettings):
     learning_rate: float = 1e-4
-    encoding_size: int = 0
+    encoding_size: Optional[int] = None
 
 
 # SAMPLERS #############################################################################
