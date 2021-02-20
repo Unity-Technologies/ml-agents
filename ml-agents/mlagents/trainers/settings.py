@@ -199,6 +199,10 @@ class RewardSignalSettings:
             enum_key = RewardSignalType(key)
             t = enum_key.to_settings()
             d_final[enum_key] = strict_to_cls(val, t)
+            # Checks to see if user specifying deprecated encoding_size for RewardSignals.
+            # If network_settings is not specified, this updates the default hidden_units
+            # to the value of encoding size. If specified, this ignores encoding size and
+            # uses network_settings values.
             if "encoding_size" in val:
                 logger.warning(
                     "'encoding_size' was deprecated for RewardSignals. Please use network_settings."
