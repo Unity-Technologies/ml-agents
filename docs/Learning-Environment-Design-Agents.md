@@ -695,6 +695,8 @@ are masked)
 WriteMask(0, new int[2]{1,2});
 ```
 
+If you are looking for an example project where this is implemented, our [Gridworld](https://github.com/Unity-Technologies/ml-agents/blob/master/Project/Assets/ML-Agents/Examples/GridWorld/Scripts/GridAgent.cs#L39) example environment uses action masking.
+
 Notes:
 
 - You can call `WriteMask` multiple times if you want to put masks on multiple
