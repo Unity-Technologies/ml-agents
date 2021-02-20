@@ -2,12 +2,12 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Unity.MLAgents.Extensions.MultiAgent
+namespace Unity.MLAgents
 {
     /// <summary>
     /// A basic class implementation of MultiAgentGroup.
     /// </summary>
-    public class SimpleMultiAgentGroup : IMultiAgentGroup, IDisposable
+    internal class SimpleMultiAgentGroup : IMultiAgentGroup, IDisposable
     {
         readonly int m_Id = MultiAgentGroupIdCounter.GetGroupId();
         HashSet<Agent> m_Agents = new HashSet<Agent>();
