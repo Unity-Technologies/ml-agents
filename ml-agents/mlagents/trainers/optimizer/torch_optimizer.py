@@ -100,6 +100,8 @@ class TorchOptimizer(Optimizer):
             1, math.ceil((num_experiences) / (self.policy.sequence_length))
         ):
             seq_obs = []
+            for _ in range(self.policy.sequence_length):
+                all_next_memories.append(_mem.squeeze().detach().numpy())
             for _obs in tensor_obs:
                 start = seq_num * self.policy.sequence_length - (
                     self.policy.sequence_length - leftover
@@ -111,8 +113,6 @@ class TorchOptimizer(Optimizer):
             values, _mem = self.critic.critic_pass(
                 seq_obs, _mem, sequence_length=self.policy.sequence_length
             )
-            for _ in range(self.policy.sequence_length):
-                all_next_memories.append(_mem.squeeze().detach().numpy())
             for signal_name, _val in values.items():
                 all_values[signal_name].append(_val)
 
