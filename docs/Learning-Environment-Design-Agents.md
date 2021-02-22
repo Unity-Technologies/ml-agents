@@ -104,7 +104,9 @@ physics-based simulations. For example, an agent in a robotic simulator that
 must provide fine-control of joint torques should make its decisions every step
 of the simulation. On the other hand, an agent that only needs to make decisions
 when certain game or simulation events occur, such as in a turn-based game,
-should call `Agent.RequestDecision()` manually.
+should call `Agent.RequestDecision()` manually. Take a look at the [Bouncer environment](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Examples.md#bouncer)
+wherein we have removed the decision requester component and call [RequestDecision manually](https://github.com/Unity-Technologies/ml-agents/blob/master/Project/Assets/ML-Agents/Examples/Bouncer/Scripts/BouncerAgent.cs#L79).
+We call this 'On Demand decisions'.
 
 ## Observations and Sensors
 In order for an agent to learn, the observations should include all the
