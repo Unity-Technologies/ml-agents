@@ -13,7 +13,7 @@ namespace Unity.MLAgents
         HashSet<Agent> m_Agents = new HashSet<Agent>();
 
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             while (m_Agents.Count > 0)
             {
@@ -55,9 +55,9 @@ namespace Unity.MLAgents
         /// <returns>
         /// List of agents registered to the MultiAgentGroup.
         /// </returns>
-        public HashSet<Agent> GetRegisteredAgents()
+        public IReadOnlyCollection<Agent> GetRegisteredAgents()
         {
-            return m_Agents;
+            return (IReadOnlyCollection<Agent>)m_Agents;
         }
 
         /// <summary>
