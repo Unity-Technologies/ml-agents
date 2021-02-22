@@ -9,9 +9,12 @@ from mlagents.trainers.torch.components.reward_providers.base_reward_provider im
 from mlagents.trainers.settings import RNDSettings
 
 from mlagents_envs.base_env import BehaviorSpec
+from mlagents_envs import logging_util
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.trajectory import ObsUtil
+
+logger = logging_util.get_logger(__name__)
 
 
 class RNDRewardProvider(BaseRewardProvider):
@@ -58,6 +61,12 @@ class RNDNetwork(torch.nn.Module):
     def __init__(self, specs: BehaviorSpec, settings: RNDSettings) -> None:
         super().__init__()
         state_encoder_settings = settings.network_settings
+        if state_encoder_settings.memory is not None:
+            state_encoder_settings.memory = None
+            logger.warning(
+                "memory was specified in network_settings but is not supported by RND. It is being ignored."
+            )
+
         self._encoder = NetworkBody(specs.observation_specs, state_encoder_settings)
 
     def forward(self, mini_batch: AgentBuffer) -> torch.Tensor:

@@ -8,6 +8,7 @@ from mlagents.trainers.torch.components.reward_providers.base_reward_provider im
 )
 from mlagents.trainers.settings import GAILSettings
 from mlagents_envs.base_env import BehaviorSpec
+from mlagents_envs import logging_util
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_flattener import ActionFlattener
@@ -15,6 +16,8 @@ from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.torch.layers import linear_layer, Initialization
 from mlagents.trainers.demo_loader import demo_to_buffer
 from mlagents.trainers.trajectory import ObsUtil
+
+logger = logging_util.get_logger(__name__)
 
 
 class GAILRewardProvider(BaseRewardProvider):
@@ -75,6 +78,12 @@ class DiscriminatorNetwork(torch.nn.Module):
         self._settings = settings
 
         encoder_settings = settings.network_settings
+        if encoder_settings.memory is not None:
+            encoder_settings.memory = None
+            logger.warning(
+                "memory was specified in network_settings but is not supported by GAIL. It is being ignored."
+            )
+
         self._action_flattener = ActionFlattener(specs.action_spec)
         unencoded_size = (
             self._action_flattener.flattened_size + 1 if settings.use_actions else 0

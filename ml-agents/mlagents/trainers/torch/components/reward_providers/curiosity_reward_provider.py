@@ -9,12 +9,15 @@ from mlagents.trainers.torch.components.reward_providers.base_reward_provider im
 from mlagents.trainers.settings import CuriositySettings
 
 from mlagents_envs.base_env import BehaviorSpec
+from mlagents_envs import logging_util
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_flattener import ActionFlattener
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.torch.layers import LinearEncoder, linear_layer
 from mlagents.trainers.trajectory import ObsUtil
+
+logger = logging_util.get_logger(__name__)
 
 
 class ActionPredictionTuple(NamedTuple):
@@ -71,6 +74,12 @@ class CuriosityNetwork(torch.nn.Module):
         self._action_spec = specs.action_spec
 
         state_encoder_settings = settings.network_settings
+        if state_encoder_settings.memory is not None:
+            state_encoder_settings.memory = None
+            logger.warning(
+                "memory was specified in network_settings but is not supported by Curiosity. It is being ignored."
+            )
+
         self._state_encoder = NetworkBody(
             specs.observation_specs, state_encoder_settings
         )
