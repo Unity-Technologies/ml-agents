@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Unity.MLAgents
 {
@@ -42,6 +43,7 @@ namespace Unity.MLAgents
         [Obsolete("GetAction has been deprecated, please use GetStoredActionBuffers instead.")]
         public float[] GetAction()
         {
+            Profiler.BeginSample("Agent.GetAction.Deprecated");
             var actionSpec = m_PolicyFactory.BrainParameters.ActionSpec;
             // For continuous and discrete actions together, this shouldn't be called because we can only return one.
             if (actionSpec.NumContinuousActions > 0 && actionSpec.NumDiscreteActions > 0)
@@ -54,10 +56,8 @@ namespace Unity.MLAgents
             {
                 return storedAction.ContinuousActions.Array;
             }
-            else
-            {
-                return Array.ConvertAll(storedAction.DiscreteActions.Array, x => (float)x);
-            }
+            Profiler.EndSample();
+            return Array.ConvertAll(storedAction.DiscreteActions.Array, x => (float)x);
         }
     }
 }
