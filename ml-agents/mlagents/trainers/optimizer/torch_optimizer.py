@@ -64,7 +64,7 @@ class TorchOptimizer(Optimizer):
         """
         num_experiences = tensor_obs[0].shape[0]
         all_next_memories = AgentBufferField()
-        # The 1st sequence are the ones that are padded. So if seq_len = 3 and
+        # In the buffer, the 1st sequence are the ones that are padded. So if seq_len = 3 and
         # trajectory is of length 10, the 1st sequence is [pad,pad,obs].
         # Compute the number of elements in this padded seq.
         leftover = num_experiences % self.policy.sequence_length
@@ -73,25 +73,22 @@ class TorchOptimizer(Optimizer):
             all_next_memories.append(initial_memory.squeeze().detach().numpy())
 
         # Compute values for the potentially truncated initial sequence
-
         _mem = initial_memory
         seq_obs = []
         for _obs in tensor_obs:
+            first_seq_obs = _obs[0:leftover]
             if leftover > 0:
-                # Pad
-                padding_shape = list(_obs.shape)
-                padding_shape[0] = self.policy.sequence_length - leftover
-                padding = torch.zeros(padding_shape)
-                padded_obs = torch.cat([padding, _obs[0:leftover]])
+                first_seq_obs = _obs[0:leftover]
+                first_seq_len = leftover
             else:
-                padded_obs = _obs[0 : self.policy.sequence_length]
-            seq_obs.append(padded_obs)
+                first_seq_obs = _obs[0 : self.policy.sequence_length]
+                first_seq_len = self.policy.sequence_length
+            seq_obs.append(first_seq_obs)
         init_values, _mem = self.critic.critic_pass(
-            seq_obs, _mem, sequence_length=self.policy.sequence_length
+            seq_obs, _mem, sequence_length=first_seq_len
         )
-        # Trim out padded part, i.e. get last leftover number of elements
         all_values = {
-            signal_name: [init_values[signal_name][-leftover:]]
+            signal_name: [init_values[signal_name]]
             for signal_name in init_values.keys()
         }
 
