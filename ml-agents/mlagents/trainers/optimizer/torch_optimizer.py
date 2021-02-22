@@ -68,22 +68,23 @@ class TorchOptimizer(Optimizer):
         # trajectory is of length 10, the 1st sequence is [pad,pad,obs].
         # Compute the number of elements in this padded seq.
         leftover = num_experiences % self.policy.sequence_length
-        first_seq_len = self.policy.sequence_length if leftover == 0 else leftover
-        for _ in range(first_seq_len):
-            all_next_memories.append(initial_memory.squeeze().detach().numpy())
 
         # Compute values for the potentially truncated initial sequence
         _mem = initial_memory
         seq_obs = []
+
+        first_seq_len = self.policy.sequence_length
         for _obs in tensor_obs:
-            first_seq_obs = _obs[0:leftover]
             if leftover > 0:
                 first_seq_obs = _obs[0:leftover]
                 first_seq_len = leftover
             else:
                 first_seq_obs = _obs[0 : self.policy.sequence_length]
-                first_seq_len = self.policy.sequence_length
             seq_obs.append(first_seq_obs)
+
+        for _ in range(first_seq_len):
+            all_next_memories.append(initial_memory.squeeze().detach().numpy())
+
         init_values, _mem = self.critic.critic_pass(
             seq_obs, _mem, sequence_length=first_seq_len
         )
@@ -112,7 +113,7 @@ class TorchOptimizer(Optimizer):
             )
             for signal_name, _val in values.items():
                 all_values[signal_name].append(_val)
-
+            print("Ooga")
         # Create one tensor per reward signal
         all_value_tensors = {
             signal_name: torch.cat(value_list, dim=0)
