@@ -1,15 +1,9 @@
-// using System;
-// using System.Linq;
-// using System.Collections.Generic;
 using Unity.MLAgents;
 using System;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using Unity;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace Unity.MLAgents.Tests
 {
