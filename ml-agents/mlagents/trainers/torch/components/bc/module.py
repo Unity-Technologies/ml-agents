@@ -3,7 +3,12 @@ import numpy as np
 from mlagents.torch_utils import torch
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
-from mlagents.trainers.demo_loader import demo_to_buffer
+from mlagents.trainers.demonstrations.demonstration_provider import (
+    DemonstrationProvider,
+)
+from mlagents.trainers.demonstrations.local_demonstration_provider import (
+    LocalDemonstrationProvider,
+)
 from mlagents.trainers.settings import BehavioralCloningSettings, ScheduleType
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
@@ -39,9 +44,13 @@ class BCModule:
         )
         params = self.policy.actor_critic.parameters()
         self.optimizer = torch.optim.Adam(params, lr=self.current_lr)
-        _, self.demonstration_buffer = demo_to_buffer(
-            settings.demo_path, policy.sequence_length, policy.behavior_spec
+
+        demo_provider = self._get_demonstration_provider(settings)
+        # TODO check policy.behavior_spec == demo_provider_spec
+        self.demonstration_buffer = demo_provider.to_agentbuffer(
+            training_length=policy.sequence_length
         )
+
         self.batch_size = (
             settings.batch_size if settings.batch_size else default_batch_size
         )
@@ -55,6 +64,16 @@ class BCModule:
         self.has_updated = False
         self.use_recurrent = self.policy.use_recurrent
         self.samples_per_update = settings.samples_per_update
+
+    def _get_demonstration_provider(
+        self, settings: BehavioralCloningSettings
+    ) -> DemonstrationProvider:
+        """
+        Get the DemonstrationProvider as determined by the BehavioralCloningSettings.
+        This is currently always a LocalDemonstrationProvider but could change in the future,
+        based on the settings.
+        """
+        return LocalDemonstrationProvider(settings.demo_path)
 
     def update(self) -> Dict[str, np.ndarray]:
         """

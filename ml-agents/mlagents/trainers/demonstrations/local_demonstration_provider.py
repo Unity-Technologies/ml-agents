@@ -91,12 +91,6 @@ class LocalDemonstrationProvider(DemonstrationProvider):
             action_tuple = LocalDemonstrationProvider._get_action_tuple(
                 pair, behavior_spec.action_spec
             )
-            action_mask = None
-            if pair.agent_info.action_mask:
-                # TODO 2D?
-                action_mask = np.ndarray(
-                    [bool(m) for m in pair.agent_info.action_mask], dtype=np.bool
-                )
 
             exp = DemonstrationExperience(
                 obs=obs,
@@ -104,11 +98,10 @@ class LocalDemonstrationProvider(DemonstrationProvider):
                 done=pair.agent_info.done,
                 action=action_tuple,
                 prev_action=previous_action,
-                action_mask=action_mask,
                 interrupted=pair.agent_info.max_step_reached,
             )
             current_experiences.append(exp)
-            previous_action = np.ndarray(
+            previous_action = np.array(
                 pair.action_info.vector_actions_deprecated, dtype=np.float32
             )
             if pair.agent_info.done or pair_index == len(info_action_pairs) - 1:
@@ -142,11 +135,12 @@ class LocalDemonstrationProvider(DemonstrationProvider):
 
         # TODO 2D?
         continuous_np = (
-            np.ndarray(continuous_actions, dtype=np.float32)
+            np.array(continuous_actions, dtype=np.float32)
             if continuous_actions
             else None
         )
         discrete_np = (
-            np.ndarray(discrete_actions, dtype=np.float32) if discrete_actions else None
+            np.array(discrete_actions, dtype=np.float32) if discrete_actions else None
         )
+
         return ActionTuple(continuous_np, discrete_np)

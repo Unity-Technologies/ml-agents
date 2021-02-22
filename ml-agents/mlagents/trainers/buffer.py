@@ -425,8 +425,10 @@ class AgentBuffer(MutableMapping):
         if key_list is None:
             key_list = list(self.keys())
         if not self.check_length(key_list):
+            lengths = {k: len(self._fields[k]) for k in key_list}
+            lengths_str = "\n\t".join(str((k, v)) for k, v in lengths.items())
             raise BufferException(
-                f"The length of the fields {key_list} were not of same length"
+                f"The length of the fields were not of same length: {lengths_str}"
             )
         for field_key in key_list:
             target_buffer[field_key].extend(

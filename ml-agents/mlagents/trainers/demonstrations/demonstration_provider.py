@@ -16,7 +16,6 @@ class DemonstrationExperience(NamedTuple):
     done: bool
     action: ActionTuple
     prev_action: np.ndarray
-    action_mask: np.ndarray
     interrupted: bool
 
 
@@ -40,7 +39,6 @@ class DemonstrationTrajectory(NamedTuple):
             agent_buffer_trajectory[BufferKey.MASKS].append(1.0)
             agent_buffer_trajectory[BufferKey.DONE].append(exp.done)
 
-            # Adds the log prob and action of continuous/discrete separately
             agent_buffer_trajectory[BufferKey.CONTINUOUS_ACTION].append(
                 exp.action.continuous
             )
@@ -48,21 +46,6 @@ class DemonstrationTrajectory(NamedTuple):
                 exp.action.discrete
             )
 
-            # Store action masks if necessary. Note that 1 means active, while
-            # in AgentExperience False means active.
-            if exp.action_mask is not None:
-                mask = 1 - np.concatenate(exp.action_mask)
-                agent_buffer_trajectory[BufferKey.ACTION_MASK].append(
-                    mask, padding_value=1
-                )
-            else:
-                # This should never be needed unless the environment somehow doesn't supply the
-                # action mask in a discrete space.
-
-                action_shape = exp.action.discrete.shape
-                agent_buffer_trajectory[BufferKey.ACTION_MASK].append(
-                    np.ones(action_shape, dtype=np.float32), padding_value=1
-                )
             agent_buffer_trajectory[BufferKey.PREV_ACTION].append(exp.prev_action)
             agent_buffer_trajectory[BufferKey.ENVIRONMENT_REWARDS].append(exp.reward)
 
@@ -77,3 +60,13 @@ class DemonstrationProvider(abc.ABC):
     @abc.abstractmethod
     def pop_trajectories(self) -> List[DemonstrationTrajectory]:
         pass
+
+    def to_agentbuffer(self, training_length: int) -> AgentBuffer:
+        buffer_out = AgentBuffer()
+        trajectories = self.pop_trajectories()
+        for trajectory in trajectories:
+            temp_buffer = trajectory.to_agentbuffer()
+            temp_buffer.resequence_and_append(
+                buffer_out, batch_size=None, training_length=training_length
+            )
+        return buffer_out

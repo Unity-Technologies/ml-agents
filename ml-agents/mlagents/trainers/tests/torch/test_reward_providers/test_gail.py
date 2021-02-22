@@ -1,14 +1,21 @@
-from typing import Any
-import numpy as np
-import pytest
-from unittest.mock import patch
-from mlagents.torch_utils import torch
 import os
+import pytest
+from typing import Any
+from unittest.mock import patch
+
+import numpy as np
+
+from mlagents_envs.base_env import BehaviorSpec, ActionSpec
+
+from mlagents.torch_utils import torch
+from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.demonstrations.demonstration_provider import (
+    DemonstrationProvider,
+)
 from mlagents.trainers.torch.components.reward_providers import (
     GAILRewardProvider,
     create_reward_provider,
 )
-from mlagents_envs.base_env import BehaviorSpec, ActionSpec
 from mlagents.trainers.settings import GAILSettings, RewardSignalType
 from mlagents.trainers.tests.torch.test_reward_providers.utils import (
     create_agent_buffer,
@@ -32,6 +39,21 @@ SEED = [42]
 ACTIONSPEC_CONTINUOUS = ActionSpec.create_continuous(2)
 ACTIONSPEC_FOURDISCRETE = ActionSpec.create_discrete((2, 3, 3, 3))
 ACTIONSPEC_DISCRETE = ActionSpec.create_discrete((20,))
+
+
+class MockDemonstrationProvider(DemonstrationProvider):
+    def __init__(self, behavior_spec, buffer):
+        self._behavior_spec = behavior_spec
+        self._buffer = buffer
+
+    def get_behavior_spec(self) -> BehaviorSpec:
+        return self._behavior_spec
+
+    def pop_trajectories(self):
+        raise NotImplementedError()
+
+    def to_agentbuffer(self, training_length: int) -> AgentBuffer:
+        return self._buffer
 
 
 @pytest.mark.parametrize(
@@ -73,17 +95,17 @@ def test_factory(behavior_spec: BehaviorSpec) -> None:
     ],
 )
 @pytest.mark.parametrize("use_actions", [False, True])
-@patch(
-    "mlagents.trainers.torch.components.reward_providers.gail_reward_provider.demo_to_buffer"
-)
+@patch.object(GAILRewardProvider, "_get_demonstration_provider")
 def test_reward_decreases(
-    demo_to_buffer: Any, use_actions: bool, behavior_spec: BehaviorSpec, seed: int
+    mock_demo_provider: Any, use_actions: bool, behavior_spec: BehaviorSpec, seed: int
 ) -> None:
     np.random.seed(seed)
     torch.manual_seed(seed)
     buffer_expert = create_agent_buffer(behavior_spec, 1000)
     buffer_policy = create_agent_buffer(behavior_spec, 1000)
-    demo_to_buffer.return_value = None, buffer_expert
+    mock_demo_provider.return_value = MockDemonstrationProvider(
+        behavior_spec, buffer_expert
+    )
     gail_settings = GAILSettings(
         demo_path="", learning_rate=0.005, use_vail=False, use_actions=use_actions
     )
@@ -128,17 +150,17 @@ def test_reward_decreases(
     ],
 )
 @pytest.mark.parametrize("use_actions", [False, True])
-@patch(
-    "mlagents.trainers.torch.components.reward_providers.gail_reward_provider.demo_to_buffer"
-)
+@patch.object(GAILRewardProvider, "_get_demonstration_provider")
 def test_reward_decreases_vail(
-    demo_to_buffer: Any, use_actions: bool, behavior_spec: BehaviorSpec, seed: int
+    mock_demo_provider: Any, use_actions: bool, behavior_spec: BehaviorSpec, seed: int
 ) -> None:
     np.random.seed(seed)
     torch.manual_seed(seed)
     buffer_expert = create_agent_buffer(behavior_spec, 1000)
     buffer_policy = create_agent_buffer(behavior_spec, 1000)
-    demo_to_buffer.return_value = None, buffer_expert
+    mock_demo_provider.return_value = MockDemonstrationProvider(
+        behavior_spec, buffer_expert
+    )
     gail_settings = GAILSettings(
         demo_path="", learning_rate=0.005, use_vail=True, use_actions=use_actions
     )

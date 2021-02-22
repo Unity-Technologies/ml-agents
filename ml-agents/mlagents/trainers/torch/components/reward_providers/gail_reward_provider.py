@@ -8,13 +8,18 @@ from mlagents.trainers.torch.components.reward_providers.base_reward_provider im
 )
 from mlagents.trainers.settings import GAILSettings
 from mlagents_envs.base_env import BehaviorSpec
+from mlagents.trainers.demonstrations.demonstration_provider import (
+    DemonstrationProvider,
+)
+from mlagents.trainers.demonstrations.local_demonstration_provider import (
+    LocalDemonstrationProvider,
+)
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_flattener import ActionFlattener
 from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.torch.layers import linear_layer, Initialization
 from mlagents.trainers.settings import NetworkSettings, EncoderType
-from mlagents.trainers.demo_loader import demo_to_buffer
 from mlagents.trainers.trajectory import ObsUtil
 
 
@@ -24,11 +29,23 @@ class GAILRewardProvider(BaseRewardProvider):
         self._ignore_done = True
         self._discriminator_network = DiscriminatorNetwork(specs, settings)
         self._discriminator_network.to(default_device())
-        _, self._demo_buffer = demo_to_buffer(
-            settings.demo_path, 1, specs
-        )  # This is supposed to be the sequence length but we do not have access here
+
+        demo_provider = self._get_demonstration_provider(settings)
+        # TODO check spec == demo_provider_spec
+        self._demo_buffer = demo_provider.to_agentbuffer(training_length=1)
+
         params = list(self._discriminator_network.parameters())
         self.optimizer = torch.optim.Adam(params, lr=settings.learning_rate)
+
+    def _get_demonstration_provider(
+        self, settings: GAILSettings
+    ) -> DemonstrationProvider:
+        """
+        Get the DemonstrationProvider as determined by the GAILSettings.
+        This is currently always a LocalDemonstrationProvider but could change in the future,
+        based on the settings.
+        """
+        return LocalDemonstrationProvider(settings.demo_path)
 
     def evaluate(self, mini_batch: AgentBuffer) -> np.ndarray:
         with torch.no_grad():
@@ -45,7 +62,7 @@ class GAILRewardProvider(BaseRewardProvider):
 
     def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
         expert_batch = self._demo_buffer.sample_mini_batch(
-            mini_batch.num_experiences, 1
+            mini_batch.num_experiences, sequence_length=1
         )
         loss, stats_dict = self._discriminator_network.compute_loss(
             mini_batch, expert_batch
