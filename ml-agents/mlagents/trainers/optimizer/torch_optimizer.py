@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import Dict, Optional, Tuple, List
 from mlagents.torch_utils import torch
 import numpy as np
@@ -64,51 +65,28 @@ class TorchOptimizer(Optimizer):
         """
         num_experiences = tensor_obs[0].shape[0]
         all_next_memories = AgentBufferField()
-        # In the buffer, the 1st sequence are the ones that are padded. So if seq_len = 3 and
-        # trajectory is of length 10, the 1st sequence is [pad,pad,obs].
-        # Compute the number of elements in this padded seq.
-        leftover = num_experiences % self.policy.sequence_length
-        first_seq_len = self.policy.sequence_length if leftover == 0 else leftover
-        for _ in range(first_seq_len):
-            all_next_memories.append(initial_memory.squeeze().detach().numpy())
-
-        # Compute values for the potentially truncated initial sequence
+        # Evaluate sequences one-by-one. Note that the last sequence may be shorter
+        # than the others by some amount, due to padding. We pad at the end
+        # of the sequence. Note that indexing past the end of a numpy array
+        # will just return everything to the end, and not throw an error.
         _mem = initial_memory
-        seq_obs = []
-        for _obs in tensor_obs:
-            first_seq_obs = _obs[0:leftover]
-            if leftover > 0:
-                first_seq_obs = _obs[0:leftover]
-                first_seq_len = leftover
-            else:
-                first_seq_obs = _obs[0 : self.policy.sequence_length]
-                first_seq_len = self.policy.sequence_length
-            seq_obs.append(first_seq_obs)
-        init_values, _mem = self.critic.critic_pass(
-            seq_obs, _mem, sequence_length=first_seq_len
-        )
-        all_values = {
-            signal_name: [init_values[signal_name]]
-            for signal_name in init_values.keys()
-        }
-
-        # Evaluate other trajectories
+        all_values: Dict[str, List[torch.Tensor]] = defaultdict(list)
         for seq_num in range(
-            1, math.ceil((num_experiences) / (self.policy.sequence_length))
+            0, math.ceil((num_experiences) / (self.policy.sequence_length))
         ):
             seq_obs = []
-            for _ in range(self.policy.sequence_length):
-                all_next_memories.append(_mem.squeeze().detach().numpy())
+
             for _obs in tensor_obs:
-                start = seq_num * self.policy.sequence_length - (
-                    self.policy.sequence_length - leftover
-                )
-                end = (seq_num + 1) * self.policy.sequence_length - (
-                    self.policy.sequence_length - leftover
-                )
+                start = seq_num * self.policy.sequence_length
+                end = (seq_num + 1) * self.policy.sequence_length
                 seq_obs.append(_obs[start:end])
+            # Get length of obs, which may not be the same length as end - start,
+            # if the last trajectory is cut off.
+            seq_len = seq_obs[0].shape[0]
+            for _ in range(seq_len):
+                all_next_memories.append(_mem.squeeze().detach().numpy())
             values, _mem = self.critic.critic_pass(
-                seq_obs, _mem, sequence_length=self.policy.sequence_length
+                seq_obs, _mem, sequence_length=seq_len
             )
             for signal_name, _val in values.items():
                 all_values[signal_name].append(_val)

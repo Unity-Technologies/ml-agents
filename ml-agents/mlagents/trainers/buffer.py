@@ -151,7 +151,7 @@ class AgentBufferField(list):
             if batch_size * training_length > len(self):
                 padding = np.array(self[-1], dtype=np.float32) * self.padding_value
                 return np.array(
-                    [padding] * (training_length - leftover) + self[:], dtype=np.float32
+                    self[:] + [padding] * (training_length - leftover), dtype=np.float32
                 )
             else:
                 return np.array(
