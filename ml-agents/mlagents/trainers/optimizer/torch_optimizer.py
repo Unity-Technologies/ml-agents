@@ -113,7 +113,6 @@ class TorchOptimizer(Optimizer):
             )
             for signal_name, _val in values.items():
                 all_values[signal_name].append(_val)
-            print("Ooga")
         # Create one tensor per reward signal
         all_value_tensors = {
             signal_name: torch.cat(value_list, dim=0)
