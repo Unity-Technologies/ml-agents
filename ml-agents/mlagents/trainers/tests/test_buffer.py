@@ -21,14 +21,23 @@ def construct_fake_buffer(fake_agent_id):
     b = AgentBuffer()
     for step in range(9):
         b[ObsUtil.get_name_at(0)].append(
-            [
-                100 * fake_agent_id + 10 * step + 1,
-                100 * fake_agent_id + 10 * step + 2,
-                100 * fake_agent_id + 10 * step + 3,
-            ]
+            np.array(
+                [
+                    100 * fake_agent_id + 10 * step + 1,
+                    100 * fake_agent_id + 10 * step + 2,
+                    100 * fake_agent_id + 10 * step + 3,
+                ],
+                dtype=np.float32,
+            )
         )
         b[BufferKey.CONTINUOUS_ACTION].append(
-            [100 * fake_agent_id + 10 * step + 4, 100 * fake_agent_id + 10 * step + 5]
+            np.array(
+                [
+                    100 * fake_agent_id + 10 * step + 4,
+                    100 * fake_agent_id + 10 * step + 5,
+                ],
+                dtype=np.float32,
+            )
         )
     return b
 
@@ -40,7 +49,9 @@ def test_buffer():
     a = agent_1_buffer[ObsUtil.get_name_at(0)].get_batch(
         batch_size=2, training_length=1, sequential=True
     )
-    assert_array(np.array(a), np.array([[171, 172, 173], [181, 182, 183]]))
+    assert_array(
+        np.array(a), np.array([[171, 172, 173], [181, 182, 183]], dtype=np.float32)
+    )
     a = agent_2_buffer[ObsUtil.get_name_at(0)].get_batch(
         batch_size=2, training_length=3, sequential=True
     )
@@ -54,7 +65,8 @@ def test_buffer():
                 [261, 262, 263],
                 [271, 272, 273],
                 [281, 282, 283],
-            ]
+            ],
+            dtype=np.float32,
         ),
     )
     a = agent_2_buffer[ObsUtil.get_name_at(0)].get_batch(

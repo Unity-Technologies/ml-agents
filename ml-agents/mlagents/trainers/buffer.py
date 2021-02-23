@@ -9,6 +9,10 @@ import h5py
 
 from mlagents_envs.exception import UnityException
 
+# Elements in the buffer can be np.ndarray, or in the case of teammate obs, actions, rewards,
+# a List of np.ndarray. This is done so that we don't have duplicated np.ndarrays, only references.
+BufferEntry = Union[np.ndarray, List[np.ndarray]]
+
 
 class BufferException(UnityException):
     """
@@ -21,8 +25,10 @@ class BufferException(UnityException):
 class BufferKey(enum.Enum):
     ACTION_MASK = "action_mask"
     CONTINUOUS_ACTION = "continuous_action"
+    NEXT_CONT_ACTION = "next_continuous_action"
     CONTINUOUS_LOG_PROBS = "continuous_log_probs"
     DISCRETE_ACTION = "discrete_action"
+    NEXT_DISC_ACTION = "next_discrete_action"
     DISCRETE_LOG_PROBS = "discrete_log_probs"
     DONE = "done"
     ENVIRONMENT_REWARDS = "environment_rewards"
@@ -33,10 +39,21 @@ class BufferKey(enum.Enum):
     ADVANTAGES = "advantages"
     DISCOUNTED_RETURNS = "discounted_returns"
 
+    GROUP_DONES = "group_dones"
+    GROUPMATE_REWARDS = "groupmate_reward"
+    GROUP_REWARD = "group_reward"
+    GROUP_CONTINUOUS_ACTION = "group_continuous_action"
+    GROUP_DISCRETE_ACTION = "group_discrete_aaction"
+    GROUP_NEXT_CONT_ACTION = "group_next_cont_action"
+    GROUP_NEXT_DISC_ACTION = "group_next_disc_action"
+
 
 class ObservationKeyPrefix(enum.Enum):
     OBSERVATION = "obs"
     NEXT_OBSERVATION = "next_obs"
+
+    GROUP_OBSERVATION = "group_obs"
+    NEXT_GROUP_OBSERVATION = "next_group_obs"
 
 
 class RewardSignalKeyPrefix(enum.Enum):
@@ -94,24 +111,13 @@ class AgentBufferField(list):
         super().append(element)
         self.padding_value = padding_value
 
-    def extend(self, data: np.ndarray) -> None:
-        """
-        Adds a list of np.arrays to the end of the list of np.arrays.
-        :param data: The np.array list to append.
-        """
-        self += list(np.array(data, dtype=np.float32))
-
     def set(self, data):
         """
         Sets the list of np.array to the input data
         :param data: The np.array list to be set.
         """
-        # Make sure we convert incoming data to float32 if it's a float
-        dtype = None
-        if data is not None and len(data) and isinstance(data[0], float):
-            dtype = np.float32
         self[:] = []
-        self[:] = list(np.array(data, dtype=dtype))
+        self[:] = data
 
     def get_batch(
         self,

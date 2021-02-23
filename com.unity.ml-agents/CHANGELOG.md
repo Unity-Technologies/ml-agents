@@ -6,8 +6,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-
 ## [Unreleased]
+### Major Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- The `encoding_size` setting for RewardSignals has been deprecated. Please use `network_settings` instead. (#4982)
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- An issue that caused `GAIL` to fail for environments where agents can terminate episodes by self-sacrifice has been fixed. (#4971)
+
+## [1.8.0-preview] - 2021-02-17
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
@@ -39,6 +52,10 @@ and this project adheres to
 - `InferenceDevice.Burst` was added, indicating that Agent's model will be run using Barracuda's Burst backend.
   This is the default for new Agents, but existing ones that use `InferenceDevice.CPU` should update to
   `InferenceDevice.Burst`. (#4925)
+- Add an InputActuatorComponent to allow the generation of Agent action spaces from an InputActionAsset.
+  Projects wanting to use this feature will need to add the
+  [Input System Package](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.1/manual/index.html)
+  at version 1.1.0-preview.3 or later. (#4881)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Tensorboard now logs the Environment Reward as both a scalar and a histogram. (#4878)
@@ -58,6 +75,8 @@ and this project adheres to
   reduced the amount of memory allocated by approximately 25%. (#4887)
 - Removed several memory allocations that happened during inference with discrete actions. (#4922)
 - Properly catch permission errors when writing timer files. (#4921)
+- Unexpected exceptions during training initialization and shutdown are now logged. If you see
+  "noisy" logs, please let us know! (#4930, #4935)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed a bug that would cause an exception when `RunOptions` was deserialized via `pickle`. (#4842)
@@ -69,6 +88,7 @@ and this project adheres to
   while waiting for a connection, and raises a better error message if it crashes. (#4880)
 - Passing a `-logfile` option in the `--env-args` option to `mlagents-learn` is
   no longer overwritten. (#4880)
+- The `load_weights` function was being called unnecessarily often in the Ghost Trainer leading to training slowdowns. (#4934)
 
 
 ## [1.7.2-preview] - 2020-12-22

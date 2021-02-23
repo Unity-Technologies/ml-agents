@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 from typing import List, Dict, TypeVar, Generic, Tuple, Any, Union
 from collections import defaultdict, Counter
 import queue
@@ -14,12 +15,12 @@ from mlagents_envs.side_channel.stats_side_channel import (
     StatsAggregationMethod,
     EnvironmentStats,
 )
-from mlagents.trainers.trajectory import Trajectory, AgentExperience
+from mlagents.trainers.trajectory import GroupmateStatus, Trajectory, AgentExperience
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo, ActionInfoOutputs
 from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 from mlagents.trainers.stats import StatsReporter
-from mlagents.trainers.behavior_id_utils import get_global_agent_id
+from mlagents.trainers.behavior_id_utils import get_global_agent_id, get_global_group_id
 
 T = TypeVar("T")
 
@@ -49,6 +50,16 @@ class AgentProcessor:
         """
         self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
         self.last_step_result: Dict[str, Tuple[DecisionStep, int]] = {}
+        # current_group_obs is used to collect the last seen obs of all the agents in the same group,
+        # and assemble the group obs.
+        self.current_group_obs: Dict[str, Dict[str, List[np.ndarray]]] = defaultdict(
+            lambda: defaultdict(list)
+        )
+        # last_group_obs is used to collect the last seen obs of all the agents in the same group,
+        # and assemble the group obs.
+        self.group_status: Dict[str, Dict[str, GroupmateStatus]] = defaultdict(
+            lambda: defaultdict(None)
+        )
         # last_take_action_outputs stores the action a_t taken before the current observation s_(t+1), while
         # grabbing previous_action from the policy grabs the action PRIOR to that, a_(t-1).
         self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = {}
@@ -88,19 +99,32 @@ class AgentProcessor:
             if global_id in self.last_step_result:  # Don't store if agent just reset
                 self.last_take_action_outputs[global_id] = take_action_outputs
 
-        # Iterate over all the terminal steps
+        # Iterate over all the terminal steps, first gather all the teammate obs
+        # and then create the AgentExperiences/Trajectories
+        for terminal_step in terminal_steps.values():
+            self._gather_group_obs(terminal_step, worker_id)
         for terminal_step in terminal_steps.values():
             local_id = terminal_step.agent_id
             global_id = get_global_agent_id(worker_id, local_id)
             self._process_step(
-                terminal_step, global_id, terminal_steps.agent_id_to_index[local_id]
+                terminal_step, worker_id, terminal_steps.agent_id_to_index[local_id]
             )
-        # Iterate over all the decision steps
+            # Clear the last seen group obs when agents die.
+            self._clear_group_obs(global_id)
+
+        # Clean the last experience dictionary for terminal steps
+        for terminal_step in terminal_steps.values():
+            local_id = terminal_step.agent_id
+            global_id = get_global_agent_id(worker_id, local_id)
+
+        # Iterate over all the decision steps, first gather all the teammate obs
+        # and then create the trajectories
+        for ongoing_step in decision_steps.values():
+            self._gather_group_obs(ongoing_step, worker_id)
         for ongoing_step in decision_steps.values():
             local_id = ongoing_step.agent_id
-            global_id = get_global_agent_id(worker_id, local_id)
             self._process_step(
-                ongoing_step, global_id, decision_steps.agent_id_to_index[local_id]
+                ongoing_step, worker_id, decision_steps.agent_id_to_index[local_id]
             )
 
         for _gid in action_global_agent_ids:
@@ -112,21 +136,65 @@ class AgentProcessor:
                         [_gid], take_action_outputs["action"]
                     )
 
+    def _gather_group_obs(
+        self, step: Union[TerminalStep, DecisionStep], worker_id: int
+    ) -> None:
+        global_agent_id = get_global_agent_id(worker_id, step.agent_id)
+        stored_decision_step, idx = self.last_step_result.get(
+            global_agent_id, (None, None)
+        )
+        stored_take_action_outputs = self.last_take_action_outputs.get(
+            global_agent_id, None
+        )
+        if stored_decision_step is not None and stored_take_action_outputs is not None:
+            if step.group_id > 0:
+                global_group_id = get_global_group_id(worker_id, step.group_id)
+                stored_actions = stored_take_action_outputs["action"]
+                action_tuple = ActionTuple(
+                    continuous=stored_actions.continuous[idx],
+                    discrete=stored_actions.discrete[idx],
+                )
+                group_status = GroupmateStatus(
+                    obs=stored_decision_step.obs,
+                    reward=step.reward,
+                    action=action_tuple,
+                    done=isinstance(step, TerminalStep),
+                )
+                self.group_status[global_group_id][global_agent_id] = group_status
+                self.current_group_obs[global_group_id][global_agent_id] = step.obs
+
+    def _clear_group_obs(self, global_id: str) -> None:
+        self._delete_in_nested_dict(self.current_group_obs, global_id)
+        self._delete_in_nested_dict(self.group_status, global_id)
+
+    def _delete_in_nested_dict(self, nested_dict: Dict[str, Any], key: str) -> None:
+        for _manager_id in list(nested_dict.keys()):
+            _team_group = nested_dict[_manager_id]
+            self._safe_delete(_team_group, key)
+            if not _team_group:  # if dict is empty
+                self._safe_delete(nested_dict, _manager_id)
+
     def _process_step(
-        self, step: Union[TerminalStep, DecisionStep], global_id: str, index: int
+        self, step: Union[TerminalStep, DecisionStep], worker_id: int, index: int
     ) -> None:
         terminated = isinstance(step, TerminalStep)
-        stored_decision_step, idx = self.last_step_result.get(global_id, (None, None))
-        stored_take_action_outputs = self.last_take_action_outputs.get(global_id, None)
+        global_agent_id = get_global_agent_id(worker_id, step.agent_id)
+        global_group_id = get_global_group_id(worker_id, step.group_id)
+        stored_decision_step, idx = self.last_step_result.get(
+            global_agent_id, (None, None)
+        )
+        stored_take_action_outputs = self.last_take_action_outputs.get(
+            global_agent_id, None
+        )
         if not terminated:
             # Index is needed to grab from last_take_action_outputs
-            self.last_step_result[global_id] = (step, index)
+            self.last_step_result[global_agent_id] = (step, index)
 
         # This state is the consequence of a past action
         if stored_decision_step is not None and stored_take_action_outputs is not None:
             obs = stored_decision_step.obs
             if self.policy.use_recurrent:
-                memory = self.policy.retrieve_memories([global_id])[0, :]
+                memory = self.policy.retrieve_memories([global_agent_id])[0, :]
             else:
                 memory = None
             done = terminated  # Since this is an ongoing step
@@ -143,7 +211,14 @@ class AgentProcessor:
                 discrete=stored_action_probs.discrete[idx],
             )
             action_mask = stored_decision_step.action_mask
-            prev_action = self.policy.retrieve_previous_action([global_id])[0, :]
+            prev_action = self.policy.retrieve_previous_action([global_agent_id])[0, :]
+
+            # Assemble teammate_obs. If none saved, then it will be an empty list.
+            group_statuses = []
+            for _id, _obs in self.group_status[global_group_id].items():
+                if _id != global_agent_id:
+                    group_statuses.append(_obs)
+
             experience = AgentExperience(
                 obs=obs,
                 reward=step.reward,
@@ -154,35 +229,44 @@ class AgentProcessor:
                 prev_action=prev_action,
                 interrupted=interrupted,
                 memory=memory,
+                group_status=group_statuses,
+                group_reward=step.group_reward,
             )
             # Add the value outputs if needed
-            self.experience_buffers[global_id].append(experience)
-            self.episode_rewards[global_id] += step.reward
+            self.experience_buffers[global_agent_id].append(experience)
+            self.episode_rewards[global_agent_id] += step.reward
             if not terminated:
-                self.episode_steps[global_id] += 1
+                self.episode_steps[global_agent_id] += 1
 
             # Add a trajectory segment to the buffer if terminal or the length has reached the time horizon
             if (
-                len(self.experience_buffers[global_id]) >= self.max_trajectory_length
+                len(self.experience_buffers[global_agent_id])
+                >= self.max_trajectory_length
                 or terminated
             ):
-                # Make next AgentExperience
                 next_obs = step.obs
+                next_group_obs = []
+                for _id, _exp in self.current_group_obs[global_group_id].items():
+                    if _id != global_agent_id:
+                        next_group_obs.append(_exp)
+
                 trajectory = Trajectory(
-                    steps=self.experience_buffers[global_id],
-                    agent_id=global_id,
+                    steps=self.experience_buffers[global_agent_id],
+                    agent_id=global_agent_id,
                     next_obs=next_obs,
+                    next_group_obs=next_group_obs,
                     behavior_id=self.behavior_id,
                 )
                 for traj_queue in self.trajectory_queues:
                     traj_queue.put(trajectory)
-                self.experience_buffers[global_id] = []
+                self.experience_buffers[global_agent_id] = []
             if terminated:
                 # Record episode length.
                 self.stats_reporter.add_stat(
-                    "Environment/Episode Length", self.episode_steps.get(global_id, 0)
+                    "Environment/Episode Length",
+                    self.episode_steps.get(global_agent_id, 0),
                 )
-                self._clean_agent_data(global_id)
+                self._clean_agent_data(global_agent_id)
 
     def _clean_agent_data(self, global_id: str) -> None:
         """

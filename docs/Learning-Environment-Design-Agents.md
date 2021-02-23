@@ -17,6 +17,8 @@
     - [Visual Observation Summary & Best Practices](#visual-observation-summary--best-practices)
   - [Raycast Observations](#raycast-observations)
     - [RayCast Observation Summary & Best Practices](#raycast-observation-summary--best-practices)
+  - [Variable Length Observations](#variable-length-observations)
+    - [Variable Length Observation Summary & Best Practices](#variable-length-observation-summary--best-practices)
 - [Actions and Actuators](#actions-and-actuators)
   - [Continuous Actions](#continuous-actions)
   - [Discrete Actions](#discrete-actions)
@@ -510,6 +512,55 @@ setting the State Size.
 - Use as few rays and tags as necessary to solve the problem in order to improve
   learning stability and agent performance.
 
+### Variable Length Observations
+
+It is possible for agents to collect observations from a varying number of
+GameObjects by using a `BufferSensor`.
+You can add a `BufferSensor` to your Agent by adding a `BufferSensorComponent` to
+its GameObject.
+The `BufferSensor` can be useful in situations in which the Agent must pay
+attention to a varying number of entities (for example, a varying number of
+enemies or projectiles).
+On the trainer side, the `BufferSensor`
+is processed using an attention module. More information about attention
+mechanisms can be found [here](https://arxiv.org/abs/1706.03762). Training or
+doing inference with variable length observations can be slower than using
+a flat vector observation. However, attention mechanisms enable solving
+problems that require comparative reasoning between entities in a scene
+such as our [Sorter environment](Learning-Environment-Examples.md#sorter).
+Note that even though the `BufferSensor` can process a variable number of
+entities, you still need to define a maximum number of entities. This is
+because our network architecture requires to know what the shape of the
+observations will be. If fewer entities are observed than the maximum, the
+observation will be padded with zeros and the trainer will ignore
+the padded observations. Note that attention layers are invariant to
+the order of the entities, so there is no need to properly "order" the
+entities before feeding them into the `BufferSensor`.
+
+The  the `BufferSensorComponent` Editor inspector have two arguments:
+ - `Observation Size` : This is how many floats each entities will be
+ represented with. This number is fixed and all entities must
+ have the same representation. For example, if the entities you want to
+ put into the `BufferSensor` have for relevant information position and
+ speed, then the `Observation Size` should be 6 floats.
+ - `Maximum Number of Entities` : This is the maximum number of entities
+ the `BufferSensor` will be able to collect.
+
+To add an entity's observations to a `BufferSensorComponent`, you need
+to call `BufferSensorComponent.AppendObservation()`
+with a float array of size `Observation Size` as argument.
+
+__Note__: Currently, the observations put into the `BufferSensor` are
+not normalized, you will need to normalize your observations manually
+between -1 and 1.
+
+#### Variable Length Observation Summary & Best Practices
+ - Attach `BufferSensorComponent` to use.
+ - Call `BufferSensorComponent.AppendObservation()` to add the observations
+ of an entity to the `BufferSensor`.
+ - Normalize the entities observations before feeding them into the `BufferSensor`.
+
+
 ## Actions and Actuators
 
 An action is an instruction from the Policy that the agent carries out. The
@@ -623,7 +674,7 @@ decide to perform the masked action. In order to mask an action, override the
 ```csharp
 public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
 {
-    actionMasker.WriteMask(branch, actionIndices)
+    actionMask.WriteMask(branch, actionIndices);
 }
 ```
 
@@ -641,7 +692,7 @@ nothing"_ or _"change weapon"_ for his next decision (since action index 1 and 2
 are masked)
 
 ```csharp
-WriteMask(0, new int[2]{1,2})
+WriteMask(0, new int[2]{1,2});
 ```
 
 Notes:

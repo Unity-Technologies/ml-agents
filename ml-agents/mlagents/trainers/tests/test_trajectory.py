@@ -9,6 +9,7 @@ ACTION_SIZE = 4
 
 def test_trajectory_to_agentbuffer():
     length = 15
+    # These keys should be of type np.ndarray
     wanted_keys = [
         (ObservationKeyPrefix.OBSERVATION, 0),
         (ObservationKeyPrefix.OBSERVATION, 1),
@@ -24,14 +25,25 @@ def test_trajectory_to_agentbuffer():
         BufferKey.ACTION_MASK,
         BufferKey.PREV_ACTION,
         BufferKey.ENVIRONMENT_REWARDS,
+        BufferKey.GROUP_REWARD,
     ]
-    wanted_keys = set(wanted_keys)
+    # These keys should be of type List
+    wanted_group_keys = [
+        BufferKey.GROUPMATE_REWARDS,
+        BufferKey.GROUP_CONTINUOUS_ACTION,
+        BufferKey.GROUP_DISCRETE_ACTION,
+        BufferKey.GROUP_DONES,
+        BufferKey.GROUP_NEXT_CONT_ACTION,
+        BufferKey.GROUP_NEXT_DISC_ACTION,
+    ]
+    wanted_keys = set(wanted_keys + wanted_group_keys)
     trajectory = make_fake_trajectory(
         length=length,
         observation_specs=create_observation_specs_with_shapes(
             [(VEC_OBS_SIZE,), (84, 84, 3)]
         ),
         action_spec=ActionSpec.create_continuous(ACTION_SIZE),
+        num_other_agents_in_group=4,
     )
     agentbuffer = trajectory.to_agentbuffer()
     seen_keys = set()
@@ -39,4 +51,8 @@ def test_trajectory_to_agentbuffer():
         assert len(field) == length
         seen_keys.add(key)
 
-    assert seen_keys == wanted_keys
+    assert seen_keys.issuperset(wanted_keys)
+
+    for _key in wanted_group_keys:
+        for step in agentbuffer[_key]:
+            assert len(step) == 4
