@@ -15,19 +15,19 @@ behaviors:
       hidden_units: 256
       num_layers: 2
       vis_encode_type: simple
-#    reward_signals:
-#      extrinsic:
-#        gamma: 0.99
-#        strength: 1.0
     reward_signals:
-        extrinsic:
-            gamma: 0.99
-            strength: 1.0
-        curiosity:
-            gamma: 0.99
-            strength: 0.02
-            encoding_size: 256
-            learning_rate: 0.0003
+      extrinsic:
+        gamma: 0.99
+        strength: 1.0
+#    reward_signals:
+#        extrinsic:
+#            gamma: 0.99
+#            strength: 1.0
+#        curiosity:
+#            gamma: 0.99
+#            strength: 0.02
+#            encoding_size: 256
+#            learning_rate: 0.0003
     keep_checkpoints: 5
     max_steps: 2000000
     time_horizon: 64
