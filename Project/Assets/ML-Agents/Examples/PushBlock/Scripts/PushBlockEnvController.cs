@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.MLAgents.Extensions.MultiAgent;
+using Unity.MLAgents;
 using UnityEngine;
 
 public class PushBlockEnvController : MonoBehaviour
@@ -67,7 +67,7 @@ public class PushBlockEnvController : MonoBehaviour
 
     private int m_NumberOfRemainingBlocks;
 
-    private BaseMultiAgentGroup m_AgentGroup;
+    private SimpleMultiAgentGroup m_AgentGroup;
 
     private int m_ResetTimer;
 
@@ -88,7 +88,7 @@ public class PushBlockEnvController : MonoBehaviour
             item.Rb = item.T.GetComponent<Rigidbody>();
         }
         // Initialize TeamManager
-        m_AgentGroup = new BaseMultiAgentGroup();
+        m_AgentGroup = new SimpleMultiAgentGroup();
         foreach (var item in AgentsList)
         {
             item.StartingPos = item.Agent.transform.position;
@@ -175,10 +175,7 @@ public class PushBlockEnvController : MonoBehaviour
         col.gameObject.SetActive(false);
 
         //Give Agent Rewards
-        foreach (var item in AgentsList)
-        {
-            item.Agent.AddReward(score);
-        }
+        m_AgentGroup.AddGroupReward(score);
 
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
