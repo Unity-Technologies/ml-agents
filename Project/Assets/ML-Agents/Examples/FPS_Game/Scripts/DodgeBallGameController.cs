@@ -58,8 +58,8 @@ public class DodgeBallGameController : MonoBehaviour
     public Color Team0Color;
     public List<AgentInfo> Team1Players;
     public Color Team1Color;
-    public List<DodgeBall> dodgeBallsListTeamO;
-    public List<DodgeBall> dodgeBallsListTeam1;
+    // public List<DodgeBall> dodgeBallsListTeamO;
+    // public List<DodgeBall> dodgeBallsListTeam1;
     public List<DodgeBall> AllBallsList;
 
     public Dictionary<DodgeBallAgent, AgentInfo> PlayersDict = new Dictionary<DodgeBallAgent, AgentInfo>();
@@ -113,7 +113,7 @@ public class DodgeBallGameController : MonoBehaviour
         //SET AGENT/TEAM REWARDS HERE
         AgentInfo info = PlayersDict[agent];
         int hitTeamID = info.TeamID;
-        var HitTeamList = hitTeamID == 0 ? Team0Players : Team1Players;
+        // var HitTeamList = hitTeamID == 0 ? Team0Players : Team1Players;
         var HitByTeamList = hitTeamID == 1 ? Team0Players : Team1Players;
         // int hitByTeamID = hitTeamID == 0? 1: 0; //assumes only 2 teams
 
