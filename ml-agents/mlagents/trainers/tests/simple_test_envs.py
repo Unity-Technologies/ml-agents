@@ -174,13 +174,17 @@ class SimpleEnvironment(BaseEnv):
         self.agent_id[name] = self.agent_id[name] + 1
 
     def _make_batched_step(
-        self, name: str, done: bool, reward: float
+        self, name: str, done: bool, reward: float, group_reward: float
     ) -> Tuple[DecisionSteps, TerminalSteps]:
         m_vector_obs = self._make_obs(self.goal[name])
         m_reward = np.array([reward], dtype=np.float32)
         m_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
+        m_group_id = np.array([0], dtype=np.int32)
+        m_group_reward = np.array([group_reward], dtype=np.float32)
         action_mask = self._generate_mask()
-        decision_step = DecisionSteps(m_vector_obs, m_reward, m_agent_id, action_mask)
+        decision_step = DecisionSteps(
+            m_vector_obs, m_reward, m_agent_id, action_mask, m_group_id, m_group_reward
+        )
         terminal_step = TerminalSteps.empty(self.behavior_spec)
         if done:
             self.final_rewards[name].append(self.rewards[name])
@@ -191,24 +195,45 @@ class SimpleEnvironment(BaseEnv):
                 new_done,
                 new_agent_id,
                 new_action_mask,
+                new_group_id,
+                new_group_reward,
             ) = self._construct_reset_step(name)
 
             decision_step = DecisionSteps(
-                new_vector_obs, new_reward, new_agent_id, new_action_mask
+                new_vector_obs,
+                new_reward,
+                new_agent_id,
+                new_action_mask,
+                new_group_id,
+                new_group_reward,
             )
             terminal_step = TerminalSteps(
-                m_vector_obs, m_reward, np.array([False], dtype=np.bool), m_agent_id
+                m_vector_obs,
+                m_reward,
+                np.array([False], dtype=np.bool),
+                m_agent_id,
+                m_group_id,
+                m_group_reward,
             )
         return (decision_step, terminal_step)
 
     def _construct_reset_step(
         self, name: str
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         new_reward = np.array([0.0], dtype=np.float32)
         new_done = np.array([False], dtype=np.bool)
         new_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
         new_action_mask = self._generate_mask()
-        return new_reward, new_done, new_agent_id, new_action_mask
+        new_group_id = np.array([0], dtype=np.int32)
+        new_group_reward = np.array([0.0], dtype=np.float32)
+        return (
+            new_reward,
+            new_done,
+            new_agent_id,
+            new_action_mask,
+            new_group_id,
+            new_group_reward,
+        )
 
     def step(self) -> None:
         assert all(action is not None for action in self.action.values())
@@ -217,12 +242,12 @@ class SimpleEnvironment(BaseEnv):
             done = self._take_action(name)
             reward = self._compute_reward(name, done)
             self.rewards[name] += reward
-            self.step_result[name] = self._make_batched_step(name, done, reward)
+            self.step_result[name] = self._make_batched_step(name, done, reward, 0.0)
 
     def reset(self) -> None:  # type: ignore
         for name in self.names:
             self._reset_agent(name)
-            self.step_result[name] = self._make_batched_step(name, False, 0.0)
+            self.step_result[name] = self._make_batched_step(name, False, 0.0, 0.0)
 
     @property
     def reset_parameters(self) -> Dict[str, str]:
@@ -240,7 +265,7 @@ class MemoryEnvironment(SimpleEnvironment):
         self.num_show_steps = 2
 
     def _make_batched_step(
-        self, name: str, done: bool, reward: float
+        self, name: str, done: bool, reward: float, group_reward: float
     ) -> Tuple[DecisionSteps, TerminalSteps]:
         recurrent_obs_val = (
             self.goal[name] if self.step_count[name] <= self.num_show_steps else 0
@@ -248,8 +273,12 @@ class MemoryEnvironment(SimpleEnvironment):
         m_vector_obs = self._make_obs(recurrent_obs_val)
         m_reward = np.array([reward], dtype=np.float32)
         m_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
+        m_group_id = np.array([0], dtype=np.int32)
+        m_group_reward = np.array([group_reward], dtype=np.float32)
         action_mask = self._generate_mask()
-        decision_step = DecisionSteps(m_vector_obs, m_reward, m_agent_id, action_mask)
+        decision_step = DecisionSteps(
+            m_vector_obs, m_reward, m_agent_id, action_mask, m_group_id, m_group_reward
+        )
         terminal_step = TerminalSteps.empty(self.behavior_spec)
         if done:
             self.final_rewards[name].append(self.rewards[name])
@@ -263,12 +292,24 @@ class MemoryEnvironment(SimpleEnvironment):
                 new_done,
                 new_agent_id,
                 new_action_mask,
+                new_group_id,
+                new_group_reward,
             ) = self._construct_reset_step(name)
             decision_step = DecisionSteps(
-                new_vector_obs, new_reward, new_agent_id, new_action_mask
+                new_vector_obs,
+                new_reward,
+                new_agent_id,
+                new_action_mask,
+                new_group_id,
+                new_group_reward,
             )
             terminal_step = TerminalSteps(
-                m_vector_obs, m_reward, np.array([False], dtype=np.bool), m_agent_id
+                m_vector_obs,
+                m_reward,
+                np.array([False], dtype=np.bool),
+                m_agent_id,
+                m_group_id,
+                m_group_reward,
             )
         return (decision_step, terminal_step)
 

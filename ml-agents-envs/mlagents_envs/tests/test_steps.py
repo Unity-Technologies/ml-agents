@@ -16,6 +16,8 @@ def test_decision_steps():
         reward=np.array(range(3), dtype=np.float32),
         agent_id=np.array(range(10, 13), dtype=np.int32),
         action_mask=[np.zeros((3, 4), dtype=np.bool)],
+        group_id=np.array(range(3), dtype=np.int32),
+        group_reward=np.array(range(3), dtype=np.float32),
     )
 
     assert ds.agent_id_to_index[10] == 0
@@ -51,6 +53,8 @@ def test_terminal_steps():
         reward=np.array(range(3), dtype=np.float32),
         agent_id=np.array(range(10, 13), dtype=np.int32),
         interrupted=np.array([1, 0, 1], dtype=np.bool),
+        group_id=np.array(range(3), dtype=np.int32),
+        group_reward=np.array(range(3), dtype=np.float32),
     )
 
     assert ts.agent_id_to_index[10] == 0

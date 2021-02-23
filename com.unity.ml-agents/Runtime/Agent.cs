@@ -35,6 +35,11 @@ namespace Unity.MLAgents
         public float reward;
 
         /// <summary>
+        /// The current group reward received by the agent.
+        /// </summary>
+        public float groupReward;
+
+        /// <summary>
         /// Whether the agent is done or not.
         /// </summary>
         public bool done;
@@ -49,6 +54,11 @@ namespace Unity.MLAgents
         /// to separate between different agents in the environment.
         /// </summary>
         public int episodeId;
+
+        /// <summary>
+        /// MultiAgentGroup identifier.
+        /// </summary>
+        public int groupId;
 
         public void ClearActions()
         {
@@ -243,6 +253,9 @@ namespace Unity.MLAgents
         /// Additionally, the magnitude of the reward should not exceed 1.0
         float m_Reward;
 
+        /// Represents the group reward the agent accumulated during the current step.
+        float m_GroupReward;
+
         /// Keeps track of the cumulative reward in this episode.
         float m_CumulativeReward;
 
@@ -316,6 +329,13 @@ namespace Unity.MLAgents
         /// This is used to avoid allocation of a float array during legacy calls to Heuristic.
         /// </summary>
         float[] m_LegacyHeuristicCache;
+
+        /// Currect MultiAgentGroup ID. Default to 0 (meaning no group)
+        int m_GroupId;
+
+        /// Delegate for the agent to unregister itself from the MultiAgentGroup without cyclic reference
+        /// between agent and the group
+        internal event Action<Agent> OnAgentDisabled;
 
         /// <summary>
         /// Called when the attached [GameObject] becomes enabled and active.
@@ -448,6 +468,8 @@ namespace Unity.MLAgents
                 new int[m_ActuatorManager.NumDiscreteActions]
             );
 
+            m_Info.groupId = m_GroupId;
+
             // The first time the Academy resets, all Agents in the scene will be
             // forced to reset through the <see cref="AgentForceReset"/> event.
             // To avoid the Agent resetting twice, the Agents will not begin their
@@ -516,6 +538,7 @@ namespace Unity.MLAgents
                 NotifyAgentDone(DoneReason.Disabled);
             }
             m_Brain?.Dispose();
+            OnAgentDisabled?.Invoke(this);
             m_Initialized = false;
         }
 
@@ -528,8 +551,10 @@ namespace Unity.MLAgents
             }
             m_Info.episodeId = m_EpisodeId;
             m_Info.reward = m_Reward;
+            m_Info.groupReward = m_GroupReward;
             m_Info.done = true;
             m_Info.maxStepReached = doneReason == DoneReason.MaxStepReached;
+            m_Info.groupId = m_GroupId;
             if (collectObservationsSensor != null)
             {
                 // Make sure the latest observations are being passed to training.
@@ -559,6 +584,7 @@ namespace Unity.MLAgents
             }
 
             m_Reward = 0f;
+            m_GroupReward = 0f;
             m_CumulativeReward = 0f;
             m_RequestAction = false;
             m_RequestDecision = false;
@@ -696,6 +722,22 @@ namespace Unity.MLAgents
 #endif
             m_Reward += increment;
             m_CumulativeReward += increment;
+        }
+
+        internal void SetGroupReward(float reward)
+        {
+#if DEBUG
+            Utilities.DebugCheckNanAndInfinity(reward, nameof(reward), nameof(SetGroupReward));
+#endif
+            m_GroupReward = reward;
+        }
+
+        internal void AddGroupReward(float increment)
+        {
+#if DEBUG
+            Utilities.DebugCheckNanAndInfinity(increment, nameof(increment), nameof(AddGroupReward));
+#endif
+            m_GroupReward += increment;
         }
 
         /// <summary>
@@ -1054,9 +1096,11 @@ namespace Unity.MLAgents
 
             m_Info.discreteActionMasks = m_ActuatorManager.DiscreteActionMask?.GetMask();
             m_Info.reward = m_Reward;
+            m_Info.groupReward = m_GroupReward;
             m_Info.done = false;
             m_Info.maxStepReached = false;
             m_Info.episodeId = m_EpisodeId;
+            m_Info.groupId = m_GroupId;
 
             using (TimerStack.Instance.Scoped("RequestDecision"))
             {
@@ -1323,6 +1367,7 @@ namespace Unity.MLAgents
             {
                 SendInfoToBrain();
                 m_Reward = 0f;
+                m_GroupReward = 0f;
                 m_RequestDecision = false;
             }
         }
@@ -1357,6 +1402,26 @@ namespace Unity.MLAgents
             var actions = m_Brain?.DecideAction() ?? new ActionBuffers();
             m_Info.CopyActions(actions);
             m_ActuatorManager.UpdateActions(actions);
+        }
+
+        internal void SetMultiAgentGroup(IMultiAgentGroup multiAgentGroup)
+        {
+            if (multiAgentGroup == null)
+            {
+                m_GroupId = 0;
+            }
+            else
+            {
+                var newGroupId = multiAgentGroup.GetId();
+                if (m_GroupId == 0 || m_GroupId == newGroupId)
+                {
+                    m_GroupId = newGroupId;
+                }
+                else
+                {
+                    throw new UnityAgentsException("Agent is already registered with a group. Unregister it first.");
+                }
+            }
         }
     }
 }
