@@ -334,7 +334,7 @@ class HyperNetwork(torch.nn.Module):
         bound = math.sqrt(1 / (layer_size * self.input_size))
         flat_output.weight.data.uniform_(-bound, bound)
 
-        self.hypernet = torch.nn.Sequential(*layers, flat_output, LayerNorm())
+        self.hypernet = torch.nn.Sequential(*layers, LayerNorm(), flat_output)
 
         # The hypernetwork will not generate the bias of the main network layer
         self.bias = torch.nn.Parameter(torch.zeros(output_size))
