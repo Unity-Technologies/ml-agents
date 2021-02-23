@@ -11,6 +11,7 @@ from mlagents_envs.base_env import (
     TerminalSteps,
     BehaviorMapping,
 )
+from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
 
 
 def test_gym_wrapper():
@@ -140,7 +141,7 @@ def test_gym_wrapper_single_visual_and_vector(use_uint8):
     assert isinstance(done, (bool, np.bool_))
     assert isinstance(info, dict)
 
-    # check behaviour for allow_multiple_obs = False
+    # check behavior for allow_multiple_obs = False
     env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8, allow_multiple_obs=False)
     assert isinstance(env, UnityToGymWrapper)
     assert isinstance(env.observation_space, spaces.Box)
@@ -185,7 +186,7 @@ def test_gym_wrapper_multi_visual_and_vector(use_uint8):
     assert isinstance(done, (bool, np.bool_))
     assert isinstance(info, dict)
 
-    # check behaviour for allow_multiple_obs = False
+    # check behavior for allow_multiple_obs = False
     env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8, allow_multiple_obs=False)
     assert isinstance(env, UnityToGymWrapper)
     assert isinstance(env.observation_space, spaces.Box)
@@ -226,7 +227,8 @@ def create_mock_group_spec(
     obs_shapes = [(vector_observation_space_size,)]
     for _ in range(number_visual_observations):
         obs_shapes += [(8, 8, 3)]
-    return BehaviorSpec(obs_shapes, action_spec)
+    obs_spec = create_observation_specs_with_shapes(obs_shapes)
+    return BehaviorSpec(obs_spec, action_spec)
 
 
 def create_mock_vector_steps(specs, num_agents=1, number_visual_observations=0):
@@ -244,7 +246,12 @@ def create_mock_vector_steps(specs, num_agents=1, number_visual_observations=0):
         ] * number_visual_observations
     rewards = np.array(num_agents * [1.0])
     agents = np.array(range(0, num_agents))
-    return DecisionSteps(obs, rewards, agents, None), TerminalSteps.empty(specs)
+    group_id = np.array(num_agents * [0])
+    group_rewards = np.array(num_agents * [0.0])
+    return (
+        DecisionSteps(obs, rewards, agents, None, group_id, group_rewards),
+        TerminalSteps.empty(specs),
+    )
 
 
 def setup_mock_unityenvironment(mock_env, mock_spec, mock_decision, mock_termination):

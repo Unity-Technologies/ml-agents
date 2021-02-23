@@ -26,6 +26,7 @@
 - [Model Types](#model-types)
   - [Learning from Vector Observations](#learning-from-vector-observations)
   - [Learning from Cameras using Convolutional Neural Networks](#learning-from-cameras-using-convolutional-neural-networks)
+  - [Learning from Variable Length Observations using Attention](#learning-from-ariable-length-observations-using-attention)
   - [Memory-enhanced Agents using Recurrent Neural Networks](#memory-enhanced-agents-using-recurrent-neural-networks)
 - [Additional Features](#additional-features)
 - [Summary and Next Steps](#summary-and-next-steps)
@@ -372,7 +373,7 @@ your agent's behavior:
   below).
 - `rnd`: represents an intrinsic reward signal that encourages exploration
   in sparse-reward environments that is defined by the Curiosity module (see
-  below). (Not available for TensorFlow trainers)
+  below).
 
 ### Deep Reinforcement Learning
 
@@ -437,8 +438,6 @@ of the trained model is used as intrinsic reward. The more an Agent visits a sta
 more accurate the predictions and the lower the rewards which encourages the Agent to
 explore new states with higher prediction errors.
 
-__Note:__ RND is not available for TensorFlow trainers (only PyTorch trainers)
-
 ### Imitation Learning
 
 It is often more intuitive to simply demonstrate the behavior we want an agent
@@ -474,12 +473,23 @@ Learning (GAIL). In most scenarios, you can combine these two features:
 - If you want to help your agents learn (especially with environments that have
   sparse rewards) using pre-recorded demonstrations, you can generally enable
   both GAIL and Behavioral Cloning at low strengths in addition to having an
-  extrinsic reward. An example of this is provided for the Pyramids example
-  environment under `PyramidsLearning` in `config/gail_config.yaml`.
-- If you want to train purely from demonstrations, GAIL and BC _without_ an
-  extrinsic reward signal is the preferred approach. An example of this is
-  provided for the Crawler example environment under `CrawlerStaticLearning` in
-  `config/gail_config.yaml`.
+  extrinsic reward. An example of this is provided for the PushBlock example
+  environment in `config/imitation/PushBlock.yaml`.
+- If you want to train purely from demonstrations with GAIL and BC _without_ an
+  extrinsic reward signal, please see the CrawlerStatic example environment under
+  in `config/imitation/CrawlerStatic.yaml`.
+
+***Note:*** GAIL introduces a [_survivor bias_](https://arxiv.org/pdf/1809.02925.pdf)
+to the learning process. That is, by giving positive rewards based on similarity
+to the expert, the agent is incentivized to remain alive for as long as possible.
+This can directly conflict with goal-oriented tasks like our PushBlock or Pyramids
+example environments where an agent must reach a goal state thus ending the
+episode as quickly as possible. In these cases, we strongly recommend that you
+use a low strength GAIL reward signal and a sparse extrinisic signal when
+the agent achieves the task. This way, the GAIL reward signal will guide the
+agent until it discovers the extrnisic signal and will not overpower it. If the
+agent appears to be ignoring the extrinsic reward signal, you should reduce
+the strength of GAIL.
 
 #### GAIL (Generative Adversarial Imitation Learning)
 
@@ -551,10 +561,10 @@ adversarial games with
 one in which opposing agents are equal in form, function and objective. Examples
 of symmetric games are our Tennis and Soccer example environments. In
 reinforcement learning, this means both agents have the same observation and
-action spaces and learn from the same reward function and so _they can share the
+actions and learn from the same reward function and so _they can share the
 same policy_. In asymmetric games, this is not the case. An example of an
 asymmetric games are Hide and Seek. Agents in these types of games do not always
-have the same observation or action spaces and so sharing policy networks is not
+have the same observation or actions and so sharing policy networks is not
 necessarily ideal.
 
 With self-play, an agent learns in adversarial games by competing against fixed,
@@ -648,7 +658,7 @@ are `gravity`, `ball_mass` and `ball_scale`._
 
 Regardless of the training method deployed, there are a few model types that
 users can train using the ML-Agents Toolkit. This is due to the flexibility in
-defining agent observations, which can include vector, ray cast and visual
+defining agent observations, which include vector, ray cast and visual
 observations. You can learn more about how to instrument an agent's observation
 in the [Designing Agents](Learning-Environment-Design-Agents.md) guide.
 
@@ -685,6 +695,28 @@ three network architectures:
 
 The choice of the architecture depends on the visual complexity of the scene and
 the available computational resources.
+
+### Learning from Variable Length Observations using Attention
+
+Using the ML-Agents Toolkit, it is possible to have agents learn from a
+varying number of inputs. To do so, each agent can keep track of a buffer
+of vector observations. At each step, the agent will go through all the
+elements in the buffer and extract information but the elements
+in the buffer can change at every step.
+This can be useful in scenarios in which the agents must keep track of
+a varying number of elements throughout the episode. For example in a game
+where an agent must learn to avoid projectiles, but the projectiles can vary in
+numbers.
+
+![Variable Length Observations Illustrated](images/variable-length-observation-illustrated.png)
+
+You can learn more about variable length observations
+[here](Learning-Environment-Design-Agents.md#variable-length-observations).
+When variable length observations are utilized, the ML-Agents Toolkit
+leverages attention networks to learn from a varying number of entities.
+Agents using attention will ignore entities that are deemed not relevant
+and pay special attention to entities relevant to the current situation
+based on context.
 
 ### Memory-enhanced Agents using Recurrent Neural Networks
 

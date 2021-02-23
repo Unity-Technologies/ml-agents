@@ -60,7 +60,7 @@ to seek, and a Sphere to represent the Agent itself.
 ### Create the Floor Plane
 
 1. Right click in Hierarchy window, select 3D Object > Plane.
-1. Name the GameObject "Floor."
+1. Name the GameObject "Floor".
 1. Select the Floor Plane to view its properties in the Inspector window.
 1. Set Transform to Position = `(0, 0, 0)`, Rotation = `(0, 0, 0)`, Scale =
    `(1, 1, 1)`.
@@ -74,7 +74,7 @@ to seek, and a Sphere to represent the Agent itself.
 ### Add the Target Cube
 
 1. Right click in Hierarchy window, select 3D Object > Cube.
-1. Name the GameObject "Target"
+1. Name the GameObject "Target".
 1. Select the Target Cube to view its properties in the Inspector window.
 1. Set Transform to Position = `(3, 0.5, 3)`, Rotation = `(0, 0, 0)`, Scale =
    `(1, 1, 1)`.
@@ -88,29 +88,17 @@ to seek, and a Sphere to represent the Agent itself.
 ### Add the Agent Sphere
 
 1. Right click in Hierarchy window, select 3D Object > Sphere.
-1. Name the GameObject "RollerAgent"
+1. Name the GameObject "RollerAgent".
 1. Select the RollerAgent Sphere to view its properties in the Inspector window.
 1. Set Transform to Position = `(0, 0.5, 0)`, Rotation = `(0, 0, 0)`, Scale =
    `(1, 1, 1)`.
 1. Click **Add Component**.
 1. Add the `Rigidbody` component to the Sphere.
 
-<p align="left">
-  <img src="images/roller-ball-agent.png"
-       alt="The Agent GameObject in the Inspector window"
-       width="400" border="10" />
-</p>
+### Group into Training Area
 
-Note that the screenshot above includes the `Roller Agent` script, which we will
-create in the next section. However, before we do that, we'll first group the
-floor, target and agent under a single, empty, GameObject. This will simplify
+Group the floor, target and agent under a single, empty, GameObject. This will simplify
 some of our subsequent steps.
-
-<p align="left">
-  <img src="images/roller-ball-hierarchy.png"
-       alt="The Hierarchy window"
-       width="250" border="10" />
-</p>
 
 To do so:
 
@@ -121,9 +109,15 @@ To do so:
 1. Drag the Floor, Target, and RollerAgent GameObjects in the Hierarchy into the
    TrainingArea GameObject.
 
+<p align="left">
+  <img src="images/roller-ball-hierarchy.png"
+       alt="The Hierarchy window"
+       width="250" border="10" />
+</p>
+
 ## Implement an Agent
 
-To create the Agent:
+To create the Agent Script:
 
 1. Select the RollerAgent GameObject to view it in the Inspector window.
 1. Click **Add Component**.
@@ -135,11 +129,15 @@ Then, edit the new `RollerAgent` script:
 
 1. In the Unity Project window, double-click the `RollerAgent` script to open it
    in your code editor.
-1. In the editor, add the `using Unity.MLAgents;` and
-   `using Unity.MLAgents.Sensors;` statements and then change the base class from
-   `MonoBehaviour` to `Agent`.
-1. Delete the `Update()` method, but we will use the `Start()` function, so
-   leave it alone for now.
+1. Import ML-Agent package by adding
+
+   ```csharp
+   using Unity.MLAgents;
+   using Unity.MLAgents.Sensors;
+   using Unity.MLAgents.Actuators;
+   ```
+   then change the base class from `MonoBehaviour` to `Agent`.
+1. Delete `Update()` since we are not using it, but keep `Start()`.
 
 So far, these are the basic steps that you would use to add ML-Agents to any
 Unity project. Next, we will add the logic that will let our Agent learn to roll
@@ -148,7 +146,7 @@ extend three methods from the `Agent` base class:
 
 - `OnEpisodeBegin()`
 - `CollectObservations(VectorSensor sensor)`
-- `OnActionReceived(float[] vectorAction)`
+- `OnActionReceived(ActionBuffers actionBuffers)`
 
 We overview each of these in more detail in the dedicated subsections below.
 
@@ -158,14 +156,14 @@ The process of training in the ML-Agents Toolkit involves running episodes where
 the Agent (Sphere) attempts to solve the task. Each episode lasts until the
 Agents solves the task (i.e. reaches the cube), fails (rolls off the platform)
 or times out (takes too long to solve or fail at the task). At the start of each
-episode, the `OnEpisodeBegin()` method is called to set-up the environment for a
+episode, `OnEpisodeBegin()` is called to set-up the environment for a
 new episode. Typically the scene is initialized in a random manner to enable the
 agent to learn to solve the task under a variety of conditions.
 
-In this example, each time the Agent (Sphere) reaches its target (Cube), its
-episode ends and the method moves the target (Cube) to a new random location. In
-addition, if the Agent rolls off the platform, the `OnEpisodeBegin()` method
-puts it back onto the floor.
+In this example, each time the Agent (Sphere) reaches its target (Cube), the
+episode ends and the target (Cube) is moved to a new random location; and if
+the Agent rolls off the platform, it will be put back onto the floor.
+These are all handled in `OnEpisodeBegin()`.
 
 To move the target (Cube), we need a reference to its Transform (which stores a
 GameObject's position, orientation and scale in the 3D world). To get this
@@ -202,9 +200,9 @@ public class RollerAgent : Agent
     public Transform Target;
     public override void OnEpisodeBegin()
     {
+       // If the Agent fell, zero its momentum
         if (this.transform.localPosition.y < 0)
         {
-            // If the Agent fell, zero its momentum
             this.rBody.angularVelocity = Vector3.zero;
             this.rBody.velocity = Vector3.zero;
             this.transform.localPosition = new Vector3( 0, 0.5f, 0);
@@ -257,13 +255,13 @@ receives actions and assigns the reward.
 #### Actions
 
 To solve the task of moving towards the target, the Agent (Sphere) needs to be
-able to move in the `x` and `z` directions. As such, we will provide 2 actions
-to the agent. The first determines the force applied along the x-axis; the
+able to move in the `x` and `z` directions. As such, the agent needs 2 actions:
+the first determines the force applied along the x-axis; and the
 second determines the force applied along the z-axis. (If we allowed the Agent
-to move in three dimensions, then we would need a third action.
+to move in three dimensions, then we would need a third action.)
 
 The RollerAgent applies the values from the `action[]` array to its Rigidbody
-component, `rBody`, using the `Rigidbody.AddForce` function:
+component `rBody`, using `Rigidbody.AddForce()`:
 
 ```csharp
 Vector3 controlSignal = Vector3.zero;
@@ -274,16 +272,16 @@ rBody.AddForce(controlSignal * forceMultiplier);
 
 #### Rewards
 
-Reinforcement learning requires rewards. Assign rewards in the
-`OnActionReceived()` function. The learning algorithm uses the rewards assigned
-to the Agent during the simulation and learning process to determine whether it
+Reinforcement learning requires rewards to signal which decisions are good and
+which are bad. The learning algorithm uses the rewards to determine whether it
 is giving the Agent the optimal actions. You want to reward an Agent for
 completing the assigned task. In this case, the Agent is given a reward of 1.0
 for reaching the Target cube.
 
-The RollerAgent calculates the distance to detect when it reaches the target.
-When it does, the code calls the `Agent.SetReward()` method to assign a reward
-of 1.0 and marks the agent as finished by calling the `EndEpisode()` method on
+Rewards are assigned in `OnActionReceived()`. The RollerAgent
+calculates the distance to detect when it reaches the target.
+When it does, the code calls `Agent.SetReward()` to assign a reward
+of 1.0 and marks the agent as finished by calling `EndEpisode()` on
 the Agent.
 
 ```csharp
@@ -309,17 +307,17 @@ if (this.transform.localPosition.y < 0)
 
 #### OnActionReceived()
 
-With the action and reward logic outlined above, the final version of the
-`OnActionReceived()` function looks like:
+With the action and reward logic outlined above, the final version of
+`OnActionReceived()` looks like:
 
 ```csharp
 public float forceMultiplier = 10;
-public override void OnActionReceived(float[] vectorAction)
+public override void OnActionReceived(ActionBuffers actionBuffers)
 {
     // Actions, size = 2
     Vector3 controlSignal = Vector3.zero;
-    controlSignal.x = vectorAction[0];
-    controlSignal.z = vectorAction[1];
+    controlSignal.x = actionBuffers.ContinuousActions[0];
+    controlSignal.z = actionBuffers.ContinuousActions[1];
     rBody.AddForce(controlSignal * forceMultiplier);
 
     // Rewards
@@ -340,29 +338,34 @@ public override void OnActionReceived(float[] vectorAction)
 }
 ```
 
-Note the `forceMultiplier` class variable is defined before the function. Since `forceMultiplier` is
-public, you can set the value from the Inspector window.
+Note the `forceMultiplier` class variable is defined before the method definition.
+Since `forceMultiplier` is public, you can set the value from the Inspector window.
 
-## Final Editor Setup
+## Final Agent Setup in Editor
 
-Now, that all the GameObjects and ML-Agent components are in place, it is time
-to connect everything together in the Unity Editor. This involves changing some
-of the Agent Component's properties so that they are compatible with our Agent
-code.
+Now that all the GameObjects and ML-Agent components are in place, it is time
+to connect everything together in the Unity Editor. This involves adding and
+setting some of the Agent Component's properties so that they are compatible
+with our Agent script.
 
 1. Select the **RollerAgent** GameObject to show its properties in the Inspector
    window.
 1. Drag the Target GameObject in the Hierarchy into the `Target` field in RollerAgent Script.
-1. Add the `Decision Requester` script with the Add Component button from the
-   RollerAgent Inspector.
-1. Change **Decision Period** to `10`. For more information on decisions, see [the Agent documentation](Learning-Environment-Design-Agents.md#decisions)
-1. Add the `Behavior Parameters` script with the Add Component button from the
-   RollerAgent Inspector.
-1. Modify the Behavior Parameters of the Agent :
-   - `Behavior Name` to _RollerBall_
+1. Add a `Decision Requester` script with the **Add Component** button.
+   Set the **Decision Period** to `10`. For more information on decisions,
+   see [the Agent documentation](Learning-Environment-Design-Agents.md#decisions)
+1. Add a `Behavior Parameters` script with the **Add Component** button.
+   Set the Behavior Parameters of the Agent to the following:
+   - `Behavior Name`: _RollerBall_
    - `Vector Observation` > `Space Size` = 8
-   - `Vector Action` > `Space Type` = **Continuous**
-   - `Vector Action` > `Space Size` = 2
+   - `Actions` > `Continuous Actions` = 2
+
+In the inspector, the `RollerAgent` should look like this now:
+<p align="left">
+  <img src="images/roller-ball-agent.png"
+       alt="The Agent GameObject in the Inspector window"
+       width="400" border="5" />
+</p>
 
 Now you are ready to test the environment before training.
 
@@ -375,10 +378,11 @@ action corresponding to the values of the "Horizontal" and "Vertical" input axis
 (which correspond to the keyboard arrow keys):
 
 ```csharp
-public override void Heuristic(float[] actionsOut)
+public override void Heuristic(in ActionBuffers actionsOut)
 {
-    actionsOut[0] = Input.GetAxis("Horizontal");
-    actionsOut[1] = Input.GetAxis("Vertical");
+    var continuousActionsOut = actionsOut.ContinuousActions;
+    continuousActionsOut[0] = Input.GetAxis("Horizontal");
+    continuousActionsOut[1] = Input.GetAxis("Vertical");
 }
 ```
 

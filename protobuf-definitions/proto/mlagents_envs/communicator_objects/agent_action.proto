@@ -4,9 +4,11 @@ option csharp_namespace = "Unity.MLAgents.CommunicatorObjects";
 package communicator_objects;
 
 message AgentActionProto {
-    repeated float vector_actions = 1;
+    repeated float vector_actions_deprecated = 1; // mark as deprecated in communicator v1.3.0
     reserved 2; // deprecated string text_actions = 2;
     reserved 3; //deprecated repeated float memories = 3;
     float value = 4;
     reserved 5; // deprecated CustomActionProto custom_action = 5;
+    repeated float continuous_actions = 6;
+    repeated int32 discrete_actions = 7;
 }

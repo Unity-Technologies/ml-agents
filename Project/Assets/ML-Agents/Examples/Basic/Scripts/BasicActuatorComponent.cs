@@ -1,5 +1,6 @@
 using System;
 using Unity.MLAgents.Actuators;
+using UnityEngine;
 
 namespace Unity.MLAgentsExamples
 {
@@ -16,7 +17,9 @@ namespace Unity.MLAgentsExamples
         /// Creates a BasicActuator.
         /// </summary>
         /// <returns></returns>
+#pragma warning disable 672
         public override IActuator CreateActuator()
+#pragma warning restore 672
         {
             return new BasicActuator(basicController);
         }
@@ -30,7 +33,7 @@ namespace Unity.MLAgentsExamples
     /// <summary>
     /// Simple actuator that converts the action into a {-1, 0, 1} direction
     /// </summary>
-    public class BasicActuator : IActuator
+    public class BasicActuator : IActuator, IHeuristicProvider
     {
         public BasicController basicController;
         ActionSpec m_ActionSpec;
@@ -74,6 +77,19 @@ namespace Unity.MLAgentsExamples
             }
 
             basicController.MoveDirection(direction);
+        }
+
+        public void Heuristic(in ActionBuffers actionBuffersOut)
+        {
+            var direction = Input.GetAxis("Horizontal");
+            var discreteActions = actionBuffersOut.DiscreteActions;
+            if (Mathf.Approximately(direction, 0.0f))
+            {
+                discreteActions[0] = 0;
+                return;
+            }
+            var sign = Math.Sign(direction);
+            discreteActions[0] = sign < 0 ? 1 : 2;
         }
 
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)

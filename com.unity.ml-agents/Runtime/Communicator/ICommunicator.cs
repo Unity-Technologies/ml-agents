@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents
@@ -131,15 +130,16 @@ namespace Unity.MLAgents
         /// Sends the academy parameters through the Communicator.
         /// Is used by the academy to send the AcademyParameters to the communicator.
         /// </summary>
-        /// <returns>The External Initialization Parameters received.</returns>
+        /// <returns>Whether the connection was successful.</returns>
         /// <param name="initParameters">The Unity Initialization Parameters to be sent.</param>
-        UnityRLInitParameters Initialize(CommunicatorInitParameters initParameters);
+        /// <param name="initParametersOut">The External Initialization Parameters received</param>
+        bool Initialize(CommunicatorInitParameters initParameters, out UnityRLInitParameters initParametersOut);
 
         /// <summary>
         /// Registers a new Brain to the Communicator.
         /// </summary>
         /// <param name="name">The name or key uniquely identifying the Brain.</param>
-        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         void SubscribeBrain(string name, ActionSpec actionSpec);
 
         /// <summary>
@@ -163,6 +163,6 @@ namespace Unity.MLAgents
         /// <param name="key">A key to identify which behavior actions to get.</param>
         /// <param name="agentId">A key to identify which Agent actions to get.</param>
         /// <returns></returns>
-        float[] GetActions(string key, int agentId);
+        ActionBuffers GetActions(string key, int agentId);
     }
 }

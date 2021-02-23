@@ -36,7 +36,7 @@ def test_normalizer():
     norm.update(vec_input3)
 
     # Test normalization
-    for val in norm(vec_input1)[0]:
+    for val in norm(vec_input1)[0].tolist():
         assert val == pytest.approx(0.707, abs=0.001)
 
     # Test copy normalization
@@ -44,7 +44,7 @@ def test_normalizer():
     assert not compare_models(norm, norm2)
     norm2.copy_from(norm)
     assert compare_models(norm, norm2)
-    for val in norm2(vec_input1)[0]:
+    for val in norm2(vec_input1)[0].tolist():
         assert val == pytest.approx(0.707, abs=0.001)
 
 
@@ -79,6 +79,6 @@ def test_visual_encoder(vis_class, image_size):
     num_outputs = 128
     enc = vis_class(image_size[0], image_size[1], image_size[2], num_outputs)
     # Note: NCHW not NHWC
-    sample_input = torch.ones((1, image_size[2], image_size[0], image_size[1]))
+    sample_input = torch.ones((1, image_size[0], image_size[1], image_size[2]))
     encoding = enc(sample_input)
     assert encoding.shape == (1, num_outputs)

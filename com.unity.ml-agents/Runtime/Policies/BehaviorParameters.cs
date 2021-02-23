@@ -74,6 +74,10 @@ namespace Unity.MLAgents.Policies
         [HideInInspector, SerializeField]
         BrainParameters m_BrainParameters = new BrainParameters();
 
+        public delegate void PolicyUpdated(bool isInHeuristicMode);
+
+        internal event PolicyUpdated OnPolicyUpdated;
+
         /// <summary>
         /// The associated <see cref="Policies.BrainParameters"/> for this behavior.
         /// </summary>
@@ -98,7 +102,7 @@ namespace Unity.MLAgents.Policies
         }
 
         [HideInInspector, SerializeField]
-        InferenceDevice m_InferenceDevice;
+        InferenceDevice m_InferenceDevice = InferenceDevice.Burst;
 
         /// <summary>
         /// How inference is performed for this Agent's model.
@@ -196,12 +200,17 @@ namespace Unity.MLAgents.Policies
             get { return m_BehaviorName + "?team=" + TeamId; }
         }
 
-        internal IPolicy GeneratePolicy(ActionSpec actionSpec, HeuristicPolicy.ActionGenerator heuristic)
+        void Awake()
+        {
+            OnPolicyUpdated += mode => { };
+        }
+
+        internal IPolicy GeneratePolicy(ActionSpec actionSpec, ActuatorManager actuatorManager)
         {
             switch (m_BehaviorType)
             {
                 case BehaviorType.HeuristicOnly:
-                    return new HeuristicPolicy(heuristic, actionSpec);
+                    return new HeuristicPolicy(actuatorManager, actionSpec);
                 case BehaviorType.InferenceOnly:
                     {
                         if (m_Model == null)
@@ -212,7 +221,7 @@ namespace Unity.MLAgents.Policies
                                 "Either assign a model, or change to a different Behavior Type."
                             );
                         }
-                        return new BarracudaPolicy(actionSpec, m_Model, m_InferenceDevice);
+                        return new BarracudaPolicy(actionSpec, m_Model, m_InferenceDevice, m_BehaviorName);
                     }
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
@@ -221,15 +230,33 @@ namespace Unity.MLAgents.Policies
                     }
                     if (m_Model != null)
                     {
-                        return new BarracudaPolicy(actionSpec, m_Model, m_InferenceDevice);
+                        return new BarracudaPolicy(actionSpec, m_Model, m_InferenceDevice, m_BehaviorName);
                     }
                     else
                     {
-                        return new HeuristicPolicy(heuristic, actionSpec);
+                        return new HeuristicPolicy(actuatorManager, actionSpec);
                     }
                 default:
-                    return new HeuristicPolicy(heuristic, actionSpec);
+                    return new HeuristicPolicy(actuatorManager, actionSpec);
             }
+        }
+
+        /// <summary>
+        /// Query the behavior parameters in order to see if the Agent is running in Heuristic Mode.
+        /// </summary>
+        /// <returns>true if the Agent is running in Heuristic mode.</returns>
+        public bool IsInHeuristicMode()
+        {
+            if (BehaviorType == BehaviorType.HeuristicOnly)
+            {
+                return true;
+            }
+
+            return BehaviorType == BehaviorType.Default &&
+                ReferenceEquals(Model, null) &&
+                (!Academy.IsInitialized ||
+                    Academy.IsInitialized &&
+                    !Academy.Instance.IsCommunicatorOn);
         }
 
         internal void UpdateAgentPolicy()
@@ -240,6 +267,7 @@ namespace Unity.MLAgents.Policies
                 return;
             }
             agent.ReloadPolicy();
+            OnPolicyUpdated?.Invoke(IsInHeuristicMode());
         }
     }
 }

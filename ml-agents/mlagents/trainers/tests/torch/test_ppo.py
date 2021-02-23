@@ -1,26 +1,27 @@
 import pytest
 
 import numpy as np
-from mlagents.tf_utils import tf
 import attr
 
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.tests import mock_brain as mb
+from mlagents.trainers.tests.mock_brain import copy_buffer_fields
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
-from mlagents.trainers.settings import NetworkSettings, FrameworkType
-from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disable=unused-variable
+from mlagents.trainers.settings import NetworkSettings
+from mlagents.trainers.tests.dummy_config import (  # noqa: F401
     ppo_dummy_config,
     curiosity_dummy_config,
     gail_dummy_config,
 )
 
 from mlagents_envs.base_env import ActionSpec
+from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 
 
 @pytest.fixture
 def dummy_config():
-    return attr.evolve(ppo_dummy_config(), framework=FrameworkType.PYTORCH)
+    return ppo_dummy_config()
 
 
 VECTOR_ACTION_SPACE = 2
@@ -59,7 +60,6 @@ def create_test_ppo_optimizer(dummy_config, use_rnn, use_discrete, use_visual):
 @pytest.mark.parametrize("rnn", [True, False], ids=["rnn", "no_rnn"])
 def test_ppo_optimizer_update(dummy_config, rnn, visual, discrete):
     # Test evaluate
-    tf.reset_default_graph()
     optimizer = create_test_ppo_optimizer(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
@@ -70,14 +70,16 @@ def test_ppo_optimizer_update(dummy_config, rnn, visual, discrete):
         memory_size=optimizer.policy.m_size,
     )
     # Mock out reward signal eval
-    update_buffer["advantages"] = update_buffer["environment_rewards"]
-    update_buffer["extrinsic_returns"] = update_buffer["environment_rewards"]
-    update_buffer["extrinsic_value_estimates"] = update_buffer["environment_rewards"]
+    copy_buffer_fields(
+        update_buffer,
+        BufferKey.ENVIRONMENT_REWARDS,
+        [
+            BufferKey.ADVANTAGES,
+            RewardSignalUtil.returns_key("extrinsic"),
+            RewardSignalUtil.value_estimates_key("extrinsic"),
+        ],
+    )
 
-    # NOTE: In TensorFlow, the log_probs are saved as one for every discrete action, whereas
-    # in PyTorch it is saved as the total probability per branch. So we need to modify the
-    # log prob in the fake buffer here.
-    update_buffer["action_probs"] = np.ones_like(update_buffer["actions"])
     return_stats = optimizer.update(
         update_buffer,
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
@@ -102,7 +104,6 @@ def test_ppo_optimizer_update_curiosity(
     dummy_config, curiosity_dummy_config, rnn, visual, discrete  # noqa: F811
 ):
     # Test evaluate
-    tf.reset_default_graph()
     dummy_config.reward_signals = curiosity_dummy_config
     optimizer = create_test_ppo_optimizer(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
@@ -114,15 +115,18 @@ def test_ppo_optimizer_update_curiosity(
         memory_size=optimizer.policy.m_size,
     )
     # Mock out reward signal eval
-    update_buffer["advantages"] = update_buffer["environment_rewards"]
-    update_buffer["extrinsic_returns"] = update_buffer["environment_rewards"]
-    update_buffer["extrinsic_value_estimates"] = update_buffer["environment_rewards"]
-    update_buffer["curiosity_returns"] = update_buffer["environment_rewards"]
-    update_buffer["curiosity_value_estimates"] = update_buffer["environment_rewards"]
-    # NOTE: In TensorFlow, the log_probs are saved as one for every discrete action, whereas
-    # in PyTorch it is saved as the total probability per branch. So we need to modify the
-    # log prob in the fake buffer here.
-    update_buffer["action_probs"] = np.ones_like(update_buffer["actions"])
+    copy_buffer_fields(
+        update_buffer,
+        src_key=BufferKey.ENVIRONMENT_REWARDS,
+        dst_keys=[
+            BufferKey.ADVANTAGES,
+            RewardSignalUtil.returns_key("extrinsic"),
+            RewardSignalUtil.value_estimates_key("extrinsic"),
+            RewardSignalUtil.returns_key("curiosity"),
+            RewardSignalUtil.value_estimates_key("curiosity"),
+        ],
+    )
+
     optimizer.update(
         update_buffer,
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
@@ -133,7 +137,7 @@ def test_ppo_optimizer_update_curiosity(
 def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F811
     # Test evaluate
     dummy_config.reward_signals = gail_dummy_config
-    config = attr.evolve(ppo_dummy_config(), framework=FrameworkType.PYTORCH)
+    config = ppo_dummy_config()
     optimizer = create_test_ppo_optimizer(
         config, use_rnn=False, use_discrete=False, use_visual=False
     )
@@ -142,11 +146,21 @@ def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F8
         BUFFER_INIT_SAMPLES, optimizer.policy.behavior_spec
     )
     # Mock out reward signal eval
-    update_buffer["advantages"] = update_buffer["environment_rewards"]
-    update_buffer["extrinsic_returns"] = update_buffer["environment_rewards"]
-    update_buffer["extrinsic_value_estimates"] = update_buffer["environment_rewards"]
-    update_buffer["gail_returns"] = update_buffer["environment_rewards"]
-    update_buffer["gail_value_estimates"] = update_buffer["environment_rewards"]
+    copy_buffer_fields(
+        update_buffer,
+        src_key=BufferKey.ENVIRONMENT_REWARDS,
+        dst_keys=[
+            BufferKey.ADVANTAGES,
+            RewardSignalUtil.returns_key("extrinsic"),
+            RewardSignalUtil.value_estimates_key("extrinsic"),
+            RewardSignalUtil.returns_key("gail"),
+            RewardSignalUtil.value_estimates_key("gail"),
+        ],
+    )
+
+    update_buffer[BufferKey.CONTINUOUS_LOG_PROBS] = np.ones_like(
+        update_buffer[BufferKey.CONTINUOUS_ACTION]
+    )
     optimizer.update(
         update_buffer,
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
@@ -155,15 +169,17 @@ def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F8
     # Check if buffer size is too big
     update_buffer = mb.simulate_rollout(3000, optimizer.policy.behavior_spec)
     # Mock out reward signal eval
-    update_buffer["advantages"] = update_buffer["environment_rewards"]
-    update_buffer["extrinsic_returns"] = update_buffer["environment_rewards"]
-    update_buffer["extrinsic_value_estimates"] = update_buffer["environment_rewards"]
-    update_buffer["gail_returns"] = update_buffer["environment_rewards"]
-    update_buffer["gail_value_estimates"] = update_buffer["environment_rewards"]
-    # NOTE: In TensorFlow, the log_probs are saved as one for every discrete action, whereas
-    # in PyTorch it is saved as the total probability per branch. So we need to modify the
-    # log prob in the fake buffer here.
-    update_buffer["action_probs"] = np.ones_like(update_buffer["actions"])
+    copy_buffer_fields(
+        update_buffer,
+        src_key=BufferKey.ENVIRONMENT_REWARDS,
+        dst_keys=[
+            BufferKey.ADVANTAGES,
+            RewardSignalUtil.returns_key("extrinsic"),
+            RewardSignalUtil.value_estimates_key("extrinsic"),
+            RewardSignalUtil.returns_key("gail"),
+            RewardSignalUtil.value_estimates_key("gail"),
+        ],
+    )
     optimizer.update(
         update_buffer,
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
@@ -180,7 +196,7 @@ def test_ppo_get_value_estimates(dummy_config, rnn, visual, discrete):
     time_horizon = 15
     trajectory = make_fake_trajectory(
         length=time_horizon,
-        observation_shapes=optimizer.policy.behavior_spec.observation_shapes,
+        observation_specs=optimizer.policy.behavior_spec.observation_specs,
         action_spec=DISCRETE_ACTION_SPEC if discrete else CONTINUOUS_ACTION_SPEC,
         max_step_complete=True,
     )

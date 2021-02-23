@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import shutil
 import sys
@@ -64,7 +65,7 @@ def run_training(python_version: str, csharp_version: str) -> bool:
     else:
         standalone_player_path = "testPlayer"
 
-    venv_path = init_venv(python_version)
+    init_venv(python_version)
 
     # Copy the default training config but override the max_steps parameter,
     # and reduce the batch_size and buffer_size enough to ensure an update step happens.
@@ -81,23 +82,35 @@ def run_training(python_version: str, csharp_version: str) -> bool:
         }
         override_config_file("config/ppo/3DBall.yaml", yaml_out, overrides)
 
-    env_path = os.path.join(get_base_output_path(), standalone_player_path + ".app")
-    mla_learn_cmd = (
-        f"mlagents-learn {yaml_out} --force --env={env_path} "
-        f"--run-id={run_id} --no-graphics --env-args -logFile -"
-    )  # noqa
-    res = subprocess.run(
-        f"source {venv_path}/bin/activate; {mla_learn_cmd}", shell=True
-    )
+    log_output_path = f"{get_base_output_path()}/training.log"
+    env_path = os.path.join(get_base_output_path(), standalone_player_path)
+    mla_learn_cmd = [
+        "mlagents-learn",
+        yaml_out,
+        "--force",
+        "--env",
+        env_path,
+        "--run-id",
+        str(run_id),
+        "--no-graphics",
+        "--env-args",
+        "-logFile",
+        log_output_path,
+    ]
+
+    res = subprocess.run(mla_learn_cmd)
 
     # Save models as artifacts (only if we're using latest python and C#)
     if csharp_version is None and python_version is None:
         model_artifacts_dir = os.path.join(get_base_output_path(), "models")
         os.makedirs(model_artifacts_dir, exist_ok=True)
-        shutil.copy(onnx_file_expected, model_artifacts_dir)
+        if os.path.exists(onnx_file_expected):
+            shutil.copy(onnx_file_expected, model_artifacts_dir)
 
     if res.returncode != 0 or not os.path.exists(onnx_file_expected):
         print("mlagents-learn run FAILED!")
+        print("Command line: " + " ".join(mla_learn_cmd))
+        subprocess.run(["cat", log_output_path])
         return False
 
     if csharp_version is None and python_version is None:
@@ -120,6 +133,11 @@ def run_inference(env_path: str, output_path: str, model_extension: str) -> bool
 
     log_output_path = f"{get_base_output_path()}/inference.{model_extension}.txt"
 
+    # 10 minutes for inference is more than enough
+    process_timeout = 10 * 60
+    # Try to gracefully exit a few seconds before that.
+    model_override_timeout = process_timeout - 15
+
     exe_path = exes[0]
     args = [
         exe_path,
@@ -134,10 +152,11 @@ def run_inference(env_path: str, output_path: str, model_extension: str) -> bool
         "1",
         "--mlagents-override-model-extension",
         model_extension,
+        "--mlagents-quit-after-seconds",
+        str(model_override_timeout),
     ]
     print(f"Starting inference with args {' '.join(args)}")
-    timeout = 15 * 60  # 15 minutes for inference is more than enough
-    res = subprocess.run(args, timeout=timeout)
+    res = subprocess.run(args, timeout=process_timeout)
     end_time = time.time()
     if res.returncode != 0:
         print("Error running inference!")
@@ -145,7 +164,23 @@ def run_inference(env_path: str, output_path: str, model_extension: str) -> bool
         subprocess.run(["cat", log_output_path])
         return False
     else:
-        print(f"Inference succeeded! Took {end_time - start_time} seconds")
+        print(f"Inference finished! Took {end_time - start_time} seconds")
+
+    # Check the artifacts directory for the timers, so we can get the gauges
+    timer_file = f"{exe_path}_Data/ML-Agents/Timers/3DBall_timers.json"
+    with open(timer_file) as f:
+        timer_data = json.load(f)
+
+    gauges = timer_data.get("gauges", {})
+    rewards = gauges.get("Override_3DBall.CumulativeReward", {})
+    max_reward = rewards.get("max")
+    if max_reward is None:
+        print(
+            "Unable to find rewards in timer file. This usually indicates a problem with Barracuda or inference."
+        )
+        return False
+    # We could check that the rewards are over a threshold, but since we train for so short a time,
+    # the values could be highly variable. So don't do it for now.
 
     return True
 

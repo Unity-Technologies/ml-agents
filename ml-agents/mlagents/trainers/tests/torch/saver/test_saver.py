@@ -3,13 +3,14 @@ from unittest import mock
 import os
 
 import numpy as np
-from mlagents.torch_utils import torch
+from mlagents.torch_utils import torch, default_device
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.torch.test_policy import create_policy_mock
+from mlagents.trainers.torch.utils import ModelUtils
 
 
 def test_register(tmp_path):
@@ -68,25 +69,30 @@ def _compare_two_policies(policy1: TorchPolicy, policy2: TorchPolicy) -> None:
     """
     Make sure two policies have the same output for the same input.
     """
+    policy1.actor_critic = policy1.actor_critic.to(default_device())
+    policy2.actor_critic = policy2.actor_critic.to(default_device())
+
     decision_step, _ = mb.create_steps_from_behavior_spec(
         policy1.behavior_spec, num_agents=1
     )
-    vec_vis_obs, masks = policy1._split_decision_step(decision_step)
-    vec_obs = [torch.as_tensor(vec_vis_obs.vector_observations)]
-    vis_obs = [torch.as_tensor(vis_ob) for vis_ob in vec_vis_obs.visual_observations]
+    np_obs = decision_step.obs
+    masks = policy1._extract_masks(decision_step)
     memories = torch.as_tensor(
         policy1.retrieve_memories(list(decision_step.agent_id))
     ).unsqueeze(0)
+    tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
 
     with torch.no_grad():
         _, log_probs1, _, _ = policy1.sample_actions(
-            vec_obs, vis_obs, masks=masks, memories=memories, all_log_probs=True
+            tensor_obs, masks=masks, memories=memories
         )
         _, log_probs2, _, _ = policy2.sample_actions(
-            vec_obs, vis_obs, masks=masks, memories=memories, all_log_probs=True
+            tensor_obs, masks=masks, memories=memories
         )
-
-    np.testing.assert_array_equal(log_probs1, log_probs2)
+    np.testing.assert_array_equal(
+        ModelUtils.to_numpy(log_probs1.all_discrete_tensor),
+        ModelUtils.to_numpy(log_probs2.all_discrete_tensor),
+    )
 
 
 @pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])

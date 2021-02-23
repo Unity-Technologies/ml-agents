@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Tuple, Union
 import gym
 from gym import error, spaces
 
-from mlagents_envs.base_env import BaseEnv
+from mlagents_envs.base_env import ActionTuple, BaseEnv
 from mlagents_envs.base_env import DecisionSteps, TerminalSteps
 from mlagents_envs import logging_util
 
@@ -179,7 +179,13 @@ class UnityToGymWrapper(gym.Env):
             action = self._flattener.lookup_action(action)
 
         action = np.array(action).reshape((1, self.action_size))
-        self._env.set_actions(self.name, action)
+
+        action_tuple = ActionTuple()
+        if self.group_spec.action_spec.is_continuous():
+            action_tuple.add_continuous(action)
+        else:
+            action_tuple.add_discrete(action)
+        self._env.set_actions(self.name, action_tuple)
 
         self._env.step()
         decision_step, terminal_step = self._env.get_steps(self.name)
@@ -223,16 +229,16 @@ class UnityToGymWrapper(gym.Env):
 
     def _get_n_vis_obs(self) -> int:
         result = 0
-        for shape in self.group_spec.observation_shapes:
-            if len(shape) == 3:
+        for obs_spec in self.group_spec.observation_specs:
+            if len(obs_spec.shape) == 3:
                 result += 1
         return result
 
     def _get_vis_obs_shape(self) -> List[Tuple]:
         result: List[Tuple] = []
-        for shape in self.group_spec.observation_shapes:
-            if len(shape) == 3:
-                result.append(shape)
+        for obs_spec in self.group_spec.observation_specs:
+            if len(obs_spec.shape) == 3:
+                result.append(obs_spec.shape)
         return result
 
     def _get_vis_obs_list(
@@ -255,9 +261,9 @@ class UnityToGymWrapper(gym.Env):
 
     def _get_vec_obs_size(self) -> int:
         result = 0
-        for shape in self.group_spec.observation_shapes:
-            if len(shape) == 1:
-                result += shape[0]
+        for obs_spec in self.group_spec.observation_specs:
+            if len(obs_spec.shape) == 1:
+                result += obs_spec.shape[0]
         return result
 
     def render(self, mode="rgb_array"):
@@ -291,10 +297,6 @@ class UnityToGymWrapper(gym.Env):
     @property
     def reward_range(self) -> Tuple[float, float]:
         return -float("inf"), float("inf")
-
-    @property
-    def spec(self):
-        return None
 
     @property
     def action_space(self):

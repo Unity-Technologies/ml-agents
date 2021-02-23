@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Sensors.Reflection;
 
 public class Ball3DHardAgent : Agent
 {
@@ -17,11 +18,22 @@ public class Ball3DHardAgent : Agent
         SetResetParameters();
     }
 
-    public override void CollectObservations(VectorSensor sensor)
+    [Observable(numStackedObservations: 9)]
+    Vector2 Rotation
     {
-        sensor.AddObservation(gameObject.transform.rotation.z);
-        sensor.AddObservation(gameObject.transform.rotation.x);
-        sensor.AddObservation((ball.transform.position - gameObject.transform.position));
+        get
+        {
+            return new Vector2(gameObject.transform.rotation.z, gameObject.transform.rotation.x);
+        }
+    }
+
+    [Observable(numStackedObservations: 9)]
+    Vector3 PositionDelta
+    {
+        get
+        {
+            return ball.transform.position - gameObject.transform.position;
+        }
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)

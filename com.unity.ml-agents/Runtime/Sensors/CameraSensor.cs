@@ -1,11 +1,12 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// A sensor that wraps a Camera object to generate visual observations for an agent.
     /// </summary>
-    public class CameraSensor : ISensor
+    public class CameraSensor : ISensor, IBuiltInSensor, IDimensionPropertiesSensor
     {
         Camera m_Camera;
         int m_Width;
@@ -14,6 +15,10 @@ namespace Unity.MLAgents.Sensors
         string m_Name;
         int[] m_Shape;
         SensorCompressionType m_CompressionType;
+        static DimensionProperty[] s_DimensionProperties = new DimensionProperty[] {
+            DimensionProperty.TranslationalEquivariance,
+            DimensionProperty.TranslationalEquivariance,
+            DimensionProperty.None };
 
         /// <summary>
         /// The Camera used for rendering the sensor observations.
@@ -75,6 +80,17 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
+        /// Accessor for the dimension properties of a camera sensor. A camera sensor
+        /// Has translational equivariance along width and hight and no property along
+        /// the channels dimension.
+        /// </summary>
+        /// <returns></returns>
+        public DimensionProperty[] GetDimensionProperties()
+        {
+            return s_DimensionProperties;
+        }
+
+        /// <summary>
         /// Generates a compressed image. This can be valuable in speeding-up training.
         /// </summary>
         /// <returns>Compressed image.</returns>
@@ -128,6 +144,11 @@ namespace Unity.MLAgents.Sensors
         /// <returns name="texture2D">Texture2D to render to.</returns>
         public static Texture2D ObservationToTexture(Camera obsCamera, int width, int height)
         {
+            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
+            {
+                Debug.LogError("GraphicsDeviceType is Null. This will likely crash when trying to render.");
+            }
+
             var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
             var oldRec = obsCamera.rect;
             obsCamera.rect = new Rect(0f, 0f, 1f, 1f);
@@ -182,5 +203,12 @@ namespace Unity.MLAgents.Sensors
                 Object.Destroy(texture);
             }
         }
+
+        /// <inheritdoc/>
+        public BuiltInSensorType GetBuiltInSensorType()
+        {
+            return BuiltInSensorType.CameraSensor;
+        }
+
     }
 }

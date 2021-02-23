@@ -3,7 +3,6 @@ using NUnit.Framework;
 using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
-using Unity.MLAgents.Policies;
 
 namespace Unity.MLAgents.Tests
 {
@@ -27,33 +26,35 @@ namespace Unity.MLAgents.Tests
         [Test]
         public void ApplyContinuousActionOutput()
         {
+            var actionSpec = ActionSpec.MakeContinuous(3);
             var inputTensor = new TensorProxy()
             {
                 shape = new long[] { 2, 3 },
                 data = new Tensor(2, 3, new float[] { 1, 2, 3, 4, 5, 6 })
             };
 
-            var applier = new ContinuousActionOutputApplier();
+            var applier = new ContinuousActionOutputApplier(actionSpec);
 
             var agentIds = new List<int>() { 0, 1 };
             // Dictionary from AgentId to Action
-            var actionDict = new Dictionary<int, float[]>() { { 0, null }, { 1, null } };
+            var actionDict = new Dictionary<int, ActionBuffers>() { { 0, ActionBuffers.Empty }, { 1, ActionBuffers.Empty } };
 
             applier.Apply(inputTensor, agentIds, actionDict);
 
 
-            Assert.AreEqual(actionDict[0][0], 1);
-            Assert.AreEqual(actionDict[0][1], 2);
-            Assert.AreEqual(actionDict[0][2], 3);
+            Assert.AreEqual(actionDict[0].ContinuousActions[0], 1);
+            Assert.AreEqual(actionDict[0].ContinuousActions[1], 2);
+            Assert.AreEqual(actionDict[0].ContinuousActions[2], 3);
 
-            Assert.AreEqual(actionDict[1][0], 4);
-            Assert.AreEqual(actionDict[1][1], 5);
-            Assert.AreEqual(actionDict[1][2], 6);
+            Assert.AreEqual(actionDict[1].ContinuousActions[0], 4);
+            Assert.AreEqual(actionDict[1].ContinuousActions[1], 5);
+            Assert.AreEqual(actionDict[1].ContinuousActions[2], 6);
         }
 
         [Test]
         public void ApplyDiscreteActionOutput()
         {
+            var actionSpec = ActionSpec.MakeDiscrete(2, 3);
             var inputTensor = new TensorProxy()
             {
                 shape = new long[] { 2, 5 },
@@ -63,20 +64,63 @@ namespace Unity.MLAgents.Tests
                     new[] { 0.5f, 22.5f, 0.1f, 5f, 1f, 4f, 5f, 6f, 7f, 8f })
             };
             var alloc = new TensorCachingAllocator();
-            var applier = new DiscreteActionOutputApplier(new[] { 2, 3 }, 0, alloc);
+            var applier = new DiscreteActionOutputApplier(actionSpec, 0, alloc);
 
             var agentIds = new List<int>() { 0, 1 };
             // Dictionary from AgentId to Action
-            var actionDict = new Dictionary<int, float[]>() { { 0, null }, { 1, null } };
+            var actionDict = new Dictionary<int, ActionBuffers>() { { 0, ActionBuffers.Empty }, { 1, ActionBuffers.Empty } };
 
 
             applier.Apply(inputTensor, agentIds, actionDict);
 
-            Assert.AreEqual(actionDict[0][0], 1);
-            Assert.AreEqual(actionDict[0][1], 1);
+            Assert.AreEqual(actionDict[0].DiscreteActions[0], 1);
+            Assert.AreEqual(actionDict[0].DiscreteActions[1], 1);
 
-            Assert.AreEqual(actionDict[1][0], 1);
-            Assert.AreEqual(actionDict[1][1], 2);
+            Assert.AreEqual(actionDict[1].DiscreteActions[0], 1);
+            Assert.AreEqual(actionDict[1].DiscreteActions[1], 2);
+            alloc.Dispose();
+        }
+
+        [Test]
+        public void ApplyHybridActionOutput()
+        {
+            var actionSpec = new ActionSpec(3, new[] { 2, 3 });
+            var continuousInputTensor = new TensorProxy()
+            {
+                shape = new long[] { 2, 3 },
+                data = new Tensor(2, 3, new float[] { 1, 2, 3, 4, 5, 6 })
+            };
+            var discreteInputTensor = new TensorProxy()
+            {
+                shape = new long[] { 2, 8 },
+                data = new Tensor(
+                    2,
+                    5,
+                    new[] { 0.5f, 22.5f, 0.1f, 5f, 1f, 4f, 5f, 6f, 7f, 8f })
+            };
+            var continuousApplier = new ContinuousActionOutputApplier(actionSpec);
+            var alloc = new TensorCachingAllocator();
+            var discreteApplier = new DiscreteActionOutputApplier(actionSpec, 0, alloc);
+
+            var agentIds = new List<int>() { 0, 1 };
+            // Dictionary from AgentId to Action
+            var actionDict = new Dictionary<int, ActionBuffers>() { { 0, ActionBuffers.Empty }, { 1, ActionBuffers.Empty } };
+
+
+            continuousApplier.Apply(continuousInputTensor, agentIds, actionDict);
+            discreteApplier.Apply(discreteInputTensor, agentIds, actionDict);
+
+            Assert.AreEqual(actionDict[0].ContinuousActions[0], 1);
+            Assert.AreEqual(actionDict[0].ContinuousActions[1], 2);
+            Assert.AreEqual(actionDict[0].ContinuousActions[2], 3);
+            Assert.AreEqual(actionDict[0].DiscreteActions[0], 1);
+            Assert.AreEqual(actionDict[0].DiscreteActions[1], 1);
+
+            Assert.AreEqual(actionDict[1].ContinuousActions[0], 4);
+            Assert.AreEqual(actionDict[1].ContinuousActions[1], 5);
+            Assert.AreEqual(actionDict[1].ContinuousActions[2], 6);
+            Assert.AreEqual(actionDict[1].DiscreteActions[0], 1);
+            Assert.AreEqual(actionDict[1].DiscreteActions[1], 2);
             alloc.Dispose();
         }
     }

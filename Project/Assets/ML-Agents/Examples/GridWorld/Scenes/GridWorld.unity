@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44971168, g: 0.4997775, b: 0.57563686, a: 1}
+  m_IndirectSpecularColor: {r: 0.4497121, g: 0.49977785, b: 0.57563704, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -296,7 +296,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 100
   hasUpgradedFromAgentParameters: 1
-  maxStep: 100
+  MaxStep: 100
   area: {fileID: 1795599557}
   timeBetweenDecisionsAtInference: 0.15
   renderCamera: {fileID: 797520692}
@@ -337,17 +337,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 0
-    numStackedVectorObservations: 1
-    vectorActionSize: 05000000
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 0
+    VectorObservationSize: 0
+    NumStackedVectorObservations: 1
+    m_ActionSpec:
+      m_NumContinuousActions: 0
+      BranchSizes: 05000000
+    VectorActionSize: 05000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
+    hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: a812f1ce7763a4a0c912717f3594fe20, type: 3}
-  m_InferenceDevice: 0
+  m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: GridWorld
   TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_ObservableAttributeHandling: 0
 --- !u!114 &125487791
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,6 +369,7 @@ MonoBehaviour:
   m_RenderTexture: {fileID: 8400000, guid: 114608d5384404f89bff4b6f88432958, type: 2}
   m_SensorName: RenderTextureSensor
   m_Grayscale: 0
+  m_ObservationStacks: 1
   m_Compression: 1
 --- !u!1 &260425459
 GameObject:
@@ -2072,6 +2079,7 @@ MonoBehaviour:
   trueAgent: {fileID: 125487785}
   goalPref: {fileID: 1508142483324970, guid: 1ec4e4e96e7514d45b7ebc3ba5a9a481, type: 3}
   pitPref: {fileID: 1811317785436014, guid: d13ee2db77b3a4dcc8664d2fe2a0f219, type: 3}
+  numberOfObstacles: 1
 --- !u!4 &1795599558
 Transform:
   m_ObjectHideFlags: 0

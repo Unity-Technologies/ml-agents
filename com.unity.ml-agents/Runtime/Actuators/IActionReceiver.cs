@@ -62,12 +62,69 @@ namespace Unity.MLAgents.Actuators
         }
 
         /// <summary>
+        /// Construct an <see cref="ActionBuffers"/> instance with <see cref="ActionSpec"/>. All values are initialized to zeros.
+        /// /// </summary>
+        /// <param name="actionSpec">The <see cref="ActionSpec"/>  to send to an <see cref="IActionReceiver"/>.</param>
+        public ActionBuffers(ActionSpec actionSpec)
+            : this(new ActionSegment<float>(new float[actionSpec.NumContinuousActions]),
+            new ActionSegment<int>(new int[actionSpec.NumDiscreteActions]))
+        { }
+
+        /// <summary>
+        /// Create an <see cref="ActionBuffers"/> instance with ActionSpec and all actions stored as a float array.
+        /// </summary>
+        /// <param name="actionSpec"><see cref="ActionSpec"/> of the <see cref="ActionBuffers"/></param>
+        /// <param name="actions">The float array of all actions, including discrete and continuous actions.</param>
+        /// <returns>An <see cref="ActionBuffers"/> instance initialized with a <see cref="ActionSpec"/> and a float array.</returns>
+        internal static ActionBuffers FromActionSpec(ActionSpec actionSpec, float[] actions)
+        {
+            if (actions == null)
+            {
+                return ActionBuffers.Empty;
+            }
+
+            Debug.Assert(actions.Length == actionSpec.NumContinuousActions + actionSpec.NumDiscreteActions,
+                $"The length of '{nameof(actions)}' does not match the total size of ActionSpec.\n" +
+                $"{nameof(actions)}.Length: {actions.Length}\n" +
+                $"{nameof(actionSpec)}: {actionSpec.NumContinuousActions + actionSpec.NumDiscreteActions}");
+
+            ActionSegment<float> continuousActionSegment = ActionSegment<float>.Empty;
+            ActionSegment<int> discreteActionSegment = ActionSegment<int>.Empty;
+            int offset = 0;
+            if (actionSpec.NumContinuousActions > 0)
+            {
+                continuousActionSegment = new ActionSegment<float>(actions, 0, actionSpec.NumContinuousActions);
+                offset += actionSpec.NumContinuousActions;
+            }
+            if (actionSpec.NumDiscreteActions > 0)
+            {
+                int[] discreteActions = new int[actionSpec.NumDiscreteActions];
+                for (var i = 0; i < actionSpec.NumDiscreteActions; i++)
+                {
+                    discreteActions[i] = (int)actions[i + offset];
+                }
+                discreteActionSegment = new ActionSegment<int>(discreteActions);
+            }
+
+            return new ActionBuffers(continuousActionSegment, discreteActionSegment);
+        }
+
+        /// <summary>
         /// Clear the <see cref="ContinuousActions"/> and <see cref="DiscreteActions"/> segments to be all zeros.
         /// </summary>
         public void Clear()
         {
             ContinuousActions.Clear();
             DiscreteActions.Clear();
+        }
+
+        /// <summary>
+        /// Check if the <see cref="ActionBuffers"/> is empty.
+        /// </summary>
+        /// <returns>Whether the buffers are empty.</returns>
+        public bool IsEmpty()
+        {
+            return ContinuousActions.IsEmpty() && DiscreteActions.IsEmpty();
         }
 
         /// <inheritdoc/>
@@ -100,6 +157,7 @@ namespace Unity.MLAgents.Actuators
         /// <param name="destination">A float array to pack actions into whose length is greater than or
         /// equal to the addition of the Lengths of this objects <see cref="ContinuousActions"/> and
         /// <see cref="DiscreteActions"/> segments.</param>
+        [Obsolete("PackActions has been deprecated.")]
         public void PackActions(in float[] destination)
         {
             Debug.Assert(destination.Length >= ContinuousActions.Length + DiscreteActions.Length,
@@ -160,7 +218,7 @@ namespace Unity.MLAgents.Actuators
         ///
         /// See [Agents - Actions] for more information on masking actions.
         ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_8_docs/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         void WriteDiscreteActionMask(IDiscreteActionMask actionMask);

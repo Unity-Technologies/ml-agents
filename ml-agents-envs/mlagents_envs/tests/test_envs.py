@@ -2,7 +2,7 @@ from unittest import mock
 import pytest
 
 from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.base_env import DecisionSteps, TerminalSteps
+from mlagents_envs.base_env import DecisionSteps, TerminalSteps, ActionTuple
 from mlagents_envs.exception import UnityEnvironmentException, UnityActionException
 from mlagents_envs.mock_communicator import MockCommunicator
 
@@ -72,14 +72,14 @@ def test_reset(mock_communicator, mock_launcher):
     env.close()
     assert isinstance(decision_steps, DecisionSteps)
     assert isinstance(terminal_steps, TerminalSteps)
-    assert len(spec.observation_shapes) == len(decision_steps.obs)
-    assert len(spec.observation_shapes) == len(terminal_steps.obs)
+    assert len(spec.observation_specs) == len(decision_steps.obs)
+    assert len(spec.observation_specs) == len(terminal_steps.obs)
     n_agents = len(decision_steps)
-    for shape, obs in zip(spec.observation_shapes, decision_steps.obs):
-        assert (n_agents,) + shape == obs.shape
+    for sen_spec, obs in zip(spec.observation_specs, decision_steps.obs):
+        assert (n_agents,) + sen_spec.shape == obs.shape
     n_agents = len(terminal_steps)
-    for shape, obs in zip(spec.observation_shapes, terminal_steps.obs):
-        assert (n_agents,) + shape == obs.shape
+    for sen_spec, obs in zip(spec.observation_specs, terminal_steps.obs):
+        assert (n_agents,) + sen_spec.shape == obs.shape
 
 
 @mock.patch("mlagents_envs.env_utils.launch_executable")
@@ -99,16 +99,18 @@ def test_step(mock_communicator, mock_launcher):
         env.set_actions("RealFakeBrain", spec.action_spec.empty_action(n_agents - 1))
     decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
     n_agents = len(decision_steps)
-    env.set_actions("RealFakeBrain", spec.action_spec.empty_action(n_agents) - 1)
+    _empty_act = spec.action_spec.empty_action(n_agents)
+    next_action = ActionTuple(_empty_act.continuous - 1, _empty_act.discrete - 1)
+    env.set_actions("RealFakeBrain", next_action)
     env.step()
 
     env.close()
     assert isinstance(decision_steps, DecisionSteps)
     assert isinstance(terminal_steps, TerminalSteps)
-    assert len(spec.observation_shapes) == len(decision_steps.obs)
-    assert len(spec.observation_shapes) == len(terminal_steps.obs)
-    for shape, obs in zip(spec.observation_shapes, decision_steps.obs):
-        assert (n_agents,) + shape == obs.shape
+    assert len(spec.observation_specs) == len(decision_steps.obs)
+    assert len(spec.observation_specs) == len(terminal_steps.obs)
+    for spec, obs in zip(spec.observation_specs, decision_steps.obs):
+        assert (n_agents,) + spec.shape == obs.shape
     assert 0 in decision_steps
     assert 2 in terminal_steps
 

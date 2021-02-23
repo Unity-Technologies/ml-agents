@@ -17,14 +17,15 @@ from mlagents.trainers.settings import (
     GAILSettings,
     RewardSignalType,
     EncoderType,
-    FrameworkType,
 )
 
 from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
     DemonstrationMetaProto,
 )
-from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
-from mlagents_envs.communicator_objects.space_type_pb2 import discrete, continuous
+from mlagents_envs.communicator_objects.brain_parameters_pb2 import (
+    BrainParametersProto,
+    ActionSpecProto,
+)
 
 from mlagents.trainers.tests.dummy_config import ppo_dummy_config, sac_dummy_config
 from mlagents.trainers.tests.check_env_trains import (
@@ -34,22 +35,23 @@ from mlagents.trainers.tests.check_env_trains import (
 
 BRAIN_NAME = "1D"
 
-PPO_TORCH_CONFIG = attr.evolve(ppo_dummy_config(), framework=FrameworkType.PYTORCH)
-SAC_TORCH_CONFIG = attr.evolve(sac_dummy_config(), framework=FrameworkType.PYTORCH)
+PPO_TORCH_CONFIG = ppo_dummy_config()
+SAC_TORCH_CONFIG = sac_dummy_config()
+
+# tests in this file won't be tested on GPU machine
+pytestmark = pytest.mark.check_environment_trains
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_ppo(use_discrete):
-    env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+def test_simple_ppo(action_sizes):
+    env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_sizes)
     config = attr.evolve(PPO_TORCH_CONFIG)
     check_environment_trains(env, {BRAIN_NAME: config})
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_2d_ppo(use_discrete):
-    env = SimpleEnvironment(
-        [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8
-    )
+@pytest.mark.parametrize("action_sizes", [(0, 2), (2, 0)])
+def test_2d_ppo(action_sizes):
+    env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_sizes, step_size=0.8)
     new_hyperparams = attr.evolve(
         PPO_TORCH_CONFIG.hyperparameters, batch_size=64, buffer_size=640
     )
@@ -59,14 +61,34 @@ def test_2d_ppo(use_discrete):
     check_environment_trains(env, {BRAIN_NAME: config})
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 @pytest.mark.parametrize("num_visual", [1, 2])
-def test_visual_ppo(num_visual, use_discrete):
+def test_visual_ppo(num_visual, action_sizes):
     env = SimpleEnvironment(
         [BRAIN_NAME],
-        use_discrete=use_discrete,
+        action_sizes=action_sizes,
         num_visual=num_visual,
         num_vector=0,
+        step_size=0.2,
+    )
+    new_hyperparams = attr.evolve(
+        PPO_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4
+    )
+    config = attr.evolve(PPO_TORCH_CONFIG, hyperparameters=new_hyperparams)
+    check_environment_trains(env, {BRAIN_NAME: config})
+
+
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+@pytest.mark.parametrize("num_var_len", [1, 2])
+@pytest.mark.parametrize("num_vector", [0, 1])
+@pytest.mark.parametrize("num_vis", [0, 1])
+def test_var_len_obs_ppo(num_vis, num_vector, num_var_len, action_sizes):
+    env = SimpleEnvironment(
+        [BRAIN_NAME],
+        action_sizes=action_sizes,
+        num_visual=num_vis,
+        num_vector=num_vector,
+        num_var_len=num_var_len,
         step_size=0.2,
     )
     new_hyperparams = attr.evolve(
@@ -81,7 +103,7 @@ def test_visual_ppo(num_visual, use_discrete):
 def test_visual_advanced_ppo(vis_encode_type, num_visual):
     env = SimpleEnvironment(
         [BRAIN_NAME],
-        use_discrete=True,
+        action_sizes=(0, 1),
         num_visual=num_visual,
         num_vector=0,
         step_size=0.5,
@@ -104,9 +126,9 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.5)
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_recurrent_ppo(use_discrete):
-    env = MemoryEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+def test_recurrent_ppo(action_sizes):
+    env = MemoryEnvironment([BRAIN_NAME], action_sizes=action_sizes)
     new_network_settings = attr.evolve(
         PPO_TORCH_CONFIG.network_settings,
         memory=NetworkSettings.MemorySettings(memory_size=16),
@@ -121,39 +143,55 @@ def test_recurrent_ppo(use_discrete):
         PPO_TORCH_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_network_settings,
-        max_steps=5000,
+        max_steps=6000,
     )
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_sac(use_discrete):
-    env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+def test_simple_sac(action_sizes):
+    env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_sizes)
     config = attr.evolve(SAC_TORCH_CONFIG)
     check_environment_trains(env, {BRAIN_NAME: config})
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_2d_sac(use_discrete):
-    env = SimpleEnvironment(
-        [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8
-    )
+@pytest.mark.parametrize("action_sizes", [(0, 2), (2, 0)])
+def test_2d_sac(action_sizes):
+    env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_sizes, step_size=0.8)
     new_hyperparams = attr.evolve(
         SAC_TORCH_CONFIG.hyperparameters, buffer_init_steps=2000
     )
     config = attr.evolve(
-        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=10000
+        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=6000
     )
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.8)
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 @pytest.mark.parametrize("num_visual", [1, 2])
-def test_visual_sac(num_visual, use_discrete):
+def test_visual_sac(num_visual, action_sizes):
     env = SimpleEnvironment(
         [BRAIN_NAME],
-        use_discrete=use_discrete,
+        action_sizes=action_sizes,
         num_visual=num_visual,
+        num_vector=0,
+        step_size=0.2,
+    )
+    new_hyperparams = attr.evolve(
+        SAC_TORCH_CONFIG.hyperparameters, batch_size=16, learning_rate=3e-4
+    )
+    config = attr.evolve(SAC_TORCH_CONFIG, hyperparameters=new_hyperparams)
+    check_environment_trains(env, {BRAIN_NAME: config})
+
+
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+@pytest.mark.parametrize("num_var_len", [1, 2])
+def test_var_len_obs_sac(num_var_len, action_sizes):
+    env = SimpleEnvironment(
+        [BRAIN_NAME],
+        action_sizes=action_sizes,
+        num_visual=0,
+        num_var_len=num_var_len,
         num_vector=0,
         step_size=0.2,
     )
@@ -169,7 +207,7 @@ def test_visual_sac(num_visual, use_discrete):
 def test_visual_advanced_sac(vis_encode_type, num_visual):
     env = SimpleEnvironment(
         [BRAIN_NAME],
-        use_discrete=True,
+        action_sizes=(0, 1),
         num_visual=num_visual,
         num_vector=0,
         step_size=0.5,
@@ -194,11 +232,11 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.5)
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_recurrent_sac(use_discrete):
-    step_size = 0.2 if use_discrete else 0.5
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+def test_recurrent_sac(action_sizes):
+    step_size = 0.2 if action_sizes == (0, 1) else 0.5
     env = MemoryEnvironment(
-        [BRAIN_NAME], use_discrete=use_discrete, step_size=step_size
+        [BRAIN_NAME], action_sizes=action_sizes, step_size=step_size
     )
     new_networksettings = attr.evolve(
         SAC_TORCH_CONFIG.network_settings,
@@ -207,7 +245,7 @@ def test_recurrent_sac(use_discrete):
     new_hyperparams = attr.evolve(
         SAC_TORCH_CONFIG.hyperparameters,
         batch_size=256,
-        learning_rate=1e-3,
+        learning_rate=1e-4,
         buffer_init_steps=1000,
         steps_per_update=2,
     )
@@ -215,15 +253,15 @@ def test_recurrent_sac(use_discrete):
         SAC_TORCH_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=2000,
+        max_steps=4000,
     )
-    check_environment_trains(env, {BRAIN_NAME: config})
+    check_environment_trains(env, {BRAIN_NAME: config}, training_seed=1213)
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_ghost(use_discrete):
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+def test_simple_ghost(action_sizes):
     env = SimpleEnvironment(
-        [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], use_discrete=use_discrete
+        [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], action_sizes=action_sizes
     )
     self_play_settings = SelfPlaySettings(
         play_against_latest_model_ratio=1.0, save_steps=2000, swap_steps=2000
@@ -232,10 +270,10 @@ def test_simple_ghost(use_discrete):
     check_environment_trains(env, {BRAIN_NAME: config})
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_ghost_fails(use_discrete):
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+def test_simple_ghost_fails(action_sizes):
     env = SimpleEnvironment(
-        [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], use_discrete=use_discrete
+        [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], action_sizes=action_sizes
     )
     # This config should fail because the ghosted policy is never swapped with a competent policy.
     # Swap occurs after max step is reached.
@@ -253,12 +291,12 @@ def test_simple_ghost_fails(use_discrete):
     )
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_asymm_ghost(use_discrete):
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+def test_simple_asymm_ghost(action_sizes):
     # Make opponent for asymmetric case
     brain_name_opp = BRAIN_NAME + "Opp"
     env = SimpleEnvironment(
-        [BRAIN_NAME + "?team=0", brain_name_opp + "?team=1"], use_discrete=use_discrete
+        [BRAIN_NAME + "?team=0", brain_name_opp + "?team=1"], action_sizes=action_sizes
     )
     self_play_settings = SelfPlaySettings(
         play_against_latest_model_ratio=1.0,
@@ -270,12 +308,12 @@ def test_simple_asymm_ghost(use_discrete):
     check_environment_trains(env, {BRAIN_NAME: config, brain_name_opp: config})
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_asymm_ghost_fails(use_discrete):
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+def test_simple_asymm_ghost_fails(action_sizes):
     # Make opponent for asymmetric case
     brain_name_opp = BRAIN_NAME + "Opp"
     env = SimpleEnvironment(
-        [BRAIN_NAME + "?team=0", brain_name_opp + "?team=1"], use_discrete=use_discrete
+        [BRAIN_NAME + "?team=0", brain_name_opp + "?team=1"], action_sizes=action_sizes
     )
     # This config should fail because the team that us not learning when both have reached
     # max step should be executing the initial, untrained poliy.
@@ -300,10 +338,10 @@ def test_simple_asymm_ghost_fails(use_discrete):
 
 @pytest.fixture(scope="session")
 def simple_record(tmpdir_factory):
-    def record_demo(use_discrete, num_visual=0, num_vector=1):
+    def record_demo(action_sizes, num_visual=0, num_vector=1):
         env = RecordEnvironment(
             [BRAIN_NAME],
-            use_discrete=use_discrete,
+            action_sizes=action_sizes,
             num_visual=num_visual,
             num_vector=num_vector,
             n_demos=100,
@@ -313,14 +351,16 @@ def simple_record(tmpdir_factory):
         env.solve()
         agent_info_protos = env.demonstration_protos[BRAIN_NAME]
         meta_data_proto = DemonstrationMetaProto()
-        brain_param_proto = BrainParametersProto(
-            vector_action_size=[2] if use_discrete else [1],
-            vector_action_descriptions=[""],
-            vector_action_space_type=discrete if use_discrete else continuous,
-            brain_name=BRAIN_NAME,
-            is_training=True,
+        continuous_action_size, discrete_action_size = action_sizes
+        action_spec_proto = ActionSpecProto(
+            num_continuous_actions=continuous_action_size,
+            num_discrete_actions=discrete_action_size,
+            discrete_branch_sizes=[2] if discrete_action_size > 0 else None,
         )
-        action_type = "Discrete" if use_discrete else "Continuous"
+        brain_param_proto = BrainParametersProto(
+            brain_name=BRAIN_NAME, is_training=True, action_spec=action_spec_proto
+        )
+        action_type = "Discrete" if action_sizes else "Continuous"
         demo_path_name = "1DTest" + action_type + ".demo"
         demo_path = str(tmpdir_factory.mktemp("tmp_demo").join(demo_path_name))
         write_demo(demo_path, meta_data_proto, brain_param_proto, agent_info_protos)
@@ -329,11 +369,11 @@ def simple_record(tmpdir_factory):
     return record_demo
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 @pytest.mark.parametrize("trainer_config", [PPO_TORCH_CONFIG, SAC_TORCH_CONFIG])
-def test_gail(simple_record, use_discrete, trainer_config):
-    demo_path = simple_record(use_discrete)
-    env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete, step_size=0.2)
+def test_gail(simple_record, action_sizes, trainer_config):
+    demo_path = simple_record(action_sizes)
+    env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_sizes, step_size=0.2)
     bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1000)
     reward_signals = {
         RewardSignalType.GAIL: GAILSettings(encoding_size=32, demo_path=demo_path)
@@ -347,21 +387,21 @@ def test_gail(simple_record, use_discrete, trainer_config):
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_gail_visual_ppo(simple_record, use_discrete):
-    demo_path = simple_record(use_discrete, num_visual=1, num_vector=0)
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+def test_gail_visual_ppo(simple_record, action_sizes):
+    demo_path = simple_record(action_sizes, num_visual=1, num_vector=0)
     env = SimpleEnvironment(
         [BRAIN_NAME],
         num_visual=1,
         num_vector=0,
-        use_discrete=use_discrete,
+        action_sizes=action_sizes,
         step_size=0.2,
     )
     bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1500)
     reward_signals = {
         RewardSignalType.GAIL: GAILSettings(encoding_size=32, demo_path=demo_path)
     }
-    hyperparams = attr.evolve(PPO_TORCH_CONFIG.hyperparameters, learning_rate=3e-4)
+    hyperparams = attr.evolve(PPO_TORCH_CONFIG.hyperparameters, learning_rate=5e-3)
     config = attr.evolve(
         PPO_TORCH_CONFIG,
         reward_signals=reward_signals,
@@ -372,14 +412,14 @@ def test_gail_visual_ppo(simple_record, use_discrete):
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_gail_visual_sac(simple_record, use_discrete):
-    demo_path = simple_record(use_discrete, num_visual=1, num_vector=0)
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+def test_gail_visual_sac(simple_record, action_sizes):
+    demo_path = simple_record(action_sizes, num_visual=1, num_vector=0)
     env = SimpleEnvironment(
         [BRAIN_NAME],
         num_visual=1,
         num_vector=0,
-        use_discrete=use_discrete,
+        action_sizes=action_sizes,
         step_size=0.2,
     )
     bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1000)

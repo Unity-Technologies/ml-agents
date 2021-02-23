@@ -2,11 +2,15 @@ import os
 import shutil
 import subprocess
 import yaml
-from typing import List, Optional
+from sys import platform
+from typing import List, Optional, Mapping
 
 
 def get_unity_executable_path():
-    downloader_install_path = "./.Editor/Unity.app/Contents/MacOS/Unity"
+    if platform == "darwin":
+        downloader_install_path = "./.Editor/Unity.app/Contents/MacOS/Unity"
+    else:  # if platform == "linux":
+        downloader_install_path = "./.Editor/Unity"
     if os.path.exists(downloader_install_path):
         return downloader_install_path
     raise FileNotFoundError("Can't find executable from unity-downloader-cli")
@@ -31,14 +35,25 @@ def run_standalone_build(
     verbose: bool = False,
     output_path: str = None,
     scene_path: str = None,
-    log_output_path: str = f"{get_base_output_path()}/standalone_build.txt",
+    build_target: str = None,
+    log_output_path: Optional[str] = f"{get_base_output_path()}/standalone_build.txt",
 ) -> int:
     """
     Run BuildStandalonePlayerOSX test to produce a player. The location defaults to
-    artifacts/standalone_build/testPlayer.
+    artifacts/standalonebuild/testPlayer.
     """
     unity_exe = get_unity_executable_path()
-    print(f"Running BuildStandalonePlayerOSX via {unity_exe}")
+    print(f"Running BuildStandalonePlayer via {unity_exe}")
+
+    # enum values from https://docs.unity3d.com/2019.4/Documentation/ScriptReference/BuildTarget.html
+    build_target_to_enum: Mapping[Optional[str], str] = {
+        "mac": "StandaloneOSX",
+        "osx": "StandaloneOSX",
+        "linux": "StandaloneLinux64",
+    }
+    # Convert the short name to the official enum
+    # Just pass through if it's not on the list.
+    build_target_enum = build_target_to_enum.get(build_target, build_target)
 
     test_args = [
         unity_exe,
@@ -49,9 +64,13 @@ def run_standalone_build(
         "Unity.MLAgents.StandaloneBuildTest.BuildStandalonePlayerOSX",
     ]
 
-    os.makedirs(os.path.dirname(log_output_path), exist_ok=True)
-    subprocess.run(["touch", log_output_path])
-    test_args += ["-logfile", log_output_path]
+    if log_output_path:
+        os.makedirs(os.path.dirname(log_output_path), exist_ok=True)
+        subprocess.run(["touch", log_output_path])
+        test_args += ["-logfile", log_output_path]
+    else:
+        # Log to stdout
+        test_args += ["-logfile", "-"]
 
     if output_path is not None:
         output_path = os.path.join(get_base_output_path(), output_path)
@@ -59,6 +78,8 @@ def run_standalone_build(
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
     if scene_path is not None:
         test_args += ["--mlagents-build-scene-path", scene_path]
+    if build_target_enum is not None:
+        test_args += ["--mlagents-build-target", build_target_enum]
     print(f"{' '.join(test_args)} ...")
 
     timeout = 30 * 60  # 30 minutes, just in case
@@ -66,14 +87,16 @@ def run_standalone_build(
 
     # Copy the default build name into the artifacts folder.
     if output_path is None and res.returncode == 0:
+        exe_name = "testPlayer.app" if platform == "darwin" else "testPlayer"
         shutil.move(
-            os.path.join(base_path, "Project", "testPlayer.app"),
-            os.path.join(get_base_output_path(), "testPlayer.app"),
+            os.path.join(base_path, "Project", exe_name),
+            os.path.join(get_base_output_path(), exe_name),
         )
 
     # Print if we fail or want verbosity.
     if verbose or res.returncode != 0:
-        subprocess.run(["cat", log_output_path])
+        if log_output_path:
+            subprocess.run(["cat", log_output_path])
 
     return res.returncode
 
@@ -93,50 +116,45 @@ def find_executables(root_dir: str) -> List[str]:
             file_path = os.path.join(root, filename)
             if os.access(file_path, os.X_OK):
                 exes.append(file_path)
+    # Also check the input path
+    if os.access(root_dir, os.X_OK):
+        exes.append(root_dir)
     return exes
 
 
 def init_venv(
     mlagents_python_version: str = None, extra_packages: Optional[List[str]] = None
-) -> str:
+) -> None:
     """
-    Set up the virtual environment, and return the venv path.
+    Install the necessary packages for the venv
     :param mlagents_python_version: The version of mlagents python packcage to install.
         If None, will do a local install, otherwise will install from pypi
     :return:
     """
-    # Use a different venv path for different versions
-    venv_path = "venv"
-    if mlagents_python_version:
-        venv_path += "_" + mlagents_python_version
-
-    # Set up the venv and install mlagents
-    subprocess.check_call(f"python -m venv {venv_path}", shell=True)
-    pip_commands = [
-        "--upgrade pip",
-        "--upgrade setuptools",
-        # TODO build these and publish to internal pypi
-        "~/tensorflow_pkg/tensorflow-2.0.0-cp37-cp37m-macosx_10_14_x86_64.whl",
-        "tf2onnx==1.6.1",
-    ]
+    pip_commands = ["--upgrade pip", "--upgrade setuptools"]
     if mlagents_python_version:
         # install from pypi
+        if platform != "darwin":
+            raise RuntimeError("Yamato can only run tensorflow on mac platforms!")
         pip_commands += [
             f"mlagents=={mlagents_python_version}",
             f"gym-unity=={mlagents_python_version}",
+            # TODO build these and publish to internal pypi
+            "~/tensorflow_pkg/tensorflow-2.0.0-cp37-cp37m-macosx_10_14_x86_64.whl",
+            "tf2onnx==1.6.1",
         ]
     else:
         # Local install
         pip_commands += ["-e ./ml-agents-envs", "-e ./ml-agents", "-e ./gym-unity"]
     if extra_packages:
         pip_commands += extra_packages
+
     for cmd in pip_commands:
         pip_index_url = "--index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple"
+        print(f'Running "python3 -m pip install -q {cmd} {pip_index_url}"')
         subprocess.check_call(
-            f"source {venv_path}/bin/activate; python -m pip install -q {cmd} {pip_index_url}",
-            shell=True,
+            f"python3 -m pip install -q {cmd} {pip_index_url}", shell=True
         )
-    return venv_path
 
 
 def checkout_csharp_version(csharp_version):

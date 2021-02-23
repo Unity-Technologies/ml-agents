@@ -38,6 +38,10 @@ namespace Unity.MLAgents.Sensors
             {
                 m_TensorShape = new TensorShape(m_Batch, shape[0]);
             }
+            else if (shape.Length == 2)
+            {
+                m_TensorShape = new TensorShape(new[] { m_Batch, 1, shape[0], shape[1] });
+            }
             else
             {
                 m_TensorShape = new TensorShape(m_Batch, shape[0], shape[1], shape[2]);
@@ -60,7 +64,7 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
-        /// 1D write access at a specified index. Use AddRange if possible instead.
+        /// 1D write access at a specified index. Use AddList if possible instead.
         /// </summary>
         /// <param name="index">Index to write to.</param>
         public float this[int index]
@@ -118,6 +122,7 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         /// <param name="data"></param>
         /// <param name="writeOffset">Optional write offset.</param>
+        [Obsolete("Use AddList() for better performance")]
         public void AddRange(IEnumerable<float> data, int writeOffset = 0)
         {
             if (m_Data != null)
@@ -136,6 +141,27 @@ namespace Unity.MLAgents.Sensors
                 {
                     m_Proxy.data[m_Batch, index + m_Offset + writeOffset] = val;
                     index++;
+                }
+            }
+        }
+
+        public void AddList(IList<float> data, int writeOffset = 0)
+        {
+            if (m_Data != null)
+            {
+                for (var index = 0; index < data.Count; index++)
+                {
+                    var val = data[index];
+                    m_Data[index + m_Offset + writeOffset] = val;
+
+                }
+            }
+            else
+            {
+                for (var index = 0; index < data.Count; index++)
+                {
+                    var val = data[index];
+                    m_Proxy.data[m_Batch, index + m_Offset + writeOffset] = val;
                 }
             }
         }
@@ -209,9 +235,11 @@ namespace Unity.MLAgents.Sensors
         }
     }
 
+    /// <summary>
+    /// Provides extension methods for the ObservationWriter.
+    /// </summary>
     public static class ObservationWriterExtension
     {
-
         /// <summary>
         /// Writes a Texture2D into a ObservationWriter.
         /// </summary>

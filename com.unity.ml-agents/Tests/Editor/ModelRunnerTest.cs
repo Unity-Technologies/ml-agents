@@ -5,7 +5,6 @@ using UnityEditor;
 using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
-using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
 
 namespace Unity.MLAgents.Tests
@@ -13,10 +12,16 @@ namespace Unity.MLAgents.Tests
     [TestFixture]
     public class ModelRunnerTest
     {
-        const string k_continuous2vis8vec2actionPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action.nn";
-        const string k_discrete1vis0vec_2_3action_recurrModelPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_recurr.nn";
-        NNModel continuous2vis8vec2actionModel;
-        NNModel discrete1vis0vec_2_3action_recurrModel;
+        const string k_continuousONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action.onnx";
+        const string k_discreteONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_recurr.onnx";
+        const string k_hybridONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/hybrid0vis53vec_3c_2daction.onnx";
+        const string k_continuousNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action_deprecated.nn";
+        const string k_discreteNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_recurr_deprecated.nn";
+        NNModel continuousONNXModel;
+        NNModel discreteONNXModel;
+        NNModel hybridONNXModel;
+        NNModel continuousNNModel;
+        NNModel discreteNNModel;
         Test3DSensorComponent sensor_21_20_3;
         Test3DSensorComponent sensor_20_22_3;
 
@@ -30,11 +35,19 @@ namespace Unity.MLAgents.Tests
             return ActionSpec.MakeDiscrete(2, 3);
         }
 
+        ActionSpec GetHybrid0vis53vec_3c_2dActionSpec()
+        {
+            return new ActionSpec(3, new[] { 2 });
+        }
+
         [SetUp]
         public void SetUp()
         {
-            continuous2vis8vec2actionModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuous2vis8vec2actionPath, typeof(NNModel));
-            discrete1vis0vec_2_3action_recurrModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_discrete1vis0vec_2_3action_recurrModelPath, typeof(NNModel));
+            continuousONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(NNModel));
+            discreteONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_discreteONNXPath, typeof(NNModel));
+            hybridONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_hybridONNXPath, typeof(NNModel));
+            continuousNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuousNNPath, typeof(NNModel));
+            discreteNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_discreteNNPath, typeof(NNModel));
             var go = new GameObject("SensorA");
             sensor_21_20_3 = go.AddComponent<Test3DSensorComponent>();
             sensor_21_20_3.Sensor = new Test3DSensor("SensorA", 21, 20, 3);
@@ -45,26 +58,36 @@ namespace Unity.MLAgents.Tests
         [Test]
         public void TestModelExist()
         {
-            Assert.IsNotNull(continuous2vis8vec2actionModel);
-            Assert.IsNotNull(discrete1vis0vec_2_3action_recurrModel);
+            Assert.IsNotNull(continuousONNXModel);
+            Assert.IsNotNull(discreteONNXModel);
+            Assert.IsNotNull(hybridONNXModel);
+            Assert.IsNotNull(continuousNNModel);
+            Assert.IsNotNull(discreteNNModel);
         }
 
         [Test]
         public void TestCreation()
         {
-            var modelRunner = new ModelRunner(continuous2vis8vec2actionModel, GetContinuous2vis8vec2actionActionSpec());
+            var inferenceDevice = InferenceDevice.Burst;
+            var modelRunner = new ModelRunner(continuousONNXModel, GetContinuous2vis8vec2actionActionSpec(), inferenceDevice);
             modelRunner.Dispose();
-            modelRunner = new ModelRunner(discrete1vis0vec_2_3action_recurrModel, GetDiscrete1vis0vec_2_3action_recurrModelActionSpec());
+            modelRunner = new ModelRunner(discreteONNXModel, GetDiscrete1vis0vec_2_3action_recurrModelActionSpec(), inferenceDevice);
+            modelRunner.Dispose();
+            modelRunner = new ModelRunner(hybridONNXModel, GetHybrid0vis53vec_3c_2dActionSpec(), inferenceDevice);
+            modelRunner.Dispose();
+            modelRunner = new ModelRunner(continuousNNModel, GetContinuous2vis8vec2actionActionSpec(), inferenceDevice);
+            modelRunner.Dispose();
+            modelRunner = new ModelRunner(discreteNNModel, GetDiscrete1vis0vec_2_3action_recurrModelActionSpec(), inferenceDevice);
             modelRunner.Dispose();
         }
 
         [Test]
         public void TestHasModel()
         {
-            var modelRunner = new ModelRunner(continuous2vis8vec2actionModel, GetContinuous2vis8vec2actionActionSpec(), InferenceDevice.CPU);
-            Assert.True(modelRunner.HasModel(continuous2vis8vec2actionModel, InferenceDevice.CPU));
-            Assert.False(modelRunner.HasModel(continuous2vis8vec2actionModel, InferenceDevice.GPU));
-            Assert.False(modelRunner.HasModel(discrete1vis0vec_2_3action_recurrModel, InferenceDevice.CPU));
+            var modelRunner = new ModelRunner(continuousONNXModel, GetContinuous2vis8vec2actionActionSpec(), InferenceDevice.CPU);
+            Assert.True(modelRunner.HasModel(continuousONNXModel, InferenceDevice.CPU));
+            Assert.False(modelRunner.HasModel(continuousONNXModel, InferenceDevice.GPU));
+            Assert.False(modelRunner.HasModel(discreteONNXModel, InferenceDevice.CPU));
             modelRunner.Dispose();
         }
 
@@ -72,7 +95,7 @@ namespace Unity.MLAgents.Tests
         public void TestRunModel()
         {
             var actionSpec = GetDiscrete1vis0vec_2_3action_recurrModelActionSpec();
-            var modelRunner = new ModelRunner(discrete1vis0vec_2_3action_recurrModel, actionSpec);
+            var modelRunner = new ModelRunner(discreteONNXModel, actionSpec, InferenceDevice.Burst);
             var info1 = new AgentInfo();
             info1.episodeId = 1;
             modelRunner.PutObservations(info1, new[] { sensor_21_20_3.CreateSensor() }.ToList());
@@ -82,10 +105,10 @@ namespace Unity.MLAgents.Tests
 
             modelRunner.DecideBatch();
 
-            Assert.IsNotNull(modelRunner.GetAction(1));
-            Assert.IsNotNull(modelRunner.GetAction(2));
-            Assert.IsNull(modelRunner.GetAction(3));
-            Assert.AreEqual(actionSpec.NumDiscreteActions, modelRunner.GetAction(1).Count());
+            Assert.IsFalse(modelRunner.GetAction(1).Equals(ActionBuffers.Empty));
+            Assert.IsFalse(modelRunner.GetAction(2).Equals(ActionBuffers.Empty));
+            Assert.IsTrue(modelRunner.GetAction(3).Equals(ActionBuffers.Empty));
+            Assert.AreEqual(actionSpec.NumDiscreteActions, modelRunner.GetAction(1).DiscreteActions.Length);
             modelRunner.Dispose();
         }
     }

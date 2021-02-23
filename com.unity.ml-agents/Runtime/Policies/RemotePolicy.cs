@@ -1,8 +1,8 @@
-using UnityEngine;
 using System.Collections.Generic;
-using System;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Analytics;
 using Unity.MLAgents.Sensors;
+
 
 namespace Unity.MLAgents.Policies
 {
@@ -14,8 +14,9 @@ namespace Unity.MLAgents.Policies
     {
         int m_AgentId;
         string m_FullyQualifiedBehaviorName;
-        SpaceType m_SpaceType;
+        ActionSpec m_ActionSpec;
         ActionBuffers m_LastActionBuffer;
+        private bool m_AnalyticsSent = false;
 
         internal ICommunicator m_Communicator;
 
@@ -26,15 +27,22 @@ namespace Unity.MLAgents.Policies
         {
             m_FullyQualifiedBehaviorName = fullyQualifiedBehaviorName;
             m_Communicator = Academy.Instance.Communicator;
-            m_Communicator.SubscribeBrain(m_FullyQualifiedBehaviorName, actionSpec);
-
-            actionSpec.CheckNotHybrid();
-            m_SpaceType = actionSpec.NumContinuousActions > 0 ? SpaceType.Continuous : SpaceType.Discrete;
+            m_Communicator?.SubscribeBrain(m_FullyQualifiedBehaviorName, actionSpec);
+            m_ActionSpec = actionSpec;
         }
 
         /// <inheritdoc />
         public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
+            if (!m_AnalyticsSent)
+            {
+                m_AnalyticsSent = true;
+                TrainingAnalytics.RemotePolicyInitialized(
+                    m_FullyQualifiedBehaviorName,
+                    sensors,
+                    m_ActionSpec
+                );
+            }
             m_AgentId = info.episodeId;
             m_Communicator?.PutObservations(m_FullyQualifiedBehaviorName, info, sensors);
         }
@@ -44,13 +52,7 @@ namespace Unity.MLAgents.Policies
         {
             m_Communicator?.DecideBatch();
             var actions = m_Communicator?.GetActions(m_FullyQualifiedBehaviorName, m_AgentId);
-            // TODO figure out how to handle this with multiple space types.
-            if (m_SpaceType == SpaceType.Continuous)
-            {
-                m_LastActionBuffer = new ActionBuffers(actions, Array.Empty<int>());
-                return ref m_LastActionBuffer;
-            }
-            m_LastActionBuffer = ActionBuffers.FromDiscreteActions(actions);
+            m_LastActionBuffer = actions == null ? ActionBuffers.Empty : (ActionBuffers)actions;
             return ref m_LastActionBuffer;
         }
 

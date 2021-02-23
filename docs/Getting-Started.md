@@ -80,13 +80,13 @@ This means that the feature vector containing the Agent's observations contains
 eight elements: the `x` and `z` components of the agent cube's rotation and the
 `x`, `y`, and `z` components of the ball's relative position and velocity.
 
-#### Behavior Parameters : Vector Action Space
+#### Behavior Parameters : Actions
 
-An Agent is given instructions in the form of a float array of _actions_.
+An Agent is given instructions in the form of actions.
 ML-Agents Toolkit classifies actions into two types: continuous and discrete.
-The 3D Balance Ball example is programmed to use continuous action space which
-is a a vector of numbers that can vary continuously. More specifically, it uses
-a `Space Size` of 2 to control the amount of `x` and `z` rotations to apply to
+The 3D Balance Ball example is programmed to use continuous actions, which
+are a vector of floating-point numbers that can vary continuously. More specifically,
+it uses a `Space Size` of 2 to control the amount of `x` and `z` rotations to apply to
 itself to keep the ball balanced on its head.
 
 ## Running a pre-trained model
@@ -159,9 +159,6 @@ Unity brain name: 3DBallLearning
         Number of Visual Observations (per agent): 0
         Vector Observation space size (per agent): 8
         Number of stacked Vector Observation: 1
-        Vector Action space type: continuous
-        Vector Action space size (per agent): [2]
-        Vector Action descriptions: ,
 INFO:mlagents_envs:Hyperparameters for the PPO Trainer of brain 3DBallLearning:
         batch_size:          64
         beta:                0.001

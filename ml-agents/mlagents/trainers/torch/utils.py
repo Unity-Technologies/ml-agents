@@ -10,9 +10,9 @@ from mlagents.trainers.torch.encoders import (
     VectorInput,
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
+from mlagents.trainers.torch.attention import EntityEmbedding
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents_envs.base_env import ActionSpec
-from mlagents.trainers.torch.distributions import DistInstance, DiscreteDistInstance
+from mlagents_envs.base_env import ObservationSpec, DimensionProperty
 
 
 class ModelUtils:
@@ -25,28 +25,24 @@ class ModelUtils:
         EncoderType.RESNET: 15,
     }
 
-    class ActionFlattener:
-        def __init__(self, action_spec: ActionSpec):
-            self._specs = action_spec
+    VALID_VISUAL_PROP = frozenset(
+        [
+            (
+                DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
+                DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
+                DimensionProperty.NONE,
+            ),
+            (DimensionProperty.UNSPECIFIED,) * 3,
+        ]
+    )
 
-        @property
-        def flattened_size(self) -> int:
-            if self._specs.is_continuous():
-                return self._specs.continuous_size
-            else:
-                return sum(self._specs.discrete_branches)
+    VALID_VECTOR_PROP = frozenset(
+        [(DimensionProperty.NONE,), (DimensionProperty.UNSPECIFIED,)]
+    )
 
-        def forward(self, action: torch.Tensor) -> torch.Tensor:
-            if self._specs.is_continuous():
-                return action
-            else:
-                return torch.cat(
-                    ModelUtils.actions_to_onehot(
-                        torch.as_tensor(action, dtype=torch.long),
-                        self._specs.discrete_branches,
-                    ),
-                    dim=1,
-                )
+    VALID_VAR_LEN_PROP = frozenset(
+        [(DimensionProperty.VARIABLE_SIZE, DimensionProperty.NONE)]
+    )
 
     @staticmethod
     def update_learning_rate(optim: torch.optim.Optimizer, lr: float) -> None:
@@ -141,56 +137,79 @@ class ModelUtils:
             )
 
     @staticmethod
+    def get_encoder_for_obs(
+        obs_spec: ObservationSpec,
+        normalize: bool,
+        h_size: int,
+        vis_encode_type: EncoderType,
+    ) -> Tuple[nn.Module, int]:
+        """
+        Returns the encoder and the size of the appropriate encoder.
+        :param shape: Tuples that represent the observation dimension.
+        :param normalize: Normalize all vector inputs.
+        :param h_size: Number of hidden units per layer.
+        :param vis_encode_type: Type of visual encoder to use.
+        """
+        shape = obs_spec.shape
+        dim_prop = obs_spec.dimension_property
+
+        # VISUAL
+        if dim_prop in ModelUtils.VALID_VISUAL_PROP:
+            visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
+            return (visual_encoder_class(shape[0], shape[1], shape[2], h_size), h_size)
+        # VECTOR
+        if dim_prop in ModelUtils.VALID_VECTOR_PROP:
+            return (VectorInput(shape[0], normalize), shape[0])
+        # VARIABLE LENGTH
+        if dim_prop in ModelUtils.VALID_VAR_LEN_PROP:
+            return (
+                EntityEmbedding(
+                    entity_size=shape[1],
+                    entity_num_max_elements=shape[0],
+                    embedding_size=h_size,
+                ),
+                0,
+            )
+        # OTHER
+        raise UnityTrainerException(f"Unsupported Sensor with specs {obs_spec}")
+
+    @staticmethod
     def create_input_processors(
-        observation_shapes: List[Tuple[int, ...]],
+        observation_specs: List[ObservationSpec],
         h_size: int,
         vis_encode_type: EncoderType,
         normalize: bool = False,
-    ) -> Tuple[nn.ModuleList, nn.ModuleList, int]:
+    ) -> Tuple[nn.ModuleList, List[int]]:
         """
         Creates visual and vector encoders, along with their normalizers.
-        :param observation_shapes: List of Tuples that represent the action dimensions.
+        :param observation_specs: List of ObservationSpec that represent the observation dimensions.
         :param action_size: Number of additional un-normalized inputs to each vector encoder. Used for
-            conditioining network on other values (e.g. actions for a Q function)
+            conditioning network on other values (e.g. actions for a Q function)
         :param h_size: Number of hidden units per layer.
         :param vis_encode_type: Type of visual encoder to use.
         :param unnormalized_inputs: Vector inputs that should not be normalized, and added to the vector
             obs.
         :param normalize: Normalize all vector inputs.
-        :return: Tuple of visual encoders and vector encoders each as a list.
+        :return: Tuple of :
+         - ModuleList of the encoders
+         - A list of embedding sizes (0 if the input requires to be processed with a variable length
+         observation encoder)
         """
-        visual_encoders: List[nn.Module] = []
-        vector_encoders: List[nn.Module] = []
+        encoders: List[nn.Module] = []
+        embedding_sizes: List[int] = []
+        for obs_spec in observation_specs:
+            encoder, embedding_size = ModelUtils.get_encoder_for_obs(
+                obs_spec, normalize, h_size, vis_encode_type
+            )
+            encoders.append(encoder)
+            embedding_sizes.append(embedding_size)
 
-        visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
-        vector_size = 0
-        visual_output_size = 0
-        for i, dimension in enumerate(observation_shapes):
-            if len(dimension) == 3:
-                ModelUtils._check_resolution_for_encoder(
-                    dimension[0], dimension[1], vis_encode_type
-                )
-                visual_encoders.append(
-                    visual_encoder_class(
-                        dimension[0], dimension[1], dimension[2], h_size
-                    )
-                )
-                visual_output_size += h_size
-            elif len(dimension) == 1:
-                vector_size += dimension[0]
-            else:
-                raise UnityTrainerException(
-                    f"Unsupported shape of {dimension} for observation {i}"
-                )
-        if vector_size > 0:
-            vector_encoders.append(VectorInput(vector_size, normalize))
-        # Total output size for all inputs + CNNs
-        total_processed_size = vector_size + visual_output_size
-        return (
-            nn.ModuleList(visual_encoders),
-            nn.ModuleList(vector_encoders),
-            total_processed_size,
-        )
+        x_self_size = sum(embedding_sizes)  # The size of the "self" embedding
+        if x_self_size > 0:
+            for enc in encoders:
+                if isinstance(enc, EntityEmbedding):
+                    enc.add_self_embedding(h_size)
+        return (nn.ModuleList(encoders), embedding_sizes)
 
     @staticmethod
     def list_to_tensor(
@@ -266,29 +285,6 @@ class ModelUtils:
         for i in range(num_partitions):
             res += [data[(partitions == i).nonzero().squeeze(1)]]
         return res
-
-    @staticmethod
-    def get_probs_and_entropy(
-        action_list: List[torch.Tensor], dists: List[DistInstance]
-    ) -> Tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor]]:
-        log_probs_list = []
-        all_probs_list = []
-        entropies_list = []
-        for action, action_dist in zip(action_list, dists):
-            log_prob = action_dist.log_prob(action)
-            log_probs_list.append(log_prob)
-            entropies_list.append(action_dist.entropy())
-            if isinstance(action_dist, DiscreteDistInstance):
-                all_probs_list.append(action_dist.all_log_prob())
-        log_probs = torch.stack(log_probs_list, dim=-1)
-        entropies = torch.stack(entropies_list, dim=-1)
-        if not all_probs_list:
-            log_probs = log_probs.squeeze(-1)
-            entropies = entropies.squeeze(-1)
-            all_probs = None
-        else:
-            all_probs = torch.cat(all_probs_list, dim=-1)
-        return log_probs, entropies, all_probs
 
     @staticmethod
     def masked_mean(tensor: torch.Tensor, masks: torch.Tensor) -> torch.Tensor:

@@ -63,7 +63,6 @@ public class ReacherAgent : Agent
     /// The agent's four actions correspond to torques on each of the two joints.
     /// </summary>
     public override void OnActionReceived(ActionBuffers actionBuffers)
-
     {
         m_GoalDegree += m_GoalSpeed;
         UpdateGoalPosition();

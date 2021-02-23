@@ -1,6 +1,7 @@
 from typing import Dict, NamedTuple, List, Any, Optional, Callable, Set
 import cloudpickle
 import enum
+import time
 
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.exception import (
@@ -15,6 +16,7 @@ from queue import Empty as EmptyQueueException
 from mlagents_envs.base_env import BaseEnv, BehaviorName, BehaviorSpec
 from mlagents_envs import logging_util
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
+from mlagents.trainers.settings import TrainerSettings
 from mlagents_envs.timers import (
     TimerNode,
     timed,
@@ -22,7 +24,7 @@ from mlagents_envs.timers import (
     reset_timers,
     get_timer_root,
 )
-from mlagents.trainers.settings import ParameterRandomizationSettings
+from mlagents.trainers.settings import ParameterRandomizationSettings, RunOptions
 from mlagents.trainers.action_info import ActionInfo
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
@@ -32,13 +34,15 @@ from mlagents_envs.side_channel.engine_configuration_channel import (
     EngineConfig,
 )
 from mlagents_envs.side_channel.stats_side_channel import (
-    StatsSideChannel,
     EnvironmentStats,
+    StatsSideChannel,
 )
+from mlagents.training_analytics_side_channel import TrainingAnalyticsSideChannel
 from mlagents_envs.side_channel.side_channel import SideChannel
 
 
 logger = logging_util.get_logger(__name__)
+WORKER_SHUTDOWN_TIMEOUT_S = 10
 
 
 class EnvironmentCommand(enum.Enum):
@@ -48,6 +52,8 @@ class EnvironmentCommand(enum.Enum):
     RESET = 4
     CLOSE = 5
     ENV_EXITED = 6
+    CLOSED = 7
+    TRAINING_STARTED = 8
 
 
 class EnvironmentRequest(NamedTuple):
@@ -75,6 +81,7 @@ class UnityEnvWorker:
         self.previous_step: EnvironmentStep = EnvironmentStep.empty(worker_id)
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
         self.waiting = False
+        self.closed = False
 
     def send(self, cmd: EnvironmentCommand, payload: Any = None) -> None:
         try:
@@ -93,7 +100,7 @@ class UnityEnvWorker:
         except (BrokenPipeError, EOFError):
             raise UnityCommunicationException("UnityEnvironment worker: recv failed.")
 
-    def close(self):
+    def request_close(self):
         try:
             self.conn.send(EnvironmentRequest(EnvironmentCommand.CLOSE))
         except (BrokenPipeError, EOFError):
@@ -101,8 +108,6 @@ class UnityEnvWorker:
                 f"UnityEnvWorker {self.worker_id} got exception trying to close."
             )
             pass
-        logger.debug(f"UnityEnvWorker {self.worker_id} joining process.")
-        self.process.join()
 
 
 def worker(
@@ -110,17 +115,30 @@ def worker(
     step_queue: Queue,
     pickled_env_factory: str,
     worker_id: int,
-    engine_configuration: EngineConfig,
+    run_options: RunOptions,
     log_level: int = logging_util.INFO,
 ) -> None:
     env_factory: Callable[
         [int, List[SideChannel]], UnityEnvironment
     ] = cloudpickle.loads(pickled_env_factory)
     env_parameters = EnvironmentParametersChannel()
+
+    engine_config = EngineConfig(
+        width=run_options.engine_settings.width,
+        height=run_options.engine_settings.height,
+        quality_level=run_options.engine_settings.quality_level,
+        time_scale=run_options.engine_settings.time_scale,
+        target_frame_rate=run_options.engine_settings.target_frame_rate,
+        capture_frame_rate=run_options.engine_settings.capture_frame_rate,
+    )
     engine_configuration_channel = EngineConfigurationChannel()
-    engine_configuration_channel.set_configuration(engine_configuration)
+    engine_configuration_channel.set_configuration(engine_config)
+
     stats_channel = StatsSideChannel()
-    env: BaseEnv = None
+    training_analytics_channel: Optional[TrainingAnalyticsSideChannel] = None
+    if worker_id == 0:
+        training_analytics_channel = TrainingAnalyticsSideChannel()
+    env: UnityEnvironment = None
     # Set log level. On some platforms, the logger isn't common with the
     # main process, so we need to set it again.
     logging_util.set_log_level(log_level)
@@ -135,16 +153,28 @@ def worker(
         return all_step_result
 
     try:
-        env = env_factory(
-            worker_id, [env_parameters, engine_configuration_channel, stats_channel]
-        )
+        side_channels = [env_parameters, engine_configuration_channel, stats_channel]
+        if training_analytics_channel is not None:
+            side_channels.append(training_analytics_channel)
+
+        env = env_factory(worker_id, side_channels)
+        if (
+            not env.academy_capabilities
+            or not env.academy_capabilities.trainingAnalytics
+        ):
+            # Make sure we don't try to send training analytics if the environment doesn't know how to process
+            # them. This wouldn't be catastrophic, but would result in unknown SideChannel UUIDs being used.
+            training_analytics_channel = None
+        if training_analytics_channel:
+            training_analytics_channel.environment_initialized(run_options)
+
         while True:
             req: EnvironmentRequest = parent_conn.recv()
             if req.cmd == EnvironmentCommand.STEP:
                 all_action_info = req.payload
                 for brain_name, action_info in all_action_info.items():
-                    if len(action_info.action) != 0:
-                        env.set_actions(brain_name, action_info.action)
+                    if len(action_info.agent_ids) > 0:
+                        env.set_actions(brain_name, action_info.env_action)
                 env.step()
                 all_step_result = _generate_all_results()
                 # The timers in this process are independent from all the processes and the "main" process
@@ -168,6 +198,12 @@ def worker(
                 for k, v in req.payload.items():
                     if isinstance(v, ParameterRandomizationSettings):
                         v.apply(k, env_parameters)
+            elif req.cmd == EnvironmentCommand.TRAINING_STARTED:
+                behavior_name, trainer_config = req.payload
+                if training_analytics_channel:
+                    training_analytics_channel.training_started(
+                        behavior_name, trainer_config
+                    )
             elif req.cmd == EnvironmentCommand.RESET:
                 env.reset()
                 all_step_result = _generate_all_results()
@@ -186,42 +222,49 @@ def worker(
             EnvironmentResponse(EnvironmentCommand.ENV_EXITED, worker_id, ex)
         )
         _send_response(EnvironmentCommand.ENV_EXITED, ex)
+    except Exception as ex:
+        logger.exception(
+            f"UnityEnvironment worker {worker_id}: environment raised an unexpected exception."
+        )
+        step_queue.put(
+            EnvironmentResponse(EnvironmentCommand.ENV_EXITED, worker_id, ex)
+        )
+        _send_response(EnvironmentCommand.ENV_EXITED, ex)
     finally:
-        # If this worker has put an item in the step queue that hasn't been processed by the EnvManager, the process
-        # will hang until the item is processed. We avoid this behavior by using Queue.cancel_join_thread()
-        # See https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue.cancel_join_thread for
-        # more info.
         logger.debug(f"UnityEnvironment worker {worker_id} closing.")
-        step_queue.cancel_join_thread()
-        step_queue.close()
         if env is not None:
             env.close()
         logger.debug(f"UnityEnvironment worker {worker_id} done.")
+        parent_conn.close()
+        step_queue.put(EnvironmentResponse(EnvironmentCommand.CLOSED, worker_id, None))
+        step_queue.close()
 
 
 class SubprocessEnvManager(EnvManager):
     def __init__(
         self,
         env_factory: Callable[[int, List[SideChannel]], BaseEnv],
-        engine_configuration: EngineConfig,
+        run_options: RunOptions,
         n_env: int = 1,
     ):
         super().__init__()
         self.env_workers: List[UnityEnvWorker] = []
         self.step_queue: Queue = Queue()
+        self.workers_alive = 0
         for worker_idx in range(n_env):
             self.env_workers.append(
                 self.create_worker(
-                    worker_idx, self.step_queue, env_factory, engine_configuration
+                    worker_idx, self.step_queue, env_factory, run_options
                 )
             )
+            self.workers_alive += 1
 
     @staticmethod
     def create_worker(
         worker_id: int,
         step_queue: Queue,
         env_factory: Callable[[int, List[SideChannel]], BaseEnv],
-        engine_configuration: EngineConfig,
+        run_options: RunOptions,
     ) -> UnityEnvWorker:
         parent_conn, child_conn = Pipe()
 
@@ -235,7 +278,7 @@ class SubprocessEnvManager(EnvManager):
                 step_queue,
                 pickled_env_factory,
                 worker_id,
-                engine_configuration,
+                run_options,
                 logger.level,
             ),
         )
@@ -299,17 +342,55 @@ class SubprocessEnvManager(EnvManager):
         for ew in self.env_workers:
             ew.send(EnvironmentCommand.ENVIRONMENT_PARAMETERS, config)
 
+    def on_training_started(
+        self, behavior_name: str, trainer_settings: TrainerSettings
+    ) -> None:
+        """
+        Handle traing starting for a new behavior type. Generally nothing is necessary here.
+        :param behavior_name:
+        :param trainer_settings:
+        :return:
+        """
+        for ew in self.env_workers:
+            ew.send(
+                EnvironmentCommand.TRAINING_STARTED, (behavior_name, trainer_settings)
+            )
+
     @property
     def training_behaviors(self) -> Dict[BehaviorName, BehaviorSpec]:
-        self.env_workers[0].send(EnvironmentCommand.BEHAVIOR_SPECS)
-        return self.env_workers[0].recv().payload
+        result: Dict[BehaviorName, BehaviorSpec] = {}
+        for worker in self.env_workers:
+            worker.send(EnvironmentCommand.BEHAVIOR_SPECS)
+            result.update(worker.recv().payload)
+        return result
 
     def close(self) -> None:
         logger.debug("SubprocessEnvManager closing.")
-        self.step_queue.close()
-        self.step_queue.join_thread()
         for env_worker in self.env_workers:
-            env_worker.close()
+            env_worker.request_close()
+        # Pull messages out of the queue until every worker has CLOSED or we time out.
+        deadline = time.time() + WORKER_SHUTDOWN_TIMEOUT_S
+        while self.workers_alive > 0 and time.time() < deadline:
+            try:
+                step: EnvironmentResponse = self.step_queue.get_nowait()
+                env_worker = self.env_workers[step.worker_id]
+                if step.cmd == EnvironmentCommand.CLOSED and not env_worker.closed:
+                    env_worker.closed = True
+                    self.workers_alive -= 1
+                # Discard all other messages.
+            except EmptyQueueException:
+                pass
+        self.step_queue.close()
+        # Sanity check to kill zombie workers and report an issue if they occur.
+        if self.workers_alive > 0:
+            logger.error("SubprocessEnvManager had workers that didn't signal shutdown")
+            for env_worker in self.env_workers:
+                if not env_worker.closed and env_worker.process.is_alive():
+                    env_worker.process.terminate()
+                    logger.error(
+                        "A SubprocessEnvManager worker did not shut down correctly so it was forcefully terminated."
+                    )
+        self.step_queue.join_thread()
 
     def _postprocess_steps(
         self, env_steps: List[EnvironmentResponse]

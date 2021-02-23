@@ -1,12 +1,14 @@
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Unity.MLAgents.Actuators;
 
 namespace Unity.MLAgents.Policies
 {
     /// <summary>
-    /// Whether the action space is discrete or continuous.
+    /// This is deprecated. Agents can now use both continuous and discrete actions together.
     /// </summary>
+    [Obsolete("Continuous and discrete actions on the same Agent are now supported; see ActionSpec.")]
     public enum SpaceType
     {
         /// <summary>
@@ -31,7 +33,7 @@ namespace Unity.MLAgents.Policies
     /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
     /// </remarks>
     [Serializable]
-    public class BrainParameters
+    public class BrainParameters : ISerializationCallbackReceiver
     {
         /// <summary>
         /// The number of the observations that are added in
@@ -50,16 +52,34 @@ namespace Unity.MLAgents.Policies
         [FormerlySerializedAs("numStackedVectorObservations")]
         [Range(1, 50)] public int NumStackedVectorObservations = 1;
 
+        [SerializeField]
+        internal ActionSpec m_ActionSpec = new ActionSpec(0, null);
+
         /// <summary>
-        /// The size of the action space.
+        /// The specification of the Actions for the BrainParameters.
+        /// </summary>
+        public ActionSpec ActionSpec
+        {
+            get { return m_ActionSpec; }
+            set
+            {
+                m_ActionSpec.NumContinuousActions = value.NumContinuousActions;
+                m_ActionSpec.BranchSizes = value.BranchSizes;
+                SyncDeprecatedActionFields();
+            }
+        }
+
+        /// <summary>
+        /// (Deprecated) The number of possible actions.
         /// </summary>
         /// <remarks>The size specified is interpreted differently depending on whether
-        /// the agent uses the continuous or the discrete action space.</remarks>
+        /// the agent uses the continuous or the discrete actions.</remarks>
         /// <value>
-        /// For the continuous action space: the length of the float vector that represents
+        /// For the continuous actions: the length of the float vector that represents
         /// the action.
-        /// For the discrete action space: the number of branches in the action space.
+        /// For the discrete actions: the number of branches.
         /// </value>
+        [Obsolete("VectorActionSize has been deprecated, please use ActionSpec instead.")]
         [FormerlySerializedAs("vectorActionSize")]
         public int[] VectorActionSize = new[] { 1 };
 
@@ -70,27 +90,25 @@ namespace Unity.MLAgents.Policies
         public string[] VectorActionDescriptions;
 
         /// <summary>
-        /// Defines if the action is discrete or continuous.
+        /// (Deprecated) Defines if the action is discrete or continuous.
         /// </summary>
+        [Obsolete("VectorActionSpaceType has been deprecated, please use ActionSpec instead.")]
         [FormerlySerializedAs("vectorActionSpaceType")]
         public SpaceType VectorActionSpaceType = SpaceType.Discrete;
 
+        [SerializeField]
+        [HideInInspector]
+        internal bool hasUpgradedBrainParametersWithActionSpec;
+
         /// <summary>
-        /// The number of actions specified by this Brain.
+        /// (Deprecated) The number of actions specified by this Brain.
         /// </summary>
+        [Obsolete("NumActions has been deprecated, please use ActionSpec instead.")]
         public int NumActions
         {
             get
             {
-                switch (VectorActionSpaceType)
-                {
-                    case SpaceType.Discrete:
-                        return VectorActionSize.Length;
-                    case SpaceType.Continuous:
-                        return VectorActionSize[0];
-                    default:
-                        return 0;
-                }
+                return ActionSpec.NumContinuousActions > 0 ? ActionSpec.NumContinuousActions : ActionSpec.NumDiscreteActions;
             }
         }
 
@@ -100,14 +118,87 @@ namespace Unity.MLAgents.Policies
         /// <returns> A new BrainParameter object with the same values as the original.</returns>
         public BrainParameters Clone()
         {
+            // Disable deprecation warnings so we can read/write the old fields.
+#pragma warning disable CS0618
             return new BrainParameters
             {
                 VectorObservationSize = VectorObservationSize,
                 NumStackedVectorObservations = NumStackedVectorObservations,
-                VectorActionSize = (int[])VectorActionSize.Clone(),
                 VectorActionDescriptions = (string[])VectorActionDescriptions.Clone(),
-                VectorActionSpaceType = VectorActionSpaceType
+                ActionSpec = new ActionSpec(ActionSpec.NumContinuousActions, ActionSpec.BranchSizes),
+                VectorActionSize = (int[])VectorActionSize.Clone(),
+                VectorActionSpaceType = VectorActionSpaceType,
             };
+#pragma warning restore CS0618
+        }
+
+        /// <summary>
+        /// Propogate ActionSpec fields from deprecated fields
+        /// </summary>
+        private void UpdateToActionSpec()
+        {
+            // Disable deprecation warnings so we can read the old fields.
+#pragma warning disable CS0618
+            if (!hasUpgradedBrainParametersWithActionSpec
+                && m_ActionSpec.NumContinuousActions == 0
+                && m_ActionSpec.BranchSizes == null)
+            {
+                if (VectorActionSpaceType == SpaceType.Continuous)
+                {
+                    m_ActionSpec.NumContinuousActions = VectorActionSize[0];
+                    m_ActionSpec.BranchSizes = null;
+                }
+                if (VectorActionSpaceType == SpaceType.Discrete)
+                {
+                    m_ActionSpec.NumContinuousActions = 0;
+                    m_ActionSpec.BranchSizes = (int[])VectorActionSize.Clone();
+                }
+            }
+            hasUpgradedBrainParametersWithActionSpec = true;
+#pragma warning restore CS0618
+        }
+
+        /// <summary>
+        /// Sync values in ActionSpec fields to deprecated fields
+        /// </summary>
+        private void SyncDeprecatedActionFields()
+        {
+            // Disable deprecation warnings so we can read the old fields.
+#pragma warning disable CS0618
+
+            if (m_ActionSpec.NumContinuousActions == 0)
+            {
+                VectorActionSize = (int[])ActionSpec.BranchSizes.Clone();
+                VectorActionSpaceType = SpaceType.Discrete;
+            }
+            else if (m_ActionSpec.NumDiscreteActions == 0)
+            {
+                VectorActionSize = new[] { m_ActionSpec.NumContinuousActions };
+                VectorActionSpaceType = SpaceType.Continuous;
+            }
+            else
+            {
+                VectorActionSize = null;
+            }
+#pragma warning restore CS0618
+        }
+
+        /// <summary>
+        /// Called by Unity immediately before serializing this object.
+        /// </summary>
+        public void OnBeforeSerialize()
+        {
+            UpdateToActionSpec();
+            SyncDeprecatedActionFields();
+        }
+
+        /// <summary>
+        /// Called by Unity immediately after deserializing this object.
+        /// </summary>
+        public void OnAfterDeserialize()
+        {
+            UpdateToActionSpec();
+            SyncDeprecatedActionFields();
         }
     }
 }

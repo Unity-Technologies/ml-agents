@@ -116,7 +116,9 @@ methods that control specific parameters in your environment. As such, it is
 important to ensure that your environment parameters are updated at each step to
 the correct values. To enable this, we expose a `EnvironmentParameters` C# class
 that you can use to retrieve the values of the parameters defined in the
-training configurations for both of those features.
+training configurations for both of those features. Please see our
+[documentation](Training-ML-Agents.md#environment-parameters)
+for curriculum learning and environment parameter randomization for details.
 
 We recommend modifying the environment from the Agent's `OnEpisodeBegin()`
 function by leveraging `Academy.Instance.EnvironmentParameters`. See the

@@ -16,6 +16,7 @@ from mlagents.trainers.tests.torch.test_reward_providers.utils import (
 from mlagents.trainers.torch.components.reward_providers.gail_reward_provider import (
     DiscriminatorNetwork,
 )
+from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
 
 
 CONTINUOUS_PATH = (
@@ -33,14 +34,20 @@ ACTIONSPEC_FOURDISCRETE = ActionSpec.create_discrete((2, 3, 3, 3))
 ACTIONSPEC_DISCRETE = ActionSpec.create_discrete((20,))
 
 
-@pytest.mark.parametrize("behavior_spec", [BehaviorSpec([(8,)], ACTIONSPEC_CONTINUOUS)])
+@pytest.mark.parametrize(
+    "behavior_spec",
+    [BehaviorSpec(create_observation_specs_with_shapes([(8,)]), ACTIONSPEC_CONTINUOUS)],
+)
 def test_construction(behavior_spec: BehaviorSpec) -> None:
     gail_settings = GAILSettings(demo_path=CONTINUOUS_PATH)
     gail_rp = GAILRewardProvider(behavior_spec, gail_settings)
     assert gail_rp.name == "GAIL"
 
 
-@pytest.mark.parametrize("behavior_spec", [BehaviorSpec([(8,)], ACTIONSPEC_CONTINUOUS)])
+@pytest.mark.parametrize(
+    "behavior_spec",
+    [BehaviorSpec(create_observation_specs_with_shapes([(8,)]), ACTIONSPEC_CONTINUOUS)],
+)
 def test_factory(behavior_spec: BehaviorSpec) -> None:
     gail_settings = GAILSettings(demo_path=CONTINUOUS_PATH)
     gail_rp = create_reward_provider(
@@ -53,9 +60,16 @@ def test_factory(behavior_spec: BehaviorSpec) -> None:
 @pytest.mark.parametrize(
     "behavior_spec",
     [
-        BehaviorSpec([(8,), (24, 26, 1)], ACTIONSPEC_CONTINUOUS),
-        BehaviorSpec([(50,)], ACTIONSPEC_FOURDISCRETE),
-        BehaviorSpec([(10,)], ACTIONSPEC_DISCRETE),
+        BehaviorSpec(
+            create_observation_specs_with_shapes([(8,), (24, 26, 1)]),
+            ACTIONSPEC_CONTINUOUS,
+        ),
+        BehaviorSpec(
+            create_observation_specs_with_shapes([(50,)]), ACTIONSPEC_FOURDISCRETE
+        ),
+        BehaviorSpec(
+            create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_DISCRETE
+        ),
     ],
 )
 @pytest.mark.parametrize("use_actions", [False, True])
@@ -80,7 +94,7 @@ def test_reward_decreases(
     init_reward_expert = gail_rp.evaluate(buffer_expert)[0]
     init_reward_policy = gail_rp.evaluate(buffer_policy)[0]
 
-    for _ in range(10):
+    for _ in range(20):
         gail_rp.update(buffer_policy)
         reward_expert = gail_rp.evaluate(buffer_expert)[0]
         reward_policy = gail_rp.evaluate(buffer_policy)[0]
@@ -101,9 +115,16 @@ def test_reward_decreases(
 @pytest.mark.parametrize(
     "behavior_spec",
     [
-        BehaviorSpec([(8,), (24, 26, 1)], ACTIONSPEC_CONTINUOUS),
-        BehaviorSpec([(50,)], ACTIONSPEC_FOURDISCRETE),
-        BehaviorSpec([(10,)], ACTIONSPEC_DISCRETE),
+        BehaviorSpec(
+            create_observation_specs_with_shapes([(8,), (24, 26, 1)]),
+            ACTIONSPEC_CONTINUOUS,
+        ),
+        BehaviorSpec(
+            create_observation_specs_with_shapes([(50,)]), ACTIONSPEC_FOURDISCRETE
+        ),
+        BehaviorSpec(
+            create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_DISCRETE
+        ),
     ],
 )
 @pytest.mark.parametrize("use_actions", [False, True])

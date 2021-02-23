@@ -46,7 +46,6 @@ repos:
         args: [--py3-plus, --py36-plus]
         exclude: >
             (?x)^(
-                .*barracuda.py|
                 .*_pb2.py|
                 .*_pb2_grpc.py
             )$
@@ -70,24 +69,12 @@ repos:
         args: [--assume-in-merge]
     -   id: check-yaml
         # Won't handle the templating in yamato
-        exclude: \.yamato/*
+        exclude: \.yamato/.*
 
 -   repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.4.2
     hooks:
     -   id: python-check-mock-methods
-
--   repo: https://github.com/pre-commit/mirrors-pylint
-    rev: v2.4.4
-    hooks:
-    -   id: pylint
-        exclude: >
-            (?x)^(
-                .*_pb2.py|
-                .*_pb2_grpc.py|
-                .*/tests/.*
-            )$
-        args: [--score=n]
 
 - repo: https://github.com/mattlqx/pre-commit-search-and-replace
   rev: v1.0.3

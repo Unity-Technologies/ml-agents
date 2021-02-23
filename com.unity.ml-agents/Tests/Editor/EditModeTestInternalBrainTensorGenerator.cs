@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.Barracuda;
 using NUnit.Framework;
 using UnityEngine;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors.Reflection;
@@ -46,13 +47,13 @@ namespace Unity.MLAgents.Tests
 
             var infoA = new AgentInfo
             {
-                storedVectorActions = new[] { 1f, 2f },
-                discreteActionMasks = null
+                storedActions = new ActionBuffers(null, new[] { 1, 2 }),
+                discreteActionMasks = null,
             };
 
             var infoB = new AgentInfo
             {
-                storedVectorActions = new[] { 3f, 4f },
+                storedActions = new ActionBuffers(null, new[] { 3, 4 }),
                 discreteActionMasks = new[] { true, false, false, false, false },
             };
 
@@ -108,7 +109,7 @@ namespace Unity.MLAgents.Tests
             const int batchSize = 4;
             var agentInfos = GetFakeAgents(ObservableAttributeOptions.ExamineAll);
             var alloc = new TensorCachingAllocator();
-            var generator = new VectorObservationGenerator(alloc);
+            var generator = new ObservationGenerator(alloc);
             generator.AddSensorIndex(0); // ObservableAttribute (size 1)
             generator.AddSensorIndex(1); // TestSensor (size 0)
             generator.AddSensorIndex(2); // TestSensor (size 0)

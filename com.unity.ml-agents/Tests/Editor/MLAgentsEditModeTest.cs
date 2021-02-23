@@ -340,14 +340,12 @@ namespace Unity.MLAgents.Tests
         {
             var agentGo1 = new GameObject("TestAgent");
             var bp1 = agentGo1.AddComponent<BehaviorParameters>();
-            bp1.BrainParameters.VectorActionSize = new[] { 1 };
-            bp1.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
+            bp1.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(1);
             agentGo1.AddComponent<TestAgent>();
             var agent1 = agentGo1.GetComponent<TestAgent>();
             var agentGo2 = new GameObject("TestAgent");
             var bp2 = agentGo2.AddComponent<BehaviorParameters>();
-            bp2.BrainParameters.VectorActionSize = new[] { 1 };
-            bp2.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
+            bp2.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(1);
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
 
@@ -452,14 +450,12 @@ namespace Unity.MLAgents.Tests
         {
             var agentGo1 = new GameObject("TestAgent");
             var bp1 = agentGo1.AddComponent<BehaviorParameters>();
-            bp1.BrainParameters.VectorActionSize = new[] { 1 };
-            bp1.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
+            bp1.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(1);
             agentGo1.AddComponent<TestAgent>();
             var agent1 = agentGo1.GetComponent<TestAgent>();
             var agentGo2 = new GameObject("TestAgent");
             var bp2 = agentGo2.AddComponent<BehaviorParameters>();
-            bp2.BrainParameters.VectorActionSize = new[] { 1 };
-            bp2.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
+            bp2.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(1);
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
 
@@ -538,8 +534,7 @@ namespace Unity.MLAgents.Tests
         {
             var agentGo1 = new GameObject("TestAgent");
             var bp1 = agentGo1.AddComponent<BehaviorParameters>();
-            bp1.BrainParameters.VectorActionSize = new[] { 1 };
-            bp1.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
+            bp1.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(1);
             var agent1 = agentGo1.AddComponent<TestAgent>();
             var behaviorParameters = agentGo1.GetComponent<BehaviorParameters>();
             behaviorParameters.BrainParameters.NumStackedVectorObservations = 3;
@@ -588,13 +583,11 @@ namespace Unity.MLAgents.Tests
         {
             var agentGo1 = new GameObject("TestAgent");
             var bp1 = agentGo1.AddComponent<BehaviorParameters>();
-            bp1.BrainParameters.VectorActionSize = new[] { 1 };
-            bp1.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
+            bp1.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(1);
             var agent1 = agentGo1.AddComponent<TestAgent>();
             var agentGo2 = new GameObject("TestAgent");
             var bp2 = agentGo2.AddComponent<BehaviorParameters>();
-            bp2.BrainParameters.VectorActionSize = new[] { 1 };
-            bp2.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
+            bp2.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(1);
             var agent2 = agentGo2.AddComponent<TestAgent>();
             var aca = Academy.Instance;
 
@@ -632,8 +625,7 @@ namespace Unity.MLAgents.Tests
         {
             var agentGo1 = new GameObject("TestAgent");
             var bp1 = agentGo1.AddComponent<BehaviorParameters>();
-            bp1.BrainParameters.VectorActionSize = new[] { 1 };
-            bp1.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
+            bp1.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(1);
             agentGo1.AddComponent<TestAgent>();
             var agent1 = agentGo1.GetComponent<TestAgent>();
             var aca = Academy.Instance;
@@ -698,8 +690,7 @@ namespace Unity.MLAgents.Tests
             // Make sure that Agents with HeuristicPolicies step their sensors each Academy step.
             var agentGo1 = new GameObject("TestAgent");
             var bp1 = agentGo1.AddComponent<BehaviorParameters>();
-            bp1.BrainParameters.VectorActionSize = new[] { 1 };
-            bp1.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
+            bp1.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(1);
             agentGo1.AddComponent<TestAgent>();
             var agent1 = agentGo1.GetComponent<TestAgent>();
             var aca = Academy.Instance;
@@ -720,8 +711,16 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(numSteps, agent1.sensor1.numWriteCalls);
             Assert.AreEqual(numSteps, agent1.sensor2.numCompressedCalls);
 
+            // Disable deprecation warnings so we can read/write the old fields.
+#pragma warning disable CS0618
+
             // Make sure the Heuristic method read the observation and set the action
             Assert.AreEqual(agent1.collectObservationsCallsForEpisode, agent1.GetAction()[0]);
+            Assert.AreEqual(
+                agent1.collectObservationsCallsForEpisode,
+                agent1.GetStoredActionBuffers().ContinuousActions[0]
+            );
+#pragma warning restore CS0618
         }
     }
 

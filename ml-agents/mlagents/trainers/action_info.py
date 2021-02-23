@@ -7,10 +7,11 @@ ActionInfoOutputs = Dict[str, np.ndarray]
 
 class ActionInfo(NamedTuple):
     action: Any
+    env_action: Any
     value: Any
     outputs: ActionInfoOutputs
     agent_ids: List[AgentId]
 
     @staticmethod
     def empty() -> "ActionInfo":
-        return ActionInfo([], [], {}, [])
+        return ActionInfo([], [], [], {}, [])

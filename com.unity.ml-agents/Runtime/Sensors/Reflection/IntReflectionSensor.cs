@@ -13,7 +13,7 @@ namespace Unity.MLAgents.Sensors.Reflection
         internal override void WriteReflectedField(ObservationWriter writer)
         {
             var intVal = (System.Int32)GetReflectedValue();
-            writer[0] = (float)intVal;
+            writer[0] = intVal;
         }
     }
 }

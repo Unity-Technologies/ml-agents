@@ -1,18 +1,28 @@
 import numpy as np
-from typing import Dict
+from typing import Dict, NamedTuple
 from mlagents.torch_utils import torch, default_device
 
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
     BaseRewardProvider,
 )
 from mlagents.trainers.settings import CuriositySettings
 
 from mlagents_envs.base_env import BehaviorSpec
+from mlagents_envs import logging_util
+from mlagents.trainers.torch.agent_action import AgentAction
+from mlagents.trainers.torch.action_flattener import ActionFlattener
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.torch.layers import LinearEncoder, linear_layer
-from mlagents.trainers.settings import NetworkSettings, EncoderType
+from mlagents.trainers.trajectory import ObsUtil
+
+logger = logging_util.get_logger(__name__)
+
+
+class ActionPredictionTuple(NamedTuple):
+    continuous: torch.Tensor
+    discrete: torch.Tensor
 
 
 class CuriosityRewardProvider(BaseRewardProvider):
@@ -62,70 +72,68 @@ class CuriosityNetwork(torch.nn.Module):
     def __init__(self, specs: BehaviorSpec, settings: CuriositySettings) -> None:
         super().__init__()
         self._action_spec = specs.action_spec
-        state_encoder_settings = NetworkSettings(
-            normalize=False,
-            hidden_units=settings.encoding_size,
-            num_layers=2,
-            vis_encode_type=EncoderType.SIMPLE,
-            memory=None,
-        )
+
+        state_encoder_settings = settings.network_settings
+        if state_encoder_settings.memory is not None:
+            state_encoder_settings.memory = None
+            logger.warning(
+                "memory was specified in network_settings but is not supported by Curiosity. It is being ignored."
+            )
+
         self._state_encoder = NetworkBody(
-            specs.observation_shapes, state_encoder_settings
+            specs.observation_specs, state_encoder_settings
         )
 
-        self._action_flattener = ModelUtils.ActionFlattener(self._action_spec)
+        self._action_flattener = ActionFlattener(self._action_spec)
 
-        self.inverse_model_action_prediction = torch.nn.Sequential(
-            LinearEncoder(2 * settings.encoding_size, 1, 256),
-            linear_layer(256, self._action_flattener.flattened_size),
+        self.inverse_model_action_encoding = torch.nn.Sequential(
+            LinearEncoder(2 * state_encoder_settings.hidden_units, 1, 256)
         )
+
+        if self._action_spec.continuous_size > 0:
+            self.continuous_action_prediction = linear_layer(
+                256, self._action_spec.continuous_size
+            )
+        if self._action_spec.discrete_size > 0:
+            self.discrete_action_prediction = linear_layer(
+                256, sum(self._action_spec.discrete_branches)
+            )
 
         self.forward_model_next_state_prediction = torch.nn.Sequential(
             LinearEncoder(
-                settings.encoding_size + self._action_flattener.flattened_size, 1, 256
+                state_encoder_settings.hidden_units
+                + self._action_flattener.flattened_size,
+                1,
+                256,
             ),
-            linear_layer(256, settings.encoding_size),
+            linear_layer(256, state_encoder_settings.hidden_units),
         )
 
     def get_current_state(self, mini_batch: AgentBuffer) -> torch.Tensor:
         """
         Extracts the current state embedding from a mini_batch.
         """
-        n_vis = len(self._state_encoder.visual_processors)
-        hidden, _ = self._state_encoder.forward(
-            vec_inputs=[
-                ModelUtils.list_to_tensor(mini_batch["vector_obs"], dtype=torch.float)
-            ],
-            vis_inputs=[
-                ModelUtils.list_to_tensor(
-                    mini_batch["visual_obs%d" % i], dtype=torch.float
-                )
-                for i in range(n_vis)
-            ],
-        )
+        n_obs = len(self._state_encoder.processors)
+        np_obs = ObsUtil.from_buffer(mini_batch, n_obs)
+        # Convert to tensors
+        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
+
+        hidden, _ = self._state_encoder.forward(tensor_obs)
         return hidden
 
     def get_next_state(self, mini_batch: AgentBuffer) -> torch.Tensor:
         """
         Extracts the next state embedding from a mini_batch.
         """
-        n_vis = len(self._state_encoder.visual_processors)
-        hidden, _ = self._state_encoder.forward(
-            vec_inputs=[
-                ModelUtils.list_to_tensor(
-                    mini_batch["next_vector_in"], dtype=torch.float
-                )
-            ],
-            vis_inputs=[
-                ModelUtils.list_to_tensor(
-                    mini_batch["next_visual_obs%d" % i], dtype=torch.float
-                )
-                for i in range(n_vis)
-            ],
-        )
+        n_obs = len(self._state_encoder.processors)
+        np_obs = ObsUtil.from_buffer_next(mini_batch, n_obs)
+        # Convert to tensors
+        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
+
+        hidden, _ = self._state_encoder.forward(tensor_obs)
         return hidden
 
-    def predict_action(self, mini_batch: AgentBuffer) -> torch.Tensor:
+    def predict_action(self, mini_batch: AgentBuffer) -> ActionPredictionTuple:
         """
         In the continuous case, returns the predicted action.
         In the discrete case, returns the logits.
@@ -133,33 +141,30 @@ class CuriosityNetwork(torch.nn.Module):
         inverse_model_input = torch.cat(
             (self.get_current_state(mini_batch), self.get_next_state(mini_batch)), dim=1
         )
-        hidden = self.inverse_model_action_prediction(inverse_model_input)
-        if self._action_spec.is_continuous():
-            return hidden
-        else:
+
+        continuous_pred = None
+        discrete_pred = None
+        hidden = self.inverse_model_action_encoding(inverse_model_input)
+        if self._action_spec.continuous_size > 0:
+            continuous_pred = self.continuous_action_prediction(hidden)
+        if self._action_spec.discrete_size > 0:
+            raw_discrete_pred = self.discrete_action_prediction(hidden)
             branches = ModelUtils.break_into_branches(
-                hidden, self._action_spec.discrete_branches
+                raw_discrete_pred, self._action_spec.discrete_branches
             )
             branches = [torch.softmax(b, dim=1) for b in branches]
-            return torch.cat(branches, dim=1)
+            discrete_pred = torch.cat(branches, dim=1)
+        return ActionPredictionTuple(continuous_pred, discrete_pred)
 
     def predict_next_state(self, mini_batch: AgentBuffer) -> torch.Tensor:
         """
         Uses the current state embedding and the action of the mini_batch to predict
         the next state embedding.
         """
-        if self._action_spec.is_continuous():
-            action = ModelUtils.list_to_tensor(mini_batch["actions"], dtype=torch.float)
-        else:
-            action = torch.cat(
-                ModelUtils.actions_to_onehot(
-                    ModelUtils.list_to_tensor(mini_batch["actions"], dtype=torch.long),
-                    self._action_spec.discrete_branches,
-                ),
-                dim=1,
-            )
+        actions = AgentAction.from_buffer(mini_batch)
+        flattened_action = self._action_flattener.forward(actions)
         forward_model_input = torch.cat(
-            (self.get_current_state(mini_batch), action), dim=1
+            (self.get_current_state(mini_batch), flattened_action), dim=1
         )
 
         return self.forward_model_next_state_prediction(forward_model_input)
@@ -170,39 +175,43 @@ class CuriosityNetwork(torch.nn.Module):
         action prediction (given the current and next state).
         """
         predicted_action = self.predict_action(mini_batch)
-        if self._action_spec.is_continuous():
+        actions = AgentAction.from_buffer(mini_batch)
+        _inverse_loss = 0
+        if self._action_spec.continuous_size > 0:
             sq_difference = (
-                ModelUtils.list_to_tensor(mini_batch["actions"], dtype=torch.float)
-                - predicted_action
+                actions.continuous_tensor - predicted_action.continuous
             ) ** 2
             sq_difference = torch.sum(sq_difference, dim=1)
-            return torch.mean(
+            _inverse_loss += torch.mean(
                 ModelUtils.dynamic_partition(
                     sq_difference,
-                    ModelUtils.list_to_tensor(mini_batch["masks"], dtype=torch.float),
+                    ModelUtils.list_to_tensor(
+                        mini_batch[BufferKey.MASKS], dtype=torch.float
+                    ),
                     2,
                 )[1]
             )
-        else:
+        if self._action_spec.discrete_size > 0:
             true_action = torch.cat(
                 ModelUtils.actions_to_onehot(
-                    ModelUtils.list_to_tensor(mini_batch["actions"], dtype=torch.long),
-                    self._action_spec.discrete_branches,
+                    actions.discrete_tensor, self._action_spec.discrete_branches
                 ),
                 dim=1,
             )
             cross_entropy = torch.sum(
-                -torch.log(predicted_action + self.EPSILON) * true_action, dim=1
+                -torch.log(predicted_action.discrete + self.EPSILON) * true_action,
+                dim=1,
             )
-            return torch.mean(
+            _inverse_loss += torch.mean(
                 ModelUtils.dynamic_partition(
                     cross_entropy,
                     ModelUtils.list_to_tensor(
-                        mini_batch["masks"], dtype=torch.float
+                        mini_batch[BufferKey.MASKS], dtype=torch.float
                     ),  # use masks not action_masks
                     2,
                 )[1]
             )
+        return _inverse_loss
 
     def compute_reward(self, mini_batch: AgentBuffer) -> torch.Tensor:
         """
@@ -222,7 +231,9 @@ class CuriosityNetwork(torch.nn.Module):
         return torch.mean(
             ModelUtils.dynamic_partition(
                 self.compute_reward(mini_batch),
-                ModelUtils.list_to_tensor(mini_batch["masks"], dtype=torch.float),
+                ModelUtils.list_to_tensor(
+                    mini_batch[BufferKey.MASKS], dtype=torch.float
+                ),
                 2,
             )[1]
         )

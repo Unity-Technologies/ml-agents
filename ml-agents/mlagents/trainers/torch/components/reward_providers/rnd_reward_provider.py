@@ -9,9 +9,12 @@ from mlagents.trainers.torch.components.reward_providers.base_reward_provider im
 from mlagents.trainers.settings import RNDSettings
 
 from mlagents_envs.base_env import BehaviorSpec
+from mlagents_envs import logging_util
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.networks import NetworkBody
-from mlagents.trainers.settings import NetworkSettings, EncoderType
+from mlagents.trainers.trajectory import ObsUtil
+
+logger = logging_util.get_logger(__name__)
 
 
 class RNDRewardProvider(BaseRewardProvider):
@@ -57,27 +60,21 @@ class RNDNetwork(torch.nn.Module):
 
     def __init__(self, specs: BehaviorSpec, settings: RNDSettings) -> None:
         super().__init__()
-        state_encoder_settings = NetworkSettings(
-            normalize=True,
-            hidden_units=settings.encoding_size,
-            num_layers=3,
-            vis_encode_type=EncoderType.SIMPLE,
-            memory=None,
-        )
-        self._encoder = NetworkBody(specs.observation_shapes, state_encoder_settings)
+        state_encoder_settings = settings.network_settings
+        if state_encoder_settings.memory is not None:
+            state_encoder_settings.memory = None
+            logger.warning(
+                "memory was specified in network_settings but is not supported by RND. It is being ignored."
+            )
+
+        self._encoder = NetworkBody(specs.observation_specs, state_encoder_settings)
 
     def forward(self, mini_batch: AgentBuffer) -> torch.Tensor:
-        n_vis = len(self._encoder.visual_processors)
-        hidden, _ = self._encoder.forward(
-            vec_inputs=[
-                ModelUtils.list_to_tensor(mini_batch["vector_obs"], dtype=torch.float)
-            ],
-            vis_inputs=[
-                ModelUtils.list_to_tensor(
-                    mini_batch["visual_obs%d" % i], dtype=torch.float
-                )
-                for i in range(n_vis)
-            ],
-        )
-        self._encoder.update_normalization(torch.tensor(mini_batch["vector_obs"]))
+        n_obs = len(self._encoder.processors)
+        np_obs = ObsUtil.from_buffer(mini_batch, n_obs)
+        # Convert to tensors
+        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
+
+        hidden, _ = self._encoder.forward(tensor_obs)
+        self._encoder.update_normalization(mini_batch)
         return hidden

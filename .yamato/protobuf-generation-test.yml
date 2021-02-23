@@ -1,24 +1,24 @@
-test_mac_protobuf_generation:
+test_linux_protobuf_generation:
   name: Protobuf Generation Tests
   agent:
-    type: Unity::VM::osx
-    image: ml-agents/ml-agents-bokken-mac:0.1.4-492264
-    flavor: b1.small
+    type: Unity::VM
+    image: package-ci/ubuntu:stable
+    flavor: b1.large
   variables:
     GRPC_VERSION: "1.14.1"
     CS_PROTO_PATH: "com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects"
   commands:
     - |
-      brew install nuget
+      sudo apt-get update && sudo apt-get install -y python3-venv nuget
+      python3 -m venv venv && source venv/bin/activate
       nuget install Grpc.Tools -Version $GRPC_VERSION -OutputDirectory protobuf-definitions/
-      python3 -m venv venv
-      . venv/bin/activate
-      pip install --upgrade pip --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
-      pip install grpcio==1.28.1 grpcio-tools==1.13.0 protobuf==3.11.3 six==1.14.0 mypy-protobuf==1.16.0  --progress-bar=off --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
-      cd protobuf-definitions
-      chmod +x Grpc.Tools.$GRPC_VERSION/tools/macosx_x64/protoc
-      chmod +x Grpc.Tools.$GRPC_VERSION/tools/macosx_x64/grpc_csharp_plugin
-      COMPILER=Grpc.Tools.$GRPC_VERSION/tools/macosx_x64 ./make.sh
+      python3 -m pip install --upgrade pip --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+      python3 -m pip install grpcio==1.28.1 grpcio-tools==1.13.0 protobuf==3.11.3 six==1.14.0 mypy-protobuf==1.16.0  --progress-bar=off --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+      pushd protobuf-definitions
+      chmod +x Grpc.Tools.$GRPC_VERSION/tools/linux_x64/protoc
+      chmod +x Grpc.Tools.$GRPC_VERSION/tools/linux_x64/grpc_csharp_plugin
+      COMPILER=Grpc.Tools.$GRPC_VERSION/tools/linux_x64 ./make.sh
+      popd
       mkdir -p artifacts
       touch artifacts/proto.patch
       git diff --exit-code -- :/ ":(exclude,top)$CS_PROTO_PATH/*.meta"                          \
@@ -32,6 +32,8 @@ test_mac_protobuf_generation:
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "protobuf-definitions/**" OR
+      pull_request.changes.any match "com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects/**" OR
+      pull_request.changes.any match "ml-agents-envs/mlagents_envs/communicator_objects/**" OR
       pull_request.changes.any match ".yamato/protobuf-generation-test.yml") AND
       NOT pull_request.changes.all match "protobuf-definitions/**/*.md"
   artifacts:

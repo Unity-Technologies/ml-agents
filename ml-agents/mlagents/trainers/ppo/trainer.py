@@ -9,25 +9,14 @@ import numpy as np
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.base_env import BehaviorSpec
+from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
-from mlagents.trainers.settings import TrainerSettings, PPOSettings, FrameworkType
-from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
-    BaseRewardProvider,
-)
-from mlagents import tf_utils
-
-if tf_utils.is_available():
-    from mlagents.trainers.policy.tf_policy import TFPolicy
-    from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
-else:
-    TFPolicy = None  # type: ignore
-    PPOOptimizer = None  # type: ignore
-
+from mlagents.trainers.settings import TrainerSettings, PPOSettings
 
 logger = get_logger(__name__)
 
@@ -81,7 +70,7 @@ class PPOTrainer(RLTrainer):
         agent_buffer_trajectory = trajectory.to_agentbuffer()
         # Update the normalization
         if self.is_training:
-            self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
+            self.policy.update_normalization(agent_buffer_trajectory)
 
         # Get all value estimates
         value_estimates, value_next = self.optimizer.get_trajectory_value_estimates(
@@ -91,33 +80,25 @@ class PPOTrainer(RLTrainer):
         )
 
         for name, v in value_estimates.items():
-            agent_buffer_trajectory[f"{name}_value_estimates"].extend(v)
-            if isinstance(self.optimizer.reward_signals[name], BaseRewardProvider):
-                self._stats_reporter.add_stat(
-                    f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value Estimate",
-                    np.mean(v),
-                )
-            else:
-                self._stats_reporter.add_stat(
-                    self.optimizer.reward_signals[name].value_name, np.mean(v)
-                )
+            agent_buffer_trajectory[RewardSignalUtil.value_estimates_key(name)].extend(
+                v
+            )
+            self._stats_reporter.add_stat(
+                f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value Estimate",
+                np.mean(v),
+            )
 
         # Evaluate all reward functions
         self.collected_rewards["environment"][agent_id] += np.sum(
-            agent_buffer_trajectory["environment_rewards"]
+            agent_buffer_trajectory[BufferKey.ENVIRONMENT_REWARDS]
         )
         for name, reward_signal in self.optimizer.reward_signals.items():
-            # BaseRewardProvider is a PyTorch-based reward signal
-            if isinstance(reward_signal, BaseRewardProvider):
-                evaluate_result = (
-                    reward_signal.evaluate(agent_buffer_trajectory)
-                    * reward_signal.strength
-                )
-            else:  # reward_signal is a TensorFlow-based RewardSignal class
-                evaluate_result = reward_signal.evaluate_batch(
-                    agent_buffer_trajectory
-                ).scaled_reward
-            agent_buffer_trajectory[f"{name}_rewards"].extend(evaluate_result)
+            evaluate_result = (
+                reward_signal.evaluate(agent_buffer_trajectory) * reward_signal.strength
+            )
+            agent_buffer_trajectory[RewardSignalUtil.rewards_key(name)].extend(
+                evaluate_result
+            )
             # Report the reward signals
             self.collected_rewards[name][agent_id] += np.sum(evaluate_result)
 
@@ -127,9 +108,11 @@ class PPOTrainer(RLTrainer):
         for name in self.optimizer.reward_signals:
             bootstrap_value = value_next[name]
 
-            local_rewards = agent_buffer_trajectory[f"{name}_rewards"].get_batch()
+            local_rewards = agent_buffer_trajectory[
+                RewardSignalUtil.rewards_key(name)
+            ].get_batch()
             local_value_estimates = agent_buffer_trajectory[
-                f"{name}_value_estimates"
+                RewardSignalUtil.value_estimates_key(name)
             ].get_batch()
 
             local_advantage = get_gae(
@@ -141,8 +124,12 @@ class PPOTrainer(RLTrainer):
             )
             local_return = local_advantage + local_value_estimates
             # This is later use as target for the different value estimates
-            agent_buffer_trajectory[f"{name}_returns"].set(local_return)
-            agent_buffer_trajectory[f"{name}_advantage"].set(local_advantage)
+            agent_buffer_trajectory[RewardSignalUtil.returns_key(name)].set(
+                local_return
+            )
+            agent_buffer_trajectory[RewardSignalUtil.advantage_key(name)].set(
+                local_advantage
+            )
             tmp_advantages.append(local_advantage)
             tmp_returns.append(local_return)
 
@@ -151,8 +138,8 @@ class PPOTrainer(RLTrainer):
             np.mean(np.array(tmp_advantages, dtype=np.float32), axis=0)
         )
         global_returns = list(np.mean(np.array(tmp_returns, dtype=np.float32), axis=0))
-        agent_buffer_trajectory["advantages"].set(global_advantages)
-        agent_buffer_trajectory["discounted_returns"].set(global_returns)
+        agent_buffer_trajectory[BufferKey.ADVANTAGES].set(global_advantages)
+        agent_buffer_trajectory[BufferKey.DISCOUNTED_RETURNS].set(global_returns)
         # Append to update buffer
         agent_buffer_trajectory.resequence_and_append(
             self.update_buffer, training_length=self.policy.sequence_length
@@ -191,8 +178,8 @@ class PPOTrainer(RLTrainer):
             int(self.hyperparameters.batch_size / self.policy.sequence_length), 1
         )
 
-        advantages = self.update_buffer["advantages"].get_batch()
-        self.update_buffer["advantages"].set(
+        advantages = self.update_buffer[BufferKey.ADVANTAGES].get_batch()
+        self.update_buffer[BufferKey.ADVANTAGES].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10)
         )
         num_epoch = self.hyperparameters.num_epoch
@@ -218,28 +205,6 @@ class PPOTrainer(RLTrainer):
         self._clear_update_buffer()
         return True
 
-    def create_tf_policy(
-        self,
-        parsed_behavior_id: BehaviorIdentifiers,
-        behavior_spec: BehaviorSpec,
-        create_graph: bool = False,
-    ) -> TFPolicy:
-        """
-        Creates a policy with a Tensorflow backend and PPO hyperparameters
-        :param parsed_behavior_id:
-        :param behavior_spec: specifications for policy construction
-        :param create_graph: whether to create the Tensorflow graph on construction
-        :return policy
-        """
-        policy = TFPolicy(
-            self.seed,
-            behavior_spec,
-            self.trainer_settings,
-            condition_sigma_on_obs=False,  # Faster training for PPO
-            create_tf_graph=create_graph,
-        )
-        return policy
-
     def create_torch_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TorchPolicy:
@@ -254,19 +219,14 @@ class PPOTrainer(RLTrainer):
             behavior_spec,
             self.trainer_settings,
             condition_sigma_on_obs=False,  # Faster training for PPO
-            separate_critic=behavior_spec.action_spec.is_continuous(),
+            separate_critic=True,  # Match network architecture with TF
         )
         return policy
 
-    def create_ppo_optimizer(self) -> PPOOptimizer:
-        if self.framework == FrameworkType.PYTORCH:
-            return TorchPPOOptimizer(  # type: ignore
-                cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore
-            )  # type: ignore
-        else:
-            return PPOOptimizer(  # type: ignore
-                cast(TFPolicy, self.policy), self.trainer_settings  # type: ignore
-            )  # type: ignore
+    def create_ppo_optimizer(self) -> TorchPPOOptimizer:
+        return TorchPPOOptimizer(  # type: ignore
+            cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore
+        )  # type: ignore
 
     def add_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy

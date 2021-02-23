@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Assert = UnityEngine.Assertions.Assert;
@@ -65,14 +62,14 @@ namespace Unity.MLAgents.Tests.Actuators
         }
 
         [Test]
-        public void TestFailOnMixedActionSpace()
+        public void TestAllowMixedActions()
         {
+            // Make sure discrete + continuous actuators are allowed.
             var manager = new ActuatorManager();
             var actuator1 = new TestActuator(ActionSpec.MakeDiscrete(new[] { 1, 2, 3, 4 }), "actuator1");
             var actuator2 = new TestActuator(ActionSpec.MakeContinuous(3), "actuator2");
             manager.Add(actuator1);
             manager.Add(actuator2);
-            LogAssert.Expect(LogType.Assert, "Actuators on the same Agent must have the same action SpaceType.");
             manager.ReadyActuatorsForExecution(new[] { actuator1, actuator2 }, 3, 10, 4);
         }
 
@@ -305,6 +302,24 @@ namespace Unity.MLAgents.Tests.Actuators
             };
             manager.WriteActionMask();
             Assert.IsTrue(groundTruthMask.SequenceEqual(manager.DiscreteActionMask.GetMask()));
+        }
+
+        [Test]
+        public void TestHeuristic()
+        {
+            var manager = new ActuatorManager(2);
+            var va1 = new TestActuator(ActionSpec.MakeDiscrete(1, 2, 3), "name");
+            var va2 = new TestActuator(ActionSpec.MakeDiscrete(3, 2, 1, 8), "name1");
+            manager.Add(va1);
+            manager.Add(va2);
+
+            var actionBuf = new ActionBuffers(Array.Empty<float>(), new[] { 0, 0, 0, 0, 0, 0, 0 });
+            manager.ApplyHeuristic(actionBuf);
+
+            Assert.IsTrue(va1.m_HeuristicCalled);
+            Assert.AreEqual(va1.m_DiscreteBufferSize, 3);
+            Assert.IsTrue(va2.m_HeuristicCalled);
+            Assert.AreEqual(va2.m_DiscreteBufferSize, 4);
         }
     }
 }
