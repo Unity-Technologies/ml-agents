@@ -6,13 +6,17 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Policies;
+
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
 public class DodgeBallAgent : Agent
 {
+
     [Header("TEAM")]
+
     public int teamID;
     private AgentCubeMovement m_CubeMovement;
     public ThrowBall ThrowController;
@@ -54,6 +58,8 @@ public class DodgeBallAgent : Agent
     public int HitPointsRemaining; //how many more times can we be hit
 
     public bool m_Initialized;
+    [HideInInspector]
+    public BehaviorParameters m_BehaviorParameters;
 
     //PLAYER STATE TO OBSERVE
 
@@ -61,6 +67,8 @@ public class DodgeBallAgent : Agent
     public override void Initialize()
     {
         m_CubeMovement = GetComponent<AgentCubeMovement>();
+        m_BehaviorParameters = gameObject.GetComponent<BehaviorParameters>();
+
         //        m_Cam = Camera.main;
         m_AgentRb = GetComponent<Rigidbody>();
         input = GetComponent<FPSAgentInput>();
@@ -205,7 +213,8 @@ public class DodgeBallAgent : Agent
     {
         if (currentNumberOfBalls > 0)
         {
-            ThrowController.Throw(ActiveBallsQueue.Peek());
+            var db = ActiveBallsQueue.Peek();
+            ThrowController.Throw(db, m_BehaviorParameters.TeamId);
             ActiveBallsQueue.Dequeue();
             currentNumberOfBalls--;
             SetActiveBalls(currentNumberOfBalls);
@@ -338,23 +347,26 @@ public class DodgeBallAgent : Agent
 
         if (db.inPlay) //HIT BY LIVE BALL
         {
-            m_GameController.PlayerWasHit(this);
-            // if (HitPointsRemaining == 1)
-            // {
-            //     //RESET ENV
-            //     print($"{gameObject.name} Lost.{gameObject.name} was weak:");
-            //     //ASSIGN REWARDS
-            //     EndEpisode();
-            // }
-            // else
-            // {
-            //     HitPointsRemaining--;
-            //     //ASSIGN REWARDS
-            //
-            // }
-            print("HIT BY LIVE BALL");
-            // if(HitByParticles.isPlaying)
-            db.BallIsInPlay(false);
+            if (db.TeamToIgnore != -1 && db.TeamToIgnore != m_BehaviorParameters.TeamId) //HIT BY LIVE BALL
+            {
+                m_GameController.PlayerWasHit(this);
+                // if (HitPointsRemaining == 1)
+                // {
+                //     //RESET ENV
+                //     print($"{gameObject.name} Lost.{gameObject.name} was weak:");
+                //     //ASSIGN REWARDS
+                //     EndEpisode();
+                // }
+                // else
+                // {
+                //     HitPointsRemaining--;
+                //     //ASSIGN REWARDS
+                //
+                // }
+                print("HIT BY LIVE BALL");
+                // if(HitByParticles.isPlaying)
+                db.BallIsInPlay(false);
+            }
         }
         else //TRY TO PICK IT UP
         {

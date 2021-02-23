@@ -12,6 +12,8 @@ public class DodgeBall : MonoBehaviour
     public Rigidbody rb;
 
     public Collider BallCollider;
+
+    public int TeamToIgnore;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,21 +35,27 @@ public class DodgeBall : MonoBehaviour
 
     //Set ball to either a pickup item or an active ball that is in play
     //inPlay = true means the ball can hurt other players
-    public void BallIsInPlay(bool p)
+    //ignoreTeam = the TeamID to ignore. *friendly fire mechanic
+    public void BallIsInPlay(bool p, int ignoreTeam = -1)
     {
         if (p)
         {
-            gameObject.tag = "dodgeBallActive";
-            BallCollider.gameObject.tag = "dodgeBallActive";
+            TagBallAs( "dodgeBallActive");
         }
         else
         {
-            gameObject.tag = "dodgeBallPickup";
-            BallCollider.gameObject.tag = "dodgeBallPickup";
+            TagBallAs( "dodgeBallPickup");
         }
         inPlay = p;
-
+        TeamToIgnore = ignoreTeam;
     }
+
+    void TagBallAs(string tag)
+    {
+        gameObject.tag = tag;
+        BallCollider.gameObject.tag = tag;
+    }
+
     private void OnCollisionEnter(Collision col)
     {
         //IF NOT MY TEAM

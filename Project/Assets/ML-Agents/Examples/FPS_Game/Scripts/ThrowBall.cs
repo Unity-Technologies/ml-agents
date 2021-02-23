@@ -134,9 +134,10 @@ public class ThrowBall : MonoBehaviour
     //        }
     //    }
 
-    public void Throw(DodgeBall db)
+    //ignoreTeam. 0 ignores team 0, 1 ignores team 1, -1 ignores no teams
+    public void Throw(DodgeBall db, int ignoreTeam = -1)
     {
-        db.BallIsInPlay(true);
+        db.BallIsInPlay(true, ignoreTeam);
         FireProjectile(db.rb);
     }
 

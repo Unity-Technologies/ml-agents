@@ -92,6 +92,7 @@ public class DodgeBallGameController : MonoBehaviour
         {
             item.Agent.Initialize();
             item.HitPointsRemaining = PlayerMaxHitPoints;
+            item.Agent.m_BehaviorParameters.TeamId = 0;
             item.TeamID = 0;
             PlayersDict.Add(item.Agent, item);
         }
@@ -99,6 +100,7 @@ public class DodgeBallGameController : MonoBehaviour
         {
             item.Agent.Initialize();
             item.HitPointsRemaining = PlayerMaxHitPoints;
+            item.Agent.m_BehaviorParameters.TeamId = 1;
             item.TeamID = 1;
             PlayersDict.Add(item.Agent, item);
         }
@@ -108,8 +110,13 @@ public class DodgeBallGameController : MonoBehaviour
 
     public void PlayerWasHit(DodgeBallAgent agent)
     {
-        // var team
+        //SET AGENT/TEAM REWARDS HERE
         AgentInfo info = PlayersDict[agent];
+        int hitTeamID = info.TeamID;
+        var HitTeamList = hitTeamID == 0 ? Team0Players : Team1Players;
+        var HitByTeamList = hitTeamID == 1 ? Team0Players : Team1Players;
+        // int hitByTeamID = hitTeamID == 0? 1: 0; //assumes only 2 teams
+
         if (info.HitPointsRemaining == 1)
         {
             //RESET ENV
@@ -117,6 +124,7 @@ public class DodgeBallGameController : MonoBehaviour
             //ASSIGN REWARDS
             // EndEpisode();
             agent.AddReward(-1f); //you lost penalty
+            HitByTeamList[0].Agent.AddReward(1);
             if (info.TeamID == 0)
             {
                 print($"Team 1 Won");
@@ -132,9 +140,8 @@ public class DodgeBallGameController : MonoBehaviour
             info.HitPointsRemaining--;
             //ASSIGN REWARDS
             agent.AddReward(-.1f); //small hit penalty
+            HitByTeamList[0].Agent.AddReward(.1f);
         }
-
-
 
     }
 
