@@ -77,7 +77,7 @@ class COMATrainer(RLTrainer):
             value_estimates,
             baseline_estimates,
             value_next,
-        ) = self.optimizer.get_trajectory_value_estimates(
+        ) = self.optimizer.get_trajectory_and_baseline_value_estimates(
             agent_buffer_trajectory,
             trajectory.next_obs,
             trajectory.next_group_obs,

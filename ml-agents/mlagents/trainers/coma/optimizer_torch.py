@@ -293,7 +293,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
         )
         loss = (
             policy_loss
-            + 0.5 * (value_loss + baseline_loss)
+            + 0.5 * (value_loss + 0.5 * baseline_loss)
             - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
         )
 
@@ -324,13 +324,13 @@ class TorchCOMAOptimizer(TorchOptimizer):
             modules.update(reward_provider.get_modules())
         return modules
 
-    def get_trajectory_value_estimates(
+    def get_trajectory_and_baseline_value_estimates(
         self,
         batch: AgentBuffer,
         next_obs: List[np.ndarray],
         next_group_obs: List[List[np.ndarray]],
         done: bool,
-    ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:
+    ) -> Tuple[Dict[str, np.ndarray], Dict[str, np.ndarray], Dict[str, float]]:
 
         n_obs = len(self.policy.behavior_spec.observation_specs)
 
