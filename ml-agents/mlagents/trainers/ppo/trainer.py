@@ -266,16 +266,23 @@ class PPOTrainer(RLTrainer):
         return self.policy
 
 
-def lambd_return(r, value_estimates, gamma=0.99, lambd=0.8, value_next=0.0):
+def discount_rewards(r, gamma=0.99, value_next=0.0):
     """
-    Computes lambda return.
+    Computes discounted sum of future rewards for use in updating value estimate.
     :param r: List of rewards.
-    :param value_estimates: List of value estimates.
     :param gamma: Discount factor.
-    :param lambd: n_step return weighting factor.
     :param value_next: T+1 value estimate for returns calculation.
-    :return: lambda return as a list
+    :return: discounted sum of future rewards as list.
     """
+    discounted_r = np.zeros_like(r)
+    running_add = value_next
+    for t in reversed(range(0, r.size)):
+        running_add = running_add * gamma + r[t]
+        discounted_r[t] = running_add
+    return discounted_r
+
+
+def lambd_return(r, value_estimates, gamma=0.99, lambd=0.8, value_next=0.0):
     returns = np.zeros_like(r)
     returns[-1] = r[-1] + gamma * value_next
     for t in reversed(range(0, r.size - 1)):
@@ -286,3 +293,32 @@ def lambd_return(r, value_estimates, gamma=0.99, lambd=0.8, value_next=0.0):
         )
 
     return returns
+
+
+def get_team_returns(
+    rewards,
+    baseline_estimates,
+    v_estimates,
+    value_next=0.0,
+    died=False,
+    gamma=0.99,
+    lambd=0.8,
+):
+    """
+    Computes generalized advantage estimate for use in updating policy.
+    :param rewards: list of rewards for time-steps t to T.
+    :param value_next: Value estimate for time-step T+1.
+    :param value_estimates: list of value estimates for time-steps t to T.
+    :param gamma: Discount factor.
+    :param lambd: GAE weighing factor.
+    :return: list of advantage estimates for time-steps t to T.
+    """
+    rewards = np.array(rewards)
+    returns_b = lambd_return(
+        rewards, baseline_estimates, gamma=gamma, lambd=lambd, value_next=value_next
+    )
+    returns_v = lambd_return(
+        rewards, v_estimates, gamma=gamma, lambd=lambd, value_next=value_next
+    )
+
+    return returns_v, returns_b

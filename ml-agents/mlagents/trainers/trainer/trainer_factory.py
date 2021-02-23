@@ -1,5 +1,6 @@
 import os
 from typing import Dict
+from mlagents.trainers.coma.trainer import COMATrainer
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
@@ -114,6 +115,16 @@ class TrainerFactory:
 
         if trainer_type == TrainerType.PPO:
             trainer = PPOTrainer(
+                brain_name,
+                min_lesson_length,
+                trainer_settings,
+                train_model,
+                load_model,
+                seed,
+                trainer_artifact_path,
+            )
+        elif trainer_type == TrainerType.COMA:
+            trainer = COMATrainer(
                 brain_name,
                 min_lesson_length,
                 trainer_settings,

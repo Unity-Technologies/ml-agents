@@ -73,22 +73,35 @@ class COMATrainer(RLTrainer):
             self.policy.update_normalization(agent_buffer_trajectory)
 
         # Get all value estimates
-        value_estimates, value_next = self.optimizer.get_trajectory_value_estimates(
+        (
+            value_estimates,
+            baseline_estimates,
+            value_next,
+        ) = self.optimizer.get_trajectory_value_estimates(
             agent_buffer_trajectory,
             trajectory.next_obs,
-            trajectory.done_reached and not trajectory.interrupted,
+            trajectory.next_group_obs,
+            trajectory.teammate_dones_reached
+            and trajectory.done_reached
+            and not trajectory.interrupted,
         )
 
         for name, v in value_estimates.items():
             agent_buffer_trajectory[RewardSignalUtil.value_estimates_key(name)].extend(
                 v
             )
+            agent_buffer_trajectory[
+                RewardSignalUtil.baseline_estimates_key(name)
+            ].extend(baseline_estimates[name])
+            self._stats_reporter.add_stat(
+                f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Baseline Estimate",
+                np.mean(baseline_estimates[name]),
+            )
             self._stats_reporter.add_stat(
                 f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value Estimate",
-                np.mean(v),
+                np.mean(value_estimates[name]),
             )
 
-        # Evaluate all reward functions
         self.collected_rewards["environment"][agent_id] += np.sum(
             agent_buffer_trajectory[BufferKey.ENVIRONMENT_REWARDS]
         )
@@ -106,27 +119,57 @@ class COMATrainer(RLTrainer):
         tmp_advantages = []
         tmp_returns = []
         for name in self.optimizer.reward_signals:
-            bootstrap_value = value_next[name]
 
             local_rewards = agent_buffer_trajectory[
                 RewardSignalUtil.rewards_key(name)
             ].get_batch()
-            local_value_estimates = agent_buffer_trajectory[
+            baseline_estimates = agent_buffer_trajectory[
+                RewardSignalUtil.baseline_estimates_key(name)
+            ].get_batch()
+            v_estimates = agent_buffer_trajectory[
                 RewardSignalUtil.value_estimates_key(name)
             ].get_batch()
 
-            local_advantage = get_gae(
+            returns_v, returns_b = get_team_returns(
                 rewards=local_rewards,
-                value_estimates=local_value_estimates,
-                value_next=bootstrap_value,
+                baseline_estimates=baseline_estimates,
+                v_estimates=v_estimates,
+                value_next=value_next[name],
                 gamma=self.optimizer.reward_signals[name].gamma,
                 lambd=self.hyperparameters.lambd,
             )
-            local_return = local_advantage + local_value_estimates
-            # This is later use as target for the different value estimates
-            agent_buffer_trajectory[RewardSignalUtil.returns_key(name)].set(
-                local_return
+            test_v, _ = get_team_returns(
+                rewards=local_rewards,
+                baseline_estimates=baseline_estimates,
+                v_estimates=v_estimates,
+                value_next=value_next[name],
+                gamma=self.optimizer.reward_signals[name].gamma,
+                lambd=1,
             )
+
+            self._stats_reporter.add_stat(
+                f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Sum Rewards",
+                np.mean(test_v),
+            )
+
+            self._stats_reporter.add_stat(
+                f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} TD Lam",
+                np.mean(returns_v),
+            )
+
+            local_advantage = np.array(returns_v) - np.array(baseline_estimates)
+
+            self._stats_reporter.add_stat(
+                f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} TD Advantage Estimate",
+                np.mean(local_advantage),
+            )
+
+            local_return = local_advantage + baseline_estimates
+
+            # local_return = local_advantage + q_estimates
+            # This is later use as target for the different value estimates
+            # agent_buffer_trajectory[f"{name}_returns"].set(local_return)
+            agent_buffer_trajectory[RewardSignalUtil.returns_key(name)].set(returns_v)
             agent_buffer_trajectory[RewardSignalUtil.advantage_key(name)].set(
                 local_advantage
             )
@@ -139,6 +182,7 @@ class COMATrainer(RLTrainer):
         )
         global_returns = list(np.mean(np.array(tmp_returns, dtype=np.float32), axis=0))
         agent_buffer_trajectory[BufferKey.ADVANTAGES].set(global_advantages)
+
         agent_buffer_trajectory[BufferKey.DISCOUNTED_RETURNS].set(global_returns)
         # Append to update buffer
         agent_buffer_trajectory.resequence_and_append(
@@ -224,7 +268,7 @@ class COMATrainer(RLTrainer):
         return policy
 
     def create_coma_optimizer(self) -> TorchCOMAOptimizer:
-        return TorchCOMAptimizer(  # type: ignore
+        return TorchCOMAOptimizer(  # type: ignore
             cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore
         )  # type: ignore
 
@@ -238,7 +282,7 @@ class COMATrainer(RLTrainer):
         """
         self.policy = policy
         self.policies[parsed_behavior_id.behavior_id] = policy
-        self.optimizer = self.create_ppo_optimizer()
+        self.optimizer = self.create_coma_optimizer()
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
@@ -284,3 +328,32 @@ def lambda_return(r, value_estimates, gamma=0.99, lambd=0.8, value_next=0.0):
             + (1 - lambd) * gamma * value_estimates[t + 1]
         )
     return returns
+
+
+def get_team_returns(
+    rewards,
+    baseline_estimates,
+    v_estimates,
+    value_next=0.0,
+    died=False,
+    gamma=0.99,
+    lambd=0.8,
+):
+    """
+    Computes generalized advantage estimate for use in updating policy.
+    :param rewards: list of rewards for time-steps t to T.
+    :param value_next: Value estimate for time-step T+1.
+    :param value_estimates: list of value estimates for time-steps t to T.
+    :param gamma: Discount factor.
+    :param lambd: GAE weighing factor.
+    :return: list of advantage estimates for time-steps t to T.
+    """
+    rewards = np.array(rewards)
+    returns_b = lambda_return(
+        rewards, baseline_estimates, gamma=gamma, lambd=lambd, value_next=value_next
+    )
+    returns_v = lambda_return(
+        rewards, v_estimates, gamma=gamma, lambd=lambd, value_next=value_next
+    )
+
+    return returns_v, returns_b

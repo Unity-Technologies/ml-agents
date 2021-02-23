@@ -156,7 +156,7 @@ class NetworkBody(nn.Module):
         return encoding, memories
 
 
-class MultiInputNetworkBody(torch.nn.Module, Critic):
+class MultiInputNetworkBody(torch.nn.Module):
     def __init__(
         self,
         observation_specs: List[ObservationSpec],
@@ -174,7 +174,7 @@ class MultiInputNetworkBody(torch.nn.Module, Critic):
             else 0
         )
         self.processors, _input_size = ModelUtils.create_input_processors(
-            sensor_specs,
+            observation_specs,
             self.h_size,
             network_settings.vis_encode_type,
             normalize=self.normalize,
@@ -188,12 +188,8 @@ class MultiInputNetworkBody(torch.nn.Module, Critic):
             + sum(self.action_spec.discrete_branches)
             + self.action_spec.continuous_size
         )
-        self.obs_encoder = EntityEmbedding(
-            0, obs_only_ent_size, None, self.h_size, concat_self=False
-        )
-        self.obs_action_encoder = EntityEmbedding(
-            0, q_ent_size, None, self.h_size, concat_self=False
-        )
+        self.obs_encoder = EntityEmbedding(obs_only_ent_size, None, self.h_size)
+        self.obs_action_encoder = EntityEmbedding(q_ent_size, None, self.h_size)
 
         self.self_attn = ResidualSelfAttention(self.h_size)
 
@@ -207,93 +203,89 @@ class MultiInputNetworkBody(torch.nn.Module, Critic):
         if self.use_lstm:
             self.lstm = LSTM(self.h_size, self.m_size)
         else:
-            self.lstm = None  # type: ignorek
+            self.lstm = None  # type: ignore
 
+    @property
+    def memory_size(self) -> int:
+        return self.lstm.memory_size if self.use_lstm else 0
 
-@property
-def memory_size(self) -> int:
-    return self.lstm.memory_size if self.use_lstm else 0
+    def update_normalization(self, buffer: AgentBuffer) -> None:
+        obs = ObsUtil.from_buffer(buffer, len(self.processors))
+        for vec_input, enc in zip(obs, self.processors):
+            if isinstance(enc, VectorInput):
+                enc.update_normalization(torch.as_tensor(vec_input))
 
+    def copy_normalization(self, other_network: "MultiInputNetworkBody") -> None:
+        if self.normalize:
+            for n1, n2 in zip(self.processors, other_network.processors):
+                if isinstance(n1, VectorInput) and isinstance(n2, VectorInput):
+                    n1.copy_normalization(n2)
 
-def update_normalization(self, buffer: AgentBuffer) -> None:
-    obs = ObsUtil.from_buffer(buffer, len(self.processors))
-    for vec_input, enc in zip(obs, self.processors):
-        if isinstance(enc, VectorInput):
-            enc.update_normalization(torch.as_tensor(vec_input))
+    def _get_masks_from_nans(self, obs_tensors: List[torch.Tensor]) -> torch.Tensor:
+        """
+        Get attention masks by grabbing an arbitrary obs across all the agents
+        Since these are raw obs, the padded values are still NaN
+        """
+        only_first_obs = [_all_obs[0] for _all_obs in obs_tensors]
+        obs_for_mask = torch.stack(only_first_obs, dim=1)
+        # Get the mask from nans
+        attn_mask = torch.any(obs_for_mask.isnan(), dim=2).type(torch.FloatTensor)
+        return attn_mask
 
+    def forward(
+        self,
+        obs_only: List[List[torch.Tensor]],
+        obs: List[List[torch.Tensor]],
+        actions: Optional[List[AgentAction]],
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
 
-def copy_normalization(self, other_network: "MultiInputNetworkBody") -> None:
-    if self.normalize:
-        for n1, n2 in zip(self.processors, other_network.processors):
-            if isinstance(n1, VectorInput) and isinstance(n2, VectorInput):
-                n1.copy_normalization(n2)
+        self_attn_masks = []
+        self_attn_inputs = []
+        concat_f_inp = []
+        if actions is not None:
+            for inputs, action in zip(obs, actions):
+                encodes = []
+                for idx, processor in enumerate(self.processors):
+                    obs_input = inputs[idx]
+                    obs_input[obs_input.isnan()] = 0.0  # Remove NaNs
+                    processed_obs = processor(obs_input)
+                    encodes.append(processed_obs)
+                cat_encodes = [
+                    torch.cat(encodes, dim=-1),
+                    action.to_flat(self.action_spec.discrete_branches),
+                ]
+                concat_f_inp.append(torch.cat(cat_encodes, dim=1))
 
+        if concat_f_inp:
+            f_inp = torch.stack(concat_f_inp, dim=1)
+            self_attn_masks.append(self._get_masks_from_nans(obs))
+            self_attn_inputs.append(self.obs_action_encoder(None, f_inp))
 
-def _get_masks_from_nans(self, obs_tensors: List[torch.Tensor]) -> torch.Tensor:
-    """
-    Get attention masks by grabbing an arbitrary obs across all the agents
-    Since these are raw obs, the padded values are still NaN
-    """
-    only_first_obs = [_all_obs[0] for _all_obs in obs_tensors]
-    obs_for_mask = torch.stack(only_first_obs, dim=1)
-    # Get the mask from nans
-    attn_mask = torch.any(obs_for_mask.isnan(), dim=2).type(torch.FloatTensor)
-    return attn_mask
+        concat_encoded_obs = []
+        for inputs in obs_only:
+            encodes = []
+            for idx, processor in enumerate(self.processors):
+                obs_input = inputs[idx]
+                obs_input[obs_input.isnan()] = 0.0  # Remove NaNs
+                processed_obs = processor(obs_input)
+                encodes.append(processed_obs)
+            concat_encoded_obs.append(torch.cat(encodes, dim=-1))
+        g_inp = torch.stack(concat_encoded_obs, dim=1)
+        self_attn_masks.append(self._get_masks_from_nans(obs_only))
+        self_attn_inputs.append(self.obs_encoder(None, g_inp))
 
+        encoded_entity = torch.cat(self_attn_inputs, dim=1)
+        encoded_state = self.self_attn(encoded_entity, self_attn_masks)
 
-def forward(
-    self,
-    obs_only: List[List[torch.Tensor]],
-    obs: List[List[torch.Tensor]],
-    actions: List[AgentAction],
-    memories: Optional[torch.Tensor] = None,
-    sequence_length: int = 1,
-) -> Tuple[torch.Tensor, torch.Tensor]:
-
-    self_attn_masks = []
-    self_attn_inputs = []
-    concat_f_inp = []
-    for inputs, action in zip(obs, actions):
-        encodes = []
-        for idx, processor in enumerate(self.processors):
-            obs_input = inputs[idx]
-            obs_input[obs_input.isnan()] = 0.0  # Remove NaNs
-            processed_obs = processor(obs_input)
-            encodes.append(processed_obs)
-        cat_encodes = [
-            torch.cat(encodes, dim=-1),
-            action.to_flat(self.action_spec.discrete_branches),
-        ]
-        concat_f_inp.append(torch.cat(cat_encodes, dim=1))
-
-    if concat_f_inp:
-        f_inp = torch.stack(concat_f_inp, dim=1)
-        self_attn_masks.append(self._get_masks_from_nans(obs))
-        self_attn_inputs.append(self.obs_action_encoder(None, f_inp))
-
-    concat_encoded_obs = []
-    for inputs in obs_only:
-        encodes = []
-        for idx, processor in enumerate(self.processors):
-            obs_input = inputs[idx]
-            obs_input[obs_input.isnan()] = 0.0  # Remove NaNs
-            processed_obs = processor(obs_input)
-            encodes.append(processed_obs)
-        concat_encoded_obs.append(torch.cat(encodes, dim=-1))
-    g_inp = torch.stack(concat_encoded_obs, dim=1)
-    self_attn_masks.append(self._get_masks_from_nans())
-    self_attn_inputs.append(self.obs_encoder(None, g_inp))
-
-    encoded_entity = torch.cat(self_attn_inputs, dim=1)
-    encoded_state = self.self_attn(encoded_entity, self_attn_masks)
-
-    encoding = self.linear_encoder(encoded_state)
-    if self.use_lstm:
-        # Resize to (batch, sequence length, encoding size)
-        encoding = encoding.reshape([-1, sequence_length, self.h_size])
-        encoding, memories = self.lstm(encoding, memories)
-        encoding = encoding.reshape([-1, self.m_size // 2])
-    return encoding, memories
+        encoding = self.linear_encoder(encoded_state)
+        if self.use_lstm:
+            # Resize to (batch, sequence length, encoding size)
+            encoding = encoding.reshape([-1, sequence_length, self.h_size])
+            encoding, memories = self.lstm(encoding, memories)
+            encoding = encoding.reshape([-1, self.m_size // 2])
+        return encoding, memories
 
 
 class Critic(abc.ABC):

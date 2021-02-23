@@ -62,6 +62,7 @@ class RewardSignalKeyPrefix(enum.Enum):
     VALUE_ESTIMATES = "value_estimates"
     RETURNS = "returns"
     ADVANTAGE = "advantage"
+    BASELINES = "baselines"
 
 
 AgentBufferKey = Union[
@@ -85,6 +86,10 @@ class RewardSignalUtil:
     @staticmethod
     def advantage_key(name: str) -> AgentBufferKey:
         return RewardSignalKeyPrefix.ADVANTAGE, name
+
+    @staticmethod
+    def baseline_estimates_key(name: str) -> AgentBufferKey:
+        return RewardSignalKeyPrefix.BASELINES, name
 
 
 class AgentBufferField(list):
