@@ -122,7 +122,7 @@ class NetworkBody(nn.Module):
                 and self.conditioning_type != ConditioningType.DEFAULT
             ):
                 if goal_signal is not None:
-                    raise "Error"
+                    raise Exception("TODO : Cannot currently handle more than one goal")
                 goal_signal = processed_obs
 
         if len(encodes) == 0:
