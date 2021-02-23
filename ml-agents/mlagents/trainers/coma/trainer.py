@@ -222,7 +222,9 @@ class COMATrainer(RLTrainer):
             int(self.hyperparameters.batch_size / self.policy.sequence_length), 1
         )
 
-        advantages = self.update_buffer[BufferKey.ADVANTAGES].get_batch()
+        advantages = np.array(
+            self.update_buffer[BufferKey.ADVANTAGES].get_batch(), dtype=np.float32
+        )
         self.update_buffer[BufferKey.ADVANTAGES].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10)
         )

@@ -160,13 +160,10 @@ class AgentBufferField(list):
                 )
             if batch_size * training_length > len(self):
                 padding = np.array(self[-1], dtype=np.float32) * self.padding_value
-                return np.array(
-                    [padding] * (training_length - leftover) + self[:], dtype=np.float32
-                )
+                return [padding] * (training_length - leftover) + self[:]
+
             else:
-                return np.array(
-                    self[len(self) - batch_size * training_length :], dtype=np.float32
-                )
+                return self[len(self) - batch_size * training_length :]
         else:
             # The sequences will have overlapping elements
             if batch_size is None:
@@ -182,7 +179,7 @@ class AgentBufferField(list):
             tmp_list: List[np.ndarray] = []
             for end in range(len(self) - batch_size + 1, len(self) + 1):
                 tmp_list += self[end - training_length : end]
-            return np.array(tmp_list, dtype=np.float32)
+            return tmp_list
 
     def reset_field(self) -> None:
         """
