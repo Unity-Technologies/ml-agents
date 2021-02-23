@@ -901,6 +901,7 @@ MonoBehaviour:
   maximumDeltaTime: 0.33333334
   solverIterations: 6
   solverVelocityIterations: 1
+  reuseCollisionCallbacks: 1
 --- !u!114 &1574236051
 MonoBehaviour:
   m_ObjectHideFlags: 0

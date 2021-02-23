@@ -2,26 +2,28 @@ from typing import Optional, Dict, List
 import numpy as np
 from mlagents.torch_utils import torch, default_device
 
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
     BaseRewardProvider,
 )
 from mlagents.trainers.settings import GAILSettings
 from mlagents_envs.base_env import BehaviorSpec
+from mlagents_envs import logging_util
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_flattener import ActionFlattener
 from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.torch.layers import linear_layer, Initialization
-from mlagents.trainers.settings import NetworkSettings, EncoderType
 from mlagents.trainers.demo_loader import demo_to_buffer
 from mlagents.trainers.trajectory import ObsUtil
+
+logger = logging_util.get_logger(__name__)
 
 
 class GAILRewardProvider(BaseRewardProvider):
     def __init__(self, specs: BehaviorSpec, settings: GAILSettings) -> None:
         super().__init__(specs, settings)
-        self._ignore_done = True
+        self._ignore_done = False
         self._discriminator_network = DiscriminatorNetwork(specs, settings)
         self._discriminator_network.to(default_device())
         _, self._demo_buffer = demo_to_buffer(
@@ -44,9 +46,12 @@ class GAILRewardProvider(BaseRewardProvider):
             )
 
     def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
+
         expert_batch = self._demo_buffer.sample_mini_batch(
             mini_batch.num_experiences, 1
         )
+        self._discriminator_network.encoder.update_normalization(expert_batch)
+
         loss, stats_dict = self._discriminator_network.compute_loss(
             mini_batch, expert_batch
         )
@@ -72,27 +77,29 @@ class DiscriminatorNetwork(torch.nn.Module):
         self._use_vail = settings.use_vail
         self._settings = settings
 
-        encoder_settings = NetworkSettings(
-            normalize=False,
-            hidden_units=settings.encoding_size,
-            num_layers=2,
-            vis_encode_type=EncoderType.SIMPLE,
-            memory=None,
-        )
+        encoder_settings = settings.network_settings
+        if encoder_settings.memory is not None:
+            encoder_settings.memory = None
+            logger.warning(
+                "memory was specified in network_settings but is not supported by GAIL. It is being ignored."
+            )
+
         self._action_flattener = ActionFlattener(specs.action_spec)
         unencoded_size = (
             self._action_flattener.flattened_size + 1 if settings.use_actions else 0
         )  # +1 is for dones
-        self.encoder = NetworkBody(specs.sensor_specs, encoder_settings, unencoded_size)
+        self.encoder = NetworkBody(
+            specs.observation_specs, encoder_settings, unencoded_size
+        )
 
-        estimator_input_size = settings.encoding_size
+        estimator_input_size = encoder_settings.hidden_units
         if settings.use_vail:
             estimator_input_size = self.z_size
             self._z_sigma = torch.nn.Parameter(
                 torch.ones((self.z_size), dtype=torch.float), requires_grad=True
             )
             self._z_mu_layer = linear_layer(
-                settings.encoding_size,
+                encoder_settings.hidden_units,
                 self.z_size,
                 kernel_init=Initialization.KaimingHeNormal,
                 kernel_gain=0.1,
@@ -110,7 +117,7 @@ class DiscriminatorNetwork(torch.nn.Module):
         Creates the action Tensor. In continuous case, corresponds to the action. In
         the discrete case, corresponds to the concatenation of one hot action Tensors.
         """
-        return self._action_flattener.forward(AgentAction.from_dict(mini_batch))
+        return self._action_flattener.forward(AgentAction.from_buffer(mini_batch))
 
     def get_state_inputs(self, mini_batch: AgentBuffer) -> List[torch.Tensor]:
         """
@@ -135,7 +142,9 @@ class DiscriminatorNetwork(torch.nn.Module):
         inputs = self.get_state_inputs(mini_batch)
         if self._settings.use_actions:
             actions = self.get_action_input(mini_batch)
-            dones = torch.as_tensor(mini_batch["done"], dtype=torch.float).unsqueeze(1)
+            dones = torch.as_tensor(
+                mini_batch[BufferKey.DONE], dtype=torch.float
+            ).unsqueeze(1)
             action_inputs = torch.cat([actions, dones], dim=1)
             hidden, _ = self.encoder(inputs, action_inputs)
         else:
@@ -219,10 +228,10 @@ class DiscriminatorNetwork(torch.nn.Module):
             expert_action = self.get_action_input(expert_batch)
             action_epsilon = torch.rand(policy_action.shape)
             policy_dones = torch.as_tensor(
-                policy_batch["done"], dtype=torch.float
+                policy_batch[BufferKey.DONE], dtype=torch.float
             ).unsqueeze(1)
             expert_dones = torch.as_tensor(
-                expert_batch["done"], dtype=torch.float
+                expert_batch[BufferKey.DONE], dtype=torch.float
             ).unsqueeze(1)
             dones_epsilon = torch.rand(policy_dones.shape)
             action_inputs = torch.cat(

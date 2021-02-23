@@ -3,18 +3,22 @@ import abc
 
 from mlagents.torch_utils import torch, nn
 
-from mlagents_envs.base_env import ActionSpec, SensorSpec
+from mlagents_envs.base_env import ActionSpec, ObservationSpec
 from mlagents.trainers.torch.action_model import ActionModel
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
-from mlagents.trainers.torch.layers import LSTM, LinearEncoder
+from mlagents.trainers.torch.layers import LSTM, LinearEncoder, Initialization
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
-from mlagents.trainers.torch.attention import ResidualSelfAttention, EntityEmbeddings
+from mlagents.trainers.torch.attention import (
+    EntityEmbedding,
+    ResidualSelfAttention,
+    get_zero_entities_mask,
+)
 
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
@@ -28,7 +32,7 @@ EPSILON = 1e-7
 class NetworkBody(nn.Module):
     def __init__(
         self,
-        sensor_specs: List[SensorSpec],
+        observation_specs: List[ObservationSpec],
         network_settings: NetworkSettings,
         encoded_act_size: int = 0,
     ):
@@ -43,13 +47,34 @@ class NetworkBody(nn.Module):
         )
 
         self.processors, self.embedding_sizes = ModelUtils.create_input_processors(
-            sensor_specs,
+            observation_specs,
             self.h_size,
             network_settings.vis_encode_type,
             normalize=self.normalize,
         )
 
-        total_enc_size = sum(self.embedding_sizes) + encoded_act_size
+        entity_num_max: int = 0
+        var_processors = [p for p in self.processors if isinstance(p, EntityEmbedding)]
+        for processor in var_processors:
+            entity_max: int = processor.entity_num_max_elements
+            # Only adds entity max if it was known at construction
+            if entity_max > 0:
+                entity_num_max += entity_max
+        if len(var_processors) > 0:
+            if sum(self.embedding_sizes):
+                self.x_self_encoder = LinearEncoder(
+                    sum(self.embedding_sizes),
+                    1,
+                    self.h_size,
+                    kernel_init=Initialization.Normal,
+                    kernel_gain=(0.125 / self.h_size) ** 0.5,
+                )
+            self.rsa = ResidualSelfAttention(self.h_size, entity_num_max)
+            total_enc_size = sum(self.embedding_sizes) + self.h_size
+        else:
+            total_enc_size = sum(self.embedding_sizes)
+
+        total_enc_size += encoded_act_size
         self.linear_encoder = LinearEncoder(
             total_enc_size, network_settings.num_layers, self.h_size
         )
@@ -83,20 +108,45 @@ class NetworkBody(nn.Module):
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         encodes = []
+        var_len_processor_inputs: List[Tuple[nn.Module, torch.Tensor]] = []
+
         for idx, processor in enumerate(self.processors):
-            obs_input = inputs[idx]
-            processed_obs = processor(obs_input)
-            encodes.append(processed_obs)
-
-        if len(encodes) == 0:
-            raise Exception("No valid inputs to network.")
-
-        # Constants don't work in Barracuda
-        if actions is not None:
-            inputs = torch.cat(encodes + [actions], dim=-1)
+            if not isinstance(processor, EntityEmbedding):
+                # The input can be encoded without having to process other inputs
+                obs_input = inputs[idx]
+                processed_obs = processor(obs_input)
+                encodes.append(processed_obs)
+            else:
+                var_len_processor_inputs.append((processor, inputs[idx]))
+        if len(encodes) != 0:
+            encoded_self = torch.cat(encodes, dim=1)
+            input_exist = True
         else:
-            inputs = torch.cat(encodes, dim=-1)
-        encoding = self.linear_encoder(inputs)
+            input_exist = False
+        if len(var_len_processor_inputs) > 0:
+            # Some inputs need to be processed with a variable length encoder
+            masks = get_zero_entities_mask([p_i[1] for p_i in var_len_processor_inputs])
+            embeddings: List[torch.Tensor] = []
+            processed_self = self.x_self_encoder(encoded_self) if input_exist else None
+            for processor, var_len_input in var_len_processor_inputs:
+                embeddings.append(processor(processed_self, var_len_input))
+            qkv = torch.cat(embeddings, dim=1)
+            attention_embedding = self.rsa(qkv, masks)
+            if not input_exist:
+                encoded_self = torch.cat([attention_embedding], dim=1)
+                input_exist = True
+            else:
+                encoded_self = torch.cat([encoded_self, attention_embedding], dim=1)
+
+        if not input_exist:
+            raise Exception(
+                "The trainer was unable to process any of the provided inputs. "
+                "Make sure the trained agents has at least one sensor attached to them."
+            )
+
+        if actions is not None:
+            encoded_self = torch.cat([encoded_self, actions], dim=1)
+        encoding = self.linear_encoder(encoded_self)
 
         if self.use_lstm:
             # Resize to (batch, sequence length, encoding size)
@@ -228,7 +278,7 @@ class ValueNetwork(nn.Module):
     def __init__(
         self,
         stream_names: List[str],
-        sensor_specs: List[SensorSpec],
+        observation_specs: List[ObservationSpec],
         network_settings: NetworkSettings,
         encoded_act_size: int = 0,
         outputs_per_stream: int = 1,
@@ -237,7 +287,7 @@ class ValueNetwork(nn.Module):
         # This is not a typo, we want to call __init__ of nn.Module
         nn.Module.__init__(self)
         self.network_body = NetworkBody(
-            sensor_specs, network_settings, encoded_act_size=encoded_act_size
+            observation_specs, network_settings, encoded_act_size=encoded_act_size
         )
         if network_settings.memory is not None:
             encoding_size = network_settings.memory.memory_size // 2
@@ -331,6 +381,7 @@ class Actor(abc.ABC):
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
+        var_len_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
     ) -> Tuple[Union[int, torch.Tensor], ...]:
@@ -393,7 +444,7 @@ class ActorCritic(Actor):
 class SimpleActor(nn.Module, Actor):
     def __init__(
         self,
-        sensor_specs: List[SensorSpec],
+        observation_specs: List[ObservationSpec],
         network_settings: NetworkSettings,
         action_spec: ActionSpec,
         conditional_sigma: bool = False,
@@ -423,7 +474,7 @@ class SimpleActor(nn.Module, Actor):
             ),
             requires_grad=False,
         )
-        self.network_body = NetworkBody(sensor_specs, network_settings)
+        self.network_body = NetworkBody(observation_specs, network_settings)
         if network_settings.memory is not None:
             self.encoding_size = network_settings.memory.memory_size // 2
         else:
@@ -464,6 +515,7 @@ class SimpleActor(nn.Module, Actor):
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
+        var_len_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
     ) -> Tuple[Union[int, torch.Tensor], ...]:
@@ -479,6 +531,7 @@ class SimpleActor(nn.Module, Actor):
         start = 0
         end = 0
         vis_index = 0
+        var_len_index = 0
         for i, enc in enumerate(self.network_body.processors):
             if isinstance(enc, VectorInput):
                 # This is a vec_obs
@@ -486,9 +539,13 @@ class SimpleActor(nn.Module, Actor):
                 end = start + vec_size
                 inputs.append(concatenated_vec_obs[:, start:end])
                 start = end
-            else:
+            elif isinstance(enc, EntityEmbedding):
+                inputs.append(var_len_inputs[var_len_index])
+                var_len_index += 1
+            else:  # visual input
                 inputs.append(vis_inputs[vis_index])
                 vis_index += 1
+
         # End of code to convert the vec and vis obs into a list of inputs for the network
         encoding, memories_out = self.network_body(
             inputs, memories=memories, sequence_length=1
@@ -517,7 +574,7 @@ class SimpleActor(nn.Module, Actor):
 class SharedActorCritic(SimpleActor, ActorCritic):
     def __init__(
         self,
-        sensor_specs: List[SensorSpec],
+        observation_specs: List[ObservationSpec],
         network_settings: NetworkSettings,
         action_spec: ActionSpec,
         stream_names: List[str],
@@ -526,7 +583,11 @@ class SharedActorCritic(SimpleActor, ActorCritic):
     ):
         self.use_lstm = network_settings.memory is not None
         super().__init__(
-            sensor_specs, network_settings, action_spec, conditional_sigma, tanh_squash
+            observation_specs,
+            network_settings,
+            action_spec,
+            conditional_sigma,
+            tanh_squash,
         )
         self.stream_names = stream_names
         self.value_heads = ValueHeads(stream_names, self.encoding_size)
@@ -579,7 +640,7 @@ class SharedActorCritic(SimpleActor, ActorCritic):
 class SeparateActorCritic(SimpleActor, ActorCritic):
     def __init__(
         self,
-        sensor_specs: List[SensorSpec],
+        observation_specs: List[ObservationSpec],
         network_settings: NetworkSettings,
         action_spec: ActionSpec,
         stream_names: List[str],
@@ -588,12 +649,14 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
     ):
         self.use_lstm = network_settings.memory is not None
         super().__init__(
-            sensor_specs, network_settings, action_spec, conditional_sigma, tanh_squash
+            observation_specs,
+            network_settings,
+            action_spec,
+            conditional_sigma,
+            tanh_squash,
         )
         self.stream_names = stream_names
-        self.critic = CentralizedValueNetwork(
-            stream_names, sensor_specs, network_settings
-        )
+        self.critic = ValueNetwork(stream_names, observation_specs, network_settings)
 
     @property
     def memory_size(self) -> int:
@@ -605,6 +668,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         if self.use_lstm and memories is not None:
             # Use only the back half of memories for critic and actor
             actor_mem, critic_mem = torch.split(memories, self.memory_size // 2, dim=-1)
+            actor_mem, critic_mem = actor_mem.contiguous(), critic_mem.contiguous()
         else:
             critic_mem = None
             actor_mem = None

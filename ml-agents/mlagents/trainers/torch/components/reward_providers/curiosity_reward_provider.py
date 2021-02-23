@@ -2,20 +2,22 @@ import numpy as np
 from typing import Dict, NamedTuple
 from mlagents.torch_utils import torch, default_device
 
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
     BaseRewardProvider,
 )
 from mlagents.trainers.settings import CuriositySettings
 
 from mlagents_envs.base_env import BehaviorSpec
+from mlagents_envs import logging_util
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_flattener import ActionFlattener
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.torch.layers import LinearEncoder, linear_layer
-from mlagents.trainers.settings import NetworkSettings, EncoderType
 from mlagents.trainers.trajectory import ObsUtil
+
+logger = logging_util.get_logger(__name__)
 
 
 class ActionPredictionTuple(NamedTuple):
@@ -70,19 +72,22 @@ class CuriosityNetwork(torch.nn.Module):
     def __init__(self, specs: BehaviorSpec, settings: CuriositySettings) -> None:
         super().__init__()
         self._action_spec = specs.action_spec
-        state_encoder_settings = NetworkSettings(
-            normalize=False,
-            hidden_units=settings.encoding_size,
-            num_layers=2,
-            vis_encode_type=EncoderType.SIMPLE,
-            memory=None,
+
+        state_encoder_settings = settings.network_settings
+        if state_encoder_settings.memory is not None:
+            state_encoder_settings.memory = None
+            logger.warning(
+                "memory was specified in network_settings but is not supported by Curiosity. It is being ignored."
+            )
+
+        self._state_encoder = NetworkBody(
+            specs.observation_specs, state_encoder_settings
         )
-        self._state_encoder = NetworkBody(specs.sensor_specs, state_encoder_settings)
 
         self._action_flattener = ActionFlattener(self._action_spec)
 
         self.inverse_model_action_encoding = torch.nn.Sequential(
-            LinearEncoder(2 * settings.encoding_size, 1, 256)
+            LinearEncoder(2 * state_encoder_settings.hidden_units, 1, 256)
         )
 
         if self._action_spec.continuous_size > 0:
@@ -96,9 +101,12 @@ class CuriosityNetwork(torch.nn.Module):
 
         self.forward_model_next_state_prediction = torch.nn.Sequential(
             LinearEncoder(
-                settings.encoding_size + self._action_flattener.flattened_size, 1, 256
+                state_encoder_settings.hidden_units
+                + self._action_flattener.flattened_size,
+                1,
+                256,
             ),
-            linear_layer(256, settings.encoding_size),
+            linear_layer(256, state_encoder_settings.hidden_units),
         )
 
     def get_current_state(self, mini_batch: AgentBuffer) -> torch.Tensor:
@@ -153,7 +161,7 @@ class CuriosityNetwork(torch.nn.Module):
         Uses the current state embedding and the action of the mini_batch to predict
         the next state embedding.
         """
-        actions = AgentAction.from_dict(mini_batch)
+        actions = AgentAction.from_buffer(mini_batch)
         flattened_action = self._action_flattener.forward(actions)
         forward_model_input = torch.cat(
             (self.get_current_state(mini_batch), flattened_action), dim=1
@@ -167,7 +175,7 @@ class CuriosityNetwork(torch.nn.Module):
         action prediction (given the current and next state).
         """
         predicted_action = self.predict_action(mini_batch)
-        actions = AgentAction.from_dict(mini_batch)
+        actions = AgentAction.from_buffer(mini_batch)
         _inverse_loss = 0
         if self._action_spec.continuous_size > 0:
             sq_difference = (
@@ -177,7 +185,9 @@ class CuriosityNetwork(torch.nn.Module):
             _inverse_loss += torch.mean(
                 ModelUtils.dynamic_partition(
                     sq_difference,
-                    ModelUtils.list_to_tensor(mini_batch["masks"], dtype=torch.float),
+                    ModelUtils.list_to_tensor(
+                        mini_batch[BufferKey.MASKS], dtype=torch.float
+                    ),
                     2,
                 )[1]
             )
@@ -196,7 +206,7 @@ class CuriosityNetwork(torch.nn.Module):
                 ModelUtils.dynamic_partition(
                     cross_entropy,
                     ModelUtils.list_to_tensor(
-                        mini_batch["masks"], dtype=torch.float
+                        mini_batch[BufferKey.MASKS], dtype=torch.float
                     ),  # use masks not action_masks
                     2,
                 )[1]
@@ -221,7 +231,9 @@ class CuriosityNetwork(torch.nn.Module):
         return torch.mean(
             ModelUtils.dynamic_partition(
                 self.compute_reward(mini_batch),
-                ModelUtils.list_to_tensor(mini_batch["masks"], dtype=torch.float),
+                ModelUtils.list_to_tensor(
+                    mini_batch[BufferKey.MASKS], dtype=torch.float
+                ),
                 2,
             )[1]
         )

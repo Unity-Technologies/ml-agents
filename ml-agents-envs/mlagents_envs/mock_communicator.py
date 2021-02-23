@@ -1,4 +1,6 @@
-from .communicator import Communicator
+from typing import Optional
+
+from .communicator import Communicator, PollCallback
 from .environment import UnityEnvironment
 from mlagents_envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutputProto
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import (
@@ -39,7 +41,9 @@ class MockCommunicator(Communicator):
         self.brain_name = brain_name
         self.vec_obs_size = vec_obs_size
 
-    def initialize(self, inputs: UnityInputProto) -> UnityOutputProto:
+    def initialize(
+        self, inputs: UnityInputProto, poll_callback: Optional[PollCallback] = None
+    ) -> UnityOutputProto:
         if self.is_discrete:
             action_spec = ActionSpecProto(
                 num_discrete_actions=2, discrete_branch_sizes=[3, 2]
@@ -94,7 +98,9 @@ class MockCommunicator(Communicator):
         )
         return dict_agent_info
 
-    def exchange(self, inputs: UnityInputProto) -> UnityOutputProto:
+    def exchange(
+        self, inputs: UnityInputProto, poll_callback: Optional[PollCallback] = None
+    ) -> UnityOutputProto:
         result = UnityRLOutputProto(agentInfos=self._get_agent_infos())
         return UnityOutputProto(rl_output=result)
 

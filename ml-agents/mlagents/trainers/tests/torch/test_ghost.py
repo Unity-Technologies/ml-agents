@@ -7,10 +7,12 @@ from mlagents.trainers.ghost.controller import GhostController
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.agent_processor import AgentManagerQueue
+from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 from mlagents.trainers.tests import mock_brain as mb
+from mlagents.trainers.tests.mock_brain import copy_buffer_fields
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers.settings import TrainerSettings, SelfPlaySettings
-from mlagents.trainers.tests.dummy_config import create_sensor_specs_with_shapes
+from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
 
 
 @pytest.fixture
@@ -21,7 +23,7 @@ def dummy_config():
 VECTOR_ACTION_SPACE = 1
 VECTOR_OBS_SPACE = 8
 DISCRETE_ACTION_SPACE = [3, 3, 3, 2]
-BUFFER_INIT_SAMPLES = 513
+BUFFER_INIT_SAMPLES = 10241
 NUM_AGENTS = 12
 
 
@@ -134,7 +136,7 @@ def test_process_trajectory(dummy_config):
     trajectory = make_fake_trajectory(
         length=time_horizon,
         max_step_complete=True,
-        sensor_specs=create_sensor_specs_with_shapes([(1,)]),
+        observation_specs=create_observation_specs_with_shapes([(1,)]),
         action_spec=mock_specs.action_spec,
     )
     trajectory_queue0.put(trajectory)
@@ -191,22 +193,22 @@ def test_publish_queue(dummy_config):
     # clear
     policy_queue1.get_nowait()
 
-    mock_specs = mb.setup_test_behavior_specs(
-        False,
-        False,
-        vector_action_space=VECTOR_ACTION_SPACE,
-        vector_obs_space=VECTOR_OBS_SPACE,
-    )
-
     buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, mock_specs)
     # Mock out reward signal eval
-    buffer["extrinsic_rewards"] = buffer["environment_rewards"]
-    buffer["extrinsic_returns"] = buffer["environment_rewards"]
-    buffer["extrinsic_value_estimates"] = buffer["environment_rewards"]
-    buffer["curiosity_rewards"] = buffer["environment_rewards"]
-    buffer["curiosity_returns"] = buffer["environment_rewards"]
-    buffer["curiosity_value_estimates"] = buffer["environment_rewards"]
-    buffer["advantages"] = buffer["environment_rewards"]
+    copy_buffer_fields(
+        buffer,
+        src_key=BufferKey.ENVIRONMENT_REWARDS,
+        dst_keys=[
+            BufferKey.ADVANTAGES,
+            RewardSignalUtil.rewards_key("extrinsic"),
+            RewardSignalUtil.returns_key("extrinsic"),
+            RewardSignalUtil.value_estimates_key("extrinsic"),
+            RewardSignalUtil.rewards_key("curiosity"),
+            RewardSignalUtil.returns_key("curiosity"),
+            RewardSignalUtil.value_estimates_key("curiosity"),
+        ],
+    )
+
     trainer.trainer.update_buffer = buffer
 
     # when ghost trainer advance and wrapped trainer buffers full

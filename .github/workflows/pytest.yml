@@ -15,6 +15,8 @@ on:
 jobs:
   pytest:
     runs-on: ubuntu-latest
+    env:
+        TEST_ENFORCE_BUFFER_KEY_TYPES: 1
     strategy:
       matrix:
         python-version: [3.6.x, 3.7.x, 3.8.x]
@@ -38,13 +40,13 @@ jobs:
       run: python -c "import sys; print(sys.version)"
     - name: Install dependencies
       run: |
-        # pin pip to workaround https://github.com/pypa/pip/issues/9180
-        python -m pip install pip==20.2
+        python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install --progress-bar=off -e ./ml-agents-envs
         python -m pip install --progress-bar=off -e ./ml-agents
         python -m pip install --progress-bar=off -r test_requirements.txt
         python -m pip install --progress-bar=off -e ./gym-unity
+        python -m pip install --progress-bar=off -e ./ml-agents-plugin-examples
     - name: Save python dependencies
       run: |
         pip freeze > pip_versions-${{ matrix.python-version }}.txt

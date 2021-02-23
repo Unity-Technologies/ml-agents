@@ -1,10 +1,11 @@
 from mlagents_envs.base_env import (
     ActionSpec,
-    SensorSpec,
+    ObservationSpec,
     DimensionProperty,
     BehaviorSpec,
     DecisionSteps,
     TerminalSteps,
+    ObservationType,
 )
 from mlagents_envs.exception import UnityObservationException
 from mlagents_envs.timers import hierarchical_timer, timed
@@ -32,15 +33,18 @@ def behavior_spec_from_proto(
     :param agent_info: protobuf object.
     :return: BehaviorSpec object.
     """
-    observation_shape = [tuple(obs.shape) for obs in agent_info.observations]
-    dim_props = [
-        tuple(DimensionProperty(dim) for dim in obs.dimension_properties)
-        for obs in agent_info.observations
-    ]
-    sensor_specs = [
-        SensorSpec(obs_shape, dim_p)
-        for obs_shape, dim_p in zip(observation_shape, dim_props)
-    ]
+    observation_specs = []
+    for obs in agent_info.observations:
+        observation_specs.append(
+            ObservationSpec(
+                tuple(obs.shape),
+                tuple(DimensionProperty(dim) for dim in obs.dimension_properties)
+                if len(obs.dimension_properties) > 0
+                else (DimensionProperty.UNSPECIFIED,) * len(obs.shape),
+                ObservationType(obs.observation_type),
+            )
+        )
+
     # proto from communicator < v1.3 does not set action spec, use deprecated fields instead
     if (
         brain_param_proto.action_spec.num_continuous_actions == 0
@@ -60,7 +64,7 @@ def behavior_spec_from_proto(
             action_spec_proto.num_continuous_actions,
             tuple(branch for branch in action_spec_proto.discrete_branch_sizes),
         )
-    return BehaviorSpec(sensor_specs, action_spec)
+    return BehaviorSpec(observation_specs, action_spec)
 
 
 class OffsetBytesIO:
@@ -184,7 +188,7 @@ def _process_images_num_channels(image_arrays, expected_channels):
 
 
 @timed
-def observation_to_np_array(
+def _observation_to_np_array(
     obs: ObservationProto, expected_shape: Optional[Iterable[int]] = None
 ) -> np.ndarray:
     """
@@ -217,7 +221,7 @@ def observation_to_np_array(
 
 
 @timed
-def _process_visual_observation(
+def _process_maybe_compressed_observation(
     obs_index: int,
     shape: Tuple[int, int, int],
     agent_info_list: Collection[AgentInfoProto],
@@ -226,7 +230,7 @@ def _process_visual_observation(
         return np.zeros((0, shape[0], shape[1], shape[2]), dtype=np.float32)
 
     batched_visual = [
-        observation_to_np_array(agent_obs.observations[obs_index], shape)
+        _observation_to_np_array(agent_obs.observations[obs_index], shape)
         for agent_obs in agent_info_list
     ]
     return np.array(batched_visual, dtype=np.float32)
@@ -253,7 +257,7 @@ def _raise_on_nan_and_inf(data: np.array, source: str) -> np.array:
 
 
 @timed
-def _process_vector_observation(
+def _process_rank_one_or_two_observation(
     obs_index: int, shape: Tuple[int, ...], agent_info_list: Collection[AgentInfoProto]
 ) -> np.ndarray:
     if len(agent_info_list) == 0:
@@ -281,29 +285,29 @@ def steps_from_proto(
     ]
     decision_obs_list: List[np.ndarray] = []
     terminal_obs_list: List[np.ndarray] = []
-    for obs_index, sensor_specs in enumerate(behavior_spec.sensor_specs):
-        is_visual = len(sensor_specs.shape) == 3
+    for obs_index, observation_specs in enumerate(behavior_spec.observation_specs):
+        is_visual = len(observation_specs.shape) == 3
         if is_visual:
-            obs_shape = cast(Tuple[int, int, int], sensor_specs.shape)
+            obs_shape = cast(Tuple[int, int, int], observation_specs.shape)
             decision_obs_list.append(
-                _process_visual_observation(
+                _process_maybe_compressed_observation(
                     obs_index, obs_shape, decision_agent_info_list
                 )
             )
             terminal_obs_list.append(
-                _process_visual_observation(
+                _process_maybe_compressed_observation(
                     obs_index, obs_shape, terminal_agent_info_list
                 )
             )
         else:
             decision_obs_list.append(
-                _process_vector_observation(
-                    obs_index, sensor_specs.shape, decision_agent_info_list
+                _process_rank_one_or_two_observation(
+                    obs_index, observation_specs.shape, decision_agent_info_list
                 )
             )
             terminal_obs_list.append(
-                _process_vector_observation(
-                    obs_index, sensor_specs.shape, terminal_agent_info_list
+                _process_rank_one_or_two_observation(
+                    obs_index, observation_specs.shape, terminal_agent_info_list
                 )
             )
     decision_rewards = np.array(
@@ -366,18 +370,18 @@ def steps_from_proto(
         DecisionSteps(
             decision_obs_list,
             decision_rewards,
-            decision_group_rewards,
             decision_agent_id,
             action_mask,
             decision_group_id,
+            decision_group_rewards,
         ),
         TerminalSteps(
             terminal_obs_list,
             terminal_rewards,
-            terminal_group_rewards,
             max_step,
             terminal_agent_id,
             terminal_group_id,
+            terminal_group_rewards,
         ),
     )
 

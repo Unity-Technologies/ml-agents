@@ -28,7 +28,7 @@ from typing import (
     Any,
     Mapping as MappingType,
 )
-from enum import IntFlag
+from enum import IntFlag, Enum
 import numpy as np
 
 from mlagents_envs.exception import UnityActionException
@@ -58,6 +58,7 @@ class DecisionStep(NamedTuple):
     agent_id: AgentId
     action_mask: Optional[List[np.ndarray]]
     group_id: int
+    group_reward: float
 
 
 class DecisionSteps(Mapping):
@@ -83,13 +84,14 @@ class DecisionSteps(Mapping):
      this simulation step.
     """
 
-    def __init__(self, obs, reward, group_reward, agent_id, action_mask, group_id):
+    def __init__(self, obs, reward, agent_id, action_mask, group_id, group_reward):
         self.obs: List[np.ndarray] = obs
         self.reward: np.ndarray = reward
         self.group_reward: np.ndarray = group_reward
         self.agent_id: np.ndarray = agent_id
         self.action_mask: Optional[List[np.ndarray]] = action_mask
         self.group_id: np.ndarray = group_id
+        self.group_reward: np.ndarray = group_reward
         self._agent_id_to_index: Optional[Dict[AgentId, int]] = None
 
     @property
@@ -132,6 +134,7 @@ class DecisionSteps(Mapping):
             agent_id=agent_id,
             action_mask=agent_mask,
             group_id=group_id,
+            group_reward=self.group_reward[agent_index],
         )
 
     def __iter__(self) -> Iterator[Any]:
@@ -144,7 +147,7 @@ class DecisionSteps(Mapping):
         :param spec: The BehaviorSpec for the DecisionSteps
         """
         obs: List[np.ndarray] = []
-        for sen_spec in spec.sensor_specs:
+        for sen_spec in spec.observation_specs:
             obs += [np.zeros((0,) + sen_spec.shape, dtype=np.float32)]
         return DecisionSteps(
             obs=obs,
@@ -153,6 +156,7 @@ class DecisionSteps(Mapping):
             agent_id=np.zeros(0, dtype=np.int32),
             action_mask=None,
             group_id=np.zeros(0, dtype=np.int32),
+            group_reward=np.zeros(0, dtype=np.float32),
         )
 
 
@@ -174,6 +178,7 @@ class TerminalStep(NamedTuple):
     interrupted: bool
     agent_id: AgentId
     group_id: int
+    group_reward: float
 
 
 class TerminalSteps(Mapping):
@@ -194,13 +199,14 @@ class TerminalSteps(Mapping):
      across simulation steps.
     """
 
-    def __init__(self, obs, reward, group_reward, interrupted, agent_id, group_id):
+    def __init__(self, obs, reward, interrupted, agent_id, group_id, group_reward):
         self.obs: List[np.ndarray] = obs
         self.reward: np.ndarray = reward
         self.group_reward: np.ndarray = group_reward
         self.interrupted: np.ndarray = interrupted
         self.agent_id: np.ndarray = agent_id
         self.group_id: np.ndarray = group_id
+        self.group_reward: np.ndarray = group_reward
         self._agent_id_to_index: Optional[Dict[AgentId, int]] = None
 
     @property
@@ -239,6 +245,7 @@ class TerminalSteps(Mapping):
             interrupted=self.interrupted[agent_index],
             agent_id=agent_id,
             group_id=group_id,
+            group_reward=self.group_reward[agent_index],
         )
 
     def __iter__(self) -> Iterator[Any]:
@@ -251,7 +258,7 @@ class TerminalSteps(Mapping):
         :param spec: The BehaviorSpec for the TerminalSteps
         """
         obs: List[np.ndarray] = []
-        for sen_spec in spec.sensor_specs:
+        for sen_spec in spec.observation_specs:
             obs += [np.zeros((0,) + sen_spec.shape, dtype=np.float32)]
         return TerminalSteps(
             obs=obs,
@@ -260,6 +267,7 @@ class TerminalSteps(Mapping):
             interrupted=np.zeros(0, dtype=np.bool),
             agent_id=np.zeros(0, dtype=np.int32),
             group_id=np.zeros(0, dtype=np.int32),
+            group_reward=np.zeros(0, dtype=np.float32),
         )
 
 
@@ -476,31 +484,49 @@ class DimensionProperty(IntFlag):
     VARIABLE_SIZE = 4
 
 
-class SensorSpec(NamedTuple):
+class ObservationType(Enum):
+    """
+    An Enum which defines the type of information carried in the observation
+    of the agent.
+    """
+
+    # Observation information is generic.
+    DEFAULT = 0
+    # Observation contains goal information for current task.
+    GOAL = 1
+    # Observation contains reward information for current task.
+    REWARD = 2
+    # Observation contains a message from another agent.
+    MESSAGE = 3
+
+
+class ObservationSpec(NamedTuple):
     """
     A NamedTuple containing information about the observation of Agents.
     - shape is a Tuple of int : It corresponds to the shape of
     an observation's dimensions.
     - dimension_property is a Tuple of DimensionProperties flag, one flag for each
     dimension.
+    - observation_type is an enum of ObservationType.
     """
 
     shape: Tuple[int, ...]
     dimension_property: Tuple[DimensionProperty, ...]
+    observation_type: ObservationType
 
 
 class BehaviorSpec(NamedTuple):
     """
     A NamedTuple containing information about the observation and action
     spaces for a group of Agents under the same behavior.
-    - sensor_specs is a List of SensorSpec NamedTuple containing
+    - observation_specs is a List of ObservationSpec NamedTuple containing
     information about the information of the Agent's observations such as their shapes.
-    The order of the SensorSpec is the same as the order of the observations of an
+    The order of the ObservationSpec is the same as the order of the observations of an
     agent.
     - action_spec is an ActionSpec NamedTuple.
     """
 
-    sensor_specs: List[SensorSpec]
+    observation_specs: List[ObservationSpec]
     action_spec: ActionSpec
 
 

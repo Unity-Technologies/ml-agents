@@ -1,7 +1,7 @@
 import os
 from typing import List, Tuple
 import numpy as np
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
@@ -64,8 +64,8 @@ def make_demo_buffer(
         else:
             current_obs = list(current_decision_step.values())[0].obs
 
-        demo_raw_buffer["done"].append(next_done)
-        demo_raw_buffer["rewards"].append(next_reward)
+        demo_raw_buffer[BufferKey.DONE].append(next_done)
+        demo_raw_buffer[BufferKey.ENVIRONMENT_REWARDS].append(next_reward)
         for i, obs in enumerate(current_obs):
             demo_raw_buffer[ObsUtil.get_name_at(i)].append(obs)
         if (
@@ -73,23 +73,23 @@ def make_demo_buffer(
             and len(current_pair_info.action_info.discrete_actions) == 0
         ):
             if behavior_spec.action_spec.continuous_size > 0:
-                demo_raw_buffer["continuous_action"].append(
+                demo_raw_buffer[BufferKey.CONTINUOUS_ACTION].append(
                     current_pair_info.action_info.vector_actions_deprecated
                 )
             else:
-                demo_raw_buffer["discrete_action"].append(
+                demo_raw_buffer[BufferKey.DISCRETE_ACTION].append(
                     current_pair_info.action_info.vector_actions_deprecated
                 )
         else:
             if behavior_spec.action_spec.continuous_size > 0:
-                demo_raw_buffer["continuous_action"].append(
+                demo_raw_buffer[BufferKey.CONTINUOUS_ACTION].append(
                     current_pair_info.action_info.continuous_actions
                 )
             if behavior_spec.action_spec.discrete_size > 0:
-                demo_raw_buffer["discrete_action"].append(
+                demo_raw_buffer[BufferKey.DISCRETE_ACTION].append(
                     current_pair_info.action_info.discrete_actions
                 )
-        demo_raw_buffer["prev_action"].append(previous_action)
+        demo_raw_buffer[BufferKey.PREV_ACTION].append(previous_action)
         if next_done:
             demo_raw_buffer.resequence_and_append(
                 demo_processed_buffer, batch_size=None, training_length=sequence_length
@@ -122,13 +122,18 @@ def demo_to_buffer(
                 )
             )
         # check observations match
-        if len(behavior_spec.sensor_specs) != len(expected_behavior_spec.sensor_specs):
+        if len(behavior_spec.observation_specs) != len(
+            expected_behavior_spec.observation_specs
+        ):
             raise RuntimeError(
                 "The demonstrations do not have the same number of observations as the policy."
             )
         else:
             for i, (demo_obs, policy_obs) in enumerate(
-                zip(behavior_spec.sensor_specs, expected_behavior_spec.sensor_specs)
+                zip(
+                    behavior_spec.observation_specs,
+                    expected_behavior_spec.observation_specs,
+                )
             ):
                 if demo_obs.shape != policy_obs.shape:
                     raise RuntimeError(

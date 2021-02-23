@@ -4,6 +4,11 @@ The ML-Agents Toolkit contains several components:
 
 - Unity package ([`com.unity.ml-agents`](../com.unity.ml-agents/)) contains the
   Unity C# SDK that will be integrated into your Unity scene.
+- Unity package
+  ([`com.unity.ml-agents.extensions`](../com.unity.ml-agents.extensions/))
+  contains experimental C#/Unity components that are not yet ready to be part
+  of the base `com.unity.ml-agents` package. `com.unity.ml-agents.extensions`
+  has a direct dependency on `com.unity.ml-agents`.
 - Three Python packages:
   - [`mlagents`](../ml-agents/) contains the machine learning algorithms that
     enables you to train behaviors in your Unity scene. Most users of ML-Agents
@@ -24,10 +29,12 @@ Consequently, to install and use the ML-Agents Toolkit you will need to:
 - Install Python (3.6.1 or higher)
 - Clone this repository (Optional)
   - __Note:__ If you do not clone the repository, then you will not be
-  able to access the example environments and training configurations.
-  Additionally, the [Getting Started Guide](Getting-Started.md) assumes that
-  you have cloned the repository.
+  able to access the example environments and training configurations or the
+  `com.unity.ml-agents.extensions` package. Additionally, the
+  [Getting Started Guide](Getting-Started.md) assumes that you have cloned the
+  repository.
 - Install the `com.unity.ml-agents` Unity package
+- Install the `com.unity.ml-agents.extensions` Unity package (Optional)
 - Install the `mlagents` Python package
 
 ### Install **Unity 2018.4** or Later
@@ -75,7 +82,7 @@ The Unity ML-Agents C# SDK is a Unity Package. You can install the
 `com.unity.ml-agents` package
 [directly from the Package Manager registry](https://docs.unity3d.com/Manual/upm-ui-install.html).
 Please make sure you enable 'Preview Packages' in the 'Advanced' dropdown in
-order to find it.
+order to find the latest Preview release of the package.
 
 **NOTE:** If you do not see the ML-Agents package listed in the Package Manager
 please follow the [advanced installation instructions](#advanced-local-installation-for-development) below.
@@ -109,6 +116,15 @@ list, and in Unity 2019.3 it's on the top left of the packages list.
 If you are going to follow the examples from our documentation, you can open the
 `Project` folder in Unity and start tinkering immediately.
 
+### Install the `com.unity.ml-agents.extensions` Unity package (Optional)
+
+To install the `com.unity.ml-agents.extensions` package, you need to first
+clone the repo and then complete a local installation similar to what was
+outlined in the previous
+[Advanced: Local Installation for Development](#advanced-local-installation-for-development-1)
+section. Complete installation steps can be found in the
+[package documentation](../com.unity.ml-agents.extensions/Documentation~/com.unity.ml-agents.extensions.md#installation).
+
 ### Install the `mlagents` Python package
 
 Installing the `mlagents` Python package involves installing other Python
@@ -125,7 +141,7 @@ On Windows, you'll have to install the PyTorch package separately prior to
 installing ML-Agents. Activate your virtual environment and run from the command line:
 
 ```sh
-pip3 install torch==1.7.0 -f https://download.pytorch.org/whl/torch_stable.html
+pip3 install torch~=1.7.1 -f https://download.pytorch.org/whl/torch_stable.html
 ```
 
 Note that on Windows, you may also need Microsoft's

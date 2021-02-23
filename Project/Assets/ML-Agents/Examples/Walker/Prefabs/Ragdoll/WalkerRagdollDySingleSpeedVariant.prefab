@@ -135,6 +135,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 47e7c480450ec4dcd9e4a04124e14ed4,
         type: 3}
+    - target: {fileID: 895268871377934297, guid: 765582efd9dda46ed98564603316353f,
+        type: 3}
+      propertyPath: m_InferenceDevice
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 895268871377934298, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_LocalPosition.x

@@ -144,12 +144,12 @@ class BCModule:
         Helper function for update_batch.
         """
         np_obs = ObsUtil.from_buffer(
-            mini_batch_demo, len(self.policy.behavior_spec.sensor_specs)
+            mini_batch_demo, len(self.policy.behavior_spec.observation_specs)
         )
         # Convert to tensors
         tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
         act_masks = None
-        expert_actions = AgentAction.from_dict(mini_batch_demo)
+        expert_actions = AgentAction.from_buffer(mini_batch_demo)
         if self.policy.behavior_spec.action_spec.discrete_size > 0:
 
             act_masks = ModelUtils.list_to_tensor(

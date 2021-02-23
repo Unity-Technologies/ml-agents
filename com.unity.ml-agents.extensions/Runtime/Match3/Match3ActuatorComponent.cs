@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 namespace Unity.MLAgents.Extensions.Match3
 {
     /// <summary>
-    /// Actuator component for a Match 3 game. Generates a Match3Actuator at runtime.
+    /// Actuator component for a Match3 game. Generates a Match3Actuator at runtime.
     /// </summary>
     public class Match3ActuatorComponent : ActuatorComponent
     {
@@ -16,6 +16,11 @@ namespace Unity.MLAgents.Extensions.Match3
         public string ActuatorName = "Match3 Actuator";
 
         /// <summary>
+        /// A random seed used to generate a board, if needed.
+        /// </summary>
+        public int RandomSeed = -1;
+
+        /// <summary>
         /// Force using the Agent's Heuristic() method to decide the action. This should only be used in testing.
         /// </summary>
         [FormerlySerializedAs("ForceRandom")]
@@ -23,11 +28,14 @@ namespace Unity.MLAgents.Extensions.Match3
         public bool ForceHeuristic;
 
         /// <inheritdoc/>
+#pragma warning disable 672
         public override IActuator CreateActuator()
+#pragma warning restore 672
         {
             var board = GetComponent<AbstractBoard>();
             var agent = GetComponentInParent<Agent>();
-            return new Match3Actuator(board, ForceHeuristic, agent, ActuatorName);
+            var seed = RandomSeed == -1 ? gameObject.GetInstanceID() : RandomSeed + 1;
+            return new Match3Actuator(board, ForceHeuristic, seed, agent, ActuatorName);
         }
 
         /// <inheritdoc/>

@@ -247,16 +247,7 @@ class GhostTrainer(Trainer):
 
         next_learning_team = self.controller.get_learning_team
 
-        # CASE 1: Current learning team is managed by this GhostTrainer.
-        # If the learning team changes, the following loop over queues will push the
-        # new policy into the policy queue for the new learning agent if
-        # that policy is managed by this GhostTrainer. Otherwise, it will save the current snapshot.
-        # CASE 2: Current learning team is managed by a different GhostTrainer.
-        # If the learning team changes to a team managed by this GhostTrainer, this loop
-        # will push the current_snapshot into the correct queue.  Otherwise,
-        # it will continue skipping and swap_snapshot will continue to handle
-        # pushing fixed snapshots
-        # Case 3: No team change. The if statement just continues to push the policy
+        # Case 1: No team change. The if statement just continues to push the policy
         # into the correct queue (or not if not learning team).
         for brain_name in self._internal_policy_queues:
             internal_policy_queue = self._internal_policy_queues[brain_name]
@@ -264,8 +255,11 @@ class GhostTrainer(Trainer):
                 policy = internal_policy_queue.get_nowait()
                 self.current_policy_snapshot[brain_name] = policy.get_weights()
             except AgentManagerQueue.Empty:
-                pass
-            if next_learning_team in self._team_to_name_to_policy_queue:
+                continue
+            if (
+                self._learning_team == next_learning_team
+                and next_learning_team in self._team_to_name_to_policy_queue
+            ):
                 name_to_policy_queue = self._team_to_name_to_policy_queue[
                     next_learning_team
                 ]
@@ -276,6 +270,28 @@ class GhostTrainer(Trainer):
                     policy = self.get_policy(behavior_id)
                     policy.load_weights(self.current_policy_snapshot[brain_name])
                     name_to_policy_queue[brain_name].put(policy)
+
+        # CASE 2: Current learning team is managed by this GhostTrainer.
+        # If the learning team changes, the following loop over queues will push the
+        # new policy into the policy queue for the new learning agent if
+        # that policy is managed by this GhostTrainer. Otherwise, it will save the current snapshot.
+        # CASE 3: Current learning team is managed by a different GhostTrainer.
+        # If the learning team changes to a team managed by this GhostTrainer, this loop
+        # will push the current_snapshot into the correct queue.  Otherwise,
+        # it will continue skipping and swap_snapshot will continue to handle
+        # pushing fixed snapshots
+        if (
+            self._learning_team != next_learning_team
+            and next_learning_team in self._team_to_name_to_policy_queue
+        ):
+            name_to_policy_queue = self._team_to_name_to_policy_queue[
+                next_learning_team
+            ]
+            for brain_name in name_to_policy_queue:
+                behavior_id = create_name_behavior_id(brain_name, next_learning_team)
+                policy = self.get_policy(behavior_id)
+                policy.load_weights(self.current_policy_snapshot[brain_name])
+                name_to_policy_queue[brain_name].put(policy)
 
         # Note save and swap should be on different step counters.
         # We don't want to save unless the policy is learning.

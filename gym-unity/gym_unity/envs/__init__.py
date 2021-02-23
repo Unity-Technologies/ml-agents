@@ -229,16 +229,16 @@ class UnityToGymWrapper(gym.Env):
 
     def _get_n_vis_obs(self) -> int:
         result = 0
-        for sen_spec in self.group_spec.sensor_specs:
-            if len(sen_spec.shape) == 3:
+        for obs_spec in self.group_spec.observation_specs:
+            if len(obs_spec.shape) == 3:
                 result += 1
         return result
 
     def _get_vis_obs_shape(self) -> List[Tuple]:
         result: List[Tuple] = []
-        for sen_spec in self.group_spec.sensor_specs:
-            if len(sen_spec.shape) == 3:
-                result.append(sen_spec.shape)
+        for obs_spec in self.group_spec.observation_specs:
+            if len(obs_spec.shape) == 3:
+                result.append(obs_spec.shape)
         return result
 
     def _get_vis_obs_list(
@@ -261,9 +261,9 @@ class UnityToGymWrapper(gym.Env):
 
     def _get_vec_obs_size(self) -> int:
         result = 0
-        for sen_spec in self.group_spec.sensor_specs:
-            if len(sen_spec.shape) == 1:
-                result += sen_spec.shape[0]
+        for obs_spec in self.group_spec.observation_specs:
+            if len(obs_spec.shape) == 1:
+                result += obs_spec.shape[0]
         return result
 
     def render(self, mode="rgb_array"):
@@ -297,10 +297,6 @@ class UnityToGymWrapper(gym.Env):
     @property
     def reward_range(self) -> Tuple[float, float]:
         return -float("inf"), float("inf")
-
-    @property
-    def spec(self):
-        return None
 
     @property
     def action_space(self):

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Unity.MLAgents.Actuators
 {
@@ -157,9 +158,11 @@ namespace Unity.MLAgents.Actuators
         /// actions for the IActuators in this list.</param>
         public void UpdateActions(ActionBuffers actions)
         {
+            Profiler.BeginSample("ActuatorManager.UpdateActions");
             ReadyActuatorsForExecution();
             UpdateActionArray(actions.ContinuousActions, StoredActions.ContinuousActions);
             UpdateActionArray(actions.DiscreteActions, StoredActions.DiscreteActions);
+            Profiler.EndSample();
         }
 
         static void UpdateActionArray<T>(ActionSegment<T> sourceActionBuffer, ActionSegment<T> destination)
@@ -171,9 +174,10 @@ namespace Unity.MLAgents.Actuators
             }
             else
             {
-                Debug.Assert(sourceActionBuffer.Length == destination.Length,
-                    $"sourceActionBuffer:{sourceActionBuffer.Length} is a different" +
-                    $" size than destination: {destination.Length}.");
+                Debug.AssertFormat(sourceActionBuffer.Length == destination.Length,
+                    "sourceActionBuffer: {0} is a different size than destination: {1}.",
+                    sourceActionBuffer.Length,
+                    destination.Length);
 
                 Array.Copy(sourceActionBuffer.Array,
                     sourceActionBuffer.Offset,
@@ -206,11 +210,57 @@ namespace Unity.MLAgents.Actuators
 
         /// <summary>
         /// Iterates through all of the IActuators in this list and calls their
+        /// <see cref="IHeuristicProvider.Heuristic"/> method on them, if implemented, with the appropriate
+        /// <see cref="ActionSegment{T}"/>s depending on their <see cref="ActionSpec"/>.
+        /// </summary>
+        public void ApplyHeuristic(in ActionBuffers actionBuffersOut)
+        {
+            Profiler.BeginSample("ActuatorManager.ApplyHeuristic");
+            var continuousStart = 0;
+            var discreteStart = 0;
+            for (var i = 0; i < m_Actuators.Count; i++)
+            {
+                var actuator = m_Actuators[i];
+                var numContinuousActions = actuator.ActionSpec.NumContinuousActions;
+                var numDiscreteActions = actuator.ActionSpec.NumDiscreteActions;
+
+                if (numContinuousActions == 0 && numDiscreteActions == 0)
+                {
+                    continue;
+                }
+
+                var continuousActions = ActionSegment<float>.Empty;
+                if (numContinuousActions > 0)
+                {
+                    continuousActions = new ActionSegment<float>(actionBuffersOut.ContinuousActions.Array,
+                        continuousStart,
+                        numContinuousActions);
+                }
+
+                var discreteActions = ActionSegment<int>.Empty;
+                if (numDiscreteActions > 0)
+                {
+                    discreteActions = new ActionSegment<int>(actionBuffersOut.DiscreteActions.Array,
+                        discreteStart,
+                        numDiscreteActions);
+                }
+
+                var heuristic = actuator as IHeuristicProvider;
+                heuristic?.Heuristic(new ActionBuffers(continuousActions, discreteActions));
+                continuousStart += numContinuousActions;
+                discreteStart += numDiscreteActions;
+            }
+            Profiler.EndSample();
+        }
+
+        /// <summary>
+        /// Iterates through all of the IActuators in this list and calls their
         /// <see cref="IActionReceiver.OnActionReceived"/> method on them with the appropriate
         /// <see cref="ActionSegment{T}"/>s depending on their <see cref="ActionSpec"/>.
         /// </summary>
         public void ExecuteActions()
         {
+            Profiler.BeginSample("ActuatorManager.ExecuteActions");
             ReadyActuatorsForExecution();
             var continuousStart = 0;
             var discreteStart = 0;
@@ -219,6 +269,11 @@ namespace Unity.MLAgents.Actuators
                 var actuator = m_Actuators[i];
                 var numContinuousActions = actuator.ActionSpec.NumContinuousActions;
                 var numDiscreteActions = actuator.ActionSpec.NumDiscreteActions;
+
+                if (numContinuousActions == 0 && numDiscreteActions == 0)
+                {
+                    continue;
+                }
 
                 var continuousActions = ActionSegment<float>.Empty;
                 if (numContinuousActions > 0)
@@ -240,6 +295,7 @@ namespace Unity.MLAgents.Actuators
                 continuousStart += numContinuousActions;
                 discreteStart += numDiscreteActions;
             }
+            Profiler.EndSample();
         }
 
         /// <summary>
@@ -325,6 +381,18 @@ namespace Unity.MLAgents.Actuators
             NumContinuousActions = NumDiscreteActions = SumOfDiscreteBranchSizes = 0;
         }
 
+        /// <summary>
+        /// Add an array of <see cref="IActuator"/>s at once.
+        /// </summary>
+        /// <param name="actuators">The array of <see cref="IActuator"/>s to add.</param>
+        public void AddActuators(IActuator[] actuators)
+        {
+            for (var i = 0; i < actuators.Length; i++)
+            {
+                Add(actuators[i]);
+            }
+        }
+
         /*********************************************************************************
          * IList implementation that delegates to m_Actuators List.                      *
          *********************************************************************************/
@@ -388,7 +456,7 @@ namespace Unity.MLAgents.Actuators
         public int Count => m_Actuators.Count;
 
         /// <inheritdoc/>
-        public bool IsReadOnly => m_Actuators.IsReadOnly;
+        public bool IsReadOnly => false;
 
         /// <inheritdoc/>
         public int IndexOf(IActuator item)

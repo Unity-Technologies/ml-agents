@@ -10,9 +10,9 @@ from mlagents.trainers.torch.networks import ValueNetwork
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, BufferKey, RewardSignalUtil
 from mlagents_envs.timers import timed
-from mlagents_envs.base_env import ActionSpec, SensorSpec
+from mlagents_envs.base_env import ActionSpec, ObservationSpec
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.settings import TrainerSettings, SACSettings
 from contextlib import ExitStack
@@ -28,7 +28,7 @@ class TorchSACOptimizer(TorchOptimizer):
         def __init__(
             self,
             stream_names: List[str],
-            sensor_specs: List[SensorSpec],
+            observation_specs: List[ObservationSpec],
             network_settings: NetworkSettings,
             action_spec: ActionSpec,
         ):
@@ -38,14 +38,14 @@ class TorchSACOptimizer(TorchOptimizer):
 
             self.q1_network = ValueNetwork(
                 stream_names,
-                sensor_specs,
+                observation_specs,
                 network_settings,
                 num_action_ins,
                 num_value_outs,
             )
             self.q2_network = ValueNetwork(
                 stream_names,
-                sensor_specs,
+                observation_specs,
                 network_settings,
                 num_action_ins,
                 num_value_outs,
@@ -132,14 +132,14 @@ class TorchSACOptimizer(TorchOptimizer):
 
         self.value_network = TorchSACOptimizer.PolicyValueNetwork(
             self.stream_names,
-            self.policy.behavior_spec.sensor_specs,
+            self.policy.behavior_spec.observation_specs,
             policy_network_settings,
             self._action_spec,
         )
 
         self.target_network = ValueNetwork(
             self.stream_names,
-            self.policy.behavior_spec.sensor_specs,
+            self.policy.behavior_spec.observation_specs,
             policy_network_settings,
         )
         ModelUtils.soft_update(
@@ -459,9 +459,11 @@ class TorchSACOptimizer(TorchOptimizer):
         """
         rewards = {}
         for name in self.reward_signals:
-            rewards[name] = ModelUtils.list_to_tensor(batch[f"{name}_rewards"])
+            rewards[name] = ModelUtils.list_to_tensor(
+                batch[RewardSignalUtil.rewards_key(name)]
+            )
 
-        n_obs = len(self.policy.behavior_spec.sensor_specs)
+        n_obs = len(self.policy.behavior_spec.observation_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
         # Convert to tensors
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
@@ -470,20 +472,22 @@ class TorchSACOptimizer(TorchOptimizer):
         # Convert to tensors
         next_obs = [ModelUtils.list_to_tensor(obs) for obs in next_obs]
 
-        act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
-        actions = AgentAction.from_dict(batch)
+        act_masks = ModelUtils.list_to_tensor(batch[BufferKey.ACTION_MASK])
+        actions = AgentAction.from_buffer(batch)
 
         memories_list = [
-            ModelUtils.list_to_tensor(batch["memory"][i])
-            for i in range(0, len(batch["memory"]), self.policy.sequence_length)
+            ModelUtils.list_to_tensor(batch[BufferKey.MEMORY][i])
+            for i in range(0, len(batch[BufferKey.MEMORY]), self.policy.sequence_length)
         ]
         # LSTM shouldn't have sequence length <1, but stop it from going out of the index if true.
         offset = 1 if self.policy.sequence_length > 1 else 0
         next_memories_list = [
             ModelUtils.list_to_tensor(
-                batch["memory"][i][self.policy.m_size // 2 :]
+                batch[BufferKey.MEMORY][i][self.policy.m_size // 2 :]
             )  # only pass value part of memory to target network
-            for i in range(offset, len(batch["memory"]), self.policy.sequence_length)
+            for i in range(
+                offset, len(batch[BufferKey.MEMORY]), self.policy.sequence_length
+            )
         ]
 
         if len(memories_list) > 0:
@@ -549,8 +553,8 @@ class TorchSACOptimizer(TorchOptimizer):
                 memories=next_memories,
                 sequence_length=self.policy.sequence_length,
             )
-        masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.bool)
-        dones = ModelUtils.list_to_tensor(batch["done"])
+        masks = ModelUtils.list_to_tensor(batch[BufferKey.MASKS], dtype=torch.bool)
+        dones = ModelUtils.list_to_tensor(batch[BufferKey.DONE])
 
         q1_loss, q2_loss = self.sac_q_loss(
             q1_stream, q2_stream, target_values, dones, rewards, masks
