@@ -7,6 +7,13 @@ using Random = UnityEngine.Random;
 public class DodgeBallGameController : MonoBehaviour
 {
 
+    // public enum CurrentGameMode
+    // {
+    //     OneVsOne, "2v2", "3v3"
+    // }
+    //
+    // public CurrentGameMode GameMode = CurrentGameMode.1v1;
+
     [Header("PLAYERS")]
     public Transform Team0SpawnPos;
     public Transform Team1SpawnPos;
@@ -17,7 +24,8 @@ public class DodgeBallGameController : MonoBehaviour
     public float BallSpawnRadius = 3;
     public Transform BallSpawnPosition;
     public int NumberOfBallsToSpawn = 10;
-    public int NumberOfBallsPlayersCanHold = 3;
+    // public int NumberOfBallsPlayersCanHold = 4;
+    public int PlayerMaxHitPoints = 5;
 
     // [Serializable]
     // public class DodgeBallPlayer
@@ -32,6 +40,7 @@ public class DodgeBallGameController : MonoBehaviour
     public class AgentInfo
     {
         public DodgeBallAgent Agent;
+        public int HitPointsRemaining;
         [HideInInspector]
         public Vector3 StartingPos;
         [HideInInspector]
@@ -40,16 +49,20 @@ public class DodgeBallGameController : MonoBehaviour
         public Rigidbody Rb;
         [HideInInspector]
         public Collider Col;
+        [HideInInspector]
+        public int TeamID;
     }
 
     private bool m_Initialized;
     public List<AgentInfo> Team0Players;
+    public Color Team0Color;
     public List<AgentInfo> Team1Players;
+    public Color Team1Color;
     public List<DodgeBall> dodgeBallsListTeamO;
     public List<DodgeBall> dodgeBallsListTeam1;
     public List<DodgeBall> AllBallsList;
 
-    // public Dictionary<DodgeBallAgent, DodgeBallPlayer> PlayersDict = new Dictionary<DodgeBallAgent, DodgeBallPlayer>();
+    public Dictionary<DodgeBallAgent, AgentInfo> PlayersDict = new Dictionary<DodgeBallAgent, AgentInfo>();
 
     private int m_ResetTimer;
     public int MaxEnvironmentSteps = 5000;
@@ -63,6 +76,8 @@ public class DodgeBallGameController : MonoBehaviour
     }
     void Initialize()
     {
+
+        //SPAWN DODGE BALLS
         for (int i = 0; i < NumberOfBallsToSpawn; i++)
         {
             GameObject g = Instantiate(BallPrefab, BallSpawnPosition.position + Random.insideUnitSphere * BallSpawnRadius,
@@ -72,27 +87,53 @@ public class DodgeBallGameController : MonoBehaviour
             g.SetActive(true);
         }
 
-        //Reset Agents
+        //INITIALIZE AGENTS
         foreach (var item in Team0Players)
         {
-            item.StartingPos = item.Agent.transform.position;
-            item.StartingRot = item.Agent.transform.rotation;
-            item.Rb = item.Agent.GetComponent<Rigidbody>();
-            // item.Col = item.Agent.GetComponent<Collider>();
+            item.Agent.Initialize();
+            item.HitPointsRemaining = PlayerMaxHitPoints;
+            item.TeamID = 0;
+            PlayersDict.Add(item.Agent, item);
         }
         foreach (var item in Team1Players)
         {
-            item.StartingPos = item.Agent.transform.position;
-            item.StartingRot = item.Agent.transform.rotation;
-            item.Rb = item.Agent.GetComponent<Rigidbody>();
+            item.Agent.Initialize();
+            item.HitPointsRemaining = PlayerMaxHitPoints;
+            item.TeamID = 1;
+            PlayersDict.Add(item.Agent, item);
         }
 
         m_Initialized = true;
     }
 
-    void PlayerWasHit(DodgeBallAgent agent)
+    public void PlayerWasHit(DodgeBallAgent agent)
     {
         // var team
+        AgentInfo info = PlayersDict[agent];
+        if (info.HitPointsRemaining == 1)
+        {
+            //RESET ENV
+            print($"{agent.name} Lost.{agent.name} was weak:");
+            //ASSIGN REWARDS
+            // EndEpisode();
+            agent.AddReward(-1f); //you lost penalty
+            if (info.TeamID == 0)
+            {
+                print($"Team 1 Won");
+            }
+            else if (info.TeamID == 1)
+            {
+                print($"Team 0 Won");
+            }
+            ResetScene();
+        }
+        else
+        {
+            info.HitPointsRemaining--;
+            //ASSIGN REWARDS
+            agent.AddReward(-.1f); //small hit penalty
+        }
+
 
 
     }
@@ -114,32 +155,38 @@ public class DodgeBallGameController : MonoBehaviour
         foreach (var item in Team0Players)
         {
             item.Agent.EndEpisode();
+            item.HitPointsRemaining = PlayerMaxHitPoints;
         }
         foreach (var item in Team1Players)
         {
             item.Agent.EndEpisode();
+            item.HitPointsRemaining = PlayerMaxHitPoints;
         }
 
-        //Reset Agents
-        foreach (var item in Team0Players)
-        {
-            ResetAgent(item);
-        }
-        foreach (var item in Team1Players)
-        {
-            ResetAgent(item);
-        }
+        // //Reset Agents
+        // foreach (var item in Team0Players)
+        // {
+        //     item.Agent.ResetAgent();
+        //     item.HitPointsRemaining = PlayerMaxHitPoints;
+        //     // ResetAgent(item);
+        // }
+        // foreach (var item in Team1Players)
+        // {
+        //     item.Agent.ResetAgent();
+        //     item.HitPointsRemaining = PlayerMaxHitPoints;
+        //     // ResetAgent(item);
+        // }
     }
 
-    void ResetAgent(AgentInfo item)
-    {
-            // var pos = UseRandomAgentPosition ? GetRandomSpawnPos() : item.StartingPos;
-            // var rot = UseRandomAgentRotation ? GetRandomRot() : item.StartingRot;
-        item.Agent.transform.SetPositionAndRotation(item.StartingPos, item.StartingRot);
-        item.Rb.velocity = Vector3.zero;
-        item.Rb.angularVelocity = Vector3.zero;
-        item.Agent.gameObject.SetActive(true);
-    }
+    // void ResetAgent(AgentInfo item)
+    // {
+    //         // var pos = UseRandomAgentPosition ? GetRandomSpawnPos() : item.StartingPos;
+    //         // var rot = UseRandomAgentRotation ? GetRandomRot() : item.StartingRot;
+    //     item.Agent.transform.SetPositionAndRotation(item.StartingPos, item.StartingRot);
+    //     item.Rb.velocity = Vector3.zero;
+    //     item.Rb.angularVelocity = Vector3.zero;
+    //     item.Agent.gameObject.SetActive(true);
+    // }
 
     // // Start is called before the first frame update
     // void Awake()
