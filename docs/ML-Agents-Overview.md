@@ -472,12 +472,23 @@ Learning (GAIL). In most scenarios, you can combine these two features:
 - If you want to help your agents learn (especially with environments that have
   sparse rewards) using pre-recorded demonstrations, you can generally enable
   both GAIL and Behavioral Cloning at low strengths in addition to having an
-  extrinsic reward. An example of this is provided for the Pyramids example
-  environment under `PyramidsLearning` in `config/gail_config.yaml`.
-- If you want to train purely from demonstrations, GAIL and BC _without_ an
-  extrinsic reward signal is the preferred approach. An example of this is
-  provided for the Crawler example environment under `CrawlerStaticLearning` in
-  `config/gail_config.yaml`.
+  extrinsic reward. An example of this is provided for the PushBlock example
+  environment in `config/imitation/PushBlock.yaml`.
+- If you want to train purely from demonstrations with GAIL and BC _without_ an
+  extrinsic reward signal, please see the CrawlerStatic example environment under
+  in `config/imitation/CrawlerStatic.yaml`.
+
+***Note:*** GAIL introduces a [_survivor bias_](https://arxiv.org/pdf/1809.02925.pdf)
+to the learning process. That is, by giving positive rewards based on similarity
+to the expert, the agent is incentivized to remain alive for as long as possible.
+This can directly conflict with goal-oriented tasks like our PushBlock or Pyramids
+example environments where an agent must reach a goal state thus ending the
+episode as quickly as possible. In these cases, we strongly recommend that you
+use a low strength GAIL reward signal and a sparse extrinisic signal when
+the agent achieves the task. This way, the GAIL reward signal will guide the
+agent until it discovers the extrnisic signal and will not overpower it. If the
+agent appears to be ignoring the extrinsic reward signal, you should reduce
+the strength of GAIL.
 
 #### GAIL (Generative Adversarial Imitation Learning)
 

@@ -35,6 +35,8 @@ def main(scene_path, build_target):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--scene", default=None)
-    parser.add_argument("--build-target", default="mac", choices=["mac", "linux"])
+    parser.add_argument(
+        "--build-target", default="mac", choices=["mac", "linux", "ios", "webgl"]
+    )
     args = parser.parse_args()
     main(args.scene, args.build_target)

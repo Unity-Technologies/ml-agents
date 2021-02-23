@@ -22,11 +22,11 @@ behaviors:
       rnd:
         gamma: 0.99
         strength: 0.01
-        encoding_size: 64
+        network_settings:
+          hidden_units: 64
         learning_rate: 0.0001
     keep_checkpoints: 5
     max_steps: 3000000
     time_horizon: 128
     summary_freq: 30000
-    framework: pytorch
     threaded: true

@@ -107,7 +107,7 @@ namespace Unity.MLAgents
         /// Unity package version of com.unity.ml-agents.
         /// This must match the version string in package.json and is checked in a unit test.
         /// </summary>
-        internal const string k_PackageVersion = "1.7.2-preview";
+        internal const string k_PackageVersion = "1.8.0-preview";
 
         const int k_EditorTrainingPort = 5004;
 
@@ -422,12 +422,7 @@ namespace Unity.MLAgents
             var port = ReadPortFromArgs();
             if (port > 0)
             {
-                Communicator = new RpcCommunicator(
-                    new CommunicatorInitParameters
-                    {
-                        port = port
-                    }
-                );
+                Communicator = CommunicatorFactory.Create();
             }
 
             if (Communicator != null)
@@ -438,6 +433,7 @@ namespace Unity.MLAgents
                 bool initSuccessful = false;
                 var communicatorInitParams = new CommunicatorInitParameters
                 {
+                    port = port,
                     unityCommunicationVersion = k_ApiVersion,
                     unityPackageVersion = k_PackageVersion,
                     name = "AcademySingleton",

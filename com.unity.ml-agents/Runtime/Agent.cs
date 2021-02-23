@@ -330,9 +330,12 @@ namespace Unity.MLAgents
         /// </summary>
         float[] m_LegacyHeuristicCache;
 
+        /// Currect MultiAgentGroup ID. Default to 0 (meaning no group)
         int m_GroupId;
 
-        internal event Action<Agent> UnregisterFromGroup;
+        /// Delegate for the agent to unregister itself from the MultiAgentGroup without cyclic reference
+        /// between agent and the group
+        internal event Action<Agent> OnAgentDisabled;
 
         /// <summary>
         /// Called when the attached [GameObject] becomes enabled and active.
@@ -535,7 +538,7 @@ namespace Unity.MLAgents
                 NotifyAgentDone(DoneReason.Disabled);
             }
             m_Brain?.Dispose();
-            UnregisterFromGroup?.Invoke(this);
+            OnAgentDisabled?.Invoke(this);
             m_Initialized = false;
         }
 
@@ -1403,10 +1406,22 @@ namespace Unity.MLAgents
 
         internal void SetMultiAgentGroup(IMultiAgentGroup multiAgentGroup)
         {
-            // Unregister from current group if this agent has been assigned one before
-            UnregisterFromGroup?.Invoke(this);
-
-            m_GroupId = multiAgentGroup.GetId();
+            if (multiAgentGroup == null)
+            {
+                m_GroupId = 0;
+            }
+            else
+            {
+                var newGroupId = multiAgentGroup.GetId();
+                if (m_GroupId == 0 || m_GroupId == newGroupId)
+                {
+                    m_GroupId = newGroupId;
+                }
+                else
+                {
+                    throw new UnityAgentsException("Agent is already registered with a group. Unregister it first.");
+                }
+            }
         }
     }
 }
