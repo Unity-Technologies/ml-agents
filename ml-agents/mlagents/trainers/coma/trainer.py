@@ -7,10 +7,12 @@ from typing import cast
 
 import numpy as np
 
+from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
+from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.coma.optimizer_torch import TorchCOMAOptimizer
@@ -57,6 +59,7 @@ class COMATrainer(RLTrainer):
         )
         self.seed = seed
         self.policy: Policy = None  # type: ignore
+        self.collected_rewards["environment_team"] = defaultdict(lambda: 0)
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
@@ -105,6 +108,9 @@ class COMATrainer(RLTrainer):
         self.collected_rewards["environment"][agent_id] += np.sum(
             agent_buffer_trajectory[BufferKey.ENVIRONMENT_REWARDS]
         )
+        self.collected_rewards["environment_team"][agent_id] += np.sum(
+            agent_buffer_trajectory[BufferKey.GROUP_REWARD]
+        )
         for name, reward_signal in self.optimizer.reward_signals.items():
             evaluate_result = (
                 reward_signal.evaluate(agent_buffer_trajectory) * reward_signal.strength
@@ -120,9 +126,11 @@ class COMATrainer(RLTrainer):
         tmp_returns = []
         for name in self.optimizer.reward_signals:
 
-            local_rewards = agent_buffer_trajectory[
-                RewardSignalUtil.rewards_key(name)
-            ].get_batch()
+            local_rewards = np.array(
+                agent_buffer_trajectory[RewardSignalUtil.rewards_key(name)].get_batch(),
+                dtype=np.float32,
+            )
+
             baseline_estimates = agent_buffer_trajectory[
                 RewardSignalUtil.baseline_estimates_key(name)
             ].get_batch()
@@ -303,6 +311,15 @@ class COMATrainer(RLTrainer):
 
         return self.policy
 
+    def _update_end_episode_stats(self, agent_id: str, optimizer: Optimizer) -> None:
+        super()._update_end_episode_stats(agent_id, optimizer)
+        if "environment_team" in self.collected_rewards:
+            self.stats_reporter.add_stat(
+                "Environment/Team Cumulative Reward",
+                self.collected_rewards["environment_team"].get(agent_id, 0),
+                aggregation=StatsAggregationMethod.HISTOGRAM,
+            )
+
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):
     """
@@ -350,7 +367,6 @@ def get_team_returns(
     :param lambd: GAE weighing factor.
     :return: list of advantage estimates for time-steps t to T.
     """
-    rewards = np.array(rewards)
     returns_b = lambda_return(
         rewards, baseline_estimates, gamma=gamma, lambd=lambd, value_next=value_next
     )

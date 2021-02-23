@@ -165,6 +165,7 @@ class SACSettings(HyperparamSettings):
 # INTRINSIC REWARD SIGNALS #############################################################
 class RewardSignalType(Enum):
     EXTRINSIC: str = "extrinsic"
+    GROUP_EXTRINSIC: str = "group"
     GAIL: str = "gail"
     CURIOSITY: str = "curiosity"
     RND: str = "rnd"
