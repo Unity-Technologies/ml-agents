@@ -89,15 +89,15 @@ class RewardSignalUtil:
 
 class AgentBufferField(list):
     """
-    AgentBufferField is a list of numpy arrays. When an agent collects a field, you can add it to its
-    AgentBufferField with the append method.
+    AgentBufferField is a list of numpy arrays, or List[np.ndarray] for group entries.
+    When an agent collects a field, you can add it to its AgentBufferField with the append method.
     """
 
     def __init__(self):
         self.padding_value = 0
         super().__init__()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(np.array(self).shape)
 
     def append(self, element: np.ndarray, padding_value: float = 0.0) -> None:
@@ -111,10 +111,10 @@ class AgentBufferField(list):
         super().append(element)
         self.padding_value = padding_value
 
-    def set(self, data):
+    def set(self, data: List[BufferEntry]) -> None:
         """
-        Sets the list of np.array to the input data
-        :param data: The np.array list to be set.
+        Sets the list of BufferEntry to the input data
+        :param data: The BufferEntry list to be set.
         """
         self[:] = []
         self[:] = data
@@ -124,7 +124,7 @@ class AgentBufferField(list):
         batch_size: int = None,
         training_length: Optional[int] = 1,
         sequential: bool = True,
-    ) -> np.ndarray:
+    ) -> List[BufferEntry]:
         """
         Retrieve the last batch_size elements of length training_length
         from the list of np.array
@@ -155,13 +155,10 @@ class AgentBufferField(list):
                 )
             if batch_size * training_length > len(self):
                 padding = np.array(self[-1], dtype=np.float32) * self.padding_value
-                return np.array(
-                    [padding] * (training_length - leftover) + self[:], dtype=np.float32
-                )
+                return [padding] * (training_length - leftover) + self[:]
+
             else:
-                return np.array(
-                    self[len(self) - batch_size * training_length :], dtype=np.float32
-                )
+                return self[len(self) - batch_size * training_length :]
         else:
             # The sequences will have overlapping elements
             if batch_size is None:
@@ -177,7 +174,7 @@ class AgentBufferField(list):
             tmp_list: List[np.ndarray] = []
             for end in range(len(self) - batch_size + 1, len(self) + 1):
                 tmp_list += self[end - training_length : end]
-            return np.array(tmp_list, dtype=np.float32)
+            return tmp_list
 
     def reset_field(self) -> None:
         """
