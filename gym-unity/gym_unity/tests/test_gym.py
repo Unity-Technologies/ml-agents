@@ -246,7 +246,12 @@ def create_mock_vector_steps(specs, num_agents=1, number_visual_observations=0):
         ] * number_visual_observations
     rewards = np.array(num_agents * [1.0])
     agents = np.array(range(0, num_agents))
-    return DecisionSteps(obs, rewards, agents, None), TerminalSteps.empty(specs)
+    group_id = np.array(num_agents * [0])
+    group_rewards = np.array(num_agents * [0.0])
+    return (
+        DecisionSteps(obs, rewards, agents, None, group_id, group_rewards),
+        TerminalSteps.empty(specs),
+    )
 
 
 def setup_mock_unityenvironment(mock_env, mock_spec, mock_decision, mock_termination):

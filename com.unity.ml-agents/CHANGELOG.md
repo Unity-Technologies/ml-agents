@@ -14,11 +14,11 @@ and this project adheres to
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-
+- The `encoding_size` setting for RewardSignals has been deprecated. Please use `network_settings` instead. (#4982)
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-
+- An issue that caused `GAIL` to fail for environments where agents can terminate episodes by self-sacrifice has been fixed. (#4971)
 
 ## [1.8.0-preview] - 2021-02-17
 ### Major Changes
@@ -52,6 +52,10 @@ and this project adheres to
 - `InferenceDevice.Burst` was added, indicating that Agent's model will be run using Barracuda's Burst backend.
   This is the default for new Agents, but existing ones that use `InferenceDevice.CPU` should update to
   `InferenceDevice.Burst`. (#4925)
+- Add an InputActuatorComponent to allow the generation of Agent action spaces from an InputActionAsset.
+  Projects wanting to use this feature will need to add the
+  [Input System Package](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.1/manual/index.html)
+  at version 1.1.0-preview.3 or later. (#4881)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Tensorboard now logs the Environment Reward as both a scalar and a histogram. (#4878)

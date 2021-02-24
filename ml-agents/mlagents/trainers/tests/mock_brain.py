@@ -43,15 +43,21 @@ def create_mock_steps(
     reward = np.array(num_agents * [1.0], dtype=np.float32)
     interrupted = np.array(num_agents * [False], dtype=np.bool)
     agent_id = np.arange(num_agents, dtype=np.int32)
+    group_id = np.array(num_agents * [0], dtype=np.int32)
+    group_reward = np.array(num_agents * [0.0], dtype=np.float32)
     behavior_spec = BehaviorSpec(observation_specs, action_spec)
     if done:
         return (
             DecisionSteps.empty(behavior_spec),
-            TerminalSteps(obs_list, reward, interrupted, agent_id),
+            TerminalSteps(
+                obs_list, reward, interrupted, agent_id, group_id, group_reward
+            ),
         )
     else:
         return (
-            DecisionSteps(obs_list, reward, agent_id, action_mask),
+            DecisionSteps(
+                obs_list, reward, agent_id, action_mask, group_id, group_reward
+            ),
             TerminalSteps.empty(behavior_spec),
         )
 
