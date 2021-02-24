@@ -110,9 +110,9 @@ class TorchSACOptimizer(TorchOptimizer):
         reward_signal_configs = trainer_params.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
         if policy.shared_critic:
-            self.value_network = policy.actor
+            self._critic = policy.actor
         else:
-            self.value_network = ValueNetwork(
+            self._critic = ValueNetwork(
                 reward_signal_names,
                 policy.behavior_spec.observation_specs,
                 policy.network_settings,
@@ -153,7 +153,7 @@ class TorchSACOptimizer(TorchOptimizer):
             self.policy.behavior_spec.observation_specs,
             policy_network_settings,
         )
-        ModelUtils.soft_update(self.value_network, self.target_network, 1.0)
+        ModelUtils.soft_update(self._critic, self.target_network, 1.0)
 
         # We create one entropy coefficient per action, whether discrete or continuous.
         _disc_log_ent_coef = torch.nn.Parameter(
@@ -184,7 +184,7 @@ class TorchSACOptimizer(TorchOptimizer):
         )
         policy_params = list(self.policy.actor.parameters())
         value_params = list(self.q_network.parameters()) + list(
-            self.value_network.parameters()
+            self._critic.parameters()
         )
 
         logger.debug("value_vars")
@@ -213,12 +213,12 @@ class TorchSACOptimizer(TorchOptimizer):
 
     @property
     def critic(self):
-        return self.value_network
+        return self._critic
 
     def _move_to_device(self, device: torch.device) -> None:
         self._log_ent_coef.to(device)
         self.target_network.to(device)
-        self.value_network.to(device)
+        self._critic.to(device)
         self.q_network.to(device)
 
     def sac_q_loss(
@@ -534,16 +534,14 @@ class TorchSACOptimizer(TorchOptimizer):
         self.target_network.network_body.copy_normalization(
             self.policy.actor.network_body
         )
-        self.value_network.network_body.copy_normalization(
-            self.policy.actor.network_body
-        )
+        self._critic.network_body.copy_normalization(self.policy.actor.network_body)
         sampled_actions, log_probs, _, _, = self.policy.actor.get_action_and_stats(
             current_obs,
             masks=act_masks,
             memories=memories,
             sequence_length=self.policy.sequence_length,
         )
-        value_estimates, _ = self.value_network.critic_pass(
+        value_estimates, _ = self._critic.critic_pass(
             current_obs, value_memories, sequence_length=self.policy.sequence_length
         )
 
@@ -588,11 +586,11 @@ class TorchSACOptimizer(TorchOptimizer):
         policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks)
         entropy_loss = self.sac_entropy_loss(log_probs, masks)
 
+        total_value_loss = q1_loss + q2_loss
         if self.policy.shared_critic:
             policy_loss += value_loss
-            total_value_loss = q1_loss + q2_loss
         else:
-            total_value_loss = q1_loss + q2_loss + value_loss
+            total_value_loss += value_loss
 
         decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
         ModelUtils.update_learning_rate(self.policy_optimizer, decay_lr)
@@ -611,7 +609,7 @@ class TorchSACOptimizer(TorchOptimizer):
         self.entropy_optimizer.step()
 
         # Update target network
-        ModelUtils.soft_update(self.value_network, self.target_network, self.tau)
+        ModelUtils.soft_update(self._critic, self.target_network, self.tau)
         update_stats = {
             "Losses/Policy Loss": policy_loss.item(),
             "Losses/Value Loss": value_loss.item(),

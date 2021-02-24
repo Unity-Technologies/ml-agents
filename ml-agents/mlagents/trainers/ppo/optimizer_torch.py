@@ -30,17 +30,15 @@ class TorchPPOOptimizer(TorchOptimizer):
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
 
         if policy.shared_critic:
-            self.value_net = policy.actor
+            self._critic = policy.actor
         else:
-            self.value_net = ValueNetwork(
+            self._critic = ValueNetwork(
                 reward_signal_names,
                 policy.behavior_spec.observation_specs,
                 network_settings=trainer_settings.network_settings,
             )
 
-        params = list(self.policy.actor.parameters()) + list(
-            self.value_net.parameters()
-        )
+        params = list(self.policy.actor.parameters()) + list(self._critic.parameters())
         self.hyperparameters: PPOSettings = cast(
             PPOSettings, trainer_settings.hyperparameters
         )
@@ -75,7 +73,7 @@ class TorchPPOOptimizer(TorchOptimizer):
 
     @property
     def critic(self):
-        return self.value_net
+        return self._critic
 
     def ppo_value_loss(
         self,
