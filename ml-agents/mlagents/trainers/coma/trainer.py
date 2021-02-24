@@ -3,7 +3,7 @@
 # Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
 
 from collections import defaultdict
-from typing import cast
+from typing import cast, Dict
 
 import numpy as np
 
@@ -59,7 +59,7 @@ class COMATrainer(RLTrainer):
         )
         self.seed = seed
         self.policy: Policy = None  # type: ignore
-        self.collected_group_rewards = defaultdict(lambda: 0)
+        self.collected_group_rewards: Dict[str, int] = defaultdict(lambda: 0)
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
@@ -121,9 +121,8 @@ class COMATrainer(RLTrainer):
             # Report the reward signals
             self.collected_rewards[name][agent_id] += np.sum(evaluate_result)
 
-        # Compute GAE and returns
+        # Compute lambda returns and advantage
         tmp_advantages = []
-        tmp_returns = []
         for name in self.optimizer.reward_signals:
 
             local_rewards = np.array(
@@ -138,60 +137,30 @@ class COMATrainer(RLTrainer):
                 RewardSignalUtil.value_estimates_key(name)
             ].get_batch()
 
-            returns_v, returns_b = get_team_returns(
-                rewards=local_rewards,
-                baseline_estimates=baseline_estimates,
-                v_estimates=v_estimates,
-                value_next=value_next[name],
+            lambd_returns = lambda_return(
+                r=local_rewards,
+                value_estimates=v_estimates,
                 gamma=self.optimizer.reward_signals[name].gamma,
                 lambd=self.hyperparameters.lambd,
-            )
-            test_v, _ = get_team_returns(
-                rewards=local_rewards,
-                baseline_estimates=baseline_estimates,
-                v_estimates=v_estimates,
                 value_next=value_next[name],
-                gamma=self.optimizer.reward_signals[name].gamma,
-                lambd=1,
             )
 
-            self._stats_reporter.add_stat(
-                f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Sum Rewards",
-                np.mean(test_v),
+            local_advantage = np.array(lambd_returns) - np.array(baseline_estimates)
+
+            agent_buffer_trajectory[RewardSignalUtil.returns_key(name)].set(
+                lambd_returns
             )
-
-            self._stats_reporter.add_stat(
-                f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} TD Lam",
-                np.mean(returns_v),
-            )
-
-            local_advantage = np.array(returns_v) - np.array(baseline_estimates)
-
-            self._stats_reporter.add_stat(
-                f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} TD Advantage Estimate",
-                np.mean(local_advantage),
-            )
-
-            local_return = local_advantage + baseline_estimates
-
-            # local_return = local_advantage + q_estimates
-            # This is later use as target for the different value estimates
-            # agent_buffer_trajectory[f"{name}_returns"].set(local_return)
-            agent_buffer_trajectory[RewardSignalUtil.returns_key(name)].set(returns_v)
             agent_buffer_trajectory[RewardSignalUtil.advantage_key(name)].set(
                 local_advantage
             )
             tmp_advantages.append(local_advantage)
-            tmp_returns.append(local_return)
 
         # Get global advantages
         global_advantages = list(
             np.mean(np.array(tmp_advantages, dtype=np.float32), axis=0)
         )
-        global_returns = list(np.mean(np.array(tmp_returns, dtype=np.float32), axis=0))
         agent_buffer_trajectory[BufferKey.ADVANTAGES].set(global_advantages)
 
-        agent_buffer_trajectory[BufferKey.DISCOUNTED_RETURNS].set(global_returns)
         # Append to update buffer
         agent_buffer_trajectory.resequence_and_append(
             self.update_buffer, training_length=self.policy.sequence_length
@@ -321,22 +290,6 @@ class COMATrainer(RLTrainer):
         self.collected_group_rewards.pop(agent_id)
 
 
-def discount_rewards(r, gamma=0.99, value_next=0.0):
-    """
-    Computes discounted sum of future rewards for use in updating value estimate.
-    :param r: List of rewards.
-    :param gamma: Discount factor.
-    :param value_next: T+1 value estimate for returns calculation.
-    :return: discounted sum of future rewards as list.
-    """
-    discounted_r = np.zeros_like(r)
-    running_add = value_next
-    for t in reversed(range(0, r.size)):
-        running_add = running_add * gamma + r[t]
-        discounted_r[t] = running_add
-    return discounted_r
-
-
 def lambda_return(r, value_estimates, gamma=0.99, lambd=0.8, value_next=0.0):
     returns = np.zeros_like(r)
     returns[-1] = r[-1] + gamma * value_next
@@ -347,31 +300,3 @@ def lambda_return(r, value_estimates, gamma=0.99, lambd=0.8, value_next=0.0):
             + (1 - lambd) * gamma * value_estimates[t + 1]
         )
     return returns
-
-
-def get_team_returns(
-    rewards,
-    baseline_estimates,
-    v_estimates,
-    value_next=0.0,
-    died=False,
-    gamma=0.99,
-    lambd=0.8,
-):
-    """
-    Computes generalized advantage estimate for use in updating policy.
-    :param rewards: list of rewards for time-steps t to T.
-    :param value_next: Value estimate for time-step T+1.
-    :param value_estimates: list of value estimates for time-steps t to T.
-    :param gamma: Discount factor.
-    :param lambd: GAE weighing factor.
-    :return: list of advantage estimates for time-steps t to T.
-    """
-    returns_b = lambda_return(
-        rewards, baseline_estimates, gamma=gamma, lambd=lambd, value_next=value_next
-    )
-    returns_v = lambda_return(
-        rewards, v_estimates, gamma=gamma, lambd=lambd, value_next=value_next
-    )
-
-    return returns_v, returns_b
