@@ -8,7 +8,7 @@ namespace Unity.MLAgents.SideChannels
     /// <summary>
     /// Side Channel implementation for recording which training features are being used.
     /// </summary>
-    public class TrainingAnalyticsSideChannel : SideChannel
+    internal class TrainingAnalyticsSideChannel : SideChannel
     {
         const string k_TrainingAnalyticsConfigId = "b664a4a9-d86f-5a5f-95cb-e8353a7e8356";
 
