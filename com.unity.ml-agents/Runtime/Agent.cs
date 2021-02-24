@@ -71,6 +71,25 @@ namespace Unity.MLAgents
     }
 
     /// <summary>
+    /// Simple wrapper around VectorActuator that overrides GetBuiltInActuatorType
+    /// so that it can be distinguished from a standard VectorActuator.
+    /// </summary>
+    internal class AgentVectorActuator : VectorActuator
+    {
+        public AgentVectorActuator(IActionReceiver actionReceiver,
+            IHeuristicProvider heuristicProvider,
+            ActionSpec actionSpec,
+            string name = "VectorActuator"
+        ) : base(actionReceiver, heuristicProvider, actionSpec, name)
+        { }
+
+        public override BuiltInActuatorType GetBuiltInActuatorType()
+        {
+            return BuiltInActuatorType.AgentVectorActuator;
+        }
+    }
+
+    /// <summary>
     /// An agent is an actor that can observe its environment, decide on the
     /// best course of action using those observations, and execute those actions
     /// within the environment.
@@ -997,7 +1016,7 @@ namespace Unity.MLAgents
             // Support legacy OnActionReceived
             // TODO don't set this up if the sizes are 0?
             var param = m_PolicyFactory.BrainParameters;
-            m_VectorActuator = new VectorActuator(this, this, param.ActionSpec);
+            m_VectorActuator = new AgentVectorActuator(this, this, param.ActionSpec);
             m_ActuatorManager = new ActuatorManager(attachedActuators.Length + 1);
             m_LegacyActionCache = new float[m_VectorActuator.TotalNumberOfActions()];
             m_LegacyHeuristicCache = new float[m_VectorActuator.TotalNumberOfActions()];

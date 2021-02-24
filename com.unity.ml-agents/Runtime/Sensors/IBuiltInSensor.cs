@@ -58,7 +58,7 @@ namespace Unity.MLAgents.Sensors
     /// Interface for sensors that are provided as part of ML-Agents.
     /// User-implemented sensors don't need to use this interface.
     /// </summary>
-    public interface IBuiltInSensor
+    internal interface IBuiltInSensor
     {
         /// <summary>
         /// Return the corresponding BuiltInSensorType for the sensor.

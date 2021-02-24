@@ -14,7 +14,7 @@ namespace Unity.MLAgents.Extensions.Input
     /// <see cref="Agent"/>'s <see cref="BehaviorParameters"/> indicate that the Agent is running in Heuristic Mode,
     /// this Actuator will write actions from the <see cref="InputSystem"/> to the <see cref="ActionBuffers"/> object.
     /// </summary>
-    public class InputActionActuator : IActuator, IHeuristicProvider
+    public class InputActionActuator : IActuator, IHeuristicProvider, IBuiltInActuator
     {
         readonly BehaviorParameters m_BehaviorParameters;
         readonly InputAction m_Action;
@@ -35,8 +35,8 @@ namespace Unity.MLAgents.Extensions.Input
         /// <param name="adaptor">The <see cref="IRLActionInputAdaptor"/> that will convert data between ML-Agents
         ///     and the <see cref="InputSystem"/>.</param>
         public InputActionActuator(InputDevice inputDevice, BehaviorParameters behaviorParameters,
-            InputAction action,
-            IRLActionInputAdaptor adaptor)
+                                   InputAction action,
+                                   IRLActionInputAdaptor adaptor)
         {
             m_BehaviorParameters = behaviorParameters;
             Name = $"InputActionActuator-{action.name}";
@@ -82,6 +82,12 @@ namespace Unity.MLAgents.Extensions.Input
             Profiler.BeginSample("InputActionActuator.Heuristic");
             m_InputAdaptor.WriteToHeuristic(m_Action, actionBuffersOut);
             Profiler.EndSample();
+        }
+
+        /// <inheritdoc/>
+        public BuiltInActuatorType GetBuiltInActuatorType()
+        {
+            return BuiltInActuatorType.InputActionActuator;
         }
     }
 }

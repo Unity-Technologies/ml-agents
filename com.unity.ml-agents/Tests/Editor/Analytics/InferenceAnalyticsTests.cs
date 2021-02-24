@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using Unity.MLAgents.Sensors;
@@ -44,10 +45,15 @@ namespace Unity.MLAgents.Tests.Analytics
         {
             var sensors = new List<ISensor> { sensor_21_20_3.Sensor, sensor_20_22_3.Sensor };
             var behaviorName = "continuousModel";
+            var actionSpec = GetContinuous2vis8vec2actionActionSpec();
+
+            var vectorActuator = new VectorActuator(null, actionSpec, "test'");
+            var actuators = new IActuator[] { vectorActuator };
 
             var continuousEvent = InferenceAnalytics.GetEventForModel(
                 continuousONNXModel, behaviorName,
-                InferenceDevice.CPU, sensors, GetContinuous2vis8vec2actionActionSpec()
+                InferenceDevice.CPU, sensors, actionSpec,
+                actuators
             );
 
             // The behavior name should be hashed, not pass-through.
@@ -60,6 +66,7 @@ namespace Unity.MLAgents.Tests.Analytics
             Assert.AreEqual(20, continuousEvent.ObservationSpecs[0].DimensionInfos[0].Size);
             Assert.AreEqual("None", continuousEvent.ObservationSpecs[0].CompressionType);
             Assert.AreEqual(Test3DSensor.k_BuiltInSensorType, continuousEvent.ObservationSpecs[0].BuiltInSensorType);
+            Assert.AreEqual((int)BuiltInActuatorType.VectorActuator, continuousEvent.ActuatorInfos[0].BuiltInActuatorType);
             Assert.AreNotEqual(null, continuousEvent.ModelHash);
 
             // Make sure nested fields get serialized
@@ -69,6 +76,7 @@ namespace Unity.MLAgents.Tests.Analytics
             Assert.IsTrue(jsonString.Contains("NumDiscreteActions"));
             Assert.IsTrue(jsonString.Contains("SensorName"));
             Assert.IsTrue(jsonString.Contains("Flags"));
+            Assert.IsTrue(jsonString.Contains("ActuatorInfos"));
         }
 
         [Test]
@@ -78,7 +86,13 @@ namespace Unity.MLAgents.Tests.Analytics
             using (new AnalyticsUtils.DisableAnalyticsSending())
             {
                 var sensors = new List<ISensor> { sensor_21_20_3.Sensor, sensor_20_22_3.Sensor };
-                var policy = new BarracudaPolicy(GetContinuous2vis8vec2actionActionSpec(), continuousONNXModel, InferenceDevice.CPU, "testBehavior");
+                var policy = new BarracudaPolicy(
+                    GetContinuous2vis8vec2actionActionSpec(),
+                    Array.Empty<IActuator>(),
+                    continuousONNXModel,
+                    InferenceDevice.CPU,
+                    "testBehavior"
+                );
                 policy.RequestDecision(new AgentInfo(), sensors);
             }
             Academy.Instance.Dispose();
