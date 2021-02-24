@@ -107,8 +107,8 @@ class NetworkBody(nn.Module):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-        encodes = []
-        goal_signal = None
+        obs_encodes = []
+        goal_encodes = []
         for idx, processor in enumerate(self.processors):
             obs_input = inputs[idx]
             processed_obs = processor(obs_input)
@@ -116,28 +116,29 @@ class NetworkBody(nn.Module):
                 self.obs_types[idx] == ObservationType.DEFAULT
                 or self.conditioning_type == ConditioningType.DEFAULT
             ):
-                encodes.append(processed_obs)
+                obs_encodes.append(processed_obs)
             elif (
                 self.obs_types[idx] == ObservationType.GOAL
                 and self.conditioning_type != ConditioningType.DEFAULT
             ):
-                if goal_signal is not None:
-                    raise Exception("TODO : Cannot currently handle more than one goal")
-                goal_signal = processed_obs
+                goal_encodes.append(processed_obs)
+            else:
+                raise Exception("TODO : Something other than a goal or observation was passed to the agent.")
 
-        if len(encodes) == 0:
+        if len(obs_encodes) == 0:
             raise Exception("No valid inputs to network.")
 
         # Constants don't work in Barracuda
         if actions is not None:
-            inputs = torch.cat(encodes + [actions], dim=-1)
+            obs_inputs = torch.cat(obs_encodes + [actions], dim=-1)
         else:
-            inputs = torch.cat(encodes, dim=-1)
+            obs_inputs = torch.cat(obs_encodes, dim=-1)
 
-        if goal_signal is None:
-            encoding = self.linear_encoder(inputs)
+        if len(goal_encodes) == 0:
+            encoding = self.linear_encoder(obs_inputs)
         else:
-            encoding = self.linear_encoder(inputs, goal_signal)
+            goal_inputs = torch.cat(goal_encodes, dim=-1)
+            encoding = self.linear_encoder(obs_inputs, goal_inputs)
 
         if self.use_lstm:
             # Resize to (batch, sequence length, encoding size)
