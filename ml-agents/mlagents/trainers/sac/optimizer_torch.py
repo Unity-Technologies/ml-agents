@@ -110,13 +110,12 @@ class TorchSACOptimizer(TorchOptimizer):
         reward_signal_configs = trainer_params.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
         if policy.shared_critic:
-            self._critic = policy.actor
-        else:
-            self._critic = ValueNetwork(
-                reward_signal_names,
-                policy.behavior_spec.observation_specs,
-                policy.network_settings,
-            )
+            raise UnityTrainerException("SAC does not support SharedActorCritic")
+        self._critic = ValueNetwork(
+            reward_signal_names,
+            policy.behavior_spec.observation_specs,
+            policy.network_settings,
+        )
 
         hyperparameters: SACSettings = cast(SACSettings, trainer_params.hyperparameters)
         self.tau = hyperparameters.tau
