@@ -59,7 +59,7 @@ class COMATrainer(RLTrainer):
         )
         self.seed = seed
         self.policy: Policy = None  # type: ignore
-        self.collected_rewards["environment_team"] = defaultdict(lambda: 0)
+        self.collected_group_rewards = defaultdict(lambda: 0)
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
@@ -108,7 +108,7 @@ class COMATrainer(RLTrainer):
         self.collected_rewards["environment"][agent_id] += np.sum(
             agent_buffer_trajectory[BufferKey.ENVIRONMENT_REWARDS]
         )
-        self.collected_rewards["environment_team"][agent_id] += np.sum(
+        self.collected_group_rewards[agent_id] += np.sum(
             agent_buffer_trajectory[BufferKey.GROUP_REWARD]
         )
         for name, reward_signal in self.optimizer.reward_signals.items():
@@ -316,7 +316,7 @@ class COMATrainer(RLTrainer):
         if "environment_team" in self.collected_rewards:
             self.stats_reporter.add_stat(
                 "Environment/Team Cumulative Reward",
-                self.collected_rewards["environment_team"].get(agent_id, 0),
+                self.collected_group_rewards.get(agent_id, 0),
                 aggregation=StatsAggregationMethod.HISTOGRAM,
             )
 

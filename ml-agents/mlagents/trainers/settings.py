@@ -173,6 +173,7 @@ class RewardSignalType(Enum):
     def to_settings(self) -> type:
         _mapping = {
             RewardSignalType.EXTRINSIC: RewardSignalSettings,
+            RewardSignalType.GROUP_EXTRINSIC: RewardSignalSettings,
             RewardSignalType.GAIL: GAILSettings,
             RewardSignalType.CURIOSITY: CuriositySettings,
             RewardSignalType.RND: RNDSettings,
