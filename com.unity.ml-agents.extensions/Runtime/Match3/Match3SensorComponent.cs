@@ -1,10 +1,12 @@
 using Unity.MLAgents.Sensors;
+using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
     /// <summary>
     /// Sensor component for a Match3 game.
     /// </summary>
+    [AddComponentMenu("ML Agents/Match 3 Sensor", (int)MenuGroup.Sensors)]
     public class Match3SensorComponent : SensorComponent
     {
         /// <summary>
