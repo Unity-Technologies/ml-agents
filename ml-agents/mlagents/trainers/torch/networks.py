@@ -123,7 +123,9 @@ class NetworkBody(nn.Module):
             ):
                 goal_encodes.append(processed_obs)
             else:
-                raise Exception("TODO : Something other than a goal or observation was passed to the agent.")
+                raise Exception(
+                    "TODO : Something other than a goal or observation was passed to the agent."
+                )
 
         if len(obs_encodes) == 0:
             raise Exception("No valid inputs to network.")
