@@ -1,5 +1,5 @@
 from typing import Dict, cast
-from mlagents.torch_utils import torch
+from mlagents.torch_utils import torch, default_device
 
 from mlagents.trainers.buffer import AgentBuffer, BufferKey, RewardSignalUtil
 
@@ -37,6 +37,7 @@ class TorchPPOOptimizer(TorchOptimizer):
                 policy.behavior_spec.observation_specs,
                 network_settings=trainer_settings.network_settings,
             )
+            self._critic.to(default_device())
 
         params = list(self.policy.actor.parameters()) + list(self._critic.parameters())
         self.hyperparameters: PPOSettings = cast(
