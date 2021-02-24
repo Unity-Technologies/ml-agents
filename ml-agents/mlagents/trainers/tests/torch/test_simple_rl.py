@@ -245,7 +245,7 @@ def test_recurrent_sac(action_sizes):
     new_hyperparams = attr.evolve(
         SAC_TORCH_CONFIG.hyperparameters,
         batch_size=256,
-        learning_rate=1e-4,
+        learning_rate=3e-4,
         buffer_init_steps=1000,
         steps_per_update=2,
     )

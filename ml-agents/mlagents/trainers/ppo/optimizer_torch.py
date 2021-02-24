@@ -171,6 +171,16 @@ class TorchPPOOptimizer(TorchOptimizer):
         if len(memories) > 0:
             memories = torch.stack(memories).unsqueeze(0)
 
+        # Get value memories
+        value_memories = [
+            ModelUtils.list_to_tensor(batch[BufferKey.CRITIC_MEMORY][i])
+            for i in range(
+                0, len(batch[BufferKey.CRITIC_MEMORY]), self.policy.sequence_length
+            )
+        ]
+        if len(value_memories) > 0:
+            value_memories = torch.stack(value_memories).unsqueeze(0)
+
         log_probs, entropy = self.policy.evaluate_actions(
             current_obs,
             masks=act_masks,
@@ -179,7 +189,9 @@ class TorchPPOOptimizer(TorchOptimizer):
             seq_len=self.policy.sequence_length,
         )
         values, _ = self.critic.critic_pass(
-            current_obs, memories=memories, sequence_length=self.policy.sequence_length
+            current_obs,
+            memories=value_memories,
+            sequence_length=self.policy.sequence_length,
         )
         old_log_probs = ActionLogProbs.from_buffer(batch).flatten()
         log_probs = log_probs.flatten()
