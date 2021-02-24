@@ -50,13 +50,13 @@ class AgentProcessor:
         """
         self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
         self.last_step_result: Dict[str, Tuple[DecisionStep, int]] = {}
-        # current_group_obs is used to collect the last seen obs of all the agents in the same group,
-        # and assemble the group obs.
+        # current_group_obs is used to collect the current, most recently seen
+        # obs of all the agents in the same group, and assemble the group obs.
         self.current_group_obs: Dict[str, Dict[str, List[np.ndarray]]] = defaultdict(
             lambda: defaultdict(list)
         )
-        # last_group_obs is used to collect the last seen obs of all the agents in the same group,
-        # and assemble the group obs.
+        # group_status is used to collect the current, most recently seen
+        # group status of all the agents in the same group, and assemble the group obs.
         self.group_status: Dict[str, Dict[str, GroupmateStatus]] = defaultdict(
             lambda: defaultdict(None)
         )
@@ -112,11 +112,6 @@ class AgentProcessor:
             # Clear the last seen group obs when agents die.
             self._clear_group_obs(global_id)
 
-        # Clean the last experience dictionary for terminal steps
-        for terminal_step in terminal_steps.values():
-            local_id = terminal_step.agent_id
-            global_id = get_global_agent_id(worker_id, local_id)
-
         # Iterate over all the decision steps, first gather all the teammate obs
         # and then create the trajectories
         for ongoing_step in decision_steps.values():
@@ -147,6 +142,8 @@ class AgentProcessor:
             global_agent_id, None
         )
         if stored_decision_step is not None and stored_take_action_outputs is not None:
+            # 0, the default group_id, means that the agent doesn't belong to an agent group.
+            # If 0, don't add any groupmate information.
             if step.group_id > 0:
                 global_group_id = get_global_group_id(worker_id, step.group_id)
                 stored_actions = stored_take_action_outputs["action"]
