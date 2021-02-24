@@ -149,12 +149,13 @@ How categorical and continuous data is treated is different between the differen
 
 ### Channel Based
 
-The Channel Based Grid Observations represent obsevations in a normalized form with 0 to 1. To distinguish between categorical and continuous data, one would use the ChannelDepth array to signify the ranges that the values in the `channelValues` array could take. If one sets ChannelDepth[i] to be 1, it is assumed that the value of `channelValues[i]` is already normalized. Else ChannelDepth[i] represents the total number of possible values that `channelValues[i]` can take and will be used for normalization.
+The Channel Based Grid Observations is perhaps the simplest in terms of usability and similarity with other machine learning applications. Each grid is of size WxHxC where C is the number of channels. To distinguish between categorical and continuous data, one would use the ChannelDepth array to signify the ranges that the values in the `channelValues` array could take. If one sets ChannelDepth[i] to be 1, it is assumed that the value of `channelValues[i]` is already normalized. Else ChannelDepth[i] represents the total number of possible values that `channelValues[i]` can take.
 
 For continuous data, you should specify `ChannelDepth[i]` to 1 and the collected data should be already normalized by its min/max range. For discrete data, you should specify `ChannelDepth[i]` to be the total number of possible values, and the collected data should be an integer value within range of `ChannelDepth[i]`.
 
 Using the example described earlier, if one was using Channel Based Grid Observations, they would have a ChannelDepth = {2, 1} to describe that there are two possible values for the first channel (ObjectType) and the 1 represents that the second channel (EnemyHealth) is continuous and should be already normalized.
 
+As the "enemy" is in the second position of the observed tags, its value can be normalized by:
 For ObjectType, "weapon", "enemy" will be represented respectively as:
 ```
 weapon = DetectableObjects.IndexOfTag("weapon")/ChannelDepth[0] = 1/2 = 0.5;
