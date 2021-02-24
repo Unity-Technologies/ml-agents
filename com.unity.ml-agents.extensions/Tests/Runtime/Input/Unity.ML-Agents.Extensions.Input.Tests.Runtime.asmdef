@@ -23,7 +23,7 @@
     "versionDefines": [
         {
             "name": "com.unity.inputsystem",
-            "expression": "1.1.0-preview",
+            "expression": "1.1.0",
             "define": "MLA_INPUT_TESTS"
         }
     ],
