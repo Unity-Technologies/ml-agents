@@ -37,7 +37,7 @@ namespace Unity.MLAgents.Inference
 
         SensorShapeValidator m_SensorShapeValidator = new SensorShapeValidator();
 
-        bool m_VisualObservationsInitialized;
+        bool m_ObservationsInitialized;
 
         /// <summary>
         /// Initializes the Brain with the Model that it will use when selecting actions for
@@ -175,13 +175,13 @@ namespace Unity.MLAgents.Inference
             {
                 return;
             }
-            if (!m_VisualObservationsInitialized)
+            if (!m_ObservationsInitialized)
             {
                 // Just grab the first agent in the collection (any will suffice, really).
                 // We check for an empty Collection above, so this will always return successfully.
                 var firstInfo = m_Infos[0];
                 m_TensorGenerator.InitializeObservations(firstInfo.sensors, m_TensorAllocator);
-                m_VisualObservationsInitialized = true;
+                m_ObservationsInitialized = true;
             }
 
             Profiler.BeginSample("ModelRunner.DecideAction");

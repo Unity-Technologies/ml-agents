@@ -95,9 +95,13 @@ namespace Unity.MLAgents
         ///         <term>1.4.0</term>
         ///         <description>Support training analytics sent from python trainer to the editor.</description>
         ///     </item>
+        ///     <item>
+        ///         <term>1.5.0</term>
+        ///         <description>Support variable length observation training.</description>
+        ///     </item>
         /// </list>
         /// </remarks>
-        const string k_ApiVersion = "1.4.0";
+        const string k_ApiVersion = "1.5.0";
 
         /// <summary>
         /// Unity package version of com.unity.ml-agents.
@@ -418,12 +422,7 @@ namespace Unity.MLAgents
             var port = ReadPortFromArgs();
             if (port > 0)
             {
-                Communicator = new RpcCommunicator(
-                    new CommunicatorInitParameters
-                    {
-                        port = port
-                    }
-                );
+                Communicator = CommunicatorFactory.Create();
             }
 
             if (Communicator != null)
@@ -434,6 +433,7 @@ namespace Unity.MLAgents
                 bool initSuccessful = false;
                 var communicatorInitParams = new CommunicatorInitParameters
                 {
+                    port = port,
                     unityCommunicationVersion = k_ApiVersion,
                     unityPackageVersion = k_PackageVersion,
                     name = "AcademySingleton",
