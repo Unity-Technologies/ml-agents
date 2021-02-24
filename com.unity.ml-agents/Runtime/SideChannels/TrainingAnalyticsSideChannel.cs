@@ -5,7 +5,10 @@ using Unity.MLAgents.CommunicatorObjects;
 
 namespace Unity.MLAgents.SideChannels
 {
-    public class TrainingAnalyticsSideChannel : SideChannel
+    /// <summary>
+    /// Side Channel implementation for recording which training features are being used.
+    /// </summary>
+    internal class TrainingAnalyticsSideChannel : SideChannel
     {
         const string k_TrainingAnalyticsConfigId = "b664a4a9-d86f-5a5f-95cb-e8353a7e8356";
 

@@ -21,6 +21,7 @@ namespace Unity.MLAgents.Analytics
         public int InferenceDevice;
         public List<EventObservationSpec> ObservationSpecs;
         public EventActionSpec ActionSpec;
+        public List<EventActuatorInfo> ActuatorInfos;
         public int MemorySize;
         public long TotalWeightSizeBytes;
         public string ModelHash;
@@ -44,6 +45,35 @@ namespace Unity.MLAgents.Analytics
                 NumContinuousActions = actionSpec.NumContinuousActions,
                 NumDiscreteActions = actionSpec.NumDiscreteActions,
                 BranchSizes = branchSizes,
+            };
+        }
+    }
+
+    /// <summary>
+    /// Information about an actuator.
+    /// </summary>
+    [Serializable]
+    internal struct EventActuatorInfo
+    {
+        public int BuiltInActuatorType;
+        public int NumContinuousActions;
+        public int NumDiscreteActions;
+
+        public static EventActuatorInfo FromActuator(IActuator actuator)
+        {
+            BuiltInActuatorType builtInActuatorType = Actuators.BuiltInActuatorType.Unknown;
+            if (actuator is IBuiltInActuator builtInActuator)
+            {
+                builtInActuatorType = builtInActuator.GetBuiltInActuatorType();
+            }
+
+            var actionSpec = actuator.ActionSpec;
+
+            return new EventActuatorInfo
+            {
+                BuiltInActuatorType = (int)builtInActuatorType,
+                NumContinuousActions = actionSpec.NumContinuousActions,
+                NumDiscreteActions = actionSpec.NumDiscreteActions
             };
         }
     }
@@ -102,6 +132,7 @@ namespace Unity.MLAgents.Analytics
         public string BehaviorName;
         public List<EventObservationSpec> ObservationSpecs;
         public EventActionSpec ActionSpec;
+        public List<EventActuatorInfo> ActuatorInfos;
 
         /// <summary>
         /// This will be the same as TrainingEnvironmentInitializedEvent if available, but

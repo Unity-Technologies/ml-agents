@@ -1,4 +1,8 @@
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#define MLA_SUPPORTED_TRAINING_PLATFORM
+#endif
+
+# if MLA_SUPPORTED_TRAINING_PLATFORM
 using Grpc.Core;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -90,6 +94,7 @@ namespace Unity.MLAgents
         /// <param name="initParametersOut">The External Initialization Parameters received.</param>
         public bool Initialize(CommunicatorInitParameters initParameters, out UnityRLInitParameters initParametersOut)
         {
+#if MLA_SUPPORTED_TRAINING_PLATFORM
             var academyParameters = new UnityRLInitializationOutputProto
             {
                 Name = initParameters.name,
@@ -177,6 +182,10 @@ namespace Unity.MLAgents
             UpdateEnvironmentWithInput(input.RlInput);
             initParametersOut = initializationInput.RlInitializationInput.ToUnityRLInitParameters();
             return true;
+#else
+            initParametersOut = new UnityRLInitParameters();
+            return false;
+#endif
         }
 
         /// <summary>
