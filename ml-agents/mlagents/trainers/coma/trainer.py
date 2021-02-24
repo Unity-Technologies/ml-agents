@@ -313,12 +313,12 @@ class COMATrainer(RLTrainer):
 
     def _update_end_episode_stats(self, agent_id: str, optimizer: Optimizer) -> None:
         super()._update_end_episode_stats(agent_id, optimizer)
-        if "environment_team" in self.collected_rewards:
-            self.stats_reporter.add_stat(
-                "Environment/Team Cumulative Reward",
-                self.collected_group_rewards.get(agent_id, 0),
-                aggregation=StatsAggregationMethod.HISTOGRAM,
-            )
+        self.stats_reporter.add_stat(
+            "Environment/Team Cumulative Reward",
+            self.collected_group_rewards.get(agent_id, 0),
+            aggregation=StatsAggregationMethod.HISTOGRAM,
+        )
+        self.collected_group_rewards.pop(agent_id)
 
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):
