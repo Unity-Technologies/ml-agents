@@ -47,7 +47,6 @@ namespace Unity.MLAgents
         Dictionary<string, ActionSpec> m_UnsentBrainKeys = new Dictionary<string, ActionSpec>();
 
 
-#if MLA_SUPPORTED_TRAINING_PLATFORM
         /// The Unity to External client.
         UnityToExternalProto.UnityToExternalProtoClient m_Client;
 
@@ -217,7 +216,6 @@ namespace Unity.MLAgents
 
         UnityInputProto Initialize(int port, UnityOutputProto unityOutput, out UnityInputProto unityInput)
         {
-#if MLA_SUPPORTED_TRAINING_PLATFORM
             m_IsOpen = true;
             var channel = new Channel($"localhost:{port}", ChannelCredentials.Insecure);
 
@@ -245,7 +243,6 @@ namespace Unity.MLAgents
         /// </summary>
         public void Dispose()
         {
-#if MLA_SUPPORTED_TRAINING_PLATFORM
             if (!m_IsOpen)
             {
                 return;
@@ -442,7 +439,6 @@ namespace Unity.MLAgents
         /// <param name="unityOutput">The UnityOutput to be sent.</param>
         UnityInputProto Exchange(UnityOutputProto unityOutput)
         {
-#if MLA_SUPPORTED_TRAINING_PLATFORM
             if (!m_IsOpen)
             {
                 return null;
