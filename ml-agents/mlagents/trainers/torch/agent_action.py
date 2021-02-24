@@ -67,8 +67,8 @@ class AgentAction(NamedTuple):
         agent_buffer_field: AgentBufferField, dtype: torch.dtype = torch.float32
     ) -> List[torch.Tensor]:
         """
-        Pad actions and convert to tensor. Note that data is padded by 0's, not NaNs
-        as the observations are.
+        Pad actions and convert to tensor. Pad the data with NaNs where there is no
+        data.
         """
         action_shape = None
         for _action in agent_buffer_field:
@@ -83,7 +83,7 @@ class AgentAction(NamedTuple):
             map(
                 lambda x: ModelUtils.list_to_tensor(x, dtype=dtype),
                 itertools.zip_longest(
-                    *agent_buffer_field, fillvalue=np.full(action_shape, 0)
+                    *agent_buffer_field, fillvalue=np.full(action_shape, np.nan)
                 ),
             )
         )
