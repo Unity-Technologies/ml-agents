@@ -9,6 +9,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// <summary>
     /// Grid-based sensor.
     /// </summary>
+    [AddComponentMenu("ML Agents/Grid Sensor", (int)MenuGroup.Sensors)]
     public class GridSensor : SensorComponent, ISensor, IBuiltInSensor
     {
         /// <summary>
@@ -479,7 +480,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             return BuiltInSensorType.GridSensor;
         }
-
 
         /// <summary>
         /// GetCompressedObservation - Calls Perceive then puts the data stored on the perception buffer

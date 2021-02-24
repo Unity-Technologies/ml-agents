@@ -7,6 +7,7 @@ namespace Unity.MLAgents.Extensions.Match3
     /// <summary>
     /// Actuator component for a Match3 game. Generates a Match3Actuator at runtime.
     /// </summary>
+    [AddComponentMenu("ML Agents/Match 3 Actuator", (int)MenuGroup.Actuators)]
     public class Match3ActuatorComponent : ActuatorComponent
     {
         /// <summary>
