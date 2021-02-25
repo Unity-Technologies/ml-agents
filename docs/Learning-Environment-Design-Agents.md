@@ -602,23 +602,21 @@ If you assign an element in the array as the speed of an Agent, for example, the
 training process learns to control the speed of the Agent through this
 parameter.
 
-The [Reacher example](Learning-Environment-Examples.md#reacher) uses
+The [3DBall example](Learning-Environment-Examples.md#3dball-3d-balance-ball) uses
 continuous actions with four control values.
 
-![reacher](images/reacher.png)
+![3DBall](images/balance.png)
 
-These control values are applied as torques to the bodies making up the arm:
+These control values are applied as rotation to the cube:
 
 ```csharp
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        var torqueX = Mathf.Clamp(actionBuffers.ContinuousActions[0], -1f, 1f) * 150f;
-        var torqueZ = Mathf.Clamp(actionBuffers.ContinuousActions[1], -1f, 1f) * 150f;
-        m_RbA.AddTorque(new Vector3(torqueX, 0f, torqueZ));
+        var actionZ = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[0], -1f, 1f);
+        var actionX = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[1], -1f, 1f);
 
-        torqueX = Mathf.Clamp(actionBuffers.ContinuousActions[2], -1f, 1f) * 150f;
-        torqueZ = Mathf.Clamp(actionBuffers.ContinuousActions[3], -1f, 1f) * 150f;
-        m_RbB.AddTorque(new Vector3(torqueX, 0f, torqueZ));
+        gameObject.transform.Rotate(new Vector3(0, 0, 1), actionZ);
+        gameObject.transform.Rotate(new Vector3(1, 0, 0), actionX);
     }
 ```
 
