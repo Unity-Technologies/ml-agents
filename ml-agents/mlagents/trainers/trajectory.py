@@ -1,10 +1,8 @@
 from typing import List, NamedTuple
-import itertools
 import numpy as np
 
 from mlagents.trainers.buffer import (
     AgentBuffer,
-    AgentBufferField,
     ObservationKeyPrefix,
     AgentBufferKey,
     BufferKey,
@@ -90,37 +88,6 @@ class GroupObsUtil:
         return ObservationKeyPrefix.NEXT_GROUP_OBSERVATION, index
 
     @staticmethod
-    def _padded_time_to_batch(
-        agent_buffer_field: AgentBufferField,
-    ) -> List[np.ndarray]:
-        """
-        Convert an AgentBufferField of List of obs, where one of the dimension is time and the other is number (e.g.
-        in the case of a variable number of critic observations) to a List of obs, where time is in the batch dimension
-        of the obs, and the List is the variable number of agents. For cases where there are varying number of agents,
-        pad the non-existent agents with NaN.
-        """
-        # Find the first observation. This should be USUALLY O(1)
-        obs_shape = None
-        for _group_obs in agent_buffer_field:
-            if _group_obs:
-                obs_shape = _group_obs[0].shape
-                break
-        # If there were no critic obs at all
-        if obs_shape is None:
-            return []
-
-        new_list = list(
-            map(
-                lambda x: np.asanyarray(x),
-                itertools.zip_longest(
-                    *agent_buffer_field, fillvalue=np.full(obs_shape, np.nan)
-                ),
-            )
-        )
-
-        return new_list
-
-    @staticmethod
     def _transpose_list_of_lists(
         list_list: List[List[np.ndarray]],
     ) -> List[List[np.ndarray]]:
@@ -134,7 +101,7 @@ class GroupObsUtil:
         separated_obs: List[np.array] = []
         for i in range(num_obs):
             separated_obs.append(
-                GroupObsUtil._padded_time_to_batch(batch[GroupObsUtil.get_name_at(i)])
+                batch[GroupObsUtil.get_name_at(i)].padded_to_batch(pad_value=np.nan)
             )
         # separated_obs contains a List(num_obs) of Lists(num_agents), we want to flip
         # that and get a List(num_agents) of Lists(num_obs)
@@ -149,8 +116,8 @@ class GroupObsUtil:
         separated_obs: List[np.array] = []
         for i in range(num_obs):
             separated_obs.append(
-                GroupObsUtil._padded_time_to_batch(
-                    batch[GroupObsUtil.get_name_at_next(i)]
+                batch[GroupObsUtil.get_name_at_next(i)].padded_to_batch(
+                    pad_value=np.nan
                 )
             )
         # separated_obs contains a List(num_obs) of Lists(num_agents), we want to flip

@@ -182,6 +182,44 @@ class AgentBufferField(list):
         """
         self[:] = []
 
+    def padded_to_batch(
+        self, pad_value: np.float = 0, dtype: np.dtype = np.float32
+    ) -> Union[np.ndarray, List[np.ndarray]]:
+        """
+        Converts this AgentBufferField (which is a List[BufferEntry]) into a numpy array
+        with first dimension equal to the length of this AgentBufferField. If this AgentBufferField
+        contains a List[List[BufferEntry]] (i.e., in the case of group observations), return a List
+        containing numpy arrays or tensors, of length equal to the maximum length of an entry. Missing
+        For entries with less than that length, the array will be padded with pad_value.
+        :param pad_value: Value to pad List AgentBufferFields, when there are less than the maximum
+            number of agents present.
+        :param dtype: Dtype of output numpy array.
+        :return: Numpy array or List of numpy arrays representing this AgentBufferField, where the first
+            dimension is equal to the length of the AgentBufferField.
+        """
+        if len(self) > 0 and not isinstance(self[0], list):
+            return np.asanyarray(self, dytpe=dtype)
+
+        shape = None
+        for _entry in self:
+            # _entry could be an empty list if there are no group agents in this
+            # step. Find the first non-empty list and use that shape.
+            if _entry:
+                shape = _entry[0].shape
+                break
+        # If there were no groupmate agents in the entire batch, return an empty List.
+        if shape is None:
+            return []
+
+        # Convert to numpy array while padding with 0's
+        new_list = list(
+            map(
+                lambda x: np.asanyarray(x, dtype=dtype),
+                itertools.zip_longest(*self, fillvalue=np.full(shape, pad_value)),
+            )
+        )
+        return new_list
+
 
 class AgentBuffer(MutableMapping):
     """
