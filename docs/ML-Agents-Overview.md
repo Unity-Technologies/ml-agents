@@ -26,6 +26,7 @@
 - [Model Types](#model-types)
   - [Learning from Vector Observations](#learning-from-vector-observations)
   - [Learning from Cameras using Convolutional Neural Networks](#learning-from-cameras-using-convolutional-neural-networks)
+  - [Learning from Variable Length Observations using Attention](#learning-from-ariable-length-observations-using-attention)
   - [Memory-enhanced Agents using Recurrent Neural Networks](#memory-enhanced-agents-using-recurrent-neural-networks)
 - [Additional Features](#additional-features)
 - [Summary and Next Steps](#summary-and-next-steps)
@@ -657,7 +658,7 @@ are `gravity`, `ball_mass` and `ball_scale`._
 
 Regardless of the training method deployed, there are a few model types that
 users can train using the ML-Agents Toolkit. This is due to the flexibility in
-defining agent observations, which can include vector, ray cast and visual
+defining agent observations, which include vector, ray cast and visual
 observations. You can learn more about how to instrument an agent's observation
 in the [Designing Agents](Learning-Environment-Design-Agents.md) guide.
 
@@ -694,6 +695,28 @@ three network architectures:
 
 The choice of the architecture depends on the visual complexity of the scene and
 the available computational resources.
+
+### Learning from Variable Length Observations using Attention
+
+Using the ML-Agents Toolkit, it is possible to have agents learn from a
+varying number of inputs. To do so, each agent can keep track of a buffer
+of vector observations. At each step, the agent will go through all the
+elements in the buffer and extract information but the elements
+in the buffer can change at every step.
+This can be useful in scenarios in which the agents must keep track of
+a varying number of elements throughout the episode. For example in a game
+where an agent must learn to avoid projectiles, but the projectiles can vary in
+numbers.
+
+![Variable Length Observations Illustrated](images/variable-length-observation-illustrated.png)
+
+You can learn more about variable length observations
+[here](Learning-Environment-Design-Agents.md#variable-length-observations).
+When variable length observations are utilized, the ML-Agents Toolkit
+leverages attention networks to learn from a varying number of entities.
+Agents using attention will ignore entities that are deemed not relevant
+and pay special attention to entities relevant to the current situation
+based on context.
 
 ### Memory-enhanced Agents using Recurrent Neural Networks
 

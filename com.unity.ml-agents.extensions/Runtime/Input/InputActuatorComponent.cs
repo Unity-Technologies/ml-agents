@@ -20,6 +20,7 @@ namespace Unity.MLAgents.Extensions.Input
     /// <see cref="InputActionActuator"/>s.
     /// </summary>
     [RequireComponent(typeof(PlayerInput), typeof(IInputActionAssetProvider))]
+    [AddComponentMenu("ML Agents/Input Actuator", (int)MenuGroup.Actuators)]
     public class InputActuatorComponent : ActuatorComponent
     {
         InputActionAsset m_InputAsset;
@@ -234,7 +235,7 @@ namespace Unity.MLAgents.Extensions.Input
             }
 
             var inputControlScheme = new InputControlScheme(
-                 mlAgentsControlSchemeName,
+                mlAgentsControlSchemeName,
                 deviceRequirements);
 
             return inputControlScheme;
@@ -261,14 +262,13 @@ namespace Unity.MLAgents.Extensions.Input
                     var builder = new InputControlLayout.Builder()
                         .WithName(layoutName)
                         .WithFormat(mlAgentsLayoutFormat);
-                    for(var i = 0; i < defaultMap.actions.Count; i++)
+                    for (var i = 0; i < defaultMap.actions.Count; i++)
                     {
                         var action = defaultMap.actions[i];
                         builder.AddControl(action.name)
                             .WithLayout(action.expectedControlType);
                     }
                     return builder.Build();
-
                 }, layoutName);
             }
         }

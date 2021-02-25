@@ -21,7 +21,9 @@ from mlagents_envs.base_env import ActionSpec, ActionTuple
 def create_mock_policy():
     mock_policy = mock.Mock()
     mock_policy.reward_signals = {}
-    mock_policy.retrieve_memories.return_value = np.zeros((1, 1), dtype=np.float32)
+    mock_policy.retrieve_previous_memories.return_value = np.zeros(
+        (1, 1), dtype=np.float32
+    )
     mock_policy.retrieve_previous_action.return_value = np.zeros((1, 1), dtype=np.int32)
     return mock_policy
 
@@ -42,7 +44,6 @@ def _create_action_info(num_agents: int, agent_ids: List[str]) -> ActionInfo:
         env_action=ActionTuple(
             continuous=np.array([[0.1]] * num_agents, dtype=np.float32)
         ),
-        value=[0.1] * num_agents,
         outputs=fake_action_outputs,
         agent_ids=agent_ids,
     )
@@ -197,7 +198,6 @@ def test_agent_deletion():
     fake_action_info = ActionInfo(
         action=ActionTuple(continuous=np.array([[0.1]], dtype=np.float32)),
         env_action=ActionTuple(continuous=np.array([[0.1]], dtype=np.float32)),
-        value=[0.1],
         outputs=fake_action_outputs,
         agent_ids=mock_decision_step.agent_id,
     )
@@ -270,7 +270,6 @@ def test_end_episode():
     fake_action_info = ActionInfo(
         action=ActionTuple(continuous=np.array([[0.1]], dtype=np.float32)),
         env_action=ActionTuple(continuous=np.array([[0.1]], dtype=np.float32)),
-        value=[0.1],
         outputs=fake_action_outputs,
         agent_ids=mock_decision_step.agent_id,
     )
