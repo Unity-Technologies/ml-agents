@@ -16,7 +16,7 @@ jobs:
             package-path: [ml-agents, ml-agents-envs, gym-unity]
 
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@main
     - name: Set up Python 3.7
       uses: actions/setup-python@v1
       with:
