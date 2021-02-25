@@ -59,8 +59,14 @@ class TorchOptimizer(Optimizer):
         self, tensor_obs: List[torch.Tensor], initial_memory: np.ndarray
     ) -> Tuple[Dict[str, torch.Tensor], AgentBufferField, torch.Tensor]:
         """
-        Evaluate the batch sequence-by-sequence, assembling the result. This enables us to get the
+        Evaluate a trajectory sequence-by-sequence, assembling the result. This enables us to get the
         intermediate memories for the critic.
+        :param tensor_obs: A List of tensors of shape (trajectory_len, <obs_dim>) that are the agent's
+            observations for this trajectory.
+        :param initial_memory: The memory that preceeds this trajectory. Of shape (1,1,<mem_size>), i.e.
+            what is returned as the output of a MemoryModules.
+        :return: A Tuple of the value estimates as a Dict of [name, tensor], an AgentBufferField of the initial
+            memories to be used during value function update, and the final memory at the end of the trajectory.
         """
         num_experiences = tensor_obs[0].shape[0]
         all_next_memories = AgentBufferField()
@@ -70,30 +76,30 @@ class TorchOptimizer(Optimizer):
         leftover = num_experiences % self.policy.sequence_length
 
         # Compute values for the potentially truncated initial sequence
-        _mem = initial_memory
         seq_obs = []
 
         first_seq_len = self.policy.sequence_length
         for _obs in tensor_obs:
             if leftover > 0:
-                first_seq_obs = _obs[0:leftover]
                 first_seq_len = leftover
-            else:
-                first_seq_obs = _obs[0 : self.policy.sequence_length]
+            first_seq_obs = _obs[0:first_seq_len]
             seq_obs.append(first_seq_obs)
 
+        # For the first sequence, the initial memory should be the one at the
+        # beginning of this trajectory.
         for _ in range(first_seq_len):
             all_next_memories.append(initial_memory.squeeze().detach().numpy())
 
         init_values, _mem = self.critic.critic_pass(
-            seq_obs, _mem, sequence_length=first_seq_len
+            seq_obs, initial_memory, sequence_length=first_seq_len
         )
         all_values = {
             signal_name: [init_values[signal_name]]
             for signal_name in init_values.keys()
         }
 
-        # Evaluate other trajectories
+        # Evaluate other trajectories, carrying over _mem after each
+        # trajectory
         for seq_num in range(
             1, math.ceil((num_experiences) / (self.policy.sequence_length))
         ):
@@ -128,6 +134,17 @@ class TorchOptimizer(Optimizer):
         done: bool,
         agent_id: str = "",
     ) -> Tuple[Dict[str, np.ndarray], Dict[str, float], Optional[AgentBufferField]]:
+        """
+        Get value estimates and memories for a trajectory, in batch form.
+        :param batch: An AgentBuffer that consists of a trajectory.
+        :param next_obs: the next observation (after the trajectory). Used for boostrapping
+            if this is not a termiinal trajectory.
+        :param done: Set true if this is a terminal trajectory.
+        :param agent_id: Agent ID of the agent that this trajectory belongs to.
+        :returns: A Tuple of the Value Estimates as a Dict of [name, np.ndarray(trajectory_len)],
+            the final value estimate as a Dict of [name, float], and optionally (if using memories)
+            an AgentBufferField of initial critic memories to be used during update.
+        """
         n_obs = len(self.policy.behavior_spec.observation_specs)
 
         if agent_id in self.critic_memory_dict:
