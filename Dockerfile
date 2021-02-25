@@ -1,4 +1,4 @@
-# From https://gitlab.com/nvidia/container-images/cuda/blob/master/doc/supported-tags.md
+# From https://gitlab.com/nvidia/container-images/cuda/blob/main/doc/supported-tags.md
 FROM nvidia/cuda:10.2-cudnn7-devel-ubuntu18.04
 
 RUN yes | unminimize
