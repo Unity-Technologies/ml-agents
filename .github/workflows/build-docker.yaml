@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@main
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
           version: '270.0.0'
           service_account_email: ${{ secrets.GCP_STG_EMAIL }}
@@ -28,7 +28,7 @@ jobs:
         run: |
           docker push gcr.io/unity-ai-ml-agents-stg/ml-agents:${GITHUB_SHA}
           docker push gcr.io/unity-ai-ml-agents-stg/ml-agents:latest
-      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@main
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
           version: '270.0.0'
           service_account_email: ${{ secrets.GCP_PRD_EMAIL }}
