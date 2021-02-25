@@ -99,12 +99,19 @@ class AgentBufferField(list):
     When an agent collects a field, you can add it to its AgentBufferField with the append method.
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.padding_value = 0
-        super().__init__()
+        super().__init__(*args, **kwargs)
 
     def __str__(self) -> str:
-        return str(np.array(self).shape)
+        return f"AgentBufferField: {super().__str__()}"
+
+    def __getitem__(self, index):
+        return_data = super().__getitem__(index)
+        if isinstance(return_data, list):
+            return AgentBufferField(return_data)
+        else:
+            return return_data
 
     def append(self, element: np.ndarray, padding_value: float = 0.0) -> None:
         """
