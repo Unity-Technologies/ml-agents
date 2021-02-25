@@ -34,6 +34,7 @@ class BufferKey(enum.Enum):
     ENVIRONMENT_REWARDS = "environment_rewards"
     MASKS = "masks"
     MEMORY = "memory"
+    CRITIC_MEMORY = "critic_memory"
     PREV_ACTION = "prev_action"
 
     ADVANTAGES = "advantages"
@@ -94,15 +95,15 @@ class RewardSignalUtil:
 
 class AgentBufferField(list):
     """
-    AgentBufferField is a list of numpy arrays. When an agent collects a field, you can add it to its
-    AgentBufferField with the append method.
+    AgentBufferField is a list of numpy arrays, or List[np.ndarray] for group entries.
+    When an agent collects a field, you can add it to its AgentBufferField with the append method.
     """
 
     def __init__(self):
         self.padding_value = 0
         super().__init__()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(np.array(self).shape)
 
     def append(self, element: np.ndarray, padding_value: float = 0.0) -> None:
@@ -116,10 +117,10 @@ class AgentBufferField(list):
         super().append(element)
         self.padding_value = padding_value
 
-    def set(self, data):
+    def set(self, data: List[BufferEntry]) -> None:
         """
-        Sets the list of np.array to the input data
-        :param data: The np.array list to be set.
+        Sets the list of BufferEntry to the input data
+        :param data: The BufferEntry list to be set.
         """
         self[:] = []
         self[:] = data
@@ -129,7 +130,7 @@ class AgentBufferField(list):
         batch_size: int = None,
         training_length: Optional[int] = 1,
         sequential: bool = True,
-    ) -> np.ndarray:
+    ) -> List[BufferEntry]:
         """
         Retrieve the last batch_size elements of length training_length
         from the list of np.array
@@ -186,6 +187,44 @@ class AgentBufferField(list):
         Resets the AgentBufferField
         """
         self[:] = []
+
+    def padded_to_batch(
+        self, pad_value: np.float = 0, dtype: np.dtype = np.float32
+    ) -> Union[np.ndarray, List[np.ndarray]]:
+        """
+        Converts this AgentBufferField (which is a List[BufferEntry]) into a numpy array
+        with first dimension equal to the length of this AgentBufferField. If this AgentBufferField
+        contains a List[List[BufferEntry]] (i.e., in the case of group observations), return a List
+        containing numpy arrays or tensors, of length equal to the maximum length of an entry. Missing
+        For entries with less than that length, the array will be padded with pad_value.
+        :param pad_value: Value to pad List AgentBufferFields, when there are less than the maximum
+            number of agents present.
+        :param dtype: Dtype of output numpy array.
+        :return: Numpy array or List of numpy arrays representing this AgentBufferField, where the first
+            dimension is equal to the length of the AgentBufferField.
+        """
+        if len(self) > 0 and not isinstance(self[0], list):
+            return np.asanyarray(self, dytpe=dtype)
+
+        shape = None
+        for _entry in self:
+            # _entry could be an empty list if there are no group agents in this
+            # step. Find the first non-empty list and use that shape.
+            if _entry:
+                shape = _entry[0].shape
+                break
+        # If there were no groupmate agents in the entire batch, return an empty List.
+        if shape is None:
+            return []
+
+        # Convert to numpy array while padding with 0's
+        new_list = list(
+            map(
+                lambda x: np.asanyarray(x, dtype=dtype),
+                itertools.zip_longest(*self, fillvalue=np.full(shape, pad_value)),
+            )
+        )
+        return new_list
 
 
 class AgentBuffer(MutableMapping):

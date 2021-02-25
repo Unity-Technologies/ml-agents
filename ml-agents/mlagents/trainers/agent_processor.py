@@ -50,13 +50,13 @@ class AgentProcessor:
         """
         self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
         self.last_step_result: Dict[str, Tuple[DecisionStep, int]] = {}
-        # current_group_obs is used to collect the last seen obs of all the agents in the same group,
-        # and assemble the group obs.
+        # current_group_obs is used to collect the current, most recently seen
+        # obs of all the agents in the same group, and assemble the group obs.
         self.current_group_obs: Dict[str, Dict[str, List[np.ndarray]]] = defaultdict(
             lambda: defaultdict(list)
         )
-        # last_group_obs is used to collect the last seen obs of all the agents in the same group,
-        # and assemble the group obs.
+        # group_status is used to collect the current, most recently seen
+        # group status of all the agents in the same group, and assemble the group obs.
         self.group_status: Dict[str, Dict[str, GroupmateStatus]] = defaultdict(
             lambda: defaultdict(None)
         )
@@ -99,10 +99,11 @@ class AgentProcessor:
             if global_id in self.last_step_result:  # Don't store if agent just reset
                 self.last_take_action_outputs[global_id] = take_action_outputs
 
-        # Iterate over all the terminal steps, first gather all the teammate obs
-        # and then create the AgentExperiences/Trajectories
+        # Iterate over all the terminal steps, first gather all the group obs
+        # and then create the AgentExperiences/Trajectories. _add_to_group_status
+        # stores Group statuses in a common data structure self.group_status
         for terminal_step in terminal_steps.values():
-            self._gather_group_obs(terminal_step, worker_id)
+            self._add_to_group_status(terminal_step, worker_id)
         for terminal_step in terminal_steps.values():
             local_id = terminal_step.agent_id
             global_id = get_global_agent_id(worker_id, local_id)
@@ -112,15 +113,11 @@ class AgentProcessor:
             # Clear the last seen group obs when agents die.
             self._clear_group_obs(global_id)
 
-        # Clean the last experience dictionary for terminal steps
-        for terminal_step in terminal_steps.values():
-            local_id = terminal_step.agent_id
-            global_id = get_global_agent_id(worker_id, local_id)
-
-        # Iterate over all the decision steps, first gather all the teammate obs
-        # and then create the trajectories
+        # Iterate over all the decision steps, first gather all the group obs
+        # and then create the trajectories. _add_to_group_status
+        # stores Group statuses in a common data structure self.group_status
         for ongoing_step in decision_steps.values():
-            self._gather_group_obs(ongoing_step, worker_id)
+            self._add_to_group_status(ongoing_step, worker_id)
         for ongoing_step in decision_steps.values():
             local_id = ongoing_step.agent_id
             self._process_step(
@@ -136,9 +133,17 @@ class AgentProcessor:
                         [_gid], take_action_outputs["action"]
                     )
 
-    def _gather_group_obs(
+    def _add_to_group_status(
         self, step: Union[TerminalStep, DecisionStep], worker_id: int
     ) -> None:
+        """
+        Takes a TerminalStep or DecisionStep and adds the information in it
+        to self.group_status. This information can then be retrieved
+        when constructing trajectories to get the status of group mates.
+        :param step: TerminalStep or DecisionStep
+        :param worker_id: Worker ID of this particular environment. Used to generate a
+            global group id.
+        """
         global_agent_id = get_global_agent_id(worker_id, step.agent_id)
         stored_decision_step, idx = self.last_step_result.get(
             global_agent_id, (None, None)
@@ -147,6 +152,8 @@ class AgentProcessor:
             global_agent_id, None
         )
         if stored_decision_step is not None and stored_take_action_outputs is not None:
+            # 0, the default group_id, means that the agent doesn't belong to an agent group.
+            # If 0, don't add any groupmate information.
             if step.group_id > 0:
                 global_group_id = get_global_group_id(worker_id, step.group_id)
                 stored_actions = stored_take_action_outputs["action"]
@@ -194,7 +201,7 @@ class AgentProcessor:
         if stored_decision_step is not None and stored_take_action_outputs is not None:
             obs = stored_decision_step.obs
             if self.policy.use_recurrent:
-                memory = self.policy.retrieve_memories([global_agent_id])[0, :]
+                memory = self.policy.retrieve_previous_memories([global_agent_id])[0, :]
             else:
                 memory = None
             done = terminated  # Since this is an ongoing step
@@ -215,9 +222,9 @@ class AgentProcessor:
 
             # Assemble teammate_obs. If none saved, then it will be an empty list.
             group_statuses = []
-            for _id, _obs in self.group_status[global_group_id].items():
+            for _id, _mate_status in self.group_status[global_group_id].items():
                 if _id != global_agent_id:
-                    group_statuses.append(_obs)
+                    group_statuses.append(_mate_status)
 
             experience = AgentExperience(
                 obs=obs,
@@ -246,9 +253,9 @@ class AgentProcessor:
             ):
                 next_obs = step.obs
                 next_group_obs = []
-                for _id, _exp in self.current_group_obs[global_group_id].items():
+                for _id, _obs in self.current_group_obs[global_group_id].items():
                     if _id != global_agent_id:
-                        next_group_obs.append(_exp)
+                        next_group_obs.append(_obs)
 
                 trajectory = Trajectory(
                     steps=self.experience_buffers[global_agent_id],

@@ -39,6 +39,18 @@ def construct_fake_buffer(fake_agent_id):
                 dtype=np.float32,
             )
         )
+        b[BufferKey.GROUP_CONTINUOUS_ACTION].append(
+            [
+                np.array(
+                    [
+                        100 * fake_agent_id + 10 * step + 4,
+                        100 * fake_agent_id + 10 * step + 5,
+                    ],
+                    dtype=np.float32,
+                )
+            ]
+            * 3
+        )
     return b
 
 
@@ -46,12 +58,16 @@ def test_buffer():
     agent_1_buffer = construct_fake_buffer(1)
     agent_2_buffer = construct_fake_buffer(2)
     agent_3_buffer = construct_fake_buffer(3)
+
+    # Test get_batch
     a = agent_1_buffer[ObsUtil.get_name_at(0)].get_batch(
         batch_size=2, training_length=1, sequential=True
     )
     assert_array(
         np.array(a), np.array([[171, 172, 173], [181, 182, 183]], dtype=np.float32)
     )
+
+    # Test get_batch
     a = agent_2_buffer[ObsUtil.get_name_at(0)].get_batch(
         batch_size=2, training_length=3, sequential=True
     )
@@ -85,6 +101,13 @@ def test_buffer():
             ]
         ),
     )
+    # Test group entries return Lists of Lists
+    a = agent_2_buffer[BufferKey.GROUP_CONTINUOUS_ACTION].get_batch(
+        batch_size=2, training_length=1, sequential=True
+    )
+    for _group_entry in a:
+        assert len(_group_entry) == 3
+
     agent_1_buffer.reset_agent()
     assert agent_1_buffer.num_experiences == 0
     update_buffer = AgentBuffer()

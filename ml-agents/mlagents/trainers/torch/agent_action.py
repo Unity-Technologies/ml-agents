@@ -3,7 +3,7 @@ import itertools
 import numpy as np
 from mlagents.torch_utils import torch
 
-from mlagents.trainers.buffer import AgentBuffer, BufferKey, AgentBufferField
+from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents_envs.base_env import ActionTuple
 
@@ -63,46 +63,27 @@ class AgentAction(NamedTuple):
         return AgentAction(continuous, discrete)
 
     @staticmethod
-    def _padded_time_to_batch(
-        agent_buffer_field: AgentBufferField, dtype: torch.dtype = torch.float32
-    ) -> List[torch.Tensor]:
-        """
-        Pad actions and convert to tensor. Note that data is padded by 0's, not NaNs
-        as the observations are.
-        """
-        action_shape = None
-        for _action in agent_buffer_field:
-            if _action:
-                action_shape = _action[0].shape
-                break
-        # If there were no critic obs at all
-        if action_shape is None:
-            return []
-
-        new_list = list(
-            map(
-                lambda x: ModelUtils.list_to_tensor(x, dtype=dtype),
-                itertools.zip_longest(
-                    *agent_buffer_field, fillvalue=np.full(action_shape, 0)
-                ),
-            )
-        )
-        return new_list
-
-    @staticmethod
-    def _group_from_buffer(
+    def _group_agent_action_from_buffer(
         buff: AgentBuffer, cont_action_key: BufferKey, disc_action_key: BufferKey
     ) -> List["AgentAction"]:
+        """
+        Extracts continuous and discrete groupmate actions, as specified by BufferKey, and
+        returns a List of AgentActions that correspond to the groupmate's actions. List will
+        be of length equal to the maximum number of groupmates in the buffer. Any spots where
+        there are less agents than maximum, the actions will be padded with 0's.
+        """
         continuous_tensors: List[torch.Tensor] = []
-        discrete_tensors: List[torch.Tensor] = []  # type: ignore
+        discrete_tensors: List[torch.Tensor] = []
         if cont_action_key in buff:
-            continuous_tensors = AgentAction._padded_time_to_batch(
-                buff[cont_action_key]
-            )
+            padded_batch = buff[cont_action_key].padded_to_batch()
+            continuous_tensors = [
+                ModelUtils.list_to_tensor(arr) for arr in padded_batch
+            ]
         if disc_action_key in buff:
-            discrete_tensors = AgentAction._padded_time_to_batch(
-                buff[disc_action_key], dtype=torch.long
-            )
+            padded_batch = buff[disc_action_key].padded_to_batch(dtype=np.long)
+            discrete_tensors = [
+                ModelUtils.list_to_tensor(arr, dtype=torch.long) for arr in padded_batch
+            ]
 
         actions_list = []
         for _cont, _disc in itertools.zip_longest(
@@ -116,24 +97,38 @@ class AgentAction(NamedTuple):
     @staticmethod
     def group_from_buffer(buff: AgentBuffer) -> List["AgentAction"]:
         """
-        A static method that accesses continuous and discrete action fields in an AgentBuffer
-        and constructs the corresponding AgentAction from the retrieved np arrays.
+        A static method that accesses next group continuous and discrete action fields in an AgentBuffer
+        and constructs a padded List of AgentActions that represent the group agent actions.
+        The List is of length equal to max number of groupmate agents in the buffer, and the AgentBuffer iss
+        of the same length as the buffer. Empty spots (e.g. when agents die) are padded with 0.
+        :param buff: AgentBuffer of a batch or trajectory
+        :return: List of groupmate's AgentActions
         """
-        return AgentAction._group_from_buffer(
+        return AgentAction._group_agent_action_from_buffer(
             buff, BufferKey.GROUP_CONTINUOUS_ACTION, BufferKey.GROUP_DISCRETE_ACTION
         )
 
     @staticmethod
     def group_from_buffer_next(buff: AgentBuffer) -> List["AgentAction"]:
         """
-        A static method that accesses next continuous and discrete action fields in an AgentBuffer
-        and constructs the corresponding AgentAction from the retrieved np arrays.
+        A static method that accesses next group continuous and discrete action fields in an AgentBuffer
+        and constructs a padded List of AgentActions that represent the next group agent actions.
+        The List is of length equal to max number of groupmate agents in the buffer, and the AgentBuffer iss
+        of the same length as the buffer. Empty spots (e.g. when agents die) are padded with 0.
+        :param buff: AgentBuffer of a batch or trajectory
+        :return: List of groupmate's AgentActions
         """
-        return AgentAction._group_from_buffer(
+        return AgentAction._group_agent_action_from_buffer(
             buff, BufferKey.GROUP_NEXT_CONT_ACTION, BufferKey.GROUP_NEXT_DISC_ACTION
         )
 
     def to_flat(self, discrete_branches: List[int]) -> torch.Tensor:
+        """
+        Flatten this AgentAction into a single torch Tensor of dimension (batch, num_continuous + num_one_hot_discrete).
+        Discrete actions are converted into one-hot and concatenated with continuous actions.
+        :param discrete_branches: List of sizes for discrete actions.
+        :return: Tensor of flattened actions.
+        """
         discrete_oh = ModelUtils.actions_to_onehot(
             self.discrete_tensor, discrete_branches
         )
