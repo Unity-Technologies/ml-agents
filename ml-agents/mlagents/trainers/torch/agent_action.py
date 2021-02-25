@@ -94,7 +94,7 @@ class AgentAction(NamedTuple):
         return new_list
 
     @staticmethod
-    def _group_from_buffer(
+    def _group_agent_action_from_buffer(
         buff: AgentBuffer, cont_action_key: BufferKey, disc_action_key: BufferKey
     ) -> List["AgentAction"]:
         """
@@ -133,7 +133,7 @@ class AgentAction(NamedTuple):
         :param buff: AgentBuffer of a batch or trajectory
         :return: List of groupmate's AgentActions
         """
-        return AgentAction._group_from_buffer(
+        return AgentAction._group_agent_action_from_buffer(
             buff, BufferKey.GROUP_CONTINUOUS_ACTION, BufferKey.GROUP_DISCRETE_ACTION
         )
 
@@ -147,7 +147,7 @@ class AgentAction(NamedTuple):
         :param buff: AgentBuffer of a batch or trajectory
         :return: List of groupmate's AgentActions
         """
-        return AgentAction._group_from_buffer(
+        return AgentAction._group_agent_action_from_buffer(
             buff, BufferKey.GROUP_NEXT_CONT_ACTION, BufferKey.GROUP_NEXT_DISC_ACTION
         )
 
