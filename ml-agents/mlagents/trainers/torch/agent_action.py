@@ -73,10 +73,12 @@ class AgentAction(NamedTuple):
         """
         action_shape = None
         for _action in agent_buffer_field:
+            # _action could be an empty list if there are no group agents in this
+            # step. Find the first non-empty list and use that shape.
             if _action:
                 action_shape = _action[0].shape
                 break
-        # If there were no critic obs at all
+        # If there were no groupmate agents in the entire batch, return an empty List.
         if action_shape is None:
             return []
 
@@ -96,7 +98,7 @@ class AgentAction(NamedTuple):
         buff: AgentBuffer, cont_action_key: BufferKey, disc_action_key: BufferKey
     ) -> List["AgentAction"]:
         continuous_tensors: List[torch.Tensor] = []
-        discrete_tensors: List[torch.Tensor] = []  # type: ignore
+        discrete_tensors: List[torch.Tensor] = []
         if cont_action_key in buff:
             continuous_tensors = AgentAction._padded_time_to_batch(
                 buff[cont_action_key]
