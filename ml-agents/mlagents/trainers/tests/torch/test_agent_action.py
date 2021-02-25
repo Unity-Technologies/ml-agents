@@ -43,6 +43,7 @@ def test_agent_action_group_from_buffer():
 
 
 def test_to_flat():
+    # Both continuous and discrete
     aa = AgentAction(
         torch.tensor([[1.0, 1.0, 1.0]]), [torch.tensor([2]), torch.tensor([1])]
     )
@@ -50,3 +51,13 @@ def test_to_flat():
     assert torch.eq(
         flattened_actions, torch.tensor([[1, 1, 1, 0, 0, 1, 0, 1, 0]])
     ).all()
+
+    # Just continuous
+    aa = AgentAction(torch.tensor([[1.0, 1.0, 1.0]]), None)
+    flattened_actions = aa.to_flat([])
+    assert torch.eq(flattened_actions, torch.tensor([1, 1, 1])).all()
+
+    # Just discrete
+    aa = AgentAction(torch.tensor([]), [torch.tensor([2]), torch.tensor([1])])
+    flattened_actions = aa.to_flat([3, 3])
+    assert torch.eq(flattened_actions, torch.tensor([0, 0, 1, 0, 1, 0])).all()
