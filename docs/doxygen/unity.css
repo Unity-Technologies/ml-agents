@@ -234,7 +234,7 @@ div.version-number { padding: 9px 7px; float: left; position: relative; }
   ==== LAYOUT
 ****************************************/
 
-div.main-wrapper { min-width: 860px; margin: 0 auto 40px auto; padding: 100px 0 20px 0; }
+div.master-wrapper { min-width: 860px; margin: 0 auto 40px auto; padding: 100px 0 20px 0; }
 div.content-wrap { width: 100%; float: right; margin: 0 0 0 -380px; position: relative; }
 div.content-block { margin: 0 0 0 380px; }
 div.content-wrap div.content { min-width: 460px; padding: 40px 40px 0 0; }
@@ -393,7 +393,7 @@ div.footer div.menu a { margin: 0 15px 0 0; }
 
 @media only screen and (max-width: 900px) {
 
-div.main-wrapper { padding: 0 0 20px 0;  }
+div.master-wrapper { padding: 0 0 20px 0;  }
 div.header-wrapper { width: auto; position: relative; float: left; }
 div.sidebar-wrap { position: static; }
 div.content-wrap { width: 480px; float: left; margin: 0; }
