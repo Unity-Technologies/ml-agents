@@ -131,7 +131,7 @@ class ModelSerializer:
 
         with exporting_to_onnx():
             torch.onnx.export(
-                self.policy.actor_critic,
+                self.policy.actor,
                 self.dummy_input,
                 onnx_output_path,
                 opset_version=SerializationSettings.onnx_opset,

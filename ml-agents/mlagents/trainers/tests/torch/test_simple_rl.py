@@ -245,7 +245,7 @@ def test_recurrent_sac(action_sizes):
     new_hyperparams = attr.evolve(
         SAC_TORCH_CONFIG.hyperparameters,
         batch_size=256,
-        learning_rate=1e-4,
+        learning_rate=3e-4,
         buffer_init_steps=1000,
         steps_per_update=2,
     )
@@ -255,7 +255,7 @@ def test_recurrent_sac(action_sizes):
         network_settings=new_networksettings,
         max_steps=4000,
     )
-    check_environment_trains(env, {BRAIN_NAME: config}, training_seed=1213)
+    check_environment_trains(env, {BRAIN_NAME: config}, training_seed=1337)
 
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
@@ -395,7 +395,7 @@ def test_gail_visual_ppo(simple_record, action_sizes):
         num_visual=1,
         num_vector=0,
         action_sizes=action_sizes,
-        step_size=0.2,
+        step_size=0.3,
     )
     bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1500)
     reward_signals = {

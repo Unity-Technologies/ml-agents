@@ -28,6 +28,7 @@ class BufferKey(enum.Enum):
     ENVIRONMENT_REWARDS = "environment_rewards"
     MASKS = "masks"
     MEMORY = "memory"
+    CRITIC_MEMORY = "critic_memory"
     PREV_ACTION = "prev_action"
 
     ADVANTAGES = "advantages"

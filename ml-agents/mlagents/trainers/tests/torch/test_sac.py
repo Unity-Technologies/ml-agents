@@ -55,12 +55,14 @@ def test_sac_optimizer_update(dummy_config, rnn, visual, discrete):
     )
     # Test update
     update_buffer = mb.simulate_rollout(
-        BUFFER_INIT_SAMPLES, optimizer.policy.behavior_spec, memory_size=24
+        BUFFER_INIT_SAMPLES, optimizer.policy.behavior_spec, memory_size=12
     )
     # Mock out reward signal eval
     update_buffer[RewardSignalUtil.rewards_key("extrinsic")] = update_buffer[
         BufferKey.ENVIRONMENT_REWARDS
     ]
+    # Mock out value memories
+    update_buffer[BufferKey.CRITIC_MEMORY] = update_buffer[BufferKey.MEMORY]
     return_stats = optimizer.update(
         update_buffer,
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
