@@ -73,11 +73,13 @@ class PPOTrainer(RLTrainer):
             self.policy.update_normalization(agent_buffer_trajectory)
 
         # Get all value estimates
-        value_estimates, value_next = self.optimizer.get_trajectory_value_estimates(
+        value_estimates, value_next, value_memories = self.optimizer.get_trajectory_value_estimates(
             agent_buffer_trajectory,
             trajectory.next_obs,
             trajectory.done_reached and not trajectory.interrupted,
         )
+        if value_memories is not None:
+            agent_buffer_trajectory[BufferKey.CRITIC_MEMORY].set(value_memories)
 
         for name, v in value_estimates.items():
             agent_buffer_trajectory[RewardSignalUtil.value_estimates_key(name)].extend(
@@ -282,28 +284,7 @@ def discount_rewards(r, gamma=0.99, value_next=0.0):
     return discounted_r
 
 
-def lambd_return(r, value_estimates, gamma=0.99, lambd=0.8, value_next=0.0):
-    returns = np.zeros_like(r)
-    returns[-1] = r[-1] + gamma * value_next
-    for t in reversed(range(0, r.size - 1)):
-        returns[t] = (
-            gamma * lambd * returns[t + 1]
-            + r[t]
-            + (1 - lambd) * gamma * value_estimates[t + 1]
-        )
-
-    return returns
-
-
-def get_team_returns(
-    rewards,
-    baseline_estimates,
-    v_estimates,
-    value_next=0.0,
-    died=False,
-    gamma=0.99,
-    lambd=0.8,
-):
+def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
     """
     Computes generalized advantage estimate for use in updating policy.
     :param rewards: list of rewards for time-steps t to T.
@@ -313,12 +294,7 @@ def get_team_returns(
     :param lambd: GAE weighing factor.
     :return: list of advantage estimates for time-steps t to T.
     """
-    rewards = np.array(rewards)
-    returns_b = lambd_return(
-        rewards, baseline_estimates, gamma=gamma, lambd=lambd, value_next=value_next
-    )
-    returns_v = lambd_return(
-        rewards, v_estimates, gamma=gamma, lambd=lambd, value_next=value_next
-    )
-
-    return returns_v, returns_b
+    value_estimates = np.append(value_estimates, value_next)
+    delta_t = rewards + gamma * value_estimates[1:] - value_estimates[:-1]
+    advantage = discount_rewards(r=delta_t, gamma=gamma * lambd)
+    return advantage
