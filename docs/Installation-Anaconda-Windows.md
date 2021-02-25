@@ -127,7 +127,7 @@ git clone --branch release_14 https://github.com/Unity-Technologies/ml-agents.gi
 ```
 
 The `--branch release_14` option will switch to the tag of the latest stable
-release. Omitting that will get the `master` branch which is potentially
+release. Omitting that will get the `main` branch which is potentially
 unstable.
 
 If you don't want to use Git, you can find download links on the
