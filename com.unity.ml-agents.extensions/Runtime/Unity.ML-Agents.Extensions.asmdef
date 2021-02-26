@@ -4,8 +4,5 @@
         "Unity.Barracuda",
         "Unity.ML-Agents",
         "Unity.ML-Agents.Extensions.Input"
-    ],
-    "optionalUnityReferences": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false
+    ]
 }

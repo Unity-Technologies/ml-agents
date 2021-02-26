@@ -62,7 +62,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 closestColliderPoint = foundColliders[i].ClosestPointOnBounds(cellCenter);
 
                 LoadObjectData(currentColliderGo, cellIndex,
-                    Vector3.Distance(closestColliderPoint, transform.position) / SphereRadius);
+                    Vector3.Distance(closestColliderPoint, transform.position) * InverseSphereRadius);
             }
         }
 

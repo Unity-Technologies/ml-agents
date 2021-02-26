@@ -172,7 +172,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Radius of grid, used for normalizing the distance.
         /// </summary>
-        protected float SphereRadius;
+        protected float InverseSphereRadius;
 
         /// <summary>
         /// Total Number of cells (width*height)
@@ -310,7 +310,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             NumCells = GridNumSideX * GridNumSideZ;
             float sphereRadiusX = (CellScaleX * GridNumSideX) / Mathf.Sqrt(2);
             float sphereRadiusZ = (CellScaleZ * GridNumSideZ) / Mathf.Sqrt(2);
-            SphereRadius = Mathf.Max(sphereRadiusX, sphereRadiusZ);
+            InverseSphereRadius = 1.0f / Mathf.Max(sphereRadiusX, sphereRadiusZ);
             ChannelOffsets = new int[ChannelDepth.Length];
             DiffNumSideZX = (GridNumSideZ - GridNumSideX);
             OffsetGridNumSide = (GridNumSideZ - 1f) / 2f;
@@ -431,11 +431,14 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_perceptionTexture2D = new Texture2D(GridNumSideX, GridNumSideZ, TextureFormat.RGB24, false);
         }
 
+        /// <inheritdoc cref="ISensor.Reset"/>
+        void ISensor.Reset() { }
+
         /// <summary>
         /// Clears the perception buffer before loading in new data. If the gridDepthType is ChannelHot, then it initializes the
         /// Reset() also reinits the cell activity array (for debug)
         /// </summary>
-        public void Reset()
+        public void ClearPerceptionBuffer()
         {
             if (m_PerceptionBuffer != null)
             {
@@ -557,7 +560,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 return Array.Empty<float>();
             }
-            Reset();
+            ClearPerceptionBuffer();
             using (TimerStack.Instance.Scoped("GridSensor.Perceive"))
             {
                 var halfCellScale = new Vector3(CellScaleX / 2f, CellScaleY, CellScaleZ / 2f);
@@ -628,7 +631,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             Profiler.BeginSample("GridSensor.ParseColliders");
             GameObject closestColliderGo = null;
-            var distance = float.MaxValue;
+            var minDistanceSquared = float.MaxValue;
 
             for (var i = 0; i < numFound; i++)
             {
@@ -639,7 +642,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                     continue;
 
                 var closestColliderPoint = foundColliders[i].ClosestPointOnBounds(cellCenter);
-                var currentDistance = (closestColliderPoint - rootReference.transform.position).sqrMagnitude;
+                var currentDistanceSquared = (closestColliderPoint - rootReference.transform.position).sqrMagnitude;
 
                 // Checks if our colliders contain a detectable object
                 var index = -1;
@@ -651,15 +654,15 @@ namespace Unity.MLAgents.Extensions.Sensors
                         break;
                     }
                 }
-                if (index > -1 && currentDistance < distance)
+                if (index > -1 && currentDistanceSquared < minDistanceSquared)
                 {
-                    distance = currentDistance;
+                    minDistanceSquared = currentDistanceSquared;
                     closestColliderGo = currentColliderGo;
                 }
             }
 
             if (!ReferenceEquals(closestColliderGo, null))
-                LoadObjectData(closestColliderGo, cellIndex, (float)Math.Sqrt(distance) / SphereRadius);
+                LoadObjectData(closestColliderGo, cellIndex, (float)Math.Sqrt(minDistanceSquared) * InverseSphereRadius);
             Profiler.EndSample();
         }
 
