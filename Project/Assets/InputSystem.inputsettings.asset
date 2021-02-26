@@ -13,14 +13,19 @@ MonoBehaviour:
   m_Name: InputSystem.inputsettings
   m_EditorClassIdentifier: 
   m_SupportedDevices: []
-  m_UpdateMode: 1
+  m_UpdateMode: 2
   m_CompensateForScreenOrientation: 0
   m_FilterNoiseOnCurrent: 0
   m_DefaultDeadzoneMin: 0.125
   m_DefaultDeadzoneMax: 0.925
   m_DefaultButtonPressPoint: 0.5
+  m_ButtonReleaseThreshold: 0.75
   m_DefaultTapTime: 0.2
   m_DefaultSlowTapTime: 0.5
   m_DefaultHoldTime: 0.4
   m_TapRadius: 5
   m_MultiTapDelayTime: 0.75
+  m_iOSSettings:
+    m_MotionUsage:
+      m_Enabled: 0
+      m_Description: 

@@ -26,7 +26,7 @@ public class DodgeBallAgent : Agent
     [Header("SHIELD")] public ShieldController AgentShield;
 
     [Header("INPUT")]
-    public FPSAgentInput input;
+    public DodgeBallAgentInput input;
 
     [Header("INVENTORY")]
     public int currentNumberOfBalls;
@@ -73,7 +73,7 @@ public class DodgeBallAgent : Agent
 
         //        m_Cam = Camera.main;
         m_AgentRb = GetComponent<Rigidbody>();
-        input = GetComponent<FPSAgentInput>();
+        input = GetComponent<DodgeBallAgentInput>();
         m_GameController = FindObjectOfType<DodgeBallGameController>();
         m_StartingPos = transform.position;
         m_StartingRot = transform.rotation;
@@ -163,6 +163,7 @@ public class DodgeBallAgent : Agent
         m_ThrowInput = act[3];
         m_DashInput = act[4];
 
+        // print($"{m_InputV} {m_InputH}");
         //HANDLE ROTATION
         m_CubeMovement.Look(m_Rotate);
 
@@ -411,6 +412,7 @@ public class DodgeBallAgent : Agent
         contActionsOut[1] = input.moveInput.x;
         //        contActionsOut[2] = input.rotateInput.x; //rotate
         contActionsOut[2] = input.rotateInput.x; //rotate
+        print(input.rotateInput.x);
         // contActionsOut[3] = input.shootInput ? 1 : 0; //shoot
         contActionsOut[3] = input.shootPressed ? 1 : 0; //shoot
         // contActionsOut[3] = input.CheckIfInputSinceLastFrame(ref input.shootInput) ? 1 : 0; //jump

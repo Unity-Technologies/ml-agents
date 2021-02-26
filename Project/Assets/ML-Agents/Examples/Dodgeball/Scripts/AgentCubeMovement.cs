@@ -123,18 +123,20 @@ namespace MLAgents
             //            lookDir += Input.GetKey(KeyCode.D) ? Vector3.right : Vector3.zero;
             //            lookDir += Input.GetKey(KeyCode.A) ? Vector3.left : Vector3.zero;
 
-            //BODY ROTATION
-            lookDir = Input.GetAxisRaw("Horizontal");
+            // //BODY ROTATION
+            // lookDir = Input.GetAxisRaw("Horizontal");
 
-            //FORWARD MOVEMENT
-            inputV = Input.GetAxisRaw("Vertical");
-
-            //LATERAL MOVEMENT
-            inputH = 0;
-            //            inputH += Input.GetKey(KeyCode.Q) ? -1 : 0;
-            //            inputH += Input.GetKey(KeyCode.E) ? 1 : 0;
-            inputH += Input.GetKeyDown(KeyCode.Q) ? -1 : 0;
-            inputH += Input.GetKeyDown(KeyCode.E) ? 1 : 0;
+            // //FORWARD MOVEMENT
+            // inputV = Input.GetAxisRaw("Vertical");
+            // inputH = Input.GetAxisRaw("Horizontal");
+            //
+            // //LATERAL MOVEMENT
+            // inputH = 0;
+            // //            inputH += Input.GetKey(KeyCode.Q) ? -1 : 0;
+            // //            inputH += Input.GetKey(KeyCode.E) ? 1 : 0;
+            // inputH += Input.GetKeyDown(KeyCode.Q) ? -1 : 0;
+            // inputH += Input.GetKeyDown(KeyCode.E) ? 1 : 0;
+            // moveDir = transform.TransformDirection(new Vector3(m_InputH, 0, m_InputV));
 
             //            lookDir = Input.GetKey(KeyCode.A)?
             //            var moveLateral = Vector3.zero;
@@ -281,7 +283,11 @@ namespace MLAgents
                 // rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
                 rotationX = ClampAngle(rotationX, minimumX, maximumX);
                 rotationY = ClampAngle(rotationY, minimumY, maximumY);
+                Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
+                Quaternion yQuaternion = Quaternion.AngleAxis(rotationY, -Vector3.right);
 
+                transform.localRotation = originalRotation * xQuaternion * yQuaternion;
+                print("look");
         }
 
         public bool applyStandingForce = false;
@@ -298,8 +304,6 @@ namespace MLAgents
             {
                 if (axes == RotationAxes.MouseXAndY)
                 {
-
-
                     Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
                     Quaternion yQuaternion = Quaternion.AngleAxis(rotationY, -Vector3.right);
 
@@ -313,14 +317,14 @@ namespace MLAgents
                     Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
                     transform.localRotation = originalRotation * xQuaternion;
                 }
-                else
-                {
-                    // rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
-                    // rotationY = ClampAngle(rotationY, minimumY, maximumY);
-
-                    Quaternion yQuaternion = Quaternion.AngleAxis(-rotationY, Vector3.right);
-                    transform.localRotation = originalRotation * yQuaternion;
-                }
+                // else
+                // {
+                //     // rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
+                //     // rotationY = ClampAngle(rotationY, minimumY, maximumY);
+                //
+                //     Quaternion yQuaternion = Quaternion.AngleAxis(-rotationY, Vector3.right);
+                //     transform.localRotation = originalRotation * yQuaternion;
+                // }
 
             }
 
@@ -377,60 +381,81 @@ namespace MLAgents
             //                }
             //
             //            }
-            if (lookDir != 0)
-            {
-                if (!spinAttack)
-                {
-                    ////                    var rot = rb.rotation * Quaternion.Euler(0, lookDir * agentRotationSpeed * Time.fixedDeltaTime, 0);
-                    //                    var walkingBackwardsCoeff = 1;
-                    //                    if (invertRotationIfWalkingBackwards && inputV < 0)
-                    //                    {
-                    //                        walkingBackwardsCoeff = -1;
-                    //                    }
-                    //
-                    ////                    var rot = rb.rotation * Quaternion.Euler(0, lookDir * agentRotationSpeed * walkingBackwardsCoeff * Time.fixedDeltaTime, 0);
-                    ////                    rb.MoveRotation(rot);
-                    ////                    var rot = rb.rotation * Quaternion.Euler(0, lookDir * agentRotationSpeed * walkingBackwardsCoeff * Time.fixedDeltaTime, 0);
-                    //                    rb.MoveRotation( Quaternion.Euler(0, lookDir * agentRotationSpeed * walkingBackwardsCoeff * Time.fixedDeltaTime, 0));
 
-                    RotateBody(lookDir, inputV);
-                    //                    print("rotating");
 
-                    //                    rb.rotation *= Quaternion.AngleAxis(); rb.rotation * Quaternion. (rb.rotation, rot, agentRotationSpeed * Time.fixedDeltaTime);
-                }
+            //////GET INPUT
 
-            }
-            if (inputH != 0)
-            {
+            //FORWARD MOVEMENT
+            inputV = Input.GetAxisRaw("Vertical");
+            inputH = Input.GetAxisRaw("Horizontal");
 
-                Strafe(transform.right * inputH);
-            }
+            // //LATERAL MOVEMENT
+            // inputH = 0;
+            // //            inputH += Input.GetKey(KeyCode.Q) ? -1 : 0;
+            // //            inputH += Input.GetKey(KeyCode.E) ? 1 : 0;
+            // inputH += Input.GetKeyDown(KeyCode.Q) ? -1 : 0;
+            // inputH += Input.GetKeyDown(KeyCode.E) ? 1 : 0;
+            var moveDir = transform.TransformDirection(new Vector3(inputH, 0, inputV));
 
-            if (inputV != 0)
-            {
+            // if (lookDir != 0)
+            // {
+            //     if (!spinAttack)
+            //     {
+            //         ////                    var rot = rb.rotation * Quaternion.Euler(0, lookDir * agentRotationSpeed * Time.fixedDeltaTime, 0);
+            //         //                    var walkingBackwardsCoeff = 1;
+            //         //                    if (invertRotationIfWalkingBackwards && inputV < 0)
+            //         //                    {
+            //         //                        walkingBackwardsCoeff = -1;
+            //         //                    }
+            //         //
+            //         ////                    var rot = rb.rotation * Quaternion.Euler(0, lookDir * agentRotationSpeed * walkingBackwardsCoeff * Time.fixedDeltaTime, 0);
+            //         ////                    rb.MoveRotation(rot);
+            //         ////                    var rot = rb.rotation * Quaternion.Euler(0, lookDir * agentRotationSpeed * walkingBackwardsCoeff * Time.fixedDeltaTime, 0);
+            //         //                    rb.MoveRotation( Quaternion.Euler(0, lookDir * agentRotationSpeed * walkingBackwardsCoeff * Time.fixedDeltaTime, 0));
+            //
+            //         RotateBody(lookDir, inputV);
+            //         //                    print("rotating");
+            //
+            //         //                    rb.rotation *= Quaternion.AngleAxis(); rb.rotation * Quaternion. (rb.rotation, rot, agentRotationSpeed * Time.fixedDeltaTime);
+            //     }
+            //
+            // }
 
-                //                var dir = cam.transform.TransformDirection(new Vector3(inputH, 0, inputV));
-                //                var dir = cam.transform.TransformDirection(new Vector3(0, 0, inputV));
-                var dir = transform.forward * inputV;
-                //                dir.y = 0;
-                //HANDLE WALKING
+            // moveDir = transform.TransformDirection(new Vector3(m_InputH, 0, m_InputV));
+
                 if (groundCheck.isGrounded)
                 {
-                    RunOnGround(rb, dir.normalized);
-                    //                    if (AnimateBodyMesh)
-                    //                    {
-                    //                        bodyMesh.localPosition = Vector3.zero +
-                    //                                                 Vector3.up * walkingAnimScale * walkingBounceCurve.Evaluate(
-                    //                                                     m_animateBodyMeshCurveTimer);
-                    //                        m_animateBodyMeshCurveTimer += Time.fixedDeltaTime;
-                    //                    }
-                    //                    print("running");
+                    RunOnGround(moveDir);
                 }
-                else
-                {
-                    RunInAir(rb, dir.normalized);
-                }
-            }
+                // else
+                // {
+                //     RunInAir(dir.normalized);
+                // }
+            // if (inputV != 0)
+            // {
+            //
+            //     //                var dir = cam.transform.TransformDirection(new Vector3(inputH, 0, inputV));
+            //     //                var dir = cam.transform.TransformDirection(new Vector3(0, 0, inputV));
+            //     var dir = transform.forward * inputV;
+            //     //                dir.y = 0;
+            //     //HANDLE WALKING
+            //     if (groundCheck.isGrounded)
+            //     {
+            //         RunOnGround(rb, dir.normalized);
+            //         //                    if (AnimateBodyMesh)
+            //         //                    {
+            //         //                        bodyMesh.localPosition = Vector3.zero +
+            //         //                                                 Vector3.up * walkingAnimScale * walkingBounceCurve.Evaluate(
+            //         //                                                     m_animateBodyMeshCurveTimer);
+            //         //                        m_animateBodyMeshCurveTimer += Time.fixedDeltaTime;
+            //         //                    }
+            //         //                    print("running");
+            //     }
+            //     else
+            //     {
+            //         RunInAir(rb, dir.normalized);
+            //     }
+            // }
             //            else //is idle
             //            {
             //
@@ -606,6 +631,7 @@ namespace MLAgents
         //        private float agentVel;
         public void RunOnGround(Vector3 dir)
         {
+                print(dir);
             if (dir == Vector3.zero)
             {
                 if (AnimateBodyMesh)
@@ -636,6 +662,8 @@ namespace MLAgents
         }
         public void RunOnGround(Rigidbody rb, Vector3 dir)
         {
+            print(dir);
+
             if (dir == Vector3.zero)
             {
                 if (AnimateBodyMesh)
