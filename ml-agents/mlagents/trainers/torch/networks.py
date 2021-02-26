@@ -227,9 +227,11 @@ class MultiInputNetworkBody(torch.nn.Module):
         Since these are raw obs, the padded values are still NaN
         """
         only_first_obs = [_all_obs[0] for _all_obs in obs_tensors]
-        obs_for_mask = torch.stack(only_first_obs, dim=1)
-        # Get the mask from nans
-        attn_mask = torch.any(obs_for_mask.isnan(), dim=2).type(torch.FloatTensor)
+        # flatten for correct dimensions with visual obs
+        only_first_obs_flat = torch.stack(
+            [_obs.flatten(start_dim=1)[:, 0] for _obs in only_first_obs], dim=1
+        )
+        attn_mask = only_first_obs_flat.isnan().type(torch.FloatTensor)
         return attn_mask
 
     def forward(
