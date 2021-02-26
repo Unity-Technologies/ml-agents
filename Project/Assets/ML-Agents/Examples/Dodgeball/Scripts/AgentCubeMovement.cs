@@ -199,6 +199,9 @@ namespace MLAgents
         public float standingForcePositionOffset = .5f;
         void FixedUpdate()
         {
+            strafeCoolDownTimer += Time.fixedDeltaTime;
+            dashCoolDownTimer += Time.fixedDeltaTime;
+
             if (!allowHumanInput)
             {
                 return;
@@ -237,8 +240,6 @@ namespace MLAgents
                 //                print("AddFallingForce");
 
             }
-            strafeCoolDownTimer += Time.fixedDeltaTime;
-            dashCoolDownTimer += Time.fixedDeltaTime;
 
             if (applyStandingForce)
             {
