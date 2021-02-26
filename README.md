@@ -148,6 +148,12 @@ We have also published a series of blog posts that are relevant for ML-Agents:
   and
   [Q-learning](https://blogs.unity3d.com/2017/08/22/unity-ai-reinforcement-learning-with-q-learning/))
 
+### More from Unity
+
+- [Unity Robotics](https://github.com/Unity-Technologies/Unity-Robotics-Hub)
+- [Unity Computer Vision](https://unity.com/computer-vision)
+- [Unity Game Simulation](https://unity.com/products/game-simulation)
+
 ## Community and Feedback
 
 The ML-Agents Toolkit is an open-source project and we encourage and welcome
