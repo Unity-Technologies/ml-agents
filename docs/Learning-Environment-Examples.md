@@ -551,8 +551,8 @@ drop down. New pieces are spawned randomly at the top, with a chance of being
   - Observations and actions are defined with a sensor and actuator respectively.
 - Float Properties: None
 - Benchmark Mean Reward:
-  - 37.2 for visual observations
-  - 37.6 for vector observations
+  - 39.5 for visual observations
+  - 38.5 for vector observations
   - 34.2 for simple heuristic (pick a random valid move)
   - 37.0 for greedy heuristic (pick the highest-scoring valid move)
 

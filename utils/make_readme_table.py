@@ -20,7 +20,7 @@ def table_line(version_info, bold=False):
         f"{bold_str}[docs]({version_info.doc_link}){bold_str}",
         f"{bold_str}[download]({version_info.download_link}){bold_str}",
     ]
-    if version_info.is_master:
+    if version_info.is_main:
         cells.append("--")  # python
         cells.append("--")  # Unity
     else:
@@ -46,12 +46,12 @@ class ReleaseInfo(NamedTuple):
         return LooseVersion(self.python_verion)
 
     @property
-    def is_master(self) -> bool:
-        return self.release_tag == "master"
+    def is_main(self) -> bool:
+        return self.release_tag == "main"
 
     @property
     def release_datetime(self) -> datetime:
-        if self.is_master:
+        if self.is_main:
             return datetime.today()
         return datetime.strptime(self.release_date, "%B %d, %Y")
 
@@ -71,8 +71,8 @@ class ReleaseInfo(NamedTuple):
         """
         if self.is_verified:
             return f"Verified Package {self.csharp_version}"
-        elif self.is_master:
-            return "master (unstable)"
+        elif self.is_main:
+            return "main (unstable)"
         else:
             return self.release_tag.replace("_", " ").title()
 
@@ -117,7 +117,7 @@ class ReleaseInfo(NamedTuple):
 
 
 versions = [
-    ReleaseInfo("master", "master", "master", "--"),
+    ReleaseInfo("main", "main", "main", "--"),
     ReleaseInfo("release_1", "1.0.0", "0.16.0", "April 30, 2020"),
     ReleaseInfo("release_2", "1.0.2", "0.16.1", "May 20, 2020"),
     ReleaseInfo("release_3", "1.1.0", "0.17.0", "June 10, 2020"),
@@ -130,6 +130,7 @@ versions = [
     ReleaseInfo("release_10", "1.6.0", "0.22.0", "November 18, 2020"),
     ReleaseInfo("release_11", "1.7.0", "0.23.0", "December 21, 2020"),
     ReleaseInfo("release_12", "1.7.2", "0.23.0", "December 22, 2020"),
+    ReleaseInfo("release_13", "1.8.0", "0.24.0", "February 17, 2021"),
     # Verified releases
     ReleaseInfo("", "1.0.6", "0.16.1", "November 16, 2020", is_verified=True),
     ReleaseInfo("", "1.0.5", "0.16.1", "September 23, 2020", is_verified=True),
@@ -143,7 +144,7 @@ highlight_versions = set()
 highlight_versions.add([v for v in sorted_versions if v.is_verified][0])
 # Highlight the most recent regular version
 highlight_versions.add(
-    [v for v in sorted_versions if (not v.is_verified and not v.is_master)][0]
+    [v for v in sorted_versions if (not v.is_verified and not v.is_main)][0]
 )
 
 count_by_verified = Counter()
