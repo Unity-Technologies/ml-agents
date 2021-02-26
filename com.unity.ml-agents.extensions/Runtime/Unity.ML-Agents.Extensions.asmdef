@@ -5,6 +5,7 @@
         "Unity.ML-Agents",
         "Unity.ML-Agents.Extensions.Input"
     ],
-    "includePlatforms": [],
-    "excludePlatforms": []
+    "optionalUnityReferences": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true
 }

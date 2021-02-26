@@ -29,7 +29,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             this.ChannelDepth = channelDepth;
             if (DetectableObjects.Length != ChannelDepth.Length)
                 throw new UnityAgentsException("The channels of a CountingGridSensor is equal to the number of detectableObjects");
-            this.gridDepthType = GridDepthType.Channel;
+            this.gridDepthType = gridDepthType;
             this.CellScaleX = cellScaleX;
             this.CellScaleZ = cellScaleZ;
             this.GridNumSideX = gridWidth;
@@ -46,12 +46,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="foundColliders">The array of colliders</param>
         /// <param name="cellIndex">The cell index the collider is in</param>
         /// <param name="cellCenter">the center of the cell the collider is in</param>
-        protected override void ParseColliders(Collider[] foundColliders, int cellIndex, Vector3 cellCenter)
+        protected override void ParseColliders(Collider[] foundColliders, int numFound, int cellIndex, Vector3 cellCenter)
         {
             GameObject currentColliderGo = null;
             Vector3 closestColliderPoint = Vector3.zero;
 
-            for (int i = 0; i < foundColliders.Length; i++)
+            for (int i = 0; i < numFound; i++)
             {
                 currentColliderGo = foundColliders[i].gameObject;
 
