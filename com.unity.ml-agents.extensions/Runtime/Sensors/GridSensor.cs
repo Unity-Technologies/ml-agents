@@ -102,14 +102,14 @@ namespace Unity.MLAgents.Extensions.Sensors
         [Header("Collider Buffer Properties")]
         [Tooltip("The absolute max size of the Collider buffer used in the non-allocating Physics calls.  In other words" +
             " the Collider buffer will never grow beyond this number even if there are more Colliders in the Grid Cell.")]
-        public int AbsoluteMaxCollidersPerCell = 500;
+        public int MaxColliderBufferSize = 500;
         [Tooltip(
             "The Estimated Max Number of Colliders to expect per cell.  This number is used to " +
             "pre-allocate an array of Colliders in order to take advantage of the OverlapBoxNonAlloc " +
-            "Physics API.  If the number of colliders found is >= EstimatedMaxCollidersPerCell the array " +
+            "Physics API.  If the number of colliders found is >= InitialColliderBufferSize the array " +
             "will be resized to double its current size.  The hard coded absolute size is 500.")]
-        public int EstimatedMaxCollidersPerCell = 4;
-        Collider[] m_CollidersPerCell;
+        public int InitialColliderBufferSize = 4;
+        Collider[] m_ColliderBuffer;
 
         float[] m_ChannelBuffer;
 
@@ -419,7 +419,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             InitDepthType();
             InitCellPoints();
             InitPerceptionBuffer();
-            m_CollidersPerCell = new Collider[Math.Min(AbsoluteMaxCollidersPerCell, EstimatedMaxCollidersPerCell)];
+            m_ColliderBuffer = new Collider[Math.Min(MaxColliderBufferSize, InitialColliderBufferSize)];
             // Default root reference to current game object
             if (rootReference == null)
                 rootReference = gameObject;
@@ -458,7 +458,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             else
             {
                 m_PerceptionBuffer = new float[NumberOfObservations];
-                m_CollidersPerCell = new Collider[Math.Min(AbsoluteMaxCollidersPerCell, EstimatedMaxCollidersPerCell)];
+                m_ColliderBuffer = new Collider[Math.Min(MaxColliderBufferSize, InitialColliderBufferSize)];
             }
 
             if (ShowGizmos)
@@ -556,7 +556,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <returns>A float[] containing all of the information collected from the gridsensor</returns>
         public float[] Perceive()
         {
-            if (m_CollidersPerCell == null)
+            if (m_ColliderBuffer == null)
             {
                 return Array.Empty<float>();
             }
@@ -583,7 +583,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
                     if (numFound > 0)
                     {
-                        ParseColliders(m_CollidersPerCell, numFound, cellIndex, cellCenter);
+                        ParseColliders(m_ColliderBuffer, numFound, cellIndex, cellCenter);
                     }
                 }
             }
@@ -605,11 +605,11 @@ namespace Unity.MLAgents.Extensions.Sensors
             // until we're sure we can hold them all (or until we hit the max size).
             while (true)
             {
-                numFound = Physics.OverlapBoxNonAlloc(cellCenter, halfCellScale, m_CollidersPerCell, rotation, ObserveMask);
-                if (numFound == m_CollidersPerCell.Length && m_CollidersPerCell.Length < AbsoluteMaxCollidersPerCell)
+                numFound = Physics.OverlapBoxNonAlloc(cellCenter, halfCellScale, m_ColliderBuffer, rotation, ObserveMask);
+                if (numFound == m_ColliderBuffer.Length && m_ColliderBuffer.Length < MaxColliderBufferSize)
                 {
-                    m_CollidersPerCell = new Collider[Math.Min(AbsoluteMaxCollidersPerCell, m_CollidersPerCell.Length * 2)];
-                    EstimatedMaxCollidersPerCell = m_CollidersPerCell.Length;
+                    m_ColliderBuffer = new Collider[Math.Min(MaxColliderBufferSize, m_ColliderBuffer.Length * 2)];
+                    InitialColliderBufferSize = m_ColliderBuffer.Length;
                 }
                 else
                 {
