@@ -560,11 +560,9 @@ namespace Unity.MLAgents.Extensions.Sensors
             Reset();
             using (TimerStack.Instance.Scoped("GridSensor.Perceive"))
             {
-                Array.Clear(m_CollidersPerCell, 0, m_CollidersPerCell.Length);
+                var halfCellScale = new Vector3(CellScaleX / 2f, CellScaleY, CellScaleZ / 2f);
 
-                Vector3 halfCellScale = new Vector3(CellScaleX / 2f, CellScaleY, CellScaleZ / 2f);
-
-                for (int cellIndex = 0; cellIndex < NumCells; cellIndex++)
+                for (var cellIndex = 0; cellIndex < NumCells; cellIndex++)
                 {
                     int numFound;
                     Vector3 cellCenter;
@@ -638,14 +636,10 @@ namespace Unity.MLAgents.Extensions.Sensors
                 if (ReferenceEquals(currentColliderGo, rootReference))
                     continue;
 
-                Profiler.BeginSample("ClosestPointOnBounds");
                 var closestColliderPoint = foundColliders[i].ClosestPointOnBounds(cellCenter);
-                Profiler.EndSample();
                 var currentDistance = (closestColliderPoint - rootReference.transform.position).sqrMagnitude;
 
-                Profiler.BeginSample("IndexCheck");
                 // Checks if our colliders contain a detectable object
-
                 var index = -1;
                 for (var ii = 0; ii < DetectableObjects.Length; ii++)
                 {
@@ -660,7 +654,6 @@ namespace Unity.MLAgents.Extensions.Sensors
                     distance = currentDistance;
                     closestColliderGo = currentColliderGo;
                 }
-                Profiler.EndSample();
             }
 
             if (!ReferenceEquals(closestColliderGo, null))
