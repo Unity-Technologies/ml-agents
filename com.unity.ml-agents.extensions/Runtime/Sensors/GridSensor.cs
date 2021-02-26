@@ -598,6 +598,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         int BufferResizingOverlapBoxNonAlloc(Vector3 cellCenter, Vector3 halfCellScale, Quaternion rotation)
         {
             int numFound;
+            // Since we can only get a fixed number of results, requery
+            // until we're sure we can hold them all (or until we hit the max size).
             while (true)
             {
                 numFound = Physics.OverlapBoxNonAlloc(cellCenter, halfCellScale, m_CollidersPerCell, rotation, ObserveMask);
