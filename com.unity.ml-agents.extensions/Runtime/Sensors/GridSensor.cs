@@ -741,92 +741,89 @@ namespace Unity.MLAgents.Extensions.Sensors
         protected virtual void LoadObjectData(GameObject currentColliderGo, int cellIndex, float normalizedDistance)
         {
             Profiler.BeginSample("GridSensor.LoadObjectData");
-            unsafe
+            var channelHotVals = new ArraySegment<float>(m_PerceptionBuffer, cellIndex * ObservationPerCell, ObservationPerCell);
+            for (var i = 0; i < DetectableObjects.Length; i++)
             {
-                var channelHotVals = stackalloc float[ObservationPerCell];
-                for (var i = 0; i < DetectableObjects.Length; i++)
+                for (var ii = 0; ii < channelHotVals.Count; ii++)
                 {
-                    for (var ii = 0; ii < ObservationPerCell; ii++)
+                    m_PerceptionBuffer[channelHotVals.Offset + ii] = 0f;
+                }
+
+                if (!ReferenceEquals(currentColliderGo, null) && currentColliderGo.CompareTag(DetectableObjects[i]))
+                {
+                    // TODO: Create the array already then set the values using "out" in GetObjectData
+                    // Using i+1 as the type index as "0" represents "empty"
+                    float[] channelValues = GetObjectData(currentColliderGo, (float)i + 1, normalizedDistance);
+
+                    ValidateValues(channelValues, currentColliderGo);
+                    if (ShowGizmos)
                     {
-                        channelHotVals[ii] = 0f;
+                        Color debugRayColor = Color.white;
+                        if (DebugColors.Length > 0)
+                        {
+                            debugRayColor = DebugColors[i];
+                        }
+
+                        CellActivity[cellIndex] = new Color(debugRayColor.r, debugRayColor.g, debugRayColor.b, .5f);
                     }
 
-                    if (!ReferenceEquals(currentColliderGo, null) && currentColliderGo.CompareTag(DetectableObjects[i]))
+                    switch (gridDepthType)
                     {
-                        // TODO: Create the array already then set the values using "out" in GetObjectData
-                        // Using i+1 as the type index as "0" represents "empty"
-                        float[] channelValues = GetObjectData(currentColliderGo, (float)i + 1, normalizedDistance);
-
-                        ValidateValues(channelValues, currentColliderGo);
-                        if (ShowGizmos)
-                        {
-                            Color debugRayColor = Color.white;
-                            if (DebugColors.Length > 0)
+                        case GridDepthType.Channel:
                             {
-                                debugRayColor = DebugColors[i];
+                                // The observations are "channel based" so each grid is WxHxC where C is the number of channels
+                                // This typically means that each channel value is normalized between 0 and 1
+                                // If channelDepth is 1, the value is assumed normalized, else the value is normalized by the channelDepth
+                                // The channels are then stored consecutively in PerceptionBuffer.
+                                // NOTE: This is the only grid type that uses floating point values
+                                // For example, if a cell contains the 3rd type of 5 possible on the 2nd team of 3 possible teams:
+                                // channelValues = {2, 1}
+                                // ObservationPerCell = channelValues.Length
+                                // channelValues = {2f/5f, 1f/3f} = {.4, .33..}
+                                // Array.Copy(channelValues, 0, PerceptionBuffer, cell_id*ObservationPerCell, ObservationPerCell);
+                                for (int j = 0; j < channelValues.Length; j++)
+                                {
+                                    channelValues[j] /= ChannelDepth[j];
+                                }
+
+                                Array.Copy(channelValues, 0, m_PerceptionBuffer, cellIndex * ObservationPerCell, ObservationPerCell);
+                                break;
                             }
 
-                            CellActivity[cellIndex] = new Color(debugRayColor.r, debugRayColor.g, debugRayColor.b, .5f);
-                        }
-
-                        switch (gridDepthType)
-                        {
-                            case GridDepthType.Channel:
+                        case GridDepthType.ChannelHot:
+                            {
+                                // The observations are "channel hot" so each grid is WxHxD where D is the sum of all of the channel depths
+                                // The opposite of the "channel based" case, the channel values are represented as one hot vector per channel and then concatenated together
+                                // Thus channelDepth is assumed to be greater than 1.
+                                // For example, if a cell contains the 3rd type of 5 possible on the 2nd team of 3 possible teams,
+                                // channelValues = {2, 1}
+                                // channelOffsets = {5, 3}
+                                // ObservationPerCell = 5 + 3 = 8
+                                // channelHotVals = {0, 0, 1, 0, 0, 0, 1, 0}
+                                // Array.Copy(channelHotVals, 0, PerceptionBuffer, cell_id*ObservationPerCell, ObservationPerCell);
+                                for (int j = 0; j < channelValues.Length; j++)
                                 {
-                                    // The observations are "channel based" so each grid is WxHxC where C is the number of channels
-                                    // This typically means that each channel value is normalized between 0 and 1
-                                    // If channelDepth is 1, the value is assumed normalized, else the value is normalized by the channelDepth
-                                    // The channels are then stored consecutively in PerceptionBuffer.
-                                    // NOTE: This is the only grid type that uses floating point values
-                                    // For example, if a cell contains the 3rd type of 5 possible on the 2nd team of 3 possible teams:
-                                    // channelValues = {2, 1}
-                                    // ObservationPerCell = channelValues.Length
-                                    // channelValues = {2f/5f, 1f/3f} = {.4, .33..}
-                                    // Array.Copy(channelValues, 0, PerceptionBuffer, cell_id*ObservationPerCell, ObservationPerCell);
-                                    for (int j = 0; j < channelValues.Length; j++)
+                                    if (ChannelDepth[j] > 1)
                                     {
-                                        channelValues[j] /= ChannelDepth[j];
+                                        m_PerceptionBuffer[channelHotVals.Offset + (int)channelValues[j] + ChannelOffsets[j]] = 1f;
                                     }
-
-                                    Array.Copy(channelValues, 0, m_PerceptionBuffer, cellIndex * ObservationPerCell, ObservationPerCell);
-                                    break;
+                                    else
+                                    {
+                                        m_PerceptionBuffer[channelHotVals.Offset + ChannelOffsets[j]] = channelValues[j];
+                                    }
                                 }
 
-                            case GridDepthType.ChannelHot:
-                                {
-                                    // The observations are "channel hot" so each grid is WxHxD where D is the sum of all of the channel depths
-                                    // The opposite of the "channel based" case, the channel values are represented as one hot vector per channel and then concatenated together
-                                    // Thus channelDepth is assumed to be greater than 1.
-                                    // For example, if a cell contains the 3rd type of 5 possible on the 2nd team of 3 possible teams,
-                                    // channelValues = {2, 1}
-                                    // channelOffsets = {5, 3}
-                                    // ObservationPerCell = 5 + 3 = 8
-                                    // channelHotVals = {0, 0, 1, 0, 0, 0, 1, 0}
-                                    // Array.Copy(channelHotVals, 0, PerceptionBuffer, cell_id*ObservationPerCell, ObservationPerCell);
-                                    for (int j = 0; j < channelValues.Length; j++)
-                                    {
-                                        if (ChannelDepth[j] > 1)
-                                        {
-                                            channelHotVals[(int)channelValues[j] + ChannelOffsets[j]] = 1f;
-                                        }
-                                        else
-                                        {
-                                            channelHotVals[ChannelOffsets[j]] = channelValues[j];
-                                        }
-                                    }
+                                // fixed (float* buffer = m_PerceptionBuffer)
+                                // {
+                                //     var sizeInBytes = ObservationPerCell * sizeof(float);
+                                //     Buffer.MemoryCopy(channelHotVals, buffer + cellIndex * ObservationPerCell, sizeInBytes, sizeInBytes);
+                                // }
 
-                                    fixed (float* buffer = m_PerceptionBuffer)
-                                    {
-                                        var sizeInBytes = ObservationPerCell * sizeof(float);
-                                        Buffer.MemoryCopy(channelHotVals, buffer + cellIndex * ObservationPerCell, sizeInBytes, sizeInBytes);
-                                    }
-
-                                    break;
-                                }
-                        }
-
-                        break;
+                                break;
+                            }
                     }
+
+                    break;
                 }
             }
             Profiler.EndSample();

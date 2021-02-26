@@ -7,5 +7,5 @@
     ],
     "optionalUnityReferences": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": true
+    "allowUnsafeCode": false
 }
