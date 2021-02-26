@@ -639,7 +639,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 Profiler.BeginSample("ClosestPointOnBounds");
                 var closestColliderPoint = foundColliders[i].ClosestPointOnBounds(cellCenter);
                 Profiler.EndSample();
-                var currentDistance = Vector3.Distance(closestColliderPoint, rootReference.transform.position);
+                var currentDistance = (closestColliderPoint - rootReference.transform.position).sqrMagnitude;
 
                 Profiler.BeginSample("IndexCheck");
                 // Checks if our colliders contain a detectable object
@@ -662,7 +662,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             if (!ReferenceEquals(closestColliderGo, null))
-                LoadObjectData(closestColliderGo, cellIndex, distance / SphereRadius);
+                LoadObjectData(closestColliderGo, cellIndex, (float)Math.Sqrt(distance) / SphereRadius));
             Profiler.EndSample();
         }
 
