@@ -643,6 +643,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
                 var closestColliderPoint = foundColliders[i].ClosestPointOnBounds(cellCenter);
                 var currentDistanceSquared = (closestColliderPoint - rootReference.transform.position).sqrMagnitude;
+                Profiler.EndSample();
 
                 Profiler.BeginSample("IndexCheck");
                 // Checks if our colliders contain a detectable object
