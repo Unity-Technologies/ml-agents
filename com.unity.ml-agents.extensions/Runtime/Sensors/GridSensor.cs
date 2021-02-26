@@ -805,13 +805,6 @@ namespace Unity.MLAgents.Extensions.Sensors
                                         m_PerceptionBuffer[channelHotVals.Offset + ChannelOffsets[j]] = channelValues[j];
                                     }
                                 }
-
-                                // fixed (float* buffer = m_PerceptionBuffer)
-                                // {
-                                //     var sizeInBytes = ObservationPerCell * sizeof(float);
-                                //     Buffer.MemoryCopy(channelHotVals, buffer + cellIndex * ObservationPerCell, sizeInBytes, sizeInBytes);
-                                // }
-
                                 break;
                             }
                     }
