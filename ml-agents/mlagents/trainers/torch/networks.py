@@ -232,7 +232,7 @@ class MultiInputNetworkBody(torch.nn.Module):
         only_first_obs_flat = torch.stack(
             [_obs.flatten(start_dim=1)[:, 0] for _obs in only_first_obs], dim=1
         )
-        # Get the msak from NaNs
+        # Get the mask from NaNs
         attn_mask = only_first_obs_flat.isnan().type(torch.FloatTensor)
         return attn_mask
 
