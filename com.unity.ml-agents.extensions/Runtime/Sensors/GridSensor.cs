@@ -99,13 +99,15 @@ namespace Unity.MLAgents.Extensions.Sensors
         [Tooltip("The reference of the root of the agent. This is used to disambiguate objects with the same tag as the agent. Defaults to current GameObject")]
         public GameObject rootReference;
 
-        const int k_AbsoluteMaxCollidersPerCell = 500;
+        [Header("Collider Buffer Properties")]
+        [Tooltip("The absolute max size of the Collider buffer used in the non-allocating Physics calls.  In other words" +
+            " the Collider buffer will never grow beyond this number even if there are more Colliders in the Grid Cell.")]
+        public int AbsoluteMaxCollidersPerCell = 500;
         [Tooltip(
             "The Estimated Max Number of Colliders to expect per cell.  This number is used to " +
             "pre-allocate an array of Colliders in order to take advantage of the OverlapBoxNonAlloc " +
             "Physics API.  If the number of colliders found is >= EstimatedMaxCollidersPerCell the array " +
             "will be resized to double its current size.  The hard coded absolute size is 500.")]
-        [Range(1, k_AbsoluteMaxCollidersPerCell)]
         public int EstimatedMaxCollidersPerCell = 4;
         Collider[] m_CollidersPerCell;
 
@@ -417,7 +419,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             InitDepthType();
             InitCellPoints();
             InitPerceptionBuffer();
-            m_CollidersPerCell = new Collider[Math.Min(k_AbsoluteMaxCollidersPerCell, EstimatedMaxCollidersPerCell)];
+            m_CollidersPerCell = new Collider[Math.Min(AbsoluteMaxCollidersPerCell, EstimatedMaxCollidersPerCell)];
             // Default root reference to current game object
             if (rootReference == null)
                 rootReference = gameObject;
@@ -453,7 +455,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             else
             {
                 m_PerceptionBuffer = new float[NumberOfObservations];
-                m_CollidersPerCell = new Collider[Math.Min(k_AbsoluteMaxCollidersPerCell, EstimatedMaxCollidersPerCell)];
+                m_CollidersPerCell = new Collider[Math.Min(AbsoluteMaxCollidersPerCell, EstimatedMaxCollidersPerCell)];
             }
 
             if (ShowGizmos)
@@ -601,9 +603,9 @@ namespace Unity.MLAgents.Extensions.Sensors
             while (true)
             {
                 numFound = Physics.OverlapBoxNonAlloc(cellCenter, halfCellScale, m_CollidersPerCell, rotation, ObserveMask);
-                if (numFound == m_CollidersPerCell.Length && m_CollidersPerCell.Length < k_AbsoluteMaxCollidersPerCell)
+                if (numFound == m_CollidersPerCell.Length && m_CollidersPerCell.Length < AbsoluteMaxCollidersPerCell)
                 {
-                    m_CollidersPerCell = new Collider[Math.Min(k_AbsoluteMaxCollidersPerCell, m_CollidersPerCell.Length * 2)];
+                    m_CollidersPerCell = new Collider[Math.Min(AbsoluteMaxCollidersPerCell, m_CollidersPerCell.Length * 2)];
                     EstimatedMaxCollidersPerCell = m_CollidersPerCell.Length;
                 }
                 else
@@ -662,7 +664,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             if (!ReferenceEquals(closestColliderGo, null))
-                LoadObjectData(closestColliderGo, cellIndex, (float)Math.Sqrt(distance) / SphereRadius));
+                LoadObjectData(closestColliderGo, cellIndex, (float)Math.Sqrt(distance) / SphereRadius);
             Profiler.EndSample();
         }
 
