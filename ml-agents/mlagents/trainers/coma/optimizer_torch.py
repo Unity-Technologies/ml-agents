@@ -75,8 +75,8 @@ class TorchCOMAOptimizer(TorchOptimizer):
 
             encoding, memories = self.network_body(
                 obs_only=obs,
-                obs=None,
-                actions=None,
+                obs=[],
+                actions=[],
                 memories=memories,
                 sequence_length=sequence_length,
             )
