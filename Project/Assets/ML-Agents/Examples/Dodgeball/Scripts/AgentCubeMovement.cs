@@ -326,7 +326,13 @@ namespace MLAgents
 
         public void RunOnGround(Vector3 dir)
         {
-                // print(dir);
+
+            //ADD FORCE
+            var vel = rb.velocity.magnitude;
+            float adjustedSpeed = Mathf.Clamp(agentRunSpeed - vel, 0, agentTerminalVel);
+            rb.AddForce(dir * adjustedSpeed, runningForceMode);
+
+            //ANIMATE MESH
             if (dir == Vector3.zero)
             {
                 if (AnimateBodyMesh)
@@ -336,13 +342,6 @@ namespace MLAgents
             }
             else
             {
-                var vel = rb.velocity.magnitude;
-                float adjustedSpeed = Mathf.Clamp(agentRunSpeed - vel, 0, agentTerminalVel);
-                //                float adjustedSpeed = Mathf.MoveTowards(vel, agentRunSpeed, WalkSmoothing);
-                //                float adjustedSpeed = Mathf.SmoothDamp(vel, agentRunSpeed, ref agentVel, WalkSmoothing, agentTerminalVel);
-
-                //                rb.AddForce(dir.normalized * adjustedSpeed, runningForceMode);
-                rb.AddForce(dir * adjustedSpeed, runningForceMode);
                 if (AnimateBodyMesh)
                 {
                     bodyMesh.localPosition = Vector3.zero +
@@ -350,11 +349,10 @@ namespace MLAgents
                                                  m_animateBodyMeshCurveTimer);
                     m_animateBodyMeshCurveTimer += Time.fixedDeltaTime;
                 }
-                //            rb.AddForceAtPosition(dir.normalized * adjustedSpeed,transform.TransformPoint(Vector3.forward * standingForcePositionOffset),
-                //                runningForceMode);
-
             }
         }
+
+
         public void RunOnGround(Rigidbody rb, Vector3 dir)
         {
             print(dir);

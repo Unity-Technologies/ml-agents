@@ -150,12 +150,8 @@ public class DodgeBallAgent : Agent
         //HANDLE ROTATION
         m_CubeMovement.Look(m_Rotate);
 
-
         //HANDLE XZ MOVEMENT
-        Vector3 moveDir = Vector3.zero;
-        // moveDir = input.Cam.transform.TransformDirection(new Vector3(m_InputH, 0, m_InputV));
-        // moveDir.y = 0;
-        moveDir = transform.TransformDirection(new Vector3(m_InputH, 0, m_InputV));
+        var moveDir = transform.TransformDirection(new Vector3(m_InputH, 0, m_InputV));
         m_CubeMovement.RunOnGround(moveDir);
 
         // if (AgentShield && act[6] > 0)
