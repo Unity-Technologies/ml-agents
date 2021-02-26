@@ -186,11 +186,11 @@ namespace MLAgents
                 // rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
                 rotationX = ClampAngle(rotationX, minimumX, maximumX);
                 rotationY = ClampAngle(rotationY, minimumY, maximumY);
-                // Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
-                // Quaternion yQuaternion = Quaternion.AngleAxis(rotationY, -Vector3.right);
-                //
-                // transform.localRotation = originalRotation * xQuaternion * yQuaternion;
-                // print("look");
+                Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
+                Quaternion yQuaternion = Quaternion.AngleAxis(rotationY, -Vector3.right);
+
+                transform.localRotation = originalRotation * xQuaternion * yQuaternion;
+                print("look");
         }
 
         public bool applyStandingForce = false;
