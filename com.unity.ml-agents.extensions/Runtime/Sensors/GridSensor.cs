@@ -863,24 +863,6 @@ namespace Unity.MLAgents.Extensions.Sensors
                 CellActivity[toCellID] = CellActivity[fromCellID];
         }
 
-        /// <summary>Creates a copy of a float array</summary>
-        /// <returns>float[] of the original data</returns>
-        /// <param name="array">The array to copy from</parma>
-        private static float[] CreateCopy(float[] array)
-        {
-            float[] b = new float[array.Length];
-            System.Buffer.BlockCopy(array, 0, b, 0, array.Length * sizeof(float));
-            return b;
-        }
-
-        /// <summary>Utility method to find the index of a tag</summary>
-        /// <returns>Index of the tag in DetectableObjects, if it is in there</returns>
-        /// <param name="tag">The tag to search for</param>
-        public int IndexOfTag(string tag)
-        {
-            return Array.IndexOf(DetectableObjects, tag);
-        }
-
         void OnDrawGizmos()
         {
             if (ShowGizmos)
@@ -890,12 +872,12 @@ namespace Unity.MLAgents.Extensions.Sensors
 
                 Perceive();
 
-                Vector3 scale = new Vector3(CellScaleX, 1, CellScaleZ);
-                Vector3 offset = new Vector3(0, GizmoYOffset, 0);
-                Matrix4x4 oldGizmoMatrix = Gizmos.matrix;
-                Matrix4x4 cubeTransform = Gizmos.matrix;
-                for (int i = 0; i < NumCells; i++)
+                var scale = new Vector3(CellScaleX, 1, CellScaleZ);
+                var offset = new Vector3(0, GizmoYOffset, 0);
+                var oldGizmoMatrix = Gizmos.matrix;
+                for (var i = 0; i < NumCells; i++)
                 {
+                    Matrix4x4 cubeTransform;
                     if (RotateToAgent)
                     {
                         cubeTransform = Matrix4x4.TRS(CellToPoint(i) + offset, transform.rotation, scale);
@@ -917,7 +899,13 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <inheritdoc/>
-        void ISensor.Update() { }
+        void ISensor.Update()
+        {
+            using (TimerStack.Instance.Scoped("GridSensor.Update"))
+            {
+                Perceive();
+            }
+        }
 
         /// <summary>Gets the observation shape</summary>
         /// <returns>int[] of the observation shape</returns>
@@ -932,8 +920,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             using (TimerStack.Instance.Scoped("GridSensor.WriteToTensor"))
             {
-                Perceive();
-
                 int index = 0;
                 for (var h = GridNumSideZ - 1; h >= 0; h--) // height
                 {
