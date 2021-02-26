@@ -645,7 +645,6 @@ namespace Unity.MLAgents.Extensions.Sensors
                 var currentDistanceSquared = (closestColliderPoint - rootReference.transform.position).sqrMagnitude;
                 Profiler.EndSample();
 
-                Profiler.BeginSample("IndexCheck");
                 // Checks if our colliders contain a detectable object
                 var index = -1;
                 for (var ii = 0; ii < DetectableObjects.Length; ii++)
@@ -661,7 +660,6 @@ namespace Unity.MLAgents.Extensions.Sensors
                     minDistanceSquared = currentDistanceSquared;
                     closestColliderGo = currentColliderGo;
                 }
-                Profiler.EndSample();
             }
 
             if (!ReferenceEquals(closestColliderGo, null))
