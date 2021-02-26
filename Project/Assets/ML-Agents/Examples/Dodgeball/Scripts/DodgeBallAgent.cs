@@ -61,11 +61,12 @@ public class DodgeBallAgent : Agent
     [HideInInspector]
     public BehaviorParameters m_BehaviorParameters;
 
+    public float m_InputH;
+    private float m_InputV;
+    private float m_Rotate;
+    public float m_ThrowInput;
+    public float m_DashInput;
 
-    // [Header("DUMB AI HEURISTIC")] public bool DoNotPerformActions;
-    //PLAYER STATE TO OBSERVE
-
-    // Start is called before the first frame update
     public override void Initialize()
     {
         m_CubeMovement = GetComponent<AgentCubeMovement>();
@@ -79,8 +80,6 @@ public class DodgeBallAgent : Agent
         m_StartingRot = transform.rotation;
         m_Initialized = true;
     }
-
-
 
     public override void OnEpisodeBegin()
     {
@@ -138,26 +137,7 @@ public class DodgeBallAgent : Agent
 
     public void MoveAgent(ActionSegment<float> act)
     {
-        // print("MoveAgent");
-
         // if (DoNotPerformActions)
-        // {
-        //     return;
-        // }
-        //        if (!m_Frozen)
-        //        {
-        //            var shootCommand = false;
-        //        var forwardAxis = act[0];
-        //        var rightAxis = act[1];
-        //        var rotateAxis = act[2];
-        //        var shootAxis = act[3];
-        //        m_Shoot = shootAxis > 0;
-
-        //        m_CubeMovement.RotateBody(rotateAxis, forwardAxis);
-        //        m_CubeMovement.RunOnGround(m_AgentRb, m_Cam.transform.TransformDirection(new Vector3(0, 0, forwardAxis)));
-        //        m_CubeMovement.Strafe(transform.right * rightAxis);
-
-        // if (AgentHealth.Dead)
         // {
         //     return;
         // }
@@ -167,7 +147,6 @@ public class DodgeBallAgent : Agent
         m_ThrowInput = act[3];
         m_DashInput = act[4];
 
-        // print($"{m_InputV} {m_InputH}");
         //HANDLE ROTATION
         m_CubeMovement.Look(m_Rotate);
 
@@ -188,13 +167,6 @@ public class DodgeBallAgent : Agent
         //     AgentShield.ActivateShield(false);
         // }
 
-
-        // if (m_ShootInput > 0 && currentNumberOfBalls > 0)
-        // {
-        //     gunController.Shoot();
-        //     currentNumberOfBalls--;
-        // }
-
         //HANDLE THROWING
         if (m_ThrowInput > 0)
         // if (input.shootPressed)
@@ -202,23 +174,11 @@ public class DodgeBallAgent : Agent
             ThrowTheBall();
         }
 
-
-        // if (act[4] > 0 && m_CubeMovement.groundCheck.isGrounded)
-        // {
-        //     m_CubeMovement.Jump();
-        // }
         //HANDLE DASH MOVEMENT
         if (m_DashInput > 0)
         {
             m_CubeMovement.Dash(moveDir);
         }
-        //        }
-
-
-        // if (m_AgentRb.velocity.sqrMagnitude > 25f) // slow it down
-        // {
-        //     m_AgentRb.velocity *= 0.95f;
-        // }
     }
 
     public void ThrowTheBall()
@@ -233,92 +193,12 @@ public class DodgeBallAgent : Agent
         }
     }
 
-    //    void OnCollisionEnter(Collision col)
-    //    {
-    //        if (col.gameObject.CompareTag("projectile"))
-    //        {
-    //            //IMPLEMENT HEALTH MECHANIC
-    //        }
-    //    }
-
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
         // print("MoveAgent");
 
         MoveAgent(actionBuffers.ContinuousActions);
     }
-
-    public float m_InputH;
-    private float m_InputV;
-    private float m_Rotate;
-
-    // void Update()
-    // {
-    //     //        m_InputH = Input.GetKeyDown(KeyCode.K) ? 1 : Input.GetKeyDown(KeyCode.J) ? -1 : 0; //inputH
-    //     if (Input.GetKeyDown(KeyCode.K))
-    //     {
-    //         rightStrafe = true;
-    //     }
-    //
-    //     if (Input.GetKeyDown(KeyCode.J))
-    //     {
-    //         leftStrafe = true;
-    //     }
-    // }
-
-    //    void FixedUpdate()
-    //    {
-    //        m_InputV = Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0; //inputV
-    //        //        m_InputH = 0;
-    //        //        m_InputH += Input.GetKeyDown(KeyCode.Q) ? -1 : 0;
-    //        //        m_InputH += Input.GetKeyDown(KeyCode.E) ? 1 : 0;
-    //        //        m_InputH = Input.GetKeyDown(KeyCode.E) ? 1 : Input.GetKeyDown(KeyCode.Q) ? -1 : 0; //inputH
-    //        m_Rotate = 0;
-    //        m_Rotate += Input.GetKey(KeyCode.A) ? -1 : 0;
-    //        m_Rotate += Input.GetKey(KeyCode.D) ? 1 : 0;
-    //        //        m_Rotate = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0; //rotate
-    //        m_ShootInput = Input.GetKey(KeyCode.Space) ? 1 : 0; //shoot
-    //    }
-
-    // private Vector2 inputMovement;
-    // private Vector2 rotateMovement;
-    public float m_ThrowInput;
-    public float m_DashInput;
-
-    // public void OnMovement(InputAction.CallbackContext value)
-    // {
-    //     inputMovement = value.ReadValue<Vector2>();
-    // }
-    //
-    // public void OnRotate(InputAction.CallbackContext value)
-    // {
-    //     rotateMovement = value.ReadValue<Vector2>();
-    // }
-    // public void OnShoot(InputAction.CallbackContext value)
-    // {
-    //     //        m_ShootInput = value.canceled? 0: value.ReadValue<float>();
-    //     //            m_ShootInput = 0;
-    //     if (value.started)
-    //     {
-    //         print("started");
-    //     }
-    //     if (value.performed)
-    //     {
-    //         print("performed" + Time.frameCount);
-    //     }
-    //     if (!value.canceled)
-    //     {
-    //         print("not cancelled" + Time.frameCount + m_ThrowInput);
-    //         m_ThrowInput = value.ReadValue<float>();
-    //         //        m_ShootInput = value.
-    //     }
-    //     else
-    //     {
-    //         m_ThrowInput = 0;
-    //         print("cancelled" + Time.frameCount + m_ThrowInput);
-    //     }
-    // }
-
 
     IEnumerator ShowHitFace()
     {
@@ -356,28 +236,13 @@ public class DodgeBallAgent : Agent
             return;
         }
 
-
         if (db.inPlay) //HIT BY LIVE BALL
         {
             if (db.TeamToIgnore != -1 && db.TeamToIgnore != m_BehaviorParameters.TeamId) //HIT BY LIVE BALL
             {
                 m_GameController.PlayerWasHit(this);
                 PlayHitFX();
-                // if (HitPointsRemaining == 1)
-                // {
-                //     //RESET ENV
-                //     print($"{gameObject.name} Lost.{gameObject.name} was weak:");
-                //     //ASSIGN REWARDS
-                //     EndEpisode();
-                // }
-                // else
-                // {
-                //     HitPointsRemaining--;
-                //     //ASSIGN REWARDS
-                //
-                // }
                 print("HIT BY LIVE BALL");
-                // if(HitByParticles.isPlaying)
                 db.BallIsInPlay(false);
             }
         }
@@ -388,9 +253,6 @@ public class DodgeBallAgent : Agent
                 PickUpBall(db);
             }
         }
-        // if (col.transform.CompareTag("dodgeBall"))
-        // {
-        // }
     }
 
     void PickUpBall(DodgeBall db)
@@ -407,58 +269,14 @@ public class DodgeBallAgent : Agent
         // ActiveBallsList.Add(db);
     }
 
-
-    // void Update()
-    // {
-    //
-    // }
-
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        // print("Heuristic");
-
         var contActionsOut = actionsOut.ContinuousActions;
 
         contActionsOut[0] = input.moveInput.y;
         contActionsOut[1] = input.moveInput.x;
-        //        contActionsOut[2] = input.rotateInput.x; //rotate
         contActionsOut[2] = input.rotateInput.x; //rotate
-        // print(input.rotateInput.x);
-        // contActionsOut[3] = input.shootInput ? 1 : 0; //shoot
         contActionsOut[3] = input.throwPressed ? 1 : 0; //shoot
-        // contActionsOut[3] = input.CheckIfInputSinceLastFrame(ref input.shootInput) ? 1 : 0; //jump
-        // contActionsOut[3] = input.CheckIfInputSinceLastFrame(ref input.shootPressed) ? 1 : 0; //throw
         contActionsOut[4] = input.CheckIfInputSinceLastFrame(ref input.dashInput) ? 1 : 0; //dash
-        // contActionsOut[5] = input.CheckIfInputSinceLastFrame(ref input.jumpInput) ? 1 : 0; //jump
-        //                                                                                    //        contActionsOut[4] = input.jumpInput ? 1 : 0; //jump
-        //                                                                                    //        contActionsOut[5] = input.dashInput ? 1 : 0; //dash
-        // contActionsOut[6] = input.shieldInput ? 1 : 0; //shield
-        // if (input.jumpInput)
-        // {
-        //     print($"Agent: Jump: {input.jumpInput} : {Time.frameCount}");
-        //
-        // }
-
-        //        contActionsOut[0] = inputMovement.y;
-        //        contActionsOut[1] = inputMovement.x;
-        //        contActionsOut[2] = rotateMovement.x;
-
-
-        //        m_InputH = 0;
-        //        if (leftStrafe)
-        //        {
-        //            //            print("leftstrafe");
-        //            m_InputH += -1;
-        //            leftStrafe = false;
-        //        }
-        //
-        //        if (rightStrafe)
-        //        {
-        //            //            print("rightstrafe");
-        //            m_InputH += 1;
-        //            rightStrafe = false;
-        //        }
-        //
-        //        contActionsOut[1] = m_InputH; //inputH
     }
 }

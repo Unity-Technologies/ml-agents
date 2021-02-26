@@ -190,7 +190,7 @@ namespace MLAgents
                 Quaternion yQuaternion = Quaternion.AngleAxis(rotationY, -Vector3.right);
 
                 transform.localRotation = originalRotation * xQuaternion * yQuaternion;
-                print("look");
+                // print("look");
         }
 
         public bool applyStandingForce = false;
