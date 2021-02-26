@@ -15,7 +15,7 @@ public class DodgeBallAgentInput : MonoBehaviour
 
     public Vector2 moveInput;
 
-    public bool shootInput;
+    public bool throwInput;
     public bool jumpInput;
     public bool dashInput;
     public Vector2 rotateInput;
@@ -67,7 +67,7 @@ public class DodgeBallAgentInput : MonoBehaviour
         }
     }
 
-    public bool shootPressed;
+    public bool throwPressed;
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -78,9 +78,9 @@ public class DodgeBallAgentInput : MonoBehaviour
             return;
         }
         moveInput = actionMap.Walk.ReadValue<Vector2>();
-        shootInput = actionMap.Shoot.ReadValue<float>() > 0;
+        throwInput = actionMap.Shoot.ReadValue<float>() > 0;
         // shootPressed = actionMap.Shoot.triggered;
-        shootPressed = actionMap.Shoot.phase == InputActionPhase.Started;
+        throwPressed = actionMap.Shoot.phase == InputActionPhase.Started;
         //        shootInput = gamepad.rightTrigger.isPressed;
         shieldInput = actionMap.Shield.ReadValue<float>() > 0;
         //        rotateInput = actionMap.RotateBody.ReadValue<Vector2>();

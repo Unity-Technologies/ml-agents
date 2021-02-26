@@ -1,5 +1,65 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &474368874
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 474368875}
+  m_Layer: 11
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &474368875
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 474368874}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6960991000376283093}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &861736839
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 861736840}
+  m_Layer: 10
+  m_Name: SpawnPos (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &861736840
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 861736839}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.42, y: 0.402, z: 0.85}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8366924173413481312}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &120164325106810459
 GameObject:
   m_ObjectHideFlags: 0
@@ -40590,11 +40650,10 @@ GameObject:
   - component: {fileID: 6960991000376283089}
   - component: {fileID: 5841309379668457540}
   - component: {fileID: 8600068265116176913}
-  - component: {fileID: 6960991000376283100}
   - component: {fileID: 6960991000376283101}
   - component: {fileID: 6960991000376283099}
-  - component: {fileID: 3559664885741895587}
   - component: {fileID: 6960991000376283103}
+  - component: {fileID: 886896010}
   m_Layer: 11
   m_Name: DodgeballAgent
   m_TagString: blueAgent
@@ -40624,6 +40683,7 @@ Transform:
   - {fileID: 8362555902365119306}
   - {fileID: 8366924173547402155}
   - {fileID: 8366924174162893208}
+  - {fileID: 474368875}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -40656,15 +40716,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 0
+    VectorObservationSize: 2
     NumStackedVectorObservations: 1
-    VectorActionSize: 07000000
+    m_ActionSpec:
+      m_NumContinuousActions: 0
+      BranchSizes: 
+    VectorActionSize: 
     VectorActionDescriptions: []
-    VectorActionSpaceType: 1
+    VectorActionSpaceType: 0
+    hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
-  m_BehaviorName: FPSAgent
+  m_BehaviorType: 1
+  m_BehaviorName: DodgeBall
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -40689,10 +40753,10 @@ MonoBehaviour:
   ThrowController: {fileID: 8366924173413481317}
   AgentHealth: {fileID: 8600068265116176913}
   AgentShield: {fileID: 5841309379668457540}
-  input: {fileID: 6960991000376283100}
+  input: {fileID: 0}
   currentNumberOfBalls: 0
   currentlyHeldBalls: []
-  UseVectorObs: 0
+  UseVectorObs: 1
   HitByParticles: {fileID: 8366924173547402157}
   HitSoundAudioSource: {fileID: 6960991000376283103}
   BallUIList:
@@ -40709,9 +40773,9 @@ MonoBehaviour:
   BallImpactAudioClip: {fileID: 8300000, guid: 706fc36d9efe9405ab1d1ff638011389, type: 3}
   NumberOfTimesPlayerCanBeHit: 5
   HitPointsRemaining: 0
+  m_Initialized: 0
+  m_BehaviorParameters: {fileID: 0}
   m_InputH: 0
-  leftStrafe: 0
-  rightStrafe: 0
   m_ThrowInput: 0
   m_DashInput: 0
 --- !u!114 &6960991000376283044
@@ -40766,7 +40830,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b86732e5cf714ed6ba8b18dd80f458c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allowKeyboardInput: 0
+  allowHumanInput: 1
   maxAngularVel: 50
   runningForceMode: 2
   agentRunSpeed: 10
@@ -40920,27 +40984,6 @@ MonoBehaviour:
   Dead: 0
   UseGlobalDamageSettings: 0
   DamagePerHit: 1
---- !u!114 &6960991000376283100
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6960991000376283098}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8895a539297b24544aba7209546d2e36, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DisableInput: 0
-  moveInput: {x: 0, y: 0}
-  shootInput: 0
-  jumpInput: 0
-  dashInput: 0
-  rotateInput: {x: 0, y: 0}
-  shieldInput: 0
-  Cam: {fileID: 0}
-  shootPressed: 0
 --- !u!114 &6960991000376283101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41004,84 +41047,6 @@ MonoBehaviour:
     m_DissipationMode: 2
     m_DissipationDistance: 200
     m_PropagationSpeed: 300
---- !u!114 &3559664885741895587
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6960991000376283098}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 77b3cef930f53497fa86a02fe6c7f145,
-    type: 3}
-  m_NotificationBehavior: 2
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 2f9ecc77-85d9-4189-8faf-18dcf905d2d4
-    m_ActionName: Player Action Map/Walk[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d,/DualShock4GamepadHID/leftStick]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: d2faa0a0-e027-4a5d-a155-870bb0ceaf7c
-    m_ActionName: Player Action Map/Jump[/DualShock4GamepadHID/buttonSouth,/Keyboard/j]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: cbcb2a57-a474-46a7-b133-cf144f6de321
-    m_ActionName: Player Action Map/Shoot[/DualShock4GamepadHID/rightTrigger,/Keyboard/k]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: ec97db61-8659-49c6-afaa-20b82a98e72b
-    m_ActionName: Player Action Map/Shield[/DualShock4GamepadHID/buttonEast,/Keyboard/i]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 49d5245a-a350-4f94-b4c8-cf578d61000b
-    m_ActionName: Player Action Map/Dash[/DualShock4GamepadHID/leftTrigger,/Keyboard/l]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: b309ca48-95aa-4032-bd7d-46dcaeb138d0
-    m_ActionName: Player Action Map/Rotate[/Keyboard/q,/Keyboard/e,/DualShock4GamepadHID/rightStick/left,/DualShock4GamepadHID/rightStick/right]
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: ToggleControlsUI
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: bd885a35-fff9-4afb-a855-24fb9f6006c7
-    m_ActionName: UI/Controls[/Keyboard/c,/XboxOneGampadMacOSWireless/start]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: e94117bb-34b9-400e-98a4-5bcdc0e1ef18
-    m_ActionName: UI/Restart[/Keyboard/r,/XboxOneGampadMacOSWireless/buttonNorth]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 7172bb7c-a5ae-46b9-af48-2f521eb69773
-    m_ActionName: Player/Rotate[/Mouse/delta]
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!82 &6960991000376283103
 AudioSource:
   m_ObjectHideFlags: 0
@@ -41178,6 +41143,27 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &886896010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6960991000376283098}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3d133f7ef3e34484b28a9e1605e48ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisableInput: 0
+  moveInput: {x: 0, y: 0}
+  shootInput: 0
+  jumpInput: 0
+  dashInput: 0
+  rotateInput: {x: 0, y: 0}
+  shieldInput: 0
+  Cam: {fileID: 0}
+  shootPressed: 0
 --- !u!1 &6960991000723819014
 GameObject:
   m_ObjectHideFlags: 0
@@ -48164,6 +48150,7 @@ Transform:
   - {fileID: 8366924172641892890}
   - {fileID: 8366924172764452076}
   - {fileID: 8366924173548761677}
+  - {fileID: 861736840}
   m_Father: {fileID: 6960991001359725254}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: -1, y: 0, z: 0}
@@ -53571,7 +53558,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8366924173548761676}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.42, y: 0.395, z: 1.2}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8366924173413481312}
@@ -65503,7 +65490,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9116796388679672958}
-  m_LocalRotation: {x: 0.023514416, y: 3.1894046e-10, z: -7.5017536e-12, w: 0.9997235}
+  m_LocalRotation: {x: 0.023514433, y: -0.0000000052765476, z: 1.2410933e-10, w: 0.9997235}
   m_LocalPosition: {x: 0, y: 1.9999999, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:

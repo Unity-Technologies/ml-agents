@@ -84,6 +84,7 @@ public class DodgeBallAgent : Agent
 
     public override void OnEpisodeBegin()
     {
+
         if (!m_Initialized)
         {
             Initialize();
@@ -117,6 +118,7 @@ public class DodgeBallAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
+
         if (UseVectorObs)
         {
             // sensor.AddObservation((float)StepCount / (float)MaxStep); //Helps with credit assign?
@@ -136,6 +138,8 @@ public class DodgeBallAgent : Agent
 
     public void MoveAgent(ActionSegment<float> act)
     {
+        // print("MoveAgent");
+
         // if (DoNotPerformActions)
         // {
         //     return;
@@ -153,10 +157,10 @@ public class DodgeBallAgent : Agent
         //        m_CubeMovement.RunOnGround(m_AgentRb, m_Cam.transform.TransformDirection(new Vector3(0, 0, forwardAxis)));
         //        m_CubeMovement.Strafe(transform.right * rightAxis);
 
-        if (AgentHealth.Dead)
-        {
-            return;
-        }
+        // if (AgentHealth.Dead)
+        // {
+        //     return;
+        // }
         m_InputV = act[0];
         m_InputH = act[1];
         m_Rotate = act[2];
@@ -239,6 +243,8 @@ public class DodgeBallAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
+        // print("MoveAgent");
+
         MoveAgent(actionBuffers.ContinuousActions);
     }
 
@@ -402,19 +408,24 @@ public class DodgeBallAgent : Agent
     }
 
 
-
+    // void Update()
+    // {
+    //
+    // }
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
+        // print("Heuristic");
+
         var contActionsOut = actionsOut.ContinuousActions;
 
         contActionsOut[0] = input.moveInput.y;
         contActionsOut[1] = input.moveInput.x;
         //        contActionsOut[2] = input.rotateInput.x; //rotate
         contActionsOut[2] = input.rotateInput.x; //rotate
-        print(input.rotateInput.x);
+        // print(input.rotateInput.x);
         // contActionsOut[3] = input.shootInput ? 1 : 0; //shoot
-        contActionsOut[3] = input.shootPressed ? 1 : 0; //shoot
+        contActionsOut[3] = input.throwPressed ? 1 : 0; //shoot
         // contActionsOut[3] = input.CheckIfInputSinceLastFrame(ref input.shootInput) ? 1 : 0; //jump
         // contActionsOut[3] = input.CheckIfInputSinceLastFrame(ref input.shootPressed) ? 1 : 0; //throw
         contActionsOut[4] = input.CheckIfInputSinceLastFrame(ref input.dashInput) ? 1 : 0; //dash
