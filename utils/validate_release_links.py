@@ -13,7 +13,7 @@ TRAINER_INIT_FILE = "ml-agents/mlagents/trainers/__init__.py"
 
 MATCH_ANY = re.compile(r"(?s).*")
 # Filename -> regex list to allow specific lines.
-# To allow everything in the file, use None for the value
+# To allow everything in the file (effectively skipping it), use MATCH_ANY for the value
 ALLOW_LIST = {
     # Previous release table
     "README.md": re.compile(r"\*\*(Verified Package ([0-9]\.?)*|Release [0-9]+)\*\*"),
@@ -24,7 +24,7 @@ ALLOW_LIST = {
 }
 
 
-def test_pattern():
+def test_release_pattern():
     # Just some sanity check that the regex works as expected.
     assert RELEASE_PATTERN.search(
         "https://github.com/Unity-Technologies/ml-agents/blob/release_4_docs/Food.md"
@@ -75,7 +75,7 @@ def get_release_tag() -> Optional[str]:
 
 
 def check_file(
-    filename: str, global_allow_pattern: Pattern, release_tag: str
+    filename: str, release_tag_pattern: Pattern, release_tag: str
 ) -> List[str]:
     """
     Validate a single file and return any offending lines.
@@ -90,12 +90,30 @@ def check_file(
             allow_list_pattern = ALLOW_LIST.get(filename, None)
             with open(filename) as f:
                 for line in f:
-                    keep_line = True
-                    keep_line = not RELEASE_PATTERN.search(line)
-                    keep_line |= global_allow_pattern.search(line) is not None
-                    keep_line |= (
-                        allow_list_pattern is not None
+                    # Does it contain anything of the form release_123
+                    has_release_pattern = RELEASE_PATTERN.search(line) is not None
+                    # Does it contain this particular release, e.g. release_42 or release_42_docs
+                    has_release_tag_pattern = (
+                        release_tag_pattern.search(line) is not None
+                    )
+                    # Does it contain the allow list pattern for the file (if there is one)
+                    has_allow_list_pattern = (
+                        allow_list_pattern
                         and allow_list_pattern.search(line) is not None
+                    )
+
+                    # keep_line = True
+                    # keep_line = not RELEASE_PATTERN.search(line)
+                    # keep_line |= release_tag_pattern.search(line) is not None
+                    # keep_line |= (
+                    #     allow_list_pattern is not None
+                    #     and allow_list_pattern.search(line) is not None
+                    # )
+
+                    keep_line = (
+                        not has_release_pattern
+                        or has_release_tag_pattern
+                        or has_allow_list_pattern
                     )
 
                     if keep_line:
@@ -151,5 +169,5 @@ def main():
 
 if __name__ == "__main__":
     if "--test" in sys.argv:
-        test_pattern()
+        test_release_pattern()
     main()
