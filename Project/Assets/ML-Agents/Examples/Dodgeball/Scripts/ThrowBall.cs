@@ -16,7 +16,7 @@ public class ThrowBall : MonoBehaviour
     //SHOOTING RATE
     [Header("SHOOTING RATE")]
     public float shootingRate = .02f; //can shoot every shootingRate seconds. ex: .5 can shoot every .5 seconds
-    // private float shootTimer;
+    public float coolDownTimer;
     public bool coolDownWait;
 
     //PROJECTILES
@@ -104,15 +104,15 @@ public class ThrowBall : MonoBehaviour
     //     }
     // }
 
-    // void FixedUpdate()
-    // {
-    //     coolDownWait = shootTimer > shootingRate ? false : true;
-    //     shootTimer += Time.fixedDeltaTime;
-    //     if (autoShootEnabled)
-    //     {
-    //         Shoot();
-    //     }
-    // }
+    void FixedUpdate()
+    {
+        coolDownWait = coolDownTimer > shootingRate ? false : true;
+        coolDownTimer += Time.fixedDeltaTime;
+        // if (autoShootEnabled)
+        // {
+        //     Shoot();
+        // }
+    }
 
     //    public void ShootQuantity(int num)
     //    {
@@ -137,6 +137,11 @@ public class ThrowBall : MonoBehaviour
     //ignoreTeam. 0 ignores team 0, 1 ignores team 1, -1 ignores no teams
     public void Throw(DodgeBall db, int ignoreTeam = -1)
     {
+        if (coolDownWait || !gameObject.activeSelf)
+        {
+            return;
+        }
+        coolDownTimer = 0; //reset timer
         db.BallIsInPlay(true, ignoreTeam);
         FireProjectile(db.rb);
     }

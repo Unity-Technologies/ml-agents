@@ -1,5 +1,5 @@
 {
-    "name": "FPSPlayerInputActions",
+    "name": "DodgeBallInputActions",
     "maps": [
         {
             "name": "Player",
@@ -22,7 +22,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Shoot",
+                    "name": "Throw",
                     "type": "Button",
                     "id": "cbcb2a57-a474-46a7-b133-cf144f6de321",
                     "expectedControlType": "Button",
@@ -158,7 +158,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shoot",
+                    "action": "Throw",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -169,7 +169,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shoot",
+                    "action": "Throw",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -180,7 +180,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shoot",
+                    "action": "Throw",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

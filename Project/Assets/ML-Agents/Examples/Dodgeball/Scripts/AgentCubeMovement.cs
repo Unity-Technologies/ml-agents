@@ -111,14 +111,14 @@ namespace MLAgents
         {
             if (!allowHumanInput)
             {
-                //FORWARD MOVEMENT
-                inputV = Input.GetAxisRaw("Vertical");
-                inputH = Input.GetAxisRaw("Horizontal");
-                spinAttack = Input.GetKey(KeyCode.H);
-                dashPressed = Input.GetKeyDown(KeyCode.K);
-                jump = Input.GetKeyDown(KeyCode.Space);
                 return;
             }
+            //FORWARD MOVEMENT
+            inputV = Input.GetAxisRaw("Vertical");
+            inputH = Input.GetAxisRaw("Horizontal");
+            spinAttack = Input.GetKey(KeyCode.H);
+            dashPressed = Input.GetKeyDown(KeyCode.K);
+            jump = Input.GetKeyDown(KeyCode.Space);
             var camForward = cam.transform.forward;
             camForward.y = 0;
             var camRight = cam.transform.right;
@@ -202,6 +202,12 @@ namespace MLAgents
             strafeCoolDownTimer += Time.fixedDeltaTime;
             dashCoolDownTimer += Time.fixedDeltaTime;
 
+            if (groundCheck && !groundCheck.isGrounded)
+            {
+                AddFallingForce(rb);
+                //                print("AddFallingForce");
+
+            }
             if (!allowHumanInput)
             {
                 return;
@@ -234,12 +240,7 @@ namespace MLAgents
 
             }
 
-            if (groundCheck && !groundCheck.isGrounded)
-            {
-                AddFallingForce(rb);
-                //                print("AddFallingForce");
 
-            }
 
             if (applyStandingForce)
             {

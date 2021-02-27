@@ -123,7 +123,7 @@ public class DodgeBallGameController : MonoBehaviour
             print($"{agent.name} Lost.{agent.name} was weak:");
             //ASSIGN REWARDS
             // EndEpisode();
-            agent.AddReward(-1f); //you lost penalty
+            // agent.AddReward(-1f); //you lost penalty
             HitByTeamList[0].Agent.AddReward(1);
             if (info.TeamID == 0)
             {
@@ -139,12 +139,50 @@ public class DodgeBallGameController : MonoBehaviour
         {
             info.HitPointsRemaining--;
             //ASSIGN REWARDS
-            agent.AddReward(-.1f); //small hit penalty
+            // agent.AddReward(-.1f); //small hit penalty
             HitByTeamList[0].Agent.AddReward(.1f);
         }
             // ResetScene();
 
     }
+
+    // public void PlayerWasHit(DodgeBallAgent agent)
+    // {
+    //     //SET AGENT/TEAM REWARDS HERE
+    //     AgentInfo info = PlayersDict[agent];
+    //     int hitTeamID = info.TeamID;
+    //     // var HitTeamList = hitTeamID == 0 ? Team0Players : Team1Players;
+    //     var HitByTeamList = hitTeamID == 1 ? Team0Players : Team1Players;
+    //     // int hitByTeamID = hitTeamID == 0? 1: 0; //assumes only 2 teams
+    //
+    //     if (info.HitPointsRemaining == 1)
+    //     {
+    //         //RESET ENV
+    //         print($"{agent.name} Lost.{agent.name} was weak:");
+    //         //ASSIGN REWARDS
+    //         // EndEpisode();
+    //         agent.AddReward(-1f); //you lost penalty
+    //         HitByTeamList[0].Agent.AddReward(1);
+    //         if (info.TeamID == 0)
+    //         {
+    //             print($"Team 1 Won");
+    //         }
+    //         else if (info.TeamID == 1)
+    //         {
+    //             print($"Team 0 Won");
+    //         }
+    //         ResetScene();
+    //     }
+    //     else
+    //     {
+    //         info.HitPointsRemaining--;
+    //         //ASSIGN REWARDS
+    //         agent.AddReward(-.1f); //small hit penalty
+    //         HitByTeamList[0].Agent.AddReward(.1f);
+    //     }
+    //         // ResetScene();
+    //
+    // }
 
 
 
@@ -162,13 +200,19 @@ public class DodgeBallGameController : MonoBehaviour
         //End Episode
         foreach (var item in Team0Players)
         {
-            item.Agent.EndEpisode();
-            item.HitPointsRemaining = PlayerMaxHitPoints;
+            if (item.Agent.enabled)
+            {
+                item.Agent.EndEpisode();
+                item.HitPointsRemaining = PlayerMaxHitPoints;
+            }
         }
         foreach (var item in Team1Players)
         {
-            item.Agent.EndEpisode();
-            item.HitPointsRemaining = PlayerMaxHitPoints;
+            if (item.Agent.enabled)
+            {
+                item.Agent.EndEpisode();
+                item.HitPointsRemaining = PlayerMaxHitPoints;
+            }
         }
 
         // //Reset Agents

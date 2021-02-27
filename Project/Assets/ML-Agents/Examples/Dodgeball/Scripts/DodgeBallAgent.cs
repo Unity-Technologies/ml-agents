@@ -121,6 +121,7 @@ public class DodgeBallAgent : Agent
         if (UseVectorObs)
         {
             // sensor.AddObservation((float)StepCount / (float)MaxStep); //Helps with credit assign?
+            sensor.AddObservation(ThrowController.coolDownWait); //Held DBs Normalized
             sensor.AddObservation((float)currentNumberOfBalls/4); //Held DBs Normalized
             sensor.AddObservation((float)HitPointsRemaining/(float)NumberOfTimesPlayerCanBeHit); //Remaining Hit Points Normalized
         //     //            var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
@@ -179,7 +180,7 @@ public class DodgeBallAgent : Agent
 
     public void ThrowTheBall()
     {
-        if (currentNumberOfBalls > 0)
+        if (currentNumberOfBalls > 0 && !ThrowController.coolDownWait)
         {
             var db = ActiveBallsQueue.Peek();
             ThrowController.Throw(db, m_BehaviorParameters.TeamId);
@@ -272,7 +273,9 @@ public class DodgeBallAgent : Agent
         contActionsOut[0] = input.moveInput.y;
         contActionsOut[1] = input.moveInput.x;
         contActionsOut[2] = input.rotateInput.x; //rotate
-        contActionsOut[3] = input.throwPressed ? 1 : 0; //shoot
+        // contActionsOut[3] = input.throwPressed ? 1 : 0; //shoot
+        contActionsOut[3] = input.CheckIfInputSinceLastFrame(ref input.throwPressed) ? 1 : 0; //dash
+        // contActionsOut[3] = input.throwInput; //shoot
         contActionsOut[4] = input.CheckIfInputSinceLastFrame(ref input.dashInput) ? 1 : 0; //dash
     }
 }

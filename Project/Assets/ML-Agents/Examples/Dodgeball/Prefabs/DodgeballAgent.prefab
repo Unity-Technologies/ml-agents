@@ -1,35 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &474368874
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 474368875}
-  m_Layer: 11
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &474368875
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 474368874}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 6960991000376283093}
-  m_RootOrder: 11
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &861736839
 GameObject:
   m_ObjectHideFlags: 0
@@ -40648,9 +40618,6 @@ GameObject:
   - component: {fileID: 6960991000376283095}
   - component: {fileID: 6960991000376283092}
   - component: {fileID: 6960991000376283089}
-  - component: {fileID: 5841309379668457540}
-  - component: {fileID: 8600068265116176913}
-  - component: {fileID: 6960991000376283101}
   - component: {fileID: 6960991000376283099}
   - component: {fileID: 6960991000376283103}
   - component: {fileID: 886896010}
@@ -40683,7 +40650,6 @@ Transform:
   - {fileID: 8362555902365119306}
   - {fileID: 8366924173547402155}
   - {fileID: 8366924174162893208}
-  - {fileID: 474368875}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -40719,15 +40685,15 @@ MonoBehaviour:
     VectorObservationSize: 2
     NumStackedVectorObservations: 1
     m_ActionSpec:
-      m_NumContinuousActions: 0
+      m_NumContinuousActions: 5
       BranchSizes: 
-    VectorActionSize: 
+    VectorActionSize: 05000000
     VectorActionDescriptions: []
-    VectorActionSpaceType: 0
+    VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 1
+  m_BehaviorType: 0
   m_BehaviorName: DodgeBall
   TeamId: 0
   m_UseChildSensors: 1
@@ -40751,9 +40717,9 @@ MonoBehaviour:
   MaxStep: 0
   teamID: 0
   ThrowController: {fileID: 8366924173413481317}
-  AgentHealth: {fileID: 8600068265116176913}
-  AgentShield: {fileID: 5841309379668457540}
-  input: {fileID: 0}
+  AgentHealth: {fileID: 0}
+  AgentShield: {fileID: 0}
+  input: {fileID: 886896010}
   currentNumberOfBalls: 0
   currentlyHeldBalls: []
   UseVectorObs: 1
@@ -40830,7 +40796,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b86732e5cf714ed6ba8b18dd80f458c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allowHumanInput: 1
+  allowHumanInput: 0
   maxAngularVel: 50
   runningForceMode: 2
   agentRunSpeed: 10
@@ -40937,74 +40903,6 @@ MonoBehaviour:
   isGrounded: 1
   ungroundedTime: 0
   groundedTime: 3.119217
---- !u!114 &5841309379668457540
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6960991000376283098}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77c3fcb98988a4fd1a6a820b2c5331cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shieldKey: 105
-  shieldGO: {fileID: 8708871947828733902}
-  ShieldIsActive: 0
-  CurrentPercentage: 100
-  DepletionRate: 5
-  RegenRate: 0.25
-  UISlider: {fileID: 0}
---- !u!114 &8600068265116176913
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6960991000376283098}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9227871cd6ab8429d90afa4a5160924e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CurrentPercentage: 89
-  UISlider: {fileID: 0}
-  bodyMesh: {fileID: 6960991001359725249}
-  damageColor: {r: 1, g: 0, b: 0, a: 0}
-  startingColor: {r: 0.1294118, g: 0.5882353, b: 0.9529412, a: 1}
-  damageFlashDuration: 0.02
-  ShieldController: {fileID: 5841309379668457540}
-  CubeBody: {fileID: 6960991001359725255}
-  DeathCube: {fileID: 8366924173617838012}
-  ExplosionParticles: {fileID: 1722726733478836, guid: c1c88308ebb5d2541a282905b854ee4c,
-    type: 3}
-  impulseSource: {fileID: 0}
-  ResetSceneAfterDeath: 1
-  Dead: 0
-  UseGlobalDamageSettings: 0
-  DamagePerHit: 1
---- !u!114 &6960991000376283101
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6960991000376283098}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceeb907ca54e84d77b6d31c0a264e386, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 6960991000376283093}
-  canCurrentlySeeTarget: 0
-  RunTowardsTarget: 1
-  OnlyWalkIfCanSeeTarget: 1
-  MaxRotationRate: 25
-  RandomRotationJitter: 1.5
-  TargetTag: agent
-  RotateTowardsTarget: 1
-  OnlyShootIfCanSeeTarget: 1
 --- !u!114 &6960991000376283099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41157,13 +41055,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DisableInput: 0
   moveInput: {x: 0, y: 0}
-  shootInput: 0
+  throwInput: 0
   jumpInput: 0
   dashInput: 0
   rotateInput: {x: 0, y: 0}
   shieldInput: 0
   Cam: {fileID: 0}
-  shootPressed: 0
+  throwPressed: 0
 --- !u!1 &6960991000723819014
 GameObject:
   m_ObjectHideFlags: 0
@@ -65490,7 +65388,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9116796388679672958}
-  m_LocalRotation: {x: 0.023514433, y: -0.0000000052765476, z: 1.2410933e-10, w: 0.9997235}
+  m_LocalRotation: {x: 0.023514416, y: 3.1894046e-10, z: -7.5017536e-12, w: 0.9997235}
   m_LocalPosition: {x: 0, y: 1.9999999, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -65925,15 +65823,15 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: cb2aa8892bed247b58476624d7896b0f, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b24fe96fd75b4646a6e7bf65b6a4943, type: 3}
---- !u!1 &7210080383517242672 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1158006594261827975, guid: 1b24fe96fd75b4646a6e7bf65b6a4943,
-    type: 3}
-  m_PrefabInstance: {fileID: 8366924173884781751}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2533523931652835811 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6284117573631589716, guid: 1b24fe96fd75b4646a6e7bf65b6a4943,
+    type: 3}
+  m_PrefabInstance: {fileID: 8366924173884781751}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7210080383517242672 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1158006594261827975, guid: 1b24fe96fd75b4646a6e7bf65b6a4943,
     type: 3}
   m_PrefabInstance: {fileID: 8366924173884781751}
   m_PrefabAsset: {fileID: 0}
