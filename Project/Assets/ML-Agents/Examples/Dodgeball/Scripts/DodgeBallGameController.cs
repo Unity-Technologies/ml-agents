@@ -36,6 +36,8 @@ public class DodgeBallGameController : MonoBehaviour
     //     public List<DodgeBall> currentlyHeldBalls;
     // }
 
+
+
     [Serializable]
     public class AgentInfo
     {
@@ -117,6 +119,7 @@ public class DodgeBallGameController : MonoBehaviour
         var HitByTeamList = hitTeamID == 1 ? Team0Players : Team1Players;
         // int hitByTeamID = hitTeamID == 0? 1: 0; //assumes only 2 teams
 
+            HitByTeamList[0].Agent.AddReward(1);
         if (info.HitPointsRemaining == 1)
         {
             //RESET ENV
@@ -124,7 +127,6 @@ public class DodgeBallGameController : MonoBehaviour
             //ASSIGN REWARDS
             // EndEpisode();
             // agent.AddReward(-1f); //you lost penalty
-            HitByTeamList[0].Agent.AddReward(1);
             if (info.TeamID == 0)
             {
                 print($"Team 1 Won");
@@ -140,7 +142,7 @@ public class DodgeBallGameController : MonoBehaviour
             info.HitPointsRemaining--;
             //ASSIGN REWARDS
             // agent.AddReward(-.1f); //small hit penalty
-            HitByTeamList[0].Agent.AddReward(.1f);
+            // HitByTeamList[0].Agent.AddReward(.1f);
         }
             // ResetScene();
 
@@ -190,6 +192,7 @@ public class DodgeBallGameController : MonoBehaviour
     {
         m_ResetTimer = 0;
 
+        print($"Resetting {gameObject.name}");
         //Reset Balls
         foreach (var item in AllBallsList)
         {

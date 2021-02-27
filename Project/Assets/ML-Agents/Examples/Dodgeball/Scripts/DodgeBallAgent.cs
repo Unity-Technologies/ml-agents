@@ -75,7 +75,7 @@ public class DodgeBallAgent : Agent
         //        m_Cam = Camera.main;
         m_AgentRb = GetComponent<Rigidbody>();
         input = GetComponent<DodgeBallAgentInput>();
-        m_GameController = FindObjectOfType<DodgeBallGameController>();
+        m_GameController = GetComponentInParent<DodgeBallGameController>();
         m_StartingPos = transform.position;
         m_StartingRot = transform.rotation;
         m_Initialized = true;
@@ -124,7 +124,11 @@ public class DodgeBallAgent : Agent
             sensor.AddObservation(ThrowController.coolDownWait); //Held DBs Normalized
             sensor.AddObservation((float)currentNumberOfBalls/4); //Held DBs Normalized
             sensor.AddObservation((float)HitPointsRemaining/(float)NumberOfTimesPlayerCanBeHit); //Remaining Hit Points Normalized
-        //     //            var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
+            sensor.AddObservation(Vector3.Dot(m_AgentRb.velocity, m_AgentRb.transform.forward));
+            sensor.AddObservation(Vector3.Dot(m_AgentRb.velocity, m_AgentRb.transform.right));
+            // sensor.AddObservation(Vector3.Dot(m_AgentRb.angularVelocity, m_AgentRb.transform.forward));
+            // sensor.AddObservation(Vector3.Dot(m_AgentRb.velocity, m_AgentRb.transform.right));
+            //     //            var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
         //     //            sensor.AddObservation(localVelocity.x);
         //     //            sensor.AddObservation(localVelocity.z);
         //     //            sensor.AddObservation(m_Frozen);
