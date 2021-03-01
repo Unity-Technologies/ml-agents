@@ -86,6 +86,7 @@ public class DodgeBallGameController : MonoBehaviour
                 Quaternion.identity);
             DodgeBall db = g.GetComponent<DodgeBall>();
             AllBallsList.Add(db);
+            g.transform.SetParent(transform);
             g.SetActive(true);
         }
 
