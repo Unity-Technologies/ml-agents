@@ -88,7 +88,7 @@ class TorchOptimizer(Optimizer):
         # For the first sequence, the initial memory should be the one at the
         # beginning of this trajectory.
         for _ in range(first_seq_len):
-            all_next_memories.append(initial_memory.squeeze().detach().numpy())
+            all_next_memories.append(ModelUtils.to_numpy(initial_memory.squeeze()))
 
         init_values, _mem = self.critic.critic_pass(
             seq_obs, initial_memory, sequence_length=first_seq_len
@@ -105,7 +105,7 @@ class TorchOptimizer(Optimizer):
         ):
             seq_obs = []
             for _ in range(self.policy.sequence_length):
-                all_next_memories.append(_mem.squeeze().detach().numpy())
+                all_next_memories.append(ModelUtils.to_numpy(_mem.squeeze()))
             for _obs in tensor_obs:
                 start = seq_num * self.policy.sequence_length - (
                     self.policy.sequence_length - leftover
