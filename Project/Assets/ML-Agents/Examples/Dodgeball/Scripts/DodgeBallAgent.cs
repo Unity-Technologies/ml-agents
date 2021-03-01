@@ -140,17 +140,21 @@ public class DodgeBallAgent : Agent
         //        }
     }
 
-    public void MoveAgent(ActionSegment<float> act)
+    // public void MoveAgent(ActionSegment<float> act)
+    public void MoveAgent(ActionBuffers actionBuffers)
     {
         // if (DoNotPerformActions)
         // {
         //     return;
         // }
-        m_InputV = act[0];
-        m_InputH = act[1];
-        m_Rotate = act[2];
-        m_ThrowInput = act[3];
-        m_DashInput = act[4];
+        var continuousActions = actionBuffers.ContinuousActions;
+        var discreteActions = actionBuffers.DiscreteActions;
+
+        m_InputV = continuousActions[0];
+        m_InputH = continuousActions[1];
+        m_Rotate = continuousActions[2];
+        m_ThrowInput = (int)discreteActions[0];;
+        m_DashInput = (int)discreteActions[1];;
 
         //HANDLE ROTATION
         m_CubeMovement.Look(m_Rotate);
@@ -198,7 +202,7 @@ public class DodgeBallAgent : Agent
     {
         // print("MoveAgent");
 
-        MoveAgent(actionBuffers.ContinuousActions);
+        MoveAgent(actionBuffers);
     }
 
     IEnumerator ShowHitFace()
@@ -278,8 +282,9 @@ public class DodgeBallAgent : Agent
         contActionsOut[1] = input.moveInput.x;
         contActionsOut[2] = input.rotateInput.x; //rotate
         // contActionsOut[3] = input.throwPressed ? 1 : 0; //shoot
-        contActionsOut[3] = input.CheckIfInputSinceLastFrame(ref input.throwPressed) ? 1 : 0; //dash
+        var discreteActionsOut = actionsOut.DiscreteActions;
+        discreteActionsOut[0] = input.CheckIfInputSinceLastFrame(ref input.throwPressed) ? 1 : 0; //dash
         // contActionsOut[3] = input.throwInput; //shoot
-        contActionsOut[4] = input.CheckIfInputSinceLastFrame(ref input.dashInput) ? 1 : 0; //dash
+        discreteActionsOut[1] = input.CheckIfInputSinceLastFrame(ref input.dashInput) ? 1 : 0; //dash
     }
 }
