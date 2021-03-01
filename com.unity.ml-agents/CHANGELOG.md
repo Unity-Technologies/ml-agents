@@ -9,6 +9,7 @@ and this project adheres to
 ## [Unreleased]
 ### Major Changes
 #### com.unity.ml-agents (C#)
+- The `BufferSensor` and `BufferSensorComponent` have been added. They allow the Agent to observe variable number of entities. (#4909)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Minor Changes
