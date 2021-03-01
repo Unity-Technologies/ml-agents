@@ -23,7 +23,7 @@ public class GoalNavAgent : Agent
 
     PushBlockSettings m_PushBlockSettings;
 
-    GoalSensorComponent goalSensor;
+    VectorSensorComponent goalSensor;
 
     public GameObject goalObject;
     public GameObject obstacleObject;
@@ -67,12 +67,12 @@ public class GoalNavAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        goalSensor = this.GetComponent<GoalSensorComponent>();
+        goalSensor = this.GetComponent<VectorSensorComponent>();
         if (useVectorObs)
         {
-            goalSensor.AddGoal(goalLoc / 10f);
+            goalSensor.sensor.AddObservation(goalLoc / 10f);
         }
-        goalSensor.AddGoal(obstacleLoc / 10f);
+        goalSensor.sensor.AddObservation(obstacleLoc / 10f);
     }
 
 

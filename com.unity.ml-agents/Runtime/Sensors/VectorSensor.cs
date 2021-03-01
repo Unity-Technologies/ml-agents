@@ -14,13 +14,14 @@ namespace Unity.MLAgents.Sensors
         List<float> m_Observations;
         int[] m_Shape;
         string m_Name;
+        ObservationType m_ObservationType;
 
         /// <summary>
         /// Initializes the sensor.
         /// </summary>
         /// <param name="observationSize">Number of vector observations.</param>
         /// <param name="name">Name of the sensor.</param>
-        public VectorSensor(int observationSize, string name = null)
+        public VectorSensor(int observationSize, string name = null, ObservationType observationType = ObservationType.Default)
         {
             if (name == null)
             {
@@ -30,6 +31,7 @@ namespace Unity.MLAgents.Sensors
             m_Observations = new List<float>(observationSize);
             m_Name = name;
             m_Shape = new[] { observationSize };
+            m_ObservationType = observationType;
         }
 
         /// <inheritdoc/>
@@ -91,7 +93,7 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public virtual ObservationType GetObservationType()
         {
-            return ObservationType.Default;
+            return m_ObservationType;
         }
 
         /// <inheritdoc/>
