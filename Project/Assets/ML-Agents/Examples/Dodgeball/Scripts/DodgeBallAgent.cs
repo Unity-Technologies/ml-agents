@@ -122,17 +122,17 @@ public class DodgeBallAgent : Agent
         {
             // sensor.AddObservation((float)StepCount / (float)MaxStep); //Helps with credit assign?
             sensor.AddObservation(ThrowController.coolDownWait); //Held DBs Normalized
-            sensor.AddObservation((float)currentNumberOfBalls/4); //Held DBs Normalized
-            sensor.AddObservation((float)HitPointsRemaining/(float)NumberOfTimesPlayerCanBeHit); //Remaining Hit Points Normalized
+            sensor.AddObservation((float)currentNumberOfBalls / 4); //Held DBs Normalized
+            sensor.AddObservation((float)HitPointsRemaining / (float)NumberOfTimesPlayerCanBeHit); //Remaining Hit Points Normalized
             sensor.AddObservation(Vector3.Dot(m_AgentRb.velocity, m_AgentRb.transform.forward));
             sensor.AddObservation(Vector3.Dot(m_AgentRb.velocity, m_AgentRb.transform.right));
             // sensor.AddObservation(Vector3.Dot(m_AgentRb.angularVelocity, m_AgentRb.transform.forward));
             // sensor.AddObservation(Vector3.Dot(m_AgentRb.velocity, m_AgentRb.transform.right));
             //     //            var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
-        //     //            sensor.AddObservation(localVelocity.x);
-        //     //            sensor.AddObservation(localVelocity.z);
-        //     //            sensor.AddObservation(m_Frozen);
-        //     //            sensor.AddObservation(m_ShootInput);
+            //     //            sensor.AddObservation(localVelocity.x);
+            //     //            sensor.AddObservation(localVelocity.z);
+            //     //            sensor.AddObservation(m_Frozen);
+            //     //            sensor.AddObservation(m_ShootInput);
         }
         //        else if (useVectorFrozenFlag)
         //        {
@@ -153,7 +153,7 @@ public class DodgeBallAgent : Agent
         m_DashInput = act[4];
 
         //HANDLE ROTATION
-        m_CubeMovement.Look(m_Rotate);
+        m_CubeMovement.Look(10 * m_Rotate);
 
         //HANDLE XZ MOVEMENT
         var moveDir = transform.TransformDirection(new Vector3(m_InputH, 0, m_InputV));
@@ -191,6 +191,8 @@ public class DodgeBallAgent : Agent
             ActiveBallsQueue.Dequeue();
             currentNumberOfBalls--;
             SetActiveBalls(currentNumberOfBalls);
+            // Give a small (< 1-gamma) reward for throwing a ball
+            // AddReward(0.005f);
         }
     }
 
@@ -218,15 +220,15 @@ public class DodgeBallAgent : Agent
 
     public void PlayHitFX()
     {
-            ThrowController.impulseSource.GenerateImpulse();
-            // HitSoundAudioSource.Play();
-            HitSoundAudioSource.PlayOneShot(BallImpactAudioClip, 1f);
-            HitSoundAudioSource.PlayOneShot(HurtVoiceAudioClip, 1f);
-            HitByParticles.Play();
-            if (AnimateEyes)
-            {
-                StartCoroutine(ShowHitFace());
-            }
+        ThrowController.impulseSource.GenerateImpulse();
+        // HitSoundAudioSource.Play();
+        HitSoundAudioSource.PlayOneShot(BallImpactAudioClip, 1f);
+        HitSoundAudioSource.PlayOneShot(HurtVoiceAudioClip, 1f);
+        HitByParticles.Play();
+        if (AnimateEyes)
+        {
+            StartCoroutine(ShowHitFace());
+        }
 
     }
     private void OnCollisionEnter(Collision col)
