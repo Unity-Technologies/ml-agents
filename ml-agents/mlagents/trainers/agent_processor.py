@@ -15,7 +15,7 @@ from mlagents_envs.side_channel.stats_side_channel import (
     StatsAggregationMethod,
     EnvironmentStats,
 )
-from mlagents.trainers.trajectory import GroupmateStatus, Trajectory, AgentExperience
+from mlagents.trainers.trajectory import AgentStatus, Trajectory, AgentExperience
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo, ActionInfoOutputs
 from mlagents.trainers.torch.action_log_probs import LogProbsTuple
@@ -57,7 +57,7 @@ class AgentProcessor:
         )
         # group_status is used to collect the current, most recently seen
         # group status of all the agents in the same group, and assemble the group obs.
-        self.group_status: Dict[str, Dict[str, GroupmateStatus]] = defaultdict(
+        self.group_status: Dict[str, Dict[str, AgentStatus]] = defaultdict(
             lambda: defaultdict(None)
         )
         # last_take_action_outputs stores the action a_t taken before the current observation s_(t+1), while
@@ -161,7 +161,7 @@ class AgentProcessor:
                     continuous=stored_actions.continuous[idx],
                     discrete=stored_actions.discrete[idx],
                 )
-                group_status = GroupmateStatus(
+                group_status = AgentStatus(
                     obs=stored_decision_step.obs,
                     reward=step.reward,
                     action=action_tuple,
