@@ -45,8 +45,6 @@ class TensorNames:
     sequence_length_placeholder = "sequence_length"
     vector_observation_placeholder = "vector_observation"
     recurrent_in_placeholder = "recurrent_in"
-    recurrent_in_placeholder_h = "recurrent_in_h"
-    recurrent_in_placeholder_c = "recurrent_in_c"
     visual_observation_placeholder_prefix = "visual_observation_"
     observation_placeholder_prefix = "obs_"
     previous_action_placeholder = "prev_action"
@@ -55,8 +53,6 @@ class TensorNames:
 
     value_estimate_output = "value_estimate"
     recurrent_output = "recurrent_out"
-    recurrent_output_h = "recurrent_out_h"
-    recurrent_output_c = "recurrent_out_c"
     memory_size = "memory_size"
     version_number = "version_number"
     continuous_action_output_shape = "continuous_action_output_shape"
@@ -68,6 +64,20 @@ class TensorNames:
     is_continuous_control_deprecated = "is_continuous_control"
     action_output_deprecated = "action"
     action_output_shape_deprecated = "action_output_shape"
+
+    @staticmethod
+    def get_visual_observation_name(index: int) -> str:
+        """
+        Returns the name of the visual observation with a given index
+        """
+        return TensorNames.visual_observation_placeholder_prefix + str(index)
+
+    @staticmethod
+    def get_observation_name(index: int) -> str:
+        """
+        Returns the name of the observation with a given index
+        """
+        return TensorNames.observation_placeholder_prefix + str(index)
 
 
 class ModelSerializer:
@@ -121,14 +131,10 @@ class ModelSerializer:
 
         self.input_names = [TensorNames.vector_observation_placeholder]
         for i in range(num_vis_obs):
-            self.input_names.append(
-                TensorNames.visual_observation_placeholder_prefix + str(i)
-            )
+            self.input_names.append(TensorNames.get_visual_observation_name(i))
         for i, obs_spec in enumerate(observation_specs):
             if len(obs_spec.shape) == 2:
-                self.input_names.append(
-                    TensorNames.observation_placeholder_prefix + str(i)
-                )
+                self.input_names.append(TensorNames.get_observation_name(i))
         self.input_names += [
             TensorNames.action_mask_placeholder,
             TensorNames.recurrent_in_placeholder,
