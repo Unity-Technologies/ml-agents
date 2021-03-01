@@ -18,6 +18,8 @@ pytest_gpu:
     recurring:
       - branch: main
         frequency: daily
+    expression: |
+      pull_request.target eq "main"
   artifacts:
     logs:
       paths:
