@@ -41,33 +41,33 @@ class exporting_to_onnx:
 
 
 class TensorNames:
-    BatchSizePlaceholder = "batch_size"
-    SequenceLengthPlaceholder = "sequence_length"
-    VectorObservationPlaceholder = "vector_observation"
-    RecurrentInPlaceholder = "recurrent_in"
-    recurrentInPlaceholderH = "recurrent_in_h"
-    recurrentInPlaceholderC = "recurrent_in_c"
-    VisualObservationPlaceholderPrefix = "visual_observation_"
-    ObservationPlaceholderPrefix = "obs_"
-    PreviousActionPlaceholder = "prev_action"
-    ActionMaskPlaceholder = "action_masks"
-    RandomNormalEpsilonPlaceholder = "epsilon"
+    batch_size_placeholder = "batch_size"
+    sequence_length_placeholder = "sequence_length"
+    vector_observation_placeholder = "vector_observation"
+    recurrent_in_placeholder = "recurrent_in"
+    recurrent_in_placeholder_h = "recurrent_in_h"
+    recurrent_in_placeholder_c = "recurrent_in_c"
+    visual_observation_placeholder_prefix = "visual_observation_"
+    observation_placeholder_prefix = "obs_"
+    previous_action_placeholder = "prev_action"
+    action_mask_placeholder = "action_masks"
+    random_normal_epsilon_placeholder = "epsilon"
 
-    ValueEstimateOutput = "value_estimate"
-    RecurrentOutput = "recurrent_out"
-    recurrentOutputH = "recurrent_out_h"
-    recurrentOutputC = "recurrent_out_c"
-    MemorySize = "memory_size"
-    VersionNumber = "version_number"
-    ContinuousActionOutputShape = "continuous_action_output_shape"
-    DiscreteActionOutputShape = "discrete_action_output_shape"
-    ContinuousActionOutput = "continuous_actions"
-    DiscreteActionOutput = "discrete_actions"
+    value_estimate_output = "value_estimate"
+    recurrent_output = "recurrent_out"
+    recurrent_output_h = "recurrent_out_h"
+    recurrent_output_c = "recurrent_out_c"
+    memory_size = "memory_size"
+    version_number = "version_number"
+    continuous_action_output_shape = "continuous_action_output_shape"
+    discrete_action_output_shape = "discrete_action_output_shape"
+    continuous_action_output = "continuous_actions"
+    discrete_action_output = "discrete_actions"
 
     # Deprecated TensorNames entries for backward compatibility
-    IsContinuousControlDeprecated = "is_continuous_control"
-    ActionOutputDeprecated = "action"
-    ActionOutputShapeDeprecated = "action_output_shape"
+    is_continuous_control_deprecated = "is_continuous_control"
+    action_output_deprecated = "action"
+    action_output_shape_deprecated = "action_output_shape"
 
 
 class ModelSerializer:
@@ -119,49 +119,53 @@ class ModelSerializer:
             dummy_memories,
         )
 
-        self.input_names = [TensorNames.VectorObservationPlaceholder]
+        self.input_names = [TensorNames.vector_observation_placeholder]
         for i in range(num_vis_obs):
             self.input_names.append(
-                TensorNames.VisualObservationPlaceholderPrefix + str(i)
+                TensorNames.visual_observation_placeholder_prefix + str(i)
             )
         for i, obs_spec in enumerate(observation_specs):
             if len(obs_spec.shape) == 2:
                 self.input_names.append(
-                    TensorNames.ObservationPlaceholderPrefix + str(i)
+                    TensorNames.observation_placeholder_prefix + str(i)
                 )
         self.input_names += [
-            TensorNames.ActionMaskPlaceholder,
-            TensorNames.RecurrentInPlaceholder,
+            TensorNames.action_mask_placeholder,
+            TensorNames.recurrent_in_placeholder,
         ]
 
         self.dynamic_axes = {name: {0: "batch"} for name in self.input_names}
 
-        self.output_names = [TensorNames.VersionNumber, TensorNames.MemorySize]
+        self.output_names = [TensorNames.version_number, TensorNames.memory_size]
         if self.policy.behavior_spec.action_spec.continuous_size > 0:
             self.output_names += [
-                TensorNames.ContinuousActionOutput,
-                TensorNames.ContinuousActionOutputShape,
+                TensorNames.continuous_action_output,
+                TensorNames.continuous_action_output_shape,
             ]
-            self.dynamic_axes.update({TensorNames.ContinuousActionOutput: {0: "batch"}})
+            self.dynamic_axes.update(
+                {TensorNames.continuous_action_output: {0: "batch"}}
+            )
         if self.policy.behavior_spec.action_spec.discrete_size > 0:
             self.output_names += [
-                TensorNames.DiscreteActionOutput,
-                TensorNames.DiscreteActionOutputShape,
+                TensorNames.discrete_action_output,
+                TensorNames.discrete_action_output_shape,
             ]
-            self.dynamic_axes.update({TensorNames.DiscreteActionOutput: {0: "batch"}})
+            self.dynamic_axes.update({TensorNames.discrete_action_output: {0: "batch"}})
         if (
             self.policy.behavior_spec.action_spec.continuous_size == 0
             or self.policy.behavior_spec.action_spec.discrete_size == 0
         ):
             self.output_names += [
-                TensorNames.ActionOutputDeprecated,
-                TensorNames.IsContinuousControlDeprecated,
-                TensorNames.ActionOutputShapeDeprecated,
+                TensorNames.action_output_deprecated,
+                TensorNames.is_continuous_control_deprecated,
+                TensorNames.action_output_shape_deprecated,
             ]
-            self.dynamic_axes.update({TensorNames.ActionOutputDeprecated: {0: "batch"}})
+            self.dynamic_axes.update(
+                {TensorNames.action_output_deprecated: {0: "batch"}}
+            )
 
         if self.policy.export_memory_size > 0:
-            self.output_names += [TensorNames.RecurrentOutput]
+            self.output_names += [TensorNames.recurrent_output]
 
     def export_policy_model(self, output_filepath: str) -> None:
         """
