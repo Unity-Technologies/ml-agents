@@ -67,8 +67,16 @@ public class DodgeBallAgent : Agent
     public float m_ThrowInput;
     public float m_DashInput;
 
+    BufferSensorComponent m_BallBuffer;
+    BufferSensorComponent m_OtherAgentsBuffer;
+
     public override void Initialize()
     {
+
+        var bufferSensors = GetComponentsInChildren<BufferSensorComponent>();
+        m_BallBuffer = bufferSensors[0];
+        m_OtherAgentsBuffer = bufferSensors[1];
+
         m_CubeMovement = GetComponent<AgentCubeMovement>();
         m_BehaviorParameters = gameObject.GetComponent<BehaviorParameters>();
 
@@ -138,6 +146,50 @@ public class DodgeBallAgent : Agent
         //        {
         //            sensor.AddObservation(m_Frozen);
         //        }
+
+        foreach (var info in m_GameController.Team0Players){
+            if (info.Agent != this && info.Agent.gameObject.active){
+                m_OtherAgentsBuffer.AppendObservation( GetOtherAgentData(info));
+            }
+        }
+        foreach (var info in m_GameController.Team1Players){
+            if (info.Agent != this && info.Agent.gameObject.active){
+                m_OtherAgentsBuffer.AppendObservation( GetOtherAgentData(info));
+            }
+        }
+        foreach (var b in m_GameController.AllBallsList){
+            if (b.gameObject.active)
+            {
+                m_BallBuffer.AppendObservation(GetBallData(b));
+            }
+        }
+    }
+
+    private float[] GetOtherAgentData(DodgeBallGameController.AgentInfo info){
+        var otherAgentdata = new float[8];
+        otherAgentdata[0] = (float)info.HitPointsRemaining / (float)NumberOfTimesPlayerCanBeHit;
+        otherAgentdata[1] = (info.Agent.transform.position.x - transform.position.x) / 20.0f;
+        otherAgentdata[2] = (info.Agent.transform.position.y - transform.position.y) / 20.0f;
+        otherAgentdata[3] = (info.Agent.transform.position.z - transform.position.z) / 20.0f;
+        otherAgentdata[4] = info.TeamID == teamID ? 0.0f : 1.0f;
+        otherAgentdata[5] = info.Agent.transform.forward.x;
+        otherAgentdata[6] = info.Agent.transform.forward.y;
+        otherAgentdata[7] = info.Agent.transform.forward.z;
+        return otherAgentdata;
+
+    }
+
+    private float[] GetBallData(DodgeBall ball){
+        var ballData = new float[8];
+        ballData[0] = (ball.transform.position.x - transform.position.x)/20f;
+        ballData[1] = (ball.transform.position.y - transform.position.y)/20f;
+        ballData[2] = (ball.transform.position.z - transform.position.z)/20f;
+        ballData[3] = (ball.rb.velocity.x);
+        ballData[4] = (ball.rb.velocity.y);
+        ballData[5] = (ball.rb.velocity.z);
+        ballData[6] = ball.inPlay ? 1.0f : 0.0f;
+        ballData[7] = ball.TeamToIgnore == teamID ? 1.0f : 0.0f;
+        return ballData;
     }
 
     // public void MoveAgent(ActionSegment<float> act)

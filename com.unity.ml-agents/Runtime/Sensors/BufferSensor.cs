@@ -98,7 +98,7 @@ namespace Unity.MLAgents.Sensors
 
         public string GetName()
         {
-            return "BufferSensor";
+            return "BufferSensor_" + m_MaxNumObs +"_" + m_ObsSize;
         }
 
         /// <inheritdoc/>
