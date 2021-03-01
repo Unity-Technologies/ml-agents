@@ -7,6 +7,7 @@ namespace Unity.MLAgents.Sensors
     /// </summary>
     public class BufferSensor : ISensor, IDimensionPropertiesSensor, IBuiltInSensor
     {
+        private string m_Name;
         private int m_MaxNumObs;
         private int m_ObsSize;
         float[] m_ObservationBuffer;
@@ -15,8 +16,9 @@ namespace Unity.MLAgents.Sensors
                 DimensionProperty.VariableSize,
                 DimensionProperty.None
             };
-        public BufferSensor(int maxNumberObs, int obsSize)
+        public BufferSensor(int maxNumberObs, int obsSize, string name)
         {
+            m_Name = name;
             m_MaxNumObs = maxNumberObs;
             m_ObsSize = obsSize;
             m_ObservationBuffer = new float[m_ObsSize * m_MaxNumObs];
@@ -98,7 +100,7 @@ namespace Unity.MLAgents.Sensors
 
         public string GetName()
         {
-            return "BufferSensor";
+            return m_Name;
         }
 
         /// <inheritdoc/>

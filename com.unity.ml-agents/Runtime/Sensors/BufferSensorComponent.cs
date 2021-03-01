@@ -9,6 +9,19 @@ namespace Unity.MLAgents.Sensors
     [AddComponentMenu("ML Agents/Buffer Sensor", (int)MenuGroup.Sensors)]
     public class BufferSensorComponent : SensorComponent
     {
+
+        /// <summary>
+        /// Name of the generated <see cref="bufferSensor"/> object.
+        /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
+        /// </summary>
+        public string SensorName
+        {
+            get { return m_SensorName; }
+            set { m_SensorName = value; }
+        }
+
+        public string m_SensorName = "BufferSensor";
+
         /// <summary>
         /// This is how many floats each entities will be represented with. This number
         /// is fixed and all entities must have the same representation.
@@ -26,7 +39,7 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public override ISensor CreateSensor()
         {
-            m_Sensor = new BufferSensor(MaxNumObservables, ObservableSize);
+            m_Sensor = new BufferSensor(MaxNumObservables, ObservableSize, m_SensorName);
             return m_Sensor;
         }
 
