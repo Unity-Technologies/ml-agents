@@ -9,6 +9,9 @@ import tempfile
 from typing import List, Optional, Pattern
 
 RELEASE_PATTERN = re.compile(r"release_[0-9]+(_docs)*")
+PIP_INSTALL_PATTERN = re.compile(
+    r"(python -m )?pip3* install mlagents(==[0-9]\.[0-9]\.[0-9])?"
+)
 TRAINER_INIT_FILE = "ml-agents/mlagents/trainers/__init__.py"
 
 MATCH_ANY = re.compile(r"(?s).*")
@@ -26,25 +29,50 @@ ALLOW_LIST = {
 
 def test_release_pattern():
     # Just some sanity check that the regex works as expected.
-    assert RELEASE_PATTERN.search(
-        "https://github.com/Unity-Technologies/ml-agents/blob/release_4_docs/Food.md"
+    for s, expected in [
+        (
+            "https://github.com/Unity-Technologies/ml-agents/blob/release_4_docs/Food.md",
+            True,
+        ),
+        ("https://github.com/Unity-Technologies/ml-agents/blob/release_4/Foo.md", True),
+        (
+            "git clone --branch release_4 https://github.com/Unity-Technologies/ml-agents.git",
+            True,
+        ),
+        (
+            "https://github.com/Unity-Technologies/ml-agents/blob/release_123_docs/Foo.md",
+            True,
+        ),
+        (
+            "https://github.com/Unity-Technologies/ml-agents/blob/release_123/Foo.md",
+            True,
+        ),
+        (
+            "https://github.com/Unity-Technologies/ml-agents/blob/latest_release/docs/Foo.md",
+            False,
+        ),
+    ]:
+        assert bool(RELEASE_PATTERN.search(s)) is expected
+
+    print("release tests OK!")
+
+
+def test_pip_pattern():
+    # Just some sanity check that the regex works as expected.
+    for s, expected in [
+        ("pip install mlagents", True),
+        ("pip3 install mlagents", True),
+        ("python -m pip install mlagents", True),
+        ("python -m pip install mlagents==1.2.3", True),
+    ]:
+        assert bool(PIP_INSTALL_PATTERN.search(s)) is expected
+
+    sub_expected = "Try running rm -rf / to install"
+    assert sub_expected == PIP_INSTALL_PATTERN.sub(
+        "rm -rf /", "Try running python -m pip install mlagents==1.2.3 to install"
     )
-    assert RELEASE_PATTERN.search(
-        "https://github.com/Unity-Technologies/ml-agents/blob/release_4/Foo.md"
-    )
-    assert RELEASE_PATTERN.search(
-        "git clone --branch release_4 https://github.com/Unity-Technologies/ml-agents.git"
-    )
-    assert RELEASE_PATTERN.search(
-        "https://github.com/Unity-Technologies/ml-agents/blob/release_123_docs/Foo.md"
-    )
-    assert RELEASE_PATTERN.search(
-        "https://github.com/Unity-Technologies/ml-agents/blob/release_123/Foo.md"
-    )
-    assert not RELEASE_PATTERN.search(
-        "https://github.com/Unity-Technologies/ml-agents/blob/latest_release/docs/Foo.md"
-    )
-    print("tests OK!")
+
+    print("pip tests OK!")
 
 
 def git_ls_files() -> List[str]:
@@ -74,8 +102,28 @@ def get_release_tag() -> Optional[str]:
     raise RuntimeError("Can't determine release tag")
 
 
+def get_python_package_version() -> str:
+    """
+    Returns the mlagents python package.
+    :return:
+    """
+    with open(TRAINER_INIT_FILE) as f:
+        for line in f:
+            if "__version__" in line:
+                lhs, equals_string, rhs = line.strip().partition(" = ")
+                # Evaluate the right hand side of the expression
+                return ast.literal_eval(rhs)
+    # If we couldn't find the release tag, raise an exception
+    # (since we can't return None here)
+    raise RuntimeError("Can't determine python package version")
+
+
 def check_file(
-    filename: str, release_tag_pattern: Pattern, release_tag: str
+    filename: str,
+    release_tag_pattern: Pattern,
+    release_tag: str,
+    pip_allow_pattern: Pattern,
+    package_version: str,
 ) -> List[str]:
     """
     Validate a single file and return any offending lines.
@@ -102,13 +150,11 @@ def check_file(
                         and allow_list_pattern.search(line) is not None
                     )
 
-                    # keep_line = True
-                    # keep_line = not RELEASE_PATTERN.search(line)
-                    # keep_line |= release_tag_pattern.search(line) is not None
-                    # keep_line |= (
-                    #     allow_list_pattern is not None
-                    #     and allow_list_pattern.search(line) is not None
-                    # )
+                    if (
+                        PIP_INSTALL_PATTERN.search(line) is not None
+                        and pip_allow_pattern.search(line) is None
+                    ):
+                        print(f"Would fail and rewrite: {line}")
 
                     keep_line = (
                         not has_release_pattern
@@ -131,17 +177,28 @@ def check_file(
     return bad_lines
 
 
-def check_all_files(allow_pattern: Pattern, release_tag: str) -> List[str]:
+def check_all_files(
+    release_allow_pattern: Pattern,
+    release_tag: str,
+    pip_allow_pattern: Pattern,
+    package_version: str,
+) -> List[str]:
     """
     Validate all files tracked by git.
-    :param allow_pattern:
+    :param release_allow_pattern:
     """
     bad_lines = []
     file_types = {".py", ".md", ".cs"}
     for file_name in git_ls_files():
         if "localized" in file_name or os.path.splitext(file_name)[1] not in file_types:
             continue
-        bad_lines += check_file(file_name, allow_pattern, release_tag)
+        bad_lines += check_file(
+            file_name,
+            release_allow_pattern,
+            release_tag,
+            pip_allow_pattern,
+            package_version,
+        )
     return bad_lines
 
 
@@ -151,9 +208,14 @@ def main():
         print("Release tag is None, exiting")
         sys.exit(0)
 
+    package_version = get_python_package_version()
     print(f"Release tag: {release_tag}")
-    allow_pattern = re.compile(f"{release_tag}(_docs)*")
-    bad_lines = check_all_files(allow_pattern, release_tag)
+    print(f"Release tag: {package_version}")
+    release_allow_pattern = re.compile(f"{release_tag}(_docs)?")
+    pip_allow_pattern = re.compile(f"python -m pip install mlagents={package_version}")
+    bad_lines = check_all_files(
+        release_allow_pattern, release_tag, pip_allow_pattern, package_version
+    )
     if bad_lines:
         for line in bad_lines:
             print(line)
@@ -170,4 +232,5 @@ def main():
 if __name__ == "__main__":
     if "--test" in sys.argv:
         test_release_pattern()
+        test_pip_pattern()
     main()
