@@ -19,7 +19,7 @@ public class GridAgent : Agent
         "a camera to render before making a decision. Place the agentCam here if using " +
         "RenderTexture as observations.")]
     public Camera renderCamera;
-    GoalSensorComponent goalSensor;
+    VectorSensorComponent goalSensor;
 
     public enum GridGoal
     {
@@ -50,8 +50,8 @@ public class GridAgent : Agent
     {
         Array values = Enum.GetValues(typeof(GridGoal));
         int goalNum = (int)gridGoal;
-        goalSensor = this.GetComponent<GoalSensorComponent>();
-        goalSensor.AddOneHotGoal(goalNum, values.Length);
+        goalSensor = this.GetComponent<VectorSensorComponent>();
+        goalSensor.sensor.AddOneHotObservation(goalNum, values.Length);
     }
 
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)

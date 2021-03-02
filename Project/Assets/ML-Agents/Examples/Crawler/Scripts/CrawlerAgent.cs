@@ -25,7 +25,7 @@ public class CrawlerAgent : Agent
         "Static - The agent will run towards a static target. "
     )]
     public CrawlerAgentBehaviorType typeOfCrawler;
-    GoalSensorComponent goalSensor;
+    VectorSensorComponent goalSensor;
 
     //Crawler Brains
     //A different brain will be used depending on the CrawlerAgentBehaviorType selected
@@ -213,7 +213,7 @@ public class CrawlerAgent : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
-        goalSensor = this.GetComponent<GoalSensorComponent>();
+        goalSensor = this.GetComponent<VectorSensorComponent>();
         var cubeForward = m_OrientationCube.transform.forward;
 
         //velocity we want to match
@@ -226,12 +226,12 @@ public class CrawlerAgent : Agent
         //avg body vel relative to cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
         //vel goal relative to cube
-        goalSensor.AddGoal(m_OrientationCube.transform.InverseTransformDirection(velGoal));
+        goalSensor.sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
         //rotation delta
         sensor.AddObservation(Quaternion.FromToRotation(body.forward, cubeForward));
 
         //Add pos of target relative to orientation cube
-        goalSensor.AddGoal(m_OrientationCube.transform.InverseTransformPoint(m_Target.transform.position));
+        goalSensor.sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(m_Target.transform.position));
 
         RaycastHit hit;
         float maxRaycastDist = 10;

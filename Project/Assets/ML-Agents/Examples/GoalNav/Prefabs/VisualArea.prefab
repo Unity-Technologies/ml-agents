@@ -247,7 +247,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 11400000, guid: 3fd57dbc0c08d4cee9ccc6edb9451017, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: GoalNav
@@ -332,7 +332,7 @@ MonoBehaviour:
     m_Extent: {x: 0, y: 0, z: 0}
   goalObject: {fileID: 704293525323185430}
   obstacleObject: {fileID: 7160026636022562747}
-  useVectorObs: 1
+  useVectorObs: 0
 --- !u!114 &5692574058063671958
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1182,7 +1182,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5694061835409238912}
   - component: {fileID: 5694061835409238914}
-  - component: {fileID: 5694061835409238915}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -1246,14 +1245,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &5694061835409238915
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5694061835409238913}
-  m_Enabled: 1
 --- !u!1 &5694061835435845149
 GameObject:
   m_ObjectHideFlags: 0

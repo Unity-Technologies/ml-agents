@@ -16,7 +16,7 @@ public class WJPBAgent : Agent
     public GameObject ground;
     public GameObject spawnArea;
     Bounds m_SpawnAreaBounds;
-    GoalSensorComponent goalSensor;
+    VectorSensorComponent goalSensor;
 
     public GameObject wallJumpGoal;
     public GameObject pushBlockGoal;
@@ -169,8 +169,8 @@ public class WJPBAgent : Agent
 
         sensor.AddObservation(agentPos / 20f);
         sensor.AddObservation(DoGroundCheck(true) ? 1 : 0);
-        goalSensor = this.GetComponent<GoalSensorComponent>();
-        goalSensor.AddGoal(m_GoalOneHot);
+        goalSensor = this.GetComponent<VectorSensorComponent>();
+        goalSensor.sensor.AddObservation(m_GoalOneHot);
     }
 
     /// <summary>
