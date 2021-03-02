@@ -93,11 +93,13 @@ namespace Unity.MLAgents.Sensors
             Array.Clear(m_ObservationBuffer, 0, m_ObservationBuffer.Length);
         }
 
+        /// <inheritdoc/>
         public SensorCompressionType GetCompressionType()
         {
             return SensorCompressionType.None;
         }
 
+        /// <inheritdoc/>
         public string GetName()
         {
             return m_Name;
