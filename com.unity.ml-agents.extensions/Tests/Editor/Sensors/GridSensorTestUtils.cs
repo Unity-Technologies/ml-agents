@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System;
 using System.Linq;
+using Unity.Collections;
 
 namespace Unity.MLAgents.Extensions.Tests.Sensors
 {
@@ -123,7 +124,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         ///             expecedDefaultArray = new float[] {0, 0}
         ///             )
         /// </example>
-        public static void AssertSubarraysAtIndex(float[] total, int[] indicies, float[][] expectedArrays, float[] expectedDefaultArray)
+        public static void AssertSubarraysAtIndex(NativeArray<float> total, int[] indicies, float[][] expectedArrays, float[] expectedDefaultArray)
         {
             int totalIndex = 0;
             int subIndex = 0;

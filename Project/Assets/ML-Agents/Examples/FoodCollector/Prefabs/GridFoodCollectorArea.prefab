@@ -790,7 +790,7 @@ GameObject:
   - component: {fileID: 33640192513867290}
   - component: {fileID: 23637226378815632}
   - component: {fileID: 65153930110053452}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Floor
   m_TagString: ground
   m_Icon: {fileID: 0}
@@ -1119,7 +1119,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4842597515579046}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Court
   m_TagString: wall
   m_Icon: {fileID: 0}
@@ -2266,7 +2266,7 @@ MonoBehaviour:
   CellScaleZ: 1
   GridNumSideX: 40
   GridNumSideZ: 40
-  CellScaleY: 0.01
+  CellScaleY: 1
   RotateToAgent: 1
   ChannelDepth: 06000000
   DetectableObjects:
@@ -2277,12 +2277,14 @@ MonoBehaviour:
   - frozenAgent
   ObserveMask:
     serializedVersion: 2
-    m_Bits: 307
+    m_Bits: 1
   gridDepthType: 1
-  rootReference: {fileID: 0}
-  ObservationPerCell: 0
-  NumberOfObservations: 0
-  ChannelOffsets: 
+  rootReference: {fileID: 1464820575638702}
+  MaxColliderBufferSize: 500
+  InitialColliderBufferSize: 4
+  ObservationPerCell: 6
+  NumberOfObservations: 9600
+  ChannelOffsets: 00000000
   DebugColors:
   - {r: 0.4039216, g: 0.7372549, b: 0.41960788, a: 0}
   - {r: 0.12941177, g: 0.5882353, b: 0.95294124, a: 0}
@@ -2611,7 +2613,7 @@ MonoBehaviour:
   CellScaleZ: 1
   GridNumSideX: 40
   GridNumSideZ: 40
-  CellScaleY: 0.01
+  CellScaleY: 1
   RotateToAgent: 1
   ChannelDepth: 06000000
   DetectableObjects:
@@ -2622,9 +2624,11 @@ MonoBehaviour:
   - frozenAgent
   ObserveMask:
     serializedVersion: 2
-    m_Bits: 307
+    m_Bits: 1
   gridDepthType: 1
-  rootReference: {fileID: 0}
+  rootReference: {fileID: 1495617568563208}
+  MaxColliderBufferSize: 500
+  InitialColliderBufferSize: 4
   ObservationPerCell: 0
   NumberOfObservations: 0
   ChannelOffsets: 
@@ -2960,7 +2964,7 @@ MonoBehaviour:
   CellScaleZ: 1
   GridNumSideX: 40
   GridNumSideZ: 40
-  CellScaleY: 0.01
+  CellScaleY: 1
   RotateToAgent: 1
   ChannelDepth: 06000000
   DetectableObjects:
@@ -2971,9 +2975,11 @@ MonoBehaviour:
   - frozenAgent
   ObserveMask:
     serializedVersion: 2
-    m_Bits: 307
+    m_Bits: 1
   gridDepthType: 1
-  rootReference: {fileID: 0}
+  rootReference: {fileID: 1601500200010266}
+  MaxColliderBufferSize: 500
+  InitialColliderBufferSize: 4
   ObservationPerCell: 0
   NumberOfObservations: 0
   ChannelOffsets: 
@@ -3572,7 +3578,7 @@ MonoBehaviour:
   CellScaleZ: 1
   GridNumSideX: 40
   GridNumSideZ: 40
-  CellScaleY: 0.01
+  CellScaleY: 1
   RotateToAgent: 1
   ChannelDepth: 06000000
   DetectableObjects:
@@ -3583,9 +3589,11 @@ MonoBehaviour:
   - frozenAgent
   ObserveMask:
     serializedVersion: 2
-    m_Bits: 307
+    m_Bits: 1
   gridDepthType: 1
-  rootReference: {fileID: 0}
+  rootReference: {fileID: 1672905243433088}
+  MaxColliderBufferSize: 500
+  InitialColliderBufferSize: 4
   ObservationPerCell: 0
   NumberOfObservations: 0
   ChannelOffsets: 
@@ -3907,7 +3915,7 @@ MonoBehaviour:
   CellScaleZ: 1
   GridNumSideX: 40
   GridNumSideZ: 40
-  CellScaleY: 0.01
+  CellScaleY: 1
   RotateToAgent: 1
   ChannelDepth: 06000000
   DetectableObjects:
@@ -3918,12 +3926,14 @@ MonoBehaviour:
   - frozenAgent
   ObserveMask:
     serializedVersion: 2
-    m_Bits: 307
+    m_Bits: 1
   gridDepthType: 1
-  rootReference: {fileID: 0}
-  ObservationPerCell: 0
-  NumberOfObservations: 0
-  ChannelOffsets: 
+  rootReference: {fileID: 1706274796045088}
+  MaxColliderBufferSize: 500
+  InitialColliderBufferSize: 4
+  ObservationPerCell: 6
+  NumberOfObservations: 9600
+  ChannelOffsets: 00000000
   DebugColors:
   - {r: 0.4039216, g: 0.7372549, b: 0.41960788, a: 0}
   - {r: 0.12941177, g: 0.5882353, b: 0.95294124, a: 0}
