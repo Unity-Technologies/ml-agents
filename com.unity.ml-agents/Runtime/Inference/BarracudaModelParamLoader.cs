@@ -141,7 +141,7 @@ namespace Unity.MLAgents.Inference
                 if (sensor.GetObservationShape().Length == 3)
                 {
                     if (!tensorsNames.Contains(
-                        TensorNames.VisualObservationPlaceholderPrefix + visObsIndex))
+                        TensorNames.GetVisualObservationName(visObsIndex)))
                     {
                         failedModelChecks.Add(
                             "The model does not contain a Visual Observation Placeholder Input " +
@@ -152,7 +152,7 @@ namespace Unity.MLAgents.Inference
                 if (sensor.GetObservationShape().Length == 2)
                 {
                     if (!tensorsNames.Contains(
-                        TensorNames.ObservationPlaceholderPrefix + sensorIndex))
+                        TensorNames.GetObservationName(sensorIndex)))
                     {
                         failedModelChecks.Add(
                             "The model does not contain an Observation Placeholder Input " +
@@ -320,13 +320,13 @@ namespace Unity.MLAgents.Inference
                 if (sens.GetObservationShape().Length == 3)
                 {
 
-                    tensorTester[TensorNames.VisualObservationPlaceholderPrefix + visObsIndex] =
+                    tensorTester[TensorNames.GetVisualObservationName(visObsIndex)] =
                         (bp, tensor, scs, i) => CheckVisualObsShape(tensor, sens);
                     visObsIndex++;
                 }
                 if (sens.GetObservationShape().Length == 2)
                 {
-                    tensorTester[TensorNames.ObservationPlaceholderPrefix + sensorIndex] =
+                    tensorTester[TensorNames.GetObservationName(sensorIndex)] =
                         (bp, tensor, scs, i) => CheckRankTwoObsShape(tensor, sens);
                 }
             }
