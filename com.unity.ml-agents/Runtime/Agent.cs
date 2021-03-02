@@ -338,17 +338,6 @@ namespace Unity.MLAgents
         /// </summary>
         IActuator m_VectorActuator;
 
-        /// <summary>
-        /// This is used to avoid allocation of a float array every frame if users are still using the old
-        /// OnActionReceived method.
-        /// </summary>
-        float[] m_LegacyActionCache;
-
-        /// <summary>
-        /// This is used to avoid allocation of a float array during legacy calls to Heuristic.
-        /// </summary>
-        float[] m_LegacyHeuristicCache;
-
         /// Currect MultiAgentGroup ID. Default to 0 (meaning no group)
         int m_GroupId;
 
@@ -952,29 +941,7 @@ namespace Unity.MLAgents
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         public virtual void Heuristic(in ActionBuffers actionsOut)
         {
-            // Disable deprecation warnings so we can call the legacy overload.
-#pragma warning disable CS0618
 
-            // The default implementation of Heuristic calls the
-            // obsolete version for backward compatibility
-            switch (m_PolicyFactory.BrainParameters.VectorActionSpaceType)
-            {
-                case SpaceType.Continuous:
-                    Heuristic(m_LegacyHeuristicCache);
-                    Array.Copy(m_LegacyHeuristicCache, actionsOut.ContinuousActions.Array, m_LegacyActionCache.Length);
-                    actionsOut.DiscreteActions.Clear();
-                    break;
-                case SpaceType.Discrete:
-                    Heuristic(m_LegacyHeuristicCache);
-                    var discreteActionSegment = actionsOut.DiscreteActions;
-                    for (var i = 0; i < actionsOut.DiscreteActions.Length; i++)
-                    {
-                        discreteActionSegment[i] = (int)m_LegacyHeuristicCache[i];
-                    }
-                    actionsOut.ContinuousActions.Clear();
-                    break;
-            }
-#pragma warning restore CS0618
         }
 
         /// <summary>
@@ -1064,8 +1031,6 @@ namespace Unity.MLAgents
             var param = m_PolicyFactory.BrainParameters;
             m_VectorActuator = new AgentVectorActuator(this, this, param.ActionSpec);
             m_ActuatorManager = new ActuatorManager(attachedActuators.Length + 1);
-            m_LegacyActionCache = new float[m_VectorActuator.TotalNumberOfActions()];
-            m_LegacyHeuristicCache = new float[m_VectorActuator.TotalNumberOfActions()];
 
             m_ActuatorManager.Add(m_VectorActuator);
 
@@ -1229,10 +1194,6 @@ namespace Unity.MLAgents
             {
                 m_ActionMasker = new DiscreteActionMasker(actionMask);
             }
-            // Disable deprecation warnings so we can call the legacy overload.
-#pragma warning disable CS0618
-            CollectDiscreteActionMasks(m_ActionMasker);
-#pragma warning restore CS0618
         }
 
         /// <summary>
@@ -1310,24 +1271,6 @@ namespace Unity.MLAgents
                 // Nothing implemented.
                 return;
             }
-
-            if (!actions.ContinuousActions.IsEmpty())
-            {
-                Array.Copy(actions.ContinuousActions.Array,
-                    m_LegacyActionCache,
-                    actionSpec.NumContinuousActions);
-            }
-            else
-            {
-                for (var i = 0; i < m_LegacyActionCache.Length; i++)
-                {
-                    m_LegacyActionCache[i] = (float)actions.DiscreteActions[i];
-                }
-            }
-            // Disable deprecation warnings so we can call the legacy overload.
-#pragma warning disable CS0618
-            OnActionReceived(m_LegacyActionCache);
-#pragma warning restore CS0618
         }
 
         /// <summary>

@@ -29,14 +29,12 @@ namespace Unity.MLAgents.Extensions.Match3
         public bool ForceHeuristic;
 
         /// <inheritdoc/>
-#pragma warning disable 672
-        public override IActuator CreateActuator()
-#pragma warning restore 672
+        public override IActuator[] CreateActuators()
         {
             var board = GetComponent<AbstractBoard>();
             var agent = GetComponentInParent<Agent>();
             var seed = RandomSeed == -1 ? gameObject.GetInstanceID() : RandomSeed + 1;
-            return new Match3Actuator(board, ForceHeuristic, seed, agent, ActuatorName);
+            return new IActuator[] { new Match3Actuator(board, ForceHeuristic, seed, agent, ActuatorName) };
         }
 
         /// <inheritdoc/>
