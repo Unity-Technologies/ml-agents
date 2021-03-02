@@ -12,6 +12,9 @@
 # Environemnt logfile
 *Project.log
 
+# Custom settings asset
+/Project/Assets/MLAgents.settings.asset*
+
 # Visual Studio 2015 cache directory
 /Project/.vs/
 
