@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/ML-Agents/Examples/FoodCollector/Scenes/GridFoodCollector.unity
+    guid: 07d4146bc5bfaba4ab42d159c49f4d7b
   m_configObjects: {}

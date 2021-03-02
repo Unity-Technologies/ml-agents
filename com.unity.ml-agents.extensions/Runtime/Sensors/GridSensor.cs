@@ -7,6 +7,7 @@ using Unity.MLAgents.Sensors;
 using UnityEngine.Profiling;
 using Unity.Jobs;
 using UnityEngine.Jobs;
+using Unity.Burst;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -493,6 +494,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <inheritdoc cref="ISensor.Reset"/>
         void ISensor.Reset() { }
 
+        [BurstCompile(CompileSynchronously = true)]
         struct ClearBufferOneHotJob : IJobParallelFor
         {
             public NativeArray<float> PerceptionBuf;
@@ -505,6 +507,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
         }
 
+        [BurstCompile(CompileSynchronously = true)]
         struct ClearBufferChannelJob : IJobParallelFor
         {
             public NativeArray<float> PerceptionBuf;
@@ -514,6 +517,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
         }
 
+        [BurstCompile(CompileSynchronously = true)]
         struct ClearCellActivityJob : IJobParallelFor
         {
             public NativeArray<Color> CellActivity;
@@ -645,6 +649,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_perceptionTexture2D.SetPixels(m_PerceptionColors);
         }
 
+        [BurstCompile(CompileSynchronously = true)]
         struct CreateBoxcastBatch : IJobParallelFor
         {
             public NativeArray<BoxcastCommand> Commands;
@@ -668,6 +673,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
         }
 
+        [BurstCompile(CompileSynchronously = true)]
         struct CreateBoxcastRotateBatch : IJobParallelFor
         {
             public NativeArray<BoxcastCommand> Commands;

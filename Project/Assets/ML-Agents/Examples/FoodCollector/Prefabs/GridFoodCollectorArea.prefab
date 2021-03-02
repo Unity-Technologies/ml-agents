@@ -2187,7 +2187,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 75910f45f20be49b18e2b95879a217b2, type: 3}
+  m_Model: {fileID: 11400000, guid: 4f4129961448e4ac08f0195d097995c9, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -2284,7 +2284,6 @@ MonoBehaviour:
   InitialColliderBufferSize: 4
   ObservationPerCell: 6
   NumberOfObservations: 9600
-  ChannelOffsets: 00000000
   DebugColors:
   - {r: 0.4039216, g: 0.7372549, b: 0.41960788, a: 0}
   - {r: 0.12941177, g: 0.5882353, b: 0.95294124, a: 0}
@@ -2547,7 +2546,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 75910f45f20be49b18e2b95879a217b2, type: 3}
+  m_Model: {fileID: 11400000, guid: 4f4129961448e4ac08f0195d097995c9, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -2631,7 +2630,6 @@ MonoBehaviour:
   InitialColliderBufferSize: 4
   ObservationPerCell: 0
   NumberOfObservations: 0
-  ChannelOffsets: 
   DebugColors:
   - {r: 0.4039216, g: 0.7372549, b: 0.41960788, a: 0}
   - {r: 0.12941177, g: 0.5882353, b: 0.95294124, a: 0}
@@ -2898,7 +2896,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 75910f45f20be49b18e2b95879a217b2, type: 3}
+  m_Model: {fileID: 11400000, guid: 4f4129961448e4ac08f0195d097995c9, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -2982,7 +2980,6 @@ MonoBehaviour:
   InitialColliderBufferSize: 4
   ObservationPerCell: 0
   NumberOfObservations: 0
-  ChannelOffsets: 
   DebugColors:
   - {r: 0.4039216, g: 0.7372549, b: 0.41960788, a: 0}
   - {r: 0.12941177, g: 0.5882353, b: 0.95294124, a: 0}
@@ -3512,7 +3509,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 75910f45f20be49b18e2b95879a217b2, type: 3}
+  m_Model: {fileID: 11400000, guid: 4f4129961448e4ac08f0195d097995c9, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -3596,7 +3593,6 @@ MonoBehaviour:
   InitialColliderBufferSize: 4
   ObservationPerCell: 0
   NumberOfObservations: 0
-  ChannelOffsets: 
   DebugColors:
   - {r: 0.4039216, g: 0.7372549, b: 0.41960788, a: 0}
   - {r: 0.12941177, g: 0.5882353, b: 0.95294124, a: 0}
@@ -3849,7 +3845,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 75910f45f20be49b18e2b95879a217b2, type: 3}
+  m_Model: {fileID: 11400000, guid: 4f4129961448e4ac08f0195d097995c9, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -3933,7 +3929,6 @@ MonoBehaviour:
   InitialColliderBufferSize: 4
   ObservationPerCell: 6
   NumberOfObservations: 9600
-  ChannelOffsets: 00000000
   DebugColors:
   - {r: 0.4039216, g: 0.7372549, b: 0.41960788, a: 0}
   - {r: 0.12941177, g: 0.5882353, b: 0.95294124, a: 0}

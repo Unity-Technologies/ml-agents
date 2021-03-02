@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 75910f45f20be49b18e2b95879a217b2
+guid: 4f4129961448e4ac08f0195d097995c9
 ScriptedImporter:
   fileIDToRecycleName:
     11400000: main obj
@@ -12,3 +12,4 @@ ScriptedImporter:
   optimizeModel: 1
   forceArbitraryBatchSize: 1
   treatErrorsAsWarnings: 0
+  importMode: 1

@@ -193,6 +193,17 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -9.9
       objectReference: {fileID: 0}
+    - target: {fileID: 23677892901527780, guid: b5339e4b990ade14f992aadf3bf8591b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}
+    - target: {fileID: 114374774605792098, guid: b5339e4b990ade14f992aadf3bf8591b,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 11400000, guid: 4f4129961448e4ac08f0195d097995c9,
+        type: 3}
     - target: {fileID: 3067525015186813280, guid: b5339e4b990ade14f992aadf3bf8591b,
         type: 3}
       propertyPath: NumCollidersPerCell

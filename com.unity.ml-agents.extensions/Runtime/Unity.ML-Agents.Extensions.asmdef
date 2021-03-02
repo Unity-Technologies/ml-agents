@@ -3,6 +3,7 @@
     "references": [
         "Unity.Barracuda",
         "Unity.ML-Agents",
-        "Unity.ML-Agents.Extensions.Input"
+        "Unity.ML-Agents.Extensions.Input",
+        "Unity.Burst"
     ]
 }

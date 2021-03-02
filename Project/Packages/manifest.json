@@ -2,6 +2,7 @@
   "dependencies": {
     "com.unity.ads": "2.0.8",
     "com.unity.analytics": "3.2.3",
+    "com.unity.burst": "1.3.9",
     "com.unity.collab-proxy": "1.2.15",
     "com.unity.ml-agents": "file:../../com.unity.ml-agents",
     "com.unity.ml-agents.extensions": "file:../../com.unity.ml-agents.extensions",
