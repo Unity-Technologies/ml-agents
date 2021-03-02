@@ -6,9 +6,22 @@ using UnityEngine;
 
 public class VectorSensorComponent : SensorComponent
 {
-    public int observationSize;
+    int m_observationSize;
+    ObservationType m_ObservationType;
+
+    public int ObservationSize
+    {
+        get { return m_observationSize; }
+        set { m_observationSize = value; }
+    }
+
     public VectorSensor sensor;
-    public ObservationType observationType;
+    public ObservationType ObservationType
+    {
+        get { return m_ObservationType; }
+        set { m_ObservationType = value; }
+    }
+
 
     /// <summary>
     /// Creates a VectorSensor.
@@ -16,13 +29,13 @@ public class VectorSensorComponent : SensorComponent
     /// <returns></returns>
     public override ISensor CreateSensor()
     {
-        sensor = new VectorSensor(observationSize, observationType: observationType);
+        sensor = new VectorSensor(m_observationSize, observationType: m_ObservationType);
         return sensor;
     }
 
     /// <inheritdoc/>
     public override int[] GetObservationShape()
     {
-        return new[] { observationSize };
+        return new[] { m_observationSize };
     }
 }

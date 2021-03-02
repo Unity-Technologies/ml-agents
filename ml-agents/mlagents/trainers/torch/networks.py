@@ -112,20 +112,19 @@ class NetworkBody(nn.Module):
         for idx, processor in enumerate(self.processors):
             obs_input = inputs[idx]
             processed_obs = processor(obs_input)
-            if (
-                self.obs_types[idx] == ObservationType.DEFAULT
-                or self.conditioning_type == ConditioningType.DEFAULT
-            ):
+
+            if self.obs_types[idx] == ObservationType.DEFAULT:
                 obs_encodes.append(processed_obs)
-            elif (
-                self.obs_types[idx] == ObservationType.GOAL
-                and self.conditioning_type != ConditioningType.DEFAULT
-            ):
+            elif self.obs_types[idx] == ObservationType.GOAL:
                 goal_encodes.append(processed_obs)
             else:
                 raise Exception(
                     "TODO : Something other than a goal or observation was passed to the agent."
                 )
+
+        if self.conditioning_type == ConditioningType.DEFAULT:
+            obs_encodes = obs_encodes + goal_encodes
+            goal_encodes = []
 
         if len(obs_encodes) == 0:
             raise Exception("No valid inputs to network.")
