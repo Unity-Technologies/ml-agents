@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -32,12 +33,16 @@ namespace Unity.MLAgents
             {
                 if (s_Instance == null)
                 {
+#if UNITY_EDITOR
                     var settings = AssetDatabase.LoadAssetAtPath<MLAgentsSettings>(k_CustomSettingsPath);
                     if (settings == null)
                     {
                         settings = ScriptableObject.CreateInstance<MLAgentsSettings>();
                     }
                     s_Instance = settings;
+#else
+                    s_Instance = Resources.FindObjectsOfTypeAll<MLAgentsSettings>().FirstOrDefault() ?? ScriptableObject.CreateInstance<MLAgentsSettings>();
+#endif
                 }
                 return s_Instance;
             }
