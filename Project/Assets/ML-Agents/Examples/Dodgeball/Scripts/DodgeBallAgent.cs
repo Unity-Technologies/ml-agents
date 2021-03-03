@@ -258,6 +258,7 @@ public class DodgeBallAgent : Agent
             if (currentNumberOfBalls < 4)
             {
                 PickUpBall(db);
+                AddReward(0.001f);
             }
         }
     }
