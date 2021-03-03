@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using Unity.MLAgents.Policies;
 using UnityEngine;
 
 namespace Unity.MLAgents.Actuators
@@ -45,7 +45,7 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Creates a Continuous <see cref="ActionSpec"/> with the number of actions available.
         /// </summary>
-        /// <param name="numActions">The number of actions available.</param>
+        /// <param name="numActions">The number of continuous actions available.</param>
         /// <returns>An Continuous ActionSpec initialized with the number of actions available.</returns>
         public static ActionSpec MakeContinuous(int numActions)
         {
@@ -66,10 +66,16 @@ namespace Unity.MLAgents.Actuators
             return actuatorSpace;
         }
 
-        internal ActionSpec(int numContinuousActions, int[] branchSizes = null)
+        /// <summary>
+        /// Create an ActionSpec initialized with the specified action sizes.
+        /// </summary>
+        /// <param name="numContinuousActions">The number of continuous actions available.</param>
+        /// <param name="discreteBranchSizes">The array of branch sizes for the discrete actions.  Each index
+        /// contains the number of actions available for that branch.</param>
+        public ActionSpec(int numContinuousActions = 0, int[] discreteBranchSizes = null)
         {
             m_NumContinuousActions = numContinuousActions;
-            BranchSizes = branchSizes;
+            BranchSizes = discreteBranchSizes ?? Array.Empty<int>();
         }
 
         /// <summary>
@@ -86,6 +92,47 @@ namespace Unity.MLAgents.Actuators
                     "ActionSpecs must be all continuous or all discrete."
                 );
             }
+        }
+
+        /// <summary>
+        /// Combines a list of actions specs and allocates a new array of branch sizes if needed.
+        /// </summary>
+        /// <param name="specs">The list of action specs to combine.</param>
+        /// <returns>An ActionSpec which represents the aggregate of the ActionSpecs passed in.</returns>
+        public static ActionSpec Combine(params ActionSpec[] specs)
+        {
+            var numContinuous = 0;
+            var numDiscrete = 0;
+            for (var i = 0; i < specs.Length; i++)
+            {
+                var spec = specs[i];
+                numContinuous += spec.NumContinuousActions;
+                numDiscrete += spec.NumDiscreteActions;
+            }
+
+            if (numDiscrete <= 0)
+            {
+                return MakeContinuous(numContinuous);
+            }
+
+            var branchSizes = new int[numDiscrete];
+            var offset = 0;
+            for (var i = 0; i < specs.Length; i++)
+            {
+                var spec = specs[i];
+                if (spec.BranchSizes.Length == 0)
+                {
+                    continue;
+                }
+                var branchSizesLength = spec.BranchSizes.Length;
+                Array.Copy(spec.BranchSizes,
+                    0,
+                    branchSizes,
+                    offset,
+                    branchSizesLength);
+                offset += branchSizesLength;
+            }
+            return new ActionSpec(numContinuous, branchSizes);
         }
     }
 }

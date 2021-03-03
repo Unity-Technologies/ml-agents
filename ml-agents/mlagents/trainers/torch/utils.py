@@ -10,8 +10,9 @@ from mlagents.trainers.torch.encoders import (
     VectorInput,
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
+from mlagents.trainers.torch.attention import EntityEmbedding
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents_envs.base_env import ObservationSpec, ObservationType
+from mlagents_envs.base_env import ObservationSpec, ObservationType, DimensionProperty
 
 
 class ModelUtils:
@@ -23,6 +24,25 @@ class ModelUtils:
         EncoderType.NATURE_CNN: 36,
         EncoderType.RESNET: 15,
     }
+
+    VALID_VISUAL_PROP = frozenset(
+        [
+            (
+                DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
+                DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
+                DimensionProperty.NONE,
+            ),
+            (DimensionProperty.UNSPECIFIED,) * 3,
+        ]
+    )
+
+    VALID_VECTOR_PROP = frozenset(
+        [(DimensionProperty.NONE,), (DimensionProperty.UNSPECIFIED,)]
+    )
+
+    VALID_VAR_LEN_PROP = frozenset(
+        [(DimensionProperty.VARIABLE_SIZE, DimensionProperty.NONE)]
+    )
 
     @staticmethod
     def update_learning_rate(optim: torch.optim.Optimizer, lr: float) -> None:
@@ -118,7 +138,7 @@ class ModelUtils:
 
     @staticmethod
     def get_encoder_for_obs(
-        shape: Tuple[int, ...],
+        obs_spec: ObservationSpec,
         normalize: bool,
         h_size: int,
         vis_encode_type: EncoderType,
@@ -130,16 +150,28 @@ class ModelUtils:
         :param h_size: Number of hidden units per layer.
         :param vis_encode_type: Type of visual encoder to use.
         """
-        if len(shape) == 1:
-            # Case rank 1 tensor
-            return (VectorInput(shape[0], normalize), shape[0])
-        if len(shape) == 3:
-            ModelUtils._check_resolution_for_encoder(
-                shape[0], shape[1], vis_encode_type
-            )
+        shape = obs_spec.shape
+        dim_prop = obs_spec.dimension_property
+
+        # VISUAL
+        if dim_prop in ModelUtils.VALID_VISUAL_PROP:
             visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
             return (visual_encoder_class(shape[0], shape[1], shape[2], h_size), h_size)
-        raise UnityTrainerException(f"Unsupported shape of {shape} for observation")
+        # VECTOR
+        if dim_prop in ModelUtils.VALID_VECTOR_PROP:
+            return (VectorInput(shape[0], normalize), shape[0])
+        # VARIABLE LENGTH
+        if dim_prop in ModelUtils.VALID_VAR_LEN_PROP:
+            return (
+                EntityEmbedding(
+                    entity_size=shape[1],
+                    entity_num_max_elements=shape[0],
+                    embedding_size=h_size,
+                ),
+                0,
+            )
+        # OTHER
+        raise UnityTrainerException(f"Unsupported Sensor with specs {obs_spec}")
 
     @staticmethod
     def create_input_processors(
@@ -158,14 +190,17 @@ class ModelUtils:
         :param unnormalized_inputs: Vector inputs that should not be normalized, and added to the vector
             obs.
         :param normalize: Normalize all vector inputs.
-        :return: Tuple of visual encoders and vector encoders each as a list.
+        :return: Tuple of :
+         - ModuleList of the encoders
+         - A list of embedding sizes (0 if the input requires to be processed with a variable length
+         observation encoder)
         """
         encoders: List[nn.Module] = []
         embedding_sizes: List[int] = []
         obs_types: List[ObservationType] = []
         for obs_spec in observation_specs:
             encoder, embedding_size = ModelUtils.get_encoder_for_obs(
-                obs_spec.shape, normalize, h_size, vis_encode_type
+                obs_spec, normalize, h_size, vis_encode_type
             )
             encoders.append(encoder)
             embedding_sizes.append(embedding_size)

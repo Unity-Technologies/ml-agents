@@ -6,6 +6,7 @@ namespace Unity.MLAgents
     internal enum MenuGroup
     {
         Default = 0,
-        Sensors = 50
+        Sensors = 50,
+        Actuators = 100
     }
 }

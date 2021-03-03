@@ -35,7 +35,7 @@ namespace Unity.MLAgents.Extensions.Match3
     /// or uncompressed visual observations. Uses AbstractBoard.GetCellType()
     /// and AbstractBoard.GetSpecialType() to determine the observation values.
     /// </summary>
-    public class Match3Sensor : ISparseChannelSensor
+    public class Match3Sensor : ISparseChannelSensor, IBuiltInSensor
     {
         private Match3ObservationType m_ObservationType;
         private AbstractBoard m_Board;
@@ -232,6 +232,12 @@ namespace Unity.MLAgents.Extensions.Match3
         public int[] GetCompressedChannelMapping()
         {
             return m_SparseChannelMapping;
+        }
+
+        /// <inheritdoc/>
+        public BuiltInSensorType GetBuiltInSensorType()
+        {
+            return BuiltInSensorType.Match3Sensor;
         }
 
         static void DestroyTexture(Texture2D texture)

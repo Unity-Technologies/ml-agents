@@ -1,7 +1,9 @@
 using NUnit.Framework;
-using Unity.MLAgents.Policies;
-using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Analytics;
+using Unity.MLAgents.CommunicatorObjects;
+using Unity.MLAgents.Demonstrations;
+using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Tests
@@ -168,6 +170,32 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), false);
             sparseChannelSensor.Mapping = new[] { 0, 0, 0, 1, 1, 1 };
             Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), false);
+        }
+
+        [Test]
+        public void TestDefaultTrainingEvents()
+        {
+            var trainingEnvInit = new TrainingEnvironmentInitialized
+            {
+                PythonVersion = "test",
+            };
+            var trainingEnvInitEvent = trainingEnvInit.ToTrainingEnvironmentInitializedEvent();
+            Assert.AreEqual(trainingEnvInit.PythonVersion, trainingEnvInitEvent.TrainerPythonVersion);
+
+            var trainingBehavInit = new TrainingBehaviorInitialized
+            {
+                BehaviorName = "testBehavior",
+                ExtrinsicRewardEnabled = true,
+                CuriosityRewardEnabled = true,
+
+                RecurrentEnabled = true,
+                SelfPlayEnabled = true,
+            };
+            var trainingBehavInitEvent = trainingBehavInit.ToTrainingBehaviorInitializedEvent();
+            Assert.AreEqual(trainingBehavInit.BehaviorName, trainingBehavInitEvent.BehaviorName);
+
+            Assert.AreEqual(RewardSignals.Extrinsic | RewardSignals.Curiosity, trainingBehavInitEvent.RewardSignalFlags);
+            Assert.AreEqual(TrainingFeatures.Recurrent | TrainingFeatures.SelfPlay, trainingBehavInitEvent.TrainingFeatureFlags);
         }
     }
 }

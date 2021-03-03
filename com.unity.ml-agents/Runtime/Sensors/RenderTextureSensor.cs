@@ -5,7 +5,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// Sensor class that wraps a [RenderTexture](https://docs.unity3d.com/ScriptReference/RenderTexture.html) instance.
     /// </summary>
-    public class RenderTextureSensor : ISensor
+    public class RenderTextureSensor : ISensor, IBuiltInSensor
     {
         RenderTexture m_RenderTexture;
         bool m_Grayscale;
@@ -92,6 +92,13 @@ namespace Unity.MLAgents.Sensors
         {
             return m_CompressionType;
         }
+
+        /// <inheritdoc/>
+        public BuiltInSensorType GetBuiltInSensorType()
+        {
+            return BuiltInSensorType.RenderTextureSensor;
+        }
+
 
         /// <summary>
         /// Converts a RenderTexture to a 2D texture.

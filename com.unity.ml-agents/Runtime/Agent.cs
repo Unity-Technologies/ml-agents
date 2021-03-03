@@ -35,6 +35,11 @@ namespace Unity.MLAgents
         public float reward;
 
         /// <summary>
+        /// The current group reward received by the agent.
+        /// </summary>
+        public float groupReward;
+
+        /// <summary>
         /// Whether the agent is done or not.
         /// </summary>
         public bool done;
@@ -49,6 +54,11 @@ namespace Unity.MLAgents
         /// to separate between different agents in the environment.
         /// </summary>
         public int episodeId;
+
+        /// <summary>
+        /// MultiAgentGroup identifier.
+        /// </summary>
+        public int groupId;
 
         public void ClearActions()
         {
@@ -67,6 +77,25 @@ namespace Unity.MLAgents
             {
                 discreteActions[i] = actionBuffers.DiscreteActions[i];
             }
+        }
+    }
+
+    /// <summary>
+    /// Simple wrapper around VectorActuator that overrides GetBuiltInActuatorType
+    /// so that it can be distinguished from a standard VectorActuator.
+    /// </summary>
+    internal class AgentVectorActuator : VectorActuator
+    {
+        public AgentVectorActuator(IActionReceiver actionReceiver,
+            IHeuristicProvider heuristicProvider,
+            ActionSpec actionSpec,
+            string name = "VectorActuator"
+        ) : base(actionReceiver, heuristicProvider, actionSpec, name)
+        { }
+
+        public override BuiltInActuatorType GetBuiltInActuatorType()
+        {
+            return BuiltInActuatorType.AgentVectorActuator;
         }
     }
 
@@ -156,13 +185,13 @@ namespace Unity.MLAgents
     /// [OnDisable()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDisable.html]
     /// [OnBeforeSerialize()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnBeforeSerialize.html
     /// [OnAfterSerialize()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnAfterSerialize.html
-    /// [Agents]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/docs/Learning-Environment-Design-Agents.md
-    /// [Reinforcement Learning in Unity]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/docs/Learning-Environment-Design.md
+    /// [Agents]: https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/docs/Learning-Environment-Design-Agents.md
+    /// [Reinforcement Learning in Unity]: https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/docs/Learning-Environment-Design.md
     /// [Unity ML-Agents Toolkit]: https://github.com/Unity-Technologies/ml-agents
-    /// [Unity ML-Agents Toolkit manual]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/docs/Readme.md
+    /// [Unity ML-Agents Toolkit manual]: https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/docs/Readme.md
     ///
     /// </remarks>
-    [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/" +
+    [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/" +
         "docs/Learning-Environment-Design-Agents.md")]
     [Serializable]
     [RequireComponent(typeof(BehaviorParameters))]
@@ -243,6 +272,9 @@ namespace Unity.MLAgents
         /// Additionally, the magnitude of the reward should not exceed 1.0
         float m_Reward;
 
+        /// Represents the group reward the agent accumulated during the current step.
+        float m_GroupReward;
+
         /// Keeps track of the cumulative reward in this episode.
         float m_CumulativeReward;
 
@@ -316,6 +348,13 @@ namespace Unity.MLAgents
         /// This is used to avoid allocation of a float array during legacy calls to Heuristic.
         /// </summary>
         float[] m_LegacyHeuristicCache;
+
+        /// Currect MultiAgentGroup ID. Default to 0 (meaning no group)
+        int m_GroupId;
+
+        /// Delegate for the agent to unregister itself from the MultiAgentGroup without cyclic reference
+        /// between agent and the group
+        internal event Action<Agent> OnAgentDisabled;
 
         /// <summary>
         /// Called when the attached [GameObject] becomes enabled and active.
@@ -448,6 +487,8 @@ namespace Unity.MLAgents
                 new int[m_ActuatorManager.NumDiscreteActions]
             );
 
+            m_Info.groupId = m_GroupId;
+
             // The first time the Academy resets, all Agents in the scene will be
             // forced to reset through the <see cref="AgentForceReset"/> event.
             // To avoid the Agent resetting twice, the Agents will not begin their
@@ -516,6 +557,7 @@ namespace Unity.MLAgents
                 NotifyAgentDone(DoneReason.Disabled);
             }
             m_Brain?.Dispose();
+            OnAgentDisabled?.Invoke(this);
             m_Initialized = false;
         }
 
@@ -528,8 +570,10 @@ namespace Unity.MLAgents
             }
             m_Info.episodeId = m_EpisodeId;
             m_Info.reward = m_Reward;
+            m_Info.groupReward = m_GroupReward;
             m_Info.done = true;
             m_Info.maxStepReached = doneReason == DoneReason.MaxStepReached;
+            m_Info.groupId = m_GroupId;
             if (collectObservationsSensor != null)
             {
                 // Make sure the latest observations are being passed to training.
@@ -559,6 +603,7 @@ namespace Unity.MLAgents
             }
 
             m_Reward = 0f;
+            m_GroupReward = 0f;
             m_CumulativeReward = 0f;
             m_RequestAction = false;
             m_RequestDecision = false;
@@ -655,8 +700,8 @@ namespace Unity.MLAgents
         /// for information about mixing reward signals from curiosity and Generative Adversarial
         /// Imitation Learning (GAIL) with rewards supplied through this method.
         ///
-        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/docs/Learning-Environment-Design-Agents.md#rewards
-        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/docs/ML-Agents-Overview.md#a-quick-note-on-reward-signals
+        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/docs/Learning-Environment-Design-Agents.md#rewards
+        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/docs/ML-Agents-Overview.md#a-quick-note-on-reward-signals
         /// </remarks>
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
@@ -685,8 +730,8 @@ namespace Unity.MLAgents
         /// for information about mixing reward signals from curiosity and Generative Adversarial
         /// Imitation Learning (GAIL) with rewards supplied through this method.
         ///
-        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/docs/Learning-Environment-Design-Agents.md#rewards
-        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/docs/ML-Agents-Overview.md#a-quick-note-on-reward-signals
+        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/docs/Learning-Environment-Design-Agents.md#rewards
+        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/docs/ML-Agents-Overview.md#a-quick-note-on-reward-signals
         ///</remarks>
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
@@ -696,6 +741,22 @@ namespace Unity.MLAgents
 #endif
             m_Reward += increment;
             m_CumulativeReward += increment;
+        }
+
+        internal void SetGroupReward(float reward)
+        {
+#if DEBUG
+            Utilities.DebugCheckNanAndInfinity(reward, nameof(reward), nameof(SetGroupReward));
+#endif
+            m_GroupReward = reward;
+        }
+
+        internal void AddGroupReward(float increment)
+        {
+#if DEBUG
+            Utilities.DebugCheckNanAndInfinity(increment, nameof(increment), nameof(AddGroupReward));
+#endif
+            m_GroupReward += increment;
         }
 
         /// <summary>
@@ -864,8 +925,8 @@ namespace Unity.MLAgents
         /// implementing a simple heuristic function can aid in debugging agent actions and interactions
         /// with its environment.
         ///
-        /// [Demonstration Recorder]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/docs/Learning-Environment-Design-Agents.md#recording-demonstrations
-        /// [Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Demonstration Recorder]: https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/docs/Learning-Environment-Design-Agents.md#recording-demonstrations
+        /// [Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </remarks>
         /// <example>
@@ -922,6 +983,10 @@ namespace Unity.MLAgents
         /// </summary>
         internal void InitializeSensors()
         {
+            if (m_PolicyFactory == null)
+            {
+                m_PolicyFactory = GetComponent<BehaviorParameters>();
+            }
             if (m_PolicyFactory.ObservableAttributeHandling != ObservableAttributeOptions.Ignore)
             {
                 var excludeInherited =
@@ -997,7 +1062,7 @@ namespace Unity.MLAgents
             // Support legacy OnActionReceived
             // TODO don't set this up if the sizes are 0?
             var param = m_PolicyFactory.BrainParameters;
-            m_VectorActuator = new VectorActuator(this, this, param.ActionSpec);
+            m_VectorActuator = new AgentVectorActuator(this, this, param.ActionSpec);
             m_ActuatorManager = new ActuatorManager(attachedActuators.Length + 1);
             m_LegacyActionCache = new float[m_VectorActuator.TotalNumberOfActions()];
             m_LegacyHeuristicCache = new float[m_VectorActuator.TotalNumberOfActions()];
@@ -1006,7 +1071,7 @@ namespace Unity.MLAgents
 
             foreach (var actuatorComponent in attachedActuators)
             {
-                m_ActuatorManager.Add(actuatorComponent.CreateActuator());
+                m_ActuatorManager.AddActuators(actuatorComponent.CreateActuators());
             }
         }
 
@@ -1050,9 +1115,11 @@ namespace Unity.MLAgents
 
             m_Info.discreteActionMasks = m_ActuatorManager.DiscreteActionMask?.GetMask();
             m_Info.reward = m_Reward;
+            m_Info.groupReward = m_GroupReward;
             m_Info.done = false;
             m_Info.maxStepReached = false;
             m_Info.episodeId = m_EpisodeId;
+            m_Info.groupId = m_GroupId;
 
             using (TimerStack.Instance.Scoped("RequestDecision"))
             {
@@ -1122,7 +1189,7 @@ namespace Unity.MLAgents
         /// For more information about observations, see [Observations and Sensors].
         ///
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
-        /// [Observations and Sensors]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/docs/Learning-Environment-Design-Agents.md#observations-and-sensors
+        /// [Observations and Sensors]: https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/docs/Learning-Environment-Design-Agents.md#observations-and-sensors
         /// </remarks>
         public virtual void CollectObservations(VectorSensor sensor)
         {
@@ -1153,7 +1220,7 @@ namespace Unity.MLAgents
         ///
         /// See [Agents - Actions] for more information on masking actions.
         ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         public virtual void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
@@ -1229,7 +1296,7 @@ namespace Unity.MLAgents
         ///
         /// For more information about implementing agent actions see [Agents - Actions].
         ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_12_docs/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <param name="actions">
         /// Struct containing the buffers of actions to be executed at this step.
@@ -1319,6 +1386,7 @@ namespace Unity.MLAgents
             {
                 SendInfoToBrain();
                 m_Reward = 0f;
+                m_GroupReward = 0f;
                 m_RequestDecision = false;
             }
         }
@@ -1353,6 +1421,26 @@ namespace Unity.MLAgents
             var actions = m_Brain?.DecideAction() ?? new ActionBuffers();
             m_Info.CopyActions(actions);
             m_ActuatorManager.UpdateActions(actions);
+        }
+
+        internal void SetMultiAgentGroup(IMultiAgentGroup multiAgentGroup)
+        {
+            if (multiAgentGroup == null)
+            {
+                m_GroupId = 0;
+            }
+            else
+            {
+                var newGroupId = multiAgentGroup.GetId();
+                if (m_GroupId == 0 || m_GroupId == newGroupId)
+                {
+                    m_GroupId = newGroupId;
+                }
+                else
+                {
+                    throw new UnityAgentsException("Agent is already registered with a group. Unregister it first.");
+                }
+            }
         }
     }
 }

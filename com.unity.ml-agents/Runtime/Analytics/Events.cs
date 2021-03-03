@@ -21,6 +21,7 @@ namespace Unity.MLAgents.Analytics
         public int InferenceDevice;
         public List<EventObservationSpec> ObservationSpecs;
         public EventActionSpec ActionSpec;
+        public List<EventActuatorInfo> ActuatorInfos;
         public int MemorySize;
         public long TotalWeightSizeBytes;
         public string ModelHash;
@@ -49,6 +50,35 @@ namespace Unity.MLAgents.Analytics
     }
 
     /// <summary>
+    /// Information about an actuator.
+    /// </summary>
+    [Serializable]
+    internal struct EventActuatorInfo
+    {
+        public int BuiltInActuatorType;
+        public int NumContinuousActions;
+        public int NumDiscreteActions;
+
+        public static EventActuatorInfo FromActuator(IActuator actuator)
+        {
+            BuiltInActuatorType builtInActuatorType = Actuators.BuiltInActuatorType.Unknown;
+            if (actuator is IBuiltInActuator builtInActuator)
+            {
+                builtInActuatorType = builtInActuator.GetBuiltInActuatorType();
+            }
+
+            var actionSpec = actuator.ActionSpec;
+
+            return new EventActuatorInfo
+            {
+                BuiltInActuatorType = (int)builtInActuatorType,
+                NumContinuousActions = actionSpec.NumContinuousActions,
+                NumDiscreteActions = actionSpec.NumDiscreteActions
+            };
+        }
+    }
+
+    /// <summary>
     /// Information about one dimension of an observation.
     /// </summary>
     [Serializable]
@@ -66,24 +96,94 @@ namespace Unity.MLAgents.Analytics
     {
         public string SensorName;
         public string CompressionType;
+        public int BuiltInSensorType;
         public EventObservationDimensionInfo[] DimensionInfos;
 
         public static EventObservationSpec FromSensor(ISensor sensor)
         {
             var shape = sensor.GetObservationShape();
+            var dimProps = (sensor as IDimensionPropertiesSensor)?.GetDimensionProperties();
             var dimInfos = new EventObservationDimensionInfo[shape.Length];
             for (var i = 0; i < shape.Length; i++)
             {
                 dimInfos[i].Size = shape[i];
-                // TODO copy flags when we have them
+                dimInfos[i].Flags = dimProps != null ? (int)dimProps[i] : 0;
             }
+
+            var builtInSensorType =
+                (sensor as IBuiltInSensor)?.GetBuiltInSensorType() ?? Sensors.BuiltInSensorType.Unknown;
 
             return new EventObservationSpec
             {
                 SensorName = sensor.GetName(),
                 CompressionType = sensor.GetCompressionType().ToString(),
+                BuiltInSensorType = (int)builtInSensorType,
                 DimensionInfos = dimInfos,
             };
         }
+    }
+
+    internal struct RemotePolicyInitializedEvent
+    {
+        public string TrainingSessionGuid;
+        /// <summary>
+        /// Hash of the BehaviorName.
+        /// </summary>
+        public string BehaviorName;
+        public List<EventObservationSpec> ObservationSpecs;
+        public EventActionSpec ActionSpec;
+        public List<EventActuatorInfo> ActuatorInfos;
+
+        /// <summary>
+        /// This will be the same as TrainingEnvironmentInitializedEvent if available, but
+        /// TrainingEnvironmentInitializedEvent maybe not always be available with older trainers.
+        /// </summary>
+        public string MLAgentsEnvsVersion;
+        public string TrainerCommunicationVersion;
+    }
+
+    internal struct TrainingEnvironmentInitializedEvent
+    {
+        public string TrainingSessionGuid;
+
+        public string TrainerPythonVersion;
+        public string MLAgentsVersion;
+        public string MLAgentsEnvsVersion;
+        public string TorchVersion;
+        public string TorchDeviceType;
+        public int NumEnvironments;
+        public int NumEnvironmentParameters;
+    }
+
+    [Flags]
+    internal enum RewardSignals
+    {
+        Extrinsic = 1 << 0,
+        Gail = 1 << 1,
+        Curiosity = 1 << 2,
+        Rnd = 1 << 3,
+    }
+
+    [Flags]
+    internal enum TrainingFeatures
+    {
+        BehavioralCloning = 1 << 0,
+        Recurrent = 1 << 1,
+        Threaded = 1 << 2,
+        SelfPlay = 1 << 3,
+        Curriculum = 1 << 4,
+    }
+
+    internal struct TrainingBehaviorInitializedEvent
+    {
+        public string TrainingSessionGuid;
+
+        public string BehaviorName;
+        public string TrainerType;
+        public RewardSignals RewardSignalFlags;
+        public TrainingFeatures TrainingFeatureFlags;
+        public string VisualEncoder;
+        public int NumNetworkLayers;
+        public int NumNetworkHiddenUnits;
     }
 }

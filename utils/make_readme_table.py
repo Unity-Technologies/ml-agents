@@ -2,19 +2,36 @@
 Generate the "Releases" table on the main readme. Update the versions lists, run this script, and copy the output
 into the markdown file.
 """
-from distutils.version import LooseVersion
+from distutils.version import LooseVersion, StrictVersion
 from datetime import datetime
 from typing import NamedTuple
+from collections import Counter
+
+MAX_DAYS = 150  # do not print releases older than this many days
 
 
-def table_line(display_name, name, date, bold=False):
+def table_line(version_info, bold=False):
     bold_str = "**" if bold else ""
-    # For release_X branches, docs are on a separate tag.
-    if name.startswith("release"):
-        docs_name = name + "_docs"
+
+    cells = [
+        f"**{version_info.display_name}**",
+        f"{bold_str}{version_info.release_date}{bold_str}",
+        f"{bold_str}[source]({version_info.source_link}){bold_str}",
+        f"{bold_str}[docs]({version_info.doc_link}){bold_str}",
+        f"{bold_str}[download]({version_info.download_link}){bold_str}",
+    ]
+    if version_info.is_main:
+        cells.append("--")  # python
+        cells.append("--")  # Unity
     else:
-        docs_name = name
-    return f"| **{display_name}** | {bold_str}{date}{bold_str} | {bold_str}[source](https://github.com/Unity-Technologies/ml-agents/tree/{name}){bold_str} | {bold_str}[docs](https://github.com/Unity-Technologies/ml-agents/tree/{docs_name}/docs/Readme.md){bold_str} | {bold_str}[download](https://github.com/Unity-Technologies/ml-agents/archive/{name}.zip){bold_str} |"  # noqa
+        cells.append(
+            f"{bold_str}[{version_info.python_verion}]({version_info.pypi_link}){bold_str}"
+        )
+        cells.append(
+            f"{bold_str}[{version_info.csharp_version}]({version_info.package_link}){bold_str}"
+        )
+    joined_cells = " | ".join(cells)
+    return f"| {joined_cells} |"
 
 
 class ReleaseInfo(NamedTuple):
@@ -22,18 +39,21 @@ class ReleaseInfo(NamedTuple):
     csharp_version: str
     python_verion: str
     release_date: str
-
-    @staticmethod
-    def from_simple_tag(release_tag: str, release_date: str) -> "ReleaseInfo":
-        """
-        Generate the ReleaseInfo for "old style" releases, where the tag and versions
-        were all the same.
-        """
-        return ReleaseInfo(release_tag, release_tag, release_tag, release_date)
+    is_verified: bool = False
 
     @property
     def loose_version(self) -> LooseVersion:
         return LooseVersion(self.python_verion)
+
+    @property
+    def is_main(self) -> bool:
+        return self.release_tag == "main"
+
+    @property
+    def release_datetime(self) -> datetime:
+        if self.is_main:
+            return datetime.today()
+        return datetime.strptime(self.release_date, "%B %d, %Y")
 
     @property
     def elapsed_days(self) -> int:
@@ -41,9 +61,7 @@ class ReleaseInfo(NamedTuple):
         Days since this version was released.
         :return:
         """
-        return (
-            datetime.today() - datetime.strptime(self.release_date, "%B %d, %Y")
-        ).days
+        return (datetime.today() - self.release_datetime).days
 
     @property
     def display_name(self) -> str:
@@ -51,21 +69,55 @@ class ReleaseInfo(NamedTuple):
         Clean up the tag name for display, e.g. "release_1" -> "Release 1"
         :return:
         """
-        return self.release_tag.replace("_", " ").title()
+        if self.is_verified:
+            return f"Verified Package {self.csharp_version}"
+        elif self.is_main:
+            return "main (unstable)"
+        else:
+            return self.release_tag.replace("_", " ").title()
+
+    @property
+    def source_link(self):
+        if self.is_verified:
+            return f"https://github.com/Unity-Technologies/ml-agents/tree/com.unity.ml-agents_{self.csharp_version}"
+        else:
+            return f"https://github.com/Unity-Technologies/ml-agents/tree/{self.release_tag}"
+
+    @property
+    def download_link(self):
+        if self.is_verified:
+            tag = f"com.unity.ml-agents_{self.csharp_version}"
+        else:
+            tag = self.release_tag
+        return f"https://github.com/Unity-Technologies/ml-agents/archive/{tag}.zip"
+
+    @property
+    def doc_link(self):
+        if self.is_verified:
+            return "https://github.com/Unity-Technologies/ml-agents/blob/release_2_verified_docs/docs/Readme.md"
+
+        # For release_X branches, docs are on a separate tag.
+        if self.release_tag.startswith("release"):
+            docs_name = self.release_tag + "_docs"
+        else:
+            docs_name = self.release_tag
+        return f"https://github.com/Unity-Technologies/ml-agents/tree/{docs_name}/docs/Readme.md"
+
+    @property
+    def package_link(self):
+        try:
+            v = StrictVersion(self.csharp_version).version
+            return f"https://docs.unity3d.com/Packages/com.unity.ml-agents@{v[0]}.{v[1]}/manual/index.html"
+        except ValueError:
+            return "--"
+
+    @property
+    def pypi_link(self):
+        return f"https://pypi.org/project/mlagents/{self.python_verion}/"
 
 
 versions = [
-    ReleaseInfo.from_simple_tag("0.10.0", "September 30, 2019"),
-    ReleaseInfo.from_simple_tag("0.10.1", "October 9, 2019"),
-    ReleaseInfo.from_simple_tag("0.11.0", "November 4, 2019"),
-    ReleaseInfo.from_simple_tag("0.12.0", "December 2, 2019"),
-    ReleaseInfo.from_simple_tag("0.12.1", "December 11, 2019"),
-    ReleaseInfo.from_simple_tag("0.13.0", "January 8, 2020"),
-    ReleaseInfo.from_simple_tag("0.13.1", "January 21, 2020"),
-    ReleaseInfo.from_simple_tag("0.14.0", "February 13, 2020"),
-    ReleaseInfo.from_simple_tag("0.14.1", "February 26, 2020"),
-    ReleaseInfo.from_simple_tag("0.15.0", "March 18, 2020"),
-    ReleaseInfo.from_simple_tag("0.15.1", "March 30, 2020"),
+    ReleaseInfo("main", "main", "main", "--"),
     ReleaseInfo("release_1", "1.0.0", "0.16.0", "April 30, 2020"),
     ReleaseInfo("release_2", "1.0.2", "0.16.1", "May 20, 2020"),
     ReleaseInfo("release_3", "1.1.0", "0.17.0", "June 10, 2020"),
@@ -78,23 +130,32 @@ versions = [
     ReleaseInfo("release_10", "1.6.0", "0.22.0", "November 18, 2020"),
     ReleaseInfo("release_11", "1.7.0", "0.23.0", "December 21, 2020"),
     ReleaseInfo("release_12", "1.7.2", "0.23.0", "December 22, 2020"),
+    ReleaseInfo("release_13", "1.8.0", "0.24.0", "February 17, 2021"),
+    # Verified releases
+    ReleaseInfo("", "1.0.6", "0.16.1", "November 16, 2020", is_verified=True),
+    ReleaseInfo("", "1.0.5", "0.16.1", "September 23, 2020", is_verified=True),
+    ReleaseInfo("", "1.0.4", "0.16.1", "August 20, 2020", is_verified=True),
 ]
 
-MAX_DAYS = 150  # do not print releases older than this many days
-sorted_versions = sorted(
-    versions, key=lambda x: (x.loose_version, x.csharp_version), reverse=True
+sorted_versions = sorted(versions, key=lambda x: x.release_datetime, reverse=True)
+
+highlight_versions = set()
+# Highlight the most recent verified version
+highlight_versions.add([v for v in sorted_versions if v.is_verified][0])
+# Highlight the most recent regular version
+highlight_versions.add(
+    [v for v in sorted_versions if (not v.is_verified and not v.is_main)][0]
 )
 
-print(table_line("master (unstable)", "master", "--"))
-highlight = True  # whether to bold the line or not
+count_by_verified = Counter()
+
 for version_info in sorted_versions:
-    if version_info.elapsed_days <= MAX_DAYS:
-        print(
-            table_line(
-                version_info.display_name,
-                version_info.release_tag,
-                version_info.release_date,
-                highlight,
-            )
-        )
-        highlight = False  # only bold the first stable release
+    highlight = version_info in highlight_versions
+    if version_info.elapsed_days > MAX_DAYS:
+        # Make sure we always have at least regular and one verified entry
+        if count_by_verified[version_info.is_verified] > 0:
+            continue
+    print(table_line(version_info, highlight))
+    count_by_verified[version_info.is_verified] += 1
+
+print("\n\n")

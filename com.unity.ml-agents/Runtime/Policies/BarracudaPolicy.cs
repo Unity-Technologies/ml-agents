@@ -12,14 +12,20 @@ namespace Unity.MLAgents.Policies
     public enum InferenceDevice
     {
         /// <summary>
-        /// CPU inference
+        /// CPU inference. Corresponds to in WorkerFactory.Type.CSharp Barracuda.
+        /// Burst is recommended instead; this is kept for legacy compatibility.
         /// </summary>
         CPU = 0,
 
         /// <summary>
-        /// GPU inference
+        /// GPU inference. Corresponds to WorkerFactory.Type.ComputePrecompiled in Barracuda.
         /// </summary>
-        GPU = 1
+        GPU = 1,
+
+        /// <summary>
+        /// CPU inference using Burst. Corresponds to WorkerFactory.Type.CSharpBurst in Barracuda.
+        /// </summary>
+        Burst = 2,
     }
 
     /// <summary>
@@ -43,6 +49,11 @@ namespace Unity.MLAgents.Policies
         private string m_BehaviorName;
 
         /// <summary>
+        /// List of actuators, only used for analytics
+        /// </summary>
+        private IList<IActuator> m_Actuators;
+
+        /// <summary>
         /// Whether or not we've tried to send analytics for this model. We only ever try to send once per policy,
         /// and do additional deduplication in the analytics code.
         /// </summary>
@@ -51,6 +62,7 @@ namespace Unity.MLAgents.Policies
         /// <inheritdoc />
         public BarracudaPolicy(
             ActionSpec actionSpec,
+            IList<IActuator> actuators,
             NNModel model,
             InferenceDevice inferenceDevice,
             string behaviorName
@@ -60,6 +72,7 @@ namespace Unity.MLAgents.Policies
             m_ModelRunner = modelRunner;
             m_BehaviorName = behaviorName;
             m_ActionSpec = actionSpec;
+            m_Actuators = actuators;
         }
 
         /// <inheritdoc />
@@ -73,7 +86,8 @@ namespace Unity.MLAgents.Policies
                     m_BehaviorName,
                     m_ModelRunner.InferenceDevice,
                     sensors,
-                    m_ActionSpec
+                    m_ActionSpec,
+                    m_Actuators
                 );
             }
             m_AgentId = info.episodeId;

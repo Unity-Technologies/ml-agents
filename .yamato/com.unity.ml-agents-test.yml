@@ -9,10 +9,6 @@ test_editors:
     enableCodeCoverage: !!bool true
     testProject: DevProject
     enableNoDefaultPackages: !!bool true
-  - version: 2020.1
-    enableCodeCoverage: !!bool true
-    testProject: DevProject
-    enableNoDefaultPackages: !!bool true
   - version: 2020.2
     enableCodeCoverage: !!bool true
     testProject: DevProject
@@ -43,7 +39,7 @@ packages:
     assembly: Unity.ML-Agents
     minCoveragePct: 72
   - name: com.unity.ml-agents.extensions
-    assembly: Unity.ML-Agents.Extensions
+    assembly: Unity.ML-Agents.Extensions*
     minCoveragePct: 75
 ---
 
@@ -64,7 +60,7 @@ all_package_tests:
   triggers:
     cancel_old_ci: true
     recurring:
-      - branch: master
+      - branch: main
         frequency: daily
 
 {% for package in packages %}
@@ -105,7 +101,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
     cancel_old_ci: true
     {% if platform.name == "linux" %}
     expression: |
-      (pull_request.target eq "master" OR
+      (pull_request.target eq "main" OR
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR

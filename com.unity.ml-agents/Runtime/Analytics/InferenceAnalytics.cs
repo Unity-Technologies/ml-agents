@@ -20,6 +20,7 @@ namespace Unity.MLAgents.Analytics
     {
         const string k_VendorKey = "unity.ml-agents";
         const string k_EventName = "ml_agents_inferencemodelset";
+        const int k_EventVersion = 1;
 
         /// <summary>
         /// Whether or not we've registered this particular event yet
@@ -36,6 +37,7 @@ namespace Unity.MLAgents.Analytics
         /// </summary>
         const int k_MaxNumberOfElements = 1000;
 
+
         /// <summary>
         /// Models that we've already sent events for.
         /// </summary>
@@ -49,7 +51,7 @@ namespace Unity.MLAgents.Analytics
             }
 
 #if UNITY_EDITOR
-            AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(k_EventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
+            AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(k_EventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey, k_EventVersion);
 #else
             AnalyticsResult result = AnalyticsResult.UnsupportedPlatform;
 #endif
@@ -85,13 +87,15 @@ namespace Unity.MLAgents.Analytics
         /// <param name="inferenceDevice">Whether inference is being performed on the CPU or GPU</param>
         /// <param name="sensors">List of ISensors for the Agent. Used to generate information about the observation space.</param>
         /// <param name="actionSpec">ActionSpec for the Agent. Used to generate information about the action space.</param>
+        /// <param name="actuators">List of IActuators for the Agent. Used to generate information about the action space.</param>
         /// <returns></returns>
         public static void InferenceModelSet(
             NNModel nnModel,
             string behaviorName,
             InferenceDevice inferenceDevice,
             IList<ISensor> sensors,
-            ActionSpec actionSpec
+            ActionSpec actionSpec,
+            IList<IActuator> actuators
         )
         {
             // The event shouldn't be able to report if this is disabled but if we know we're not going to report
@@ -110,11 +114,14 @@ namespace Unity.MLAgents.Analytics
                 return;
             }
 
-            var data = GetEventForModel(nnModel, behaviorName, inferenceDevice, sensors, actionSpec);
+            var data = GetEventForModel(nnModel, behaviorName, inferenceDevice, sensors, actionSpec, actuators);
             // Note - to debug, use JsonUtility.ToJson on the event.
             // Debug.Log(JsonUtility.ToJson(data, true));
 #if UNITY_EDITOR
-            EditorAnalytics.SendEventWithLimit(k_EventName, data);
+            if (AnalyticsUtils.s_SendEditorAnalytics)
+            {
+                EditorAnalytics.SendEventWithLimit(k_EventName, data, k_EventVersion);
+            }
 #else
             return;
 #endif
@@ -128,21 +135,22 @@ namespace Unity.MLAgents.Analytics
         /// <param name="inferenceDevice"></param>
         /// <param name="sensors"></param>
         /// <param name="actionSpec"></param>
+        /// <param name="actuators"></param>
         /// <returns></returns>
         internal static InferenceEvent GetEventForModel(
             NNModel nnModel,
             string behaviorName,
             InferenceDevice inferenceDevice,
             IList<ISensor> sensors,
-            ActionSpec actionSpec
+            ActionSpec actionSpec,
+            IList<IActuator> actuators
         )
         {
             var barracudaModel = ModelLoader.Load(nnModel);
             var inferenceEvent = new InferenceEvent();
 
             // Hash the behavior name so that there's no concern about PII or "secret" data being leaked.
-            var behaviorNameHash = Hash128.Compute(behaviorName);
-            inferenceEvent.BehaviorName = behaviorNameHash.ToString();
+            inferenceEvent.BehaviorName = AnalyticsUtils.Hash(behaviorName);
 
             inferenceEvent.BarracudaModelSource = barracudaModel.IrSource;
             inferenceEvent.BarracudaModelVersion = barracudaModel.IrVersion;
@@ -169,6 +177,12 @@ namespace Unity.MLAgents.Analytics
             foreach (var sensor in sensors)
             {
                 inferenceEvent.ObservationSpecs.Add(EventObservationSpec.FromSensor(sensor));
+            }
+
+            inferenceEvent.ActuatorInfos = new List<EventActuatorInfo>(actuators.Count);
+            foreach (var actuator in actuators)
+            {
+                inferenceEvent.ActuatorInfos.Add(EventActuatorInfo.FromActuator(actuator));
             }
 
             inferenceEvent.TotalWeightSizeBytes = GetModelWeightSize(barracudaModel);

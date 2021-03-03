@@ -1,7 +1,7 @@
 from typing import List, Tuple
 import numpy as np
 
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, AgentBufferKey
 from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents_envs.base_env import (
@@ -43,15 +43,21 @@ def create_mock_steps(
     reward = np.array(num_agents * [1.0], dtype=np.float32)
     interrupted = np.array(num_agents * [False], dtype=np.bool)
     agent_id = np.arange(num_agents, dtype=np.int32)
+    group_id = np.array(num_agents * [0], dtype=np.int32)
+    group_reward = np.array(num_agents * [0.0], dtype=np.float32)
     behavior_spec = BehaviorSpec(observation_specs, action_spec)
     if done:
         return (
             DecisionSteps.empty(behavior_spec),
-            TerminalSteps(obs_list, reward, interrupted, agent_id),
+            TerminalSteps(
+                obs_list, reward, interrupted, agent_id, group_id, group_reward
+            ),
         )
     else:
         return (
-            DecisionSteps(obs_list, reward, agent_id, action_mask),
+            DecisionSteps(
+                obs_list, reward, agent_id, action_mask, group_id, group_reward
+            ),
             TerminalSteps.empty(behavior_spec),
         )
 
@@ -141,6 +147,13 @@ def make_fake_trajectory(
     return Trajectory(
         steps=steps_list, agent_id=agent_id, behavior_id=behavior_id, next_obs=obs
     )
+
+
+def copy_buffer_fields(
+    buffer: AgentBuffer, src_key: AgentBufferKey, dst_keys: List[AgentBufferKey]
+) -> None:
+    for dst_key in dst_keys:
+        buffer[dst_key] = buffer[src_key]
 
 
 def simulate_rollout(

@@ -6,6 +6,7 @@ import attr
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.tests import mock_brain as mb
+from mlagents.trainers.tests.mock_brain import copy_buffer_fields
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.tests.dummy_config import (  # noqa: F401
@@ -15,6 +16,7 @@ from mlagents.trainers.tests.dummy_config import (  # noqa: F401
 )
 
 from mlagents_envs.base_env import ActionSpec
+from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 
 
 @pytest.fixture
@@ -68,9 +70,17 @@ def test_ppo_optimizer_update(dummy_config, rnn, visual, discrete):
         memory_size=optimizer.policy.m_size,
     )
     # Mock out reward signal eval
-    update_buffer["advantages"] = update_buffer["environment_rewards"]
-    update_buffer["extrinsic_returns"] = update_buffer["environment_rewards"]
-    update_buffer["extrinsic_value_estimates"] = update_buffer["environment_rewards"]
+    copy_buffer_fields(
+        update_buffer,
+        BufferKey.ENVIRONMENT_REWARDS,
+        [
+            BufferKey.ADVANTAGES,
+            RewardSignalUtil.returns_key("extrinsic"),
+            RewardSignalUtil.value_estimates_key("extrinsic"),
+        ],
+    )
+    # Copy memories to critic memories
+    copy_buffer_fields(update_buffer, BufferKey.MEMORY, [BufferKey.CRITIC_MEMORY])
 
     return_stats = optimizer.update(
         update_buffer,
@@ -107,11 +117,20 @@ def test_ppo_optimizer_update_curiosity(
         memory_size=optimizer.policy.m_size,
     )
     # Mock out reward signal eval
-    update_buffer["advantages"] = update_buffer["environment_rewards"]
-    update_buffer["extrinsic_returns"] = update_buffer["environment_rewards"]
-    update_buffer["extrinsic_value_estimates"] = update_buffer["environment_rewards"]
-    update_buffer["curiosity_returns"] = update_buffer["environment_rewards"]
-    update_buffer["curiosity_value_estimates"] = update_buffer["environment_rewards"]
+    copy_buffer_fields(
+        update_buffer,
+        src_key=BufferKey.ENVIRONMENT_REWARDS,
+        dst_keys=[
+            BufferKey.ADVANTAGES,
+            RewardSignalUtil.returns_key("extrinsic"),
+            RewardSignalUtil.value_estimates_key("extrinsic"),
+            RewardSignalUtil.returns_key("curiosity"),
+            RewardSignalUtil.value_estimates_key("curiosity"),
+        ],
+    )
+    # Copy memories to critic memories
+    copy_buffer_fields(update_buffer, BufferKey.MEMORY, [BufferKey.CRITIC_MEMORY])
+
     optimizer.update(
         update_buffer,
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
@@ -131,13 +150,20 @@ def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F8
         BUFFER_INIT_SAMPLES, optimizer.policy.behavior_spec
     )
     # Mock out reward signal eval
-    update_buffer["advantages"] = update_buffer["environment_rewards"]
-    update_buffer["extrinsic_returns"] = update_buffer["environment_rewards"]
-    update_buffer["extrinsic_value_estimates"] = update_buffer["environment_rewards"]
-    update_buffer["gail_returns"] = update_buffer["environment_rewards"]
-    update_buffer["gail_value_estimates"] = update_buffer["environment_rewards"]
-    update_buffer["continuous_log_probs"] = np.ones_like(
-        update_buffer["continuous_action"]
+    copy_buffer_fields(
+        update_buffer,
+        src_key=BufferKey.ENVIRONMENT_REWARDS,
+        dst_keys=[
+            BufferKey.ADVANTAGES,
+            RewardSignalUtil.returns_key("extrinsic"),
+            RewardSignalUtil.value_estimates_key("extrinsic"),
+            RewardSignalUtil.returns_key("gail"),
+            RewardSignalUtil.value_estimates_key("gail"),
+        ],
+    )
+
+    update_buffer[BufferKey.CONTINUOUS_LOG_PROBS] = np.ones_like(
+        update_buffer[BufferKey.CONTINUOUS_ACTION]
     )
     optimizer.update(
         update_buffer,
@@ -147,11 +173,17 @@ def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F8
     # Check if buffer size is too big
     update_buffer = mb.simulate_rollout(3000, optimizer.policy.behavior_spec)
     # Mock out reward signal eval
-    update_buffer["advantages"] = update_buffer["environment_rewards"]
-    update_buffer["extrinsic_returns"] = update_buffer["environment_rewards"]
-    update_buffer["extrinsic_value_estimates"] = update_buffer["environment_rewards"]
-    update_buffer["gail_returns"] = update_buffer["environment_rewards"]
-    update_buffer["gail_value_estimates"] = update_buffer["environment_rewards"]
+    copy_buffer_fields(
+        update_buffer,
+        src_key=BufferKey.ENVIRONMENT_REWARDS,
+        dst_keys=[
+            BufferKey.ADVANTAGES,
+            RewardSignalUtil.returns_key("extrinsic"),
+            RewardSignalUtil.value_estimates_key("extrinsic"),
+            RewardSignalUtil.returns_key("gail"),
+            RewardSignalUtil.value_estimates_key("gail"),
+        ],
+    )
     optimizer.update(
         update_buffer,
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
@@ -172,14 +204,16 @@ def test_ppo_get_value_estimates(dummy_config, rnn, visual, discrete):
         action_spec=DISCRETE_ACTION_SPEC if discrete else CONTINUOUS_ACTION_SPEC,
         max_step_complete=True,
     )
-    run_out, final_value_out = optimizer.get_trajectory_value_estimates(
+    run_out, final_value_out, all_memories = optimizer.get_trajectory_value_estimates(
         trajectory.to_agentbuffer(), trajectory.next_obs, done=False
     )
     for key, val in run_out.items():
         assert type(key) is str
         assert len(val) == 15
+    if all_memories is not None:
+        assert len(all_memories) == 15
 
-    run_out, final_value_out = optimizer.get_trajectory_value_estimates(
+    run_out, final_value_out, _ = optimizer.get_trajectory_value_estimates(
         trajectory.to_agentbuffer(), trajectory.next_obs, done=True
     )
     for key, val in final_value_out.items():
@@ -188,7 +222,7 @@ def test_ppo_get_value_estimates(dummy_config, rnn, visual, discrete):
 
     # Check if we ignore terminal states properly
     optimizer.reward_signals["extrinsic"].use_terminal_states = False
-    run_out, final_value_out = optimizer.get_trajectory_value_estimates(
+    run_out, final_value_out, _ = optimizer.get_trajectory_value_estimates(
         trajectory.to_agentbuffer(), trajectory.next_obs, done=False
     )
     for key, val in final_value_out.items():

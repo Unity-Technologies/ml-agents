@@ -6,6 +6,7 @@ using Unity.MLAgents.CommunicatorObjects;
 using UnityEngine;
 using System.Runtime.CompilerServices;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Analytics;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Policies;
@@ -57,9 +58,11 @@ namespace Unity.MLAgents
             var agentInfoProto = new AgentInfoProto
             {
                 Reward = ai.reward,
+                GroupReward = ai.groupReward,
                 MaxStepReached = ai.maxStepReached,
                 Done = ai.done,
                 Id = ai.episodeId,
+                GroupId = ai.groupId,
             };
 
             if (ai.discreteActionMasks != null)
@@ -409,6 +412,19 @@ namespace Unity.MLAgents
                 {
                     observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
                 }
+                // Checking trainer compatibility with variable length observations
+                if (dimensionProperties.Length == 2)
+                {
+                    if (dimensionProperties[0] == DimensionProperty.VariableSize &&
+                    dimensionProperties[1] == DimensionProperty.None)
+                    {
+                        var trainerCanHandleVarLenObs = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.VariableLengthObservation;
+                        if (!trainerCanHandleVarLenObs)
+                        {
+                            throw new UnityAgentsException("Variable Length Observations are not supported by the trainer");
+                        }
+                    }
+                }
             }
             observationProto.Shape.AddRange(shape);
 
@@ -435,6 +451,8 @@ namespace Unity.MLAgents
                 ConcatenatedPngObservations = proto.ConcatenatedPngObservations,
                 CompressedChannelMapping = proto.CompressedChannelMapping,
                 HybridActions = proto.HybridActions,
+                TrainingAnalytics = proto.TrainingAnalytics,
+                VariableLengthObservation = proto.VariableLengthObservation,
             };
         }
 
@@ -446,6 +464,8 @@ namespace Unity.MLAgents
                 ConcatenatedPngObservations = rlCaps.ConcatenatedPngObservations,
                 CompressedChannelMapping = rlCaps.CompressedChannelMapping,
                 HybridActions = rlCaps.HybridActions,
+                TrainingAnalytics = rlCaps.TrainingAnalytics,
+                VariableLengthObservation = rlCaps.VariableLengthObservation,
             };
         }
 
@@ -476,5 +496,54 @@ namespace Unity.MLAgents
             }
             return true;
         }
+
+        #region Analytics
+
+        internal static TrainingEnvironmentInitializedEvent ToTrainingEnvironmentInitializedEvent(
+            this TrainingEnvironmentInitialized inputProto)
+        {
+            return new TrainingEnvironmentInitializedEvent
+            {
+                TrainerPythonVersion = inputProto.PythonVersion,
+                MLAgentsVersion = inputProto.MlagentsVersion,
+                MLAgentsEnvsVersion = inputProto.MlagentsEnvsVersion,
+                TorchVersion = inputProto.TorchVersion,
+                TorchDeviceType = inputProto.TorchDeviceType,
+                NumEnvironments = inputProto.NumEnvs,
+                NumEnvironmentParameters = inputProto.NumEnvironmentParameters,
+            };
+        }
+
+        internal static TrainingBehaviorInitializedEvent ToTrainingBehaviorInitializedEvent(
+            this TrainingBehaviorInitialized inputProto)
+        {
+            RewardSignals rewardSignals = 0;
+            rewardSignals |= inputProto.ExtrinsicRewardEnabled ? RewardSignals.Extrinsic : 0;
+            rewardSignals |= inputProto.GailRewardEnabled ? RewardSignals.Gail : 0;
+            rewardSignals |= inputProto.CuriosityRewardEnabled ? RewardSignals.Curiosity : 0;
+            rewardSignals |= inputProto.RndRewardEnabled ? RewardSignals.Rnd : 0;
+
+            TrainingFeatures trainingFeatures = 0;
+            trainingFeatures |= inputProto.BehavioralCloningEnabled ? TrainingFeatures.BehavioralCloning : 0;
+            trainingFeatures |= inputProto.RecurrentEnabled ? TrainingFeatures.Recurrent : 0;
+            trainingFeatures |= inputProto.TrainerThreaded ? TrainingFeatures.Threaded : 0;
+            trainingFeatures |= inputProto.SelfPlayEnabled ? TrainingFeatures.SelfPlay : 0;
+            trainingFeatures |= inputProto.CurriculumEnabled ? TrainingFeatures.Curriculum : 0;
+
+
+            return new TrainingBehaviorInitializedEvent
+            {
+                BehaviorName = inputProto.BehaviorName,
+                TrainerType = inputProto.TrainerType,
+                RewardSignalFlags = rewardSignals,
+                TrainingFeatureFlags = trainingFeatures,
+                VisualEncoder = inputProto.VisualEncoder,
+                NumNetworkLayers = inputProto.NumNetworkLayers,
+                NumNetworkHiddenUnits = inputProto.NumNetworkHiddenUnits,
+            };
+        }
+
+        #endregion
+
     }
 }
