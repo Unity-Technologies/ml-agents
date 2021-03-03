@@ -1,16 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.MLAgents.Extensions.Input;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 //[ExecuteAlways]
-public class DodgeBallAgentInput : MonoBehaviour
+public class DodgeBallAgentInput : MonoBehaviour, IInputActionAssetProvider
 {
     public bool DisableInput = false;
-    private DodgeBallInputActions inputActions;
-    private DodgeBallInputActions.PlayerActions actionMap;
+    public DodgeBallInputActions inputActions;
     private Gamepad gamepad;
 
     public Vector2 moveInput;
@@ -25,10 +25,18 @@ public class DodgeBallAgentInput : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        inputActions = new DodgeBallInputActions();
-        actionMap = inputActions.Player;
+        LazyInitializeInput();
         Cursor.lockState = CursorLockMode.Locked;
     }
+
+    void LazyInitializeInput()
+    {
+        if (ReferenceEquals(inputActions, null))
+        {
+            inputActions = new DodgeBallInputActions();
+        }
+    }
+
     void OnEnable()
     {
         gamepad = Gamepad.current;
@@ -77,33 +85,39 @@ public class DodgeBallAgentInput : MonoBehaviour
         {
             return;
         }
-        moveInput = actionMap.Walk.ReadValue<Vector2>();
-        throwInput = actionMap.Throw.ReadValue<float>();
+        moveInput = inputActions.Player.Walk.ReadValue<Vector2>();
+        throwInput = inputActions.Player.Throw.ReadValue<float>();
         // throwPressed = actionMap.Throw.phase == InputActionPhase.Started;
         // throwPressed = actionMap.Throw.triggered;
         //        shootInput = gamepad.rightTrigger.isPressed;
-        shieldInput = actionMap.Shield.ReadValue<float>() > 0;
+        shieldInput = inputActions.Player.Shield.ReadValue<float>() > 0;
         //        rotateInput = actionMap.RotateBody.ReadValue<Vector2>();
         //        rotateInput = actionMap.Rotate.ReadValue<float>() * .1f;
         // rotateInput = actionMap.Rotate.ReadValue<float>();
         // rotateVector2 = actionMap.Rotate.ReadValue<Vector2>();
-        rotateInput = actionMap.Rotate.ReadValue<Vector2>();
+        rotateInput = inputActions.Player.Rotate.ReadValue<Vector2>();
         // rotateInput = rotateVector2.x;
         //        rotateInput = actionMap.RotateBody.ReadValue<Vector2>();
         //        jumpInput = actionMap.Jump.ReadValue<float>() > 0;
         //        jumpInput = actionMap.Jump.triggered;
         // if (actionMap.Throw.phase == InputActionPhase.Started)
-        if (actionMap.Throw.triggered)
+        if (inputActions.Player.Throw.triggered)
         {
             throwPressed = true;
         }
-        if (actionMap.Dash.triggered)
+        if (inputActions.Player.Dash.triggered)
         {
             dashInput = true;
         }
-        if (actionMap.Jump.triggered)
+        if (inputActions.Player.Jump.triggered)
         {
             jumpInput = true;
         }
+    }
+
+    public (InputActionAsset, IInputActionCollection2) GetInputActionAsset()
+    {
+        LazyInitializeInput();
+        return (inputActions.asset, inputActions);
     }
 }

@@ -49,7 +49,7 @@ public partial class @DodgeBallInputActions : IInputActionCollection2, IDisposab
                     ""id"": ""cbcb2a57-a474-46a7-b133-cf144f6de321"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """"
+                    ""interactions"": ""Press(behavior=2)""
                 },
                 {
                     ""name"": ""Shield"",
@@ -64,14 +64,6 @@ public partial class @DodgeBallInputActions : IInputActionCollection2, IDisposab
                     ""type"": ""Button"",
                     ""id"": ""49d5245a-a350-4f94-b4c8-cf578d61000b"",
                     ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""RotateOld"",
-                    ""type"": ""Value"",
-                    ""id"": ""b309ca48-95aa-4032-bd7d-46dcaeb138d0"",
-                    ""expectedControlType"": ""Axis"",
                     ""processors"": """",
                     ""interactions"": """"
                 },
@@ -263,52 +255,8 @@ public partial class @DodgeBallInputActions : IInputActionCollection2, IDisposab
                 },
                 {
                     ""name"": """",
-                    ""id"": ""ac165f0a-fa27-4311-b148-2689537b942b"",
-                    ""path"": ""<Pointer>/delta/x"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""RotateOld"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""1D Axis"",
-                    ""id"": ""a788bd05-d81e-47f4-a14c-5cb071e21c96"",
-                    ""path"": ""1DAxis"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""RotateOld"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""negative"",
-                    ""id"": ""9844ff0b-6a74-43bb-a969-9f59c74212b9"",
-                    ""path"": ""<Gamepad>/rightStick/left"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""RotateOld"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""positive"",
-                    ""id"": ""b81e038b-8786-4bbe-bb1d-aba1d54112d1"",
-                    ""path"": ""<Gamepad>/rightStick/right"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""RotateOld"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
                     ""id"": ""4e9015a8-9ef1-4f5b-8776-ed1f246ce741"",
-                    ""path"": ""<Pointer>/delta"",
+                    ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
                     ""processors"": ""ScaleVector2(x=2,y=2)"",
                     ""groups"": """",
@@ -396,7 +344,6 @@ public partial class @DodgeBallInputActions : IInputActionCollection2, IDisposab
         m_Player_Throw = m_Player.FindAction("Throw", throwIfNotFound: true);
         m_Player_Shield = m_Player.FindAction("Shield", throwIfNotFound: true);
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
-        m_Player_RotateOld = m_Player.FindAction("RotateOld", throwIfNotFound: true);
         m_Player_Rotate = m_Player.FindAction("Rotate", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
@@ -466,7 +413,6 @@ public partial class @DodgeBallInputActions : IInputActionCollection2, IDisposab
     private readonly InputAction m_Player_Throw;
     private readonly InputAction m_Player_Shield;
     private readonly InputAction m_Player_Dash;
-    private readonly InputAction m_Player_RotateOld;
     private readonly InputAction m_Player_Rotate;
     public struct PlayerActions
     {
@@ -477,7 +423,6 @@ public partial class @DodgeBallInputActions : IInputActionCollection2, IDisposab
         public InputAction @Throw => m_Wrapper.m_Player_Throw;
         public InputAction @Shield => m_Wrapper.m_Player_Shield;
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
-        public InputAction @RotateOld => m_Wrapper.m_Player_RotateOld;
         public InputAction @Rotate => m_Wrapper.m_Player_Rotate;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
@@ -503,9 +448,6 @@ public partial class @DodgeBallInputActions : IInputActionCollection2, IDisposab
                 @Dash.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
                 @Dash.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
                 @Dash.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
-                @RotateOld.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateOld;
-                @RotateOld.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateOld;
-                @RotateOld.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateOld;
                 @Rotate.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotate;
                 @Rotate.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotate;
                 @Rotate.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotate;
@@ -528,9 +470,6 @@ public partial class @DodgeBallInputActions : IInputActionCollection2, IDisposab
                 @Dash.started += instance.OnDash;
                 @Dash.performed += instance.OnDash;
                 @Dash.canceled += instance.OnDash;
-                @RotateOld.started += instance.OnRotateOld;
-                @RotateOld.performed += instance.OnRotateOld;
-                @RotateOld.canceled += instance.OnRotateOld;
                 @Rotate.started += instance.OnRotate;
                 @Rotate.performed += instance.OnRotate;
                 @Rotate.canceled += instance.OnRotate;
@@ -586,7 +525,6 @@ public partial class @DodgeBallInputActions : IInputActionCollection2, IDisposab
         void OnThrow(InputAction.CallbackContext context);
         void OnShield(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
-        void OnRotateOld(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
     }
     public interface IUIActions

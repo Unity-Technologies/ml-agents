@@ -2,6 +2,7 @@
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.LowLevel;
 
 namespace Unity.MLAgents.Extensions.Input
@@ -30,7 +31,14 @@ namespace Unity.MLAgents.Extensions.Input
         public void QueueInputEventForAction(InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
         {
             var val = actionBuffers.DiscreteActions[0];
-            InputSystem.QueueDeltaStateEvent(control, (byte)val);
+            // previously this code was just
+            // InputSystem.QueueDeltaStateEvent(control, (byte)val);
+            // now I'm queueing a event like below:
+            using (StateEvent.From(control.device, out var eventPtr))
+            {
+                ((ButtonControl)control).WriteValueIntoEvent((float)val, eventPtr);
+                InputSystem.QueueEvent(eventPtr);
+            }
         }
 
         /// <inheritdoc cref="IRLActionInputAdaptor.WriteToHeuristic"/>>

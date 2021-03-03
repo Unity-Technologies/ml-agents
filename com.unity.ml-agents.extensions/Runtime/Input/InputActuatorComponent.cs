@@ -57,9 +57,15 @@ namespace Unity.MLAgents.Extensions.Input
             get
             {
 #if UNITY_EDITOR
-                FindNeededComponents();
-                var actuators = CreateActuatorsFromMap(m_InputAsset.FindActionMap(m_PlayerInput.defaultActionMap), m_BehaviorParameters, null);
-                m_ActionSpec = CombineActuatorActionSpecs(actuators);
+                if (!EditorApplication.isPlaying && m_ActionSpec.NumContinuousActions == 0
+                    && m_ActionSpec.BranchSizes == null
+                    || m_ActionSpec.BranchSizes.Length == 0)
+                {
+                    FindNeededComponents();
+                    var actuators = CreateActuatorsFromMap(m_InputAsset.FindActionMap(m_PlayerInput.defaultActionMap), m_BehaviorParameters, null);
+                    m_ActionSpec = CombineActuatorActionSpecs(actuators);
+
+                }
 #endif
                 return m_ActionSpec;
             }
@@ -158,6 +164,7 @@ namespace Unity.MLAgents.Extensions.Input
                     action.interactions,
                     action.processors,
                     mlAgentsControlSchemeName);
+                action.bindingMask = InputBinding.MaskByGroup(mlAgentsControlSchemeName);
             }
             return actuators;
         }
