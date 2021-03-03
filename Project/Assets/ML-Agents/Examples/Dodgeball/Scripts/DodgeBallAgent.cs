@@ -79,6 +79,23 @@ public class DodgeBallAgent : Agent
         m_StartingPos = transform.position;
         m_StartingRot = transform.rotation;
         m_Initialized = true;
+
+        input.inputActions.Player.Throw.canceled += ThrowOnperformed;
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        input.inputActions.Player.Throw.canceled -= ThrowOnperformed;
+    }
+
+    void ThrowOnperformed(InputAction.CallbackContext obj)
+    {
+        // TODO Throw when the button is released?
+        if (obj.action.WasReleasedThisFrame())
+        {
+            ThrowTheBall();
+        }
     }
 
     public override void OnEpisodeBegin()
@@ -122,68 +139,22 @@ public class DodgeBallAgent : Agent
         {
             // sensor.AddObservation((float)StepCount / (float)MaxStep); //Helps with credit assign?
             sensor.AddObservation(ThrowController.coolDownWait); //Held DBs Normalized
-            sensor.AddObservation((float)currentNumberOfBalls/4); //Held DBs Normalized
-            sensor.AddObservation((float)HitPointsRemaining/(float)NumberOfTimesPlayerCanBeHit); //Remaining Hit Points Normalized
+            sensor.AddObservation((float)currentNumberOfBalls / 4); //Held DBs Normalized
+            sensor.AddObservation((float)HitPointsRemaining / (float)NumberOfTimesPlayerCanBeHit); //Remaining Hit Points Normalized
             sensor.AddObservation(Vector3.Dot(m_AgentRb.velocity, m_AgentRb.transform.forward));
             sensor.AddObservation(Vector3.Dot(m_AgentRb.velocity, m_AgentRb.transform.right));
             // sensor.AddObservation(Vector3.Dot(m_AgentRb.angularVelocity, m_AgentRb.transform.forward));
             // sensor.AddObservation(Vector3.Dot(m_AgentRb.velocity, m_AgentRb.transform.right));
             //     //            var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
-        //     //            sensor.AddObservation(localVelocity.x);
-        //     //            sensor.AddObservation(localVelocity.z);
-        //     //            sensor.AddObservation(m_Frozen);
-        //     //            sensor.AddObservation(m_ShootInput);
+            //     //            sensor.AddObservation(localVelocity.x);
+            //     //            sensor.AddObservation(localVelocity.z);
+            //     //            sensor.AddObservation(m_Frozen);
+            //     //            sensor.AddObservation(m_ShootInput);
         }
         //        else if (useVectorFrozenFlag)
         //        {
         //            sensor.AddObservation(m_Frozen);
         //        }
-    }
-
-    // public void MoveAgent(ActionSegment<float> act)
-    public void MoveAgent(ActionBuffers actionBuffers)
-    {
-        // if (DoNotPerformActions)
-        // {
-        //     return;
-        // }
-        var continuousActions = actionBuffers.ContinuousActions;
-        var discreteActions = actionBuffers.DiscreteActions;
-
-        m_InputV = continuousActions[0];
-        m_InputH = continuousActions[1];
-        m_Rotate = continuousActions[2];
-        m_ThrowInput = (int)discreteActions[0];;
-        m_DashInput = (int)discreteActions[1];;
-
-        //HANDLE ROTATION
-        m_CubeMovement.Look(m_Rotate);
-
-        //HANDLE XZ MOVEMENT
-        var moveDir = transform.TransformDirection(new Vector3(m_InputH, 0, m_InputV));
-        m_CubeMovement.RunOnGround(moveDir);
-
-        // if (AgentShield && act[6] > 0)
-        // {
-        //     AgentShield.ActivateShield(true);
-        // }
-        // else
-        // {
-        //     AgentShield.ActivateShield(false);
-        // }
-
-        //HANDLE THROWING
-        if (m_ThrowInput > 0)
-        // if (input.shootPressed)
-        {
-            ThrowTheBall();
-        }
-
-        //HANDLE DASH MOVEMENT
-        if (m_DashInput > 0)
-        {
-            m_CubeMovement.Dash(moveDir);
-        }
     }
 
     public void ThrowTheBall()
@@ -196,13 +167,6 @@ public class DodgeBallAgent : Agent
             currentNumberOfBalls--;
             SetActiveBalls(currentNumberOfBalls);
         }
-    }
-
-    public override void OnActionReceived(ActionBuffers actionBuffers)
-    {
-        // print("MoveAgent");
-
-        MoveAgent(actionBuffers);
     }
 
     IEnumerator ShowHitFace()
@@ -222,15 +186,15 @@ public class DodgeBallAgent : Agent
 
     public void PlayHitFX()
     {
-            ThrowController.impulseSource.GenerateImpulse();
-            // HitSoundAudioSource.Play();
-            HitSoundAudioSource.PlayOneShot(BallImpactAudioClip, 1f);
-            HitSoundAudioSource.PlayOneShot(HurtVoiceAudioClip, 1f);
-            HitByParticles.Play();
-            if (AnimateEyes)
-            {
-                StartCoroutine(ShowHitFace());
-            }
+        ThrowController.impulseSource.GenerateImpulse();
+        // HitSoundAudioSource.Play();
+        HitSoundAudioSource.PlayOneShot(BallImpactAudioClip, 1f);
+        HitSoundAudioSource.PlayOneShot(HurtVoiceAudioClip, 1f);
+        HitByParticles.Play();
+        if (AnimateEyes)
+        {
+            StartCoroutine(ShowHitFace());
+        }
 
     }
     private void OnCollisionEnter(Collision col)
@@ -272,19 +236,5 @@ public class DodgeBallAgent : Agent
         db.BallIsInPlay(true);
         db.gameObject.SetActive(false);
         // ActiveBallsList.Add(db);
-    }
-
-    public override void Heuristic(in ActionBuffers actionsOut)
-    {
-        var contActionsOut = actionsOut.ContinuousActions;
-
-        contActionsOut[0] = input.moveInput.y;
-        contActionsOut[1] = input.moveInput.x;
-        contActionsOut[2] = input.rotateInput.x; //rotate
-        // contActionsOut[3] = input.throwPressed ? 1 : 0; //shoot
-        var discreteActionsOut = actionsOut.DiscreteActions;
-        discreteActionsOut[0] = input.CheckIfInputSinceLastFrame(ref input.throwPressed) ? 1 : 0; //dash
-        // contActionsOut[3] = input.throwInput; //shoot
-        discreteActionsOut[1] = input.CheckIfInputSinceLastFrame(ref input.dashInput) ? 1 : 0; //dash
     }
 }

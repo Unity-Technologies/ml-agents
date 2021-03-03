@@ -4,7 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/ML-Agents/Examples/Dodgeball/Scenes/Dodgeball.unity
+    guid: bb9eaf2690d8442a396456665bfe11d6
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 4d91049841035460f9654c1b5e05c046,
       type: 2}

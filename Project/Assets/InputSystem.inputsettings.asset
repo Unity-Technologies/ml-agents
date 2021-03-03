@@ -12,7 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c46f07b5ed07e4e92aa78254188d3d10, type: 3}
   m_Name: InputSystem.inputsettings
   m_EditorClassIdentifier: 
-  m_SupportedDevices: []
+  m_SupportedDevices:
+  - Pointer
+  - Keyboard
+  - Gamepad
+  - Mouse
   m_UpdateMode: 2
   m_CompensateForScreenOrientation: 0
   m_FilterNoiseOnCurrent: 0
@@ -27,5 +31,5 @@ MonoBehaviour:
   m_MultiTapDelayTime: 0.75
   m_iOSSettings:
     m_MotionUsage:
-      m_Enabled: 0
+      m_Enabled: 1
       m_Description: 

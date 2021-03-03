@@ -2,7 +2,9 @@
 
 using System;
 using Unity.Mathematics;
+using Unity.MLAgents.Policies;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace MLAgents
 {
@@ -53,7 +55,7 @@ namespace MLAgents
         public float spinAttackSpeed = 20f;
         private bool spinAttack;
 
-        public enum RotationAxes { MouseXAndY = 0, MouseX = 1, 	MouseY = 2 };
+        public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 };
 
         [Header("BODY ROTATION")] public bool UseMouseRotation = true;
         public RotationAxes axes = RotationAxes.MouseXAndY;
@@ -103,52 +105,46 @@ namespace MLAgents
         {
             rb = GetComponent<Rigidbody>();
             groundCheck = GetComponent<AgentCubeGroundCheck>();
+
+            // Share the input asset instance between objects.
+            m_DodgeballInput = GetComponent<DodgeBallAgentInput>();
             rb.maxAngularVelocity = maxAngularVel;
             originalRotation = transform.localRotation;
+
+            m_DodgeballInput.inputActions.Player.Jump.performed += JumpOnPerformed;
+            m_DodgeballInput.inputActions.Player.Dash.performed += DashOnPerformed;
+            m_Bp = GetComponent<BehaviorParameters>();
         }
 
-        void Update()
+        void OnDisable()
         {
-            if (!allowHumanInput)
+            m_DodgeballInput.inputActions.Player.Jump.performed -= JumpOnPerformed;
+            m_DodgeballInput.inputActions.Player.Dash.performed -= DashOnPerformed;
+        }
+
+        void DashOnPerformed(InputAction.CallbackContext obj)
+        {
+            if (m_DodgeballInput.Cam != null)
             {
-                return;
+                Dash(m_DodgeballInput.Cam.transform.TransformDirection(new Vector3(inputH, 0, inputV)));
             }
-            //FORWARD MOVEMENT
-            inputV = Input.GetAxisRaw("Vertical");
-            inputH = Input.GetAxisRaw("Horizontal");
-            spinAttack = Input.GetKey(KeyCode.H);
-            dashPressed = Input.GetKeyDown(KeyCode.K);
-            jump = Input.GetKeyDown(KeyCode.Space);
-            var camForward = cam.transform.forward;
-            camForward.y = 0;
-            var camRight = cam.transform.right;
-
-            if (canJump && Input.GetKeyDown(KeyCode.Space))
+            else if (allowHumanInput)
             {
-                if (groundCheck)
-                {
-                    if (groundCheck.isGrounded)
-                    {
-                        Jump();
-                    }
-                    else if (UseGroundPound)
-                    {
-                        rb.AddForce(Vector3.down * groundPoundForce, groundPoundForceMode);
-                    }
-                }
-            }
-
-
-
-            if (dashPressed)
-            {
-                //                dashPressed = false;
-                //                rb.AddForce(rb.transform.forward * dashBoostForce, dashForceMode);
-                rb.AddTorque(rb.transform.right * dashBoostForce, dashForceMode);
-                print("dashPressed");
+                Dash(transform.forward);
             }
         }
 
+        void JumpOnPerformed(InputAction.CallbackContext obj)
+        {
+            if (groundCheck.isGrounded)
+            {
+                Jump();
+            }
+            else if (UseGroundPound)
+            {
+                rb.AddForce(Vector3.down * groundPoundForce, groundPoundForceMode);
+            }
+        }
 
         public void RotateBody(float rotateAxis, float forwardAxis)
         {
@@ -177,26 +173,29 @@ namespace MLAgents
 
         public void Look(float xRot = 0, float yRot = 0)
         {
-                // Read the mouse input axis
-                rotationX += xRot * sensitivityX;
-                rotationY += yRot * sensitivityY;
-                // rotationX += xRot * sensitivityX * Time.deltaTime;
-                // rotationY += yRot * sensitivityY * Time.deltaTime;
-                // rotationX += Input.GetAxis("Mouse X") * sensitivityX;
-                // rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
-                rotationX = ClampAngle(rotationX, minimumX, maximumX);
-                rotationY = ClampAngle(rotationY, minimumY, maximumY);
-                Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
-                Quaternion yQuaternion = Quaternion.AngleAxis(rotationY, -Vector3.right);
+            // Read the mouse input axis
+            rotationX += xRot * sensitivityX;
+            rotationY += yRot * sensitivityY;
+            // rotationX += xRot * sensitivityX * Time.deltaTime;
+            // rotationY += yRot * sensitivityY * Time.deltaTime;
+            // rotationX += Input.GetAxis("Mouse X") * sensitivityX;
+            // rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
+            rotationX = ClampAngle(rotationX, minimumX, maximumX);
+            rotationY = ClampAngle(rotationY, minimumY, maximumY);
+            Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
+            Quaternion yQuaternion = Quaternion.AngleAxis(rotationY, -Vector3.right);
 
-                transform.localRotation = originalRotation * xQuaternion * yQuaternion;
-                // print("look");
+            transform.localRotation = originalRotation * xQuaternion * yQuaternion;
+            // print("look");
         }
 
         public bool applyStandingForce = false;
         public float standingForce = 10;
         public ForceMode standingForceForceMode;
         public float standingForcePositionOffset = .5f;
+        DodgeBallAgentInput m_DodgeballInput;
+        BehaviorParameters m_Bp;
+
         void FixedUpdate()
         {
             strafeCoolDownTimer += Time.fixedDeltaTime;
@@ -208,10 +207,18 @@ namespace MLAgents
                 //                print("AddFallingForce");
 
             }
+
             if (!allowHumanInput)
             {
                 return;
             }
+
+            var rotate = m_DodgeballInput.rotateInput;
+            inputH = m_DodgeballInput.moveInput.x;
+            inputV = m_DodgeballInput.moveInput.y;
+            var movDir = transform.TransformDirection(new Vector3(inputH, 0, inputV));
+            RunOnGround(movDir);
+            Look(rotate.x, rotate.y);
             if (UseMouseRotation)
             {
                 if (axes == RotationAxes.MouseXAndY)
@@ -261,14 +268,14 @@ namespace MLAgents
             var moveDir = transform.TransformDirection(new Vector3(inputH, 0, inputV));
 
 
-                if (groundCheck.isGrounded)
-                {
-                    RunOnGround(moveDir);
-                }
-                // else
-                // {
-                //     RunInAir(dir.normalized);
-                // }
+            if (groundCheck.isGrounded)
+            {
+                RunOnGround(moveDir);
+            }
+            // else
+            // {
+            //     RunInAir(dir.normalized);
+            // }
 
             if (inputH == 0 && inputV == 0)
             {

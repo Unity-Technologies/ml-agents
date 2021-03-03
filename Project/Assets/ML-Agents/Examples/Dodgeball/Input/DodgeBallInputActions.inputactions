@@ -27,7 +27,7 @@
                     "id": "cbcb2a57-a474-46a7-b133-cf144f6de321",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "Press(behavior=2)"
                 },
                 {
                     "name": "Shield",
@@ -42,14 +42,6 @@
                     "type": "Button",
                     "id": "49d5245a-a350-4f94-b4c8-cf578d61000b",
                     "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
-                    "name": "RotateOld",
-                    "type": "Value",
-                    "id": "b309ca48-95aa-4032-bd7d-46dcaeb138d0",
-                    "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": ""
                 },
@@ -241,54 +233,21 @@
                 },
                 {
                     "name": "",
-                    "id": "ac165f0a-fa27-4311-b148-2689537b942b",
-                    "path": "<Pointer>/delta/x",
+                    "id": "4e9015a8-9ef1-4f5b-8776-ed1f246ce741",
+                    "path": "<Mouse>/delta",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "ScaleVector2(x=2,y=2)",
                     "groups": "",
-                    "action": "RotateOld",
+                    "action": "Rotate",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "1D Axis",
-                    "id": "a788bd05-d81e-47f4-a14c-5cb071e21c96",
-                    "path": "1DAxis",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RotateOld",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "negative",
-                    "id": "9844ff0b-6a74-43bb-a969-9f59c74212b9",
-                    "path": "<Gamepad>/rightStick/left",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RotateOld",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "b81e038b-8786-4bbe-bb1d-aba1d54112d1",
-                    "path": "<Gamepad>/rightStick/right",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RotateOld",
-                    "isComposite": false,
-                    "isPartOfComposite": true
                 },
                 {
                     "name": "",
-                    "id": "4e9015a8-9ef1-4f5b-8776-ed1f246ce741",
-                    "path": "<Pointer>/delta",
+                    "id": "0ca23e01-b25e-45e7-a296-dd04d605970a",
+                    "path": "<Gamepad>/leftStick",
                     "interactions": "",
-                    "processors": "ScaleVector2(x=2,y=2)",
+                    "processors": "",
                     "groups": "",
                     "action": "Rotate",
                     "isComposite": false,
