@@ -301,9 +301,6 @@ namespace Unity.MLAgents
         /// Whether or not the Agent has been initialized already
         bool m_Initialized;
 
-        /// Keeps track of the actions that are masked at each step.
-        DiscreteActionMasker m_ActionMasker;
-
         /// <summary>
         /// Set of DemonstrationWriters that the Agent will write its step information to.
         /// If you use a DemonstrationRecorder component, this will automatically register its DemonstrationWriter.
@@ -941,7 +938,7 @@ namespace Unity.MLAgents
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         public virtual void Heuristic(in ActionBuffers actionsOut)
         {
-
+            Debug.LogWarning("Heuristic method called but not implemented. Returning placeholder actions.");
         }
 
         /// <summary>
@@ -1188,13 +1185,7 @@ namespace Unity.MLAgents
         /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
-        public virtual void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
-        {
-            if (m_ActionMasker == null)
-            {
-                m_ActionMasker = new DiscreteActionMasker(actionMask);
-            }
-        }
+        public virtual void WriteDiscreteActionMask(IDiscreteActionMask actionMask) { }
 
         /// <summary>
         /// Implement `OnActionReceived()` to specify agent behavior at every step, based
@@ -1262,16 +1253,7 @@ namespace Unity.MLAgents
         /// <param name="actions">
         /// Struct containing the buffers of actions to be executed at this step.
         /// </param>
-        public virtual void OnActionReceived(ActionBuffers actions)
-        {
-            var actionSpec = m_PolicyFactory.BrainParameters.ActionSpec;
-            // For continuous and discrete actions together, we don't need to fall back to the legacy method
-            if (actionSpec.NumContinuousActions > 0 && actionSpec.NumDiscreteActions > 0)
-            {
-                // Nothing implemented.
-                return;
-            }
-        }
+        public virtual void OnActionReceived(ActionBuffers actions) { }
 
         /// <summary>
         /// Implement `OnEpisodeBegin()` to set up an Agent instance at the beginning

@@ -101,18 +101,6 @@ namespace Unity.MLAgents.Policies
         internal bool hasUpgradedBrainParametersWithActionSpec;
 
         /// <summary>
-        /// (Deprecated) The number of actions specified by this Brain.
-        /// </summary>
-        [Obsolete("NumActions has been deprecated, please use ActionSpec instead.")]
-        public int NumActions
-        {
-            get
-            {
-                return ActionSpec.NumContinuousActions > 0 ? ActionSpec.NumContinuousActions : ActionSpec.NumDiscreteActions;
-            }
-        }
-
-        /// <summary>
         /// Deep clones the BrainParameter object.
         /// </summary>
         /// <returns> A new BrainParameter object with the same values as the original.</returns>
