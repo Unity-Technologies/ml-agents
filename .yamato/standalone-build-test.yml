@@ -23,7 +23,7 @@ test_linux_standalone_{{ editor.version }}:
     cancel_old_ci: true
     expression: |
       (pull_request.target eq "main" OR
-       pull_request.target eq "v2-staging" OR  # TODO remove before merging to main
+       pull_request.target eq "v2-staging" OR
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
