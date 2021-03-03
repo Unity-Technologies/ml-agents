@@ -14,10 +14,7 @@ namespace Unity.MLAgents.Actuators
         /// initialization.
         /// </summary>
         /// <returns>A collection of <see cref="IActuator"/>s</returns>
-        public virtual IActuator[] CreateActuators()
-        {
-            return new IActuator[0];
-        }
+        public abstract IActuator[] CreateActuators();
 
         /// <summary>
         /// The specification of the possible actions for this ActuatorComponent.
