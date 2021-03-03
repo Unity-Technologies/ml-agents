@@ -121,7 +121,7 @@ class NetworkSettings:
     num_layers: int = 2
     vis_encode_type: EncoderType = EncoderType.SIMPLE
     memory: Optional[MemorySettings] = None
-    conditioning_type: ConditioningType = ConditioningType.DEFAULT
+    conditioning_type: ConditioningType = ConditioningType.HYPER
 
 
 @attr.s(auto_attribs=True)

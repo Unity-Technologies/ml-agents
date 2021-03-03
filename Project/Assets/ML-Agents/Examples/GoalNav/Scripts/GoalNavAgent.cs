@@ -70,9 +70,9 @@ public class GoalNavAgent : Agent
         goalSensor = this.GetComponent<VectorSensorComponent>();
         if (useVectorObs)
         {
-            goalSensor.sensor.AddObservation(goalLoc / 10f);
+            goalSensor.GetSensor().AddObservation(goalLoc / 10f);
         }
-        goalSensor.sensor.AddObservation(obstacleLoc / 10f);
+        goalSensor.GetSensor().AddObservation(obstacleLoc / 10f);
     }
 
 

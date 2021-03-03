@@ -170,7 +170,7 @@ public class WJPBAgent : Agent
         sensor.AddObservation(agentPos / 20f);
         sensor.AddObservation(DoGroundCheck(true) ? 1 : 0);
         goalSensor = this.GetComponent<VectorSensorComponent>();
-        goalSensor.sensor.AddObservation(m_GoalOneHot);
+        goalSensor.GetSensor().AddObservation(m_GoalOneHot);
     }
 
     /// <summary>

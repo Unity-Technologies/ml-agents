@@ -343,7 +343,6 @@ class HyperNetwork(torch.nn.Module):
         output_weights = self.hypernet(hyper_input)
 
         output_weights = output_weights.view(-1, self.input_size, self.output_size)
-        return (
-            torch.bmm(input_activation.unsqueeze(1), output_weights).squeeze(1)
-            + self.bias
-        )
+
+        result = torch.bmm(input_activation.unsqueeze(1), output_weights).squeeze(1) + self.bias
+        return result

@@ -184,7 +184,7 @@ GameObject:
   - component: {fileID: 4505552578305912855}
   - component: {fileID: 441485152799695089}
   - component: {fileID: 441485152799695094}
-  - component: {fileID: 441485152799695088}
+  - component: {fileID: 4324470601561966908}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -245,7 +245,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 11400000, guid: ad29336c39b53441bac1c1dc86f627a8, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: GoalNav
@@ -345,7 +345,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
---- !u!114 &441485152799695088
+--- !u!114 &4324470601561966908
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -354,10 +354,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 441485152799695095}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd48a95d788a348b0b7a8cefd39e7c27, type: 3}
+  m_Script: {fileID: 11500000, guid: cd4eb5a37d8bf4074bbbbb470263d151, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  observationSize: 6
+  m_observationSize: 6
+  m_ObservationType: 1
 --- !u!1 &441518250880870225
 GameObject:
   m_ObjectHideFlags: 0
