@@ -33,3 +33,5 @@ behaviors:
     time_horizon: 64
     summary_freq: 20000
     threaded: true
+env_settings:
+  num_envs: 8
