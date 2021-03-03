@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
@@ -9,14 +10,14 @@ using UnityEngine.Experimental.UIElements;
 
 namespace Unity.MLAgents.Editor
 {
-    internal class MLAgentsSettingsProvider : SettingsProvider
+    internal class MLAgentsSettingsProvider : SettingsProvider, IDisposable
     {
         const string k_SettingsPath = "Project/ML Agents";
         const string k_CustomSettingsPath = "Assets/MLAgents.settings.asset";
         private static MLAgentsSettingsProvider s_Instance;
         private SerializedObject m_SettingsObject;
         [SerializeField]
-        private static MLAgentsSettings m_Settings;
+        private MLAgentsSettings m_Settings;
 
 
         private MLAgentsSettingsProvider(string path, SettingsScope scope = SettingsScope.Project)
@@ -35,6 +36,11 @@ namespace Unity.MLAgents.Editor
         {
             base.OnDeactivate();
             MLAgentsSettings.OnSettingsChange -= OnSettingsChange;
+        }
+
+        public void Dispose()
+        {
+            m_SettingsObject?.Dispose();
         }
 
         [SettingsProvider]
