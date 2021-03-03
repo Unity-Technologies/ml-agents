@@ -40621,7 +40621,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 3000
+  MaxStep: 0
   teamID: 0
   ThrowController: {fileID: 8366924173413481317}
   AgentHealth: {fileID: 0}
@@ -41251,7 +41251,7 @@ MonoBehaviour:
   - dodgeBallActive
   m_RaysPerDirection: 10
   m_MaxRayDegrees: 100
-  m_SphereCastRadius: 0.4
+  m_SphereCastRadius: 0.5
   m_RayLength: 40
   m_RayLayerMask:
     serializedVersion: 2
