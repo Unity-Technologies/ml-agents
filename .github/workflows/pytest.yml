@@ -10,14 +10,16 @@ on:
     - 'test_requirements.txt'
     - '.github/workflows/pytest.yml'
   push:
-    branches: [master]
+    branches: [main]
 
 jobs:
   pytest:
     runs-on: ubuntu-latest
+    env:
+        TEST_ENFORCE_BUFFER_KEY_TYPES: 1
     strategy:
       matrix:
-        python-version: [3.6.x, 3.7.x, 3.8.x, 3.9.x]
+        python-version: [3.6.x, 3.7.x, 3.8.x]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -38,19 +40,19 @@ jobs:
       run: python -c "import sys; print(sys.version)"
     - name: Install dependencies
       run: |
-        # pin pip to workaround https://github.com/pypa/pip/issues/9180
-        python -m pip install pip==20.2
+        python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install --progress-bar=off -e ./ml-agents-envs
         python -m pip install --progress-bar=off -e ./ml-agents
         python -m pip install --progress-bar=off -r test_requirements.txt
         python -m pip install --progress-bar=off -e ./gym-unity
+        python -m pip install --progress-bar=off -e ./ml-agents-plugin-examples
     - name: Save python dependencies
       run: |
         pip freeze > pip_versions-${{ matrix.python-version }}.txt
         cat pip_versions-${{ matrix.python-version }}.txt
     - name: Run pytest
-      run: pytest -v -s --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings
+      run: pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings
     - name: Upload pytest test results
       uses: actions/upload-artifact@v2
       with:

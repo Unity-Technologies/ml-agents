@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c46f07b5ed07e4e92aa78254188d3d10, type: 3}
+  m_Name: InputSystem.inputsettings
+  m_EditorClassIdentifier: 
+  m_SupportedDevices:
+  - Keyboard
+  - Gamepad
+  m_UpdateMode: 2
+  m_CompensateForScreenOrientation: 0
+  m_FilterNoiseOnCurrent: 0
+  m_DefaultDeadzoneMin: 0.125
+  m_DefaultDeadzoneMax: 0.925
+  m_DefaultButtonPressPoint: 0.5
+  m_ButtonReleaseThreshold: 0.75
+  m_DefaultTapTime: 0.2
+  m_DefaultSlowTapTime: 0.5
+  m_DefaultHoldTime: 0.4
+  m_TapRadius: 5
+  m_MultiTapDelayTime: 0.75
+  m_iOSSettings:
+    m_MotionUsage:
+      m_Enabled: 0
+      m_Description: 

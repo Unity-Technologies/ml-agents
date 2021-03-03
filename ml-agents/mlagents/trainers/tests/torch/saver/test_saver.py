@@ -69,8 +69,8 @@ def _compare_two_policies(policy1: TorchPolicy, policy2: TorchPolicy) -> None:
     """
     Make sure two policies have the same output for the same input.
     """
-    policy1.actor_critic = policy1.actor_critic.to(default_device())
-    policy2.actor_critic = policy2.actor_critic.to(default_device())
+    policy1.actor = policy1.actor.to(default_device())
+    policy2.actor = policy2.actor.to(default_device())
 
     decision_step, _ = mb.create_steps_from_behavior_spec(
         policy1.behavior_spec, num_agents=1

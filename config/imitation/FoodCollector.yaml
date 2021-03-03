@@ -19,7 +19,11 @@ behaviors:
       gail:
         gamma: 0.99
         strength: 0.1
-        encoding_size: 128
+        network_settings:
+          normalize: false
+          hidden_units: 128
+          num_layers: 2
+          vis_encode_type: simple
         learning_rate: 0.0003
         use_actions: false
         use_vail: false

@@ -1,193 +1,47 @@
-using System;
+using System.Collections.Generic;
 using Unity.Barracuda;
 using NUnit.Framework;
-using UnityEngine;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
-using Unity.MLAgents.Inference.Utils;
 
 namespace Unity.MLAgents.Tests
 {
     public class DiscreteActionOutputApplierTest
     {
         [Test]
-        public void TestEvalP()
+        public void TestDiscreteApply()
         {
-            var m = new Multinomial(2018);
+            var actionSpec = ActionSpec.MakeDiscrete(3, 2);
+            const float smallLogProb = -1000.0f;
+            const float largeLogProb = -1.0f;
 
-            var src = new TensorProxy
-            {
-                data = new Tensor(1, 3, new[] { 0.1f, 0.2f, 0.7f }),
-                valueType = TensorProxy.TensorType.FloatingPoint
-            };
-
-            var dst = new TensorProxy
-            {
-                data = new Tensor(1, 3),
-                valueType = TensorProxy.TensorType.FloatingPoint
-            };
-
-            DiscreteActionOutputApplier.Eval(src, dst, m);
-
-            float[] reference = { 2, 2, 1 };
-            for (var i = 0; i < dst.data.length; i++)
-            {
-                Assert.AreEqual(reference[i], dst.data[i]);
-                ++i;
-            }
-        }
-
-        [Test]
-        public void TestEvalLogits()
-        {
-            var m = new Multinomial(2018);
-
-            var src = new TensorProxy
+            var logProbs = new TensorProxy
             {
                 data = new Tensor(
-                    1,
-                    3,
-                    new[] { Mathf.Log(0.1f) - 50, Mathf.Log(0.2f) - 50, Mathf.Log(0.7f) - 50 }),
+                    2,
+                    5,
+                    new[]
+                    {
+                        smallLogProb, smallLogProb, largeLogProb, // Agent 0, branch 0
+                        smallLogProb, largeLogProb,               // Agent 0, branch 1
+                        largeLogProb, smallLogProb, smallLogProb, // Agent 1, branch 0
+                        largeLogProb, smallLogProb,               // Agent 1, branch 1
+                    }),
                 valueType = TensorProxy.TensorType.FloatingPoint
             };
 
-            var dst = new TensorProxy
-            {
-                data = new Tensor(1, 3),
-                valueType = TensorProxy.TensorType.FloatingPoint
-            };
+            var applier = new DiscreteActionOutputApplier(actionSpec, 2020, null);
+            var agentIds = new List<int> { 42, 1337 };
+            var actionBuffers = new Dictionary<int, ActionBuffers>();
+            actionBuffers[42] = new ActionBuffers(actionSpec);
+            actionBuffers[1337] = new ActionBuffers(actionSpec);
 
-            DiscreteActionOutputApplier.Eval(src, dst, m);
+            applier.Apply(logProbs, agentIds, actionBuffers);
+            Assert.AreEqual(2, actionBuffers[42].DiscreteActions[0]);
+            Assert.AreEqual(1, actionBuffers[42].DiscreteActions[1]);
 
-            float[] reference = { 2, 2, 2 };
-            for (var i = 0; i < dst.data.length; i++)
-            {
-                Assert.AreEqual(reference[i], dst.data[i]);
-                ++i;
-            }
-        }
-
-        [Test]
-        public void TestEvalBatching()
-        {
-            var m = new Multinomial(2018);
-
-            var src = new TensorProxy
-            {
-                data = new Tensor(2, 3, new[]
-                {
-                    Mathf.Log(0.1f) - 50, Mathf.Log(0.2f) - 50, Mathf.Log(0.7f) - 50,
-                    Mathf.Log(0.3f) - 25, Mathf.Log(0.4f) - 25, Mathf.Log(0.3f) - 25
-                }),
-                valueType = TensorProxy.TensorType.FloatingPoint
-            };
-
-            var dst = new TensorProxy
-            {
-                data = new Tensor(2, 3),
-                valueType = TensorProxy.TensorType.FloatingPoint
-            };
-
-            DiscreteActionOutputApplier.Eval(src, dst, m);
-
-            float[] reference = { 2, 2, 2, 0, 1, 0 };
-            for (var i = 0; i < dst.data.length; i++)
-            {
-                Assert.AreEqual(reference[i], dst.data[i]);
-                ++i;
-            }
-        }
-
-        [Test]
-        public void TestSrcInt()
-        {
-            var m = new Multinomial(2018);
-
-            var src = new TensorProxy
-            {
-                valueType = TensorProxy.TensorType.Integer
-            };
-
-            Assert.Throws<NotImplementedException>(
-                () => DiscreteActionOutputApplier.Eval(src, null, m));
-        }
-
-        [Test]
-        public void TestDstInt()
-        {
-            var m = new Multinomial(2018);
-
-            var src = new TensorProxy
-            {
-                valueType = TensorProxy.TensorType.FloatingPoint
-            };
-
-            var dst = new TensorProxy
-            {
-                valueType = TensorProxy.TensorType.Integer
-            };
-
-            Assert.Throws<ArgumentException>(
-                () => DiscreteActionOutputApplier.Eval(src, dst, m));
-        }
-
-        [Test]
-        public void TestSrcDataNull()
-        {
-            var m = new Multinomial(2018);
-
-            var src = new TensorProxy
-            {
-                valueType = TensorProxy.TensorType.FloatingPoint
-            };
-
-            var dst = new TensorProxy
-            {
-                valueType = TensorProxy.TensorType.FloatingPoint
-            };
-
-            Assert.Throws<ArgumentNullException>(
-                () => DiscreteActionOutputApplier.Eval(src, dst, m));
-        }
-
-        [Test]
-        public void TestDstDataNull()
-        {
-            var m = new Multinomial(2018);
-
-            var src = new TensorProxy
-            {
-                valueType = TensorProxy.TensorType.FloatingPoint,
-                data = new Tensor(0, 1)
-            };
-
-            var dst = new TensorProxy
-            {
-                valueType = TensorProxy.TensorType.FloatingPoint
-            };
-
-            Assert.Throws<ArgumentNullException>(
-                () => DiscreteActionOutputApplier.Eval(src, dst, m));
-        }
-
-        [Test]
-        public void TestUnequalBatchSize()
-        {
-            var m = new Multinomial(2018);
-
-            var src = new TensorProxy
-            {
-                valueType = TensorProxy.TensorType.FloatingPoint,
-                data = new Tensor(1, 1)
-            };
-
-            var dst = new TensorProxy
-            {
-                valueType = TensorProxy.TensorType.FloatingPoint,
-                data = new Tensor(2, 1)
-            };
-
-            Assert.Throws<ArgumentException>(
-                () => DiscreteActionOutputApplier.Eval(src, dst, m));
+            Assert.AreEqual(0, actionBuffers[1337].DiscreteActions[0]);
+            Assert.AreEqual(0, actionBuffers[1337].DiscreteActions[1]);
         }
     }
 }

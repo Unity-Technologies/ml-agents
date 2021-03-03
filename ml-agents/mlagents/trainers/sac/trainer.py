@@ -12,6 +12,7 @@ from mlagents.trainers.policy.checkpoint_manager import ModelCheckpoint
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
 from mlagents_envs.base_env import BehaviorSpec
+from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
@@ -137,7 +138,7 @@ class SACTrainer(RLTrainer):
 
         # Evaluate all reward functions for reporting purposes
         self.collected_rewards["environment"][agent_id] += np.sum(
-            agent_buffer_trajectory["environment_rewards"]
+            agent_buffer_trajectory[BufferKey.ENVIRONMENT_REWARDS]
         )
         for name, reward_signal in self.optimizer.reward_signals.items():
             evaluate_result = (
@@ -148,9 +149,16 @@ class SACTrainer(RLTrainer):
             self.collected_rewards[name][agent_id] += np.sum(evaluate_result)
 
         # Get all value estimates for reporting purposes
-        value_estimates, _ = self.optimizer.get_trajectory_value_estimates(
+        (
+            value_estimates,
+            _,
+            value_memories,
+        ) = self.optimizer.get_trajectory_value_estimates(
             agent_buffer_trajectory, trajectory.next_obs, trajectory.done_reached
         )
+        if value_memories is not None:
+            agent_buffer_trajectory[BufferKey.CRITIC_MEMORY].set(value_memories)
+
         for name, v in value_estimates.items():
             self._stats_reporter.add_stat(
                 f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value",
@@ -163,7 +171,7 @@ class SACTrainer(RLTrainer):
             last_step_obs = last_step.obs
             for i, obs in enumerate(last_step_obs):
                 agent_buffer_trajectory[ObsUtil.get_name_at_next(i)][-1] = obs
-            agent_buffer_trajectory["done"][-1] = False
+            agent_buffer_trajectory[BufferKey.DONE][-1] = False
 
         # Append to update buffer
         agent_buffer_trajectory.resequence_and_append(
@@ -254,7 +262,7 @@ class SACTrainer(RLTrainer):
                 )
                 # Get rewards for each reward
                 for name, signal in self.optimizer.reward_signals.items():
-                    sampled_minibatch[f"{name}_rewards"] = (
+                    sampled_minibatch[RewardSignalUtil.rewards_key(name)] = (
                         signal.evaluate(sampled_minibatch) * signal.strength
                     )
 

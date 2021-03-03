@@ -19,4 +19,6 @@ message AgentInfoProto {
     repeated bool action_mask = 11;
     reserved 12; // deprecated CustomObservationProto custom_observation = 12;
     repeated ObservationProto observations = 13;
+    int32 group_id = 14;
+    float group_reward = 15;
 }

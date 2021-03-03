@@ -37,7 +37,7 @@ class BCModule:
         self.decay_learning_rate = ModelUtils.DecayedValue(
             learning_rate_schedule, self.current_lr, 1e-10, self._anneal_steps
         )
-        params = self.policy.actor_critic.parameters()
+        params = self.policy.actor.parameters()
         self.optimizer = torch.optim.Adam(params, lr=self.current_lr)
         _, self.demonstration_buffer = demo_to_buffer(
             settings.demo_path, policy.sequence_length, policy.behavior_spec
@@ -149,7 +149,7 @@ class BCModule:
         # Convert to tensors
         tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
         act_masks = None
-        expert_actions = AgentAction.from_dict(mini_batch_demo)
+        expert_actions = AgentAction.from_buffer(mini_batch_demo)
         if self.policy.behavior_spec.action_spec.discrete_size > 0:
 
             act_masks = ModelUtils.list_to_tensor(

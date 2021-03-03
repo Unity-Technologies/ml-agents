@@ -41,7 +41,7 @@ namespace Unity.MLAgents
                 scenes,
                 outputPath,
                 buildTarget,
-                BuildOptions.None
+                BuildOptions.Development
             );
             var isOk = buildResult.summary.result == BuildResult.Succeeded;
             var error = "";

@@ -1,3 +1,4 @@
+import os.path
 import warnings
 
 import attr
@@ -182,6 +183,7 @@ class RewardSignalType(Enum):
 class RewardSignalSettings:
     gamma: float = 0.99
     strength: float = 1.0
+    network_settings: NetworkSettings = attr.ib(factory=NetworkSettings)
 
     @staticmethod
     def structure(d: Mapping, t: type) -> Any:
@@ -197,13 +199,26 @@ class RewardSignalSettings:
             enum_key = RewardSignalType(key)
             t = enum_key.to_settings()
             d_final[enum_key] = strict_to_cls(val, t)
+            # Checks to see if user specifying deprecated encoding_size for RewardSignals.
+            # If network_settings is not specified, this updates the default hidden_units
+            # to the value of encoding size. If specified, this ignores encoding size and
+            # uses network_settings values.
+            if "encoding_size" in val:
+                logger.warning(
+                    "'encoding_size' was deprecated for RewardSignals. Please use network_settings."
+                )
+                # If network settings was not specified, use the encoding size. Otherwise, use hidden_units
+                if "network_settings" not in val:
+                    d_final[enum_key].network_settings.hidden_units = val[
+                        "encoding_size"
+                    ]
         return d_final
 
 
 @attr.s(auto_attribs=True)
 class GAILSettings(RewardSignalSettings):
-    encoding_size: int = 64
     learning_rate: float = 3e-4
+    encoding_size: Optional[int] = None
     use_actions: bool = False
     use_vail: bool = False
     demo_path: str = attr.ib(kw_only=True)
@@ -211,14 +226,14 @@ class GAILSettings(RewardSignalSettings):
 
 @attr.s(auto_attribs=True)
 class CuriositySettings(RewardSignalSettings):
-    encoding_size: int = 64
     learning_rate: float = 3e-4
+    encoding_size: Optional[int] = None
 
 
 @attr.s(auto_attribs=True)
 class RNDSettings(RewardSignalSettings):
-    encoding_size: int = 64
     learning_rate: float = 1e-4
+    encoding_size: Optional[int] = None
 
 
 # SAMPLERS #############################################################################
@@ -706,6 +721,23 @@ class CheckpointSettings:
     force: bool = parser.get_default("force")
     train_model: bool = parser.get_default("train_model")
     inference: bool = parser.get_default("inference")
+    results_dir: str = parser.get_default("results_dir")
+
+    @property
+    def write_path(self) -> str:
+        return os.path.join(self.results_dir, self.run_id)
+
+    @property
+    def maybe_init_path(self) -> Optional[str]:
+        return (
+            os.path.join(self.results_dir, self.initialize_from)
+            if self.initialize_from is not None
+            else None
+        )
+
+    @property
+    def run_logs_dir(self) -> str:
+        return os.path.join(self.write_path, "run_logs")
 
 
 @attr.s(auto_attribs=True)

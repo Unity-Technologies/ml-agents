@@ -7,6 +7,7 @@ from mlagents.trainers.settings import TrainerSettings, NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.trajectory import ObsUtil
 from mlagents.trainers.torch.agent_action import AgentAction
+from mlagents.trainers.buffer import BufferKey
 
 VECTOR_ACTION_SPACE = 2
 VECTOR_OBS_SPACE = 8
@@ -68,19 +69,19 @@ def test_evaluate_actions(rnn, visual, discrete):
         TrainerSettings(), use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
     buffer = mb.simulate_rollout(64, policy.behavior_spec, memory_size=policy.m_size)
-    act_masks = ModelUtils.list_to_tensor(buffer["action_mask"])
-    agent_action = AgentAction.from_dict(buffer)
+    act_masks = ModelUtils.list_to_tensor(buffer[BufferKey.ACTION_MASK])
+    agent_action = AgentAction.from_buffer(buffer)
     np_obs = ObsUtil.from_buffer(buffer, len(policy.behavior_spec.observation_specs))
     tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
 
     memories = [
-        ModelUtils.list_to_tensor(buffer["memory"][i])
-        for i in range(0, len(buffer["memory"]), policy.sequence_length)
+        ModelUtils.list_to_tensor(buffer[BufferKey.MEMORY][i])
+        for i in range(0, len(buffer[BufferKey.MEMORY]), policy.sequence_length)
     ]
     if len(memories) > 0:
         memories = torch.stack(memories).unsqueeze(0)
 
-    log_probs, entropy, values = policy.evaluate_actions(
+    log_probs, entropy = policy.evaluate_actions(
         tensor_obs,
         masks=act_masks,
         actions=agent_action,
@@ -94,8 +95,6 @@ def test_evaluate_actions(rnn, visual, discrete):
 
     assert log_probs.flatten().shape == (64, _size)
     assert entropy.shape == (64,)
-    for val in values.values():
-        assert val.shape == (64,)
 
 
 @pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
@@ -106,14 +105,14 @@ def test_sample_actions(rnn, visual, discrete):
         TrainerSettings(), use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
     buffer = mb.simulate_rollout(64, policy.behavior_spec, memory_size=policy.m_size)
-    act_masks = ModelUtils.list_to_tensor(buffer["action_mask"])
+    act_masks = ModelUtils.list_to_tensor(buffer[BufferKey.ACTION_MASK])
 
     np_obs = ObsUtil.from_buffer(buffer, len(policy.behavior_spec.observation_specs))
     tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
 
     memories = [
-        ModelUtils.list_to_tensor(buffer["memory"][i])
-        for i in range(0, len(buffer["memory"]), policy.sequence_length)
+        ModelUtils.list_to_tensor(buffer[BufferKey.MEMORY][i])
+        for i in range(0, len(buffer[BufferKey.MEMORY]), policy.sequence_length)
     ]
     if len(memories) > 0:
         memories = torch.stack(memories).unsqueeze(0)

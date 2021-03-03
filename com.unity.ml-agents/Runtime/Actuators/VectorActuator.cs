@@ -1,9 +1,11 @@
+using UnityEngine.Profiling;
+
 namespace Unity.MLAgents.Actuators
 {
     /// <summary>
     /// IActuator implementation that forwards calls to an <see cref="IActionReceiver"/> and an <see cref="IHeuristicProvider"/>.
     /// </summary>
-    internal class VectorActuator : IActuator, IHeuristicProvider
+    internal class VectorActuator : IActuator, IHeuristicProvider, IBuiltInActuator
     {
         IActionReceiver m_ActionReceiver;
         IHeuristicProvider m_HeuristicProvider;
@@ -69,13 +71,17 @@ namespace Unity.MLAgents.Actuators
         /// <inheritdoc />
         public void OnActionReceived(ActionBuffers actionBuffers)
         {
-            ActionBuffers = actionBuffers;
-            m_ActionReceiver.OnActionReceived(ActionBuffers);
+            Profiler.BeginSample("VectorActuator.OnActionReceived");
+            m_ActionBuffers = actionBuffers;
+            m_ActionReceiver.OnActionReceived(m_ActionBuffers);
+            Profiler.EndSample();
         }
 
         public void Heuristic(in ActionBuffers actionBuffersOut)
         {
+            Profiler.BeginSample("VectorActuator.Heuristic");
             m_HeuristicProvider?.Heuristic(actionBuffersOut);
+            Profiler.EndSample();
         }
 
         /// <inheritdoc />
@@ -89,5 +95,11 @@ namespace Unity.MLAgents.Actuators
 
         /// <inheritdoc />
         public string Name { get; }
+
+        /// <inheritdoc />
+        public virtual BuiltInActuatorType GetBuiltInActuatorType()
+        {
+            return BuiltInActuatorType.VectorActuator;
+        }
     }
 }

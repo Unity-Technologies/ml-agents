@@ -1,12 +1,13 @@
 from typing import Dict, cast
-from mlagents.torch_utils import torch
+from mlagents.torch_utils import torch, default_device
 
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, BufferKey, RewardSignalUtil
 
 from mlagents_envs.timers import timed
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
+from mlagents.trainers.torch.networks import ValueNetwork
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
@@ -25,7 +26,20 @@ class TorchPPOOptimizer(TorchOptimizer):
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
 
         super().__init__(policy, trainer_settings)
-        params = list(self.policy.actor_critic.parameters())
+        reward_signal_configs = trainer_settings.reward_signals
+        reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
+
+        if policy.shared_critic:
+            self._critic = policy.actor
+        else:
+            self._critic = ValueNetwork(
+                reward_signal_names,
+                policy.behavior_spec.observation_specs,
+                network_settings=trainer_settings.network_settings,
+            )
+            self._critic.to(default_device())
+
+        params = list(self.policy.actor.parameters()) + list(self._critic.parameters())
         self.hyperparameters: PPOSettings = cast(
             PPOSettings, trainer_settings.hyperparameters
         )
@@ -57,6 +71,10 @@ class TorchPPOOptimizer(TorchOptimizer):
         }
 
         self.stream_names = list(self.reward_signals.keys())
+
+    @property
+    def critic(self):
+        return self._critic
 
     def ppo_value_loss(
         self,
@@ -131,40 +149,57 @@ class TorchPPOOptimizer(TorchOptimizer):
         old_values = {}
         for name in self.reward_signals:
             old_values[name] = ModelUtils.list_to_tensor(
-                batch[f"{name}_value_estimates"]
+                batch[RewardSignalUtil.value_estimates_key(name)]
             )
-            returns[name] = ModelUtils.list_to_tensor(batch[f"{name}_returns"])
+            returns[name] = ModelUtils.list_to_tensor(
+                batch[RewardSignalUtil.returns_key(name)]
+            )
 
         n_obs = len(self.policy.behavior_spec.observation_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
         # Convert to tensors
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
 
-        act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
-        actions = AgentAction.from_dict(batch)
+        act_masks = ModelUtils.list_to_tensor(batch[BufferKey.ACTION_MASK])
+        actions = AgentAction.from_buffer(batch)
 
         memories = [
-            ModelUtils.list_to_tensor(batch["memory"][i])
-            for i in range(0, len(batch["memory"]), self.policy.sequence_length)
+            ModelUtils.list_to_tensor(batch[BufferKey.MEMORY][i])
+            for i in range(0, len(batch[BufferKey.MEMORY]), self.policy.sequence_length)
         ]
         if len(memories) > 0:
             memories = torch.stack(memories).unsqueeze(0)
 
-        log_probs, entropy, values = self.policy.evaluate_actions(
+        # Get value memories
+        value_memories = [
+            ModelUtils.list_to_tensor(batch[BufferKey.CRITIC_MEMORY][i])
+            for i in range(
+                0, len(batch[BufferKey.CRITIC_MEMORY]), self.policy.sequence_length
+            )
+        ]
+        if len(value_memories) > 0:
+            value_memories = torch.stack(value_memories).unsqueeze(0)
+
+        log_probs, entropy = self.policy.evaluate_actions(
             current_obs,
             masks=act_masks,
             actions=actions,
             memories=memories,
             seq_len=self.policy.sequence_length,
         )
-        old_log_probs = ActionLogProbs.from_dict(batch).flatten()
+        values, _ = self.critic.critic_pass(
+            current_obs,
+            memories=value_memories,
+            sequence_length=self.policy.sequence_length,
+        )
+        old_log_probs = ActionLogProbs.from_buffer(batch).flatten()
         log_probs = log_probs.flatten()
-        loss_masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.bool)
+        loss_masks = ModelUtils.list_to_tensor(batch[BufferKey.MASKS], dtype=torch.bool)
         value_loss = self.ppo_value_loss(
             values, old_values, returns, decay_eps, loss_masks
         )
         policy_loss = self.ppo_policy_loss(
-            ModelUtils.list_to_tensor(batch["advantages"]),
+            ModelUtils.list_to_tensor(batch[BufferKey.ADVANTAGES]),
             log_probs,
             old_log_probs,
             loss_masks,

@@ -139,7 +139,8 @@ namespace Unity.MLAgents.Analytics
         public static void RemotePolicyInitialized(
             string fullyQualifiedBehaviorName,
             IList<ISensor> sensors,
-            ActionSpec actionSpec
+            ActionSpec actionSpec,
+            IList<IActuator> actuators
         )
         {
             if (!IsAnalyticsEnabled())
@@ -158,7 +159,7 @@ namespace Unity.MLAgents.Analytics
                 return;
             }
 
-            var data = GetEventForRemotePolicy(behaviorName, sensors, actionSpec);
+            var data = GetEventForRemotePolicy(behaviorName, sensors, actionSpec, actuators);
             // Note - to debug, use JsonUtility.ToJson on the event.
             // Debug.Log(
             //     $"Would send event {k_RemotePolicyInitializedEventName} with body {JsonUtility.ToJson(data, true)}"
@@ -220,10 +221,12 @@ namespace Unity.MLAgents.Analytics
 #endif
         }
 
-        static RemotePolicyInitializedEvent GetEventForRemotePolicy(
+        internal static RemotePolicyInitializedEvent GetEventForRemotePolicy(
             string behaviorName,
             IList<ISensor> sensors,
-            ActionSpec actionSpec)
+            ActionSpec actionSpec,
+            IList<IActuator> actuators
+        )
         {
             var remotePolicyEvent = new RemotePolicyInitializedEvent();
 
@@ -236,6 +239,12 @@ namespace Unity.MLAgents.Analytics
             foreach (var sensor in sensors)
             {
                 remotePolicyEvent.ObservationSpecs.Add(EventObservationSpec.FromSensor(sensor));
+            }
+
+            remotePolicyEvent.ActuatorInfos = new List<EventActuatorInfo>(actuators.Count);
+            foreach (var actuator in actuators)
+            {
+                remotePolicyEvent.ActuatorInfos.Add(EventActuatorInfo.FromActuator(actuator));
             }
 
             remotePolicyEvent.MLAgentsEnvsVersion = s_TrainerPackageVersion;

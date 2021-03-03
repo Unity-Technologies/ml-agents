@@ -1,5 +1,5 @@
 import numpy as np
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.trajectory import ObsUtil
 
@@ -19,19 +19,23 @@ def create_agent_buffer(
     action_buffer = behavior_spec.action_spec.random_action(1)
     action = {}
     if behavior_spec.action_spec.continuous_size > 0:
-        action["continuous_action"] = action_buffer.continuous
+        action[BufferKey.CONTINUOUS_ACTION] = action_buffer.continuous
     if behavior_spec.action_spec.discrete_size > 0:
-        action["discrete_action"] = action_buffer.discrete
+        action[BufferKey.DISCRETE_ACTION] = action_buffer.discrete
 
     for _ in range(number):
         for i, obs in enumerate(curr_obs):
             buffer[ObsUtil.get_name_at(i)].append(obs)
         for i, obs in enumerate(next_obs):
             buffer[ObsUtil.get_name_at_next(i)].append(obs)
-        buffer["actions"].append(action)
+        # TODO
+        # buffer[AgentBufferKey.ACTIONS].append(action)
         for _act_type, _act in action.items():
             buffer[_act_type].append(_act[0, :])
-        buffer["reward"].append(np.ones(1, dtype=np.float32) * reward)
-        buffer["masks"].append(np.ones(1, dtype=np.float32))
-    buffer["done"] = np.zeros(number, dtype=np.float32)
+        # TODO was "rewards"
+        buffer[BufferKey.ENVIRONMENT_REWARDS].append(
+            np.ones(1, dtype=np.float32) * reward
+        )
+        buffer[BufferKey.MASKS].append(np.ones(1, dtype=np.float32))
+    buffer[BufferKey.DONE] = np.zeros(number, dtype=np.float32)
     return buffer

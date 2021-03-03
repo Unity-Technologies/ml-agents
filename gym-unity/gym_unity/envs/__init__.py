@@ -299,10 +299,6 @@ class UnityToGymWrapper(gym.Env):
         return -float("inf"), float("inf")
 
     @property
-    def spec(self):
-        return None
-
-    @property
     def action_space(self):
         return self._action_space
 

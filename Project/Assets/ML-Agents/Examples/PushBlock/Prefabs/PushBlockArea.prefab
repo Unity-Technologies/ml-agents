@@ -430,17 +430,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 0
-    numStackedVectorObservations: 2
-    vectorActionSize: 07000000
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 0
+    VectorObservationSize: 0
+    NumStackedVectorObservations: 2
+    m_ActionSpec:
+      m_NumContinuousActions: 0
+      BranchSizes: 07000000
+    VectorActionSize: 07000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
+    hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: 70db47ab276e44fe0beb677ff8d69382, type: 3}
-  m_InferenceDevice: 0
+  m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_ObservableAttributeHandling: 0
 --- !u!114 &114505490781873732
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -456,7 +462,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  maxStep: 5000
+  MaxStep: 5000
   ground: {fileID: 1500989011945850}
   area: {fileID: 1125452240183160}
   areaBounds:
@@ -551,7 +557,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
-  offsetStep: 0
 --- !u!114 &4081319787948195948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -564,6 +569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugCommandLineOverride: 
 --- !u!1 &1500989011945850
 GameObject:
   m_ObjectHideFlags: 0
