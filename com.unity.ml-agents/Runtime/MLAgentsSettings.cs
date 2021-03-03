@@ -16,6 +16,8 @@ namespace Unity.MLAgents
 
         [SerializeField]
         private int m_EditorPort = 5004;
+        [SerializeField]
+        private int m_PlayerPort = -1;
 
 
         public int EditorPort
@@ -24,6 +26,14 @@ namespace Unity.MLAgents
             set
             {
                 m_EditorPort = value;
+            }
+        }
+        public int PlayerPort
+        {
+            get { return m_PlayerPort; }
+            set
+            {
+                m_PlayerPort = value;
             }
         }
 

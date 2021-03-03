@@ -75,6 +75,7 @@ namespace Unity.MLAgents.Editor
             {
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.PropertyField(m_SettingsObject.FindProperty("m_EditorPort"), new GUIContent("Editor Port"));
+                EditorGUILayout.PropertyField(m_SettingsObject.FindProperty("m_PlayerPort"), new GUIContent("Player Port"));
                 if (EditorGUI.EndChangeCheck())
                     m_SettingsObject.ApplyModifiedProperties();
             }
