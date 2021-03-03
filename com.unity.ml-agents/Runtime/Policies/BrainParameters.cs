@@ -5,6 +5,22 @@ using Unity.MLAgents.Actuators;
 
 namespace Unity.MLAgents.Policies
 {
+    /// <summary>
+    /// This is deprecated. Agents can now use both continuous and discrete actions together.
+    /// </summary>
+    [Obsolete("Continuous and discrete actions on the same Agent are now supported; see ActionSpec.")]
+    public enum SpaceType
+    {
+        /// <summary>
+        /// Discrete action space: a fixed number of options are available.
+        /// </summary>
+        Discrete,
+
+        /// <summary>
+        /// Continuous action space: each action can take on a float value.
+        /// </summary>
+        Continuous
+    }
 
     /// <summary>
     /// Holds information about the brain. It defines what are the inputs and outputs of the
@@ -54,14 +70,47 @@ namespace Unity.MLAgents.Policies
         }
 
         /// <summary>
+        /// (Deprecated) The number of possible actions.
+        /// </summary>
+        /// <remarks>The size specified is interpreted differently depending on whether
+        /// the agent uses the continuous or the discrete actions.</remarks>
+        /// <value>
+        /// For the continuous actions: the length of the float vector that represents
+        /// the action.
+        /// For the discrete actions: the number of branches.
+        /// </value>
+        [Obsolete("VectorActionSize has been deprecated, please use ActionSpec instead.")]
+        [FormerlySerializedAs("vectorActionSize")]
+        public int[] VectorActionSize = new[] { 1 };
+
+        /// <summary>
         /// The list of strings describing what the actions correspond to.
         /// </summary>
         [FormerlySerializedAs("vectorActionDescriptions")]
         public string[] VectorActionDescriptions;
 
+        /// <summary>
+        /// (Deprecated) Defines if the action is discrete or continuous.
+        /// </summary>
+        [Obsolete("VectorActionSpaceType has been deprecated, please use ActionSpec instead.")]
+        [FormerlySerializedAs("vectorActionSpaceType")]
+        public SpaceType VectorActionSpaceType = SpaceType.Discrete;
+
         [SerializeField]
         [HideInInspector]
         internal bool hasUpgradedBrainParametersWithActionSpec;
+
+        /// <summary>
+        /// (Deprecated) The number of actions specified by this Brain.
+        /// </summary>
+        [Obsolete("NumActions has been deprecated, please use ActionSpec instead.")]
+        public int NumActions
+        {
+            get
+            {
+                return ActionSpec.NumContinuousActions > 0 ? ActionSpec.NumContinuousActions : ActionSpec.NumDiscreteActions;
+            }
+        }
 
         /// <summary>
         /// Deep clones the BrainParameter object.
