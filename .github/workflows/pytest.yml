@@ -9,7 +9,7 @@ on:
     - 'test_constraints*.txt'
     - 'test_requirements.txt'
   push:
-    branches: [master]
+    branches: [release_2_verified]
 
 jobs:
   pytest:
