@@ -81,6 +81,8 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     public bool UseRandomBlockPosition = true;
     PushBlockSettings m_PushBlockSettings;
 
+    private SimpleMultiAgentGroup m_AgentGroup;
+
     private int m_NumberOfRemainingBlocks;
 
     void Start()
@@ -93,6 +95,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         // Starting material
         m_GroundMaterial = m_GroundRenderer.material;
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
+        m_AgentGroup = new SimpleMultiAgentGroup();
         foreach (var item in BlocksList)
         {
             item.StartingPos = item.T.transform.position;
@@ -108,7 +111,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.Rb = item.Agent.GetComponent<Rigidbody>();
             item.Col = item.Agent.GetComponent<Collider>();
             // Add to team manager
-            // item.Agent.SetTeamManager(m_TeamManager);
+            m_AgentGroup.RegisterAgent(item.Agent);
         }
         foreach (var item in ZombiesList)
         {
@@ -224,10 +227,10 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         //Give Agent Rewards
         foreach (var item in AgentsList)
         {
+            m_AgentGroup.AddGroupReward(score);
             if (item.Agent.gameObject.activeInHierarchy)
             {
                 print($"{item.Agent.name} scored");
-                item.Agent.AddReward(score);
             }
         }
 
@@ -244,10 +247,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     public void ZombieTouchedBlock()
     {
         //Give Agent Rewards
-        foreach (var item in AgentsList)
-        {
-            item.Agent.AddReward(-1);
-        }
+        m_AgentGroup.AddGroupReward(-1);
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.failMaterial, 0.5f));
         ResetScene();
