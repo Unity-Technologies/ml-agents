@@ -50,13 +50,15 @@ class AgentProcessor:
         """
         self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
         self.last_step_result: Dict[str, Tuple[DecisionStep, int]] = {}
-        # current_group_obs is used to collect the current, most recently seen
+        # current_group_obs is used to collect the current (i.e. the most recently seen)
         # obs of all the agents in the same group, and assemble the group obs.
+        # It is a dictionary of group_id to dictionaries of agent_id to observation.
         self.current_group_obs: Dict[str, Dict[str, List[np.ndarray]]] = defaultdict(
             lambda: defaultdict(list)
         )
         # group_status is used to collect the current, most recently seen
-        # group status of all the agents in the same group, and assemble the group obs.
+        # group status of all the agents in the same group, and assemble the group's status.
+        # It is a dictionary of group_id to dictionaries of agent_id to AgeentStatus.
         self.group_status: Dict[str, Dict[str, AgentStatus]] = defaultdict(
             lambda: defaultdict(None)
         )
