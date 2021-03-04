@@ -1,7 +1,7 @@
 import io
 import numpy as np
 import pytest
-from typing import List, Tuple
+from typing import List, Tuple, Any
 
 from mlagents_envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents_envs.communicator_objects.observation_pb2 import (
@@ -137,13 +137,14 @@ def proto_from_steps(
         reward = decision_steps.reward[agent_id_index]
         done = False
         max_step_reached = False
-        agent_mask = None
+        agent_mask: Any = None
         if decision_steps.action_mask is not None:
-            agent_mask = []  # type: ignore
+            agent_mask = []
             for _branch in decision_steps.action_mask:
                 agent_mask = np.concatenate(
                     (agent_mask, _branch[agent_id_index, :]), axis=0
                 )
+            agent_mask = agent_mask.astype(np.bool).tolist()
         observations: List[ObservationProto] = []
         for all_observations_of_type in decision_steps.obs:
             observation = all_observations_of_type[agent_id_index]
@@ -161,7 +162,7 @@ def proto_from_steps(
             reward=reward,
             done=done,
             id=agent_id,
-            max_step_reached=max_step_reached,
+            max_step_reached=bool(max_step_reached),
             action_mask=agent_mask,
             observations=observations,
         )
@@ -190,7 +191,7 @@ def proto_from_steps(
             reward=reward,
             done=done,
             id=agent_id,
-            max_step_reached=max_step_reached,
+            max_step_reached=bool(max_step_reached),
             action_mask=None,
             observations=final_observations,
         )

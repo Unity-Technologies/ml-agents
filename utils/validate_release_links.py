@@ -60,7 +60,7 @@ def git_ls_files() -> List[str]:
 def get_release_tag() -> Optional[str]:
     """
     Returns the release tag for the mlagents python package.
-    This will be None on the master branch.
+    This will be None on the main branch.
     :return:
     """
     with open(TRAINER_INIT_FILE) as f:

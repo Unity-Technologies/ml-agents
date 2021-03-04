@@ -16,7 +16,7 @@ pytest_gpu:
   triggers:
     cancel_old_ci: true
     recurring:
-      - branch: master
+      - branch: main
         frequency: daily
   artifacts:
     logs:

@@ -11,9 +11,10 @@ from mlagents_envs.base_env import ActionTuple
 from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 
 
-class GroupmateStatus(NamedTuple):
+class AgentStatus(NamedTuple):
     """
-    Stores data related to an agent's teammate.
+    Stores observation, action, and reward for an agent. Does not have additional
+    fields that are present in AgentExperience.
     """
 
     obs: List[np.ndarray]
@@ -23,6 +24,12 @@ class GroupmateStatus(NamedTuple):
 
 
 class AgentExperience(NamedTuple):
+    """
+    Stores the full amount of data for an agent in one timestep. Includes
+    the status' of group mates and the group reward, as well as the probabilities
+    outputted by the policy.
+    """
+
     obs: List[np.ndarray]
     reward: float
     done: bool
@@ -32,7 +39,7 @@ class AgentExperience(NamedTuple):
     prev_action: np.ndarray
     interrupted: bool
     memory: np.ndarray
-    group_status: List[GroupmateStatus]
+    group_status: List[AgentStatus]
     group_reward: float
 
 

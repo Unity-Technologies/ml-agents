@@ -3,7 +3,7 @@ import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer, AgentBufferKey
 from mlagents.trainers.torch.action_log_probs import LogProbsTuple
-from mlagents.trainers.trajectory import GroupmateStatus, Trajectory, AgentExperience
+from mlagents.trainers.trajectory import AgentStatus, Trajectory, AgentExperience
 from mlagents_envs.base_env import (
     DecisionSteps,
     TerminalSteps,
@@ -122,7 +122,7 @@ def make_fake_trajectory(
         behavior_id = "test_brain"
         group_status = []
         for _ in range(num_other_agents_in_group):
-            group_status.append(GroupmateStatus(obs, reward, action, done))
+            group_status.append(AgentStatus(obs, reward, action, done))
         experience = AgentExperience(
             obs=obs,
             reward=reward,
