@@ -16,11 +16,11 @@ behaviors:
       num_layers: 2
       vis_encode_type: simple
     reward_signals:
-      group:
+      extrinsic:
         gamma: 0.99
         strength: 1.0
     keep_checkpoints: 5
-    max_steps: 20000000 #2000000
+    max_steps: 20000000
     time_horizon: 64
     summary_freq: 60000
     threaded: true
