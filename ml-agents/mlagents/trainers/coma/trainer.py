@@ -80,6 +80,8 @@ class COMATrainer(RLTrainer):
             value_estimates,
             baseline_estimates,
             value_next,
+            value_memories,
+            baseline_memories,
         ) = self.optimizer.get_trajectory_and_baseline_value_estimates(
             agent_buffer_trajectory,
             trajectory.next_obs,
@@ -88,6 +90,10 @@ class COMATrainer(RLTrainer):
             and trajectory.done_reached
             and not trajectory.interrupted,
         )
+
+        if value_memories is not None:
+            agent_buffer_trajectory[BufferKey.CRITIC_MEMORY].set(value_memories)
+            agent_buffer_trajectory[BufferKey.BASELINE_MEMORY].set(baseline_memories)
 
         for name, v in value_estimates.items():
             agent_buffer_trajectory[RewardSignalUtil.value_estimates_key(name)].extend(

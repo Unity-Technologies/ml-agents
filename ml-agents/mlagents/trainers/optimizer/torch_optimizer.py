@@ -56,7 +56,7 @@ class TorchOptimizer(Optimizer):
             )
 
     def _evaluate_by_sequence(
-        self, tensor_obs: List[torch.Tensor], initial_memory: np.ndarray
+        self, tensor_obs: List[torch.Tensor], initial_memory: torch.Tensor
     ) -> Tuple[Dict[str, torch.Tensor], AgentBufferField, torch.Tensor]:
         """
         Evaluate a trajectory sequence-by-sequence, assembling the result. This enables us to get the
