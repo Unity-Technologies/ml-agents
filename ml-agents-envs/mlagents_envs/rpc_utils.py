@@ -285,10 +285,22 @@ def steps_from_proto(
     ]
     decision_obs_list: List[np.ndarray] = []
     terminal_obs_list: List[np.ndarray] = []
-    for obs_index, observation_specs in enumerate(behavior_spec.observation_specs):
-        is_visual = len(observation_specs.shape) == 3
+    for obs_index, observation_spec in enumerate(behavior_spec.observation_specs):
+        # Check that all the observations match the expected size.
+        # This gives a nicer error than a cryptic numpy error later.
+        expected_obs_shape = tuple(observation_spec.shape)
+        for agent_info in agent_info_list:
+            agent_obs_shape = tuple(agent_info.observations[obs_index].shape)
+            if expected_obs_shape != agent_obs_shape:
+                raise RuntimeError(
+                    f"Observation at index={obs_index} for agent with "
+                    f"id={agent_info.id}  didn't match the ObservationSpec. "
+                    f"Expeceted shape {expected_obs_shape} but got {agent_obs_shape}."
+                )
+
+        is_visual = len(observation_spec.shape) == 3
         if is_visual:
-            obs_shape = cast(Tuple[int, int, int], observation_specs.shape)
+            obs_shape = cast(Tuple[int, int, int], observation_spec.shape)
             decision_obs_list.append(
                 _process_maybe_compressed_observation(
                     obs_index, obs_shape, decision_agent_info_list
@@ -302,12 +314,12 @@ def steps_from_proto(
         else:
             decision_obs_list.append(
                 _process_rank_one_or_two_observation(
-                    obs_index, observation_specs.shape, decision_agent_info_list
+                    obs_index, observation_spec.shape, decision_agent_info_list
                 )
             )
             terminal_obs_list.append(
                 _process_rank_one_or_two_observation(
-                    obs_index, observation_specs.shape, terminal_agent_info_list
+                    obs_index, observation_spec.shape, terminal_agent_info_list
                 )
             )
     decision_rewards = np.array(
