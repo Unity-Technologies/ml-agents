@@ -78,10 +78,8 @@ class TorchOptimizer(Optimizer):
         # Compute values for the potentially truncated initial sequence
         seq_obs = []
 
-        first_seq_len = self.policy.sequence_length
+        first_seq_len = leftover if leftover > 0 else self.policy.sequence_length
         for _obs in tensor_obs:
-            if leftover > 0:
-                first_seq_len = leftover
             first_seq_obs = _obs[0:first_seq_len]
             seq_obs.append(first_seq_obs)
 

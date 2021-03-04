@@ -148,6 +148,8 @@ class TorchCOMAOptimizer(TorchOptimizer):
         }
 
         self.stream_names = list(self.reward_signals.keys())
+        self.value_memory_dict: Dict[str, torch.Tensor] = {}
+        self.baseline_memory_dict: Dict[str, torch.Tensor] = {}
 
     @property
     def critic(self):
@@ -324,6 +326,112 @@ class TorchCOMAOptimizer(TorchOptimizer):
             modules.update(reward_provider.get_modules())
         return modules
 
+    def _evaluate_by_sequence(
+        self,
+        self_obs: List[torch.Tensor],
+        obs: List[List[torch.Tensor]],
+        actions: List[AgentAction],
+        init_value_mem: Optional[torch.Tensor] = None,
+        init_baseline_mem: Optional[torch.Tensor] = None,
+    ) -> Tuple[Dict[str, torch.Tensor], AgentBufferField, torch.Tensor]:
+        """
+        Evaluate a trajectory sequence-by-sequence, assembling the result. This enables us to get the
+        intermediate memories for the critic.
+        :param tensor_obs: A List of tensors of shape (trajectory_len, <obs_dim>) that are the agent's
+            observations for this trajectory.
+        :param initial_memory: The memory that preceeds this trajectory. Of shape (1,1,<mem_size>), i.e.
+            what is returned as the output of a MemoryModules.
+        :return: A Tuple of the value estimates as a Dict of [name, tensor], an AgentBufferField of the initial
+            memories to be used during value function update, and the final memory at the end of the trajectory.
+        """
+        num_experiences = self_obs[0].shape[0]
+        all_next_value_mem = AgentBufferField()
+        all_next_baseline_mem = AgentBufferField()
+        # In the buffer, the 1st sequence are the ones that are padded. So if seq_len = 3 and
+        # trajectory is of length 10, the 1st sequence is [pad,pad,obs].
+        # Compute the number of elements in this padded seq.
+        leftover = num_experiences % self.policy.sequence_length
+
+        # Compute values for the potentially truncated initial sequence
+
+        self_seq_obs = []
+        team_seq_obs = []
+        team_seq_act = []
+
+        first_seq_len = leftover if leftover > 0 else self.policy.sequence_length
+        seq_obs = []
+        for _self_obs in self_obs:
+            first_seq_obs = _self_obs[0:first_seq_len]
+            seq_obs.append(first_seq_obs)
+        self_seq_obs.append(seq_obs)
+
+        for team_obs, team_action in zip(obs, actions):
+            seq_obs = []
+            for (_obs,) in _team_obs:
+                first_seq_obs = _obs[0:first_seq_len]
+                seq_obs.append(first_seq_obs)
+            team_seq_obs.append(seq_obs)
+            _act = team_action[0:first_seq_len]
+            team_seq_act.append(_act)
+
+        # For the first sequence, the initial memory should be the one at the
+        # beginning of this trajectory.
+        for _ in range(first_seq_len):
+            all_next_value_mem.append(ModelUtils.to_numpy(_init_value_mem.squeeze()))
+            all_next_baseline_mem.append(
+                ModelUtils.to_numpy(_init_baseline_mem.squeeze())
+            )
+
+        all_seq_obs = self_seq_obs + team_seq_obs
+        init_values, _mem = self.critic.critic_pass(
+            all_seq_obs, _init_value_memory, sequence_length=first_seq_len
+        )
+        all_values = {
+            signal_name: [init_values[signal_name]]
+            for signal_name in init_values.keys()
+        }
+
+        init_baseline, _mem = self.critic.baseline(
+            self_seq_obs,
+            team_seq_obs,
+            team_seq_act,
+            _init_baseline_memory,
+            sequence_length=first_seq_len,
+        )
+        all_baseline = {
+            signal_name: [init_baseline[signal_name]]
+            for signal_name in init_values.keys()
+        }
+
+        # Evaluate other trajectories, carrying over _mem after each
+        # trajectory
+        for seq_num in range(
+            1, math.ceil((num_experiences) / (self.policy.sequence_length))
+        ):
+            seq_obs = []
+            for _ in range(self.policy.sequence_length):
+                all_next_memories.append(ModelUtils.to_numpy(_mem.squeeze()))
+            for _obs in tensor_obs:
+                start = seq_num * self.policy.sequence_length - (
+                    self.policy.sequence_length - leftover
+                )
+                end = (seq_num + 1) * self.policy.sequence_length - (
+                    self.policy.sequence_length - leftover
+                )
+                seq_obs.append(_obs[start:end])
+            values, _mem = self.critic.critic_pass(
+                seq_obs, _mem, sequence_length=self.policy.sequence_length
+            )
+            for signal_name, _val in values.items():
+                all_values[signal_name].append(_val)
+        # Create one tensor per reward signal
+        all_value_tensors = {
+            signal_name: torch.cat(value_list, dim=0)
+            for signal_name, value_list in all_values.items()
+        }
+        next_mem = _mem
+        return all_value_tensors, all_next_memories, next_mem
+
     def get_trajectory_and_baseline_value_estimates(
         self,
         batch: AgentBuffer,
@@ -356,25 +464,44 @@ class TorchCOMAOptimizer(TorchOptimizer):
             [_obs.unsqueeze(0) for _obs in _list_obs] for _list_obs in next_group_obs
         ]
 
-        memory = torch.zeros([1, 1, self.policy.m_size])
-        all_obs = [current_obs] + team_obs if team_obs is not None else [current_obs]
-        value_estimates, mem = self.critic.critic_pass(
-            all_obs, memory, sequence_length=batch.num_experiences
-        )
+        if agent_id in self.value_memory_dict:
+            # The agent_id should always be in both since they are added together
+            _init_value_mem = self.value_memory_dict[agent_id]
+            _init_baseline_mem = self.baseline_memory_dict[agent_id]
+        else:
+            memory = (
+                torch.zeros((1, 1, self.critic.memory_size))
+                if self.policy.use_recurrent
+                else None
+            )
 
-        baseline_estimates, mem = self.critic.baseline(
-            [current_obs],
-            team_obs,
-            team_actions,
-            memory,
-            sequence_length=batch.num_experiences,
-        )
+        all_obs = [current_obs] + team_obs if team_obs is not None else [current_obs]
+        if self.policy.use_recurrent:
+            value_estimates, baseline_estimates, value_mem, baseline_mem = self.critic._evaluate_by_sequence(
+                current_obs, team_obs, team_actions, _init_value_mem, _init_baseline_mem
+            )
+        else:
+            value_estimates, value_mem = self.critic.critic_pass(
+                all_obs, memory, sequence_length=batch.num_experiences
+            )
+
+            baseline_estimates, baseline_mem = self.critic.baseline(
+                [current_obs],
+                team_obs,
+                team_actions,
+                memory,
+                sequence_length=batch.num_experiences,
+            )
+        # Store the memory for the next trajectory
+        self.value_memory_dict[agent_id] = value_mem
+        self.baseline_memory_dict[agent_id] = baseline_mem
+
         all_next_obs = (
             [next_obs] + next_group_obs if next_group_obs is not None else [next_obs]
         )
 
-        next_value_estimates, mem = self.critic.critic_pass(
-            all_next_obs, mem, sequence_length=batch.num_experiences
+        next_value_estimates, value_mem = self.critic.critic_pass(
+            all_next_obs, value_mem, sequence_length=batch.num_experiences
         )
 
         for name, estimate in baseline_estimates.items():
