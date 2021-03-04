@@ -122,7 +122,7 @@ class AgentProcessor:
                 terminal_step, worker_id, terminal_steps.agent_id_to_index[local_id]
             )
             # Clear the last seen group obs when agents die.
-            self._clear_group_obs(global_id)
+            self._clear_group_status_and_obs(global_id)
 
         # Iterate over all the decision steps, first gather all the group obs
         # and then create the trajectories. _add_to_group_status
@@ -183,7 +183,10 @@ class AgentProcessor:
                 self._group_status[global_group_id][global_agent_id] = group_status
                 self._current_group_obs[global_group_id][global_agent_id] = step.obs
 
-    def _clear_group_obs(self, global_id: GlobalGroupId) -> None:
+    def _clear_group_status_and_obs(self, global_id: GlobalAgentId) -> None:
+        """
+        Clears an agent from self._group_status and self._current_group_obs.
+        """
         self._delete_in_nested_dict(self._current_group_obs, global_id)
         self._delete_in_nested_dict(self._group_status, global_id)
 
