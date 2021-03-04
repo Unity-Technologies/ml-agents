@@ -104,13 +104,13 @@ class TorchOptimizer(Optimizer):
             seq_obs = []
             for _ in range(self.policy.sequence_length):
                 all_next_memories.append(ModelUtils.to_numpy(_mem.squeeze()))
+            start = seq_num * self.policy.sequence_length - (
+                self.policy.sequence_length - leftover
+            )
+            end = (seq_num + 1) * self.policy.sequence_length - (
+                self.policy.sequence_length - leftover
+            )
             for _obs in tensor_obs:
-                start = seq_num * self.policy.sequence_length - (
-                    self.policy.sequence_length - leftover
-                )
-                end = (seq_num + 1) * self.policy.sequence_length - (
-                    self.policy.sequence_length - leftover
-                )
                 seq_obs.append(_obs[start:end])
             values, _mem = self.critic.critic_pass(
                 seq_obs, _mem, sequence_length=self.policy.sequence_length
