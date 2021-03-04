@@ -295,7 +295,7 @@ def steps_from_proto(
                 raise ValueError(
                     f"Observation at index={obs_index} for agent with "
                     f"id={agent_info.id} didn't match the ObservationSpec. "
-                    f"Expeceted shape {expected_obs_shape} but got {agent_obs_shape}."
+                    f"Expected shape {expected_obs_shape} but got {agent_obs_shape}."
                 )
 
         is_visual = len(observation_spec.shape) == 3
