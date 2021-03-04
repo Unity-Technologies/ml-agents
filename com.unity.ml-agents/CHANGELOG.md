@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.7] - 2021-03-04
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 In order to improve the developer experience for Unity ML-Agents Toolkit, we have added in-editor analytics.
