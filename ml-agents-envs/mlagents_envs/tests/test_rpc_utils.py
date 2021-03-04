@@ -369,6 +369,20 @@ def test_batched_step_result_from_proto():
     assert terminal_steps.obs[1].shape[1] == shapes[1][0]
 
 
+def test_mismatch_observations_raise_in_step_result_from_proto():
+    n_agents = 10
+    shapes = [(3,), (4,)]
+    spec = BehaviorSpec(
+        create_observation_specs_with_shapes(shapes), ActionSpec.create_continuous(3)
+    )
+    ap_list = generate_list_agent_proto(n_agents, shapes)
+    # Hack an observation to be larger, we should get an exception
+    ap_list[0].observations[0].shape[0] += 1
+    ap_list[0].observations[0].float_data.data.append(0.42)
+    with pytest.raises(RuntimeError):
+        steps_from_proto(ap_list, spec)
+
+
 def test_action_masking_discrete():
     n_agents = 10
     shapes = [(3,), (4,)]
