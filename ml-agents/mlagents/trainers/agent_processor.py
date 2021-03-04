@@ -20,7 +20,12 @@ from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo, ActionInfoOutputs
 from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 from mlagents.trainers.stats import StatsReporter
-from mlagents.trainers.behavior_id_utils import get_global_agent_id, get_global_group_id
+from mlagents.trainers.behavior_id_utils import (
+    get_global_agent_id,
+    get_global_group_id,
+    GlobalAgentId,
+    GlobalGroupId,
+)
 
 T = TypeVar("T")
 
@@ -48,28 +53,30 @@ class AgentProcessor:
         :param max_trajectory_length: Maximum length of a trajectory before it is added to the trainer.
         :param stats_category: The category under which to write the stats. Usually, this comes from the Trainer.
         """
-        self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
-        self.last_step_result: Dict[str, Tuple[DecisionStep, int]] = {}
+        self.experience_buffers: Dict[
+            GlobalAgentId, List[AgentExperience]
+        ] = defaultdict(list)
+        self.last_step_result: Dict[GlobalAgentId, Tuple[DecisionStep, int]] = {}
         # current_group_obs is used to collect the current (i.e. the most recently seen)
         # obs of all the agents in the same group, and assemble the group obs.
         # It is a dictionary of group_id to dictionaries of agent_id to observation.
-        self.current_group_obs: Dict[str, Dict[str, List[np.ndarray]]] = defaultdict(
-            lambda: defaultdict(list)
-        )
+        self.current_group_obs: Dict[
+            GlobalGroupId, Dict[GlobalAgentId, List[np.ndarray]]
+        ] = defaultdict(lambda: defaultdict(list))
         # group_status is used to collect the current, most recently seen
         # group status of all the agents in the same group, and assemble the group's status.
         # It is a dictionary of group_id to dictionaries of agent_id to AgeentStatus.
-        self.group_status: Dict[str, Dict[str, AgentStatus]] = defaultdict(
-            lambda: defaultdict(None)
-        )
+        self.group_status: Dict[
+            GlobalGroupId, Dict[GlobalAgentId, AgentStatus]
+        ] = defaultdict(lambda: defaultdict(None))
         # last_take_action_outputs stores the action a_t taken before the current observation s_(t+1), while
         # grabbing previous_action from the policy grabs the action PRIOR to that, a_(t-1).
-        self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = {}
+        self.last_take_action_outputs: Dict[GlobalAgentId, ActionInfoOutputs] = {}
         # Note: In the future this policy reference will be the policy of the env_manager and not the trainer.
         # We can in that case just grab the action from the policy rather than having it passed in.
         self.policy = policy
         self.episode_steps: Counter = Counter()
-        self.episode_rewards: Dict[str, float] = defaultdict(float)
+        self.episode_rewards: Dict[GlobalAgentId, float] = defaultdict(float)
         self.stats_reporter = stats_reporter
         self.max_trajectory_length = max_trajectory_length
         self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
@@ -172,7 +179,7 @@ class AgentProcessor:
                 self.group_status[global_group_id][global_agent_id] = group_status
                 self.current_group_obs[global_group_id][global_agent_id] = step.obs
 
-    def _clear_group_obs(self, global_id: str) -> None:
+    def _clear_group_obs(self, global_id: GlobalGroupId) -> None:
         self._delete_in_nested_dict(self.current_group_obs, global_id)
         self._delete_in_nested_dict(self.group_status, global_id)
 
@@ -277,7 +284,7 @@ class AgentProcessor:
                 )
                 self._clean_agent_data(global_agent_id)
 
-    def _clean_agent_data(self, global_id: str) -> None:
+    def _clean_agent_data(self, global_id: GlobalAgentId) -> None:
         """
         Removes the data for an Agent.
         """
