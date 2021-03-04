@@ -379,7 +379,7 @@ def test_mismatch_observations_raise_in_step_result_from_proto():
     # Hack an observation to be larger, we should get an exception
     ap_list[0].observations[0].shape[0] += 1
     ap_list[0].observations[0].float_data.data.append(0.42)
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ValueError):
         steps_from_proto(ap_list, spec)
 
 

@@ -292,9 +292,9 @@ def steps_from_proto(
         for agent_info in agent_info_list:
             agent_obs_shape = tuple(agent_info.observations[obs_index].shape)
             if expected_obs_shape != agent_obs_shape:
-                raise RuntimeError(
+                raise ValueError(
                     f"Observation at index={obs_index} for agent with "
-                    f"id={agent_info.id}  didn't match the ObservationSpec. "
+                    f"id={agent_info.id} didn't match the ObservationSpec. "
                     f"Expeceted shape {expected_obs_shape} but got {agent_obs_shape}."
                 )
 
