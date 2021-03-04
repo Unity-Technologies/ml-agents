@@ -572,11 +572,11 @@ class TorchCOMAOptimizer(TorchOptimizer):
                 current_obs, team_obs, team_actions, _init_value_mem, _init_baseline_mem
             )
         else:
-            value_estimates, value_mem = self.critic.critic_pass(
+            value_estimates, next_value_mem = self.critic.critic_pass(
                 all_obs, _init_value_mem, sequence_length=batch.num_experiences
             )
 
-            baseline_estimates, baseline_mem = self.critic.baseline(
+            baseline_estimates, next_baseline_mem = self.critic.baseline(
                 [current_obs],
                 team_obs,
                 team_actions,
@@ -591,8 +591,8 @@ class TorchCOMAOptimizer(TorchOptimizer):
             [next_obs] + next_group_obs if next_group_obs is not None else [next_obs]
         )
 
-        next_value_estimates, value_mem = self.critic.critic_pass(
-            all_next_obs, value_mem, sequence_length=batch.num_experiences
+        next_value_estimates, _ = self.critic.critic_pass(
+            all_next_obs, next_value_mem, sequence_length=batch.num_experiences
         )
 
         for name, estimate in baseline_estimates.items():
