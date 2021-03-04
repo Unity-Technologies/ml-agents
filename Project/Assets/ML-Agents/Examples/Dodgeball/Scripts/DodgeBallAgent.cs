@@ -157,7 +157,7 @@ public class DodgeBallAgent : Agent
         m_DashInput = (int)discreteActions[1]; ;
 
         //HANDLE ROTATION
-        m_CubeMovement.Look(10 * m_Rotate);
+        m_CubeMovement.Look(50 * m_Rotate);
 
         //HANDLE XZ MOVEMENT
         var moveDir = transform.TransformDirection(new Vector3(m_InputH, 0, m_InputV));
@@ -258,7 +258,7 @@ public class DodgeBallAgent : Agent
             if (currentNumberOfBalls < 4)
             {
                 PickUpBall(db);
-                AddReward(0.001f);
+                // AddReward(0.001f);
             }
         }
     }
