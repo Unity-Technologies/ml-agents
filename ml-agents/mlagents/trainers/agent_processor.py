@@ -59,13 +59,13 @@ class AgentProcessor:
         self.last_step_result: Dict[GlobalAgentId, Tuple[DecisionStep, int]] = {}
         # current_group_obs is used to collect the current (i.e. the most recently seen)
         # obs of all the agents in the same group, and assemble the group obs.
-        # It is a dictionary of group_id to dictionaries of agent_id to observation.
+        # It is a dictionary of GlobalGroupId to dictionaries of GlobalAgentId to observation.
         self.current_group_obs: Dict[
             GlobalGroupId, Dict[GlobalAgentId, List[np.ndarray]]
         ] = defaultdict(lambda: defaultdict(list))
         # group_status is used to collect the current, most recently seen
         # group status of all the agents in the same group, and assemble the group's status.
-        # It is a dictionary of group_id to dictionaries of agent_id to AgeentStatus.
+        # It is a dictionary of GlobalGroupId to dictionaries of GlobalAgentId to AgentStatus.
         self.group_status: Dict[
             GlobalGroupId, Dict[GlobalAgentId, AgentStatus]
         ] = defaultdict(lambda: defaultdict(None))
