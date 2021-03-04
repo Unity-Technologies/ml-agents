@@ -229,20 +229,20 @@ def test_agent_deletion():
     policy.remove_previous_action.assert_has_calls(remove_calls)
     # Check that there are no experiences left
     assert len(processor.experience_buffers.keys()) == 0
-    assert len(processor.last_take_action_outputs.keys()) == 0
-    assert len(processor.episode_steps.keys()) == 0
-    assert len(processor.episode_rewards.keys()) == 0
-    assert len(processor.last_step_result.keys()) == 0
+    assert len(processor._last_take_action_outputs.keys()) == 0
+    assert len(processor._episode_steps.keys()) == 0
+    assert len(processor._episode_rewards.keys()) == 0
+    assert len(processor._last_step_result.keys()) == 0
 
     # check that steps with immediate dones don't add to dicts
     processor.add_experiences(
         mock_done_decision_step, mock_done_terminal_step, 0, ActionInfo.empty()
     )
     assert len(processor.experience_buffers.keys()) == 0
-    assert len(processor.last_take_action_outputs.keys()) == 0
-    assert len(processor.episode_steps.keys()) == 0
-    assert len(processor.episode_rewards.keys()) == 0
-    assert len(processor.last_step_result.keys()) == 0
+    assert len(processor._last_take_action_outputs.keys()) == 0
+    assert len(processor._episode_steps.keys()) == 0
+    assert len(processor._episode_rewards.keys()) == 0
+    assert len(processor._last_step_result.keys()) == 0
 
 
 def test_end_episode():
@@ -295,9 +295,9 @@ def test_end_episode():
     policy.remove_previous_action.assert_has_calls(remove_calls)
     # Check that there are no experiences left
     assert len(processor.experience_buffers.keys()) == 0
-    assert len(processor.last_take_action_outputs.keys()) == 0
-    assert len(processor.episode_steps.keys()) == 0
-    assert len(processor.episode_rewards.keys()) == 0
+    assert len(processor._last_take_action_outputs.keys()) == 0
+    assert len(processor._episode_steps.keys()) == 0
+    assert len(processor._episode_rewards.keys()) == 0
 
 
 def test_agent_manager():
@@ -309,8 +309,8 @@ def test_agent_manager():
         max_trajectory_length=5,
         stats_reporter=StatsReporter("testcat"),
     )
-    assert len(manager.trajectory_queues) == 1
-    assert isinstance(manager.trajectory_queues[0], AgentManagerQueue)
+    assert len(manager._trajectory_queues) == 1
+    assert isinstance(manager._trajectory_queues[0], AgentManagerQueue)
 
 
 def test_agent_manager_queue():

@@ -53,34 +53,36 @@ class AgentProcessor:
         :param max_trajectory_length: Maximum length of a trajectory before it is added to the trainer.
         :param stats_category: The category under which to write the stats. Usually, this comes from the Trainer.
         """
-        self.experience_buffers: Dict[
+        self._experience_buffers: Dict[
             GlobalAgentId, List[AgentExperience]
         ] = defaultdict(list)
-        self.last_step_result: Dict[GlobalAgentId, Tuple[DecisionStep, int]] = {}
+        self._last_step_result: Dict[GlobalAgentId, Tuple[DecisionStep, int]] = {}
         # current_group_obs is used to collect the current (i.e. the most recently seen)
         # obs of all the agents in the same group, and assemble the group obs.
         # It is a dictionary of GlobalGroupId to dictionaries of GlobalAgentId to observation.
-        self.current_group_obs: Dict[
+        self._current_group_obs: Dict[
             GlobalGroupId, Dict[GlobalAgentId, List[np.ndarray]]
         ] = defaultdict(lambda: defaultdict(list))
         # group_status is used to collect the current, most recently seen
         # group status of all the agents in the same group, and assemble the group's status.
         # It is a dictionary of GlobalGroupId to dictionaries of GlobalAgentId to AgentStatus.
-        self.group_status: Dict[
+        self._group_status: Dict[
             GlobalGroupId, Dict[GlobalAgentId, AgentStatus]
         ] = defaultdict(lambda: defaultdict(None))
         # last_take_action_outputs stores the action a_t taken before the current observation s_(t+1), while
         # grabbing previous_action from the policy grabs the action PRIOR to that, a_(t-1).
-        self.last_take_action_outputs: Dict[GlobalAgentId, ActionInfoOutputs] = {}
+        self._last_take_action_outputs: Dict[GlobalAgentId, ActionInfoOutputs] = {}
+
+        self._episode_steps: Counter = Counter()
+        self._episode_rewards: Dict[GlobalAgentId, float] = defaultdict(float)
+        self._stats_reporter = stats_reporter
+        self._max_trajectory_length = max_trajectory_length
+        self._trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
+        self._behavior_id = behavior_id
+
         # Note: In the future this policy reference will be the policy of the env_manager and not the trainer.
         # We can in that case just grab the action from the policy rather than having it passed in.
         self.policy = policy
-        self.episode_steps: Counter = Counter()
-        self.episode_rewards: Dict[GlobalAgentId, float] = defaultdict(float)
-        self.stats_reporter = stats_reporter
-        self.max_trajectory_length = max_trajectory_length
-        self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
-        self.behavior_id = behavior_id
 
     def add_experiences(
         self,
@@ -98,15 +100,15 @@ class AgentProcessor:
         take_action_outputs = previous_action.outputs
         if take_action_outputs:
             for _entropy in take_action_outputs["entropy"]:
-                self.stats_reporter.add_stat("Policy/Entropy", _entropy)
+                self._stats_reporter.add_stat("Policy/Entropy", _entropy)
 
         # Make unique agent_ids that are global across workers
         action_global_agent_ids = [
             get_global_agent_id(worker_id, ag_id) for ag_id in previous_action.agent_ids
         ]
         for global_id in action_global_agent_ids:
-            if global_id in self.last_step_result:  # Don't store if agent just reset
-                self.last_take_action_outputs[global_id] = take_action_outputs
+            if global_id in self._last_step_result:  # Don't store if agent just reset
+                self._last_take_action_outputs[global_id] = take_action_outputs
 
         # Iterate over all the terminal steps, first gather all the group obs
         # and then create the AgentExperiences/Trajectories. _add_to_group_status
@@ -136,7 +138,7 @@ class AgentProcessor:
         for _gid in action_global_agent_ids:
             # If the ID doesn't have a last step result, the agent just reset,
             # don't store the action.
-            if _gid in self.last_step_result:
+            if _gid in self._last_step_result:
                 if "action" in take_action_outputs:
                     self.policy.save_previous_action(
                         [_gid], take_action_outputs["action"]
@@ -154,10 +156,10 @@ class AgentProcessor:
             global group id.
         """
         global_agent_id = get_global_agent_id(worker_id, step.agent_id)
-        stored_decision_step, idx = self.last_step_result.get(
+        stored_decision_step, idx = self._last_step_result.get(
             global_agent_id, (None, None)
         )
-        stored_take_action_outputs = self.last_take_action_outputs.get(
+        stored_take_action_outputs = self._last_take_action_outputs.get(
             global_agent_id, None
         )
         if stored_decision_step is not None and stored_take_action_outputs is not None:
@@ -176,12 +178,12 @@ class AgentProcessor:
                     action=action_tuple,
                     done=isinstance(step, TerminalStep),
                 )
-                self.group_status[global_group_id][global_agent_id] = group_status
-                self.current_group_obs[global_group_id][global_agent_id] = step.obs
+                self._group_status[global_group_id][global_agent_id] = group_status
+                self._current_group_obs[global_group_id][global_agent_id] = step.obs
 
     def _clear_group_obs(self, global_id: GlobalGroupId) -> None:
-        self._delete_in_nested_dict(self.current_group_obs, global_id)
-        self._delete_in_nested_dict(self.group_status, global_id)
+        self._delete_in_nested_dict(self._current_group_obs, global_id)
+        self._delete_in_nested_dict(self._group_status, global_id)
 
     def _delete_in_nested_dict(self, nested_dict: Dict[str, Any], key: str) -> None:
         for _manager_id in list(nested_dict.keys()):
@@ -196,15 +198,15 @@ class AgentProcessor:
         terminated = isinstance(step, TerminalStep)
         global_agent_id = get_global_agent_id(worker_id, step.agent_id)
         global_group_id = get_global_group_id(worker_id, step.group_id)
-        stored_decision_step, idx = self.last_step_result.get(
+        stored_decision_step, idx = self._last_step_result.get(
             global_agent_id, (None, None)
         )
-        stored_take_action_outputs = self.last_take_action_outputs.get(
+        stored_take_action_outputs = self._last_take_action_outputs.get(
             global_agent_id, None
         )
         if not terminated:
             # Index is needed to grab from last_take_action_outputs
-            self.last_step_result[global_agent_id] = (step, index)
+            self._last_step_result[global_agent_id] = (step, index)
 
         # This state is the consequence of a past action
         if stored_decision_step is not None and stored_take_action_outputs is not None:
@@ -231,7 +233,7 @@ class AgentProcessor:
 
             # Assemble teammate_obs. If none saved, then it will be an empty list.
             group_statuses = []
-            for _id, _mate_status in self.group_status[global_group_id].items():
+            for _id, _mate_status in self._group_status[global_group_id].items():
                 if _id != global_agent_id:
                     group_statuses.append(_mate_status)
 
@@ -249,38 +251,38 @@ class AgentProcessor:
                 group_reward=step.group_reward,
             )
             # Add the value outputs if needed
-            self.experience_buffers[global_agent_id].append(experience)
-            self.episode_rewards[global_agent_id] += step.reward
+            self._experience_buffers[global_agent_id].append(experience)
+            self._episode_rewards[global_agent_id] += step.reward
             if not terminated:
-                self.episode_steps[global_agent_id] += 1
+                self._episode_steps[global_agent_id] += 1
 
             # Add a trajectory segment to the buffer if terminal or the length has reached the time horizon
             if (
-                len(self.experience_buffers[global_agent_id])
-                >= self.max_trajectory_length
+                len(self._experience_buffers[global_agent_id])
+                >= self._max_trajectory_length
                 or terminated
             ):
                 next_obs = step.obs
                 next_group_obs = []
-                for _id, _obs in self.current_group_obs[global_group_id].items():
+                for _id, _obs in self._current_group_obs[global_group_id].items():
                     if _id != global_agent_id:
                         next_group_obs.append(_obs)
 
                 trajectory = Trajectory(
-                    steps=self.experience_buffers[global_agent_id],
+                    steps=self._experience_buffers[global_agent_id],
                     agent_id=global_agent_id,
                     next_obs=next_obs,
                     next_group_obs=next_group_obs,
-                    behavior_id=self.behavior_id,
+                    behavior_id=self._behavior_id,
                 )
-                for traj_queue in self.trajectory_queues:
+                for traj_queue in self._trajectory_queues:
                     traj_queue.put(trajectory)
-                self.experience_buffers[global_agent_id] = []
+                self._experience_buffers[global_agent_id] = []
             if terminated:
                 # Record episode length.
-                self.stats_reporter.add_stat(
+                self._stats_reporter.add_stat(
                     "Environment/Episode Length",
-                    self.episode_steps.get(global_agent_id, 0),
+                    self._episode_steps.get(global_agent_id, 0),
                 )
                 self._clean_agent_data(global_agent_id)
 
@@ -288,11 +290,11 @@ class AgentProcessor:
         """
         Removes the data for an Agent.
         """
-        self._safe_delete(self.experience_buffers, global_id)
-        self._safe_delete(self.last_take_action_outputs, global_id)
-        self._safe_delete(self.last_step_result, global_id)
-        self._safe_delete(self.episode_steps, global_id)
-        self._safe_delete(self.episode_rewards, global_id)
+        self._safe_delete(self._experience_buffers, global_id)
+        self._safe_delete(self._last_take_action_outputs, global_id)
+        self._safe_delete(self._last_step_result, global_id)
+        self._safe_delete(self._episode_steps, global_id)
+        self._safe_delete(self._episode_rewards, global_id)
         self.policy.remove_previous_action([global_id])
         self.policy.remove_memories([global_id])
 
@@ -312,14 +314,14 @@ class AgentProcessor:
         assembles a Trajectory
         :param trajectory_queue: Trajectory queue to publish to.
         """
-        self.trajectory_queues.append(trajectory_queue)
+        self._trajectory_queues.append(trajectory_queue)
 
     def end_episode(self) -> None:
         """
         Ends the episode, terminating the current trajectory and stopping stats collection for that
         episode. Used for forceful reset (e.g. in curriculum or generalization training.)
         """
-        all_gids = list(self.experience_buffers.keys())  # Need to make copy
+        all_gids = list(self._experience_buffers.keys())  # Need to make copy
         for _gid in all_gids:
             self._clean_agent_data(_gid)
 
@@ -404,12 +406,12 @@ class AgentManager(AgentProcessor):
         super().__init__(policy, behavior_id, stats_reporter, max_trajectory_length)
         trajectory_queue_len = 20 if threaded else 0
         self.trajectory_queue: AgentManagerQueue[Trajectory] = AgentManagerQueue(
-            self.behavior_id, maxlen=trajectory_queue_len
+            self._behavior_id, maxlen=trajectory_queue_len
         )
         # NOTE: we make policy queues of infinite length to avoid lockups of the trainers.
         # In the environment manager, we make sure to empty the policy queue before continuing to produce steps.
         self.policy_queue: AgentManagerQueue[Policy] = AgentManagerQueue(
-            self.behavior_id, maxlen=0
+            self._behavior_id, maxlen=0
         )
         self.publish_trajectory_queue(self.trajectory_queue)
 
@@ -428,11 +430,11 @@ class AgentManager(AgentProcessor):
         for stat_name, value_list in env_stats.items():
             for val, agg_type in value_list:
                 if agg_type == StatsAggregationMethod.AVERAGE:
-                    self.stats_reporter.add_stat(stat_name, val, agg_type)
+                    self._stats_reporter.add_stat(stat_name, val, agg_type)
                 elif agg_type == StatsAggregationMethod.SUM:
-                    self.stats_reporter.add_stat(stat_name, val, agg_type)
+                    self._stats_reporter.add_stat(stat_name, val, agg_type)
                 elif agg_type == StatsAggregationMethod.MOST_RECENT:
                     # In order to prevent conflicts between multiple environments,
                     # only stats from the first environment are recorded.
                     if worker_id == 0:
-                        self.stats_reporter.set_stat(stat_name, val)
+                        self._stats_reporter.set_stat(stat_name, val)
