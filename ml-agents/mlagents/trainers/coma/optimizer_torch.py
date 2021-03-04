@@ -504,8 +504,8 @@ class TorchCOMAOptimizer(TorchOptimizer):
             all_value_tensors,
             all_baseline_tensors,
             all_next_value_mem,
-            next_value_mem,
             all_next_baseline_mem,
+            next_value_mem,
             next_baseline_mem,
         )
 
@@ -592,7 +592,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
         )
 
         next_value_estimates, _ = self.critic.critic_pass(
-            all_next_obs, next_value_mem, sequence_length=batch.num_experiences
+            all_next_obs, next_value_mem, sequence_length=1
         )
 
         for name, estimate in baseline_estimates.items():
