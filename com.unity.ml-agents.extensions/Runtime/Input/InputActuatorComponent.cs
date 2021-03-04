@@ -1,6 +1,7 @@
 #if MLA_INPUT_SYSTEM && UNITY_2019_4_OR_NEWER
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using UnityEngine;
@@ -11,6 +12,8 @@ using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.Utilities;
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEngine.InputSystem.LowLevel;
+
 #endif
 
 namespace Unity.MLAgents.Extensions.Input
@@ -21,7 +24,7 @@ namespace Unity.MLAgents.Extensions.Input
     /// </summary>
     [RequireComponent(typeof(PlayerInput), typeof(IInputActionAssetProvider))]
     [AddComponentMenu("ML Agents/Input Actuator", (int)MenuGroup.Actuators)]
-    public class InputActuatorComponent : ActuatorComponent
+    public class InputActuatorComponent : ActuatorComponent , IInputEventPtrProvider
     {
         InputActionAsset m_InputAsset;
         IInputActionCollection2 m_AssetCollection;
@@ -62,7 +65,7 @@ namespace Unity.MLAgents.Extensions.Input
                     || m_ActionSpec.BranchSizes.Length == 0)
                 {
                     FindNeededComponents();
-                    var actuators = CreateActuatorsFromMap(m_InputAsset.FindActionMap(m_PlayerInput.defaultActionMap), m_BehaviorParameters, null);
+                    var actuators = CreateActuatorsFromMap(m_InputAsset.FindActionMap(m_PlayerInput.defaultActionMap), m_BehaviorParameters, null, this);
                     m_ActionSpec = CombineActuatorActionSpecs(actuators);
 
                 }
@@ -125,7 +128,7 @@ namespace Unity.MLAgents.Extensions.Input
             RegisterLayoutBuilder(inputActionMap, m_LayoutName);
             m_Device = InputSystem.AddDevice(m_LayoutName);
 
-            m_Actuators = CreateActuatorsFromMap(inputActionMap, m_BehaviorParameters, m_Device);
+            m_Actuators = CreateActuatorsFromMap(inputActionMap, m_BehaviorParameters, m_Device, this);
 
             UpdateDeviceBinding(m_BehaviorParameters.IsInHeuristicMode());
             inputActionMap.Enable();
@@ -147,7 +150,8 @@ namespace Unity.MLAgents.Extensions.Input
 
         internal static IActuator[] CreateActuatorsFromMap(InputActionMap inputActionMap,
             BehaviorParameters behaviorParameters,
-            InputDevice inputDevice)
+            InputDevice inputDevice,
+            IInputEventPtrProvider ptrProvider)
         {
             var actuators = new IActuator[inputActionMap.actions.Count];
             for (var i = 0; i < inputActionMap.actions.Count; i++)
@@ -155,7 +159,7 @@ namespace Unity.MLAgents.Extensions.Input
                 var action = inputActionMap.actions[i];
                 var actionLayout = InputSystem.LoadLayout(action.expectedControlType);
                 var adaptor = (IRLActionInputAdaptor)Activator.CreateInstance(controlTypeToAdaptorType[actionLayout.type]);
-                actuators[i] = new InputActionActuator(inputDevice, behaviorParameters, action, adaptor);
+                actuators[i] = new InputActionActuator(inputDevice, behaviorParameters, action, adaptor, ptrProvider);
 
                 // Reasonably, the input system starts adding numbers after the first none numbered name
                 // is added.  So for device ID of 0, we use the empty string in the path.
@@ -332,6 +336,43 @@ namespace Unity.MLAgents.Extensions.Input
             m_PlayerInput = null;
             m_BehaviorParameters = null;
             m_Device = null;
+        }
+
+        int m_ActuatorsWrittenToEvent;
+        NativeArray<byte> m_InputBufferForFrame;
+        InputEventPtr m_InputEventPtrForFrame;
+        public InputEventPtr GetEventForFrame()
+        {
+#if UNITY_EDITOR
+            if (!EditorApplication.isPlaying)
+            {
+                return new InputEventPtr();
+            }
+#endif
+            if (m_ActuatorsWrittenToEvent % m_Actuators.Length == 0 || !m_InputEventPtrForFrame.valid)
+            {
+                m_ActuatorsWrittenToEvent = 0;
+                m_InputEventPtrForFrame = new InputEventPtr();
+                m_InputBufferForFrame = StateEvent.From(m_Device, out m_InputEventPtrForFrame);
+            }
+
+            return m_InputEventPtrForFrame;
+        }
+
+        public void EventWrittenToInFrame()
+        {
+#if UNITY_EDITOR
+            if (!EditorApplication.isPlaying)
+            {
+                return;
+            }
+#endif
+            m_ActuatorsWrittenToEvent++;
+            if (m_ActuatorsWrittenToEvent == m_Actuators.Length)
+            {
+                InputSystem.QueueEvent(m_InputEventPtrForFrame);
+                m_InputBufferForFrame.Dispose();
+            }
         }
     }
 }

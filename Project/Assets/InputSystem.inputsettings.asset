@@ -16,6 +16,7 @@ MonoBehaviour:
   - Pointer
   - Keyboard
   - Gamepad
+  - Mouse
   m_UpdateMode: 2
   m_CompensateForScreenOrientation: 0
   m_FilterNoiseOnCurrent: 0
@@ -30,5 +31,5 @@ MonoBehaviour:
   m_MultiTapDelayTime: 0.75
   m_iOSSettings:
     m_MotionUsage:
-      m_Enabled: 0
+      m_Enabled: 1
       m_Description: 

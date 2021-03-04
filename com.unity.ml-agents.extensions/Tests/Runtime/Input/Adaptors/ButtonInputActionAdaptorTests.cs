@@ -51,7 +51,7 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
         public void TestQueueEvent()
         {
             var actionBuffers = new ActionBuffers(ActionSegment<float>.Empty, new ActionSegment<int>(new[] { 1 }));
-            m_Adaptor.QueueInputEventForAction(m_Action, m_Control, new ActionSpec(), actionBuffers);
+            m_Adaptor.WriteToInputEventForAction(m_Action, m_Control, new ActionSpec(), actionBuffers);
             InputSystem.Update();
             var val = m_Action.ReadValue<float>();
             Assert.IsTrue(Mathf.Approximately(1f, val));
@@ -61,7 +61,7 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
         public void TestWriteToHeuristic()
         {
             var actionBuffers = new ActionBuffers(ActionSegment<float>.Empty, new ActionSegment<int>(new[] { 1 }));
-            m_Adaptor.QueueInputEventForAction(m_Action, m_Control, new ActionSpec(), actionBuffers);
+            m_Adaptor.WriteToInputEventForAction(m_Action, m_Control, new ActionSpec(), actionBuffers);
             InputSystem.Update();
             var buffer = new ActionBuffers(ActionSegment<float>.Empty, new ActionSegment<int>(new[] { 1 }));
             m_Adaptor.WriteToHeuristic(m_Action, buffer);

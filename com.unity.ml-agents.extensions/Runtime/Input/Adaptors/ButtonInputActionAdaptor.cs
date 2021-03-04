@@ -27,18 +27,11 @@ namespace Unity.MLAgents.Extensions.Input
         }
 
         /// TODO again this might need to be more nuanced for things like continuous buttons.
-        /// <inheritdoc cref="IRLActionInputAdaptor.QueueInputEventForAction"/>
-        public void QueueInputEventForAction(InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
+        /// <inheritdoc cref="IRLActionInputAdaptor.WriteToInputEventForAction"/>
+        public void WriteToInputEventForAction(InputEventPtr eventPtr, InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
         {
             var val = actionBuffers.DiscreteActions[0];
-            // previously this code was just
-            // InputSystem.QueueDeltaStateEvent(control, (byte)val);
-            // now I'm queueing a event like below:
-            using (StateEvent.From(control.device, out var eventPtr))
-            {
-                ((ButtonControl)control).WriteValueIntoEvent((float)val, eventPtr);
-                InputSystem.QueueEvent(eventPtr);
-            }
+            ((ButtonControl)control).WriteValueIntoEvent((float)val, eventPtr);
         }
 
         /// <inheritdoc cref="IRLActionInputAdaptor.WriteToHeuristic"/>>

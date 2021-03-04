@@ -19,7 +19,7 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
             return ActionSpec.MakeContinuous(1);
         }
 
-        public void QueueInputEventForAction(InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
+        public void WriteToInputEventForAction(InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
         {
             eventQueued = true;
         }
