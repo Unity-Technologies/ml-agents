@@ -54,7 +54,7 @@ all_package_tests:
   triggers:
     cancel_old_ci: true
     recurring:
-      - branch: master
+      - branch: main
         frequency: daily
 
 {% for editor in test_editors %}

@@ -68,7 +68,7 @@ versions = [
 MAX_DAYS = 150  # do not print releases older than this many days
 sorted_versions = sorted(versions, key=lambda x: x.loose_version, reverse=True)
 
-print(table_line("master (unstable)", "master", "--"))
+print(table_line("main (unstable)", "main", "--"))
 highlight = True  # whether to bold the line or not
 for version_info in sorted_versions:
     if version_info.elapsed_days <= MAX_DAYS:

@@ -52,7 +52,7 @@ descriptions of all these features.
 [here](https://github.com/Unity-Technologies/ml-agents/tree/release_2_verified_docs/docs/Readme.md)
 to get started with the latest release of ML-Agents.**
 
-The table below lists all our releases, including our `master` branch which is
+The table below lists all our releases, including our `main` branch which is
 under active development and may be unstable. A few helpful guidelines:
 - The [Versioning page](docs/Versioning.md) overviews how we manage our GitHub
   releases and the versioning process for each of the ML-Agents components.
@@ -66,7 +66,7 @@ under active development and may be unstable. A few helpful guidelines:
 
 | **Version** | **Release Date** | **Source** | **Documentation** | **Download** |
 |:-------:|:------:|:-------------:|:-------:|:------------:|
-| **master (unstable)** | -- | [source](https://github.com/Unity-Technologies/ml-agents/tree/master) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/master/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/master.zip) |
+| **main (unstable)** | -- | [source](https://github.com/Unity-Technologies/ml-agents/tree/main) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/main/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/main.zip) |
 | **Release 2** | **May 19, 2020** | **[source](https://github.com/Unity-Technologies/ml-agents/tree/release_2)** | **[docs](https://github.com/Unity-Technologies/ml-agents/tree/release_2/docs/Readme.md)** | **[download](https://github.com/Unity-Technologies/ml-agents/archive/release_2.zip)** |
 | **Release 1** | April 30, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/release_1) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/release_1/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/release_1.zip) |
 | **0.15.1** | March 30, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.15.1) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.15.1/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.15.1.zip) |
