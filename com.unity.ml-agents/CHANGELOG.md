@@ -9,12 +9,15 @@ and this project adheres to
 ## [Unreleased]
 ### Major Changes
 #### com.unity.ml-agents (C#)
+- The `BufferSensor` and `BufferSensorComponent` have been added. They allow the Agent to observe variable number of entities. (#4909)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `encoding_size` setting for RewardSignals has been deprecated. Please use `network_settings` instead. (#4982)
+- The `cattrs` version dependency was updated to allow `>=1.1.0` on Python 3.8 or higher. (#4821)
+
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
@@ -62,7 +65,7 @@ and this project adheres to
 - Added a `--torch-device` commandline option to `mlagents-learn`, which sets the default
   [`torch.device`](https://pytorch.org/docs/stable/tensor_attributes.html#torch.torch.device) used for training. (#4888)
 - The `--cpu` commandline option had no effect and was removed. Use `--torch-device=cpu` to force CPU training. (#4888)
-- The `mlagents_env` API has changed, `BehaviorSpec` now has a `observation_specs` property containing a list of `ObservationSpec`. For more information on `ObservationSpec` see [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Python-API.md#behaviorspec). (#4763, #4825)
+- The `mlagents_env` API has changed, `BehaviorSpec` now has a `observation_specs` property containing a list of `ObservationSpec`. For more information on `ObservationSpec` see [here](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Python-API.md#behaviorspec). (#4763, #4825)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
@@ -128,7 +131,7 @@ discrete actions for shooting. (#4746)
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
  - PyTorch trainers are now the default. See the
- [installation docs](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Installation.md) for
+ [installation docs](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Installation.md) for
  more information on installing PyTorch. For the time being, TensorFlow is still available;
  you can use the TensorFlow backend by adding `--tensorflow` to the CLI, or
  adding `framework: tensorflow` in the configuration YAML. (#4517)
@@ -137,7 +140,7 @@ discrete actions for shooting. (#4746)
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - The Barracuda dependency was upgraded to 1.1.2 (#4571)
 - Utilities were added to `com.unity.ml-agents.extensions` to make it easier to
-integrate with match-3 games. See the [readme](https://github.com/Unity-Technologies/ml-agents/blob/master/com.unity.ml-agents.extensions/Documentation~/Match3.md)
+integrate with match-3 games. See the [readme](https://github.com/Unity-Technologies/ml-agents/blob/main/com.unity.ml-agents.extensions/Documentation~/Match3.md)
 for more details. (#4515)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `action_probs` node is no longer listed as an output in TensorFlow models (#4613).
@@ -160,7 +163,7 @@ goes larger than 2^31. Previous Tensorflow checkpoints will become incompatible 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
  - Added the Random Network Distillation (RND) intrinsic reward signal to the Pytorch
  trainers. To use RND, add a `rnd` section to the `reward_signals` section of your
- yaml configuration file. [More information here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-Configuration-File.md#rnd-intrinsic-reward) (#4473)
+ yaml configuration file. [More information here](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Training-Configuration-File.md#rnd-intrinsic-reward) (#4473)
 ### Minor Changes
 #### com.unity.ml-agents (C#)
  - Stacking for compressed observations is now supported. An additional setting
@@ -279,11 +282,11 @@ first trajectory processed. (#4299)
 ### Major Changes
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The Parameter Randomization feature has been refactored to enable sampling of new parameters per episode to improve robustness. The
-  `resampling-interval` parameter has been removed and the config structure updated. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md). (#4065)
+  `resampling-interval` parameter has been removed and the config structure updated. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Training-ML-Agents.md). (#4065)
 - The Parameter Randomization feature has been merged with the Curriculum feature. It is now possible to specify a sampler
 in the lesson of a Curriculum. Curriculum has been refactored and is now specified at the level of the parameter, not the
 behavior. More information
-[here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md).(#4160)
+[here](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Training-ML-Agents.md).(#4160)
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)

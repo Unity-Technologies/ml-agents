@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Extensions.Match3
     /// Actuator for a Match3 game. It translates valid moves (defined by AbstractBoard.IsMoveValid())
     /// in action masks, and applies the action to the board via AbstractBoard.MakeMove().
     /// </summary>
-    public class Match3Actuator : IActuator, IHeuristicProvider
+    public class Match3Actuator : IActuator, IHeuristicProvider, IBuiltInActuator
     {
         protected AbstractBoard m_Board;
         protected System.Random m_Random;
@@ -90,6 +90,12 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public void ResetData()
         {
+        }
+
+        /// <inheritdoc/>
+        public BuiltInActuatorType GetBuiltInActuatorType()
+        {
+            return BuiltInActuatorType.Match3Actuator;
         }
 
         IEnumerable<int> InvalidMoveIndices()
@@ -179,6 +185,5 @@ namespace Unity.MLAgents.Extensions.Match3
         {
             return 1;
         }
-
     }
 }

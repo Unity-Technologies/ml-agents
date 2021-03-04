@@ -1,4 +1,4 @@
-<img src="https://github.com/Unity-Technologies/ml-agents/blob/master/docs/images/image-banner.png" align="middle" width="3000"/>
+<img src="https://github.com/Unity-Technologies/ml-agents/blob/main/docs/images/image-banner.png" align="middle" width="3000"/>
 
 # Unity ML-Agents Toolkit Version Release 7
 
@@ -61,7 +61,7 @@ Proximal Policy Optimization (PPO) и Soft Actor-Critic (SAC). Первый ал
 См. [здесь](https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/docs/Readme.md),
 чтобы начать работать с самой последней версий ML-Agents.**
 
-Таблица внизу - список всех наших релизов, включая master ветку, над которой мы ведем активную работу
+Таблица внизу - список всех наших релизов, включая main ветку, над которой мы ведем активную работу
 и которая может быть нестабильной. Полезная информация:
 
 [Управление версиями](docs/Versioning.md) - описание того, как мы работам с GitHub.
@@ -72,7 +72,7 @@ Proximal Policy Optimization (PPO) и Soft Actor-Critic (SAC). Первый ал
 
 | **Version** | **Дата релиза** | **Source** | **Документация** | **Загрузка** |
 |:-------:|:------:|:-------------:|:-------:|:------------:|
-| **master (unstable)** | -- | [source](https://github.com/Unity-Technologies/ml-agents/tree/master) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/master/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/master.zip) |
+| **main (unstable)** | -- | [source](https://github.com/Unity-Technologies/ml-agents/tree/main) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/main/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/main.zip) |
 | **Release 7** | **16 Сентября, 2020** | **[source](https://github.com/Unity-Technologies/ml-agents/tree/release_7)** | **[docs](https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/docs/Readme.md)** | **[download](https://github.com/Unity-Technologies/ml-agents/archive/release_7.zip)** |
 | **Release 6** | 12 Августа, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/release_6) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/release_6_docs/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/release_6.zip) |
 | **Release 5** | 31 Июля, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/release_5) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/release_5_docs/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/release_5.zip) |
