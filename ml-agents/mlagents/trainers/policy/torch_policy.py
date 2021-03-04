@@ -10,11 +10,7 @@ from mlagents_envs.base_env import DecisionSteps, BehaviorSpec
 from mlagents_envs.timers import timed
 
 from mlagents.trainers.settings import TrainerSettings
-from mlagents.trainers.torch.networks import (
-    SharedActorCritic,
-    SeparateActorCritic,
-    GlobalSteps,
-)
+from mlagents.trainers.torch.networks import SimpleActor, SharedActorCritic, GlobalSteps
 
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.buffer import AgentBuffer
@@ -61,31 +57,40 @@ class TorchPolicy(Policy):
         )  # could be much simpler if TorchPolicy is nn.Module
         self.grads = None
 
-        reward_signal_configs = trainer_settings.reward_signals
-        reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
-
         self.stats_name_to_update_name = {
             "Losses/Value Loss": "value_loss",
             "Losses/Policy Loss": "policy_loss",
         }
         if separate_critic:
-            ac_class = SeparateActorCritic
+            self.actor = SimpleActor(
+                observation_specs=self.behavior_spec.observation_specs,
+                network_settings=trainer_settings.network_settings,
+                action_spec=behavior_spec.action_spec,
+                conditional_sigma=self.condition_sigma_on_obs,
+                tanh_squash=tanh_squash,
+            )
+            self.shared_critic = False
         else:
-            ac_class = SharedActorCritic
-        self.actor_critic = ac_class(
-            observation_specs=self.behavior_spec.observation_specs,
-            network_settings=trainer_settings.network_settings,
-            action_spec=behavior_spec.action_spec,
-            stream_names=reward_signal_names,
-            conditional_sigma=self.condition_sigma_on_obs,
-            tanh_squash=tanh_squash,
-        )
+            reward_signal_configs = trainer_settings.reward_signals
+            reward_signal_names = [
+                key.value for key, _ in reward_signal_configs.items()
+            ]
+            self.actor = SharedActorCritic(
+                observation_specs=self.behavior_spec.observation_specs,
+                network_settings=trainer_settings.network_settings,
+                action_spec=behavior_spec.action_spec,
+                stream_names=reward_signal_names,
+                conditional_sigma=self.condition_sigma_on_obs,
+                tanh_squash=tanh_squash,
+            )
+            self.shared_critic = True
+
         # Save the m_size needed for export
         self._export_m_size = self.m_size
         # m_size needed for training is determined by network, not trainer settings
-        self.m_size = self.actor_critic.memory_size
+        self.m_size = self.actor.memory_size
 
-        self.actor_critic.to(default_device())
+        self.actor.to(default_device())
         self._clip_action = not tanh_squash
 
     @property
@@ -115,7 +120,7 @@ class TorchPolicy(Policy):
         """
 
         if self.normalize:
-            self.actor_critic.update_normalization(buffer)
+            self.actor.update_normalization(buffer)
 
     @timed
     def sample_actions(
@@ -124,7 +129,6 @@ class TorchPolicy(Policy):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
-        critic_obs: Optional[List[List[torch.Tensor]]] = None,
     ) -> Tuple[AgentAction, ActionLogProbs, torch.Tensor, torch.Tensor]:
         """
         :param obs: List of observations.
@@ -133,7 +137,7 @@ class TorchPolicy(Policy):
         :param seq_len: Sequence length when using RNN.
         :return: Tuple of AgentAction, ActionLogProbs, entropies, and output memories.
         """
-        actions, log_probs, entropies, memories = self.actor_critic.get_action_stats(
+        actions, log_probs, entropies, memories = self.actor.get_action_and_stats(
             obs, masks, memories, seq_len
         )
         return (actions, log_probs, entropies, memories)
@@ -145,12 +149,11 @@ class TorchPolicy(Policy):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
-        critic_obs: Optional[List[List[torch.Tensor]]] = None,
-    ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
-        log_probs, entropies, value_heads = self.actor_critic.get_stats_and_value(
-            obs, actions, masks, memories, seq_len, critic_obs
+    ) -> Tuple[ActionLogProbs, torch.Tensor]:
+        log_probs, entropies = self.actor.get_stats(
+            obs, actions, masks, memories, seq_len
         )
-        return log_probs, entropies, value_heads
+        return log_probs, entropies
 
     @timed
     def evaluate(
@@ -169,6 +172,7 @@ class TorchPolicy(Policy):
         memories = torch.as_tensor(self.retrieve_memories(global_agent_ids)).unsqueeze(
             0
         )
+
         run_out = {}
         with torch.no_grad():
             action, log_probs, entropy, memories = self.sample_actions(
@@ -211,7 +215,6 @@ class TorchPolicy(Policy):
         return ActionInfo(
             action=run_out.get("action"),
             env_action=run_out.get("env_action"),
-            value=run_out.get("value"),
             outputs=run_out,
             agent_ids=list(decision_requests.agent_id),
         )
@@ -240,13 +243,13 @@ class TorchPolicy(Policy):
         return self.get_current_step()
 
     def load_weights(self, values: List[np.ndarray]) -> None:
-        self.actor_critic.load_state_dict(values)
+        self.actor.load_state_dict(values)
 
     def init_load_weights(self) -> None:
         pass
 
     def get_weights(self) -> List[np.ndarray]:
-        return copy.deepcopy(self.actor_critic.state_dict())
+        return copy.deepcopy(self.actor.state_dict())
 
     def get_modules(self):
-        return {"Policy": self.actor_critic, "global_step": self.global_step}
+        return {"Policy": self.actor, "global_step": self.global_step}

@@ -34,6 +34,7 @@ import numpy as np
 from mlagents_envs.exception import UnityActionException
 
 AgentId = int
+GroupId = int
 BehaviorName = str
 
 
@@ -54,7 +55,6 @@ class DecisionStep(NamedTuple):
 
     obs: List[np.ndarray]
     reward: float
-    group_reward: float
     agent_id: AgentId
     action_mask: Optional[List[np.ndarray]]
     group_id: int
@@ -87,7 +87,6 @@ class DecisionSteps(Mapping):
     def __init__(self, obs, reward, agent_id, action_mask, group_id, group_reward):
         self.obs: List[np.ndarray] = obs
         self.reward: np.ndarray = reward
-        self.group_reward: np.ndarray = group_reward
         self.agent_id: np.ndarray = agent_id
         self.action_mask: Optional[List[np.ndarray]] = action_mask
         self.group_id: np.ndarray = group_id
@@ -130,7 +129,6 @@ class DecisionSteps(Mapping):
         return DecisionStep(
             obs=agent_obs,
             reward=self.reward[agent_index],
-            group_reward=self.group_reward[agent_index],
             agent_id=agent_id,
             action_mask=agent_mask,
             group_id=group_id,
@@ -152,7 +150,6 @@ class DecisionSteps(Mapping):
         return DecisionSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
-            group_reward=np.zeros(0, dtype=np.float32),
             agent_id=np.zeros(0, dtype=np.int32),
             action_mask=None,
             group_id=np.zeros(0, dtype=np.int32),
@@ -174,10 +171,9 @@ class TerminalStep(NamedTuple):
 
     obs: List[np.ndarray]
     reward: float
-    group_reward: float
     interrupted: bool
     agent_id: AgentId
-    group_id: int
+    group_id: GroupId
     group_reward: float
 
 
@@ -202,7 +198,6 @@ class TerminalSteps(Mapping):
     def __init__(self, obs, reward, interrupted, agent_id, group_id, group_reward):
         self.obs: List[np.ndarray] = obs
         self.reward: np.ndarray = reward
-        self.group_reward: np.ndarray = group_reward
         self.interrupted: np.ndarray = interrupted
         self.agent_id: np.ndarray = agent_id
         self.group_id: np.ndarray = group_id
@@ -241,7 +236,6 @@ class TerminalSteps(Mapping):
         return TerminalStep(
             obs=agent_obs,
             reward=self.reward[agent_index],
-            group_reward=self.group_reward[agent_index],
             interrupted=self.interrupted[agent_index],
             agent_id=agent_id,
             group_id=group_id,
@@ -263,7 +257,6 @@ class TerminalSteps(Mapping):
         return TerminalSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
-            group_reward=np.zeros(0, dtype=np.float32),
             interrupted=np.zeros(0, dtype=np.bool),
             agent_id=np.zeros(0, dtype=np.int32),
             group_id=np.zeros(0, dtype=np.int32),

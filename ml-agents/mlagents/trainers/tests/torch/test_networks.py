@@ -4,8 +4,8 @@ from mlagents.torch_utils import torch
 from mlagents.trainers.torch.networks import (
     NetworkBody,
     ValueNetwork,
+    SimpleActor,
     SharedActorCritic,
-    SeparateActorCritic,
 )
 from mlagents.trainers.settings import NetworkSettings
 from mlagents_envs.base_env import ActionSpec
@@ -128,9 +128,9 @@ def test_valuenetwork():
             assert _out[0] == pytest.approx(1.0, abs=0.1)
 
 
-@pytest.mark.parametrize("ac_type", [SharedActorCritic, SeparateActorCritic])
+@pytest.mark.parametrize("shared", [True, False])
 @pytest.mark.parametrize("lstm", [True, False])
-def test_actor_critic(ac_type, lstm):
+def test_actor_critic(lstm, shared):
     obs_size = 4
     network_settings = NetworkSettings(
         memory=NetworkSettings.MemorySettings() if lstm else None, normalize=True
@@ -141,7 +141,13 @@ def test_actor_critic(ac_type, lstm):
     stream_names = [f"stream_name{n}" for n in range(4)]
     # action_spec = ActionSpec.create_continuous(act_size[0])
     action_spec = ActionSpec(act_size, tuple(act_size for _ in range(act_size)))
-    actor = ac_type(obs_spec, network_settings, action_spec, stream_names)
+    if shared:
+        actor = critic = SharedActorCritic(
+            obs_spec, network_settings, action_spec, stream_names, network_settings
+        )
+    else:
+        actor = SimpleActor(obs_spec, network_settings, action_spec)
+        critic = ValueNetwork(stream_names, obs_spec, network_settings)
     if lstm:
         sample_obs = torch.ones((1, network_settings.memory.sequence_length, obs_size))
         memories = torch.ones(
@@ -153,7 +159,7 @@ def test_actor_critic(ac_type, lstm):
         # memories isn't always set to None, the network should be able to
         # deal with that.
     # Test critic pass
-    value_out, memories_out = actor.critic_pass([sample_obs], memories=memories)
+    value_out, memories_out = critic.critic_pass([sample_obs], memories=memories)
     for stream in stream_names:
         if lstm:
             assert value_out[stream].shape == (network_settings.memory.sequence_length,)
@@ -162,7 +168,7 @@ def test_actor_critic(ac_type, lstm):
             assert value_out[stream].shape == (1,)
 
     # Test get action stats and_value
-    action, log_probs, entropies, value_out, mem_out = actor.get_action_stats_and_value(
+    action, log_probs, entropies, mem_out = actor.get_action_and_stats(
         [sample_obs], memories=memories, masks=mask
     )
     if lstm:
@@ -179,8 +185,3 @@ def test_actor_critic(ac_type, lstm):
 
     if mem_out is not None:
         assert mem_out.shape == memories.shape
-    for stream in stream_names:
-        if lstm:
-            assert value_out[stream].shape == (network_settings.memory.sequence_length,)
-        else:
-            assert value_out[stream].shape == (1,)

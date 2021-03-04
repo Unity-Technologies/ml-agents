@@ -119,13 +119,13 @@ namespace Unity.MLAgents.Inference
                         // If the tensor is of rank 2, we use the index of the sensor
                         // to create the name
                         obsGen = new ObservationGenerator(allocator);
-                        obsGenName = TensorNames.ObservationPlaceholderPrefix + sensorIndex;
+                        obsGenName = TensorNames.GetObservationName(sensorIndex);
                         break;
                     case 3:
                         // If the tensor is of rank 3, we use the "visual observation
                         // index", which only counts the rank 3 sensors
                         obsGen = new ObservationGenerator(allocator);
-                        obsGenName = TensorNames.VisualObservationPlaceholderPrefix + visIndex;
+                        obsGenName = TensorNames.GetVisualObservationName(visIndex);
                         visIndex++;
                         break;
                     default:

@@ -156,125 +156,31 @@ class NetworkBody(nn.Module):
         return encoding, memories
 
 
-# NOTE: this class will be replaced with a multi-head attention when the time comes
-class MultiInputNetworkBody(nn.Module):
-    def __init__(
-        self,
-        sensor_specs: List[SensorSpec],
-        network_settings: NetworkSettings,
-        encoded_act_size: int = 0,
-        num_obs_heads: int = 1,
-    ):
-        super().__init__()
-        self.normalize = network_settings.normalize
-        self.use_lstm = network_settings.memory is not None
-        # Scale network depending on num agents
-        self.h_size = network_settings.hidden_units
-        self.m_size = (
-            network_settings.memory.memory_size
-            if network_settings.memory is not None
-            else 0
-        )
-        self.processors, _input_size = ModelUtils.create_input_processors(
-            sensor_specs,
-            self.h_size,
-            network_settings.vis_encode_type,
-            normalize=self.normalize,
-        )
-
-        # Modules for self-attention
-        self.entity_encoder = EntityEmbeddings(
-            sum(_input_size), [sum(_input_size)], self.h_size
-        )
-        self.self_attn = ResidualSelfAttention(self.h_size)
-
-        encoder_input_size = self.h_size
-
-        total_enc_size = encoder_input_size + encoded_act_size
-        self.linear_encoder = LinearEncoder(
-            total_enc_size, network_settings.num_layers, self.h_size
-        )
-
-        if self.use_lstm:
-            self.lstm = LSTM(self.h_size, self.m_size)
-        else:
-            self.lstm = None  # type: ignore
-
-    @property
-    def memory_size(self) -> int:
-        return self.lstm.memory_size if self.use_lstm else 0
-
+class Critic(abc.ABC):
+    @abc.abstractmethod
     def update_normalization(self, buffer: AgentBuffer) -> None:
-        obs = ObsUtil.from_buffer(buffer, len(self.processors))
-        for vec_input, enc in zip(obs, self.processors):
-            if isinstance(enc, VectorInput):
-                enc.update_normalization(torch.as_tensor(vec_input))
+        """
+        Updates normalization of Actor based on the provided List of vector obs.
+        :param vector_obs: A List of vector obs as tensors.
+        """
+        pass
 
-    def copy_normalization(self, other_network: "NetworkBody") -> None:
-        if self.normalize:
-            for n1, n2 in zip(self.processors, other_network.processors):
-                if isinstance(n1, VectorInput) and isinstance(n2, VectorInput):
-                    n1.copy_normalization(n2)
-
-    def forward(
+    def critic_pass(
         self,
-        all_net_inputs: List[List[torch.Tensor]],
-        actions: Optional[torch.Tensor] = None,
+        inputs: List[torch.Tensor],
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
-        concat_encoded_obs = []
-        x_self = None
-        self_encodes = []
-        inputs = all_net_inputs[0]
-        for idx, processor in enumerate(self.processors):
-            obs_input = inputs[idx]
-            processed_obs = processor(obs_input)
-            self_encodes.append(processed_obs)
-        x_self = torch.cat(self_encodes, dim=-1)
-
-        # Get attention masks by grabbing an arbitrary obs across all the agents
-        # Since these are raw obs, the padded values are still NaN
-        only_first_obs = [_all_obs[0] for _all_obs in all_net_inputs]
-        obs_for_mask = torch.stack(only_first_obs, dim=1)
-        # Get the mask from nans
-        attn_mask = torch.any(obs_for_mask.isnan(), dim=2).type(torch.FloatTensor)
-
-        # Get the self encoding separately, but keep it in the entities
-        concat_encoded_obs = [x_self]
-        for inputs in all_net_inputs[1:]:
-            encodes = []
-            for idx, processor in enumerate(self.processors):
-                obs_input = inputs[idx]
-                obs_input[obs_input.isnan()] = 0.0  # Remove NaNs
-                processed_obs = processor(obs_input)
-                encodes.append(processed_obs)
-            concat_encoded_obs.append(torch.cat(encodes, dim=-1))
-
-        concat_entites = torch.stack(concat_encoded_obs, dim=1)
-
-        encoded_entity = self.entity_encoder(x_self, [concat_entites])
-        encoded_state = self.self_attn(encoded_entity, [attn_mask])
-
-        if len(concat_encoded_obs) == 0:
-            raise Exception("No valid inputs to network.")
-
-        # Constants don't work in Barracuda
-        if actions is not None:
-            inputs = torch.cat([encoded_state, actions], dim=-1)
-        else:
-            inputs = encoded_state
-        encoding = self.linear_encoder(inputs)
-
-        if self.use_lstm:
-            # Resize to (batch, sequence length, encoding size)
-            encoding = encoding.reshape([-1, sequence_length, self.h_size])
-            encoding, memories = self.lstm(encoding, memories)
-            encoding = encoding.reshape([-1, self.m_size // 2])
-        return encoding, memories
+    ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
+        """
+        Get value outputs for the given obs.
+        :param inputs: List of inputs as tensors.
+        :param memories: Tensor of memories, if using memory. Otherwise, None.
+        :returns: Dict of reward stream to output tensor for values.
+        """
+        pass
 
 
-class ValueNetwork(nn.Module):
+class ValueNetwork(nn.Module, Critic):
     def __init__(
         self,
         stream_names: List[str],
@@ -295,47 +201,27 @@ class ValueNetwork(nn.Module):
             encoding_size = network_settings.hidden_units
         self.value_heads = ValueHeads(stream_names, encoding_size, outputs_per_stream)
 
+    def update_normalization(self, buffer: AgentBuffer) -> None:
+        self.network_body.update_normalization(buffer)
+
     @property
     def memory_size(self) -> int:
         return self.network_body.memory_size
 
-    def forward(
+    def critic_pass(
         self,
         inputs: List[torch.Tensor],
-        actions: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
-        encoding, memories = self.network_body(
-            inputs, actions, memories, sequence_length
+        value_outputs, critic_mem_out = self.forward(
+            inputs, memories=memories, sequence_length=sequence_length
         )
-        output = self.value_heads(encoding)
-        return output, memories
-
-
-class CentralizedValueNetwork(ValueNetwork):
-    def __init__(
-        self,
-        stream_names: List[str],
-        observation_shapes: List[Tuple[int, ...]],
-        network_settings: NetworkSettings,
-        encoded_act_size: int = 0,
-        outputs_per_stream: int = 1,
-    ):
-        # This is not a typo, we want to call __init__ of nn.Module
-        nn.Module.__init__(self)
-        self.network_body = MultiInputNetworkBody(
-            observation_shapes, network_settings, encoded_act_size=encoded_act_size
-        )
-        if network_settings.memory is not None:
-            encoding_size = network_settings.memory.memory_size // 2
-        else:
-            encoding_size = network_settings.hidden_units
-        self.value_heads = ValueHeads(stream_names, encoding_size, outputs_per_stream)
+        return value_outputs, critic_mem_out
 
     def forward(
         self,
-        inputs: List[List[torch.Tensor]],
+        inputs: List[torch.Tensor],
         actions: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
@@ -356,7 +242,7 @@ class Actor(abc.ABC):
         """
         pass
 
-    def get_action_stats(
+    def get_action_and_stats(
         self,
         inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
@@ -366,14 +252,35 @@ class Actor(abc.ABC):
         """
         Returns sampled actions.
         If memory is enabled, return the memories as well.
-        :param vec_inputs: A List of vector inputs as tensors.
-        :param vis_inputs: A List of visual inputs as tensors.
+        :param inputs: A List of inputs as tensors.
         :param masks: If using discrete actions, a Tensor of action masks.
         :param memories: If using memory, a Tensor of initial memories.
         :param sequence_length: If using memory, the sequence length.
         :return: A Tuple of AgentAction, ActionLogProbs, entropies, and memories.
             Memories will be None if not using memory.
         """
+        pass
+
+    def get_stats(
+        self,
+        inputs: List[torch.Tensor],
+        actions: AgentAction,
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Tuple[ActionLogProbs, torch.Tensor]:
+        """
+        Returns log_probs for actions and entropies.
+        If memory is enabled, return the memories as well.
+        :param inputs: A List of inputs as tensors.
+        :param actions: AgentAction of actions.
+        :param masks: If using discrete actions, a Tensor of action masks.
+        :param memories: If using memory, a Tensor of initial memories.
+        :param sequence_length: If using memory, the sequence length.
+        :return: A Tuple of AgentAction, ActionLogProbs, entropies, and memories.
+            Memories will be None if not using memory.
+        """
+
         pass
 
     @abc.abstractmethod
@@ -389,54 +296,6 @@ class Actor(abc.ABC):
         Forward pass of the Actor for inference. This is required for export to ONNX, and
         the inputs and outputs of this method should not be changed without a respective change
         in the ONNX export code.
-        """
-        pass
-
-
-class ActorCritic(Actor):
-    @abc.abstractmethod
-    def critic_pass(
-        self,
-        inputs: List[torch.Tensor],
-        memories: Optional[torch.Tensor] = None,
-        sequence_length: int = 1,
-    ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
-        """
-        Get value outputs for the given obs.
-        :param inputs: List of inputs as tensors.
-        :param memories: Tensor of memories, if using memory. Otherwise, None.
-        :returns: Dict of reward stream to output tensor for values.
-        """
-        pass
-
-    @abc.abstractmethod
-    def get_action_stats_and_value(
-        self,
-        inputs: List[torch.Tensor],
-        masks: Optional[torch.Tensor] = None,
-        memories: Optional[torch.Tensor] = None,
-        sequence_length: int = 1,
-        critic_obs: Optional[List[List[torch.Tensor]]] = None,
-    ) -> Tuple[
-        AgentAction, ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
-    ]:
-        """
-        Returns sampled actions and value estimates.
-        If memory is enabled, return the memories as well.
-        :param inputs: A List of vector inputs as tensors.
-        :param masks: If using discrete actions, a Tensor of action masks.
-        :param memories: If using memory, a Tensor of initial memories.
-        :param sequence_length: If using memory, the sequence length.
-        :return: A Tuple of AgentAction, ActionLogProbs, entropies, Dict of reward signal
-            name to value estimate, and memories. Memories will be None if not using memory.
-        """
-        pass
-
-    @abc.abstractproperty
-    def memory_size(self):
-        """
-        Returns the size of the memory (same size used as input and output in the other
-        methods) used by this Actor.
         """
         pass
 
@@ -497,7 +356,7 @@ class SimpleActor(nn.Module, Actor):
     def update_normalization(self, buffer: AgentBuffer) -> None:
         self.network_body.update_normalization(buffer)
 
-    def get_action_stats(
+    def get_action_and_stats(
         self,
         inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
@@ -510,6 +369,21 @@ class SimpleActor(nn.Module, Actor):
         )
         action, log_probs, entropies = self.action_model(encoding, masks)
         return action, log_probs, entropies, memories
+
+    def get_stats(
+        self,
+        inputs: List[torch.Tensor],
+        actions: AgentAction,
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Tuple[ActionLogProbs, torch.Tensor]:
+        encoding, actor_mem_outs = self.network_body(
+            inputs, memories=memories, sequence_length=sequence_length
+        )
+        log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
+
+        return log_probs, entropies
 
     def forward(
         self,
@@ -568,10 +442,12 @@ class SimpleActor(nn.Module, Actor):
                 self.is_continuous_int_deprecated,
                 self.act_size_vector_deprecated,
             ]
+        if self.network_body.memory_size > 0:
+            export_out += [memories_out]
         return tuple(export_out)
 
 
-class SharedActorCritic(SimpleActor, ActorCritic):
+class SharedActorCritic(SimpleActor, Critic):
     def __init__(
         self,
         observation_specs: List[ObservationSpec],
@@ -602,170 +478,6 @@ class SharedActorCritic(SimpleActor, ActorCritic):
             inputs, memories=memories, sequence_length=sequence_length
         )
         return self.value_heads(encoding), memories_out
-
-    def get_stats_and_value(
-        self,
-        inputs: List[torch.Tensor],
-        actions: AgentAction,
-        masks: Optional[torch.Tensor] = None,
-        memories: Optional[torch.Tensor] = None,
-        sequence_length: int = 1,
-        critic_obs: Optional[List[List[torch.Tensor]]] = None,
-    ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
-        encoding, memories = self.network_body(
-            inputs, memories=memories, sequence_length=sequence_length
-        )
-        log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
-        value_outputs = self.value_heads(encoding)
-        return log_probs, entropies, value_outputs
-
-    def get_action_stats_and_value(
-        self,
-        inputs: List[torch.Tensor],
-        masks: Optional[torch.Tensor] = None,
-        memories: Optional[torch.Tensor] = None,
-        sequence_length: int = 1,
-    ) -> Tuple[
-        AgentAction, ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
-    ]:
-
-        encoding, memories = self.network_body(
-            inputs, memories=memories, sequence_length=sequence_length
-        )
-        action, log_probs, entropies = self.action_model(encoding, masks)
-        value_outputs = self.value_heads(encoding)
-        return action, log_probs, entropies, value_outputs, memories
-
-
-class SeparateActorCritic(SimpleActor, ActorCritic):
-    def __init__(
-        self,
-        observation_specs: List[ObservationSpec],
-        network_settings: NetworkSettings,
-        action_spec: ActionSpec,
-        stream_names: List[str],
-        conditional_sigma: bool = False,
-        tanh_squash: bool = False,
-    ):
-        self.use_lstm = network_settings.memory is not None
-        super().__init__(
-            observation_specs,
-            network_settings,
-            action_spec,
-            conditional_sigma,
-            tanh_squash,
-        )
-        self.stream_names = stream_names
-        self.critic = ValueNetwork(stream_names, observation_specs, network_settings)
-
-    @property
-    def memory_size(self) -> int:
-        return self.network_body.memory_size + self.critic.memory_size
-
-    def _get_actor_critic_mem(
-        self, memories: Optional[torch.Tensor] = None
-    ) -> Tuple[Optional[torch.Tensor], Optional[torch.Tensor]]:
-        if self.use_lstm and memories is not None:
-            # Use only the back half of memories for critic and actor
-            actor_mem, critic_mem = torch.split(memories, self.memory_size // 2, dim=-1)
-            actor_mem, critic_mem = actor_mem.contiguous(), critic_mem.contiguous()
-        else:
-            critic_mem = None
-            actor_mem = None
-        return actor_mem, critic_mem
-
-    def critic_pass(
-        self,
-        inputs: List[torch.Tensor],
-        memories: Optional[torch.Tensor] = None,
-        sequence_length: int = 1,
-        critic_obs: List[List[torch.Tensor]] = None,
-    ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
-        actor_mem, critic_mem = self._get_actor_critic_mem(memories)
-        all_net_inputs = [inputs]
-        if critic_obs is not None:
-            all_net_inputs.extend(critic_obs)
-        value_outputs, critic_mem_out = self.critic(
-            all_net_inputs, memories=critic_mem, sequence_length=sequence_length
-        )
-        if actor_mem is not None:
-            # Make memories with the actor mem unchanged
-            memories_out = torch.cat([actor_mem, critic_mem_out], dim=-1)
-        else:
-            memories_out = None
-        return value_outputs, memories_out
-
-    def get_stats_and_value(
-        self,
-        inputs: List[torch.Tensor],
-        actions: AgentAction,
-        masks: Optional[torch.Tensor] = None,
-        memories: Optional[torch.Tensor] = None,
-        sequence_length: int = 1,
-        critic_obs: Optional[List[List[torch.Tensor]]] = None,
-    ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
-        actor_mem, critic_mem = self._get_actor_critic_mem(memories)
-        encoding, actor_mem_outs = self.network_body(
-            inputs, memories=actor_mem, sequence_length=sequence_length
-        )
-        log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
-        all_net_inputs = [inputs]
-        if critic_obs is not None:
-            all_net_inputs.extend(critic_obs)
-        value_outputs, critic_mem_outs = self.critic(
-            all_net_inputs, memories=critic_mem, sequence_length=sequence_length
-        )
-
-        return log_probs, entropies, value_outputs
-
-    def get_action_stats(
-        self,
-        inputs: List[torch.Tensor],
-        masks: Optional[torch.Tensor] = None,
-        memories: Optional[torch.Tensor] = None,
-        sequence_length: int = 1,
-    ) -> Tuple[AgentAction, ActionLogProbs, torch.Tensor, torch.Tensor]:
-        actor_mem, critic_mem = self._get_actor_critic_mem(memories)
-        action, log_probs, entropies, actor_mem_out = super().get_action_stats(
-            inputs, masks=masks, memories=actor_mem, sequence_length=sequence_length
-        )
-        if critic_mem is not None:
-            # Make memories with the actor mem unchanged
-            memories_out = torch.cat([actor_mem_out, critic_mem], dim=-1)
-        else:
-            memories_out = None
-        return action, log_probs, entropies, memories_out
-
-    def get_action_stats_and_value(
-        self,
-        inputs: List[torch.Tensor],
-        masks: Optional[torch.Tensor] = None,
-        memories: Optional[torch.Tensor] = None,
-        sequence_length: int = 1,
-        critic_obs: Optional[List[List[torch.Tensor]]] = None,
-    ) -> Tuple[
-        AgentAction, ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
-    ]:
-        actor_mem, critic_mem = self._get_actor_critic_mem(memories)
-        encoding, actor_mem_outs = self.network_body(
-            inputs, memories=actor_mem, sequence_length=sequence_length
-        )
-        action, log_probs, entropies = self.action_model(encoding, masks)
-        all_net_inputs = [inputs]
-        if critic_obs is not None:
-            all_net_inputs.extend(critic_obs)
-        value_outputs, critic_mem_outs = self.critic(
-            all_net_inputs, memories=critic_mem, sequence_length=sequence_length
-        )
-        if self.use_lstm:
-            mem_out = torch.cat([actor_mem_outs, critic_mem_outs], dim=-1)
-        else:
-            mem_out = None
-        return action, log_probs, entropies, value_outputs, mem_out
-
-    def update_normalization(self, buffer: AgentBuffer) -> None:
-        super().update_normalization(buffer)
-        self.critic.network_body.update_normalization(buffer)
 
 
 class GlobalSteps(nn.Module):

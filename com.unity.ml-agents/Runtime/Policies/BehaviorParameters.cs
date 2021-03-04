@@ -222,16 +222,16 @@ namespace Unity.MLAgents.Policies
                                 "Either assign a model, or change to a different Behavior Type."
                             );
                         }
-                        return new BarracudaPolicy(actionSpec, m_Model, m_InferenceDevice, m_BehaviorName);
+                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName);
                     }
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
                     {
-                        return new RemotePolicy(actionSpec, FullyQualifiedBehaviorName);
+                        return new RemotePolicy(actionSpec, actuatorManager, FullyQualifiedBehaviorName);
                     }
                     if (m_Model != null)
                     {
-                        return new BarracudaPolicy(actionSpec, m_Model, m_InferenceDevice, m_BehaviorName);
+                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName);
                     }
                     else
                     {

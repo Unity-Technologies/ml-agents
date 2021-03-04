@@ -1,5 +1,5 @@
 from typing import Dict, cast
-from mlagents.torch_utils import torch
+from mlagents.torch_utils import torch, default_device
 
 from mlagents.trainers.buffer import AgentBuffer, BufferKey, RewardSignalUtil
 
@@ -7,10 +7,11 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
+from mlagents.trainers.torch.networks import ValueNetwork
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
-from mlagents.trainers.trajectory import ObsUtil, TeamObsUtil
+from mlagents.trainers.trajectory import ObsUtil
 
 
 class TorchPPOOptimizer(TorchOptimizer):
@@ -25,7 +26,20 @@ class TorchPPOOptimizer(TorchOptimizer):
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
 
         super().__init__(policy, trainer_settings)
-        params = list(self.policy.actor_critic.parameters())
+        reward_signal_configs = trainer_settings.reward_signals
+        reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
+
+        if policy.shared_critic:
+            self._critic = policy.actor
+        else:
+            self._critic = ValueNetwork(
+                reward_signal_names,
+                policy.behavior_spec.observation_specs,
+                network_settings=trainer_settings.network_settings,
+            )
+            self._critic.to(default_device())
+
+        params = list(self.policy.actor.parameters()) + list(self._critic.parameters())
         self.hyperparameters: PPOSettings = cast(
             PPOSettings, trainer_settings.hyperparameters
         )
@@ -57,6 +71,10 @@ class TorchPPOOptimizer(TorchOptimizer):
         }
 
         self.stream_names = list(self.reward_signals.keys())
+
+    @property
+    def critic(self):
+        return self._critic
 
     def ppo_value_loss(
         self,
@@ -152,13 +170,27 @@ class TorchPPOOptimizer(TorchOptimizer):
         if len(memories) > 0:
             memories = torch.stack(memories).unsqueeze(0)
 
-        log_probs, entropy, values = self.policy.evaluate_actions(
+        # Get value memories
+        value_memories = [
+            ModelUtils.list_to_tensor(batch[BufferKey.CRITIC_MEMORY][i])
+            for i in range(
+                0, len(batch[BufferKey.CRITIC_MEMORY]), self.policy.sequence_length
+            )
+        ]
+        if len(value_memories) > 0:
+            value_memories = torch.stack(value_memories).unsqueeze(0)
+
+        log_probs, entropy = self.policy.evaluate_actions(
             current_obs,
             masks=act_masks,
             actions=actions,
             memories=memories,
-            critic_obs=critic_obs,
             seq_len=self.policy.sequence_length,
+        )
+        values, _ = self.critic.critic_pass(
+            current_obs,
+            memories=value_memories,
+            sequence_length=self.policy.sequence_length,
         )
         old_log_probs = ActionLogProbs.from_buffer(batch).flatten()
         log_probs = log_probs.flatten()

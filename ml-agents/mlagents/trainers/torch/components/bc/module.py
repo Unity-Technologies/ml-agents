@@ -4,12 +4,12 @@ from mlagents.torch_utils import torch
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.demo_loader import demo_to_buffer
-from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.settings import BehavioralCloningSettings, ScheduleType
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.trajectory import ObsUtil
+from mlagents.trainers.buffer import AgentBuffer
 
 
 class BCModule:
@@ -37,7 +37,7 @@ class BCModule:
         self.decay_learning_rate = ModelUtils.DecayedValue(
             learning_rate_schedule, self.current_lr, 1e-10, self._anneal_steps
         )
-        params = self.policy.actor_critic.parameters()
+        params = self.policy.actor.parameters()
         self.optimizer = torch.optim.Adam(params, lr=self.current_lr)
         _, self.demonstration_buffer = demo_to_buffer(
             settings.demo_path, policy.sequence_length, policy.behavior_spec

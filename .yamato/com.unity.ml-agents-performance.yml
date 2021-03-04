@@ -20,7 +20,7 @@ Run_Mac_Perfomance_Tests{{ editor.version }}:
   triggers:
     cancel_old_ci: true
     recurring:
-      - branch: master
+      - branch: main
         frequency: daily
   artifacts:
     logs:

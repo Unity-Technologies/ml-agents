@@ -313,7 +313,6 @@ def steps_from_proto(
     decision_rewards = np.array(
         [agent_info.reward for agent_info in decision_agent_info_list], dtype=np.float32
     )
-
     terminal_rewards = np.array(
         [agent_info.reward for agent_info in terminal_agent_info_list], dtype=np.float32
     )
