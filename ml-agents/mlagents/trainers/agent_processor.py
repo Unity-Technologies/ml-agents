@@ -114,7 +114,7 @@ class AgentProcessor:
         # and then create the AgentExperiences/Trajectories. _add_to_group_status
         # stores Group statuses in a common data structure self.group_status
         for terminal_step in terminal_steps.values():
-            self._store_group_status_and_obs(terminal_step, worker_id)
+            self._add_group_status_and_obs(terminal_step, worker_id)
         for terminal_step in terminal_steps.values():
             local_id = terminal_step.agent_id
             global_id = get_global_agent_id(worker_id, local_id)
@@ -128,7 +128,7 @@ class AgentProcessor:
         # and then create the trajectories. _add_to_group_status
         # stores Group statuses in a common data structure self.group_status
         for ongoing_step in decision_steps.values():
-            self._store_group_status_and_obs(ongoing_step, worker_id)
+            self._add_group_status_and_obs(ongoing_step, worker_id)
         for ongoing_step in decision_steps.values():
             local_id = ongoing_step.agent_id
             self._process_step(
@@ -144,7 +144,7 @@ class AgentProcessor:
                         [_gid], take_action_outputs["action"]
                     )
 
-    def _store_group_status_and_obs(
+    def _add_group_status_and_obs(
         self, step: Union[TerminalStep, DecisionStep], worker_id: int
     ) -> None:
         """

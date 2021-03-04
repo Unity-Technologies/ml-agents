@@ -91,7 +91,7 @@ def test_agentprocessor(num_vis_obs):
         assert len(step.group_status) == 0
 
     # Assert that the AgentProcessor is empty
-    assert len(processor.experience_buffers[0]) == 0
+    assert len(processor._experience_buffers[0]) == 0
 
     # Test empty steps
     mock_decision_steps, mock_terminal_steps = mb.create_mock_steps(
@@ -105,7 +105,7 @@ def test_agentprocessor(num_vis_obs):
         mock_decision_steps, mock_terminal_steps, 0, ActionInfo.empty()
     )
     # Assert that the AgentProcessor is still empty
-    assert len(processor.experience_buffers[0]) == 0
+    assert len(processor._experience_buffers[0]) == 0
 
 
 def test_group_statuses():
@@ -228,7 +228,7 @@ def test_agent_deletion():
     policy.save_previous_action.assert_has_calls(add_calls)
     policy.remove_previous_action.assert_has_calls(remove_calls)
     # Check that there are no experiences left
-    assert len(processor.experience_buffers.keys()) == 0
+    assert len(processor._experience_buffers.keys()) == 0
     assert len(processor._last_take_action_outputs.keys()) == 0
     assert len(processor._episode_steps.keys()) == 0
     assert len(processor._episode_rewards.keys()) == 0
@@ -238,7 +238,7 @@ def test_agent_deletion():
     processor.add_experiences(
         mock_done_decision_step, mock_done_terminal_step, 0, ActionInfo.empty()
     )
-    assert len(processor.experience_buffers.keys()) == 0
+    assert len(processor._experience_buffers.keys()) == 0
     assert len(processor._last_take_action_outputs.keys()) == 0
     assert len(processor._episode_steps.keys()) == 0
     assert len(processor._episode_rewards.keys()) == 0
@@ -294,7 +294,7 @@ def test_end_episode():
     # Check that we removed every agent
     policy.remove_previous_action.assert_has_calls(remove_calls)
     # Check that there are no experiences left
-    assert len(processor.experience_buffers.keys()) == 0
+    assert len(processor._experience_buffers.keys()) == 0
     assert len(processor._last_take_action_outputs.keys()) == 0
     assert len(processor._episode_steps.keys()) == 0
     assert len(processor._episode_rewards.keys()) == 0
