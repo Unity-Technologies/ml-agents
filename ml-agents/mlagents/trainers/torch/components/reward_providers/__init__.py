@@ -4,9 +4,6 @@ from mlagents.trainers.torch.components.reward_providers.base_reward_provider im
 from mlagents.trainers.torch.components.reward_providers.extrinsic_reward_provider import (  # noqa F401
     ExtrinsicRewardProvider,
 )
-from mlagents.trainers.torch.components.reward_providers.group_extrinsic_reward_provider import (  # noqa F401
-    GroupExtrinsicRewardProvider,
-)
 from mlagents.trainers.torch.components.reward_providers.curiosity_reward_provider import (  # noqa F401
     CuriosityRewardProvider,
 )

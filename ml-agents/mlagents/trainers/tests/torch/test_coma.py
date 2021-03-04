@@ -4,7 +4,7 @@ import numpy as np
 import attr
 
 from mlagents.trainers.coma.optimizer_torch import TorchCOMAOptimizer
-from mlagents.trainers.settings import RewardSignalSettings, RewardSignalType
+from mlagents.trainers.settings import ExtrinsicSettings, RewardSignalType
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.tests import mock_brain as mb
@@ -49,7 +49,9 @@ def create_test_coma_optimizer(dummy_config, use_rnn, use_discrete, use_visual):
 
     trainer_settings = attr.evolve(dummy_config)
     trainer_settings.reward_signals = {
-        RewardSignalType.GROUP_EXTRINSIC: RewardSignalSettings(strength=1.0, gamma=0.99)
+        RewardSignalType.EXTRINSIC: ExtrinsicSettings(
+            strength=1.0, gamma=0.99, add_groupmate_rewards=True
+        )
     }
 
     trainer_settings.network_settings.memory = (
@@ -122,7 +124,11 @@ def test_coma_get_value_estimates(dummy_config, rnn, visual, discrete):
         max_step_complete=True,
         num_other_agents_in_group=NUM_AGENTS,
     )
-    value_estimates, baseline_estimates, next_value_estimates = optimizer.get_trajectory_and_baseline_value_estimates(
+    (
+        value_estimates,
+        baseline_estimates,
+        next_value_estimates,
+    ) = optimizer.get_trajectory_and_baseline_value_estimates(
         trajectory.to_agentbuffer(),
         trajectory.next_obs,
         trajectory.next_group_obs,
@@ -138,7 +144,11 @@ def test_coma_get_value_estimates(dummy_config, rnn, visual, discrete):
     # if all_memories is not None:
     #    assert len(all_memories) == 15
 
-    value_estimates, baseline_estimates, next_value_estimates = optimizer.get_trajectory_and_baseline_value_estimates(
+    (
+        value_estimates,
+        baseline_estimates,
+        next_value_estimates,
+    ) = optimizer.get_trajectory_and_baseline_value_estimates(
         trajectory.to_agentbuffer(),
         trajectory.next_obs,
         trajectory.next_group_obs,
@@ -150,7 +160,11 @@ def test_coma_get_value_estimates(dummy_config, rnn, visual, discrete):
 
     # Check if we ignore terminal states properly
     optimizer.reward_signals["group"].use_terminal_states = False
-    value_estimates, baseline_estimates, next_value_estimates = optimizer.get_trajectory_and_baseline_value_estimates(
+    (
+        value_estimates,
+        baseline_estimates,
+        next_value_estimates,
+    ) = optimizer.get_trajectory_and_baseline_value_estimates(
         trajectory.to_agentbuffer(),
         trajectory.next_obs,
         trajectory.next_group_obs,
