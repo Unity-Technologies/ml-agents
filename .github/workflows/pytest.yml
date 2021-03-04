@@ -19,7 +19,7 @@ jobs:
         TEST_ENFORCE_BUFFER_KEY_TYPES: 1
     strategy:
       matrix:
-        python-version: [3.6.x, 3.7.x, 3.8.x]
+        python-version: [3.9.x]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -52,7 +52,7 @@ jobs:
         pip freeze > pip_versions-${{ matrix.python-version }}.txt
         cat pip_versions-${{ matrix.python-version }}.txt
     - name: Run pytest
-      run: pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings
+      run: pytest -p no:warnings
     - name: Upload pytest test results
       uses: actions/upload-artifact@v2
       with:
