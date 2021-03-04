@@ -14,12 +14,12 @@ namespace Unity.MLAgents.Sensors
 
         [HideInInspector, SerializeField]
         int m_observationSize;
-        
+
         [HideInInspector, SerializeField]
         ObservationType m_ObservationType;
 
         VectorSensor m_sensor;
-        
+
         public ObservationType ObservationType
         {
             get { return m_ObservationType; }
