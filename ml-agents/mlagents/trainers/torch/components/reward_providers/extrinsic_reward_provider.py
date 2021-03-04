@@ -32,15 +32,15 @@ class ExtrinsicRewardProvider(BaseRewardProvider):
             if self._add_groupmate_rewards:
                 groupmate_rewards_list = mini_batch[BufferKey.GROUPMATE_REWARDS]
                 groupmate_rewards_sum = np.array(
-                    [sum(_rew) for _rew in groupmate_rewards_list], dtype=np.ndarray
+                    [sum(_rew) for _rew in groupmate_rewards_list], dtype=np.float32
                 )
                 total_rewards += groupmate_rewards_sum
             group_rewards = np.array(
                 mini_batch[BufferKey.GROUP_REWARD], dtype=np.float32
             )
             # Add all the group rewards to the individual rewards
-            total_rewards += groupmate_rewards_sum + group_rewards
-        return indiv_rewards
+            total_rewards += group_rewards
+        return total_rewards
 
     def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
         return {}
