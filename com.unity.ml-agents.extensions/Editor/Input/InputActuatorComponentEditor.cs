@@ -4,7 +4,7 @@ using UnityEditor;
 
 namespace Unity.MLAgents.Extensions.Editor.Input
 {
-    [CustomEditor(typeof(InputActuatorComponent))]
+    [CustomEditor(typeof(InputActuatorActuatorComponent))]
     internal class InputActuatorComponentEditor : UnityEditor.Editor
     {
         const string k_ActionSpecName = "m_ActionSpec";
@@ -13,7 +13,7 @@ namespace Unity.MLAgents.Extensions.Editor.Input
         {
             var so = serializedObject;
             so.Update();
-            InputActuatorComponent o = so.targetObject as InputActuatorComponent;
+            InputActuatorActuatorComponent o = so.targetObject as InputActuatorActuatorComponent;
             _ = o.ActionSpec;
             EditorGUI.indentLevel++;
             EditorGUI.BeginDisabledGroup(true);

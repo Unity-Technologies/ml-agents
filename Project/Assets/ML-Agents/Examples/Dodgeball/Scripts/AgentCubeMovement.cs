@@ -214,8 +214,6 @@ namespace MLAgents
             }
 
             var rotate = m_DodgeballInput.rotateInput;
-            if (!m_Bp.IsInHeuristicMode() && rotate.magnitude > 0.00001)
-                Debug.Log($"Rotate: {rotate}");
             inputH = m_DodgeballInput.moveInput.x;
             inputV = m_DodgeballInput.moveInput.y;
             var movDir = transform.TransformDirection(new Vector3(inputH, 0, inputV));

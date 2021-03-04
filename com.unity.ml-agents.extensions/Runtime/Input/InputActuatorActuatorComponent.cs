@@ -24,7 +24,7 @@ namespace Unity.MLAgents.Extensions.Input
     /// </summary>
     [RequireComponent(typeof(PlayerInput), typeof(IInputActionAssetProvider))]
     [AddComponentMenu("ML Agents/Input Actuator", (int)MenuGroup.Actuators)]
-    public class InputActuatorComponent : ActuatorComponent , IInputEventPtrProvider
+    public class InputActuatorActuatorComponent : ActuatorComponent
     {
         InputActionAsset m_InputAsset;
         IInputActionCollection2 m_AssetCollection;
@@ -65,7 +65,10 @@ namespace Unity.MLAgents.Extensions.Input
                     || m_ActionSpec.BranchSizes.Length == 0)
                 {
                     FindNeededComponents();
-                    var actuators = CreateActuatorsFromMap(m_InputAsset.FindActionMap(m_PlayerInput.defaultActionMap), m_BehaviorParameters, null, this);
+                    var actuators = CreateActuatorsFromMap(m_InputAsset.FindActionMap(m_PlayerInput.defaultActionMap),
+                        m_BehaviorParameters,
+                        null,
+                        InputActuatorEventContext.s_EditorContext);
                     m_ActionSpec = CombineActuatorActionSpecs(actuators);
 
                 }
@@ -128,7 +131,8 @@ namespace Unity.MLAgents.Extensions.Input
             RegisterLayoutBuilder(inputActionMap, m_LayoutName);
             m_Device = InputSystem.AddDevice(m_LayoutName);
 
-            m_Actuators = CreateActuatorsFromMap(inputActionMap, m_BehaviorParameters, m_Device, this);
+            var context = new InputActuatorEventContext(inputActionMap.actions.Count, m_Device);
+            m_Actuators = CreateActuatorsFromMap(inputActionMap, m_BehaviorParameters, m_Device, context);
 
             UpdateDeviceBinding(m_BehaviorParameters.IsInHeuristicMode());
             inputActionMap.Enable();
@@ -151,7 +155,7 @@ namespace Unity.MLAgents.Extensions.Input
         internal static IActuator[] CreateActuatorsFromMap(InputActionMap inputActionMap,
             BehaviorParameters behaviorParameters,
             InputDevice inputDevice,
-            IInputEventPtrProvider ptrProvider)
+            InputActuatorEventContext context)
         {
             var actuators = new IActuator[inputActionMap.actions.Count];
             for (var i = 0; i < inputActionMap.actions.Count; i++)
@@ -159,7 +163,7 @@ namespace Unity.MLAgents.Extensions.Input
                 var action = inputActionMap.actions[i];
                 var actionLayout = InputSystem.LoadLayout(action.expectedControlType);
                 var adaptor = (IRLActionInputAdaptor)Activator.CreateInstance(controlTypeToAdaptorType[actionLayout.type]);
-                actuators[i] = new InputActionActuator(inputDevice, behaviorParameters, action, adaptor, ptrProvider);
+                actuators[i] = new InputActionActuator(inputDevice, behaviorParameters, action, adaptor, context);
 
                 // Reasonably, the input system starts adding numbers after the first none numbered name
                 // is added.  So for device ID of 0, we use the empty string in the path.
@@ -359,7 +363,7 @@ namespace Unity.MLAgents.Extensions.Input
             return m_InputEventPtrForFrame;
         }
 
-        public void EventWrittenToInFrame()
+        public void EventProcessedInFrame()
         {
 #if UNITY_EDITOR
             if (!EditorApplication.isPlaying)
@@ -368,7 +372,7 @@ namespace Unity.MLAgents.Extensions.Input
             }
 #endif
             m_ActuatorsWrittenToEvent++;
-            if (m_ActuatorsWrittenToEvent == m_Actuators.Length)
+            if (m_ActuatorsWrittenToEvent == m_Actuators.Length && m_InputEventPtrForFrame.valid)
             {
                 InputSystem.QueueEvent(m_InputEventPtrForFrame);
                 m_InputBufferForFrame.Dispose();

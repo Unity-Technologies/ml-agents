@@ -26,7 +26,7 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
         GameObject m_GameObject;
         PlayerInput m_PlayerInput;
         BehaviorParameters m_BehaviorParameters;
-        InputActuatorComponent m_ActuatorComponent;
+        InputActuatorActuatorComponent m_ActuatorComponent;
         TestPushBlockActions m_Actions;
         TestProvider m_Provider;
 
@@ -40,7 +40,7 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
             m_Provider = m_GameObject.AddComponent<TestProvider>();
             m_Provider.asset = m_Asset;
             m_Provider.collection = m_Actions;
-            m_ActuatorComponent = m_GameObject.AddComponent<InputActuatorComponent>();
+            m_ActuatorComponent = m_GameObject.AddComponent<InputActuatorActuatorComponent>();
             m_BehaviorParameters = m_GameObject.AddComponent<BehaviorParameters>();
             m_BehaviorParameters.BehaviorName = "InputTest";
             m_BehaviorParameters.BehaviorType = BehaviorType.Default;
@@ -75,13 +75,13 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
             m_PlayerInput.actions = m_Asset;
             m_PlayerInput.defaultActionMap = m_Asset.actionMaps[0].name;
             var inputActionMap = m_Asset.FindActionMap(m_PlayerInput.defaultActionMap);
-            InputActuatorComponent.RegisterLayoutBuilder(
+            InputActuatorActuatorComponent.RegisterLayoutBuilder(
                 inputActionMap,
                 "TestLayout");
 
             var device = InputSystem.AddDevice("TestLayout");
 
-            var actuators = InputActuatorComponent.CreateActuatorsFromMap(inputActionMap, m_BehaviorParameters, device);
+            var actuators = InputActuatorActuatorComponent.CreateActuatorsFromMap(inputActionMap, m_BehaviorParameters, device);
             Assert.IsTrue(actuators.Length == 2);
             Assert.IsTrue(actuators[0].ActionSpec.Equals(ActionSpec.MakeContinuous(2)));
             Assert.IsTrue(actuators[1].ActionSpec.NumDiscreteActions == 1);
@@ -95,7 +95,7 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
             m_PlayerInput.defaultActionMap = m_Asset.actionMaps[0].name;
 
             // need to call this to load the layout in the input system
-            InputActuatorComponent.RegisterLayoutBuilder(
+            InputActuatorActuatorComponent.RegisterLayoutBuilder(
                 m_Asset.FindActionMap(m_PlayerInput.defaultActionMap),
                 "TestLayout");
 
