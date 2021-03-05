@@ -91,7 +91,7 @@ class COMATrainer(RLTrainer):
             and not trajectory.interrupted,
         )
 
-        if value_memories is not None:
+        if value_memories is not None and baseline_memories is not None:
             agent_buffer_trajectory[BufferKey.CRITIC_MEMORY].set(value_memories)
             agent_buffer_trajectory[BufferKey.BASELINE_MEMORY].set(baseline_memories)
 
@@ -136,7 +136,7 @@ class COMATrainer(RLTrainer):
                 dtype=np.float32,
             )
 
-            baseline_estimates = agent_buffer_trajectory[
+            baseline_estimate = agent_buffer_trajectory[
                 RewardSignalUtil.baseline_estimates_key(name)
             ].get_batch()
             v_estimates = agent_buffer_trajectory[
@@ -151,7 +151,7 @@ class COMATrainer(RLTrainer):
                 value_next=value_next[name],
             )
 
-            local_advantage = np.array(lambd_returns) - np.array(baseline_estimates)
+            local_advantage = np.array(lambd_returns) - np.array(baseline_estimate)
 
             agent_buffer_trajectory[RewardSignalUtil.returns_key(name)].set(
                 lambd_returns
