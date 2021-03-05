@@ -34,7 +34,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             this.CellScaleZ = cellScaleZ;
             this.GridNumSideX = gridWidth;
             this.GridNumSideZ = gridHeight;
-            this.RotateToAgent = rotateToAgent;
+            this.RotateGridWithRoot = rotateToAgent;
             this.DiffNumSideZX = (GridNumSideZ - GridNumSideX);
             this.OffsetGridNumSide = (GridNumSideZ - 1f) / 2f;
             this.DebugColors = debugColors;
