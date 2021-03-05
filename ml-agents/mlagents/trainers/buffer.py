@@ -173,7 +173,7 @@ class AgentBufferField(list):
                     padding = []
                 else:
                     # We want to duplicate the last value in the array, multiplied by the padding_value.
-                    padding = self[-1] * self.padding_value
+                    padding = np.array(self[-1], dtype=np.float32) * self.padding_value
                 return [padding] * (training_length - leftover) + self[:]
 
             else:
