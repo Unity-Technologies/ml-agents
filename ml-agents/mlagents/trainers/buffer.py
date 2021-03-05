@@ -206,7 +206,7 @@ class AgentBufferField(list):
             dimension is equal to the length of the AgentBufferField.
         """
         if len(self) > 0 and not isinstance(self[0], list):
-            return np.asanyarray(self, dytpe=dtype)
+            return np.asanyarray(self, dtype=dtype)
 
         shape = None
         for _entry in self:
