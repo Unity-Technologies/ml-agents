@@ -1,5 +1,5 @@
 behaviors:
-  CrawlerStatic:
+  Crawler:
     trainer_type: ppo
     hyperparameters:
       batch_size: 2024
