@@ -21,14 +21,17 @@ class AgentAction(NamedTuple):
     discrete_list: Optional[List[torch.Tensor]]
 
     def __getitem__(self, index):
-        _cont = None
-        _disc_list = []
-        if self.continuous_tensor is not None:
-            _cont = self.continuous_tensor.__getitem__(index)
-        if self.discrete_list is not None and len(self.discrete_list) > 0:
-            for _disc in self.discrete_list:
-                _disc_list.append(_disc.__getitem__(index))
-        return AgentAction(_cont, _disc_list)
+        if isinstance(index, slice):
+            _cont = None
+            _disc_list = []
+            if self.continuous_tensor is not None:
+                _cont = self.continuous_tensor.__getitem__(index)
+            if self.discrete_list is not None and len(self.discrete_list) > 0:
+                for _disc in self.discrete_list:
+                    _disc_list.append(_disc.__getitem__(index))
+            return AgentAction(_cont, _disc_list)
+        else:
+            return super().__getitem__(index)
 
     @property
     def discrete_tensor(self) -> torch.Tensor:
