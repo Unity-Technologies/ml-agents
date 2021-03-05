@@ -1,5 +1,6 @@
 from typing import List, Optional, Tuple
 from mlagents.torch_utils import torch, nn
+from mlagents.trainers.torch.layers import LinearEncoder, Initialization
 import numpy as np
 
 from mlagents.trainers.torch.encoders import (
@@ -10,7 +11,11 @@ from mlagents.trainers.torch.encoders import (
     VectorInput,
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
-from mlagents.trainers.torch.attention import EntityEmbedding
+from mlagents.trainers.torch.attention import (
+    EntityEmbedding,
+    ResidualSelfAttention,
+    get_zero_entities_mask,
+)
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents_envs.base_env import ObservationSpec, DimensionProperty
 
@@ -333,3 +338,93 @@ class ModelUtils:
                     alpha=tau,
                     out=target_param.data,
                 )
+
+    @staticmethod
+    def create_residual_self_attention(
+        input_processors: nn.ModuleList, embedding_sizes: List[int], hidden_size: int
+    ) -> Tuple[Optional[ResidualSelfAttention], Optional[LinearEncoder]]:
+        """
+        Creates an RSA if there are variable length observations found in the input processors.
+        :param input_processors: A ModuleList of input processors as returned by the function
+            create_input_processors().
+        :param embedding sizes: A List of embedding sizes as returned by create_input_processors().
+        :param hidden_size: The hidden size to use for the RSA.
+        :returns: A Tuple of the RSA itself, a self encoder, and the embedding size after the RSA.
+            Returns None for the RSA and encoder if no var len inputs are detected.
+        """
+        rsa, x_self_encoder = None, None
+        entity_num_max: int = 0
+        var_processors = [p for p in input_processors if isinstance(p, EntityEmbedding)]
+        for processor in var_processors:
+            entity_max: int = processor.entity_num_max_elements
+            # Only adds entity max if it was known at construction
+            if entity_max > 0:
+                entity_num_max += entity_max
+        if len(var_processors) > 0:
+            if sum(embedding_sizes):
+                x_self_encoder = LinearEncoder(
+                    sum(embedding_sizes),
+                    1,
+                    hidden_size,
+                    kernel_init=Initialization.Normal,
+                    kernel_gain=(0.125 / hidden_size) ** 0.5,
+                )
+            rsa = ResidualSelfAttention(hidden_size, entity_num_max)
+        return rsa, x_self_encoder
+
+    @staticmethod
+    def encode_observations(
+        inputs: List[torch.Tensor],
+        processors: nn.ModuleList,
+        rsa: Optional[ResidualSelfAttention],
+        x_self_encoder: Optional[LinearEncoder],
+    ) -> torch.Tensor:
+        """
+        Helper method to encode observations using a listt of processors and an RSA.
+        :param inputs: List of Tensors corresponding to a set of obs.
+        :param processors: a ModuleList of the input processors to be applied to these obs.
+        :param rsa: Optionally, an RSA to use for variable length obs.
+        :param x_self_encoder: Optionally, an encoder to use for x_self (in this case, the non-variable inputs.).
+        """
+        encodes = []
+        var_len_processor_inputs: List[Tuple[nn.Module, torch.Tensor]] = []
+
+        for idx, processor in enumerate(processors):
+            if not isinstance(processor, EntityEmbedding):
+                # The input can be encoded without having to process other inputs
+                obs_input = inputs[idx]
+                processed_obs = processor(obs_input)
+                encodes.append(processed_obs)
+            else:
+                var_len_processor_inputs.append((processor, inputs[idx]))
+        if len(encodes) != 0:
+            encoded_self = torch.cat(encodes, dim=1)
+            input_exist = True
+        else:
+            input_exist = False
+        if len(var_len_processor_inputs) > 0 and rsa is not None:
+            # Some inputs need to be processed with a variable length encoder
+            masks = get_zero_entities_mask([p_i[1] for p_i in var_len_processor_inputs])
+            embeddings: List[torch.Tensor] = []
+            processed_self = (
+                x_self_encoder(encoded_self)
+                if input_exist and x_self_encoder is not None
+                else None
+            )
+            for processor, var_len_input in var_len_processor_inputs:
+                embeddings.append(processor(processed_self, var_len_input))
+            qkv = torch.cat(embeddings, dim=1)
+            attention_embedding = rsa(qkv, masks)
+            if not input_exist:
+                encoded_self = torch.cat([attention_embedding], dim=1)
+                input_exist = True
+            else:
+                encoded_self = torch.cat([encoded_self, attention_embedding], dim=1)
+
+        if not input_exist:
+            raise UnityTrainerException(
+                "The trainer was unable to process any of the provided inputs. "
+                "Make sure the trained agents has at least one sensor attached to them."
+            )
+
+        return encoded_self
