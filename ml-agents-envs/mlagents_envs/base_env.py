@@ -505,6 +505,7 @@ class ObservationSpec(NamedTuple):
     shape: Tuple[int, ...]
     dimension_property: Tuple[DimensionProperty, ...]
     observation_type: ObservationType
+    name: str
 
 
 class BehaviorSpec(NamedTuple):
