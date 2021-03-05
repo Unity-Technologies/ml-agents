@@ -30,7 +30,11 @@ class AgentAction(NamedTuple):
         else:
             return torch.empty(0)
 
-    def slice(self, start, end):
+    def slice(self, start: int, end: int) -> "AgentAction":
+        """
+        Returns an AgentAction with the continuous and discrete tensors slices
+        from index start to index end.
+        """
         _cont = None
         _disc_list = []
         if self.continuous_tensor is not None:
