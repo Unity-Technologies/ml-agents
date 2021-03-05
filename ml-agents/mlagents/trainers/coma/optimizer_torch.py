@@ -432,7 +432,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
                 first_seq_obs = _obs[0:first_seq_len]
                 seq_obs.append(first_seq_obs)
             team_seq_obs.append(seq_obs)
-            _act = team_action[0:first_seq_len]
+            _act = team_action.slice(0, first_seq_len)
             team_seq_act.append(_act)
 
         # For the first sequence, the initial memory should be the one at the
@@ -496,7 +496,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
                     first_seq_obs = _obs[start:end]
                     seq_obs.append(first_seq_obs)
                 team_seq_obs.append(seq_obs)
-                _act = team_action[start:end]
+                _act = team_action.slice(start, end)
                 team_seq_act.append(_act)
 
             all_seq_obs = self_seq_obs + team_seq_obs
