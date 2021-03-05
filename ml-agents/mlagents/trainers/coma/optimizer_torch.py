@@ -597,7 +597,14 @@ class TorchCOMAOptimizer(TorchOptimizer):
         all_next_value_mem: Optional[AgentBufferField] = None
         all_next_baseline_mem: Optional[AgentBufferField] = None
         if self.policy.use_recurrent:
-            value_estimates, baseline_estimates, all_next_value_mem, all_next_baseline_mem, next_value_mem, next_baseline_mem = self._evaluate_by_sequence_team(
+            (
+                value_estimates,
+                baseline_estimates,
+                all_next_value_mem,
+                all_next_baseline_mem,
+                next_value_mem,
+                next_baseline_mem,
+            ) = self._evaluate_by_sequence_team(
                 current_obs, team_obs, team_actions, _init_value_mem, _init_baseline_mem
             )
         else:
