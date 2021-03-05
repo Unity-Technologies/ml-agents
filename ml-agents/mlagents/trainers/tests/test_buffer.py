@@ -154,6 +154,10 @@ def test_agentbufferfield():
     assert np.array_equal(padded[0], np.array([1, 1, 1, 1]))
     assert np.array_equal(padded[1], np.array([2, 2, 3, 3]))
 
+    # Make sure it doesn't fail when the field isn't a list
+    padded_a = a.padded_to_batch()
+    assert np.array_equal(padded_a, a)
+
 
 def fakerandint(values):
     return 19
