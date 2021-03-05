@@ -64,14 +64,13 @@ git clone --branch release_14 https://github.com/Unity-Technologies/ml-agents.gi
 ```
 
 The `--branch release_14` option will switch to the tag of the latest stable
-release. Omitting that will get the `master` branch which is potentially
-unstable.
+release. Omitting that will get the `main` branch which is potentially
 
 #### Advanced: Local Installation for Development
 
 You will need to clone the repository if you plan to modify or extend the
 ML-Agents Toolkit for your purposes. If you plan to contribute those changes
-back, make sure to clone the `master` branch (by omitting `--branch release_14`
+back, make sure to clone the `main` branch (by omitting `--branch release_14`
 from the command above). See our
 [Contributions Guidelines](../com.unity.ml-agents/CONTRIBUTING.md) for more
 information on contributing to the ML-Agents Toolkit.

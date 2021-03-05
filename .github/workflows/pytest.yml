@@ -10,7 +10,7 @@ on:
     - 'test_requirements.txt'
     - '.github/workflows/pytest.yml'
   push:
-    branches: [master]
+    branches: [main]
 
 jobs:
   pytest:
