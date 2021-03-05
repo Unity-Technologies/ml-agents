@@ -130,6 +130,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         m_ResetTimer += 1;
         if (m_ResetTimer > MaxEnvironmentSteps)
         {
+            m_AgentGroup.GroupEpisodeInterrupted();
             ResetScene();
         }
     }
@@ -225,9 +226,9 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         // col.gameObject.SetActive(false);
 
         //Give Agent Rewards
+        m_AgentGroup.AddGroupReward(score);
         foreach (var item in AgentsList)
         {
-            m_AgentGroup.AddGroupReward(score);
             if (item.Agent.gameObject.activeInHierarchy)
             {
                 print($"{item.Agent.name} scored");
@@ -240,6 +241,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         // if (done)
         // {
         //Reset assets
+        m_AgentGroup.EndGroupEpisode();
         ResetScene();
         // }
     }
@@ -269,14 +271,6 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         area.transform.Rotate(new Vector3(0f, rotationAngle, 0f));
 
         //End Episode
-        foreach (var item in AgentsList)
-        {
-            if (!item.Agent)
-            {
-                return;
-            }
-            item.Agent.EndEpisode();
-        }
         //Reset Agents
         foreach (var item in AgentsList)
         {

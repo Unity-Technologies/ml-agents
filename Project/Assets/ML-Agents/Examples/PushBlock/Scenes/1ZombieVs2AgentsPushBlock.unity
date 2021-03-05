@@ -3984,7 +3984,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -4019,7 +4018,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!1 &271453778
 GameObject:
@@ -4520,7 +4519,6 @@ MonoBehaviour:
   m_BehaviorType: 2
   m_BehaviorName: 
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -5618,7 +5616,6 @@ MonoBehaviour:
   m_BehaviorType: 2
   m_BehaviorName: 
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -9103,7 +9100,6 @@ MonoBehaviour:
   m_BehaviorType: 2
   m_BehaviorName: 
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -9646,7 +9642,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!114 &897538731
 MonoBehaviour:
@@ -9801,7 +9797,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 2
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -16881,7 +16876,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!114 &1364603546
 MonoBehaviour:
@@ -17036,7 +17031,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 3
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -19486,7 +19480,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!114 &1632614511
 MonoBehaviour:
@@ -19641,7 +19635,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 2
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -21260,7 +21253,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -22061,7 +22053,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -24090,7 +24081,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!114 &1903542480
 MonoBehaviour:
@@ -24245,7 +24236,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 1
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -25191,7 +25181,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -25946,7 +25935,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -26579,7 +26567,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!114 &2112390553
 MonoBehaviour:
@@ -26734,7 +26722,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 1
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -26809,7 +26796,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!114 &2117505560
 MonoBehaviour:
@@ -26964,7 +26951,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 3
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -28104,7 +28090,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   useVectorObs: 1
 --- !u!1 &1500989827241484
 GameObject:
@@ -29093,7 +29079,6 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -30730,7 +30715,6 @@ MonoBehaviour:
   m_BehaviorType: 2
   m_BehaviorName: 
   TeamId: 0
-  GroupId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
