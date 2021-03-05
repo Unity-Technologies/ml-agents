@@ -52,7 +52,7 @@ jobs:
         pip freeze > pip_versions-${{ matrix.python-version }}.txt
         cat pip_versions-${{ matrix.python-version }}.txt
     - name: Run pytest
-      run: pytest -p no:warnings
+      run: pytest -k test_agent_processor -p no:warnings
     - name: Upload pytest test results
       uses: actions/upload-artifact@v2
       with:
