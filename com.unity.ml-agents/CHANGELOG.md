@@ -7,21 +7,15 @@ and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
-### Major Changes
-#### com.unity.ml-agents (C#)
-#### ml-agents / ml-agents-envs / gym-unity (Python)
-
+## [1.8.1-preview] - 2021-03-08
 ### Minor Changes
-#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `cattrs` version dependency was updated to allow `>=1.1.0` on Python 3.8 or higher. (#4821)
 
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-#### ml-agents / ml-agents-envs / gym-unity (Python)
-- An issue that caused `GAIL` to fail for environments where agents can terminate episodes by self-sacrifice has been fixed. (#4971)
-- Fix an issue where queuing InputEvents overwrote data from previous events in the same frame.
+- Fix an issue where queuing InputEvents overwrote data from previous events in the same frame. (#5034)
+
 
 ## [1.8.0-preview] - 2021-02-17
 ### Major Changes
