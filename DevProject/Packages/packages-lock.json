@@ -31,7 +31,7 @@
       "url": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates"
     },
     "com.unity.barracuda": {
-      "version": "1.3.0-preview",
+      "version": "1.3.1-preview",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -108,7 +108,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.unity.barracuda": "1.3.0-preview",
+        "com.unity.barracuda": "1.3.1-preview",
         "com.unity.modules.imageconversion": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0",
         "com.unity.modules.physics": "1.0.0",
@@ -121,7 +121,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.unity.ml-agents": "1.7.2-preview"
+        "com.unity.ml-agents": "1.8.0-preview"
       }
     },
     "com.unity.multiplayer-hlapi": {
