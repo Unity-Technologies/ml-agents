@@ -282,6 +282,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.Rb.velocity = Vector3.zero;
             item.Rb.angularVelocity = Vector3.zero;
             item.Agent.gameObject.SetActive(true);
+            m_AgentGroup.RegisterAgent(item.Agent);
         }
 
         //Reset Blocks
