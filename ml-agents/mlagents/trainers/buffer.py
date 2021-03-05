@@ -35,6 +35,7 @@ class BufferKey(enum.Enum):
     MASKS = "masks"
     MEMORY = "memory"
     CRITIC_MEMORY = "critic_memory"
+    BASELINE_MEMORY = "coma_baseline_memory"
     PREV_ACTION = "prev_action"
 
     ADVANTAGES = "advantages"

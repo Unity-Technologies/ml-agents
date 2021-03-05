@@ -62,7 +62,7 @@ class TorchOptimizer(Optimizer):
             )
 
     def _evaluate_by_sequence(
-        self, tensor_obs: List[torch.Tensor], initial_memory: np.ndarray
+        self, tensor_obs: List[torch.Tensor], initial_memory: torch.Tensor
     ) -> Tuple[Dict[str, torch.Tensor], AgentBufferField, torch.Tensor]:
         """
         Evaluate a trajectory sequence-by-sequence, assembling the result. This enables us to get the
@@ -84,10 +84,8 @@ class TorchOptimizer(Optimizer):
         # Compute values for the potentially truncated initial sequence
         seq_obs = []
 
-        first_seq_len = self.policy.sequence_length
+        first_seq_len = leftover if leftover > 0 else self.policy.sequence_length
         for _obs in tensor_obs:
-            if leftover > 0:
-                first_seq_len = leftover
             first_seq_obs = _obs[0:first_seq_len]
             seq_obs.append(first_seq_obs)
 
@@ -112,13 +110,13 @@ class TorchOptimizer(Optimizer):
             seq_obs = []
             for _ in range(self.policy.sequence_length):
                 all_next_memories.append(ModelUtils.to_numpy(_mem.squeeze()))
+            start = seq_num * self.policy.sequence_length - (
+                self.policy.sequence_length - leftover
+            )
+            end = (seq_num + 1) * self.policy.sequence_length - (
+                self.policy.sequence_length - leftover
+            )
             for _obs in tensor_obs:
-                start = seq_num * self.policy.sequence_length - (
-                    self.policy.sequence_length - leftover
-                )
-                end = (seq_num + 1) * self.policy.sequence_length - (
-                    self.policy.sequence_length - leftover
-                )
                 seq_obs.append(_obs[start:end])
             values, _mem = self.critic.critic_pass(
                 seq_obs, _mem, sequence_length=self.policy.sequence_length
