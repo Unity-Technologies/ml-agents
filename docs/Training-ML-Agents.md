@@ -268,7 +268,7 @@ behaviors:
 
     # Configuration of the neural network (common to PPO/SAC)
     network_settings:
-      vis_encoder_type: simple
+      vis_encode_type: simple
       normalize: false
       hidden_units: 128
       num_layers: 2
