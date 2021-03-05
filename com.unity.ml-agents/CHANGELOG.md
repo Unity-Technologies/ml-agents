@@ -17,10 +17,13 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `encoding_size` setting for RewardSignals has been deprecated. Please use `network_settings` instead. (#4982)
 - Sensor names are now passed through to `ObservationSpec.name`. (#5036)
+- The `cattrs` version dependency was updated to allow `>=1.1.0` on Python 3.8 or higher. (#4821)
+
 ### Bug Fixes
-#### com.unity.ml-agents (C#)
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - An issue that caused `GAIL` to fail for environments where agents can terminate episodes by self-sacrifice has been fixed. (#4971)
+- Fix an issue where queuing InputEvents overwrote data from previous events in the same frame.
 
 ## [1.8.0-preview] - 2021-02-17
 ### Major Changes
