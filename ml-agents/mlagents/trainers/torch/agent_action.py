@@ -20,17 +20,14 @@ class AgentAction(NamedTuple):
     continuous_tensor: torch.Tensor
     discrete_list: Optional[List[torch.Tensor]]
 
-    def slice(self, start: int, end: int) -> "AgentAction":
-        """
-        Slices this AgentAction from start to end, and returns a new AgentAction.
-        """
+    def __getitem__(self, index):
         _cont = None
         _disc_list = []
         if self.continuous_tensor is not None:
-            _cont = self.continuous_tensor[start:end]
+            _cont = self.continuous_tensor.__getitem__(index)
         if self.discrete_list is not None and len(self.discrete_list) > 0:
             for _disc in self.discrete_list:
-                _disc_list.append(_disc[start:end])
+                _disc_list.append(_disc.__getitem__(index))
         return AgentAction(_cont, _disc_list)
 
     @property
