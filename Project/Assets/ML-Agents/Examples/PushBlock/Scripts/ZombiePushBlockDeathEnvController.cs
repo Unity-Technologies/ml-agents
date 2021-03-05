@@ -250,6 +250,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     {
         //Give Agent Rewards
         m_AgentGroup.AddGroupReward(-1);
+        m_AgentGroup.EndGroupEpisode();
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.failMaterial, 0.5f));
         ResetScene();

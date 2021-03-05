@@ -15372,7 +15372,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9fa4d08b7d4d198d5165b07ddd47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnvironmentSteps: 25000
+  MaxEnvironmentSteps: 5000
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -16193,7 +16193,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9fa4d08b7d4d198d5165b07ddd47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnvironmentSteps: 25000
+  MaxEnvironmentSteps: 5000
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -16702,7 +16702,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9fa4d08b7d4d198d5165b07ddd47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnvironmentSteps: 25000
+  MaxEnvironmentSteps: 5000
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -27963,7 +27963,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9fa4d08b7d4d198d5165b07ddd47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnvironmentSteps: 25000
+  MaxEnvironmentSteps: 5000
   areaBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
