@@ -6,12 +6,13 @@ using Unity.MLAgents.Extensions.Input;
 using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 
 namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
 {
     class TestAdaptor : IRLActionInputAdaptor
     {
-        public bool eventQueued;
+        public bool eventWritten;
         public bool writtenToHeuristic;
 
         public ActionSpec GetActionSpecForInputAction(InputAction action)
@@ -19,9 +20,9 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
             return ActionSpec.MakeContinuous(1);
         }
 
-        public void QueueInputEventForAction(InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
+        public void WriteToInputEventForAction(InputEventPtr eventPtr, InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
         {
-            eventQueued = true;
+            eventWritten = true;
         }
 
         public void WriteToHeuristic(InputAction action, in ActionBuffers actionBuffers)
@@ -31,7 +32,7 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
 
         public void Reset()
         {
-            eventQueued = false;
+            eventWritten = false;
             writtenToHeuristic = false;
         }
     }
@@ -50,7 +51,7 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
             m_BehaviorParameters = go.AddComponent<BehaviorParameters>();
             var action = new InputAction("action");
             m_Adaptor = new TestAdaptor();
-            m_Actuator = new InputActionActuator(null, m_BehaviorParameters, action, m_Adaptor);
+            m_Actuator = new InputActionActuator(null, m_BehaviorParameters, action, m_Adaptor, new InputActuatorEventContext(1, InputSystem.AddDevice<Gamepad>()));
         }
 
         [Test]
@@ -59,18 +60,18 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
             m_BehaviorParameters.BehaviorType = BehaviorType.HeuristicOnly;
             m_Actuator.OnActionReceived(new ActionBuffers());
             m_Actuator.Heuristic(new ActionBuffers());
-            Assert.IsFalse(m_Adaptor.eventQueued);
+            Assert.IsFalse(m_Adaptor.eventWritten);
             Assert.IsTrue(m_Adaptor.writtenToHeuristic);
             m_Adaptor.Reset();
 
             m_BehaviorParameters.BehaviorType = BehaviorType.Default;
             m_Actuator.OnActionReceived(new ActionBuffers());
-            Assert.IsFalse(m_Adaptor.eventQueued);
+            Assert.IsFalse(m_Adaptor.eventWritten);
             m_Adaptor.Reset();
 
             m_BehaviorParameters.Model = ScriptableObject.CreateInstance<NNModel>();
             m_Actuator.OnActionReceived(new ActionBuffers());
-            Assert.IsTrue(m_Adaptor.eventQueued);
+            Assert.IsTrue(m_Adaptor.eventWritten);
             m_Adaptor.Reset();
 
             Assert.AreEqual(m_Actuator.Name, "InputActionActuator-action");
