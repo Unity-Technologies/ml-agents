@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.0.0-preview]
+## [Unreleased]
 ### Major Changes
 #### com.unity.ml-agents (C#)
 - Some methods previously marked as `Obsolete` have been removed. If you were using these methods, you need to replace them with their supported counterpart.
@@ -21,7 +21,7 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 
-## [Unreleased]
+## [1.9.0-preview] - 2021-03-17
 ### Major Changes
 #### com.unity.ml-agents (C#)
 - The `BufferSensor` and `BufferSensorComponent` have been added. They allow the Agent to observe variable number of entities. (#4909)
