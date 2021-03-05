@@ -185,24 +185,6 @@ class TorchCOMAOptimizer(TorchOptimizer):
                 settings.add_groupmate_rewards = True
         super().create_reward_signals(reward_signal_configs)
 
-    def create_reward_signals(
-        self, reward_signal_configs: Dict[RewardSignalType, RewardSignalSettings]
-    ) -> None:
-        """
-        Create reward signals. Override default to provide warnings for Curiosity and
-        GAIL, and make sure Extrinsic adds team rewards.
-        :param reward_signal_configs: Reward signal config.
-        """
-        for reward_signal, settings in reward_signal_configs.items():
-            if reward_signal != RewardSignalType.EXTRINSIC:
-                logger.warning(
-                    f"Reward Signal {reward_signal.value} is not supported with the COMA2 trainer; \
-                    results may be unexpected."
-                )
-            elif isinstance(settings, ExtrinsicSettings):
-                settings.add_groupmate_rewards = True
-        super().create_reward_signals(reward_signal_configs)
-
     @property
     def critic(self):
         return self._critic
@@ -615,7 +597,14 @@ class TorchCOMAOptimizer(TorchOptimizer):
         all_next_value_mem: Optional[AgentBufferField] = None
         all_next_baseline_mem: Optional[AgentBufferField] = None
         if self.policy.use_recurrent:
-            value_estimates, baseline_estimates, all_next_value_mem, all_next_baseline_mem, next_value_mem, next_baseline_mem = self._evaluate_by_sequence_team(
+            (
+                value_estimates,
+                baseline_estimates,
+                all_next_value_mem,
+                all_next_baseline_mem,
+                next_value_mem,
+                next_baseline_mem,
+            ) = self._evaluate_by_sequence_team(
                 current_obs, team_obs, team_actions, _init_value_mem, _init_baseline_mem
             )
         else:
