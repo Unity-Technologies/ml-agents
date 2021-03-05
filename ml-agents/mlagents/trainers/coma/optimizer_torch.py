@@ -14,7 +14,13 @@ from mlagents_envs.timers import timed
 from mlagents_envs.base_env import ObservationSpec, ActionSpec
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
-from mlagents.trainers.settings import TrainerSettings, PPOSettings
+from mlagents.trainers.settings import (
+    ExtrinsicSettings,
+    RewardSignalSettings,
+    RewardSignalType,
+    TrainerSettings,
+    PPOSettings,
+)
 from mlagents.trainers.torch.networks import Critic, MultiInputNetworkBody
 from mlagents.trainers.torch.decoders import ValueHeads
 from mlagents.trainers.torch.agent_action import AgentAction
@@ -22,6 +28,10 @@ from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.trajectory import ObsUtil, GroupObsUtil
 from mlagents.trainers.settings import NetworkSettings
+
+from mlagents_envs.logging_util import get_logger
+
+logger = get_logger(__name__)
 
 
 class TorchCOMAOptimizer(TorchOptimizer):
@@ -156,6 +166,24 @@ class TorchCOMAOptimizer(TorchOptimizer):
         self.stream_names = list(self.reward_signals.keys())
         self.value_memory_dict: Dict[str, torch.Tensor] = {}
         self.baseline_memory_dict: Dict[str, torch.Tensor] = {}
+
+    def create_reward_signals(
+        self, reward_signal_configs: Dict[RewardSignalType, RewardSignalSettings]
+    ) -> None:
+        """
+        Create reward signals. Override default to provide warnings for Curiosity and
+        GAIL, and make sure Extrinsic adds team rewards.
+        :param reward_signal_configs: Reward signal config.
+        """
+        for reward_signal, settings in reward_signal_configs.items():
+            if reward_signal != RewardSignalType.EXTRINSIC:
+                logger.warning(
+                    f"Reward Signal {reward_signal.value} is not supported with the COMA2 trainer; \
+                    results may be unexpected."
+                )
+            elif isinstance(settings, ExtrinsicSettings):
+                settings.add_groupmate_rewards = True
+        super().create_reward_signals(reward_signal_configs)
 
     @property
     def critic(self):
@@ -335,6 +363,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
             # TODO: After PyTorch is default, change to something more correct.
             "Losses/Policy Loss": torch.abs(policy_loss).item(),
             "Losses/Value Loss": value_loss.item(),
+            "Losses/Baseline Loss": baseline_loss.item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/Epsilon": decay_eps,
             "Policy/Beta": decay_bet,

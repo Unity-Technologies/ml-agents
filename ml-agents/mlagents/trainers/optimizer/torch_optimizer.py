@@ -10,7 +10,11 @@ from mlagents.trainers.torch.components.reward_providers import create_reward_pr
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer import Optimizer
-from mlagents.trainers.settings import TrainerSettings
+from mlagents.trainers.settings import (
+    TrainerSettings,
+    RewardSignalSettings,
+    RewardSignalType,
+)
 from mlagents.trainers.torch.utils import ModelUtils
 
 
@@ -44,7 +48,9 @@ class TorchOptimizer(Optimizer):
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
         pass
 
-    def create_reward_signals(self, reward_signal_configs):
+    def create_reward_signals(
+        self, reward_signal_configs: Dict[RewardSignalType, RewardSignalSettings]
+    ) -> None:
         """
         Create reward signals
         :param reward_signal_configs: Reward signal config.
