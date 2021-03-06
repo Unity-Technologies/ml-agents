@@ -26,16 +26,16 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    # - name: Cache pip
-    #   uses: actions/cache@v2
-    #   with:
-    #     # This path is specific to Ubuntu
-    #     path: ~/.cache/pip
-    #     # Look to see if there is a cache hit for the corresponding requirements file
-    #     key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'gym-unity/setup.py', 'test_requirements.txt') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-pip-
-    #       ${{ runner.os }}-
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        # This path is specific to Ubuntu
+        path: ~/.cache/pip
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'gym-unity/setup.py', 'test_requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
     - name: Install dependencies
@@ -52,7 +52,7 @@ jobs:
         pip freeze > pip_versions-${{ matrix.python-version }}.txt
         cat pip_versions-${{ matrix.python-version }}.txt
     - name: Run pytest
-      run: pytest -p no:warnings
+      run: pytest --deselect ml-agents/mlagents/trainers/tests/test_subprocess_env_manager.py::test_subprocess_env_endtoend --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings
 
     - name: Upload pytest test results
       uses: actions/upload-artifact@v2
