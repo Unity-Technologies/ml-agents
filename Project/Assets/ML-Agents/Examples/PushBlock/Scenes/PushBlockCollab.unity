@@ -453,6 +453,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PushBlockCollabAreaStaticGrid (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 8191903532335653025, guid: f5bbed44a6ea747a687fbbb738eb1730,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f5bbed44a6ea747a687fbbb738eb1730, type: 3}
 --- !u!1 &1265651285
@@ -551,6 +556,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PushBlockCollabAreaStaticGrid (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8191903532335653025, guid: f5bbed44a6ea747a687fbbb738eb1730,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f5bbed44a6ea747a687fbbb738eb1730, type: 3}
@@ -687,6 +697,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PushBlockCollabAreaStaticGrid (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8191903532335653025, guid: f5bbed44a6ea747a687fbbb738eb1730,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f5bbed44a6ea747a687fbbb738eb1730, type: 3}
