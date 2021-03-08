@@ -118,34 +118,6 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
-        /// Write the range of floats
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="writeOffset">Optional write offset.</param>
-        [Obsolete("Use AddList() for better performance")]
-        public void AddRange(IEnumerable<float> data, int writeOffset = 0)
-        {
-            if (m_Data != null)
-            {
-                int index = 0;
-                foreach (var val in data)
-                {
-                    m_Data[index + m_Offset + writeOffset] = val;
-                    index++;
-                }
-            }
-            else
-            {
-                int index = 0;
-                foreach (var val in data)
-                {
-                    m_Proxy.data[m_Batch, index + m_Offset + writeOffset] = val;
-                    index++;
-                }
-            }
-        }
-
-        /// <summary>
         /// Write the list of floats.
         /// </summary>
         /// <param name="data">The actual list of floats to write.</param>

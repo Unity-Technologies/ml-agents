@@ -707,7 +707,7 @@ Notes:
 The Actuator API allows users to abstract behavior out of Agents and in to
 components (similar to the ISensor API).  The `IActuator` interface and `Agent`
 class both implement the `IActionReceiver` interface to allow for backward compatibility
-with the current `Agent.OnActionReceived` and `Agent.CollectDiscreteActionMasks` APIs.
+with the current `Agent.OnActionReceived`.
 This means you will not have to change your code until you decide to use the `IActuator` API.
 
 Like the `ISensor` interface, the `IActuator` interface is intended for advanced users.
