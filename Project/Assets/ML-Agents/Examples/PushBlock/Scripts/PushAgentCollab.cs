@@ -4,17 +4,13 @@ using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Sensors;
 
 public class PushAgentCollab : Agent
 {
 
-    PushBlockSettings m_PushBlockSettings;
+    private PushBlockSettings m_PushBlockSettings;
+    private Rigidbody m_AgentRb;  //cached on initialization
 
-    //    Rigidbody m_BlockRb;  //cached on initialization
-    Rigidbody m_AgentRb;  //cached on initialization
-
-    public bool useVectorObs = true;
     void Awake()
     {
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
@@ -22,7 +18,7 @@ public class PushAgentCollab : Agent
 
     public override void Initialize()
     {
-        // Cache the agent rigidbody
+        // Cache the agent rb
         m_AgentRb = GetComponent<Rigidbody>();
     }
 
@@ -62,7 +58,6 @@ public class PushAgentCollab : Agent
             ForceMode.VelocityChange);
     }
 
-
     /// <summary>
     /// Called every step of the engine. Here the agent takes an action.
     /// </summary>
@@ -97,13 +92,4 @@ public class PushAgentCollab : Agent
             discreteActionsOut[0] = 2;
         }
     }
-
-    /// <summary>
-    /// In the editor, if "Reset On Done" is checked then AgentReset() will be
-    /// called automatically anytime we mark done = true in an agent script.
-    /// </summary>
-    public override void OnEpisodeBegin()
-    {
-    }
-
 }

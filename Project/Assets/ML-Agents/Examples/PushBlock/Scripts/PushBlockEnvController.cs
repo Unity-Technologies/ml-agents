@@ -6,7 +6,7 @@ using UnityEngine;
 public class PushBlockEnvController : MonoBehaviour
 {
     [System.Serializable]
-    public class AgentInfo
+    public class PlayerInfo
     {
         public PushAgentCollab Agent;
         [HideInInspector]
@@ -15,7 +15,6 @@ public class PushBlockEnvController : MonoBehaviour
         public Quaternion StartingRot;
         [HideInInspector]
         public Rigidbody Rb;
-
     }
 
     [System.Serializable]
@@ -35,7 +34,6 @@ public class PushBlockEnvController : MonoBehaviour
     /// </summary>
     /// <returns></returns>
     [Header("Max Environment Steps")] public int MaxEnvironmentSteps = 25000;
-    // private int m_ResetTimer;
 
     /// <summary>
     /// The area bounds.
@@ -56,14 +54,16 @@ public class PushBlockEnvController : MonoBehaviour
     /// </summary>
     Renderer m_GroundRenderer;
 
-    public List<AgentInfo> AgentsList = new List<AgentInfo>();
+    //List of Agents On Platform
+    public List<PlayerInfo> AgentsList = new List<PlayerInfo>();
+    //List of Blocks On Platform
     public List<BlockInfo> BlocksList = new List<BlockInfo>();
 
     public bool UseRandomAgentRotation = true;
     public bool UseRandomAgentPosition = true;
     public bool UseRandomBlockRotation = true;
     public bool UseRandomBlockPosition = true;
-    PushBlockSettings m_PushBlockSettings;
+    private PushBlockSettings m_PushBlockSettings;
 
     private int m_NumberOfRemainingBlocks;
 
@@ -81,6 +81,7 @@ public class PushBlockEnvController : MonoBehaviour
         // Starting material
         m_GroundMaterial = m_GroundRenderer.material;
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
+        // Initialize Blocks
         foreach (var item in BlocksList)
         {
             item.StartingPos = item.T.transform.position;
@@ -96,9 +97,7 @@ public class PushBlockEnvController : MonoBehaviour
             item.Rb = item.Agent.GetComponent<Rigidbody>();
             m_AgentGroup.RegisterAgent(item.Agent);
         }
-
         ResetScene();
-
     }
 
     void FixedUpdate()
@@ -109,12 +108,6 @@ public class PushBlockEnvController : MonoBehaviour
             m_AgentGroup.GroupEpisodeInterrupted();
             ResetScene();
         }
-
-        // foreach (var item in BlocksList)
-        // {
-        //     //Give Agent Rewards
-        //     m_AgentGroup.AddGroupReward(.01f * item.Rb.velocity.sqrMagnitude);
-        // }
     }
 
     /// <summary>
@@ -155,7 +148,6 @@ public class PushBlockEnvController : MonoBehaviour
         block.Rb.angularVelocity = Vector3.zero;
     }
 
-
     /// <summary>
     /// Swap ground material, wait time seconds, then swap back to the regular material.
     /// </summary>
@@ -186,7 +178,6 @@ public class PushBlockEnvController : MonoBehaviour
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
 
-        print($"Scored {score} on gameObject.name");
         if (done)
         {
             //Reset assets
@@ -204,20 +195,11 @@ public class PushBlockEnvController : MonoBehaviour
     {
         m_ResetTimer = 0;
 
-        //Random platform rot
+        //Random platform rotation
         var rotation = Random.Range(0, 4);
         var rotationAngle = rotation * 90f;
         area.transform.Rotate(new Vector3(0f, rotationAngle, 0f));
 
-        //End Episode
-        // foreach (var item in AgentsList)
-        // {
-        //     if (!item.Agent)
-        //     {
-        //         return;
-        //     }
-        //     item.Agent.EndEpisode();
-        // }
         //Reset Agents
         foreach (var item in AgentsList)
         {
@@ -243,6 +225,5 @@ public class PushBlockEnvController : MonoBehaviour
 
         //Reset counter
         m_NumberOfRemainingBlocks = BlocksList.Count;
-        // m_NumberOfRemainingBlocks = 2;
     }
 }
