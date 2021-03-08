@@ -32,8 +32,8 @@ class AgentAction(NamedTuple):
 
     def slice(self, start: int, end: int) -> "AgentAction":
         """
-        Returns an AgentAction with the continuous and discrete tensors slices
-        from index start to index end.
+        Returns an AgentAction with the slice of continuous and discrete tensors
+        between start and end.
         """
         _cont = None
         _disc_list = []
