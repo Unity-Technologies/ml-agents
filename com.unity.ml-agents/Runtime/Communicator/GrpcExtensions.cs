@@ -428,7 +428,7 @@ namespace Unity.MLAgents
             }
             observationProto.Shape.AddRange(shape);
             var sensorName = sensor.GetName();
-            if (string.IsNullOrEmpty(sensorName))
+            if (!string.IsNullOrEmpty(sensorName))
             {
                 observationProto.Name = sensorName;
             }
