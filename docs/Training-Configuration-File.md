@@ -50,7 +50,7 @@ choice of the trainer (which we review on subsequent sections).
 Depending on your choice of a trainer, there are additional trainer-specific
 configurations. We present them below in two separate tables, but keep in mind
 that you only need to include the configurations for the trainer selected (i.e.
-the `trainer` setting above).P
+the `trainer` setting above).
 
 ### PPO-specific Configurations
 
