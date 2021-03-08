@@ -30,6 +30,12 @@ TagManager:
   - purpleAgent
   - purpleGoal
   - tile
+  - zombie
+  - blockLarge
+  - blockVeryLarge
+  - blockSmall
+  - door
+  - switch
   layers:
   - Default
   - TransparentFX

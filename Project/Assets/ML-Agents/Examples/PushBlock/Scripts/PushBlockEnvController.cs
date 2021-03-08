@@ -109,6 +109,12 @@ public class PushBlockEnvController : MonoBehaviour
             m_AgentGroup.GroupEpisodeInterrupted();
             ResetScene();
         }
+
+        // foreach (var item in BlocksList)
+        // {
+        //     //Give Agent Rewards
+        //     m_AgentGroup.AddGroupReward(.01f * item.Rb.velocity.sqrMagnitude);
+        // }
     }
 
     /// <summary>
@@ -180,6 +186,7 @@ public class PushBlockEnvController : MonoBehaviour
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
 
+        print($"Scored {score} on gameObject.name");
         if (done)
         {
             //Reset assets

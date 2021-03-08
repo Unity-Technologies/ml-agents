@@ -457,7 +457,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 71d6f70da79364f00b5823e7158d7f22, type: 3}
+  m_Model: {fileID: 11400000, guid: cc80e1b0c1e5d442ab2afde4187a0691, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -1765,7 +1765,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8190299122290044757}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0.59, z: -4.39}
+  m_LocalPosition: {x: 0, y: 0.59, z: 9.21}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8195608969721335995}
@@ -1813,7 +1813,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 71d6f70da79364f00b5823e7158d7f22, type: 3}
+  m_Model: {fileID: 11400000, guid: cc80e1b0c1e5d442ab2afde4187a0691, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -2444,7 +2444,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8191066182651411141}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8191066183478082749}
@@ -2463,9 +2463,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: StaticPlatformGrid
-  CellScaleX: 1.3
+  CellScaleX: 1
   CellScaleY: 0.5
-  CellScaleZ: 1.3
+  CellScaleZ: 1
   GridNumSideX: 20
   GridNumSideZ: 20
   RotateGridWithRoot: 1
@@ -2481,7 +2481,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   gridDepthType: 1
-  rootReference: {fileID: 8191903532335653025}
+  rootReference: {fileID: 8191066182651411141}
   MaxColliderBufferSize: 500
   InitialColliderBufferSize: 16
   ObservationPerCell: 7
@@ -2744,7 +2744,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8191066182862526894}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8188215278053101651}
@@ -2763,9 +2763,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: StaticPlatformGrid
-  CellScaleX: 1.3
+  CellScaleX: 1
   CellScaleY: 0.5
-  CellScaleZ: 1.3
+  CellScaleZ: 1
   GridNumSideX: 20
   GridNumSideZ: 20
   RotateGridWithRoot: 1
@@ -2781,7 +2781,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   gridDepthType: 1
-  rootReference: {fileID: 8191903532335653025}
+  rootReference: {fileID: 8191066182862526894}
   MaxColliderBufferSize: 500
   InitialColliderBufferSize: 16
   ObservationPerCell: 7
@@ -2900,7 +2900,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8191066182918326564}
   serializedVersion: 2
-  m_Mass: 35
+  m_Mass: 10
   m_Drag: 0.5
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -2967,7 +2967,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8191066183046235082}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3789616195185397257}
@@ -2986,9 +2986,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: StaticPlatformGrid
-  CellScaleX: 1.3
+  CellScaleX: 1
   CellScaleY: 0.5
-  CellScaleZ: 1.3
+  CellScaleZ: 1
   GridNumSideX: 20
   GridNumSideZ: 20
   RotateGridWithRoot: 1
@@ -3004,7 +3004,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   gridDepthType: 1
-  rootReference: {fileID: 8191903532335653025}
+  rootReference: {fileID: 8191066183046235082}
   MaxColliderBufferSize: 500
   InitialColliderBufferSize: 16
   ObservationPerCell: 7
@@ -3101,7 +3101,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 71d6f70da79364f00b5823e7158d7f22, type: 3}
+  m_Model: {fileID: 11400000, guid: cc80e1b0c1e5d442ab2afde4187a0691, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock
@@ -3365,7 +3365,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8191066183517911096}
   serializedVersion: 2
-  m_Mass: 35
+  m_Mass: 10
   m_Drag: 0.5
   m_AngularDrag: 0.05
   m_UseGravity: 1
