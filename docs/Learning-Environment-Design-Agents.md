@@ -976,7 +976,8 @@ Team Id. If this playing field is duplicated many times in the Scene (e.g. for t
 speedup), there should be two Groups _per playing field_, and two unique Team Ids
 _for the entire Scene_.
 
-For an example of how to set up cooperative environments, see the Cooperative PushBlock and
+For an example of how to set up cooperative environments, see the
+[Cooperative PushBlock](Learning-Environment-Examples.md#cooperative-push-block) and
 Escape Room example environments
 
 #### Cooperative Behaviors Notes and Best Practices
