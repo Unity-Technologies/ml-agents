@@ -14,6 +14,9 @@ double-check that the versions are in the same. The versions can be found in
 
 
 # Migrating
+## Migrating the package to version 2.0
+- If you used any of the APIs that were deprecated before version 2.0, you need to use their replacement. These deprecated APIs have been removed. See the migration steps bellow for specific API replacements.
+
 ## Migrating to Release 13
 ### Implementing IHeuristic in your IActuator implementations
  - If you have any custom actuators, you can now implement the `IHeuristicProvider` interface to have your actuator

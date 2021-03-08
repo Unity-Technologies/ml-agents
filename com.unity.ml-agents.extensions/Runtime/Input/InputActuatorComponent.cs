@@ -241,11 +241,6 @@ namespace Unity.MLAgents.Extensions.Input
             return inputControlScheme;
         }
 
-#pragma warning disable 672
-        /// <inheritdoc cref="ActuatorComponent.CreateActuator"/>
-        public override IActuator CreateActuator() { return null; }
-#pragma warning restore 672
-
         /// <summary>
         ///
         /// </summary>

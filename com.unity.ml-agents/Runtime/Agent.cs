@@ -301,9 +301,6 @@ namespace Unity.MLAgents
         /// Whether or not the Agent has been initialized already
         bool m_Initialized;
 
-        /// Keeps track of the actions that are masked at each step.
-        DiscreteActionMasker m_ActionMasker;
-
         /// <summary>
         /// Set of DemonstrationWriters that the Agent will write its step information to.
         /// If you use a DemonstrationRecorder component, this will automatically register its DemonstrationWriter.
@@ -337,17 +334,6 @@ namespace Unity.MLAgents
         /// with the current behavior of Agent.
         /// </summary>
         IActuator m_VectorActuator;
-
-        /// <summary>
-        /// This is used to avoid allocation of a float array every frame if users are still using the old
-        /// OnActionReceived method.
-        /// </summary>
-        float[] m_LegacyActionCache;
-
-        /// <summary>
-        /// This is used to avoid allocation of a float array during legacy calls to Heuristic.
-        /// </summary>
-        float[] m_LegacyHeuristicCache;
 
         /// Currect MultiAgentGroup ID. Default to 0 (meaning no group)
         int m_GroupId;
@@ -952,29 +938,7 @@ namespace Unity.MLAgents
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         public virtual void Heuristic(in ActionBuffers actionsOut)
         {
-            // Disable deprecation warnings so we can call the legacy overload.
-#pragma warning disable CS0618
-
-            // The default implementation of Heuristic calls the
-            // obsolete version for backward compatibility
-            switch (m_PolicyFactory.BrainParameters.VectorActionSpaceType)
-            {
-                case SpaceType.Continuous:
-                    Heuristic(m_LegacyHeuristicCache);
-                    Array.Copy(m_LegacyHeuristicCache, actionsOut.ContinuousActions.Array, m_LegacyActionCache.Length);
-                    actionsOut.DiscreteActions.Clear();
-                    break;
-                case SpaceType.Discrete:
-                    Heuristic(m_LegacyHeuristicCache);
-                    var discreteActionSegment = actionsOut.DiscreteActions;
-                    for (var i = 0; i < actionsOut.DiscreteActions.Length; i++)
-                    {
-                        discreteActionSegment[i] = (int)m_LegacyHeuristicCache[i];
-                    }
-                    actionsOut.ContinuousActions.Clear();
-                    break;
-            }
-#pragma warning restore CS0618
+            Debug.LogWarning("Heuristic method called but not implemented. Returning placeholder actions.");
         }
 
         /// <summary>
@@ -1064,8 +1028,6 @@ namespace Unity.MLAgents
             var param = m_PolicyFactory.BrainParameters;
             m_VectorActuator = new AgentVectorActuator(this, this, param.ActionSpec);
             m_ActuatorManager = new ActuatorManager(attachedActuators.Length + 1);
-            m_LegacyActionCache = new float[m_VectorActuator.TotalNumberOfActions()];
-            m_LegacyHeuristicCache = new float[m_VectorActuator.TotalNumberOfActions()];
 
             m_ActuatorManager.Add(m_VectorActuator);
 
@@ -1223,17 +1185,7 @@ namespace Unity.MLAgents
         /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
-        public virtual void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
-        {
-            if (m_ActionMasker == null)
-            {
-                m_ActionMasker = new DiscreteActionMasker(actionMask);
-            }
-            // Disable deprecation warnings so we can call the legacy overload.
-#pragma warning disable CS0618
-            CollectDiscreteActionMasks(m_ActionMasker);
-#pragma warning restore CS0618
-        }
+        public virtual void WriteDiscreteActionMask(IDiscreteActionMask actionMask) { }
 
         /// <summary>
         /// Implement `OnActionReceived()` to specify agent behavior at every step, based
@@ -1301,34 +1253,7 @@ namespace Unity.MLAgents
         /// <param name="actions">
         /// Struct containing the buffers of actions to be executed at this step.
         /// </param>
-        public virtual void OnActionReceived(ActionBuffers actions)
-        {
-            var actionSpec = m_PolicyFactory.BrainParameters.ActionSpec;
-            // For continuous and discrete actions together, we don't need to fall back to the legacy method
-            if (actionSpec.NumContinuousActions > 0 && actionSpec.NumDiscreteActions > 0)
-            {
-                // Nothing implemented.
-                return;
-            }
-
-            if (!actions.ContinuousActions.IsEmpty())
-            {
-                Array.Copy(actions.ContinuousActions.Array,
-                    m_LegacyActionCache,
-                    actionSpec.NumContinuousActions);
-            }
-            else
-            {
-                for (var i = 0; i < m_LegacyActionCache.Length; i++)
-                {
-                    m_LegacyActionCache[i] = (float)actions.DiscreteActions[i];
-                }
-            }
-            // Disable deprecation warnings so we can call the legacy overload.
-#pragma warning disable CS0618
-            OnActionReceived(m_LegacyActionCache);
-#pragma warning restore CS0618
-        }
+        public virtual void OnActionReceived(ActionBuffers actions) { }
 
         /// <summary>
         /// Implement `OnEpisodeBegin()` to set up an Agent instance at the beginning
