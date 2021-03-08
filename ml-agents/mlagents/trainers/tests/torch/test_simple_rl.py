@@ -48,11 +48,13 @@ COMA_TORCH_CONFIG = coma_dummy_config()
 pytestmark = pytest.mark.check_environment_trains
 
 
-@pytest.mark.parametrize("action_sizes", [(1, 0)])
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_simple_coma(action_sizes):
     env = MultiAgentEnvironment([BRAIN_NAME], action_sizes=action_sizes, num_agents=2)
+    # config = attr.evolve(PPO_TORCH_CONFIG)
     config = attr.evolve(COMA_TORCH_CONFIG)
     check_environment_trains(env, {BRAIN_NAME: config})
+    assert False
 
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])

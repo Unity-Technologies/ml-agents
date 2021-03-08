@@ -332,7 +332,9 @@ class MultiAgentEnvironment(BaseEnv):
         self.envs = {}
         self.dones = {}
         self.names = brain_names
+        self.final_rewards: Dict[str, List[float]] = {}
         for name in brain_names:
+            self.final_rewards[name] = []
             for i in range(num_agents):
                 name_and_num = name + str(i)
                 self.envs[name_and_num] = SimpleEnvironment(
@@ -370,17 +372,17 @@ class MultiAgentEnvironment(BaseEnv):
     def set_actions(self, behavior_name, action):
         # im so sorry
         j = 0
+        _act = ActionTuple()
         for i in range(self.num_agents):
             name_and_num = behavior_name + str(i)
             env = self.envs[name_and_num]
-            _act = ActionTuple()
             if not self.dones[name_and_num]:
                 if self.action_spec.continuous_size > 0:
                     _act.add_continuous(action.continuous[j : j + 1])
                 if self.action_spec.discrete_size > 0:
                     _disc_list = []
                     for _disc in action.discrete:
-                        _disc_list.append(_disc[j : j + 1])
+                        _disc_list.append([_disc[j : j + 1]])
                     _act.add_discrete(np.array(_disc_list))
                 j += 1
             env.action[behavior_name] = _act
@@ -409,16 +411,11 @@ class MultiAgentEnvironment(BaseEnv):
                         vec_obs.append(obs)
                 reward.append(_dec.reward[0])
                 group_reward.append(_dec.group_reward[0])
-            elif _term.reward > 0:
                 terminal_step = _term
-                decision_step = _dec
-                decision_step.agent_id = [i]
-                decision_step.group_id = [0]
 
-        if decision_step is None:
-            decision_step = DecisionSteps(
-                vec_obs, reward, m_agent_id, action_mask, m_group_id, group_reward
-            )
+        decision_step = DecisionSteps(
+            vec_obs, reward, m_agent_id, action_mask, m_group_id, group_reward
+        )
         return (decision_step, terminal_step)
 
     def step(self) -> None:
@@ -436,11 +433,19 @@ class MultiAgentEnvironment(BaseEnv):
                         env.step_result[name] = env._make_batched_step(
                             name, done, 1.0, 0.0
                         )
+                        self.final_rewards[name].append(1.0)
                         self.reset()
+                    # elif done:
+                    #    env.step_result[name] = env._make_batched_step(
+                    #        name, done, -.2, 0.0
+                    #    )
+                    #    self.final_rewards[name].append(-.2)
+
                     else:
                         env.step_result[name] = env._make_batched_step(
-                            name, done, 0.0, 0.0
+                            name, done, -TIME_PENALTY, 0.0
                         )
+                        self.final_rewards[name].append(-TIME_PENALTY)
 
     def reset(self) -> None:  # type: ignore
         for name in self.names:
