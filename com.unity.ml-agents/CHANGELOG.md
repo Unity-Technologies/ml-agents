@@ -23,6 +23,7 @@ and this project adheres to
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - An issue that caused `GAIL` to fail for environments where agents can terminate episodes by self-sacrifice has been fixed. (#4971)
+- Made the error message when observations of different shapes are sent to the trainer clearer. (#5030)
 - Fix an issue where queuing InputEvents overwrote data from previous events in the same frame.
 
 ## [1.8.0-preview] - 2021-02-17
