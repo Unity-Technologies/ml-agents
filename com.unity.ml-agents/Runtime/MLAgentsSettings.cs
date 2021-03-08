@@ -17,7 +17,7 @@ namespace Unity.MLAgents
         [SerializeField]
         private int m_EditorPort = 5004;
         [SerializeField]
-        private int m_PlayerPort = -1;
+        private bool m_ConnectTrainer = true;
 
 
         public int EditorPort
@@ -28,12 +28,12 @@ namespace Unity.MLAgents
                 m_EditorPort = value;
             }
         }
-        public int PlayerPort
+        public bool ConnectTrainer
         {
-            get { return m_PlayerPort; }
+            get { return m_ConnectTrainer; }
             set
             {
-                m_PlayerPort = value;
+                m_ConnectTrainer = value;
             }
         }
 

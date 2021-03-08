@@ -370,11 +370,10 @@ namespace Unity.MLAgents
                 // No arg passed, or malformed port number.
 #if UNITY_EDITOR
                 // Try connecting on the default editor port
-                return MLAgentsSettings.Instance.EditorPort;
+                return MLAgentsSettings.Instance.ConnectTrainer ? MLAgentsSettings.Instance.EditorPort : -1;
 #else
                 // This is an executable, so we don't try to connect.
-                return MLAgentsSettings.Instance.PlayerPort;
-                // return -1;
+                return -1;
 #endif
             }
         }

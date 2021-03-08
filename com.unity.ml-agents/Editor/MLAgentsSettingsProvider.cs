@@ -74,8 +74,8 @@ namespace Unity.MLAgents.Editor
             using (new EditorGUI.DisabledScope(!IsSettingsAvailable()))
             {
                 EditorGUI.BeginChangeCheck();
+                EditorGUILayout.PropertyField(m_SettingsObject.FindProperty("m_ConnectTrainer"), new GUIContent("Connect to Trainer"));
                 EditorGUILayout.PropertyField(m_SettingsObject.FindProperty("m_EditorPort"), new GUIContent("Editor Port"));
-                EditorGUILayout.PropertyField(m_SettingsObject.FindProperty("m_PlayerPort"), new GUIContent("Player Port"));
                 if (EditorGUI.EndChangeCheck())
                     m_SettingsObject.ApplyModifiedProperties();
             }
