@@ -553,7 +553,7 @@ In addition to the three environment-agnostic training methods introduced in the
 previous section, the ML-Agents Toolkit provides additional methods that can aid
 in training behaviors for specific types of environments.
 
-### Training in Multi-Agent Environments with Self-Play
+### Training in Competitive Multi-Agent Environments with Self-Play
 
 ML-Agents provides the functionality to train both symmetric and asymmetric
 adversarial games with
@@ -587,6 +587,37 @@ page for more information on setting up teams in your Unity scene. Also, read
 our
 [blog post on self-play](https://blogs.unity3d.com/2020/02/28/training-intelligent-adversaries-using-self-play-with-ml-agents/)
 for additional information.
+
+### Training In Cooperative Multi-Agent Environments with COMA2
+
+![PushBlock with Agents Working Together](images/cooperative_pushblock.png)
+
+ML-Agents provides the functionality for training cooperative behaviors - i.e.,
+groups of agents working towards a common goal, where the success of the individual
+is linked to the success of the whole group. In such a scenario, agents typically receive
+rewards as a group. For instance, if a team of agents wins a game against an opposing
+team, everyone is rewarded - even agents who did not contribute too the win. This
+makes makes learning what to do as an individual difficult - you may get a win
+for doing nothing, and a loss for doing your best.
+
+In ML-Agents, we provide COMA2, which is a novel multi-agent trainer that trains
+a _centralized critic_, a neural network that acts as a "coach" for a whole group
+of agents. You can then give rewards to the team as a whole, and the agents will
+learn how best to contribute to achieving that reward. Agents can _also_ be given
+rewards individually, and the team will work together to help the individual achieve
+those goals. During an episode, agents can be added or removed from the group, such as
+when agents spawn or die in a game. If agents are removed mid-episode (e.g., if teammates die
+or are removed from the game), they will still learn whether their actions contributed
+to the team winning later, enabling agents to take group-beneficial actions even if
+they result in the individual being removed from the game (i.e., self-sacrifice).
+COMA2 can also be combined with self-play to train teams of agents to play against each other.
+
+To learn more about enabling cooperative behaviors for agents in an ML-Agents environment,
+check out [this page](Learning-Environment-Design-Agents.md#cooperative-scenarios).
+
+For further reading, COMA2 builds on previous work in multi-agent cooperative learning
+([Lowe et al.](https://arxiv.org/abs/1706.02275), [Foerster et al.](https://arxiv.org/pdf/1705.08926.pdf),
+among others) to enable the above use-cases.
 
 ### Solving Complex Tasks using Curriculum Learning
 

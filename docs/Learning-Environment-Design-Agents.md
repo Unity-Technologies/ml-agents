@@ -537,7 +537,7 @@ the padded observations. Note that attention layers are invariant to
 the order of the entities, so there is no need to properly "order" the
 entities before feeding them into the `BufferSensor`.
 
-The  the `BufferSensorComponent` Editor inspector have two arguments:
+The `BufferSensorComponent` Editor inspector have two arguments:
  - `Observation Size` : This is how many floats each entities will be
  represented with. This number is fixed and all entities must
  have the same representation. For example, if the entities you want to
@@ -900,7 +900,9 @@ is always at least one Agent training at all times by either spawning a new
 Agent every time one is destroyed or by re-spawning new Agents when the whole
 environment resets.
 
-## Defining Teams for Multi-agent Scenarios
+## Defining Multi-agent Scenarios
+
+### Teams for Adversarial Scenarios
 
 Self-play is triggered by including the self-play hyperparameter hierarchy in
 the [trainer configuration](Training-ML-Agents.md#training-configurations). To
@@ -926,6 +928,71 @@ and agent prefabs for our Tennis and Soccer environments. Tennis and Soccer
 provide examples of symmetric games. To train an asymmetric game, specify
 trainer configurations for each of your behavior names and include the self-play
 hyperparameter hierarchy in both.
+
+### Groups for Cooperative Scenarios
+
+Cooperative behavior in ML-Agents can be enabled by instantiating a `SimpleMultiAgentGroup`,
+typically in an environment controller or similar script, and adding agents to it
+using the `RegisterAgent(Agent agent)` method. Using Multi Agent Groups enables the
+agents within a group to learn how to work together to achieve a common goal (i.e.,
+maximize a group-given reward), even if one or more of the group members are removed
+before the episode ends. You can then use this group to add/set rewards, end or interrupt episodes
+at a group level using the `AddGroupReward()`, `SetGroupReward()`, `EndGroupEpisode()`, and
+`GroupEpisodeInterrupted()` methods. For example:
+
+```csharp
+// Create a Multi Agent Group in Start() or Initialize()
+m_AgentGroup = new SimpleMultiAgentGroup();
+
+// Register agents in group at the beginning of an episode
+for (var agent in AgentList)
+{
+  m_AgentGroup.RegisterAgent(agent);
+}
+
+// if the team scores a goal
+m_AgentGroup.AddGroupReward(score);
+
+// If the goal is reached and the episode is over
+m_AgentGroup.EndGroupEpisode();
+ResetScene();
+
+// If time ran out and we need to interrupt the episode
+m_AgentGroup.GroupEpisodeInterrupted();
+ResetScene();
+```
+
+Multi Agent Groups are best used with the COMA2 trainer, which will train a "coach" for each
+Group. This can be enabled by using the `coma` trainer - see the
+[training configurations](Training-Configuration-File.md) doc for more information on
+configuring COMA2. When using COMA2, agents which are deactivated or removed from the Scene
+during the episode will still "recieve" group rewards that are seen later.
+
+**NOTE**: Groups differ from Teams (for competitive settings) in the following way - agents
+working together should be added to the same Group, while Agents playing against each other
+should be given different Team Ids. If in the Scene there is one playing field and two teams,
+there should be two Groups, one for each team, and each team should be assigned a different
+Team Id. If this playing field is duplicated many times in the Scene (e.g. for training
+speedup), there should be two Groups _per playing field_, and two unique Team Ids
+_for the entire Scene_.
+
+For an example of how to set up cooperative environments, see the Cooperative PushBlock and
+Escape Room example environments
+
+#### Cooperative Behaviors Notes and Best Practices
+
+* Agents within groups should set the Max Steps parameter the Agent script to 0. Instead,
+handle Max Steps by ending the episode foor the entire Group using `EndGroupEpisode()`, and
+`GroupEpisodeInterrupted()`.
+
+* If an Agent is deactivated in a scene, it must be re-registered to the Multi Agent Group.
+
+* You can still add incremental rewards to Agents using `Agent.AddReward()` if they are
+in a Group. These rewards will only be given to those agents and can only be recieved when the
+Agent is active.
+
+* Environments which use Multi Agent Groups can be trained using PPO or SAC, but agents will
+not receive Group Rewards after deactivation/removal, nor will they behave as cooperatively.
 
 ## Recording Demonstrations
 

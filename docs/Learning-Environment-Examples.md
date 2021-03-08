@@ -456,3 +456,36 @@ drop down. New pieces are spawned randomly at the top, with a chance of being
       - Recommended Minimum: 1
       - Recommended Maximum: 20
   - Benchmark Mean Reward: Depends on the number of tiles.
+
+## Cooperative Push Block
+![CoopPushBlock](images/cooperative_pushblock.png)
+
+- Set-up: Similar to Push Block, the agents are in an area with blocks that need
+to be pushed into a goal. Small blocks can be pushed by one agents and are worth
++1 value, medium blocks require two agents to push in and are worth +2, and large
+blocks require all 3 agents to push and are worth +3.
+- Goal: Push all blocks into the goal.
+- Agents: The environment contains three Agents in a Multi Agent Group.
+- Agent Reward Function:
+  - -(1/15000) Existential penalty.
+  - +1, +2, or +3 for pushing in a block
+- Behavior Parameters:
+  - Observation space: A single Grid Sensor with separate tags for each block size,
+    the goal, and other agents.
+  - Actions: 1 discrete action branch with 7 actions, corresponding to turn clockwise
+    and counterclockwise, move along four different face directions, or do nothing.
+- Float Properties: Three
+  - dynamic_friction: Coefficient of friction for the ground material acting on
+    moving objects
+    - Default: 0
+    - Recommended Minimum: 0
+    - Recommended Maximum: 1
+  - static_friction: Coefficient of friction for the ground material acting on
+    stationary objects
+    - Default: 0
+    - Recommended Minimum: 0
+    - Recommended Maximum: 1
+  - block_drag: Effect of air resistance on block
+    - Default: 0.5
+    - Recommended Minimum: 0
+    - Recommended Maximum: 2000
