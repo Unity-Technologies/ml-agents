@@ -10,7 +10,6 @@ namespace Unity.MLAgents
 {
     public class SampleExporter
     {
-        const string k_OutputCommandLineFlag = "--mlagents-sample-ouput-path";
         const string k_SceneFlag = "--mlagents-scene-path";
 
         public static void ExportCuratedSamples()
@@ -20,15 +19,9 @@ namespace Unity.MLAgents
             try
             {
                 var args = Environment.GetCommandLineArgs();
-                var outputPath = "exported_samples";
                 var scenes = new List<string>();
                 for (var i = 0; i < args.Length - 1; i++)
                 {
-                    if (args[i] == k_OutputCommandLineFlag)
-                    {
-                        outputPath = args[i + 1];
-                        Debug.Log($"Overriding output path to {outputPath}");
-                    }
                     if (args[i] == k_SceneFlag)
                     {
                         scenes.Add(args[i + 1]);
