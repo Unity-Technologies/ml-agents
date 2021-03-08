@@ -4,6 +4,7 @@ import attr
 
 from mlagents.trainers.tests.simple_test_envs import (
     SimpleEnvironment,
+    MultiAgentEnvironment,
     MemoryEnvironment,
     RecordEnvironment,
 )
@@ -27,7 +28,11 @@ from mlagents_envs.communicator_objects.brain_parameters_pb2 import (
     ActionSpecProto,
 )
 
-from mlagents.trainers.tests.dummy_config import ppo_dummy_config, sac_dummy_config
+from mlagents.trainers.tests.dummy_config import (
+    ppo_dummy_config,
+    sac_dummy_config,
+    coma_dummy_config,
+)
 from mlagents.trainers.tests.check_env_trains import (
     check_environment_trains,
     default_reward_processor,
@@ -37,9 +42,17 @@ BRAIN_NAME = "1D"
 
 PPO_TORCH_CONFIG = ppo_dummy_config()
 SAC_TORCH_CONFIG = sac_dummy_config()
+COMA_TORCH_CONFIG = coma_dummy_config()
 
 # tests in this file won't be tested on GPU machine
 pytestmark = pytest.mark.check_environment_trains
+
+
+@pytest.mark.parametrize("action_sizes", [(1, 0)])
+def test_simple_coma(action_sizes):
+    env = MultiAgentEnvironment([BRAIN_NAME], action_sizes=action_sizes, num_agents=2)
+    config = attr.evolve(COMA_TORCH_CONFIG)
+    check_environment_trains(env, {BRAIN_NAME: config})
 
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
