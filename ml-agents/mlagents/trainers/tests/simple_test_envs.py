@@ -462,21 +462,20 @@ class MultiAgentEnvironment(BaseEnv):
                     self.dones[name_and_num] = done
                     if self.all_done:
                         env.step_result[name] = env._make_batched_step(
-                            name, done, 1.0, 0.0
+                            name, done, 0.0, 1.0
                         )
                         self.final_rewards[name].append(1.0)
                         self.reset()
-                    # elif done:
-                    #    env.step_result[name] = env._make_batched_step(
-                    #        name, done, -.2, 0.0
-                    #    )
-                    #    self.final_rewards[name].append(-.2)
-
                     elif done:
+                        env.step_result[name] = env._make_batched_step(
+                            name, done, -0.2, 0.0
+                        )
+                        self.final_rewards[name].append(-0.2)
+
+                    else:
                         env.step_result[name] = env._make_batched_step(
                             name, done, -TIME_PENALTY, 0.0
                         )
-                        self.final_rewards[name].append(-TIME_PENALTY)
 
     def reset(self) -> None:  # type: ignore
         for name in self.names:
