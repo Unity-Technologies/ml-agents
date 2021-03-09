@@ -459,22 +459,24 @@ class MultiAgentEnvironment(BaseEnv):
                     # Reproducing part of env step to intercept Dones
                     assert all(action is not None for action in env.action.values())
                     done = env._take_action(name)
+                    reward = env._compute_reward(name, done)
                     self.dones[name_and_num] = done
                     if self.all_done:
                         env.step_result[name] = env._make_batched_step(
-                            name, done, 0.0, 1.0
+                            name, done, 0.0, reward
                         )
-                        self.final_rewards[name].append(1.0)
+                        self.final_rewards[name].append(reward)
                         self.reset()
                     elif done:
+                        ceil_reward = min(-TIME_PENALTY, reward)
                         env.step_result[name] = env._make_batched_step(
-                            name, done, -0.2, 0.0
+                            name, done, ceil_reward, 0.0
                         )
-                        self.final_rewards[name].append(-0.2)
+                        self.final_rewards[name].append(ceil_reward)
 
                     else:
                         env.step_result[name] = env._make_batched_step(
-                            name, done, -TIME_PENALTY, 0.0
+                            name, done, reward, 0.0
                         )
 
     def reset(self) -> None:  # type: ignore
