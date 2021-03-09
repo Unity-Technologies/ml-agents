@@ -469,7 +469,8 @@ class MultiAgentEnvironment(BaseEnv):
                     done = env._take_action(name)
                     reward = env._compute_reward(name, done)
                     self.dones[name_and_num] = done
-                    self.just_died.add(name_and_num)
+                    if done:
+                        self.just_died.add(name_and_num)
                     if self.all_done:
                         env.step_result[name] = env._make_batched_step(
                             name, done, 0.0, reward
@@ -481,6 +482,7 @@ class MultiAgentEnvironment(BaseEnv):
                         env.step_result[name] = env._make_batched_step(
                             name, done, ceil_reward, 0.0
                         )
+                        self.final_rewards[name].append(reward)
 
                     else:
                         env.step_result[name] = env._make_batched_step(
