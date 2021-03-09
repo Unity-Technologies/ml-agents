@@ -83,7 +83,7 @@ namespace Unity.MLAgents.Policies
         /// <summary>
         /// Event that fires when an Agent's policy is updated.
         /// </summary>
-        public event PolicyUpdated OnPolicyUpdated;
+        internal event PolicyUpdated OnPolicyUpdated;
 
         /// <summary>
         /// The associated <see cref="Policies.BrainParameters"/> for this behavior.
