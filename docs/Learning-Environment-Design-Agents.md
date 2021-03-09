@@ -29,7 +29,7 @@
   - [Rewards Summary & Best Practices](#rewards-summary--best-practices)
 - [Agent Properties](#agent-properties)
 - [Destroying an Agent](#destroying-an-agent)
-- [Defining Teams for Multi-agent Scenarios](#defining-teams-for-multi-agent-scenarios)
+- [Defining Multi-agent Scenarios](#defining-multi-agent-scenarios)
 - [Recording Demonstrations](#recording-demonstrations)
 
 An agent is an entity that can observe its environment, decide on the best
@@ -933,7 +933,7 @@ hyperparameter hierarchy in both.
 
 Cooperative behavior in ML-Agents can be enabled by instantiating a `SimpleMultiAgentGroup`,
 typically in an environment controller or similar script, and adding agents to it
-using the `RegisterAgent(Agent agent)` method. Using Multi Agent Groups enables the
+using the `RegisterAgent(Agent agent)` method. Using `MultiAgentGroup` enables the
 agents within a group to learn how to work together to achieve a common goal (i.e.,
 maximize a group-given reward), even if one or more of the group members are removed
 before the episode ends. You can then use this group to add/set rewards, end or interrupt episodes
@@ -966,7 +966,7 @@ Multi Agent Groups are best used with the COMA2 trainer, which will train a "coa
 Group. This can be enabled by using the `coma` trainer - see the
 [training configurations](Training-Configuration-File.md) doc for more information on
 configuring COMA2. When using COMA2, agents which are deactivated or removed from the Scene
-during the episode will still "recieve" group rewards that are seen later.
+during the episode will still "receive" group rewards that are seen later.
 
 **NOTE**: Groups differ from Teams (for competitive settings) in the following way - agents
 working together should be added to the same Group, while Agents playing against each other
@@ -981,19 +981,44 @@ For an example of how to set up cooperative environments, see the
 Escape Room example environments
 
 #### Cooperative Behaviors Notes and Best Practices
+##### Agents in a Group
+* An Agent can only be registered to one MultiAgentGroup at a time. If you want to re-assign an
+Agent from one group to another, you have to unregister it from the current group first.
 
-* Agents within groups should set the Max Steps parameter the Agent script to 0. Instead,
-handle Max Steps by ending the episode foor the entire Group using `EndGroupEpisode()`, and
-`GroupEpisodeInterrupted()`.
+* Agents within groups should always set the `Max Steps` parameter the Agent script to 0, meaning
+they will never reach a max step. Instead, handle Max Steps with MultiAgentGroup by ending the episode for the entire
+Group using `GroupEpisodeInterrupted()`.
 
-* If an Agent is deactivated in a scene, it must be re-registered to the Multi Agent Group.
+* Agents with different behavior names in the same group are not supported.
+
+* If an Agent finished earlier, e.g. completed tasks/be removed/be killed in the game, do not call
+`EndEpisode()` on the Agent. Instead, disable the Agent and re-enable it when the next episode starts,
+or destroy the agent entirely. Once an agent is disabled, it will not receive any group or
+individual rewards anymore and effectively doesn't exist in the game.
+
+* If an Agent is disabled in a scene, it must be re-registered to the MultiAgentGroup.
+
+* Group rewards are meant to reinforce agents to act in the group's best interest instead of
+individual ones, and are treated differently than individual agent rewards during
+training. So calling AddGroupReward() is not equivalent to calling agent.AddReward() on each agent
+in the group.
 
 * You can still add incremental rewards to Agents using `Agent.AddReward()` if they are
-in a Group. These rewards will only be given to those agents and can only be recieved when the
+in a Group. These rewards will only be given to those agents and can only be received when the
 Agent is active.
 
 * Environments which use Multi Agent Groups can be trained using PPO or SAC, but agents will
 not receive Group Rewards after deactivation/removal, nor will they behave as cooperatively.
+
+##### Ending Episodes for a Group
+* `EndGroupEpisode` and `GroupEpisodeInterrupted` do the same job in the game, but has
+slightly different effect on the training. If the episode is completed, you would want to call
+`EndGroupEpisode`. But if the episode is not over but it has been running for enough steps, i.e.
+reaching max step, you would call `GroupEpisodeInterrupted`.
+
+##### Multiple Groups:
+* You can have multiple MultiAgentGroup in one training field, but make sure they call
+`EndGroupEpisode()` and `GroupEpisodeInterrupted` at the same time and their episodes are in sync.
 
 ## Recording Demonstrations
 
