@@ -178,8 +178,8 @@ class TorchCOMAOptimizer(TorchOptimizer):
         for reward_signal, settings in reward_signal_configs.items():
             if reward_signal != RewardSignalType.EXTRINSIC:
                 logger.warning(
-                    f"Reward Signal {reward_signal.value} is not supported with the COMA2 trainer; \
-                    results may be unexpected."
+                    f"Reward signal {reward_signal.value.capitalize()} is not supported with the COMA2 trainer; "
+                    "results may be unexpected."
                 )
             elif isinstance(settings, ExtrinsicSettings):
                 settings.add_groupmate_rewards = True
