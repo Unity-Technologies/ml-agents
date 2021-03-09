@@ -40,15 +40,16 @@ In Unity 2019.4 or later, open the Package Manager, hit the "+" button, and sele
 
 In the dialog that appears, enter
  ```
- git+https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents.extensions
+git+https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents.extensions#release_14
 ```
 
 You can also edit your project's `manifest.json` directly and add the following line to the `dependencies`
 section:
 ```
-"com.unity.ml-agents.extensions": "git+https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents.extensions",
+"com.unity.ml-agents.extensions": "git+https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents.extensions#release_14",
 ```
-See [Git dependencies](https://docs.unity3d.com/Manual/upm-git.html#subfolder) for more information.
+See [Git dependencies](https://docs.unity3d.com/Manual/upm-git.html#subfolder) for more information. Note that this
+may take several minutes to resolve the packages the first time that you add it.
 
 
 ## Requirements
