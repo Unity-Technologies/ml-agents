@@ -985,11 +985,16 @@ Escape Room example environments
 * An Agent can only be registered to one MultiAgentGroup at a time. If you want to re-assign an
 Agent from one group to another, you have to unregister it from the current group first.
 
+* Agents with different behavior names in the same group are not supported.
+
 * Agents within groups should always set the `Max Steps` parameter the Agent script to 0, meaning
 they will never reach a max step. Instead, handle Max Steps with MultiAgentGroup by ending the episode for the entire
 Group using `GroupEpisodeInterrupted()`.
 
-* Agents with different behavior names in the same group are not supported.
+* `EndGroupEpisode` and `GroupEpisodeInterrupted` do the same job in the game, but has
+slightly different effect on the training. If the episode is completed, you would want to call
+`EndGroupEpisode`. But if the episode is not over but it has been running for enough steps, i.e.
+reaching max step, you would call `GroupEpisodeInterrupted`.
 
 * If an Agent finished earlier, e.g. completed tasks/be removed/be killed in the game, do not call
 `EndEpisode()` on the Agent. Instead, disable the Agent and re-enable it when the next episode starts,
@@ -1009,16 +1014,6 @@ Agent is active.
 
 * Environments which use Multi Agent Groups can be trained using PPO or SAC, but agents will
 not receive Group Rewards after deactivation/removal, nor will they behave as cooperatively.
-
-##### Ending Episodes for a Group
-* `EndGroupEpisode` and `GroupEpisodeInterrupted` do the same job in the game, but has
-slightly different effect on the training. If the episode is completed, you would want to call
-`EndGroupEpisode`. But if the episode is not over but it has been running for enough steps, i.e.
-reaching max step, you would call `GroupEpisodeInterrupted`.
-
-##### Multiple Groups:
-* You can have multiple MultiAgentGroup in one training field, but make sure they call
-`EndGroupEpisode()` and `GroupEpisodeInterrupted` at the same time and their episodes are in sync.
 
 ## Recording Demonstrations
 
