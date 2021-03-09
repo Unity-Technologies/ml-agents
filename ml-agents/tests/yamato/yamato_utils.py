@@ -1,9 +1,10 @@
+import glob
 import os
 import shutil
 import subprocess
 import yaml
 from sys import platform
-from typing import List, Optional
+from typing import List, Optional, Mapping
 
 
 def get_unity_executable_path():
@@ -46,11 +47,14 @@ def run_standalone_build(
     print(f"Running BuildStandalonePlayer via {unity_exe}")
 
     # enum values from https://docs.unity3d.com/2019.4/Documentation/ScriptReference/BuildTarget.html
-    build_target_to_enum = {
+    build_target_to_enum: Mapping[Optional[str], str] = {
         "mac": "StandaloneOSX",
         "osx": "StandaloneOSX",
         "linux": "StandaloneLinux64",
     }
+    # Convert the short name to the official enum
+    # Just pass through if it's not on the list.
+    build_target_enum = build_target_to_enum.get(build_target, build_target)
 
     test_args = [
         unity_exe,
@@ -75,8 +79,8 @@ def run_standalone_build(
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
     if scene_path is not None:
         test_args += ["--mlagents-build-scene-path", scene_path]
-    if build_target is not None:
-        test_args += ["--mlagents-build-target", build_target_to_enum[build_target]]
+    if build_target_enum is not None:
+        test_args += ["--mlagents-build-target", build_target_enum]
     print(f"{' '.join(test_args)} ...")
 
     timeout = 30 * 60  # 30 minutes, just in case
@@ -226,3 +230,52 @@ def override_legacy_config_file(python_version, src_path, dest_path, **kwargs):
 
     with open(dest_path, "w") as f:
         yaml.dump(configs, f)
+
+
+def create_samples(
+    scenes: List[str],
+    base_path: str,
+    log_output_path: Optional[str] = f"{get_base_output_path()}/sample_export.txt",
+) -> int:
+    unity_exe = get_unity_executable_path()
+    test_args = [
+        unity_exe,
+        "-projectPath",
+        f"{base_path}/Project",
+        "-batchmode",
+        "-executeMethod",
+        "Unity.MLAgents.SampleExporter.ExportCuratedSamples",
+    ]
+
+    if log_output_path:
+        os.makedirs(os.path.dirname(log_output_path), exist_ok=True)
+        subprocess.run(["touch", log_output_path])
+        test_args += ["-logfile", log_output_path]
+    else:
+        # Log to stdout
+        test_args += ["-logfile", "-"]
+
+    os.makedirs(os.path.join(get_base_output_path(), "Samples"), exist_ok=True)
+
+    for scene in scenes:
+        test_args += ["--mlagents-scene-path", scene]
+
+    timeout = 5 * 60  # 5 minutes for now
+    res: subprocess.CompletedProcess = subprocess.run(test_args, timeout=timeout)
+
+    if res.returncode == 0:
+        for file in glob.glob(os.path.join(base_path, "Project/*.unitypackage")):
+            print(
+                f"moving {file} to {os.path.join(get_base_output_path(), 'Samples', os.path.basename(file))}"
+            )
+            shutil.move(
+                file,
+                os.path.join(get_base_output_path(), "Samples", os.path.basename(file)),
+            )
+
+    # Print if we fail or want verbosity.
+    if res.returncode != 0:
+        if log_output_path:
+            subprocess.run(["cat", log_output_path])
+
+    return res.returncode

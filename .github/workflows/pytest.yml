@@ -40,8 +40,7 @@ jobs:
       run: python -c "import sys; print(sys.version)"
     - name: Install dependencies
       run: |
-        # pin pip to workaround https://github.com/pypa/pip/issues/9180
-        python -m pip install pip==20.2
+        python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install --progress-bar=off -e ./ml-agents-envs
         python -m pip install --progress-bar=off -e ./ml-agents

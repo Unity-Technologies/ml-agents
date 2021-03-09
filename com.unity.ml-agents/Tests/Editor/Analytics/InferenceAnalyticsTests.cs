@@ -64,6 +64,8 @@ namespace Unity.MLAgents.Tests.Analytics
             Assert.AreEqual(2, continuousEvent.ObservationSpecs.Count);
             Assert.AreEqual(3, continuousEvent.ObservationSpecs[0].DimensionInfos.Length);
             Assert.AreEqual(20, continuousEvent.ObservationSpecs[0].DimensionInfos[0].Size);
+            Assert.AreEqual((int)DimensionProperty.TranslationalEquivariance, continuousEvent.ObservationSpecs[0].DimensionInfos[0].Flags);
+            Assert.AreEqual((int)DimensionProperty.None, continuousEvent.ObservationSpecs[0].DimensionInfos[2].Flags);
             Assert.AreEqual("None", continuousEvent.ObservationSpecs[0].CompressionType);
             Assert.AreEqual(Test3DSensor.k_BuiltInSensorType, continuousEvent.ObservationSpecs[0].BuiltInSensorType);
             Assert.AreEqual((int)BuiltInActuatorType.VectorActuator, continuousEvent.ActuatorInfos[0].BuiltInActuatorType);

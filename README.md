@@ -26,13 +26,13 @@ developer communities.
 
 ## Features
 
-- 15+ [example Unity environments](docs/Learning-Environment-Examples.md)
+- 18+ [example Unity environments](docs/Learning-Environment-Examples.md)
 - Support for multiple environment configurations and training scenarios
 - Flexible Unity SDK that can be integrated into your game or custom Unity scene
 - Training using two deep reinforcement learning algorithms, Proximal Policy
   Optimization (PPO) and Soft Actor-Critic (SAC)
-- Built-in support for Imitation Learning through Behavioral Cloning or
-  Generative Adversarial Imitation Learning
+- Built-in support for Imitation Learning through Behavioral Cloning (BC) or
+  Generative Adversarial Imitation Learning (GAIL)
 - Self-play mechanism for training agents in adversarial scenarios
 - Easily definable Curriculum Learning scenarios for complex tasks
 - Train robust agents using environment randomization
@@ -147,6 +147,12 @@ We have also published a series of blog posts that are relevant for ML-Agents:
   ([multi-armed bandit](https://blogs.unity3d.com/2017/06/26/unity-ai-themed-blog-entries/)
   and
   [Q-learning](https://blogs.unity3d.com/2017/08/22/unity-ai-reinforcement-learning-with-q-learning/))
+
+### More from Unity
+
+- [Unity Robotics](https://github.com/Unity-Technologies/Unity-Robotics-Hub)
+- [Unity Computer Vision](https://unity.com/computer-vision)
+- [Unity Game Simulation](https://unity.com/products/game-simulation)
 
 ## Community and Feedback
 

@@ -9,6 +9,10 @@ import h5py
 
 from mlagents_envs.exception import UnityException
 
+# Elements in the buffer can be np.ndarray, or in the case of teammate obs, actions, rewards,
+# a List of np.ndarray. This is done so that we don't have duplicated np.ndarrays, only references.
+BufferEntry = Union[np.ndarray, List[np.ndarray]]
+
 
 class BufferException(UnityException):
     """
@@ -21,22 +25,36 @@ class BufferException(UnityException):
 class BufferKey(enum.Enum):
     ACTION_MASK = "action_mask"
     CONTINUOUS_ACTION = "continuous_action"
+    NEXT_CONT_ACTION = "next_continuous_action"
     CONTINUOUS_LOG_PROBS = "continuous_log_probs"
     DISCRETE_ACTION = "discrete_action"
+    NEXT_DISC_ACTION = "next_discrete_action"
     DISCRETE_LOG_PROBS = "discrete_log_probs"
     DONE = "done"
     ENVIRONMENT_REWARDS = "environment_rewards"
     MASKS = "masks"
     MEMORY = "memory"
+    CRITIC_MEMORY = "critic_memory"
     PREV_ACTION = "prev_action"
 
     ADVANTAGES = "advantages"
     DISCOUNTED_RETURNS = "discounted_returns"
 
+    GROUP_DONES = "group_dones"
+    GROUPMATE_REWARDS = "groupmate_reward"
+    GROUP_REWARD = "group_reward"
+    GROUP_CONTINUOUS_ACTION = "group_continuous_action"
+    GROUP_DISCRETE_ACTION = "group_discrete_aaction"
+    GROUP_NEXT_CONT_ACTION = "group_next_cont_action"
+    GROUP_NEXT_DISC_ACTION = "group_next_disc_action"
+
 
 class ObservationKeyPrefix(enum.Enum):
     OBSERVATION = "obs"
     NEXT_OBSERVATION = "next_obs"
+
+    GROUP_OBSERVATION = "group_obs"
+    NEXT_GROUP_OBSERVATION = "next_group_obs"
 
 
 class RewardSignalKeyPrefix(enum.Enum):
@@ -72,18 +90,32 @@ class RewardSignalUtil:
 
 class AgentBufferField(list):
     """
-    AgentBufferField is a list of numpy arrays. When an agent collects a field, you can add it to its
-    AgentBufferField with the append method.
+    AgentBufferField is a list of numpy arrays, or List[np.ndarray] for group entries.
+    When an agent collects a field, you can add it to its AgentBufferField with the append method.
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.padding_value = 0
-        super().__init__()
+        super().__init__(*args, **kwargs)
 
-    def __str__(self):
-        return str(np.array(self).shape)
+    def __str__(self) -> str:
+        return f"AgentBufferField: {super().__str__()}"
 
-    def append(self, element: np.ndarray, padding_value: float = 0.0) -> None:
+    def __getitem__(self, index):
+        return_data = super().__getitem__(index)
+        if isinstance(return_data, list):
+            return AgentBufferField(return_data)
+        else:
+            return return_data
+
+    @property
+    def contains_lists(self) -> bool:
+        """
+        Checks whether this AgentBufferField contains List[np.ndarray].
+        """
+        return len(self) > 0 and isinstance(self[0], list)
+
+    def append(self, element: BufferEntry, padding_value: float = 0.0) -> None:
         """
         Adds an element to this list. Also lets you change the padding
         type, so that it can be set on append (e.g. action_masks should
@@ -94,31 +126,20 @@ class AgentBufferField(list):
         super().append(element)
         self.padding_value = padding_value
 
-    def extend(self, data: np.ndarray) -> None:
+    def set(self, data: List[BufferEntry]) -> None:
         """
-        Adds a list of np.arrays to the end of the list of np.arrays.
-        :param data: The np.array list to append.
+        Sets the list of BufferEntry to the input data
+        :param data: The BufferEntry list to be set.
         """
-        self += list(np.array(data, dtype=np.float32))
-
-    def set(self, data):
-        """
-        Sets the list of np.array to the input data
-        :param data: The np.array list to be set.
-        """
-        # Make sure we convert incoming data to float32 if it's a float
-        dtype = None
-        if data is not None and len(data) and isinstance(data[0], float):
-            dtype = np.float32
         self[:] = []
-        self[:] = list(np.array(data, dtype=dtype))
+        self[:] = data
 
     def get_batch(
         self,
         batch_size: int = None,
         training_length: Optional[int] = 1,
         sequential: bool = True,
-    ) -> np.ndarray:
+    ) -> List[BufferEntry]:
         """
         Retrieve the last batch_size elements of length training_length
         from the list of np.array
@@ -148,14 +169,15 @@ class AgentBufferField(list):
                     " too large given the current number of data points."
                 )
             if batch_size * training_length > len(self):
-                padding = np.array(self[-1], dtype=np.float32) * self.padding_value
-                return np.array(
-                    [padding] * (training_length - leftover) + self[:], dtype=np.float32
-                )
+                if self.contains_lists:
+                    padding = []
+                else:
+                    # We want to duplicate the last value in the array, multiplied by the padding_value.
+                    padding = np.array(self[-1], dtype=np.float32) * self.padding_value
+                return [padding] * (training_length - leftover) + self[:]
+
             else:
-                return np.array(
-                    self[len(self) - batch_size * training_length :], dtype=np.float32
-                )
+                return self[len(self) - batch_size * training_length :]
         else:
             # The sequences will have overlapping elements
             if batch_size is None:
@@ -171,13 +193,51 @@ class AgentBufferField(list):
             tmp_list: List[np.ndarray] = []
             for end in range(len(self) - batch_size + 1, len(self) + 1):
                 tmp_list += self[end - training_length : end]
-            return np.array(tmp_list, dtype=np.float32)
+            return tmp_list
 
     def reset_field(self) -> None:
         """
         Resets the AgentBufferField
         """
         self[:] = []
+
+    def padded_to_batch(
+        self, pad_value: np.float = 0, dtype: np.dtype = np.float32
+    ) -> Union[np.ndarray, List[np.ndarray]]:
+        """
+        Converts this AgentBufferField (which is a List[BufferEntry]) into a numpy array
+        with first dimension equal to the length of this AgentBufferField. If this AgentBufferField
+        contains a List[List[BufferEntry]] (i.e., in the case of group observations), return a List
+        containing numpy arrays or tensors, of length equal to the maximum length of an entry. Missing
+        For entries with less than that length, the array will be padded with pad_value.
+        :param pad_value: Value to pad List AgentBufferFields, when there are less than the maximum
+            number of agents present.
+        :param dtype: Dtype of output numpy array.
+        :return: Numpy array or List of numpy arrays representing this AgentBufferField, where the first
+            dimension is equal to the length of the AgentBufferField.
+        """
+        if len(self) > 0 and not isinstance(self[0], list):
+            return np.asanyarray(self, dtype=dtype)
+
+        shape = None
+        for _entry in self:
+            # _entry could be an empty list if there are no group agents in this
+            # step. Find the first non-empty list and use that shape.
+            if _entry:
+                shape = _entry[0].shape
+                break
+        # If there were no groupmate agents in the entire batch, return an empty List.
+        if shape is None:
+            return []
+
+        # Convert to numpy array while padding with 0's
+        new_list = list(
+            map(
+                lambda x: np.asanyarray(x, dtype=dtype),
+                itertools.zip_longest(*self, fillvalue=np.full(shape, pad_value)),
+            )
+        )
+        return new_list
 
 
 class AgentBuffer(MutableMapping):
