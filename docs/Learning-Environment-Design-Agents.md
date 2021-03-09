@@ -537,7 +537,7 @@ the padded observations. Note that attention layers are invariant to
 the order of the entities, so there is no need to properly "order" the
 entities before feeding them into the `BufferSensor`.
 
-The `BufferSensorComponent` Editor inspector have two arguments:
+The `BufferSensorComponent` Editor inspector has two arguments:
  - `Observation Size` : This is how many floats each entities will be
  represented with. This number is fixed and all entities must
  have the same representation. For example, if the entities you want to
@@ -962,11 +962,12 @@ m_AgentGroup.GroupEpisodeInterrupted();
 ResetScene();
 ```
 
-Multi Agent Groups are best used with the COMA2 trainer, which will train a "coach" for each
-Group. This can be enabled by using the `coma` trainer - see the
+Multi Agent Groups are best used with the COMA2 trainer, which is explicitly designed to train
+cooperative environments. This can be enabled by using the `coma` trainer - see the
 [training configurations](Training-Configuration-File.md) doc for more information on
 configuring COMA2. When using COMA2, agents which are deactivated or removed from the Scene
-during the episode will still "receive" group rewards that are seen later.
+during the episode will still learn to contribute to the group's long term rewards, even
+if they are not active in the scene to experience them.
 
 **NOTE**: Groups differ from Teams (for competitive settings) in the following way - agents
 working together should be added to the same Group, while Agents playing against each other
@@ -974,7 +975,8 @@ should be given different Team Ids. If in the Scene there is one playing field a
 there should be two Groups, one for each team, and each team should be assigned a different
 Team Id. If this playing field is duplicated many times in the Scene (e.g. for training
 speedup), there should be two Groups _per playing field_, and two unique Team Ids
-_for the entire Scene_.
+_for the entire Scene_. In environments with both Groups and Team Ids configured, COMA2 and
+self-play can be used together for training.
 
 For an example of how to set up cooperative environments, see the
 [Cooperative PushBlock](Learning-Environment-Examples.md#cooperative-push-block) and
@@ -997,8 +999,7 @@ reaching max step, you would call `GroupEpisodeInterrupted`.
 
 * If an Agent finished earlier, e.g. completed tasks/be removed/be killed in the game, do not call
 `EndEpisode()` on the Agent. Instead, disable the Agent and re-enable it when the next episode starts,
-or destroy the agent entirely. Once an agent is disabled, it will not receive any group or
-individual rewards anymore and effectively doesn't exist in the game.
+or destroy the agent entirely.
 
 * If an Agent is disabled in a scene, it must be re-registered to the MultiAgentGroup.
 
@@ -1008,11 +1009,11 @@ training. So calling AddGroupReward() is not equivalent to calling agent.AddRewa
 in the group.
 
 * You can still add incremental rewards to Agents using `Agent.AddReward()` if they are
-in a Group. These rewards will only be given to those agents and can only be received when the
+in a Group. These rewards will only be given to those agents and are received when the
 Agent is active.
 
 * Environments which use Multi Agent Groups can be trained using PPO or SAC, but agents will
-not receive Group Rewards after deactivation/removal, nor will they behave as cooperatively.
+not be able to learn from group rewards after deactivation/removal, nor will they behave as cooperatively.
 
 ## Recording Demonstrations
 

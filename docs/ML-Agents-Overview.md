@@ -596,8 +596,8 @@ ML-Agents provides the functionality for training cooperative behaviors - i.e.,
 groups of agents working towards a common goal, where the success of the individual
 is linked to the success of the whole group. In such a scenario, agents typically receive
 rewards as a group. For instance, if a team of agents wins a game against an opposing
-team, everyone is rewarded - even agents who did not contribute too the win. This
-makes makes learning what to do as an individual difficult - you may get a win
+team, everyone is rewarded - even agents who did not directly contribute to the win. This
+makes learning what to do as an individual difficult - you may get a win
 for doing nothing, and a loss for doing your best.
 
 In ML-Agents, we provide COMA2, which is a novel multi-agent trainer that trains

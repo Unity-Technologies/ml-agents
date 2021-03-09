@@ -10,8 +10,8 @@ and this project adheres to
 ### Major Changes
 #### com.unity.ml-agents (C#)
 - The `BufferSensor` and `BufferSensorComponent` have been added. They allow the Agent to observe variable number of entities. (#4909)
-- The `SimpleMultiAgentGroup` class and `IMultiAgentGroup` interface have been added. These allow Agents to be given rewards as and
-  learn how to work together as groups. (#4923)
+- The `SimpleMultiAgentGroup` class and `IMultiAgentGroup` interface have been added. These allow Agents to be given rewards and
+  end episodes in groups. (#4923)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The COMA2 trainer has been added. This is a new trainer that enables Agents to learn how to work together in groups. Configure
   `coma` as the trainer in the configuration YAML after implementing a `MultiAgentGroup` to use this feature. (#5005)
