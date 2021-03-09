@@ -163,6 +163,8 @@ public class PushBlockEnvController : MonoBehaviour
     /// </summary>
     public void ScoredAGoal(Collider col, float score)
     {
+        print($"Scored {score} on {gameObject.name}");
+
         //Decrement the counter
         m_NumberOfRemainingBlocks--;
 
