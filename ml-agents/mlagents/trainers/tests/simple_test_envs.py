@@ -372,20 +372,18 @@ class MultiAgentEnvironment(BaseEnv):
     def set_actions(self, behavior_name, action):
         # im so sorry
         j = 0
-        _act = ActionTuple()
         for i in range(self.num_agents):
+            _act = ActionTuple()
             name_and_num = behavior_name + str(i)
             env = self.envs[name_and_num]
             if not self.dones[name_and_num]:
                 if self.action_spec.continuous_size > 0:
                     _act.add_continuous(action.continuous[j : j + 1])
                 if self.action_spec.discrete_size > 0:
-                    _disc_list = []
-                    for _disc in action.discrete:
-                        _disc_list.append([_disc[j : j + 1]])
+                    _disc_list = [action.discrete[j, :]]
                     _act.add_discrete(np.array(_disc_list))
                 j += 1
-            env.action[behavior_name] = _act
+                env.action[behavior_name] = _act
 
     def get_steps(self, behavior_name):
         dec_vec_obs = []
@@ -418,6 +416,15 @@ class MultiAgentEnvironment(BaseEnv):
                         dec_vec_obs.append(obs)
                 dec_reward.append(_dec.reward[0])
                 dec_group_reward.append(_dec.group_reward[0])
+                if _dec.action_mask is not None:
+                    if action_mask is None:
+                        action_mask = []
+                    if len(action_mask) > 0:
+                        action_mask[0] = np.concatenate(
+                            (action_mask[0], _dec.action_mask[0]), axis=0
+                        )
+                    else:
+                        action_mask.append(_dec.action_mask[0])
             if len(_term.reward) > 0:
                 ter_agent_id.append(i)
                 ter_group_id.append(0)
@@ -430,7 +437,6 @@ class MultiAgentEnvironment(BaseEnv):
                 ter_reward.append(_term.reward[0])
                 ter_group_reward.append(_term.group_reward[0])
                 interrupted.append(False)
-
         decision_step = DecisionSteps(
             dec_vec_obs,
             dec_reward,
