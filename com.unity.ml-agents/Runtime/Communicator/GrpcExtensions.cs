@@ -407,7 +407,6 @@ namespace Unity.MLAgents
             if (dimensionPropertySensor != null)
             {
                 var dimensionProperties = dimensionPropertySensor.GetDimensionProperties();
-                int[] intDimensionProperties = new int[dimensionProperties.Length];
                 for (int i = 0; i < dimensionProperties.Length; i++)
                 {
                     observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
