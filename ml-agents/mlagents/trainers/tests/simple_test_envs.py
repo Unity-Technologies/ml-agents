@@ -331,6 +331,7 @@ class MultiAgentEnvironment(BaseEnv):
         super().__init__()
         self.envs = {}
         self.dones = {}
+        self.just_died = set()
         self.names = brain_names
         self.final_rewards: Dict[str, List[float]] = {}
         for name in brain_names:
@@ -407,7 +408,7 @@ class MultiAgentEnvironment(BaseEnv):
             _dec, _term = env.step_result[behavior_name]
             if not self.dones[name_and_num]:
                 dec_agent_id.append(i)
-                dec_group_id.append(0)
+                dec_group_id.append(1)
                 if len(dec_vec_obs) > 0:
                     for j, obs in enumerate(_dec.obs):
                         dec_vec_obs[j] = np.concatenate((dec_vec_obs[j], obs), axis=0)
@@ -425,9 +426,9 @@ class MultiAgentEnvironment(BaseEnv):
                         )
                     else:
                         action_mask.append(_dec.action_mask[0])
-            if len(_term.reward) > 0:
+            if len(_term.reward) > 0 and name_and_num in self.just_died:
                 ter_agent_id.append(i)
-                ter_group_id.append(0)
+                ter_group_id.append(1)
                 if len(ter_vec_obs) > 0:
                     for j, obs in enumerate(_term.obs):
                         ter_vec_obs[j] = np.concatenate((ter_vec_obs[j], obs), axis=0)
@@ -437,6 +438,7 @@ class MultiAgentEnvironment(BaseEnv):
                 ter_reward.append(_term.reward[0])
                 ter_group_reward.append(_term.group_reward[0])
                 interrupted.append(False)
+                self.just_died.remove(name_and_num)
         decision_step = DecisionSteps(
             dec_vec_obs,
             dec_reward,
@@ -467,6 +469,7 @@ class MultiAgentEnvironment(BaseEnv):
                     done = env._take_action(name)
                     reward = env._compute_reward(name, done)
                     self.dones[name_and_num] = done
+                    self.just_died.add(name_and_num)
                     if self.all_done:
                         env.step_result[name] = env._make_batched_step(
                             name, done, 0.0, reward
@@ -478,7 +481,6 @@ class MultiAgentEnvironment(BaseEnv):
                         env.step_result[name] = env._make_batched_step(
                             name, done, ceil_reward, 0.0
                         )
-                        self.final_rewards[name].append(ceil_reward)
 
                     else:
                         env.step_result[name] = env._make_batched_step(
