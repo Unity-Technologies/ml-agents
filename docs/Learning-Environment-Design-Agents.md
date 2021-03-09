@@ -978,10 +978,9 @@ _for the entire Scene_.
 
 For an example of how to set up cooperative environments, see the
 [Cooperative PushBlock](Learning-Environment-Examples.md#cooperative-push-block) and
-Escape Room example environments
+Escape Room example environments.
 
 #### Cooperative Behaviors Notes and Best Practices
-##### Agents in a Group
 * An Agent can only be registered to one MultiAgentGroup at a time. If you want to re-assign an
 Agent from one group to another, you have to unregister it from the current group first.
 
