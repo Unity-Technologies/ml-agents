@@ -31,10 +31,10 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <param name="agent"></param>
         /// <param name="name"></param>
         public Match3Actuator(AbstractBoard board,
-            bool forceHeuristic,
-            int seed,
-            Agent agent,
-            string name)
+                              bool forceHeuristic,
+                              int seed,
+                              Agent agent,
+                              string name)
         {
             m_Board = board;
             m_Rows = board.Rows;
@@ -78,9 +78,45 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
+            const int branch = 0;
+            bool foundValidMove = false;
             using (TimerStack.Instance.Scoped("WriteDiscreteActionMask"))
             {
-                actionMask.WriteMask(0, InvalidMoveIndices());
+                var numMoves = m_Board.NumMoves();
+
+                var currentMove = Move.FromMoveIndex(0, m_Board.Rows, m_Board.Columns);
+                for (var i = 0; i < numMoves; i++)
+                {
+                    if (m_Board.IsMoveValid(currentMove))
+                    {
+                        foundValidMove = true;
+                    }
+                    else
+                    {
+                        actionMask.SetActionEnabled(branch, i, false);
+                    }
+                    currentMove.Next(m_Board.Rows, m_Board.Columns);
+                }
+
+                if (!foundValidMove)
+                {
+                    // If all the moves are invalid and we mask all the actions out, this will cause an assert
+                    // later on in IDiscreteActionMask. Instead, fire a callback to the user if they provided one,
+                    // (or log a warning if not) and leave the last action unmasked. This isn't great, but
+                    // an invalid move should be easier to handle than an exception..
+                    if (m_Board.OnNoValidMovesAction != null)
+                    {
+                        m_Board.OnNoValidMovesAction();
+                    }
+                    else
+                    {
+                        Debug.LogWarning(
+                            "No valid moves are available. The last action will be left unmasked, so " +
+                            "an invalid move will be passed to AbstractBoard.MakeMove()."
+                        );
+                    }
+                    actionMask.SetActionEnabled(branch, numMoves - 1, false);
+                }
             }
         }
 
@@ -98,47 +134,14 @@ namespace Unity.MLAgents.Extensions.Match3
             return BuiltInActuatorType.Match3Actuator;
         }
 
-        IEnumerable<int> InvalidMoveIndices()
-        {
-            var numValidMoves = m_Board.NumMoves();
-
-            foreach (var move in m_Board.InvalidMoves())
-            {
-                numValidMoves--;
-                if (numValidMoves == 0)
-                {
-                    // If all the moves are invalid and we mask all the actions out, this will cause an assert
-                    // later on in IDiscreteActionMask. Instead, fire a callback to the user if they provided one,
-                    // (or log a warning if not) and leave the last action unmasked. This isn't great, but
-                    // an invalid move should be easier to handle than an exception..
-                    if (m_Board.OnNoValidMovesAction != null)
-                    {
-                        m_Board.OnNoValidMovesAction();
-                    }
-                    else
-                    {
-                        Debug.LogWarning(
-                            "No valid moves are available. The last action will be left unmasked, so " +
-                            "an invalid move will be passed to AbstractBoard.MakeMove()."
-                        );
-                    }
-                    // This means the last move won't be returned as an invalid index.
-                    yield break;
-                }
-                yield return move.MoveIndex;
-            }
-        }
-
         public void Heuristic(in ActionBuffers actionsOut)
         {
             var discreteActions = actionsOut.DiscreteActions;
             discreteActions[0] = GreedyMove();
         }
 
-
         protected int GreedyMove()
         {
-
             var bestMoveIndex = 0;
             var bestMovePoints = -1;
             var numMovesAtCurrentScore = 0;

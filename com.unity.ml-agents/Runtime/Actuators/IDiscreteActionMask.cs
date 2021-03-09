@@ -24,15 +24,20 @@ namespace Unity.MLAgents.Actuators
         void WriteMask(int branch, IEnumerable<int> actionIndices);
 
         /// <summary>
-        /// Get the current mask for an agent.
+        /// Set whether or not the action index for the given branch is allowed.
         /// </summary>
-        /// <returns>A mask for the agent. A boolean array of length equal to the total number of
-        /// actions.</returns>
-        bool[] GetMask();
-
-        /// <summary>
-        /// Resets the current mask for an agent.
-        /// </summary>
-        void ResetMask();
+        /// By default, all discrete actions are allowed.
+        /// If isEnabled is false, the agent will not be able to perform the actions passed as argument
+        /// at the next decision for the specified action branch. The actionIndex correspond
+        /// to the action options the agent will be unable to perform.
+        ///
+        /// See [Agents - Actions] for more information on masking actions.
+        ///
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_13_docs/docs/Learning-Environment-Design-Agents.md#actions
+        /// </remarks>
+        /// <param name="branch">The branch for which the actions will be masked.</param>
+        /// <param name="actionIndex">Index of the action</param>
+        /// <param name="isEnabled">Whether the action is allowed or now.</param>
+        void SetActionEnabled(int branch, int actionIndex, bool isEnabled);
     }
 }

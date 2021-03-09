@@ -42,15 +42,22 @@ namespace Unity.MLAgents.Actuators
             // Perform the masking
             foreach (var actionIndex in actionIndices)
             {
-#if DEBUG
-                if (branch >= m_NumBranches || actionIndex >= m_BranchSizes[CurrentBranchOffset + branch])
-                {
-                    throw new UnityAgentsException(
-                        "Invalid Action Masking: Action Mask is too large for specified branch.");
-                }
-#endif
-                m_CurrentMask[actionIndex + m_StartingActionIndices[CurrentBranchOffset + branch]] = true;
+                SetActionEnabled(branch, actionIndex, false);
             }
+        }
+
+        /// <inheritdoc/>
+        public void SetActionEnabled(int branch, int actionIndex, bool isEnabled)
+        {
+            LazyInitialize();
+#if DEBUG
+            if (branch >= m_NumBranches || actionIndex >= m_BranchSizes[CurrentBranchOffset + branch])
+            {
+                throw new UnityAgentsException(
+                    "Invalid Action Masking: Action Mask is too large for specified branch.");
+            }
+#endif
+            m_CurrentMask[actionIndex + m_StartingActionIndices[CurrentBranchOffset + branch]] = !isEnabled;
         }
 
         void LazyInitialize()
@@ -83,8 +90,12 @@ namespace Unity.MLAgents.Actuators
             }
         }
 
-        /// <inheritdoc/>
-        public bool[] GetMask()
+        /// <summary>
+        /// Get the current mask for an agent.
+        /// </summary>
+        /// <returns>A mask for the agent. A boolean array of length equal to the total number of
+        /// actions.</returns>
+        internal bool[] GetMask()
         {
 #if DEBUG
             if (m_CurrentMask != null)
@@ -116,7 +127,7 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Resets the current mask for an agent.
         /// </summary>
-        public void ResetMask()
+        internal void ResetMask()
         {
             if (m_CurrentMask != null)
             {
