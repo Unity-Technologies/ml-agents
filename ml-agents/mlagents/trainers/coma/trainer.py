@@ -175,7 +175,8 @@ class COMATrainer(RLTrainer):
         if trajectory.done_reached:
             self._update_end_episode_stats(agent_id, self.optimizer)
             # Remove dead agents from group reward recording
-            self.collected_group_rewards.pop(agent_id)
+            if not trajectory.all_group_dones_reached:
+                self.collected_group_rewards.pop(agent_id)
 
         # If the whole team is done, average the remaining group rewards.
         if trajectory.all_group_dones_reached:
