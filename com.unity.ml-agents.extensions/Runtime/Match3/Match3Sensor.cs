@@ -240,6 +240,12 @@ namespace Unity.MLAgents.Extensions.Match3
             return BuiltInSensorType.Match3Sensor;
         }
 
+        /// <inheritdoc/>
+        public ObservationType GetObservationType()
+        {
+            return ObservationType.Default;
+        }
+
         static void DestroyTexture(Texture2D texture)
         {
             if (Application.isEditor)

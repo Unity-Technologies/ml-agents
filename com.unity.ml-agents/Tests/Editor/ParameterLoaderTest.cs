@@ -87,6 +87,12 @@ namespace Unity.MLAgents.Tests
                 DimensionProperty.None
             };
         }
+
+        /// <inheritdoc/>
+        public ObservationType GetObservationType()
+        {
+            return ObservationType.Default;
+        }
     }
 
     [TestFixture]

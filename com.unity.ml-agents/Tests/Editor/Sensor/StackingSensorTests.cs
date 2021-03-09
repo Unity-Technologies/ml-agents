@@ -124,6 +124,11 @@ namespace Unity.MLAgents.Tests
                 return Mapping;
             }
 
+            public ObservationType GetObservationType()
+            {
+                return ObservationType.Default;
+            }
+
         }
 
         [Test]

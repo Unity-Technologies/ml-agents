@@ -496,6 +496,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <inheritdoc/>
+        public ObservationType GetObservationType()
+        {
+            return ObservationType.Default;
+        }
+
+        /// <inheritdoc/>
         public BuiltInSensorType GetBuiltInSensorType()
         {
             return BuiltInSensorType.GridSensor;

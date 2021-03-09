@@ -101,6 +101,12 @@ namespace Unity.MLAgents.Sensors.Reflection
         }
 
         /// <inheritdoc/>
+        public ObservationType GetObservationType()
+        {
+            return ObservationType.Default;
+        }
+
+        /// <inheritdoc/>
         public BuiltInSensorType GetBuiltInSensorType()
         {
             return BuiltInSensorType.ReflectionSensor;

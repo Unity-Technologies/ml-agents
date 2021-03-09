@@ -113,6 +113,12 @@ namespace Unity.MLAgents.Sensors
             return BuiltInSensorType.VectorSensor;
         }
 
+        /// <inheritdoc/>
+        public ObservationType GetObservationType()
+        {
+            return ObservationType.Default;
+        }
+
         void Clear()
         {
             m_Observations.Clear();

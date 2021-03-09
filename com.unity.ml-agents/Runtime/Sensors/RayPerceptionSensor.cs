@@ -372,6 +372,12 @@ namespace Unity.MLAgents.Sensors
             return BuiltInSensorType.RayPerceptionSensor;
         }
 
+        /// <inheritdoc/>
+        public ObservationType GetObservationType()
+        {
+            return ObservationType.Default;
+        }
+
         /// <summary>
         /// Evaluates the raycasts to be used as part of an observation of an agent.
         /// </summary>

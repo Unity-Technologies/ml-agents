@@ -158,6 +158,12 @@ namespace Unity.MLAgents.Tests
         {
             numResetCalls++;
         }
+
+        /// <inheritdoc/>
+        public ObservationType GetObservationType()
+        {
+            return ObservationType.Default;
+        }
     }
 
     [TestFixture]

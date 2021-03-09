@@ -289,5 +289,11 @@ namespace Unity.MLAgents.Sensors
             IBuiltInSensor wrappedBuiltInSensor = m_WrappedSensor as IBuiltInSensor;
             return wrappedBuiltInSensor?.GetBuiltInSensorType() ?? BuiltInSensorType.Unknown;
         }
+
+        /// <inheritdoc/>
+        public ObservationType GetObservationType()
+        {
+            return m_WrappedSensor.GetObservationType();
+        }
     }
 }

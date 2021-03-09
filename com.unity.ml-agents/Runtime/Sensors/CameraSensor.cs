@@ -205,6 +205,12 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
+        public ObservationType GetObservationType()
+        {
+            return ObservationType.Default;
+        }
+
+        /// <inheritdoc/>
         public BuiltInSensorType GetBuiltInSensorType()
         {
             return BuiltInSensorType.CameraSensor;

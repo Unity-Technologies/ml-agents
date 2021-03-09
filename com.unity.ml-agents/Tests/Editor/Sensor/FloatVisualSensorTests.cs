@@ -67,6 +67,11 @@ namespace Unity.MLAgents.Tests
         {
             return SensorCompressionType.None;
         }
+
+        public ObservationType GetObservationType()
+        {
+            return ObservationType.Default;
+        }
     }
 
     public class FloatVisualSensorTests

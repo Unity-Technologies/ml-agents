@@ -89,6 +89,12 @@ namespace Unity.MLAgents.Tests
             {
                 return "Dummy";
             }
+
+            public ObservationType GetObservationType()
+            {
+                return ObservationType.Default;
+            }
+
         }
 
         class DummySparseChannelSensor : DummySensor, ISparseChannelSensor
