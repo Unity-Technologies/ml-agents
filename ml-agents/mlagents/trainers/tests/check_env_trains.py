@@ -29,7 +29,7 @@ class DebugWriter(StatsWriter):
         for val, stats_summary in values.items():
             if (
                 val == "Environment/Cumulative Reward"
-                or val == "Environment/Team Cumulative Reward"
+                or val == "Environment/Group Cumulative Reward"
             ):
 
                 print(step, val, stats_summary.aggregated_value)
