@@ -388,11 +388,18 @@ class MultiAgentEnvironment(BaseEnv):
             env.action[behavior_name] = _act
 
     def get_steps(self, behavior_name):
-        vec_obs = []
-        reward = []
-        group_reward = []
-        m_agent_id = []
-        m_group_id = []
+        dec_vec_obs = []
+        dec_reward = []
+        dec_group_reward = []
+        dec_agent_id = []
+        dec_group_id = []
+        ter_vec_obs = []
+        ter_reward = []
+        ter_group_reward = []
+        ter_agent_id = []
+        ter_group_id = []
+        interrupted = []
+
         action_mask = None
         terminal_step = TerminalSteps.empty(self.behavior_spec)
         decision_step = None
@@ -401,20 +408,44 @@ class MultiAgentEnvironment(BaseEnv):
             env = self.envs[name_and_num]
             _dec, _term = env.step_result[behavior_name]
             if not self.dones[name_and_num]:
-                m_agent_id.append(i)
-                m_group_id.append(0)
-                if len(vec_obs) > 0:
+                dec_agent_id.append(i)
+                dec_group_id.append(0)
+                if len(dec_vec_obs) > 0:
                     for j, obs in enumerate(_dec.obs):
-                        vec_obs[j] = np.concatenate((vec_obs[j], obs), axis=0)
+                        dec_vec_obs[j] = np.concatenate((dec_vec_obs[j], obs), axis=0)
                 else:
                     for obs in _dec.obs:
-                        vec_obs.append(obs)
-                reward.append(_dec.reward[0])
-                group_reward.append(_dec.group_reward[0])
-                terminal_step = _term
+                        dec_vec_obs.append(obs)
+                dec_reward.append(_dec.reward[0])
+                dec_group_reward.append(_dec.group_reward[0])
+            if len(_term.reward) > 0:
+                ter_agent_id.append(i)
+                ter_group_id.append(0)
+                if len(ter_vec_obs) > 0:
+                    for j, obs in enumerate(_term.obs):
+                        ter_vec_obs[j] = np.concatenate((ter_vec_obs[j], obs), axis=0)
+                else:
+                    for obs in _term.obs:
+                        ter_vec_obs.append(obs)
+                ter_reward.append(_term.reward[0])
+                ter_group_reward.append(_term.group_reward[0])
+                interrupted.append(False)
 
         decision_step = DecisionSteps(
-            vec_obs, reward, m_agent_id, action_mask, m_group_id, group_reward
+            dec_vec_obs,
+            dec_reward,
+            dec_agent_id,
+            action_mask,
+            dec_group_id,
+            dec_group_reward,
+        )
+        terminal_step = TerminalSteps(
+            ter_vec_obs,
+            ter_reward,
+            interrupted,
+            ter_agent_id,
+            ter_group_id,
+            ter_group_reward,
         )
         return (decision_step, terminal_step)
 
@@ -441,7 +472,7 @@ class MultiAgentEnvironment(BaseEnv):
                     #    )
                     #    self.final_rewards[name].append(-.2)
 
-                    else:
+                    elif done:
                         env.step_result[name] = env._make_batched_step(
                             name, done, -TIME_PENALTY, 0.0
                         )

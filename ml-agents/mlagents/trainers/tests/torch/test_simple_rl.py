@@ -54,7 +54,6 @@ def test_simple_coma(action_sizes):
     # config = attr.evolve(PPO_TORCH_CONFIG)
     config = attr.evolve(COMA_TORCH_CONFIG)
     check_environment_trains(env, {BRAIN_NAME: config})
-    assert False
 
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
