@@ -298,7 +298,7 @@ class Trajectory(NamedTuple):
         return self.steps[-1].done
 
     @property
-    def teammate_dones_reached(self) -> bool:
+    def all_group_dones_reached(self) -> bool:
         """
         Returns true if all teammates are done at the end of the trajectory.
         Combine with done_reached to check if the whole team is done.
