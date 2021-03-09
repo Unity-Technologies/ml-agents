@@ -87,8 +87,8 @@ def test_load_save_optimizer(tmp_path, optimizer):
     model_saver.save_checkpoint("MockBrain", 2000)
 
     # create a new optimizer and policy
-    optimizer2 = OptimizerClass(policy, trainer_settings)
     policy2 = create_policy_mock(trainer_settings, use_discrete=False)
+    optimizer2 = OptimizerClass(policy2, trainer_settings)
 
     # load weights
     model_saver2 = TorchModelSaver(trainer_settings, path1, load=True)
@@ -134,9 +134,6 @@ def _compare_two_policies(policy1: TorchPolicy, policy2: TorchPolicy) -> None:
 
 
 def _compare_two_optimizers(opt1: TorchOptimizer, opt2: TorchOptimizer) -> None:
-    decision_step, _ = mb.create_steps_from_behavior_spec(
-        opt1.policy.behavior_spec, num_agents=1
-    )
     trajectory = mb.make_fake_trajectory(
         length=10,
         observation_specs=opt1.policy.behavior_spec.observation_specs,
