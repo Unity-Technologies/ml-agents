@@ -55,6 +55,38 @@ def test_simple_coma(action_sizes):
     check_environment_trains(env, {BRAIN_NAME: config})
 
 
+@pytest.mark.parametrize("num_visual", [1, 2])
+def test_visual_coma(num_visual):
+    env = MultiAgentEnvironment(
+        [BRAIN_NAME], action_sizes=(0, 1), num_agents=2, num_visual=num_visual
+    )
+    new_hyperparams = attr.evolve(
+        COMA_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4
+    )
+    config = attr.evolve(COMA_TORCH_CONFIG, hyperparameters=new_hyperparams)
+    check_environment_trains(env, {BRAIN_NAME: config})
+
+
+@pytest.mark.parametrize("num_var_len", [1, 2])
+@pytest.mark.parametrize("num_vector", [0, 1])
+@pytest.mark.parametrize("num_vis", [0, 1])
+def test_var_len_obs_coma(num_vis, num_vector, num_var_len):
+    env = MultiAgentEnvironment(
+        [BRAIN_NAME],
+        action_sizes=(0, 1),
+        num_visual=num_vis,
+        num_vector=num_vector,
+        num_var_len=num_var_len,
+        step_size=0.2,
+        num_agents=2,
+    )
+    new_hyperparams = attr.evolve(
+        COMA_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4
+    )
+    config = attr.evolve(COMA_TORCH_CONFIG, hyperparameters=new_hyperparams)
+    check_environment_trains(env, {BRAIN_NAME: config})
+
+
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_simple_ppo(action_sizes):
     env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_sizes)
