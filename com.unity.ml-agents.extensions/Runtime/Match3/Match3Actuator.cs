@@ -115,7 +115,7 @@ namespace Unity.MLAgents.Extensions.Match3
                             "an invalid move will be passed to AbstractBoard.MakeMove()."
                         );
                     }
-                    actionMask.SetActionEnabled(branch, numMoves - 1, false);
+                    actionMask.SetActionEnabled(branch, numMoves - 1, true);
                 }
             }
         }
