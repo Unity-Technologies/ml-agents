@@ -27,6 +27,7 @@ namespace Unity.MLAgents.Sensors
         /// new {3}. A sensor that returns an RGB image would return new [] {Height, Width, 3}
         /// </summary>
         /// <returns>Size of the observations that will be generated.</returns>
+        // TODO OBSOLETE replace with GetObservationSpec.Shape
         int[] GetObservationShape();
 
         /// <summary>
@@ -62,6 +63,7 @@ namespace Unity.MLAgents.Sensors
         /// <see cref="SensorCompressionType.None"/>.
         /// </summary>
         /// <returns>Compression type used by the sensor.</returns>
+        // TODO OBSOLETE replace with GetCompressionSpec().SensorCompressionType
         SensorCompressionType GetCompressionType();
 
         /// <summary>
