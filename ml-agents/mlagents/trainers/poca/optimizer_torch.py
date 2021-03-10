@@ -114,8 +114,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
     def __init__(self, policy: TorchPolicy, trainer_settings: TrainerSettings):
         """
         Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy.
-        The PPO optimizer has a value estimator and a loss function.
-        :param policy: A TorchPolicy object that will be updated by this PPO Optimizer.
+        :param policy: A TorchPolicy object that will be updated by this POCA Optimizer.
         :param trainer_params: Trainer parameters dictionary that specifies the
         properties of the trainer.
         """
@@ -198,7 +197,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
         loss_masks: torch.Tensor,
     ) -> torch.Tensor:
         """
-        Evaluates value loss for PPO.
+        Evaluates value loss for POCA.
         :param values: Value output of the current network.
         :param old_values: Value stored with experiences in buffer.
         :param returns: Computed returns.
@@ -219,7 +218,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
         value_loss = torch.mean(torch.stack(value_losses))
         return value_loss
 
-    def ppo_policy_loss(
+    def poca_policy_loss(
         self,
         advantages: torch.Tensor,
         log_probs: torch.Tensor,
@@ -227,7 +226,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
         loss_masks: torch.Tensor,
     ) -> torch.Tensor:
         """
-        Evaluate PPO policy loss.
+        Evaluate POCA policy loss.
         :param advantages: Computed advantages.
         :param log_probs: Current policy probabilities
         :param old_log_probs: Past policy probabilities
@@ -340,7 +339,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
         value_loss = self.poca_value_loss(
             values, old_values, returns, decay_eps, loss_masks
         )
-        policy_loss = self.ppo_policy_loss(
+        policy_loss = self.poca_policy_loss(
             ModelUtils.list_to_tensor(batch[BufferKey.ADVANTAGES]),
             log_probs,
             old_log_probs,
