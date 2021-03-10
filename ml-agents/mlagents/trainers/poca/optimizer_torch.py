@@ -34,8 +34,8 @@ from mlagents_envs.logging_util import get_logger
 logger = get_logger(__name__)
 
 
-class TorchCOMAOptimizer(TorchOptimizer):
-    class COMAValueNetwork(torch.nn.Module, Critic):
+class TorchPOCAOptimizer(TorchOptimizer):
+    class POCAValueNetwork(torch.nn.Module, Critic):
         def __init__(
             self,
             stream_names: List[str],
@@ -125,7 +125,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
         reward_signal_configs = trainer_settings.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
 
-        self._critic = TorchCOMAOptimizer.COMAValueNetwork(
+        self._critic = TorchPOCAOptimizer.POCAValueNetwork(
             reward_signal_names,
             policy.behavior_spec.observation_specs,
             network_settings=trainer_settings.network_settings,
@@ -178,7 +178,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
         for reward_signal, settings in reward_signal_configs.items():
             if reward_signal != RewardSignalType.EXTRINSIC:
                 logger.warning(
-                    f"Reward signal {reward_signal.value.capitalize()} is not supported with the COMA2 trainer; "
+                    f"Reward signal {reward_signal.value.capitalize()} is not supported with the POCA trainer; "
                     "results may be unexpected."
                 )
             elif isinstance(settings, ExtrinsicSettings):
@@ -189,7 +189,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
     def critic(self):
         return self._critic
 
-    def coma_value_loss(
+    def poca_value_loss(
         self,
         values: Dict[str, torch.Tensor],
         old_values: Dict[str, torch.Tensor],
@@ -334,10 +334,10 @@ class TorchCOMAOptimizer(TorchOptimizer):
         log_probs = log_probs.flatten()
         loss_masks = ModelUtils.list_to_tensor(batch[BufferKey.MASKS], dtype=torch.bool)
 
-        baseline_loss = self.coma_value_loss(
+        baseline_loss = self.poca_value_loss(
             baselines, old_baseline_values, returns, decay_eps, loss_masks
         )
-        value_loss = self.coma_value_loss(
+        value_loss = self.poca_value_loss(
             values, old_values, returns, decay_eps, loss_masks
         )
         policy_loss = self.ppo_policy_loss(

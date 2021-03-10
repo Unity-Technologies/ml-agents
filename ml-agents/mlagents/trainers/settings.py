@@ -217,7 +217,7 @@ class RewardSignalSettings:
 
 @attr.s(auto_attribs=True)
 class ExtrinsicSettings(RewardSignalSettings):
-    # For use with COMA2. Add groupmate rewards to the final extrinsic reward.
+    # For use with MA-POCA. Add groupmate rewards to the final extrinsic reward.
     add_groupmate_rewards = False
 
 
@@ -606,13 +606,13 @@ class SelfPlaySettings:
 class TrainerType(Enum):
     PPO: str = "ppo"
     SAC: str = "sac"
-    COMA: str = "coma"
+    POCA: str = "poca"
 
     def to_settings(self) -> type:
         _mapping = {
             TrainerType.PPO: PPOSettings,
             TrainerType.SAC: SACSettings,
-            TrainerType.COMA: PPOSettings,
+            TrainerType.POCA: PPOSettings,
         }
         return _mapping[self]
 

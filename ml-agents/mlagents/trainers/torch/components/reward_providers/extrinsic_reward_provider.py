@@ -12,7 +12,7 @@ from mlagents.trainers.settings import ExtrinsicSettings
 class ExtrinsicRewardProvider(BaseRewardProvider):
     """
     Evaluates extrinsic reward. For single-agent, this equals the individual reward
-    given to the agent. For the COMA2 algorithm, we want not only the individual reward
+    given to the agent. For the POCA algorithm, we want not only the individual reward
     but also the team and the individual rewards of the other agents.
     """
 
