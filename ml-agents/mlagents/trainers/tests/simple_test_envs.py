@@ -358,9 +358,9 @@ class MultiAgentEnvironment(BaseEnv):
                 )
                 self.dones[name_and_num] = False
                 self.envs[name_and_num].reset()
-                # HACK
-                self.behavior_spec = self.envs[name_and_num].behavior_spec
-                self.action_spec = self.envs[name_and_num].action_spec
+        # All envs have the same behavior spec, so just get the last one.
+        self.behavior_spec = self.envs[name_and_num].behavior_spec
+        self.action_spec = self.envs[name_and_num].action_spec
         self.num_agents = num_agents
 
     @property
