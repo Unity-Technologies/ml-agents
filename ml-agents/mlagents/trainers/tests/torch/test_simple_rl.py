@@ -88,6 +88,38 @@ def test_var_len_obs_coma(num_vis, num_vector, num_var_len):
 
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+@pytest.mark.parametrize("is_multiagent", [True, False])
+def test_recurrent_coma(action_sizes, is_multiagent):
+    if is_multiagent:
+        # This is not a recurrent environment, just check if LSTM doesn't crash
+        env = MultiAgentEnvironment(
+            [BRAIN_NAME], action_sizes=action_sizes, num_agents=2
+        )
+    else:
+        # Actually test LSTM here
+        env = MemoryEnvironment([BRAIN_NAME], action_sizes=action_sizes)
+    new_network_settings = attr.evolve(
+        COMA_TORCH_CONFIG.network_settings,
+        memory=NetworkSettings.MemorySettings(memory_size=16),
+    )
+    new_hyperparams = attr.evolve(
+        COMA_TORCH_CONFIG.hyperparameters,
+        learning_rate=1.0e-3,
+        batch_size=64,
+        buffer_size=128,
+    )
+    config = attr.evolve(
+        COMA_TORCH_CONFIG,
+        hyperparameters=new_hyperparams,
+        network_settings=new_network_settings,
+        max_steps=500 if is_multiagent else 6000,
+    )
+    check_environment_trains(
+        env, {BRAIN_NAME: config}, success_threshold=None if is_multiagent else 0.9
+    )
+
+
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 def test_simple_ppo(action_sizes):
     env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_sizes)
     config = attr.evolve(PPO_TORCH_CONFIG)
