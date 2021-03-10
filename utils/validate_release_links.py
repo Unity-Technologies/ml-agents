@@ -167,8 +167,6 @@ def check_file(
                         or PIP_INSTALL_PATTERN.search(line) is None
                         or pip_allow_pattern.search(line) is not None
                     )
-                    # if not pip_install_ok:
-                    #    print(f"Would fail and rewrite {filename}: {line} to {update_pip_install_line(line, package_version)}")  # noqa
 
                     release_tag_ok = (
                         not has_release_pattern
