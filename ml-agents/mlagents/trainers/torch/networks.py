@@ -115,7 +115,6 @@ class MultiInputNetworkBody(torch.nn.Module):
         super().__init__()
         self.normalize = network_settings.normalize
         self.use_lstm = network_settings.memory is not None
-        # Scale network depending on num agents
         self.h_size = network_settings.hidden_units
         self.m_size = (
             network_settings.memory.memory_size
@@ -220,7 +219,17 @@ class MultiInputNetworkBody(torch.nn.Module):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-
+        """
+        Returns sampled actions.
+        If memory is enabled, return the memories as well.
+        :param obs_only: Observations to be processed that do not have corresponding actions.
+            These are encoded with the obs_encoder.
+        :param obs: Observations to be processed that do have corresponding actions.
+            After concatenation with actions, these are processed with obs_action_encoder.
+        :param actions: After concatenation with obs, these are processed with obs_action_encoder.
+        :param memories: If using memory, a Tensor of initial memories.
+        :param sequence_length: If using memory, the sequence length.
+        """
         self_attn_masks = []
         self_attn_inputs = []
         concat_f_inp = []
