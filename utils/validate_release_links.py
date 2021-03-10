@@ -9,8 +9,11 @@ import tempfile
 from typing import List, Optional, Pattern
 
 RELEASE_PATTERN = re.compile(r"release_[0-9]+(_docs)*")
+# This matches the various ways to invoke pip: "pip", "pip3", "python -m pip"
+# It matches "mlagents" and "mlagents_envs", accessible as group "package"
+# and optionally matches the version, e.g. "==1.2.3"
 PIP_INSTALL_PATTERN = re.compile(
-    r"(python -m )?pip3* install mlagents(==[0-9]\.[0-9]\.[0-9])?"
+    r"(python -m )?pip3* install (?P<package>mlagents(_envs)?)(==[0-9]\.[0-9]\.[0-9])?"
 )
 TRAINER_INIT_FILE = "ml-agents/mlagents/trainers/__init__.py"
 
@@ -64,6 +67,7 @@ def test_pip_pattern():
         ("pip3 install mlagents", True),
         ("python -m pip install mlagents", True),
         ("python -m pip install mlagents==1.2.3", True),
+        ("python -m pip install mlagents_envs==1.2.3", True),
     ]:
         assert bool(PIP_INSTALL_PATTERN.search(s)) is expected
 
@@ -73,6 +77,14 @@ def test_pip_pattern():
     )
 
     print("pip tests OK!")
+
+
+def update_pip_install_line(line, package_verion):
+    match = PIP_INSTALL_PATTERN.search(line)
+    package_name = match.group("package")
+    replacement_version = f"python -m pip install {package_name}={package_verion}"
+    updated = PIP_INSTALL_PATTERN.sub(replacement_version, line)
+    return updated
 
 
 def git_ls_files() -> List[str]:
@@ -150,25 +162,27 @@ def check_file(
                         and allow_list_pattern.search(line) is not None
                     )
 
-                    if (
-                        PIP_INSTALL_PATTERN.search(line) is not None
-                        and pip_allow_pattern.search(line) is None
-                    ):
-                        print(f"Would fail and rewrite: {line}")
+                    pip_install_ok = (
+                        has_allow_list_pattern
+                        or PIP_INSTALL_PATTERN.search(line) is None
+                        or pip_allow_pattern.search(line) is not None
+                    )
+                    # if not pip_install_ok:
+                    #    print(f"Would fail and rewrite {filename}: {line} to {update_pip_install_line(line, package_version)}")  # noqa
 
-                    keep_line = (
+                    release_tag_ok = (
                         not has_release_pattern
                         or has_release_tag_pattern
                         or has_allow_list_pattern
                     )
 
-                    if keep_line:
+                    if release_tag_ok and pip_install_ok:
                         new_file.write(line)
                     else:
                         bad_lines.append(f"{filename}: {line}")
-                        new_file.write(
-                            re.sub(r"release_[0-9]+", fr"{release_tag}", line)
-                        )
+                        new_line = re.sub(r"release_[0-9]+", fr"{release_tag}", line)
+                        new_line = update_pip_install_line(new_line, package_version)
+                        new_file.write(new_line)
         if bad_lines:
             if os.path.exists(filename):
                 os.remove(filename)
@@ -212,7 +226,9 @@ def main():
     print(f"Release tag: {release_tag}")
     print(f"Release tag: {package_version}")
     release_allow_pattern = re.compile(f"{release_tag}(_docs)?")
-    pip_allow_pattern = re.compile(f"python -m pip install mlagents={package_version}")
+    pip_allow_pattern = re.compile(
+        f"python -m pip install mlagents(_envs)?=={package_version}"
+    )
     bad_lines = check_all_files(
         release_allow_pattern, release_tag, pip_allow_pattern, package_version
     )
