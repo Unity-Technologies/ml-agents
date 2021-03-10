@@ -37,11 +37,14 @@ def behavior_spec_from_proto(
     for obs in agent_info.observations:
         observation_specs.append(
             ObservationSpec(
-                tuple(obs.shape),
-                tuple(DimensionProperty(dim) for dim in obs.dimension_properties)
+                name=obs.name,
+                shape=tuple(obs.shape),
+                observation_type=ObservationType(obs.observation_type),
+                dimension_property=tuple(
+                    DimensionProperty(dim) for dim in obs.dimension_properties
+                )
                 if len(obs.dimension_properties) > 0
                 else (DimensionProperty.UNSPECIFIED,) * len(obs.shape),
-                ObservationType(obs.observation_type),
             )
         )
 
