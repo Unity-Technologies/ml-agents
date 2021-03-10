@@ -396,10 +396,11 @@ namespace Unity.MLAgents
                     CompressedData = ByteString.CopyFrom(compressedObs),
                     CompressionType = (CompressionTypeProto)sensor.GetCompressionType(),
                 };
-                var compressibleSensor = sensor as ISparseChannelSensor;
-                if (compressibleSensor != null)
+
+                var compressedChannelMapping = sensor.GetCompressedChannelMapping();
+                if (compressedChannelMapping != null)
                 {
-                    observationProto.CompressedChannelMapping.AddRange(compressibleSensor.GetCompressedChannelMapping());
+                    observationProto.CompressedChannelMapping.AddRange(compressedChannelMapping);
                 }
             }
 
@@ -458,12 +459,7 @@ namespace Unity.MLAgents
 
         internal static bool IsTrivialMapping(ISensor sensor)
         {
-            var compressibleSensor = sensor as ISparseChannelSensor;
-            if (compressibleSensor is null)
-            {
-                return true;
-            }
-            var mapping = compressibleSensor.GetCompressedChannelMapping();
+            var mapping = sensor.GetCompressedChannelMapping();
             if (mapping == null)
             {
                 return true;

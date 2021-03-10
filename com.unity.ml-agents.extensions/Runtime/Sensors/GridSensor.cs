@@ -510,6 +510,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <inheritdoc/>
+        public int[] GetCompressedChannelMapping()
+        {
+            return null;
+        }
+
+        /// <inheritdoc/>
         public DimensionProperty[] GetDimensionProperties()
         {
             if (m_DimensionProperties == null)

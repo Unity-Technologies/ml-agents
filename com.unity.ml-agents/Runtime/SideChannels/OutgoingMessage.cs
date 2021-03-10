@@ -41,7 +41,7 @@ namespace Unity.MLAgents.SideChannels
         }
 
         /// <summary>
-        /// Write an interger value to the message.
+        /// Write an integer value to the message.
         /// </summary>
         /// <param name="i"></param>
         public void WriteInt32(int i)

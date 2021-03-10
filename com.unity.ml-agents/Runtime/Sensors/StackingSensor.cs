@@ -17,7 +17,7 @@ namespace Unity.MLAgents.Sensors
     /// Internally, a circular buffer of arrays is used. The m_CurrentIndex represents the most recent observation.
     /// Currently, observations are stacked on the last dimension.
     /// </summary>
-    public class StackingSensor : ISparseChannelSensor, IBuiltInSensor
+    public class StackingSensor : ISensor, IBuiltInSensor
     {
         /// <summary>
         /// The wrapped sensor.
@@ -89,7 +89,7 @@ namespace Unity.MLAgents.Sensors
                 {
                     m_StackedCompressedObservations[i] = m_EmptyCompressedObservation;
                 }
-                m_CompressionMapping = ConstructStackedCompressedChannelMapping(wrapped);
+                m_CompressionMapping = ConstructStackedCompressedChannelMapping();
             }
 
             if (m_Shape.Length != 1)
@@ -236,18 +236,13 @@ namespace Unity.MLAgents.Sensors
         /// <summary>
         /// Constrct stacked CompressedChannelMapping.
         /// </summary>
-        internal int[] ConstructStackedCompressedChannelMapping(ISensor wrappedSenesor)
+        internal int[] ConstructStackedCompressedChannelMapping()
         {
             // Get CompressedChannelMapping of the wrapped sensor. If the
             // wrapped sensor doesn't have one, use default mapping.
             // Default mapping: {0, 0, 0} for grayscale, identity mapping {1, 2, ..., n} otherwise.
-            int[] wrappedMapping = null;
-            int wrappedNumChannel = wrappedSenesor.GetObservationShape()[2];
-            var sparseChannelSensor = m_WrappedSensor as ISparseChannelSensor;
-            if (sparseChannelSensor != null)
-            {
-                wrappedMapping = sparseChannelSensor.GetCompressedChannelMapping();
-            }
+            int[] wrappedMapping = m_WrappedSensor.GetCompressedChannelMapping();
+            int wrappedNumChannel = m_WrappedSensor.GetObservationShape()[2];
             if (wrappedMapping == null)
             {
                 if (wrappedNumChannel == 1)

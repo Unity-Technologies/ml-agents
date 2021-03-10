@@ -113,6 +113,13 @@ namespace Unity.MLAgents.Sensors
             return m_DimensionProperties;
         }
 
+        /// <inheritdoc/>
+        public int[] GetCompressedChannelMapping()
+        {
+            return null;
+        }
+
+
         /// <summary>
         /// Converts a RenderTexture to a 2D texture.
         /// </summary>

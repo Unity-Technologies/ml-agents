@@ -99,19 +99,13 @@ namespace Unity.MLAgents.Tests
             {
                 return this.DefaultDimensionProperties();
             }
-        }
 
-        class DummySparseChannelSensor : DummySensor, ISparseChannelSensor
-        {
             public int[] Mapping;
-            internal DummySparseChannelSensor()
-            {
-            }
-
             public int[] GetCompressedChannelMapping()
             {
                 return Mapping;
             }
+
         }
 
         [Test]
@@ -169,7 +163,7 @@ namespace Unity.MLAgents.Tests
         {
             Assert.AreEqual(GrpcExtensions.IsTrivialMapping(new DummySensor()), true);
 
-            var sparseChannelSensor = new DummySparseChannelSensor();
+            var sparseChannelSensor = new DummySensor();
             sparseChannelSensor.Mapping = null;
             Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), true);
             sparseChannelSensor.Mapping = new[] { 0, 0, 0 };

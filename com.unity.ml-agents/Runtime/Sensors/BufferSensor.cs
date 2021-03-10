@@ -114,6 +114,12 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
+        public int[] GetCompressedChannelMapping()
+        {
+            return null;
+        }
+
+        /// <inheritdoc/>
         public BuiltInSensorType GetBuiltInSensorType()
         {
             return BuiltInSensorType.BufferSensor;

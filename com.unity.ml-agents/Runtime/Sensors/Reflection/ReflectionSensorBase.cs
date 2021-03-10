@@ -115,6 +115,12 @@ namespace Unity.MLAgents.Sensors.Reflection
         }
 
         /// <inheritdoc/>
+        public int[] GetCompressedChannelMapping()
+        {
+            return null;
+        }
+
+        /// <inheritdoc/>
         public BuiltInSensorType GetBuiltInSensorType()
         {
             return BuiltInSensorType.ReflectionSensor;

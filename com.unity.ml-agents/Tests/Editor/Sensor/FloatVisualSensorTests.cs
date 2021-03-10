@@ -78,6 +78,10 @@ namespace Unity.MLAgents.Tests
             return this.DefaultDimensionProperties();
         }
 
+        public int[] GetCompressedChannelMapping()
+        {
+            return null;
+        }
     }
 
     public class FloatVisualSensorTests

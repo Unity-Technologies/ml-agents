@@ -64,7 +64,7 @@ namespace Unity.MLAgents.Tests
             SensorTestHelper.CompareObservation(sensor, new[] { 0f, 0f, 0f, 0f, 5f, 6f });
         }
 
-        class Dummy3DSensor : ISparseChannelSensor
+        class Dummy3DSensor : ISensor
         {
             public SensorCompressionType CompressionType = SensorCompressionType.PNG;
             public int[] Mapping;

@@ -88,11 +88,16 @@ namespace Unity.MLAgents.Tests
             };
         }
 
-        /// <inheritdoc/>
         public ObservationType GetObservationType()
         {
             return ObservationType.Default;
         }
+
+        public int[] GetCompressedChannelMapping()
+        {
+            return null;
+        }
+
     }
 
     [TestFixture]

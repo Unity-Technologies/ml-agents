@@ -381,6 +381,12 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
+        public int[] GetCompressedChannelMapping()
+        {
+            return null;
+        }
+
+        /// <inheritdoc/>
         public ObservationType GetObservationType()
         {
             return ObservationType.Default;

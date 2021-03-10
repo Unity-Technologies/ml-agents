@@ -127,6 +127,12 @@ namespace Unity.MLAgents.Sensors
             return m_DimensionProperties;
         }
 
+        /// <inheritdoc/>
+        public int[] GetCompressedChannelMapping()
+        {
+            return null;
+        }
+
         void Clear()
         {
             m_Observations.Clear();

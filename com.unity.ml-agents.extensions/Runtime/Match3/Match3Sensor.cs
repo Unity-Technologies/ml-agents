@@ -35,7 +35,7 @@ namespace Unity.MLAgents.Extensions.Match3
     /// or uncompressed visual observations. Uses AbstractBoard.GetCellType()
     /// and AbstractBoard.GetSpecialType() to determine the observation values.
     /// </summary>
-    public class Match3Sensor : ISparseChannelSensor, IBuiltInSensor
+    public class Match3Sensor : ISensor, IBuiltInSensor
     {
         private Match3ObservationType m_ObservationType;
         private AbstractBoard m_Board;
@@ -48,7 +48,6 @@ namespace Unity.MLAgents.Extensions.Match3
         private int m_Columns;
         private int m_NumCellTypes;
         private int m_NumSpecialTypes;
-        private ISparseChannelSensor sparseChannelSensorImplementation;
 
         private int SpecialTypeSize
         {

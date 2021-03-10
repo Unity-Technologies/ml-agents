@@ -33,6 +33,12 @@ public DimensionProperty[] GetDimensionProperties()
     // For best performance, cache this as e.g. m_DimensionProperties.
     return this.DefaultDimensionProperties();
 }
+
+// Moved from ISparseChannelSensor
+public int[] GetCompressedChannelMapping()
+{
+    return null;
+}
 ```
 
 ## Migrating to Release 13

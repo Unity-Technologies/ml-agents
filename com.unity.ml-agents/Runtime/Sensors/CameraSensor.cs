@@ -14,6 +14,7 @@ namespace Unity.MLAgents.Sensors
         bool m_Grayscale;
         string m_Name;
         int[] m_Shape;
+        DimensionProperty[] m_DimensionProperties;
         SensorCompressionType m_CompressionType;
 
         /// <summary>
@@ -53,6 +54,7 @@ namespace Unity.MLAgents.Sensors
             m_Grayscale = grayscale;
             m_Name = name;
             m_Shape = GenerateShape(width, height, grayscale);
+            m_DimensionProperties = this.DefaultDimensionProperties();
             m_CompressionType = compression;
         }
 
@@ -83,7 +85,7 @@ namespace Unity.MLAgents.Sensors
         /// <returns></returns>
         public DimensionProperty[] GetDimensionProperties()
         {
-            return s_DimensionProperties;
+            return m_DimensionProperties;
         }
 
         /// <summary>
@@ -128,6 +130,12 @@ namespace Unity.MLAgents.Sensors
         public SensorCompressionType GetCompressionType()
         {
             return m_CompressionType;
+        }
+
+        /// <inheritdoc/>
+        public int[] GetCompressedChannelMapping()
+        {
+            return null;
         }
 
         /// <summary>
