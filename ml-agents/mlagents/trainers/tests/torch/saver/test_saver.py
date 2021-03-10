@@ -8,7 +8,7 @@ from mlagents.torch_utils import torch, default_device
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
-from mlagents.trainers.coma.optimizer_torch import TorchPOCAOptimizer
+from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer
 from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
 from mlagents.trainers.settings import TrainerSettings, PPOSettings, SACSettings
 from mlagents.trainers.tests import mock_brain as mb
