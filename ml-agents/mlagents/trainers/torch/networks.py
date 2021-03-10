@@ -194,17 +194,23 @@ class MultiInputNetworkBody(torch.nn.Module):
         attn_mask = only_first_obs_flat.isnan().type(torch.FloatTensor)
         return attn_mask
 
-    def _remove_nans_from_obs(
+    def _copy_and_remove_nans_from_obs(
         self, all_obs: List[List[torch.Tensor]], attention_mask: torch.Tensor
-    ) -> None:
+    ) -> List[List[torch.Tensor]]:
         """
         Helper function to remove NaNs from observations using an attention mask.
         """
+        obs_with_no_nans = []
         for i_agent, single_agent_obs in enumerate(all_obs):
+            no_nan_obs = []
             for obs in single_agent_obs:
-                obs[
+                new_obs = obs.clone()
+                new_obs[
                     attention_mask.type(torch.BoolTensor)[:, i_agent], ::
                 ] = 0.0  # Remoove NaNs fast
+                no_nan_obs.append(new_obs)
+            obs_with_no_nans.append(no_nan_obs)
+        return obs_with_no_nans
 
     def forward(
         self,
@@ -220,7 +226,7 @@ class MultiInputNetworkBody(torch.nn.Module):
         concat_f_inp = []
         if obs:
             obs_attn_mask = self._get_masks_from_nans(obs)
-            self._remove_nans_from_obs(obs, obs_attn_mask)
+            obs = self._copy_and_remove_nans_from_obs(obs, obs_attn_mask)
             for inputs, action in zip(obs, actions):
                 encoded = ModelUtils.encode_observations(
                     inputs, self.processors, self.input_rsa, self.input_x_self_encoder
@@ -237,7 +243,7 @@ class MultiInputNetworkBody(torch.nn.Module):
         concat_encoded_obs = []
         if obs_only:
             obs_only_attn_mask = self._get_masks_from_nans(obs_only)
-            self._remove_nans_from_obs(obs_only, obs_only_attn_mask)
+            obs_only = self._copy_and_remove_nans_from_obs(obs_only, obs_only_attn_mask)
             for inputs in obs_only:
                 encoded = ModelUtils.encode_observations(
                     inputs, self.processors, self.input_rsa, self.input_x_self_encoder
