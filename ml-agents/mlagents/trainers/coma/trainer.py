@@ -1,6 +1,6 @@
 # # Unity ML-Agents Toolkit
-# ## ML-Agent Learning (PPO)
-# Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
+# ## ML-Agents Learning (COMA2)
+# Contains an implementation of COMA2.
 
 from collections import defaultdict
 from typing import cast, Dict
