@@ -154,7 +154,7 @@ To install the `mlagents` Python package, activate your virtual environment and
 run from the command line:
 
 ```sh
-pip3 install mlagents
+python -m pip install mlagents==0.24.1
 ```
 
 Note that this will install `mlagents` from PyPi, _not_ from the cloned
