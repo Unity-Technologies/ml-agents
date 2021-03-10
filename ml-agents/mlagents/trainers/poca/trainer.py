@@ -14,7 +14,7 @@ from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.policy.torch_policy import TorchPolicy
-from mlagents.trainers.coma.optimizer_torch import TorchPOCAOptimizer
+from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, PPOSettings

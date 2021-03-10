@@ -3,7 +3,7 @@ import pytest
 import numpy as np
 import attr
 
-from mlagents.trainers.coma.optimizer_torch import TorchPOCAOptimizer
+from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer
 from mlagents.trainers.settings import ExtrinsicSettings, RewardSignalType
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
