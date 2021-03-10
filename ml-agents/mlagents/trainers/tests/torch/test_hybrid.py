@@ -39,8 +39,8 @@ def test_hybrid_ppo(action_size):
 
 
 @pytest.mark.check_environment_trains
-@pytest.mark.parametrize("num_visual", [1, 2])
-def test_hybrid_visual_ppo(num_visual):
+@pytest.mark.parametrize("num_visual,training_seed", [(1, 1336), (2, 1338)])
+def test_hybrid_visual_ppo(num_visual, training_seed):
     env = SimpleEnvironment(
         [BRAIN_NAME], num_visual=num_visual, num_vector=0, action_sizes=(1, 1)
     )
@@ -48,7 +48,7 @@ def test_hybrid_visual_ppo(num_visual):
         PPO_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4
     )
     config = attr.evolve(PPO_TORCH_CONFIG, hyperparameters=new_hyperparams)
-    check_environment_trains(env, {BRAIN_NAME: config}, training_seed=1336)
+    check_environment_trains(env, {BRAIN_NAME: config}, training_seed=training_seed)
 
 
 @pytest.mark.check_environment_trains
@@ -87,14 +87,12 @@ def test_hybrid_sac(action_size):
     config = attr.evolve(
         SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=2200
     )
-    check_environment_trains(
-        env, {BRAIN_NAME: config}, success_threshold=0.9, training_seed=1336
-    )
+    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
 
 @pytest.mark.check_environment_trains
-@pytest.mark.parametrize("num_visual", [1, 2])
-def test_hybrid_visual_sac(num_visual):
+@pytest.mark.parametrize("num_visual,training_seed", [(1, 1337), (2, 1338)])
+def test_hybrid_visual_sac(num_visual, training_seed):
     env = SimpleEnvironment(
         [BRAIN_NAME], num_visual=num_visual, num_vector=0, action_sizes=(1, 1)
     )
@@ -107,7 +105,7 @@ def test_hybrid_visual_sac(num_visual):
     config = attr.evolve(
         SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=3000
     )
-    check_environment_trains(env, {BRAIN_NAME: config})
+    check_environment_trains(env, {BRAIN_NAME: config}, training_seed=training_seed)
 
 
 @pytest.mark.check_environment_trains

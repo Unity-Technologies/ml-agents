@@ -265,17 +265,21 @@ def test_process_pixels_gray():
 def test_vector_observation():
     n_agents = 10
     shapes = [(3,), (4,)]
+    obs_specs = create_observation_specs_with_shapes(shapes)
     list_proto = generate_list_agent_proto(n_agents, shapes)
     for obs_index, shape in enumerate(shapes):
-        arr = _process_rank_one_or_two_observation(obs_index, shape, list_proto)
+        arr = _process_rank_one_or_two_observation(
+            obs_index, obs_specs[obs_index], list_proto
+        )
         assert list(arr.shape) == ([n_agents] + list(shape))
         assert np.allclose(arr, 0.1, atol=0.01)
 
 
 def test_process_visual_observation():
-    in_array_1 = np.random.rand(128, 64, 3)
+    shape = (128, 64, 3)
+    in_array_1 = np.random.rand(*shape)
     proto_obs_1 = generate_compressed_proto_obs(in_array_1)
-    in_array_2 = np.random.rand(128, 64, 3)
+    in_array_2 = np.random.rand(*shape)
     in_array_2_mapping = [0, 1, 2]
     proto_obs_2 = generate_compressed_proto_obs_with_mapping(
         in_array_2, in_array_2_mapping
@@ -286,7 +290,8 @@ def test_process_visual_observation():
     ap2 = AgentInfoProto()
     ap2.observations.extend([proto_obs_2])
     ap_list = [ap1, ap2]
-    arr = _process_maybe_compressed_observation(0, (128, 64, 3), ap_list)
+    obs_spec = create_observation_specs_with_shapes([shape])[0]
+    arr = _process_maybe_compressed_observation(0, obs_spec, ap_list)
     assert list(arr.shape) == [2, 128, 64, 3]
     assert np.allclose(arr[0, :, :, :], in_array_1, atol=0.01)
     assert np.allclose(arr[1, :, :, :], in_array_2, atol=0.01)
@@ -308,7 +313,9 @@ def test_process_visual_observation_grayscale():
     ap2 = AgentInfoProto()
     ap2.observations.extend([proto_obs_2])
     ap_list = [ap1, ap2]
-    arr = _process_maybe_compressed_observation(0, (128, 64, 1), ap_list)
+    shape = (128, 64, 1)
+    obs_spec = create_observation_specs_with_shapes([shape])[0]
+    arr = _process_maybe_compressed_observation(0, obs_spec, ap_list)
     assert list(arr.shape) == [2, 128, 64, 1]
     assert np.allclose(arr[0, :, :, :], expected_out_array_1, atol=0.01)
     assert np.allclose(arr[1, :, :, :], expected_out_array_2, atol=0.01)
@@ -325,7 +332,10 @@ def test_process_visual_observation_padded_channels():
     ap1 = AgentInfoProto()
     ap1.observations.extend([proto_obs_1])
     ap_list = [ap1]
-    arr = _process_maybe_compressed_observation(0, (128, 64, 8), ap_list)
+    shape = (128, 64, 8)
+    obs_spec = create_observation_specs_with_shapes([shape])[0]
+
+    arr = _process_maybe_compressed_observation(0, obs_spec, ap_list)
     assert list(arr.shape) == [1, 128, 64, 8]
     assert np.allclose(arr[0, :, :, :], expected_out_array_1, atol=0.01)
 
@@ -336,8 +346,12 @@ def test_process_visual_observation_bad_shape():
     ap1 = AgentInfoProto()
     ap1.observations.extend([proto_obs_1])
     ap_list = [ap1]
+
+    shape = (128, 42, 3)
+    obs_spec = create_observation_specs_with_shapes([shape])[0]
+
     with pytest.raises(UnityObservationException):
-        _process_maybe_compressed_observation(0, (128, 42, 3), ap_list)
+        _process_maybe_compressed_observation(0, obs_spec, ap_list)
 
 
 def test_batched_step_result_from_proto():
@@ -368,6 +382,20 @@ def test_batched_step_result_from_proto():
     assert decision_steps.obs[1].shape[1] == shapes[1][0]
     assert terminal_steps.obs[0].shape[1] == shapes[0][0]
     assert terminal_steps.obs[1].shape[1] == shapes[1][0]
+
+
+def test_mismatch_observations_raise_in_step_result_from_proto():
+    n_agents = 10
+    shapes = [(3,), (4,)]
+    spec = BehaviorSpec(
+        create_observation_specs_with_shapes(shapes), ActionSpec.create_continuous(3)
+    )
+    ap_list = generate_list_agent_proto(n_agents, shapes)
+    # Hack an observation to be larger, we should get an exception
+    ap_list[0].observations[0].shape[0] += 1
+    ap_list[0].observations[0].float_data.data.append(0.42)
+    with pytest.raises(UnityObservationException):
+        steps_from_proto(ap_list, spec)
 
 
 def test_action_masking_discrete():
