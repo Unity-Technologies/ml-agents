@@ -76,5 +76,11 @@ public class TestTextureSensor : ISensor
     {
         return this.DefaultDimensionProperties();
     }
+
+    public int[] GetCompressedChannelMapping()
+    {
+        return null;
+    }
+
 }
 

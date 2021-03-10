@@ -141,5 +141,11 @@ namespace Unity.MLAgents.Extensions.Sensors
             return BuiltInSensorType.PhysicsBodySensor;
         }
 
+        /// <inheritdoc/>
+        public int[] GetCompressedChannelMapping()
+        {
+            return null;
+        }
+
     }
 }

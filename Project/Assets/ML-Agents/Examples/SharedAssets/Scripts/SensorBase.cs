@@ -67,5 +67,12 @@ namespace Unity.MLAgentsExamples
         {
             return this.DefaultDimensionProperties();
         }
+
+        /// <inheritdoc/>
+        public int[] GetCompressedChannelMapping()
+        {
+            return null;
+        }
+
     }
 }
