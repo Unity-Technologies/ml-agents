@@ -15,6 +15,7 @@ namespace Unity.MLAgents.Sensors
         List<float> m_Observations;
         int[] m_Shape;
         string m_Name;
+        DimensionProperty[] m_DimensionProperties;
 
         /// <summary>
         /// Initializes the sensor.
@@ -31,6 +32,7 @@ namespace Unity.MLAgents.Sensors
             m_Observations = new List<float>(observationSize);
             m_Name = name;
             m_Shape = new[] { observationSize };
+            m_DimensionProperties = this.DefaultDimensionProperties();
         }
 
         /// <inheritdoc/>
@@ -117,6 +119,12 @@ namespace Unity.MLAgents.Sensors
         public ObservationType GetObservationType()
         {
             return ObservationType.Default;
+        }
+
+        /// <inheritdoc/>
+        public DimensionProperty[] GetDimensionProperties()
+        {
+            return m_DimensionProperties;
         }
 
         void Clear()

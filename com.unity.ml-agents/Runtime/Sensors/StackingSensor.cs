@@ -295,5 +295,11 @@ namespace Unity.MLAgents.Sensors
         {
             return m_WrappedSensor.GetObservationType();
         }
+
+        /// <inheritdoc/>
+        public DimensionProperty[] GetDimensionProperties()
+        {
+            return m_WrappedSensor.GetDimensionProperties();
+        }
     }
 }

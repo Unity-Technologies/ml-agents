@@ -40,6 +40,7 @@ namespace Unity.MLAgents.Extensions.Match3
         private Match3ObservationType m_ObservationType;
         private AbstractBoard m_Board;
         private int[] m_Shape;
+        private DimensionProperty[] m_DimensionProperties;
         private int[] m_SparseChannelMapping;
         private string m_Name;
 
@@ -73,6 +74,8 @@ namespace Unity.MLAgents.Extensions.Match3
             m_Shape = obsType == Match3ObservationType.Vector ?
                 new[] { m_Rows * m_Columns * (m_NumCellTypes + SpecialTypeSize) } :
                 new[] { m_Rows, m_Columns, m_NumCellTypes + SpecialTypeSize };
+
+            m_DimensionProperties = this.DefaultDimensionProperties();
 
             // See comment in GetCompressedObservation()
             var cellTypePaddedSize = 3 * ((m_NumCellTypes + 2) / 3);
@@ -244,6 +247,12 @@ namespace Unity.MLAgents.Extensions.Match3
         public ObservationType GetObservationType()
         {
             return ObservationType.Default;
+        }
+
+        /// <inheritdoc/>
+        public DimensionProperty[] GetDimensionProperties()
+        {
+            return m_DimensionProperties;
         }
 
         static void DestroyTexture(Texture2D texture)

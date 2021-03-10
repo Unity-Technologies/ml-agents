@@ -58,6 +58,11 @@ namespace Unity.MLAgents.Tests
         {
             return ObservationType.Default;
         }
+
+        public DimensionProperty[] GetDimensionProperties()
+        {
+            return this.DefaultDimensionProperties();
+        }
     }
 
     public class SensorShapeValidatorTests

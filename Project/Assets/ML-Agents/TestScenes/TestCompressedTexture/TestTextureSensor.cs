@@ -67,10 +67,14 @@ public class TestTextureSensor : ISensor
         return m_CompressionType;
     }
 
-    /// <inheritdoc/>
     public ObservationType GetObservationType()
     {
         return ObservationType.Default;
+    }
+
+    public DimensionProperty[] GetDimensionProperties()
+    {
+        return this.DefaultDimensionProperties();
     }
 }
 

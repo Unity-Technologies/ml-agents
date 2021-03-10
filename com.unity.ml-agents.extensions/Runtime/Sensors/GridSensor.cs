@@ -219,6 +219,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         private int[] m_Shape;
 
+        private DimensionProperty[] m_DimensionProperties;
+
         //
         // Debug Parameters
         //
@@ -505,6 +507,16 @@ namespace Unity.MLAgents.Extensions.Sensors
         public BuiltInSensorType GetBuiltInSensorType()
         {
             return BuiltInSensorType.GridSensor;
+        }
+
+        /// <inheritdoc/>
+        public DimensionProperty[] GetDimensionProperties()
+        {
+            if (m_DimensionProperties == null)
+            {
+                m_DimensionProperties = this.DefaultDimensionProperties();
+            }
+            return m_DimensionProperties;
         }
 
         /// <summary>

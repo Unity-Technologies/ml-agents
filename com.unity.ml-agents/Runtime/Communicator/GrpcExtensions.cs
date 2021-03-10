@@ -402,30 +402,27 @@ namespace Unity.MLAgents
                     observationProto.CompressedChannelMapping.AddRange(compressibleSensor.GetCompressedChannelMapping());
                 }
             }
-            // Add the dimension properties if any to the observationProto
-            var dimensionPropertySensor = sensor as IDimensionPropertiesSensor;
-            if (dimensionPropertySensor != null)
+
+            // Add the dimension properties to the observationProto
+            var dimensionProperties = sensor.GetDimensionProperties();
+            for (int i = 0; i < dimensionProperties.Length; i++)
             {
-                var dimensionProperties = dimensionPropertySensor.GetDimensionProperties();
-                int[] intDimensionProperties = new int[dimensionProperties.Length];
-                for (int i = 0; i < dimensionProperties.Length; i++)
+                observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
+            }
+            // Checking trainer compatibility with variable length observations
+            if (dimensionProperties.Length == 2)
+            {
+                if (dimensionProperties[0] == DimensionProperty.VariableSize &&
+                dimensionProperties[1] == DimensionProperty.None)
                 {
-                    observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
-                }
-                // Checking trainer compatibility with variable length observations
-                if (dimensionProperties.Length == 2)
-                {
-                    if (dimensionProperties[0] == DimensionProperty.VariableSize &&
-                    dimensionProperties[1] == DimensionProperty.None)
+                    var trainerCanHandleVarLenObs = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.VariableLengthObservation;
+                    if (!trainerCanHandleVarLenObs)
                     {
-                        var trainerCanHandleVarLenObs = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.VariableLengthObservation;
-                        if (!trainerCanHandleVarLenObs)
-                        {
-                            throw new UnityAgentsException("Variable Length Observations are not supported by the trainer");
-                        }
+                        throw new UnityAgentsException("Variable Length Observations are not supported by the trainer");
                     }
                 }
             }
+
             observationProto.Shape.AddRange(shape);
             observationProto.ObservationType = (ObservationTypeProto)sensor.GetObservationType();
             return observationProto;

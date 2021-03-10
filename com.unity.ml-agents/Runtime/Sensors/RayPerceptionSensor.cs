@@ -238,6 +238,7 @@ namespace Unity.MLAgents.Sensors
     {
         float[] m_Observations;
         int[] m_Shape;
+        DimensionProperty[] m_DimensionProperties;
         string m_Name;
 
         RayPerceptionInput m_RayPerceptionInput;
@@ -271,6 +272,7 @@ namespace Unity.MLAgents.Sensors
         {
             m_Shape = new[] { numObservations };
             m_Observations = new float[numObservations];
+            m_DimensionProperties = this.DefaultDimensionProperties();
         }
 
         internal void SetRayPerceptionInput(RayPerceptionInput rayInput)
@@ -370,6 +372,12 @@ namespace Unity.MLAgents.Sensors
         public BuiltInSensorType GetBuiltInSensorType()
         {
             return BuiltInSensorType.RayPerceptionSensor;
+        }
+
+        /// <inheritdoc/>
+        public DimensionProperty[] GetDimensionProperties()
+        {
+            return m_DimensionProperties;
         }
 
         /// <inheritdoc/>

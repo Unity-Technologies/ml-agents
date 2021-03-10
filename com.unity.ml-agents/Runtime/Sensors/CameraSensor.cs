@@ -6,7 +6,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// A sensor that wraps a Camera object to generate visual observations for an agent.
     /// </summary>
-    public class CameraSensor : ISensor, IBuiltInSensor, IDimensionPropertiesSensor
+    public class CameraSensor : ISensor, IBuiltInSensor
     {
         Camera m_Camera;
         int m_Width;
@@ -15,10 +15,6 @@ namespace Unity.MLAgents.Sensors
         string m_Name;
         int[] m_Shape;
         SensorCompressionType m_CompressionType;
-        static DimensionProperty[] s_DimensionProperties = new DimensionProperty[] {
-            DimensionProperty.TranslationalEquivariance,
-            DimensionProperty.TranslationalEquivariance,
-            DimensionProperty.None };
 
         /// <summary>
         /// The Camera used for rendering the sensor observations.

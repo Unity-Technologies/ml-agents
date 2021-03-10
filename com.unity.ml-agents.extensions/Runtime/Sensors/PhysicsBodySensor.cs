@@ -12,6 +12,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     public class PhysicsBodySensor : ISensor, IBuiltInSensor
     {
         int[] m_Shape;
+        DimensionProperty[] m_DimensionProperties;
         string m_SensorName;
 
         PoseExtractor m_PoseExtractor;
@@ -45,6 +46,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             var numTransformObservations = m_PoseExtractor.GetNumPoseObservations(settings);
             m_Shape = new[] { numTransformObservations + numJointExtractorObservations };
+            m_DimensionProperties = this.DefaultDimensionProperties();
         }
 
 #if UNITY_2020_1_OR_NEWER
@@ -125,6 +127,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         public ObservationType GetObservationType()
         {
             return ObservationType.Default;
+        }
+
+        /// <inheritdoc/>
+        public DimensionProperty[] GetDimensionProperties()
+        {
+            return m_DimensionProperties;
         }
 
         /// <inheritdoc/>

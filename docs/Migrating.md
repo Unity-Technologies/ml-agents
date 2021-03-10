@@ -26,6 +26,13 @@ public ObservationType GetObservationType()
 {
     return ObservationType.Default;
 }
+
+// Moved from IDimensionPropertiesSensor
+public DimensionProperty[] GetDimensionProperties()
+{
+    // For best performance, cache this as e.g. m_DimensionProperties.
+    return this.DefaultDimensionProperties();
+}
 ```
 
 ## Migrating to Release 13

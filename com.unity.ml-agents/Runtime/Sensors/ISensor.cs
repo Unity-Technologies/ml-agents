@@ -33,6 +33,35 @@ namespace Unity.MLAgents.Sensors
     }
 
     /// <summary>
+    /// The Dimension property flags of the observations
+    /// </summary>
+    [System.Flags]
+    public enum DimensionProperty
+    {
+        /// <summary>
+        /// No properties specified.
+        /// </summary>
+        Unspecified = 0,
+
+        /// <summary>
+        /// No Property of the observation in that dimension. Observation can be processed with
+        /// fully connected networks.
+        /// </summary>
+        None = 1,
+
+        /// <summary>
+        /// Means it is suitable to do a convolution in this dimension.
+        /// </summary>
+        TranslationalEquivariance = 2,
+
+        /// <summary>
+        /// Means that there can be a variable number of observations in this dimension.
+        /// The observations are unordered.
+        /// </summary>
+        VariableSize = 4,
+    }
+
+    /// <summary>
     /// Sensor interface for generating observations.
     /// </summary>
     public interface ISensor
@@ -94,6 +123,13 @@ namespace Unity.MLAgents.Sensors
         /// <returns>The ObservationType enum</returns>
         ObservationType GetObservationType();
 
+        /// <summary>
+        /// Returns the array containing the properties of each dimensions of the
+        /// observation. The length of the array must be equal to the length of the
+        /// array returned by GetObservationShape().
+        /// </summary>
+        /// <returns>The array of DimensionProperty</returns>
+        DimensionProperty[] GetDimensionProperties();
     }
 
 
@@ -118,6 +154,33 @@ namespace Unity.MLAgents.Sensors
             }
 
             return count;
+        }
+
+        /// <summary>
+        /// Get a default DimensionProperty for the sensor. Note that this allocates a new array,
+        /// so the results should be cached in the Sensor implementation.
+        /// </summary>
+        /// <param name="sensor"></param>
+        /// <returns></returns>
+        public static DimensionProperty[] DefaultDimensionProperties(this ISensor sensor)
+        {
+            var shape = sensor.GetObservationShape();
+            if (shape.Length == 3)
+            {
+                return new[] {
+                    DimensionProperty.TranslationalEquivariance,
+                    DimensionProperty.TranslationalEquivariance,
+                    DimensionProperty.None
+                };
+            }
+
+            var result = new DimensionProperty[shape.Length];
+            for (var i = 0; i < shape.Length; i++)
+            {
+                result[i] = DimensionProperty.Unspecified;
+            }
+
+            return result;
         }
     }
 }

@@ -159,11 +159,16 @@ namespace Unity.MLAgents.Tests
             numResetCalls++;
         }
 
-        /// <inheritdoc/>
         public ObservationType GetObservationType()
         {
             return ObservationType.Default;
         }
+
+        public DimensionProperty[] GetDimensionProperties()
+        {
+            return this.DefaultDimensionProperties();
+        }
+
     }
 
     [TestFixture]

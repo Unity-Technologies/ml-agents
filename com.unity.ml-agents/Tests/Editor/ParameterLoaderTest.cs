@@ -24,7 +24,7 @@ namespace Unity.MLAgents.Tests
             return Sensor.GetObservationShape();
         }
     }
-    public class Test3DSensor : ISensor, IBuiltInSensor, IDimensionPropertiesSensor
+    public class Test3DSensor : ISensor, IBuiltInSensor
     {
         int m_Width;
         int m_Height;

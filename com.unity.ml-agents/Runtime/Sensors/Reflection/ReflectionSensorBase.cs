@@ -38,6 +38,7 @@ namespace Unity.MLAgents.Sensors.Reflection
         // Cached sensor names and shapes.
         string m_SensorName;
         int[] m_Shape;
+        DimensionProperty[] m_DimensionProperties;
 
         public ReflectionSensorBase(ReflectionSensorInfo reflectionSensorInfo, int size)
         {
@@ -47,6 +48,7 @@ namespace Unity.MLAgents.Sensors.Reflection
             m_ObservableAttribute = reflectionSensorInfo.ObservableAttribute;
             m_SensorName = reflectionSensorInfo.SensorName;
             m_Shape = new[] { size };
+            m_DimensionProperties = this.DefaultDimensionProperties();
         }
 
         /// <inheritdoc/>
@@ -104,6 +106,12 @@ namespace Unity.MLAgents.Sensors.Reflection
         public ObservationType GetObservationType()
         {
             return ObservationType.Default;
+        }
+
+        /// <inheritdoc/>
+        public DimensionProperty[] GetDimensionProperties()
+        {
+            return m_DimensionProperties;
         }
 
         /// <inheritdoc/>

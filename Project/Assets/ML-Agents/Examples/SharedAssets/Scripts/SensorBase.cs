@@ -61,5 +61,11 @@ namespace Unity.MLAgentsExamples
         {
             return ObservationType.Default;
         }
+
+        /// <inheritdoc/>
+        public DimensionProperty[] GetDimensionProperties()
+        {
+            return this.DefaultDimensionProperties();
+        }
     }
 }
