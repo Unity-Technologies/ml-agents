@@ -42,6 +42,19 @@ namespace Unity.MLAgents.Tests.Actuators
         }
 
         [Test]
+        public void CanOverwriteMask()
+        {
+            var actuator1 = new TestActuator(ActionSpec.MakeDiscrete(new[] { 4, 5, 6 }), "actuator1");
+            var masker = new ActuatorDiscreteActionMask(new IActuator[] { actuator1 }, 15, 3);
+            masker.SetActionEnabled(0, 1, false);
+            var mask = masker.GetMask();
+            Assert.IsTrue(mask[1]);
+
+            masker.SetActionEnabled(0, 1, true);
+            Assert.IsFalse(mask[1]);
+        }
+
+        [Test]
         public void SecondBranchMask()
         {
             var actuator1 = new TestActuator(ActionSpec.MakeDiscrete(new[] { 4, 5, 6 }), "actuator1");
