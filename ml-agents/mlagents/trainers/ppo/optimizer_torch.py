@@ -232,7 +232,10 @@ class TorchPPOOptimizer(TorchOptimizer):
         return update_stats
 
     def get_modules(self):
-        modules = {"Optimizer": self.optimizer}
+        modules = {
+            "Optimizer:value_optimizer": self.optimizer,
+            "Optimizer:critic": self._critic,
+        }
         for reward_provider in self.reward_signals.values():
             modules.update(reward_provider.get_modules())
         return modules
