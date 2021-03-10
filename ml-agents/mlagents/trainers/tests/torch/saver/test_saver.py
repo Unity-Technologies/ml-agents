@@ -8,6 +8,7 @@ from mlagents.torch_utils import torch, default_device
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
+from mlagents.trainers.coma.optimizer_torch import TorchCOMAOptimizer
 from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
 from mlagents.trainers.settings import TrainerSettings, PPOSettings, SACSettings
 from mlagents.trainers.tests import mock_brain as mb
@@ -66,8 +67,12 @@ def test_load_save_policy(tmp_path):
 
 @pytest.mark.parametrize(
     "optimizer",
-    [(TorchPPOOptimizer, PPOSettings), (TorchSACOptimizer, SACSettings)],
-    ids=["ppo", "sac"],
+    [
+        (TorchPPOOptimizer, PPOSettings),
+        (TorchSACOptimizer, SACSettings),
+        (TorchCOMAOptimizer, PPOSettings),
+    ],
+    ids=["ppo", "sac", "coma2"],
 )
 def test_load_save_optimizer(tmp_path, optimizer):
     OptimizerClass, HyperparametersClass = optimizer

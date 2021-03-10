@@ -375,7 +375,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
         return update_stats
 
     def get_modules(self):
-        modules = {"Optimizer": self.optimizer}
+        modules = {"Optimizer:adam": self.optimizer, "Optimizer:critic": self._critic}
         for reward_provider in self.reward_signals.values():
             modules.update(reward_provider.get_modules())
         return modules
@@ -538,6 +538,29 @@ class TorchCOMAOptimizer(TorchOptimizer):
             next_baseline_mem,
         )
 
+    def get_trajectory_value_estimates(
+        self,
+        batch: AgentBuffer,
+        next_obs: List[np.ndarray],
+        done: bool,
+        agent_id: str = "",
+    ) -> Tuple[Dict[str, np.ndarray], Dict[str, float], Optional[AgentBufferField]]:
+        """
+        Override base class method. Unused in the trainer, but needed to make sure class heirarchy is maintained.
+        Assume that there are no group obs.
+        """
+        (
+            value_estimates,
+            _,
+            next_value_estimates,
+            all_next_value_mem,
+            _,
+        ) = self.get_trajectory_and_baseline_value_estimates(
+            batch, next_obs, [], done, agent_id
+        )
+
+        return value_estimates, next_value_estimates, all_next_value_mem
+
     def get_trajectory_and_baseline_value_estimates(
         self,
         batch: AgentBuffer,
@@ -552,6 +575,19 @@ class TorchCOMAOptimizer(TorchOptimizer):
         Optional[AgentBufferField],
         Optional[AgentBufferField],
     ]:
+        """
+        Get value estimates, baseline estimates, and memories for a trajectory, in batch form.
+        :param batch: An AgentBuffer that consists of a trajectory.
+        :param next_obs: the next observation (after the trajectory). Used for boostrapping
+            if this is not a termiinal trajectory.
+        :param next_group_obs: the next observations from other members of the group.
+        :param done: Set true if this is a terminal trajectory.
+        :param agent_id: Agent ID of the agent that this trajectory belongs to.
+        :returns: A Tuple of the Value Estimates as a Dict of [name, np.ndarray(trajectory_len)],
+            the baseline estimates as a Dict, the final value estimate as a Dict of [name, float], and
+            optionally (if using memories) an AgentBufferField of initial critic and baseline memories to be used
+            during update.
+        """
 
         n_obs = len(self.policy.behavior_spec.observation_specs)
 
