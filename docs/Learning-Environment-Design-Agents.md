@@ -962,10 +962,10 @@ m_AgentGroup.GroupEpisodeInterrupted();
 ResetScene();
 ```
 
-Multi Agent Groups are best used with the COMA2 trainer, which is explicitly designed to train
+Multi Agent Groups are best used with the MA-POCA trainer, which is explicitly designed to train
 cooperative environments. This can be enabled by using the `coma` trainer - see the
 [training configurations](Training-Configuration-File.md) doc for more information on
-configuring COMA2. When using COMA2, agents which are deactivated or removed from the Scene
+configuring MA-POCA. When using MA-POCA, agents which are deactivated or removed from the Scene
 during the episode will still learn to contribute to the group's long term rewards, even
 if they are not active in the scene to experience them.
 
@@ -975,7 +975,7 @@ should be given different Team Ids. If in the Scene there is one playing field a
 there should be two Groups, one for each team, and each team should be assigned a different
 Team Id. If this playing field is duplicated many times in the Scene (e.g. for training
 speedup), there should be two Groups _per playing field_, and two unique Team Ids
-_for the entire Scene_. In environments with both Groups and Team Ids configured, COMA2 and
+_for the entire Scene_. In environments with both Groups and Team Ids configured, MA-POCA and
 self-play can be used together for training.
 
 For an example of how to set up cooperative environments, see the

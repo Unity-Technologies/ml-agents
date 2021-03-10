@@ -13,8 +13,8 @@ and this project adheres to
 - The `SimpleMultiAgentGroup` class and `IMultiAgentGroup` interface have been added. These allow Agents to be given rewards and
   end episodes in groups. (#4923)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-- The COMA2 trainer has been added. This is a new trainer that enables Agents to learn how to work together in groups. Configure
-  `coma` as the trainer in the configuration YAML after implementing a `MultiAgentGroup` to use this feature. (#5005)
+- The MA-POCA trainer has been added. This is a new trainer that enables Agents to learn how to work together in groups. Configure
+  `poca` as the trainer in the configuration YAML after implementing a `MultiAgentGroup` to use this feature. (#5005)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
