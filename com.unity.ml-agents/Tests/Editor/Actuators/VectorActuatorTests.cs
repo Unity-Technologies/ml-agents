@@ -25,7 +25,10 @@ namespace Unity.MLAgents.Tests.Actuators
 
             public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
             {
-                actionMask.WriteMask(Branch, Mask);
+                foreach (var actionIndex in Mask)
+                {
+                    actionMask.SetActionEnabled(Branch, actionIndex, false);
+                }
             }
 
             public void Heuristic(in ActionBuffers actionBuffersOut)

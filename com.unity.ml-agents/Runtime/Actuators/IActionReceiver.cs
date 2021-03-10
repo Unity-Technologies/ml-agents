@@ -173,7 +173,7 @@ namespace Unity.MLAgents.Actuators
         /// </param>
         /// <remarks>
         /// When using Discrete Control, you can prevent the Agent from using a certain
-        /// action by masking it with <see cref="IDiscreteActionMask.WriteMask"/>.
+        /// action by masking it with <see cref="IDiscreteActionMask.SetActionEnabled"/>.
         ///
         /// See [Agents - Actions] for more information on masking actions.
         ///

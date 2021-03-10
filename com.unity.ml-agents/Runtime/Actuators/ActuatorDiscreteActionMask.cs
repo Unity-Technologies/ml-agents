@@ -35,18 +35,6 @@ namespace Unity.MLAgents.Actuators
         }
 
         /// <inheritdoc/>
-        public void WriteMask(int branch, IEnumerable<int> actionIndices)
-        {
-            LazyInitialize();
-
-            // Perform the masking
-            foreach (var actionIndex in actionIndices)
-            {
-                SetActionEnabled(branch, actionIndex, false);
-            }
-        }
-
-        /// <inheritdoc/>
         public void SetActionEnabled(int branch, int actionIndex, bool isEnabled)
         {
             LazyInitialize();
