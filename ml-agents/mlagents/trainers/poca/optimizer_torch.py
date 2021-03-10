@@ -36,6 +36,12 @@ logger = get_logger(__name__)
 
 class TorchPOCAOptimizer(TorchOptimizer):
     class POCAValueNetwork(torch.nn.Module, Critic):
+        """
+        The POCAValueNetwork uses the MultiAgentNetworkBody to compute the value
+        and POCA baseline for a variable number of agents in a group that all
+        share the same observation and action space.
+        """
+
         def __init__(
             self,
             stream_names: List[str],
@@ -69,7 +75,11 @@ class TorchPOCAOptimizer(TorchOptimizer):
             memories: Optional[torch.Tensor] = None,
             sequence_length: int = 1,
         ) -> Tuple[torch.Tensor, torch.Tensor]:
-
+            """
+            The POCA baseline marginalizes the action of the agent associated with self_obs.
+            It calls the forward pass of the MultiAgentNetworkBody with the state action
+            pairs of groupmates but just the state of the agent in question.
+            """
             encoding, memories = self.network_body(
                 obs_only=self_obs,
                 obs=obs,
@@ -88,7 +98,10 @@ class TorchPOCAOptimizer(TorchOptimizer):
             memories: Optional[torch.Tensor] = None,
             sequence_length: int = 1,
         ) -> Tuple[torch.Tensor, torch.Tensor]:
-
+            """
+            A centralized value function. It calls the forward pass of MultiAgentNetworkBody
+            with just the states of all agents.
+            """
             encoding, memories = self.network_body(
                 obs_only=obs,
                 obs=[],
