@@ -442,6 +442,8 @@ class SimpleActor(nn.Module, Actor):
                 self.is_continuous_int_deprecated,
                 self.act_size_vector_deprecated,
             ]
+        if self.network_body.memory_size > 0:
+            export_out += [memories_out]
         return tuple(export_out)
 
 

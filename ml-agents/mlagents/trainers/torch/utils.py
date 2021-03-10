@@ -222,6 +222,18 @@ class ModelUtils:
         return torch.as_tensor(np.asanyarray(ndarray_list), dtype=dtype)
 
     @staticmethod
+    def list_to_tensor_list(
+        ndarray_list: List[np.ndarray], dtype: Optional[torch.dtype] = torch.float32
+    ) -> torch.Tensor:
+        """
+        Converts a list of numpy arrays into a list of tensors. MUCH faster than
+        calling as_tensor on the list directly.
+        """
+        return [
+            torch.as_tensor(np.asanyarray(_arr), dtype=dtype) for _arr in ndarray_list
+        ]
+
+    @staticmethod
     def to_numpy(tensor: torch.Tensor) -> np.ndarray:
         """
         Converts a Torch Tensor to a numpy array. If the Tensor is on the GPU, it will
