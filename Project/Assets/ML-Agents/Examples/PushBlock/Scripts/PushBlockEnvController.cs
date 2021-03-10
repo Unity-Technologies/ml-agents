@@ -108,6 +108,9 @@ public class PushBlockEnvController : MonoBehaviour
             m_AgentGroup.GroupEpisodeInterrupted();
             ResetScene();
         }
+
+        //Hurry Up Penalty
+        m_AgentGroup.AddGroupReward(-0.5f / MaxEnvironmentSteps);
     }
 
     /// <summary>

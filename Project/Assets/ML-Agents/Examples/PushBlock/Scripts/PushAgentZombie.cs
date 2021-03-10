@@ -3,23 +3,41 @@
 using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
 
-public class PushAgentCollab : Agent
+public class PushAgentZombie : Agent
 {
 
+    public GameObject MyKey;
+    public bool IHaveAKey;
     private PushBlockSettings m_PushBlockSettings;
     private Rigidbody m_AgentRb;  //cached on initialization
-
-    void Awake()
-    {
-        m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
-    }
+    private ZombiePushBlockDeathEnvController m_GameController;
 
     public override void Initialize()
     {
-        // Cache the agent rb
+        m_GameController = GetComponentInParent<ZombiePushBlockDeathEnvController>();
         m_AgentRb = GetComponent<Rigidbody>();
+        m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
+        MyKey.SetActive(false);
+        IHaveAKey = false;
+    }
+
+    public override void OnEpisodeBegin()
+    {
+        MyKey.SetActive(false);
+        IHaveAKey = false;
+    }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        // if (useVectorObs)
+        // {
+        sensor.AddObservation(IHaveAKey);
+        // sensor.AddObservation(m_GameController.PlayerDict[this].HoldingSwitch);
+        // sensor.AddObservation(m_GameController.PlayerDict[this].Scored);
+        // }
     }
 
     /// <summary>
@@ -62,13 +80,42 @@ public class PushAgentCollab : Agent
     /// Called every step of the engine. Here the agent takes an action.
     /// </summary>
     public override void OnActionReceived(ActionBuffers actionBuffers)
-
     {
         // Move the agent using the action.
         MoveAgent(actionBuffers.DiscreteActions);
+    }
 
-        // // Penalty given each step to encourage agent to finish task quickly.
-        // AddReward(-1f / 15000);
+    void OnCollisionEnter(Collision col)
+    {
+        if (col.transform.CompareTag("lock"))
+        {
+            if (IHaveAKey)
+            {
+                m_GameController.UnlockBlock(col.transform);
+                MyKey.SetActive(false);
+                IHaveAKey = false;
+            }
+        }
+        if (col.transform.CompareTag("zombie"))
+        {
+            m_GameController.KilledByZombie(this, col);
+            MyKey.SetActive(false);
+            IHaveAKey = false;
+        }
+    }
+
+    void OnTriggerEnter(Collider col)
+    {
+        //if we find a key and it's parent is the main platform we can pick it up
+        // if (col.transform.CompareTag("key"))
+        if (col.transform.CompareTag("key") && col.transform.parent == transform.parent && gameObject.activeInHierarchy)
+        {
+            print("picked up key");
+            MyKey.SetActive(true);
+            IHaveAKey = true;
+            col.gameObject.SetActive(false);
+            // DestroyImmediate(col.gameObject);
+        }
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

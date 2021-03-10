@@ -36,6 +36,8 @@ TagManager:
   - blockSmall
   - door
   - switch
+  - key
+  - lock
   layers:
   - Default
   - TransparentFX

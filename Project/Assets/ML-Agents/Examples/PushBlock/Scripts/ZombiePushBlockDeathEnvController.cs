@@ -6,9 +6,9 @@ using UnityEngine;
 public class ZombiePushBlockDeathEnvController : MonoBehaviour
 {
     [System.Serializable]
-    public class AgentInfo
+    public class PlayerInfo
     {
-        public PushAgentCollab Agent;
+        public PushAgentZombie Agent;
         [HideInInspector]
         public Vector3 StartingPos;
         [HideInInspector]
@@ -31,19 +31,22 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         public Rigidbody Rb;
         [HideInInspector]
         public Collider Col;
+        public Transform T;
+        public bool IsDead;
     }
 
-    [System.Serializable]
-    public class BlockInfo
-    {
-        public Transform T;
-        [HideInInspector]
-        public Vector3 StartingPos;
-        [HideInInspector]
-        public Quaternion StartingRot;
-        [HideInInspector]
-        public Rigidbody Rb;
-    }
+    // [System.Serializable]
+    // public class BlockInfo
+    // {
+    //     public Transform T;
+    //     [HideInInspector]
+    //     public Vector3 StartingPos;
+    //     [HideInInspector]
+    //     public Quaternion StartingRot;
+    //     [HideInInspector]
+    //     public Rigidbody Rb;
+    //     public Transform LockedBlock;
+    // }
 
     /// <summary>
     /// Max Academy steps before this platform resets
@@ -62,7 +65,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     /// </summary>
     public GameObject ground;
 
-    public GameObject area;
+    // public GameObject area;
 
     Material m_GroundMaterial; //cached on Awake()
 
@@ -71,17 +74,26 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     /// </summary>
     Renderer m_GroundRenderer;
 
-    public List<AgentInfo> AgentsList = new List<AgentInfo>();
+    public List<PlayerInfo> AgentsList = new List<PlayerInfo>();
     public List<ZombieInfo> ZombiesList = new List<ZombieInfo>();
-    public List<BlockInfo> BlocksList = new List<BlockInfo>();
+    // public List<BlockInfo> BlocksList = new List<BlockInfo>();
 
     public bool UseRandomAgentRotation = true;
     public bool UseRandomAgentPosition = true;
-    public bool UseRandomBlockRotation = true;
-    public bool UseRandomBlockPosition = true;
+    // public bool UseRandomBlockRotation = true;
+    // public bool UseRandomBlockPosition = true;
     PushBlockSettings m_PushBlockSettings;
 
     private int m_NumberOfRemainingBlocks;
+    public GameObject Key;
+    public GameObject LockedBlock;
+    public Rigidbody UnlockedBlock;
+
+
+    public Dictionary<Transform, PlayerInfo> m_AgentsDict = new Dictionary<Transform, PlayerInfo>();
+    public Dictionary<Transform, ZombieInfo> m_ZombiesDict = new Dictionary<Transform, ZombieInfo>();
+    // public Dictionary<Transform, BlockInfo> m_BlocksDict = new Dictionary<Transform, BlockInfo>();
+    private SimpleMultiAgentGroup m_AgentGroup;
 
     void Start()
     {
@@ -93,70 +105,112 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         // Starting material
         m_GroundMaterial = m_GroundRenderer.material;
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
-        foreach (var item in BlocksList)
-        {
-            item.StartingPos = item.T.transform.position;
-            item.StartingRot = item.T.transform.rotation;
-            item.Rb = item.T.GetComponent<Rigidbody>();
-        }
+
+        //Lock The Block
+        LockTheBlock();
+
+        //Hide The Key
+        Key.SetActive(false);
+
+        // foreach (var item in BlocksList)
+        // {
+        //     item.StartingPos = item.T.transform.position;
+        //     item.StartingRot = item.T.transform.rotation;
+        //     item.Rb = item.T.GetComponent<Rigidbody>();
+        //     m_BlocksDict.Add(item.T, item);
+        // }
+
         // Initialize TeamManager
-        // m_TeamManager = new PushBlockTeamManager();
+        m_AgentGroup = new SimpleMultiAgentGroup();
         foreach (var item in AgentsList)
         {
             item.StartingPos = item.Agent.transform.position;
             item.StartingRot = item.Agent.transform.rotation;
             item.Rb = item.Agent.GetComponent<Rigidbody>();
             item.Col = item.Agent.GetComponent<Collider>();
+            m_AgentsDict.Add(item.Agent.transform, item);
             // Add to team manager
-            // item.Agent.SetTeamManager(m_TeamManager);
+            m_AgentGroup.RegisterAgent(item.Agent);
         }
         foreach (var item in ZombiesList)
         {
             item.StartingPos = item.Agent.transform.position;
             item.StartingRot = item.Agent.transform.rotation;
+            item.T = item.Agent.transform;
             item.Col = item.Agent.GetComponent<Collider>();
+            m_ZombiesDict.Add(item.T, item);
         }
 
         ResetScene();
-
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
         m_ResetTimer += 1;
-        if (m_ResetTimer > MaxEnvironmentSteps)
+        if (m_ResetTimer >= MaxEnvironmentSteps && MaxEnvironmentSteps > 0)
         {
+            m_AgentGroup.GroupEpisodeInterrupted();
             ResetScene();
         }
     }
 
-    //Kill/disable an agent
-    public void KillAgent(Collision col, Transform t)
-    {
-        print($"zombie {t.name} ate {col.collider.name}");
-        //Disable killed Agent
-        foreach (var item in AgentsList)
-        {
-            if (item.Col == col.collider)
-            {
-                item.Agent.EndEpisode();
-                item.Col.gameObject.SetActive(false);
-                break;
-            }
-        }
+    // // public Dictionary<Agent>
+    // //Kill/disable an agent
+    // public void KillAgent(Collision col, Transform t)
+    // {
+    //     print($"zombie {t.name} ate {col.collider.name}");
+    //     //Disable killed Agent
+    //     foreach (var item in AgentsList)
+    //     {
+    //         if (item.Col == col.collider)
+    //         {
+    //             item.Agent.EndEpisode();
+    //             item.Col.gameObject.SetActive(false);
+    //             break;
+    //         }
+    //     }
+    //
+    //     //End Episode
+    //     foreach (var item in ZombiesList)
+    //     {
+    //         if (item.Agent.transform == t)
+    //         {
+    //             KillZombie(item);
+    //             break;
+    //         }
+    //     }
+    // }
 
-        //End Episode
-        foreach (var item in ZombiesList)
-        {
-            if (item.Agent.transform == t)
-            {
-                item.Agent.gameObject.SetActive(false);
-                break;
-            }
-        }
+    public void UnlockBlock(Transform blockT)
+    {
+        LockedBlock.SetActive(false);
+        UnlockedBlock.velocity = Vector3.zero;
+        UnlockedBlock.angularVelocity = Vector3.zero;
+        UnlockedBlock.transform.SetPositionAndRotation(blockT.position, blockT.rotation);
+        UnlockedBlock.gameObject.SetActive(true);
     }
 
+    public void LockTheBlock()
+    {
+        LockedBlock.SetActive(true);
+        UnlockedBlock.velocity = Vector3.zero;
+        UnlockedBlock.angularVelocity = Vector3.zero;
+        UnlockedBlock.transform.SetPositionAndRotation(LockedBlock.transform.position, LockedBlock.transform.rotation);
+        UnlockedBlock.gameObject.SetActive(false);
+    }
+
+    public void KilledByZombie(PushAgentZombie agent, Collision zombCol)
+    {
+        zombCol.gameObject.SetActive(false);
+        agent.EndEpisode();
+        agent.gameObject.SetActive(false);
+        print($"zombie {zombCol.gameObject.name} ate {agent.transform.name}");
+        //Spawn the Key Pickup
+        Key.transform.SetPositionAndRotation(zombCol.collider.transform.position, zombCol.collider.transform.rotation);
+        Key.SetActive(true);
+        // Instantiate(KeyPrefab, zombCol.collider.transform.position, zombCol.collider.transform.rotation, transform);
+    }
 
     /// <summary>
     /// Use the ground's bounds to pick a random spawn position.
@@ -182,22 +236,6 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     }
 
     /// <summary>
-    /// Resets the block position and velocities.
-    /// </summary>
-    void ResetBlock(BlockInfo block)
-    {
-        // Get a random position for the block.
-        block.T.position = GetRandomSpawnPos();
-
-        // Reset block velocity back to zero.
-        block.Rb.velocity = Vector3.zero;
-
-        // Reset block angularVelocity back to zero.
-        block.Rb.angularVelocity = Vector3.zero;
-    }
-
-
-    /// <summary>
     /// Swap ground material, wait time seconds, then swap back to the regular material.
     /// </summary>
     IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
@@ -212,42 +250,23 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     /// </summary>
     public void ScoredAGoal(Collider col, float score)
     {
-        // //Decrement the counter
-        // m_NumberOfRemainingBlocks--;
-        //
-        // //Are we done?
-        // bool done = m_NumberOfRemainingBlocks == 0;
-        //
-        // //Disable the block
-        // col.gameObject.SetActive(false);
+        print($"Scored {score} on {gameObject.name}");
 
         //Give Agent Rewards
-        foreach (var item in AgentsList)
-        {
-            if (item.Agent.gameObject.activeInHierarchy)
-            {
-                print($"{item.Agent.name} scored");
-                item.Agent.AddReward(score);
-            }
-        }
+        m_AgentGroup.AddGroupReward(score);
+        // m_AgentGroup.EndGroupEpisode();
 
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
-
-        // if (done)
-        // {
-        //Reset assets
         ResetScene();
-        // }
     }
 
     public void ZombieTouchedBlock()
     {
-        //Give Agent Rewards
-        foreach (var item in AgentsList)
-        {
-            item.Agent.AddReward(-1);
-        }
+        //Give Agents Penalties
+        m_AgentGroup.AddGroupReward(-1);
+        // m_AgentGroup.EndGroupEpisode();
+
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.failMaterial, 0.5f));
         ResetScene();
@@ -261,22 +280,15 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
 
     void ResetScene()
     {
+
+        //Reset counter
         m_ResetTimer = 0;
 
         //Random platform rot
         var rotation = Random.Range(0, 4);
         var rotationAngle = rotation * 90f;
-        area.transform.Rotate(new Vector3(0f, rotationAngle, 0f));
+        transform.Rotate(new Vector3(0f, rotationAngle, 0f));
 
-        //End Episode
-        foreach (var item in AgentsList)
-        {
-            if (!item.Agent)
-            {
-                return;
-            }
-            item.Agent.EndEpisode();
-        }
         //Reset Agents
         foreach (var item in AgentsList)
         {
@@ -286,20 +298,19 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.Agent.transform.SetPositionAndRotation(pos, rot);
             item.Rb.velocity = Vector3.zero;
             item.Rb.angularVelocity = Vector3.zero;
+            item.Agent.MyKey.SetActive(false);
+            item.Agent.IHaveAKey = false;
             item.Agent.gameObject.SetActive(true);
         }
 
         //Reset Blocks
-        foreach (var item in BlocksList)
-        {
-            var pos = UseRandomBlockPosition ? GetRandomSpawnPos() : item.StartingPos;
-            var rot = UseRandomBlockRotation ? GetRandomRot() : item.StartingRot;
+        LockedBlock.transform.position = GetRandomSpawnPos();
+        LockedBlock.transform.rotation = GetRandomRot();
+        LockTheBlock();
 
-            item.T.transform.SetPositionAndRotation(pos, rot);
-            item.Rb.velocity = Vector3.zero;
-            item.Rb.angularVelocity = Vector3.zero;
-            item.T.gameObject.SetActive(true);
-        }
+        //Reset Key
+        Key.SetActive(false);
+
         //End Episode
         foreach (var item in ZombiesList)
         {
@@ -313,8 +324,68 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.Agent.gameObject.SetActive(true);
         }
 
-        //Reset counter
-        m_NumberOfRemainingBlocks = BlocksList.Count;
-        // m_NumberOfRemainingBlocks = 2;
+
+        m_AgentGroup.EndGroupEpisode();
+
     }
+
+    // void ResetScene()
+    // {
+    //     m_ResetTimer = 0;
+    //
+    //     //Random platform rot
+    //     var rotation = Random.Range(0, 4);
+    //     var rotationAngle = rotation * 90f;
+    //     transform.Rotate(new Vector3(0f, rotationAngle, 0f));
+    //
+    //     //End Episode
+    //     foreach (var item in AgentsList)
+    //     {
+    //         if (!item.Agent)
+    //         {
+    //             return;
+    //         }
+    //         item.Agent.EndEpisode();
+    //     }
+    //     //Reset Agents
+    //     foreach (var item in AgentsList)
+    //     {
+    //         var pos = UseRandomAgentPosition ? GetRandomSpawnPos() : item.StartingPos;
+    //         var rot = UseRandomAgentRotation ? GetRandomRot() : item.StartingRot;
+    //
+    //         item.Agent.transform.SetPositionAndRotation(pos, rot);
+    //         item.Rb.velocity = Vector3.zero;
+    //         item.Rb.angularVelocity = Vector3.zero;
+    //         item.Agent.gameObject.SetActive(true);
+    //     }
+    //
+    //     //Reset Blocks
+    //     foreach (var item in BlocksList)
+    //     {
+    //         var pos = UseRandomBlockPosition ? GetRandomSpawnPos() : item.StartingPos;
+    //         var rot = UseRandomBlockRotation ? GetRandomRot() : item.StartingRot;
+    //
+    //         item.T.transform.SetPositionAndRotation(pos, rot);
+    //         item.Rb.velocity = Vector3.zero;
+    //         item.Rb.angularVelocity = Vector3.zero;
+    //         item.T.gameObject.SetActive(true);
+    //         // BlockIsLocked(item, true);
+    //     }
+    //     //End Episode
+    //     foreach (var item in ZombiesList)
+    //     {
+    //         if (!item.Agent)
+    //         {
+    //             return;
+    //         }
+    //         // item.Agent.EndEpisode();
+    //         item.Agent.transform.SetPositionAndRotation(item.StartingPos, item.StartingRot);
+    //         item.Agent.SetRandomWalkSpeed();
+    //         item.Agent.gameObject.SetActive(true);
+    //     }
+    //
+    //     //Reset counter
+    //     m_NumberOfRemainingBlocks = BlocksList.Count;
+    //     // m_NumberOfRemainingBlocks = 2;
+    // }
 }
