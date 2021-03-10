@@ -1,6 +1,6 @@
 # # Unity ML-Agents Toolkit
-# ## ML-Agents Learning (COMA2)
-# Contains an implementation of COMA2.
+# ## ML-Agents Learning (POCA)
+# Contains an implementation of MA-POCA.
 
 from collections import defaultdict
 from typing import cast, Dict
@@ -14,7 +14,7 @@ from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.policy.torch_policy import TorchPolicy
-from mlagents.trainers.coma.optimizer_torch import TorchCOMAOptimizer
+from mlagents.trainers.coma.optimizer_torch import TorchPOCAOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
@@ -22,8 +22,8 @@ from mlagents.trainers.settings import TrainerSettings, PPOSettings
 logger = get_logger(__name__)
 
 
-class COMATrainer(RLTrainer):
-    """The COMATrainer is an implementation of the COMA2 algorithm."""
+class POCATrainer(RLTrainer):
+    """The POCATrainer is an implementation of the MA-POCA algorithm."""
 
     def __init__(
         self,
@@ -263,8 +263,8 @@ class COMATrainer(RLTrainer):
         )
         return policy
 
-    def create_coma_optimizer(self) -> TorchCOMAOptimizer:
-        return TorchCOMAOptimizer(self.policy, self.trainer_settings)
+    def create_poca_optimizer(self) -> TorchPOCAOptimizer:
+        return TorchPOCAOptimizer(self.policy, self.trainer_settings)
 
     def add_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
@@ -278,7 +278,7 @@ class COMATrainer(RLTrainer):
             raise RuntimeError(f"policy {policy} must be an instance of TorchPolicy.")
         self.policy = policy
         self.policies[parsed_behavior_id.behavior_id] = policy
-        self.optimizer = self.create_coma_optimizer()
+        self.optimizer = self.create_poca_optimizer()
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 

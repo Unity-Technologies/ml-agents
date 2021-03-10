@@ -113,7 +113,7 @@ def test_multinetworkbody_vector(with_actions):
     )
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-3)
     sample_obs = [[0.1 * torch.ones((1, obs_size))] for _ in range(n_agents)]
-    # simulate baseline in COMA
+    # simulate baseline in POCA
     sample_act = [
         AgentAction(
             0.1 * torch.ones((1, 2)), [0.1 * torch.ones(1) for _ in range(act_size)]
@@ -157,7 +157,7 @@ def test_multinetworkbody_lstm(with_actions):
     )
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-4)
     sample_obs = [[0.1 * torch.ones((seq_len, obs_size))] for _ in range(n_agents)]
-    # simulate baseline in COMA
+    # simulate baseline in POCA
     sample_act = [
         AgentAction(
             0.1 * torch.ones((seq_len, 2)),
@@ -211,7 +211,7 @@ def test_multinetworkbody_visual(with_actions):
         [0.1 * torch.ones((1, obs_size))] + [0.1 * torch.ones((1, 84, 84, 3))]
         for _ in range(n_agents)
     ]
-    # simulate baseline in COMA
+    # simulate baseline in POCA
     sample_act = [
         AgentAction(
             0.1 * torch.ones((1, 2)), [0.1 * torch.ones(1) for _ in range(act_size)]
