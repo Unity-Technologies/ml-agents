@@ -224,7 +224,7 @@ def main():
 
     package_version = get_python_package_version()
     print(f"Release tag: {release_tag}")
-    print(f"Release tag: {package_version}")
+    print(f"Python package version: {package_version}")
     release_allow_pattern = re.compile(f"{release_tag}(_docs)?")
     pip_allow_pattern = re.compile(
         f"python -m pip install mlagents(_envs)?=={package_version}"
