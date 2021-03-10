@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
@@ -15,6 +16,8 @@ namespace Unity.MLAgents.Editor
         const string k_SettingsPath = "Project/ML Agents";
         const string k_CustomSettingsPath = "Assets/MLAgents.settings.asset";
         private static MLAgentsSettingsProvider s_Instance;
+        private string[] m_AvailableInputSettingsAssets;
+        private GUIContent[] m_AvailableSettingsAssetsOptions;
         private SerializedObject m_SettingsObject;
         [SerializeField]
         private MLAgentsSettings m_Settings;
@@ -52,6 +55,25 @@ namespace Unity.MLAgents.Editor
         public static bool IsSettingsAvailable()
         {
             return File.Exists(k_CustomSettingsPath);
+        }
+
+        public override void OnTitleBarGUI()
+        {
+            if (EditorGUILayout.DropdownButton(EditorGUIUtility.IconContent("_Popup"), FocusType.Passive, EditorStyles.label))
+            {
+                var menu = new GenericMenu();
+                menu.AddDisabledItem(new GUIContent("Available Settings Assets:"));
+                menu.AddSeparator("");
+                for (var i = 0; i < m_AvailableSettingsAssetsOptions.Length; i++)
+                    menu.AddItem(new GUIContent(m_AvailableSettingsAssetsOptions[i]), m_CurrentSelectedInputSettingsAsset == i, (path) =>
+                    {
+                        InputSystem.settings = AssetDatabase.LoadAssetAtPath<InputSettings>((string)path);
+                    }, m_AvailableInputSettingsAssets[i]);
+                menu.AddSeparator("");
+                menu.AddItem(new GUIContent("New Settings Asset…"), false, CreateNewSettingsAsset);
+                menu.ShowAsContext();
+                Event.current.Use();
+            }
         }
 
         public override void OnGUI(string searchContext)
@@ -93,14 +115,47 @@ namespace Unity.MLAgents.Editor
 
         internal void InitializeWithCurrentSettings()
         {
+            // Find the set of available assets in the project.
+            m_AvailableInputSettingsAssets = FindSettingsInProject();
+
             m_Settings = MLAgentsSettings.Instance;
             var currentSettingsPath = AssetDatabase.GetAssetPath(m_Settings);
-            if (IsSettingsAvailable())
+
+            if (string.IsNullOrEmpty(currentSettingsPath))
             {
-                m_Settings = AssetDatabase.LoadAssetAtPath<MLAgentsSettings>(k_CustomSettingsPath);
-                MLAgentsSettings.Instance = m_Settings;
+                if (m_AvailableInputSettingsAssets.Length != 0)
+                {
+                    m_CurrentSelectedInputSettingsAsset = 0;
+                    m_Settings = AssetDatabase.LoadAssetAtPath<InputSettings>(m_AvailableInputSettingsAssets[0]);
+                    InputSystem.settings = m_Settings;
+                }
             }
+            else
+            {
+                m_CurrentSelectedInputSettingsAsset = ArrayHelpers.IndexOf(m_AvailableInputSettingsAssets, currentSettingsPath);
+                if (m_CurrentSelectedInputSettingsAsset == -1)
+                {
+                    // This is odd and shouldn't happen. Solve by just adding the path to the list.
+                    m_CurrentSelectedInputSettingsAsset =
+                        ArrayHelpers.Append(ref m_AvailableInputSettingsAssets, currentSettingsPath);
+                }
+
+                ////REVIEW: should we store this by platform?
+                EditorBuildSettings.AddConfigObject(kEditorBuildSettingsConfigKey, m_Settings, true);
+            }
+
+            // if (IsSettingsAvailable())
+            // {
+            //     m_Settings = AssetDatabase.LoadAssetAtPath<MLAgentsSettings>(k_CustomSettingsPath);
+            //     MLAgentsSettings.Instance = m_Settings;
+            // }
             m_SettingsObject = new SerializedObject(m_Settings);
+        }
+
+        private static string[] FindSettingsInProject()
+        {
+            var guids = AssetDatabase.FindAssets("t:MLAgentsSettings");
+            return guids.Select(guid => AssetDatabase.GUIDToAssetPath(guid)).ToArray();
         }
 
         private void OnSettingsChange()
