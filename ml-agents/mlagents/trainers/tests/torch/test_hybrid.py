@@ -45,10 +45,15 @@ def test_hybrid_visual_ppo(num_visual):
         [BRAIN_NAME], num_visual=num_visual, num_vector=0, action_sizes=(1, 1)
     )
     new_hyperparams = attr.evolve(
-        PPO_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4
+        PPO_TORCH_CONFIG.hyperparameters,
+        batch_size=64,
+        buffer_size=1024,
+        learning_rate=1e-4,
     )
-    config = attr.evolve(PPO_TORCH_CONFIG, hyperparameters=new_hyperparams)
-    check_environment_trains(env, {BRAIN_NAME: config}, training_seed=1336)
+    config = attr.evolve(
+        PPO_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=8000
+    )
+    check_environment_trains(env, {BRAIN_NAME: config})
 
 
 @pytest.mark.check_environment_trains
@@ -85,7 +90,7 @@ def test_hybrid_sac(action_size):
         buffer_init_steps=0,
     )
     config = attr.evolve(
-        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=2200
+        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=6000
     )
     check_environment_trains(
         env, {BRAIN_NAME: config}, success_threshold=0.9, training_seed=1336
