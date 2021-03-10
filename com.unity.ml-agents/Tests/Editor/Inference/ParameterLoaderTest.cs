@@ -21,10 +21,11 @@ namespace Unity.MLAgents.Tests
 
         public override int[] GetObservationShape()
         {
-            return Sensor.GetObservationShape();
+            var shape = Sensor.GetObservationSpec().Shape;
+            return new int[] { shape[0], shape[1], shape[2] };
         }
     }
-    public class Test3DSensor : ISensor, IBuiltInSensor, IDimensionPropertiesSensor
+    public class Test3DSensor : ISensor, IBuiltInSensor
     {
         int m_Width;
         int m_Height;
@@ -41,9 +42,9 @@ namespace Unity.MLAgents.Tests
             m_Name = name;
         }
 
-        public int[] GetObservationShape()
+        public ObservationSpec GetObservationSpec()
         {
-            return new[] { m_Height, m_Width, m_Channels };
+            return ObservationSpec.Visual(m_Height, m_Width, m_Channels);
         }
 
         public int Write(ObservationWriter writer)
@@ -76,16 +77,6 @@ namespace Unity.MLAgents.Tests
         public BuiltInSensorType GetBuiltInSensorType()
         {
             return (BuiltInSensorType)k_BuiltInSensorType;
-        }
-
-        public DimensionProperty[] GetDimensionProperties()
-        {
-            return new[]
-            {
-                DimensionProperty.TranslationalEquivariance,
-                DimensionProperty.TranslationalEquivariance,
-                DimensionProperty.None
-            };
         }
     }
 

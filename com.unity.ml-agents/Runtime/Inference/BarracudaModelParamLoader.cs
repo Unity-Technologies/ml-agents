@@ -186,7 +186,7 @@ namespace Unity.MLAgents.Inference
             for (var sensorIndex = 0; sensorIndex < sensors.Length; sensorIndex++)
             {
                 var sensor = sensors[sensorIndex];
-                if (sensor.GetObservationShape().Length == 3)
+                if (sensor.GetObservationSpec().Shape.Length == 3)
                 {
                     if (!tensorsNames.Contains(
                         TensorNames.GetVisualObservationName(visObsIndex)))
@@ -198,7 +198,7 @@ namespace Unity.MLAgents.Inference
                     }
                     visObsIndex++;
                 }
-                if (sensor.GetObservationShape().Length == 2)
+                if (sensor.GetObservationSpec().Shape.Length == 2)
                 {
                     if (!tensorsNames.Contains(
                         TensorNames.GetObservationName(sensorIndex)))
@@ -354,7 +354,7 @@ namespace Unity.MLAgents.Inference
         static FailedCheck CheckVisualObsShape(
             TensorProxy tensorProxy, ISensor sensor)
         {
-            var shape = sensor.GetObservationShape();
+            var shape = sensor.GetObservationSpec().Shape;
             var heightBp = shape[0];
             var widthBp = shape[1];
             var pixelBp = shape[2];
@@ -383,7 +383,7 @@ namespace Unity.MLAgents.Inference
         static FailedCheck CheckRankTwoObsShape(
             TensorProxy tensorProxy, ISensor sensor)
         {
-            var shape = sensor.GetObservationShape();
+            var shape = sensor.GetObservationSpec().Shape;
             var dim1Bp = shape[0];
             var dim2Bp = shape[1];
             var dim1T = tensorProxy.Channels;
@@ -478,14 +478,14 @@ namespace Unity.MLAgents.Inference
             for (var sensorIndex = 0; sensorIndex < sensors.Length; sensorIndex++)
             {
                 var sens = sensors[sensorIndex];
-                if (sens.GetObservationShape().Length == 3)
+                if (sens.GetObservationSpec().Shape.Length == 3)
                 {
 
                     tensorTester[TensorNames.GetVisualObservationName(visObsIndex)] =
                         (bp, tensor, scs, i) => CheckVisualObsShape(tensor, sens);
                     visObsIndex++;
                 }
-                if (sens.GetObservationShape().Length == 2)
+                if (sens.GetObservationSpec().Shape.Length == 2)
                 {
                     tensorTester[TensorNames.GetObservationName(sensorIndex)] =
                         (bp, tensor, scs, i) => CheckRankTwoObsShape(tensor, sens);
@@ -542,9 +542,9 @@ namespace Unity.MLAgents.Inference
             var totalVectorSensorSize = 0;
             foreach (var sens in sensors)
             {
-                if ((sens.GetObservationShape().Length == 1))
+                if ((sens.GetObservationSpec().Shape.Length == 1))
                 {
-                    totalVectorSensorSize += sens.GetObservationShape()[0];
+                    totalVectorSensorSize += sens.GetObservationSpec().Shape[0];
                 }
             }
 
@@ -553,9 +553,9 @@ namespace Unity.MLAgents.Inference
                 var sensorSizes = "";
                 foreach (var sensorComp in sensors)
                 {
-                    if (sensorComp.GetObservationShape().Length == 1)
+                    if (sensorComp.GetObservationSpec().Shape.Length == 1)
                     {
-                        var vecSize = sensorComp.GetObservationShape()[0];
+                        var vecSize = sensorComp.GetObservationSpec().Shape[0];
                         if (sensorSizes.Length == 0)
                         {
                             sensorSizes = $"[{vecSize}";
@@ -616,17 +616,17 @@ namespace Unity.MLAgents.Inference
             for (var sensorIndex = 0; sensorIndex < sensors.Length; sensorIndex++)
             {
                 var sens = sensors[sensorIndex];
-                if (sens.GetObservationShape().Length == 3)
+                if (sens.GetObservationSpec().Rank == 3)
                 {
                     tensorTester[TensorNames.GetObservationName(sensorIndex)] =
                         (bp, tensor, scs, i) => CheckVisualObsShape(tensor, sens);
                 }
-                if (sens.GetObservationShape().Length == 2)
+                if (sens.GetObservationSpec().Rank == 2)
                 {
                     tensorTester[TensorNames.GetObservationName(sensorIndex)] =
                         (bp, tensor, scs, i) => CheckRankTwoObsShape(tensor, sens);
                 }
-                if (sens.GetObservationShape().Length == 1)
+                if (sens.GetObservationSpec().Rank == 1)
                 {
                     tensorTester[TensorNames.GetObservationName(sensorIndex)] =
                         (bp, tensor, scs, i) => CheckRankOneObsShape(tensor, sens);

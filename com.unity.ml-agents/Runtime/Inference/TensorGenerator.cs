@@ -106,8 +106,7 @@ namespace Unity.MLAgents.Inference
                 for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
                 {
                     var sensor = sensors[sensorIndex];
-                    var shape = sensor.GetObservationShape();
-                    var rank = shape.Length;
+                    var rank = sensor.GetObservationSpec().Rank;
                     ObservationGenerator obsGen = null;
                     string obsGenName = null;
                     switch (rank)
@@ -143,6 +142,12 @@ namespace Unity.MLAgents.Inference
             }
             if (m_ApiVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
             {
+                var sensor = sensors[sensorIndex];
+                var shape = sensor.GetObservationSpec().Shape;
+                var rank = shape.Length;
+                ObservationGenerator obsGen = null;
+                string obsGenName = null;
+                switch (rank)
                 for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
                 {
                     var obsGen = new ObservationGenerator(allocator);
