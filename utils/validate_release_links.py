@@ -13,7 +13,7 @@ RELEASE_PATTERN = re.compile(r"release_[0-9]+(_docs)*")
 # It matches "mlagents" and "mlagents_envs", accessible as group "package"
 # and optionally matches the version, e.g. "==1.2.3"
 PIP_INSTALL_PATTERN = re.compile(
-    r"(python -m )?pip3* install (?P<package>mlagents(_envs)?)(==[0-9]\.[0-9]\.[0-9])?"
+    r"(python -m )?pip3* install (?P<package>mlagents(_envs)?)(==[0-9]\.[0-9]\.[0-9](\.dev[0-9]+)?)?"
 )
 TRAINER_INIT_FILE = "ml-agents/mlagents/trainers/__init__.py"
 
@@ -82,7 +82,7 @@ def test_pip_pattern():
 def update_pip_install_line(line, package_verion):
     match = PIP_INSTALL_PATTERN.search(line)
     package_name = match.group("package")
-    replacement_version = f"python -m pip install {package_name}={package_verion}"
+    replacement_version = f"python -m pip install {package_name}=={package_verion}"
     updated = PIP_INSTALL_PATTERN.sub(replacement_version, line)
     return updated
 
