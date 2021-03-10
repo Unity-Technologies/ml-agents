@@ -50,8 +50,8 @@ _SAC_CONFIG = TrainerSettings(
     threaded=False,
 )
 
-_COMA_CONFIG = TrainerSettings(
-    trainer_type=TrainerType.COMA,
+_POCA_CONFIG = TrainerSettings(
+    trainer_type=TrainerType.POCA,
     hyperparameters=PPOSettings(
         learning_rate=5.0e-3,
         learning_rate_schedule=ScheduleType.CONSTANT,
@@ -73,8 +73,8 @@ def sac_dummy_config():
     return copy.deepcopy(_SAC_CONFIG)
 
 
-def coma_dummy_config():
-    return copy.deepcopy(_COMA_CONFIG)
+def poca_dummy_config():
+    return copy.deepcopy(_POCA_CONFIG)
 
 
 @pytest.fixture
