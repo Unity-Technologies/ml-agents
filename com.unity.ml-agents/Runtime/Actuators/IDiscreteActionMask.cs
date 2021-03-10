@@ -10,6 +10,7 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Set whether or not the action index for the given branch is allowed.
         /// </summary>
+        /// <remarks>
         /// By default, all discrete actions are allowed.
         /// If isEnabled is false, the agent will not be able to perform the actions passed as argument
         /// at the next decision for the specified action branch. The actionIndex correspond

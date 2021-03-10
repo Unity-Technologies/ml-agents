@@ -14,8 +14,8 @@ namespace Unity.MLAgents.Tests
         {
 
             var bufferSensor = new BufferSensor(20, 4, "testName");
-            var shape = bufferSensor.GetObservationShape();
-            var dimProp = bufferSensor.GetDimensionProperties();
+            var shape = bufferSensor.GetObservationSpec().Shape;
+            var dimProp = bufferSensor.GetObservationSpec().DimensionProperties;
             Assert.AreEqual(shape[0], 20);
             Assert.AreEqual(shape[1], 4);
             Assert.AreEqual(shape.Length, 2);
@@ -29,7 +29,7 @@ namespace Unity.MLAgents.Tests
             var obsWriter = new ObservationWriter();
             var obs = bufferSensor.GetObservationProto(obsWriter);
 
-            Assert.AreEqual(shape, obs.Shape);
+            Assert.AreEqual(shape, InplaceArray<int>.FromList(obs.Shape));
             Assert.AreEqual(obs.DimensionProperties.Count, 2);
             Assert.AreEqual((int)dimProp[0], obs.DimensionProperties[0]);
             Assert.AreEqual((int)dimProp[1], obs.DimensionProperties[1]);

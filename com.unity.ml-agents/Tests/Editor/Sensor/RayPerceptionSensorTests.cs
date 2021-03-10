@@ -96,11 +96,11 @@ namespace Unity.MLAgents.Tests
                 var sensor = perception.CreateSensor();
 
                 var expectedObs = (2 * perception.RaysPerDirection + 1) * (perception.DetectableTags.Count + 2);
-                Assert.AreEqual(sensor.GetObservationShape()[0], expectedObs);
+                Assert.AreEqual(sensor.GetObservationSpec().Shape[0], expectedObs);
                 var outputBuffer = new float[expectedObs];
 
                 ObservationWriter writer = new ObservationWriter();
-                writer.SetTarget(outputBuffer, sensor.GetObservationShape(), 0);
+                writer.SetTarget(outputBuffer, sensor.GetObservationSpec(), 0);
 
                 var numWritten = sensor.Write(writer);
                 Assert.AreEqual(numWritten, expectedObs);
@@ -154,11 +154,11 @@ namespace Unity.MLAgents.Tests
 
             var sensor = perception.CreateSensor();
             var expectedObs = (2 * perception.RaysPerDirection + 1) * (perception.DetectableTags.Count + 2);
-            Assert.AreEqual(sensor.GetObservationShape()[0], expectedObs);
+            Assert.AreEqual(sensor.GetObservationSpec().Shape[0], expectedObs);
             var outputBuffer = new float[expectedObs];
 
             ObservationWriter writer = new ObservationWriter();
-            writer.SetTarget(outputBuffer, sensor.GetObservationShape(), 0);
+            writer.SetTarget(outputBuffer, sensor.GetObservationSpec(), 0);
 
             var numWritten = sensor.Write(writer);
             Assert.AreEqual(numWritten, expectedObs);
@@ -202,11 +202,11 @@ namespace Unity.MLAgents.Tests
 
                 var sensor = perception.CreateSensor();
                 var expectedObs = (2 * perception.RaysPerDirection + 1) * (perception.DetectableTags.Count + 2);
-                Assert.AreEqual(sensor.GetObservationShape()[0], expectedObs);
+                Assert.AreEqual(sensor.GetObservationSpec().Shape[0], expectedObs);
                 var outputBuffer = new float[expectedObs];
 
                 ObservationWriter writer = new ObservationWriter();
-                writer.SetTarget(outputBuffer, sensor.GetObservationShape(), 0);
+                writer.SetTarget(outputBuffer, sensor.GetObservationSpec(), 0);
 
                 var numWritten = sensor.Write(writer);
                 Assert.AreEqual(numWritten, expectedObs);
@@ -249,11 +249,11 @@ namespace Unity.MLAgents.Tests
                 var sensor = perception.CreateSensor();
 
                 var expectedObs = (2 * perception.RaysPerDirection + 1) * (perception.DetectableTags.Count + 2);
-                Assert.AreEqual(sensor.GetObservationShape()[0], expectedObs);
+                Assert.AreEqual(sensor.GetObservationSpec().Shape[0], expectedObs);
                 var outputBuffer = new float[expectedObs];
 
                 ObservationWriter writer = new ObservationWriter();
-                writer.SetTarget(outputBuffer, sensor.GetObservationShape(), 0);
+                writer.SetTarget(outputBuffer, sensor.GetObservationSpec(), 0);
 
                 var numWritten = sensor.Write(writer);
                 Assert.AreEqual(numWritten, expectedObs);
@@ -297,11 +297,11 @@ namespace Unity.MLAgents.Tests
 
                 var sensor = perception.CreateSensor();
                 var expectedObs = (2 * perception.RaysPerDirection + 1) * (perception.DetectableTags.Count + 2);
-                Assert.AreEqual(sensor.GetObservationShape()[0], expectedObs);
+                Assert.AreEqual(sensor.GetObservationSpec().Shape[0], expectedObs);
                 var outputBuffer = new float[expectedObs];
 
                 ObservationWriter writer = new ObservationWriter();
-                writer.SetTarget(outputBuffer, sensor.GetObservationShape(), 0);
+                writer.SetTarget(outputBuffer, sensor.GetObservationSpec(), 0);
 
                 var numWritten = sensor.Write(writer);
                 Assert.AreEqual(numWritten, expectedObs);

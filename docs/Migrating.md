@@ -42,6 +42,26 @@ public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
 }
 ```
 
+- The `ISensor.GetObservationShape()` method was removed, and `GetObservationSpec()` was added. You can use
+`ObservationSpec.Vector()` or `ObservationSpec.Visual()` to generate `ObservationSpec`s that are equivalent to
+the previous shape. For example, if your old ISensor looked like:
+
+```csharp
+public override int[] GetObservationShape()
+{
+    return new[] { m_Height, m_Width, m_NumChannels };
+}
+```
+
+the equivalent code would now be
+
+```csharp
+public override ObservationSpec GetObservationSpec()
+{
+    return ObservationSpec.Visual(m_Height, m_Width, m_NumChannels);
+}
+```
+
 ## Migrating to Release 13
 ### Implementing IHeuristic in your IActuator implementations
  - If you have any custom actuators, you can now implement the `IHeuristicProvider` interface to have your actuator

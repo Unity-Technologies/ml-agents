@@ -93,15 +93,54 @@ namespace Unity.MLAgents.Inference
 
         public void InitializeObservations(List<ISensor> sensors, ITensorAllocator allocator)
         {
-            // Loop through the sensors on a representative agent.
-            // All vector observations use a shared ObservationGenerator since they are concatenated.
-            // All other observations use a unique ObservationInputGenerator
-            var visIndex = 0;
-            ObservationGenerator vecObsGen = null;
-            for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
+            if (m_ApiVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents1_0)
+            {
+                // Loop through the sensors on a representative agent.
+                // All vector observations use a shared ObservationGenerator since they are concatenated.
+                // All other observations use a unique ObservationInputGenerator
+                var visIndex = 0;
+                ObservationGenerator vecObsGen = null;
+                for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
+                {
+                    var sensor = sensors[sensorIndex];
+                    var rank = sensor.GetObservationSpec().Rank;
+                    ObservationGenerator obsGen = null;
+                    string obsGenName = null;
+                    switch (rank)
+                    {
+                        case 1:
+                            if (vecObsGen == null)
+                            {
+                                vecObsGen = new ObservationGenerator(allocator);
+                            }
+                            obsGen = vecObsGen;
+                            obsGenName = TensorNames.VectorObservationPlaceholder;
+                            break;
+                        case 2:
+                            // If the tensor is of rank 2, we use the index of the sensor
+                            // to create the name
+                            obsGen = new ObservationGenerator(allocator);
+                            obsGenName = TensorNames.GetObservationName(sensorIndex);
+                            break;
+                        case 3:
+                            // If the tensor is of rank 3, we use the "visual observation
+                            // index", which only counts the rank 3 sensors
+                            obsGen = new ObservationGenerator(allocator);
+                            obsGenName = TensorNames.GetVisualObservationName(visIndex);
+                            visIndex++;
+                            break;
+                        default:
+                            throw new UnityAgentsException(
+                                $"Sensor {sensor.GetName()} have an invalid rank {rank}");
+                    }
+                    obsGen.AddSensorIndex(sensorIndex);
+                    m_Dict[obsGenName] = obsGen;
+                }
+            }
+            if (m_ApiVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
             {
                 var sensor = sensors[sensorIndex];
-                var shape = sensor.GetObservationShape();
+                var shape = sensor.GetObservationSpec().Shape;
                 var rank = shape.Length;
                 ObservationGenerator obsGen = null;
                 string obsGenName = null;

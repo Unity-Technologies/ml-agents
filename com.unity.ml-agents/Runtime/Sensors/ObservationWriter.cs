@@ -25,9 +25,20 @@ namespace Unity.MLAgents.Sensors
         /// Set the writer to write to an IList at the given channelOffset.
         /// </summary>
         /// <param name="data">Float array or list that will be written to.</param>
+        /// <param name="observationSpec">ObservationSpec of the observation to be written</param>
+        /// <param name="offset">Offset from the start of the float data to write to.</param>
+        internal void SetTarget(IList<float> data, ObservationSpec observationSpec, int offset)
+        {
+            SetTarget(data, observationSpec.Shape, offset);
+        }
+
+        /// <summary>
+        /// Set the writer to write to an IList at the given channelOffset.
+        /// </summary>
+        /// <param name="data">Float array or list that will be written to.</param>
         /// <param name="shape">Shape of the observations to be written.</param>
         /// <param name="offset">Offset from the start of the float data to write to.</param>
-        internal void SetTarget(IList<float> data, int[] shape, int offset)
+        internal void SetTarget(IList<float> data, InplaceArray<int> shape, int offset)
         {
             m_Data = data;
             m_Offset = offset;

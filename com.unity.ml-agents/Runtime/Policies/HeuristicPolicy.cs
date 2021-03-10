@@ -129,7 +129,7 @@ namespace Unity.MLAgents.Policies
             {
                 if (sensor.GetCompressionType() == SensorCompressionType.None)
                 {
-                    m_ObservationWriter.SetTarget(m_NullList, sensor.GetObservationShape(), 0);
+                    m_ObservationWriter.SetTarget(m_NullList, sensor.GetObservationSpec(), 0);
                     sensor.Write(m_ObservationWriter);
                 }
                 else

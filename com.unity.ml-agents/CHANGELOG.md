@@ -9,6 +9,9 @@ and this project adheres to
 ## [Unreleased]
 ### Major Changes
 #### com.unity.ml-agents (C#)
+- Several breaking interface changes were made. See the
+[Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_14_docs/docs/Migrating.md) for more
+details.
 - Some methods previously marked as `Obsolete` have been removed. If you were using these methods, you need to replace them with their supported counterpart.
 - The interface for disabling discrete actions in `IDiscreteActionMask` has changed.
 `WriteMask(int branch, IEnumerable<int> actionIndices)` was replaced with

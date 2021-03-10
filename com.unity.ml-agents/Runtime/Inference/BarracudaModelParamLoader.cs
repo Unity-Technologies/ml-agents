@@ -138,7 +138,7 @@ namespace Unity.MLAgents.Inference
             for (var sensorIndex = 0; sensorIndex < sensors.Length; sensorIndex++)
             {
                 var sensor = sensors[sensorIndex];
-                if (sensor.GetObservationShape().Length == 3)
+                if (sensor.GetObservationSpec().Shape.Length == 3)
                 {
                     if (!tensorsNames.Contains(
                         TensorNames.GetVisualObservationName(visObsIndex)))
@@ -149,7 +149,7 @@ namespace Unity.MLAgents.Inference
                     }
                     visObsIndex++;
                 }
-                if (sensor.GetObservationShape().Length == 2)
+                if (sensor.GetObservationSpec().Shape.Length == 2)
                 {
                     if (!tensorsNames.Contains(
                         TensorNames.GetObservationName(sensorIndex)))
@@ -237,7 +237,7 @@ namespace Unity.MLAgents.Inference
         static string CheckVisualObsShape(
             TensorProxy tensorProxy, ISensor sensor)
         {
-            var shape = sensor.GetObservationShape();
+            var shape = sensor.GetObservationSpec().Shape;
             var heightBp = shape[0];
             var widthBp = shape[1];
             var pixelBp = shape[2];
@@ -265,7 +265,7 @@ namespace Unity.MLAgents.Inference
         static string CheckRankTwoObsShape(
             TensorProxy tensorProxy, ISensor sensor)
         {
-            var shape = sensor.GetObservationShape();
+            var shape = sensor.GetObservationSpec().Shape;
             var dim1Bp = shape[0];
             var dim2Bp = shape[1];
             var dim1T = tensorProxy.Channels;
@@ -317,14 +317,14 @@ namespace Unity.MLAgents.Inference
             for (var sensorIndex = 0; sensorIndex < sensors.Length; sensorIndex++)
             {
                 var sens = sensors[sensorIndex];
-                if (sens.GetObservationShape().Length == 3)
+                if (sens.GetObservationSpec().Shape.Length == 3)
                 {
 
                     tensorTester[TensorNames.GetVisualObservationName(visObsIndex)] =
                         (bp, tensor, scs, i) => CheckVisualObsShape(tensor, sens);
                     visObsIndex++;
                 }
-                if (sens.GetObservationShape().Length == 2)
+                if (sens.GetObservationSpec().Shape.Length == 2)
                 {
                     tensorTester[TensorNames.GetObservationName(sensorIndex)] =
                         (bp, tensor, scs, i) => CheckRankTwoObsShape(tensor, sens);
@@ -380,9 +380,9 @@ namespace Unity.MLAgents.Inference
             var totalVectorSensorSize = 0;
             foreach (var sens in sensors)
             {
-                if ((sens.GetObservationShape().Length == 1))
+                if ((sens.GetObservationSpec().Shape.Length == 1))
                 {
-                    totalVectorSensorSize += sens.GetObservationShape()[0];
+                    totalVectorSensorSize += sens.GetObservationSpec().Shape[0];
                 }
             }
 
@@ -391,9 +391,9 @@ namespace Unity.MLAgents.Inference
                 var sensorSizes = "";
                 foreach (var sensorComp in sensors)
                 {
-                    if (sensorComp.GetObservationShape().Length == 1)
+                    if (sensorComp.GetObservationSpec().Shape.Length == 1)
                     {
-                        var vecSize = sensorComp.GetObservationShape()[0];
+                        var vecSize = sensorComp.GetObservationSpec().Shape[0];
                         if (sensorSizes.Length == 0)
                         {
                             sensorSizes = $"[{vecSize}";
@@ -415,6 +415,81 @@ namespace Unity.MLAgents.Inference
             return null;
         }
 
+
+        /// <summary>
+        /// Generates failed checks that correspond to inputs shapes incompatibilities between
+        /// the model and the BrainParameters.
+        /// </summary>
+        /// <param name="model">
+        /// The Barracuda engine model for loading static parameters
+        /// </param>
+        /// <param name="brainParameters">
+        /// The BrainParameters that are used verify the compatibility with the InferenceEngine
+        /// </param>
+        /// <param name="sensors">Attached sensors</param>
+        /// <param name="observableAttributeTotalSize">Sum of the sizes of all ObservableAttributes.</param>
+        /// <returns>A IEnumerable of the checks that failed</returns>
+        static IEnumerable<FailedCheck> CheckInputTensorShape(
+            Model model, BrainParameters brainParameters, ISensor[] sensors,
+            int observableAttributeTotalSize)
+        {
+            var failedModelChecks = new List<FailedCheck>();
+            var tensorTester =
+                new Dictionary<string, Func<BrainParameters, TensorProxy, ISensor[], int, FailedCheck>>()
+            {
+                {TensorNames.PreviousActionPlaceholder, CheckPreviousActionShape},
+                {TensorNames.RandomNormalEpsilonPlaceholder, ((bp, tensor, scs, i) => null)},
+                {TensorNames.ActionMaskPlaceholder, ((bp, tensor, scs, i) => null)},
+                {TensorNames.SequenceLengthPlaceholder, ((bp, tensor, scs, i) => null)},
+                {TensorNames.RecurrentInPlaceholder, ((bp, tensor, scs, i) => null)},
+            };
+
+            foreach (var mem in model.memories)
+            {
+                tensorTester[mem.input] = ((bp, tensor, scs, i) => null);
+            }
+
+            for (var sensorIndex = 0; sensorIndex < sensors.Length; sensorIndex++)
+            {
+                var sens = sensors[sensorIndex];
+                if (sens.GetObservationSpec().Rank == 3)
+                {
+                    tensorTester[TensorNames.GetObservationName(sensorIndex)] =
+                        (bp, tensor, scs, i) => CheckVisualObsShape(tensor, sens);
+                }
+                if (sens.GetObservationSpec().Rank == 2)
+                {
+                    tensorTester[TensorNames.GetObservationName(sensorIndex)] =
+                        (bp, tensor, scs, i) => CheckRankTwoObsShape(tensor, sens);
+                }
+                if (sens.GetObservationSpec().Rank == 1)
+                {
+                    tensorTester[TensorNames.GetObservationName(sensorIndex)] =
+                        (bp, tensor, scs, i) => CheckRankOneObsShape(tensor, sens);
+                }
+
+            }
+
+            // If the model expects an input but it is not in this list
+            foreach (var tensor in model.GetInputTensors())
+            {
+                if (!tensorTester.ContainsKey(tensor.name))
+                {
+                    failedModelChecks.Add(FailedCheck.Warning("Model contains an unexpected input named : " + tensor.name
+                    ));
+                }
+                else
+                {
+                    var tester = tensorTester[tensor.name];
+                    var error = tester.Invoke(brainParameters, tensor, sensors, observableAttributeTotalSize);
+                    if (error != null)
+                    {
+                        failedModelChecks.Add(error);
+                    }
+                }
+            }
+            return failedModelChecks;
+        }
         /// <summary>
         /// Checks that the shape of the Previous Vector Action input placeholder is the same in the
         /// model and in the Brain Parameters.
