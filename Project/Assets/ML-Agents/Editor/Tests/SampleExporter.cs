@@ -94,8 +94,8 @@ namespace Unity.MLAgents
                                 var packageFileFullPath = Path.Combine(Application.dataPath, packageFilePath);
 
                                 var packageInSamplePath = Path.Combine(currentSampleDir.FullName, packageFilePath);
+                                Debug.Log($"Moving {packageFileFullPath} to {packageInSamplePath}");
                                 File.Move(packageFileFullPath, packageInSamplePath);
-                                Debug.Log($"Moving {packageFilePath} to {packageInSamplePath}");
 
                                 // write the .sample.json file to the sample directory
                                 File.WriteAllText(Path.Combine(currentSampleDir.FullName, k_PackageSampleFile),
