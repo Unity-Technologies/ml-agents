@@ -123,7 +123,7 @@ def test_hybrid_recurrent_sac():
     new_hyperparams = attr.evolve(
         SAC_TORCH_CONFIG.hyperparameters,
         batch_size=256,
-        learning_rate=1e-3,
+        learning_rate=3e-4,
         buffer_init_steps=1000,
         steps_per_update=2,
     )
@@ -131,6 +131,6 @@ def test_hybrid_recurrent_sac():
         SAC_TORCH_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=3500,
+        max_steps=4000,
     )
     check_environment_trains(env, {BRAIN_NAME: config}, training_seed=1212)
