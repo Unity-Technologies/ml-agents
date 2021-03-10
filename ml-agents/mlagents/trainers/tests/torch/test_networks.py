@@ -4,7 +4,7 @@ from mlagents.torch_utils import torch
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.networks import (
     NetworkBody,
-    MultiInputNetworkBody,
+    MultiAgentNetworkBody,
     ValueNetwork,
     SimpleActor,
     SharedActorCritic,
@@ -108,7 +108,7 @@ def test_multinetworkbody_vector(with_actions):
     network_settings = NetworkSettings()
     obs_shapes = [(obs_size,)]
     action_spec = ActionSpec(act_size, tuple(act_size for _ in range(act_size)))
-    networkbody = MultiInputNetworkBody(
+    networkbody = MultiAgentNetworkBody(
         create_observation_specs_with_shapes(obs_shapes), network_settings, action_spec
     )
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-3)
@@ -152,7 +152,7 @@ def test_multinetworkbody_lstm(with_actions):
 
     obs_shapes = [(obs_size,)]
     action_spec = ActionSpec(act_size, tuple(act_size for _ in range(act_size)))
-    networkbody = MultiInputNetworkBody(
+    networkbody = MultiAgentNetworkBody(
         create_observation_specs_with_shapes(obs_shapes), network_settings, action_spec
     )
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-4)
@@ -203,7 +203,7 @@ def test_multinetworkbody_visual(with_actions):
     network_settings = NetworkSettings()
     obs_shapes = [(obs_size,), vis_obs_size]
     action_spec = ActionSpec(act_size, tuple(act_size for _ in range(act_size)))
-    networkbody = MultiInputNetworkBody(
+    networkbody = MultiAgentNetworkBody(
         create_observation_specs_with_shapes(obs_shapes), network_settings, action_spec
     )
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-3)

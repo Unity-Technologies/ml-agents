@@ -21,7 +21,7 @@ from mlagents.trainers.settings import (
     TrainerSettings,
     PPOSettings,
 )
-from mlagents.trainers.torch.networks import Critic, MultiInputNetworkBody
+from mlagents.trainers.torch.networks import Critic, MultiAgentNetworkBody
 from mlagents.trainers.torch.decoders import ValueHeads
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
@@ -44,7 +44,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
             action_spec: ActionSpec,
         ):
             torch.nn.Module.__init__(self)
-            self.network_body = MultiInputNetworkBody(
+            self.network_body = MultiAgentNetworkBody(
                 observation_specs, network_settings, action_spec
             )
             if network_settings.memory is not None:

@@ -105,7 +105,13 @@ class NetworkBody(nn.Module):
         return encoding, memories
 
 
-class MultiInputNetworkBody(torch.nn.Module):
+class MultiAgentNetworkBody(torch.nn.Module):
+    """
+    A network body that uses a self attention layer to handle state
+    and action input from a potentially variable number of agents that
+    share the same observation and action space.
+    """
+
     def __init__(
         self,
         observation_specs: List[ObservationSpec],
@@ -172,7 +178,7 @@ class MultiInputNetworkBody(torch.nn.Module):
             if isinstance(enc, VectorInput):
                 enc.update_normalization(torch.as_tensor(vec_input))
 
-    def copy_normalization(self, other_network: "MultiInputNetworkBody") -> None:
+    def copy_normalization(self, other_network: "MultiAgentNetworkBody") -> None:
         if self.normalize:
             for n1, n2 in zip(self.processors, other_network.processors):
                 if isinstance(n1, VectorInput) and isinstance(n2, VectorInput):
