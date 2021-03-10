@@ -147,7 +147,18 @@ namespace Unity.MLAgents.Editor
                 {
                     if (check != null)
                     {
-                        EditorGUILayout.HelpBox(check, MessageType.Warning);
+                        if (check.CheckType == Inference.CheckType.Info)
+                        {
+                            EditorGUILayout.HelpBox(check.Message, MessageType.Info);
+                        }
+                        if (check.CheckType == Inference.CheckType.Warning)
+                        {
+                            EditorGUILayout.HelpBox(check.Message, MessageType.Warning);
+                        }
+                        if (check.CheckType == Inference.CheckType.Error)
+                        {
+                            EditorGUILayout.HelpBox(check.Message, MessageType.Error);
+                        }
                     }
                 }
             }
