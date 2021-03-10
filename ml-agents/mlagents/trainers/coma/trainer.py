@@ -57,7 +57,7 @@ class COMATrainer(RLTrainer):
             PPOSettings, self.trainer_settings.hyperparameters
         )
         self.seed = seed
-        self.policy: Policy = None  # type: ignore
+        self.policy: TorchPolicy = None  # type: ignore
         self.collected_group_rewards: Dict[str, int] = defaultdict(lambda: 0)
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
@@ -264,9 +264,7 @@ class COMATrainer(RLTrainer):
         return policy
 
     def create_coma_optimizer(self) -> TorchCOMAOptimizer:
-        return TorchCOMAOptimizer(  # type: ignore
-            cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore
-        )  # type: ignore
+        return TorchCOMAOptimizer(self.policy, self.trainer_settings)
 
     def add_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
@@ -276,6 +274,8 @@ class COMATrainer(RLTrainer):
         :param parsed_behavior_id: Behavior identifiers that the policy should belong to.
         :param policy: Policy to associate with name_behavior_id.
         """
+        if not isinstance(policy, TorchPolicy):
+            raise RuntimeError(f"policy {policy} must be an instance of TorchPolicy.")
         self.policy = policy
         self.policies[parsed_behavior_id.behavior_id] = policy
         self.optimizer = self.create_coma_optimizer()
