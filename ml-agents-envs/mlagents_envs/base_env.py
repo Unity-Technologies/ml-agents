@@ -34,6 +34,7 @@ import numpy as np
 from mlagents_envs.exception import UnityActionException
 
 AgentId = int
+GroupId = int
 BehaviorName = str
 
 
@@ -172,7 +173,7 @@ class TerminalStep(NamedTuple):
     reward: float
     interrupted: bool
     agent_id: AgentId
-    group_id: int
+    group_id: GroupId
     group_reward: float
 
 
@@ -505,6 +506,10 @@ class ObservationSpec(NamedTuple):
     shape: Tuple[int, ...]
     dimension_property: Tuple[DimensionProperty, ...]
     observation_type: ObservationType
+
+    # Optional name. For observations coming from com.unity.ml-agents, this
+    # will be the ISensor name.
+    name: str
 
 
 class BehaviorSpec(NamedTuple):

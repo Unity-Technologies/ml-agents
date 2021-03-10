@@ -81,7 +81,7 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
 
             var device = InputSystem.AddDevice("TestLayout");
 
-            var actuators = InputActuatorComponent.CreateActuatorsFromMap(inputActionMap, m_BehaviorParameters, device);
+            var actuators = InputActuatorComponent.CreateActuatorsFromMap(inputActionMap, m_BehaviorParameters, device, new InputActuatorEventContext());
             Assert.IsTrue(actuators.Length == 2);
             Assert.IsTrue(actuators[0].ActionSpec.Equals(ActionSpec.MakeContinuous(2)));
             Assert.IsTrue(actuators[1].ActionSpec.NumDiscreteActions == 1);
