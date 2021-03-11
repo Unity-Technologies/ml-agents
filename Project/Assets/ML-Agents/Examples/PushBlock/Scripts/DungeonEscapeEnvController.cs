@@ -115,6 +115,9 @@ public class DungeonEscapeEnvController : MonoBehaviour
             m_AgentGroup.GroupEpisodeInterrupted();
             ResetScene();
         }
+
+        // //Hurry Up Penalty
+        // m_AgentGroup.AddGroupReward(-0.5f / MaxEnvironmentSteps);
     }
 
     public void UnlockBlock(Transform blockT)
