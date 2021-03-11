@@ -659,10 +659,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravityMultiplier: 1.5
-  fixedDeltaTime: 0.01333
+  fixedDeltaTime: 0.02
   maximumDeltaTime: 0.33333334
-  solverIterations: 12
-  solverVelocityIterations: 12
+  solverIterations: 6
+  solverVelocityIterations: 1
   reuseCollisionCallbacks: 1
 --- !u!4 &1574236049
 Transform:

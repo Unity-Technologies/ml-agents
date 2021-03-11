@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using Unity.MLAgents;
 using UnityEngine;
 
-public class ZombiePushBlockDeathEnvController : MonoBehaviour
+public class DungeonEscapeEnvController : MonoBehaviour
 {
     [System.Serializable]
     public class PlayerInfo
     {
-        public PushAgentZombie Agent;
+        public PushAgentEscape Agent;
         [HideInInspector]
         public Vector3 StartingPos;
         [HideInInspector]
@@ -87,14 +87,14 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     private int m_NumberOfRemainingBlocks;
     public GameObject Key;
     public GameObject LockedBlock;
-    public Rigidbody UnlockedBlock;
+    // public Rigidbody UnlockedBlock;
 
 
     public Dictionary<Transform, PlayerInfo> m_AgentsDict = new Dictionary<Transform, PlayerInfo>();
     public Dictionary<Transform, ZombieInfo> m_ZombiesDict = new Dictionary<Transform, ZombieInfo>();
     // public Dictionary<Transform, BlockInfo> m_BlocksDict = new Dictionary<Transform, BlockInfo>();
     private SimpleMultiAgentGroup m_AgentGroup;
-    public bool BlockIsLocked;
+    // public bool BlockIsLocked;
     void Start()
     {
 
@@ -106,8 +106,8 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         m_GroundMaterial = m_GroundRenderer.material;
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
 
-        //Lock The Block
-        LockTheBlock();
+        // //Lock The Block
+        // LockTheBlock();
 
         //Hide The Key
         Key.SetActive(false);
@@ -155,7 +155,7 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         }
 
         //Hurry Up Penalty
-        m_AgentGroup.AddGroupReward(-0.5f / MaxEnvironmentSteps);
+        // m_AgentGroup.AddGroupReward(-0.5f / MaxEnvironmentSteps);
     }
 
     // // public Dictionary<Agent>
@@ -187,27 +187,32 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
 
     public void UnlockBlock(Transform blockT)
     {
-        LockedBlock.SetActive(false);
-        UnlockedBlock.velocity = Vector3.zero;
-        UnlockedBlock.angularVelocity = Vector3.zero;
-        UnlockedBlock.transform.SetPositionAndRotation(blockT.position, blockT.rotation);
-        UnlockedBlock.gameObject.SetActive(true);
-        BlockIsLocked = false;
-        m_AgentGroup.AddGroupReward(0.1f);
+        // LockedBlock.SetActive(false);
+        // UnlockedBlock.velocity = Vector3.zero;
+        // UnlockedBlock.angularVelocity = Vector3.zero;
+        // UnlockedBlock.transform.SetPositionAndRotation(blockT.position, blockT.rotation);
+        // UnlockedBlock.gameObject.SetActive(true);
+        // BlockIsLocked = false;
+        m_AgentGroup.AddGroupReward(1f);
+        StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
 
+        print("Unlocked Door");
+        m_AgentGroup.EndGroupEpisode();
+
+        ResetScene();
     }
 
-    public void LockTheBlock()
-    {
-        LockedBlock.SetActive(true);
-        UnlockedBlock.velocity = Vector3.zero;
-        UnlockedBlock.angularVelocity = Vector3.zero;
-        UnlockedBlock.transform.SetPositionAndRotation(LockedBlock.transform.position, LockedBlock.transform.rotation);
-        UnlockedBlock.gameObject.SetActive(false);
-        BlockIsLocked = true;
-    }
+    // public void LockTheBlock()
+    // {
+    //     LockedBlock.SetActive(true);
+    //     // UnlockedBlock.velocity = Vector3.zero;
+    //     // UnlockedBlock.angularVelocity = Vector3.zero;
+    //     // UnlockedBlock.transform.SetPositionAndRotation(LockedBlock.transform.position, LockedBlock.transform.rotation);
+    //     // UnlockedBlock.gameObject.SetActive(false);
+    //     BlockIsLocked = true;
+    // }
 
-    public void KilledByZombie(PushAgentZombie agent, Collision zombCol)
+    public void KilledByZombie(PushAgentEscape agent, Collision zombCol)
     {
         zombCol.gameObject.SetActive(false);
         agent.EndEpisode();
@@ -271,8 +276,9 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
     public void ZombieTouchedBlock()
     {
         //Give Agents Penalties
-        m_AgentGroup.AddGroupReward(-1);
-        // m_AgentGroup.EndGroupEpisode();
+        // m_AgentGroup.AddGroupReward(-1);
+        m_AgentGroup.EndGroupEpisode();
+
 
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.failMaterial, 0.5f));
@@ -308,12 +314,13 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
             item.Agent.MyKey.SetActive(false);
             item.Agent.IHaveAKey = false;
             item.Agent.gameObject.SetActive(true);
+            m_AgentGroup.RegisterAgent(item.Agent);
         }
 
         //Reset Blocks
-        LockedBlock.transform.position = GetRandomSpawnPos();
-        LockedBlock.transform.rotation = GetRandomRot();
-        LockTheBlock();
+        // LockedBlock.transform.position = GetRandomSpawnPos();
+        // LockedBlock.transform.rotation = GetRandomRot();
+        // LockTheBlock();
 
         //Reset Key
         Key.SetActive(false);
@@ -332,7 +339,6 @@ public class ZombiePushBlockDeathEnvController : MonoBehaviour
         }
 
 
-        m_AgentGroup.EndGroupEpisode();
 
     }
 

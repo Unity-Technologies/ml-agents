@@ -6,18 +6,18 @@ using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
 
-public class PushAgentZombie : Agent
+public class PushAgentEscape : Agent
 {
 
     public GameObject MyKey;
     public bool IHaveAKey;
     private PushBlockSettings m_PushBlockSettings;
     private Rigidbody m_AgentRb;  //cached on initialization
-    private ZombiePushBlockDeathEnvController m_GameController;
+    private DungeonEscapeEnvController m_GameController;
 
     public override void Initialize()
     {
-        m_GameController = GetComponentInParent<ZombiePushBlockDeathEnvController>();
+        m_GameController = GetComponentInParent<DungeonEscapeEnvController>();
         m_AgentRb = GetComponent<Rigidbody>();
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
         MyKey.SetActive(false);
@@ -35,7 +35,7 @@ public class PushAgentZombie : Agent
         // if (useVectorObs)
         // {
         sensor.AddObservation(IHaveAKey);
-        sensor.AddObservation(m_GameController.BlockIsLocked);
+        // sensor.AddObservation(m_GameController.BlockIsLocked);
         // sensor.AddObservation(m_GameController.PlayerDict[this].HoldingSwitch);
         // sensor.AddObservation(m_GameController.PlayerDict[this].Scored);
         // }
@@ -92,9 +92,9 @@ public class PushAgentZombie : Agent
         {
             if (IHaveAKey)
             {
-                m_GameController.UnlockBlock(col.transform);
                 MyKey.SetActive(false);
                 IHaveAKey = false;
+                m_GameController.UnlockBlock(col.transform);
             }
         }
         if (col.transform.CompareTag("zombie"))
