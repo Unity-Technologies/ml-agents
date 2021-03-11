@@ -14,6 +14,7 @@ and this project adheres to
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Updated com.unity.barracuda to 1.3.2-preview. (#5084)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `encoding_size` setting for RewardSignals has been deprecated. Please use `network_settings` instead. (#4982)
 - The `cattrs` version dependency was updated to allow `>=1.1.0` on Python 3.8 or higher. (#4821)
