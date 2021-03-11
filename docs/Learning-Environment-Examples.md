@@ -456,3 +456,23 @@ drop down. New pieces are spawned randomly at the top, with a chance of being
       - Recommended Minimum: 1
       - Recommended Maximum: 20
   - Benchmark Mean Reward: Depends on the number of tiles.
+
+## Cooperative Push Block
+![CoopPushBlock](images/cooperative_pushblock.png)
+
+- Set-up: Similar to Push Block, the agents are in an area with blocks that need
+to be pushed into a goal. Small blocks can be pushed by one agents and are worth
++1 value, medium blocks require two agents to push in and are worth +2, and large
+blocks require all 3 agents to push and are worth +3.
+- Goal: Push all blocks into the goal.
+- Agents: The environment contains three Agents in a Multi Agent Group.
+- Agent Reward Function:
+  - -(1/15000) Existential penalty, as a group reward.
+  - +1, +2, or +3 for pushing in a block, added as a group reward.
+- Behavior Parameters:
+  - Observation space: A single Grid Sensor with separate tags for each block size,
+    the goal, the walls, and other agents.
+  - Actions: 1 discrete action branch with 7 actions, corresponding to turn clockwise
+    and counterclockwise, move along four different face directions, or do nothing.
+- Float Properties: None
+- Benchmark Mean Reward: 11 (Group Reward)
