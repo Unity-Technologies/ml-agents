@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Barracuda;
 using FailedCheck = Unity.MLAgents.Inference.BarracudaModelParamLoader.FailedCheck;
-using CheckType = Unity.MLAgents.Inference.BarracudaModelParamLoader.CheckType;
 
 namespace Unity.MLAgents.Inference
 {

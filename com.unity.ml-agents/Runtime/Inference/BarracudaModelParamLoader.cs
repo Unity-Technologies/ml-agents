@@ -24,28 +24,27 @@ namespace Unity.MLAgents.Inference
             MaxSupportedVersion = MLAgents2_0
         }
 
-        internal enum CheckType
-        {
-            Info = 0,
-            Warning = 1,
-            Error = 2
-        }
-
         internal class FailedCheck
         {
-            public CheckType CheckType;
+            public enum CheckTypeEnum
+            {
+                Info = 0,
+                Warning = 1,
+                Error = 2
+            }
+            public CheckTypeEnum CheckType;
             public string Message;
             public static FailedCheck Info(string message)
             {
-                return new FailedCheck { CheckType = CheckType.Info, Message = message };
+                return new FailedCheck { CheckType = CheckTypeEnum.Info, Message = message };
             }
             public static FailedCheck Warning(string message)
             {
-                return new FailedCheck { CheckType = CheckType.Warning, Message = message };
+                return new FailedCheck { CheckType = CheckTypeEnum.Warning, Message = message };
             }
             public static FailedCheck Error(string message)
             {
-                return new FailedCheck { CheckType = CheckType.Error, Message = message };
+                return new FailedCheck { CheckType = CheckTypeEnum.Error, Message = message };
             }
         }
 

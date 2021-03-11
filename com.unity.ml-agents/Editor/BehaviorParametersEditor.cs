@@ -5,7 +5,7 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Sensors.Reflection;
-using CheckType = Unity.MLAgents.Inference.BarracudaModelParamLoader.CheckType;
+using CheckTypeEnum = Unity.MLAgents.Inference.BarracudaModelParamLoader.FailedCheck.CheckTypeEnum;
 
 namespace Unity.MLAgents.Editor
 {
@@ -150,13 +150,13 @@ namespace Unity.MLAgents.Editor
                     {
                         switch (check.CheckType)
                         {
-                            case CheckType.Info:
+                            case CheckTypeEnum.Info:
                                 EditorGUILayout.HelpBox(check.Message, MessageType.Info);
                                 break;
-                            case CheckType.Warning:
+                            case CheckTypeEnum.Warning:
                                 EditorGUILayout.HelpBox(check.Message, MessageType.Warning);
                                 break;
-                            case CheckType.Error:
+                            case CheckTypeEnum.Error:
                                 EditorGUILayout.HelpBox(check.Message, MessageType.Error);
                                 break;
                             default:
