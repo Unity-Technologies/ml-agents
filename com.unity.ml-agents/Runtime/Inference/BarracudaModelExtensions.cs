@@ -39,6 +39,18 @@ namespace Unity.MLAgents.Inference
         }
 
         /// <summary>
+        /// Get the version of the model.
+        /// </summary>
+        /// <param name="model">
+        /// The Barracuda engine model for loading static parameters.
+        /// </param>
+        /// <returns>The api version of the model</returns>
+        public static int GetVersion(this Model model)
+        {
+            return (int)model.GetTensorByName(TensorNames.VersionNumber)[0];
+        }
+
+        /// <summary>
         /// Generates the Tensor inputs that are expected to be present in the Model.
         /// </summary>
         /// <param name="model">

@@ -133,7 +133,7 @@ class CategoricalDistInstance(DiscreteDistInstance):
         ).unsqueeze(-1)
 
     def exported_model_output(self):
-        return self.all_log_prob()
+        return self.sample()
 
 
 class GaussianDistribution(nn.Module):

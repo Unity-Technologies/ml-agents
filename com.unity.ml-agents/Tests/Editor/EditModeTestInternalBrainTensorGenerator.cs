@@ -68,7 +68,7 @@ namespace Unity.MLAgents.Tests
         {
             var alloc = new TensorCachingAllocator();
             var mem = new Dictionary<int, List<float>>();
-            var tensorGenerator = new TensorGenerator(0, alloc, mem);
+            var tensorGenerator = new TensorGenerator(0, 2, alloc, mem);
             Assert.IsNotNull(tensorGenerator);
             alloc.Dispose();
         }

@@ -6,7 +6,7 @@ using Unity.MLAgents.Inference;
 
 namespace Unity.MLAgents.Tests
 {
-    public class DiscreteActionOutputApplierTest
+    public class DiscreteActionWithMultiNomialOutputApplierTest
     {
         [Test]
         public void TestDiscreteApply()
@@ -30,7 +30,7 @@ namespace Unity.MLAgents.Tests
                 valueType = TensorProxy.TensorType.FloatingPoint
             };
 
-            var applier = new DiscreteActionOutputApplier(actionSpec, 2020, null);
+            var applier = new DiscreteActionWithMultiNomialOutputApplier(actionSpec, 2020, null);
             var agentIds = new List<int> { 42, 1337 };
             var actionBuffers = new Dictionary<int, ActionBuffers>();
             actionBuffers[42] = new ActionBuffers(actionSpec);

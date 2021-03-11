@@ -28,8 +28,8 @@ namespace Unity.MLAgents.Inference
     /// </summary>
     internal class BarracudaModelParamLoader
     {
-        const long k_ApiVersion = 3;
-        const long k_ApiVersionLegacy = 2;
+        public const long k_ApiVersion = 3;
+        public const long k_ApiVersionLegacy = 2;
 
         /// <summary>
         /// Factory for the ModelParamLoader : Creates a ModelParamLoader and runs the checks
@@ -125,17 +125,34 @@ namespace Unity.MLAgents.Inference
                 return failedModelChecks;
             }
 
-            failedModelChecks.AddRange(
-                CheckInputTensorPresence(model, brainParameters, memorySize, sensors)
-            );
-            failedModelChecks.AddRange(
-                CheckOutputTensorPresence(model, memorySize)
-            );
-            failedModelChecks.AddRange(
-                CheckInputTensorShape(model, brainParameters, sensors, observableAttributeTotalSize)
-            );
+            var modelVersion = model.GetVersion();
+            if (modelVersion == k_ApiVersionLegacy)
+            {
+                failedModelChecks.AddRange(
+                    CheckInputTensorPresenceLegacy(model, brainParameters, memorySize, sensors)
+                );
+                failedModelChecks.AddRange(
+                    CheckInputTensorShapeLegacy(model, brainParameters, sensors, observableAttributeTotalSize)
+                );
+            }
+            if (modelVersion == k_ApiVersion)
+            {
+                failedModelChecks.AddRange(
+                    CheckInputTensorPresence(model, brainParameters, memorySize, sensors)
+                );
+                failedModelChecks.AddRange(
+                    CheckInputTensorShape(model, brainParameters, sensors, observableAttributeTotalSize)
+                );
+            }
+
+
+
             failedModelChecks.AddRange(
                 CheckOutputTensorShape(model, brainParameters, actuatorComponents)
+            );
+
+            failedModelChecks.AddRange(
+                CheckOutputTensorPresence(model, memorySize)
             );
             return failedModelChecks;
         }
@@ -157,7 +174,7 @@ namespace Unity.MLAgents.Inference
         /// <returns>
         /// A IEnumerable of string corresponding to the failed input presence checks.
         /// </returns>
-        static IEnumerable<FailedCheck> CheckInputTensorPresence(
+        static IEnumerable<FailedCheck> CheckInputTensorPresenceLegacy(
             Model model,
             BrainParameters brainParameters,
             int memory,
@@ -234,6 +251,82 @@ namespace Unity.MLAgents.Inference
                     $" but only found {visObsIndex} visual sensors."
                     }
                 );
+            }
+
+            // If the model has a non-negative memory size but requires a recurrent input
+            if (memory > 0)
+            {
+                if (!tensorsNames.Any(x => x.EndsWith("_h")) ||
+                    !tensorsNames.Any(x => x.EndsWith("_c")))
+                {
+                    failedModelChecks.Add(
+                        new FailedCheck
+                        {
+                            CheckType = CheckType.Warning,
+                            Message =
+                        "The model does not contain a Recurrent Input Node but has memory_size."
+                        });
+                }
+            }
+
+            // If the model uses discrete control but does not have an input for action masks
+            if (model.HasDiscreteOutputs())
+            {
+                if (!tensorsNames.Contains(TensorNames.ActionMaskPlaceholder))
+                {
+                    failedModelChecks.Add(
+                        new FailedCheck
+                        {
+                            CheckType = CheckType.Warning,
+                            Message =
+                        "The model does not contain an Action Mask but is using Discrete Control."
+                        });
+                }
+            }
+            return failedModelChecks;
+        }
+
+        /// <summary>
+        /// Generates failed checks that correspond to inputs expected by the model that are not
+        /// present in the BrainParameters.
+        /// </summary>
+        /// <param name="model">
+        /// The Barracuda engine model for loading static parameters
+        /// </param>
+        /// <param name="brainParameters">
+        /// The BrainParameters that are used verify the compatibility with the InferenceEngine
+        /// </param>
+        /// <param name="memory">
+        /// The memory size that the model is expecting.
+        /// </param>
+        /// <param name="sensors">Array of attached sensor components</param>
+        /// <returns>
+        /// A IEnumerable of string corresponding to the failed input presence checks.
+        /// </returns>
+        static IEnumerable<FailedCheck> CheckInputTensorPresence(
+            Model model,
+            BrainParameters brainParameters,
+            int memory,
+            ISensor[] sensors
+        )
+        {
+            var failedModelChecks = new List<FailedCheck>();
+            var tensorsNames = model.GetInputNames();
+            for (var sensorIndex = 0; sensorIndex < sensors.Length; sensorIndex++)
+            {
+                if (!tensorsNames.Contains(
+                    TensorNames.GetObservationName(sensorIndex)))
+                {
+                    var sensor = sensors[sensorIndex];
+                    failedModelChecks.Add(
+                        new FailedCheck
+                        {
+                            CheckType = CheckType.Warning,
+                            Message =
+                        "The model does not contain an Observation Placeholder Input " +
+                        $"for sensor component {sensorIndex} ({sensor.GetType().Name})."
+                        });
+                }
             }
 
             // If the model has a non-negative memory size but requires a recurrent input
@@ -354,15 +447,61 @@ namespace Unity.MLAgents.Inference
             var dim2Bp = shape[1];
             var dim1T = tensorProxy.Channels;
             var dim2T = tensorProxy.Width;
+            var dim3T = tensorProxy.Height;
             if ((dim1Bp != dim1T) || (dim2Bp != dim2T))
             {
+                var proxyDimStr = $"[?x{dim1T}x{dim2T}]";
+                if (dim3T > 0)
+                {
+                    proxyDimStr = $"[?x{dim3T}x{dim2T}x{dim1T}]";
+                }
                 return new FailedCheck
                 {
                     CheckType = CheckType.Warning,
                     Message =
                     $"An Observation of the model does not match. " +
                     $"Received TensorProxy of shape [?x{dim1Bp}x{dim2Bp}] but " +
-                    $"was expecting [?x{dim1T}x{dim2T}]."
+                    $"was expecting {proxyDimStr}."
+                };
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Checks that the shape of the rank 2 observation input placeholder is the same as the corresponding sensor.
+        /// </summary>
+        /// <param name="tensorProxy">The tensor that is expected by the model</param>
+        /// <param name="sensor">The sensor that produces the visual observation.</param>
+        /// <returns>
+        /// If the Check failed, returns a string containing information about why the
+        /// check failed. If the check passed, returns null.
+        /// </returns>
+        static FailedCheck CheckRankOneObsShape(
+            TensorProxy tensorProxy, ISensor sensor)
+        {
+            var shape = sensor.GetObservationShape();
+            var dim1Bp = shape[0];
+            var dim1T = tensorProxy.Channels;
+            var dim2T = tensorProxy.Width;
+            var dim3T = tensorProxy.Height;
+            if ((dim1Bp != dim1T))
+            {
+                var proxyDimStr = $"[?x{dim1T}]";
+                if (dim2T > 0)
+                {
+                    proxyDimStr = $"[?x{dim1T}x{dim2T}]";
+                }
+                if (dim3T > 0)
+                {
+                    proxyDimStr = $"[?x{dim3T}x{dim2T}x{dim1T}]";
+                }
+                return new FailedCheck
+                {
+                    CheckType = CheckType.Warning,
+                    Message =
+                    $"An Observation of the model does not match. " +
+                    $"Received TensorProxy of shape [?x{dim1Bp}] but " +
+                    $"was expecting {proxyDimStr}."
                 };
             }
             return null;
@@ -381,7 +520,7 @@ namespace Unity.MLAgents.Inference
         /// <param name="sensors">Attached sensors</param>
         /// <param name="observableAttributeTotalSize">Sum of the sizes of all ObservableAttributes.</param>
         /// <returns>The list the error messages of the checks that failed</returns>
-        static IEnumerable<FailedCheck> CheckInputTensorShape(
+        static IEnumerable<FailedCheck> CheckInputTensorShapeLegacy(
             Model model, BrainParameters brainParameters, ISensor[] sensors,
             int observableAttributeTotalSize)
         {
@@ -389,7 +528,7 @@ namespace Unity.MLAgents.Inference
             var tensorTester =
                 new Dictionary<string, Func<BrainParameters, TensorProxy, ISensor[], int, FailedCheck>>()
             {
-                {TensorNames.VectorObservationPlaceholder, CheckVectorObsShape},
+                {TensorNames.VectorObservationPlaceholder, CheckVectorObsShapeLegacy},
                 {TensorNames.PreviousActionPlaceholder, CheckPreviousActionShape},
                 {TensorNames.RandomNormalEpsilonPlaceholder, ((bp, tensor, scs, i) => null)},
                 {TensorNames.ActionMaskPlaceholder, ((bp, tensor, scs, i) => null)},
@@ -463,7 +602,7 @@ namespace Unity.MLAgents.Inference
         /// If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.
         /// </returns>
-        static FailedCheck CheckVectorObsShape(
+        static FailedCheck CheckVectorObsShapeLegacy(
             BrainParameters brainParameters, TensorProxy tensorProxy, ISensor[] sensors,
             int observableAttributeTotalSize)
         {
@@ -512,6 +651,87 @@ namespace Unity.MLAgents.Inference
                 };
             }
             return null;
+        }
+
+
+        /// <summary>
+        /// Generates failed checks that correspond to inputs shapes incompatibilities between
+        /// the model and the BrainParameters.
+        /// </summary>
+        /// <param name="model">
+        /// The Barracuda engine model for loading static parameters
+        /// </param>
+        /// <param name="brainParameters">
+        /// The BrainParameters that are used verify the compatibility with the InferenceEngine
+        /// </param>
+        /// <param name="sensors">Attached sensors</param>
+        /// <param name="observableAttributeTotalSize">Sum of the sizes of all ObservableAttributes.</param>
+        /// <returns>The list the error messages of the checks that failed</returns>
+        static IEnumerable<FailedCheck> CheckInputTensorShape(
+            Model model, BrainParameters brainParameters, ISensor[] sensors,
+            int observableAttributeTotalSize)
+        {
+            var failedModelChecks = new List<FailedCheck>();
+            var tensorTester =
+                new Dictionary<string, Func<BrainParameters, TensorProxy, ISensor[], int, FailedCheck>>()
+            {
+                {TensorNames.PreviousActionPlaceholder, CheckPreviousActionShape},
+                {TensorNames.RandomNormalEpsilonPlaceholder, ((bp, tensor, scs, i) => null)},
+                {TensorNames.ActionMaskPlaceholder, ((bp, tensor, scs, i) => null)},
+                {TensorNames.SequenceLengthPlaceholder, ((bp, tensor, scs, i) => null)},
+                {TensorNames.RecurrentInPlaceholder, ((bp, tensor, scs, i) => null)},
+            };
+
+            foreach (var mem in model.memories)
+            {
+                tensorTester[mem.input] = ((bp, tensor, scs, i) => null);
+            }
+
+            for (var sensorIndex = 0; sensorIndex < sensors.Length; sensorIndex++)
+            {
+                var sens = sensors[sensorIndex];
+                if (sens.GetObservationShape().Length == 3)
+                {
+                    tensorTester[TensorNames.GetObservationName(sensorIndex)] =
+                        (bp, tensor, scs, i) => CheckVisualObsShape(tensor, sens);
+                }
+                if (sens.GetObservationShape().Length == 2)
+                {
+                    tensorTester[TensorNames.GetObservationName(sensorIndex)] =
+                        (bp, tensor, scs, i) => CheckRankTwoObsShape(tensor, sens);
+                }
+                if (sens.GetObservationShape().Length == 1)
+                {
+                    tensorTester[TensorNames.GetObservationName(sensorIndex)] =
+                        (bp, tensor, scs, i) => CheckRankOneObsShape(tensor, sens);
+                }
+
+            }
+
+            // If the model expects an input but it is not in this list
+            foreach (var tensor in model.GetInputTensors())
+            {
+                if (!tensorTester.ContainsKey(tensor.name))
+                {
+                    failedModelChecks.Add(
+                        new FailedCheck
+                        {
+                            CheckType = CheckType.Warning,
+                            Message =
+                        "Model requires an unknown input named : " + tensor.name
+                        });
+                }
+                else
+                {
+                    var tester = tensorTester[tensor.name];
+                    var error = tester.Invoke(brainParameters, tensor, sensors, observableAttributeTotalSize);
+                    if (error != null)
+                    {
+                        failedModelChecks.Add(error);
+                    }
+                }
+            }
+            return failedModelChecks;
         }
 
         /// <summary>

@@ -35,20 +35,24 @@ namespace Unity.MLAgents.Inference
         }
 
         readonly Dictionary<string, IGenerator> m_Dict = new Dictionary<string, IGenerator>();
+        int m_ApiVersion;
 
         /// <summary>
         /// Returns a new TensorGenerators object.
         /// </summary>
+        /// <param name="modelVersion"> The API version of the model.</param>
         /// <param name="seed"> The seed the Generators will be initialized with.</param>
         /// <param name="allocator"> Tensor allocator.</param>
         /// <param name="memories">Dictionary of AgentInfo.id to memory for use in the inference model.</param>
         /// <param name="barracudaModel"></param>
         public TensorGenerator(
+            int modelVersion,
             int seed,
             ITensorAllocator allocator,
             Dictionary<int, List<float>> memories,
             object barracudaModel = null)
         {
+            m_ApiVersion = modelVersion;
             // If model is null, no inference to run and exception is thrown before reaching here.
             if (barracudaModel == null)
             {
@@ -93,47 +97,61 @@ namespace Unity.MLAgents.Inference
 
         public void InitializeObservations(List<ISensor> sensors, ITensorAllocator allocator)
         {
-            // Loop through the sensors on a representative agent.
-            // All vector observations use a shared ObservationGenerator since they are concatenated.
-            // All other observations use a unique ObservationInputGenerator
-            var visIndex = 0;
-            ObservationGenerator vecObsGen = null;
-            for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
+            if (m_ApiVersion == BarracudaModelParamLoader.k_ApiVersionLegacy)
             {
-                var sensor = sensors[sensorIndex];
-                var shape = sensor.GetObservationShape();
-                var rank = shape.Length;
-                ObservationGenerator obsGen = null;
-                string obsGenName = null;
-                switch (rank)
+                // Loop through the sensors on a representative agent.
+                // All vector observations use a shared ObservationGenerator since they are concatenated.
+                // All other observations use a unique ObservationInputGenerator
+                var visIndex = 0;
+                ObservationGenerator vecObsGen = null;
+                for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
                 {
-                    case 1:
-                        if (vecObsGen == null)
-                        {
-                            vecObsGen = new ObservationGenerator(allocator);
-                        }
-                        obsGen = vecObsGen;
-                        obsGenName = TensorNames.VectorObservationPlaceholder;
-                        break;
-                    case 2:
-                        // If the tensor is of rank 2, we use the index of the sensor
-                        // to create the name
-                        obsGen = new ObservationGenerator(allocator);
-                        obsGenName = TensorNames.GetObservationName(sensorIndex);
-                        break;
-                    case 3:
-                        // If the tensor is of rank 3, we use the "visual observation
-                        // index", which only counts the rank 3 sensors
-                        obsGen = new ObservationGenerator(allocator);
-                        obsGenName = TensorNames.GetVisualObservationName(visIndex);
-                        visIndex++;
-                        break;
-                    default:
-                        throw new UnityAgentsException(
-                            $"Sensor {sensor.GetName()} have an invalid rank {rank}");
+                    var sensor = sensors[sensorIndex];
+                    var shape = sensor.GetObservationShape();
+                    var rank = shape.Length;
+                    ObservationGenerator obsGen = null;
+                    string obsGenName = null;
+                    switch (rank)
+                    {
+                        case 1:
+                            if (vecObsGen == null)
+                            {
+                                vecObsGen = new ObservationGenerator(allocator);
+                            }
+                            obsGen = vecObsGen;
+                            obsGenName = TensorNames.VectorObservationPlaceholder;
+                            break;
+                        case 2:
+                            // If the tensor is of rank 2, we use the index of the sensor
+                            // to create the name
+                            obsGen = new ObservationGenerator(allocator);
+                            obsGenName = TensorNames.GetObservationName(sensorIndex);
+                            break;
+                        case 3:
+                            // If the tensor is of rank 3, we use the "visual observation
+                            // index", which only counts the rank 3 sensors
+                            obsGen = new ObservationGenerator(allocator);
+                            obsGenName = TensorNames.GetVisualObservationName(visIndex);
+                            visIndex++;
+                            break;
+                        default:
+                            throw new UnityAgentsException(
+                                $"Sensor {sensor.GetName()} have an invalid rank {rank}");
+                    }
+                    obsGen.AddSensorIndex(sensorIndex);
+                    m_Dict[obsGenName] = obsGen;
                 }
-                obsGen.AddSensorIndex(sensorIndex);
-                m_Dict[obsGenName] = obsGen;
+            }
+            if (m_ApiVersion == BarracudaModelParamLoader.k_ApiVersion)
+            {
+                for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
+                {
+                    var obsGen = new ObservationGenerator(allocator);
+                    var obsGenName = TensorNames.GetObservationName(sensorIndex);
+                    obsGen.AddSensorIndex(sensorIndex);
+                    m_Dict[obsGenName] = obsGen;
+
+                }
             }
         }
 
