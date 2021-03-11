@@ -66,9 +66,6 @@ public class PushAgentCollab : Agent
     {
         // Move the agent using the action.
         MoveAgent(actionBuffers.DiscreteActions);
-
-        // // Penalty given each step to encourage agent to finish task quickly.
-        // AddReward(-1f / 15000);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
