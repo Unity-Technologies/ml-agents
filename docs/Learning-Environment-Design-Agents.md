@@ -988,8 +988,8 @@ Agent from one group to another, you have to unregister it from the current grou
 
 * Agents with different behavior names in the same group are not supported.
 
-* Agents within groups should always set the `Max Steps` parameter the Agent script to 0, meaning
-they will never reach a max step. Instead, handle Max Steps with MultiAgentGroup by ending the episode for the entire
+* Agents within groups should always set the `Max Steps` parameter in the Agent script to 0.
+Instead, handle Max Steps using the MultiAgentGroup by ending the episode for the entire
 Group using `GroupEpisodeInterrupted()`.
 
 * `EndGroupEpisode` and `GroupEpisodeInterrupted` do the same job in the game, but has
