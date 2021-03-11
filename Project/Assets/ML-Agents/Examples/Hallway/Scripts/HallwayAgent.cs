@@ -13,11 +13,11 @@ public class HallwayAgent : Agent
     public GameObject symbolO;
     public GameObject symbolX;
     public bool useVectorObs;
-    protected Rigidbody m_AgentRb;
-    protected Material m_GroundMaterial;
-    protected Renderer m_GroundRenderer;
-    protected HallwaySettings m_HallwaySettings;
-    protected int m_Selection;
+    Rigidbody m_AgentRb;
+    Material m_GroundMaterial;
+    Renderer m_GroundRenderer;
+    HallwaySettings m_HallwaySettings;
+    int m_Selection;
     StatsRecorder m_statsRecorder;
 
     public override void Initialize()
@@ -26,7 +26,7 @@ public class HallwayAgent : Agent
         m_AgentRb = GetComponent<Rigidbody>();
         m_GroundRenderer = ground.GetComponent<Renderer>();
         m_GroundMaterial = m_GroundRenderer.material;
-        // m_statsRecorder = Academy.Instance.StatsRecorder;
+        m_statsRecorder = Academy.Instance.StatsRecorder;
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -37,7 +37,7 @@ public class HallwayAgent : Agent
         }
     }
 
-    protected IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
+    IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
     {
         m_GroundRenderer.material = mat;
         yield return new WaitForSeconds(time);
@@ -85,13 +85,13 @@ public class HallwayAgent : Agent
             {
                 SetReward(1f);
                 StartCoroutine(GoalScoredSwapGroundMaterial(m_HallwaySettings.goalScoredMaterial, 0.5f));
-                // m_statsRecorder.Add("Goal/Correct", 1, StatAggregationMethod.Sum);
+                m_statsRecorder.Add("Goal/Correct", 1, StatAggregationMethod.Sum);
             }
             else
             {
                 SetReward(-0.1f);
                 StartCoroutine(GoalScoredSwapGroundMaterial(m_HallwaySettings.failMaterial, 0.5f));
-                // m_statsRecorder.Add("Goal/Wrong", 1, StatAggregationMethod.Sum);
+                m_statsRecorder.Add("Goal/Wrong", 1, StatAggregationMethod.Sum);
             }
             EndEpisode();
         }
@@ -160,7 +160,7 @@ public class HallwayAgent : Agent
             symbolXGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
             symbolOGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
         }
-        // m_statsRecorder.Add("Goal/Correct", 0, StatAggregationMethod.Sum);
-        // m_statsRecorder.Add("Goal/Wrong", 0, StatAggregationMethod.Sum);
+        m_statsRecorder.Add("Goal/Correct", 0, StatAggregationMethod.Sum);
+        m_statsRecorder.Add("Goal/Wrong", 0, StatAggregationMethod.Sum);
     }
 }
