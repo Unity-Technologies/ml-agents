@@ -10,7 +10,12 @@ from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
 from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer
 from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
-from mlagents.trainers.settings import TrainerSettings, PPOSettings, SACSettings
+from mlagents.trainers.settings import (
+    TrainerSettings,
+    PPOSettings,
+    SACSettings,
+    POCASettings,
+)
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.torch.test_policy import create_policy_mock
 from mlagents.trainers.torch.utils import ModelUtils
@@ -70,7 +75,7 @@ def test_load_save_policy(tmp_path):
     [
         (TorchPPOOptimizer, PPOSettings),
         (TorchSACOptimizer, SACSettings),
-        (TorchPOCAOptimizer, PPOSettings),
+        (TorchPOCAOptimizer, POCASettings),
     ],
     ids=["ppo", "sac", "poca"],
 )
