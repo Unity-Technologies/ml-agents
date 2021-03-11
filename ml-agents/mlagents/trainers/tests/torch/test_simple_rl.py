@@ -375,7 +375,7 @@ def simple_record(tmpdir_factory):
 def test_gail(simple_record, action_sizes, trainer_config):
     demo_path = simple_record(action_sizes)
     env = SimpleEnvironment(
-        [BRAIN_NAME], action_sizes=action_sizes, step_size=0.2, gail=True
+        [BRAIN_NAME], action_sizes=action_sizes, step_size=0.3, gail=True
     )
     bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1000)
     reward_signals = {
@@ -430,7 +430,7 @@ def test_gail_visual_sac(simple_record, action_sizes):
         num_visual=1,
         num_vector=0,
         action_sizes=action_sizes,
-        step_size=0.2,
+        step_size=0.3,
         gail=True,
     )
     bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1000)
