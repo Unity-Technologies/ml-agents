@@ -32,13 +32,7 @@ public class PushAgentEscape : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        // if (useVectorObs)
-        // {
         sensor.AddObservation(IHaveAKey);
-        // sensor.AddObservation(m_GameController.BlockIsLocked);
-        // sensor.AddObservation(m_GameController.PlayerDict[this].HoldingSwitch);
-        // sensor.AddObservation(m_GameController.PlayerDict[this].Scored);
-        // }
     }
 
     /// <summary>
@@ -97,9 +91,9 @@ public class PushAgentEscape : Agent
                 m_GameController.UnlockBlock(col.transform);
             }
         }
-        if (col.transform.CompareTag("zombie"))
+        if (col.transform.CompareTag("dragon"))
         {
-            m_GameController.KilledByZombie(this, col);
+            m_GameController.KilledByBaddie(this, col);
             MyKey.SetActive(false);
             IHaveAKey = false;
         }
@@ -108,14 +102,12 @@ public class PushAgentEscape : Agent
     void OnTriggerEnter(Collider col)
     {
         //if we find a key and it's parent is the main platform we can pick it up
-        // if (col.transform.CompareTag("key"))
         if (col.transform.CompareTag("key") && col.transform.parent == transform.parent && gameObject.activeInHierarchy)
         {
             print("picked up key");
             MyKey.SetActive(true);
             IHaveAKey = true;
             col.gameObject.SetActive(false);
-            // DestroyImmediate(col.gameObject);
         }
     }
 

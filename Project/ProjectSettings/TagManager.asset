@@ -38,6 +38,7 @@ TagManager:
   - switch
   - key
   - lock
+  - dragon
   layers:
   - Default
   - TransparentFX

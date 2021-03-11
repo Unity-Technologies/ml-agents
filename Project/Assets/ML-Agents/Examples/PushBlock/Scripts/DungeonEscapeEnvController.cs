@@ -20,7 +20,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
     }
 
     [System.Serializable]
-    public class ZombieInfo
+    public class DragonInfo
     {
         public SimpleNPC Agent;
         [HideInInspector]
@@ -34,19 +34,6 @@ public class DungeonEscapeEnvController : MonoBehaviour
         public Transform T;
         public bool IsDead;
     }
-
-    // [System.Serializable]
-    // public class BlockInfo
-    // {
-    //     public Transform T;
-    //     [HideInInspector]
-    //     public Vector3 StartingPos;
-    //     [HideInInspector]
-    //     public Quaternion StartingRot;
-    //     [HideInInspector]
-    //     public Rigidbody Rb;
-    //     public Transform LockedBlock;
-    // }
 
     /// <summary>
     /// Max Academy steps before this platform resets
@@ -65,8 +52,6 @@ public class DungeonEscapeEnvController : MonoBehaviour
     /// </summary>
     public GameObject ground;
 
-    // public GameObject area;
-
     Material m_GroundMaterial; //cached on Awake()
 
     /// <summary>
@@ -75,26 +60,17 @@ public class DungeonEscapeEnvController : MonoBehaviour
     Renderer m_GroundRenderer;
 
     public List<PlayerInfo> AgentsList = new List<PlayerInfo>();
-    public List<ZombieInfo> ZombiesList = new List<ZombieInfo>();
-    // public List<BlockInfo> BlocksList = new List<BlockInfo>();
+    public List<DragonInfo> DragonsList = new List<DragonInfo>();
 
     public bool UseRandomAgentRotation = true;
     public bool UseRandomAgentPosition = true;
-    // public bool UseRandomBlockRotation = true;
-    // public bool UseRandomBlockPosition = true;
     PushBlockSettings m_PushBlockSettings;
 
     private int m_NumberOfRemainingBlocks;
     public GameObject Key;
-    public GameObject LockedBlock;
-    // public Rigidbody UnlockedBlock;
-
 
     public Dictionary<Transform, PlayerInfo> m_AgentsDict = new Dictionary<Transform, PlayerInfo>();
-    public Dictionary<Transform, ZombieInfo> m_ZombiesDict = new Dictionary<Transform, ZombieInfo>();
-    // public Dictionary<Transform, BlockInfo> m_BlocksDict = new Dictionary<Transform, BlockInfo>();
     private SimpleMultiAgentGroup m_AgentGroup;
-    // public bool BlockIsLocked;
     void Start()
     {
 
@@ -106,19 +82,8 @@ public class DungeonEscapeEnvController : MonoBehaviour
         m_GroundMaterial = m_GroundRenderer.material;
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
 
-        // //Lock The Block
-        // LockTheBlock();
-
         //Hide The Key
         Key.SetActive(false);
-
-        // foreach (var item in BlocksList)
-        // {
-        //     item.StartingPos = item.T.transform.position;
-        //     item.StartingRot = item.T.transform.rotation;
-        //     item.Rb = item.T.GetComponent<Rigidbody>();
-        //     m_BlocksDict.Add(item.T, item);
-        // }
 
         // Initialize TeamManager
         m_AgentGroup = new SimpleMultiAgentGroup();
@@ -132,13 +97,12 @@ public class DungeonEscapeEnvController : MonoBehaviour
             // Add to team manager
             m_AgentGroup.RegisterAgent(item.Agent);
         }
-        foreach (var item in ZombiesList)
+        foreach (var item in DragonsList)
         {
             item.StartingPos = item.Agent.transform.position;
             item.StartingRot = item.Agent.transform.rotation;
             item.T = item.Agent.transform;
             item.Col = item.Agent.GetComponent<Collider>();
-            m_ZombiesDict.Add(item.T, item);
         }
 
         ResetScene();
@@ -153,46 +117,10 @@ public class DungeonEscapeEnvController : MonoBehaviour
             m_AgentGroup.GroupEpisodeInterrupted();
             ResetScene();
         }
-
-        //Hurry Up Penalty
-        // m_AgentGroup.AddGroupReward(-0.5f / MaxEnvironmentSteps);
     }
-
-    // // public Dictionary<Agent>
-    // //Kill/disable an agent
-    // public void KillAgent(Collision col, Transform t)
-    // {
-    //     print($"zombie {t.name} ate {col.collider.name}");
-    //     //Disable killed Agent
-    //     foreach (var item in AgentsList)
-    //     {
-    //         if (item.Col == col.collider)
-    //         {
-    //             item.Agent.EndEpisode();
-    //             item.Col.gameObject.SetActive(false);
-    //             break;
-    //         }
-    //     }
-    //
-    //     //End Episode
-    //     foreach (var item in ZombiesList)
-    //     {
-    //         if (item.Agent.transform == t)
-    //         {
-    //             KillZombie(item);
-    //             break;
-    //         }
-    //     }
-    // }
 
     public void UnlockBlock(Transform blockT)
     {
-        // LockedBlock.SetActive(false);
-        // UnlockedBlock.velocity = Vector3.zero;
-        // UnlockedBlock.angularVelocity = Vector3.zero;
-        // UnlockedBlock.transform.SetPositionAndRotation(blockT.position, blockT.rotation);
-        // UnlockedBlock.gameObject.SetActive(true);
-        // BlockIsLocked = false;
         m_AgentGroup.AddGroupReward(1f);
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
 
@@ -202,26 +130,15 @@ public class DungeonEscapeEnvController : MonoBehaviour
         ResetScene();
     }
 
-    // public void LockTheBlock()
-    // {
-    //     LockedBlock.SetActive(true);
-    //     // UnlockedBlock.velocity = Vector3.zero;
-    //     // UnlockedBlock.angularVelocity = Vector3.zero;
-    //     // UnlockedBlock.transform.SetPositionAndRotation(LockedBlock.transform.position, LockedBlock.transform.rotation);
-    //     // UnlockedBlock.gameObject.SetActive(false);
-    //     BlockIsLocked = true;
-    // }
-
-    public void KilledByZombie(PushAgentEscape agent, Collision zombCol)
+    public void KilledByBaddie(PushAgentEscape agent, Collision baddieCol)
     {
-        zombCol.gameObject.SetActive(false);
+        baddieCol.gameObject.SetActive(false);
         agent.EndEpisode();
         agent.gameObject.SetActive(false);
-        print($"zombie {zombCol.gameObject.name} ate {agent.transform.name}");
+        print($"{baddieCol.gameObject.name} ate {agent.transform.name}");
         //Spawn the Key Pickup
-        Key.transform.SetPositionAndRotation(zombCol.collider.transform.position, zombCol.collider.transform.rotation);
+        Key.transform.SetPositionAndRotation(baddieCol.collider.transform.position, baddieCol.collider.transform.rotation);
         Key.SetActive(true);
-        // Instantiate(KeyPrefab, zombCol.collider.transform.position, zombCol.collider.transform.rotation, transform);
     }
 
     /// <summary>
@@ -257,28 +174,9 @@ public class DungeonEscapeEnvController : MonoBehaviour
         m_GroundRenderer.material = m_GroundMaterial;
     }
 
-    /// <summary>
-    /// Called when the agent moves the block into the goal.
-    /// </summary>
-    public void ScoredAGoal(Collider col, float score)
+    public void BaddieTouchedBlock()
     {
-        print($"Scored {score} on {gameObject.name}");
-
-        //Give Agent Rewards
-        m_AgentGroup.AddGroupReward(score);
-        // m_AgentGroup.EndGroupEpisode();
-
-        // Swap ground material for a bit to indicate we scored.
-        StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
-        ResetScene();
-    }
-
-    public void ZombieTouchedBlock()
-    {
-        //Give Agents Penalties
-        // m_AgentGroup.AddGroupReward(-1);
         m_AgentGroup.EndGroupEpisode();
-
 
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.failMaterial, 0.5f));
@@ -317,88 +215,19 @@ public class DungeonEscapeEnvController : MonoBehaviour
             m_AgentGroup.RegisterAgent(item.Agent);
         }
 
-        //Reset Blocks
-        // LockedBlock.transform.position = GetRandomSpawnPos();
-        // LockedBlock.transform.rotation = GetRandomRot();
-        // LockTheBlock();
-
         //Reset Key
         Key.SetActive(false);
 
         //End Episode
-        foreach (var item in ZombiesList)
+        foreach (var item in DragonsList)
         {
             if (!item.Agent)
             {
                 return;
             }
-            // item.Agent.EndEpisode();
             item.Agent.transform.SetPositionAndRotation(item.StartingPos, item.StartingRot);
             item.Agent.SetRandomWalkSpeed();
             item.Agent.gameObject.SetActive(true);
         }
-
-
-
     }
-
-    // void ResetScene()
-    // {
-    //     m_ResetTimer = 0;
-    //
-    //     //Random platform rot
-    //     var rotation = Random.Range(0, 4);
-    //     var rotationAngle = rotation * 90f;
-    //     transform.Rotate(new Vector3(0f, rotationAngle, 0f));
-    //
-    //     //End Episode
-    //     foreach (var item in AgentsList)
-    //     {
-    //         if (!item.Agent)
-    //         {
-    //             return;
-    //         }
-    //         item.Agent.EndEpisode();
-    //     }
-    //     //Reset Agents
-    //     foreach (var item in AgentsList)
-    //     {
-    //         var pos = UseRandomAgentPosition ? GetRandomSpawnPos() : item.StartingPos;
-    //         var rot = UseRandomAgentRotation ? GetRandomRot() : item.StartingRot;
-    //
-    //         item.Agent.transform.SetPositionAndRotation(pos, rot);
-    //         item.Rb.velocity = Vector3.zero;
-    //         item.Rb.angularVelocity = Vector3.zero;
-    //         item.Agent.gameObject.SetActive(true);
-    //     }
-    //
-    //     //Reset Blocks
-    //     foreach (var item in BlocksList)
-    //     {
-    //         var pos = UseRandomBlockPosition ? GetRandomSpawnPos() : item.StartingPos;
-    //         var rot = UseRandomBlockRotation ? GetRandomRot() : item.StartingRot;
-    //
-    //         item.T.transform.SetPositionAndRotation(pos, rot);
-    //         item.Rb.velocity = Vector3.zero;
-    //         item.Rb.angularVelocity = Vector3.zero;
-    //         item.T.gameObject.SetActive(true);
-    //         // BlockIsLocked(item, true);
-    //     }
-    //     //End Episode
-    //     foreach (var item in ZombiesList)
-    //     {
-    //         if (!item.Agent)
-    //         {
-    //             return;
-    //         }
-    //         // item.Agent.EndEpisode();
-    //         item.Agent.transform.SetPositionAndRotation(item.StartingPos, item.StartingRot);
-    //         item.Agent.SetRandomWalkSpeed();
-    //         item.Agent.gameObject.SetActive(true);
-    //     }
-    //
-    //     //Reset counter
-    //     m_NumberOfRemainingBlocks = BlocksList.Count;
-    //     // m_NumberOfRemainingBlocks = 2;
-    // }
 }
