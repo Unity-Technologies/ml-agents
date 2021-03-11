@@ -12,14 +12,12 @@ namespace Unity.MLAgents.Tests
         {
         }
 
-        [TestCase(2)]
-        [TestCase(3)]
         public void Construction(int apiVersion)
         {
             var actionSpec = new ActionSpec();
             var alloc = new TensorCachingAllocator();
             var mem = new Dictionary<int, List<float>>();
-            var tensorGenerator = new TensorApplier(apiVersion, actionSpec, 0, alloc, mem);
+            var tensorGenerator = new TensorApplier(actionSpec, 0, alloc, mem);
             Assert.IsNotNull(tensorGenerator);
             alloc.Dispose();
         }

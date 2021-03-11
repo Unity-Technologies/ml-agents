@@ -39,14 +39,12 @@ namespace Unity.MLAgents.Inference
         /// <summary>
         /// Returns a new TensorAppliers object.
         /// </summary>
-        /// <param name="modelVersion"> The API version of the model.</param>
         /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         /// <param name="seed"> The seed the Appliers will be initialized with.</param>
         /// <param name="allocator"> Tensor allocator</param>
         /// <param name="memories">Dictionary of AgentInfo.id to memory used to pass to the inference model.</param>
         /// <param name="barracudaModel"></param>
         public TensorApplier(
-            int modelVersion,
             ActionSpec actionSpec,
             int seed,
             ITensorAllocator allocator,
@@ -72,11 +70,12 @@ namespace Unity.MLAgents.Inference
             if (actionSpec.NumDiscreteActions > 0)
             {
                 var tensorName = model.DiscreteOutputName();
-                if (modelVersion == BarracudaModelParamLoader.k_ApiVersionLegacy)
+                var modelVersion = model.GetVersion();
+                if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents1_0)
                 {
                     m_Dict[tensorName] = new DiscreteActionWithMultiNomialOutputApplier(actionSpec, seed, allocator);
                 }
-                if (modelVersion == BarracudaModelParamLoader.k_ApiVersion)
+                if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
                 {
                     m_Dict[tensorName] = new DiscreteActionOutputApplier(actionSpec, seed, allocator);
                 }

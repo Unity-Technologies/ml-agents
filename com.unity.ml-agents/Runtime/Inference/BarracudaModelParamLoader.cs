@@ -16,6 +16,14 @@ namespace Unity.MLAgents.Inference
     internal class BarracudaModelParamLoader
     {
 
+        internal enum ModelApiVersion
+        {
+            MLAgents1_0 = 2,
+            MLAgents2_0 = 3,
+            MinSupportedVersion = MLAgents1_0,
+            MaxSupportedVersion = MLAgents2_0
+        }
+
         internal enum CheckType
         {
             Info = 0,
@@ -28,9 +36,6 @@ namespace Unity.MLAgents.Inference
             public CheckType CheckType;
             public string Message;
         }
-
-        public const long k_ApiVersion = 3;
-        public const long k_ApiVersionLegacy = 2;
 
         /// <summary>
         /// Factory for the ModelParamLoader : Creates a ModelParamLoader and runs the checks
@@ -87,7 +92,7 @@ namespace Unity.MLAgents.Inference
                     });
                 return failedModelChecks;
             }
-            if (modelApiVersion != k_ApiVersion && modelApiVersion != k_ApiVersionLegacy)
+            if (modelApiVersion < (int)ModelApiVersion.MinSupportedVersion || modelApiVersion > (int)ModelApiVersion.MaxSupportedVersion)
             {
                 failedModelChecks.Add(
                     new FailedCheck
@@ -95,7 +100,8 @@ namespace Unity.MLAgents.Inference
                         CheckType = CheckType.Error,
                         Message =
                     $"Version of the trainer the model was trained with ({modelApiVersion}) " +
-                    $"is not compatible with the Brain's version ({k_ApiVersion})."
+                    $"is not compatible with the current range of supported versions:  " +
+                    $"({(int)ModelApiVersion.MinSupportedVersion} to {(int)ModelApiVersion.MaxSupportedVersion})."
                     });
                 return failedModelChecks;
             }
@@ -114,7 +120,7 @@ namespace Unity.MLAgents.Inference
             }
 
             var modelVersion = model.GetVersion();
-            if (modelVersion == k_ApiVersionLegacy)
+            if (modelVersion == (int)ModelApiVersion.MLAgents1_0)
             {
                 failedModelChecks.AddRange(
                     CheckInputTensorPresenceLegacy(model, brainParameters, memorySize, sensors)
@@ -123,7 +129,7 @@ namespace Unity.MLAgents.Inference
                     CheckInputTensorShapeLegacy(model, brainParameters, sensors, observableAttributeTotalSize)
                 );
             }
-            if (modelVersion == k_ApiVersion)
+            if (modelVersion == (int)ModelApiVersion.MLAgents2_0)
             {
                 failedModelChecks.AddRange(
                     CheckInputTensorPresence(model, brainParameters, memorySize, sensors)

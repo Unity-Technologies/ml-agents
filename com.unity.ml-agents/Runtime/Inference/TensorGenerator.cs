@@ -40,25 +40,24 @@ namespace Unity.MLAgents.Inference
         /// <summary>
         /// Returns a new TensorGenerators object.
         /// </summary>
-        /// <param name="modelVersion"> The API version of the model.</param>
         /// <param name="seed"> The seed the Generators will be initialized with.</param>
         /// <param name="allocator"> Tensor allocator.</param>
         /// <param name="memories">Dictionary of AgentInfo.id to memory for use in the inference model.</param>
         /// <param name="barracudaModel"></param>
         public TensorGenerator(
-            int modelVersion,
             int seed,
             ITensorAllocator allocator,
             Dictionary<int, List<float>> memories,
             object barracudaModel = null)
         {
-            m_ApiVersion = modelVersion;
             // If model is null, no inference to run and exception is thrown before reaching here.
             if (barracudaModel == null)
             {
                 return;
             }
             var model = (Model)barracudaModel;
+
+            m_ApiVersion = model.GetVersion();
 
             // Generator for Inputs
             m_Dict[TensorNames.BatchSizePlaceholder] =
@@ -97,7 +96,7 @@ namespace Unity.MLAgents.Inference
 
         public void InitializeObservations(List<ISensor> sensors, ITensorAllocator allocator)
         {
-            if (m_ApiVersion == BarracudaModelParamLoader.k_ApiVersionLegacy)
+            if (m_ApiVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents1_0)
             {
                 // Loop through the sensors on a representative agent.
                 // All vector observations use a shared ObservationGenerator since they are concatenated.
@@ -142,7 +141,7 @@ namespace Unity.MLAgents.Inference
                     m_Dict[obsGenName] = obsGen;
                 }
             }
-            if (m_ApiVersion == BarracudaModelParamLoader.k_ApiVersion)
+            if (m_ApiVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
             {
                 for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
                 {

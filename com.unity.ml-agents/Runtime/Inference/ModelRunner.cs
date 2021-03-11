@@ -97,11 +97,10 @@ namespace Unity.MLAgents.Inference
 
             m_InferenceInputs = barracudaModel.GetInputTensors();
             m_OutputNames = barracudaModel.GetOutputNames();
-            var apiVersion = barracudaModel.GetVersion();
             m_TensorGenerator = new TensorGenerator(
-                apiVersion, seed, m_TensorAllocator, m_Memories, barracudaModel);
+                seed, m_TensorAllocator, m_Memories, barracudaModel);
             m_TensorApplier = new TensorApplier(
-                apiVersion, actionSpec, seed, m_TensorAllocator, m_Memories, barracudaModel);
+                actionSpec, seed, m_TensorAllocator, m_Memories, barracudaModel);
             m_InputsByName = new Dictionary<string, Tensor>();
             m_InferenceOutputs = new List<TensorProxy>();
         }
