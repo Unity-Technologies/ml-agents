@@ -1,16 +1,34 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.iOS;
 
 namespace Unity.MLAgents
 {
     public class SampleExporter
     {
-        const string k_SceneFlag = "--mlagents-scene-path";
+        const string k_MLAgentsSampleFile = "mlagents-sample.json";
+        const string k_PackageSampleFile = ".sample.json";
+        const string k_MLAgentsDir = "ML-Agents";
+        const string k_MLAgentsExamplesDir = "Examples";
+        const string k_MLAgentsPackageName = "com.unity.ml-agents";
+        const string k_MLAgentsSamplesDirName = "Samples";
+        const string k_MLAgentsScriptsDirName = "Scripts";
+
+        struct MLAgentsSampleJson
+        {
+            public string displayName;
+            public string description;
+            public List<string> scenes;
+        }
+
+        struct PackageSampleJson
+        {
+            public string displayName;
+            public string description;
+        }
 
         public static void ExportCuratedSamples()
         {
@@ -18,35 +36,78 @@ namespace Unity.MLAgents
             EditorPrefs.SetBool("BurstCompilation", false);
             try
             {
-                var args = Environment.GetCommandLineArgs();
-                var scenes = new List<string>();
-                for (var i = 0; i < args.Length - 1; i++)
+                // Path to Project/Assets
+                var assetsDir = Application.dataPath;
+                var repoRoot = Directory.GetParent(Directory.GetParent(assetsDir).FullName).FullName;
+
+                // Top level of where to store the samples
+                var samplesDir = Path.Combine(
+                    repoRoot,
+                    k_MLAgentsPackageName,
+                    k_MLAgentsSamplesDirName);
+
+                if (!Directory.Exists(samplesDir))
                 {
-                    if (args[i] == k_SceneFlag)
-                    {
-                        scenes.Add(args[i + 1]);
-                        Debug.Log($"Exporting Scene {scenes.Last()}");
-                    }
+                    Directory.CreateDirectory(samplesDir);
                 }
 
-                foreach (var scene in scenes)
+                // Path to the examples dir in the project
+                var examplesDir = Path.Combine(Application.dataPath, k_MLAgentsDir, k_MLAgentsExamplesDir);
+                foreach (var exampleDirectory in Directory.GetDirectories(examplesDir))
                 {
-                    var assets = new List<string> { scene };
-                    var exampleFolderToAdd = Directory.GetParent(Directory.GetParent(scene).FullName).FullName;
-                    Debug.Log($"Parent of Scene: {exampleFolderToAdd}");
-                    if (Directory.Exists(Path.Combine(exampleFolderToAdd, "Scripts")))
+                    var mlAgentsSamplePath = Path.Combine(exampleDirectory, k_MLAgentsSampleFile);
+                    if (File.Exists(mlAgentsSamplePath))
                     {
-                        exampleFolderToAdd = Path.Combine(exampleFolderToAdd, "Scripts");
-                    }
+                        var sampleJson = JsonConvert.DeserializeObject<MLAgentsSampleJson>(File.ReadAllText(mlAgentsSamplePath));
+                        Debug.Log(JsonConvert.SerializeObject(sampleJson));
+                        foreach (var scene in sampleJson.scenes)
+                        {
+                            var scenePath = Path.Combine(exampleDirectory, scene);
+                            if (File.Exists(scenePath))
+                            {
+                                // Create a Sample Directory
+                                var currentSampleDir = Directory.CreateDirectory(Path.Combine(samplesDir,
+                                    Path.GetFileNameWithoutExtension(scenePath)));
 
-                    exampleFolderToAdd = exampleFolderToAdd.Substring(exampleFolderToAdd.IndexOf("Assets"));
-                    foreach (var guid in AssetDatabase.FindAssets("t:Script", new[] { exampleFolderToAdd }))
-                    {
-                        var path = AssetDatabase.GUIDToAssetPath(guid);
-                        assets.Add(path);
-                        Debug.Log($"Adding Asset: {path}");
+
+                                var scriptsPath = Path.Combine(exampleDirectory, k_MLAgentsScriptsDirName);
+                                Debug.Log($"Scene Path: {scenePath}");
+                                var assets = new List<string> { scenePath.Substring(scenePath.IndexOf("Assets")) };
+                                if (!Directory.Exists(Path.Combine(scriptsPath)))
+                                {
+                                    scriptsPath = exampleDirectory;
+                                }
+
+                                scriptsPath = scriptsPath.Substring(scriptsPath.IndexOf("Assets"));
+                                foreach (var guid in AssetDatabase.FindAssets("t:Script", new[] { scriptsPath }))
+                                {
+                                    var path = AssetDatabase.GUIDToAssetPath(guid);
+                                    assets.Add(path);
+                                    Debug.Log($"Adding Asset: {path}");
+                                }
+
+                                var packageFilePath = Path.GetFileNameWithoutExtension(scenePath) + ".unitypackage";
+                                AssetDatabase.ExportPackage(assets.ToArray(),
+                                    Path.Combine(Application.dataPath, packageFilePath),
+                                    ExportPackageOptions.IncludeDependencies | ExportPackageOptions.Recurse);
+
+                                // Move the .unitypackage into the samples folder.
+                                var packageFileFullPath = Path.Combine(Application.dataPath, packageFilePath);
+
+                                var packageInSamplePath = Path.Combine(currentSampleDir.FullName, packageFilePath);
+                                Debug.Log($"Moving {packageFileFullPath} to {packageInSamplePath}");
+                                File.Move(packageFileFullPath, packageInSamplePath);
+
+                                // write the .sample.json file to the sample directory
+                                File.WriteAllText(Path.Combine(currentSampleDir.FullName, k_PackageSampleFile),
+                                    JsonConvert.SerializeObject(new PackageSampleJson
+                                    {
+                                        description = sampleJson.description,
+                                        displayName = sampleJson.displayName
+                                    }));
+                            }
+                        }
                     }
-                    AssetDatabase.ExportPackage(assets.ToArray(), Path.GetFileNameWithoutExtension(scene) + ".unitypackage", ExportPackageOptions.IncludeDependencies | ExportPackageOptions.Recurse);
                 }
             }
             catch (Exception e)
