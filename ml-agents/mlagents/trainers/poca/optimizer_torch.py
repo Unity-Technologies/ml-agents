@@ -76,11 +76,19 @@ class TorchPOCAOptimizer(TorchOptimizer):
             actions: List[AgentAction],
             memories: Optional[torch.Tensor] = None,
             sequence_length: int = 1,
-        ) -> Tuple[torch.Tensor, torch.Tensor]:
+        ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
             """
             The POCA baseline marginalizes the action of the agent associated with self_obs.
             It calls the forward pass of the MultiAgentNetworkBody with the state action
             pairs of groupmates but just the state of the agent in question.
+            :param self_obs: The obs of the agent for w.r.t. which to compute the baseline
+            :param obs: List of observations for all groupmates. Should be the same length
+                as actions.
+            :param actions: List of actions for all groupmates. Should be the same length
+                as obs.
+            :param memories: If using memory, a Tensor of initial memories.
+            :param sequence_length: If using memory, the sequence length.
+            :return: A Tuple of Dict of reward stream to tensor and critic memories.
             """
             encoding, memories = self.network_body(
                 obs_only=self_obs,
@@ -99,10 +107,14 @@ class TorchPOCAOptimizer(TorchOptimizer):
             obs: List[List[torch.Tensor]],
             memories: Optional[torch.Tensor] = None,
             sequence_length: int = 1,
-        ) -> Tuple[torch.Tensor, torch.Tensor]:
+        ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
             """
             A centralized value function. It calls the forward pass of MultiAgentNetworkBody
             with just the states of all agents.
+            :param obs: List of observations for all agents in group
+            :param memories: If using memory, a Tensor of initial memories.
+            :param sequence_length: If using memory, the sequence length.
+            :return: A Tuple of Dict of reward stream to tensor and critic memories.
             """
             encoding, memories = self.network_body(
                 obs_only=obs,
