@@ -21,7 +21,7 @@ from mlagents.trainers.settings import (
     RewardSignalSettings,
     RewardSignalType,
     TrainerSettings,
-    PPOSettings,
+    POCASettings,
 )
 from mlagents.trainers.torch.networks import Critic, MultiAgentNetworkBody
 from mlagents.trainers.torch.decoders import ValueHeads
@@ -147,8 +147,8 @@ class TorchPOCAOptimizer(TorchOptimizer):
         )
 
         params = list(self.policy.actor.parameters()) + list(self.critic.parameters())
-        self.hyperparameters: PPOSettings = cast(
-            PPOSettings, trainer_settings.hyperparameters
+        self.hyperparameters: POCASettings = cast(
+            POCASettings, trainer_settings.hyperparameters
         )
         self.decay_learning_rate = ModelUtils.DecayedValue(
             self.hyperparameters.learning_rate_schedule,

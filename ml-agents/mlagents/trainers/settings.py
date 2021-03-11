@@ -162,6 +162,10 @@ class SACSettings(HyperparamSettings):
         return self.steps_per_update
 
 
+# POCA uses the same hyperparameters as PPO
+POCASettings = PPOSettings
+
+
 # INTRINSIC REWARD SIGNALS #############################################################
 class RewardSignalType(Enum):
     EXTRINSIC: str = "extrinsic"
@@ -606,7 +610,7 @@ class TrainerType(Enum):
         _mapping = {
             TrainerType.PPO: PPOSettings,
             TrainerType.SAC: SACSettings,
-            TrainerType.POCA: PPOSettings,
+            TrainerType.POCA: POCASettings,
         }
         return _mapping[self]
 

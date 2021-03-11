@@ -17,7 +17,7 @@ from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
-from mlagents.trainers.settings import TrainerSettings, PPOSettings
+from mlagents.trainers.settings import TrainerSettings, POCASettings
 
 logger = get_logger(__name__)
 
@@ -53,8 +53,8 @@ class POCATrainer(RLTrainer):
             artifact_path,
             reward_buff_cap,
         )
-        self.hyperparameters: PPOSettings = cast(
-            PPOSettings, self.trainer_settings.hyperparameters
+        self.hyperparameters: POCASettings = cast(
+            POCASettings, self.trainer_settings.hyperparameters
         )
         self.seed = seed
         self.policy: TorchPolicy = None  # type: ignore
