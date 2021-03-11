@@ -14,10 +14,11 @@ namespace Unity.MLAgents.Editor
     internal class MLAgentsSettingsProvider : SettingsProvider, IDisposable
     {
         const string k_SettingsPath = "Project/ML Agents";
-        const string k_CustomSettingsPath = "Assets/MLAgents.settings.asset";
         private static MLAgentsSettingsProvider s_Instance;
-        private string[] m_AvailableInputSettingsAssets;
-        private GUIContent[] m_AvailableSettingsAssetsOptions;
+        private string[] m_AvailableSettingsAssets;
+        // private GUIContent[] m_AvailableSettingsGUIList;
+        // store asset index for highlighting in drop-down
+        private int m_CurrentSelectedSettingsAsset;
         private SerializedObject m_SettingsObject;
         [SerializeField]
         private MLAgentsSettings m_Settings;
@@ -29,16 +30,22 @@ namespace Unity.MLAgents.Editor
             s_Instance = this;
         }
 
+        [SettingsProvider]
+        public static SettingsProvider CreateMLAgentsSettingsProvider()
+        {
+            return new MLAgentsSettingsProvider(k_SettingsPath, SettingsScope.Project);
+        }
+
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
             base.OnActivate(searchContext, rootElement);
-            MLAgentsSettings.OnSettingsChange += OnSettingsChange;
+            MLAgentsManager.OnSettingsChange += Reinitialize;
         }
 
         public override void OnDeactivate()
         {
             base.OnDeactivate();
-            MLAgentsSettings.OnSettingsChange -= OnSettingsChange;
+            MLAgentsManager.OnSettingsChange -= Reinitialize;
         }
 
         public void Dispose()
@@ -46,34 +53,73 @@ namespace Unity.MLAgents.Editor
             m_SettingsObject?.Dispose();
         }
 
-        [SettingsProvider]
-        public static SettingsProvider CreateMLAgentsSettingsProvider()
-        {
-            return new MLAgentsSettingsProvider(k_SettingsPath, SettingsScope.Project);
-        }
-
-        public static bool IsSettingsAvailable()
-        {
-            return File.Exists(k_CustomSettingsPath);
-        }
-
         public override void OnTitleBarGUI()
         {
             if (EditorGUILayout.DropdownButton(EditorGUIUtility.IconContent("_Popup"), FocusType.Passive, EditorStyles.label))
             {
                 var menu = new GenericMenu();
-                menu.AddDisabledItem(new GUIContent("Available Settings Assets:"));
-                menu.AddSeparator("");
-                for (var i = 0; i < m_AvailableSettingsAssetsOptions.Length; i++)
-                    menu.AddItem(new GUIContent(m_AvailableSettingsAssetsOptions[i]), m_CurrentSelectedInputSettingsAsset == i, (path) =>
+                for (var i = 0; i < m_AvailableSettingsAssets.Length; i++)
+                    menu.AddItem(ExtractDisplayName(m_AvailableSettingsAssets[i]), m_CurrentSelectedSettingsAsset == i, (path) =>
                     {
-                        InputSystem.settings = AssetDatabase.LoadAssetAtPath<InputSettings>((string)path);
-                    }, m_AvailableInputSettingsAssets[i]);
+                        MLAgentsManager.Settings = AssetDatabase.LoadAssetAtPath<MLAgentsSettings>((string)path);
+                    }, m_AvailableSettingsAssets[i]);
                 menu.AddSeparator("");
                 menu.AddItem(new GUIContent("New Settings Asset…"), false, CreateNewSettingsAsset);
                 menu.ShowAsContext();
                 Event.current.Use();
             }
+        }
+
+        private GUIContent ExtractDisplayName(string name)
+        {
+            if (name.StartsWith("Assets/"))
+                name = name.Substring("Assets/".Length);
+            if (name.EndsWith(".asset"))
+                name = name.Substring(0, name.Length - ".asset".Length);
+            if (name.EndsWith(".mlagents.settings"))
+                name = name.Substring(0, name.Length - ".settings".Length);
+
+            // Ugly hack: GenericMenu iterprets "/" as a submenu path. But luckily, "/" is not the only slash we have in Unicode.
+            return new GUIContent(name.Replace("/", "\u29f8"));
+        }
+
+        private void CreateNewSettingsAsset()
+        {
+            // Query for file name.
+            var projectName = PlayerSettings.productName;
+            var path = EditorUtility.SaveFilePanel("Create ML-Agents Settings File", "Assets",
+                projectName + ".mlagents.settings", "asset");
+            if (string.IsNullOrEmpty(path))
+                return;
+
+            // Make sure the path is in the Assets/ folder.
+            path = path.Replace("\\", "/"); // Make sure we only get '/' separators.
+            var dataPath = Application.dataPath + "/";
+            if (!path.StartsWith(dataPath, StringComparison.CurrentCultureIgnoreCase))
+            {
+                Debug.LogError(string.Format(
+                    "Settings must be stored in Assets folder of the project (got: '{0}')", path));
+                return;
+            }
+
+            // Make sure it ends with .asset.
+            var extension = Path.GetExtension(path);
+            if (string.Compare(extension, ".asset", StringComparison.InvariantCultureIgnoreCase) != 0)
+                path += ".asset";
+
+            // Create settings file.
+            var relativePath = "Assets/" + path.Substring(dataPath.Length);
+            CreateNewSettingsAsset(relativePath);
+        }
+
+        private static void CreateNewSettingsAsset(string relativePath)
+        {
+            var settings = ScriptableObject.CreateInstance<MLAgentsSettings>();
+            AssetDatabase.CreateAsset(settings, relativePath);
+            EditorGUIUtility.PingObject(settings);
+            // Install the settings. This will lead to an MLAgentsManager.OnSettingsChange event which in turn
+            // will cause us to re-initialize.
+            MLAgentsManager.Settings = settings;
         }
 
         public override void OnGUI(string searchContext)
@@ -83,17 +129,17 @@ namespace Unity.MLAgents.Editor
                 InitializeWithCurrentSettings();
             }
 
-            if (!IsSettingsAvailable())
+            if (m_AvailableSettingsAssets.Length == 0)
             {
                 EditorGUILayout.HelpBox(
                     "Click the button below to create a settings asset you can edit.",
                     MessageType.Info);
                 if (GUILayout.Button("Create settings asset", GUILayout.Height(30)))
-                    CreateNewSettingsAsset(k_CustomSettingsPath);
+                    CreateNewSettingsAsset();
                 GUILayout.Space(20);
             }
 
-            using (new EditorGUI.DisabledScope(!IsSettingsAvailable()))
+            using (new EditorGUI.DisabledScope(m_AvailableSettingsAssets.Length == 0))
             {
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.PropertyField(m_SettingsObject.FindProperty("m_ConnectTrainer"), new GUIContent("Connect to Trainer"));
@@ -103,52 +149,30 @@ namespace Unity.MLAgents.Editor
             }
         }
 
-        private static void CreateNewSettingsAsset(string relativePath)
-        {
-            var settings = ScriptableObject.CreateInstance<MLAgentsSettings>();
-            AssetDatabase.CreateAsset(settings, relativePath);
-            EditorGUIUtility.PingObject(settings);
-            // Install the settings. This will lead to an MLAgentsSettings.OnSettingsChange event which in turn
-            // will cause us to re-initialize.
-            MLAgentsSettings.Instance = settings;
-        }
-
         internal void InitializeWithCurrentSettings()
         {
             // Find the set of available assets in the project.
-            m_AvailableInputSettingsAssets = FindSettingsInProject();
+            m_AvailableSettingsAssets = FindSettingsInProject();
 
-            m_Settings = MLAgentsSettings.Instance;
+            m_Settings = MLAgentsManager.Settings;
             var currentSettingsPath = AssetDatabase.GetAssetPath(m_Settings);
-
             if (string.IsNullOrEmpty(currentSettingsPath))
             {
-                if (m_AvailableInputSettingsAssets.Length != 0)
+                if (m_AvailableSettingsAssets.Length > 0)
                 {
-                    m_CurrentSelectedInputSettingsAsset = 0;
-                    m_Settings = AssetDatabase.LoadAssetAtPath<InputSettings>(m_AvailableInputSettingsAssets[0]);
-                    InputSystem.settings = m_Settings;
+                    m_CurrentSelectedSettingsAsset = 0;
+                    m_Settings = AssetDatabase.LoadAssetAtPath<MLAgentsSettings>(m_AvailableSettingsAssets[0]);
+                    MLAgentsManager.Settings = m_Settings;
                 }
             }
             else
             {
-                m_CurrentSelectedInputSettingsAsset = ArrayHelpers.IndexOf(m_AvailableInputSettingsAssets, currentSettingsPath);
-                if (m_CurrentSelectedInputSettingsAsset == -1)
-                {
-                    // This is odd and shouldn't happen. Solve by just adding the path to the list.
-                    m_CurrentSelectedInputSettingsAsset =
-                        ArrayHelpers.Append(ref m_AvailableInputSettingsAssets, currentSettingsPath);
-                }
+                var settingsList = m_AvailableSettingsAssets.ToList();
+                m_CurrentSelectedSettingsAsset = settingsList.IndexOf(currentSettingsPath);
 
-                ////REVIEW: should we store this by platform?
-                EditorBuildSettings.AddConfigObject(kEditorBuildSettingsConfigKey, m_Settings, true);
+                EditorBuildSettings.AddConfigObject(MLAgentsManager.EditorBuildSettingsConfigKey, m_Settings, true);
             }
 
-            // if (IsSettingsAvailable())
-            // {
-            //     m_Settings = AssetDatabase.LoadAssetAtPath<MLAgentsSettings>(k_CustomSettingsPath);
-            //     MLAgentsSettings.Instance = m_Settings;
-            // }
             m_SettingsObject = new SerializedObject(m_Settings);
         }
 
@@ -158,9 +182,9 @@ namespace Unity.MLAgents.Editor
             return guids.Select(guid => AssetDatabase.GUIDToAssetPath(guid)).ToArray();
         }
 
-        private void OnSettingsChange()
+        private void Reinitialize()
         {
-            if (m_Settings != null && MLAgentsSettings.Instance != m_Settings)
+            if (m_Settings != null && MLAgentsManager.Settings != m_Settings)
             {
                 InitializeWithCurrentSettings();
             }

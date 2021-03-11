@@ -1,24 +1,23 @@
-using System;
-using System.Linq;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace Unity.MLAgents
 {
     class MLAgentsSettings : ScriptableObject
     {
-        private static MLAgentsSettings s_Instance;
-        internal static event Action OnSettingsChange;
-
-        const string k_CustomSettingsPath = "Assets/MLAgents.settings.asset";
-
-        [SerializeField]
-        private int m_EditorPort = 5004;
         [SerializeField]
         private bool m_ConnectTrainer = true;
+        [SerializeField]
+        private int m_EditorPort = 5004;
 
+        public bool ConnectTrainer
+        {
+            get { return m_ConnectTrainer; }
+            set
+            {
+                m_ConnectTrainer = value;
+                OnChange();
+            }
+        }
 
         public int EditorPort
         {
@@ -26,47 +25,14 @@ namespace Unity.MLAgents
             set
             {
                 m_EditorPort = value;
-            }
-        }
-        public bool ConnectTrainer
-        {
-            get { return m_ConnectTrainer; }
-            set
-            {
-                m_ConnectTrainer = value;
-            }
-        }
-
-        public static MLAgentsSettings Instance
-        {
-            get
-            {
-                if (s_Instance == null)
-                {
-#if UNITY_EDITOR
-                    var settings = AssetDatabase.LoadAssetAtPath<MLAgentsSettings>(k_CustomSettingsPath);
-                    if (settings == null)
-                    {
-                        settings = ScriptableObject.CreateInstance<MLAgentsSettings>();
-                    }
-                    s_Instance = settings;
-#else
-                    s_Instance = Resources.FindObjectsOfTypeAll<MLAgentsSettings>().FirstOrDefault() ?? ScriptableObject.CreateInstance<MLAgentsSettings>();
-#endif
-                }
-                return s_Instance;
-            }
-            set
-            {
-                s_Instance = value;
-                s_Instance.OnChange();
+                OnChange();
             }
         }
 
         internal void OnChange()
         {
-            if (MLAgentsSettings.Instance == this)
-                OnSettingsChange.Invoke();
+            if (MLAgentsManager.Settings == this)
+                MLAgentsManager.ApplySettings();
         }
     }
 }

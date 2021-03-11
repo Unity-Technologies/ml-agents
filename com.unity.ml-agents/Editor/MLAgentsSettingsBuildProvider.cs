@@ -1,6 +1,4 @@
-using System;
 using System.Linq;
-using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -20,9 +18,9 @@ namespace Unity.MLAgents.Editor
             m_SettingsAddedToPreloadedAssets = null;
 
             var preloadedAssets = PlayerSettings.GetPreloadedAssets().ToList();
-            if (!preloadedAssets.Contains(MLAgentsSettings.Instance))
+            if (!preloadedAssets.Contains(MLAgentsManager.Settings))
             {
-                m_SettingsAddedToPreloadedAssets = MLAgentsSettings.Instance;
+                m_SettingsAddedToPreloadedAssets = MLAgentsManager.Settings;
                 preloadedAssets.Add(m_SettingsAddedToPreloadedAssets);
                 PlayerSettings.SetPreloadedAssets(preloadedAssets.ToArray());
             }
@@ -72,6 +70,5 @@ namespace Unity.MLAgents.Editor
                 EditorUtility.ClearDirty(settings[0]);
 #endif
         }
-
     }
 }
