@@ -4182,7 +4182,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: 8c86d7c7d97b2440eb89f0b3b43d3952,
+      objectReference: {fileID: 11400000, guid: b084c4e4592dc4825b4bc433358fcd75,
         type: 3}
     - target: {fileID: 4828233698206621445, guid: f3c5280e4ae094a9a9b8b6702630c941,
         type: 3}
@@ -4280,7 +4280,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: 8c86d7c7d97b2440eb89f0b3b43d3952,
+      objectReference: {fileID: 11400000, guid: b084c4e4592dc4825b4bc433358fcd75,
         type: 3}
     - target: {fileID: 4828233698206621445, guid: f3c5280e4ae094a9a9b8b6702630c941,
         type: 3}
