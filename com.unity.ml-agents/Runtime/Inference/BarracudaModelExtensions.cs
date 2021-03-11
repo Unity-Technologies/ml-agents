@@ -239,7 +239,7 @@ namespace Unity.MLAgents.Inference
             else
             {
                 return model.outputs.Contains(TensorNames.DiscreteActionOutput) &&
-                    (int)model.GetTensorByName(TensorNames.DiscreteActionOutputShape)[0] > 0;
+                    (int)model.DiscreteOutputSize() > 0;
             }
         }
 
@@ -262,7 +262,19 @@ namespace Unity.MLAgents.Inference
             else
             {
                 var discreteOutputShape = model.GetTensorByName(TensorNames.DiscreteActionOutputShape);
-                return discreteOutputShape == null ? 0 : (int)discreteOutputShape[0];
+                if (discreteOutputShape == null)
+                {
+                    return 0;
+                }
+                else
+                {
+                    int result = 0;
+                    for (int i = 0; i < discreteOutputShape.length; i++)
+                    {
+                        result += (int)discreteOutputShape[i];
+                    }
+                    return result;
+                }
             }
         }
 

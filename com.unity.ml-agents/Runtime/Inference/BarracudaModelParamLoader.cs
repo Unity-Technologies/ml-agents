@@ -716,8 +716,19 @@ namespace Unity.MLAgents.Inference
             {
                 failedModelChecks.Add(continuousError);
             }
-            var modelSumDiscreteBranchSizes = model.DiscreteOutputSize();
-            var discreteError = CheckDiscreteActionOutputShape(brainParameters, actuatorComponents, modelSumDiscreteBranchSizes);
+            FailedCheck discreteError = null;
+            var modelApiVersion = model.GetVersion();
+            if (modelApiVersion == (int)ModelApiVersion.MLAgents1_0)
+            {
+                var modelSumDiscreteBranchSizes = model.DiscreteOutputSize();
+                discreteError = CheckDiscreteActionOutputShapeLegacy(brainParameters, actuatorComponents, modelSumDiscreteBranchSizes);
+            }
+            if (modelApiVersion == (int)ModelApiVersion.MLAgents2_0)
+            {
+                var modeDiscreteBranches = model.GetTensorByName(TensorNames.DiscreteActionOutputShape);
+                discreteError = CheckDiscreteActionOutputShape(brainParameters, actuatorComponents, modeDiscreteBranches);
+            }
+
             if (discreteError != null)
             {
                 failedModelChecks.Add(discreteError);
@@ -733,6 +744,50 @@ namespace Unity.MLAgents.Inference
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
         /// </param>
         /// <param name="actuatorComponents">Array of attached actuator components.</param>
+        /// <param name="modelDiscreteBranches"> The Tensor of branch sizes.
+        /// </param>
+        /// <returns>
+        /// If the Check failed, returns a string containing information about why the
+        /// check failed. If the check passed, returns null.
+        /// </returns>
+        static FailedCheck CheckDiscreteActionOutputShape(
+            BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, Tensor modelDiscreteBranches)
+        {
+
+            var discreteActionBranches = brainParameters.ActionSpec.BranchSizes.ToList();
+            foreach (var actuatorComponent in actuatorComponents)
+            {
+                var actionSpec = actuatorComponent.ActionSpec;
+                discreteActionBranches.AddRange(actionSpec.BranchSizes);
+            }
+
+            if (modelDiscreteBranches.length != discreteActionBranches.Count)
+            {
+                return FailedCheck.Warning("Discrete Action Size of the model does not match. The BrainParameters expect " +
+                    $"{discreteActionBranches.Count} branches but the model contains {modelDiscreteBranches.length}."
+                );
+            }
+
+            for (int i = 0; i < modelDiscreteBranches.length; i++)
+            {
+                if (modelDiscreteBranches[i] != discreteActionBranches[i])
+                {
+                    return FailedCheck.Warning($"The number of Discrete Actions of branch {i} does not match. " +
+                    $"Was expecting {discreteActionBranches[i]} but the model contains {modelDiscreteBranches[i]} "
+                    );
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Checks that the shape of the discrete action output is the same in the
+        /// model and in the Brain Parameters. Tests the models created with the API of version 1.X
+        /// </summary>
+        /// <param name="brainParameters">
+        /// The BrainParameters that are used verify the compatibility with the InferenceEngine
+        /// </param>
+        /// <param name="actuatorComponents">Array of attached actuator components.</param>
         /// <param name="modelSumDiscreteBranchSizes">
         /// The size of the discrete action output that is expected by the model.
         /// </param>
@@ -740,7 +795,7 @@ namespace Unity.MLAgents.Inference
         /// If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.
         /// </returns>
-        static FailedCheck CheckDiscreteActionOutputShape(
+        static FailedCheck CheckDiscreteActionOutputShapeLegacy(
             BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, int modelSumDiscreteBranchSizes)
         {
             // TODO: check each branch size instead of sum of branch sizes
