@@ -49,7 +49,8 @@ namespace Unity.MLAgents.Inference
         /// <returns>The api version of the model</returns>
         public static int GetVersion(this Model model)
         {
-            return (int)model.GetTensorByName(TensorNames.VersionNumber)[0];
+            return 3;
+            // return (int)model.GetTensorByName(TensorNames.VersionNumber)[0];
         }
 
         /// <summary>

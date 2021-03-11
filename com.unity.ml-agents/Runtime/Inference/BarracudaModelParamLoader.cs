@@ -63,7 +63,7 @@ namespace Unity.MLAgents.Inference
         /// <param name="actuatorComponents">Attached actuator components</param>
         /// <param name="observableAttributeTotalSize">Sum of the sizes of all ObservableAttributes.</param>
         /// <param name="behaviorType">BehaviorType or the Agent to check.</param>
-        /// <returns>The list the error messages of the checks that failed</returns>
+        /// <returns>A IEnumerable of the checks that failed</returns>
         public static IEnumerable<FailedCheck> CheckModel(Model model, BrainParameters brainParameters,
             ISensor[] sensors, ActuatorComponent[] actuatorComponents,
             int observableAttributeTotalSize = 0,
@@ -81,7 +81,7 @@ namespace Unity.MLAgents.Inference
                 {
                     errorMsg += "(But can still train)";
                 }
-                failedModelChecks.Add(FailedCheck.Warning(errorMsg));
+                failedModelChecks.Add(FailedCheck.Info(errorMsg));
                 return failedModelChecks;
             }
 
@@ -91,7 +91,7 @@ namespace Unity.MLAgents.Inference
                 return failedModelChecks;
             }
 
-            var modelApiVersion = (int)model.GetTensorByName(TensorNames.VersionNumber)[0];
+            var modelApiVersion = model.GetVersion();
             if (modelApiVersion == -1)
             {
                 failedModelChecks.Add(
@@ -165,7 +165,7 @@ namespace Unity.MLAgents.Inference
         /// </param>
         /// <param name="sensors">Array of attached sensor components</param>
         /// <returns>
-        /// A IEnumerable of string corresponding to the failed input presence checks.
+        /// A IEnumerable of the checks that failed
         /// </returns>
         static IEnumerable<FailedCheck> CheckInputTensorPresenceLegacy(
             Model model,
@@ -269,7 +269,7 @@ namespace Unity.MLAgents.Inference
         /// </param>
         /// <param name="sensors">Array of attached sensor components</param>
         /// <returns>
-        /// A IEnumerable of string corresponding to the failed input presence checks.
+        /// A IEnumerable of the checks that failed
         /// </returns>
         static IEnumerable<FailedCheck> CheckInputTensorPresence(
             Model model,
@@ -327,7 +327,7 @@ namespace Unity.MLAgents.Inference
         /// </param>
         /// <param name="memory">The memory size that the model is expecting/</param>
         /// <returns>
-        /// A IEnumerable of string corresponding to the failed output presence checks.
+        /// A IEnumerable of the checks that failed
         /// </returns>
         static IEnumerable<FailedCheck> CheckOutputTensorPresence(Model model, int memory)
         {
@@ -459,7 +459,7 @@ namespace Unity.MLAgents.Inference
         /// </param>
         /// <param name="sensors">Attached sensors</param>
         /// <param name="observableAttributeTotalSize">Sum of the sizes of all ObservableAttributes.</param>
-        /// <returns>The list the error messages of the checks that failed</returns>
+        /// <returns>A IEnumerable of the checks that failed</returns>
         static IEnumerable<FailedCheck> CheckInputTensorShapeLegacy(
             Model model, BrainParameters brainParameters, ISensor[] sensors,
             int observableAttributeTotalSize)
@@ -599,7 +599,7 @@ namespace Unity.MLAgents.Inference
         /// </param>
         /// <param name="sensors">Attached sensors</param>
         /// <param name="observableAttributeTotalSize">Sum of the sizes of all ObservableAttributes.</param>
-        /// <returns>The list the error messages of the checks that failed</returns>
+        /// <returns>A IEnumerable of the checks that failed</returns>
         static IEnumerable<FailedCheck> CheckInputTensorShape(
             Model model, BrainParameters brainParameters, ISensor[] sensors,
             int observableAttributeTotalSize)
@@ -701,7 +701,7 @@ namespace Unity.MLAgents.Inference
         /// </param>
         /// <param name="actuatorComponents">Array of attached actuator components.</param>
         /// <returns>
-        /// A IEnumerable of string corresponding to the incompatible shapes between model
+        /// A IEnumerable of error messages corresponding to the incompatible shapes between model
         /// and BrainParameters.
         /// </returns>
         static IEnumerable<FailedCheck> CheckOutputTensorShape(
