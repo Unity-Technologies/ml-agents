@@ -248,10 +248,10 @@ class TorchPOCAOptimizer(TorchOptimizer):
         current_obs = ObsUtil.from_buffer(batch, n_obs)
         # Convert to tensors
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
-        group_obs = GroupObsUtil.from_buffer(batch, n_obs)
-        group_obs = [
+        groupmate_obs = GroupObsUtil.from_buffer(batch, n_obs)
+        groupmate_obs = [
             [ModelUtils.list_to_tensor(obs) for obs in _groupmate_obs]
-            for _groupmate_obs in group_obs
+            for _groupmate_obs in groupmate_obs
         ]
 
         act_masks = ModelUtils.list_to_tensor(batch[BufferKey.ACTION_MASK])
@@ -289,7 +289,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
             memories=memories,
             seq_len=self.policy.sequence_length,
         )
-        all_obs = [current_obs] + group_obs
+        all_obs = [current_obs] + groupmate_obs
         values, _ = self.critic.critic_pass(
             all_obs,
             memories=value_memories,
@@ -297,7 +297,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
         )
         baselines, _ = self.critic.baseline(
             [current_obs],
-            group_obs,
+            groupmate_obs,
             group_actions,
             memories=baseline_memories,
             sequence_length=self.policy.sequence_length,
@@ -538,7 +538,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
         self,
         batch: AgentBuffer,
         next_obs: List[np.ndarray],
-        next_group_obs: List[List[np.ndarray]],
+        next_groupmate_obs: List[List[np.ndarray]],
         done: bool,
         agent_id: str = "",
     ) -> Tuple[
@@ -553,7 +553,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
         :param batch: An AgentBuffer that consists of a trajectory.
         :param next_obs: the next observation (after the trajectory). Used for boostrapping
             if this is not a termiinal trajectory.
-        :param next_group_obs: the next observations from other members of the group.
+        :param next_groupmate_obs: the next observations from other members of the group.
         :param done: Set true if this is a terminal trajectory.
         :param agent_id: Agent ID of the agent that this trajectory belongs to.
         :returns: A Tuple of the Value Estimates as a Dict of [name, np.ndarray(trajectory_len)],
@@ -578,12 +578,14 @@ class TorchPOCAOptimizer(TorchOptimizer):
         next_obs = [ModelUtils.list_to_tensor(obs) for obs in next_obs]
         next_obs = [obs.unsqueeze(0) for obs in next_obs]
 
-        next_group_obs = [
-            ModelUtils.list_to_tensor_list(_list_obs) for _list_obs in next_group_obs
+        next_groupmate_obs = [
+            ModelUtils.list_to_tensor_list(_list_obs)
+            for _list_obs in next_groupmate_obs
         ]
         # Expand dimensions of next critic obs
-        next_group_obs = [
-            [_obs.unsqueeze(0) for _obs in _list_obs] for _list_obs in next_group_obs
+        next_groupmate_obs = [
+            [_obs.unsqueeze(0) for _obs in _list_obs]
+            for _list_obs in next_groupmate_obs
         ]
 
         if agent_id in self.value_memory_dict:
@@ -638,7 +640,9 @@ class TorchPOCAOptimizer(TorchOptimizer):
         self.baseline_memory_dict[agent_id] = next_baseline_mem
 
         all_next_obs = (
-            [next_obs] + next_group_obs if next_group_obs is not None else [next_obs]
+            [next_obs] + next_groupmate_obs
+            if next_groupmate_obs is not None
+            else [next_obs]
         )
 
         next_value_estimates, _ = self.critic.critic_pass(
