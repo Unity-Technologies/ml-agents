@@ -467,25 +467,31 @@ blocks require all 3 agents to push and are worth +3.
 - Goal: Push all blocks into the goal.
 - Agents: The environment contains three Agents in a Multi Agent Group.
 - Agent Reward Function:
-  - -(1/15000) Existential penalty.
-  - +1, +2, or +3 for pushing in a block
+  - -(1/15000) Existential penalty, as a group reward.
+  - +1, +2, or +3 for pushing in a block, added as a group reward.
 - Behavior Parameters:
   - Observation space: A single Grid Sensor with separate tags for each block size,
-    the goal, and other agents.
+    the goal, the walls, and other agents.
   - Actions: 1 discrete action branch with 7 actions, corresponding to turn clockwise
     and counterclockwise, move along four different face directions, or do nothing.
-- Float Properties: Three
-  - dynamic_friction: Coefficient of friction for the ground material acting on
-    moving objects
-    - Default: 0
-    - Recommended Minimum: 0
-    - Recommended Maximum: 1
-  - static_friction: Coefficient of friction for the ground material acting on
-    stationary objects
-    - Default: 0
-    - Recommended Minimum: 0
-    - Recommended Maximum: 1
-  - block_drag: Effect of air resistance on block
-    - Default: 0.5
-    - Recommended Minimum: 0
-    - Recommended Maximum: 2000
+- Float Properties: None
+- Benchmark Mean Reward:
+
+## Dungeon Escape
+
+- Set-up: Agents are trapped in a dungeon with a dragon, and must work together to escape.
+  To retrieve the key, one of the agents must find and slay the dragon, sacrificing itself
+  to do so. The dragon will drop a key for the others to use. The other agents can then pick
+  up this key and unlock the dungeon door.
+- Goal: Unlock the dungeon door and leave.
+- Agents: The environment contains three Agents in a Multi Agent Group and one Dragon, which
+  moves in a predetermined pattern.
+- Agent Reward Function:
+  - +1 group reward if any agent successfully unlocks the door and leaves the dungeon.
+- Behavior Parameters:
+  - Observation space: A single Grid Sensor with separate tags for the walls, other agents,
+    the door, keys, and the dragon.
+  - Actions: 1 discrete action branch with 7 actions, corresponding to turn clockwise
+    and counterclockwise, move along four different face directions, or do nothing.
+- Float Properties: None
+- Benchmark Mean Reward:
