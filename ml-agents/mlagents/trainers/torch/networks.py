@@ -299,6 +299,8 @@ class Actor(abc.ABC):
 
 
 class SimpleActor(nn.Module, Actor):
+    MODEL_EXPORT_VERSION = 3
+
     def __init__(
         self,
         observation_specs: List[ObservationSpec],
@@ -310,7 +312,7 @@ class SimpleActor(nn.Module, Actor):
         super().__init__()
         self.action_spec = action_spec
         self.version_number = torch.nn.Parameter(
-            torch.Tensor([3.0]), requires_grad=False
+            torch.Tensor([self.MODEL_EXPORT_VERSION]), requires_grad=False
         )
         self.is_continuous_int_deprecated = torch.nn.Parameter(
             torch.Tensor([int(self.action_spec.is_continuous())]), requires_grad=False
