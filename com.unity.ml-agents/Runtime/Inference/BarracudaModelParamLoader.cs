@@ -9,25 +9,26 @@ using Unity.MLAgents.Policies;
 namespace Unity.MLAgents.Inference
 {
 
-    internal enum CheckType
-    {
-        Info = 0,
-        Warning = 1,
-        Error = 2
-    }
-
-    internal class FailedCheck
-    {
-        public CheckType CheckType;
-        public string Message;
-    }
-
     /// <summary>
     /// Prepares the Tensors for the Learning Brain and exposes a list of failed checks if Model
     /// and BrainParameters are incompatible.
     /// </summary>
     internal class BarracudaModelParamLoader
     {
+
+        internal enum CheckType
+        {
+            Info = 0,
+            Warning = 1,
+            Error = 2
+        }
+
+        internal class FailedCheck
+        {
+            public CheckType CheckType;
+            public string Message;
+        }
+
         public const long k_ApiVersion = 3;
         public const long k_ApiVersionLegacy = 2;
 

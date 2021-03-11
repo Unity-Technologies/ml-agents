@@ -5,6 +5,7 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Sensors.Reflection;
+using CheckType = Unity.MLAgents.Inference.BarracudaModelParamLoader.CheckType;
 
 namespace Unity.MLAgents.Editor
 {
@@ -147,17 +148,19 @@ namespace Unity.MLAgents.Editor
                 {
                     if (check != null)
                     {
-                        if (check.CheckType == Inference.CheckType.Info)
+                        switch (check.CheckType)
                         {
-                            EditorGUILayout.HelpBox(check.Message, MessageType.Info);
-                        }
-                        if (check.CheckType == Inference.CheckType.Warning)
-                        {
-                            EditorGUILayout.HelpBox(check.Message, MessageType.Warning);
-                        }
-                        if (check.CheckType == Inference.CheckType.Error)
-                        {
-                            EditorGUILayout.HelpBox(check.Message, MessageType.Error);
+                            case CheckType.Info:
+                                EditorGUILayout.HelpBox(check.Message, MessageType.Info);
+                                break;
+                            case CheckType.Warning:
+                                EditorGUILayout.HelpBox(check.Message, MessageType.Warning);
+                                break;
+                            case CheckType.Error:
+                                EditorGUILayout.HelpBox(check.Message, MessageType.Error);
+                                break;
+                            default:
+                                break;
                         }
                     }
                 }
