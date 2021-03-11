@@ -18,7 +18,7 @@ test_linux_ll_api_{{ editor.version }}:
       python ml-agents/tests/yamato/scripts/run_llapi.py
       python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-Basic
       python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-WallJump
-      python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-Bouncer
+      python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-Match3
   dependencies:
     - .yamato/standalone-build-test.yml#test_linux_standalone_{{ editor.version }}
   triggers:
