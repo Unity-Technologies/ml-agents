@@ -53,6 +53,16 @@ namespace Unity.MLAgents.Sensors
                 DimensionProperties = dimProps
             };
         }
+
+        public ObservationSpec Clone()
+        {
+            return new ObservationSpec
+            {
+                Shape = (int[])Shape.Clone(),
+                DimensionProperties = (DimensionProperty[])DimensionProperties.Clone(),
+                ObservationType = ObservationType
+            };
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

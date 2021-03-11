@@ -237,7 +237,7 @@ namespace Unity.MLAgents.Sensors
     public class RayPerceptionSensor : ISensor, IBuiltInSensor
     {
         float[] m_Observations;
-        int[] m_Shape;
+        ObservationSpec m_ObservationSpec;
         string m_Name;
 
         RayPerceptionInput m_RayPerceptionInput;
@@ -269,7 +269,7 @@ namespace Unity.MLAgents.Sensors
 
         void SetNumObservations(int numObservations)
         {
-            m_Shape = new[] { numObservations };
+            m_ObservationSpec = ObservationSpec.FromShape(numObservations);
             m_Observations = new float[numObservations];
         }
 
@@ -343,9 +343,9 @@ namespace Unity.MLAgents.Sensors
         public void Reset() { }
 
         /// <inheritdoc/>
-        public int[] GetObservationShape()
+        public ObservationSpec GetObservationSpec()
         {
-            return m_Shape;
+            return m_ObservationSpec;
         }
 
         /// <inheritdoc/>

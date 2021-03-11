@@ -13,7 +13,8 @@ namespace Unity.MLAgents.Sensors
         int m_Height;
         bool m_Grayscale;
         string m_Name;
-        int[] m_Shape;
+        //int[] m_Shape;
+        private ObservationSpec m_ObservationSpec;
         SensorCompressionType m_CompressionType;
         static DimensionProperty[] s_DimensionProperties = new DimensionProperty[] {
             DimensionProperty.TranslationalEquivariance,
@@ -56,7 +57,7 @@ namespace Unity.MLAgents.Sensors
             m_Height = height;
             m_Grayscale = grayscale;
             m_Name = name;
-            m_Shape = GenerateShape(width, height, grayscale);
+            m_ObservationSpec = ObservationSpec.FromShape(GenerateShape(width, height, grayscale));
             m_CompressionType = compression;
         }
 
@@ -69,14 +70,10 @@ namespace Unity.MLAgents.Sensors
             return m_Name;
         }
 
-        /// <summary>
-        /// Accessor for the size of the sensor data. Will be h x w x 1 for grayscale and
-        /// h x w x 3 for color.
-        /// </summary>
-        /// <returns>Size of each of the three dimensions.</returns>
-        public int[] GetObservationShape()
+        /// <inheritdoc/>
+        public ObservationSpec GetObservationSpec()
         {
-            return m_Shape;
+            return m_ObservationSpec;
         }
 
         /// <summary>

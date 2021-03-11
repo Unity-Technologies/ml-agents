@@ -28,7 +28,9 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         /// <returns>Size of the observations that will be generated.</returns>
         // TODO OBSOLETE replace with GetObservationSpec.Shape
-        int[] GetObservationShape();
+        //int[] GetObservationShape();
+
+        ObservationSpec GetObservationSpec();
 
         /// <summary>
         /// Write the observation data directly to the <see cref="ObservationWriter"/>.
@@ -88,9 +90,9 @@ namespace Unity.MLAgents.Sensors
         /// <returns></returns>
         public static int ObservationSize(this ISensor sensor)
         {
-            var shape = sensor.GetObservationShape();
+            var obsSpec = sensor.GetObservationSpec();
             var count = 1;
-            foreach (var dim in shape)
+            foreach (var dim in obsSpec.Shape)
             {
                 count *= dim;
             }

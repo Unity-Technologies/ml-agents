@@ -13,7 +13,7 @@ namespace Unity.MLAgents.Sensors
         // TODO use float[] instead
         // TODO allow setting float[]
         List<float> m_Observations;
-        int[] m_Shape;
+        private ObservationSpec m_ObservationSpec;
         string m_Name;
 
         /// <summary>
@@ -30,13 +30,13 @@ namespace Unity.MLAgents.Sensors
 
             m_Observations = new List<float>(observationSize);
             m_Name = name;
-            m_Shape = new[] { observationSize };
+            m_ObservationSpec = ObservationSpec.FromShape(observationSize);
         }
 
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
-            var expectedObservations = m_Shape[0];
+            var expectedObservations = m_ObservationSpec.Shape[0];
             if (m_Observations.Count > expectedObservations)
             {
                 // Too many observations, truncate
@@ -84,9 +84,9 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public int[] GetObservationShape()
+        public ObservationSpec GetObservationSpec()
         {
-            return m_Shape;
+            return m_ObservationSpec;
         }
 
         /// <inheritdoc/>

@@ -10,7 +10,7 @@ namespace Unity.MLAgents.Sensors
         RenderTexture m_RenderTexture;
         bool m_Grayscale;
         string m_Name;
-        int[] m_Shape;
+        private ObservationSpec m_ObservationSpec;
         SensorCompressionType m_CompressionType;
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Unity.MLAgents.Sensors
             var height = renderTexture != null ? renderTexture.height : 0;
             m_Grayscale = grayscale;
             m_Name = name;
-            m_Shape = new[] { height, width, grayscale ? 1 : 3 };
+            m_ObservationSpec = ObservationSpec.FromShape(height, width, grayscale ? 1 : 3);
             m_CompressionType = compressionType;
         }
 
@@ -51,9 +51,9 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public int[] GetObservationShape()
+        public ObservationSpec GetObservationSpec()
         {
-            return m_Shape;
+            return m_ObservationSpec;
         }
 
         /// <inheritdoc/>
