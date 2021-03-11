@@ -933,7 +933,8 @@ hyperparameter hierarchy in both.
 
 Cooperative behavior in ML-Agents can be enabled by instantiating a `SimpleMultiAgentGroup`,
 typically in an environment controller or similar script, and adding agents to it
-using the `RegisterAgent(Agent agent)` method. Using `MultiAgentGroup` enables the
+using the `RegisterAgent(Agent agent)` method. Note that all agents added to the same `MultiAgentGroup`
+must have the same behavior name and Behavior Parameters. Using `MultiAgentGroup` enables the
 agents within a group to learn how to work together to achieve a common goal (i.e.,
 maximize a group-given reward), even if one or more of the group members are removed
 before the episode ends. You can then use this group to add/set rewards, end or interrupt episodes
@@ -962,21 +963,29 @@ m_AgentGroup.GroupEpisodeInterrupted();
 ResetScene();
 ```
 
-Multi Agent Groups are best used with the MA-POCA trainer, which is explicitly designed to train
+Multi Agent Groups should be used with the MA-POCA trainer, which is explicitly designed to train
 cooperative environments. This can be enabled by using the `poca` trainer - see the
 [training configurations](Training-Configuration-File.md) doc for more information on
 configuring MA-POCA. When using MA-POCA, agents which are deactivated or removed from the Scene
 during the episode will still learn to contribute to the group's long term rewards, even
 if they are not active in the scene to experience them.
 
-**NOTE**: Groups differ from Teams (for competitive settings) in the following way - agents
-working together should be added to the same Group, while Agents playing against each other
+**NOTE**: Groups differ from Teams (for competitive settings) in the following way - Agents
+working together should be added to the same Group, while agents playing against each other
 should be given different Team Ids. If in the Scene there is one playing field and two teams,
 there should be two Groups, one for each team, and each team should be assigned a different
 Team Id. If this playing field is duplicated many times in the Scene (e.g. for training
 speedup), there should be two Groups _per playing field_, and two unique Team Ids
 _for the entire Scene_. In environments with both Groups and Team Ids configured, MA-POCA and
-self-play can be used together for training.
+self-play can be used together for training. In the diagram below, there are two agents on each team,
+and two playing fields where teams are pitted against each other. All the blue agents should share a Team Id
+(and the orange ones a different ID), and there should be four group managers, one per pair of agents.
+
+<p align="center">
+  <img src="images/groupmanager_teamid.png"
+       alt="Group Manager vs Team Id"
+       width="650" border="10" />
+</p>
 
 #### Cooperative Behaviors Notes and Best Practices
 * An Agent can only be registered to one MultiAgentGroup at a time. If you want to re-assign an
@@ -1004,7 +1013,7 @@ individual ones, and are treated differently than individual agent rewards durin
 training. So calling AddGroupReward() is not equivalent to calling agent.AddReward() on each agent
 in the group.
 
-* You can still add incremental rewards to Agents using `Agent.AddReward()` if they are
+* You can still add incremental rewards to agents using `Agent.AddReward()` if they are
 in a Group. These rewards will only be given to those agents and are received when the
 Agent is active.
 
