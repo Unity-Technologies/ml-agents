@@ -69,7 +69,6 @@ public class DungeonEscapeEnvController : MonoBehaviour
     private int m_NumberOfRemainingBlocks;
     public GameObject Key;
 
-    public Dictionary<Transform, PlayerInfo> m_AgentsDict = new Dictionary<Transform, PlayerInfo>();
     private SimpleMultiAgentGroup m_AgentGroup;
     void Start()
     {
@@ -93,7 +92,6 @@ public class DungeonEscapeEnvController : MonoBehaviour
             item.StartingRot = item.Agent.transform.rotation;
             item.Rb = item.Agent.GetComponent<Rigidbody>();
             item.Col = item.Agent.GetComponent<Collider>();
-            m_AgentsDict.Add(item.Agent.transform, item);
             // Add to team manager
             m_AgentGroup.RegisterAgent(item.Agent);
         }

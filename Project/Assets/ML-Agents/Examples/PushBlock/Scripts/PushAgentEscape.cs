@@ -1,5 +1,3 @@
-//Put this script on your blue cube.
-
 using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
@@ -12,7 +10,7 @@ public class PushAgentEscape : Agent
     public GameObject MyKey;
     public bool IHaveAKey;
     private PushBlockSettings m_PushBlockSettings;
-    private Rigidbody m_AgentRb;  //cached on initialization
+    private Rigidbody m_AgentRb;
     private DungeonEscapeEnvController m_GameController;
 
     public override void Initialize()
