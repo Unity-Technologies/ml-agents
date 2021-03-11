@@ -3,7 +3,10 @@
 The ML-Agents Toolkit contains several components:
 
 - Unity package ([`com.unity.ml-agents`](../com.unity.ml-agents/)) contains the
-  Unity C# SDK that will be integrated into your Unity scene.
+  Unity C# SDK that will be integrated into your Unity scene.  This package contains
+  the [3DBall example](../Project/Assets/ML-Agents/Examples/3DBall/Scenes/3DBall.unity)
+  as a sample.  Please let us know what samples you'd like to see shipped with the package in
+  [this forum thread](https://forum.unity.com/threads/feedback-wanted-shipping-sample-s-with-the-ml-agents-package.1073468/).
 - Unity package
   ([`com.unity.ml-agents.extensions`](../com.unity.ml-agents.extensions/))
   contains experimental C#/Unity components that are not yet ready to be part
