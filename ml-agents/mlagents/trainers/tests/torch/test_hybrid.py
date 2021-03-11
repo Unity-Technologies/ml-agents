@@ -45,9 +45,14 @@ def test_hybrid_visual_ppo(num_visual, training_seed):
         [BRAIN_NAME], num_visual=num_visual, num_vector=0, action_sizes=(1, 1)
     )
     new_hyperparams = attr.evolve(
-        PPO_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4
+        PPO_TORCH_CONFIG.hyperparameters,
+        batch_size=64,
+        buffer_size=1024,
+        learning_rate=1e-4,
     )
-    config = attr.evolve(PPO_TORCH_CONFIG, hyperparameters=new_hyperparams)
+    config = attr.evolve(
+        PPO_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=8000
+    )
     check_environment_trains(env, {BRAIN_NAME: config}, training_seed=training_seed)
 
 
@@ -85,7 +90,7 @@ def test_hybrid_sac(action_size):
         buffer_init_steps=0,
     )
     config = attr.evolve(
-        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=2200
+        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=6000
     )
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
@@ -118,7 +123,7 @@ def test_hybrid_recurrent_sac():
     new_hyperparams = attr.evolve(
         SAC_TORCH_CONFIG.hyperparameters,
         batch_size=256,
-        learning_rate=1e-3,
+        learning_rate=3e-4,
         buffer_init_steps=1000,
         steps_per_update=2,
     )
@@ -126,6 +131,6 @@ def test_hybrid_recurrent_sac():
         SAC_TORCH_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=3500,
+        max_steps=4000,
     )
     check_environment_trains(env, {BRAIN_NAME: config}, training_seed=1212)

@@ -64,7 +64,7 @@ git clone --branch release_14 https://github.com/Unity-Technologies/ml-agents.gi
 ```
 
 The `--branch release_14` option will switch to the tag of the latest stable
-release. Omitting that will get the `main` branch which is potentially
+release. Omitting that will get the `main` branch which is potentially unstable.
 
 #### Advanced: Local Installation for Development
 
@@ -154,7 +154,7 @@ To install the `mlagents` Python package, activate your virtual environment and
 run from the command line:
 
 ```sh
-pip3 install mlagents
+python -m pip install mlagents==0.24.1
 ```
 
 Note that this will install `mlagents` from PyPi, _not_ from the cloned
