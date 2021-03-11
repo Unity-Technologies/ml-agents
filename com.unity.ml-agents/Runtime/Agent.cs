@@ -505,7 +505,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// The reason that the Agent has been set to "done".
         /// </summary>
-        public enum DoneReason
+        enum DoneReason
         {
             /// <summary>
             /// The episode was ended manually by calling <see cref="EndEpisode"/>.
@@ -609,7 +609,6 @@ namespace Unity.MLAgents
             m_RequestDecision = false;
             m_Info.storedActions.Clear();
         }
-
 
         /// <summary>
         /// Updates the Model assigned to this Agent instance.
