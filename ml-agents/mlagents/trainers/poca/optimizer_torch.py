@@ -1,4 +1,7 @@
 from typing import Dict, cast, List, Tuple, Optional
+from mlagents.trainers.torch.components.reward_providers.extrinsic_reward_provider import (
+    ExtrinsicRewardProvider,
+)
 import numpy as np
 import math
 from mlagents.torch_utils import torch
@@ -15,13 +18,12 @@ from mlagents_envs.base_env import ObservationSpec, ActionSpec
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.settings import (
-    ExtrinsicSettings,
     RewardSignalSettings,
     RewardSignalType,
     TrainerSettings,
     PPOSettings,
 )
-from mlagents.trainers.torch.networks import Critic, MultiInputNetworkBody
+from mlagents.trainers.torch.networks import Critic, MultiAgentNetworkBody
 from mlagents.trainers.torch.decoders import ValueHeads
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
@@ -34,8 +36,14 @@ from mlagents_envs.logging_util import get_logger
 logger = get_logger(__name__)
 
 
-class TorchCOMAOptimizer(TorchOptimizer):
-    class COMAValueNetwork(torch.nn.Module, Critic):
+class TorchPOCAOptimizer(TorchOptimizer):
+    class POCAValueNetwork(torch.nn.Module, Critic):
+        """
+        The POCAValueNetwork uses the MultiAgentNetworkBody to compute the value
+        and POCA baseline for a variable number of agents in a group that all
+        share the same observation and action space.
+        """
+
         def __init__(
             self,
             stream_names: List[str],
@@ -44,7 +52,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
             action_spec: ActionSpec,
         ):
             torch.nn.Module.__init__(self)
-            self.network_body = MultiInputNetworkBody(
+            self.network_body = MultiAgentNetworkBody(
                 observation_specs, network_settings, action_spec
             )
             if network_settings.memory is not None:
@@ -69,7 +77,11 @@ class TorchCOMAOptimizer(TorchOptimizer):
             memories: Optional[torch.Tensor] = None,
             sequence_length: int = 1,
         ) -> Tuple[torch.Tensor, torch.Tensor]:
-
+            """
+            The POCA baseline marginalizes the action of the agent associated with self_obs.
+            It calls the forward pass of the MultiAgentNetworkBody with the state action
+            pairs of groupmates but just the state of the agent in question.
+            """
             encoding, memories = self.network_body(
                 obs_only=self_obs,
                 obs=obs,
@@ -88,7 +100,10 @@ class TorchCOMAOptimizer(TorchOptimizer):
             memories: Optional[torch.Tensor] = None,
             sequence_length: int = 1,
         ) -> Tuple[torch.Tensor, torch.Tensor]:
-
+            """
+            A centralized value function. It calls the forward pass of MultiAgentNetworkBody
+            with just the states of all agents.
+            """
             encoding, memories = self.network_body(
                 obs_only=obs,
                 obs=[],
@@ -114,8 +129,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
     def __init__(self, policy: TorchPolicy, trainer_settings: TrainerSettings):
         """
         Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy.
-        The PPO optimizer has a value estimator and a loss function.
-        :param policy: A TorchPolicy object that will be updated by this PPO Optimizer.
+        :param policy: A TorchPolicy object that will be updated by this POCA Optimizer.
         :param trainer_params: Trainer parameters dictionary that specifies the
         properties of the trainer.
         """
@@ -125,7 +139,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
         reward_signal_configs = trainer_settings.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
 
-        self._critic = TorchCOMAOptimizer.COMAValueNetwork(
+        self._critic = TorchPOCAOptimizer.POCAValueNetwork(
             reward_signal_names,
             policy.behavior_spec.observation_specs,
             network_settings=trainer_settings.network_settings,
@@ -175,76 +189,22 @@ class TorchCOMAOptimizer(TorchOptimizer):
         GAIL, and make sure Extrinsic adds team rewards.
         :param reward_signal_configs: Reward signal config.
         """
-        for reward_signal, settings in reward_signal_configs.items():
+        for reward_signal in reward_signal_configs.keys():
             if reward_signal != RewardSignalType.EXTRINSIC:
                 logger.warning(
-                    f"Reward signal {reward_signal.value.capitalize()} is not supported with the COMA2 trainer; "
+                    f"Reward signal {reward_signal.value.capitalize()} is not supported with the POCA trainer; "
                     "results may be unexpected."
                 )
-            elif isinstance(settings, ExtrinsicSettings):
-                settings.add_groupmate_rewards = True
         super().create_reward_signals(reward_signal_configs)
+        # Make sure we add the groupmate rewards in POCA, so agents learn how to help each
+        # other achieve individual rewards as well
+        for reward_provider in self.reward_signals.values():
+            if isinstance(reward_provider, ExtrinsicRewardProvider):
+                reward_provider.add_groupmate_rewards = True
 
     @property
     def critic(self):
         return self._critic
-
-    def coma_value_loss(
-        self,
-        values: Dict[str, torch.Tensor],
-        old_values: Dict[str, torch.Tensor],
-        returns: Dict[str, torch.Tensor],
-        epsilon: float,
-        loss_masks: torch.Tensor,
-    ) -> torch.Tensor:
-        """
-        Evaluates value loss for PPO.
-        :param values: Value output of the current network.
-        :param old_values: Value stored with experiences in buffer.
-        :param returns: Computed returns.
-        :param epsilon: Clipping value for value estimate.
-        :param loss_mask: Mask for losses. Used with LSTM to ignore 0'ed out experiences.
-        """
-        value_losses = []
-        for name, head in values.items():
-            old_val_tensor = old_values[name]
-            returns_tensor = returns[name]
-            clipped_value_estimate = old_val_tensor + torch.clamp(
-                head - old_val_tensor, -1 * epsilon, epsilon
-            )
-            v_opt_a = (returns_tensor - head) ** 2
-            v_opt_b = (returns_tensor - clipped_value_estimate) ** 2
-            value_loss = ModelUtils.masked_mean(torch.max(v_opt_a, v_opt_b), loss_masks)
-            value_losses.append(value_loss)
-        value_loss = torch.mean(torch.stack(value_losses))
-        return value_loss
-
-    def ppo_policy_loss(
-        self,
-        advantages: torch.Tensor,
-        log_probs: torch.Tensor,
-        old_log_probs: torch.Tensor,
-        loss_masks: torch.Tensor,
-    ) -> torch.Tensor:
-        """
-        Evaluate PPO policy loss.
-        :param advantages: Computed advantages.
-        :param log_probs: Current policy probabilities
-        :param old_log_probs: Past policy probabilities
-        :param loss_masks: Mask for losses. Used with LSTM to ignore 0'ed out experiences.
-        """
-        advantage = advantages.unsqueeze(-1)
-
-        decay_epsilon = self.hyperparameters.epsilon
-        r_theta = torch.exp(log_probs - old_log_probs)
-        p_opt_a = r_theta * advantage
-        p_opt_b = (
-            torch.clamp(r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon) * advantage
-        )
-        policy_loss = -1 * ModelUtils.masked_mean(
-            torch.min(p_opt_a, p_opt_b), loss_masks
-        )
-        return policy_loss
 
     @timed
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
@@ -334,17 +294,18 @@ class TorchCOMAOptimizer(TorchOptimizer):
         log_probs = log_probs.flatten()
         loss_masks = ModelUtils.list_to_tensor(batch[BufferKey.MASKS], dtype=torch.bool)
 
-        baseline_loss = self.coma_value_loss(
+        baseline_loss = ModelUtils.trust_region_value_loss(
             baselines, old_baseline_values, returns, decay_eps, loss_masks
         )
-        value_loss = self.coma_value_loss(
+        value_loss = ModelUtils.trust_region_value_loss(
             values, old_values, returns, decay_eps, loss_masks
         )
-        policy_loss = self.ppo_policy_loss(
+        policy_loss = ModelUtils.trust_region_policy_loss(
             ModelUtils.list_to_tensor(batch[BufferKey.ADVANTAGES]),
             log_probs,
             old_log_probs,
             loss_masks,
+            decay_eps,
         )
         loss = (
             policy_loss
@@ -375,7 +336,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
         return update_stats
 
     def get_modules(self):
-        modules = {"Optimizer": self.optimizer}
+        modules = {"Optimizer:adam": self.optimizer, "Optimizer:critic": self._critic}
         for reward_provider in self.reward_signals.values():
             modules.update(reward_provider.get_modules())
         return modules
@@ -538,6 +499,29 @@ class TorchCOMAOptimizer(TorchOptimizer):
             next_baseline_mem,
         )
 
+    def get_trajectory_value_estimates(
+        self,
+        batch: AgentBuffer,
+        next_obs: List[np.ndarray],
+        done: bool,
+        agent_id: str = "",
+    ) -> Tuple[Dict[str, np.ndarray], Dict[str, float], Optional[AgentBufferField]]:
+        """
+        Override base class method. Unused in the trainer, but needed to make sure class heirarchy is maintained.
+        Assume that there are no group obs.
+        """
+        (
+            value_estimates,
+            _,
+            next_value_estimates,
+            all_next_value_mem,
+            _,
+        ) = self.get_trajectory_and_baseline_value_estimates(
+            batch, next_obs, [], done, agent_id
+        )
+
+        return value_estimates, next_value_estimates, all_next_value_mem
+
     def get_trajectory_and_baseline_value_estimates(
         self,
         batch: AgentBuffer,
@@ -552,6 +536,19 @@ class TorchCOMAOptimizer(TorchOptimizer):
         Optional[AgentBufferField],
         Optional[AgentBufferField],
     ]:
+        """
+        Get value estimates, baseline estimates, and memories for a trajectory, in batch form.
+        :param batch: An AgentBuffer that consists of a trajectory.
+        :param next_obs: the next observation (after the trajectory). Used for boostrapping
+            if this is not a termiinal trajectory.
+        :param next_group_obs: the next observations from other members of the group.
+        :param done: Set true if this is a terminal trajectory.
+        :param agent_id: Agent ID of the agent that this trajectory belongs to.
+        :returns: A Tuple of the Value Estimates as a Dict of [name, np.ndarray(trajectory_len)],
+            the baseline estimates as a Dict, the final value estimate as a Dict of [name, float], and
+            optionally (if using memories) an AgentBufferField of initial critic and baseline memories to be used
+            during update.
+        """
 
         n_obs = len(self.policy.behavior_spec.observation_specs)
 

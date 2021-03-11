@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict
 from mlagents.torch_utils import torch, nn
 from mlagents.trainers.torch.layers import LinearEncoder, Initialization
 import numpy as np
@@ -428,3 +428,58 @@ class ModelUtils:
             )
 
         return encoded_self
+
+    @staticmethod
+    def trust_region_value_loss(
+        values: Dict[str, torch.Tensor],
+        old_values: Dict[str, torch.Tensor],
+        returns: Dict[str, torch.Tensor],
+        epsilon: float,
+        loss_masks: torch.Tensor,
+    ) -> torch.Tensor:
+        """
+        Evaluates value loss, clipping to stay within a trust region of old value estimates.
+        Used for PPO and POCA.
+        :param values: Value output of the current network.
+        :param old_values: Value stored with experiences in buffer.
+        :param returns: Computed returns.
+        :param epsilon: Clipping value for value estimate.
+        :param loss_mask: Mask for losses. Used with LSTM to ignore 0'ed out experiences.
+        """
+        value_losses = []
+        for name, head in values.items():
+            old_val_tensor = old_values[name]
+            returns_tensor = returns[name]
+            clipped_value_estimate = old_val_tensor + torch.clamp(
+                head - old_val_tensor, -1 * epsilon, epsilon
+            )
+            v_opt_a = (returns_tensor - head) ** 2
+            v_opt_b = (returns_tensor - clipped_value_estimate) ** 2
+            value_loss = ModelUtils.masked_mean(torch.max(v_opt_a, v_opt_b), loss_masks)
+            value_losses.append(value_loss)
+        value_loss = torch.mean(torch.stack(value_losses))
+        return value_loss
+
+    @staticmethod
+    def trust_region_policy_loss(
+        advantages: torch.Tensor,
+        log_probs: torch.Tensor,
+        old_log_probs: torch.Tensor,
+        loss_masks: torch.Tensor,
+        epsilon: float,
+    ) -> torch.Tensor:
+        """
+        Evaluate policy loss clipped to stay within a trust region. Used for PPO and POCA.
+        :param advantages: Computed advantages.
+        :param log_probs: Current policy probabilities
+        :param old_log_probs: Past policy probabilities
+        :param loss_masks: Mask for losses. Used with LSTM to ignore 0'ed out experiences.
+        """
+        advantage = advantages.unsqueeze(-1)
+        r_theta = torch.exp(log_probs - old_log_probs)
+        p_opt_a = r_theta * advantage
+        p_opt_b = torch.clamp(r_theta, 1.0 - epsilon, 1.0 + epsilon) * advantage
+        policy_loss = -1 * ModelUtils.masked_mean(
+            torch.min(p_opt_a, p_opt_b), loss_masks
+        )
+        return policy_loss

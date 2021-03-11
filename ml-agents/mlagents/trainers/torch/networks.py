@@ -105,7 +105,13 @@ class NetworkBody(nn.Module):
         return encoding, memories
 
 
-class MultiInputNetworkBody(torch.nn.Module):
+class MultiAgentNetworkBody(torch.nn.Module):
+    """
+    A network body that uses a self attention layer to handle state
+    and action input from a potentially variable number of agents that
+    share the same observation and action space.
+    """
+
     def __init__(
         self,
         observation_specs: List[ObservationSpec],
@@ -115,7 +121,6 @@ class MultiInputNetworkBody(torch.nn.Module):
         super().__init__()
         self.normalize = network_settings.normalize
         self.use_lstm = network_settings.memory is not None
-        # Scale network depending on num agents
         self.h_size = network_settings.hidden_units
         self.m_size = (
             network_settings.memory.memory_size
@@ -173,7 +178,7 @@ class MultiInputNetworkBody(torch.nn.Module):
             if isinstance(enc, VectorInput):
                 enc.update_normalization(torch.as_tensor(vec_input))
 
-    def copy_normalization(self, other_network: "MultiInputNetworkBody") -> None:
+    def copy_normalization(self, other_network: "MultiAgentNetworkBody") -> None:
         if self.normalize:
             for n1, n2 in zip(self.processors, other_network.processors):
                 if isinstance(n1, VectorInput) and isinstance(n2, VectorInput):
@@ -194,17 +199,23 @@ class MultiInputNetworkBody(torch.nn.Module):
         attn_mask = only_first_obs_flat.isnan().type(torch.FloatTensor)
         return attn_mask
 
-    def _remove_nans_from_obs(
+    def _copy_and_remove_nans_from_obs(
         self, all_obs: List[List[torch.Tensor]], attention_mask: torch.Tensor
-    ) -> None:
+    ) -> List[List[torch.Tensor]]:
         """
         Helper function to remove NaNs from observations using an attention mask.
         """
+        obs_with_no_nans = []
         for i_agent, single_agent_obs in enumerate(all_obs):
+            no_nan_obs = []
             for obs in single_agent_obs:
-                obs[
+                new_obs = obs.clone()
+                new_obs[
                     attention_mask.type(torch.BoolTensor)[:, i_agent], ::
                 ] = 0.0  # Remoove NaNs fast
+                no_nan_obs.append(new_obs)
+            obs_with_no_nans.append(no_nan_obs)
+        return obs_with_no_nans
 
     def forward(
         self,
@@ -214,13 +225,23 @@ class MultiInputNetworkBody(torch.nn.Module):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-
+        """
+        Returns sampled actions.
+        If memory is enabled, return the memories as well.
+        :param obs_only: Observations to be processed that do not have corresponding actions.
+            These are encoded with the obs_encoder.
+        :param obs: Observations to be processed that do have corresponding actions.
+            After concatenation with actions, these are processed with obs_action_encoder.
+        :param actions: After concatenation with obs, these are processed with obs_action_encoder.
+        :param memories: If using memory, a Tensor of initial memories.
+        :param sequence_length: If using memory, the sequence length.
+        """
         self_attn_masks = []
         self_attn_inputs = []
         concat_f_inp = []
         if obs:
             obs_attn_mask = self._get_masks_from_nans(obs)
-            self._remove_nans_from_obs(obs, obs_attn_mask)
+            obs = self._copy_and_remove_nans_from_obs(obs, obs_attn_mask)
             for inputs, action in zip(obs, actions):
                 encoded = ModelUtils.encode_observations(
                     inputs, self.processors, self.input_rsa, self.input_x_self_encoder
@@ -237,7 +258,7 @@ class MultiInputNetworkBody(torch.nn.Module):
         concat_encoded_obs = []
         if obs_only:
             obs_only_attn_mask = self._get_masks_from_nans(obs_only)
-            self._remove_nans_from_obs(obs_only, obs_only_attn_mask)
+            obs_only = self._copy_and_remove_nans_from_obs(obs_only, obs_only_attn_mask)
             for inputs in obs_only:
                 encoded = ModelUtils.encode_observations(
                     inputs, self.processors, self.input_rsa, self.input_x_self_encoder

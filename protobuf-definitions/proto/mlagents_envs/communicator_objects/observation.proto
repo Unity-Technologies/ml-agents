@@ -29,4 +29,8 @@ message ObservationProto {
     repeated int32 compressed_channel_mapping = 5;
     repeated int32 dimension_properties = 6;
     ObservationTypeProto observation_type = 7;
+    // Optional name of the observation.
+    // This will be set to the ISensor name when writing,
+    // and read into the ObservationSpec in the low-level API
+    string name = 8;
 }

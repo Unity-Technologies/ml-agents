@@ -1,6 +1,6 @@
 # # Unity ML-Agents Toolkit
-# ## ML-Agent Learning (PPO)
-# Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
+# ## ML-Agents Learning (POCA)
+# Contains an implementation of MA-POCA.
 
 from collections import defaultdict
 from typing import cast, Dict
@@ -12,10 +12,9 @@ from mlagents_envs.logging_util import get_logger
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
-from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.policy.torch_policy import TorchPolicy
-from mlagents.trainers.coma.optimizer_torch import TorchCOMAOptimizer
+from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
@@ -23,8 +22,8 @@ from mlagents.trainers.settings import TrainerSettings, PPOSettings
 logger = get_logger(__name__)
 
 
-class COMATrainer(RLTrainer):
-    """The COMATrainer is an implementation of the COMA2 algorithm."""
+class POCATrainer(RLTrainer):
+    """The POCATrainer is an implementation of the MA-POCA algorithm."""
 
     def __init__(
         self,
@@ -37,7 +36,7 @@ class COMATrainer(RLTrainer):
         artifact_path: str,
     ):
         """
-        Responsible for collecting experiences and training PPO model.
+        Responsible for collecting experiences and training POCA model.
         :param behavior_name: The name of the behavior associated with trainer config
         :param reward_buff_cap: Max reward history to track in the reward buffer
         :param trainer_settings: The parameters for the trainer.
@@ -58,7 +57,7 @@ class COMATrainer(RLTrainer):
             PPOSettings, self.trainer_settings.hyperparameters
         )
         self.seed = seed
-        self.policy: Policy = None  # type: ignore
+        self.policy: TorchPolicy = None  # type: ignore
         self.collected_group_rewards: Dict[str, int] = defaultdict(lambda: 0)
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
@@ -86,7 +85,7 @@ class COMATrainer(RLTrainer):
             agent_buffer_trajectory,
             trajectory.next_obs,
             trajectory.next_group_obs,
-            trajectory.teammate_dones_reached
+            trajectory.all_group_dones_reached
             and trajectory.done_reached
             and not trajectory.interrupted,
         )
@@ -175,6 +174,18 @@ class COMATrainer(RLTrainer):
         # If this was a terminal trajectory, append stats and reset reward collection
         if trajectory.done_reached:
             self._update_end_episode_stats(agent_id, self.optimizer)
+            # Remove dead agents from group reward recording
+            if not trajectory.all_group_dones_reached:
+                self.collected_group_rewards.pop(agent_id)
+
+        # If the whole team is done, average the remaining group rewards.
+        if trajectory.all_group_dones_reached and trajectory.done_reached:
+            self.stats_reporter.add_stat(
+                "Environment/Group Cumulative Reward",
+                self.collected_group_rewards.get(agent_id, 0),
+                aggregation=StatsAggregationMethod.HISTOGRAM,
+            )
+            self.collected_group_rewards.pop(agent_id)
 
     def _is_ready_update(self):
         """
@@ -238,7 +249,7 @@ class COMATrainer(RLTrainer):
         self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TorchPolicy:
         """
-        Creates a policy with a PyTorch backend and PPO hyperparameters
+        Creates a policy with a PyTorch backend and POCA hyperparameters
         :param parsed_behavior_id:
         :param behavior_spec: specifications for policy construction
         :return policy
@@ -247,15 +258,13 @@ class COMATrainer(RLTrainer):
             self.seed,
             behavior_spec,
             self.trainer_settings,
-            condition_sigma_on_obs=False,  # Faster training for PPO
+            condition_sigma_on_obs=False,  # Faster training for POCA
             separate_critic=True,  # Match network architecture with TF
         )
         return policy
 
-    def create_coma_optimizer(self) -> TorchCOMAOptimizer:
-        return TorchCOMAOptimizer(  # type: ignore
-            cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore
-        )  # type: ignore
+    def create_poca_optimizer(self) -> TorchPOCAOptimizer:
+        return TorchPOCAOptimizer(self.policy, self.trainer_settings)
 
     def add_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
@@ -265,9 +274,11 @@ class COMATrainer(RLTrainer):
         :param parsed_behavior_id: Behavior identifiers that the policy should belong to.
         :param policy: Policy to associate with name_behavior_id.
         """
+        if not isinstance(policy, TorchPolicy):
+            raise RuntimeError(f"policy {policy} must be an instance of TorchPolicy.")
         self.policy = policy
         self.policies[parsed_behavior_id.behavior_id] = policy
-        self.optimizer = self.create_coma_optimizer()
+        self.optimizer = self.create_poca_optimizer()
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
@@ -285,15 +296,6 @@ class COMATrainer(RLTrainer):
         """
 
         return self.policy
-
-    def _update_end_episode_stats(self, agent_id: str, optimizer: Optimizer) -> None:
-        super()._update_end_episode_stats(agent_id, optimizer)
-        self.stats_reporter.add_stat(
-            "Environment/Team Cumulative Reward",
-            self.collected_group_rewards.get(agent_id, 0),
-            aggregation=StatsAggregationMethod.HISTOGRAM,
-        )
-        self.collected_group_rewards.pop(agent_id)
 
 
 def lambda_return(r, value_estimates, gamma=0.99, lambd=0.8, value_next=0.0):

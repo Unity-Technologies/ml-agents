@@ -407,7 +407,6 @@ namespace Unity.MLAgents
             if (dimensionPropertySensor != null)
             {
                 var dimensionProperties = dimensionPropertySensor.GetDimensionProperties();
-                int[] intDimensionProperties = new int[dimensionProperties.Length];
                 for (int i = 0; i < dimensionProperties.Length; i++)
                 {
                     observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
@@ -427,6 +426,11 @@ namespace Unity.MLAgents
                 }
             }
             observationProto.Shape.AddRange(shape);
+            var sensorName = sensor.GetName();
+            if (!string.IsNullOrEmpty(sensorName))
+            {
+                observationProto.Name = sensorName;
+            }
 
             // Add the observation type, if any, to the observationProto
             var typeSensor = sensor as ITypedSensor;

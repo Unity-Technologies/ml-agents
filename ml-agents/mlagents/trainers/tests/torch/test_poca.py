@@ -3,8 +3,8 @@ import pytest
 import numpy as np
 import attr
 
-from mlagents.trainers.coma.optimizer_torch import TorchCOMAOptimizer
-from mlagents.trainers.settings import ExtrinsicSettings, RewardSignalType
+from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer
+from mlagents.trainers.settings import RewardSignalSettings, RewardSignalType
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.tests import mock_brain as mb
@@ -23,7 +23,7 @@ from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 
 @pytest.fixture
 def dummy_config():
-    # coma has the same hyperparameters as ppo for now
+    # poca has the same hyperparameters as ppo for now
     return ppo_dummy_config()
 
 
@@ -37,7 +37,7 @@ CONTINUOUS_ACTION_SPEC = ActionSpec.create_continuous(VECTOR_ACTION_SPACE)
 DISCRETE_ACTION_SPEC = ActionSpec.create_discrete(tuple(DISCRETE_ACTION_SPACE))
 
 
-def create_test_coma_optimizer(dummy_config, use_rnn, use_discrete, use_visual):
+def create_test_poca_optimizer(dummy_config, use_rnn, use_discrete, use_visual):
     mock_specs = mb.setup_test_behavior_specs(
         use_discrete,
         use_visual,
@@ -49,7 +49,7 @@ def create_test_coma_optimizer(dummy_config, use_rnn, use_discrete, use_visual):
 
     trainer_settings = attr.evolve(dummy_config)
     trainer_settings.reward_signals = {
-        RewardSignalType.EXTRINSIC: ExtrinsicSettings(strength=1.0, gamma=0.99)
+        RewardSignalType.EXTRINSIC: RewardSignalSettings(strength=1.0, gamma=0.99)
     }
 
     trainer_settings.network_settings.memory = (
@@ -58,16 +58,16 @@ def create_test_coma_optimizer(dummy_config, use_rnn, use_discrete, use_visual):
         else None
     )
     policy = TorchPolicy(0, mock_specs, trainer_settings, "test", False)
-    optimizer = TorchCOMAOptimizer(policy, trainer_settings)
+    optimizer = TorchPOCAOptimizer(policy, trainer_settings)
     return optimizer
 
 
 @pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
 @pytest.mark.parametrize("visual", [True, False], ids=["visual", "vector"])
 @pytest.mark.parametrize("rnn", [True, False], ids=["rnn", "no_rnn"])
-def test_coma_optimizer_update(dummy_config, rnn, visual, discrete):
+def test_poca_optimizer_update(dummy_config, rnn, visual, discrete):
     # Test evaluate
-    optimizer = create_test_coma_optimizer(
+    optimizer = create_test_poca_optimizer(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
     # Test update
@@ -114,8 +114,8 @@ def test_coma_optimizer_update(dummy_config, rnn, visual, discrete):
 @pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
 @pytest.mark.parametrize("visual", [True, False], ids=["visual", "vector"])
 @pytest.mark.parametrize("rnn", [True, False], ids=["rnn", "no_rnn"])
-def test_coma_get_value_estimates(dummy_config, rnn, visual, discrete):
-    optimizer = create_test_coma_optimizer(
+def test_poca_get_value_estimates(dummy_config, rnn, visual, discrete):
+    optimizer = create_test_poca_optimizer(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
     time_horizon = 15
@@ -193,7 +193,7 @@ def test_ppo_optimizer_update_curiosity(
 ):
     # Test evaluate
     dummy_config.reward_signals = curiosity_dummy_config
-    optimizer = create_test_coma_optimizer(
+    optimizer = create_test_poca_optimizer(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
     # Test update
@@ -234,7 +234,7 @@ def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F8
     # Test evaluate
     dummy_config.reward_signals = gail_dummy_config
     config = ppo_dummy_config()
-    optimizer = create_test_coma_optimizer(
+    optimizer = create_test_poca_optimizer(
         config, use_rnn=False, use_discrete=False, use_visual=False
     )
     # Test update

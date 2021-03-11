@@ -171,7 +171,7 @@ class RewardSignalType(Enum):
 
     def to_settings(self) -> type:
         _mapping = {
-            RewardSignalType.EXTRINSIC: ExtrinsicSettings,
+            RewardSignalType.EXTRINSIC: RewardSignalSettings,
             RewardSignalType.GAIL: GAILSettings,
             RewardSignalType.CURIOSITY: CuriositySettings,
             RewardSignalType.RND: RNDSettings,
@@ -213,12 +213,6 @@ class RewardSignalSettings:
                         "encoding_size"
                     ]
         return d_final
-
-
-@attr.s(auto_attribs=True)
-class ExtrinsicSettings(RewardSignalSettings):
-    # For use with COMA2. Add groupmate rewards to the final extrinsic reward.
-    add_groupmate_rewards = False
 
 
 @attr.s(auto_attribs=True)
@@ -606,13 +600,13 @@ class SelfPlaySettings:
 class TrainerType(Enum):
     PPO: str = "ppo"
     SAC: str = "sac"
-    COMA: str = "coma"
+    POCA: str = "poca"
 
     def to_settings(self) -> type:
         _mapping = {
             TrainerType.PPO: PPOSettings,
             TrainerType.SAC: SACSettings,
-            TrainerType.COMA: PPOSettings,
+            TrainerType.POCA: PPOSettings,
         }
         return _mapping[self]
 
@@ -629,7 +623,7 @@ class TrainerSettings(ExportableSettings):
 
     network_settings: NetworkSettings = attr.ib(factory=NetworkSettings)
     reward_signals: Dict[RewardSignalType, RewardSignalSettings] = attr.ib(
-        factory=lambda: {RewardSignalType.EXTRINSIC: ExtrinsicSettings()}
+        factory=lambda: {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
     )
     init_path: Optional[str] = None
     keep_checkpoints: int = 5

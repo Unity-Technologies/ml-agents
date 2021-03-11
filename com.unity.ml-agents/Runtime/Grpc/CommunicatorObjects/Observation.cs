@@ -25,7 +25,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjRtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL29ic2VydmF0",
-            "aW9uLnByb3RvEhRjb21tdW5pY2F0b3Jfb2JqZWN0cyKBAwoQT2JzZXJ2YXRp",
+            "aW9uLnByb3RvEhRjb21tdW5pY2F0b3Jfb2JqZWN0cyKPAwoQT2JzZXJ2YXRp",
             "b25Qcm90bxINCgVzaGFwZRgBIAMoBRJEChBjb21wcmVzc2lvbl90eXBlGAIg",
             "ASgOMiouY29tbXVuaWNhdG9yX29iamVjdHMuQ29tcHJlc3Npb25UeXBlUHJv",
             "dG8SGQoPY29tcHJlc3NlZF9kYXRhGAMgASgMSAASRgoKZmxvYXRfZGF0YRgE",
@@ -33,15 +33,16 @@ namespace Unity.MLAgents.CommunicatorObjects {
             "RmxvYXREYXRhSAASIgoaY29tcHJlc3NlZF9jaGFubmVsX21hcHBpbmcYBSAD",
             "KAUSHAoUZGltZW5zaW9uX3Byb3BlcnRpZXMYBiADKAUSRAoQb2JzZXJ2YXRp",
             "b25fdHlwZRgHIAEoDjIqLmNvbW11bmljYXRvcl9vYmplY3RzLk9ic2VydmF0",
-            "aW9uVHlwZVByb3RvGhkKCUZsb2F0RGF0YRIMCgRkYXRhGAEgAygCQhIKEG9i",
-            "c2VydmF0aW9uX2RhdGEqKQoUQ29tcHJlc3Npb25UeXBlUHJvdG8SCAoETk9O",
-            "RRAAEgcKA1BORxABKkYKFE9ic2VydmF0aW9uVHlwZVByb3RvEgsKB0RFRkFV",
-            "TFQQABIICgRHT0FMEAESCgoGUkVXQVJEEAISCwoHTUVTU0FHRRADQiWqAiJV",
-            "bml0eS5NTEFnZW50cy5Db21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
+            "aW9uVHlwZVByb3RvEgwKBG5hbWUYCCABKAkaGQoJRmxvYXREYXRhEgwKBGRh",
+            "dGEYASADKAJCEgoQb2JzZXJ2YXRpb25fZGF0YSopChRDb21wcmVzc2lvblR5",
+            "cGVQcm90bxIICgROT05FEAASBwoDUE5HEAEqRgoUT2JzZXJ2YXRpb25UeXBl",
+            "UHJvdG8SCwoHREVGQVVMVBAAEggKBEdPQUwQARIKCgZSRVdBUkQQAhILCgdN",
+            "RVNTQUdFEANCJaoCIlVuaXR5Lk1MQWdlbnRzLkNvbW11bmljYXRvck9iamVj",
+            "dHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Unity.MLAgents.CommunicatorObjects.CompressionTypeProto), typeof(global::Unity.MLAgents.CommunicatorObjects.ObservationTypeProto), }, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.ObservationProto), global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Parser, new[]{ "Shape", "CompressionType", "CompressedData", "FloatData", "CompressedChannelMapping", "DimensionProperties", "ObservationType" }, new[]{ "ObservationData" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData), global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData.Parser, new[]{ "Data" }, null, null, null)})
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.ObservationProto), global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Parser, new[]{ "Shape", "CompressionType", "CompressedData", "FloatData", "CompressedChannelMapping", "DimensionProperties", "ObservationType", "Name" }, new[]{ "ObservationData" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData), global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData.Parser, new[]{ "Data" }, null, null, null)})
           }));
     }
     #endregion
@@ -93,6 +94,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       compressedChannelMapping_ = other.compressedChannelMapping_.Clone();
       dimensionProperties_ = other.dimensionProperties_.Clone();
       observationType_ = other.observationType_;
+      name_ = other.name_;
       switch (other.ObservationDataCase) {
         case ObservationDataOneofCase.CompressedData:
           CompressedData = other.CompressedData;
@@ -184,6 +186,22 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "name" field.</summary>
+    public const int NameFieldNumber = 8;
+    private string name_ = "";
+    /// <summary>
+    /// Optional name of the observation.
+    /// This will be set to the ISensor name when writing,
+    /// and read into the ObservationSpec in the low-level API
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Name {
+      get { return name_; }
+      set {
+        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     private object observationData_;
     /// <summary>Enum of possible cases for the "observation_data" oneof.</summary>
     public enum ObservationDataOneofCase {
@@ -223,6 +241,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if(!compressedChannelMapping_.Equals(other.compressedChannelMapping_)) return false;
       if(!dimensionProperties_.Equals(other.dimensionProperties_)) return false;
       if (ObservationType != other.ObservationType) return false;
+      if (Name != other.Name) return false;
       if (ObservationDataCase != other.ObservationDataCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -237,6 +256,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       hash ^= compressedChannelMapping_.GetHashCode();
       hash ^= dimensionProperties_.GetHashCode();
       if (ObservationType != 0) hash ^= ObservationType.GetHashCode();
+      if (Name.Length != 0) hash ^= Name.GetHashCode();
       hash ^= (int) observationDataCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -270,6 +290,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
         output.WriteRawTag(56);
         output.WriteEnum((int) ObservationType);
       }
+      if (Name.Length != 0) {
+        output.WriteRawTag(66);
+        output.WriteString(Name);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -293,6 +317,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (ObservationType != 0) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) ObservationType);
       }
+      if (Name.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -312,6 +339,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
       dimensionProperties_.Add(other.dimensionProperties_);
       if (other.ObservationType != 0) {
         ObservationType = other.ObservationType;
+      }
+      if (other.Name.Length != 0) {
+        Name = other.Name;
       }
       switch (other.ObservationDataCase) {
         case ObservationDataOneofCase.CompressedData:
@@ -370,6 +400,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
           }
           case 56: {
             observationType_ = (global::Unity.MLAgents.CommunicatorObjects.ObservationTypeProto) input.ReadEnum();
+            break;
+          }
+          case 66: {
+            Name = input.ReadString();
             break;
           }
         }
