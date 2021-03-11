@@ -49,8 +49,10 @@ class SimpleEnvironment(BaseEnv):
         vec_obs_size=OBS_SIZE,
         var_len_obs_size=VAR_LEN_SIZE,
         action_sizes=(1, 0),
+        gail=False,
     ):
         super().__init__()
+        self.gail = gail
         self.num_visual = num_visual
         self.num_vector = num_vector
         self.num_var_len = num_var_len
@@ -170,7 +172,10 @@ class SimpleEnvironment(BaseEnv):
         return action_mask
 
     def _compute_reward(self, name: str, done: bool) -> float:
-        if done:
+        if self.gail:
+            # Subtract large positive constant to eliminate survivor bias in GAIL
+            reward = -0.2
+        elif done:
             reward = 0.0
             for _pos in self.positions[name]:
                 reward += (SUCCESS_REWARD * _pos * self.goal[name]) / len(

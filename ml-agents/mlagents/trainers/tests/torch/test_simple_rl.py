@@ -15,6 +15,7 @@ from mlagents.trainers.settings import (
     SelfPlaySettings,
     BehavioralCloningSettings,
     GAILSettings,
+    RewardSignalSettings,
     RewardSignalType,
     EncoderType,
 )
@@ -373,10 +374,15 @@ def simple_record(tmpdir_factory):
 @pytest.mark.parametrize("trainer_config", [PPO_TORCH_CONFIG, SAC_TORCH_CONFIG])
 def test_gail(simple_record, action_sizes, trainer_config):
     demo_path = simple_record(action_sizes)
-    env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_sizes, step_size=0.2)
+    env = SimpleEnvironment(
+        [BRAIN_NAME], action_sizes=action_sizes, step_size=0.2, gail=True
+    )
     bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1000)
     reward_signals = {
-        RewardSignalType.GAIL: GAILSettings(encoding_size=32, demo_path=demo_path)
+        RewardSignalType.GAIL: GAILSettings(
+            strength=0.05, encoding_size=32, demo_path=demo_path
+        ),
+        RewardSignalType.EXTRINSIC: RewardSignalSettings(),
     }
     config = attr.evolve(
         trainer_config,
@@ -384,7 +390,7 @@ def test_gail(simple_record, action_sizes, trainer_config):
         behavioral_cloning=bc_settings,
         max_steps=500,
     )
-    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
+    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=-1.5)
 
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
@@ -396,10 +402,14 @@ def test_gail_visual_ppo(simple_record, action_sizes):
         num_vector=0,
         action_sizes=action_sizes,
         step_size=0.3,
+        gail=True,
     )
     bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1500)
     reward_signals = {
-        RewardSignalType.GAIL: GAILSettings(encoding_size=32, demo_path=demo_path)
+        RewardSignalType.GAIL: GAILSettings(
+            strength=0.05, encoding_size=32, demo_path=demo_path
+        ),
+        RewardSignalType.EXTRINSIC: RewardSignalSettings(),
     }
     hyperparams = attr.evolve(PPO_TORCH_CONFIG.hyperparameters, learning_rate=5e-3)
     config = attr.evolve(
@@ -409,7 +419,7 @@ def test_gail_visual_ppo(simple_record, action_sizes):
         behavioral_cloning=bc_settings,
         max_steps=1000,
     )
-    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
+    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=-1.5)
 
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
@@ -421,10 +431,14 @@ def test_gail_visual_sac(simple_record, action_sizes):
         num_vector=0,
         action_sizes=action_sizes,
         step_size=0.2,
+        gail=True,
     )
     bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1000)
     reward_signals = {
-        RewardSignalType.GAIL: GAILSettings(encoding_size=32, demo_path=demo_path)
+        RewardSignalType.GAIL: GAILSettings(
+            strength=0.05, encoding_size=32, demo_path=demo_path
+        ),
+        RewardSignalType.EXTRINSIC: RewardSignalSettings(),
     }
     hyperparams = attr.evolve(
         SAC_TORCH_CONFIG.hyperparameters, learning_rate=3e-4, batch_size=16
@@ -436,4 +450,4 @@ def test_gail_visual_sac(simple_record, action_sizes):
         behavioral_cloning=bc_settings,
         max_steps=500,
     )
-    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
+    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=-1.5)
