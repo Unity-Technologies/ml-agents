@@ -1,7 +1,6 @@
 #if MLA_INPUT_SYSTEM && UNITY_2019_4_OR_NEWER
 using Unity.MLAgents.Actuators;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.LowLevel;
 
 namespace Unity.MLAgents.Extensions.Input
@@ -17,11 +16,11 @@ namespace Unity.MLAgents.Extensions.Input
             return ActionSpec.MakeContinuous(1);
         }
 
-        /// <inheritdoc cref="IRLActionInputAdaptor.WriteToInputEventForAction"/>
-        public void WriteToInputEventForAction(InputEventPtr eventPtr, InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
+        /// <inheritdoc cref="IRLActionInputAdaptor.QueueInputEventForAction"/>
+        public void QueueInputEventForAction(InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
         {
             var val = actionBuffers.ContinuousActions[0];
-            ((DoubleControl)control).WriteValueIntoEvent((double)val, eventPtr);
+            InputSystem.QueueDeltaStateEvent(control,(double)val);
         }
 
         /// <inheritdoc cref="IRLActionInputAdaptor.WriteToHeuristic"/>

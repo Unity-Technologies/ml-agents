@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: edcbb505552464c5c829886a4a3817dd
+ScriptedImporter:
+  fileIDToRecycleName:
+    11400002: Assets/ML-Agents/Examples/Walker/Demos/ExpertWalkerStVS.demo
+  externalObjects: {}
+  userData: ' (Unity.MLAgents.Demonstrations.DemonstrationSummary)'
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 7bd65ce151aaa4a41a45312543c56be1, type: 3}

@@ -16,11 +16,11 @@ namespace Unity.MLAgents.Extensions.Input
             return ActionSpec.MakeContinuous(1);
         }
 
-        /// <inheritdoc cref="IRLActionInputAdaptor.WriteToInputEventForAction"/>
-        public void WriteToInputEventForAction(InputEventPtr eventPtr, InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
+        /// <inheritdoc cref="IRLActionInputAdaptor.QueueInputEventForAction"/>
+        public void QueueInputEventForAction(InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
         {
             var val = actionBuffers.ContinuousActions[0];
-            control.WriteValueIntoEvent(val, eventPtr);
+            InputSystem.QueueDeltaStateEvent(control, val);
         }
 
         /// <inheritdoc cref="IRLActionInputAdaptor.WriteToHeuristic"/>

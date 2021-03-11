@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 34586a8d0f1c342a49973b36a609e73b
+ScriptedImporter:
+  fileIDToRecycleName:
+    11400002: Assets/ML-Agents/Examples/Crawler/Demos/ExpCrawlerDynVS.demo
+  externalObjects: {}
+  userData: ' (Unity.MLAgents.Demonstrations.DemonstrationSummary)'
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 7bd65ce151aaa4a41a45312543c56be1, type: 3}

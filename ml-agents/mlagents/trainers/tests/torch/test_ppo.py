@@ -207,11 +207,6 @@ def test_ppo_get_value_estimates(dummy_config, rnn, visual, discrete):
     run_out, final_value_out, all_memories = optimizer.get_trajectory_value_estimates(
         trajectory.to_agentbuffer(), trajectory.next_obs, done=False
     )
-    if rnn:
-        # Check that memories don't have a Torch gradient
-        for mem in optimizer.critic_memory_dict.values():
-            assert not mem.requires_grad
-
     for key, val in run_out.items():
         assert type(key) is str
         assert len(val) == 15

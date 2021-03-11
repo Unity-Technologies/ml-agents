@@ -19,7 +19,6 @@ namespace Unity.MLAgents.Extensions.Input
         readonly BehaviorParameters m_BehaviorParameters;
         readonly InputAction m_Action;
         readonly IRLActionInputAdaptor m_InputAdaptor;
-        InputActuatorEventContext m_InputActuatorEventContext;
         InputDevice m_Device;
         InputControl m_Control;
 
@@ -35,17 +34,14 @@ namespace Unity.MLAgents.Extensions.Input
         ///     via the <see cref="IRLActionInputAdaptor"/>.</param>
         /// <param name="adaptor">The <see cref="IRLActionInputAdaptor"/> that will convert data between ML-Agents
         ///     and the <see cref="InputSystem"/>.</param>
-        /// <param name="inputActuatorEventContext">The object that will provide the event ptr to write to.</param>
         public InputActionActuator(InputDevice inputDevice, BehaviorParameters behaviorParameters,
                                    InputAction action,
-                                   IRLActionInputAdaptor adaptor,
-                                   InputActuatorEventContext inputActuatorEventContext)
+                                   IRLActionInputAdaptor adaptor)
         {
             m_BehaviorParameters = behaviorParameters;
             Name = $"InputActionActuator-{action.name}";
             m_Action = action;
             m_InputAdaptor = adaptor;
-            m_InputActuatorEventContext = inputActuatorEventContext;
             ActionSpec = adaptor.GetActionSpecForInputAction(m_Action);
             m_Device = inputDevice;
             m_Control = m_Device?.GetChildControl(m_Action.name);
@@ -57,11 +53,7 @@ namespace Unity.MLAgents.Extensions.Input
             Profiler.BeginSample("InputActionActuator.OnActionReceived");
             if (!m_BehaviorParameters.IsInHeuristicMode())
             {
-                using (m_InputActuatorEventContext.GetEventForFrame(out var eventPtr))
-                {
-                    m_InputAdaptor.WriteToInputEventForAction(eventPtr, m_Action, m_Control, ActionSpec, actionBuffers);
-                }
-
+                m_InputAdaptor.QueueInputEventForAction(m_Action, m_Control, ActionSpec, actionBuffers);
             }
             Profiler.EndSample();
         }

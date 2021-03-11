@@ -131,9 +131,7 @@ versions = [
     ReleaseInfo("release_11", "1.7.0", "0.23.0", "December 21, 2020"),
     ReleaseInfo("release_12", "1.7.2", "0.23.0", "December 22, 2020"),
     ReleaseInfo("release_13", "1.8.0", "0.24.0", "February 17, 2021"),
-    ReleaseInfo("release_14", "1.8.1", "0.24.1", "March 5, 2021"),
     # Verified releases
-    ReleaseInfo("", "1.0.7", "0.16.1", "March 8, 2021", is_verified=True),
     ReleaseInfo("", "1.0.6", "0.16.1", "November 16, 2020", is_verified=True),
     ReleaseInfo("", "1.0.5", "0.16.1", "September 23, 2020", is_verified=True),
     ReleaseInfo("", "1.0.4", "0.16.1", "August 20, 2020", is_verified=True),

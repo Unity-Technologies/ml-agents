@@ -14,6 +14,7 @@ public class SorterAgent : Agent
 
     int m_NumberOfTilesToSpawn;
     int m_MaxNumberOfTiles;
+    PushBlockSettings m_PushBlockSettings;
     Rigidbody m_AgentRb;
 
     // The BufferSensorComponent is the Sensor that allows the Agent to observe
@@ -40,6 +41,7 @@ public class SorterAgent : Agent
         m_MaxNumberOfTiles = k_HighestTileValue;
         m_ResetParams = Academy.Instance.EnvironmentParameters;
         m_BufferSensor = GetComponent<BufferSensorComponent>();
+        m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
         m_AgentRb = GetComponent<Rigidbody>();
         m_StartingPos = transform.position;
     }
@@ -218,7 +220,8 @@ public class SorterAgent : Agent
         }
 
         transform.Rotate(rotateDir, Time.deltaTime * 200f);
-        m_AgentRb.AddForce(dirToGo * 2, ForceMode.VelocityChange);
+        m_AgentRb.AddForce(dirToGo * m_PushBlockSettings.agentRunSpeed,
+            ForceMode.VelocityChange);
 
     }
 

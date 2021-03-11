@@ -66,10 +66,7 @@ setup(
         "pyyaml>=3.1.0",
         # Windows ver. of PyTorch doesn't work from PyPi. Installation:
         # https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Installation.md#windows-installing-pytorch
-        # Torch only working on python 3.9 for 1.8.0 and above. Details see:
-        # https://github.com/pytorch/pytorch/issues/50014
-        "torch>=1.8.0,<1.9.0;(platform_system!='Windows' and python_version>='3.9')",
-        "torch>=1.6.0,<1.9.0;(platform_system!='Windows' and python_version<'3.9')",
+        'torch>=1.6.0,<1.8.0;platform_system!="Windows"',
         "tensorboard>=1.15",
         # cattrs 1.1.0 dropped support for python 3.6, but 1.0.0 doesn't work for python 3.9
         # Since there's no version that supports both, we have to draw the line somwehere.

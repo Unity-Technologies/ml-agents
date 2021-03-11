@@ -36,10 +36,6 @@ def test_run_environment(env_name):
         # Examine the number of observations per Agent
         print("Number of observations : ", len(group_spec.observation_specs))
 
-        for obs_spec in group_spec.observation_specs:
-            # Make sure the name was set in the ObservationSpec
-            assert bool(obs_spec.name) is True, f'obs_spec.name="{obs_spec.name}"'
-
         # Is there a visual observation ?
         vis_obs = any(
             len(obs_spec.shape) == 3 for obs_spec in group_spec.observation_specs

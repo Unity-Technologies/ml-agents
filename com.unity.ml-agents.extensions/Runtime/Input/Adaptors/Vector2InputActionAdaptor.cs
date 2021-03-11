@@ -3,7 +3,6 @@ using System;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.LowLevel;
 
 namespace Unity.MLAgents.Extensions.Input
@@ -20,15 +19,15 @@ namespace Unity.MLAgents.Extensions.Input
             return ActionSpec.MakeContinuous(2);
         }
 
-        /// <inheritdoc cref="IRLActionInputAdaptor.WriteToInputEventForAction"/>
-        public void WriteToInputEventForAction(InputEventPtr eventPtr, InputAction action,
+        /// <inheritdoc cref="IRLActionInputAdaptor.QueueInputEventForAction"/>
+        public void QueueInputEventForAction(InputAction action,
             InputControl control,
             ActionSpec actionSpec,
             in ActionBuffers actionBuffers)
         {
             var x = actionBuffers.ContinuousActions[0];
             var y = actionBuffers.ContinuousActions[1];
-            control.WriteValueIntoEvent(new Vector2(x, y), eventPtr);
+            InputSystem.QueueDeltaStateEvent(control, new Vector2(x, y));
         }
 
         /// <inheritdoc cref="IRLActionInputAdaptor.WriteToHeuristic"/>

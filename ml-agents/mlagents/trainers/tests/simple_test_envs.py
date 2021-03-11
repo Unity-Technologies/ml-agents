@@ -69,21 +69,7 @@ class SimpleEnvironment(BaseEnv):
         self.names = brain_names
         self.positions: Dict[str, List[float]] = {}
         self.step_count: Dict[str, float] = {}
-
-        # Concatenate the arguments for a consistent random seed
-        seed = (
-            brain_names,
-            step_size,
-            num_visual,
-            num_vector,
-            num_var_len,
-            vis_obs_size,
-            vec_obs_size,
-            var_len_obs_size,
-            action_sizes,
-        )
-        self.random = random.Random(str(seed))
-
+        self.random = random.Random(str(self.behavior_spec))
         self.goal: Dict[str, int] = {}
         self.action = {}
         self.rewards: Dict[str, float] = {}

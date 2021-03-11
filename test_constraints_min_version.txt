@@ -1,2 +1,0 @@
-# pip constraints to use the *lowest* versions allowed in ml-agents/setup.py
-torch==1.6.0

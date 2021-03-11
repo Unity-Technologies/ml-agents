@@ -1,7 +1,0 @@
-{
-  "displayName": "3D Ball",
-  "description": "The 3D Ball sample is a simple environment that is a great for jumping into Ml-Agents to see how things work.",
-  "scenes": [
-      "Scenes/3DBall.unity"
-    ]
-}
