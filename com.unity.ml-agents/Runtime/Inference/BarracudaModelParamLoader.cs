@@ -35,6 +35,18 @@ namespace Unity.MLAgents.Inference
         {
             public CheckType CheckType;
             public string Message;
+            public static FailedCheck Info(string message)
+            {
+                return new FailedCheck { CheckType = CheckType.Info, Message = message };
+            }
+            public static FailedCheck Warning(string message)
+            {
+                return new FailedCheck { CheckType = CheckType.Warning, Message = message };
+            }
+            public static FailedCheck Error(string message)
+            {
+                return new FailedCheck { CheckType = CheckType.Error, Message = message };
+            }
         }
 
         /// <summary>
@@ -69,7 +81,7 @@ namespace Unity.MLAgents.Inference
                 {
                     errorMsg += "(But can still train)";
                 }
-                failedModelChecks.Add(new FailedCheck { CheckType = CheckType.Warning, Message = errorMsg });
+                failedModelChecks.Add(FailedCheck.Warning(errorMsg));
                 return failedModelChecks;
             }
 
@@ -82,40 +94,25 @@ namespace Unity.MLAgents.Inference
             var modelApiVersion = (int)model.GetTensorByName(TensorNames.VersionNumber)[0];
             if (modelApiVersion == -1)
             {
-                failedModelChecks.Add(
-                    new FailedCheck
-                    {
-                        CheckType = CheckType.Warning,
-                        Message =
-                    "Model was not trained using the right version of ML-Agents. " +
+                failedModelChecks.Add(FailedCheck.Warning("Model was not trained using the right version of ML-Agents. " +
                     "Cannot use this model."
-                    });
+                    ));
                 return failedModelChecks;
             }
             if (modelApiVersion < (int)ModelApiVersion.MinSupportedVersion || modelApiVersion > (int)ModelApiVersion.MaxSupportedVersion)
             {
-                failedModelChecks.Add(
-                    new FailedCheck
-                    {
-                        CheckType = CheckType.Error,
-                        Message =
-                    $"Version of the trainer the model was trained with ({modelApiVersion}) " +
+                failedModelChecks.Add(FailedCheck.Warning($"Version of the trainer the model was trained with ({modelApiVersion}) " +
                     $"is not compatible with the current range of supported versions:  " +
                     $"({(int)ModelApiVersion.MinSupportedVersion} to {(int)ModelApiVersion.MaxSupportedVersion})."
-                    });
+                    ));
                 return failedModelChecks;
             }
 
             var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
             if (memorySize == -1)
             {
-                failedModelChecks.Add(
-                    new FailedCheck
-                    {
-                        CheckType = CheckType.Warning,
-                        Message =
-                    $"Missing node in the model provided : {TensorNames.MemorySize}"
-                    });
+                failedModelChecks.Add(FailedCheck.Warning($"Missing node in the model provided : {TensorNames.MemorySize}"
+                    ));
                 return failedModelChecks;
             }
 
@@ -182,14 +179,9 @@ namespace Unity.MLAgents.Inference
             if ((brainParameters.VectorObservationSize != 0) &&
                 (!tensorsNames.Contains(TensorNames.VectorObservationPlaceholder)))
             {
-                failedModelChecks.Add(
-                    new FailedCheck
-                    {
-                        CheckType = CheckType.Warning,
-                        Message =
-                    "The model does not contain a Vector Observation Placeholder Input. " +
+                failedModelChecks.Add(FailedCheck.Warning("The model does not contain a Vector Observation Placeholder Input. " +
                     "You must set the Vector Observation Space Size to 0."
-                    });
+                    ));
             }
 
             // If there are not enough Visual Observation Input compared to what the
@@ -203,14 +195,9 @@ namespace Unity.MLAgents.Inference
                     if (!tensorsNames.Contains(
                         TensorNames.GetVisualObservationName(visObsIndex)))
                     {
-                        failedModelChecks.Add(
-                            new FailedCheck
-                            {
-                                CheckType = CheckType.Warning,
-                                Message =
-                            "The model does not contain a Visual Observation Placeholder Input " +
+                        failedModelChecks.Add(FailedCheck.Warning("The model does not contain a Visual Observation Placeholder Input " +
                             $"for sensor component {visObsIndex} ({sensor.GetType().Name})."
-                            });
+                            ));
                     }
                     visObsIndex++;
                 }
@@ -219,14 +206,9 @@ namespace Unity.MLAgents.Inference
                     if (!tensorsNames.Contains(
                         TensorNames.GetObservationName(sensorIndex)))
                     {
-                        failedModelChecks.Add(
-                            new FailedCheck
-                            {
-                                CheckType = CheckType.Warning,
-                                Message =
-                            "The model does not contain an Observation Placeholder Input " +
+                        failedModelChecks.Add(FailedCheck.Warning("The model does not contain an Observation Placeholder Input " +
                             $"for sensor component {sensorIndex} ({sensor.GetType().Name})."
-                            });
+                            ));
                     }
                 }
 
@@ -236,15 +218,9 @@ namespace Unity.MLAgents.Inference
             // Check if there's not enough visual sensors (too many would be handled above)
             if (expectedVisualObs > visObsIndex)
             {
-                failedModelChecks.Add(
-                    new FailedCheck
-                    {
-                        CheckType = CheckType.Warning,
-                        Message =
-                    $"The model expects {expectedVisualObs} visual inputs," +
+                failedModelChecks.Add(FailedCheck.Warning($"The model expects {expectedVisualObs} visual inputs," +
                     $" but only found {visObsIndex} visual sensors."
-                    }
-                );
+                ));
             }
 
             // If the model has a non-negative memory size but requires a recurrent input
@@ -253,13 +229,8 @@ namespace Unity.MLAgents.Inference
                 if (!tensorsNames.Any(x => x.EndsWith("_h")) ||
                     !tensorsNames.Any(x => x.EndsWith("_c")))
                 {
-                    failedModelChecks.Add(
-                        new FailedCheck
-                        {
-                            CheckType = CheckType.Warning,
-                            Message =
-                        "The model does not contain a Recurrent Input Node but has memory_size."
-                        });
+                    failedModelChecks.Add(FailedCheck.Warning("The model does not contain a Recurrent Input Node but has memory_size."
+                        ));
                 }
             }
 
@@ -268,13 +239,8 @@ namespace Unity.MLAgents.Inference
             {
                 if (!tensorsNames.Contains(TensorNames.ActionMaskPlaceholder))
                 {
-                    failedModelChecks.Add(
-                        new FailedCheck
-                        {
-                            CheckType = CheckType.Warning,
-                            Message =
-                        "The model does not contain an Action Mask but is using Discrete Control."
-                        });
+                    failedModelChecks.Add(FailedCheck.Warning("The model does not contain an Action Mask but is using Discrete Control."
+                        ));
                 }
             }
             return failedModelChecks;
@@ -312,14 +278,9 @@ namespace Unity.MLAgents.Inference
                     TensorNames.GetObservationName(sensorIndex)))
                 {
                     var sensor = sensors[sensorIndex];
-                    failedModelChecks.Add(
-                        new FailedCheck
-                        {
-                            CheckType = CheckType.Warning,
-                            Message =
-                        "The model does not contain an Observation Placeholder Input " +
+                    failedModelChecks.Add(FailedCheck.Warning("The model does not contain an Observation Placeholder Input " +
                         $"for sensor component {sensorIndex} ({sensor.GetType().Name})."
-                        });
+                        ));
                 }
             }
 
@@ -329,13 +290,8 @@ namespace Unity.MLAgents.Inference
                 if (!tensorsNames.Any(x => x.EndsWith("_h")) ||
                     !tensorsNames.Any(x => x.EndsWith("_c")))
                 {
-                    failedModelChecks.Add(
-                        new FailedCheck
-                        {
-                            CheckType = CheckType.Warning,
-                            Message =
-                        "The model does not contain a Recurrent Input Node but has memory_size."
-                        });
+                    failedModelChecks.Add(FailedCheck.Warning("The model does not contain a Recurrent Input Node but has memory_size."
+                        ));
                 }
             }
 
@@ -344,13 +300,8 @@ namespace Unity.MLAgents.Inference
             {
                 if (!tensorsNames.Contains(TensorNames.ActionMaskPlaceholder))
                 {
-                    failedModelChecks.Add(
-                        new FailedCheck
-                        {
-                            CheckType = CheckType.Warning,
-                            Message =
-                        "The model does not contain an Action Mask but is using Discrete Control."
-                        });
+                    failedModelChecks.Add(FailedCheck.Warning("The model does not contain an Action Mask but is using Discrete Control."
+                        ));
                 }
             }
             return failedModelChecks;
@@ -379,13 +330,8 @@ namespace Unity.MLAgents.Inference
                 if (!memOutputs.Any(x => x.EndsWith("_h")) ||
                     !memOutputs.Any(x => x.EndsWith("_c")))
                 {
-                    failedModelChecks.Add(
-                        new FailedCheck
-                        {
-                            CheckType = CheckType.Warning,
-                            Message =
-                        "The model does not contain a Recurrent Output Node but has memory_size."
-                        });
+                    failedModelChecks.Add(FailedCheck.Warning("The model does not contain a Recurrent Output Node but has memory_size."
+                        ));
                 }
             }
             return failedModelChecks;
@@ -412,14 +358,10 @@ namespace Unity.MLAgents.Inference
             var pixelT = tensorProxy.Channels;
             if ((widthBp != widthT) || (heightBp != heightT) || (pixelBp != pixelT))
             {
-                return new FailedCheck
-                {
-                    CheckType = CheckType.Warning,
-                    Message =
-                    $"The visual Observation of the model does not match. " +
+                return FailedCheck.Warning($"The visual Observation of the model does not match. " +
                     $"Received TensorProxy of shape [?x{widthBp}x{heightBp}x{pixelBp}] but " +
                     $"was expecting [?x{widthT}x{heightT}x{pixelT}]."
-                };
+                );
             }
             return null;
         }
@@ -449,14 +391,10 @@ namespace Unity.MLAgents.Inference
                 {
                     proxyDimStr = $"[?x{dim3T}x{dim2T}x{dim1T}]";
                 }
-                return new FailedCheck
-                {
-                    CheckType = CheckType.Warning,
-                    Message =
-                    $"An Observation of the model does not match. " +
+                return FailedCheck.Warning($"An Observation of the model does not match. " +
                     $"Received TensorProxy of shape [?x{dim1Bp}x{dim2Bp}] but " +
                     $"was expecting {proxyDimStr}."
-                };
+                );
             }
             return null;
         }
@@ -489,14 +427,10 @@ namespace Unity.MLAgents.Inference
                 {
                     proxyDimStr = $"[?x{dim3T}x{dim2T}x{dim1T}]";
                 }
-                return new FailedCheck
-                {
-                    CheckType = CheckType.Warning,
-                    Message =
-                    $"An Observation of the model does not match. " +
+                return FailedCheck.Warning($"An Observation of the model does not match. " +
                     $"Received TensorProxy of shape [?x{dim1Bp}] but " +
                     $"was expecting {proxyDimStr}."
-                };
+                );
             }
             return null;
         }
@@ -560,13 +494,8 @@ namespace Unity.MLAgents.Inference
                 {
                     if (!tensor.name.Contains("visual_observation"))
                     {
-                        failedModelChecks.Add(
-                            new FailedCheck
-                            {
-                                CheckType = CheckType.Warning,
-                                Message =
-                            "Model requires an unknown input named : " + tensor.name
-                            });
+                        failedModelChecks.Add(FailedCheck.Warning("Model requires an unknown input named : " + tensor.name
+                            ));
                     }
                 }
                 else
@@ -633,16 +562,12 @@ namespace Unity.MLAgents.Inference
                 }
 
                 sensorSizes += "]";
-                return new FailedCheck
-                {
-                    CheckType = CheckType.Warning,
-                    Message =
-                $"Vector Observation Size of the model does not match. Was expecting {totalVecObsSizeT} " +
+                return FailedCheck.Warning($"Vector Observation Size of the model does not match. Was expecting {totalVecObsSizeT} " +
                     $"but received: \n" +
                     $"Vector observations: {vecObsSizeBp} x {numStackedVector}\n" +
                     $"Total [Observable] attributes: {observableAttributeTotalSize}\n" +
                     $"Sensor sizes: {sensorSizes}."
-                };
+                );
             }
             return null;
         }
@@ -707,13 +632,8 @@ namespace Unity.MLAgents.Inference
             {
                 if (!tensorTester.ContainsKey(tensor.name))
                 {
-                    failedModelChecks.Add(
-                        new FailedCheck
-                        {
-                            CheckType = CheckType.Warning,
-                            Message =
-                        "Model requires an unknown input named : " + tensor.name
-                        });
+                    failedModelChecks.Add(FailedCheck.Warning("Model requires an unknown input named : " + tensor.name
+                    ));
                 }
                 else
                 {
@@ -748,13 +668,9 @@ namespace Unity.MLAgents.Inference
             var numberActionsT = tensorProxy.shape[tensorProxy.shape.Length - 1];
             if (numberActionsBp != numberActionsT)
             {
-                return new FailedCheck
-                {
-                    CheckType = CheckType.Warning,
-                    Message =
-                "Previous Action Size of the model does not match. " +
+                return FailedCheck.Warning("Previous Action Size of the model does not match. " +
                     $"Received {numberActionsBp} but was expecting {numberActionsT}."
-                };
+                );
             }
             return null;
         }
@@ -826,13 +742,9 @@ namespace Unity.MLAgents.Inference
 
             if (modelSumDiscreteBranchSizes != sumOfDiscreteBranchSizes)
             {
-                return new FailedCheck
-                {
-                    CheckType = CheckType.Warning,
-                    Message =
-                "Discrete Action Size of the model does not match. The BrainParameters expect " +
+                return FailedCheck.Warning("Discrete Action Size of the model does not match. The BrainParameters expect " +
                     $"{sumOfDiscreteBranchSizes} but the model contains {modelSumDiscreteBranchSizes}."
-                };
+                );
             }
             return null;
         }
@@ -863,13 +775,9 @@ namespace Unity.MLAgents.Inference
 
             if (modelContinuousActionSize != numContinuousActions)
             {
-                return new FailedCheck
-                {
-                    CheckType = CheckType.Warning,
-                    Message =
-                "Continuous Action Size of the model does not match. The BrainParameters and ActuatorComponents expect " +
+                return FailedCheck.Warning("Continuous Action Size of the model does not match. The BrainParameters and ActuatorComponents expect " +
                     $"{numContinuousActions} but the model contains {modelContinuousActionSize}."
-                };
+                );
             }
             return null;
         }
