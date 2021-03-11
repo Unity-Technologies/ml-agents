@@ -978,10 +978,6 @@ speedup), there should be two Groups _per playing field_, and two unique Team Id
 _for the entire Scene_. In environments with both Groups and Team Ids configured, MA-POCA and
 self-play can be used together for training.
 
-For an example of how to set up cooperative environments, see the
-[Cooperative PushBlock](Learning-Environment-Examples.md#cooperative-push-block) and
-[Dungeon Escape](Learning-Environment-Examples.md#dungeon-escape) example environments.
-
 #### Cooperative Behaviors Notes and Best Practices
 * An Agent can only be registered to one MultiAgentGroup at a time. If you want to re-assign an
 Agent from one group to another, you have to unregister it from the current group first.
