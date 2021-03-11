@@ -952,7 +952,7 @@ for (var agent in AgentList)
 }
 
 // if the team scores a goal
-m_AgentGroup.AddGroupReward(score);
+m_AgentGroup.AddGroupReward(rewardForGoal);
 
 // If the goal is reached and the episode is over
 m_AgentGroup.EndGroupEpisode();
@@ -1004,13 +1004,15 @@ reaching max step, you would call `GroupEpisodeInterrupted`.
 
 * If an Agent finished earlier, e.g. completed tasks/be removed/be killed in the game, do not call
 `EndEpisode()` on the Agent. Instead, disable the agent and re-enable it when the next episode starts,
-or destroy the agent entirely.
+or destroy the agent entirely. This is because calling `EndEpisode()` will call `OnEpisodeBegin()`, which
+will reset the agent immediately. While it is possible to call `EndEpisode()` in this way, it is usually not the
+desired behavior when training groups of agents.
 
-* If an agent is disabled or destroyed in a scene, it must be re-registered to the MultiAgentGroup.
+* If an agent is disabled in a scene, it must be re-registered to the MultiAgentGroup.
 
 * Group rewards are meant to reinforce agents to act in the group's best interest instead of
 individual ones, and are treated differently than individual agent rewards during
-training. So calling AddGroupReward() is not equivalent to calling agent.AddReward() on each agent
+training. So calling `AddGroupReward()` is not equivalent to calling agent.AddReward() on each agent
 in the group.
 
 * You can still add incremental rewards to agents using `Agent.AddReward()` if they are
