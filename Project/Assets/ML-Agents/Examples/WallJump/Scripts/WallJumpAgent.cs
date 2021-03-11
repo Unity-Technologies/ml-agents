@@ -11,7 +11,7 @@ using Unity.MLAgentsExamples;
 public class WallJumpAgent : Agent
 {
     // Depending on this value, the wall will have different height
-    protected int m_Configuration;
+    int m_Configuration;
     // Brain to use when no wall is present
     public NNModel noWallBrain;
     // Brain to use when a jumpable wall is present
@@ -21,17 +21,17 @@ public class WallJumpAgent : Agent
 
     public GameObject ground;
     public GameObject spawnArea;
-    protected Bounds m_SpawnAreaBounds;
+    Bounds m_SpawnAreaBounds;
 
 
     public GameObject goal;
     public GameObject shortBlock;
     public GameObject wall;
-    protected Rigidbody m_ShortBlockRb;
-    protected Rigidbody m_AgentRb;
-    protected Material m_GroundMaterial;
-    protected Renderer m_GroundRenderer;
-    protected WallJumpSettings m_WallJumpSettings;
+    Rigidbody m_ShortBlockRb;
+    Rigidbody m_AgentRb;
+    Material m_GroundMaterial;
+    Renderer m_GroundRenderer;
+    WallJumpSettings m_WallJumpSettings;
 
     public float jumpingTime;
     public float jumpTime;
@@ -47,7 +47,7 @@ public class WallJumpAgent : Agent
     string m_SmallWallBehaviorName = "SmallWallJump";
     string m_BigWallBehaviorName = "BigWallJump";
 
-    protected EnvironmentParameters m_ResetParams;
+    EnvironmentParameters m_ResetParams;
 
     public override void Initialize()
     {
@@ -186,7 +186,7 @@ public class WallJumpAgent : Agent
     /// <returns>The Enumerator to be used in a Coroutine.</returns>
     /// <param name="mat">The material to be swapped.</param>
     /// <param name="time">The time the material will remain.</param>
-    protected IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
+    IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
     {
         m_GroundRenderer.material = mat;
         yield return new WaitForSeconds(time); //wait for 2 sec
@@ -285,7 +285,7 @@ public class WallJumpAgent : Agent
     }
 
     // Detect when the agent hits the goal
-    protected virtual void OnTriggerStay(Collider col)
+    void OnTriggerStay(Collider col)
     {
         if (col.gameObject.CompareTag("goal") && DoGroundCheck(true))
         {
@@ -331,7 +331,7 @@ public class WallJumpAgent : Agent
     /// If 1:  Small wall and smallWallBrain.
     /// Other : Tall wall and BigWallBrain.
     /// </param>
-    protected virtual void ConfigureAgent(int config)
+    void ConfigureAgent(int config)
     {
         var localScale = wall.transform.localScale;
         if (config == 0)

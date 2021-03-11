@@ -154,7 +154,6 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         [HideInInspector, SerializeField, FormerlySerializedAs("m_TeamID")]
         public int TeamId;
-
         // TODO properties here instead of Agent
 
         [FormerlySerializedAs("m_useChildSensors")]
