@@ -99,19 +99,6 @@ namespace Unity.MLAgents.Inference
                     });
                 return failedModelChecks;
             }
-            if (modelApiVersion == k_ApiVersionLegacy)
-            {
-                failedModelChecks.Add(
-                    new FailedCheck
-                    {
-                        CheckType = CheckType.Info,
-                        Message =
-                    $"Version of the trainer the model was trained with ({modelApiVersion}) " +
-                    $"is not the same as the the Brain's version ({k_ApiVersion}). " +
-                    "The model should still work"
-                    });
-                return failedModelChecks;
-            }
 
             var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
             if (memorySize == -1)
