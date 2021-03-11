@@ -372,7 +372,7 @@ namespace Unity.MLAgents.Inference
             {
                 return FailedCheck.Warning($"The visual Observation of the model does not match. " +
                     $"Received TensorProxy of shape [?x{widthBp}x{heightBp}x{pixelBp}] but " +
-                    $"was expecting [?x{widthT}x{heightT}x{pixelT}]."
+                    $"was expecting [?x{widthT}x{heightT}x{pixelT}] for the {sensor.GetName()} Sensor."
                 );
             }
             return null;
@@ -399,13 +399,13 @@ namespace Unity.MLAgents.Inference
             if ((dim1Bp != dim1T) || (dim2Bp != dim2T))
             {
                 var proxyDimStr = $"[?x{dim1T}x{dim2T}]";
-                if (dim3T > 0)
+                if (dim3T > 1)
                 {
                     proxyDimStr = $"[?x{dim3T}x{dim2T}x{dim1T}]";
                 }
                 return FailedCheck.Warning($"An Observation of the model does not match. " +
                     $"Received TensorProxy of shape [?x{dim1Bp}x{dim2Bp}] but " +
-                    $"was expecting {proxyDimStr}."
+                    $"was expecting {proxyDimStr} for the {sensor.GetName()} Sensor."
                 );
             }
             return null;
@@ -431,17 +431,17 @@ namespace Unity.MLAgents.Inference
             if ((dim1Bp != dim1T))
             {
                 var proxyDimStr = $"[?x{dim1T}]";
-                if (dim2T > 0)
+                if (dim2T > 1)
                 {
                     proxyDimStr = $"[?x{dim1T}x{dim2T}]";
                 }
-                if (dim3T > 0)
+                if (dim3T > 1)
                 {
                     proxyDimStr = $"[?x{dim3T}x{dim2T}x{dim1T}]";
                 }
                 return FailedCheck.Warning($"An Observation of the model does not match. " +
                     $"Received TensorProxy of shape [?x{dim1Bp}] but " +
-                    $"was expecting {proxyDimStr}."
+                    $"was expecting {proxyDimStr} for the {sensor.GetName()} Sensor."
                 );
             }
             return null;
