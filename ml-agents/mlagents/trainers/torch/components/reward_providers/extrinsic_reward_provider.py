@@ -6,7 +6,7 @@ from mlagents.trainers.torch.components.reward_providers.base_reward_provider im
     BaseRewardProvider,
 )
 from mlagents_envs.base_env import BehaviorSpec
-from mlagents.trainers.settings import ExtrinsicSettings
+from mlagents.trainers.settings import RewardSignalSettings
 
 
 class ExtrinsicRewardProvider(BaseRewardProvider):
@@ -16,9 +16,9 @@ class ExtrinsicRewardProvider(BaseRewardProvider):
     but also the team and the individual rewards of the other agents.
     """
 
-    def __init__(self, specs: BehaviorSpec, settings: ExtrinsicSettings) -> None:
+    def __init__(self, specs: BehaviorSpec, settings: RewardSignalSettings) -> None:
         super().__init__(specs, settings)
-        self._add_groupmate_rewards = settings.add_groupmate_rewards
+        self.add_groupmate_rewards = False
 
     def evaluate(self, mini_batch: AgentBuffer) -> np.ndarray:
         indiv_rewards = np.array(
@@ -29,7 +29,7 @@ class ExtrinsicRewardProvider(BaseRewardProvider):
             BufferKey.GROUPMATE_REWARDS in mini_batch
             and BufferKey.GROUP_REWARD in mini_batch
         ):
-            if self._add_groupmate_rewards:
+            if self.add_groupmate_rewards:
                 groupmate_rewards_list = mini_batch[BufferKey.GROUPMATE_REWARDS]
                 groupmate_rewards_sum = np.array(
                     [sum(_rew) for _rew in groupmate_rewards_list], dtype=np.float32

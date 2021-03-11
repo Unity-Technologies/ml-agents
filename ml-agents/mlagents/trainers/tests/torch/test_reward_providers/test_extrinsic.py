@@ -6,7 +6,7 @@ from mlagents.trainers.torch.components.reward_providers import (
     create_reward_provider,
 )
 from mlagents_envs.base_env import BehaviorSpec, ActionSpec
-from mlagents.trainers.settings import ExtrinsicSettings, RewardSignalType
+from mlagents.trainers.settings import RewardSignalSettings, RewardSignalType
 from mlagents.trainers.tests.torch.test_reward_providers.utils import (
     create_agent_buffer,
 )
@@ -29,7 +29,7 @@ ACTIONSPEC_TWODISCRETE = ActionSpec.create_discrete((2, 3))
     ],
 )
 def test_construction(behavior_spec: BehaviorSpec) -> None:
-    settings = ExtrinsicSettings()
+    settings = RewardSignalSettings()
     settings.gamma = 0.2
     extrinsic_rp = ExtrinsicRewardProvider(behavior_spec, settings)
     assert extrinsic_rp.gamma == 0.2
@@ -48,7 +48,7 @@ def test_construction(behavior_spec: BehaviorSpec) -> None:
     ],
 )
 def test_factory(behavior_spec: BehaviorSpec) -> None:
-    settings = ExtrinsicSettings()
+    settings = RewardSignalSettings()
     extrinsic_rp = create_reward_provider(
         RewardSignalType.EXTRINSIC, behavior_spec, settings
     )
@@ -69,7 +69,7 @@ def test_factory(behavior_spec: BehaviorSpec) -> None:
 )
 def test_reward(behavior_spec: BehaviorSpec, reward: float) -> None:
     buffer = create_agent_buffer(behavior_spec, 1000, reward)
-    settings = ExtrinsicSettings()
+    settings = RewardSignalSettings()
     extrinsic_rp = ExtrinsicRewardProvider(behavior_spec, settings)
     generated_rewards = extrinsic_rp.evaluate(buffer)
     assert (generated_rewards == reward).all()
@@ -86,7 +86,7 @@ def test_reward(behavior_spec: BehaviorSpec, reward: float) -> None:
     assert (generated_rewards == 2 * reward).all()
 
     # Test groupmate rewards. Total reward should be indiv_reward + 2 * teammate_reward + group_reward
-    settings.add_groupmate_rewards = True
     extrinsic_rp = ExtrinsicRewardProvider(behavior_spec, settings)
+    extrinsic_rp.add_groupmate_rewards = True
     generated_rewards = extrinsic_rp.evaluate(buffer)
     assert (generated_rewards == 4 * reward).all()

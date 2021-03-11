@@ -1,4 +1,7 @@
 from typing import Dict, cast, List, Tuple, Optional
+from mlagents.trainers.torch.components.reward_providers.extrinsic_reward_provider import (
+    ExtrinsicRewardProvider,
+)
 import numpy as np
 import math
 from mlagents.torch_utils import torch
@@ -15,7 +18,6 @@ from mlagents_envs.base_env import ObservationSpec, ActionSpec
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.settings import (
-    ExtrinsicSettings,
     RewardSignalSettings,
     RewardSignalType,
     TrainerSettings,
@@ -187,15 +189,18 @@ class TorchPOCAOptimizer(TorchOptimizer):
         GAIL, and make sure Extrinsic adds team rewards.
         :param reward_signal_configs: Reward signal config.
         """
-        for reward_signal, settings in reward_signal_configs.items():
+        for reward_signal in reward_signal_configs.keys():
             if reward_signal != RewardSignalType.EXTRINSIC:
                 logger.warning(
                     f"Reward signal {reward_signal.value.capitalize()} is not supported with the POCA trainer; "
                     "results may be unexpected."
                 )
-            elif isinstance(settings, ExtrinsicSettings):
-                settings.add_groupmate_rewards = True
         super().create_reward_signals(reward_signal_configs)
+        # Make sure we add the groupmate rewards in POCA, so agents learn how to help each
+        # other achieve individual rewards as well
+        for reward_provider in self.reward_signals.values():
+            if isinstance(reward_provider, ExtrinsicRewardProvider):
+                reward_provider.add_groupmate_rewards = True
 
     @property
     def critic(self):

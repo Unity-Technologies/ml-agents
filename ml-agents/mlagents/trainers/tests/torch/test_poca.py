@@ -4,7 +4,7 @@ import numpy as np
 import attr
 
 from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer
-from mlagents.trainers.settings import ExtrinsicSettings, RewardSignalType
+from mlagents.trainers.settings import RewardSignalSettings, RewardSignalType
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.tests import mock_brain as mb
@@ -49,7 +49,7 @@ def create_test_poca_optimizer(dummy_config, use_rnn, use_discrete, use_visual):
 
     trainer_settings = attr.evolve(dummy_config)
     trainer_settings.reward_signals = {
-        RewardSignalType.EXTRINSIC: ExtrinsicSettings(strength=1.0, gamma=0.99)
+        RewardSignalType.EXTRINSIC: RewardSignalSettings(strength=1.0, gamma=0.99)
     }
 
     trainer_settings.network_settings.memory = (
