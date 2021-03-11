@@ -963,7 +963,7 @@ ResetScene();
 ```
 
 Multi Agent Groups are best used with the MA-POCA trainer, which is explicitly designed to train
-cooperative environments. This can be enabled by using the `coma` trainer - see the
+cooperative environments. This can be enabled by using the `poca` trainer - see the
 [training configurations](Training-Configuration-File.md) doc for more information on
 configuring MA-POCA. When using MA-POCA, agents which are deactivated or removed from the Scene
 during the episode will still learn to contribute to the group's long term rewards, even
