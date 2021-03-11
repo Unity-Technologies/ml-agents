@@ -71,7 +71,8 @@ namespace Unity.MLAgents
 
 
                                 var scriptsPath = Path.Combine(exampleDirectory, k_MLAgentsScriptsDirName);
-                                var assets = new List<string> { scenePath };
+                                Debug.Log($"Scene Path: {scenePath}");
+                                var assets = new List<string> { scenePath.Substring(scenePath.IndexOf("Assets")) };
                                 if (!Directory.Exists(Path.Combine(scriptsPath)))
                                 {
                                     scriptsPath = exampleDirectory;
