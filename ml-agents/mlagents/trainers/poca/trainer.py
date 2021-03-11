@@ -179,7 +179,7 @@ class POCATrainer(RLTrainer):
                 self.collected_group_rewards.pop(agent_id)
 
         # If the whole team is done, average the remaining group rewards.
-        if trajectory.all_group_dones_reached:
+        if trajectory.all_group_dones_reached and trajectory.done_reached:
             self.stats_reporter.add_stat(
                 "Environment/Group Cumulative Reward",
                 self.collected_group_rewards.get(agent_id, 0),
