@@ -467,7 +467,7 @@ blocks require all 3 agents to push and are worth +3.
 - Goal: Push all blocks into the goal.
 - Agents: The environment contains three Agents in a Multi Agent Group.
 - Agent Reward Function:
-  - -(1/15000) Existential penalty, as a group reward.
+  - -0.0001 Existential penalty, as a group reward.
   - +1, +2, or +3 for pushing in a block, added as a group reward.
 - Behavior Parameters:
   - Observation space: A single Grid Sensor with separate tags for each block size,
