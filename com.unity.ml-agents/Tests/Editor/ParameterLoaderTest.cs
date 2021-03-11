@@ -21,7 +21,7 @@ namespace Unity.MLAgents.Tests
 
         public override int[] GetObservationShape()
         {
-            return Sensor.GetObservationShape();
+            return Sensor.GetObservationSpec().Shape;
         }
     }
     public class Test3DSensor : ISensor, IBuiltInSensor, IDimensionPropertiesSensor
@@ -41,9 +41,9 @@ namespace Unity.MLAgents.Tests
             m_Name = name;
         }
 
-        public int[] GetObservationShape()
+        public ObservationSpec GetObservationSpec()
         {
-            return new[] { m_Height, m_Width, m_Channels };
+            return ObservationSpec.FromShape(m_Height, m_Width, m_Channels);
         }
 
         public int Write(ObservationWriter writer)

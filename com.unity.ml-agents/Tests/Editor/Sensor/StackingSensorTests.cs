@@ -14,7 +14,7 @@ namespace Unity.MLAgents.Tests
             ISensor wrapped = new VectorSensor(4);
             ISensor sensor = new StackingSensor(wrapped, 4);
             Assert.AreEqual("StackingSensor_size4_VectorSensor_size4", sensor.GetName());
-            Assert.AreEqual(sensor.GetObservationShape(), new[] { 16 });
+            Assert.AreEqual(sensor.GetObservationSpec().Shape, new[] { 16 });
         }
 
         [Test]
@@ -68,38 +68,38 @@ namespace Unity.MLAgents.Tests
         {
             public SensorCompressionType CompressionType = SensorCompressionType.PNG;
             public int[] Mapping;
-            public int[] Shape;
+            public ObservationSpec ObservationSpec;
             public float[,,] CurrentObservation;
 
             internal Dummy3DSensor()
             {
             }
 
-            public int[] GetObservationShape()
+            public ObservationSpec GetObservationSpec()
             {
-                return Shape;
+                return ObservationSpec;
             }
 
             public int Write(ObservationWriter writer)
             {
-                for (var h = 0; h < Shape[0]; h++)
+                for (var h = 0; h < ObservationSpec.Shape[0]; h++)
                 {
-                    for (var w = 0; w < Shape[1]; w++)
+                    for (var w = 0; w < ObservationSpec.Shape[1]; w++)
                     {
-                        for (var c = 0; c < Shape[2]; c++)
+                        for (var c = 0; c < ObservationSpec.Shape[2]; c++)
                         {
                             writer[h, w, c] = CurrentObservation[h, w, c];
                         }
                     }
                 }
-                return Shape[0] * Shape[1] * Shape[2];
+                return ObservationSpec.Shape[0] * ObservationSpec.Shape[1] * ObservationSpec.Shape[2];
             }
 
             public byte[] GetCompressedObservation()
             {
                 var writer = new ObservationWriter();
-                var flattenedObservation = new float[Shape[0] * Shape[1] * Shape[2]];
-                writer.SetTarget(flattenedObservation, Shape, 0);
+                var flattenedObservation = new float[ObservationSpec.Shape[0] * ObservationSpec.Shape[1] * ObservationSpec.Shape[2]];
+                writer.SetTarget(flattenedObservation, ObservationSpec.Shape, 0);
                 Write(writer);
                 byte[] bytes = Array.ConvertAll(flattenedObservation, (z) => (byte)z);
                 return bytes;
@@ -143,14 +143,14 @@ namespace Unity.MLAgents.Tests
 
             // Test mapping with number of layers not being multiple of 3
             var dummySensor = new Dummy3DSensor();
-            dummySensor.Shape = new[] { 2, 2, 4 };
+            dummySensor.ObservationSpec = ObservationSpec.FromShape(2, 2, 4);
             dummySensor.Mapping = new[] { 0, 1, 2, 3 };
             var stackedDummySensor = new StackingSensor(dummySensor, 2);
             Assert.AreEqual(stackedDummySensor.GetCompressedChannelMapping(), new[] { 0, 1, 2, 3, -1, -1, 4, 5, 6, 7, -1, -1 });
 
             // Test mapping with dummy layers that should be dropped
             var paddedDummySensor = new Dummy3DSensor();
-            paddedDummySensor.Shape = new[] { 2, 2, 4 };
+            paddedDummySensor.ObservationSpec = ObservationSpec.FromShape(2, 2, 4);
             paddedDummySensor.Mapping = new[] { 0, 1, 2, 3, -1, -1 };
             var stackedPaddedDummySensor = new StackingSensor(paddedDummySensor, 2);
             Assert.AreEqual(stackedPaddedDummySensor.GetCompressedChannelMapping(), new[] { 0, 1, 2, 3, -1, -1, 4, 5, 6, 7, -1, -1 });
@@ -160,7 +160,7 @@ namespace Unity.MLAgents.Tests
         public void Test3DStacking()
         {
             var wrapped = new Dummy3DSensor();
-            wrapped.Shape = new[] { 2, 1, 2 };
+            wrapped.ObservationSpec = ObservationSpec.FromShape(2, 1, 2);
             var sensor = new StackingSensor(wrapped, 2);
 
             // Check the stacking is on the last dimension
@@ -188,7 +188,7 @@ namespace Unity.MLAgents.Tests
         public void TestStackedGetCompressedObservation()
         {
             var wrapped = new Dummy3DSensor();
-            wrapped.Shape = new[] { 1, 1, 3 };
+            wrapped.ObservationSpec = ObservationSpec.FromShape(1, 1, 3);
             var sensor = new StackingSensor(wrapped, 2);
 
             wrapped.CurrentObservation = new[, ,] { { { 1f, 2f, 3f } } };
@@ -218,7 +218,7 @@ namespace Unity.MLAgents.Tests
         public void TestStackingSensorBuiltInSensorType()
         {
             var dummySensor = new Dummy3DSensor();
-            dummySensor.Shape = new[] { 2, 2, 4 };
+            dummySensor.ObservationSpec = ObservationSpec.FromShape(2, 2, 4);
             dummySensor.Mapping = new[] { 0, 1, 2, 3 };
             var stackedDummySensor = new StackingSensor(dummySensor, 2);
             Assert.AreEqual(stackedDummySensor.GetBuiltInSensorType(), BuiltInSensorType.Unknown);

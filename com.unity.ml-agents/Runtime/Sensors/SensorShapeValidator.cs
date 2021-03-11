@@ -5,7 +5,7 @@ namespace Unity.MLAgents.Sensors
 {
     internal class SensorShapeValidator
     {
-        List<int[]> m_SensorShapes;
+        List<ObservationSpec> m_SensorShapes;
 
         /// <summary>
         /// Check that the List Sensors are the same shape as the previous ones.
@@ -15,11 +15,11 @@ namespace Unity.MLAgents.Sensors
         {
             if (m_SensorShapes == null)
             {
-                m_SensorShapes = new List<int[]>(sensors.Count);
+                m_SensorShapes = new List<ObservationSpec>(sensors.Count);
                 // First agent, save the sensor sizes
                 foreach (var sensor in sensors)
                 {
-                    m_SensorShapes.Add(sensor.GetObservationShape());
+                    m_SensorShapes.Add(sensor.GetObservationSpec());
                 }
             }
             else
@@ -34,12 +34,12 @@ namespace Unity.MLAgents.Sensors
                 );
                 for (var i = 0; i < Mathf.Min(m_SensorShapes.Count, sensors.Count); i++)
                 {
-                    var cachedShape = m_SensorShapes[i];
-                    var sensorShape = sensors[i].GetObservationShape();
-                    Debug.Assert(cachedShape.Length == sensorShape.Length, "Sensor dimensions must match.");
-                    for (var j = 0; j < Mathf.Min(cachedShape.Length, sensorShape.Length); j++)
+                    var cachedSpec = m_SensorShapes[i];
+                    var sensorSpec = sensors[i].GetObservationSpec();
+                    Debug.Assert(cachedSpec.Shape.Length == sensorSpec.Shape.Length, "Sensor dimensions must match.");
+                    for (var j = 0; j < Mathf.Min(cachedSpec.Shape.Length, sensorSpec.Shape.Length); j++)
                     {
-                        Debug.Assert(cachedShape[j] == sensorShape[j], "Sensor sizes must match.");
+                        Debug.Assert(cachedSpec.Shape[j] == sensorSpec.Shape[j], "Sensor sizes must match.");
                     }
                 }
             }

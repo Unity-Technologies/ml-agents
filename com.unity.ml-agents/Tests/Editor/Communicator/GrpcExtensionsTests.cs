@@ -54,16 +54,16 @@ namespace Unity.MLAgents.Tests
 
         class DummySensor : ISensor
         {
-            public int[] Shape;
+            public ObservationSpec ObservationSpec;
             public SensorCompressionType CompressionType;
 
             internal DummySensor()
             {
             }
 
-            public int[] GetObservationShape()
+            public ObservationSpec GetObservationSpec()
             {
-                return Shape;
+                return ObservationSpec;
             }
 
             public int Write(ObservationWriter writer)
@@ -127,7 +127,7 @@ namespace Unity.MLAgents.Tests
                 var dummySensor = new DummySensor();
                 var obsWriter = new ObservationWriter();
 
-                dummySensor.Shape = shape;
+                dummySensor.ObservationSpec = ObservationSpec.FromShape(shape);
                 dummySensor.CompressionType = compressionType;
                 obsWriter.SetTarget(new float[128], shape, 0);
 

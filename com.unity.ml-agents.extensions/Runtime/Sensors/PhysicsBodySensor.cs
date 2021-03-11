@@ -11,7 +11,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// </summary>
     public class PhysicsBodySensor : ISensor, IBuiltInSensor
     {
-        int[] m_Shape;
+        ObservationSpec m_ObservationSpec;
         string m_SensorName;
 
         PoseExtractor m_PoseExtractor;
@@ -44,7 +44,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             var numTransformObservations = m_PoseExtractor.GetNumPoseObservations(settings);
-            m_Shape = new[] { numTransformObservations + numJointExtractorObservations };
+            m_ObservationSpec = ObservationSpec.FromShape(numTransformObservations + numJointExtractorObservations);
         }
 
 #if UNITY_2020_1_OR_NEWER
@@ -65,14 +65,14 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             var numTransformObservations = m_PoseExtractor.GetNumPoseObservations(settings);
-            m_Shape = new[] { numTransformObservations + numJointExtractorObservations };
+            m_ObservationSpec = ObservationSpec.FromShape(numTransformObservations + numJointExtractorObservations);
         }
 #endif
 
         /// <inheritdoc/>
-        public int[] GetObservationShape()
+        public ObservationSpec GetObservationSpec()
         {
-            return m_Shape;
+            return m_ObservationSpec;
         }
 
         /// <inheritdoc/>

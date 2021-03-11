@@ -31,7 +31,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
             var expectedShape = new[] { 3 * 3 * 2 };
             Assert.AreEqual(expectedShape, sensorComponent.GetObservationShape());
-            Assert.AreEqual(expectedShape, sensor.GetObservationShape());
+            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
 
             var expectedObs = new float[]
             {
@@ -65,7 +65,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
             var expectedShape = new[] { 3 * 3 * (2 + 3) };
             Assert.AreEqual(expectedShape, sensorComponent.GetObservationShape());
-            Assert.AreEqual(expectedShape, sensor.GetObservationShape());
+            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
 
             var expectedObs = new float[]
             {
@@ -94,7 +94,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
             var expectedShape = new[] { 3, 3, 2 };
             Assert.AreEqual(expectedShape, sensorComponent.GetObservationShape());
-            Assert.AreEqual(expectedShape, sensor.GetObservationShape());
+            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
 
             Assert.AreEqual(SensorCompressionType.None, sensor.GetCompressionType());
 
@@ -138,7 +138,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
             var expectedShape = new[] { 3, 3, 2 + 3 };
             Assert.AreEqual(expectedShape, sensorComponent.GetObservationShape());
-            Assert.AreEqual(expectedShape, sensor.GetObservationShape());
+            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
 
             Assert.AreEqual(SensorCompressionType.None, sensor.GetCompressionType());
 
@@ -176,7 +176,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
             var expectedShape = new[] { 3, 3, 2 };
             Assert.AreEqual(expectedShape, sensorComponent.GetObservationShape());
-            Assert.AreEqual(expectedShape, sensor.GetObservationShape());
+            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
 
             Assert.AreEqual(SensorCompressionType.PNG, sensor.GetCompressionType());
 
@@ -216,7 +216,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
             var expectedShape = new[] { 3, 3, 2 + 3 };
             Assert.AreEqual(expectedShape, sensorComponent.GetObservationShape());
-            Assert.AreEqual(expectedShape, sensor.GetObservationShape());
+            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
 
             Assert.AreEqual(SensorCompressionType.PNG, sensor.GetCompressionType());
 

@@ -124,9 +124,9 @@ namespace Unity.MLAgents.Tests
             sensorName = n;
         }
 
-        public int[] GetObservationShape()
+        public ObservationSpec GetObservationSpec()
         {
-            return new[] { 0 };
+            return ObservationSpec.FromShape(0);
         }
 
         public int Write(ObservationWriter writer)

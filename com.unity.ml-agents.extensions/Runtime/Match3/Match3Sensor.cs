@@ -39,7 +39,7 @@ namespace Unity.MLAgents.Extensions.Match3
     {
         private Match3ObservationType m_ObservationType;
         private AbstractBoard m_Board;
-        private int[] m_Shape;
+        private ObservationSpec m_ObservationSpec;
         private int[] m_SparseChannelMapping;
         private string m_Name;
 
@@ -70,9 +70,9 @@ namespace Unity.MLAgents.Extensions.Match3
             m_NumSpecialTypes = board.NumSpecialTypes;
 
             m_ObservationType = obsType;
-            m_Shape = obsType == Match3ObservationType.Vector ?
-                new[] { m_Rows * m_Columns * (m_NumCellTypes + SpecialTypeSize) } :
-                new[] { m_Rows, m_Columns, m_NumCellTypes + SpecialTypeSize };
+            m_ObservationSpec = obsType == Match3ObservationType.Vector
+                ? ObservationSpec.FromShape(m_Rows * m_Columns * (m_NumCellTypes + SpecialTypeSize))
+                : ObservationSpec.FromShape(m_Rows, m_Columns, m_NumCellTypes + SpecialTypeSize);
 
             // See comment in GetCompressedObservation()
             var cellTypePaddedSize = 3 * ((m_NumCellTypes + 2) / 3);
@@ -96,9 +96,9 @@ namespace Unity.MLAgents.Extensions.Match3
         }
 
         /// <inheritdoc/>
-        public int[] GetObservationShape()
+        public ObservationSpec GetObservationSpec()
         {
-            return m_Shape;
+            return m_ObservationSpec;
         }
 
         /// <inheritdoc/>

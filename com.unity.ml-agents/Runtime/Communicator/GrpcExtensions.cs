@@ -317,7 +317,7 @@ namespace Unity.MLAgents
         /// <returns></returns>
         public static ObservationProto GetObservationProto(this ISensor sensor, ObservationWriter observationWriter)
         {
-            var shape = sensor.GetObservationShape();
+            var shape = sensor.GetObservationSpec().Shape;
             ObservationProto observationProto = null;
             var compressionType = sensor.GetCompressionType();
             // Check capabilities if we need to concatenate PNGs
@@ -371,7 +371,7 @@ namespace Unity.MLAgents
                     floatDataProto.Data.Add(0.0f);
                 }
 
-                observationWriter.SetTarget(floatDataProto.Data, sensor.GetObservationShape(), 0);
+                observationWriter.SetTarget(floatDataProto.Data, sensor.GetObservationSpec(), 0);
                 sensor.Write(observationWriter);
 
                 observationProto = new ObservationProto

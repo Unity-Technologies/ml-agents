@@ -15,7 +15,7 @@ namespace Unity.MLAgentsExamples
         public abstract void WriteObservation(float[] output);
 
         /// <inheritdoc/>
-        public abstract int[] GetObservationShape();
+        public abstract ObservationSpec GetObservationSpec();
 
         /// <inheritdoc/>
         public abstract string GetName();

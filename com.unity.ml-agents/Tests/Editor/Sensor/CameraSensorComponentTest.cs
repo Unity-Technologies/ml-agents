@@ -33,7 +33,7 @@ namespace Unity.MLAgents.Tests
                     Assert.AreEqual(expectedShape, cameraComponent.GetObservationShape());
 
                     var sensor = cameraComponent.CreateSensor();
-                    Assert.AreEqual(expectedShape, sensor.GetObservationShape());
+                    Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
                     Assert.AreEqual(typeof(CameraSensor), sensor.GetType());
                 }
             }

@@ -215,9 +215,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         protected bool Initialized = false;
 
         /// <summary>
-        /// Array holding the dimensions of the resulting tensor
+        /// Cached ObservationSpec
         /// </summary>
-        private int[] m_Shape;
+        private ObservationSpec m_ObservationSpec;
 
         //
         // Debug Parameters
@@ -423,7 +423,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             // Default root reference to current game object
             if (rootReference == null)
                 rootReference = gameObject;
-            m_Shape = new[] { GridNumSideX, GridNumSideZ, ObservationPerCell };
+            m_ObservationSpec = ObservationSpec.FromShape(GridNumSideX, GridNumSideZ, ObservationPerCell);
 
             compressedImgs = new List<byte[]>();
             byteSizesBytesList = new List<byte[]>();
@@ -473,14 +473,6 @@ namespace Unity.MLAgents.Extensions.Sensors
                     CellActivity[i] = DebugDefaultColor;
                 }
             }
-        }
-
-        /// <summary>Gets the shape of the grid observation</summary>
-        /// <returns>integer array shape of the grid observation</returns>
-        public int[] GetFloatObservationShape()
-        {
-            m_Shape = new[] { GridNumSideX, GridNumSideZ, ObservationPerCell };
-            return m_Shape;
         }
 
         /// <inheritdoc/>
@@ -914,10 +906,21 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         /// <summary>Gets the observation shape</summary>
         /// <returns>int[] of the observation shape</returns>
+        public ObservationSpec GetObservationSpec()
+        {
+            // Lazy update
+            var shape = m_ObservationSpec.Shape;
+            if (shape[0] != GridNumSideX || shape[1] != GridNumSideZ || shape[2] != ObservationPerCell)
+            {
+                m_ObservationSpec = ObservationSpec.FromShape(GridNumSideX, GridNumSideZ, ObservationPerCell);
+            }
+            return m_ObservationSpec;
+        }
+
+        /// <inheritdoc/>
         public override int[] GetObservationShape()
         {
-            m_Shape = new[] { GridNumSideX, GridNumSideZ, ObservationPerCell };
-            return m_Shape;
+            return m_ObservationSpec.Shape;
         }
 
         /// <inheritdoc/>

@@ -12,6 +12,8 @@ namespace Unity.MLAgents.Sensors
         private int m_ObsSize;
         float[] m_ObservationBuffer;
         int m_CurrentNumObservables;
+        ObservationSpec m_ObservationSpec;
+
         static DimensionProperty[] s_DimensionProperties = new DimensionProperty[]{
                 DimensionProperty.VariableSize,
                 DimensionProperty.None
@@ -23,12 +25,13 @@ namespace Unity.MLAgents.Sensors
             m_ObsSize = obsSize;
             m_ObservationBuffer = new float[m_ObsSize * m_MaxNumObs];
             m_CurrentNumObservables = 0;
+            m_ObservationSpec = ObservationSpec.FromShape(m_MaxNumObs, m_ObsSize);
         }
 
         /// <inheritdoc/>
-        public int[] GetObservationShape()
+        public ObservationSpec GetObservationSpec()
         {
-            return new int[] { m_MaxNumObs, m_ObsSize };
+            return m_ObservationSpec;
         }
 
         /// <inheritdoc/>

@@ -9,21 +9,21 @@ namespace Unity.MLAgents.Tests
     public class DummySensor : ISensor
     {
         string m_Name = "DummySensor";
-        int[] m_Shape;
+        ObservationSpec m_ObservationSpec;
 
         public DummySensor(int dim1)
         {
-            m_Shape = new[] { dim1 };
+            m_ObservationSpec = ObservationSpec.FromShape(dim1);
         }
 
         public DummySensor(int dim1, int dim2)
         {
-            m_Shape = new[] { dim1, dim2, };
+            m_ObservationSpec = ObservationSpec.FromShape(dim1, dim2);
         }
 
         public DummySensor(int dim1, int dim2, int dim3)
         {
-            m_Shape = new[] { dim1, dim2, dim3 };
+            m_ObservationSpec = ObservationSpec.FromShape(dim1, dim2, dim3);
         }
 
         public string GetName()
@@ -31,9 +31,9 @@ namespace Unity.MLAgents.Tests
             return m_Name;
         }
 
-        public int[] GetObservationShape()
+        public ObservationSpec GetObservationSpec()
         {
-            return m_Shape;
+            return m_ObservationSpec;
         }
 
         public byte[] GetCompressedObservation()
