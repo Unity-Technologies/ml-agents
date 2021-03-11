@@ -478,6 +478,7 @@ blocks require all 3 agents to push and are worth +3.
 - Benchmark Mean Reward:
 
 ## Dungeon Escape
+![DungeonEscape](images/dungeon_escape.png)
 
 - Set-up: Agents are trapped in a dungeon with a dragon, and must work together to escape.
   To retrieve the key, one of the agents must find and slay the dragon, sacrificing itself
