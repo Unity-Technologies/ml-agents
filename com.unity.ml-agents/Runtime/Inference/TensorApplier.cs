@@ -73,7 +73,7 @@ namespace Unity.MLAgents.Inference
                 var modelVersion = model.GetVersion();
                 if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents1_0)
                 {
-                    m_Dict[tensorName] = new DiscreteActionWithMultiNomialOutputApplier(actionSpec, seed, allocator);
+                    m_Dict[tensorName] = new LegacyDiscreteActionOutputApplier(actionSpec, seed, allocator);
                 }
                 if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
                 {

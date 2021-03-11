@@ -63,7 +63,7 @@ namespace Unity.MLAgents.Tests
                     new[] { 0.5f, 22.5f, 0.1f, 5f, 1f, 4f, 5f, 6f, 7f, 8f })
             };
             var alloc = new TensorCachingAllocator();
-            var applier = new DiscreteActionWithMultiNomialOutputApplier(actionSpec, 0, alloc);
+            var applier = new LegacyDiscreteActionOutputApplier(actionSpec, 0, alloc);
 
             var agentIds = new List<int>() { 0, 1 };
             // Dictionary from AgentId to Action
@@ -129,7 +129,7 @@ namespace Unity.MLAgents.Tests
             };
             var continuousApplier = new ContinuousActionOutputApplier(actionSpec);
             var alloc = new TensorCachingAllocator();
-            var discreteApplier = new DiscreteActionWithMultiNomialOutputApplier(actionSpec, 0, alloc);
+            var discreteApplier = new LegacyDiscreteActionOutputApplier(actionSpec, 0, alloc);
 
             var agentIds = new List<int>() { 0, 1 };
             // Dictionary from AgentId to Action

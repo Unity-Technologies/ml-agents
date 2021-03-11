@@ -90,7 +90,7 @@ namespace Unity.MLAgents.Inference
     /// The Applier for the Discrete Action output tensor. Uses multinomial to sample discrete
     /// actions from the logits contained in the tensor.
     /// </summary>
-    internal class DiscreteActionWithMultiNomialOutputApplier : TensorApplier.IApplier
+    internal class LegacyDiscreteActionOutputApplier : TensorApplier.IApplier
     {
         readonly int[] m_ActionSize;
         readonly Multinomial m_Multinomial;
@@ -99,7 +99,7 @@ namespace Unity.MLAgents.Inference
         readonly float[] m_CdfBuffer;
 
 
-        public DiscreteActionWithMultiNomialOutputApplier(ActionSpec actionSpec, int seed, ITensorAllocator allocator)
+        public LegacyDiscreteActionOutputApplier(ActionSpec actionSpec, int seed, ITensorAllocator allocator)
         {
             m_ActionSize = actionSpec.BranchSizes;
             m_Multinomial = new Multinomial(seed);

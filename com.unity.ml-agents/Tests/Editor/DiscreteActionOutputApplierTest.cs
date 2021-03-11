@@ -45,7 +45,7 @@ namespace Unity.MLAgents.Tests
         }
     }
 
-    public class DiscreteActionWithMultiNomialOutputApplierTest
+    public class LegacyDiscreteActionOutputApplierTest
     {
         [Test]
         public void TestDiscreteApply()
@@ -69,7 +69,7 @@ namespace Unity.MLAgents.Tests
                 valueType = TensorProxy.TensorType.FloatingPoint
             };
 
-            var applier = new DiscreteActionWithMultiNomialOutputApplier(actionSpec, 2020, null);
+            var applier = new LegacyDiscreteActionOutputApplier(actionSpec, 2020, null);
             var agentIds = new List<int> { 42, 1337 };
             var actionBuffers = new Dictionary<int, ActionBuffers>();
             actionBuffers[42] = new ActionBuffers(actionSpec);
