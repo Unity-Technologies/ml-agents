@@ -988,8 +988,8 @@ and two playing fields where teams are pitted against each other. All the blue a
 </p>
 
 #### Cooperative Behaviors Notes and Best Practices
-* An Agent can only be registered to one MultiAgentGroup at a time. If you want to re-assign an
-Agent from one group to another, you have to unregister it from the current group first.
+* An agent can only be registered to one MultiAgentGroup at a time. If you want to re-assign an
+agent from one group to another, you have to unregister it from the current group first.
 
 * Agents with different behavior names in the same group are not supported.
 
@@ -1003,10 +1003,10 @@ slightly different effect on the training. If the episode is completed, you woul
 reaching max step, you would call `GroupEpisodeInterrupted`.
 
 * If an Agent finished earlier, e.g. completed tasks/be removed/be killed in the game, do not call
-`EndEpisode()` on the Agent. Instead, disable the Agent and re-enable it when the next episode starts,
+`EndEpisode()` on the Agent. Instead, disable the agent and re-enable it when the next episode starts,
 or destroy the agent entirely.
 
-* If an Agent is disabled in a scene, it must be re-registered to the MultiAgentGroup.
+* If an agent is disabled or destroyed in a scene, it must be re-registered to the MultiAgentGroup.
 
 * Group rewards are meant to reinforce agents to act in the group's best interest instead of
 individual ones, and are treated differently than individual agent rewards during
