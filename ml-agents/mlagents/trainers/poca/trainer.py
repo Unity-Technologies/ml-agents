@@ -36,7 +36,7 @@ class POCATrainer(RLTrainer):
         artifact_path: str,
     ):
         """
-        Responsible for collecting experiences and training PPO model.
+        Responsible for collecting experiences and training POCA model.
         :param behavior_name: The name of the behavior associated with trainer config
         :param reward_buff_cap: Max reward history to track in the reward buffer
         :param trainer_settings: The parameters for the trainer.
@@ -249,7 +249,7 @@ class POCATrainer(RLTrainer):
         self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TorchPolicy:
         """
-        Creates a policy with a PyTorch backend and PPO hyperparameters
+        Creates a policy with a PyTorch backend and POCA hyperparameters
         :param parsed_behavior_id:
         :param behavior_spec: specifications for policy construction
         :return policy
@@ -258,7 +258,7 @@ class POCATrainer(RLTrainer):
             self.seed,
             behavior_spec,
             self.trainer_settings,
-            condition_sigma_on_obs=False,  # Faster training for PPO
+            condition_sigma_on_obs=False,  # Faster training for POCA
             separate_critic=True,  # Match network architecture with TF
         )
         return policy

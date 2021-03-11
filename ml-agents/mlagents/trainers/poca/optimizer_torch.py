@@ -21,7 +21,7 @@ from mlagents.trainers.settings import (
     TrainerSettings,
     PPOSettings,
 )
-from mlagents.trainers.torch.networks import Critic, MultiInputNetworkBody
+from mlagents.trainers.torch.networks import Critic, MultiAgentNetworkBody
 from mlagents.trainers.torch.decoders import ValueHeads
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
@@ -36,6 +36,12 @@ logger = get_logger(__name__)
 
 class TorchPOCAOptimizer(TorchOptimizer):
     class POCAValueNetwork(torch.nn.Module, Critic):
+        """
+        The POCAValueNetwork uses the MultiAgentNetworkBody to compute the value
+        and POCA baseline for a variable number of agents in a group that all
+        share the same observation and action space.
+        """
+
         def __init__(
             self,
             stream_names: List[str],
@@ -44,7 +50,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
             action_spec: ActionSpec,
         ):
             torch.nn.Module.__init__(self)
-            self.network_body = MultiInputNetworkBody(
+            self.network_body = MultiAgentNetworkBody(
                 observation_specs, network_settings, action_spec
             )
             if network_settings.memory is not None:
@@ -69,7 +75,11 @@ class TorchPOCAOptimizer(TorchOptimizer):
             memories: Optional[torch.Tensor] = None,
             sequence_length: int = 1,
         ) -> Tuple[torch.Tensor, torch.Tensor]:
-
+            """
+            The POCA baseline marginalizes the action of the agent associated with self_obs.
+            It calls the forward pass of the MultiAgentNetworkBody with the state action
+            pairs of groupmates but just the state of the agent in question.
+            """
             encoding, memories = self.network_body(
                 obs_only=self_obs,
                 obs=obs,
@@ -88,7 +98,10 @@ class TorchPOCAOptimizer(TorchOptimizer):
             memories: Optional[torch.Tensor] = None,
             sequence_length: int = 1,
         ) -> Tuple[torch.Tensor, torch.Tensor]:
-
+            """
+            A centralized value function. It calls the forward pass of MultiAgentNetworkBody
+            with just the states of all agents.
+            """
             encoding, memories = self.network_body(
                 obs_only=obs,
                 obs=[],
@@ -114,8 +127,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
     def __init__(self, policy: TorchPolicy, trainer_settings: TrainerSettings):
         """
         Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy.
-        The PPO optimizer has a value estimator and a loss function.
-        :param policy: A TorchPolicy object that will be updated by this PPO Optimizer.
+        :param policy: A TorchPolicy object that will be updated by this POCA Optimizer.
         :param trainer_params: Trainer parameters dictionary that specifies the
         properties of the trainer.
         """
