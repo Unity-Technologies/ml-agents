@@ -150,7 +150,7 @@ namespace Unity.MLAgents.Inference
 
         /// <summary>
         /// Generates failed checks that correspond to inputs expected by the model that are not
-        /// present in the BrainParameters.
+        /// present in the BrainParameters. Tests the models created with the API of version 1.X
         /// </summary>
         /// <param name="model">
         /// The Barracuda engine model for loading static parameters
@@ -447,7 +447,7 @@ namespace Unity.MLAgents.Inference
 
         /// <summary>
         /// Generates failed checks that correspond to inputs shapes incompatibilities between
-        /// the model and the BrainParameters.
+        /// the model and the BrainParameters. Tests the models created with the API of version 1.X
         /// </summary>
         /// <param name="model">
         /// The Barracuda engine model for loading static parameters
@@ -524,7 +524,7 @@ namespace Unity.MLAgents.Inference
 
         /// <summary>
         /// Checks that the shape of the Vector Observation input placeholder is the same in the
-        /// model and in the Brain Parameters.
+        /// model and in the Brain Parameters. Tests the models created with the API of version 1.X
         /// </summary>
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
