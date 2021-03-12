@@ -51,7 +51,7 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  m_RaysPerDirection: 1
+  m_RaysPerDirection: 2
   m_MaxRayDegrees: 45
   m_SphereCastRadius: 0.5
   m_RayLength: 60
@@ -601,8 +601,8 @@ MonoBehaviour:
   - purpleGoal
   - blueGoal
   - wall
-  m_RaysPerDirection: 5
-  m_MaxRayDegrees: 60
+  m_RaysPerDirection: 12
+  m_MaxRayDegrees: 75
   m_SphereCastRadius: 0.5
   m_RayLength: 60
   m_RayLayerMask:
