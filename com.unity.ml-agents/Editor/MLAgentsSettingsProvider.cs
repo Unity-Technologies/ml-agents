@@ -182,6 +182,7 @@ namespace Unity.MLAgents.Editor
             {
                 InitializeWithCurrentSettings();
             }
+            Repaint();
         }
     }
 }

@@ -19,16 +19,34 @@ namespace Unity.MLAgents
 
         public static MLAgentsSettings Settings
         {
-            get => s_Settings;
+            get
+            {
+                if (s_Settings == null)
+                {
+                    Initialize();
+                }
+                return s_Settings;
+            }
             set
             {
-                EditorBuildSettings.AddConfigObject(EditorBuildSettingsConfigKey, value, true);
+                Debug.Assert(value != null);
+#if UNITY_EDITOR
+                if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(value)))
+                {
+                    EditorBuildSettings.AddConfigObject(EditorBuildSettingsConfigKey, value, true);
+                }
+#endif
                 s_Settings = value;
                 ApplySettings();
             }
         }
 
         static MLAgentsManager()
+        {
+            Initialize();
+        }
+
+        static void Initialize()
         {
 #if UNITY_EDITOR
             InitializeInEditor();
@@ -40,11 +58,16 @@ namespace Unity.MLAgents
 #if UNITY_EDITOR
         internal static void InitializeInEditor()
         {
+            var settings = ScriptableObject.CreateInstance<MLAgentsSettings>();
             if (EditorBuildSettings.TryGetConfigObject(EditorBuildSettingsConfigKey,
                 out MLAgentsSettings settingsAsset))
             {
-                Settings = settingsAsset;
+                if (settingsAsset != null)
+                {
+                    settings = settingsAsset;
+                }
             }
+            Settings = settings;
         }
 #else
         internal static void InitializeInPlayer()
