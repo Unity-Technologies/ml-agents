@@ -12,11 +12,14 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Analytics;
 using Unity.MLAgents.CommunicatorObjects;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.SideChannels;
 using Google.Protobuf;
+
+#if MLA_UNITY_ANALYTICS
+using Unity.MLAgents.Analytics;
+#endif
 
 namespace Unity.MLAgents
 {
@@ -144,8 +147,9 @@ namespace Unity.MLAgents
 
             var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
             var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
-
+#if MLA_UNITY_ANALYTICS
             TrainingAnalytics.SetTrainerInformation(pythonPackageVersion, pythonCommunicationVersion);
+#endif
 
             var communicationIsCompatible = CheckCommunicationVersionsAreCompatible(
                 initParameters.unityCommunicationVersion,

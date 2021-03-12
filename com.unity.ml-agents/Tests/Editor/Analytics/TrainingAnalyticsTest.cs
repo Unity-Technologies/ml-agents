@@ -1,3 +1,4 @@
+#if MLA_UNITY_ANALYTICS
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -70,3 +71,4 @@ namespace Unity.MLAgents.Tests.Analytics
         }
     }
 }
+#endif // MLA_UNITY_ANALYTICS

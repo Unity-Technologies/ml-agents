@@ -6,11 +6,13 @@ using Unity.MLAgents.CommunicatorObjects;
 using UnityEngine;
 using System.Runtime.CompilerServices;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Analytics;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Policies;
 
+#if MLA_UNITY_ANALYTICS
+using Unity.MLAgents.Analytics;
+#endif
 
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor")]
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor.Tests")]
@@ -525,7 +527,7 @@ namespace Unity.MLAgents
         }
 
         #region Analytics
-
+#if MLA_UNITY_ANALYTICS
         internal static TrainingEnvironmentInitializedEvent ToTrainingEnvironmentInitializedEvent(
             this TrainingEnvironmentInitialized inputProto)
         {
@@ -569,7 +571,7 @@ namespace Unity.MLAgents
                 NumNetworkHiddenUnits = inputProto.NumNetworkHiddenUnits,
             };
         }
-
+#endif // MLA_UNITY_ANALYTICS
         #endregion
 
     }

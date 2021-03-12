@@ -1,3 +1,4 @@
+#if MLA_UNITY_ANALYTICS
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -5,9 +6,9 @@ using Unity.MLAgents.Sensors;
 using UnityEngine;
 using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Analytics;
 using Unity.MLAgents.Policies;
 using UnityEditor;
+
 
 namespace Unity.MLAgents.Tests.Analytics
 {
@@ -101,3 +102,4 @@ namespace Unity.MLAgents.Tests.Analytics
         }
     }
 }
+#endif // MLA_UNITY_ANALYTICS

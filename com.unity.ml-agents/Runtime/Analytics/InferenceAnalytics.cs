@@ -1,3 +1,4 @@
+#if MLA_UNITY_ANALYTICS
 using System;
 using System.Collections.Generic;
 using Unity.Barracuda;
@@ -52,7 +53,7 @@ namespace Unity.MLAgents.Analytics
 
 #if UNITY_EDITOR
             AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(k_EventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey, k_EventVersion);
-#else
+#elif MLA_UNITY_ANALYTICS
             AnalyticsResult result = AnalyticsResult.UnsupportedPlatform;
 #endif
             if (result == AnalyticsResult.Ok)
@@ -275,3 +276,4 @@ namespace Unity.MLAgents.Analytics
         }
     }
 }
+#endif // MLA_UNITY_ANALYTICS

@@ -1,10 +1,13 @@
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Analytics;
-using Unity.MLAgents.CommunicatorObjects;
 using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
+
+#if MLA_UNITY_ANALYTICS
+using Unity.MLAgents.Analytics;
+using Unity.MLAgents.CommunicatorObjects;
+#endif
 
 namespace Unity.MLAgents.Tests
 {
@@ -171,7 +174,7 @@ namespace Unity.MLAgents.Tests
             sparseChannelSensor.Mapping = new[] { 0, 0, 0, 1, 1, 1 };
             Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), false);
         }
-
+#if MLA_UNITY_ANALYTICS
         [Test]
         public void TestDefaultTrainingEvents()
         {
@@ -197,5 +200,6 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(RewardSignals.Extrinsic | RewardSignals.Curiosity, trainingBehavInitEvent.RewardSignalFlags);
             Assert.AreEqual(TrainingFeatures.Recurrent | TrainingFeatures.SelfPlay, trainingBehavInitEvent.TrainingFeatureFlags);
         }
+#endif // MLA_UNITY_ANALYTICS
     }
 }

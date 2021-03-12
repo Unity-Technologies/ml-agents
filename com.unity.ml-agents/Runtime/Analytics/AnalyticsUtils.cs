@@ -1,3 +1,4 @@
+#if MLA_UNITY_ANALYTICS
 using System;
 using UnityEngine;
 
@@ -38,3 +39,4 @@ namespace Unity.MLAgents.Analytics
         }
     }
 }
+#endif // MLA_UNITY_ANALYTICS
