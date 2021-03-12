@@ -25,4 +25,7 @@ message UnityRLCapabilitiesProto {
 
     // Support for variable length observations of rank 2
     bool variableLengthObservation = 6;
+
+    // Support for multi agent groups and group rewards
+    bool multiAgentGroups = 7;
 }
