@@ -457,6 +457,7 @@ namespace Unity.MLAgents
                 HybridActions = proto.HybridActions,
                 TrainingAnalytics = proto.TrainingAnalytics,
                 VariableLengthObservation = proto.VariableLengthObservation,
+                MultiAgentGroups = proto.MultiAgentGroups,
             };
         }
 
@@ -470,6 +471,7 @@ namespace Unity.MLAgents
                 HybridActions = rlCaps.HybridActions,
                 TrainingAnalytics = rlCaps.TrainingAnalytics,
                 VariableLengthObservation = rlCaps.VariableLengthObservation,
+                MultiAgentGroups = rlCaps.MultiAgentGroups,
             };
         }
 

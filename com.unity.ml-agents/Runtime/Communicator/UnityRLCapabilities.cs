@@ -21,7 +21,8 @@ namespace Unity.MLAgents
             bool compressedChannelMapping = true,
             bool hybridActions = true,
             bool trainingAnalytics = true,
-            bool variableLengthObservation = true)
+            bool variableLengthObservation = true,
+            bool multiAgentGroups = true)
         {
             BaseRLCapabilities = baseRlCapabilities;
             ConcatenatedPngObservations = concatenatedPngObservations;
@@ -29,6 +30,7 @@ namespace Unity.MLAgents
             HybridActions = hybridActions;
             TrainingAnalytics = trainingAnalytics;
             VariableLengthObservation = variableLengthObservation;
+            MultiAgentGroups = multiAgentGroups;
         }
 
         /// <summary>

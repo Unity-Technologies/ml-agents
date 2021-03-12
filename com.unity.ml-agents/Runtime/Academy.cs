@@ -97,7 +97,7 @@ namespace Unity.MLAgents
         ///     </item>
         ///     <item>
         ///         <term>1.5.0</term>
-        ///         <description>Support variable length observation training.</description>
+        ///         <description>Support variable length observation training and multi-agent groups.</description>
         ///     </item>
         /// </list>
         /// </remarks>
