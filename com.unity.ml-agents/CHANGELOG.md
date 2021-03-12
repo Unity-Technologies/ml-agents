@@ -41,6 +41,7 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - An issue that caused `GAIL` to fail for environments where agents can terminate episodes by self-sacrifice has been fixed. (#4971)
 - Made the error message when observations of different shapes are sent to the trainer clearer. (#5030)
+- An issue that prevented curriculums from incrementing with self-play has been fixed. (#5098)
 
 ## [1.8.1-preview] - 2021-03-08
 ### Minor Changes
