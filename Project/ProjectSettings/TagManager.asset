@@ -39,6 +39,7 @@ TagManager:
   - key
   - lock
   - dragon
+  - portal
   layers:
   - Default
   - TransparentFX
