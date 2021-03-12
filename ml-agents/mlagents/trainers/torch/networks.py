@@ -53,7 +53,7 @@ class ObservationEncoder(nn.Module):
             total_enc_size = sum(self.embedding_sizes) + h_size
         else:
             total_enc_size = sum(self.embedding_sizes)
-
+        self.normalize = normalize
         self._total_enc_size = total_enc_size
 
     @property
