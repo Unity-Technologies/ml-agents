@@ -2,7 +2,7 @@
 
 # Unity ML-Agents Toolkit
 
-[![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/release_14_docs/docs/)
+[![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/release_15_docs/docs/)
 
 [![license badge](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
 
@@ -50,7 +50,7 @@ descriptions of all these features.
 
 
 **Our latest, stable release is `Release 14`. Click
-[here](https://github.com/Unity-Technologies/ml-agents/tree/release_14_docs/docs/Readme.md)
+[here](https://github.com/Unity-Technologies/ml-agents/tree/release_15_docs/docs/Readme.md)
 to get started with the latest release of ML-Agents.**
 
 The table below lists all our releases, including our `main` branch which is
