@@ -14,7 +14,7 @@ namespace Unity.MLAgents.Sensors
         public RayPerceptionSensorComponent2D()
         {
             // Set to the 2D defaults (just in case they ever diverge).
-            RayLayerMask = Physics2D.DefaultRaycastLayers;
+            RayLayerMask = -5;
         }
 
         /// <inheritdoc/>
