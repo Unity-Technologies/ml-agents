@@ -3,7 +3,8 @@
 The ML-Agents Toolkit contains several components:
 
 - Unity package ([`com.unity.ml-agents`](../com.unity.ml-agents/)) contains the
-  Unity C# SDK that will be integrated into your Unity scene.
+  Unity C# SDK that will be integrated into your Unity project.  This package contains
+  a sample to help you get started with ML-Agents.
 - Unity package
   ([`com.unity.ml-agents.extensions`](../com.unity.ml-agents.extensions/))
   contains experimental C#/Unity components that are not yet ready to be part
@@ -58,6 +59,9 @@ Python packages. You do not need to clone the repository to install those
 packages, but you may choose to clone the repository if you'd like download our
 example environments and training configurations to experiment with them (some
 of our tutorials / guides assume you have access to our example environments).
+
+**NOTE:** There are samples shipped with the Unity Package.  You only need to clone
+the repository if you would like to explore more examples.
 
 ```sh
 git clone --branch release_14 https://github.com/Unity-Technologies/ml-agents.git
