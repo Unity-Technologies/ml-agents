@@ -426,7 +426,12 @@ namespace Unity.MLAgents
                     }
                 }
             }
-            observationProto.Shape.AddRange(shape);
+            // Implement IEnumerable or IList?
+            for (var i = 0; i < shape.Length; i++)
+            {
+                observationProto.Shape.Add(shape[i]);
+            }
+
 
             // Add the observation type, if any, to the observationProto
             var typeSensor = sensor as ITypedSensor;

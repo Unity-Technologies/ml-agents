@@ -29,7 +29,7 @@ namespace Unity.MLAgents.Tests
             var obsWriter = new ObservationWriter();
             var obs = bufferSensor.GetObservationProto(obsWriter);
 
-            Assert.AreEqual(shape, obs.Shape);
+            Assert.AreEqual(shape, InplaceArray<int>.FromList(obs.Shape));
             Assert.AreEqual(obs.DimensionProperties.Count, 2);
             Assert.AreEqual((int)dimProp[0], obs.DimensionProperties[0]);
             Assert.AreEqual((int)dimProp[1], obs.DimensionProperties[1]);

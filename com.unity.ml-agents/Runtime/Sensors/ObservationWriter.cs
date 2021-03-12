@@ -61,6 +61,33 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
+        /// Set the writer to write to an IList at the given channelOffset.
+        /// </summary>
+        /// <param name="data">Float array or list that will be written to.</param>
+        /// <param name="shape">Shape of the observations to be written.</param>
+        /// <param name="offset">Offset from the start of the float data to write to.</param>
+        internal void SetTarget(IList<float> data, InplaceArray<int> shape, int offset)
+        {
+            m_Data = data;
+            m_Offset = offset;
+            m_Proxy = null;
+            m_Batch = 0;
+
+            if (shape.Length == 1)
+            {
+                m_TensorShape = new TensorShape(m_Batch, shape[0]);
+            }
+            else if (shape.Length == 2)
+            {
+                m_TensorShape = new TensorShape(new[] { m_Batch, 1, shape[0], shape[1] });
+            }
+            else
+            {
+                m_TensorShape = new TensorShape(m_Batch, shape[0], shape[1], shape[2]);
+            }
+        }
+
+        /// <summary>
         /// Set the writer to write to a TensorProxy at the given batch and channel offset.
         /// </summary>
         /// <param name="tensorProxy">Tensor proxy that will be written to.</param>

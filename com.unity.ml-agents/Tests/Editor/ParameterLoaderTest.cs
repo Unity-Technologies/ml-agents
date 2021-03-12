@@ -21,7 +21,8 @@ namespace Unity.MLAgents.Tests
 
         public override int[] GetObservationShape()
         {
-            return Sensor.GetObservationSpec().Shape;
+            var shape = Sensor.GetObservationSpec().Shape;
+            return new int[] { shape[0], shape[1], shape[2] };
         }
     }
     public class Test3DSensor : ISensor, IBuiltInSensor, IDimensionPropertiesSensor

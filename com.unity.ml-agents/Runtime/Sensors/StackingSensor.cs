@@ -62,7 +62,7 @@ namespace Unity.MLAgents.Sensors
             m_Name = $"StackingSensor_size{numStackedObservations}_{wrapped.GetName()}";
 
             m_WrappedSpec = wrapped.GetObservationSpec();
-            m_ObservationSpec = m_WrappedSpec.Clone();
+            m_ObservationSpec = m_WrappedSpec;
 
             m_UnstackedObservationSize = wrapped.ObservationSize();
 
@@ -99,7 +99,7 @@ namespace Unity.MLAgents.Sensors
         public int Write(ObservationWriter writer)
         {
             // First, call the wrapped sensor's write method. Make sure to use our own writer, not the passed one.
-            m_LocalWriter.SetTarget(m_StackedObservations[m_CurrentIndex], m_WrappedSpec.Shape, 0);
+            m_LocalWriter.SetTarget(m_StackedObservations[m_CurrentIndex], m_WrappedSpec, 0);
             m_WrappedSensor.Write(m_LocalWriter);
 
             // Now write the saved observations (oldest first)

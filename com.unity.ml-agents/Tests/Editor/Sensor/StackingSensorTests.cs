@@ -14,7 +14,7 @@ namespace Unity.MLAgents.Tests
             ISensor wrapped = new VectorSensor(4);
             ISensor sensor = new StackingSensor(wrapped, 4);
             Assert.AreEqual("StackingSensor_size4_VectorSensor_size4", sensor.GetName());
-            Assert.AreEqual(sensor.GetObservationSpec().Shape, new[] { 16 });
+            Assert.AreEqual(sensor.GetObservationSpec().Shape, new InplaceArray<int>(16));
         }
 
         [Test]

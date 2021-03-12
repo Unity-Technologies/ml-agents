@@ -8,44 +8,19 @@ namespace Unity.MLAgents.Sensors
     public struct ObservationSpec
     {
         public ObservationType ObservationType;
-        public int[] Shape;
-        public DimensionProperty[] DimensionProperties;
+        public InplaceArray<int> Shape;
+        public InplaceArray<DimensionProperty> DimensionProperties;
 
-        /// <summary>
-        /// Create an Observation spec with default DimensionProperties and ObservationType from the shape.
-        /// </summary>
-        /// <param name="shape"></param>
-        /// <returns></returns>
-        public static ObservationSpec FromShape(params int[] shape)
+        public int Dimensions
         {
-            DimensionProperty[] dimProps = null;
-            if (shape.Length == 1)
-            {
-                dimProps = new[] { DimensionProperty.None };
-            }
-            else if (shape.Length == 2)
-            {
-                // NOTE: not sure if I like this - might leave Unspecified and make BufferSensor set it
-                dimProps = new[] { DimensionProperty.VariableSize, DimensionProperty.None };
-            }
-            else if (shape.Length == 3)
-            {
-                dimProps = new[]
-                {
-                    DimensionProperty.TranslationalEquivariance,
-                    DimensionProperty.TranslationalEquivariance,
-                    DimensionProperty.None
-                };
-            }
-            else
-            {
-                dimProps = new DimensionProperty[shape.Length];
-                for (var i = 0; i < dimProps.Length; i++)
-                {
-                    dimProps[i] = DimensionProperty.Unspecified;
-                }
-            }
+            get { return Shape.Length; }
+        }
 
+        // TODO RENAME?
+        public static ObservationSpec FromShape(int length)
+        {
+            InplaceArray<int> shape = new InplaceArray<int>(length);
+            InplaceArray<DimensionProperty> dimProps = new InplaceArray<DimensionProperty>(DimensionProperty.None);
             return new ObservationSpec
             {
                 ObservationType = ObservationType.Default,
@@ -54,13 +29,29 @@ namespace Unity.MLAgents.Sensors
             };
         }
 
-        public ObservationSpec Clone()
+        public static ObservationSpec FromShape(int obsSize, int maxNumObs)
         {
+            InplaceArray<int> shape = new InplaceArray<int>(obsSize, maxNumObs);
+            InplaceArray<DimensionProperty> dimProps = new InplaceArray<DimensionProperty>(DimensionProperty.VariableSize, DimensionProperty.None);
             return new ObservationSpec
             {
-                Shape = (int[])Shape.Clone(),
-                DimensionProperties = (DimensionProperty[])DimensionProperties.Clone(),
-                ObservationType = ObservationType
+                ObservationType = ObservationType.Default,
+                Shape = shape,
+                DimensionProperties = dimProps
+            };
+        }
+
+        public static ObservationSpec FromShape(int height, int width, int channels)
+        {
+            InplaceArray<int> shape = new InplaceArray<int>(height, width, channels);
+            InplaceArray<DimensionProperty> dimProps = new InplaceArray<DimensionProperty>(
+                DimensionProperty.TranslationalEquivariance, DimensionProperty.TranslationalEquivariance, DimensionProperty.None
+            );
+            return new ObservationSpec
+            {
+                ObservationType = ObservationType.Default,
+                Shape = shape,
+                DimensionProperties = dimProps
             };
         }
     }

@@ -920,7 +920,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <inheritdoc/>
         public override int[] GetObservationShape()
         {
-            return m_ObservationSpec.Shape;
+            var shape = m_ObservationSpec.Shape;
+            return new int[] { shape[0], shape[1], shape[2] };
         }
 
         /// <inheritdoc/>

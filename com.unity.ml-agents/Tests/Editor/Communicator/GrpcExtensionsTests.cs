@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Analytics;
@@ -127,7 +128,18 @@ namespace Unity.MLAgents.Tests
                 var dummySensor = new DummySensor();
                 var obsWriter = new ObservationWriter();
 
-                dummySensor.ObservationSpec = ObservationSpec.FromShape(shape);
+                if (shape.Length == 1)
+                {
+                    dummySensor.ObservationSpec = ObservationSpec.FromShape(shape[0]);
+                }
+                else if (shape.Length == 3)
+                {
+                    dummySensor.ObservationSpec = ObservationSpec.FromShape(shape[0], shape[1], shape[2]);
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
                 dummySensor.CompressionType = compressionType;
                 obsWriter.SetTarget(new float[128], shape, 0);
 
