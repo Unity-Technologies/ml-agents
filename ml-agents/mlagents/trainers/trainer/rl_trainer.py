@@ -152,10 +152,10 @@ class RLTrainer(Trainer):
             logger.warning(
                 "Trainer has multiple policies, but default behavior only saves the first."
             )
-        checkpoint_path = self.model_saver.save_checkpoint(self.brain_name, self.step)
+        checkpoint_path = self.model_saver.save_checkpoint(self.brain_name, self._step)
         export_ext = "onnx"
         new_checkpoint = ModelCheckpoint(
-            int(self.step),
+            int(self._step),
             f"{checkpoint_path}.{export_ext}",
             self._policy_mean_reward(),
             time.time(),
@@ -199,7 +199,7 @@ class RLTrainer(Trainer):
         Increment the step count of the trainer
         :param n_steps: number of steps to increment the step count by
         """
-        self.step += n_steps
+        self._step += n_steps
         self._next_summary_step = self._get_next_interval_step(self.summary_freq)
         self._next_save_step = self._get_next_interval_step(
             self.trainer_settings.checkpoint_interval
@@ -213,7 +213,7 @@ class RLTrainer(Trainer):
         Get the next step count that should result in an action.
         :param interval: The interval between actions.
         """
-        return self.step + (interval - self.step % interval)
+        return self._step + (interval - self._step % interval)
 
     def _write_summary(self, step: int) -> None:
         """
