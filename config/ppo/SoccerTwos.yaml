@@ -1,6 +1,6 @@
 behaviors:
   SoccerTwos:
-    trainer_type: ppo
+    trainer_type: poca
     hyperparameters:
       batch_size: 2048
       buffer_size: 20480
@@ -20,7 +20,7 @@ behaviors:
         gamma: 0.99
         strength: 1.0
     keep_checkpoints: 5
-    max_steps: 50000000
+    max_steps: 100000000
     time_horizon: 1000
     summary_freq: 10000
     threaded: false
@@ -31,3 +31,26 @@ behaviors:
       window: 10
       play_against_latest_model_ratio: 0.5
       initial_elo: 1200.0
+environment_parameters:
+  ball_touch:
+    curriculum:
+      - name: Lesson0 # The '-' is important as this is a list
+        completion_criteria:
+          measure: progress
+          behavior: SoccerTwos
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.01
+        value: 1.0
+      - name: Lesson1 # The '-' is important as this is a list
+        completion_criteria:
+          measure: progress
+          behavior: SoccerTwos
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.02
+        value: 0.5
+      - name: Lesson2 # The '-' is important as this is a list
+        value: 0.0
+env_settings:
+  num_envs: 3
