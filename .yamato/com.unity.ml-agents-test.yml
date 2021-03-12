@@ -150,7 +150,7 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
   {% endfor %}
 {% endfor %}
 
-OptionalDependencyTestsLinux
+OptionalDependencyTestsLinux:
   name : LinuxOptionalDependenciesTests
   agent:
     type: Unity::VM
