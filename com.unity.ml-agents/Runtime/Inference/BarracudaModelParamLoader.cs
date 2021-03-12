@@ -62,10 +62,14 @@ namespace Unity.MLAgents.Inference
         /// <param name="observableAttributeTotalSize">Sum of the sizes of all ObservableAttributes.</param>
         /// <param name="behaviorType">BehaviorType or the Agent to check.</param>
         /// <returns>A IEnumerable of the checks that failed</returns>
-        public static IEnumerable<FailedCheck> CheckModel(Model model, BrainParameters brainParameters,
-            ISensor[] sensors, ActuatorComponent[] actuatorComponents,
+        public static IEnumerable<FailedCheck> CheckModel(
+            Model model,
+            BrainParameters brainParameters,
+            ISensor[] sensors,
+            ActuatorComponent[] actuatorComponents,
             int observableAttributeTotalSize = 0,
-            BehaviorType behaviorType = BehaviorType.Default)
+            BehaviorType behaviorType = BehaviorType.Default
+            )
         {
             List<FailedCheck> failedModelChecks = new List<FailedCheck>();
             if (model == null)
@@ -90,14 +94,6 @@ namespace Unity.MLAgents.Inference
             }
 
             var modelApiVersion = model.GetVersion();
-            if (modelApiVersion == -1)
-            {
-                failedModelChecks.Add(
-                    FailedCheck.Warning("Model was not trained using the right version of ML-Agents. " +
-                    "Cannot use this model.")
-                    );
-                return failedModelChecks;
-            }
             if (modelApiVersion < (int)ModelApiVersion.MinSupportedVersion || modelApiVersion > (int)ModelApiVersion.MaxSupportedVersion)
             {
                 failedModelChecks.Add(
@@ -116,8 +112,7 @@ namespace Unity.MLAgents.Inference
                 return failedModelChecks;
             }
 
-            var modelVersion = model.GetVersion();
-            if (modelVersion == (int)ModelApiVersion.MLAgents1_0)
+            if (modelApiVersion == (int)ModelApiVersion.MLAgents1_0)
             {
                 failedModelChecks.AddRange(
                     CheckInputTensorPresenceLegacy(model, brainParameters, memorySize, sensors)
@@ -126,7 +121,7 @@ namespace Unity.MLAgents.Inference
                     CheckInputTensorShapeLegacy(model, brainParameters, sensors, observableAttributeTotalSize)
                 );
             }
-            if (modelVersion == (int)ModelApiVersion.MLAgents2_0)
+            else if (modelApiVersion == (int)ModelApiVersion.MLAgents2_0)
             {
                 failedModelChecks.AddRange(
                     CheckInputTensorPresence(model, brainParameters, memorySize, sensors)
