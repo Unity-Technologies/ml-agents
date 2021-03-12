@@ -20,6 +20,9 @@ namespace Unity.MLAgents
     internal static class GrpcExtensions
     {
         #region AgentInfo
+
+        private static bool s_HaveWarnedTrainerCapabilitiesAgentGroup = false;
+
         /// <summary>
         /// Converts a AgentInfo to a protobuf generated AgentInfoActionPairProto
         /// </summary>
@@ -55,6 +58,22 @@ namespace Unity.MLAgents
         /// <returns>The protobuf version of the AgentInfo.</returns>
         public static AgentInfoProto ToAgentInfoProto(this AgentInfo ai)
         {
+            if(ai.GroupId > 0)
+            {
+                var trainerCanHandle = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.MultiAgentGroups;
+                if (!trainerCanHandle)
+                {
+                    if (!s_HaveWarnedTrainerCapabilitiesAgentGroup)
+                    {
+                        Debug.LogWarning(
+                            $"Attached trainer doesn't support Multi Agent Groups; group rewards will be ignored." +
+                            "Please find the versions that work best together from our release page: " +
+                            "https://github.com/Unity-Technologies/ml-agents/releases"
+                        );
+                        s_HaveWarnedTrainerCapabilitiesAgentGroup = true;
+                    }
+                }
+            }
             var agentInfoProto = new AgentInfoProto
             {
                 Reward = ai.reward,
