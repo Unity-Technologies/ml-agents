@@ -720,8 +720,8 @@ namespace Unity.MLAgents.Inference
             }
             if (modelApiVersion == (int)ModelApiVersion.MLAgents2_0)
             {
-                var modeDiscreteBranches = model.GetTensorByName(TensorNames.DiscreteActionOutputShape);
-                discreteError = CheckDiscreteActionOutputShape(brainParameters, actuatorComponents, modeDiscreteBranches);
+                var modelDiscreteBranches = model.GetTensorByName(TensorNames.DiscreteActionOutputShape);
+                discreteError = CheckDiscreteActionOutputShape(brainParameters, actuatorComponents, modelDiscreteBranches);
             }
 
             if (discreteError != null)
