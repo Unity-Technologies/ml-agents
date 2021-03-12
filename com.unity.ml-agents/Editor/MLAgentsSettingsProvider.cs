@@ -13,11 +13,9 @@ namespace Unity.MLAgents.Editor
 {
     internal class MLAgentsSettingsProvider : SettingsProvider, IDisposable
     {
-        const string k_SettingsPath = "Project/ML Agents";
+        const string k_SettingsPath = "Project/ML-Agents";
         private static MLAgentsSettingsProvider s_Instance;
         private string[] m_AvailableSettingsAssets;
-        // private GUIContent[] m_AvailableSettingsGUIList;
-        // store asset index for highlighting in drop-down
         private int m_CurrentSelectedSettingsAsset;
         private SerializedObject m_SettingsObject;
         [SerializeField]
@@ -85,30 +83,27 @@ namespace Unity.MLAgents.Editor
 
         private void CreateNewSettingsAsset()
         {
-            // Query for file name.
+            // Asset database always use forward slashes. Use forward slashes for all the paths.
             var projectName = PlayerSettings.productName;
             var path = EditorUtility.SaveFilePanel("Create ML-Agents Settings File", "Assets",
                 projectName + ".mlagents.settings", "asset");
             if (string.IsNullOrEmpty(path))
                 return;
 
-            // Make sure the path is in the Assets/ folder.
             path = path.Replace("\\", "/"); // Make sure we only get '/' separators.
-            var dataPath = Application.dataPath + "/";
-            if (!path.StartsWith(dataPath, StringComparison.CurrentCultureIgnoreCase))
+            var assetPath = Application.dataPath + "/";
+            if (!path.StartsWith(assetPath, StringComparison.CurrentCultureIgnoreCase))
             {
                 Debug.LogError(string.Format(
                     "Settings must be stored in Assets folder of the project (got: '{0}')", path));
                 return;
             }
 
-            // Make sure it ends with .asset.
             var extension = Path.GetExtension(path);
             if (string.Compare(extension, ".asset", StringComparison.InvariantCultureIgnoreCase) != 0)
                 path += ".asset";
 
-            // Create settings file.
-            var relativePath = "Assets/" + path.Substring(dataPath.Length);
+            var relativePath = "Assets/" + path.Substring(assetPath.Length);
             CreateNewSettingsAsset(relativePath);
         }
 
@@ -117,8 +112,8 @@ namespace Unity.MLAgents.Editor
             var settings = ScriptableObject.CreateInstance<MLAgentsSettings>();
             AssetDatabase.CreateAsset(settings, relativePath);
             EditorGUIUtility.PingObject(settings);
-            // Install the settings. This will lead to an MLAgentsManager.OnSettingsChange event which in turn
-            // will cause us to re-initialize.
+            // Install the settings. This will lead to an MLAgentsManager.OnSettingsChange event
+            // which in turn will cause this Provider to reinitialize
             MLAgentsManager.Settings = settings;
         }
 
@@ -143,7 +138,7 @@ namespace Unity.MLAgents.Editor
             {
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.PropertyField(m_SettingsObject.FindProperty("m_ConnectTrainer"), new GUIContent("Connect to Trainer"));
-                EditorGUILayout.PropertyField(m_SettingsObject.FindProperty("m_EditorPort"), new GUIContent("Editor Port"));
+                EditorGUILayout.PropertyField(m_SettingsObject.FindProperty("m_EditorPort"), new GUIContent("Editor Training Port"));
                 if (EditorGUI.EndChangeCheck())
                     m_SettingsObject.ApplyModifiedProperties();
             }
@@ -151,7 +146,6 @@ namespace Unity.MLAgents.Editor
 
         internal void InitializeWithCurrentSettings()
         {
-            // Find the set of available assets in the project.
             m_AvailableSettingsAssets = FindSettingsInProject();
 
             m_Settings = MLAgentsManager.Settings;

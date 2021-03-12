@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -11,9 +12,21 @@ namespace Unity.MLAgents
 #endif
     internal static class MLAgentsManager
     {
-        internal static MLAgentsSettings s_Settings;
         internal static event Action OnSettingsChange;
         internal const string EditorBuildSettingsConfigKey = "com.unity.ml-agents.settings";
+        private static MLAgentsSettings s_Settings;
+
+
+        public static MLAgentsSettings Settings
+        {
+            get => s_Settings;
+            set
+            {
+                EditorBuildSettings.AddConfigObject(EditorBuildSettingsConfigKey, value, true);
+                s_Settings = value;
+                ApplySettings();
+            }
+        }
 
         static MLAgentsManager()
         {
@@ -24,27 +37,12 @@ namespace Unity.MLAgents
 #endif
         }
 
-        public static MLAgentsSettings Settings
-        {
-            get => s_Settings;
-            set
-            {
-                s_Settings = value;
-                ApplySettings();
-            }
-        }
-
 #if UNITY_EDITOR
-        // internal static MLAgentsManagerObject s_ManagerObject;
         internal static void InitializeInEditor()
         {
-            Debug.Log("InitializeInEditor");
-
-            // See if we have a remembered settings object.
             if (EditorBuildSettings.TryGetConfigObject(EditorBuildSettingsConfigKey,
                 out MLAgentsSettings settingsAsset))
             {
-                Debug.Log("load from EditorBuildSettings");
                 Settings = settingsAsset;
             }
         }
