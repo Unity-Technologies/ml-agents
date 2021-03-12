@@ -149,6 +149,7 @@ class NetworkBody(nn.Module):
             network_settings.vis_encode_type,
             self.normalize,
         )
+        self.processors = self.observation_encoder.processors
         total_enc_size = self.observation_encoder.total_enc_size
         total_enc_size += encoded_act_size
         self.linear_encoder = LinearEncoder(
@@ -219,6 +220,7 @@ class MultiAgentNetworkBody(torch.nn.Module):
             network_settings.vis_encode_type,
             self.normalize,
         )
+        self.processors = self.observation_encoder.processors
 
         # Modules for multi-agent self-attention
         obs_only_ent_size = self.observation_encoder.total_enc_size
