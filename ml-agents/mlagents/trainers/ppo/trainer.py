@@ -263,7 +263,7 @@ class PPOTrainer(RLTrainer):
         self.model_saver.initialize_or_load()
 
         # Needed to resume loads properly
-        self.step = policy.get_current_step()
+        self._step = policy.get_current_step()
 
     def get_policy(self, name_behavior_id: str) -> Policy:
         """
