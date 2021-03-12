@@ -1002,13 +1002,13 @@ slightly different effect on the training. If the episode is completed, you woul
 `EndGroupEpisode`. But if the episode is not over but it has been running for enough steps, i.e.
 reaching max step, you would call `GroupEpisodeInterrupted`.
 
-* If an Agent finished earlier, e.g. completed tasks/be removed/be killed in the game, do not call
+* If an agent finished earlier, e.g. completed tasks/be removed/be killed in the game, do not call
 `EndEpisode()` on the Agent. Instead, disable the agent and re-enable it when the next episode starts,
 or destroy the agent entirely. This is because calling `EndEpisode()` will call `OnEpisodeBegin()`, which
 will reset the agent immediately. While it is possible to call `EndEpisode()` in this way, it is usually not the
 desired behavior when training groups of agents.
 
-* If an agent is disabled in a scene, it must be re-registered to the MultiAgentGroup.
+* If an agent that was disabled in a scene needs to be re-enabled, it must be re-registered to the MultiAgentGroup.
 
 * Group rewards are meant to reinforce agents to act in the group's best interest instead of
 individual ones, and are treated differently than individual agent rewards during
