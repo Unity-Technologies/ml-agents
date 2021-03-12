@@ -13,7 +13,7 @@ namespace Unity.MLAgents
         HashSet<Agent> m_Agents = new HashSet<Agent>();
 
         /// <summary>
-        /// Unregister all the member Agents on dispose of SimpleMultiAgentGroup.
+        /// Unregister all member Agents on dispose of SimpleMultiAgentGroup.
         /// </summary>
         public virtual void Dispose()
         {
