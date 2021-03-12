@@ -63,7 +63,8 @@ namespace Unity.MLAgents.Tests
             return agents;
         }
 
-        public void Construction(int apiVersion)
+        [Test]
+        public void Construction()
         {
             var alloc = new TensorCachingAllocator();
             var mem = new Dictionary<int, List<float>>();

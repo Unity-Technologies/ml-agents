@@ -12,7 +12,8 @@ namespace Unity.MLAgents.Tests
         {
         }
 
-        public void Construction(int apiVersion)
+        [Test]
+        public void Construction()
         {
             var actionSpec = new ActionSpec();
             var alloc = new TensorCachingAllocator();
