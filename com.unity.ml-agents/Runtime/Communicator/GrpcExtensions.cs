@@ -20,7 +20,9 @@ namespace Unity.MLAgents
     internal static class GrpcExtensions
     {
         #region AgentInfo
-
+        /// <summary>
+        /// Static flag to make sure that we only fire the warning once.
+        /// </summary>
         private static bool s_HaveWarnedTrainerCapabilitiesAgentGroup = false;
 
         /// <summary>
