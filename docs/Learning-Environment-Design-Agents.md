@@ -933,8 +933,8 @@ hyperparameter hierarchy in both.
 
 Cooperative behavior in ML-Agents can be enabled by instantiating a `SimpleMultiAgentGroup`,
 typically in an environment controller or similar script, and adding agents to it
-using the `RegisterAgent(Agent agent)` method. Note that all agents added to the same `MultiAgentGroup`
-must have the same behavior name and Behavior Parameters. Using `MultiAgentGroup` enables the
+using the `RegisterAgent(Agent agent)` method. Note that all agents added to the same `SimpleMultiAgentGroup`
+must have the same behavior name and Behavior Parameters. Using `SimpleMultiAgentGroup` enables the
 agents within a group to learn how to work together to achieve a common goal (i.e.,
 maximize a group-given reward), even if one or more of the group members are removed
 before the episode ends. You can then use this group to add/set rewards, end or interrupt episodes

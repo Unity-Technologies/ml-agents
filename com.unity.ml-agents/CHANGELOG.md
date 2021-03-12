@@ -15,7 +15,7 @@ and this project adheres to
   end episodes in groups. (#4923)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The MA-POCA trainer has been added. This is a new trainer that enables Agents to learn how to work together in groups. Configure
-  `poca` as the trainer in the configuration YAML after implementing a `MultiAgentGroup` to use this feature. (#5005)
+  `poca` as the trainer in the configuration YAML after instantiating a `SimpleMultiAgentGroup` to use this feature. (#5005)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
