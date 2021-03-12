@@ -28,10 +28,10 @@ Let's get started!
 If you haven't already, follow the [installation instructions](Installation.md).
 Afterwards, open the Unity Project that contains all the example environments:
 
-1. Launch Unity Hub
-1. On the Projects dialog, choose the **Add** option at the top of the window.
-1. Using the file dialog that opens, locate the `Project` folder within the
-   ML-Agents Toolkit and click **Open**.
+1. Open the Package Manager Window by navigating to `Window -> Package Manager`
+   in the menu.
+1. Navigate to the ML-Agents Package and click on it.
+1. Find the 3D Ball Sample and click `Import`.
 1. In the **Project** window, go to the
    `Assets/ML-Agents/Examples/3DBall/Scenes` folder and open the `3DBall` scene
    file.
