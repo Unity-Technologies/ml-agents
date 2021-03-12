@@ -160,7 +160,7 @@ OptionalDependencyTestsLinux:
     - python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
     - unity-downloader-cli -u trunk -c editor --wait --fast
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci project test -u 2018.4 --type package-tests --project-path OptionalDependencyTests/NoAnyalyticsModule --package-filter com.unity.ml-agents 
+    - upm-ci project test -u 2018.4 --type package-tests --project-path ./OptionalDepedencyTests/NoAnalyticsModule --package-filter com.unity.ml-agents 
   artifacts:
     logs:
       paths:
