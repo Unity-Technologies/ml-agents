@@ -30,6 +30,20 @@ class AgentAction(NamedTuple):
         else:
             return torch.empty(0)
 
+    def slice(self, start: int, end: int) -> "AgentAction":
+        """
+        Returns an AgentAction with the continuous and discrete tensors slices
+        from index start to index end.
+        """
+        _cont = None
+        _disc_list = []
+        if self.continuous_tensor is not None:
+            _cont = self.continuous_tensor[start:end]
+        if self.discrete_list is not None and len(self.discrete_list) > 0:
+            for _disc in self.discrete_list:
+                _disc_list.append(_disc[start:end])
+        return AgentAction(_cont, _disc_list)
+
     def to_action_tuple(self, clip: bool = False) -> ActionTuple:
         """
         Returns an ActionTuple
@@ -133,7 +147,7 @@ class AgentAction(NamedTuple):
         :return: Tensor of flattened actions.
         """
         # if there are any discrete actions, create one-hot
-        if self.discrete_list is not None and self.discrete_list:
+        if self.discrete_list is not None and len(self.discrete_list) > 0:
             discrete_oh = ModelUtils.actions_to_onehot(
                 self.discrete_tensor, discrete_branches
             )

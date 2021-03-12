@@ -90,7 +90,7 @@ def test_hybrid_sac(action_size):
         buffer_init_steps=0,
     )
     config = attr.evolve(
-        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=6000
+        SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=4000
     )
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 

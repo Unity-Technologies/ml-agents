@@ -35,6 +35,7 @@ class BufferKey(enum.Enum):
     MASKS = "masks"
     MEMORY = "memory"
     CRITIC_MEMORY = "critic_memory"
+    BASELINE_MEMORY = "poca_baseline_memory"
     PREV_ACTION = "prev_action"
 
     ADVANTAGES = "advantages"
@@ -63,6 +64,7 @@ class RewardSignalKeyPrefix(enum.Enum):
     VALUE_ESTIMATES = "value_estimates"
     RETURNS = "returns"
     ADVANTAGE = "advantage"
+    BASELINES = "baselines"
 
 
 AgentBufferKey = Union[
@@ -86,6 +88,10 @@ class RewardSignalUtil:
     @staticmethod
     def advantage_key(name: str) -> AgentBufferKey:
         return RewardSignalKeyPrefix.ADVANTAGE, name
+
+    @staticmethod
+    def baseline_estimates_key(name: str) -> AgentBufferKey:
+        return RewardSignalKeyPrefix.BASELINES, name
 
 
 class AgentBufferField(list):

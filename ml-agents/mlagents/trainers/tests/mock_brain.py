@@ -175,12 +175,14 @@ def simulate_rollout(
     behavior_spec: BehaviorSpec,
     memory_size: int = 10,
     exclude_key_list: List[str] = None,
+    num_other_agents_in_group: int = 0,
 ) -> AgentBuffer:
     trajectory = make_fake_trajectory(
         length,
         behavior_spec.observation_specs,
         action_spec=behavior_spec.action_spec,
         memory_size=memory_size,
+        num_other_agents_in_group=num_other_agents_in_group,
     )
     buffer = trajectory.to_agentbuffer()
     # If a key_list was given, remove those keys
