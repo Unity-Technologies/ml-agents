@@ -10,6 +10,7 @@ namespace Unity.MLAgents
         public bool HybridActions;
         public bool TrainingAnalytics;
         public bool VariableLengthObservation;
+        public bool MultiAgentGroups;
 
         /// <summary>
         /// A class holding the capabilities flags for Reinforcement Learning across C# and the Trainer codebase.  This
