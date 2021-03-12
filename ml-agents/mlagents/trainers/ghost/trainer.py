@@ -192,7 +192,9 @@ class GhostTrainer(Trainer):
         """
         if trajectory.done_reached:
             # Assumption is that final reward is >0/0/<0 for win/draw/loss
-            final_reward = trajectory.steps[-1].reward
+            final_reward = (
+                trajectory.steps[-1].reward + trajectory.steps[-1].group_reward
+            )
             result = 0.5
             if final_reward > 0:
                 result = 1.0

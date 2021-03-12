@@ -170,6 +170,11 @@ sure to include as much detail as possible. If you run into any other problems
 using the ML-Agents Toolkit or have a specific feature request, please
 [submit a GitHub issue](https://github.com/Unity-Technologies/ml-agents/issues).
 
+Please tell us which samples you would like to see shipped with the ML-Agents Unity
+package by replying to
+[this forum thread](https://forum.unity.com/threads/feedback-wanted-shipping-sample-s-with-the-ml-agents-package.1073468/).
+
+
 Your opinion matters a great deal to us. Only by hearing your thoughts on the
 Unity ML-Agents Toolkit can we continue to improve and grow. Please take a few
 minutes to

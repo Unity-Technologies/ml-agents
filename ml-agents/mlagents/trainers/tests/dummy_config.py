@@ -4,6 +4,7 @@ import pytest
 import copy
 import os
 from mlagents.trainers.settings import (
+    POCASettings,
     TrainerSettings,
     PPOSettings,
     SACSettings,
@@ -52,7 +53,7 @@ _SAC_CONFIG = TrainerSettings(
 
 _POCA_CONFIG = TrainerSettings(
     trainer_type=TrainerType.POCA,
-    hyperparameters=PPOSettings(
+    hyperparameters=POCASettings(
         learning_rate=5.0e-3,
         learning_rate_schedule=ScheduleType.CONSTANT,
         batch_size=16,

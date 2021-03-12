@@ -21,7 +21,7 @@ from mlagents.trainers.settings import (
     RewardSignalSettings,
     RewardSignalType,
     TrainerSettings,
-    PPOSettings,
+    POCASettings,
 )
 from mlagents.trainers.torch.networks import Critic, MultiAgentNetworkBody
 from mlagents.trainers.torch.decoders import ValueHeads
@@ -71,19 +71,25 @@ class TorchPOCAOptimizer(TorchOptimizer):
 
         def baseline(
             self,
-            self_obs: List[List[torch.Tensor]],
-            obs: List[List[torch.Tensor]],
-            actions: List[AgentAction],
+            obs_without_actions: List[torch.Tensor],
+            obs_with_actions: Tuple[List[List[torch.Tensor]], List[AgentAction]],
             memories: Optional[torch.Tensor] = None,
             sequence_length: int = 1,
-        ) -> Tuple[torch.Tensor, torch.Tensor]:
+        ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
             """
             The POCA baseline marginalizes the action of the agent associated with self_obs.
             It calls the forward pass of the MultiAgentNetworkBody with the state action
             pairs of groupmates but just the state of the agent in question.
+            :param obs_without_actions: The obs of the agent for which to compute the baseline.
+            :param obs_with_actions: Tuple of observations and actions for all groupmates.
+            :param memories: If using memory, a Tensor of initial memories.
+            :param sequence_length: If using memory, the sequence length.
+
+            :return: A Tuple of Dict of reward stream to tensor and critic memories.
             """
+            (obs, actions) = obs_with_actions
             encoding, memories = self.network_body(
-                obs_only=self_obs,
+                obs_only=[obs_without_actions],
                 obs=obs,
                 actions=actions,
                 memories=memories,
@@ -99,10 +105,14 @@ class TorchPOCAOptimizer(TorchOptimizer):
             obs: List[List[torch.Tensor]],
             memories: Optional[torch.Tensor] = None,
             sequence_length: int = 1,
-        ) -> Tuple[torch.Tensor, torch.Tensor]:
+        ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
             """
             A centralized value function. It calls the forward pass of MultiAgentNetworkBody
             with just the states of all agents.
+            :param obs: List of observations for all agents in group
+            :param memories: If using memory, a Tensor of initial memories.
+            :param sequence_length: If using memory, the sequence length.
+            :return: A Tuple of Dict of reward stream to tensor and critic memories.
             """
             encoding, memories = self.network_body(
                 obs_only=obs,
@@ -147,8 +157,8 @@ class TorchPOCAOptimizer(TorchOptimizer):
         )
 
         params = list(self.policy.actor.parameters()) + list(self.critic.parameters())
-        self.hyperparameters: PPOSettings = cast(
-            PPOSettings, trainer_settings.hyperparameters
+        self.hyperparameters: POCASettings = cast(
+            POCASettings, trainer_settings.hyperparameters
         )
         self.decay_learning_rate = ModelUtils.DecayedValue(
             self.hyperparameters.learning_rate_schedule,
@@ -236,15 +246,15 @@ class TorchPOCAOptimizer(TorchOptimizer):
         current_obs = ObsUtil.from_buffer(batch, n_obs)
         # Convert to tensors
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
-        group_obs = GroupObsUtil.from_buffer(batch, n_obs)
-        group_obs = [
+        groupmate_obs = GroupObsUtil.from_buffer(batch, n_obs)
+        groupmate_obs = [
             [ModelUtils.list_to_tensor(obs) for obs in _groupmate_obs]
-            for _groupmate_obs in group_obs
+            for _groupmate_obs in groupmate_obs
         ]
 
         act_masks = ModelUtils.list_to_tensor(batch[BufferKey.ACTION_MASK])
         actions = AgentAction.from_buffer(batch)
-        group_actions = AgentAction.group_from_buffer(batch)
+        groupmate_actions = AgentAction.group_from_buffer(batch)
 
         memories = [
             ModelUtils.list_to_tensor(batch[BufferKey.MEMORY][i])
@@ -277,16 +287,16 @@ class TorchPOCAOptimizer(TorchOptimizer):
             memories=memories,
             seq_len=self.policy.sequence_length,
         )
-        all_obs = [current_obs] + group_obs
+        all_obs = [current_obs] + groupmate_obs
         values, _ = self.critic.critic_pass(
             all_obs,
             memories=value_memories,
             sequence_length=self.policy.sequence_length,
         )
+        groupmate_obs_and_actions = (groupmate_obs, groupmate_actions)
         baselines, _ = self.critic.baseline(
-            [current_obs],
-            group_obs,
-            group_actions,
+            current_obs,
+            groupmate_obs_and_actions,
             memories=baseline_memories,
             sequence_length=self.policy.sequence_length,
         )
@@ -379,22 +389,22 @@ class TorchPOCAOptimizer(TorchOptimizer):
         first_seq_len = leftover if leftover > 0 else self.policy.sequence_length
 
         self_seq_obs = []
-        team_seq_obs = []
-        team_seq_act = []
+        groupmate_seq_obs = []
+        groupmate_seq_act = []
         seq_obs = []
         for _self_obs in self_obs:
             first_seq_obs = _self_obs[0:first_seq_len]
             seq_obs.append(first_seq_obs)
         self_seq_obs.append(seq_obs)
 
-        for team_obs, team_action in zip(obs, actions):
+        for groupmate_obs, groupmate_action in zip(obs, actions):
             seq_obs = []
-            for _obs in team_obs:
+            for _obs in groupmate_obs:
                 first_seq_obs = _obs[0:first_seq_len]
                 seq_obs.append(first_seq_obs)
-            team_seq_obs.append(seq_obs)
-            _act = team_action.slice(0, first_seq_len)
-            team_seq_act.append(_act)
+            groupmate_seq_obs.append(seq_obs)
+            _act = groupmate_action.slice(0, first_seq_len)
+            groupmate_seq_act.append(_act)
 
         # For the first sequence, the initial memory should be the one at the
         # beginning of this trajectory.
@@ -404,7 +414,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
                 ModelUtils.to_numpy(init_baseline_mem.squeeze())
             )
 
-        all_seq_obs = self_seq_obs + team_seq_obs
+        all_seq_obs = self_seq_obs + groupmate_seq_obs
         init_values, _value_mem = self.critic.critic_pass(
             all_seq_obs, init_value_mem, sequence_length=first_seq_len
         )
@@ -413,10 +423,10 @@ class TorchPOCAOptimizer(TorchOptimizer):
             for signal_name in init_values.keys()
         }
 
+        groupmate_obs_and_actions = (groupmate_seq_obs, groupmate_seq_act)
         init_baseline, _baseline_mem = self.critic.baseline(
-            self_seq_obs,
-            team_seq_obs,
-            team_seq_act,
+            self_seq_obs[0],
+            groupmate_obs_and_actions,
             init_baseline_mem,
             sequence_length=first_seq_len,
         )
@@ -444,23 +454,23 @@ class TorchPOCAOptimizer(TorchOptimizer):
             )
 
             self_seq_obs = []
-            team_seq_obs = []
-            team_seq_act = []
+            groupmate_seq_obs = []
+            groupmate_seq_act = []
             seq_obs = []
             for _self_obs in self_obs:
                 seq_obs.append(_obs[start:end])
             self_seq_obs.append(seq_obs)
 
-            for team_obs, team_action in zip(obs, actions):
+            for groupmate_obs, team_action in zip(obs, actions):
                 seq_obs = []
-                for (_obs,) in team_obs:
+                for (_obs,) in groupmate_obs:
                     first_seq_obs = _obs[start:end]
                     seq_obs.append(first_seq_obs)
-                team_seq_obs.append(seq_obs)
+                groupmate_seq_obs.append(seq_obs)
                 _act = team_action.slice(start, end)
-                team_seq_act.append(_act)
+                groupmate_seq_act.append(_act)
 
-            all_seq_obs = self_seq_obs + team_seq_obs
+            all_seq_obs = self_seq_obs + groupmate_seq_obs
             values, _value_mem = self.critic.critic_pass(
                 all_seq_obs, _value_mem, sequence_length=self.policy.sequence_length
             )
@@ -468,10 +478,10 @@ class TorchPOCAOptimizer(TorchOptimizer):
                 signal_name: [init_values[signal_name]] for signal_name in values.keys()
             }
 
+            groupmate_obs_and_actions = (groupmate_seq_obs, groupmate_seq_act)
             baselines, _baseline_mem = self.critic.baseline(
-                self_seq_obs,
-                team_seq_obs,
-                team_seq_act,
+                self_seq_obs[0],
+                groupmate_obs_and_actions,
                 _baseline_mem,
                 sequence_length=first_seq_len,
             )
@@ -526,7 +536,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
         self,
         batch: AgentBuffer,
         next_obs: List[np.ndarray],
-        next_group_obs: List[List[np.ndarray]],
+        next_groupmate_obs: List[List[np.ndarray]],
         done: bool,
         agent_id: str = "",
     ) -> Tuple[
@@ -541,7 +551,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
         :param batch: An AgentBuffer that consists of a trajectory.
         :param next_obs: the next observation (after the trajectory). Used for boostrapping
             if this is not a termiinal trajectory.
-        :param next_group_obs: the next observations from other members of the group.
+        :param next_groupmate_obs: the next observations from other members of the group.
         :param done: Set true if this is a terminal trajectory.
         :param agent_id: Agent ID of the agent that this trajectory belongs to.
         :returns: A Tuple of the Value Estimates as a Dict of [name, np.ndarray(trajectory_len)],
@@ -553,25 +563,27 @@ class TorchPOCAOptimizer(TorchOptimizer):
         n_obs = len(self.policy.behavior_spec.observation_specs)
 
         current_obs = ObsUtil.from_buffer(batch, n_obs)
-        team_obs = GroupObsUtil.from_buffer(batch, n_obs)
+        groupmate_obs = GroupObsUtil.from_buffer(batch, n_obs)
 
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
-        team_obs = [
-            [ModelUtils.list_to_tensor(obs) for obs in _teammate_obs]
-            for _teammate_obs in team_obs
+        groupmate_obs = [
+            [ModelUtils.list_to_tensor(obs) for obs in _groupmate_obs]
+            for _groupmate_obs in groupmate_obs
         ]
 
-        team_actions = AgentAction.group_from_buffer(batch)
+        groupmate_actions = AgentAction.group_from_buffer(batch)
 
         next_obs = [ModelUtils.list_to_tensor(obs) for obs in next_obs]
         next_obs = [obs.unsqueeze(0) for obs in next_obs]
 
-        next_group_obs = [
-            ModelUtils.list_to_tensor_list(_list_obs) for _list_obs in next_group_obs
+        next_groupmate_obs = [
+            ModelUtils.list_to_tensor_list(_list_obs)
+            for _list_obs in next_groupmate_obs
         ]
         # Expand dimensions of next critic obs
-        next_group_obs = [
-            [_obs.unsqueeze(0) for _obs in _list_obs] for _list_obs in next_group_obs
+        next_groupmate_obs = [
+            [_obs.unsqueeze(0) for _obs in _list_obs]
+            for _list_obs in next_groupmate_obs
         ]
 
         if agent_id in self.value_memory_dict:
@@ -590,7 +602,11 @@ class TorchPOCAOptimizer(TorchOptimizer):
                 else None
             )
 
-        all_obs = [current_obs] + team_obs if team_obs is not None else [current_obs]
+        all_obs = (
+            [current_obs] + groupmate_obs
+            if groupmate_obs is not None
+            else [current_obs]
+        )
         all_next_value_mem: Optional[AgentBufferField] = None
         all_next_baseline_mem: Optional[AgentBufferField] = None
         with torch.no_grad():
@@ -604,8 +620,8 @@ class TorchPOCAOptimizer(TorchOptimizer):
                     next_baseline_mem,
                 ) = self._evaluate_by_sequence_team(
                     current_obs,
-                    team_obs,
-                    team_actions,
+                    groupmate_obs,
+                    groupmate_actions,
                     _init_value_mem,
                     _init_baseline_mem,
                 )
@@ -613,11 +629,10 @@ class TorchPOCAOptimizer(TorchOptimizer):
                 value_estimates, next_value_mem = self.critic.critic_pass(
                     all_obs, _init_value_mem, sequence_length=batch.num_experiences
                 )
-
+                groupmate_obs_and_actions = (groupmate_obs, groupmate_actions)
                 baseline_estimates, next_baseline_mem = self.critic.baseline(
-                    [current_obs],
-                    team_obs,
-                    team_actions,
+                    current_obs,
+                    groupmate_obs_and_actions,
                     _init_baseline_mem,
                     sequence_length=batch.num_experiences,
                 )
@@ -626,7 +641,9 @@ class TorchPOCAOptimizer(TorchOptimizer):
         self.baseline_memory_dict[agent_id] = next_baseline_mem
 
         all_next_obs = (
-            [next_obs] + next_group_obs if next_group_obs is not None else [next_obs]
+            [next_obs] + next_groupmate_obs
+            if next_groupmate_obs is not None
+            else [next_obs]
         )
 
         next_value_estimates, _ = self.critic.critic_pass(
