@@ -21,6 +21,11 @@ namespace Unity.MLAgents
     {
         #region AgentInfo
         /// <summary>
+        /// Static flag to make sure that we only fire the warning once.
+        /// </summary>
+        private static bool s_HaveWarnedTrainerCapabilitiesAgentGroup = false;
+
+        /// <summary>
         /// Converts a AgentInfo to a protobuf generated AgentInfoActionPairProto
         /// </summary>
         /// <returns>The protobuf version of the AgentInfoActionPairProto.</returns>
@@ -55,6 +60,22 @@ namespace Unity.MLAgents
         /// <returns>The protobuf version of the AgentInfo.</returns>
         public static AgentInfoProto ToAgentInfoProto(this AgentInfo ai)
         {
+            if(ai.groupId > 0)
+            {
+                var trainerCanHandle = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.MultiAgentGroups;
+                if (!trainerCanHandle)
+                {
+                    if (!s_HaveWarnedTrainerCapabilitiesAgentGroup)
+                    {
+                        Debug.LogWarning(
+                            $"Attached trainer doesn't support Multi Agent Groups; group rewards will be ignored." +
+                            "Please find the versions that work best together from our release page: " +
+                            "https://github.com/Unity-Technologies/ml-agents/releases"
+                        );
+                        s_HaveWarnedTrainerCapabilitiesAgentGroup = true;
+                    }
+                }
+            }
             var agentInfoProto = new AgentInfoProto
             {
                 Reward = ai.reward,
@@ -407,7 +428,6 @@ namespace Unity.MLAgents
             if (dimensionPropertySensor != null)
             {
                 var dimensionProperties = dimensionPropertySensor.GetDimensionProperties();
-                int[] intDimensionProperties = new int[dimensionProperties.Length];
                 for (int i = 0; i < dimensionProperties.Length; i++)
                 {
                     observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
@@ -427,6 +447,11 @@ namespace Unity.MLAgents
                 }
             }
             observationProto.Shape.AddRange(shape);
+            var sensorName = sensor.GetName();
+            if (!string.IsNullOrEmpty(sensorName))
+            {
+                observationProto.Name = sensorName;
+            }
 
             // Add the observation type, if any, to the observationProto
             var typeSensor = sensor as ITypedSensor;
@@ -453,6 +478,7 @@ namespace Unity.MLAgents
                 HybridActions = proto.HybridActions,
                 TrainingAnalytics = proto.TrainingAnalytics,
                 VariableLengthObservation = proto.VariableLengthObservation,
+                MultiAgentGroups = proto.MultiAgentGroups,
             };
         }
 
@@ -466,6 +492,7 @@ namespace Unity.MLAgents
                 HybridActions = rlCaps.HybridActions,
                 TrainingAnalytics = rlCaps.TrainingAnalytics,
                 VariableLengthObservation = rlCaps.VariableLengthObservation,
+                MultiAgentGroups = rlCaps.MultiAgentGroups,
             };
         }
 

@@ -73,7 +73,11 @@ class PPOTrainer(RLTrainer):
             self.policy.update_normalization(agent_buffer_trajectory)
 
         # Get all value estimates
-        value_estimates, value_next, value_memories = self.optimizer.get_trajectory_value_estimates(
+        (
+            value_estimates,
+            value_next,
+            value_memories,
+        ) = self.optimizer.get_trajectory_value_estimates(
             agent_buffer_trajectory,
             trajectory.next_obs,
             trajectory.done_reached and not trajectory.interrupted,
@@ -180,7 +184,9 @@ class PPOTrainer(RLTrainer):
             int(self.hyperparameters.batch_size / self.policy.sequence_length), 1
         )
 
-        advantages = np.array(self.update_buffer[BufferKey.ADVANTAGES].get_batch())
+        advantages = np.array(
+            self.update_buffer[BufferKey.ADVANTAGES].get_batch(), dtype=np.float32
+        )
         self.update_buffer[BufferKey.ADVANTAGES].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10)
         )

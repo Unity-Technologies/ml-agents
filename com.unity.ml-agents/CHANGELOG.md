@@ -9,19 +9,47 @@ and this project adheres to
 ## [Unreleased]
 ### Major Changes
 #### com.unity.ml-agents (C#)
-- The `BufferSensor` and `BufferSensorComponent` have been added. They allow the Agent to observe variable number of entities. (#4909)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Bug Fixes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+## [1.9.0-preview] - 2021-03-17
+### Major Changes
+#### com.unity.ml-agents (C#)
+- The `BufferSensor` and `BufferSensorComponent` have been added. They allow the Agent to observe variable number of entities. (#4909)
+- The `SimpleMultiAgentGroup` class and `IMultiAgentGroup` interface have been added. These allow Agents to be given rewards and
+  end episodes in groups. (#4923)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- The MA-POCA trainer has been added. This is a new trainer that enables Agents to learn how to work together in groups. Configure
+  `poca` as the trainer in the configuration YAML after instantiating a `SimpleMultiAgentGroup` to use this feature. (#5005)
+
+### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Updated com.unity.barracuda to 1.3.2-preview. (#5084)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `encoding_size` setting for RewardSignals has been deprecated. Please use `network_settings` instead. (#4982)
+- Sensor names are now passed through to `ObservationSpec.name`. (#5036)
+
+### Bug Fixes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- An issue that caused `GAIL` to fail for environments where agents can terminate episodes by self-sacrifice has been fixed. (#4971)
+- Made the error message when observations of different shapes are sent to the trainer clearer. (#5030)
+
+## [1.8.1-preview] - 2021-03-08
+### Minor Changes
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `cattrs` version dependency was updated to allow `>=1.1.0` on Python 3.8 or higher. (#4821)
 
 ### Bug Fixes
-#### com.unity.ml-agents (C#)
-#### ml-agents / ml-agents-envs / gym-unity (Python)
-- An issue that caused `GAIL` to fail for environments where agents can terminate episodes by self-sacrifice has been fixed. (#4971)
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Fix an issue where queuing InputEvents overwrote data from previous events in the same frame. (#5034)
 
 ## [1.8.0-preview] - 2021-02-17
 ### Major Changes

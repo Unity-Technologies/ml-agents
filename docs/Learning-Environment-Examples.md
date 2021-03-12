@@ -105,38 +105,6 @@ you would like to contribute environments, please see our
   number of goals.
 - Benchmark Mean Reward: 0.8
 
-## Tennis
-
-![Tennis](images/tennis.png)
-
-- Set-up: Two-player game where agents control rackets to hit a ball over the
-  net.
-- Goal: The agents must hit the ball so that the opponent cannot hit a valid
-  return.
-- Agents: The environment contains two agent with same Behavior Parameters.
-  After training you can set the `Behavior Type` to `Heuristic Only` on one of
-  the Agent's Behavior Parameters to play against your trained model.
-- Agent Reward Function (independent):
-  - +1.0 To the agent that wins the point. An agent wins a point by preventing
-    the opponent from hitting a valid return.
-  - -1.0 To the agent who loses the point.
-- Behavior Parameters:
-  - Vector Observation space: 9 variables corresponding to position, velocity
-    and orientation of ball and racket.
-  - Actions: 3 continuous actions, corresponding to movement
-    toward net or away from net, jumping and rotation.
-  - Visual Observations: None
-- Float Properties: Three
-  - gravity: Magnitude of gravity
-    - Default: 9.81
-    - Recommended Minimum: 6
-    - Recommended Maximum: 20
-  - scale: Specifies the scale of the ball in the 3 dimensions (equal across the
-    three dimensions)
-    - Default: .5
-    - Recommended Minimum: 0.2
-    - Recommended Maximum: 5
-
 ## Push Block
 
 ![Push](images/push.png)
@@ -153,9 +121,6 @@ you would like to contribute environments, please see our
     block).
   - Actions: 1 discrete action branch with 7 actions, corresponding to turn clockwise
     and counterclockwise, move along four different face directions, or do nothing.
-  - Visual Observations (Optional): One first-person camera. Use
-    `VisualPushBlock` scene. **The visual observation version of this
-    environment does not train with the provided default training parameters.**
 - Float Properties: Four
   - block_scale: Scale of the block along the x and z dimensions
     - Default: 2
@@ -203,56 +168,12 @@ you would like to contribute environments, please see our
 - Float Properties: Four
 - Benchmark Mean Reward (Big & Small Wall): 0.8
 
-## Reacher
-
-![Reacher](images/reacher.png)
-
-- Set-up: Double-jointed arm which can move to target locations.
-- Goal: The agents must move its hand to the goal location, and keep it there.
-- Agents: The environment contains 10 agent with same Behavior Parameters.
-- Agent Reward Function (independent):
-  - +0.1 Each step agent's hand is in goal location.
-- Behavior Parameters:
-  - Vector Observation space: 26 variables corresponding to position, rotation,
-    velocity, and angular velocities of the two arm rigid bodies.
-  - Actions: 4 continuous actions, corresponding to torque
-    applicable to two joints.
-  - Visual Observations: None.
-- Float Properties: Five
-  - goal_size: radius of the goal zone
-    - Default: 5
-    - Recommended Minimum: 1
-    - Recommended Maximum: 10
-  - goal_speed: speed of the goal zone around the arm (in radians)
-    - Default: 1
-    - Recommended Minimum: 0.2
-    - Recommended Maximum: 4
-  - gravity
-    - Default: 9.81
-    - Recommended Minimum: 4
-    - Recommended Maximum: 20
-  - deviation: Magnitude of sinusoidal (cosine) deviation of the goal along the
-    vertical dimension
-    - Default: 0
-    - Recommended Minimum: 0
-    - Recommended Maximum: 5
-  - deviation_freq: Frequency of the cosine deviation of the goal along the
-    vertical dimension
-    - Default: 0
-    - Recommended Minimum: 0
-    - Recommended Maximum: 3
-- Benchmark Mean Reward: 30
-
 ## Crawler
 
 ![Crawler](images/crawler.png)
 
 - Set-up: A creature with 4 arms and 4 forearms.
 - Goal: The agents must move its body toward the goal direction without falling.
-  - `CrawlerDynamicTarget`- Goal direction is randomized.
-  - `CrawlerDynamicVariableSpeed`- Goal direction and walking speed are randomized.
-  - `CrawlerStaticTarget` - Goal direction is always forward.
-  - `CrawlerStaticVariableSpeed`- Goal direction is always forward. Walking speed is randomized
 - Agents: The environment contains 10 agents with same Behavior Parameters.
 - Agent Reward Function (independent):
   The reward function is now geometric meaning the reward each step is a product
@@ -268,10 +189,7 @@ you would like to contribute environments, please see our
     rotations for joints.
   - Visual Observations: None
 - Float Properties: None
-- Benchmark Mean Reward for `CrawlerDynamicTarget`: 2000
-- Benchmark Mean Reward for `CrawlerDynamicVariableSpeed`: 3000
-- Benchmark Mean Reward for `CrawlerStaticTarget`: 4000
-- Benchmark Mean Reward for `CrawlerStaticVariableSpeed`: 4000
+- Benchmark Mean Reward: 3000
 
 ## Worm
 
@@ -279,8 +197,6 @@ you would like to contribute environments, please see our
 
 - Set-up: A worm with a head and 3 body segments.
 - Goal: The agents must move its body toward the goal direction.
-  - `WormStaticTarget` - Goal direction is always forward.
-  - `WormDynamicTarget`- Goal direction is randomized.
 - Agents: The environment contains 10 agents with same Behavior Parameters.
 - Agent Reward Function (independent):
   The reward function is now geometric meaning the reward each step is a product
@@ -296,8 +212,7 @@ you would like to contribute environments, please see our
     rotations for joints.
   - Visual Observations: None
 - Float Properties: None
-- Benchmark Mean Reward for `WormStaticTarget`: 1200
-- Benchmark Mean Reward for `WormDynamicTarget`: 800
+- Benchmark Mean Reward: 800
 
 ## Food Collector
 
@@ -312,9 +227,8 @@ you would like to contribute environments, please see our
   - -1 for interaction with red spheres
 - Behavior Parameters:
   - Vector Observation space: 53 corresponding to velocity of agent (2), whether
-    agent is frozen and/or shot its laser (2), plus ray-based perception of
-    objects around agent's forward direction (49; 7 raycast angles with 7
-    measurements for each).
+    agent is frozen and/or shot its laser (2), plus grid based perception of
+    objects around agent's forward direction (40 by 40 with 6 different categories).
   - Actions:
     - 3 continuous actions correspond to Forward Motion, Side Motion and Rotation
     - 1 discrete acion branch for Laser with 2 possible actions corresponding to
@@ -353,38 +267,10 @@ you would like to contribute environments, please see our
     objects, goals, and walls.
   - Actions: 1 discrete action Branch, with 4 actions corresponding to agent
     rotation and forward/backward movement.
-  - Visual Observations (Optional): First-person view for the agent. Use
-    `VisualHallway` scene. **The visual observation version of this environment
-    does not train with the provided default training parameters.**
 - Float Properties: None
 - Benchmark Mean Reward: 0.7
   - To train this environment, you can enable curiosity by adding the `curiosity` reward signal
     in `config/ppo/Hallway.yaml`
-
-## Bouncer
-
-![Bouncer](images/bouncer.png)
-
-- Set-up: Environment where the agent needs on-demand decision making. The agent
-  must decide how perform its next bounce only when it touches the ground.
-- Goal: Catch the floating green cube. Only has a limited number of jumps.
-- Agents: The environment contains one agent.
-- Agent Reward Function (independent):
-  - +1 For catching the green cube.
-  - -1 For bouncing out of bounds.
-  - -0.05 Times the action squared. Energy expenditure penalty.
-- Behavior Parameters:
-  - Vector Observation space: 6 corresponding to local position of agent and
-    green cube.
-  - Actions: 3 continuous actions corresponding to agent force applied for
-    the jump.
-  - Visual Observations: None
-- Float Properties: Two
-  - target_scale: The scale of the green cube in the 3 dimensions
-    - Default: 150
-    - Recommended Minimum: 50
-    - Recommended Maximum: 250
-- Benchmark Mean Reward: 10
 
 ## Soccer Twos
 
@@ -470,11 +356,6 @@ you would like to contribute environments, please see our
   correspond to articulation of the following body-parts: hips, chest, spine,
   head, thighs, shins, feet, arms, forearms and hands.
 - Goal: The agents must move its body toward the goal direction without falling.
-  - `WalkerDynamic`- Goal direction is randomized.
-  - `WalkerDynamicVariableSpeed`- Goal direction and walking speed are randomized.
-  - `WalkerStatic` - Goal direction is always forward.
-  - `WalkerStaticVariableSpeed` - Goal direction is always forward. Walking
-     speed is randomized
 - Agents: The environment contains 10 independent agents with same Behavior
   Parameters.
 - Agent Reward Function (independent):
@@ -506,11 +387,7 @@ you would like to contribute environments, please see our
     - Default: 8
     - Recommended Minimum: 3
     - Recommended Maximum: 20
-- Benchmark Mean Reward for `WalkerDynamic`: 2500
-- Benchmark Mean Reward for `WalkerDynamicVariableSpeed`: 2500
-- Benchmark Mean Reward for `WalkerStatic`: 3500
-- Benchmark Mean Reward for `WalkerStaticVariableSpeed`: 3500
-
+- Benchmark Mean Reward : 2500
 
 
 ## Pyramids
@@ -530,9 +407,6 @@ you would like to contribute environments, please see our
     state.
   - Actions: 1 discrete action branch, with 4 actions corresponding to agent rotation and
     forward/backward movement.
-  - Visual Observations (Optional): First-person camera per-agent. Us
-    `VisualPyramids` scene. **The visual observation version of this environment
-    does not train with the provided default training parameters.**
 - Float Properties: None
 - Benchmark Mean Reward: 1.75
 
@@ -582,3 +456,23 @@ drop down. New pieces are spawned randomly at the top, with a chance of being
       - Recommended Minimum: 1
       - Recommended Maximum: 20
   - Benchmark Mean Reward: Depends on the number of tiles.
+
+## Cooperative Push Block
+![CoopPushBlock](images/cooperative_pushblock.png)
+
+- Set-up: Similar to Push Block, the agents are in an area with blocks that need
+to be pushed into a goal. Small blocks can be pushed by one agents and are worth
++1 value, medium blocks require two agents to push in and are worth +2, and large
+blocks require all 3 agents to push and are worth +3.
+- Goal: Push all blocks into the goal.
+- Agents: The environment contains three Agents in a Multi Agent Group.
+- Agent Reward Function:
+  - -0.0001 Existential penalty, as a group reward.
+  - +1, +2, or +3 for pushing in a block, added as a group reward.
+- Behavior Parameters:
+  - Observation space: A single Grid Sensor with separate tags for each block size,
+    the goal, the walls, and other agents.
+  - Actions: 1 discrete action branch with 7 actions, corresponding to turn clockwise
+    and counterclockwise, move along four different face directions, or do nothing.
+- Float Properties: None
+- Benchmark Mean Reward: 11 (Group Reward)

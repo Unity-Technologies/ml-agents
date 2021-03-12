@@ -1,6 +1,6 @@
 behaviors:
-  PushBlock:
-    trainer_type: ppo
+  PushBlockCollab:
+    trainer_type: poca
     hyperparameters:
       batch_size: 1024
       buffer_size: 10240
@@ -20,7 +20,7 @@ behaviors:
         gamma: 0.99
         strength: 1.0
     keep_checkpoints: 5
-    max_steps: 20000000 #2000000
+    max_steps: 20000000
     time_horizon: 64
     summary_freq: 60000
     threaded: true

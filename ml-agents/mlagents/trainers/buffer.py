@@ -35,6 +35,7 @@ class BufferKey(enum.Enum):
     MASKS = "masks"
     MEMORY = "memory"
     CRITIC_MEMORY = "critic_memory"
+    BASELINE_MEMORY = "poca_baseline_memory"
     PREV_ACTION = "prev_action"
 
     ADVANTAGES = "advantages"
@@ -63,6 +64,7 @@ class RewardSignalKeyPrefix(enum.Enum):
     VALUE_ESTIMATES = "value_estimates"
     RETURNS = "returns"
     ADVANTAGE = "advantage"
+    BASELINES = "baselines"
 
 
 AgentBufferKey = Union[
@@ -87,6 +89,10 @@ class RewardSignalUtil:
     def advantage_key(name: str) -> AgentBufferKey:
         return RewardSignalKeyPrefix.ADVANTAGE, name
 
+    @staticmethod
+    def baseline_estimates_key(name: str) -> AgentBufferKey:
+        return RewardSignalKeyPrefix.BASELINES, name
+
 
 class AgentBufferField(list):
     """
@@ -108,7 +114,14 @@ class AgentBufferField(list):
         else:
             return return_data
 
-    def append(self, element: np.ndarray, padding_value: float = 0.0) -> None:
+    @property
+    def contains_lists(self) -> bool:
+        """
+        Checks whether this AgentBufferField contains List[np.ndarray].
+        """
+        return len(self) > 0 and isinstance(self[0], list)
+
+    def append(self, element: BufferEntry, padding_value: float = 0.0) -> None:
         """
         Adds an element to this list. Also lets you change the padding
         type, so that it can be set on append (e.g. action_masks should
@@ -162,7 +175,11 @@ class AgentBufferField(list):
                     " too large given the current number of data points."
                 )
             if batch_size * training_length > len(self):
-                padding = np.array(self[-1], dtype=np.float32) * self.padding_value
+                if self.contains_lists:
+                    padding = []
+                else:
+                    # We want to duplicate the last value in the array, multiplied by the padding_value.
+                    padding = np.array(self[-1], dtype=np.float32) * self.padding_value
                 return [padding] * (training_length - leftover) + self[:]
 
             else:
@@ -206,7 +223,7 @@ class AgentBufferField(list):
             dimension is equal to the length of the AgentBufferField.
         """
         if len(self) > 0 and not isinstance(self[0], list):
-            return np.asanyarray(self, dytpe=dtype)
+            return np.asanyarray(self, dtype=dtype)
 
         shape = None
         for _entry in self:

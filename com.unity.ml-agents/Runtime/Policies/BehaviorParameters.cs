@@ -74,8 +74,15 @@ namespace Unity.MLAgents.Policies
         [HideInInspector, SerializeField]
         BrainParameters m_BrainParameters = new BrainParameters();
 
+        /// <summary>
+        /// Delegate for receiving events about Policy Updates.
+        /// </summary>
+        /// <param name="isInHeuristicMode">Whether or not the current policy is running in heuristic mode.</param>
         public delegate void PolicyUpdated(bool isInHeuristicMode);
 
+        /// <summary>
+        /// Event that fires when an Agent's policy is updated.
+        /// </summary>
         internal event PolicyUpdated OnPolicyUpdated;
 
         /// <summary>
