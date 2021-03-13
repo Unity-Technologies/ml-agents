@@ -13,6 +13,7 @@ and this project adheres to
 - The interface for disabling discrete actions in `IDiscreteActionMask` has changed.
 `WriteMask(int branch, IEnumerable<int> actionIndices)` was replaced with
 `SetActionEnabled(int branch, int actionIndex, bool isEnabled)`. See the
+- IActuator now implements IHeuristicProvider. (#5110)
 [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_14_docs/docs/Migrating.md) for more
 details. (#5060)
 #### ml-agents / ml-agents-envs / gym-unity (Python)

@@ -41,6 +41,8 @@ public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
     actionMask.SetActionEnabled(branch, 3, false);
 }
 ```
+- The `IActuator` interface now implements `IHeuristicProvider.  Please add the corresponding `Heuristic(in ActionBuffers)`
+method to your custom Actuator classes.
 
 ## Migrating to Release 13
 ### Implementing IHeuristic in your IActuator implementations
