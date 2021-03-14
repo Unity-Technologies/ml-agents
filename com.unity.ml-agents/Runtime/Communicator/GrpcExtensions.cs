@@ -10,7 +10,7 @@ using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Policies;
 
-#if MLA_UNITY_ANALYTICS
+#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
 using Unity.MLAgents.Analytics;
 #endif
 
@@ -527,7 +527,7 @@ namespace Unity.MLAgents
         }
 
         #region Analytics
-#if MLA_UNITY_ANALYTICS
+#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
         internal static TrainingEnvironmentInitializedEvent ToTrainingEnvironmentInitializedEvent(
             this TrainingEnvironmentInitialized inputProto)
         {
@@ -571,7 +571,7 @@ namespace Unity.MLAgents
                 NumNetworkHiddenUnits = inputProto.NumNetworkHiddenUnits,
             };
         }
-#endif // MLA_UNITY_ANALYTICS
+#endif // MLA_UNITY_ANALYTICS_MODULE_ENABLED
         #endregion
 
     }

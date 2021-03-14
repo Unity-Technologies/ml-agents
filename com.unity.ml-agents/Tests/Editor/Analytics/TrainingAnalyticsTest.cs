@@ -1,4 +1,4 @@
-#if MLA_UNITY_ANALYTICS
+#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -71,4 +71,4 @@ namespace Unity.MLAgents.Tests.Analytics
         }
     }
 }
-#endif // MLA_UNITY_ANALYTICS
+#endif // MLA_UNITY_ANALYTICS_MODULE_ENABLED

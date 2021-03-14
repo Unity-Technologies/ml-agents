@@ -78,7 +78,7 @@ namespace Unity.MLAgents.Policies
         /// <inheritdoc />
         public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
-#if MLA_UNITY_ANALYTICS
+#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
             if (!m_AnalyticsSent)
             {
                 m_AnalyticsSent = true;

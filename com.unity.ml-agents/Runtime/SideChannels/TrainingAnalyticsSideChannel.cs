@@ -1,4 +1,4 @@
-#if MLA_UNITY_ANALYTICS
+#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
 using System;
 using UnityEngine;
 using Unity.MLAgents.Analytics;
@@ -52,4 +52,4 @@ namespace Unity.MLAgents.SideChannels
         }
     }
 }
-#endif // MLA_UNITY_ANALYTICS
+#endif // MLA_UNITY_ANALYTICS_MODULE_ENABLED

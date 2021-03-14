@@ -1,4 +1,4 @@
-#if MLA_UNITY_ANALYTICS
+#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
 using System;
 using System.Linq;
 using System.Text;
@@ -64,4 +64,4 @@ namespace Unity.MLAgents.Tests
         }
     }
 }
-#endif // MLA_UNITY_ANALYTICS
+#endif // MLA_UNITY_ANALYTICS_MODULE_ENABLED

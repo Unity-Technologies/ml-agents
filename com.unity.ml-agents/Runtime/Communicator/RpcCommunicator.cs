@@ -17,7 +17,7 @@ using Unity.MLAgents.Sensors;
 using Unity.MLAgents.SideChannels;
 using Google.Protobuf;
 
-#if MLA_UNITY_ANALYTICS
+#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
 using Unity.MLAgents.Analytics;
 #endif
 
@@ -147,7 +147,7 @@ namespace Unity.MLAgents
 
             var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
             var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
-#if MLA_UNITY_ANALYTICS
+#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
             TrainingAnalytics.SetTrainerInformation(pythonPackageVersion, pythonCommunicationVersion);
 #endif
 
