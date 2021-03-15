@@ -16,7 +16,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// Register agent to the MultiAgentGroup.
         /// </summary>
-        /// <param name="agent">The Agent to unregister.</param>
+        /// <param name="agent">The Agent to register.</param>
         void RegisterAgent(Agent agent);
 
         /// <summary>
