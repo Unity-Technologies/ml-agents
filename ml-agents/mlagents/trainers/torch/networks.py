@@ -478,9 +478,7 @@ class Actor(abc.ABC):
     @abc.abstractmethod
     def forward(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
-        var_len_inputs: List[torch.Tensor],
+        inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
     ) -> Tuple[Union[int, torch.Tensor], ...]:
@@ -493,6 +491,8 @@ class Actor(abc.ABC):
 
 
 class SimpleActor(nn.Module, Actor):
+    MODEL_EXPORT_VERSION = 3
+
     def __init__(
         self,
         observation_specs: List[ObservationSpec],
@@ -504,7 +504,7 @@ class SimpleActor(nn.Module, Actor):
         super().__init__()
         self.action_spec = action_spec
         self.version_number = torch.nn.Parameter(
-            torch.Tensor([2.0]), requires_grad=False
+            torch.Tensor([self.MODEL_EXPORT_VERSION]), requires_grad=False
         )
         self.is_continuous_int_deprecated = torch.nn.Parameter(
             torch.Tensor([int(self.action_spec.is_continuous())]), requires_grad=False
@@ -512,9 +512,8 @@ class SimpleActor(nn.Module, Actor):
         self.continuous_act_size_vector = torch.nn.Parameter(
             torch.Tensor([int(self.action_spec.continuous_size)]), requires_grad=False
         )
-        # TODO: export list of branch sizes instead of sum
         self.discrete_act_size_vector = torch.nn.Parameter(
-            torch.Tensor([sum(self.action_spec.discrete_branches)]), requires_grad=False
+            torch.Tensor([self.action_spec.discrete_branches]), requires_grad=False
         )
         self.act_size_vector_deprecated = torch.nn.Parameter(
             torch.Tensor(
@@ -579,9 +578,7 @@ class SimpleActor(nn.Module, Actor):
 
     def forward(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
-        var_len_inputs: List[torch.Tensor],
+        inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
     ) -> Tuple[Union[int, torch.Tensor], ...]:
@@ -627,13 +624,6 @@ class SimpleActor(nn.Module, Actor):
             export_out += [cont_action_out, self.continuous_act_size_vector]
         if self.action_spec.discrete_size > 0:
             export_out += [disc_action_out, self.discrete_act_size_vector]
-        # Only export deprecated nodes with non-hybrid action spec
-        if self.action_spec.continuous_size == 0 or self.action_spec.discrete_size == 0:
-            export_out += [
-                action_out_deprecated,
-                self.is_continuous_int_deprecated,
-                self.act_size_vector_deprecated,
-            ]
         if self.network_body.memory_size > 0:
             export_out += [memories_out]
         return tuple(export_out)
