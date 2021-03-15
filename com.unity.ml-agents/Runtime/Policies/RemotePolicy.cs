@@ -1,13 +1,8 @@
-#if MLA_UNITY_ANALYTICS_MODULE || !UNITY_2019_4_OR_NEWER
-#define MLA_UNITY_ANALYTICS_MODULE_ENABLED
-#endif
 
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
-#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
 using Unity.MLAgents.Analytics;
-#endif
 
 
 namespace Unity.MLAgents.Policies
@@ -22,9 +17,7 @@ namespace Unity.MLAgents.Policies
         string m_FullyQualifiedBehaviorName;
         ActionSpec m_ActionSpec;
         ActionBuffers m_LastActionBuffer;
-#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
         private bool m_AnalyticsSent = false;
-#endif
 
         internal ICommunicator m_Communicator;
 
@@ -49,7 +42,6 @@ namespace Unity.MLAgents.Policies
         /// <inheritdoc />
         public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
-#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
             if (!m_AnalyticsSent)
             {
                 m_AnalyticsSent = true;
@@ -60,7 +52,6 @@ namespace Unity.MLAgents.Policies
                     m_Actuators
                 );
             }
-#endif
             m_AgentId = info.episodeId;
             m_Communicator?.PutObservations(m_FullyQualifiedBehaviorName, info, sensors);
         }

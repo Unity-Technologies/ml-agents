@@ -1,8 +1,3 @@
-#if MLA_UNITY_ANALYTICS_MODULE || !UNITY_2019_4_OR_NEWER
-#define MLA_UNITY_ANALYTICS_MODULE_ENABLED
-#endif
-
-#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
 using System;
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
@@ -192,4 +187,3 @@ namespace Unity.MLAgents.Analytics
         public int NumNetworkHiddenUnits;
     }
 }
-#endif // MLA_UNITY_ANALYTICS_MODULE_ENABLED

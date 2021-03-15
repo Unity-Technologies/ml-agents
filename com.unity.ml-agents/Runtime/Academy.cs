@@ -1,7 +1,3 @@
-#if MLA_UNITY_ANALYTICS_MODULE || !UNITY_2019_4_OR_NEWER
-#define MLA_UNITY_ANALYTICS_MODULE_ENABLED
-#endif
-
 using System;
 using UnityEngine;
 using System.Collections.Generic;
@@ -418,9 +414,7 @@ namespace Unity.MLAgents
             EnableAutomaticStepping();
 
             SideChannelManager.RegisterSideChannel(new EngineConfigurationChannel());
-#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
             SideChannelManager.RegisterSideChannel(new TrainingAnalyticsSideChannel());
-#endif
             m_EnvironmentParameters = new EnvironmentParameters();
             m_StatsRecorder = new StatsRecorder();
 

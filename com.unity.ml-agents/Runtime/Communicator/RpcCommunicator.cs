@@ -1,7 +1,3 @@
-#if MLA_UNITY_ANALYTICS_MODULE || !UNITY_2019_4_OR_NEWER
-#define MLA_UNITY_ANALYTICS_MODULE_ENABLED
-#endif
-
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
 #define MLA_SUPPORTED_TRAINING_PLATFORM
 #endif
@@ -21,9 +17,7 @@ using Unity.MLAgents.Sensors;
 using Unity.MLAgents.SideChannels;
 using Google.Protobuf;
 
-#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
 using Unity.MLAgents.Analytics;
-#endif
 
 namespace Unity.MLAgents
 {
@@ -151,9 +145,7 @@ namespace Unity.MLAgents
 
             var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
             var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
-#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
             TrainingAnalytics.SetTrainerInformation(pythonPackageVersion, pythonCommunicationVersion);
-#endif
 
             var communicationIsCompatible = CheckCommunicationVersionsAreCompatible(
                 initParameters.unityCommunicationVersion,

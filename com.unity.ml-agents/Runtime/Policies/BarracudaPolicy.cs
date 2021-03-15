@@ -78,7 +78,6 @@ namespace Unity.MLAgents.Policies
         /// <inheritdoc />
         public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
-#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
             if (!m_AnalyticsSent)
             {
                 m_AnalyticsSent = true;
@@ -91,7 +90,6 @@ namespace Unity.MLAgents.Policies
                     m_Actuators
                 );
             }
-#endif
             m_AgentId = info.episodeId;
             m_ModelRunner?.PutObservations(info, sensors);
         }

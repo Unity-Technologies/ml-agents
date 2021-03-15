@@ -1,7 +1,3 @@
-#if MLA_UNITY_ANALYTICS_MODULE || !UNITY_2019_4_OR_NEWER
-#define MLA_UNITY_ANALYTICS_MODULE_ENABLED
-#endif
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +10,7 @@ using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Policies;
 
-#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
 using Unity.MLAgents.Analytics;
-#endif
 
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor")]
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor.Tests")]
@@ -531,7 +525,6 @@ namespace Unity.MLAgents
         }
 
         #region Analytics
-#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
         internal static TrainingEnvironmentInitializedEvent ToTrainingEnvironmentInitializedEvent(
             this TrainingEnvironmentInitialized inputProto)
         {
@@ -575,7 +568,6 @@ namespace Unity.MLAgents
                 NumNetworkHiddenUnits = inputProto.NumNetworkHiddenUnits,
             };
         }
-#endif // MLA_UNITY_ANALYTICS_MODULE_ENABLED
         #endregion
 
     }
