@@ -149,3 +149,4 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
     {% endfor %}
   {% endfor %}
 {% endfor %}
+

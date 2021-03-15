@@ -9,7 +9,6 @@
     "com.unity.modules.imageconversion": "1.0.0",
     "com.unity.modules.jsonserialize": "1.0.0",
     "com.unity.modules.physics": "1.0.0",
-    "com.unity.modules.physics2d": "1.0.0",
-    "com.unity.modules.unityanalytics": "1.0.0"
+    "com.unity.modules.physics2d": "1.0.0"
   }
 }
