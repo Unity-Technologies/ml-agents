@@ -19,9 +19,12 @@ namespace Unity.MLAgents
 
         struct MLAgentsSampleJson
         {
+#pragma warning disable 649
             public string displayName;
             public string description;
+            // ReSharper disable once CollectionNeverUpdated.Local
             public List<string> scenes;
+#pragma warning restore 649
         }
 
         struct PackageSampleJson
