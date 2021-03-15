@@ -987,6 +987,8 @@ and two playing fields where teams are pitted against each other. All the blue a
        width="650" border="10" />
 </p>
 
+Please see the [SoccerTwos](Learning-Environment-Examples.md#soccer-twos) environment for an example.
+
 #### Cooperative Behaviors Notes and Best Practices
 * An agent can only be registered to one MultiAgentGroup at a time. If you want to re-assign an
 agent from one group to another, you have to unregister it from the current group first.
