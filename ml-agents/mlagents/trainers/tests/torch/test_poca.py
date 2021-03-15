@@ -1,9 +1,14 @@
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 import pytest
 
 import numpy as np
 import attr
 
+# Import to avoid circular import
+from mlagents.trainers.trainer.trainer_factory import TrainerFactory  # noqa F401
+
 from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer
+from mlagents.trainers.poca.trainer import POCATrainer
 from mlagents.trainers.settings import RewardSignalSettings, RewardSignalType
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
@@ -12,19 +17,21 @@ from mlagents.trainers.tests.mock_brain import copy_buffer_fields
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.tests.dummy_config import (  # noqa: F401
-    ppo_dummy_config,
+    create_observation_specs_with_shapes,
+    poca_dummy_config,
     curiosity_dummy_config,
     gail_dummy_config,
 )
+from mlagents.trainers.agent_processor import AgentManagerQueue
+from mlagents.trainers.settings import TrainerSettings
 
-from mlagents_envs.base_env import ActionSpec
+from mlagents_envs.base_env import ActionSpec, BehaviorSpec
 from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 
 
 @pytest.fixture
 def dummy_config():
-    # poca has the same hyperparameters as ppo for now
-    return ppo_dummy_config()
+    return poca_dummy_config()
 
 
 VECTOR_ACTION_SPACE = 2
@@ -188,7 +195,7 @@ def test_poca_get_value_estimates(dummy_config, rnn, visual, discrete):
 @pytest.mark.parametrize("visual", [True, False], ids=["visual", "vector"])
 @pytest.mark.parametrize("rnn", [True, False], ids=["rnn", "no_rnn"])
 # We need to test this separately from test_reward_signals.py to ensure no interactions
-def test_ppo_optimizer_update_curiosity(
+def test_poca_optimizer_update_curiosity(
     dummy_config, curiosity_dummy_config, rnn, visual, discrete  # noqa: F811
 ):
     # Test evaluate
@@ -230,10 +237,10 @@ def test_ppo_optimizer_update_curiosity(
 
 
 # We need to test this separately from test_reward_signals.py to ensure no interactions
-def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F811
+def test_poca_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F811
     # Test evaluate
     dummy_config.reward_signals = gail_dummy_config
-    config = ppo_dummy_config()
+    config = poca_dummy_config()
     optimizer = create_test_poca_optimizer(
         config, use_rnn=False, use_discrete=False, use_visual=False
     )
@@ -284,6 +291,47 @@ def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F8
         update_buffer,
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
     )
+
+
+def test_poca_end_episode():
+    name_behavior_id = "test_trainer"
+    trainer = POCATrainer(
+        name_behavior_id,
+        10,
+        TrainerSettings(max_steps=100, checkpoint_interval=10, summary_freq=20),
+        True,
+        False,
+        0,
+        "mock_model_path",
+    )
+    behavior_spec = BehaviorSpec(
+        create_observation_specs_with_shapes([(1,)]), ActionSpec.create_discrete((2,))
+    )
+    parsed_behavior_id = BehaviorIdentifiers.from_name_behavior_id(name_behavior_id)
+    mock_policy = trainer.create_policy(parsed_behavior_id, behavior_spec)
+    trainer.add_policy(parsed_behavior_id, mock_policy)
+    trajectory_queue = AgentManagerQueue("testbrain")
+    policy_queue = AgentManagerQueue("testbrain")
+    trainer.subscribe_trajectory_queue(trajectory_queue)
+    trainer.publish_policy_queue(policy_queue)
+    time_horizon = 10
+    trajectory = mb.make_fake_trajectory(
+        length=time_horizon,
+        observation_specs=behavior_spec.observation_specs,
+        max_step_complete=False,
+        action_spec=behavior_spec.action_spec,
+        num_other_agents_in_group=2,
+        group_reward=1.0,
+        is_terminal=False,
+    )
+    trajectory_queue.put(trajectory)
+    trainer.advance()
+    # Test that some trajectoories have been injested
+    for reward in trainer.collected_group_rewards.values():
+        assert reward == 10
+    # Test end episode
+    trainer.end_episode()
+    assert len(trainer.collected_group_rewards.keys()) == 0
 
 
 if __name__ == "__main__":
