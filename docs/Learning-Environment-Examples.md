@@ -280,7 +280,7 @@ you would like to contribute environments, please see our
 - Goal:
   - Get the ball into the opponent's goal while preventing the ball from
     entering own goal.
-- Agents: The environment contains four agents, with the same Behavior
+- Agents: The environment contains two different Multi Agent Groups with two agents in each.
   Parameters : SoccerTwos.
 - Agent Reward Function (dependent):
   - (1 - `accumulated time penalty`) When ball enters opponent's goal
@@ -315,7 +315,7 @@ you would like to contribute environments, please see our
 - Goal:
   - Striker: Get the ball into the opponent's goal.
   - Goalie: Keep the ball out of the goal.
-- Agents: The environment contains three agents. Two Strikers and one Goalie.
+- Agents: The environment contains two different Multi Agent Groups. One with two Strikers and the other one Goalie.
   Behavior Parameters : Striker, Goalie.
 - Striker Agent Reward Function (dependent):
   - +1 When ball enters opponent's goal.

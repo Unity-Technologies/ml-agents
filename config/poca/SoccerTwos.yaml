@@ -1,6 +1,6 @@
 behaviors:
   SoccerTwos:
-    trainer_type: ppo
+    trainer_type: poca
     hyperparameters:
       batch_size: 2048
       buffer_size: 20480
