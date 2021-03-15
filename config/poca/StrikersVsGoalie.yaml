@@ -1,6 +1,6 @@
 behaviors:
   Goalie:
-    trainer_type: ppo
+    trainer_type: poca
     hyperparameters:
       batch_size: 2048
       buffer_size: 20480
@@ -32,7 +32,7 @@ behaviors:
       play_against_latest_model_ratio: 0.5
       initial_elo: 1200.0
   Striker:
-    trainer_type: ppo
+    trainer_type: poca
     hyperparameters:
       batch_size: 2048
       buffer_size: 20480
