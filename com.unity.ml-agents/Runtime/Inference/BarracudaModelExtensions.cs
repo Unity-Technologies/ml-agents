@@ -245,6 +245,14 @@ namespace Unity.MLAgents.Inference
 
         /// <summary>
         /// Discrete action output size of the model. This is equal to the sum of the branch sizes.
+        /// This method gets the tensor representing the list of branch size and returns the
+        /// sum of all the elements in the Tensor.
+        ///  - In version 1.X this tensor contains a single number, the sum of all branch
+        /// size values.
+        ///  - In version 2.X this tensor contains a 1D Tensor with each element corresponding
+        /// to a branch size.
+        /// Since this method does the sum of all elements in the tensor, the output
+        /// will be the same on both 1.X and 2.X.
         /// </summary>
         /// <param name="model">
         /// The Barracuda engine model for loading static parameters.
