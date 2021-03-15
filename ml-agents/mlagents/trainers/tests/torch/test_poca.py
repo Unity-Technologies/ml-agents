@@ -16,9 +16,11 @@ from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import copy_buffer_fields
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.tests.dummy_config import (
+from mlagents.trainers.tests.dummy_config import (  # noqa: F401
     create_observation_specs_with_shapes,
     poca_dummy_config,
+    curiosity_dummy_config,
+    gail_dummy_config,
 )
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.settings import TrainerSettings
