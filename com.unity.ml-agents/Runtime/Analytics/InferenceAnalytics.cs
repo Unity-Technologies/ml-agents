@@ -66,13 +66,16 @@ namespace Unity.MLAgents.Analytics
 
 #if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE_ENABLED
             AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(k_EventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey, k_EventVersion);
-
             if (result == AnalyticsResult.Ok)
             {
                 s_EventRegistered = true;
             }
 #elif MLA_UNITY_ANALYTICS_MODULE_ENABLED
             AnalyticsResult result = AnalyticsResult.UnsupportedPlatform;
+            if (result == AnalyticsResult.Ok)
+            {
+                s_EventRegistered = true;
+            }
 #endif
             if (s_EventRegistered && s_SentModels == null)
             {

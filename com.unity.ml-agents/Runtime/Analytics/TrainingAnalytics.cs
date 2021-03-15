@@ -84,8 +84,6 @@ namespace Unity.MLAgents.Analytics
                 {
                     return false;
                 }
-#else // We are not in the editor and Analytics are no enabled.
-                return false;
 #endif
             }
             s_EventsRegistered = true;
