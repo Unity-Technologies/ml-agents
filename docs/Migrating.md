@@ -41,6 +41,8 @@ public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
     actionMask.SetActionEnabled(branch, 3, false);
 }
 ```
+- The `IActuator` interface now implements `IHeuristicProvider`.  Please add the corresponding `Heuristic(in ActionBuffers)`
+method to your custom Actuator classes.
 
 - The `ISensor.GetObservationShape()` method was removed, and `GetObservationSpec()` was added. You can use
 `ObservationSpec.Vector()` or `ObservationSpec.Visual()` to generate `ObservationSpec`s that are equivalent to
