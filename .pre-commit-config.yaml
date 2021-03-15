@@ -84,7 +84,7 @@ repos:
     exclude: ".*localized.*"
 
 - repo: https://github.com/dotnet/format
-  rev: ""  # Specify a tag or sha here, or run "pre-commit autoupdate"
+  rev: "7e343070a0355c86f72bdee226b5e19ffcbac931"  # TODO - update to a tagged version when one that includes the hook is ready.
   hooks:
   - id: dotnet-format
     args: [--folder, --include]

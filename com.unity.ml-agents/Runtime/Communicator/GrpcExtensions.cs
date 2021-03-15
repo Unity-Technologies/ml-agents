@@ -60,7 +60,7 @@ namespace Unity.MLAgents
         /// <returns>The protobuf version of the AgentInfo.</returns>
         public static AgentInfoProto ToAgentInfoProto(this AgentInfo ai)
         {
-            if(ai.groupId > 0)
+            if (ai.groupId > 0)
             {
                 var trainerCanHandle = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.MultiAgentGroups;
                 if (!trainerCanHandle)
