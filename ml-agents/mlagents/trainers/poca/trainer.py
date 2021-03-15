@@ -245,6 +245,15 @@ class POCATrainer(RLTrainer):
         self._clear_update_buffer()
         return True
 
+    def end_episode(self) -> None:
+        """
+        A signal that the Episode has ended. The buffer must be reset.
+        Get only called when the academy resets. For POCA, we should
+        also zero out the group rewards.
+        """
+        super().end_episode()
+        self.collected_group_rewards.clear()
+
     def create_torch_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TorchPolicy:

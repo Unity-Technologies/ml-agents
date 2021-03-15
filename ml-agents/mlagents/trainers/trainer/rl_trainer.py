@@ -4,6 +4,7 @@ from collections import defaultdict
 import abc
 import time
 import attr
+import numpy as np
 from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 
 from mlagents.trainers.policy.checkpoint_manager import (
@@ -13,7 +14,7 @@ from mlagents.trainers.policy.checkpoint_manager import (
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
 from mlagents.trainers.optimizer import Optimizer
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
     BaseRewardProvider,
@@ -58,6 +59,7 @@ class RLTrainer(Trainer):
         self.model_saver = self.create_model_saver(
             self.trainer_settings, self.artifact_path, self.load
         )
+        self._has_warned_group_rewards = False
 
     def end_episode(self) -> None:
         """
@@ -255,6 +257,19 @@ class RLTrainer(Trainer):
             )
         if step_after_process >= self._next_save_step and self.get_step != 0:
             self._checkpoint()
+
+    def _warn_if_group_reward(self, buffer: AgentBuffer) -> None:
+        """
+        Warn if the trainer receives a Group Reward but isn't a multiagent trainer (e.g. POCA).
+        """
+        if not self._has_warned_group_rewards:
+            group_reward = np.sum(buffer[BufferKey.GROUP_REWARD])
+            if group_reward > 0.0:
+                logger.warning(
+                    "An agent recieved a Group Reward, but you are not using a multi-agent trainer. "
+                    "Please use the POCA trainer for best results."
+                )
+                self._has_warned_group_rewards = True
 
     def advance(self) -> None:
         """
