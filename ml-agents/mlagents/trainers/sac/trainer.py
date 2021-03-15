@@ -131,6 +131,8 @@ class SACTrainer(RLTrainer):
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
         agent_buffer_trajectory = trajectory.to_agentbuffer()
+        # Check if we used group rewards, warn if so.
+        self._warn_if_group_reward(agent_buffer_trajectory)
 
         # Update the normalization
         if self.is_training:
