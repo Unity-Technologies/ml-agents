@@ -756,14 +756,15 @@ namespace Unity.MLAgents.Inference
                 discreteActionBranches.AddRange(actionSpec.BranchSizes);
             }
 
-            if (modelDiscreteBranches.length != discreteActionBranches.Count)
+            int modelDiscreteBranchesLength = modelDiscreteBranches?.length ?? 0;
+            if (modelDiscreteBranchesLength != discreteActionBranches.Count)
             {
                 return FailedCheck.Warning("Discrete Action Size of the model does not match. The BrainParameters expect " +
-                    $"{discreteActionBranches.Count} branches but the model contains {modelDiscreteBranches.length}."
+                    $"{discreteActionBranches.Count} branches but the model contains {modelDiscreteBranchesLength}."
                 );
             }
 
-            for (int i = 0; i < modelDiscreteBranches.length; i++)
+            for (int i = 0; i < modelDiscreteBranchesLength; i++)
             {
                 if (modelDiscreteBranches[i] != discreteActionBranches[i])
                 {
