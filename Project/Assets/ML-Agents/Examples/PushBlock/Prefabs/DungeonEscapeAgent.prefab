@@ -196,8 +196,9 @@ MonoBehaviour:
   - dragon
   - key
   - lock
-  m_RaysPerDirection: 9
-  m_MaxRayDegrees: 120
+  - portal
+  m_RaysPerDirection: 7
+  m_MaxRayDegrees: 60
   m_SphereCastRadius: 0.5
   m_RayLength: 40
   m_RayLayerMask:
@@ -726,7 +727,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 96c6fde84ac654b129311fafdd96119d, type: 3}
+  m_Model: {fileID: 11400000, guid: 3fa61361f23fd46e9b78326f45cb98ce, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PushBlock

@@ -61,12 +61,12 @@ public class DungeonEscapeEnvController : MonoBehaviour
 
     public List<PlayerInfo> AgentsList = new List<PlayerInfo>();
     public List<DragonInfo> DragonsList = new List<DragonInfo>();
-
+    private Dictionary<PushAgentEscape, PlayerInfo> m_PlayerDict = new Dictionary<PushAgentEscape, PlayerInfo>();
     public bool UseRandomAgentRotation = true;
     public bool UseRandomAgentPosition = true;
     PushBlockSettings m_PushBlockSettings;
 
-    private int m_NumberOfRemainingBlocks;
+    private int m_NumberOfRemainingPlayers;
     public GameObject Key;
 
     private SimpleMultiAgentGroup m_AgentGroup;
@@ -80,6 +80,9 @@ public class DungeonEscapeEnvController : MonoBehaviour
         // Starting material
         m_GroundMaterial = m_GroundRenderer.material;
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
+
+        //Reset Players Remaining
+        m_NumberOfRemainingPlayers = AgentsList.Count;
 
         //Hide The Key
         Key.SetActive(false);
@@ -120,7 +123,19 @@ public class DungeonEscapeEnvController : MonoBehaviour
         // m_AgentGroup.AddGroupReward(-0.5f / MaxEnvironmentSteps);
     }
 
-    public void UnlockBlock(Transform blockT)
+    public void TouchedHazard(PushAgentEscape agent)
+    {
+        m_NumberOfRemainingPlayers--;
+        agent.EndEpisode();
+        agent.gameObject.SetActive(false);
+        if (m_NumberOfRemainingPlayers == 0 || agent.IHaveAKey)
+        {
+            m_AgentGroup.EndGroupEpisode();
+            ResetScene();
+        }
+    }
+
+    public void UnlockDoor()
     {
         m_AgentGroup.AddGroupReward(1f);
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
@@ -134,6 +149,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
     public void KilledByBaddie(PushAgentEscape agent, Collision baddieCol)
     {
         baddieCol.gameObject.SetActive(false);
+        m_NumberOfRemainingPlayers--;
         agent.EndEpisode();
         agent.gameObject.SetActive(false);
         print($"{baddieCol.gameObject.name} ate {agent.transform.name}");
@@ -195,6 +211,9 @@ public class DungeonEscapeEnvController : MonoBehaviour
 
         //Reset counter
         m_ResetTimer = 0;
+
+        //Reset Players Remaining
+        m_NumberOfRemainingPlayers = AgentsList.Count;
 
         //Random platform rot
         var rotation = Random.Range(0, 4);

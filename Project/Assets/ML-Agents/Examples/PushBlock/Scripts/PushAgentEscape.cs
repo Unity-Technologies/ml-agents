@@ -86,7 +86,7 @@ public class PushAgentEscape : Agent
             {
                 MyKey.SetActive(false);
                 IHaveAKey = false;
-                m_GameController.UnlockBlock(col.transform);
+                m_GameController.UnlockDoor();
             }
         }
         if (col.transform.CompareTag("dragon"))
@@ -94,6 +94,12 @@ public class PushAgentEscape : Agent
             m_GameController.KilledByBaddie(this, col);
             MyKey.SetActive(false);
             IHaveAKey = false;
+        }
+        if (col.transform.CompareTag("portal"))
+        {
+            m_GameController.TouchedHazard(this);
+            // MyKey.SetActive(false);
+            // IHaveAKey = false;
         }
     }
 
