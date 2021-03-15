@@ -500,7 +500,7 @@ namespace Unity.MLAgents.Inference
                     if (!tensor.name.Contains("visual_observation"))
                     {
                         failedModelChecks.Add(
-                            FailedCheck.Warning("Model requires an unknown input named : " + tensor.name)
+                            FailedCheck.Warning("Model contains an unexpected input named : " + tensor.name)
                             );
                     }
                 }
@@ -639,7 +639,7 @@ namespace Unity.MLAgents.Inference
             {
                 if (!tensorTester.ContainsKey(tensor.name))
                 {
-                    failedModelChecks.Add(FailedCheck.Warning("Model requires an unknown input named : " + tensor.name
+                    failedModelChecks.Add(FailedCheck.Warning("Model contains an unexpected input named : " + tensor.name
                     ));
                 }
                 else
