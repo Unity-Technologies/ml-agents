@@ -22,6 +22,8 @@ details. (#5060)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- The `.onnx` models input names have changed. All input placeholders will now use the prefix `obs_` removing the distinction between visual and vector observations. Models created with this version will not be usable with previous versions of the package (#5080)
+- The `.onnx` models discrete action output now contains the discrete actions values and not the logits. Models created with this version will not be usable with previous versions of the package (#5080)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Bug Fixes

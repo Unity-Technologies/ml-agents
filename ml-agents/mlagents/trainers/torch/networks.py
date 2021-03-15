@@ -286,9 +286,7 @@ class Actor(abc.ABC):
     @abc.abstractmethod
     def forward(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
-        var_len_inputs: List[torch.Tensor],
+        inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
     ) -> Tuple[Union[int, torch.Tensor], ...]:
@@ -301,6 +299,8 @@ class Actor(abc.ABC):
 
 
 class SimpleActor(nn.Module, Actor):
+    MODEL_EXPORT_VERSION = 3
+
     def __init__(
         self,
         observation_specs: List[ObservationSpec],
@@ -312,7 +312,7 @@ class SimpleActor(nn.Module, Actor):
         super().__init__()
         self.action_spec = action_spec
         self.version_number = torch.nn.Parameter(
-            torch.Tensor([2.0]), requires_grad=False
+            torch.Tensor([self.MODEL_EXPORT_VERSION]), requires_grad=False
         )
         self.is_continuous_int_deprecated = torch.nn.Parameter(
             torch.Tensor([int(self.action_spec.is_continuous())]), requires_grad=False
@@ -320,9 +320,8 @@ class SimpleActor(nn.Module, Actor):
         self.continuous_act_size_vector = torch.nn.Parameter(
             torch.Tensor([int(self.action_spec.continuous_size)]), requires_grad=False
         )
-        # TODO: export list of branch sizes instead of sum
         self.discrete_act_size_vector = torch.nn.Parameter(
-            torch.Tensor([sum(self.action_spec.discrete_branches)]), requires_grad=False
+            torch.Tensor([self.action_spec.discrete_branches]), requires_grad=False
         )
         self.act_size_vector_deprecated = torch.nn.Parameter(
             torch.Tensor(
@@ -387,9 +386,7 @@ class SimpleActor(nn.Module, Actor):
 
     def forward(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
-        var_len_inputs: List[torch.Tensor],
+        inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
     ) -> Tuple[Union[int, torch.Tensor], ...]:
@@ -399,28 +396,6 @@ class SimpleActor(nn.Module, Actor):
         At this moment, torch.onnx.export() doesn't accept None as tensor to be exported,
         so the size of return tuple varies with action spec.
         """
-        # This code will convert the vec and vis obs into a list of inputs for the network
-        concatenated_vec_obs = vec_inputs[0]
-        inputs = []
-        start = 0
-        end = 0
-        vis_index = 0
-        var_len_index = 0
-        for i, enc in enumerate(self.network_body.processors):
-            if isinstance(enc, VectorInput):
-                # This is a vec_obs
-                vec_size = self.network_body.embedding_sizes[i]
-                end = start + vec_size
-                inputs.append(concatenated_vec_obs[:, start:end])
-                start = end
-            elif isinstance(enc, EntityEmbedding):
-                inputs.append(var_len_inputs[var_len_index])
-                var_len_index += 1
-            else:  # visual input
-                inputs.append(vis_inputs[vis_index])
-                vis_index += 1
-
-        # End of code to convert the vec and vis obs into a list of inputs for the network
         encoding, memories_out = self.network_body(
             inputs, memories=memories, sequence_length=1
         )
@@ -435,13 +410,6 @@ class SimpleActor(nn.Module, Actor):
             export_out += [cont_action_out, self.continuous_act_size_vector]
         if self.action_spec.discrete_size > 0:
             export_out += [disc_action_out, self.discrete_act_size_vector]
-        # Only export deprecated nodes with non-hybrid action spec
-        if self.action_spec.continuous_size == 0 or self.action_spec.discrete_size == 0:
-            export_out += [
-                action_out_deprecated,
-                self.is_continuous_int_deprecated,
-                self.act_size_vector_deprecated,
-            ]
         if self.network_body.memory_size > 0:
             export_out += [memories_out]
         return tuple(export_out)
