@@ -10,8 +10,6 @@ OptionalDependencyTestsLinux:
       sudo sh -c "echo 'deb https://artifactory.prd.it.unity3d.com/artifactory/unity-apt-local bionic main' > /etc/apt/sources.list.d/unity.list"
       sudo apt update
       sudo apt install -y unity-config 
-      python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
-      unity-downloader-cli -u trunk -c editor --wait --fast
       npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
       unity-config settings editor-path ./.Editor
       unity-config project create opt-deps-test
@@ -21,8 +19,7 @@ OptionalDependencyTestsLinux:
       unity-config project add dependency com.unity.modules.jsonserialize@1.0.0
       unity-config project add dependency com.unity.modules.physics@1.0.0
       unity-config project add dependency com.unity.modules.physics2d@1.0.0
-      upm-ci project test -u 2019.4 --type package-tests --project-path opt-deps-test --package-filter com.unity.ml-agents 
-      rm -rf opt-deps-test
+      upm-ci project test -u 2019.4 --type project-tests --project-path opt-deps-test --package-filter com.unity.ml-agents 
   artifacts:
     logs:
       paths:
@@ -36,6 +33,5 @@ OptionalDependencyTestsLinux:
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
-       pull_request.changes.any match " {{ editor.testProject }}/**" OR
       pull_request.changes.any match ".yamato/com.unity.ml-agents-test.yml")
 
