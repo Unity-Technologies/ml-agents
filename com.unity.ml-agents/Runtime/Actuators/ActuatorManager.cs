@@ -244,9 +244,7 @@ namespace Unity.MLAgents.Actuators
                         discreteStart,
                         numDiscreteActions);
                 }
-
-                var heuristic = actuator as IHeuristicProvider;
-                heuristic?.Heuristic(new ActionBuffers(continuousActions, discreteActions));
+                actuator.Heuristic(new ActionBuffers(continuousActions, discreteActions));
                 continuousStart += numContinuousActions;
                 discreteStart += numDiscreteActions;
             }
