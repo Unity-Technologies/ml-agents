@@ -5,9 +5,10 @@ using Unity.MLAgents.Sensors;
 using UnityEngine;
 using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Analytics;
 using Unity.MLAgents.Policies;
+using Unity.MLAgents.Analytics;
 using UnityEditor;
+
 
 namespace Unity.MLAgents.Tests.Analytics
 {

@@ -45,7 +45,7 @@ class Trainer(abc.ABC):
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy_queues: List[AgentManagerQueue[Policy]] = []
         self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
-        self.step: int = 0
+        self._step: int = 0
         self.artifact_path = artifact_path
         self.summary_freq = self.trainer_settings.summary_freq
         self.policies: Dict[str, Policy] = {}
@@ -78,7 +78,7 @@ class Trainer(abc.ABC):
         Returns the number of steps the trainer has performed
         :return: the step count of the trainer
         """
-        return self.step
+        return self._step
 
     @property
     def threaded(self) -> bool:

@@ -68,6 +68,9 @@ class PPOTrainer(RLTrainer):
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
         agent_buffer_trajectory = trajectory.to_agentbuffer()
+        # Check if we used group rewards, warn if so.
+        self._warn_if_group_reward(agent_buffer_trajectory)
+
         # Update the normalization
         if self.is_training:
             self.policy.update_normalization(agent_buffer_trajectory)
@@ -263,7 +266,7 @@ class PPOTrainer(RLTrainer):
         self.model_saver.initialize_or_load()
 
         # Needed to resume loads properly
-        self.step = policy.get_current_step()
+        self._step = policy.get_current_step()
 
     def get_policy(self, name_behavior_id: str) -> Policy:
         """

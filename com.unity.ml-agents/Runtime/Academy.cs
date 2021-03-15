@@ -97,7 +97,7 @@ namespace Unity.MLAgents
         ///     </item>
         ///     <item>
         ///         <term>1.5.0</term>
-        ///         <description>Support variable length observation training.</description>
+        ///         <description>Support variable length observation training and multi-agent groups.</description>
         ///     </item>
         /// </list>
         /// </remarks>
@@ -107,7 +107,7 @@ namespace Unity.MLAgents
         /// Unity package version of com.unity.ml-agents.
         /// This must match the version string in package.json and is checked in a unit test.
         /// </summary>
-        internal const string k_PackageVersion = "1.8.1-preview";
+        internal const string k_PackageVersion = "1.9.0-preview";
 
         const int k_EditorTrainingPort = 5004;
 

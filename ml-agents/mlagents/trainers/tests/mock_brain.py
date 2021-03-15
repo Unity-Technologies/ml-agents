@@ -81,6 +81,8 @@ def make_fake_trajectory(
     max_step_complete: bool = False,
     memory_size: int = 10,
     num_other_agents_in_group: int = 0,
+    group_reward: float = 0.0,
+    is_terminal: bool = True,
 ) -> Trajectory:
     """
     Makes a fake trajectory of length length. If max_step_complete,
@@ -134,24 +136,29 @@ def make_fake_trajectory(
             interrupted=max_step,
             memory=memory,
             group_status=group_status,
-            group_reward=0,
+            group_reward=group_reward,
         )
         steps_list.append(experience)
     obs = []
     for obs_spec in observation_specs:
         obs.append(np.ones(obs_spec.shape, dtype=np.float32))
+    last_group_status = []
+    for _ in range(num_other_agents_in_group):
+        last_group_status.append(
+            AgentStatus(obs, reward, action, not max_step_complete and is_terminal)
+        )
     last_experience = AgentExperience(
         obs=obs,
         reward=reward,
-        done=not max_step_complete,
+        done=not max_step_complete and is_terminal,
         action=action,
         action_probs=action_probs,
         action_mask=action_mask,
         prev_action=prev_action,
         interrupted=max_step_complete,
         memory=memory,
-        group_status=group_status,
-        group_reward=0,
+        group_status=last_group_status,
+        group_reward=group_reward,
     )
     steps_list.append(last_experience)
     return Trajectory(
