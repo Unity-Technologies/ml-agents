@@ -48,9 +48,9 @@ TagManager:
   - 
   - 
   - invisible
-  - soccerAgents
   - soccerBall
-  - 
+  - blueSoccerAgent
+  - purpleSoccerAgent
   - 
   - 
   - 

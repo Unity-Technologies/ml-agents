@@ -1879,7 +1879,7 @@ GameObject:
   - component: {fileID: 135993924486820224}
   - component: {fileID: 114273807544954564}
   - component: {fileID: 54100138833592438}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Soccer Ball
   m_TagString: ball
   m_Icon: {fileID: 0}
@@ -2086,6 +2086,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4558743310993102}
     m_Modifications:
+    - target: {fileID: 870745635885946275, guid: 57db73bb516494aa6ab66ac13e987d44,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8274065550969517594, guid: 57db73bb516494aa6ab66ac13e987d44,
         type: 3}
       propertyPath: m_RootOrder
@@ -2347,15 +2352,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4558743310993102}
     m_Modifications:
-    - target: {fileID: 5918526098337498759, guid: 772fee460e5734c5aac30b4e2a9f6b3c,
+    - target: {fileID: 5918399385278882223, guid: 772fee460e5734c5aac30b4e2a9f6b3c,
         type: 3}
-      propertyPath: m_MaxRayDegrees
-      value: 75
-      objectReference: {fileID: 0}
-    - target: {fileID: 5918526098337498759, guid: 772fee460e5734c5aac30b4e2a9f6b3c,
-        type: 3}
-      propertyPath: m_RaysPerDirection
-      value: 12
+      propertyPath: m_UseChildSensors
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6030327595305340077, guid: 772fee460e5734c5aac30b4e2a9f6b3c,
         type: 3}
@@ -2417,11 +2417,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6166895040598452978, guid: 772fee460e5734c5aac30b4e2a9f6b3c,
-        type: 3}
-      propertyPath: m_SensorName
-      value: AgentBlueRayPerceptionSensor
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 772fee460e5734c5aac30b4e2a9f6b3c, type: 3}
 --- !u!114 &114850431417842684 stripped
@@ -2453,6 +2448,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BlueStriker (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6030327595305340077, guid: 772fee460e5734c5aac30b4e2a9f6b3c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6033637986218926083, guid: 772fee460e5734c5aac30b4e2a9f6b3c,
         type: 3}
@@ -2536,6 +2536,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4558743310993102}
     m_Modifications:
+    - target: {fileID: 4520953910130910384, guid: 57db73bb516494aa6ab66ac13e987d44,
+        type: 3}
+      propertyPath: m_SensorName
+      value: OpponentAgentPurpleRayPerceptionSensor
+      objectReference: {fileID: 0}
     - target: {fileID: 8274065550969517594, guid: 57db73bb516494aa6ab66ac13e987d44,
         type: 3}
       propertyPath: m_RootOrder

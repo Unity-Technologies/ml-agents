@@ -33,10 +33,11 @@ public class AgentSoccer : Agent
     float m_BallTouch;
     public Position position;
 
-    const float k_Power = 2000f;
+    const float k_Power = 3000f;
     float m_Existential;
     float m_LateralSpeed;
     float m_ForwardSpeed;
+    float m_RotateSpeed = 1.5f;
 
 
     [HideInInspector]
@@ -76,8 +77,8 @@ public class AgentSoccer : Agent
         }
         else
         {
-            m_LateralSpeed = 0.3f;
-            m_ForwardSpeed = 1.0f;
+            m_LateralSpeed = 1.0f;
+            m_ForwardSpeed = 1.5f;
         }
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
         agentRb = GetComponent<Rigidbody>();
@@ -86,48 +87,26 @@ public class AgentSoccer : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
 
-    public void MoveAgent(ActionSegment<int> act)
+    public void MoveAgent(ActionSegment<float> act)
     {
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
 
         m_KickPower = 0f;
+        var forward = Mathf.Clamp(act[0], -1f, 1f);
+        var right = Mathf.Clamp(act[1], -1f, 1f);
+        var rotate = Mathf.Clamp(act[2], -1f, 1f);
 
-        var forwardAxis = act[0];
-        var rightAxis = act[1];
-        var rotateAxis = act[2];
-
-        switch (forwardAxis)
+        if (forward > 0)
         {
-            case 1:
-                dirToGo = transform.forward * m_ForwardSpeed;
-                m_KickPower = 1f;
-                break;
-            case 2:
-                dirToGo = transform.forward * -m_ForwardSpeed;
-                break;
+            m_KickPower = forward;
         }
 
-        switch (rightAxis)
-        {
-            case 1:
-                dirToGo = transform.right * m_LateralSpeed;
-                break;
-            case 2:
-                dirToGo = transform.right * -m_LateralSpeed;
-                break;
-        }
+        dirToGo = transform.forward * forward * m_ForwardSpeed;
+        dirToGo += transform.right * right * m_LateralSpeed;
+        rotateDir = -transform.up * rotate * m_RotateSpeed;
 
-        switch (rotateAxis)
-        {
-            case 1:
-                rotateDir = transform.up * -1f;
-                break;
-            case 2:
-                rotateDir = transform.up * 1f;
-                break;
-        }
-
+        
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
         agentRb.AddForce(dirToGo * m_SoccerSettings.agentRunSpeed,
             ForceMode.VelocityChange);
@@ -147,7 +126,7 @@ public class AgentSoccer : Agent
             // Existential penalty for Strikers
             AddReward(-m_Existential);
         }
-        MoveAgent(actionBuffers.DiscreteActions);
+        MoveAgent(actionBuffers.ContinuousActions);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

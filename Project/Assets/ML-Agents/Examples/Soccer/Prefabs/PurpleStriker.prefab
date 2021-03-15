@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &870745635885946275
+--- !u!1 &393196613380590445
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8002379972027386189}
-  - component: {fileID: 3634001036900456413}
-  m_Layer: 9
+  - component: {fileID: 3012430755271482569}
+  - component: {fileID: 8715403559456655484}
+  m_Layer: 11
   m_Name: PurpleReverseRays
-  m_TagString: Untagged
+  m_TagString: purpleAgent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8002379972027386189
+--- !u!4 &3012430755271482569
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 870745635885946275}
+  m_GameObject: {fileID: 393196613380590445}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -31,33 +31,30 @@ Transform:
   m_Father: {fileID: 8274065550969517594}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!114 &3634001036900456413
+--- !u!114 &8715403559456655484
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 870745635885946275}
+  m_GameObject: {fileID: 393196613380590445}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SensorName: PurpleRayPerceptionSensorReverse
+  m_SensorName: BackPurpleRayPerceptionSensor
   m_DetectableTags:
-  - ball
+  - wall
   - purpleGoal
   - blueGoal
-  - wall
-  - purpleAgent
-  - blueAgent
-  m_RaysPerDirection: 2
-  m_MaxRayDegrees: 45
+  m_RaysPerDirection: 1
+  m_MaxRayDegrees: 20
   m_SphereCastRadius: 0.5
   m_RayLength: 60
   m_RayLayerMask:
     serializedVersion: 2
-    m_Bits: 4294967291
+    m_Bits: 307
   m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
@@ -74,7 +71,7 @@ GameObject:
   - component: {fileID: 8274089369872465524}
   - component: {fileID: 8262316339047102392}
   - component: {fileID: 8255026012314912624}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Headband
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -153,7 +150,7 @@ GameObject:
   - component: {fileID: 8272268828723110618}
   - component: {fileID: 8262600791238029904}
   - component: {fileID: 8254545225651916204}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: mouth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -232,7 +229,7 @@ GameObject:
   - component: {fileID: 8272287767057202704}
   - component: {fileID: 8262944367852513330}
   - component: {fileID: 8254399400540653710}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: eye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -311,7 +308,7 @@ GameObject:
   - component: {fileID: 8272111360709471126}
   - component: {fileID: 8262288428532764636}
   - component: {fileID: 8254746230599396730}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: AgentCube_Purple
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -395,7 +392,7 @@ GameObject:
   - component: {fileID: 8273740251038337464}
   - component: {fileID: 8262514225167325024}
   - component: {fileID: 8253127364903272116}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: eye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -476,11 +473,13 @@ GameObject:
   - component: {fileID: 8303549175822251130}
   - component: {fileID: 8307960943556301180}
   - component: {fileID: 8307613324337731416}
-  - component: {fileID: 8307581884824213156}
   - component: {fileID: 997902657987214240}
   - component: {fileID: 8775384753860522886}
+  - component: {fileID: 8307581884824213156}
   - component: {fileID: 613782037252311925}
-  m_Layer: 9
+  - component: {fileID: 4520953910130910384}
+  - component: {fileID: 8862605692950166824}
+  m_Layer: 11
   m_Name: PurpleStriker
   m_TagString: purpleAgent
   m_Icon: {fileID: 0}
@@ -499,7 +498,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8272111360709471126}
-  - {fileID: 8002379972027386189}
+  - {fileID: 3012430755271482569}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
@@ -548,11 +547,11 @@ MonoBehaviour:
     VectorObservationSize: 0
     NumStackedVectorObservations: 1
     m_ActionSpec:
-      m_NumContinuousActions: 0
-      BranchSizes: 030000000300000003000000
-    VectorActionSize: 030000000300000003000000
+      m_NumContinuousActions: 3
+      BranchSizes: 
+    VectorActionSize: 03000000
     VectorActionDescriptions: []
-    VectorActionSpaceType: 0
+    VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 11400000, guid: b0a629580a0ab48a5a774f90ff1fb48b, type: 3}
   m_InferenceDevice: 2
@@ -583,36 +582,6 @@ MonoBehaviour:
   agentRb: {fileID: 0}
   initialPos: {x: 0, y: 0, z: 0}
   rotSign: 0
---- !u!114 &8307581884824213156
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8277532713597140832}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: BallPurpleRayPerceptionSensor
-  m_DetectableTags:
-  - ball
-  - purpleGoal
-  - blueGoal
-  - wall
-  m_RaysPerDirection: 12
-  m_MaxRayDegrees: 75
-  m_SphereCastRadius: 0.5
-  m_RayLength: 60
-  m_RayLayerMask:
-    serializedVersion: 2
-    m_Bits: 1331
-  m_ObservationStacks: 3
-  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
-  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  m_StartVerticalOffset: 0.5
-  m_EndVerticalOffset: 0.5
 --- !u!114 &997902657987214240
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -640,6 +609,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugCommandLineOverride: 
+--- !u!114 &8307581884824213156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8277532713597140832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: BallPurpleRayPerceptionSensor
+  m_DetectableTags:
+  - ball
+  m_RaysPerDirection: 20
+  m_MaxRayDegrees: 160
+  m_SphereCastRadius: 1
+  m_RayLength: 60
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 819
+  m_ObservationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!114 &613782037252311925
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -652,20 +648,72 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SensorName: AgentPurpleRayPerceptionSensor
+  m_SensorName: TeammatePurpleRayPerceptionSensor
   m_DetectableTags:
-  - purpleGoal
-  - blueGoal
-  - wall
   - purpleAgent
+  m_RaysPerDirection: 12
+  m_MaxRayDegrees: 160
+  m_SphereCastRadius: 1
+  m_RayLength: 60
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 2355
+  m_ObservationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
+--- !u!114 &4520953910130910384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8277532713597140832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: OpponentPurpleRayPerceptionSensor
+  m_DetectableTags:
   - blueAgent
   m_RaysPerDirection: 12
   m_MaxRayDegrees: 160
+  m_SphereCastRadius: 1
+  m_RayLength: 60
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 1331
+  m_ObservationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
+--- !u!114 &8862605692950166824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8277532713597140832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: WallPurpleRayPerceptionSensor
+  m_DetectableTags:
+  - wall
+  - purpleGoal
+  - blueGoal
+  m_RaysPerDirection: 5
+  m_MaxRayDegrees: 90
   m_SphereCastRadius: 0.5
   m_RayLength: 60
   m_RayLayerMask:
     serializedVersion: 2
-    m_Bits: 819
+    m_Bits: 307
   m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
@@ -681,7 +729,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8272334313488723784}
   - component: {fileID: 8258400870889435078}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: AgentCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
