@@ -27,7 +27,7 @@
     "versionDefines": [
         {
             "name": "com.unity.modules.unityanalytics",
-            "expression": "1.1.0",
+            "expression": "1.0.0",
             "define": "MLA_UNITY_ANALYTICS_MODULE"
         }
     ]

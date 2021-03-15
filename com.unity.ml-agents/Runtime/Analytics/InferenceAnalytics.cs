@@ -1,3 +1,7 @@
+#if MLA_UNITY_ANALYTICS_MODULE || !UNITY_2019_4_OR_NEWER
+#define MLA_UNITY_ANALYTICS_MODULE_ENABLED
+#endif
+
 #if MLA_UNITY_ANALYTICS_MODULE_ENABLED
 using System;
 using System.Collections.Generic;
@@ -51,7 +55,7 @@ namespace Unity.MLAgents.Analytics
                 return true;
             }
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE_ENABLED
             AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(k_EventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey, k_EventVersion);
 #elif MLA_UNITY_ANALYTICS_MODULE_ENABLED
             AnalyticsResult result = AnalyticsResult.UnsupportedPlatform;

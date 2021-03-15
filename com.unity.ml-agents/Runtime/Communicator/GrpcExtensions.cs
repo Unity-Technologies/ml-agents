@@ -1,3 +1,7 @@
+#if MLA_UNITY_ANALYTICS_MODULE || !UNITY_2019_4_OR_NEWER
+#define MLA_UNITY_ANALYTICS_MODULE_ENABLED
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
