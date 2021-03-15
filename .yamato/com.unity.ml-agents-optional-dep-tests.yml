@@ -13,7 +13,16 @@ OptionalDependencyTestsLinux:
       python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
       unity-downloader-cli -u trunk -c editor --wait --fast
       npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-      upm-ci project test -u 2018.4 --type package-tests --project-path ./OptionalDepedencyTests/NoAnalyticsModule --package-filter com.unity.ml-agents 
+      unity-config settings editor-path ./.Editor
+      unity-config project create opt-deps-test
+      unity-config project add dependency com.unity.ml-agents/
+      unity-config project add testable com.unity.ml-agents
+      unity-config project add dependency com.unity.modules.imageconversion@1.0.0
+      unity-config project add dependency com.unity.modules.jsonserialize@1.0.0
+      unity-config project add dependency com.unity.modules.physics@1.0.0
+      unity-config project add dependency com.unity.modules.physics2d@1.0.0
+      upm-ci project test -u 2019.4 --type package-tests --project-path opt-deps-test --package-filter com.unity.ml-agents 
+      rm -rf opt-deps-test
   artifacts:
     logs:
       paths:
