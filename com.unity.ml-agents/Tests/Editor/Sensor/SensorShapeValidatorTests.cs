@@ -19,7 +19,7 @@ namespace Unity.MLAgents.Tests
 
         public DummySensor(int dim1, int dim2)
         {
-            m_ObservationSpec = ObservationSpec.VariableSize(dim1, dim2);
+            m_ObservationSpec = ObservationSpec.VariableLength(dim1, dim2);
         }
 
         public DummySensor(int dim1, int dim2, int dim3)

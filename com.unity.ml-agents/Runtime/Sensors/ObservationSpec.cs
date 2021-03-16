@@ -23,7 +23,7 @@ namespace Unity.MLAgents.Sensors
             return new ObservationSpec(shape, dimProps);
         }
 
-        public static ObservationSpec VariableSize(int obsSize, int maxNumObs)
+        public static ObservationSpec VariableLength(int obsSize, int maxNumObs)
         {
             InplaceArray<int> shape = new InplaceArray<int>(obsSize, maxNumObs);
             InplaceArray<DimensionProperty> dimProps = new InplaceArray<DimensionProperty>(DimensionProperty.VariableSize, DimensionProperty.None);

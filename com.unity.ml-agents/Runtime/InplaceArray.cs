@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 
 namespace Unity.MLAgents
 {
     public struct InplaceArray<T> where T : struct
     {
         private const int k_MaxLength = 4;
-        private int m_Length;
+        private readonly int m_Length;
 
         private T m_elem0;
         private T m_elem1;
@@ -71,9 +70,9 @@ namespace Unity.MLAgents
         {
             get
             {
-                if (index < 0 || index >= k_MaxLength)
+                if (index < 0 || index >= Length)
                 {
-                    throw new ArgumentOutOfRangeException();
+                    throw new IndexOutOfRangeException();
                 }
 
                 switch (index)
@@ -87,15 +86,15 @@ namespace Unity.MLAgents
                     case 3:
                         return m_elem3;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new IndexOutOfRangeException();
                 }
             }
 
-            internal set
+            set
             {
-                if (index < 0 || index >= k_MaxLength)
+                if (index < 0 || index >= Length)
                 {
-                    throw new ArgumentOutOfRangeException();
+                    throw new IndexOutOfRangeException();
                 }
 
                 switch (index)
@@ -113,7 +112,7 @@ namespace Unity.MLAgents
                         m_elem3 = value;
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new IndexOutOfRangeException();
                 }
             }
         }
@@ -138,7 +137,7 @@ namespace Unity.MLAgents
                 case 4:
                     return $"[{m_elem0}, {m_elem1}, {m_elem2}, {m_elem3}]";
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new IndexOutOfRangeException();
             }
         }
 

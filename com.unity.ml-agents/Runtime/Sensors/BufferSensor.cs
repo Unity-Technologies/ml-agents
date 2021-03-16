@@ -21,7 +21,7 @@ namespace Unity.MLAgents.Sensors
             m_ObsSize = obsSize;
             m_ObservationBuffer = new float[m_ObsSize * m_MaxNumObs];
             m_CurrentNumObservables = 0;
-            m_ObservationSpec = ObservationSpec.VariableSize(m_MaxNumObs, m_ObsSize);
+            m_ObservationSpec = ObservationSpec.VariableLength(m_MaxNumObs, m_ObsSize);
         }
 
         /// <inheritdoc/>
