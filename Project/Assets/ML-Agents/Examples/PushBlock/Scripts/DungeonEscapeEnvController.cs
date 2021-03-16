@@ -68,7 +68,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
 
     private int m_NumberOfRemainingPlayers;
     public GameObject Key;
-
+    public GameObject Tombstone;
     private SimpleMultiAgentGroup m_AgentGroup;
     void Start()
     {
@@ -118,20 +118,20 @@ public class DungeonEscapeEnvController : MonoBehaviour
             m_AgentGroup.GroupEpisodeInterrupted();
             ResetScene();
         }
-
-        // //Hurry Up Penalty
-        // m_AgentGroup.AddGroupReward(-0.5f / MaxEnvironmentSteps);
     }
 
     public void TouchedHazard(PushAgentEscape agent)
     {
         m_NumberOfRemainingPlayers--;
-        agent.EndEpisode();
-        agent.gameObject.SetActive(false);
         if (m_NumberOfRemainingPlayers == 0 || agent.IHaveAKey)
         {
             m_AgentGroup.EndGroupEpisode();
             ResetScene();
+        }
+        else
+        {
+            agent.EndEpisode();
+            agent.gameObject.SetActive(false);
         }
     }
 
@@ -153,6 +153,11 @@ public class DungeonEscapeEnvController : MonoBehaviour
         agent.EndEpisode();
         agent.gameObject.SetActive(false);
         print($"{baddieCol.gameObject.name} ate {agent.transform.name}");
+
+        //Spawn Tombstone
+        Tombstone.transform.SetPositionAndRotation(agent.transform.position, agent.transform.rotation);
+        Tombstone.SetActive(true);
+
         //Spawn the Key Pickup
         Key.transform.SetPositionAndRotation(baddieCol.collider.transform.position, baddieCol.collider.transform.rotation);
         Key.SetActive(true);
@@ -198,7 +203,6 @@ public class DungeonEscapeEnvController : MonoBehaviour
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.failMaterial, 0.5f));
         ResetScene();
-
     }
 
     Quaternion GetRandomRot()
@@ -237,6 +241,9 @@ public class DungeonEscapeEnvController : MonoBehaviour
 
         //Reset Key
         Key.SetActive(false);
+
+        //Reset Tombstone
+        Tombstone.SetActive(false);
 
         //End Episode
         foreach (var item in DragonsList)

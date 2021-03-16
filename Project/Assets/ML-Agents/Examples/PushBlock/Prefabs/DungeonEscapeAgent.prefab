@@ -175,7 +175,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4830954159424380931}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9113196012897707438
 MonoBehaviour:
@@ -397,7 +397,7 @@ Transform:
   - {fileID: 2436825414407777346}
   - {fileID: 7673585347177426643}
   m_Father: {fileID: 4830954159424380931}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &2436825414900162135
 BoxCollider:
@@ -682,7 +682,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4833553929194791147}
-  - {fileID: 4829017773430270461}
   - {fileID: 2436825414900162128}
   - {fileID: 6860412223676067345}
   - {fileID: 6368173101304807141}
@@ -730,7 +729,7 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: 3fa61361f23fd46e9b78326f45cb98ce, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: PushBlock
+  m_BehaviorName: DungeonEscape
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -971,82 +970,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!1 &4829017773430270462
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4829017773430270461}
-  - component: {fileID: 4829017773430270460}
-  m_Layer: 0
-  m_Name: GridSensor (1)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &4829017773430270461
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4829017773430270462}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4830954159424380931}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4829017773430270460
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4829017773430270462}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 801669c0cdece6b40b2e741ad0b119ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Name: AgentGrid
-  CellScaleX: 1
-  CellScaleZ: 1
-  GridNumSideX: 20
-  GridNumSideZ: 20
-  CellScaleY: 0.5
-  RotateToAgent: 1
-  ChannelDepth: 06000000
-  DetectableObjects:
-  - wall
-  - agent
-  - dragon
-  - lock
-  - key
-  ObserveMask:
-    serializedVersion: 2
-    m_Bits: 1
-  gridDepthType: 1
-  rootReference: {fileID: 4828233698206621445}
-  MaxColliderBufferSize: 500
-  InitialColliderBufferSize: 16
-  ObservationPerCell: 6
-  NumberOfObservations: 2400
-  ChannelOffsets: 00000000
-  DebugColors:
-  - {r: 0, g: 0, b: 0, a: 0}
-  - {r: 0, g: 0.51824737, b: 1, a: 1}
-  - {r: 1, g: 0.155166, b: 0, a: 1}
-  - {r: 0.4680206, g: 0.7058824, b: 0.35155708, a: 1}
-  - {r: 1, g: 0.8196079, b: 0, a: 1}
-  GizmoYOffset: 0
-  ShowGizmos: 0
-  CompressionType: 1
 --- !u!1 &4830071351459599461
 GameObject:
   m_ObjectHideFlags: 0
@@ -1174,7 +1097,7 @@ PrefabInstance:
     - target: {fileID: 8772105788424992950, guid: 2e7a35edaf71a428eb9473e1e0dd60d8,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8772105788424992950, guid: 2e7a35edaf71a428eb9473e1e0dd60d8,
         type: 3}

@@ -7,8 +7,8 @@ using Unity.MLAgents.Actuators;
 public class PushAgentEscape : Agent
 {
 
-    public GameObject MyKey;
-    public bool IHaveAKey;
+    public GameObject MyKey; //my key gameobject. will be enabled when key picked up.
+    public bool IHaveAKey; //have i picked up a key
     private PushBlockSettings m_PushBlockSettings;
     private Rigidbody m_AgentRb;
     private DungeonEscapeEnvController m_GameController;
@@ -98,8 +98,6 @@ public class PushAgentEscape : Agent
         if (col.transform.CompareTag("portal"))
         {
             m_GameController.TouchedHazard(this);
-            // MyKey.SetActive(false);
-            // IHaveAKey = false;
         }
     }
 
@@ -108,7 +106,7 @@ public class PushAgentEscape : Agent
         //if we find a key and it's parent is the main platform we can pick it up
         if (col.transform.CompareTag("key") && col.transform.parent == transform.parent && gameObject.activeInHierarchy)
         {
-            print("picked up key");
+            print("Picked up key");
             MyKey.SetActive(true);
             IHaveAKey = true;
             col.gameObject.SetActive(false);
