@@ -73,7 +73,7 @@ namespace Unity.MLAgents.Editor
             if (name.EndsWith(".asset"))
                 name = name.Substring(0, name.Length - ".asset".Length);
             if (name.EndsWith(".mlagents.settings"))
-                name = name.Substring(0, name.Length - ".settings".Length);
+                name = name.Substring(0, name.Length - ".mlagents.settings".Length);
 
             // Ugly hack: GenericMenu interprets "/" as a submenu path. But luckily, "/" is not the only slash we have in Unicode.
             return new GUIContent(name.Replace("/", "\u29f8"));
