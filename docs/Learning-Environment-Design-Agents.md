@@ -30,6 +30,8 @@
 - [Agent Properties](#agent-properties)
 - [Destroying an Agent](#destroying-an-agent)
 - [Defining Multi-agent Scenarios](#defining-multi-agent-scenarios)
+  -[Teams for Adversarial Scenarios](#teams-for-adversarial-scenarios)
+  -[Groups for Cooperative Scenarios](#groups-for-cooperative-scenarios)
 - [Recording Demonstrations](#recording-demonstrations)
 
 An agent is an entity that can observe its environment, decide on the best
