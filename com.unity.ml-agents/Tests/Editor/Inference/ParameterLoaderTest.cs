@@ -60,8 +60,8 @@ namespace Unity.MLAgents.Tests
             return new byte[0];
         }
 
-        public void Update() { }
-        public void Reset() { }
+        public void Update() {}
+        public void Reset() {}
 
         public SensorCompressionType GetCompressionType()
         {
@@ -376,7 +376,7 @@ namespace Unity.MLAgents.Tests
             brainParameters.VectorObservationSize = 9; // Invalid observation
             var errors = BarracudaModelParamLoader.CheckModel(
                 model, brainParameters,
-                new ISensor[] { }, new ActuatorComponent[0]
+                new ISensor[] {}, new ActuatorComponent[0]
             );
             Assert.Greater(errors.Count(), 0);
 
@@ -384,7 +384,7 @@ namespace Unity.MLAgents.Tests
             brainParameters.NumStackedVectorObservations = 2;// Invalid stacking
             errors = BarracudaModelParamLoader.CheckModel(
                 model, brainParameters,
-                new ISensor[] { }, new ActuatorComponent[0]
+                new ISensor[] {}, new ActuatorComponent[0]
             );
             Assert.Greater(errors.Count(), 0);
         }
