@@ -1,5 +1,5 @@
 behaviors:
-  FoodCollector:
+  GridFoodCollector:
     trainer_type: ppo
     hyperparameters:
       batch_size: 1024
