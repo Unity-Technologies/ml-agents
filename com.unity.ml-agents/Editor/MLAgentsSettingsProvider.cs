@@ -3,11 +3,7 @@ using System.Linq;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
-#if UNITY_2019_4_OR_NEWER
 using UnityEngine.UIElements;
-#else
-using UnityEngine.Experimental.UIElements;
-#endif
 
 namespace Unity.MLAgents.Editor
 {
