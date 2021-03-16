@@ -30,8 +30,8 @@
 - [Agent Properties](#agent-properties)
 - [Destroying an Agent](#destroying-an-agent)
 - [Defining Multi-agent Scenarios](#defining-multi-agent-scenarios)
-  -[Teams for Adversarial Scenarios](#teams-for-adversarial-scenarios)
-  -[Groups for Cooperative Scenarios](#groups-for-cooperative-scenarios)
+  - [Teams for Adversarial Scenarios](#teams-for-adversarial-scenarios)
+  - [Groups for Cooperative Scenarios](#groups-for-cooperative-scenarios)
 - [Recording Demonstrations](#recording-demonstrations)
 
 An agent is an entity that can observe its environment, decide on the best
@@ -971,6 +971,11 @@ cooperative environments. This can be enabled by using the `poca` trainer - see 
 configuring MA-POCA. When using MA-POCA, agents which are deactivated or removed from the Scene
 during the episode will still learn to contribute to the group's long term rewards, even
 if they are not active in the scene to experience them.
+
+See the [Cooperative Push Block](Learning-Environment-Examples.md#cooperative-push-block) environment
+for an example of how to use Multi Agent Groups, and the
+[Dungeon Escape](Learning-Environment-Examples.md#dungeon-escape) environment for an example of
+how the Multi Agent Group can be used with agents that are removed from the scene mid-episode.
 
 **NOTE**: Groups differ from Teams (for competitive settings) in the following way - Agents
 working together should be added to the same Group, while agents playing against each other
