@@ -18,9 +18,9 @@ namespace Unity.MLAgents.Editor
             m_SettingsAddedToPreloadedAssets = null;
 
             var preloadedAssets = PlayerSettings.GetPreloadedAssets().ToList();
-            if (!preloadedAssets.Contains(MLAgentsManager.Settings))
+            if (!preloadedAssets.Contains(MLAgentsSettingsManager.Settings))
             {
-                m_SettingsAddedToPreloadedAssets = MLAgentsManager.Settings;
+                m_SettingsAddedToPreloadedAssets = MLAgentsSettingsManager.Settings;
                 preloadedAssets.Add(m_SettingsAddedToPreloadedAssets);
                 PlayerSettings.SetPreloadedAssets(preloadedAssets.ToArray());
             }

@@ -37,13 +37,13 @@ namespace Unity.MLAgents.Editor
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
             base.OnActivate(searchContext, rootElement);
-            MLAgentsManager.OnSettingsChange += Reinitialize;
+            MLAgentsSettingsManager.OnSettingsChange += Reinitialize;
         }
 
         public override void OnDeactivate()
         {
             base.OnDeactivate();
-            MLAgentsManager.OnSettingsChange -= Reinitialize;
+            MLAgentsSettingsManager.OnSettingsChange -= Reinitialize;
         }
 
         public void Dispose()
@@ -59,7 +59,7 @@ namespace Unity.MLAgents.Editor
                 for (var i = 0; i < m_AvailableSettingsAssets.Length; i++)
                     menu.AddItem(ExtractDisplayName(m_AvailableSettingsAssets[i]), m_CurrentSelectedSettingsAsset == i, (path) =>
                     {
-                        MLAgentsManager.Settings = AssetDatabase.LoadAssetAtPath<MLAgentsSettings>((string)path);
+                        MLAgentsSettingsManager.Settings = AssetDatabase.LoadAssetAtPath<MLAgentsSettings>((string)path);
                     }, m_AvailableSettingsAssets[i]);
                 menu.AddSeparator("");
                 menu.AddItem(new GUIContent("New Settings Asset…"), false, CreateNewSettingsAsset);
@@ -114,7 +114,7 @@ namespace Unity.MLAgents.Editor
             EditorGUIUtility.PingObject(settings);
             // Install the settings. This will lead to an MLAgentsManager.OnSettingsChange event
             // which in turn will cause this Provider to reinitialize
-            MLAgentsManager.Settings = settings;
+            MLAgentsSettingsManager.Settings = settings;
         }
 
         public override void OnGUI(string searchContext)
@@ -148,7 +148,7 @@ namespace Unity.MLAgents.Editor
         {
             m_AvailableSettingsAssets = FindSettingsInProject();
 
-            m_Settings = MLAgentsManager.Settings;
+            m_Settings = MLAgentsSettingsManager.Settings;
             var currentSettingsPath = AssetDatabase.GetAssetPath(m_Settings);
             if (string.IsNullOrEmpty(currentSettingsPath))
             {
@@ -156,7 +156,7 @@ namespace Unity.MLAgents.Editor
                 {
                     m_CurrentSelectedSettingsAsset = 0;
                     m_Settings = AssetDatabase.LoadAssetAtPath<MLAgentsSettings>(m_AvailableSettingsAssets[0]);
-                    MLAgentsManager.Settings = m_Settings;
+                    MLAgentsSettingsManager.Settings = m_Settings;
                 }
             }
             else
@@ -164,7 +164,7 @@ namespace Unity.MLAgents.Editor
                 var settingsList = m_AvailableSettingsAssets.ToList();
                 m_CurrentSelectedSettingsAsset = settingsList.IndexOf(currentSettingsPath);
 
-                EditorBuildSettings.AddConfigObject(MLAgentsManager.EditorBuildSettingsConfigKey, m_Settings, true);
+                EditorBuildSettings.AddConfigObject(MLAgentsSettingsManager.EditorBuildSettingsConfigKey, m_Settings, true);
             }
 
             m_SettingsObject = new SerializedObject(m_Settings);
@@ -178,7 +178,7 @@ namespace Unity.MLAgents.Editor
 
         private void Reinitialize()
         {
-            if (m_Settings != null && MLAgentsManager.Settings != m_Settings)
+            if (m_Settings != null && MLAgentsSettingsManager.Settings != m_Settings)
             {
                 InitializeWithCurrentSettings();
             }
