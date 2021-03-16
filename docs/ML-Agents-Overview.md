@@ -21,7 +21,7 @@
   - [Summary](#summary)
 - [Training Methods: Environment-specific](#training-methods-environment-specific)
   - [Training in Competitive Multi-Agent Environments with Self-Play](#training-in-competitive-multi-agent-environments-with-self-play)
-  [Training in Cooperative Multi-Agent Environments with MA-POCA](#training-in-cooperative-multi-agent-environments-with-ma-poca)
+  - [Training in Cooperative Multi-Agent Environments with MA-POCA](#training-in-cooperative-multi-agent-environments-with-ma-poca)
   - [Solving Complex Tasks using Curriculum Learning](#solving-complex-tasks-using-curriculum-learning)
   - [Training Robust Agents using Environment Parameter Randomization](#training-robust-agents-using-environment-parameter-randomization)
 - [Model Types](#model-types)
