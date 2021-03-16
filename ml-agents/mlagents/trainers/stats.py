@@ -138,46 +138,73 @@ class GaugeWriter(StatsWriter):
 
 
 class ConsoleWriter(StatsWriter):
+    SHOW_HEADER_PERIOD = 20
+
     def __init__(self):
         self.training_start_time = time.time()
         # If self-play, we want to print ELO as well as reward
         self.self_play = False
         self.self_play_team = -1
         self.rank = get_rank()
+        self._previous_log_header: str = ""
+        self._log_header: str = ""
+        self._log_data: str = ""
+        self._lines_without_header = 0
+
+    def _add_field(self, key: str, value: str) -> None:
+        len_k = len(key)
+        len_v = len(value)
+        if len_k > len_v:
+            value = " " * (len_k - len_v) + value
+        if len_k < len_v:
+            key = " " * (len_v - len_k) + key
+        self._log_header += key + " | "
+        self._log_data += value + " | "
 
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
     ) -> None:
-        is_training = "Not Training"
+        is_training = False
         if "Is Training" in values:
             stats_summary = values["Is Training"]
             if stats_summary.aggregated_value > 0.0:
-                is_training = "Training"
+                is_training = True
 
         elapsed_time = time.time() - self.training_start_time
-        log_info: List[str] = [category]
-        log_info.append(f"Step: {step}")
-        log_info.append(f"Time Elapsed: {elapsed_time:0.3f} s")
+        self._add_field("Behavior Name", category)
+        self._add_field("Step", str(step))
+        self._add_field("Time Elapsed", f"{elapsed_time:0.3f}")
         if "Environment/Cumulative Reward" in values:
             stats_summary = values["Environment/Cumulative Reward"]
             if self.rank is not None:
-                log_info.append(f"Rank: {self.rank}")
+                self._add_field("Rank", str(self.rank))
 
-            log_info.append(f"Mean Reward: {stats_summary.mean:0.3f}")
+            self._add_field("Mean Cumulative Reward", f"{stats_summary.mean:0.3f}")
             if "Environment/Group Cumulative Reward" in values:
                 group_stats_summary = values["Environment/Group Cumulative Reward"]
-                log_info.append(f"Mean Group Reward: {group_stats_summary.mean:0.3f}")
+                self._add_field("Mean Group Reward", f"{group_stats_summary.mean:0.3f}")
             else:
-                log_info.append(f"Std of Reward: {stats_summary.std:0.3f}")
-            log_info.append(is_training)
+                self._add_field("Std of Reward", f"{stats_summary.std:0.3f}")
 
             if self.self_play and "Self-play/ELO" in values:
                 elo_stats = values["Self-play/ELO"]
-                log_info.append(f"ELO: {elo_stats.mean:0.3f}")
+                self._add_field("ELO", f"{elo_stats.mean:0.3f}")
+            self._add_field("Is Training", str(is_training))
+
+            if (
+                len(self._log_header) != len(self._previous_log_header)
+            ) or self._lines_without_header == self.SHOW_HEADER_PERIOD:
+                logger.info("")
+                logger.info(self._log_header)
+                self._previous_log_header = self._log_header
+                self._lines_without_header = 0
+            logger.info(self._log_data)
+            self._lines_without_header += 1
+
         else:
-            log_info.append("No episode was completed since last summary")
-            log_info.append(is_training)
-        logger.info(". ".join(log_info) + ".")
+            logger.info(self._log_data + "No episode was completed since last summary")
+        self._log_header = ""
+        self._log_data = ""
 
     def add_property(
         self, category: str, property_type: StatsPropertyType, value: Any
