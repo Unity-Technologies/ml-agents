@@ -268,8 +268,7 @@ class MultiAgentNetworkBody(torch.nn.Module):
             [_obs.flatten(start_dim=1)[:, 0] for _obs in only_first_obs], dim=1
         )
         # Get the mask from NaNs
-        attn_mask = only_first_obs_flat.isnan().type(torch.FloatTensor)
-        print(attn_mask.get_device(), only_first_obs_flat.get_device())
+        attn_mask = only_first_obs_flat.isnan().float()
         return attn_mask
 
     def _copy_and_remove_nans_from_obs(
