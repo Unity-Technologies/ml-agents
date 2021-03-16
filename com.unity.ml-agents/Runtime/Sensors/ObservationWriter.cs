@@ -29,7 +29,6 @@ namespace Unity.MLAgents.Sensors
         /// <param name="offset">Offset from the start of the float data to write to.</param>
         internal void SetTarget(IList<float> data, ObservationSpec observationSpec, int offset)
         {
-            // TODO remove int[] version
             SetTarget(data, observationSpec.Shape, offset);
         }
 

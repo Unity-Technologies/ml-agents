@@ -13,7 +13,6 @@ namespace Unity.MLAgents.Sensors
         int m_Height;
         bool m_Grayscale;
         string m_Name;
-        //int[] m_Shape;
         private ObservationSpec m_ObservationSpec;
         SensorCompressionType m_CompressionType;
 

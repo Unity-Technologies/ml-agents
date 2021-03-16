@@ -26,7 +26,6 @@ namespace Unity.MLAgents.Sensors
         /// </remarks>
         public InplaceArray<DimensionProperty> DimensionProperties;
 
-
         /// <summary>
         /// The type of the observation, e.g. whether they are generic or
         /// help determine the goal for the Agent.
@@ -48,9 +47,10 @@ namespace Unity.MLAgents.Sensors
         /// <returns></returns>
         public static ObservationSpec Vector(int length)
         {
-            InplaceArray<int> shape = new InplaceArray<int>(length);
-            InplaceArray<DimensionProperty> dimProps = new InplaceArray<DimensionProperty>(DimensionProperty.None);
-            return new ObservationSpec(shape, dimProps);
+            return new ObservationSpec(
+                new InplaceArray<int>(length),
+                new InplaceArray<DimensionProperty>(DimensionProperty.None)
+            );
         }
 
         /// <summary>
@@ -61,9 +61,14 @@ namespace Unity.MLAgents.Sensors
         /// <returns></returns>
         public static ObservationSpec VariableLength(int obsSize, int maxNumObs)
         {
-            InplaceArray<int> shape = new InplaceArray<int>(obsSize, maxNumObs);
-            InplaceArray<DimensionProperty> dimProps = new InplaceArray<DimensionProperty>(DimensionProperty.VariableSize, DimensionProperty.None);
-            return new ObservationSpec(shape, dimProps);
+            var dimProps = new InplaceArray<DimensionProperty>(
+                DimensionProperty.VariableSize,
+                DimensionProperty.None
+            );
+            return new ObservationSpec(
+                new InplaceArray<int>(obsSize, maxNumObs),
+                dimProps
+            );
         }
 
         /// <summary>
@@ -76,21 +81,29 @@ namespace Unity.MLAgents.Sensors
         /// <returns></returns>
         public static ObservationSpec Visual(int height, int width, int channels)
         {
-            InplaceArray<int> shape = new InplaceArray<int>(height, width, channels);
-            InplaceArray<DimensionProperty> dimProps = new InplaceArray<DimensionProperty>(
-                DimensionProperty.TranslationalEquivariance, DimensionProperty.TranslationalEquivariance, DimensionProperty.None
+            var dimProps = new InplaceArray<DimensionProperty>(
+                DimensionProperty.TranslationalEquivariance,
+                DimensionProperty.TranslationalEquivariance,
+                DimensionProperty.None
             );
-            return new ObservationSpec(shape, dimProps);
+            return new ObservationSpec(
+                new InplaceArray<int>(height, width, channels),
+                dimProps
+            );
         }
 
         /// <summary>
         /// Create a general ObservationSpec from the shape, dimension properties, and observation type.
         /// </summary>
+        /// <remarks>
+        /// Note that not all combinations of DimensionProperty may be supported by the trainer.
+        /// shape and dimensionProperties must have the same size.
+        /// </remarks>
         /// <param name="shape"></param>
         /// <param name="dimensionProperties"></param>
         /// <param name="observationType"></param>
         /// <exception cref="UnityAgentsException"></exception>
-        internal ObservationSpec(
+        public ObservationSpec(
             InplaceArray<int> shape,
             InplaceArray<DimensionProperty> dimensionProperties,
             ObservationType observationType = ObservationType.Default

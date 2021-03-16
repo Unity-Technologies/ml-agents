@@ -13,7 +13,7 @@ namespace Unity.MLAgents.Sensors
         // TODO use float[] instead
         // TODO allow setting float[]
         List<float> m_Observations;
-        private ObservationSpec m_ObservationSpec;
+        ObservationSpec m_ObservationSpec;
         string m_Name;
 
         /// <summary>
