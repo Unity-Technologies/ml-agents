@@ -63,5 +63,16 @@ namespace Unity.MLAgents.Tests
 
             Assert.AreEqual(ObservationType.Default, obsSpec.ObservationType);
         }
+
+        [Test]
+        public void TestMismatchShapeDimensionPropThrows()
+        {
+            var shape = new InplaceArray<int>(1, 2);
+            var dimProps = new InplaceArray<DimensionProperty>(DimensionProperty.TranslationalEquivariance);
+            Assert.Throws<UnityAgentsException>(() =>
+            {
+                new ObservationSpec(shape, dimProps);
+            });
+        }
     }
 }

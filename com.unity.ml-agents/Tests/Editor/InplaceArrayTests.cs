@@ -8,8 +8,6 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Tests
 {
-
-
     [TestFixture]
     public class InplaceArrayTests
     {
@@ -87,26 +85,26 @@ namespace Unity.MLAgents.Tests
         [TestCaseSource(typeof(LengthCases))]
         public void TestInplaceGetSet(int length)
         {
-                var original = GetTestArray(length);
+            var original = GetTestArray(length);
 
-                for (var i = 0; i < original.Length; i++)
+            for (var i = 0; i < original.Length; i++)
+            {
+                var modified = original;
+                modified[i] = 0;
+                for (var j = 0; j < original.Length; j++)
                 {
-                    var modified = original;
-                    modified[i] = 0;
-                    for (var j = 0; j < original.Length; j++)
+                    if (i == j)
                     {
-                        if (i == j)
-                        {
-                            // This is the one we overwrote
-                            Assert.AreEqual(0, modified[j]);
-                        }
-                        else
-                        {
-                            // Other elements should be unchanged
-                            Assert.AreEqual(original[j], modified[j]);
-                        }
+                        // This is the one we overwrote
+                        Assert.AreEqual(0, modified[j]);
+                    }
+                    else
+                    {
+                        // Other elements should be unchanged
+                        Assert.AreEqual(original[j], modified[j]);
                     }
                 }
+            }
         }
 
         [TestCaseSource(typeof(LengthCases))]
@@ -170,6 +168,26 @@ namespace Unity.MLAgents.Tests
             }
         }
 
+        [Test]
+        public void TestToString()
+        {
+            Assert.AreEqual("[1]", new InplaceArray<int>(1).ToString());
+            Assert.AreEqual("[1, 2]", new InplaceArray<int>(1, 2).ToString());
+            Assert.AreEqual("[1, 2, 3]", new InplaceArray<int>(1, 2, 3).ToString());
+            Assert.AreEqual("[1, 2, 3, 4]", new InplaceArray<int>(1, 2, 3, 4).ToString());
+        }
 
+        [TestCaseSource(typeof(LengthCases))]
+        public void TestFromList(int length)
+        {
+            var intArray = new int[length];
+            for (var i = 0; i < length; i++)
+            {
+                intArray[i] = (i + 1) * 11; // 11, 22, etc.
+            }
+
+            var converted = InplaceArray<int>.FromList(intArray);
+            Assert.AreEqual(GetTestArray(length), converted);
+        }
     }
 }

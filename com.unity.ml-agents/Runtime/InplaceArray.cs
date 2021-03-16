@@ -17,9 +17,9 @@ namespace Unity.MLAgents
         {
             m_Length = 1;
             m_elem0 = elem0;
-            m_elem1 = new T { };
-            m_elem2 = new T { };
-            m_elem3 = new T { };
+            m_elem1 = new T {};
+            m_elem2 = new T {};
+            m_elem3 = new T {};
         }
 
         public InplaceArray(T elem0, T elem1)
@@ -27,8 +27,8 @@ namespace Unity.MLAgents
             m_Length = 2;
             m_elem0 = elem0;
             m_elem1 = elem1;
-            m_elem2 = new T { };
-            m_elem3 = new T { };
+            m_elem2 = new T {};
+            m_elem3 = new T {};
         }
 
         public InplaceArray(T elem0, T elem1, T elem2)
@@ -37,7 +37,7 @@ namespace Unity.MLAgents
             m_elem0 = elem0;
             m_elem1 = elem1;
             m_elem2 = elem2;
-            m_elem3 = new T { };
+            m_elem3 = new T {};
         }
 
         public InplaceArray(T elem0, T elem1, T elem2, T elem3)
@@ -70,7 +70,7 @@ namespace Unity.MLAgents
         {
             get
             {
-                if (index < 0 || index >= Length)
+                if (index >= Length)
                 {
                     throw new IndexOutOfRangeException();
                 }
@@ -92,7 +92,7 @@ namespace Unity.MLAgents
 
             set
             {
-                if (index < 0 || index >= Length)
+                if (index >= Length)
                 {
                     throw new IndexOutOfRangeException();
                 }
@@ -126,8 +126,6 @@ namespace Unity.MLAgents
         {
             switch (m_Length)
             {
-                case 0:
-                    return "[]";
                 case 1:
                     return $"[{m_elem0}]";
                 case 2:
@@ -141,7 +139,7 @@ namespace Unity.MLAgents
             }
         }
 
-        public static bool operator ==(InplaceArray<T> lhs, InplaceArray<T> rhs)
+        public static bool operator==(InplaceArray<T> lhs, InplaceArray<T> rhs)
         {
             if (lhs.Length != rhs.Length)
             {
@@ -159,7 +157,7 @@ namespace Unity.MLAgents
             return true;
         }
 
-        public static bool operator !=(InplaceArray<T> lhs, InplaceArray<T> rhs) => !(lhs == rhs);
+        public static bool operator!=(InplaceArray<T> lhs, InplaceArray<T> rhs) => !(lhs == rhs);
 
         public override bool Equals(object other) => other is InplaceArray<T> other1 && this.Equals(other1);
 
@@ -170,9 +168,7 @@ namespace Unity.MLAgents
 
         public override int GetHashCode()
         {
-            // TODO need to switch on length?
             return Tuple.Create(m_elem0, m_elem1, m_elem2, m_elem3, Length).GetHashCode();
         }
-
     }
 }
