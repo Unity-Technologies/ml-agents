@@ -70,7 +70,15 @@ namespace Unity.MLAgents.Inference
             if (actionSpec.NumDiscreteActions > 0)
             {
                 var tensorName = model.DiscreteOutputName();
-                m_Dict[tensorName] = new DiscreteActionOutputApplier(actionSpec, seed, allocator);
+                var modelVersion = model.GetVersion();
+                if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents1_0)
+                {
+                    m_Dict[tensorName] = new LegacyDiscreteActionOutputApplier(actionSpec, seed, allocator);
+                }
+                if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
+                {
+                    m_Dict[tensorName] = new DiscreteActionOutputApplier(actionSpec, seed, allocator);
+                }
             }
             m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
 
