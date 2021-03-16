@@ -31,8 +31,8 @@ namespace Unity.MLAgents
 
         internal void OnChange()
         {
-            if (MLAgentsManager.Settings == this)
-                MLAgentsManager.ApplySettings();
+            if (MLAgentsSettingsManager.Settings == this)
+                MLAgentsSettingsManager.ApplySettings();
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Unity.MLAgents
 #if UNITY_EDITOR
     [InitializeOnLoad]
 #endif
-    internal static class MLAgentsManager
+    internal static class MLAgentsSettingsManager
     {
         internal static event Action OnSettingsChange;
         internal const string EditorBuildSettingsConfigKey = "com.unity.ml-agents.settings";
@@ -41,7 +41,7 @@ namespace Unity.MLAgents
             }
         }
 
-        static MLAgentsManager()
+        static MLAgentsSettingsManager()
         {
             Initialize();
         }
