@@ -29,13 +29,9 @@ developer communities.
 - 18+ [example Unity environments](docs/Learning-Environment-Examples.md)
 - Support for multiple environment configurations and training scenarios
 - Flexible Unity SDK that can be integrated into your game or custom Unity scene
-- Training using two deep reinforcement learning algorithms, Proximal Policy
-  Optimization (PPO) and Soft Actor-Critic (SAC)
-- Multi-agent cooperative training using a novel deep reinforcement learning algorithm,
-  Multi-Agent POsthumous Credit Assignment (MA-POCA)
-- Built-in support for Imitation Learning through Behavioral Cloning (BC) or
-  Generative Adversarial Imitation Learning (GAIL)
-- Self-play mechanism for training agents in adversarial scenarios
+- Support for training single-agent, multi-agent cooperative, and multi-agent
+  competitive scenarios via several Deep Reinforcement Learning algorithms (PPO, SAC, MA-POCA, self-play).
+- Support for learning from demonstrations through two Imitation Learning algorithms (BC and GAIL).
 - Easily definable Curriculum Learning scenarios for complex tasks
 - Train robust agents using environment randomization
 - Flexible agent control with On Demand Decision Making
