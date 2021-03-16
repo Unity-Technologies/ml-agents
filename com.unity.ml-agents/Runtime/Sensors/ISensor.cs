@@ -110,7 +110,6 @@ namespace Unity.MLAgents.Sensors
         /// <see cref="SensorCompressionType.None"/>.
         /// </summary>
         /// <returns>Compression type used by the sensor.</returns>
-        // TODO OBSOLETE replace with GetCompressionSpec().SensorCompressionType
         SensorCompressionType GetCompressionType();
 
         /// <summary>
