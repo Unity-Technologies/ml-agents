@@ -130,7 +130,6 @@ public class DungeonEscapeEnvController : MonoBehaviour
         }
         else
         {
-            agent.EndEpisode();
             agent.gameObject.SetActive(false);
         }
     }
