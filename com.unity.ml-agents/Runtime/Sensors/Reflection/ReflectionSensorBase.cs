@@ -47,7 +47,7 @@ namespace Unity.MLAgents.Sensors.Reflection
             m_PropertyInfo = reflectionSensorInfo.PropertyInfo;
             m_ObservableAttribute = reflectionSensorInfo.ObservableAttribute;
             m_SensorName = reflectionSensorInfo.SensorName;
-            m_ObservationSpec = ObservationSpec.FromShape(size);
+            m_ObservationSpec = ObservationSpec.Vector(size);
             m_NumFloats = size;
         }
 

@@ -11,81 +11,48 @@ namespace Unity.MLAgents.Sensors
         public InplaceArray<int> Shape;
         public InplaceArray<DimensionProperty> DimensionProperties;
 
-        public int Dimensions
+        public int NumDimensions
         {
             get { return Shape.Length; }
         }
 
-        // TODO RENAME?
-        public static ObservationSpec FromShape(int length)
+        public static ObservationSpec Vector(int length)
         {
             InplaceArray<int> shape = new InplaceArray<int>(length);
             InplaceArray<DimensionProperty> dimProps = new InplaceArray<DimensionProperty>(DimensionProperty.None);
-            return new ObservationSpec
-            {
-                ObservationType = ObservationType.Default,
-                Shape = shape,
-                DimensionProperties = dimProps
-            };
+            return new ObservationSpec(shape, dimProps);
         }
 
-        public static ObservationSpec FromShape(int obsSize, int maxNumObs)
+        public static ObservationSpec VariableSize(int obsSize, int maxNumObs)
         {
             InplaceArray<int> shape = new InplaceArray<int>(obsSize, maxNumObs);
             InplaceArray<DimensionProperty> dimProps = new InplaceArray<DimensionProperty>(DimensionProperty.VariableSize, DimensionProperty.None);
-            return new ObservationSpec
-            {
-                ObservationType = ObservationType.Default,
-                Shape = shape,
-                DimensionProperties = dimProps
-            };
+            return new ObservationSpec(shape, dimProps);
         }
 
-        public static ObservationSpec FromShape(int height, int width, int channels)
+        public static ObservationSpec Visual(int height, int width, int channels)
         {
             InplaceArray<int> shape = new InplaceArray<int>(height, width, channels);
             InplaceArray<DimensionProperty> dimProps = new InplaceArray<DimensionProperty>(
                 DimensionProperty.TranslationalEquivariance, DimensionProperty.TranslationalEquivariance, DimensionProperty.None
             );
-            return new ObservationSpec
+            return new ObservationSpec(shape, dimProps);
+        }
+
+        internal ObservationSpec(
+            InplaceArray<int> shape,
+            InplaceArray<DimensionProperty> dimensionProperties,
+            ObservationType observationType = ObservationType.Default
+        )
+        {
+            if (shape.Length != dimensionProperties.Length)
             {
-                ObservationType = ObservationType.Default,
-                Shape = shape,
-                DimensionProperties = dimProps
-            };
+                throw new UnityAgentsException("shape and dimensionProperties must have the same length.");
+            }
+            Shape = shape;
+            DimensionProperties = dimensionProperties;
+            ObservationType = observationType;
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /// <summary>
-    /// Information about a single dimension. Future per-dimension properties can go here.
-    /// This is nicer because it ensures the shape and dimension properties that the same size
-    /// </summary>
-    public struct DimensionInfo
-    {
-        public int Rank;
-        public DimensionProperty DimensionProperty;
-    }
-
-    public struct ObservationSpecAlternativeOne
-    {
-        public ObservationType ObservationType;
-        public DimensionInfo[] DimensionInfos;
-        // Similar ObservationSpec.FromShape() as above
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /// <summary>
-    /// Uses Barracuda's TensorShape struct instead of an int[] for the shape.
-    /// This doesn't fully avoid allocations because of DimensionProperty, so we'd need more supporting code.
-    /// I don't like explicitly depending on Barracuda in one of our central interfaces, but listing as an alternative.
-    /// </summary>
-    public struct ObservationSpecAlternativeTwo
-    {
-        public ObservationType ObservationType;
-        public TensorShape Shape;
-        public DimensionProperty[] DimensionProperties;
-    }
 }

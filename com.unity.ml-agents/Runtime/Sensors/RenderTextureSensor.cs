@@ -40,7 +40,7 @@ namespace Unity.MLAgents.Sensors
             var height = renderTexture != null ? renderTexture.height : 0;
             m_Grayscale = grayscale;
             m_Name = name;
-            m_ObservationSpec = ObservationSpec.FromShape(height, width, grayscale ? 1 : 3);
+            m_ObservationSpec = ObservationSpec.Visual(height, width, grayscale ? 1 : 3);
             m_CompressionType = compressionType;
         }
 

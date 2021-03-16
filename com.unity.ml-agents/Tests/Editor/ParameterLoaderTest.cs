@@ -44,7 +44,7 @@ namespace Unity.MLAgents.Tests
 
         public ObservationSpec GetObservationSpec()
         {
-            return ObservationSpec.FromShape(m_Height, m_Width, m_Channels);
+            return ObservationSpec.Visual(m_Height, m_Width, m_Channels);
         }
 
         public int Write(ObservationWriter writer)

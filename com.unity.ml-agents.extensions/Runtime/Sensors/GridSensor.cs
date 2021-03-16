@@ -423,7 +423,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             // Default root reference to current game object
             if (rootReference == null)
                 rootReference = gameObject;
-            m_ObservationSpec = ObservationSpec.FromShape(GridNumSideX, GridNumSideZ, ObservationPerCell);
+            m_ObservationSpec = ObservationSpec.Visual(GridNumSideX, GridNumSideZ, ObservationPerCell);
 
             compressedImgs = new List<byte[]>();
             byteSizesBytesList = new List<byte[]>();
@@ -912,7 +912,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             var shape = m_ObservationSpec.Shape;
             if (shape[0] != GridNumSideX || shape[1] != GridNumSideZ || shape[2] != ObservationPerCell)
             {
-                m_ObservationSpec = ObservationSpec.FromShape(GridNumSideX, GridNumSideZ, ObservationPerCell);
+                m_ObservationSpec = ObservationSpec.Visual(GridNumSideX, GridNumSideZ, ObservationPerCell);
             }
             return m_ObservationSpec;
         }

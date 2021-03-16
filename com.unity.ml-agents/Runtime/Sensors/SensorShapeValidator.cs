@@ -36,11 +36,12 @@ namespace Unity.MLAgents.Sensors
                 {
                     var cachedSpec = m_SensorShapes[i];
                     var sensorSpec = sensors[i].GetObservationSpec();
-                    Debug.Assert(cachedSpec.Shape.Length == sensorSpec.Shape.Length, "Sensor dimensions must match.");
-                    for (var j = 0; j < Mathf.Min(cachedSpec.Shape.Length, sensorSpec.Shape.Length); j++)
-                    {
-                        Debug.Assert(cachedSpec.Shape[j] == sensorSpec.Shape[j], "Sensor sizes must match.");
-                    }
+                    Debug.AssertFormat(
+                        cachedSpec.Shape == sensorSpec.Shape,
+                        "Sensor shapes must match. {0} != {1}",
+                        cachedSpec.Shape,
+                        sensorSpec.Shape
+                    );
                 }
             }
         }

@@ -55,7 +55,7 @@ namespace Unity.MLAgentsExamples
         /// <inheritdoc/>
         public override ObservationSpec GetObservationSpec()
         {
-            return ObservationSpec.FromShape(BasicController.k_Extents);
+            return ObservationSpec.Vector(BasicController.k_Extents);
         }
 
         /// <inheritdoc/>

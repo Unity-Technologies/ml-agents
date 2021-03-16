@@ -92,7 +92,7 @@ namespace Unity.MLAgents.Sensors
         {
             var obsSpec = sensor.GetObservationSpec();
             var count = 1;
-            for (var i = 0; i < obsSpec.Shape.Length; i++)
+            for (var i = 0; i < obsSpec.NumDimensions; i++)
             {
                 count *= obsSpec.Shape[i];
             }

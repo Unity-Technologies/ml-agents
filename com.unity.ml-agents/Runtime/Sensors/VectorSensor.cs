@@ -30,7 +30,7 @@ namespace Unity.MLAgents.Sensors
 
             m_Observations = new List<float>(observationSize);
             m_Name = name;
-            m_ObservationSpec = ObservationSpec.FromShape(observationSize);
+            m_ObservationSpec = ObservationSpec.Vector(observationSize);
         }
 
         /// <inheritdoc/>

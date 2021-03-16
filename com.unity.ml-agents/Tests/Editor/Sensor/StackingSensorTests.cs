@@ -143,14 +143,14 @@ namespace Unity.MLAgents.Tests
 
             // Test mapping with number of layers not being multiple of 3
             var dummySensor = new Dummy3DSensor();
-            dummySensor.ObservationSpec = ObservationSpec.FromShape(2, 2, 4);
+            dummySensor.ObservationSpec = ObservationSpec.Visual(2, 2, 4);
             dummySensor.Mapping = new[] { 0, 1, 2, 3 };
             var stackedDummySensor = new StackingSensor(dummySensor, 2);
             Assert.AreEqual(stackedDummySensor.GetCompressedChannelMapping(), new[] { 0, 1, 2, 3, -1, -1, 4, 5, 6, 7, -1, -1 });
 
             // Test mapping with dummy layers that should be dropped
             var paddedDummySensor = new Dummy3DSensor();
-            paddedDummySensor.ObservationSpec = ObservationSpec.FromShape(2, 2, 4);
+            paddedDummySensor.ObservationSpec = ObservationSpec.Visual(2, 2, 4);
             paddedDummySensor.Mapping = new[] { 0, 1, 2, 3, -1, -1 };
             var stackedPaddedDummySensor = new StackingSensor(paddedDummySensor, 2);
             Assert.AreEqual(stackedPaddedDummySensor.GetCompressedChannelMapping(), new[] { 0, 1, 2, 3, -1, -1, 4, 5, 6, 7, -1, -1 });
@@ -160,7 +160,7 @@ namespace Unity.MLAgents.Tests
         public void Test3DStacking()
         {
             var wrapped = new Dummy3DSensor();
-            wrapped.ObservationSpec = ObservationSpec.FromShape(2, 1, 2);
+            wrapped.ObservationSpec = ObservationSpec.Visual(2, 1, 2);
             var sensor = new StackingSensor(wrapped, 2);
 
             // Check the stacking is on the last dimension
@@ -188,7 +188,7 @@ namespace Unity.MLAgents.Tests
         public void TestStackedGetCompressedObservation()
         {
             var wrapped = new Dummy3DSensor();
-            wrapped.ObservationSpec = ObservationSpec.FromShape(1, 1, 3);
+            wrapped.ObservationSpec = ObservationSpec.Visual(1, 1, 3);
             var sensor = new StackingSensor(wrapped, 2);
 
             wrapped.CurrentObservation = new[, ,] { { { 1f, 2f, 3f } } };
@@ -218,7 +218,7 @@ namespace Unity.MLAgents.Tests
         public void TestStackingSensorBuiltInSensorType()
         {
             var dummySensor = new Dummy3DSensor();
-            dummySensor.ObservationSpec = ObservationSpec.FromShape(2, 2, 4);
+            dummySensor.ObservationSpec = ObservationSpec.Visual(2, 2, 4);
             dummySensor.Mapping = new[] { 0, 1, 2, 3 };
             var stackedDummySensor = new StackingSensor(dummySensor, 2);
             Assert.AreEqual(stackedDummySensor.GetBuiltInSensorType(), BuiltInSensorType.Unknown);

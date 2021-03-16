@@ -17,7 +17,7 @@ namespace Unity.MLAgents.Tests
             Height = height;
             m_Name = name;
 
-            m_ObservationSpec = ObservationSpec.FromShape(height, width, 1);
+            m_ObservationSpec = ObservationSpec.Visual(height, width, 1);
             floatData = new float[Height, Width];
         }
 
@@ -27,7 +27,7 @@ namespace Unity.MLAgents.Tests
             Height = floatData.GetLength(0);
             Width = floatData.GetLength(1);
             m_Name = name;
-            m_ObservationSpec = ObservationSpec.FromShape(Height, Width, 1);
+            m_ObservationSpec = ObservationSpec.Visual(Height, Width, 1);
         }
 
         public string GetName()

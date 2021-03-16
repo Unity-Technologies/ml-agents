@@ -13,7 +13,7 @@ namespace Unity.MLAgents.Tests
         {
             ObservationWriter writer = new ObservationWriter();
             var buffer = new[] { 0f, 0f, 0f };
-            var shape = new[] { 3 };
+            var shape = new InplaceArray<int>(3);
 
             writer.SetTarget(buffer, shape, 0);
             // Elementwise writes

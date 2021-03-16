@@ -269,7 +269,7 @@ namespace Unity.MLAgents.Sensors
 
         void SetNumObservations(int numObservations)
         {
-            m_ObservationSpec = ObservationSpec.FromShape(numObservations);
+            m_ObservationSpec = ObservationSpec.Vector(numObservations);
             m_Observations = new float[numObservations];
         }
 

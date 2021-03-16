@@ -141,5 +141,39 @@ namespace Unity.MLAgents
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        public static bool operator ==(InplaceArray<T> lhs, InplaceArray<T> rhs)
+        {
+            if (lhs.Length != rhs.Length)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < lhs.Length; i++)
+            {
+                // See https://stackoverflow.com/a/390974/224264
+                if (!EqualityComparer<T>.Default.Equals(lhs[i], rhs[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static bool operator !=(InplaceArray<T> lhs, InplaceArray<T> rhs) => !(lhs == rhs);
+
+        public override bool Equals(object other) => other is InplaceArray<T> other1 && this.Equals(other1);
+
+        public bool Equals(InplaceArray<T> other)
+        {
+            return this == other;
+        }
+
+        public override int GetHashCode()
+        {
+            // TODO need to switch on length?
+            return Tuple.Create(m_elem0, m_elem1, m_elem2, m_elem3, Length).GetHashCode();
+        }
+
     }
 }

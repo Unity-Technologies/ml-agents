@@ -71,8 +71,8 @@ namespace Unity.MLAgents.Extensions.Match3
 
             m_ObservationType = obsType;
             m_ObservationSpec = obsType == Match3ObservationType.Vector
-                ? ObservationSpec.FromShape(m_Rows * m_Columns * (m_NumCellTypes + SpecialTypeSize))
-                : ObservationSpec.FromShape(m_Rows, m_Columns, m_NumCellTypes + SpecialTypeSize);
+                ? ObservationSpec.Vector(m_Rows * m_Columns * (m_NumCellTypes + SpecialTypeSize))
+                : ObservationSpec.Visual(m_Rows, m_Columns, m_NumCellTypes + SpecialTypeSize);
 
             // See comment in GetCompressedObservation()
             var cellTypePaddedSize = 3 * ((m_NumCellTypes + 2) / 3);

@@ -67,7 +67,7 @@ namespace Unity.MLAgents.Sensors
             m_UnstackedObservationSize = wrapped.ObservationSize();
 
             // TODO support arbitrary stacking dimension
-            m_ObservationSpec.Shape[m_ObservationSpec.Shape.Length - 1] *= numStackedObservations;
+            m_ObservationSpec.Shape[m_ObservationSpec.NumDimensions - 1] *= numStackedObservations;
 
             // Initialize uncompressed buffer anyway in case python trainer does not
             // support the compression mapping and has to fall back to uncompressed obs.
@@ -88,7 +88,7 @@ namespace Unity.MLAgents.Sensors
                 m_CompressionMapping = ConstructStackedCompressedChannelMapping(wrapped);
             }
 
-            if (m_WrappedSpec.Shape.Length != 1)
+            if (m_WrappedSpec.NumDimensions != 1)
             {
                 var wrappedShape = m_WrappedSpec.Shape;
                 m_tensorShape = new TensorShape(0, wrappedShape[0], wrappedShape[1], wrappedShape[2]);
@@ -104,7 +104,7 @@ namespace Unity.MLAgents.Sensors
 
             // Now write the saved observations (oldest first)
             var numWritten = 0;
-            if (m_WrappedSpec.Shape.Length == 1)
+            if (m_WrappedSpec.NumDimensions == 1)
             {
                 for (var i = 0; i < m_NumStackedObservations; i++)
                 {

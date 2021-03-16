@@ -126,7 +126,7 @@ namespace Unity.MLAgents.Tests
 
         public ObservationSpec GetObservationSpec()
         {
-            return ObservationSpec.FromShape(0);
+            return ObservationSpec.Vector(0);
         }
 
         public int Write(ObservationWriter writer)

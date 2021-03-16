@@ -44,7 +44,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             var numTransformObservations = m_PoseExtractor.GetNumPoseObservations(settings);
-            m_ObservationSpec = ObservationSpec.FromShape(numTransformObservations + numJointExtractorObservations);
+            m_ObservationSpec = ObservationSpec.Vector(numTransformObservations + numJointExtractorObservations);
         }
 
 #if UNITY_2020_1_OR_NEWER
@@ -65,7 +65,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             var numTransformObservations = m_PoseExtractor.GetNumPoseObservations(settings);
-            m_ObservationSpec = ObservationSpec.FromShape(numTransformObservations + numJointExtractorObservations);
+            m_ObservationSpec = ObservationSpec.Vector(numTransformObservations + numJointExtractorObservations);
         }
 #endif
 
