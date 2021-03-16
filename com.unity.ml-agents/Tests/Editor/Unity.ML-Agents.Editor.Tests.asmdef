@@ -23,5 +23,12 @@
     "autoReferenced": false,
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.modules.unityanalytics",
+            "expression": "1.0.0",
+            "define": "MLA_UNITY_ANALYTICS_MODULE"
+        }
     ]
 }

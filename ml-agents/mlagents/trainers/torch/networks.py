@@ -7,10 +7,10 @@ from mlagents_envs.base_env import ActionSpec, ObservationSpec
 from mlagents.trainers.torch.action_model import ActionModel
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
-from mlagents.trainers.settings import NetworkSettings
+from mlagents.trainers.settings import NetworkSettings, EncoderType
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
-from mlagents.trainers.torch.layers import LSTM, LinearEncoder, Initialization
+from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
@@ -19,6 +19,7 @@ from mlagents.trainers.torch.attention import (
     ResidualSelfAttention,
     get_zero_entities_mask,
 )
+from mlagents.trainers.exception import UnityTrainerException
 
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
@@ -27,6 +28,103 @@ EncoderFunction = Callable[
 ]
 
 EPSILON = 1e-7
+
+
+class ObservationEncoder(nn.Module):
+    def __init__(
+        self,
+        observation_specs: List[ObservationSpec],
+        h_size: int,
+        vis_encode_type: EncoderType,
+        normalize: bool = False,
+    ):
+        """
+        Returns an ObservationEncoder that can process and encode a set of observations.
+        Will use an RSA if needed for variable length observations.
+        """
+        super().__init__()
+        self.processors, self.embedding_sizes = ModelUtils.create_input_processors(
+            observation_specs, h_size, vis_encode_type, normalize=normalize
+        )
+        self.rsa, self.x_self_encoder = ModelUtils.create_residual_self_attention(
+            self.processors, self.embedding_sizes, h_size
+        )
+        if self.rsa is not None:
+            total_enc_size = sum(self.embedding_sizes) + h_size
+        else:
+            total_enc_size = sum(self.embedding_sizes)
+        self.normalize = normalize
+        self._total_enc_size = total_enc_size
+
+    @property
+    def total_enc_size(self) -> int:
+        """
+        Returns the total encoding size for this ObservationEncoder.
+        """
+        return self._total_enc_size
+
+    def update_normalization(self, buffer: AgentBuffer) -> None:
+        obs = ObsUtil.from_buffer(buffer, len(self.processors))
+        for vec_input, enc in zip(obs, self.processors):
+            if isinstance(enc, VectorInput):
+                enc.update_normalization(torch.as_tensor(vec_input))
+
+    def copy_normalization(self, other_encoder: "ObservationEncoder") -> None:
+        if self.normalize:
+            for n1, n2 in zip(self.processors, other_encoder.processors):
+                if isinstance(n1, VectorInput) and isinstance(n2, VectorInput):
+                    n1.copy_normalization(n2)
+
+    def forward(self, inputs: List[torch.Tensor]) -> torch.Tensor:
+        """
+        Encode observations using a list of processors and an RSA.
+        :param inputs: List of Tensors corresponding to a set of obs.
+        :param processors: a ModuleList of the input processors to be applied to these obs.
+        :param rsa: Optionally, an RSA to use for variable length obs.
+        :param x_self_encoder: Optionally, an encoder to use for x_self (in this case, the non-variable inputs.).
+        """
+        encodes = []
+        var_len_processor_inputs: List[Tuple[nn.Module, torch.Tensor]] = []
+
+        for idx, processor in enumerate(self.processors):
+            if not isinstance(processor, EntityEmbedding):
+                # The input can be encoded without having to process other inputs
+                obs_input = inputs[idx]
+                processed_obs = processor(obs_input)
+                encodes.append(processed_obs)
+            else:
+                var_len_processor_inputs.append((processor, inputs[idx]))
+        if len(encodes) != 0:
+            encoded_self = torch.cat(encodes, dim=1)
+            input_exist = True
+        else:
+            input_exist = False
+        if len(var_len_processor_inputs) > 0 and self.rsa is not None:
+            # Some inputs need to be processed with a variable length encoder
+            masks = get_zero_entities_mask([p_i[1] for p_i in var_len_processor_inputs])
+            embeddings: List[torch.Tensor] = []
+            processed_self = (
+                self.x_self_encoder(encoded_self)
+                if input_exist and self.x_self_encoder is not None
+                else None
+            )
+            for processor, var_len_input in var_len_processor_inputs:
+                embeddings.append(processor(processed_self, var_len_input))
+            qkv = torch.cat(embeddings, dim=1)
+            attention_embedding = self.rsa(qkv, masks)
+            if not input_exist:
+                encoded_self = torch.cat([attention_embedding], dim=1)
+                input_exist = True
+            else:
+                encoded_self = torch.cat([encoded_self, attention_embedding], dim=1)
+
+        if not input_exist:
+            raise UnityTrainerException(
+                "The trainer was unable to process any of the provided inputs. "
+                "Make sure the trained agents has at least one sensor attached to them."
+            )
+
+        return encoded_self
 
 
 class NetworkBody(nn.Module):
@@ -45,35 +143,14 @@ class NetworkBody(nn.Module):
             if network_settings.memory is not None
             else 0
         )
-
-        self.processors, self.embedding_sizes = ModelUtils.create_input_processors(
+        self.observation_encoder = ObservationEncoder(
             observation_specs,
             self.h_size,
             network_settings.vis_encode_type,
-            normalize=self.normalize,
+            self.normalize,
         )
-
-        entity_num_max: int = 0
-        var_processors = [p for p in self.processors if isinstance(p, EntityEmbedding)]
-        for processor in var_processors:
-            entity_max: int = processor.entity_num_max_elements
-            # Only adds entity max if it was known at construction
-            if entity_max > 0:
-                entity_num_max += entity_max
-        if len(var_processors) > 0:
-            if sum(self.embedding_sizes):
-                self.x_self_encoder = LinearEncoder(
-                    sum(self.embedding_sizes),
-                    1,
-                    self.h_size,
-                    kernel_init=Initialization.Normal,
-                    kernel_gain=(0.125 / self.h_size) ** 0.5,
-                )
-            self.rsa = ResidualSelfAttention(self.h_size, entity_num_max)
-            total_enc_size = sum(self.embedding_sizes) + self.h_size
-        else:
-            total_enc_size = sum(self.embedding_sizes)
-
+        self.processors = self.observation_encoder.processors
+        total_enc_size = self.observation_encoder.total_enc_size
         total_enc_size += encoded_act_size
         self.linear_encoder = LinearEncoder(
             total_enc_size, network_settings.num_layers, self.h_size
@@ -85,16 +162,10 @@ class NetworkBody(nn.Module):
             self.lstm = None  # type: ignore
 
     def update_normalization(self, buffer: AgentBuffer) -> None:
-        obs = ObsUtil.from_buffer(buffer, len(self.processors))
-        for vec_input, enc in zip(obs, self.processors):
-            if isinstance(enc, VectorInput):
-                enc.update_normalization(torch.as_tensor(vec_input))
+        self.observation_encoder.update_normalization(buffer)
 
     def copy_normalization(self, other_network: "NetworkBody") -> None:
-        if self.normalize:
-            for n1, n2 in zip(self.processors, other_network.processors):
-                if isinstance(n1, VectorInput) and isinstance(n2, VectorInput):
-                    n1.copy_normalization(n2)
+        self.observation_encoder.copy_normalization(other_network.observation_encoder)
 
     @property
     def memory_size(self) -> int:
@@ -107,47 +178,168 @@ class NetworkBody(nn.Module):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-        encodes = []
-        var_len_processor_inputs: List[Tuple[nn.Module, torch.Tensor]] = []
-
-        for idx, processor in enumerate(self.processors):
-            if not isinstance(processor, EntityEmbedding):
-                # The input can be encoded without having to process other inputs
-                obs_input = inputs[idx]
-                processed_obs = processor(obs_input)
-                encodes.append(processed_obs)
-            else:
-                var_len_processor_inputs.append((processor, inputs[idx]))
-        if len(encodes) != 0:
-            encoded_self = torch.cat(encodes, dim=1)
-            input_exist = True
-        else:
-            input_exist = False
-        if len(var_len_processor_inputs) > 0:
-            # Some inputs need to be processed with a variable length encoder
-            masks = get_zero_entities_mask([p_i[1] for p_i in var_len_processor_inputs])
-            embeddings: List[torch.Tensor] = []
-            processed_self = self.x_self_encoder(encoded_self) if input_exist else None
-            for processor, var_len_input in var_len_processor_inputs:
-                embeddings.append(processor(processed_self, var_len_input))
-            qkv = torch.cat(embeddings, dim=1)
-            attention_embedding = self.rsa(qkv, masks)
-            if not input_exist:
-                encoded_self = torch.cat([attention_embedding], dim=1)
-                input_exist = True
-            else:
-                encoded_self = torch.cat([encoded_self, attention_embedding], dim=1)
-
-        if not input_exist:
-            raise Exception(
-                "The trainer was unable to process any of the provided inputs. "
-                "Make sure the trained agents has at least one sensor attached to them."
-            )
-
+        encoded_self = self.observation_encoder(inputs)
         if actions is not None:
             encoded_self = torch.cat([encoded_self, actions], dim=1)
         encoding = self.linear_encoder(encoded_self)
 
+        if self.use_lstm:
+            # Resize to (batch, sequence length, encoding size)
+            encoding = encoding.reshape([-1, sequence_length, self.h_size])
+            encoding, memories = self.lstm(encoding, memories)
+            encoding = encoding.reshape([-1, self.m_size // 2])
+        return encoding, memories
+
+
+class MultiAgentNetworkBody(torch.nn.Module):
+    """
+    A network body that uses a self attention layer to handle state
+    and action input from a potentially variable number of agents that
+    share the same observation and action space.
+    """
+
+    def __init__(
+        self,
+        observation_specs: List[ObservationSpec],
+        network_settings: NetworkSettings,
+        action_spec: ActionSpec,
+    ):
+        super().__init__()
+        self.normalize = network_settings.normalize
+        self.use_lstm = network_settings.memory is not None
+        self.h_size = network_settings.hidden_units
+        self.m_size = (
+            network_settings.memory.memory_size
+            if network_settings.memory is not None
+            else 0
+        )
+        self.action_spec = action_spec
+        self.observation_encoder = ObservationEncoder(
+            observation_specs,
+            self.h_size,
+            network_settings.vis_encode_type,
+            self.normalize,
+        )
+        self.processors = self.observation_encoder.processors
+
+        # Modules for multi-agent self-attention
+        obs_only_ent_size = self.observation_encoder.total_enc_size
+        q_ent_size = (
+            obs_only_ent_size
+            + sum(self.action_spec.discrete_branches)
+            + self.action_spec.continuous_size
+        )
+        self.obs_encoder = EntityEmbedding(obs_only_ent_size, None, self.h_size)
+        self.obs_action_encoder = EntityEmbedding(q_ent_size, None, self.h_size)
+
+        self.self_attn = ResidualSelfAttention(self.h_size)
+
+        self.linear_encoder = LinearEncoder(
+            self.h_size,
+            network_settings.num_layers,
+            self.h_size,
+            kernel_gain=(0.125 / self.h_size) ** 0.5,
+        )
+
+        if self.use_lstm:
+            self.lstm = LSTM(self.h_size, self.m_size)
+        else:
+            self.lstm = None  # type: ignore
+
+    @property
+    def memory_size(self) -> int:
+        return self.lstm.memory_size if self.use_lstm else 0
+
+    def update_normalization(self, buffer: AgentBuffer) -> None:
+        self.observation_encoder.update_normalization(buffer)
+
+    def copy_normalization(self, other_network: "MultiAgentNetworkBody") -> None:
+        self.observation_encoder.copy_normalization(other_network.observation_encoder)
+
+    def _get_masks_from_nans(self, obs_tensors: List[torch.Tensor]) -> torch.Tensor:
+        """
+        Get attention masks by grabbing an arbitrary obs across all the agents
+        Since these are raw obs, the padded values are still NaN
+        """
+        only_first_obs = [_all_obs[0] for _all_obs in obs_tensors]
+        # Just get the first element in each obs regardless of its dimension. This will speed up
+        # searching for NaNs.
+        only_first_obs_flat = torch.stack(
+            [_obs.flatten(start_dim=1)[:, 0] for _obs in only_first_obs], dim=1
+        )
+        # Get the mask from NaNs
+        attn_mask = only_first_obs_flat.isnan().type(torch.FloatTensor)
+        return attn_mask
+
+    def _copy_and_remove_nans_from_obs(
+        self, all_obs: List[List[torch.Tensor]], attention_mask: torch.Tensor
+    ) -> List[List[torch.Tensor]]:
+        """
+        Helper function to remove NaNs from observations using an attention mask.
+        """
+        obs_with_no_nans = []
+        for i_agent, single_agent_obs in enumerate(all_obs):
+            no_nan_obs = []
+            for obs in single_agent_obs:
+                new_obs = obs.clone()
+                new_obs[
+                    attention_mask.type(torch.BoolTensor)[:, i_agent], ::
+                ] = 0.0  # Remoove NaNs fast
+                no_nan_obs.append(new_obs)
+            obs_with_no_nans.append(no_nan_obs)
+        return obs_with_no_nans
+
+    def forward(
+        self,
+        obs_only: List[List[torch.Tensor]],
+        obs: List[List[torch.Tensor]],
+        actions: List[AgentAction],
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        """
+        Returns sampled actions.
+        If memory is enabled, return the memories as well.
+        :param obs_only: Observations to be processed that do not have corresponding actions.
+            These are encoded with the obs_encoder.
+        :param obs: Observations to be processed that do have corresponding actions.
+            After concatenation with actions, these are processed with obs_action_encoder.
+        :param actions: After concatenation with obs, these are processed with obs_action_encoder.
+        :param memories: If using memory, a Tensor of initial memories.
+        :param sequence_length: If using memory, the sequence length.
+        """
+        self_attn_masks = []
+        self_attn_inputs = []
+        concat_f_inp = []
+        if obs:
+            obs_attn_mask = self._get_masks_from_nans(obs)
+            obs = self._copy_and_remove_nans_from_obs(obs, obs_attn_mask)
+            for inputs, action in zip(obs, actions):
+                encoded = self.observation_encoder(inputs)
+                cat_encodes = [
+                    encoded,
+                    action.to_flat(self.action_spec.discrete_branches),
+                ]
+                concat_f_inp.append(torch.cat(cat_encodes, dim=1))
+            f_inp = torch.stack(concat_f_inp, dim=1)
+            self_attn_masks.append(obs_attn_mask)
+            self_attn_inputs.append(self.obs_action_encoder(None, f_inp))
+
+        concat_encoded_obs = []
+        if obs_only:
+            obs_only_attn_mask = self._get_masks_from_nans(obs_only)
+            obs_only = self._copy_and_remove_nans_from_obs(obs_only, obs_only_attn_mask)
+            for inputs in obs_only:
+                encoded = self.observation_encoder(inputs)
+                concat_encoded_obs.append(encoded)
+            g_inp = torch.stack(concat_encoded_obs, dim=1)
+            self_attn_masks.append(obs_only_attn_mask)
+            self_attn_inputs.append(self.obs_encoder(None, g_inp))
+
+        encoded_entity = torch.cat(self_attn_inputs, dim=1)
+        encoded_state = self.self_attn(encoded_entity, self_attn_masks)
+
+        encoding = self.linear_encoder(encoded_state)
         if self.use_lstm:
             # Resize to (batch, sequence length, encoding size)
             encoding = encoding.reshape([-1, sequence_length, self.h_size])

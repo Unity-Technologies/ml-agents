@@ -4,6 +4,7 @@ import pytest
 import copy
 import os
 from mlagents.trainers.settings import (
+    POCASettings,
     TrainerSettings,
     PPOSettings,
     SACSettings,
@@ -50,6 +51,20 @@ _SAC_CONFIG = TrainerSettings(
     threaded=False,
 )
 
+_POCA_CONFIG = TrainerSettings(
+    trainer_type=TrainerType.POCA,
+    hyperparameters=POCASettings(
+        learning_rate=5.0e-3,
+        learning_rate_schedule=ScheduleType.CONSTANT,
+        batch_size=16,
+        buffer_size=64,
+    ),
+    network_settings=NetworkSettings(num_layers=1, hidden_units=32),
+    summary_freq=500,
+    max_steps=3000,
+    threaded=False,
+)
+
 
 def ppo_dummy_config():
     return copy.deepcopy(_PPO_CONFIG)
@@ -57,6 +72,10 @@ def ppo_dummy_config():
 
 def sac_dummy_config():
     return copy.deepcopy(_SAC_CONFIG)
+
+
+def poca_dummy_config():
+    return copy.deepcopy(_POCA_CONFIG)
 
 
 @pytest.fixture
@@ -78,10 +97,15 @@ def create_observation_specs_with_shapes(
     shapes: List[Tuple[int, ...]]
 ) -> List[ObservationSpec]:
     obs_specs: List[ObservationSpec] = []
-    for shape in shapes:
+    for i, shape in enumerate(shapes):
         dim_prop = (DimensionProperty.UNSPECIFIED,) * len(shape)
         if len(shape) == 2:
             dim_prop = (DimensionProperty.VARIABLE_SIZE, DimensionProperty.NONE)
-        spec = ObservationSpec(shape, dim_prop, ObservationType.DEFAULT)
+        spec = ObservationSpec(
+            name=f"observation {i} with shape {shape}",
+            shape=shape,
+            dimension_property=dim_prop,
+            observation_type=ObservationType.DEFAULT,
+        )
         obs_specs.append(spec)
     return obs_specs

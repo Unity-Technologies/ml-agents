@@ -13,7 +13,7 @@ communication.
 Install the `mlagents_envs` package with:
 
 ```sh
-pip3 install mlagents_envs
+python -m pip install mlagents_envs==0.24.1
 ```
 
 ## Usage & More Information

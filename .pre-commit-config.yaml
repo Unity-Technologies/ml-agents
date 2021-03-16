@@ -83,6 +83,12 @@ repos:
     types: [markdown]
     exclude: ".*localized.*"
 
+- repo: https://github.com/dotnet/format
+  rev: "7e343070a0355c86f72bdee226b5e19ffcbac931"  # TODO - update to a tagged version when one that includes the hook is ready.
+  hooks:
+  - id: dotnet-format
+    args: [--folder, --include]
+
 # "Local" hooks, see https://pre-commit.com/#repository-local-hooks
 -   repo: local
     hooks:
@@ -119,4 +125,3 @@ repos:
         name: validate release links
         language: script
         entry: utils/validate_release_links.py
-
