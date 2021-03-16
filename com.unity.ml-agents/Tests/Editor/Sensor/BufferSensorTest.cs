@@ -15,7 +15,7 @@ namespace Unity.MLAgents.Tests
 
             var bufferSensor = new BufferSensor(20, 4, "testName");
             var shape = bufferSensor.GetObservationSpec().Shape;
-            var dimProp = bufferSensor.GetDimensionProperties();
+            var dimProp = bufferSensor.GetObservationSpec().DimensionProperties;
             Assert.AreEqual(shape[0], 20);
             Assert.AreEqual(shape[1], 4);
             Assert.AreEqual(shape.Length, 2);

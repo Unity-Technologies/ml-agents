@@ -5,7 +5,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// A Sensor that allows to observe a variable number of entities.
     /// </summary>
-    public class BufferSensor : ISensor, IDimensionPropertiesSensor, IBuiltInSensor
+    public class BufferSensor : ISensor, IBuiltInSensor
     {
         private string m_Name;
         private int m_MaxNumObs;
@@ -14,10 +14,6 @@ namespace Unity.MLAgents.Sensors
         int m_CurrentNumObservables;
         ObservationSpec m_ObservationSpec;
 
-        static DimensionProperty[] s_DimensionProperties = new DimensionProperty[]{
-                DimensionProperty.VariableSize,
-                DimensionProperty.None
-            };
         public BufferSensor(int maxNumberObs, int obsSize, string name)
         {
             m_Name = name;
@@ -32,12 +28,6 @@ namespace Unity.MLAgents.Sensors
         public ObservationSpec GetObservationSpec()
         {
             return m_ObservationSpec;
-        }
-
-        /// <inheritdoc/>
-        public DimensionProperty[] GetDimensionProperties()
-        {
-            return s_DimensionProperties;
         }
 
         /// <summary>

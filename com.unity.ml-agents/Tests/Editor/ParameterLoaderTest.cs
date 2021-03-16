@@ -25,7 +25,7 @@ namespace Unity.MLAgents.Tests
             return new int[] { shape[0], shape[1], shape[2] };
         }
     }
-    public class Test3DSensor : ISensor, IBuiltInSensor, IDimensionPropertiesSensor
+    public class Test3DSensor : ISensor, IBuiltInSensor
     {
         int m_Width;
         int m_Height;
@@ -77,16 +77,6 @@ namespace Unity.MLAgents.Tests
         public BuiltInSensorType GetBuiltInSensorType()
         {
             return (BuiltInSensorType)k_BuiltInSensorType;
-        }
-
-        public DimensionProperty[] GetDimensionProperties()
-        {
-            return new[]
-            {
-                DimensionProperty.TranslationalEquivariance,
-                DimensionProperty.TranslationalEquivariance,
-                DimensionProperty.None
-            };
         }
     }
 
