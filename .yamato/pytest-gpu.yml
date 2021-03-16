@@ -16,7 +16,7 @@ pytest_gpu:
   triggers:
     cancel_old_ci: true
     expression: |
-      (push.branch eq "main" OR
+      (push.branch eq "develop-gpu-test-on-merge" OR
       push.branch match "release.+") AND
       push.changes.any match "ml-agents/**" AND
       NOT push.changes.all match "**/*.md"
