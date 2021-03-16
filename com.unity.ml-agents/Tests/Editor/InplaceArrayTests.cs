@@ -34,7 +34,7 @@ namespace Unity.MLAgents.Tests
                 case 4:
                     return new InplaceArray<int>(11, 22, 33, 44);
                 default:
-                    throw new RuntimeException("bad test!");
+                    throw new ArgumentException("bad test!");
             }
         }
 
@@ -51,7 +51,7 @@ namespace Unity.MLAgents.Tests
                 case 4:
                     return new InplaceArray<int>(0, 0, 0, 0);
                 default:
-                    throw new RuntimeException("bad test!");
+                    throw new ArgumentException("bad test!");
             }
         }
 
