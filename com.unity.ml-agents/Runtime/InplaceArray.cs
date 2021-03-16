@@ -29,9 +29,9 @@ namespace Unity.MLAgents
         {
             m_Length = 1;
             m_Elem0 = elem0;
-            m_Elem1 = new T {};
-            m_Elem2 = new T {};
-            m_Elem3 = new T {};
+            m_Elem1 = new T { };
+            m_Elem2 = new T { };
+            m_Elem3 = new T { };
         }
 
         /// <summary>
@@ -44,8 +44,8 @@ namespace Unity.MLAgents
             m_Length = 2;
             m_Elem0 = elem0;
             m_Elem1 = elem1;
-            m_Elem2 = new T {};
-            m_Elem3 = new T {};
+            m_Elem2 = new T { };
+            m_Elem3 = new T { };
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Unity.MLAgents
             m_Elem0 = elem0;
             m_Elem1 = elem1;
             m_Elem2 = elem2;
-            m_Elem3 = new T {};
+            m_Elem3 = new T { };
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace Unity.MLAgents
         /// <param name="lhs"></param>
         /// <param name="rhs"></param>
         /// <returns>Whether the arrays are equivalent.</returns>
-        public static bool operator==(InplaceArray<T> lhs, InplaceArray<T> rhs)
+        public static bool operator ==(InplaceArray<T> lhs, InplaceArray<T> rhs)
         {
             if (lhs.Length != rhs.Length)
             {
@@ -219,7 +219,7 @@ namespace Unity.MLAgents
         /// <param name="lhs"></param>
         /// <param name="rhs"></param>
         /// <returns>Whether the arrays are not equivalent</returns>
-        public static bool operator!=(InplaceArray<T> lhs, InplaceArray<T> rhs) => !(lhs == rhs);
+        public static bool operator !=(InplaceArray<T> lhs, InplaceArray<T> rhs) => !(lhs == rhs);
 
         /// <summary>
         /// Check that the arrays are equivalent.

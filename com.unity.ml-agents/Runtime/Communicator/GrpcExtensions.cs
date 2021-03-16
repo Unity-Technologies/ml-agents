@@ -448,7 +448,7 @@ namespace Unity.MLAgents
                 observationProto.Shape.Add(shape[i]);
             }
 
-            observationProto.ObservationType = (ObservationTypeProto) obsSpec.ObservationType;
+            observationProto.ObservationType = (ObservationTypeProto)obsSpec.ObservationType;
             return observationProto;
         }
 
