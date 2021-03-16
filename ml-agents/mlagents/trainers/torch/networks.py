@@ -283,7 +283,7 @@ class MultiAgentNetworkBody(torch.nn.Module):
             for obs in single_agent_obs:
                 new_obs = obs.clone()
                 new_obs[
-                    attention_mask.type(torch.BoolTensor)[:, i_agent], ::
+                    attention_mask.bool()[:, i_agent], ::
                 ] = 0.0  # Remoove NaNs fast
                 no_nan_obs.append(new_obs)
             obs_with_no_nans.append(no_nan_obs)
