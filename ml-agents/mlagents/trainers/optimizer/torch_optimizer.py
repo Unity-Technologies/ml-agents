@@ -10,7 +10,11 @@ from mlagents.trainers.torch.components.reward_providers import create_reward_pr
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer import Optimizer
-from mlagents.trainers.settings import TrainerSettings
+from mlagents.trainers.settings import (
+    TrainerSettings,
+    RewardSignalSettings,
+    RewardSignalType,
+)
 from mlagents.trainers.torch.utils import ModelUtils
 
 
@@ -44,7 +48,9 @@ class TorchOptimizer(Optimizer):
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
         pass
 
-    def create_reward_signals(self, reward_signal_configs):
+    def create_reward_signals(
+        self, reward_signal_configs: Dict[RewardSignalType, RewardSignalSettings]
+    ) -> None:
         """
         Create reward signals
         :param reward_signal_configs: Reward signal config.
@@ -56,7 +62,7 @@ class TorchOptimizer(Optimizer):
             )
 
     def _evaluate_by_sequence(
-        self, tensor_obs: List[torch.Tensor], initial_memory: np.ndarray
+        self, tensor_obs: List[torch.Tensor], initial_memory: torch.Tensor
     ) -> Tuple[Dict[str, torch.Tensor], AgentBufferField, torch.Tensor]:
         """
         Evaluate a trajectory sequence-by-sequence, assembling the result. This enables us to get the
@@ -78,10 +84,8 @@ class TorchOptimizer(Optimizer):
         # Compute values for the potentially truncated initial sequence
         seq_obs = []
 
-        first_seq_len = self.policy.sequence_length
+        first_seq_len = leftover if leftover > 0 else self.policy.sequence_length
         for _obs in tensor_obs:
-            if leftover > 0:
-                first_seq_len = leftover
             first_seq_obs = _obs[0:first_seq_len]
             seq_obs.append(first_seq_obs)
 
@@ -106,13 +110,13 @@ class TorchOptimizer(Optimizer):
             seq_obs = []
             for _ in range(self.policy.sequence_length):
                 all_next_memories.append(ModelUtils.to_numpy(_mem.squeeze()))
+            start = seq_num * self.policy.sequence_length - (
+                self.policy.sequence_length - leftover
+            )
+            end = (seq_num + 1) * self.policy.sequence_length - (
+                self.policy.sequence_length - leftover
+            )
             for _obs in tensor_obs:
-                start = seq_num * self.policy.sequence_length - (
-                    self.policy.sequence_length - leftover
-                )
-                end = (seq_num + 1) * self.policy.sequence_length - (
-                    self.policy.sequence_length - leftover
-                )
                 seq_obs.append(_obs[start:end])
             values, _mem = self.critic.critic_pass(
                 seq_obs, _mem, sequence_length=self.policy.sequence_length
@@ -166,18 +170,21 @@ class TorchOptimizer(Optimizer):
 
         # If we're using LSTM, we want to get all the intermediate memories.
         all_next_memories: Optional[AgentBufferField] = None
-        if self.policy.use_recurrent:
-            (
-                value_estimates,
-                all_next_memories,
-                next_memory,
-            ) = self._evaluate_by_sequence(current_obs, memory)
-        else:
-            value_estimates, next_memory = self.critic.critic_pass(
-                current_obs, memory, sequence_length=batch.num_experiences
-            )
 
-        # Store the memory for the next trajectory
+        # To prevent memory leak and improve performance, evaluate with no_grad.
+        with torch.no_grad():
+            if self.policy.use_recurrent:
+                (
+                    value_estimates,
+                    all_next_memories,
+                    next_memory,
+                ) = self._evaluate_by_sequence(current_obs, memory)
+            else:
+                value_estimates, next_memory = self.critic.critic_pass(
+                    current_obs, memory, sequence_length=batch.num_experiences
+                )
+
+        # Store the memory for the next trajectory. This should NOT have a gradient.
         self.critic_memory_dict[agent_id] = next_memory
 
         next_value_estimate, _ = self.critic.critic_pass(

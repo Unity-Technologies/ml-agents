@@ -69,7 +69,21 @@ class SimpleEnvironment(BaseEnv):
         self.names = brain_names
         self.positions: Dict[str, List[float]] = {}
         self.step_count: Dict[str, float] = {}
-        self.random = random.Random(str(self.behavior_spec))
+
+        # Concatenate the arguments for a consistent random seed
+        seed = (
+            brain_names,
+            step_size,
+            num_visual,
+            num_vector,
+            num_var_len,
+            vis_obs_size,
+            vec_obs_size,
+            var_len_obs_size,
+            action_sizes,
+        )
+        self.random = random.Random(str(seed))
+
         self.goal: Dict[str, int] = {}
         self.action = {}
         self.rewards: Dict[str, float] = {}
@@ -312,6 +326,212 @@ class MemoryEnvironment(SimpleEnvironment):
                 m_group_reward,
             )
         return (decision_step, terminal_step)
+
+
+class MultiAgentEnvironment(BaseEnv):
+    """
+    The MultiAgentEnvironment maintains a list of SimpleEnvironment, one for each agent.
+    When sending DecisionSteps and TerminalSteps to the trainers, it first batches the
+    decision steps from the individual environments. When setting actions, it indexes the
+    batched ActionTuple to obtain the ActionTuple for individual agents
+    """
+
+    def __init__(
+        self,
+        brain_names,
+        step_size=STEP_SIZE,
+        num_visual=0,
+        num_vector=1,
+        num_var_len=0,
+        vis_obs_size=VIS_OBS_SIZE,
+        vec_obs_size=OBS_SIZE,
+        var_len_obs_size=VAR_LEN_SIZE,
+        action_sizes=(1, 0),
+        num_agents=2,
+    ):
+        super().__init__()
+        self.envs = {}
+        self.dones = {}
+        self.just_died = set()
+        self.names = brain_names
+        self.final_rewards: Dict[str, List[float]] = {}
+        for name in brain_names:
+            self.final_rewards[name] = []
+            for i in range(num_agents):
+                name_and_num = name + str(i)
+                self.envs[name_and_num] = SimpleEnvironment(
+                    [name],
+                    step_size,
+                    num_visual,
+                    num_vector,
+                    num_var_len,
+                    vis_obs_size,
+                    vec_obs_size,
+                    var_len_obs_size,
+                    action_sizes,
+                )
+                self.dones[name_and_num] = False
+                self.envs[name_and_num].reset()
+        # All envs have the same behavior spec, so just get the last one.
+        self.behavior_spec = self.envs[name_and_num].behavior_spec
+        self.action_spec = self.envs[name_and_num].action_spec
+        self.num_agents = num_agents
+
+    @property
+    def all_done(self):
+        return all(self.dones.values())
+
+    @property
+    def behavior_specs(self):
+        behavior_dict = {}
+        for n in self.names:
+            behavior_dict[n] = self.behavior_spec
+        return BehaviorMapping(behavior_dict)
+
+    def set_action_for_agent(self, behavior_name, agent_id, action):
+        pass
+
+    def set_actions(self, behavior_name, action):
+        # The ActionTuple contains the actions for all n_agents. This
+        # slices the ActionTuple into an action tuple for each environment
+        # and sets it. The index j is used to ignore agents that have already
+        # reached done.
+        j = 0
+        for i in range(self.num_agents):
+            _act = ActionTuple()
+            name_and_num = behavior_name + str(i)
+            env = self.envs[name_and_num]
+            if not self.dones[name_and_num]:
+                if self.action_spec.continuous_size > 0:
+                    _act.add_continuous(action.continuous[j : j + 1])
+                if self.action_spec.discrete_size > 0:
+                    _disc_list = [action.discrete[j, :]]
+                    _act.add_discrete(np.array(_disc_list))
+                j += 1
+                env.action[behavior_name] = _act
+
+    def get_steps(self, behavior_name):
+        # This gets the individual DecisionSteps and TerminalSteps
+        # from the envs and merges them into a batch to be sent
+        # to the AgentProcessor.
+        dec_vec_obs = []
+        dec_reward = []
+        dec_group_reward = []
+        dec_agent_id = []
+        dec_group_id = []
+        ter_vec_obs = []
+        ter_reward = []
+        ter_group_reward = []
+        ter_agent_id = []
+        ter_group_id = []
+        interrupted = []
+
+        action_mask = None
+        terminal_step = TerminalSteps.empty(self.behavior_spec)
+        decision_step = None
+        for i in range(self.num_agents):
+            name_and_num = behavior_name + str(i)
+            env = self.envs[name_and_num]
+            _dec, _term = env.step_result[behavior_name]
+            if not self.dones[name_and_num]:
+                dec_agent_id.append(i)
+                dec_group_id.append(1)
+                if len(dec_vec_obs) > 0:
+                    for j, obs in enumerate(_dec.obs):
+                        dec_vec_obs[j] = np.concatenate((dec_vec_obs[j], obs), axis=0)
+                else:
+                    for obs in _dec.obs:
+                        dec_vec_obs.append(obs)
+                dec_reward.append(_dec.reward[0])
+                dec_group_reward.append(_dec.group_reward[0])
+                if _dec.action_mask is not None:
+                    if action_mask is None:
+                        action_mask = []
+                    if len(action_mask) > 0:
+                        action_mask[0] = np.concatenate(
+                            (action_mask[0], _dec.action_mask[0]), axis=0
+                        )
+                    else:
+                        action_mask.append(_dec.action_mask[0])
+            if len(_term.reward) > 0 and name_and_num in self.just_died:
+                ter_agent_id.append(i)
+                ter_group_id.append(1)
+                if len(ter_vec_obs) > 0:
+                    for j, obs in enumerate(_term.obs):
+                        ter_vec_obs[j] = np.concatenate((ter_vec_obs[j], obs), axis=0)
+                else:
+                    for obs in _term.obs:
+                        ter_vec_obs.append(obs)
+                ter_reward.append(_term.reward[0])
+                ter_group_reward.append(_term.group_reward[0])
+                interrupted.append(False)
+                self.just_died.remove(name_and_num)
+        decision_step = DecisionSteps(
+            dec_vec_obs,
+            dec_reward,
+            dec_agent_id,
+            action_mask,
+            dec_group_id,
+            dec_group_reward,
+        )
+        terminal_step = TerminalSteps(
+            ter_vec_obs,
+            ter_reward,
+            interrupted,
+            ter_agent_id,
+            ter_group_id,
+            ter_group_reward,
+        )
+        return (decision_step, terminal_step)
+
+    def step(self) -> None:
+        # Steps all environments and calls reset if all agents are done.
+        for name in self.names:
+            for i in range(self.num_agents):
+                name_and_num = name + str(i)
+                # Does not step the env if done
+                if not self.dones[name_and_num]:
+                    env = self.envs[name_and_num]
+                    # Reproducing part of env step to intercept Dones
+                    assert all(action is not None for action in env.action.values())
+                    done = env._take_action(name)
+                    reward = env._compute_reward(name, done)
+                    self.dones[name_and_num] = done
+                    if done:
+                        self.just_died.add(name_and_num)
+                    if self.all_done:
+                        env.step_result[name] = env._make_batched_step(
+                            name, done, 0.0, reward
+                        )
+                        self.final_rewards[name].append(reward)
+                        self.reset()
+                    elif done:
+                        # This agent has finished but others are still running.
+                        # This gives a reward of the time penalty if this agent
+                        # is successful and the negative env reward if it fails.
+                        ceil_reward = min(-TIME_PENALTY, reward)
+                        env.step_result[name] = env._make_batched_step(
+                            name, done, ceil_reward, 0.0
+                        )
+                        self.final_rewards[name].append(reward)
+
+                    else:
+                        env.step_result[name] = env._make_batched_step(
+                            name, done, reward, 0.0
+                        )
+
+    def reset(self) -> None:  # type: ignore
+        for name in self.names:
+            for i in range(self.num_agents):
+                name_and_num = name + str(i)
+                self.dones[name_and_num] = False
+
+    @property
+    def reset_parameters(self) -> Dict[str, str]:
+        return {}
+
+    def close(self):
+        pass
 
 
 class RecordEnvironment(SimpleEnvironment):

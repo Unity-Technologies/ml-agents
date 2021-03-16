@@ -1,7 +1,8 @@
+
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Analytics;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Analytics;
 
 
 namespace Unity.MLAgents.Policies

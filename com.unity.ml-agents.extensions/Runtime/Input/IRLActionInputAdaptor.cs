@@ -2,6 +2,7 @@
 using System;
 using Unity.MLAgents.Actuators;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 
 namespace Unity.MLAgents.Extensions.Input
 {
@@ -22,11 +23,12 @@ namespace Unity.MLAgents.Extensions.Input
         /// <summary>
         /// Translates data from the <see cref="ActionBuffers"/> object to the <see cref="InputSystem"/>.
         /// </summary>
+        /// <param name="eventPtr">The Event pointer to write to.</param>
         /// <param name="action">The action associated with this adaptor.</param>
         /// <param name="control">The control which will write the event to the <see cref="InputSystem"/>.</param>
         /// <param name="actionSpec">The <see cref="ActionSpec"/> associated with this action and adaptor pair.</param>
         /// <param name="actionBuffers">The <see cref="ActionBuffers"/> object to read from.</param>
-        void QueueInputEventForAction(InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers);
+        void WriteToInputEventForAction(InputEventPtr eventPtr, InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers);
 
         /// <summary>
         /// Writes data from the <paramref name="action"/> to the <paramref name="actionBuffers"/>.

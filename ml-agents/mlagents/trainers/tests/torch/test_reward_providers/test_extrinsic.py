@@ -1,4 +1,6 @@
+from mlagents.trainers.buffer import BufferKey
 import pytest
+import numpy as np
 from mlagents.trainers.torch.components.reward_providers import (
     ExtrinsicRewardProvider,
     create_reward_provider,
@@ -71,3 +73,20 @@ def test_reward(behavior_spec: BehaviorSpec, reward: float) -> None:
     extrinsic_rp = ExtrinsicRewardProvider(behavior_spec, settings)
     generated_rewards = extrinsic_rp.evaluate(buffer)
     assert (generated_rewards == reward).all()
+
+    # Test group rewards. Rewards should be double of the environment rewards, but shouldn't count
+    # the groupmate rewards.
+    buffer[BufferKey.GROUP_REWARD] = buffer[BufferKey.ENVIRONMENT_REWARDS]
+    # 2 agents with identical rewards
+    buffer[BufferKey.GROUPMATE_REWARDS].set(
+        [np.ones(1, dtype=np.float32) * reward] * 2
+        for _ in range(buffer.num_experiences)
+    )
+    generated_rewards = extrinsic_rp.evaluate(buffer)
+    assert (generated_rewards == 2 * reward).all()
+
+    # Test groupmate rewards. Total reward should be indiv_reward + 2 * teammate_reward + group_reward
+    extrinsic_rp = ExtrinsicRewardProvider(behavior_spec, settings)
+    extrinsic_rp.add_groupmate_rewards = True
+    generated_rewards = extrinsic_rp.evaluate(buffer)
+    assert (generated_rewards == 4 * reward).all()

@@ -164,7 +164,11 @@ class ConsoleWriter(StatsWriter):
                 log_info.append(f"Rank: {self.rank}")
 
             log_info.append(f"Mean Reward: {stats_summary.mean:0.3f}")
-            log_info.append(f"Std of Reward: {stats_summary.std:0.3f}")
+            if "Environment/Group Cumulative Reward" in values:
+                group_stats_summary = values["Environment/Group Cumulative Reward"]
+                log_info.append(f"Mean Group Reward: {group_stats_summary.mean:0.3f}")
+            else:
+                log_info.append(f"Std of Reward: {stats_summary.std:0.3f}")
             log_info.append(is_training)
 
             if self.self_play and "Self-play/ELO" in values:

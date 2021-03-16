@@ -1,3 +1,4 @@
+from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 import pytest
 from unittest import mock
 import os
@@ -6,8 +7,15 @@ import numpy as np
 from mlagents.torch_utils import torch, default_device
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
+from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
+from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer
 from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
-from mlagents.trainers.settings import TrainerSettings
+from mlagents.trainers.settings import (
+    TrainerSettings,
+    PPOSettings,
+    SACSettings,
+    POCASettings,
+)
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.torch.test_policy import create_policy_mock
 from mlagents.trainers.torch.utils import ModelUtils
@@ -29,7 +37,7 @@ def test_register(tmp_path):
     assert model_saver.policy is not None
 
 
-def test_load_save(tmp_path):
+def test_load_save_policy(tmp_path):
     path1 = os.path.join(tmp_path, "runid1")
     path2 = os.path.join(tmp_path, "runid2")
     trainer_params = TrainerSettings()
@@ -60,6 +68,46 @@ def test_load_save(tmp_path):
     _compare_two_policies(policy2, policy3)
     # Assert that the steps are 0.
     assert policy3.get_current_step() == 0
+
+
+@pytest.mark.parametrize(
+    "optimizer",
+    [
+        (TorchPPOOptimizer, PPOSettings),
+        (TorchSACOptimizer, SACSettings),
+        (TorchPOCAOptimizer, POCASettings),
+    ],
+    ids=["ppo", "sac", "poca"],
+)
+def test_load_save_optimizer(tmp_path, optimizer):
+    OptimizerClass, HyperparametersClass = optimizer
+
+    trainer_settings = TrainerSettings()
+    trainer_settings.hyperparameters = HyperparametersClass()
+    policy = create_policy_mock(trainer_settings, use_discrete=False)
+    optimizer = OptimizerClass(policy, trainer_settings)
+
+    # save at path 1
+    path1 = os.path.join(tmp_path, "runid1")
+    model_saver = TorchModelSaver(trainer_settings, path1)
+    model_saver.register(policy)
+    model_saver.register(optimizer)
+    model_saver.initialize_or_load()
+    policy.set_step(2000)
+    model_saver.save_checkpoint("MockBrain", 2000)
+
+    # create a new optimizer and policy
+    policy2 = create_policy_mock(trainer_settings, use_discrete=False)
+    optimizer2 = OptimizerClass(policy2, trainer_settings)
+
+    # load weights
+    model_saver2 = TorchModelSaver(trainer_settings, path1, load=True)
+    model_saver2.register(policy2)
+    model_saver2.register(optimizer2)
+    model_saver2.initialize_or_load()  # This is to load the optimizers
+
+    # Compare the two optimizers
+    _compare_two_optimizers(optimizer, optimizer2)
 
 
 # TorchPolicy.evalute() returns log_probs instead of all_log_probs like tf does.
@@ -93,6 +141,25 @@ def _compare_two_policies(policy1: TorchPolicy, policy2: TorchPolicy) -> None:
         ModelUtils.to_numpy(log_probs1.all_discrete_tensor),
         ModelUtils.to_numpy(log_probs2.all_discrete_tensor),
     )
+
+
+def _compare_two_optimizers(opt1: TorchOptimizer, opt2: TorchOptimizer) -> None:
+    trajectory = mb.make_fake_trajectory(
+        length=10,
+        observation_specs=opt1.policy.behavior_spec.observation_specs,
+        action_spec=opt1.policy.behavior_spec.action_spec,
+        max_step_complete=True,
+    )
+    with torch.no_grad():
+        _, opt1_val_out, _ = opt1.get_trajectory_value_estimates(
+            trajectory.to_agentbuffer(), trajectory.next_obs, done=False
+        )
+        _, opt2_val_out, _ = opt2.get_trajectory_value_estimates(
+            trajectory.to_agentbuffer(), trajectory.next_obs, done=False
+        )
+
+    for opt1_val, opt2_val in zip(opt1_val_out.values(), opt2_val_out.values()):
+        np.testing.assert_array_equal(opt1_val, opt2_val)
 
 
 @pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
