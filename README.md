@@ -32,7 +32,7 @@ developer communities.
 - Training using two deep reinforcement learning algorithms, Proximal Policy
   Optimization (PPO) and Soft Actor-Critic (SAC)
 - Multi-agent cooperative training using a novel deep reinforcement learning algorithm,
-  Multi-Agent POsthumous Credit Assignemnt (POCA)
+  Multi-Agent POsthumous Credit Assignment (MA-POCA)
 - Built-in support for Imitation Learning through Behavioral Cloning (BC) or
   Generative Adversarial Imitation Learning (GAIL)
 - Self-play mechanism for training agents in adversarial scenarios
