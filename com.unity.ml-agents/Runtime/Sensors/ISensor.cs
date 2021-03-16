@@ -46,6 +46,22 @@ namespace Unity.MLAgents.Sensors
     }
 
     /// <summary>
+    /// The ObservationType enum of the Sensor.
+    /// </summary>
+    public enum ObservationType
+    {
+        // Collected observations are generic.
+        Default = 0,
+        // Collected observations contain goal information.
+        Goal = 1,
+        // Collected observations contain reward information.
+        Reward = 2,
+        // Collected observations are messages from other agents.
+        Message = 3,
+    }
+
+
+    /// <summary>
     /// Sensor interface for generating observations.
     /// </summary>
     public interface ISensor
