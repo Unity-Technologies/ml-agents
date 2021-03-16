@@ -226,12 +226,12 @@ public class CrawlerAgent : Agent
         //avg body vel relative to cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
         //vel goal relative to cube
-        goalSensor.GetSensor().AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
+        goalSensor.GetSensor().AddObservation(cubeForward * TargetWalkingSpeed);
         //rotation delta
-        sensor.AddObservation(Quaternion.FromToRotation(body.forward, cubeForward));
+        sensor.AddObservation(Quaternion.FromToRotation(body.forward, Vector3.forward));
 
         //Add pos of target relative to orientation cube
-        goalSensor.GetSensor().AddObservation(m_OrientationCube.transform.InverseTransformPoint(m_Target.transform.position));
+        goalSensor.GetSensor().AddObservation(Vector3.forward);
 
         RaycastHit hit;
         float maxRaycastDist = 10;
@@ -307,7 +307,7 @@ public class CrawlerAgent : Agent
 
         // b. Rotation alignment with target direction.
         //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
-        var lookAtTargetReward = (Vector3.Dot(cubeForward, body.forward) + 1) * .5F;
+        var lookAtTargetReward = (Vector3.Dot(Vector3.forward, body.forward) + 1) * .5F;
 
         AddReward(matchSpeedReward * lookAtTargetReward);
     }
