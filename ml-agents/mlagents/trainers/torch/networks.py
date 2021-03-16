@@ -185,7 +185,7 @@ class NetworkBody(nn.Module):
             encoded_self = torch.cat([encoded_self, actions], dim=1)
 
         if self.conditioning_type == ConditioningType.DEFAULT:
-            obs_encodes = obs_encodes + goal_encodes
+            encoded_self = torch.cat([encoded_self, torch.cat(goal_encodes, dim=-1)], dim=1)
             goal_encodes = []
 
         if len(obs_encodes) == 0:
