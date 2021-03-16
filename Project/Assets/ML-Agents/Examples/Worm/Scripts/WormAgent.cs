@@ -8,29 +8,9 @@ using Unity.MLAgents.Sensors;
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class WormAgent : Agent
 {
-    //The type of agent behavior we want to use.
-    //This setting will determine how the agent is set up during initialization.
-    public enum WormAgentBehaviorType
-    {
-        WormDynamic,
-        WormStatic
-    }
-
-    [Tooltip(
-        "Dynamic - The agent will run towards a target that changes position.\n\n" +
-        "Static - The agent will run towards a static target. "
-    )]
-    public WormAgentBehaviorType typeOfWorm;
-
     const float m_MaxWalkingSpeed = 10; //The max walking speed
 
-    //Brains
-    //A different brain will be used depending on the CrawlerAgentBehaviorType selected
-    [Header("NN Models")] public NNModel wormDyModel;
-    public NNModel wormStModel;
-
-    [Header("Target Prefabs")] public Transform dynamicTargetPrefab; //Target prefab to use in Dynamic envs
-    public Transform staticTargetPrefab; //Target prefab to use in Static envs
+    [Header("Target Prefabs")] public Transform TargetPrefab; //Target prefab to use in Dynamic envs
     private Transform m_Target; //Target the agent will walk towards during training.
 
     [Header("Body Parts")] public Transform bodySegment0;
@@ -50,8 +30,7 @@ public class WormAgent : Agent
 
     public override void Initialize()
     {
-        SetAgentType();
-
+        SpawnTarget(TargetPrefab, transform.position); //spawn target
 
         m_StartingPos = bodySegment0.position;
         m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
@@ -76,33 +55,6 @@ public class WormAgent : Agent
     void SpawnTarget(Transform prefab, Vector3 pos)
     {
         m_Target = Instantiate(prefab, pos, Quaternion.identity, transform);
-    }
-
-    /// <summary>
-    /// Set up the agent based on the type
-    /// </summary>
-    void SetAgentType()
-    {
-        var behaviorParams = GetComponent<Unity.MLAgents.Policies.BehaviorParameters>();
-        switch (typeOfWorm)
-        {
-            case WormAgentBehaviorType.WormDynamic:
-                {
-                    behaviorParams.BehaviorName = "WormDynamic"; //set behavior name
-                    if (wormDyModel)
-                        behaviorParams.Model = wormDyModel; //assign the brain
-                    SpawnTarget(dynamicTargetPrefab, transform.position); //spawn target
-                    break;
-                }
-            case WormAgentBehaviorType.WormStatic:
-                {
-                    behaviorParams.BehaviorName = "WormStatic"; //set behavior name
-                    if (wormStModel)
-                        behaviorParams.Model = wormStModel; //assign the brain
-                    SpawnTarget(staticTargetPrefab, transform.TransformPoint(new Vector3(0, 0, 1000))); //spawn target
-                    break;
-                }
-        }
     }
 
     /// <summary>

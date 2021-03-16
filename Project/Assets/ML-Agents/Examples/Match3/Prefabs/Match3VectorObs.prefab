@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 2118285884327540687}
   - component: {fileID: 2118285884327540680}
   - component: {fileID: 3357012711826686276}
+  - component: {fileID: 2164669533582273470}
   m_Layer: 0
   m_Name: Match3 Agent
   m_TagString: Untagged
@@ -181,3 +182,16 @@ MonoBehaviour:
   ActuatorName: Match3 Actuator
   RandomSeed: -1
   ForceHeuristic: 0
+--- !u!114 &2164669533582273470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2118285884327540673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugCommandLineOverride: 
