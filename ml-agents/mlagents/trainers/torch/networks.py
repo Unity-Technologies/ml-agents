@@ -1,7 +1,7 @@
 from typing import Callable, List, Dict, Tuple, Optional, Union
 import abc
 
-from mlagents.torch_utils import torch, nn, default_device
+from mlagents.torch_utils import torch, nn
 
 from mlagents_envs.base_env import ActionSpec, ObservationSpec
 from mlagents.trainers.torch.action_model import ActionModel
@@ -281,8 +281,10 @@ class MultiAgentNetworkBody(torch.nn.Module):
         for i_agent, single_agent_obs in enumerate(all_obs):
             no_nan_obs = []
             for obs in single_agent_obs:
-                with default_device():
+                # Clone to same device as obs
+                with torch.cuda.device_of(obs):
                     new_obs = obs.clone()
+                    print(obs.get_device(), new_obs.get_device())
                 new_obs[
                     attention_mask.type(torch.BoolTensor)[:, i_agent], ::
                 ] = 0.0  # Remoove NaNs fast
