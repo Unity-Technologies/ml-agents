@@ -57,10 +57,12 @@ namespace Unity.MLAgents.Editor
             {
                 var menu = new GenericMenu();
                 for (var i = 0; i < m_AvailableSettingsAssets.Length; i++)
+                {
                     menu.AddItem(ExtractDisplayName(m_AvailableSettingsAssets[i]), m_CurrentSelectedSettingsAsset == i, (path) =>
                     {
                         MLAgentsSettingsManager.Settings = AssetDatabase.LoadAssetAtPath<MLAgentsSettings>((string)path);
                     }, m_AvailableSettingsAssets[i]);
+                }
                 menu.AddSeparator("");
                 menu.AddItem(new GUIContent("New Settings Asset…"), false, CreateNewSettingsAsset);
                 menu.ShowAsContext();
@@ -77,7 +79,7 @@ namespace Unity.MLAgents.Editor
             if (name.EndsWith(".mlagents.settings"))
                 name = name.Substring(0, name.Length - ".settings".Length);
 
-            // Ugly hack: GenericMenu iterprets "/" as a submenu path. But luckily, "/" is not the only slash we have in Unicode.
+            // Ugly hack: GenericMenu interprets "/" as a submenu path. But luckily, "/" is not the only slash we have in Unicode.
             return new GUIContent(name.Replace("/", "\u29f8"));
         }
 
@@ -88,7 +90,9 @@ namespace Unity.MLAgents.Editor
             var path = EditorUtility.SaveFilePanel("Create ML-Agents Settings File", "Assets",
                 projectName + ".mlagents.settings", "asset");
             if (string.IsNullOrEmpty(path))
+            {
                 return;
+            }
 
             path = path.Replace("\\", "/"); // Make sure we only get '/' separators.
             var assetPath = Application.dataPath + "/";
@@ -101,8 +105,9 @@ namespace Unity.MLAgents.Editor
 
             var extension = Path.GetExtension(path);
             if (string.Compare(extension, ".asset", StringComparison.InvariantCultureIgnoreCase) != 0)
+            {
                 path += ".asset";
-
+            }
             var relativePath = "Assets/" + path.Substring(assetPath.Length);
             CreateNewSettingsAsset(relativePath);
         }

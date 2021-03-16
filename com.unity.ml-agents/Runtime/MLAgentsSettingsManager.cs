@@ -17,6 +17,7 @@ namespace Unity.MLAgents
         private static MLAgentsSettings s_Settings;
 
 
+        // setter will trigger callback for refreshing editor UI if using editor
         public static MLAgentsSettings Settings
         {
             get
@@ -72,7 +73,7 @@ namespace Unity.MLAgents
 #else
         internal static void InitializeInPlayer()
         {
-            s_Settings = Resources.FindObjectsOfTypeAll<MLAgentsSettings>().FirstOrDefault() ?? ScriptableObject.CreateInstance<MLAgentsSettings>();
+            Settings = Resources.FindObjectsOfTypeAll<MLAgentsSettings>().FirstOrDefault() ?? ScriptableObject.CreateInstance<MLAgentsSettings>();
         }
 #endif
 
