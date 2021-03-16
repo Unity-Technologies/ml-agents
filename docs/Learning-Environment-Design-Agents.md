@@ -29,7 +29,7 @@
   - [Rewards Summary & Best Practices](#rewards-summary--best-practices)
 - [Agent Properties](#agent-properties)
 - [Destroying an Agent](#destroying-an-agent)
-- [Defining Teams for Multi-agent Scenarios](#defining-teams-for-multi-agent-scenarios)
+- [Defining Multi-agent Scenarios](#defining-multi-agent-scenarios)
 - [Recording Demonstrations](#recording-demonstrations)
 
 An agent is an entity that can observe its environment, decide on the best
@@ -537,7 +537,7 @@ the padded observations. Note that attention layers are invariant to
 the order of the entities, so there is no need to properly "order" the
 entities before feeding them into the `BufferSensor`.
 
-The  the `BufferSensorComponent` Editor inspector have two arguments:
+The `BufferSensorComponent` Editor inspector has two arguments:
  - `Observation Size` : This is how many floats each entities will be
  represented with. This number is fixed and all entities must
  have the same representation. For example, if the entities you want to
@@ -602,23 +602,21 @@ If you assign an element in the array as the speed of an Agent, for example, the
 training process learns to control the speed of the Agent through this
 parameter.
 
-The [Reacher example](Learning-Environment-Examples.md#reacher) uses
+The [3DBall example](Learning-Environment-Examples.md#3dball-3d-balance-ball) uses
 continuous actions with four control values.
 
-![reacher](images/reacher.png)
+![3DBall](images/balance.png)
 
-These control values are applied as torques to the bodies making up the arm:
+These control values are applied as rotation to the cube:
 
 ```csharp
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        var torqueX = Mathf.Clamp(actionBuffers.ContinuousActions[0], -1f, 1f) * 150f;
-        var torqueZ = Mathf.Clamp(actionBuffers.ContinuousActions[1], -1f, 1f) * 150f;
-        m_RbA.AddTorque(new Vector3(torqueX, 0f, torqueZ));
+        var actionZ = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[0], -1f, 1f);
+        var actionX = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[1], -1f, 1f);
 
-        torqueX = Mathf.Clamp(actionBuffers.ContinuousActions[2], -1f, 1f) * 150f;
-        torqueZ = Mathf.Clamp(actionBuffers.ContinuousActions[3], -1f, 1f) * 150f;
-        m_RbB.AddTorque(new Vector3(torqueX, 0f, torqueZ));
+        gameObject.transform.Rotate(new Vector3(0, 0, 1), actionZ);
+        gameObject.transform.Rotate(new Vector3(1, 0, 0), actionX);
     }
 ```
 
@@ -904,7 +902,9 @@ is always at least one Agent training at all times by either spawning a new
 Agent every time one is destroyed or by re-spawning new Agents when the whole
 environment resets.
 
-## Defining Teams for Multi-agent Scenarios
+## Defining Multi-agent Scenarios
+
+### Teams for Adversarial Scenarios
 
 Self-play is triggered by including the self-play hyperparameter hierarchy in
 the [trainer configuration](Training-ML-Agents.md#training-configurations). To
@@ -930,6 +930,101 @@ and agent prefabs for our Tennis and Soccer environments. Tennis and Soccer
 provide examples of symmetric games. To train an asymmetric game, specify
 trainer configurations for each of your behavior names and include the self-play
 hyperparameter hierarchy in both.
+
+### Groups for Cooperative Scenarios
+
+Cooperative behavior in ML-Agents can be enabled by instantiating a `SimpleMultiAgentGroup`,
+typically in an environment controller or similar script, and adding agents to it
+using the `RegisterAgent(Agent agent)` method. Note that all agents added to the same `SimpleMultiAgentGroup`
+must have the same behavior name and Behavior Parameters. Using `SimpleMultiAgentGroup` enables the
+agents within a group to learn how to work together to achieve a common goal (i.e.,
+maximize a group-given reward), even if one or more of the group members are removed
+before the episode ends. You can then use this group to add/set rewards, end or interrupt episodes
+at a group level using the `AddGroupReward()`, `SetGroupReward()`, `EndGroupEpisode()`, and
+`GroupEpisodeInterrupted()` methods. For example:
+
+```csharp
+// Create a Multi Agent Group in Start() or Initialize()
+m_AgentGroup = new SimpleMultiAgentGroup();
+
+// Register agents in group at the beginning of an episode
+for (var agent in AgentList)
+{
+  m_AgentGroup.RegisterAgent(agent);
+}
+
+// if the team scores a goal
+m_AgentGroup.AddGroupReward(rewardForGoal);
+
+// If the goal is reached and the episode is over
+m_AgentGroup.EndGroupEpisode();
+ResetScene();
+
+// If time ran out and we need to interrupt the episode
+m_AgentGroup.GroupEpisodeInterrupted();
+ResetScene();
+```
+
+Multi Agent Groups should be used with the MA-POCA trainer, which is explicitly designed to train
+cooperative environments. This can be enabled by using the `poca` trainer - see the
+[training configurations](Training-Configuration-File.md) doc for more information on
+configuring MA-POCA. When using MA-POCA, agents which are deactivated or removed from the Scene
+during the episode will still learn to contribute to the group's long term rewards, even
+if they are not active in the scene to experience them.
+
+**NOTE**: Groups differ from Teams (for competitive settings) in the following way - Agents
+working together should be added to the same Group, while agents playing against each other
+should be given different Team Ids. If in the Scene there is one playing field and two teams,
+there should be two Groups, one for each team, and each team should be assigned a different
+Team Id. If this playing field is duplicated many times in the Scene (e.g. for training
+speedup), there should be two Groups _per playing field_, and two unique Team Ids
+_for the entire Scene_. In environments with both Groups and Team Ids configured, MA-POCA and
+self-play can be used together for training. In the diagram below, there are two agents on each team,
+and two playing fields where teams are pitted against each other. All the blue agents should share a Team Id
+(and the orange ones a different ID), and there should be four group managers, one per pair of agents.
+
+<p align="center">
+  <img src="images/groupmanager_teamid.png"
+       alt="Group Manager vs Team Id"
+       width="650" border="10" />
+</p>
+
+Please see the [SoccerTwos](Learning-Environment-Examples.md#soccer-twos) environment for an example.
+
+#### Cooperative Behaviors Notes and Best Practices
+* An agent can only be registered to one MultiAgentGroup at a time. If you want to re-assign an
+agent from one group to another, you have to unregister it from the current group first.
+
+* Agents with different behavior names in the same group are not supported.
+
+* Agents within groups should always set the `Max Steps` parameter in the Agent script to 0.
+Instead, handle Max Steps using the MultiAgentGroup by ending the episode for the entire
+Group using `GroupEpisodeInterrupted()`.
+
+* `EndGroupEpisode` and `GroupEpisodeInterrupted` do the same job in the game, but has
+slightly different effect on the training. If the episode is completed, you would want to call
+`EndGroupEpisode`. But if the episode is not over but it has been running for enough steps, i.e.
+reaching max step, you would call `GroupEpisodeInterrupted`.
+
+* If an agent finished earlier, e.g. completed tasks/be removed/be killed in the game, do not call
+`EndEpisode()` on the Agent. Instead, disable the agent and re-enable it when the next episode starts,
+or destroy the agent entirely. This is because calling `EndEpisode()` will call `OnEpisodeBegin()`, which
+will reset the agent immediately. While it is possible to call `EndEpisode()` in this way, it is usually not the
+desired behavior when training groups of agents.
+
+* If an agent that was disabled in a scene needs to be re-enabled, it must be re-registered to the MultiAgentGroup.
+
+* Group rewards are meant to reinforce agents to act in the group's best interest instead of
+individual ones, and are treated differently than individual agent rewards during
+training. So calling `AddGroupReward()` is not equivalent to calling agent.AddReward() on each agent
+in the group.
+
+* You can still add incremental rewards to agents using `Agent.AddReward()` if they are
+in a Group. These rewards will only be given to those agents and are received when the
+Agent is active.
+
+* Environments which use Multi Agent Groups can be trained using PPO or SAC, but agents will
+not be able to learn from group rewards after deactivation/removal, nor will they behave as cooperatively.
 
 ## Recording Demonstrations
 

@@ -3,6 +3,12 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 
+public enum Team
+{
+    Blue = 0,
+    Purple = 1
+}
+
 public class AgentSoccer : Agent
 {
     // Note that that the detectable tags are different for the blue and purple teams. The order is
@@ -12,11 +18,6 @@ public class AgentSoccer : Agent
     // * wall
     // * own teammate
     // * opposing player
-    public enum Team
-    {
-        Blue = 0,
-        Purple = 1
-    }
 
     public enum Position
     {
@@ -28,8 +29,6 @@ public class AgentSoccer : Agent
     [HideInInspector]
     public Team team;
     float m_KickPower;
-    int m_PlayerIndex;
-    public SoccerFieldArea area;
     // The coefficient for the reward for colliding with a ball. Set using curriculum.
     float m_BallTouch;
     public Position position;
@@ -39,14 +38,13 @@ public class AgentSoccer : Agent
     float m_LateralSpeed;
     float m_ForwardSpeed;
 
-    [HideInInspector]
-    public float timePenalty;
 
     [HideInInspector]
     public Rigidbody agentRb;
     SoccerSettings m_SoccerSettings;
     BehaviorParameters m_BehaviorParameters;
-    Vector3 m_Transform;
+    public Vector3 initialPos;
+    public float rotSign;
 
     EnvironmentParameters m_ResetParams;
 
@@ -57,12 +55,14 @@ public class AgentSoccer : Agent
         if (m_BehaviorParameters.TeamId == (int)Team.Blue)
         {
             team = Team.Blue;
-            m_Transform = new Vector3(transform.position.x - 4f, .5f, transform.position.z);
+            initialPos = new Vector3(transform.position.x - 5f, .5f, transform.position.z);
+            rotSign = 1f;
         }
         else
         {
             team = Team.Purple;
-            m_Transform = new Vector3(transform.position.x + 4f, .5f, transform.position.z);
+            initialPos = new Vector3(transform.position.x + 5f, .5f, transform.position.z);
+            rotSign = -1f;
         }
         if (position == Position.Goalie)
         {
@@ -82,16 +82,6 @@ public class AgentSoccer : Agent
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
         agentRb = GetComponent<Rigidbody>();
         agentRb.maxAngularVelocity = 500;
-
-        var playerState = new PlayerState
-        {
-            agentRb = agentRb,
-            startingPos = transform.position,
-            agentScript = this,
-        };
-        area.playerStates.Add(playerState);
-        m_PlayerIndex = area.playerStates.IndexOf(playerState);
-        playerState.playerIndex = m_PlayerIndex;
 
         m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
@@ -157,11 +147,6 @@ public class AgentSoccer : Agent
             // Existential penalty for Strikers
             AddReward(-m_Existential);
         }
-        else
-        {
-            // Existential penalty cumulant for Generic
-            timePenalty -= m_Existential;
-        }
         MoveAgent(actionBuffers.DiscreteActions);
     }
 
@@ -218,25 +203,7 @@ public class AgentSoccer : Agent
 
     public override void OnEpisodeBegin()
     {
-
-        timePenalty = 0;
         m_BallTouch = m_ResetParams.GetWithDefault("ball_touch", 0);
-        if (team == Team.Purple)
-        {
-            transform.rotation = Quaternion.Euler(0f, -90f, 0f);
-        }
-        else
-        {
-            transform.rotation = Quaternion.Euler(0f, 90f, 0f);
-        }
-        transform.position = m_Transform;
-        agentRb.velocity = Vector3.zero;
-        agentRb.angularVelocity = Vector3.zero;
-        SetResetParameters();
     }
 
-    public void SetResetParameters()
-    {
-        area.ResetBall();
-    }
 }

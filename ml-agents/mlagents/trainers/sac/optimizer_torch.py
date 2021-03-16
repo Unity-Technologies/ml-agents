@@ -635,7 +635,8 @@ class TorchSACOptimizer(TorchOptimizer):
 
     def get_modules(self):
         modules = {
-            "Optimizer:value_network": self.q_network,
+            "Optimizer:q_network": self.q_network,
+            "Optimizer:value_network": self._critic,
             "Optimizer:target_network": self.target_network,
             "Optimizer:policy_optimizer": self.policy_optimizer,
             "Optimizer:value_optimizer": self.value_optimizer,

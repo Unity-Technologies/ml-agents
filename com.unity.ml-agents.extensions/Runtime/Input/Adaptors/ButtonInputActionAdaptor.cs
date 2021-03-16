@@ -2,6 +2,7 @@
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.LowLevel;
 
 namespace Unity.MLAgents.Extensions.Input
@@ -26,11 +27,11 @@ namespace Unity.MLAgents.Extensions.Input
         }
 
         /// TODO again this might need to be more nuanced for things like continuous buttons.
-        /// <inheritdoc cref="IRLActionInputAdaptor.QueueInputEventForAction"/>
-        public void QueueInputEventForAction(InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
+        /// <inheritdoc cref="IRLActionInputAdaptor.WriteToInputEventForAction"/>
+        public void WriteToInputEventForAction(InputEventPtr eventPtr, InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
         {
             var val = actionBuffers.DiscreteActions[0];
-            InputSystem.QueueDeltaStateEvent(control, (byte)val);
+            ((ButtonControl)control).WriteValueIntoEvent((float)val, eventPtr);
         }
 
         /// <inheritdoc cref="IRLActionInputAdaptor.WriteToHeuristic"/>>
