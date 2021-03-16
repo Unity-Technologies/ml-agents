@@ -52,7 +52,13 @@ We run continuous integration on all PRs; all tests must be passing before the P
 
 Several static checks are run on the codebase using the
 [pre-commit framework](https://pre-commit.com/) during CI. To execute the same
-checks locally, run `pip install pre-commit` and then `pre-commit run --all-files`.
+checks locally, run:
+```bash
+pip install pre-commit>=2.8.0
+pip install identify>==2.1.3
+pre-commit run --all-files
+```
+
 Some hooks (for example, `black`) will output the corrected version of the code;
 others (like `mypy`) may require more effort to fix. You can optionally run
 `pre-commit install` to install it as a git hook; after this it will run on all
@@ -64,8 +70,8 @@ All python code should be formatted with
 [`black`](https://github.com/psf/black).
 
 C# code is formatted using [`dotnet-format`](https://github.com/dotnet/format).
-You must have [dotnet](https://dotnet.microsoft.com/download) and
-`dotnet-format` installed first.
+You must have [dotnet](https://dotnet.microsoft.com/download) installed first
+(but don't need to install `dotnet-format` - `pre-commit` will do that for you).
 
 ### Python type annotations
 
