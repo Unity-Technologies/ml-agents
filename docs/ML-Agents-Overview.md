@@ -613,7 +613,7 @@ they result in the individual being removed from the game (i.e., self-sacrifice)
 MA-POCA can also be combined with self-play to train teams of agents to play against each other.
 
 To learn more about enabling cooperative behaviors for agents in an ML-Agents environment,
-check out [this page](Learning-Environment-Design-Agents.md#cooperative-scenarios).
+check out [this page](Learning-Environment-Design-Agents.md#groups-for-cooperative-scenarios).
 
 For further reading, MA-POCA builds on previous work in multi-agent cooperative learning
 ([Lowe et al.](https://arxiv.org/abs/1706.02275), [Foerster et al.](https://arxiv.org/pdf/1705.08926.pdf),
