@@ -74,8 +74,15 @@ namespace Unity.MLAgents.Policies
         [HideInInspector, SerializeField]
         BrainParameters m_BrainParameters = new BrainParameters();
 
+        /// <summary>
+        /// Delegate for receiving events about Policy Updates.
+        /// </summary>
+        /// <param name="isInHeuristicMode">Whether or not the current policy is running in heuristic mode.</param>
         public delegate void PolicyUpdated(bool isInHeuristicMode);
 
+        /// <summary>
+        /// Event that fires when an Agent's policy is updated.
+        /// </summary>
         internal event PolicyUpdated OnPolicyUpdated;
 
         /// <summary>
@@ -221,16 +228,16 @@ namespace Unity.MLAgents.Policies
                                 "Either assign a model, or change to a different Behavior Type."
                             );
                         }
-                        return new BarracudaPolicy(actionSpec, m_Model, m_InferenceDevice, m_BehaviorName);
+                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName);
                     }
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
                     {
-                        return new RemotePolicy(actionSpec, FullyQualifiedBehaviorName);
+                        return new RemotePolicy(actionSpec, actuatorManager, FullyQualifiedBehaviorName);
                     }
                     if (m_Model != null)
                     {
-                        return new BarracudaPolicy(actionSpec, m_Model, m_InferenceDevice, m_BehaviorName);
+                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName);
                     }
                     else
                     {

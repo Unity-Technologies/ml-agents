@@ -15,14 +15,15 @@ test_linux_standalone_{{ editor.version }}:
     - unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
     - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux
     - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --scene=Assets/ML-Agents/Examples/Basic/Scenes/Basic.unity
-    - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --scene=Assets/ML-Agents/Examples/Bouncer/Scenes/Bouncer.unity
+    - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --scene=Assets/ML-Agents/Examples/Match3/Scenes/Match3.unity
     - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --scene=Assets/ML-Agents/Examples/WallJump/Scenes/WallJump.unity
     - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --scene=Assets/ML-Agents/TestScenes/TestCompressedGrid/TestGridCompressed.unity
     - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --scene=Assets/ML-Agents/TestScenes/TestCompressedTexture/TestTextureCompressed.unity
   triggers:
     cancel_old_ci: true
     expression: |
-      (pull_request.target eq "master" OR
+      (pull_request.target eq "main" OR
+       pull_request.target eq "v2-staging" OR
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR

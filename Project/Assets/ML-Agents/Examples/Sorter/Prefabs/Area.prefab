@@ -7073,8 +7073,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd8012d5925524537b27131fef517017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservableSize: 23
-  MaxNumObservables: 20
+  m_SensorName: BufferSensor
+  m_ObservableSize: 23
+  m_MaxNumObservables: 20
 --- !u!1 &6000518840957865293
 GameObject:
   m_ObjectHideFlags: 0

@@ -52,7 +52,7 @@ namespace Unity.MLAgents.Tests
         }
 
         [Test]
-        public void ApplyDiscreteActionOutput()
+        public void ApplyDiscreteActionOutputLegacy()
         {
             var actionSpec = ActionSpec.MakeDiscrete(2, 3);
             var inputTensor = new TensorProxy()
@@ -62,6 +62,36 @@ namespace Unity.MLAgents.Tests
                     2,
                     5,
                     new[] { 0.5f, 22.5f, 0.1f, 5f, 1f, 4f, 5f, 6f, 7f, 8f })
+            };
+            var alloc = new TensorCachingAllocator();
+            var applier = new LegacyDiscreteActionOutputApplier(actionSpec, 0, alloc);
+
+            var agentIds = new List<int>() { 0, 1 };
+            // Dictionary from AgentId to Action
+            var actionDict = new Dictionary<int, ActionBuffers>() { { 0, ActionBuffers.Empty }, { 1, ActionBuffers.Empty } };
+
+
+            applier.Apply(inputTensor, agentIds, actionDict);
+
+            Assert.AreEqual(actionDict[0].DiscreteActions[0], 1);
+            Assert.AreEqual(actionDict[0].DiscreteActions[1], 1);
+
+            Assert.AreEqual(actionDict[1].DiscreteActions[0], 1);
+            Assert.AreEqual(actionDict[1].DiscreteActions[1], 2);
+            alloc.Dispose();
+        }
+
+        [Test]
+        public void ApplyDiscreteActionOutput()
+        {
+            var actionSpec = ActionSpec.MakeDiscrete(2, 3);
+            var inputTensor = new TensorProxy()
+            {
+                shape = new long[] { 2, 2 },
+                data = new Tensor(
+                    2,
+                    2,
+                    new[] { 1f, 1f, 1f, 2f }),
             };
             var alloc = new TensorCachingAllocator();
             var applier = new DiscreteActionOutputApplier(actionSpec, 0, alloc);
@@ -82,7 +112,7 @@ namespace Unity.MLAgents.Tests
         }
 
         [Test]
-        public void ApplyHybridActionOutput()
+        public void ApplyHybridActionOutputLegacy()
         {
             var actionSpec = new ActionSpec(3, new[] { 2, 3 });
             var continuousInputTensor = new TensorProxy()
@@ -97,6 +127,49 @@ namespace Unity.MLAgents.Tests
                     2,
                     5,
                     new[] { 0.5f, 22.5f, 0.1f, 5f, 1f, 4f, 5f, 6f, 7f, 8f })
+            };
+            var continuousApplier = new ContinuousActionOutputApplier(actionSpec);
+            var alloc = new TensorCachingAllocator();
+            var discreteApplier = new LegacyDiscreteActionOutputApplier(actionSpec, 0, alloc);
+
+            var agentIds = new List<int>() { 0, 1 };
+            // Dictionary from AgentId to Action
+            var actionDict = new Dictionary<int, ActionBuffers>() { { 0, ActionBuffers.Empty }, { 1, ActionBuffers.Empty } };
+
+
+            continuousApplier.Apply(continuousInputTensor, agentIds, actionDict);
+            discreteApplier.Apply(discreteInputTensor, agentIds, actionDict);
+
+            Assert.AreEqual(actionDict[0].ContinuousActions[0], 1);
+            Assert.AreEqual(actionDict[0].ContinuousActions[1], 2);
+            Assert.AreEqual(actionDict[0].ContinuousActions[2], 3);
+            Assert.AreEqual(actionDict[0].DiscreteActions[0], 1);
+            Assert.AreEqual(actionDict[0].DiscreteActions[1], 1);
+
+            Assert.AreEqual(actionDict[1].ContinuousActions[0], 4);
+            Assert.AreEqual(actionDict[1].ContinuousActions[1], 5);
+            Assert.AreEqual(actionDict[1].ContinuousActions[2], 6);
+            Assert.AreEqual(actionDict[1].DiscreteActions[0], 1);
+            Assert.AreEqual(actionDict[1].DiscreteActions[1], 2);
+            alloc.Dispose();
+        }
+
+        [Test]
+        public void ApplyHybridActionOutput()
+        {
+            var actionSpec = new ActionSpec(3, new[] { 2, 3 });
+            var continuousInputTensor = new TensorProxy()
+            {
+                shape = new long[] { 2, 3 },
+                data = new Tensor(2, 3, new float[] { 1, 2, 3, 4, 5, 6 })
+            };
+            var discreteInputTensor = new TensorProxy()
+            {
+                shape = new long[] { 2, 2 },
+                data = new Tensor(
+                    2,
+                    2,
+                    new[] { 1f, 1f, 1f, 2f }),
             };
             var continuousApplier = new ContinuousActionOutputApplier(actionSpec);
             var alloc = new TensorCachingAllocator();

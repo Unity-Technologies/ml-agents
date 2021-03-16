@@ -68,16 +68,25 @@ class PPOTrainer(RLTrainer):
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
         agent_buffer_trajectory = trajectory.to_agentbuffer()
+        # Check if we used group rewards, warn if so.
+        self._warn_if_group_reward(agent_buffer_trajectory)
+
         # Update the normalization
         if self.is_training:
             self.policy.update_normalization(agent_buffer_trajectory)
 
         # Get all value estimates
-        value_estimates, value_next = self.optimizer.get_trajectory_value_estimates(
+        (
+            value_estimates,
+            value_next,
+            value_memories,
+        ) = self.optimizer.get_trajectory_value_estimates(
             agent_buffer_trajectory,
             trajectory.next_obs,
             trajectory.done_reached and not trajectory.interrupted,
         )
+        if value_memories is not None:
+            agent_buffer_trajectory[BufferKey.CRITIC_MEMORY].set(value_memories)
 
         for name, v in value_estimates.items():
             agent_buffer_trajectory[RewardSignalUtil.value_estimates_key(name)].extend(
@@ -178,7 +187,9 @@ class PPOTrainer(RLTrainer):
             int(self.hyperparameters.batch_size / self.policy.sequence_length), 1
         )
 
-        advantages = self.update_buffer[BufferKey.ADVANTAGES].get_batch()
+        advantages = np.array(
+            self.update_buffer[BufferKey.ADVANTAGES].get_batch(), dtype=np.float32
+        )
         self.update_buffer[BufferKey.ADVANTAGES].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10)
         )
@@ -255,7 +266,7 @@ class PPOTrainer(RLTrainer):
         self.model_saver.initialize_or_load()
 
         # Needed to resume loads properly
-        self.step = policy.get_current_step()
+        self._step = policy.get_current_step()
 
     def get_policy(self, name_behavior_id: str) -> Policy:
         """

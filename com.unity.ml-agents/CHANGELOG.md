@@ -9,17 +9,61 @@ and this project adheres to
 ## [Unreleased]
 ### Major Changes
 #### com.unity.ml-agents (C#)
+- Some methods previously marked as `Obsolete` have been removed. If you were using these methods, you need to replace them with their supported counterpart.
+- The interface for disabling discrete actions in `IDiscreteActionMask` has changed.
+`WriteMask(int branch, IEnumerable<int> actionIndices)` was replaced with
+`SetActionEnabled(int branch, int actionIndex, bool isEnabled)`. See the
+- IActuator now implements IHeuristicProvider. (#5110)
+[Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_14_docs/docs/Migrating.md) for more
+details. (#5060)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- The `.onnx` models input names have changed. All input placeholders will now use the prefix `obs_` removing the distinction between visual and vector observations. Models created with this version will not be usable with previous versions of the package (#5080)
+- The `.onnx` models discrete action output now contains the discrete actions values and not the logits. Models created with this version will not be usable with previous versions of the package (#5080)
 - Added ML-Agents package settings. (#5027)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-- The `encoding_size` setting for RewardSignals has been deprecated. Please use `network_settings` instead. (#4982)
+
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+
+
+## [1.9.0-preview] - 2021-03-17
+### Major Changes
+#### com.unity.ml-agents (C#)
+- The `BufferSensor` and `BufferSensorComponent` have been added. They allow the Agent to observe variable number of entities. (#4909)
+- The `SimpleMultiAgentGroup` class and `IMultiAgentGroup` interface have been added. These allow Agents to be given rewards and
+  end episodes in groups. (#4923)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- The MA-POCA trainer has been added. This is a new trainer that enables Agents to learn how to work together in groups. Configure
+  `poca` as the trainer in the configuration YAML after instantiating a `SimpleMultiAgentGroup` to use this feature. (#5005)
+
+### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Updated com.unity.barracuda to 1.3.2-preview. (#5084)
+- Make com.unity.modules.unityanalytics an optional dependency. (#5109)
+- Added 3D Ball to the `com.unity.ml-agents` samples. (#5077)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- The `encoding_size` setting for RewardSignals has been deprecated. Please use `network_settings` instead. (#4982)
+- Sensor names are now passed through to `ObservationSpec.name`. (#5036)
+
+### Bug Fixes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 - An issue that caused `GAIL` to fail for environments where agents can terminate episodes by self-sacrifice has been fixed. (#4971)
+- Made the error message when observations of different shapes are sent to the trainer clearer. (#5030)
+- An issue that prevented curriculums from incrementing with self-play has been fixed. (#5098)
+
+## [1.8.1-preview] - 2021-03-08
+### Minor Changes
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- The `cattrs` version dependency was updated to allow `>=1.1.0` on Python 3.8 or higher. (#4821)
+
+### Bug Fixes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Fix an issue where queuing InputEvents overwrote data from previous events in the same frame. (#5034)
 
 ## [1.8.0-preview] - 2021-02-17
 ### Major Changes
@@ -63,7 +107,7 @@ and this project adheres to
 - Added a `--torch-device` commandline option to `mlagents-learn`, which sets the default
   [`torch.device`](https://pytorch.org/docs/stable/tensor_attributes.html#torch.torch.device) used for training. (#4888)
 - The `--cpu` commandline option had no effect and was removed. Use `--torch-device=cpu` to force CPU training. (#4888)
-- The `mlagents_env` API has changed, `BehaviorSpec` now has a `observation_specs` property containing a list of `ObservationSpec`. For more information on `ObservationSpec` see [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Python-API.md#behaviorspec). (#4763, #4825)
+- The `mlagents_env` API has changed, `BehaviorSpec` now has a `observation_specs` property containing a list of `ObservationSpec`. For more information on `ObservationSpec` see [here](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Python-API.md#behaviorspec). (#4763, #4825)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
@@ -129,7 +173,7 @@ discrete actions for shooting. (#4746)
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
  - PyTorch trainers are now the default. See the
- [installation docs](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Installation.md) for
+ [installation docs](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Installation.md) for
  more information on installing PyTorch. For the time being, TensorFlow is still available;
  you can use the TensorFlow backend by adding `--tensorflow` to the CLI, or
  adding `framework: tensorflow` in the configuration YAML. (#4517)
@@ -138,7 +182,7 @@ discrete actions for shooting. (#4746)
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - The Barracuda dependency was upgraded to 1.1.2 (#4571)
 - Utilities were added to `com.unity.ml-agents.extensions` to make it easier to
-integrate with match-3 games. See the [readme](https://github.com/Unity-Technologies/ml-agents/blob/master/com.unity.ml-agents.extensions/Documentation~/Match3.md)
+integrate with match-3 games. See the [readme](https://github.com/Unity-Technologies/ml-agents/blob/main/com.unity.ml-agents.extensions/Documentation~/Match3.md)
 for more details. (#4515)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `action_probs` node is no longer listed as an output in TensorFlow models (#4613).
@@ -161,7 +205,7 @@ goes larger than 2^31. Previous Tensorflow checkpoints will become incompatible 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
  - Added the Random Network Distillation (RND) intrinsic reward signal to the Pytorch
  trainers. To use RND, add a `rnd` section to the `reward_signals` section of your
- yaml configuration file. [More information here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-Configuration-File.md#rnd-intrinsic-reward) (#4473)
+ yaml configuration file. [More information here](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Training-Configuration-File.md#rnd-intrinsic-reward) (#4473)
 ### Minor Changes
 #### com.unity.ml-agents (C#)
  - Stacking for compressed observations is now supported. An additional setting
@@ -280,11 +324,11 @@ first trajectory processed. (#4299)
 ### Major Changes
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The Parameter Randomization feature has been refactored to enable sampling of new parameters per episode to improve robustness. The
-  `resampling-interval` parameter has been removed and the config structure updated. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md). (#4065)
+  `resampling-interval` parameter has been removed and the config structure updated. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Training-ML-Agents.md). (#4065)
 - The Parameter Randomization feature has been merged with the Curriculum feature. It is now possible to specify a sampler
 in the lesson of a Curriculum. Curriculum has been refactored and is now specified at the level of the parameter, not the
 behavior. More information
-[here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md).(#4160)
+[here](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Training-ML-Agents.md).(#4160)
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)

@@ -15,5 +15,12 @@
         "Grpc.Core.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.modules.unityanalytics",
+            "expression": "1.0.0",
+            "define": "MLA_UNITY_ANALYTICS_MODULE"
+        }
+    ]
 }

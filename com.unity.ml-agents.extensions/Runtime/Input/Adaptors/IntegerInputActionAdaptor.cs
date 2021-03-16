@@ -17,11 +17,11 @@ namespace Unity.MLAgents.Extensions.Input
             return ActionSpec.MakeDiscrete(2);
         }
 
-        /// <inheritdoc cref="IRLActionInputAdaptor.QueueInputEventForAction"/>
-        public void QueueInputEventForAction(InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
+        /// <inheritdoc cref="IRLActionInputAdaptor.WriteToInputEventForAction"/>
+        public void WriteToInputEventForAction(InputEventPtr eventPtr, InputAction action, InputControl control, ActionSpec actionSpec, in ActionBuffers actionBuffers)
         {
             var val = actionBuffers.DiscreteActions[0];
-            InputSystem.QueueDeltaStateEvent(control, val);
+            control.WriteValueIntoEvent(val, eventPtr);
         }
 
         /// <inheritdoc cref="IRLActionInputAdaptor.WriteToHeuristic"/>

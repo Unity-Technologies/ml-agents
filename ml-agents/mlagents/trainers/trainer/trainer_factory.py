@@ -7,6 +7,7 @@ from mlagents.trainers.exception import TrainerConfigError
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
+from mlagents.trainers.poca.trainer import POCATrainer
 from mlagents.trainers.ghost.trainer import GhostTrainer
 from mlagents.trainers.ghost.controller import GhostController
 from mlagents.trainers.settings import TrainerSettings, TrainerType
@@ -114,6 +115,16 @@ class TrainerFactory:
 
         if trainer_type == TrainerType.PPO:
             trainer = PPOTrainer(
+                brain_name,
+                min_lesson_length,
+                trainer_settings,
+                train_model,
+                load_model,
+                seed,
+                trainer_artifact_path,
+            )
+        elif trainer_type == TrainerType.POCA:
+            trainer = POCATrainer(
                 brain_name,
                 min_lesson_length,
                 trainer_settings,

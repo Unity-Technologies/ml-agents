@@ -1,4 +1,8 @@
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#define MLA_SUPPORTED_TRAINING_PLATFORM
+#endif
+
+# if MLA_SUPPORTED_TRAINING_PLATFORM
 using Grpc.Core;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -8,11 +12,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Analytics;
 using Unity.MLAgents.CommunicatorObjects;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.SideChannels;
 using Google.Protobuf;
+
+using Unity.MLAgents.Analytics;
 
 namespace Unity.MLAgents
 {
@@ -90,6 +95,7 @@ namespace Unity.MLAgents
         /// <param name="initParametersOut">The External Initialization Parameters received.</param>
         public bool Initialize(CommunicatorInitParameters initParameters, out UnityRLInitParameters initParametersOut)
         {
+#if MLA_SUPPORTED_TRAINING_PLATFORM
             var academyParameters = new UnityRLInitializationOutputProto
             {
                 Name = initParameters.name,
@@ -139,7 +145,6 @@ namespace Unity.MLAgents
 
             var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
             var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
-
             TrainingAnalytics.SetTrainerInformation(pythonPackageVersion, pythonCommunicationVersion);
 
             var communicationIsCompatible = CheckCommunicationVersionsAreCompatible(
@@ -177,6 +182,10 @@ namespace Unity.MLAgents
             UpdateEnvironmentWithInput(input.RlInput);
             initParametersOut = initializationInput.RlInitializationInput.ToUnityRLInitParameters();
             return true;
+#else
+            initParametersOut = new UnityRLInitParameters();
+            return false;
+#endif
         }
 
         /// <summary>

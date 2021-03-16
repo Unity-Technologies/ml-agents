@@ -1,13 +1,22 @@
+#if MLA_UNITY_ANALYTICS_MODULE || !UNITY_2019_4_OR_NEWER
+#define MLA_UNITY_ANALYTICS_MODULE_ENABLED
+#endif
+
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
+#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
 using UnityEngine.Analytics;
+#if UNITY_EDITOR
+using UnityEditor.Analytics;
+#endif
+#endif
 
 #if UNITY_EDITOR
 using UnityEditor;
-using UnityEditor.Analytics;
 #endif
 
 namespace Unity.MLAgents.Analytics
@@ -56,22 +65,22 @@ namespace Unity.MLAgents.Analytics
 
         static bool EnableAnalytics()
         {
+#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
             if (s_EventsRegistered)
             {
                 return true;
             }
-
             foreach (var eventName in s_EventNames)
             {
 #if UNITY_EDITOR
                 AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(eventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
-#else
-                AnalyticsResult result = AnalyticsResult.UnsupportedPlatform;
-#endif
                 if (result != AnalyticsResult.Ok)
                 {
                     return false;
                 }
+#else
+                return false;
+#endif // UNITY_EDITOR
             }
             s_EventsRegistered = true;
 
@@ -83,6 +92,9 @@ namespace Unity.MLAgents.Analytics
             }
 
             return s_EventsRegistered;
+#else
+            return false;
+#endif // MLA_UNITY_ANALYTICS_MODULE_ENABLED
         }
 
         /// <summary>
@@ -90,6 +102,7 @@ namespace Unity.MLAgents.Analytics
         /// </summary>
         /// <param name="communicationVersion"></param>
         /// <param name="packageVersion"></param>
+        [Conditional("MLA_UNITY_ANALYTICS_MODULE_ENABLED")]
         public static void SetTrainerInformation(string packageVersion, string communicationVersion)
         {
             s_TrainerPackageVersion = packageVersion;
@@ -98,13 +111,14 @@ namespace Unity.MLAgents.Analytics
 
         public static bool IsAnalyticsEnabled()
         {
-#if UNITY_EDITOR
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE_ENABLED
             return EditorAnalytics.enabled;
 #else
             return false;
 #endif
         }
 
+        [Conditional("MLA_UNITY_ANALYTICS_MODULE_ENABLED")]
         public static void TrainingEnvironmentInitialized(TrainingEnvironmentInitializedEvent tbiEvent)
         {
             if (!IsAnalyticsEnabled())
@@ -126,20 +140,20 @@ namespace Unity.MLAgents.Analytics
             // Debug.Log(
             //     $"Would send event {k_TrainingEnvironmentInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
             // );
-#if UNITY_EDITOR
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE_ENABLED
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
                 EditorAnalytics.SendEventWithLimit(k_TrainingEnvironmentInitializedEventName, tbiEvent);
             }
-#else
-            return;
 #endif
         }
 
+        [Conditional("MLA_UNITY_ANALYTICS_MODULE_ENABLED")]
         public static void RemotePolicyInitialized(
             string fullyQualifiedBehaviorName,
             IList<ISensor> sensors,
-            ActionSpec actionSpec
+            ActionSpec actionSpec,
+            IList<IActuator> actuators
         )
         {
             if (!IsAnalyticsEnabled())
@@ -158,18 +172,16 @@ namespace Unity.MLAgents.Analytics
                 return;
             }
 
-            var data = GetEventForRemotePolicy(behaviorName, sensors, actionSpec);
+            var data = GetEventForRemotePolicy(behaviorName, sensors, actionSpec, actuators);
             // Note - to debug, use JsonUtility.ToJson on the event.
             // Debug.Log(
             //     $"Would send event {k_RemotePolicyInitializedEventName} with body {JsonUtility.ToJson(data, true)}"
             // );
-#if UNITY_EDITOR
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE_ENABLED
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
                 EditorAnalytics.SendEventWithLimit(k_RemotePolicyInitializedEventName, data);
             }
-#else
-            return;
 #endif
         }
 
@@ -185,6 +197,7 @@ namespace Unity.MLAgents.Analytics
             return fullyQualifiedBehaviorName.Substring(0, lastQuestionIndex);
         }
 
+        [Conditional("MLA_UNITY_ANALYTICS_MODULE_ENABLED")]
         public static void TrainingBehaviorInitialized(TrainingBehaviorInitializedEvent tbiEvent)
         {
             if (!IsAnalyticsEnabled())
@@ -210,7 +223,7 @@ namespace Unity.MLAgents.Analytics
             // Debug.Log(
             //     $"Would send event {k_TrainingBehaviorInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
             // );
-#if UNITY_EDITOR
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE_ENABLED
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
                 EditorAnalytics.SendEventWithLimit(k_TrainingBehaviorInitializedEventName, tbiEvent);
@@ -220,10 +233,12 @@ namespace Unity.MLAgents.Analytics
 #endif
         }
 
-        static RemotePolicyInitializedEvent GetEventForRemotePolicy(
+        internal static RemotePolicyInitializedEvent GetEventForRemotePolicy(
             string behaviorName,
             IList<ISensor> sensors,
-            ActionSpec actionSpec)
+            ActionSpec actionSpec,
+            IList<IActuator> actuators
+        )
         {
             var remotePolicyEvent = new RemotePolicyInitializedEvent();
 
@@ -236,6 +251,12 @@ namespace Unity.MLAgents.Analytics
             foreach (var sensor in sensors)
             {
                 remotePolicyEvent.ObservationSpecs.Add(EventObservationSpec.FromSensor(sensor));
+            }
+
+            remotePolicyEvent.ActuatorInfos = new List<EventActuatorInfo>(actuators.Count);
+            foreach (var actuator in actuators)
+            {
+                remotePolicyEvent.ActuatorInfos.Add(EventActuatorInfo.FromActuator(actuator));
             }
 
             remotePolicyEvent.MLAgentsEnvsVersion = s_TrainerPackageVersion;

@@ -8,6 +8,7 @@ from mlagents_envs.exception import UnityException
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
 from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.behavior_id_utils import GlobalAgentId
 
 
 class UnityPolicyException(UnityException):
@@ -33,6 +34,7 @@ class Policy:
         self.network_settings: NetworkSettings = trainer_settings.network_settings
         self.seed = seed
         self.previous_action_dict: Dict[str, np.ndarray] = {}
+        self.previous_memory_dict: Dict[str, np.ndarray] = {}
         self.memory_dict: Dict[str, np.ndarray] = {}
         self.normalize = trainer_settings.network_settings.normalize
         self.use_recurrent = self.network_settings.memory is not None
@@ -67,25 +69,39 @@ class Policy:
         return np.zeros((num_agents, self.m_size), dtype=np.float32)
 
     def save_memories(
-        self, agent_ids: List[str], memory_matrix: Optional[np.ndarray]
+        self, agent_ids: List[GlobalAgentId], memory_matrix: Optional[np.ndarray]
     ) -> None:
         if memory_matrix is None:
             return
 
+        # Pass old memories into previous_memory_dict
+        for agent_id in agent_ids:
+            if agent_id in self.memory_dict:
+                self.previous_memory_dict[agent_id] = self.memory_dict[agent_id]
+
         for index, agent_id in enumerate(agent_ids):
             self.memory_dict[agent_id] = memory_matrix[index, :]
 
-    def retrieve_memories(self, agent_ids: List[str]) -> np.ndarray:
+    def retrieve_memories(self, agent_ids: List[GlobalAgentId]) -> np.ndarray:
         memory_matrix = np.zeros((len(agent_ids), self.m_size), dtype=np.float32)
         for index, agent_id in enumerate(agent_ids):
             if agent_id in self.memory_dict:
                 memory_matrix[index, :] = self.memory_dict[agent_id]
         return memory_matrix
 
-    def remove_memories(self, agent_ids):
+    def retrieve_previous_memories(self, agent_ids: List[GlobalAgentId]) -> np.ndarray:
+        memory_matrix = np.zeros((len(agent_ids), self.m_size), dtype=np.float32)
+        for index, agent_id in enumerate(agent_ids):
+            if agent_id in self.previous_memory_dict:
+                memory_matrix[index, :] = self.previous_memory_dict[agent_id]
+        return memory_matrix
+
+    def remove_memories(self, agent_ids: List[GlobalAgentId]) -> None:
         for agent_id in agent_ids:
             if agent_id in self.memory_dict:
                 self.memory_dict.pop(agent_id)
+            if agent_id in self.previous_memory_dict:
+                self.previous_memory_dict.pop(agent_id)
 
     def make_empty_previous_action(self, num_agents: int) -> np.ndarray:
         """
@@ -98,19 +114,19 @@ class Policy:
         )
 
     def save_previous_action(
-        self, agent_ids: List[str], action_tuple: ActionTuple
+        self, agent_ids: List[GlobalAgentId], action_tuple: ActionTuple
     ) -> None:
         for index, agent_id in enumerate(agent_ids):
             self.previous_action_dict[agent_id] = action_tuple.discrete[index, :]
 
-    def retrieve_previous_action(self, agent_ids: List[str]) -> np.ndarray:
+    def retrieve_previous_action(self, agent_ids: List[GlobalAgentId]) -> np.ndarray:
         action_matrix = self.make_empty_previous_action(len(agent_ids))
         for index, agent_id in enumerate(agent_ids):
             if agent_id in self.previous_action_dict:
                 action_matrix[index, :] = self.previous_action_dict[agent_id]
         return action_matrix
 
-    def remove_previous_action(self, agent_ids):
+    def remove_previous_action(self, agent_ids: List[GlobalAgentId]) -> None:
         for agent_id in agent_ids:
             if agent_id in self.previous_action_dict:
                 self.previous_action_dict.pop(agent_id)

@@ -104,7 +104,7 @@ ml-agents Conda 환경이 활성화 되어있는지 확인하십시오)_:
 git clone https://github.com/Unity-Technologies/ml-agents.git
 ```
 
-만약 Git을 사용하고 싶지 않다면 언제든 [링크](https://github.com/Unity-Technologies/ml-agents/archive/master.zip)에서 모든 파일을 다운로드 할 수 있습니다.
+만약 Git을 사용하고 싶지 않다면 언제든 [링크](https://github.com/Unity-Technologies/ml-agents/archive/main.zip)에서 모든 파일을 다운로드 할 수 있습니다.
 
 `UnitySDK` 하위 디렉토리에는 프로젝트에 추가할 유니티 애셋이 포함되어 있습니다. 또한 시작하는데 도움이 되는 많은 [예제 환경](Learning-Environment-Examples.md)들이 있습니다.
 

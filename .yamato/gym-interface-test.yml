@@ -23,7 +23,8 @@ test_gym_interface_{{ editor.version }}:
     cancel_old_ci: true
     {% if editor.extra_test == "gym" %}
     expression: |
-      (pull_request.target eq "master" OR
+      (pull_request.target eq "main" OR
+       pull_request.target eq "v2-staging" OR
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR

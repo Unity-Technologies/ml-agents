@@ -22,9 +22,13 @@ namespace Unity.MLAgents.Tests.Actuators
 
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
+
             for (var i = 0; i < Masks.Length; i++)
             {
-                actionMask.WriteMask(i, Masks[i]);
+                foreach (var actionIndex in Masks[i])
+                {
+                    actionMask.SetActionEnabled(i, actionIndex, false);
+                }
             }
         }
 
