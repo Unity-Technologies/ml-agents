@@ -1,5 +1,242 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &161301779983801904
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3084142930283604803}
+  - component: {fileID: 7893899253060053071}
+  m_Layer: 10
+  m_Name: RaySensorBlueAgents
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &3084142930283604803
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161301779983801904}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6033637986218926083}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7893899253060053071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161301779983801904}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: TeammateBlueRayPerceptionSensor
+  m_DetectableTags:
+  - blueAgent
+  m_RaysPerDirection: 12
+  m_MaxRayDegrees: 160
+  m_SphereCastRadius: 1
+  m_RayLength: 60
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 1331
+  m_ObservationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
+--- !u!1 &922446411616811097
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4534212122170701232}
+  - component: {fileID: 1691792984321538705}
+  m_Layer: 10
+  m_Name: RaySensorPurpleAgents
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &4534212122170701232
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 922446411616811097}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6033637986218926083}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1691792984321538705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 922446411616811097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: OpponentBlueRayPerceptionSensor
+  m_DetectableTags:
+  - purpleAgent
+  m_RaysPerDirection: 12
+  m_MaxRayDegrees: 160
+  m_SphereCastRadius: 1
+  m_RayLength: 60
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 2355
+  m_ObservationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
+--- !u!1 &3555807687982913070
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2154900239737326374}
+  - component: {fileID: 3847391541845119253}
+  m_Layer: 10
+  m_Name: RaySensorBall
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &2154900239737326374
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3555807687982913070}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6033637986218926083}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3847391541845119253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3555807687982913070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: BallBlueRayPerceptionSensor
+  m_DetectableTags:
+  - ball
+  m_RaysPerDirection: 20
+  m_MaxRayDegrees: 160
+  m_SphereCastRadius: 1
+  m_RayLength: 60
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 819
+  m_ObservationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
+--- !u!1 &4271663842289902626
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6903292148076757099}
+  - component: {fileID: 3343228272183200124}
+  m_Layer: 10
+  m_Name: RaySensorEverything
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6903292148076757099
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4271663842289902626}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6033637986218926083}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3343228272183200124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4271663842289902626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: BlueRayPerceptionSensor
+  m_DetectableTags:
+  - ball
+  - blueGoal
+  - purpleGoal
+  - wall
+  - blueAgent
+  - purpleAgent
+  m_RaysPerDirection: 16
+  m_MaxRayDegrees: 160
+  m_SphereCastRadius: 1
+  m_RayLength: 60
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 3585
+  m_ObservationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!1 &6030327595305340077
 GameObject:
   m_ObjectHideFlags: 0
@@ -15,10 +252,7 @@ GameObject:
   - component: {fileID: 5921112085002027199}
   - component: {fileID: 6208698791010987259}
   - component: {fileID: 2699369445970917263}
-  - component: {fileID: 5918526098337498759}
-  - component: {fileID: 6166895040598452978}
-  - component: {fileID: 5154235608112411214}
-  - component: {fileID: 4580724097406181005}
+  - component: {fileID: 1575060282611693468}
   m_Layer: 10
   m_Name: BlueStriker
   m_TagString: blueAgent
@@ -38,7 +272,11 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6027426712508094869}
-  - {fileID: 4544914441785437329}
+  - {fileID: 3084142930283604803}
+  - {fileID: 4534212122170701232}
+  - {fileID: 8718814957555716854}
+  - {fileID: 2154900239737326374}
+  - {fileID: 6903292148076757099}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
@@ -84,12 +322,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 0
+    VectorObservationSize: 2
     NumStackedVectorObservations: 1
     m_ActionSpec:
-      m_NumContinuousActions: 3
+      m_NumContinuousActions: 5
       BranchSizes: 
-    VectorActionSize: 03000000
+    VectorActionSize: 05000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
@@ -122,6 +360,13 @@ MonoBehaviour:
   agentRb: {fileID: 0}
   initialPos: {x: 0, y: 0, z: 0}
   rotSign: 0
+  UseVectorObs: 1
+  UseActuatedRaycastSensor: 1
+  RaySensor: {fileID: 3343228272183200124}
+  MinMaxRayAngles: {x: 25, y: 160}
+  MinMaxSpherecastRadius: {x: 0.25, y: 1}
+  CurrentRayAngleLerp: 0.5
+  CurrentSpherecastRadiusLerp: 0.5
 --- !u!114 &6208698791010987259
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,7 +394,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugCommandLineOverride: 
---- !u!114 &5918526098337498759
+--- !u!114 &1575060282611693468
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -158,107 +403,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 6030327595305340077}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Script: {fileID: 11500000, guid: df0f8be9a37d6486498061e2cbc4cd94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SensorName: BallBlueRayPerceptionSensor
-  m_DetectableTags:
-  - ball
-  m_RaysPerDirection: 20
-  m_MaxRayDegrees: 160
-  m_SphereCastRadius: 1
-  m_RayLength: 60
-  m_RayLayerMask:
-    serializedVersion: 2
-    m_Bits: 819
-  m_ObservationStacks: 3
-  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
-  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  m_StartVerticalOffset: 0.5
-  m_EndVerticalOffset: 0.5
---- !u!114 &6166895040598452978
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6030327595305340077}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: TeammateBlueRayPerceptionSensor
-  m_DetectableTags:
-  - blueAgent
-  m_RaysPerDirection: 12
-  m_MaxRayDegrees: 160
-  m_SphereCastRadius: 1
-  m_RayLength: 60
-  m_RayLayerMask:
-    serializedVersion: 2
-    m_Bits: 1331
-  m_ObservationStacks: 3
-  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
-  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  m_StartVerticalOffset: 0.5
-  m_EndVerticalOffset: 0.5
---- !u!114 &5154235608112411214
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6030327595305340077}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: OpponentBlueRayPerceptionSensor
-  m_DetectableTags:
-  - purpleAgent
-  m_RaysPerDirection: 12
-  m_MaxRayDegrees: 160
-  m_SphereCastRadius: 1
-  m_RayLength: 60
-  m_RayLayerMask:
-    serializedVersion: 2
-    m_Bits: 2355
-  m_ObservationStacks: 3
-  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
-  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  m_StartVerticalOffset: 0.5
-  m_EndVerticalOffset: 0.5
---- !u!114 &4580724097406181005
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6030327595305340077}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: WallBlueRayPerceptionSensor
-  m_DetectableTags:
-  - wall
-  - blueGoal
-  - purpleGoal
-  m_RaysPerDirection: 5
-  m_MaxRayDegrees: 90
-  m_SphereCastRadius: 0.5
-  m_RayLength: 60
-  m_RayLayerMask:
-    serializedVersion: 2
-    m_Bits: 307
-  m_ObservationStacks: 3
-  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
-  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  m_StartVerticalOffset: 0.5
-  m_EndVerticalOffset: 0.5
+  RootBody: {fileID: 6013994672817233831}
+  VirtualRoot: {fileID: 6030327595305340077}
+  Settings:
+    UseModelSpaceTranslations: 0
+    UseModelSpaceRotations: 0
+    UseLocalSpaceTranslations: 1
+    UseLocalSpaceRotations: 1
+    UseModelSpaceLinearVelocity: 0
+    UseLocalSpaceLinearVelocity: 1
+    UseJointPositionsAndAngles: 0
+    UseJointForces: 0
+  sensorName: RBSensor
 --- !u!1 &6030755009428851883
 GameObject:
   m_ObjectHideFlags: 0
@@ -313,7 +472,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -325,7 +483,6 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -392,7 +549,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -404,7 +560,6 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -471,7 +626,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -483,7 +637,6 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -550,7 +703,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -562,7 +714,6 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -618,10 +769,9 @@ Camera:
   m_ClearFlags: 2
   m_BackGroundColor: {r: 0.46666667, g: 0.5647059, b: 0.60784316, a: 1}
   m_projectionMatrixMode: 1
-  m_GateFitMode: 2
-  m_FOVAxisMode: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
+  m_GateFitMode: 2
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -708,7 +858,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -720,7 +869,6 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -733,7 +881,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!1 &7803096889037966710
+--- !u!1 &8202368685770303340
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -741,48 +889,48 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4544914441785437329}
-  - component: {fileID: 7531414272779648763}
+  - component: {fileID: 8718814957555716854}
+  - component: {fileID: 1256050638380047572}
   m_Layer: 10
-  m_Name: BlueReverseRays
-  m_TagString: blueAgent
+  m_Name: RaySensorEnv
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4544914441785437329
+  m_IsActive: 0
+--- !u!4 &8718814957555716854
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7803096889037966710}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_GameObject: {fileID: 8202368685770303340}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6033637986218926083}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!114 &7531414272779648763
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1256050638380047572
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7803096889037966710}
+  m_GameObject: {fileID: 8202368685770303340}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SensorName: BackBlueRayPerceptionSensor
+  m_SensorName: WallBlueRayPerceptionSensor
   m_DetectableTags:
   - wall
   - blueGoal
   - purpleGoal
-  m_RaysPerDirection: 1
-  m_MaxRayDegrees: 20
+  m_RaysPerDirection: 5
+  m_MaxRayDegrees: 90
   m_SphereCastRadius: 0.5
   m_RayLength: 60
   m_RayLayerMask:

@@ -1,6 +1,8 @@
 using UnityEngine;
+using System.Collections.Generic;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
 
 public enum Team
@@ -49,6 +51,19 @@ public class AgentSoccer : Agent
 
     EnvironmentParameters m_ResetParams;
 
+
+    [Header("ACTUATED RAY SENSOR")]
+    //Actuated RayS
+    public bool UseVectorObs = true;
+    public bool UseActuatedRaycastSensor = false;
+    // public List<RayPerceptionSensorComponent3D> RaySensorsList = new List<RayPerceptionSensorComponent3D>();
+    public RayPerceptionSensorComponent3D RaySensor;
+
+    public Vector2 MinMaxRayAngles = new Vector2(25, 120);
+    public Vector2 MinMaxSpherecastRadius = new Vector2(.25f, 1);
+    public float CurrentRayAngleLerp = .5f;
+    public float CurrentSpherecastRadiusLerp = .5f;
+
     public override void Initialize()
     {
         m_Existential = 1f / MaxStep;
@@ -87,6 +102,33 @@ public class AgentSoccer : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
 
+    public override void CollectObservations(VectorSensor sensor)
+    {
+
+        if (UseVectorObs)
+        {
+            // // sensor.AddObservation((float)StepCount / (float)MaxStep); //Helps with credit assign?
+            // sensor.AddObservation(ThrowController.coolDownWait); //Held DBs Normalized
+            // sensor.AddObservation((float)currentNumberOfBalls/4); //Held DBs Normalized
+            // // sensor.AddObservation((float)HitPointsRemaining/(float)NumberOfTimesPlayerCanBeHit); //Remaining Hit Points Normalized
+            // sensor.AddObservation((float)HitPointsRemaining/(float)m_GameController.PlayerMaxHitPoints); //Remaining Hit Points Normalized
+            // sensor.AddObservation(Vector3.Dot(m_AgentRb.velocity, m_AgentRb.transform.forward)); //forward speed
+            // sensor.AddObservation(Vector3.Dot(m_AgentRb.velocity, m_AgentRb.transform.right)); //lateral speed
+            // sensor.AddObservation(m_AgentRb.angularVelocity);
+
+            if (UseActuatedRaycastSensor)
+            {
+                sensor.AddObservation(CurrentRayAngleLerp);
+                sensor.AddObservation(CurrentSpherecastRadiusLerp);
+            }
+        }
+    }
+
+    public void UpdateSensors()
+    {
+
+    }
+
     public void MoveAgent(ActionSegment<float> act)
     {
         var dirToGo = Vector3.zero;
@@ -106,10 +148,26 @@ public class AgentSoccer : Agent
         dirToGo += transform.right * right * m_LateralSpeed;
         rotateDir = -transform.up * rotate * m_RotateSpeed;
 
-        
+
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
         agentRb.AddForce(dirToGo * m_SoccerSettings.agentRunSpeed,
             ForceMode.VelocityChange);
+
+
+        // ACTUATED SENSOR STUFF
+        CurrentRayAngleLerp = (act[3] + 1)/2;
+        CurrentSpherecastRadiusLerp = (act[4] + 1)/2;
+        if (UseActuatedRaycastSensor)
+        {
+                RaySensor.MaxRayDegrees = Mathf.Lerp(MinMaxRayAngles.x, MinMaxRayAngles.y, CurrentRayAngleLerp);
+                RaySensor.SphereCastRadius = Mathf.Lerp(MinMaxSpherecastRadius.x, MinMaxSpherecastRadius.y, CurrentSpherecastRadiusLerp);
+
+            // foreach (var item in RaySensorsList)
+            // {
+            //     item.MaxRayDegrees = Mathf.Lerp(MinMaxRayAngles.x, MinMaxRayAngles.y, CurrentRayAngleLerp);
+            //     item.SphereCastRadius = Mathf.Lerp(MinMaxSpherecastRadius.x, MinMaxSpherecastRadius.y, CurrentSpherecastRadiusLerp);
+            // }
+        }
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
