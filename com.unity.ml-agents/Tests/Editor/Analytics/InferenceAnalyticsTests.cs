@@ -15,7 +15,7 @@ namespace Unity.MLAgents.Tests.Analytics
     [TestFixture]
     public class InferenceAnalyticsTests
     {
-        const string k_continuousONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action.onnx";
+        const string k_continuousONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action_v1_0.onnx";
         NNModel continuousONNXModel;
         Test3DSensorComponent sensor_21_20_3;
         Test3DSensorComponent sensor_20_22_3;
