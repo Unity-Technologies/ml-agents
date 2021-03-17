@@ -929,7 +929,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                     debugRayColor = DebugColors[detectableIndex];
                 }
 
-                CellActivity[cellIndex] = new Color(debugRayColor.r, debugRayColor.g, debugRayColor.b, .5f);
+                CellActivity[cellIndex] = new Color(debugRayColor.r, debugRayColor.g, debugRayColor.b, .15f);
             }
 
             switch (gridDepthType)
