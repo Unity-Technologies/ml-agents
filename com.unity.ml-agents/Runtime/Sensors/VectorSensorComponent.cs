@@ -6,7 +6,6 @@ namespace Unity.MLAgents.Sensors
     [AddComponentMenu("ML Agents/Vector Sensor", (int)MenuGroup.Sensors)]
     public class VectorSensorComponent : SensorComponent
     {
-
         /// <summary>
         /// Name of the generated <see cref="VectorSensor"/> object.
         /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
@@ -45,7 +44,7 @@ namespace Unity.MLAgents.Sensors
         /// <returns></returns>
         public override ISensor CreateSensor()
         {
-            m_sensor = new VectorSensor(m_observationSize, m_ObservationType, m_SensorName);
+            m_sensor = new VectorSensor(m_observationSize, m_SensorName, m_ObservationType);
             return m_sensor;
         }
 

@@ -36,7 +36,7 @@ namespace Unity.MLAgents.Sensors
             set { m_SensorName = value; }
         }
 
-        [HideInInspector, SerializeField, FormerlySerializedAs("observationType")]
+        [HideInInspector, SerializeField]
         ObservationType m_ObservationType;
 
         [HideInInspector, SerializeField, FormerlySerializedAs("width")]

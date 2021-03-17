@@ -56,7 +56,12 @@ namespace Unity.MLAgents.Sensors
         /// <param name="name">The name of the camera sensor.</param>
         /// <param name="compression">The compression to apply to the generated image.</param>
         public CameraSensor(
-            Camera camera, int width, int height, bool grayscale, string name, SensorCompressionType compression,
+            Camera camera,
+            int width,
+            int height,
+            bool grayscale,
+            string name,
+            SensorCompressionType compression,
             ObservationType observationType = ObservationType.Default)
         {
             m_Camera = camera;
