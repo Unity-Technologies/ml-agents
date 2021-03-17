@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b6c7faadd10084c3995ad9fff7aa8c54
+ScriptedImporter:
+  fileIDToRecycleName:
+    11400000: main obj
+    11400002: model data
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 683b6cb6d0a474744822c888b46772c9, type: 3}
+  optimizeModel: 1
+  forceArbitraryBatchSize: 1
+  treatErrorsAsWarnings: 0
+  importMode: 1
