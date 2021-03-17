@@ -1,4 +1,5 @@
 using System;
+using Unity.Collections;
 using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Sensors
@@ -17,7 +18,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         public override void InitChannelHotDefaultPerceptionBuffer()
         {
-            m_ChannelHotDefaultPerceptionBuffer = new float[ObservationPerCell];
+            m_ChannelHotDefaultPerceptionBuffer = new NativeArray<float>(ObservationPerCell, Allocator.Persistent);
         }
 
         /// <inheritdoc/>
@@ -44,6 +45,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// For each collider, calls LoadObjectData on the gameobejct
         /// </summary>
         /// <param name="foundColliders">The array of colliders</param>
+        /// <param name="numFound"></param>
         /// <param name="cellIndex">The cell index the collider is in</param>
         /// <param name="cellCenter">the center of the cell the collider is in</param>
         protected override void ParseColliders(Collider[] foundColliders, int numFound, int cellIndex, Vector3 cellCenter)
@@ -61,8 +63,11 @@ namespace Unity.MLAgents.Extensions.Sensors
 
                 closestColliderPoint = foundColliders[i].ClosestPointOnBounds(cellCenter);
 
-                LoadObjectData(currentColliderGo, cellIndex,
-                    Vector3.Distance(closestColliderPoint, transform.position) * InverseSphereRadius);
+                if (m_DetectableObjectToIndex.TryGetValue(currentColliderGo.tag, out var detectableIndex))
+                {
+                    LoadObjectData(currentColliderGo, cellIndex,
+                        detectableIndex, Vector3.Distance(closestColliderPoint, transform.position) * InverseSphereRadius);
+                }
             }
         }
 
@@ -83,32 +88,26 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         /// <param name="currentColliderGo">the current game object</param>
         /// <param name="cellIndex">the index of the cell</param>
+        /// <param name="detectableIndex"></param>
         /// <param name="normalizedDistance">the normalized distance from the gameobject to the sensor</param>
-        protected override void LoadObjectData(GameObject currentColliderGo, int cellIndex, float normalizedDistance)
+        protected override void LoadObjectData(GameObject currentColliderGo, int cellIndex, int detectableIndex, float normalizedDistance)
         {
-            for (int i = 0; i < DetectableObjects.Length; i++)
+            if (ShowGizmos)
             {
-                if (currentColliderGo != null && currentColliderGo.CompareTag(DetectableObjects[i]))
+                Color debugRayColor = Color.white;
+                if (DebugColors.Length > 0)
                 {
-                    if (ShowGizmos)
-                    {
-                        Color debugRayColor = Color.white;
-                        if (DebugColors.Length > 0)
-                        {
-                            debugRayColor = DebugColors[i];
-                        }
-                        CellActivity[cellIndex] = new Color(debugRayColor.r, debugRayColor.g, debugRayColor.b, .5f);
-                    }
-
-                    /// <remarks>
-                    /// The observations are "channel count" so each grid is WxHxC where C is the number of tags
-                    /// This means that each value channelValues[i] is a counter of gameobject included into grid cells where i is the index of the tag in DetectableObjects
-                    /// </remarks>
-                    int countIndex = cellIndex * ObservationPerCell + i;
-                    m_PerceptionBuffer[countIndex] = Mathf.Min(1f, m_PerceptionBuffer[countIndex] + 1f / ChannelDepth[i]);
-                    break;
+                    debugRayColor = DebugColors[detectableIndex];
                 }
+                CellActivity[cellIndex] = new Color(debugRayColor.r, debugRayColor.g, debugRayColor.b, .5f);
             }
+
+            // <remarks>
+            // The observations are "channel count" so each grid is WxHxC where C is the number of tags
+            // This means that each value channelValues[i] is a counter of gameobject included into grid cells where i is the index of the tag in DetectableObjects
+            // </remarks>
+            int countIndex = cellIndex * ObservationPerCell + detectableIndex;
+            m_PerceptionBuffer[countIndex] = Mathf.Min(1f, m_PerceptionBuffer[countIndex] + (1f / ChannelDepth[detectableIndex]));
         }
     }
 }
