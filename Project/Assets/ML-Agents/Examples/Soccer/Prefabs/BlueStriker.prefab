@@ -93,7 +93,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 564bcbe7c3d62405da7bc6d3b6942309, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: dedb26b9da620414b9d562d63a2d547d, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: SoccerTwos
