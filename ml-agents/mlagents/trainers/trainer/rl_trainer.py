@@ -263,7 +263,7 @@ class RLTrainer(Trainer):
         Warn if the trainer receives a Group Reward but isn't a multiagent trainer (e.g. POCA).
         """
         if not self._has_warned_group_rewards:
-            if not np.any(buffer[BufferKey.GROUP_REWARD]):
+            if np.any(buffer[BufferKey.GROUP_REWARD]):
                 logger.warning(
                     "An agent recieved a Group Reward, but you are not using a multi-agent trainer. "
                     "Please use the POCA trainer for best results."

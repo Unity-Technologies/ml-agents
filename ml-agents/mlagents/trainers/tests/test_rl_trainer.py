@@ -1,4 +1,5 @@
 import os
+import unittest
 from unittest import mock
 import pytest
 import mlagents.trainers.tests.mock_brain as mb
@@ -178,3 +179,34 @@ def test_summary_checkpoint(mock_add_checkpoint, mock_write_summary):
         for step in checkpoint_range
     ]
     mock_add_checkpoint.assert_has_calls(add_checkpoint_calls)
+
+
+class RLTrainerWarningTest(unittest.TestCase):
+    def test_warning_group_reward(self):
+        with self.assertLogs("mlagents.trainers", level="WARN") as cm:
+            rl_trainer = create_rl_trainer()
+            # This oone should warn
+            trajectory = mb.make_fake_trajectory(
+                length=10,
+                observation_specs=create_observation_specs_with_shapes([(1,)]),
+                max_step_complete=True,
+                action_spec=ActionSpec.create_discrete((2,)),
+                group_reward=1.0,
+            )
+            buff = trajectory.to_agentbuffer()
+            rl_trainer._warn_if_group_reward(buff)
+            assert len(cm.output) > 0
+            len_of_first_warning = len(cm.output)
+
+            rl_trainer = create_rl_trainer()
+            # This one shouldn't
+            trajectory = mb.make_fake_trajectory(
+                length=10,
+                observation_specs=create_observation_specs_with_shapes([(1,)]),
+                max_step_complete=True,
+                action_spec=ActionSpec.create_discrete((2,)),
+            )
+            buff = trajectory.to_agentbuffer()
+            rl_trainer._warn_if_group_reward(buff)
+            # Make sure warnings don't get bigger
+            assert len(cm.output) == len_of_first_warning
