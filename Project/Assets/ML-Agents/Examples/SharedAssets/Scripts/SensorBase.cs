@@ -51,9 +51,9 @@ namespace Unity.MLAgentsExamples
         }
 
         /// <inheritdoc/>
-        public virtual SensorCompressionType GetCompressionType()
+        public virtual CompressionSpec GetCompressionSpec()
         {
-            return SensorCompressionType.None;
+            return CompressionSpec.Default();
         }
     }
 }

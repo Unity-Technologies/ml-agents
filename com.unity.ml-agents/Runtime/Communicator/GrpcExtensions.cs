@@ -340,7 +340,7 @@ namespace Unity.MLAgents
         {
             var shape = sensor.GetObservationShape();
             ObservationProto observationProto = null;
-            var compressionType = sensor.GetCompressionType();
+            var compressionType = sensor.GetCompressionSpec().SensorCompressionType;
             // Check capabilities if we need to concatenate PNGs
             if (compressionType == SensorCompressionType.PNG && shape.Length == 3 && shape[2] > 3)
             {
@@ -409,13 +409,13 @@ namespace Unity.MLAgents
                     throw new UnityAgentsException(
                         $"GetCompressedObservation() returned null data for sensor named {sensor.GetName()}. " +
                         "You must return a byte[]. If you don't want to use compressed observations, " +
-                        "return SensorCompressionType.None from GetCompressionType()."
+                        "return CompressionSpec.Default() from GetCompressionSpec()."
                     );
                 }
                 observationProto = new ObservationProto
                 {
                     CompressedData = ByteString.CopyFrom(compressedObs),
-                    CompressionType = (CompressionTypeProto)sensor.GetCompressionType(),
+                    CompressionType = (CompressionTypeProto)sensor.GetCompressionSpec().SensorCompressionType,
                 };
                 var compressibleSensor = sensor as ISparseChannelSensor;
                 if (compressibleSensor != null)

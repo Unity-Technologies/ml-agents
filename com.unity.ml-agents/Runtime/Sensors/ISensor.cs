@@ -58,11 +58,11 @@ namespace Unity.MLAgents.Sensors
         void Reset();
 
         /// <summary>
-        /// Return the compression type being used. If no compression is used, return
-        /// <see cref="SensorCompressionType.None"/>.
+        /// Return information on the compression type being used. If no compression is used, return
+        /// <see cref="CompressionSpec.Default()"/>.
         /// </summary>
-        /// <returns>Compression type used by the sensor.</returns>
-        SensorCompressionType GetCompressionType();
+        /// <returns>CompressionSpec used by the sensor.</returns>
+        CompressionSpec GetCompressionSpec();
 
         /// <summary>
         /// Get the name of the sensor. This is used to ensure deterministic sorting of the sensors

@@ -490,9 +490,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <inheritdoc/>
-        public virtual SensorCompressionType GetCompressionType()
+        public virtual CompressionSpec GetCompressionSpec()
         {
-            return CompressionType;
+            return CompressionSpec.Compressed(CompressionType);
         }
 
         /// <inheritdoc/>

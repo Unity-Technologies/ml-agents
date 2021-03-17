@@ -81,7 +81,7 @@ namespace Unity.MLAgents.Sensors
                 m_StackedObservations[i] = new float[m_UnstackedObservationSize];
             }
 
-            if (m_WrappedSensor.GetCompressionType() != SensorCompressionType.None)
+            if (m_WrappedSensor.GetCompressionSpec().SensorCompressionType != SensorCompressionType.None)
             {
                 m_StackedCompressedObservations = new byte[numStackedObservations][];
                 m_EmptyCompressedObservation = CreateEmptyPNG();
@@ -156,7 +156,7 @@ namespace Unity.MLAgents.Sensors
             {
                 Array.Clear(m_StackedObservations[i], 0, m_StackedObservations[i].Length);
             }
-            if (m_WrappedSensor.GetCompressionType() != SensorCompressionType.None)
+            if (m_WrappedSensor.GetCompressionSpec().SensorCompressionType != SensorCompressionType.None)
             {
                 for (var i = 0; i < m_NumStackedObservations; i++)
                 {
@@ -205,13 +205,15 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public int[] GetCompressedChannelMapping()
         {
+            // TODO remove
             return m_CompressionMapping;
         }
 
-        /// <inheritdoc/>
-        public SensorCompressionType GetCompressionType()
+        public CompressionSpec GetCompressionSpec()
         {
-            return m_WrappedSensor.GetCompressionType();
+            var wrappedSpec = m_WrappedSensor.GetCompressionSpec();
+            wrappedSpec.CompressedChannelMapping = m_CompressionMapping;
+            return wrappedSpec;
         }
 
         /// <summary>

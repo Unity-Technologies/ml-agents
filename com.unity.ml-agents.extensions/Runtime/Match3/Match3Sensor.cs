@@ -214,12 +214,17 @@ namespace Unity.MLAgents.Extensions.Match3
         {
         }
 
-        /// <inheritdoc/>
-        public SensorCompressionType GetCompressionType()
+        internal SensorCompressionType GetCompressionType()
         {
             return m_ObservationType == Match3ObservationType.CompressedVisual ?
                 SensorCompressionType.PNG :
                 SensorCompressionType.None;
+        }
+
+        /// <inheritdoc/>
+        public CompressionSpec GetCompressionSpec()
+        {
+            return CompressionSpec.Compressed(GetCompressionType());
         }
 
         /// <inheritdoc/>
