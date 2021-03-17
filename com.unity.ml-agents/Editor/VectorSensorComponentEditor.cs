@@ -18,6 +18,7 @@ namespace Unity.MLAgents.Editor
             {
                 // These fields affect the sensor order or observation size,
                 // So can't be changed at runtime.
+                EditorGUILayout.PropertyField(so.FindProperty("m_SensorName"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_observationSize"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_ObservationType"), true);
             }

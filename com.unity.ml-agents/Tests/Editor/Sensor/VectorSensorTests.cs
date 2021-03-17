@@ -12,7 +12,7 @@ namespace Unity.MLAgents.Tests
             ISensor sensor = new VectorSensor(4);
             Assert.AreEqual("VectorSensor_size4", sensor.GetName());
 
-            sensor = new VectorSensor(3, "test_sensor");
+            sensor = new VectorSensor(3, name: "test_sensor");
             Assert.AreEqual("test_sensor", sensor.GetName());
         }
 
