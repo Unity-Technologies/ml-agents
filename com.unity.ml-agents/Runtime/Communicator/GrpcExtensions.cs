@@ -442,10 +442,15 @@ namespace Unity.MLAgents
                 }
             }
 
-            // Implement IEnumerable or IList?
             for (var i = 0; i < shape.Length; i++)
             {
                 observationProto.Shape.Add(shape[i]);
+            }
+
+            var sensorName = sensor.GetName();
+            if (!string.IsNullOrEmpty(sensorName))
+            {
+                observationProto.Name = sensorName;
             }
 
             observationProto.ObservationType = (ObservationTypeProto)obsSpec.ObservationType;
