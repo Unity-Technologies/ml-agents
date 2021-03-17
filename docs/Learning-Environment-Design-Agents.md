@@ -19,6 +19,8 @@
     - [RayCast Observation Summary & Best Practices](#raycast-observation-summary--best-practices)
   - [Variable Length Observations](#variable-length-observations)
     - [Variable Length Observation Summary & Best Practices](#variable-length-observation-summary--best-practices)
+  - [Goal Observations](#goal-observations)
+    - [Goal Observation Summary & Best Practices](#goal-observation-summary--best-practices)
 - [Actions and Actuators](#actions-and-actuators)
   - [Continuous Actions](#continuous-actions)
   - [Discrete Actions](#discrete-actions)
@@ -560,6 +562,35 @@ between -1 and 1.
  of an entity to the `BufferSensor`.
  - Normalize the entities observations before feeding them into the `BufferSensor`.
 
+### Goal Observations
+
+It is possible for agents to collect observations that will be treated as "goal".
+A goal is used to condition the policy of the Agent, meaning that if the goal
+changes, the behavior of the Agent will change as well. Note that this is true
+for any observation since all observations influence the policy of the Agent to
+some degree. But by specifying a goal explicitly, we can make this conditioning
+more important to the agent. This feature can be used in settings where an agent
+must learn to solve different tasks that are similar by some aspects because the
+agent will learn to reuse learnings from different tasks to generalize better.
+In Unity, you can specify that a `VectorSensor` or
+a `CameraSensor` is a goal by attaching a `VectorSensorComponent` or a
+`CameraSensorComponent` to the Agent can selecting `Goal` as `Observation Type`.
+On the trainer side, there are two different ways to condition the policy. This
+setting is determined by the
+[conditioning_type parameter](Training-Configuration-File.md#common-trainer-configurations).
+If set to `default` the goals will be considered as regular observations. If set to
+`hyper` a [HyperNetwork](https://arxiv.org/pdf/1609.09106.pdf)
+will be used to generate some of the
+weights of the policy using the goal observations as input. Note that using a
+HyperNetwork requires a lot of computations, it is recommended to use a smaller
+number of hidden units in the policy to alleviate this.
+
+#### Goal Observation Summary & Best Practices
+ - Attach a `VectorSensorComponent` or `CameraSensorComponent` to an agent and
+ set the observation type to goal to use the feature.
+ - Set the conditioning_type parameter in the training configuration.
+ - Reduce the number of hidden units in the network when using the HyperNetwork
+ conditioning type.
 
 ## Actions and Actuators
 
