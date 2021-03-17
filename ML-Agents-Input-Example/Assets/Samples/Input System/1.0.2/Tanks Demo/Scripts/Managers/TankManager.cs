@@ -47,7 +47,6 @@ public class TankManager
             var bp = instance.GetComponent<BehaviorParameters>();
             bp.BehaviorType = BehaviorType.HeuristicOnly;
             Reset(instance.transform);
-            instance.GetComponent<InputActuatorComponent>().UpdateDeviceBinding(true);
         }
 
         // Set the player numbers to be consistent across the scripts.

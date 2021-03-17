@@ -8,6 +8,7 @@ using UnityEngine.Profiling;
 using Unity.Jobs;
 using UnityEngine.Jobs;
 using Unity.Burst;
+using Unity.Collections.LowLevel.Unsafe;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -327,10 +328,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             var sphereRadiusX = (CellScaleX * GridNumSideX) / Mathf.Sqrt(2);
             var sphereRadiusZ = (CellScaleZ * GridNumSideZ) / Mathf.Sqrt(2);
             InverseSphereRadius = 1.0f / Mathf.Max(sphereRadiusX, sphereRadiusZ);
-            if (ChannelOffsets.IsCreated)
-            {
-                ChannelOffsets.Dispose();
-            }
+            DisposeNativeArray(ChannelOffsets);
             ChannelOffsets = new NativeArray<int>(ChannelDepth.Length, Allocator.Persistent);
             DiffNumSideZX = (GridNumSideZ - GridNumSideX);
             OffsetGridNumSide = (GridNumSideZ - 1f) / 2f;
@@ -423,8 +421,8 @@ namespace Unity.MLAgents.Extensions.Sensors
             if (m_PerceptionBuffer.IsCreated)
             {
                 m_boxcastJobHandle.Complete();
-                m_PerceptionBuffer.Dispose();
             }
+            DisposeNativeArray(m_PerceptionBuffer);
             m_PerceptionBuffer = new NativeArray<float>(NumberOfObservations, Allocator.Persistent);
             if (gridDepthType == GridDepthType.ChannelHot)
             {
@@ -441,11 +439,13 @@ namespace Unity.MLAgents.Extensions.Sensors
                 NumImages += 1;
 
             m_ChannelBuffer = new float[ChannelDepth.Length];
-            if (CellActivity.IsCreated)
-            {
-                CellActivity.Dispose();
-            }
+            DisposeNativeArray(CellActivity);
             CellActivity = new NativeArray<Color>(NumCells, Allocator.Persistent);
+        }
+
+        void OnEnable()
+        {
+            Start();
         }
 
         /// <summary>
@@ -458,22 +458,13 @@ namespace Unity.MLAgents.Extensions.Sensors
             InitDepthType();
             InitCellPoints();
             InitPerceptionBuffer();
-            if (m_Hits.IsCreated)
-            {
-                m_Hits.Dispose();
-            }
+            DisposeNativeArray(m_Hits);
             m_Hits = new NativeArray<RaycastHit>(NumCells, Allocator.Persistent);
 
-            if (m_HitIndexes.IsCreated)
-            {
-                m_HitIndexes.Dispose();
-            }
+            DisposeNativeArray(m_HitIndexes);
             m_HitIndexes = new NativeArray<int>(NumCells, Allocator.Persistent);
 
-            if (m_BoxcastCommands.IsCreated)
-            {
-                m_BoxcastCommands.Dispose();
-            }
+            DisposeNativeArray(m_BoxcastCommands);
             m_BoxcastCommands = new NativeArray<BoxcastCommand>(NumCells, Allocator.Persistent);
 
             for (var i = 0; i < DetectableObjects.Length; i++)
@@ -567,14 +558,26 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         void OnDisable()
         {
-            m_Hits.Dispose();
-            m_HitIndexes.Dispose();
-            m_BoxcastCommands.Dispose();
-            m_PerceptionBuffer.Dispose();
-            CellActivity.Dispose();
-            CellPoints.Dispose();
-            m_ChannelHotDefaultPerceptionBuffer.Dispose();
-            ChannelOffsets.Dispose();
+        }
+
+        void OnDestroy()
+        {
+            DisposeNativeArray(m_Hits);
+            DisposeNativeArray(m_HitIndexes);
+            DisposeNativeArray(m_BoxcastCommands);
+            DisposeNativeArray(CellActivity);
+            DisposeNativeArray(CellPoints);
+            DisposeNativeArray(m_ChannelHotDefaultPerceptionBuffer);
+            DisposeNativeArray(ChannelOffsets);
+        }
+
+        static void DisposeNativeArray<TD>(NativeArray<TD> array)
+        where TD : struct
+        {
+            if (array.IsCreated)
+            {
+                array.Dispose();
+            }
         }
 
         /// <summary>Gets the shape of the grid observation</summary>
@@ -663,11 +666,11 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 var cellCenter = Pos + CellPoints[index];
                 var rotation = Quaternion.identity;
-                Commands[index] = new BoxcastCommand(new Vector3(cellCenter.x, cellCenter.y - 2.0f, cellCenter.z),
+                Commands[index] = new BoxcastCommand(new Vector3(cellCenter.x, cellCenter.y + 2.0f, cellCenter.z),
                     halfScale,
                     rotation,
-                    Vector3.up,
-                    2.0f,
+                    Vector3.down,
+                    10.0f,
                     ObserveMask);
 
             }
@@ -690,11 +693,11 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 var cellCenter = Mat.MultiplyPoint(CellPoints[index]);
                 var rotation = Rotation;
-                Commands[index] = new BoxcastCommand(new Vector3(cellCenter.x, cellCenter.y - 2.0f, cellCenter.z),
+                Commands[index] = new BoxcastCommand(new Vector3(cellCenter.x, cellCenter.y + 7.0f, cellCenter.z),
                     halfScale,
                     rotation,
-                    Vector3.up,
-                    2.0f,
+                    Vector3.down,
+                    10.0f,
                     ObserveMask);
 
             }
@@ -716,6 +719,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             Profiler.BeginSample("GridSensor.Perceive");
             {
+                m_boxcastJobHandle.Complete();
                 JobHandle clearHandle;
                 if (gridDepthType == GridDepthType.ChannelHot)
                 {
@@ -744,7 +748,8 @@ namespace Unity.MLAgents.Extensions.Sensors
                         CellActivity = CellActivity,
                         DebugDefault = DebugDefaultColor
                     };
-                    clearHandle = JobHandle.CombineDependencies(clearHandle, gizmoJob.Schedule(NumCells, NumCells / 12));
+                    var gizmoHandle = gizmoJob.Schedule(NumCells, NumCells / 12);
+                    clearHandle = JobHandle.CombineDependencies(clearHandle, gizmoHandle);
                 }
 
                 var t = transform;
@@ -794,38 +799,45 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="cellCenter">The center position of the cell</param>
         protected virtual void ParseColliders(Collider[] foundColliders, int numFound, int cellIndex, Vector3 cellCenter)
         {
-            Profiler.BeginSample("GridSensor.ParseColliders");
-            GameObject closestColliderGo = null;
-            var minDistanceSquared = float.MaxValue;
-
-            var detectableIndex = -1;
-            for (var i = 0; i < numFound; i++)
-            {
-                if (ReferenceEquals(foundColliders[i], null))
-                {
-                    continue;
-                }
-                var currentColliderGo = foundColliders[i].gameObject;
-
-                // Continue if the current collider go is the root reference
-                if (ReferenceEquals(currentColliderGo, rootReference))
-                    continue;
-
-                var closestColliderPoint = foundColliders[i].ClosestPointOnBounds(cellCenter);
-                var currentDistanceSquared = (closestColliderPoint - rootReference.transform.position).sqrMagnitude;
-                Profiler.EndSample();
-
-                // Checks if our colliders contain a detectable object
-                if (m_DetectableObjectToIndex.TryGetValue(currentColliderGo.tag, out detectableIndex) && currentDistanceSquared < minDistanceSquared)
-                {
-                    minDistanceSquared = currentDistanceSquared;
-                    closestColliderGo = currentColliderGo;
-                }
-            }
-
-            if (!ReferenceEquals(closestColliderGo, null))
-                LoadObjectData(closestColliderGo, cellIndex, detectableIndex, (float)Math.Sqrt(minDistanceSquared) * InverseSphereRadius);
-            Profiler.EndSample();
+            // Profiler.BeginSample("GridSensor.ParseColliders");
+            // GameObject closestColliderGo = null;
+            // var minDistanceSquared = float.MaxValue;
+            //
+            // var detectableIndex = -1;
+            // for (var i = 0; i < numFound; i++)
+            // {
+            //     if (ReferenceEquals(foundColliders[i], null))
+            //     {
+            //         continue;
+            //     }
+            //     var currentColliderGo = foundColliders[i].gameObject;
+            //
+            //     // Continue if the current collider go is the root reference
+            //     if (ReferenceEquals(currentColliderGo, rootReference))
+            //         continue;
+            //
+            //     var closestColliderPoint = foundColliders[i].ClosestPointOnBounds(cellCenter);
+            //     var currentDistanceSquared = (closestColliderPoint - rootReference.transform.position).sqrMagnitude;
+            //     Profiler.EndSample();
+            //
+            //     // Checks if our colliders contain a detectable object
+            //     if (m_DetectableObjectToIndex.TryGetValue(currentColliderGo.tag, out detectableIndex) && currentDistanceSquared < minDistanceSquared)
+            //     {
+            //     }
+            //     for (var ii = 0; ii < DetectableObjects.Length; ii++)
+            //     {
+            //         if (currentColliderGo.CompareTag(DetectableObjects[ii]))
+            //         {
+            //             minDistanceSquared = currentDistanceSquared;
+            //             closestColliderGo = currentColliderGo;
+            //             break;
+            //         }
+            //     }
+            // }
+            //
+            // if (!ReferenceEquals(closestColliderGo, null))
+            //     LoadObjectData(closestColliderGo, cellIndex, detectableIndex, (float)Math.Sqrt(minDistanceSquared) * InverseSphereRadius);
+            // Profiler.EndSample();
         }
 
         /// <summary>
@@ -1035,7 +1047,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 UpdateBufferFromJob();
 
                 var scale = new Vector3(CellScaleX, CellScaleY, CellScaleZ);
-                var offset = new Vector3(0, GizmoYOffset, 0);
+                var offset = new Vector3(0, 7.0f, 0);
                 var oldGizmoMatrix = Gizmos.matrix;
                 for (var i = 0; i < NumCells; i++)
                 {
