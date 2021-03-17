@@ -6,7 +6,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// A sensor that wraps a Camera object to generate visual observations for an agent.
     /// </summary>
-    public class CameraSensor : ISensor, IBuiltInSensor, IDimensionPropertiesSensor
+    public class CameraSensor : ISensor, ITypedSensor, IBuiltInSensor, IDimensionPropertiesSensor
     {
         Camera m_Camera;
         int m_Width;
@@ -15,6 +15,7 @@ namespace Unity.MLAgents.Sensors
         string m_Name;
         int[] m_Shape;
         SensorCompressionType m_CompressionType;
+        ObservationType m_ObservationType;
         static DimensionProperty[] s_DimensionProperties = new DimensionProperty[] {
             DimensionProperty.TranslationalEquivariance,
             DimensionProperty.TranslationalEquivariance,
@@ -38,6 +39,12 @@ namespace Unity.MLAgents.Sensors
             set { m_CompressionType = value; }
         }
 
+        public ObservationType ObservationType
+        {
+            get { return m_ObservationType; }
+            set { m_ObservationType = value; }
+        }
+
 
         /// <summary>
         /// Creates and returns the camera sensor.
@@ -49,7 +56,8 @@ namespace Unity.MLAgents.Sensors
         /// <param name="name">The name of the camera sensor.</param>
         /// <param name="compression">The compression to apply to the generated image.</param>
         public CameraSensor(
-            Camera camera, int width, int height, bool grayscale, string name, SensorCompressionType compression)
+            Camera camera, int width, int height, bool grayscale, string name, SensorCompressionType compression,
+            ObservationType observationType = ObservationType.Default)
         {
             m_Camera = camera;
             m_Width = width;
@@ -58,6 +66,7 @@ namespace Unity.MLAgents.Sensors
             m_Name = name;
             m_Shape = GenerateShape(width, height, grayscale);
             m_CompressionType = compression;
+            m_ObservationType = observationType;
         }
 
         /// <summary>
@@ -67,6 +76,12 @@ namespace Unity.MLAgents.Sensors
         public string GetName()
         {
             return m_Name;
+        }
+
+        /// <inheritdoc/>
+        public virtual ObservationType GetObservationType()
+        {
+            return m_ObservationType;
         }
 
         /// <summary>
