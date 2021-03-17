@@ -578,12 +578,12 @@ a `CameraSensor` is a goal by attaching a `VectorSensorComponent` or a
 On the trainer side, there are two different ways to condition the policy. This
 setting is determined by the
 [conditioning_type parameter](Training-Configuration-File.md#common-trainer-configurations).
-If set to `default` the goals will be considered as regular observations. If set to
-`hyper` a [HyperNetwork](https://arxiv.org/pdf/1609.09106.pdf)
+If set to `hyper` (default) a [HyperNetwork](https://arxiv.org/pdf/1609.09106.pdf)
 will be used to generate some of the
 weights of the policy using the goal observations as input. Note that using a
 HyperNetwork requires a lot of computations, it is recommended to use a smaller
 number of hidden units in the policy to alleviate this.
+If set to `none` the goals will be considered as regular observations.
 
 #### Goal Observation Summary & Best Practices
  - Attach a `VectorSensorComponent` or `CameraSensorComponent` to an agent and
