@@ -19,7 +19,6 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.x'
-    - run: dotnet tool install -g dotnet-format --version 4.1.131201
     - uses: pre-commit/action@v2.0.0
 
   markdown-link-check:

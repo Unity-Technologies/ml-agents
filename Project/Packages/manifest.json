@@ -1,12 +1,10 @@
 {
   "dependencies": {
     "com.unity.ads": "2.0.8",
-    "com.unity.analytics": "3.2.3",
     "com.unity.collab-proxy": "1.2.15",
     "com.unity.ml-agents": "file:../../com.unity.ml-agents",
     "com.unity.ml-agents.extensions": "file:../../com.unity.ml-agents.extensions",
     "com.unity.package-manager-ui": "2.0.13",
-    "com.unity.purchasing": "2.2.1",
     "com.unity.textmeshpro": "1.4.1",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
