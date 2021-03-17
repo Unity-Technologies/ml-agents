@@ -92,7 +92,7 @@ namespace Unity.MLAgents.Sensors
                 m_CompressionMapping = ConstructStackedCompressedChannelMapping(wrapped);
             }
 
-            if (m_WrappedSpec.NumDimensions != 1)
+            if (m_WrappedSpec.Rank != 1)
             {
                 var wrappedShape = m_WrappedSpec.Shape;
                 m_tensorShape = new TensorShape(0, wrappedShape[0], wrappedShape[1], wrappedShape[2]);
@@ -108,7 +108,7 @@ namespace Unity.MLAgents.Sensors
 
             // Now write the saved observations (oldest first)
             var numWritten = 0;
-            if (m_WrappedSpec.NumDimensions == 1)
+            if (m_WrappedSpec.Rank == 1)
             {
                 for (var i = 0; i < m_NumStackedObservations; i++)
                 {

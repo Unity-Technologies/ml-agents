@@ -11,7 +11,7 @@ namespace Unity.MLAgents.Tests
         public void TestVectorObsSpec()
         {
             var obsSpec = ObservationSpec.Vector(5);
-            Assert.AreEqual(1, obsSpec.NumDimensions);
+            Assert.AreEqual(1, obsSpec.Rank);
 
             var shape = obsSpec.Shape;
             Assert.AreEqual(1, shape.Length);
@@ -28,7 +28,7 @@ namespace Unity.MLAgents.Tests
         public void TestVariableLengthObsSpec()
         {
             var obsSpec = ObservationSpec.VariableLength(5, 6);
-            Assert.AreEqual(2, obsSpec.NumDimensions);
+            Assert.AreEqual(2, obsSpec.Rank);
 
             var shape = obsSpec.Shape;
             Assert.AreEqual(2, shape.Length);
@@ -47,7 +47,7 @@ namespace Unity.MLAgents.Tests
         public void TestVisualObsSpec()
         {
             var obsSpec = ObservationSpec.Visual(5, 6, 7);
-            Assert.AreEqual(3, obsSpec.NumDimensions);
+            Assert.AreEqual(3, obsSpec.Rank);
 
             var shape = obsSpec.Shape;
             Assert.AreEqual(3, shape.Length);

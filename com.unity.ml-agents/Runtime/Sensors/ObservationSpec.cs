@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Sensors
     /// </summary>
     public struct ObservationSpec
     {
-        internal InplaceArray<int> m_Shape;
+        internal readonly InplaceArray<int> m_Shape;
 
         /// <summary>
         /// The size of the observations that will be generated.
@@ -21,7 +21,7 @@ namespace Unity.MLAgents.Sensors
             get => m_Shape;
         }
 
-        internal InplaceArray<DimensionProperty> m_DimensionProperties;
+        internal readonly InplaceArray<DimensionProperty> m_DimensionProperties;
 
         /// <summary>
         /// The properties of each dimensions of the observation.
@@ -36,16 +36,21 @@ namespace Unity.MLAgents.Sensors
             get => m_DimensionProperties;
         }
 
+        internal ObservationType m_ObservationType;
+
         /// <summary>
         /// The type of the observation, e.g. whether they are generic or
         /// help determine the goal for the Agent.
         /// </summary>
-        public ObservationType ObservationType;
+        public ObservationType ObservationType
+        {
+            get => m_ObservationType;
+        }
 
         /// <summary>
         /// The number of dimensions of the observation.
         /// </summary>
-        public int NumDimensions
+        public int Rank
         {
             get { return Shape.Length; }
         }
@@ -125,7 +130,7 @@ namespace Unity.MLAgents.Sensors
             }
             m_Shape = shape;
             m_DimensionProperties = dimensionProperties;
-            ObservationType = observationType;
+            m_ObservationType = observationType;
         }
     }
 }

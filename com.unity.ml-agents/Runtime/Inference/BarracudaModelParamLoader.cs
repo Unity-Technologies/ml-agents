@@ -616,17 +616,17 @@ namespace Unity.MLAgents.Inference
             for (var sensorIndex = 0; sensorIndex < sensors.Length; sensorIndex++)
             {
                 var sens = sensors[sensorIndex];
-                if (sens.GetObservationSpec().NumDimensions == 3)
+                if (sens.GetObservationSpec().Rank == 3)
                 {
                     tensorTester[TensorNames.GetObservationName(sensorIndex)] =
                         (bp, tensor, scs, i) => CheckVisualObsShape(tensor, sens);
                 }
-                if (sens.GetObservationSpec().NumDimensions == 2)
+                if (sens.GetObservationSpec().Rank == 2)
                 {
                     tensorTester[TensorNames.GetObservationName(sensorIndex)] =
                         (bp, tensor, scs, i) => CheckRankTwoObsShape(tensor, sens);
                 }
-                if (sens.GetObservationSpec().NumDimensions == 1)
+                if (sens.GetObservationSpec().Rank == 1)
                 {
                     tensorTester[TensorNames.GetObservationName(sensorIndex)] =
                         (bp, tensor, scs, i) => CheckRankOneObsShape(tensor, sens);
