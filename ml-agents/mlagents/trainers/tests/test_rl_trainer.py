@@ -185,7 +185,7 @@ class RLTrainerWarningTest(unittest.TestCase):
     def test_warning_group_reward(self):
         with self.assertLogs("mlagents.trainers", level="WARN") as cm:
             rl_trainer = create_rl_trainer()
-            # This oone should warn
+            # This one should warn
             trajectory = mb.make_fake_trajectory(
                 length=10,
                 observation_specs=create_observation_specs_with_shapes([(1,)]),
