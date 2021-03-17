@@ -1,0 +1,58 @@
+// Put the following line to 0 or comment it to disable vignette weighting
+#define USE_VIGNETTE_WEIGHTING 1
+
+#include "Common.cginc"
+#include "EyeAdaptation.cginc"
+
+RWStructuredBuffer<uint> _Histogram;
+Texture2D<float4> _Source;
+
+CBUFFER_START(Params)
+    float4 _ScaleOffsetRes; // x: scale, y: offset, z: width, w: height
+CBUFFER_END
+
+groupshared uint gs_histogram[HISTOGRAM_BINS];
+
+#pragma kernel KEyeHistogram
+[numthreads(HISTOGRAM_THREAD_X,HISTOGRAM_THREAD_Y,1)]
+void KEyeHistogram(uint2 dispatchThreadId : SV_DispatchThreadID, uint2 groupThreadId : SV_GroupThreadID)
+{
+    // Pretty straightforward implementation of histogram gathering using atomic ops.
+    // I tried a few methods (no atomic ops / heavy LDS leveraging) but this one turned out to be
+    // the fastest on desktop (Nvidia - Kepler/Maxwell) and PS4. Still need to try it on GCN/desktop
+    // but considering it runs very fast on PS4 we can expect it to run well (?).
+
+    const uint localThreadId = groupThreadId.y * HISTOGRAM_THREAD_X + groupThreadId.x;
+
+    // Clears the shared memory
+    if (localThreadId < HISTOGRAM_BINS)
+        gs_histogram[localThreadId] = 0u;
+
+    GroupMemoryBarrierWithGroupSync();
+
+    // Gather local group histogram
+    if (dispatchThreadId.x < (uint)_ScaleOffsetRes.z && dispatchThreadId.y < (uint)_ScaleOffsetRes.w)
+    {
+#if USE_VIGNETTE_WEIGHTING
+        // Vignette weighting to put more focus on what's in the center of the screen
+        float2 uv01 = float2(dispatchThreadId) / float2(_ScaleOffsetRes.z, _ScaleOffsetRes.w);
+        float2 d = abs(uv01 - (0.5).xx);
+        float vfactor = Pow2(saturate(1.0 - dot(d, d)));
+        uint weight = (uint)(64.0 * vfactor);
+#else
+        uint weight = 1u;
+#endif
+
+        float3 color = _Source[dispatchThreadId].xyz;
+        float luminance = Max3(color); // Looks more natural than using a Rec.709 luminance for some reason
+        float logLuminance = GetHistogramBinFromLuminance(luminance, _ScaleOffsetRes.xy);
+        uint idx = (uint)(logLuminance * (HISTOGRAM_BINS - 1u));
+        InterlockedAdd(gs_histogram[idx], weight);
+    }
+
+    GroupMemoryBarrierWithGroupSync();
+
+    // Merge everything
+    if (localThreadId < HISTOGRAM_BINS)
+        InterlockedAdd(_Histogram[localThreadId], gs_histogram[localThreadId]);
+}

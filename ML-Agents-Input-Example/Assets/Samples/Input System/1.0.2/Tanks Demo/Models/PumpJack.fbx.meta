@@ -1,0 +1,135 @@
+fileFormatVersion: 2
+guid: d7962f90116a5c94d9a7a2b2e4fbc1b2
+timeCreated: 1431512005
+licenseType: Store
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: ArmJoint
+    100002: DriveJoint
+    100004: EndJoint
+    100006: EndJointNub
+    100008: HingeJoint
+    100010: HoldJoint
+    100012: HoldJointNub
+    100014: //RootNode
+    100016: Pumpjack
+    400000: ArmJoint
+    400002: DriveJoint
+    400004: EndJoint
+    400006: EndJointNub
+    400008: HingeJoint
+    400010: HoldJoint
+    400012: HoldJointNub
+    400014: //RootNode
+    400016: Pumpjack
+    4300000: Pumpjack
+    7400000: Take 001
+    9500000: //RootNode
+    13700000: Pumpjack
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 1
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Take 001
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 100
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Pumpjack
+        weight: 1
+      - path: ArmJoint
+        weight: 1
+      - path: ArmJoint/HingeJoint
+        weight: 1
+      - path: ArmJoint/HingeJoint/DriveJoint
+        weight: 1
+      - path: ArmJoint/HingeJoint/DriveJoint/EndJoint
+        weight: 1
+      - path: ArmJoint/HingeJoint/DriveJoint/EndJoint/EndJointNub
+        weight: 1
+      - path: HoldJoint
+        weight: 1
+      - path: HoldJoint/HoldJointNub
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 1
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

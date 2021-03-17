@@ -8,7 +8,7 @@
 /Assets/Plugins*
 /Assets/Demonstrations*
 /Assets/ML-Agents/Timers*
-/*_timers.json
+/csharp_timers.json
 
 # Environemnt logfile
 *Project.log

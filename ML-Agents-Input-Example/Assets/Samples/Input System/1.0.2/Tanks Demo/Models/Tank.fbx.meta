@@ -1,0 +1,514 @@
+fileFormatVersion: 2
+guid: 002e2a607f5b64c48be0b3b0d8b8bfdd
+timeCreated: 1429189962
+licenseType: Store
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: LeftTrackjoint1
+    100002: LeftTrackjoint10
+    100004: LeftTrackjoint11
+    100006: LeftTrackjoint12
+    100008: LeftTrackjoint13
+    100010: LeftTrackjoint14
+    100012: LeftTrackjoint15
+    100014: LeftTrackjoint16
+    100016: LeftTrackjoint17
+    100018: LeftTrackjoint18
+    100020: LeftTrackjoint19
+    100022: LeftTrackjoint2
+    100024: LeftTrackjoint20
+    100026: LeftTrackjoint21
+    100028: LeftTrackjoint22
+    100030: LeftTrackjoint23
+    100032: LeftTrackjoint24
+    100034: LeftTrackjoint3
+    100036: LeftTrackjoint4
+    100038: LeftTrackjoint5
+    100040: LeftTrackjoint6
+    100042: LeftTrackjoint7
+    100044: LeftTrackjoint8
+    100046: LeftTrackjoint9
+    100048: LeftWheeFrontlEnd
+    100050: LeftWheeFrontlEnd 1
+    100052: LeftWheelFront
+    100054: LeftWheelRear
+    100056: LeftWheelRearEnd
+    100058: RightTrackjoint1
+    100060: RightTrackjoint10
+    100062: RightTrackjoint11
+    100064: RightTrackjoint12
+    100066: RightTrackjoint13
+    100068: RightTrackjoint14
+    100070: RightTrackjoint15
+    100072: RightTrackjoint16
+    100074: RightTrackjoint17
+    100076: RightTrackjoint18
+    100078: RightTrackjoint19
+    100080: RightTrackjoint2
+    100082: RightTrackjoint20
+    100084: RightTrackjoint21
+    100086: RightTrackjoint22
+    100088: RightTrackjoint23
+    100090: RightTrackjoint24
+    100092: RightTrackjoint3
+    100094: RightTrackjoint4
+    100096: RightTrackjoint5
+    100098: RightTrackjoint6
+    100100: RightTrackjoint7
+    100102: RightTrackjoint8
+    100104: RightTrackjoint9
+    100106: RightWheelFront
+    100108: RightWheelRear
+    100110: RightWheelRearEnd
+    100112: //RootNode
+    100114: TankChassis
+    100116: TankTracksLeft
+    100118: TankTracksRight
+    100120: TankTurret
+    100122: TracksRig
+    100124: TankRenderers
+    400000: LeftTrackjoint1
+    400002: LeftTrackjoint10
+    400004: LeftTrackjoint11
+    400006: LeftTrackjoint12
+    400008: LeftTrackjoint13
+    400010: LeftTrackjoint14
+    400012: LeftTrackjoint15
+    400014: LeftTrackjoint16
+    400016: LeftTrackjoint17
+    400018: LeftTrackjoint18
+    400020: LeftTrackjoint19
+    400022: LeftTrackjoint2
+    400024: LeftTrackjoint20
+    400026: LeftTrackjoint21
+    400028: LeftTrackjoint22
+    400030: LeftTrackjoint23
+    400032: LeftTrackjoint24
+    400034: LeftTrackjoint3
+    400036: LeftTrackjoint4
+    400038: LeftTrackjoint5
+    400040: LeftTrackjoint6
+    400042: LeftTrackjoint7
+    400044: LeftTrackjoint8
+    400046: LeftTrackjoint9
+    400048: LeftWheeFrontlEnd
+    400050: LeftWheeFrontlEnd 1
+    400052: LeftWheelFront
+    400054: LeftWheelRear
+    400056: LeftWheelRearEnd
+    400058: RightTrackjoint1
+    400060: RightTrackjoint10
+    400062: RightTrackjoint11
+    400064: RightTrackjoint12
+    400066: RightTrackjoint13
+    400068: RightTrackjoint14
+    400070: RightTrackjoint15
+    400072: RightTrackjoint16
+    400074: RightTrackjoint17
+    400076: RightTrackjoint18
+    400078: RightTrackjoint19
+    400080: RightTrackjoint2
+    400082: RightTrackjoint20
+    400084: RightTrackjoint21
+    400086: RightTrackjoint22
+    400088: RightTrackjoint23
+    400090: RightTrackjoint24
+    400092: RightTrackjoint3
+    400094: RightTrackjoint4
+    400096: RightTrackjoint5
+    400098: RightTrackjoint6
+    400100: RightTrackjoint7
+    400102: RightTrackjoint8
+    400104: RightTrackjoint9
+    400106: RightWheelFront
+    400108: RightWheelRear
+    400110: RightWheelRearEnd
+    400112: //RootNode
+    400114: TankChassis
+    400116: TankTracksLeft
+    400118: TankTracksRight
+    400120: TankTurret
+    400122: TracksRig
+    400124: TankRenderers
+    2300000: TankChassis
+    2300002: TankTurret
+    2300004: //RootNode
+    2300006: TankTracksLeft
+    2300008: TankTracksRight
+    3300000: TankChassis
+    3300002: TankTurret
+    3300004: //RootNode
+    3300006: TankTracksLeft
+    3300008: TankTracksRight
+    4300000: TankChassis
+    4300002: TankTurret
+    4300004: TankTracksLeft
+    4300006: TankTracksRight
+    7400000: LeftTrackForward
+    7400002: RightTrackForward
+    9500000: //RootNode
+    13700000: TankTracksLeft
+    13700002: TankTracksRight
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 1
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 0
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: LeftTrackForward
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 30
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TracksRig
+        weight: 1
+      - path: TracksRig/LeftWheelRear
+        weight: 1
+      - path: TracksRig/LeftWheelRear/LeftWheelRearEnd
+        weight: 1
+      - path: TracksRig/LeftWheelFront
+        weight: 1
+      - path: TracksRig/LeftWheelFront/LeftWheeFrontlEnd
+        weight: 1
+      - path: TracksRig/RightWheelRear
+        weight: 1
+      - path: TracksRig/RightWheelRear/RightWheelRearEnd
+        weight: 1
+      - path: TracksRig/RightWheelFront
+        weight: 1
+      - path: TracksRig/RightWheelFront/LeftWheeFrontlEnd 1
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16/LeftTrackjoint17
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16/LeftTrackjoint17/LeftTrackjoint18
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16/LeftTrackjoint17/LeftTrackjoint18/LeftTrackjoint19
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16/LeftTrackjoint17/LeftTrackjoint18/LeftTrackjoint19/LeftTrackjoint20
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16/LeftTrackjoint17/LeftTrackjoint18/LeftTrackjoint19/LeftTrackjoint20/LeftTrackjoint21
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16/LeftTrackjoint17/LeftTrackjoint18/LeftTrackjoint19/LeftTrackjoint20/LeftTrackjoint21/LeftTrackjoint22
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16/LeftTrackjoint17/LeftTrackjoint18/LeftTrackjoint19/LeftTrackjoint20/LeftTrackjoint21/LeftTrackjoint22/LeftTrackjoint23
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16/LeftTrackjoint17/LeftTrackjoint18/LeftTrackjoint19/LeftTrackjoint20/LeftTrackjoint21/LeftTrackjoint22/LeftTrackjoint23/LeftTrackjoint24
+        weight: 1
+      - path: TracksRig/RightTrackjoint1
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16/RightTrackjoint17
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16/RightTrackjoint17/RightTrackjoint18
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16/RightTrackjoint17/RightTrackjoint18/RightTrackjoint19
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16/RightTrackjoint17/RightTrackjoint18/RightTrackjoint19/RightTrackjoint20
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16/RightTrackjoint17/RightTrackjoint18/RightTrackjoint19/RightTrackjoint20/RightTrackjoint21
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16/RightTrackjoint17/RightTrackjoint18/RightTrackjoint19/RightTrackjoint20/RightTrackjoint21/RightTrackjoint22
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16/RightTrackjoint17/RightTrackjoint18/RightTrackjoint19/RightTrackjoint20/RightTrackjoint21/RightTrackjoint22/RightTrackjoint23
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16/RightTrackjoint17/RightTrackjoint18/RightTrackjoint19/RightTrackjoint20/RightTrackjoint21/RightTrackjoint22/RightTrackjoint23/RightTrackjoint24
+        weight: 1
+      - path: TankChassis
+        weight: 1
+      - path: TankChassis/TankTracksRight
+        weight: 1
+      - path: TankChassis/TankTracksLeft
+        weight: 1
+      - path: TankChassis/TankTurret
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: RightTrackForward
+      takeName: Take 001
+      firstFrame: 30
+      lastFrame: 60
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: TracksRig
+        weight: 1
+      - path: TracksRig/LeftWheelRear
+        weight: 1
+      - path: TracksRig/LeftWheelRear/LeftWheelRearEnd
+        weight: 1
+      - path: TracksRig/LeftWheelFront
+        weight: 1
+      - path: TracksRig/LeftWheelFront/LeftWheeFrontlEnd
+        weight: 1
+      - path: TracksRig/RightWheelRear
+        weight: 1
+      - path: TracksRig/RightWheelRear/RightWheelRearEnd
+        weight: 1
+      - path: TracksRig/RightWheelFront
+        weight: 1
+      - path: TracksRig/RightWheelFront/LeftWheeFrontlEnd 1
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16/LeftTrackjoint17
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16/LeftTrackjoint17/LeftTrackjoint18
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16/LeftTrackjoint17/LeftTrackjoint18/LeftTrackjoint19
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16/LeftTrackjoint17/LeftTrackjoint18/LeftTrackjoint19/LeftTrackjoint20
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16/LeftTrackjoint17/LeftTrackjoint18/LeftTrackjoint19/LeftTrackjoint20/LeftTrackjoint21
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16/LeftTrackjoint17/LeftTrackjoint18/LeftTrackjoint19/LeftTrackjoint20/LeftTrackjoint21/LeftTrackjoint22
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16/LeftTrackjoint17/LeftTrackjoint18/LeftTrackjoint19/LeftTrackjoint20/LeftTrackjoint21/LeftTrackjoint22/LeftTrackjoint23
+        weight: 1
+      - path: TracksRig/LeftTrackjoint1/LeftTrackjoint2/LeftTrackjoint3/LeftTrackjoint4/LeftTrackjoint5/LeftTrackjoint6/LeftTrackjoint7/LeftTrackjoint8/LeftTrackjoint9/LeftTrackjoint10/LeftTrackjoint11/LeftTrackjoint12/LeftTrackjoint13/LeftTrackjoint14/LeftTrackjoint15/LeftTrackjoint16/LeftTrackjoint17/LeftTrackjoint18/LeftTrackjoint19/LeftTrackjoint20/LeftTrackjoint21/LeftTrackjoint22/LeftTrackjoint23/LeftTrackjoint24
+        weight: 1
+      - path: TracksRig/RightTrackjoint1
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16/RightTrackjoint17
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16/RightTrackjoint17/RightTrackjoint18
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16/RightTrackjoint17/RightTrackjoint18/RightTrackjoint19
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16/RightTrackjoint17/RightTrackjoint18/RightTrackjoint19/RightTrackjoint20
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16/RightTrackjoint17/RightTrackjoint18/RightTrackjoint19/RightTrackjoint20/RightTrackjoint21
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16/RightTrackjoint17/RightTrackjoint18/RightTrackjoint19/RightTrackjoint20/RightTrackjoint21/RightTrackjoint22
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16/RightTrackjoint17/RightTrackjoint18/RightTrackjoint19/RightTrackjoint20/RightTrackjoint21/RightTrackjoint22/RightTrackjoint23
+        weight: 1
+      - path: TracksRig/RightTrackjoint1/RightTrackjoint2/RightTrackjoint3/RightTrackjoint4/RightTrackjoint5/RightTrackjoint6/RightTrackjoint7/RightTrackjoint8/RightTrackjoint9/RightTrackjoint10/RightTrackjoint11/RightTrackjoint12/RightTrackjoint13/RightTrackjoint14/RightTrackjoint15/RightTrackjoint16/RightTrackjoint17/RightTrackjoint18/RightTrackjoint19/RightTrackjoint20/RightTrackjoint21/RightTrackjoint22/RightTrackjoint23/RightTrackjoint24
+        weight: 1
+      - path: TankChassis
+        weight: 1
+      - path: TankChassis/TankTracksRight
+        weight: 1
+      - path: TankChassis/TankTracksLeft
+        weight: 1
+      - path: TankChassis/TankTurret
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 1
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 0
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

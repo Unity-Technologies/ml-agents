@@ -38,8 +38,8 @@ GraphicsSettings:
   - {fileID: 10783, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 16000, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 16001, guid: 0000000000000000f000000000000000, type: 0}
-  - {fileID: 17000, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 16002, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 17000, guid: 0000000000000000f000000000000000, type: 0}
   m_PreloadedShaders: []
   m_SpritesDefaultMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000,
     type: 0}
@@ -65,4 +65,4 @@ GraphicsSettings:
   m_LightsUseLinearIntensity: 0
   m_LightsUseColorTemperature: 0
   m_LogWhenShaderIsCompiled: 0
-  m_AllowEnlightenSupportForUpgradedProject: 1
+  m_AllowEnlightenSupportForUpgradedProject: 0
