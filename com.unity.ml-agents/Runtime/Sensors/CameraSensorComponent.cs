@@ -153,7 +153,6 @@ namespace Unity.MLAgents.Sensors
             {
                 m_Sensor.Camera = m_Camera;
                 m_Sensor.CompressionType = m_Compression;
-                m_Sensor.ObservationType = m_ObservationType;
             }
         }
     }

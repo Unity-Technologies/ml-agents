@@ -13,7 +13,6 @@ namespace Unity.MLAgents.Editor
             so.Update();
 
             // Drawing the VectorSensorComponent
-            EditorGUI.BeginChangeCheck();
 
             EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
@@ -24,19 +23,7 @@ namespace Unity.MLAgents.Editor
             }
             EditorGUI.EndDisabledGroup();
 
-            var requireSensorUpdate = EditorGUI.EndChangeCheck();
             so.ApplyModifiedProperties();
-
-            if (requireSensorUpdate)
-            {
-                UpdateSensor();
-            }
-        }
-
-        void UpdateSensor()
-        {
-            var sensorComponent = serializedObject.targetObject as VectorSensorComponent;
-            sensorComponent?.UpdateSensor();
         }
     }
 }

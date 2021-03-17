@@ -46,17 +46,5 @@ namespace Unity.MLAgents.Sensors
         {
             return m_sensor;
         }
-
-
-        /// <summary>
-        /// Update fields that are safe to change on the Sensor at runtime.
-        /// </summary>
-        internal void UpdateSensor()
-        {
-            if (m_sensor != null)
-            {
-
-            }
-        }
     }
 }
