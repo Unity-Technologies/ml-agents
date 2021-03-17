@@ -130,7 +130,6 @@ public class DungeonEscapeEnvController : MonoBehaviour
         }
         else
         {
-            agent.EndEpisode();
             agent.gameObject.SetActive(false);
         }
     }
@@ -150,7 +149,6 @@ public class DungeonEscapeEnvController : MonoBehaviour
     {
         baddieCol.gameObject.SetActive(false);
         m_NumberOfRemainingPlayers--;
-        agent.EndEpisode();
         agent.gameObject.SetActive(false);
         print($"{baddieCol.gameObject.name} ate {agent.transform.name}");
 
