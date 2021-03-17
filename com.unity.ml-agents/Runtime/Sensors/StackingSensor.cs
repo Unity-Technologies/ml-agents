@@ -62,12 +62,16 @@ namespace Unity.MLAgents.Sensors
             m_Name = $"StackingSensor_size{numStackedObservations}_{wrapped.GetName()}";
 
             m_WrappedSpec = wrapped.GetObservationSpec();
-            m_ObservationSpec = m_WrappedSpec;
 
             m_UnstackedObservationSize = wrapped.ObservationSize();
 
+            // Set up the cached observation spec for the StackingSensor
+            var newShape = m_WrappedSpec.Shape;
             // TODO support arbitrary stacking dimension
-            m_ObservationSpec.Shape[m_ObservationSpec.NumDimensions - 1] *= numStackedObservations;
+            newShape[newShape.Length - 1] *= numStackedObservations;
+            m_ObservationSpec = new ObservationSpec(
+                newShape, m_WrappedSpec.DimensionProperties, m_WrappedSpec.ObservationType
+            );
 
             // Initialize uncompressed buffer anyway in case python trainer does not
             // support the compression mapping and has to fall back to uncompressed obs.

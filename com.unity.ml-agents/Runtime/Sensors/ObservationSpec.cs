@@ -9,22 +9,32 @@ namespace Unity.MLAgents.Sensors
     /// </summary>
     public struct ObservationSpec
     {
+        internal InplaceArray<int> m_Shape;
+
         /// <summary>
         /// The size of the observations that will be generated.
         /// For example, a sensor that observes the velocity of a rigid body (in 3D) would use [3].
         /// A sensor that returns an RGB image would use [Height, Width, 3].
         /// </summary>
-        public InplaceArray<int> Shape;
+        public InplaceArray<int> Shape
+        {
+            get => m_Shape;
+        }
+
+        internal InplaceArray<DimensionProperty> m_DimensionProperties;
 
         /// <summary>
         /// The properties of each dimensions of the observation.
         /// The length of the array must be equal to the rank of the observation tensor.
         /// </summary>
         /// <remarks>
-        /// It is generally recommended to not modify this from the default values,
+        /// It is generally recommended to use default values provided by helper functions,
         /// as not all combinations of DimensionProperty may be supported by the trainer.
         /// </remarks>
-        public InplaceArray<DimensionProperty> DimensionProperties;
+        public InplaceArray<DimensionProperty> DimensionProperties
+        {
+            get => m_DimensionProperties;
+        }
 
         /// <summary>
         /// The type of the observation, e.g. whether they are generic or
@@ -113,8 +123,8 @@ namespace Unity.MLAgents.Sensors
             {
                 throw new UnityAgentsException("shape and dimensionProperties must have the same length.");
             }
-            Shape = shape;
-            DimensionProperties = dimensionProperties;
+            m_Shape = shape;
+            m_DimensionProperties = dimensionProperties;
             ObservationType = observationType;
         }
     }
