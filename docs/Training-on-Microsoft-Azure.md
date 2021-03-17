@@ -33,7 +33,7 @@ view the documentation for doing so [here](#custom-instances).
    instance, and set it as the working directory.
 2. Install the required packages:
    Torch: `pip3 install torch==1.7.0 -f https://download.pytorch.org/whl/torch_stable.html` and
-   MLAgents: `python -m pip install mlagents==0.26.0.dev0`
+   MLAgents: `python -m pip install mlagents==0.25.0`
 
 ## Testing
 
