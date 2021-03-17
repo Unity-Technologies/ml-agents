@@ -10,10 +10,6 @@ namespace Unity.MLAgents.Sensors
         Default = 0,
         // Collected observations contain goal information.
         Goal = 1,
-        // Collected observations contain reward information.
-        Reward = 2,
-        // Collected observations are messages from other agents.
-        Message = 3,
     }
 
 
