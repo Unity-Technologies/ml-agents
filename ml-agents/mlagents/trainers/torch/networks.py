@@ -140,7 +140,7 @@ class ObservationEncoder(nn.Module):
 
     def get_goal_encoding(self, inputs: List[torch.Tensor]) -> torch.Tensor:
         """
-        Encode observations corresponding to gaols using a list of processors.
+        Encode observations corresponding to goals using a list of processors.
         :param inputs: List of Tensors corresponding to a set of obs.
         """
         encodes = []
