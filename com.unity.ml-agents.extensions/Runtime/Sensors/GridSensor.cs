@@ -693,7 +693,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 var cellCenter = Mat.MultiplyPoint(CellPoints[index]);
                 var rotation = Rotation;
-                Commands[index] = new BoxcastCommand(new Vector3(cellCenter.x, cellCenter.y + 7.0f, cellCenter.z),
+                Commands[index] = new BoxcastCommand(new Vector3(cellCenter.x, cellCenter.y + 5.0f, cellCenter.z),
                     halfScale,
                     rotation,
                     Vector3.down,
@@ -1047,7 +1047,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 UpdateBufferFromJob();
 
                 var scale = new Vector3(CellScaleX, CellScaleY, CellScaleZ);
-                var offset = new Vector3(0, 7.0f, 0);
+                var offset = new Vector3(0, 5.0f, 0);
                 var oldGizmoMatrix = Gizmos.matrix;
                 for (var i = 0; i < NumCells; i++)
                 {
@@ -1062,7 +1062,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                     }
                     Gizmos.matrix = oldGizmoMatrix * cubeTransform;
                     Gizmos.color = CellActivity[i];
-                    Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
+                    Gizmos.DrawCube(Vector3.zero, Vector3.one);
                 }
 
                 Gizmos.matrix = oldGizmoMatrix;

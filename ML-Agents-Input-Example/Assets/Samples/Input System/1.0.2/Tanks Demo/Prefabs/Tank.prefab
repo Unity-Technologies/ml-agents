@@ -5179,6 +5179,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33005b124d7f841a191249baf2bacb2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_ActionSpec:
+    m_NumContinuousActions: 3
+    BranchSizes: 02000000
 --- !u!114 &2690620215108438311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5267,13 +5270,13 @@ MonoBehaviour:
     m_Bits: 1280
   gridDepthType: 1
   rootReference: {fileID: 2855894493477824887}
+  MaxColliderBufferSize: 500
+  InitialColliderBufferSize: 4
   ObservationPerCell: 3
   NumberOfObservations: 4800
-  ChannelOffsets: 00000000
   DebugColors:
-  - {r: 1, g: 0.8690778, b: 0, a: 0}
-  - {r: 0, g: 0.35168457, b: 1, a: 0}
-  - {r: 1, g: 0.22373962, b: 0, a: 0}
+  - {r: 0.8113208, g: 0, b: 0.027757771, a: 0}
+  - {r: 0, g: 1, b: 0.022001743, a: 0}
   GizmoYOffset: 0.5
   ShowGizmos: 1
   CompressionType: 1
