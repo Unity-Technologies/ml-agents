@@ -18,6 +18,7 @@ from mlagents.trainers.settings import (
     GAILSettings,
     RewardSignalType,
     EncoderType,
+    ConditioningType,
 )
 
 from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
@@ -67,10 +68,11 @@ def test_visual_poca(num_visual):
     check_environment_trains(env, {BRAIN_NAME: config})
 
 
+@pytest.mark.parametrize("conditioning_type", [ConditioningType.HYPER])
 @pytest.mark.parametrize("num_var_len", [1, 2])
 @pytest.mark.parametrize("num_vector", [0, 1])
 @pytest.mark.parametrize("num_vis", [0, 1])
-def test_var_len_obs_poca(num_vis, num_vector, num_var_len):
+def test_var_len_obs_and_goal_poca(num_vis, num_vector, num_var_len, conditioning_type):
     env = MultiAgentEnvironment(
         [BRAIN_NAME],
         action_sizes=(0, 1),
@@ -79,11 +81,17 @@ def test_var_len_obs_poca(num_vis, num_vector, num_var_len):
         num_var_len=num_var_len,
         step_size=0.2,
         num_agents=2,
+        goal_indices=[0],
+    )
+    new_network = attr.evolve(
+        POCA_TORCH_CONFIG.network_settings, conditioning_type=conditioning_type
     )
     new_hyperparams = attr.evolve(
         POCA_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4
     )
-    config = attr.evolve(POCA_TORCH_CONFIG, hyperparameters=new_hyperparams)
+    config = attr.evolve(
+        POCA_TORCH_CONFIG, hyperparameters=new_hyperparams, network_settings=new_network
+    )
     check_environment_trains(env, {BRAIN_NAME: config})
 
 
@@ -155,11 +163,14 @@ def test_visual_ppo(num_visual, action_sizes):
     check_environment_trains(env, {BRAIN_NAME: config})
 
 
+@pytest.mark.parametrize("conditioning_type", [ConditioningType.HYPER])
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 @pytest.mark.parametrize("num_var_len", [1, 2])
 @pytest.mark.parametrize("num_vector", [0, 1])
 @pytest.mark.parametrize("num_vis", [0, 1])
-def test_var_len_obs_ppo(num_vis, num_vector, num_var_len, action_sizes):
+def test_var_len_obs_and_goal_ppo(
+    num_vis, num_vector, num_var_len, action_sizes, conditioning_type
+):
     env = SimpleEnvironment(
         [BRAIN_NAME],
         action_sizes=action_sizes,
@@ -167,11 +178,17 @@ def test_var_len_obs_ppo(num_vis, num_vector, num_var_len, action_sizes):
         num_vector=num_vector,
         num_var_len=num_var_len,
         step_size=0.2,
+        goal_indices=[0],
+    )
+    new_network = attr.evolve(
+        POCA_TORCH_CONFIG.network_settings, conditioning_type=conditioning_type
     )
     new_hyperparams = attr.evolve(
         PPO_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4
     )
-    config = attr.evolve(PPO_TORCH_CONFIG, hyperparameters=new_hyperparams)
+    config = attr.evolve(
+        PPO_TORCH_CONFIG, hyperparameters=new_hyperparams, network_settings=new_network
+    )
     check_environment_trains(env, {BRAIN_NAME: config})
 
 

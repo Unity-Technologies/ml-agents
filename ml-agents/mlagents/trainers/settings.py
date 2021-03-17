@@ -92,6 +92,11 @@ class ScheduleType(Enum):
     LINEAR = "linear"
 
 
+class ConditioningType(Enum):
+    DEFAULT = "default"
+    HYPER = "hyper"
+
+
 @attr.s(auto_attribs=True)
 class NetworkSettings:
     @attr.s
@@ -115,6 +120,7 @@ class NetworkSettings:
     num_layers: int = 2
     vis_encode_type: EncoderType = EncoderType.SIMPLE
     memory: Optional[MemorySettings] = None
+    conditioning_type: ConditioningType = ConditioningType.DEFAULT
 
 
 @attr.s(auto_attribs=True)
