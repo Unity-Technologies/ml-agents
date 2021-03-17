@@ -54,7 +54,7 @@ namespace Unity.MLAgents.Tests
             var gameObj = new GameObject();
             var bp = gameObj.AddComponent<BehaviorParameters>();
             gameObj.AddComponent<Agent>().LazyInitialize();
-            bp.OnPolicyUpdated += delegate(bool isInHeuristicMode) { Debug.Log($"OnPolicyChanged:{isInHeuristicMode}"); };
+            bp.OnPolicyUpdated += delegate (bool isInHeuristicMode) { Debug.Log($"OnPolicyChanged:{isInHeuristicMode}"); };
             bp.BehaviorType = BehaviorType.HeuristicOnly;
             LogAssert.Expect(LogType.Log, $"OnPolicyChanged:{true}");
 
