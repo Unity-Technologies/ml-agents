@@ -200,7 +200,7 @@ class NetworkBody(nn.Module):
                 self.observation_encoder.total_goal_enc_size,
                 self.h_size,
                 network_settings.num_layers,
-                2,
+                1,
             )
         else:
             self.linear_encoder = LinearEncoder(
