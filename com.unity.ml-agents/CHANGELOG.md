@@ -36,21 +36,6 @@ details.
 ## [1.9.0-preview] - 2021-03-17
 ### Major Changes
 #### com.unity.ml-agents (C#)
-- The `BufferSensor` and `BufferSensorComponent` have been added. They allow the Agent to observe variable number of entities. (#4909)
-#### ml-agents / ml-agents-envs / gym-unity (Python)
-
-### Minor Changes
-#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- Make com.unity.modules.unityanalytics an optional dependency. (#5109)
-#### ml-agents / ml-agents-envs / gym-unity (Python)
-
-### Bug Fixes
-#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-#### ml-agents / ml-agents-envs / gym-unity (Python)
-
-## [1.9.0-preview] - 2021-03-17
-### Major Changes
-#### com.unity.ml-agents (C#)
 - The `BufferSensor` and `BufferSensorComponent` have been added. They allow the Agent to observe variable number of entities. For an example, see the [Sorter environment](https://github.com/Unity-Technologies/ml-agents/blob/release_15_docs/docs/Learning-Environment-Examples.md#sorter). (#4909)
 - The `SimpleMultiAgentGroup` class and `IMultiAgentGroup` interface have been added. These allow Agents to be given rewards and
   end episodes in groups. For examples, see the [Cooperative Push Block](https://github.com/Unity-Technologies/ml-agents/blob/release_15_docs/docs/Learning-Environment-Examples.md#cooperative-push-block), [Dungeon Escape](https://github.com/Unity-Technologies/ml-agents/blob/release_15_docs/docs/Learning-Environment-Examples.md#dungeon-escape) and [Soccer](https://github.com/Unity-Technologies/ml-agents/blob/release_15_docs/docs/Learning-Environment-Examples.md#soccer-twos) environments. (#4923)
@@ -62,6 +47,8 @@ details.
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - Updated com.unity.barracuda to 1.3.2-preview. (#5084)
 - Added 3D Ball to the `com.unity.ml-agents` samples. (#5077)
+- Make com.unity.modules.unityanalytics an optional dependency. (#5109)
+
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `encoding_size` setting for RewardSignals has been deprecated. Please use `network_settings` instead. (#4982)
 - Sensor names are now passed through to `ObservationSpec.name`. (#5036)
