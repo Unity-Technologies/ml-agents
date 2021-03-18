@@ -106,8 +106,7 @@ namespace Unity.MLAgents.Inference
                 for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
                 {
                     var sensor = sensors[sensorIndex];
-                    var shape = sensor.GetObservationShape();
-                    var rank = shape.Length;
+                    var rank = sensor.GetObservationSpec().Rank;
                     ObservationGenerator obsGen = null;
                     string obsGenName = null;
                     switch (rank)

@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Tests
         public int Width { get; }
         public int Height { get; }
         string m_Name;
-        int[] m_Shape;
+        private ObservationSpec m_ObservationSpec;
         public float[,] floatData;
 
         public Float2DSensor(int width, int height, string name)
@@ -16,7 +16,8 @@ namespace Unity.MLAgents.Tests
             Width = width;
             Height = height;
             m_Name = name;
-            m_Shape = new[] { height, width, 1 };
+
+            m_ObservationSpec = ObservationSpec.Visual(height, width, 1);
             floatData = new float[Height, Width];
         }
 
@@ -26,7 +27,7 @@ namespace Unity.MLAgents.Tests
             Height = floatData.GetLength(0);
             Width = floatData.GetLength(1);
             m_Name = name;
-            m_Shape = new[] { Height, Width, 1 };
+            m_ObservationSpec = ObservationSpec.Visual(Height, Width, 1);
         }
 
         public string GetName()
@@ -34,9 +35,9 @@ namespace Unity.MLAgents.Tests
             return m_Name;
         }
 
-        public int[] GetObservationShape()
+        public ObservationSpec GetObservationSpec()
         {
-            return m_Shape;
+            return m_ObservationSpec;
         }
 
         public byte[] GetCompressedObservation()
@@ -85,7 +86,7 @@ namespace Unity.MLAgents.Tests
 
             var output = new float[12];
             var writer = new ObservationWriter();
-            writer.SetTarget(output, sensor.GetObservationShape(), 0);
+            writer.SetTarget(output, sensor.GetObservationSpec(), 0);
             sensor.Write(writer);
             for (var i = 0; i < 9; i++)
             {
