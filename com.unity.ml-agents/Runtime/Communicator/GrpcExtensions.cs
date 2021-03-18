@@ -340,7 +340,8 @@ namespace Unity.MLAgents
         {
             var shape = sensor.GetObservationShape();
             ObservationProto observationProto = null;
-            var compressionType = sensor.GetCompressionSpec().SensorCompressionType;
+            var compressionSpec = sensor.GetCompressionSpec();
+            var compressionType = compressionSpec.SensorCompressionType;
             // Check capabilities if we need to concatenate PNGs
             if (compressionType == SensorCompressionType.PNG && shape.Length == 3 && shape[2] > 3)
             {
@@ -363,7 +364,7 @@ namespace Unity.MLAgents
             if (compressionType != SensorCompressionType.None && shape.Length == 3 && shape[2] > 3)
             {
                 var trainerCanHandleMapping = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.CompressedChannelMapping;
-                var isTrivialMapping = IsTrivialMapping(sensor);
+                var isTrivialMapping = compressionSpec.IsTrivialMapping();
                 if (!trainerCanHandleMapping && !isTrivialMapping)
                 {
                     if (!s_HaveWarnedTrainerCapabilitiesMapping)
