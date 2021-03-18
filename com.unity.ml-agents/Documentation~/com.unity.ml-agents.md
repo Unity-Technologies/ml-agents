@@ -123,10 +123,10 @@ Please refer to "Information that is passively collected by Unity" in the
 [unity ML-Agents Toolkit]: https://github.com/Unity-Technologies/ml-agents
 [unity inference engine]: https://docs.unity3d.com/Packages/com.unity.barracuda@latest/index.html
 [package manager documentation]: https://docs.unity3d.com/Manual/upm-ui-install.html
-[installation instructions]: https://github.com/Unity-Technologies/ml-agents/blob/release_14_docs/docs/Installation.md
+[installation instructions]: https://github.com/Unity-Technologies/ml-agents/blob/release_15_docs/docs/Installation.md
 [github repository]: https://github.com/Unity-Technologies/ml-agents
 [python package]: https://github.com/Unity-Technologies/ml-agents
 [execution order of event functions]: https://docs.unity3d.com/Manual/ExecutionOrder.html
 [connect with us]: https://github.com/Unity-Technologies/ml-agents#community-and-feedback
 [ml-agents forum]: https://forum.unity.com/forums/ml-agents.453/
-[ML-Agents GitHub repo]: https://github.com/Unity-Technologies/ml-agents/blob/release_14_docs/com.unity.ml-agents.extensions
+[ML-Agents GitHub repo]: https://github.com/Unity-Technologies/ml-agents/blob/release_15_docs/com.unity.ml-agents.extensions

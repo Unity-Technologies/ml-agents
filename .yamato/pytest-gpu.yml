@@ -15,9 +15,11 @@ pytest_gpu:
       python3 -m pytest -m "not check_environment_trains" --junitxml=junit/test-results.xml -p no:warnings
   triggers:
     cancel_old_ci: true
-    recurring:
-      - branch: main
-        frequency: daily
+    expression: |
+      (push.branch eq "main" OR
+      push.branch match "release.+") AND
+      push.changes.any match "ml-agents/**" AND
+      NOT push.changes.all match "**/*.md"
   artifacts:
     logs:
       paths:

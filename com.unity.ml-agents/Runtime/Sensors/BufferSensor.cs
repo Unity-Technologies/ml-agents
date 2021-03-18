@@ -14,6 +14,12 @@ namespace Unity.MLAgents.Sensors
         int m_CurrentNumObservables;
         ObservationSpec m_ObservationSpec;
 
+        /// <summary>
+        /// Creates the BufferSensor.
+        /// </summary>
+        /// <param name="maxNumberObs">The maximum number of observations to be appended to this BufferSensor.</param>
+        /// <param name="obsSize">The size of each observation appended to the BufferSensor.</param>
+        /// <param name="name">The name of the sensor.</param>
         public BufferSensor(int maxNumberObs, int obsSize, string name)
         {
             m_Name = name;
