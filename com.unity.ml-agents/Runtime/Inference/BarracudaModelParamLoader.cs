@@ -416,7 +416,6 @@ namespace Unity.MLAgents.Inference
         static FailedCheck CheckRankOneObsShape(
             TensorProxy tensorProxy, ISensor sensor)
         {
-
             var shape = sensor.GetObservationSpec().Shape;
             var dim1Bp = shape[0];
             var dim1T = tensorProxy.Channels;
