@@ -1,5 +1,5 @@
 {
-    "name": "Unity.ML-Agents.Performance.Tests",
+    "name": "Unity.ML-Agents.DevTests.Editor",
     "references": [
         "Unity.ML-Agents.Editor",
         "Unity.ML-Agents",

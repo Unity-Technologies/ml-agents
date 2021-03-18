@@ -15,6 +15,7 @@ namespace Tests
         [SetUp]
         public void Setup()
         {
+            Academy.Instance.Dispose();
             SceneManager.LoadScene("ML-Agents/Scripts/Tests/Runtime/AcademyTest/AcademyStepperTestScene");
         }
 
