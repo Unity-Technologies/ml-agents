@@ -564,12 +564,12 @@ between -1 and 1.
 
 ### Goal Signals
 
-It is possible for agents to collect observations that will be treated as "goal."
-A goal is used to condition the policy of the Agent, meaning that if the goal
+It is possible for agents to collect observations that will be treated as "goal signals".
+A goal signal is used to condition the policy of the Agent, meaning that if the goal
 changes, the policy (i.e. the mapping from observations to actions) will change
 as well. Note that this is true
 for any observation since all observations influence the policy of the Agent to
-some degree. But by specifying a goal explicitly, we can make this conditioning
+some degree. But by specifying a goal signal explicitly, we can make this conditioning
 more important to the agent. This feature can be used in settings where an agent
 must learn to solve different tasks that are similar by some aspects because the
 agent will learn to reuse learnings from different tasks to generalize better.
@@ -584,7 +584,7 @@ will be used to generate some of the
 weights of the policy using the goal observations as input. Note that using a
 HyperNetwork requires a lot of computations, it is recommended to use a smaller
 number of hidden units in the policy to alleviate this.
-If set to `none` the goals will be considered as regular observations.
+If set to `none` the goal signals will be considered as regular observations.
 
 #### Goal Signal Summary & Best Practices
  - Attach a `VectorSensorComponent` or `CameraSensorComponent` to an agent and
