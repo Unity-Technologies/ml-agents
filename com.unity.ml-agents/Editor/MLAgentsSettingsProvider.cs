@@ -4,7 +4,11 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEditor;
+#if UNITY_2019_4_OR_NEWER
 using UnityEngine.UIElements;
+#else
+using UnityEngine.Experimental.UIElements;
+#endif
 
 [assembly: InternalsVisibleTo("Unity.ML-Agents.DevTests.Editor")]
 namespace Unity.MLAgents.Editor
