@@ -3334,6 +3334,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: PurpleStriker (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 8307960943556301180, guid: 57db73bb516494aa6ab66ac13e987d44,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 11400000, guid: c2e94bdfd20e7471f9c95cf1bf58d2c8,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 57db73bb516494aa6ab66ac13e987d44, type: 3}
 --- !u!4 &7463082066700826853 stripped
@@ -3426,6 +3432,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: PurpleStriker (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 8307960943556301180, guid: 57db73bb516494aa6ab66ac13e987d44,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 11400000, guid: c2e94bdfd20e7471f9c95cf1bf58d2c8,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 57db73bb516494aa6ab66ac13e987d44, type: 3}
 --- !u!114 &6411866143362927130 stripped
@@ -3453,6 +3465,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4558743310993102}
     m_Modifications:
+    - target: {fileID: 5918399385278882223, guid: 772fee460e5734c5aac30b4e2a9f6b3c,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 11400000, guid: c2e94bdfd20e7471f9c95cf1bf58d2c8,
+        type: 3}
     - target: {fileID: 6030327595305340077, guid: 772fee460e5734c5aac30b4e2a9f6b3c,
         type: 3}
       propertyPath: m_Name
@@ -3600,6 +3618,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: PurpleStriker (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 8307960943556301180, guid: 57db73bb516494aa6ab66ac13e987d44,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 11400000, guid: c2e94bdfd20e7471f9c95cf1bf58d2c8,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 57db73bb516494aa6ab66ac13e987d44, type: 3}
 --- !u!114 &5352590361515668523 stripped
@@ -3627,6 +3651,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4558743310993102}
     m_Modifications:
+    - target: {fileID: 5918399385278882223, guid: 772fee460e5734c5aac30b4e2a9f6b3c,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 11400000, guid: c2e94bdfd20e7471f9c95cf1bf58d2c8,
+        type: 3}
     - target: {fileID: 6030327595305340077, guid: 772fee460e5734c5aac30b4e2a9f6b3c,
         type: 3}
       propertyPath: m_Name
@@ -3714,6 +3744,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4558743310993102}
     m_Modifications:
+    - target: {fileID: 5918399385278882223, guid: 772fee460e5734c5aac30b4e2a9f6b3c,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 11400000, guid: c2e94bdfd20e7471f9c95cf1bf58d2c8,
+        type: 3}
     - target: {fileID: 6030327595305340077, guid: 772fee460e5734c5aac30b4e2a9f6b3c,
         type: 3}
       propertyPath: m_Name
@@ -3861,6 +3897,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: PurpleStriker
       objectReference: {fileID: 0}
+    - target: {fileID: 8307960943556301180, guid: 57db73bb516494aa6ab66ac13e987d44,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 11400000, guid: c2e94bdfd20e7471f9c95cf1bf58d2c8,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 57db73bb516494aa6ab66ac13e987d44, type: 3}
 --- !u!4 &4277721046484044 stripped
@@ -3888,6 +3930,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4558743310993102}
     m_Modifications:
+    - target: {fileID: 5918399385278882223, guid: 772fee460e5734c5aac30b4e2a9f6b3c,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 11400000, guid: c2e94bdfd20e7471f9c95cf1bf58d2c8,
+        type: 3}
     - target: {fileID: 6030327595305340077, guid: 772fee460e5734c5aac30b4e2a9f6b3c,
         type: 3}
       propertyPath: m_Name
