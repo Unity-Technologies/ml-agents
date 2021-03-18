@@ -1,7 +1,7 @@
 # ML-Agents Package Settings
 
-ML-Agents Package Settings contains settings that applies to the whole project.
-It allows you to configure the settings in the editor and these settings are used in both editor and player build.
+ML-Agents Package Settings contains settings that apply to the whole project.
+It allows you to configure ML-Agents-specific settings in the Editor.  These settings are available for use in both the Editor and Player.
 
 You can find them at `Edit` > `Project Settings...` > `ML-Agents`. It lists out all the available settings and their default values.
 
