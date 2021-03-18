@@ -28,8 +28,8 @@ namespace Unity.MLAgents.Sensors
         {
             return new CompressionSpec
             {
-                SensorCompressionType = SensorCompressionType.None,
-                CompressedChannelMapping = null
+                m_SensorCompressionType = SensorCompressionType.None,
+                m_CompressedChannelMapping = null
             };
         }
 
@@ -37,8 +37,8 @@ namespace Unity.MLAgents.Sensors
         {
             return new CompressionSpec
             {
-                SensorCompressionType = sensorCompressionType,
-                CompressedChannelMapping = compressedChannelMapping
+                m_SensorCompressionType = sensorCompressionType,
+                m_CompressedChannelMapping = compressedChannelMapping
             };
         }
 

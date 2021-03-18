@@ -205,8 +205,7 @@ namespace Unity.MLAgents.Sensors
         public CompressionSpec GetCompressionSpec()
         {
             var wrappedSpec = m_WrappedSensor.GetCompressionSpec();
-            wrappedSpec.CompressedChannelMapping = m_CompressionMapping;
-            return wrappedSpec;
+            return CompressionSpec.Compressed(wrappedSpec.SensorCompressionType, m_CompressionMapping);
         }
 
         /// <summary>
@@ -229,7 +228,7 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
-        /// Constrct stacked CompressedChannelMapping.
+        /// Construct stacked CompressedChannelMapping.
         /// </summary>
         internal int[] ConstructStackedCompressedChannelMapping(ISensor wrappedSenesor)
         {
@@ -238,11 +237,9 @@ namespace Unity.MLAgents.Sensors
             // Default mapping: {0, 0, 0} for grayscale, identity mapping {1, 2, ..., n} otherwise.
             int[] wrappedMapping = null;
             int wrappedNumChannel = wrappedSenesor.GetObservationShape()[2];
-            var sparseChannelSensor = m_WrappedSensor as ISparseChannelSensor;
-            if (sparseChannelSensor != null)
-            {
-                wrappedMapping = sparseChannelSensor.GetCompressionSpec().CompressedChannelMapping;
-            }
+
+            wrappedMapping = wrappedSenesor.GetCompressionSpec().CompressedChannelMapping;
+
             if (wrappedMapping == null)
             {
                 if (wrappedNumChannel == 1)
