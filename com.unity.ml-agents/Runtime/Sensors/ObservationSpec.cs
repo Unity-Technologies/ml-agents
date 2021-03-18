@@ -75,9 +75,8 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         /// <param name="obsSize"></param>
         /// <param name="maxNumObs"></param>
-        /// <param name="obsType"></param>
         /// <returns></returns>
-        public static ObservationSpec VariableLength(int obsSize, int maxNumObs, ObservationType obsType = ObservationType.Default)
+        public static ObservationSpec VariableLength(int obsSize, int maxNumObs)
         {
             var dimProps = new InplaceArray<DimensionProperty>(
                 DimensionProperty.VariableSize,
@@ -85,8 +84,7 @@ namespace Unity.MLAgents.Sensors
             );
             return new ObservationSpec(
                 new InplaceArray<int>(obsSize, maxNumObs),
-                dimProps,
-                obsType
+                dimProps
             );
         }
 
