@@ -17,7 +17,7 @@ namespace Unity.MLAgents.Sensors
     /// Internally, a circular buffer of arrays is used. The m_CurrentIndex represents the most recent observation.
     /// Currently, observations are stacked on the last dimension.
     /// </summary>
-    public class StackingSensor : ISparseChannelSensor, IBuiltInSensor
+    public class StackingSensor : ISensor, IBuiltInSensor
     {
         /// <summary>
         /// The wrapped sensor.
@@ -202,13 +202,6 @@ namespace Unity.MLAgents.Sensors
             return outputBytes;
         }
 
-        /// <inheritdoc/>
-        public int[] GetCompressedChannelMapping()
-        {
-            // TODO remove
-            return m_CompressionMapping;
-        }
-
         public CompressionSpec GetCompressionSpec()
         {
             var wrappedSpec = m_WrappedSensor.GetCompressionSpec();
@@ -248,7 +241,7 @@ namespace Unity.MLAgents.Sensors
             var sparseChannelSensor = m_WrappedSensor as ISparseChannelSensor;
             if (sparseChannelSensor != null)
             {
-                wrappedMapping = sparseChannelSensor.GetCompressedChannelMapping();
+                wrappedMapping = sparseChannelSensor.GetCompressionSpec().CompressedChannelMapping;
             }
             if (wrappedMapping == null)
             {

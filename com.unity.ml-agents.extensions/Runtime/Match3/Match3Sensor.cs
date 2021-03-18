@@ -35,7 +35,7 @@ namespace Unity.MLAgents.Extensions.Match3
     /// or uncompressed visual observations. Uses AbstractBoard.GetCellType()
     /// and AbstractBoard.GetSpecialType() to determine the observation values.
     /// </summary>
-    public class Match3Sensor : ISparseChannelSensor, IBuiltInSensor
+    public class Match3Sensor : ISensor, IBuiltInSensor
     {
         private Match3ObservationType m_ObservationType;
         private AbstractBoard m_Board;
@@ -224,19 +224,13 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public CompressionSpec GetCompressionSpec()
         {
-            return CompressionSpec.Compressed(GetCompressionType());
+            return CompressionSpec.Compressed(GetCompressionType(), m_SparseChannelMapping);
         }
 
         /// <inheritdoc/>
         public string GetName()
         {
             return m_Name;
-        }
-
-        /// <inheritdoc/>
-        public int[] GetCompressedChannelMapping()
-        {
-            return m_SparseChannelMapping;
         }
 
         /// <inheritdoc/>

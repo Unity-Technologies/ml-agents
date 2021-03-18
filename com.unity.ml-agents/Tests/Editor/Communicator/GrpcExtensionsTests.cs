@@ -92,19 +92,6 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        class DummySparseChannelSensor : DummySensor, ISparseChannelSensor
-        {
-            public int[] Mapping;
-            internal DummySparseChannelSensor()
-            {
-            }
-
-            public int[] GetCompressedChannelMapping()
-            {
-                return Mapping;
-            }
-        }
-
         [Test]
         public void TestGetObservationProtoCapabilities()
         {

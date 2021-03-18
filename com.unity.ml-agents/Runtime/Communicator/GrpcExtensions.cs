@@ -418,10 +418,9 @@ namespace Unity.MLAgents
                     CompressedData = ByteString.CopyFrom(compressedObs),
                     CompressionType = (CompressionTypeProto)sensor.GetCompressionSpec().SensorCompressionType,
                 };
-                var compressibleSensor = sensor as ISparseChannelSensor;
-                if (compressibleSensor != null)
+                if (compressionSpec.CompressedChannelMapping != null)
                 {
-                    observationProto.CompressedChannelMapping.AddRange(compressibleSensor.GetCompressedChannelMapping());
+                    observationProto.CompressedChannelMapping.AddRange(compressionSpec.CompressedChannelMapping);
                 }
             }
             // Add the dimension properties if any to the observationProto
@@ -495,34 +494,6 @@ namespace Unity.MLAgents
                 VariableLengthObservation = rlCaps.VariableLengthObservation,
                 MultiAgentGroups = rlCaps.MultiAgentGroups,
             };
-        }
-
-        internal static bool IsTrivialMapping(ISensor sensor)
-        {
-            var compressibleSensor = sensor as ISparseChannelSensor;
-            if (compressibleSensor is null)
-            {
-                return true;
-            }
-            var mapping = compressibleSensor.GetCompressedChannelMapping();
-            if (mapping == null)
-            {
-                return true;
-            }
-            // check if mapping equals zero mapping
-            if (mapping.Length == 3 && mapping.All(m => m == 0))
-            {
-                return true;
-            }
-            // check if mapping equals identity mapping
-            for (var i = 0; i < mapping.Length; i++)
-            {
-                if (mapping[i] != i)
-                {
-                    return false;
-                }
-            }
-            return true;
         }
 
         #region Analytics
