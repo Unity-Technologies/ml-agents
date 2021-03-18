@@ -12,7 +12,9 @@ namespace Unity.MLAgents
         readonly int m_Id = MultiAgentGroupIdCounter.GetGroupId();
         HashSet<Agent> m_Agents = new HashSet<Agent>();
 
-
+        /// <summary>
+        /// Disposes of the SimpleMultiAgentGroup.
+        /// </summary>
         public virtual void Dispose()
         {
             while (m_Agents.Count > 0)
