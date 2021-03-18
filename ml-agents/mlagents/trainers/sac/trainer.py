@@ -67,7 +67,7 @@ class SACTrainer(RLTrainer):
         self.hyperparameters: SACSettings = cast(
             SACSettings, trainer_settings.hyperparameters
         )
-        self.step = 0
+        self._step = 0
 
         # Don't divide by zero
         self.update_steps = 1
@@ -131,6 +131,8 @@ class SACTrainer(RLTrainer):
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
         agent_buffer_trajectory = trajectory.to_agentbuffer()
+        # Check if we used group rewards, warn if so.
+        self._warn_if_group_reward(agent_buffer_trajectory)
 
         # Update the normalization
         if self.is_training:
@@ -149,9 +151,16 @@ class SACTrainer(RLTrainer):
             self.collected_rewards[name][agent_id] += np.sum(evaluate_result)
 
         # Get all value estimates for reporting purposes
-        value_estimates, _ = self.optimizer.get_trajectory_value_estimates(
+        (
+            value_estimates,
+            _,
+            value_memories,
+        ) = self.optimizer.get_trajectory_value_estimates(
             agent_buffer_trajectory, trajectory.next_obs, trajectory.done_reached
         )
+        if value_memories is not None:
+            agent_buffer_trajectory[BufferKey.CRITIC_MEMORY].set(value_memories)
+
         for name, v in value_estimates.items():
             self._stats_reporter.add_stat(
                 f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value",
@@ -181,7 +190,7 @@ class SACTrainer(RLTrainer):
         """
         return (
             self.update_buffer.num_experiences >= self.hyperparameters.batch_size
-            and self.step >= self.hyperparameters.buffer_init_steps
+            and self._step >= self.hyperparameters.buffer_init_steps
         )
 
     @timed
@@ -244,9 +253,9 @@ class SACTrainer(RLTrainer):
 
         batch_update_stats: Dict[str, list] = defaultdict(list)
         while (
-            self.step - self.hyperparameters.buffer_init_steps
+            self._step - self.hyperparameters.buffer_init_steps
         ) / self.update_steps > self.steps_per_update:
-            logger.debug(f"Updating SAC policy at step {self.step}")
+            logger.debug(f"Updating SAC policy at step {self._step}")
             buffer = self.update_buffer
             if self.update_buffer.num_experiences >= self.hyperparameters.batch_size:
                 sampled_minibatch = buffer.sample_mini_batch(
@@ -298,12 +307,12 @@ class SACTrainer(RLTrainer):
         )
         batch_update_stats: Dict[str, list] = defaultdict(list)
         while (
-            self.step - self.hyperparameters.buffer_init_steps
+            self._step - self.hyperparameters.buffer_init_steps
         ) / self.reward_signal_update_steps > self.reward_signal_steps_per_update:
             # Get minibatches for reward signal update if needed
             reward_signal_minibatches = {}
             for name in self.optimizer.reward_signals.keys():
-                logger.debug(f"Updating {name} at step {self.step}")
+                logger.debug(f"Updating {name} at step {self._step}")
                 if name != "extrinsic":
                     reward_signal_minibatches[name] = buffer.sample_mini_batch(
                         self.hyperparameters.batch_size,
@@ -348,11 +357,11 @@ class SACTrainer(RLTrainer):
         self.model_saver.initialize_or_load()
 
         # Needed to resume loads properly
-        self.step = policy.get_current_step()
+        self._step = policy.get_current_step()
         # Assume steps were updated at the correct ratio before
-        self.update_steps = int(max(1, self.step / self.steps_per_update))
+        self.update_steps = int(max(1, self._step / self.steps_per_update))
         self.reward_signal_update_steps = int(
-            max(1, self.step / self.reward_signal_steps_per_update)
+            max(1, self._step / self.reward_signal_steps_per_update)
         )
 
     def get_policy(self, name_behavior_id: str) -> Policy:

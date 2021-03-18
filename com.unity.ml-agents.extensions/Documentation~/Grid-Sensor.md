@@ -36,6 +36,19 @@ These limitations provided the motivation towards the development of the Grid Se
 
 # Contribution
 
+An image can be thought of as a matrix of a predefined width (W) and a height (H) and each pixel can be thought of as simply an array of length 3 (in the case of RGB), `[Red, Green, Blue]` holding the different channel information of the color (channel) intensities at that pixel location. Thus an image is just a 3 dimensional matrix of size WxHx3. A Grid Observation can be thought of as a generalization of this setup where in place of a pixel there is a "cell" which is an array of length N representing different channel intensities at that cell position. From a Convolutional Neural Network point of view, the introduction of multiple channels in an "image" isn't a new concept. One such example is using an RGB-Depth image which is used in several robotics applications. The distinction of Grid Observations is what the data within the channels represents. Instead of limiting the channels to color intensities, the channels within a cell of a Grid Observation generalize to any data that can be represented by a single number (float or int).
+
+Before jumping into the details of the Grid Sensor, an important thing to note is the agent performance and qualitatively different behavior over raycasts. Unity MLAgent's comes with a suite of example environments. One in particular, the [Food Collector](https://github.com/Unity-Technologies/ml-agents/tree/release_14_docs/docs/Learning-Environment-Examples.md#food-collector), has been the focus of the Grid Sensor development.
+
+The Food Collector environment can be described as:
+* Set-up: A multi-agent environment where agents compete to collect food.
+* Goal: The agents must learn to collect as many green food spheres as possible while avoiding red spheres.
+* Agents: The environment contains 5 agents with same Behavior Parameters.
+
+When applying the Grid Sensor to this environment, in place of the Raycast Vector Sensor or the Camera Sensor, a Mean Reward of 40-50 is observed. This performance is on par with what is seen by agents trained with RayCasts but the side-by-side comparison of trained agents, shows a qualitative difference in behavior. A deeper study and interpretation of the qualitative differences between agents trained with Raycasts and Vector Sensors verses Grid Sensors is left to future studies.
+
+<img src="images/gridobs-vs-vectorobs.gif" align="middle" width="3000"/>
+
 ## Overview
 
 There are three main phases to the observation process of the Grid Sensor:
@@ -136,12 +149,13 @@ How categorical and continuous data is treated is different between the differen
 
 ### Channel Based
 
-The Channel Based Grid Observations represent obsevations in a normalized form with 0 to 1. To distinguish between categorical and continuous data, one would use the ChannelDepth array to signify the ranges that the values in the `channelValues` array could take. If one sets ChannelDepth[i] to be 1, it is assumed that the value of `channelValues[i]` is already normalized. Else ChannelDepth[i] represents the total number of possible values that `channelValues[i]` can take and will be used for normalization.
+The Channel Based Grid Observations is perhaps the simplest in terms of usability and similarity with other machine learning applications. Each grid is of size WxHxC where C is the number of channels. To distinguish between categorical and continuous data, one would use the ChannelDepth array to signify the ranges that the values in the `channelValues` array could take. If one sets ChannelDepth[i] to be 1, it is assumed that the value of `channelValues[i]` is already normalized. Else ChannelDepth[i] represents the total number of possible values that `channelValues[i]` can take.
 
 For continuous data, you should specify `ChannelDepth[i]` to 1 and the collected data should be already normalized by its min/max range. For discrete data, you should specify `ChannelDepth[i]` to be the total number of possible values, and the collected data should be an integer value within range of `ChannelDepth[i]`.
 
 Using the example described earlier, if one was using Channel Based Grid Observations, they would have a ChannelDepth = {2, 1} to describe that there are two possible values for the first channel (ObjectType) and the 1 represents that the second channel (EnemyHealth) is continuous and should be already normalized.
 
+As the "enemy" is in the second position of the observed tags, its value can be normalized by:
 For ObjectType, "weapon", "enemy" will be represented respectively as:
 ```
 weapon = DetectableObjects.IndexOfTag("weapon")/ChannelDepth[0] = 1/2 = 0.5;

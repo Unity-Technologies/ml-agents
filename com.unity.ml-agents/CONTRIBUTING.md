@@ -8,7 +8,7 @@ of guidelines to ensure that your extensions can be easily integrated.
 ## Communication
 
 First, please read through our
-[code of conduct](https://github.com/Unity-Technologies/ml-agents/blob/master/CODE_OF_CONDUCT.md),
+[code of conduct](https://github.com/Unity-Technologies/ml-agents/blob/main/CODE_OF_CONDUCT.md),
 as we expect all our contributors to follow it.
 
 Second, before starting on a project that you intend to contribute to the
@@ -25,7 +25,7 @@ the `Requests` or `Bug` label.
 
 ## Git Branches
 
-The master branch corresponds to the most recent version of the project. Note
+The main branch corresponds to the most recent version of the project. Note
 that this may be newer that the
 [latest release](https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release).
 

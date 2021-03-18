@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Extensions.Match3
     /// Actuator for a Match3 game. It translates valid moves (defined by AbstractBoard.IsMoveValid())
     /// in action masks, and applies the action to the board via AbstractBoard.MakeMove().
     /// </summary>
-    public class Match3Actuator : IActuator, IHeuristicProvider
+    public class Match3Actuator : IActuator, IHeuristicProvider, IBuiltInActuator
     {
         protected AbstractBoard m_Board;
         protected System.Random m_Random;
@@ -31,10 +31,10 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <param name="agent"></param>
         /// <param name="name"></param>
         public Match3Actuator(AbstractBoard board,
-            bool forceHeuristic,
-            int seed,
-            Agent agent,
-            string name)
+                              bool forceHeuristic,
+                              int seed,
+                              Agent agent,
+                              string name)
         {
             m_Board = board;
             m_Rows = board.Rows;
@@ -78,28 +78,27 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
+            const int branch = 0;
+            bool foundValidMove = false;
             using (TimerStack.Instance.Scoped("WriteDiscreteActionMask"))
             {
-                actionMask.WriteMask(0, InvalidMoveIndices());
-            }
-        }
+                var numMoves = m_Board.NumMoves();
 
-        /// <inheritdoc/>
-        public string Name { get; }
+                var currentMove = Move.FromMoveIndex(0, m_Board.Rows, m_Board.Columns);
+                for (var i = 0; i < numMoves; i++)
+                {
+                    if (m_Board.IsMoveValid(currentMove))
+                    {
+                        foundValidMove = true;
+                    }
+                    else
+                    {
+                        actionMask.SetActionEnabled(branch, i, false);
+                    }
+                    currentMove.Next(m_Board.Rows, m_Board.Columns);
+                }
 
-        /// <inheritdoc/>
-        public void ResetData()
-        {
-        }
-
-        IEnumerable<int> InvalidMoveIndices()
-        {
-            var numValidMoves = m_Board.NumMoves();
-
-            foreach (var move in m_Board.InvalidMoves())
-            {
-                numValidMoves--;
-                if (numValidMoves == 0)
+                if (!foundValidMove)
                 {
                     // If all the moves are invalid and we mask all the actions out, this will cause an assert
                     // later on in IDiscreteActionMask. Instead, fire a callback to the user if they provided one,
@@ -116,11 +115,23 @@ namespace Unity.MLAgents.Extensions.Match3
                             "an invalid move will be passed to AbstractBoard.MakeMove()."
                         );
                     }
-                    // This means the last move won't be returned as an invalid index.
-                    yield break;
+                    actionMask.SetActionEnabled(branch, numMoves - 1, true);
                 }
-                yield return move.MoveIndex;
             }
+        }
+
+        /// <inheritdoc/>
+        public string Name { get; }
+
+        /// <inheritdoc/>
+        public void ResetData()
+        {
+        }
+
+        /// <inheritdoc/>
+        public BuiltInActuatorType GetBuiltInActuatorType()
+        {
+            return BuiltInActuatorType.Match3Actuator;
         }
 
         public void Heuristic(in ActionBuffers actionsOut)
@@ -129,10 +140,8 @@ namespace Unity.MLAgents.Extensions.Match3
             discreteActions[0] = GreedyMove();
         }
 
-
         protected int GreedyMove()
         {
-
             var bestMoveIndex = 0;
             var bestMovePoints = -1;
             var numMovesAtCurrentScore = 0;
@@ -179,6 +188,5 @@ namespace Unity.MLAgents.Extensions.Match3
         {
             return 1;
         }
-
     }
 }

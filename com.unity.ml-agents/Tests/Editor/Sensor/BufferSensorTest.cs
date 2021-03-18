@@ -13,7 +13,7 @@ namespace Unity.MLAgents.Tests
         public void TestBufferSensor()
         {
 
-            var bufferSensor = new BufferSensor(20, 4);
+            var bufferSensor = new BufferSensor(20, 4, "testName");
             var shape = bufferSensor.GetObservationShape();
             var dimProp = bufferSensor.GetDimensionProperties();
             Assert.AreEqual(shape[0], 20);
@@ -53,6 +53,7 @@ namespace Unity.MLAgents.Tests
             var bufferComponent = agentGameObj.AddComponent<BufferSensorComponent>();
             bufferComponent.MaxNumObservables = 20;
             bufferComponent.ObservableSize = 4;
+            bufferComponent.SensorName = "TestName";
 
             var sensor = bufferComponent.CreateSensor();
             var shape = bufferComponent.GetObservationShape();
@@ -69,6 +70,8 @@ namespace Unity.MLAgents.Tests
 
             Assert.AreEqual(shape, obs.Shape);
             Assert.AreEqual(obs.DimensionProperties.Count, 2);
+
+            Assert.AreEqual(sensor.GetName(), "TestName");
 
             for (int i = 0; i < 8; i++)
             {

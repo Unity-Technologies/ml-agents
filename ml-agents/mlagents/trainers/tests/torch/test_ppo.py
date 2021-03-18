@@ -79,6 +79,8 @@ def test_ppo_optimizer_update(dummy_config, rnn, visual, discrete):
             RewardSignalUtil.value_estimates_key("extrinsic"),
         ],
     )
+    # Copy memories to critic memories
+    copy_buffer_fields(update_buffer, BufferKey.MEMORY, [BufferKey.CRITIC_MEMORY])
 
     return_stats = optimizer.update(
         update_buffer,
@@ -126,6 +128,8 @@ def test_ppo_optimizer_update_curiosity(
             RewardSignalUtil.value_estimates_key("curiosity"),
         ],
     )
+    # Copy memories to critic memories
+    copy_buffer_fields(update_buffer, BufferKey.MEMORY, [BufferKey.CRITIC_MEMORY])
 
     optimizer.update(
         update_buffer,
@@ -200,14 +204,21 @@ def test_ppo_get_value_estimates(dummy_config, rnn, visual, discrete):
         action_spec=DISCRETE_ACTION_SPEC if discrete else CONTINUOUS_ACTION_SPEC,
         max_step_complete=True,
     )
-    run_out, final_value_out = optimizer.get_trajectory_value_estimates(
+    run_out, final_value_out, all_memories = optimizer.get_trajectory_value_estimates(
         trajectory.to_agentbuffer(), trajectory.next_obs, done=False
     )
+    if rnn:
+        # Check that memories don't have a Torch gradient
+        for mem in optimizer.critic_memory_dict.values():
+            assert not mem.requires_grad
+
     for key, val in run_out.items():
         assert type(key) is str
         assert len(val) == 15
+    if all_memories is not None:
+        assert len(all_memories) == 15
 
-    run_out, final_value_out = optimizer.get_trajectory_value_estimates(
+    run_out, final_value_out, _ = optimizer.get_trajectory_value_estimates(
         trajectory.to_agentbuffer(), trajectory.next_obs, done=True
     )
     for key, val in final_value_out.items():
@@ -216,7 +227,7 @@ def test_ppo_get_value_estimates(dummy_config, rnn, visual, discrete):
 
     # Check if we ignore terminal states properly
     optimizer.reward_signals["extrinsic"].use_terminal_states = False
-    run_out, final_value_out = optimizer.get_trajectory_value_estimates(
+    run_out, final_value_out, _ = optimizer.get_trajectory_value_estimates(
         trajectory.to_agentbuffer(), trajectory.next_obs, done=False
     )
     for key, val in final_value_out.items():

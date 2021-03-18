@@ -1,7 +1,8 @@
+
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Analytics;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Analytics;
 
 
 namespace Unity.MLAgents.Policies
@@ -20,15 +21,22 @@ namespace Unity.MLAgents.Policies
 
         internal ICommunicator m_Communicator;
 
+        /// <summary>
+        /// List of actuators, only used for analytics
+        /// </summary>
+        private IList<IActuator> m_Actuators;
+
         /// <inheritdoc />
         public RemotePolicy(
             ActionSpec actionSpec,
+            IList<IActuator> actuators,
             string fullyQualifiedBehaviorName)
         {
             m_FullyQualifiedBehaviorName = fullyQualifiedBehaviorName;
             m_Communicator = Academy.Instance.Communicator;
             m_Communicator?.SubscribeBrain(m_FullyQualifiedBehaviorName, actionSpec);
             m_ActionSpec = actionSpec;
+            m_Actuators = actuators;
         }
 
         /// <inheritdoc />
@@ -40,7 +48,8 @@ namespace Unity.MLAgents.Policies
                 TrainingAnalytics.RemotePolicyInitialized(
                     m_FullyQualifiedBehaviorName,
                     sensors,
-                    m_ActionSpec
+                    m_ActionSpec,
+                    m_Actuators
                 );
             }
             m_AgentId = info.episodeId;

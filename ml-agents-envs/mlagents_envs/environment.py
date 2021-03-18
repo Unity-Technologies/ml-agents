@@ -63,7 +63,7 @@ class UnityEnvironment(BaseEnv):
     #  * 1.2.0 - support compression mapping for stacked compressed observations.
     #  * 1.3.0 - support action spaces with both continuous and discrete actions.
     #  * 1.4.0 - support training analytics sent from python trainer to the editor.
-    #  * 1.5.0 - support variable length observation training.
+    #  * 1.5.0 - support variable length observation training and multi-agent groups.
     API_VERSION = "1.5.0"
 
     # Default port that the editor listens on. If an environment executable
@@ -124,6 +124,7 @@ class UnityEnvironment(BaseEnv):
         capabilities.hybridActions = True
         capabilities.trainingAnalytics = True
         capabilities.variableLengthObservation = True
+        capabilities.multiAgentGroups = True
         return capabilities
 
     @staticmethod

@@ -14,6 +14,36 @@ double-check that the versions are in the same. The versions can be found in
 
 
 # Migrating
+## Migrating the package to version 2.0
+- If you used any of the APIs that were deprecated before version 2.0, you need to use their replacement. These deprecated APIs have been removed. See the migration steps bellow for specific API replacements.
+### IDiscreteActionMask changes
+- The interface for disabling specific discrete actions has changed. `IDiscreteActionMask.WriteMask()` was removed,
+and replaced with `SetActionEnabled()`. Instead of returning an IEnumerable with indices to disable, you can
+now call `SetActionEnabled` for each index to disable (or enable). As an example, if you overrode
+`Agent.WriteDiscreteActionMask()` with something that looked like:
+
+```csharp
+public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
+{
+    var branch = 2;
+    var actionsToDisable = new[] {1, 3};
+    actionMask.WriteMask(branch, actionsToDisable);
+}
+```
+
+the equivalent code would now be
+
+```csharp
+public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
+{
+    var branch = 2;
+    actionMask.SetActionEnabled(branch, 1, false);
+    actionMask.SetActionEnabled(branch, 3, false);
+}
+```
+- The `IActuator` interface now implements `IHeuristicProvider`.  Please add the corresponding `Heuristic(in ActionBuffers)`
+method to your custom Actuator classes.
+
 ## Migrating to Release 13
 ### Implementing IHeuristic in your IActuator implementations
  - If you have any custom actuators, you can now implement the `IHeuristicProvider` interface to have your actuator
@@ -70,7 +100,7 @@ folder
 - The Parameter Randomization feature has been merged with the Curriculum feature. It is now possible to specify a sampler
 in the lesson of a Curriculum. Curriculum has been refactored and is now specified at the level of the parameter, not the
 behavior. More information
-[here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md).(#4160)
+[here](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Training-ML-Agents.md).(#4160)
 
 ### Steps to Migrate
 - The configuration format for curriculum and parameter randomization has changed. To upgrade your configuration files,
