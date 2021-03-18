@@ -15,10 +15,10 @@ details.
 - Some methods previously marked as `Obsolete` have been removed. If you were using these methods, you need to replace them with their supported counterpart.
 - The interface for disabling discrete actions in `IDiscreteActionMask` has changed.
 `WriteMask(int branch, IEnumerable<int> actionIndices)` was replaced with
-`SetActionEnabled(int branch, int actionIndex, bool isEnabled)`. See the
+`SetActionEnabled(int branch, int actionIndex, bool isEnabled)`. (#5060)
 - IActuator now implements IHeuristicProvider. (#5110)
-[Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_14_docs/docs/Migrating.md) for more
-details. (#5060)
+- `ISensor.GetObservationShape()` was removed, and `GetObservationSpec()` was added. (#5127)
+
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Minor Changes

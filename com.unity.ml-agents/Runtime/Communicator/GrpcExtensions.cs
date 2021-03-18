@@ -434,19 +434,14 @@ namespace Unity.MLAgents
 
             // Checking trainer compatibility with variable length observations
             if (dimensionProperties == new InplaceArray<DimensionProperty>(DimensionProperty.VariableSize, DimensionProperty.None))
-            {
+
                 var trainerCanHandleVarLenObs = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.VariableLengthObservation;
                 if (!trainerCanHandleVarLenObs)
                 {
                     throw new UnityAgentsException("Variable Length Observations are not supported by the trainer");
                 }
             }
-            observationProto.Shape.AddRange(shape);
-            var sensorName = sensor.GetName();
-            if (!string.IsNullOrEmpty(sensorName))
-            {
-                observationProto.Name = sensorName;
-            }
+
 
             for (var i = 0; i < shape.Length; i++)
             {
