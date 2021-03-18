@@ -81,5 +81,11 @@ namespace Unity.MLAgents
         {
             OnSettingsChange?.Invoke();
         }
+
+        internal static void Destroy()
+        {
+            s_Settings = null;
+            OnSettingsChange = null;
+        }
     }
 }

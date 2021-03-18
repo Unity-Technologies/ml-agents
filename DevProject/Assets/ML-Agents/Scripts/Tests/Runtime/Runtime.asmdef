@@ -1,5 +1,5 @@
 ﻿{
-    "name": "Runtime",
+    "name": "Unity.ML-Agents.DevTests.Runtime",
     "references": [
         "Unity.ML-Agents"
     ],

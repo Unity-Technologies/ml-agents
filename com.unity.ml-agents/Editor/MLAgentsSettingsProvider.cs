@@ -1,10 +1,12 @@
 using System;
 using System.Linq;
 using System.IO;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 
+[assembly: InternalsVisibleTo("Unity.ML-Agents.DevTests.Editor")]
 namespace Unity.MLAgents.Editor
 {
     internal class MLAgentsSettingsProvider : SettingsProvider, IDisposable

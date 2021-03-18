@@ -1,8 +1,11 @@
 using UnityEngine;
+using System.Runtime.CompilerServices;
 
+
+[assembly: InternalsVisibleTo("Unity.ML-Agents.DevTests.Editor")]
 namespace Unity.MLAgents
 {
-    class MLAgentsSettings : ScriptableObject
+    internal class MLAgentsSettings : ScriptableObject
     {
         [SerializeField]
         private bool m_ConnectTrainer = true;
