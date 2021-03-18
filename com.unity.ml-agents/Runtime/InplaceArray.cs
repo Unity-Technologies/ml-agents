@@ -11,7 +11,7 @@ namespace Unity.MLAgents
     /// This does not implement any interfaces such as IList, in order to avoid any accidental boxing allocations.
     /// </remarks>
     /// <typeparam name="T"></typeparam>
-    public struct InplaceArray<T> where T : struct
+    public struct InplaceArray<T> : IEquatable<InplaceArray<T>> where T : struct
     {
         private const int k_MaxLength = 4;
         private readonly int m_Length;
@@ -197,20 +197,7 @@ namespace Unity.MLAgents
         /// <returns>Whether the arrays are equivalent.</returns>
         public static bool operator ==(InplaceArray<T> lhs, InplaceArray<T> rhs)
         {
-            if (lhs.Length != rhs.Length)
-            {
-                return false;
-            }
-
-            for (var i = 0; i < lhs.Length; i++)
-            {
-                // See https://stackoverflow.com/a/390974/224264
-                if (!EqualityComparer<T>.Default.Equals(lhs[i], rhs[i]))
-                {
-                    return false;
-                }
-            }
-            return true;
+            return lhs.Equals(rhs);
         }
 
         /// <summary>
@@ -219,7 +206,7 @@ namespace Unity.MLAgents
         /// <param name="lhs"></param>
         /// <param name="rhs"></param>
         /// <returns>Whether the arrays are not equivalent</returns>
-        public static bool operator !=(InplaceArray<T> lhs, InplaceArray<T> rhs) => !(lhs == rhs);
+        public static bool operator !=(InplaceArray<T> lhs, InplaceArray<T> rhs) => !lhs.Equals(rhs);
 
         /// <summary>
         /// Check that the arrays are equivalent.
@@ -235,7 +222,11 @@ namespace Unity.MLAgents
         /// <returns>Whether the arrays are not equivalent</returns>
         public bool Equals(InplaceArray<T> other)
         {
-            return this == other;
+            // See https://montemagno.com/optimizing-c-struct-equality-with-iequatable/
+            var thisTuple = (m_Elem0, m_Elem1, m_Elem2, m_Elem3, Length);
+            var otherTuple = (other.m_Elem0, other.m_Elem1, other.m_Elem2, other.m_Elem3, other.Length);
+            return thisTuple.Equals(otherTuple);
+
         }
 
         /// <summary>
@@ -244,7 +235,7 @@ namespace Unity.MLAgents
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return Tuple.Create(m_Elem0, m_Elem1, m_Elem2, m_Elem3, Length).GetHashCode();
+            return (m_Elem0, m_Elem1, m_Elem2, m_Elem3, Length).GetHashCode();
         }
     }
 }
