@@ -564,7 +564,7 @@ between -1 and 1.
 
 ### Goal Observations
 
-It is possible for agents to collect observations that will be treated as "goal".
+It is possible for agents to collect observations that will be treated as "goal."
 A goal is used to condition the policy of the Agent, meaning that if the goal
 changes, the behavior of the Agent will change as well. Note that this is true
 for any observation since all observations influence the policy of the Agent to
