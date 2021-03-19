@@ -85,7 +85,7 @@ def set_version(
             f.write(new_contents)
 
     if csharp_version is not None:
-        package_version = csharp_version + r"-pre.1"
+        package_version = f"{csharp_version}-pre.1"
         if csharp_extensions_version is not None:
             extension_version = csharp_extensions_version + r"-pre.1"
         print(
