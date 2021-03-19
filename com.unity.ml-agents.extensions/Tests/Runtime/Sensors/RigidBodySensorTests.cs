@@ -1,8 +1,8 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using NUnit.Framework;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Extensions.Sensors;
-
 
 namespace Unity.MLAgents.Extensions.Tests.Sensors
 {

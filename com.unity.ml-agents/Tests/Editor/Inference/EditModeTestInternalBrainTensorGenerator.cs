@@ -6,6 +6,7 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors.Reflection;
+using Unity.MLAgents.Utils.Tests;
 
 namespace Unity.MLAgents.Tests
 {

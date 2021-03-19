@@ -4,9 +4,6 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using Unity.Barracuda;
 
-
-[assembly: InternalsVisibleTo("Unity.ML-Agents.Editor.Tests")]
-
 namespace Unity.MLAgents.Sensors
 {
     /// <summary>
