@@ -1,22 +1,6 @@
 namespace Unity.MLAgents.Sensors
 {
     /// <summary>
-    /// The compression setting for visual/camera observations.
-    /// </summary>
-    public enum SensorCompressionType
-    {
-        /// <summary>
-        /// No compression. Data is preserved as float arrays.
-        /// </summary>
-        None,
-
-        /// <summary>
-        /// PNG format. Data will be stored in binary format.
-        /// </summary>
-        PNG
-    }
-
-    /// <summary>
     /// Sensor interface for generating observations.
     /// </summary>
     public interface ISensor
