@@ -472,3 +472,18 @@ RollerBall environment:
    your Assets browser, turning it into a prefab.
 1. You can now instantiate copies of the TrainingArea prefab. Drag them into
    your scene, positioning them so that they do not overlap.
+
+## Optional: Training Using Concurrent Unity Instances
+Another level of parallelization comes by training using 
+[concurrent Unity instances](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/ML-Agents-Overview.md#additional-features). 
+For example,
+
+```
+mlagents-learn config/rollerball_config.yaml --run-id=RollerBall --num-envs=2
+```
+
+will start ML Agents training with two environment instances. Combining multiple
+training areas withint the same scene, with concurrent Unity instances, effectively
+gives you two levels of parallelism to speed up training. The command line option
+```--num-envs=<n>``` controls the number of concurrent Unity instances that are 
+executed in parallel during training.
