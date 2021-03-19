@@ -82,16 +82,16 @@ you would like to contribute environments, please see our
 
 ![GridWorld](images/gridworld.png)
 
-- Set-up: A version of the classic grid-world task. Scene contains agent, goal,
+- Set-up: A version of the grid-world task. Scene contains agent, goal,
   and obstacles.
-- Goal: The agent must navigate the grid to the goal while avoiding the
-  obstacles.
+- Goal: The agent must navigate the grid to the appropriate goal while
+  avoiding the obstacles.
 - Agents: The environment contains nine agents with the same Behavior
   Parameters.
 - Agent Reward Function:
   - -0.01 for every step.
-  - +1.0 if the agent navigates to the goal position of the grid (episode ends).
-  - -1.0 if the agent navigates to an obstacle (episode ends).
+  - +1.0 if the agent navigates to the correct goal (episode ends).
+  - -1.0 if the agent navigates to an incorrect goal (episode ends).
 - Behavior Parameters:
   - Vector Observation space: None
   - Actions: 1 discrete action branch with 5 actions, corresponding to movement in
@@ -101,8 +101,10 @@ you would like to contribute environments, please see our
     checkbox within the `trueAgent` GameObject). The trained model file provided
     was generated with action masking turned on.
   - Visual Observations: One corresponding to top-down view of GridWorld.
-- Float Properties: Three, corresponding to grid size, number of obstacles, and
-  number of goals.
+  - Goal Signal : A one hot vector corresponding to which color is the correct goal
+  for the Agent
+- Float Properties: Three, corresponding to grid size, number of green goals, and
+  number of red goals.
 - Benchmark Mean Reward: 0.8
 
 ## Push Block
