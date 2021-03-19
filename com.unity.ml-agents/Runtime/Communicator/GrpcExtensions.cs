@@ -14,6 +14,7 @@ using Unity.MLAgents.Analytics;
 
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor")]
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor.Tests")]
+[assembly: InternalsVisibleTo("Unity.ML-Agents.Runtime.Utils.Tests")]
 
 namespace Unity.MLAgents
 {
@@ -338,7 +339,8 @@ namespace Unity.MLAgents
         /// <returns></returns>
         public static ObservationProto GetObservationProto(this ISensor sensor, ObservationWriter observationWriter)
         {
-            var shape = sensor.GetObservationShape();
+            var obsSpec = sensor.GetObservationSpec();
+            var shape = obsSpec.Shape;
             ObservationProto observationProto = null;
             var compressionSpec = sensor.GetCompressionSpec();
             var compressionType = compressionSpec.SensorCompressionType;
@@ -393,7 +395,7 @@ namespace Unity.MLAgents
                     floatDataProto.Data.Add(0.0f);
                 }
 
-                observationWriter.SetTarget(floatDataProto.Data, sensor.GetObservationShape(), 0);
+                observationWriter.SetTarget(floatDataProto.Data, sensor.GetObservationSpec(), 0);
                 sensor.Write(observationWriter);
 
                 observationProto = new ObservationProto
@@ -423,46 +425,36 @@ namespace Unity.MLAgents
                     observationProto.CompressedChannelMapping.AddRange(compressionSpec.CompressedChannelMapping);
                 }
             }
-            // Add the dimension properties if any to the observationProto
-            var dimensionPropertySensor = sensor as IDimensionPropertiesSensor;
-            if (dimensionPropertySensor != null)
+
+            // Add the dimension properties to the observationProto
+            var dimensionProperties = obsSpec.DimensionProperties;
+            for (int i = 0; i < dimensionProperties.Length; i++)
             {
-                var dimensionProperties = dimensionPropertySensor.GetDimensionProperties();
-                for (int i = 0; i < dimensionProperties.Length; i++)
+                observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
+            }
+
+            // Checking trainer compatibility with variable length observations
+            if (dimensionProperties == new InplaceArray<DimensionProperty>(DimensionProperty.VariableSize, DimensionProperty.None))
+            {
+                var trainerCanHandleVarLenObs = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.VariableLengthObservation;
+                if (!trainerCanHandleVarLenObs)
                 {
-                    observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
-                }
-                // Checking trainer compatibility with variable length observations
-                if (dimensionProperties.Length == 2)
-                {
-                    if (dimensionProperties[0] == DimensionProperty.VariableSize &&
-                    dimensionProperties[1] == DimensionProperty.None)
-                    {
-                        var trainerCanHandleVarLenObs = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.VariableLengthObservation;
-                        if (!trainerCanHandleVarLenObs)
-                        {
-                            throw new UnityAgentsException("Variable Length Observations are not supported by the trainer");
-                        }
-                    }
+                    throw new UnityAgentsException("Variable Length Observations are not supported by the trainer");
                 }
             }
-            observationProto.Shape.AddRange(shape);
+
+            for (var i = 0; i < shape.Length; i++)
+            {
+                observationProto.Shape.Add(shape[i]);
+            }
+
             var sensorName = sensor.GetName();
             if (!string.IsNullOrEmpty(sensorName))
             {
                 observationProto.Name = sensorName;
             }
 
-            // Add the observation type, if any, to the observationProto
-            var typeSensor = sensor as ITypedSensor;
-            if (typeSensor != null)
-            {
-                observationProto.ObservationType = (ObservationTypeProto)typeSensor.GetObservationType();
-            }
-            else
-            {
-                observationProto.ObservationType = ObservationTypeProto.Default;
-            }
+            observationProto.ObservationType = (ObservationTypeProto)obsSpec.ObservationType;
             return observationProto;
         }
 

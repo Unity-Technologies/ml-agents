@@ -101,13 +101,14 @@ namespace Unity.MLAgents.Analytics
 
         public static EventObservationSpec FromSensor(ISensor sensor)
         {
-            var shape = sensor.GetObservationShape();
-            var dimProps = (sensor as IDimensionPropertiesSensor)?.GetDimensionProperties();
+            var obsSpec = sensor.GetObservationSpec();
+            var shape = obsSpec.Shape;
+            var dimProps = obsSpec.DimensionProperties;
             var dimInfos = new EventObservationDimensionInfo[shape.Length];
             for (var i = 0; i < shape.Length; i++)
             {
                 dimInfos[i].Size = shape[i];
-                dimInfos[i].Flags = dimProps != null ? (int)dimProps[i] : 0;
+                dimInfos[i].Flags = (int)dimProps[i];
             }
 
             var builtInSensorType =
