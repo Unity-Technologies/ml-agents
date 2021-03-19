@@ -47,7 +47,6 @@ namespace Unity.MLAgents.Extensions.Match3
         private int m_Columns;
         private int m_NumCellTypes;
         private int m_NumSpecialTypes;
-        private ISparseChannelSensor sparseChannelSensorImplementation;
 
         private int SpecialTypeSize
         {
