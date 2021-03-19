@@ -7,6 +7,7 @@ using Unity.MLAgents.CommunicatorObjects;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Policies;
+using Unity.MLAgents.Utils.Tests;
 
 namespace Unity.MLAgents.Tests
 {

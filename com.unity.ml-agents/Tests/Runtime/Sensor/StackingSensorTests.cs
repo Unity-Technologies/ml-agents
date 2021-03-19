@@ -1,13 +1,27 @@
 using NUnit.Framework;
 using System;
 using System.Linq;
+using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 using UnityEngine;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Utils.Tests;
 
 namespace Unity.MLAgents.Tests
 {
     public class StackingSensorTests
     {
+        [SetUp]
+        public void SetUp()
+        {
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.Dispose();
+            }
+
+            Academy.Instance.AutomaticSteppingEnabled = false;
+        }
+
         [Test]
         public void TestCtor()
         {
@@ -15,6 +29,40 @@ namespace Unity.MLAgents.Tests
             ISensor sensor = new StackingSensor(wrapped, 4);
             Assert.AreEqual("StackingSensor_size4_VectorSensor_size4", sensor.GetName());
             Assert.AreEqual(sensor.GetObservationSpec().Shape, new InplaceArray<int>(16));
+        }
+
+        [Test]
+        public void AssertStackingReset()
+        {
+            var agentGo1 = new GameObject("TestAgent");
+            var bp1 = agentGo1.AddComponent<BehaviorParameters>();
+            bp1.BrainParameters.NumStackedVectorObservations = 3;
+            bp1.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(1);
+            var aca = Academy.Instance;
+            var agent1 = agentGo1.AddComponent<TestAgent>();
+            var policy = new TestPolicy();
+            agent1.SetPolicy(policy);
+
+            StackingSensor sensor = null;
+            foreach (ISensor s in agent1.sensors)
+            {
+                if (s is StackingSensor)
+                {
+                    sensor = s as StackingSensor;
+                }
+            }
+
+            Assert.NotNull(sensor);
+
+            for (int i = 0; i < 20; i++)
+            {
+                agent1.RequestDecision();
+                aca.EnvironmentStep();
+            }
+
+            policy.OnRequestDecision = () => SensorTestHelper.CompareObservation(sensor, new[] { 18f, 19f, 21f });
+            agent1.EndEpisode();
+            SensorTestHelper.CompareObservation(sensor, new[] { 0f, 0f, 0f });
         }
 
         [Test]

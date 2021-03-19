@@ -1,7 +1,6 @@
 {
-    "name": "Unity.ML-Agents.Editor.Tests",
+    "name": "Unity.ML-Agents.Runtime.Sensor.Tests",
     "references": [
-        "Unity.ML-Agents.Editor",
         "Unity.ML-Agents",
         "Unity.Barracuda",
         "Unity.ML-Agents.CommunicatorObjects",
@@ -10,9 +9,7 @@
     "optionalUnityReferences": [
         "TestAssemblies"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
@@ -24,12 +21,5 @@
     "autoReferenced": false,
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
-    ],
-    "versionDefines": [
-        {
-            "name": "com.unity.modules.unityanalytics",
-            "expression": "1.0.0",
-            "define": "MLA_UNITY_ANALYTICS_MODULE"
-        }
     ]
 }
