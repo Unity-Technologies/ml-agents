@@ -209,7 +209,7 @@ Camera:
   far clip plane: 1000
   field of view: 58
   orthographic: 1
-  orthographic size: 2.75
+  orthographic size: 5.46
   m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
@@ -753,10 +753,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Area (6)
       objectReference: {fileID: 0}
-    - target: {fileID: 1625008366184734, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4124767863011510, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1
@@ -889,14 +885,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1488387672112076, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
-      propertyPath: m_Name
-      value: FloatAgent
-      objectReference: {fileID: 0}
-    - target: {fileID: 1625008366184734, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4124767863011510, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -928,21 +916,6 @@ PrefabInstance:
     - target: {fileID: 4124767863011510, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
       propertyPath: m_RootOrder
       value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 114650561397225712, guid: 5c2bd19e4bbda4991b74387ca5d28156,
-        type: 3}
-      propertyPath: m_UseHeuristic
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114889700908650620, guid: 5c2bd19e4bbda4991b74387ca5d28156,
-        type: 3}
-      propertyPath: compression
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114889700908650620, guid: 5c2bd19e4bbda4991b74387ca5d28156,
-        type: 3}
-      propertyPath: m_Compression
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
@@ -1280,10 +1253,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Area (2)
       objectReference: {fileID: 0}
-    - target: {fileID: 1625008366184734, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4124767863011510, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1
@@ -1495,10 +1464,6 @@ PrefabInstance:
     - target: {fileID: 1625008366184734, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
       propertyPath: m_Name
       value: Area (5)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1625008366184734, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4124767863011510, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1722,10 +1687,6 @@ PrefabInstance:
     - target: {fileID: 1625008366184734, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
       propertyPath: m_Name
       value: Area (4)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1625008366184734, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4124767863011510, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2131,10 +2092,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Area (3)
       objectReference: {fileID: 0}
-    - target: {fileID: 1625008366184734, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4124767863011510, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1
@@ -2439,10 +2396,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Area (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 1625008366184734, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4124767863011510, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1
@@ -2732,9 +2685,10 @@ MonoBehaviour:
   actorObjs: []
   players: 
   trueAgent: {fileID: 125487785}
-  goalPref: {fileID: 1508142483324970, guid: 1ec4e4e96e7514d45b7ebc3ba5a9a481, type: 3}
-  pitPref: {fileID: 1811317785436014, guid: d13ee2db77b3a4dcc8664d2fe2a0f219, type: 3}
-  numberOfObstacles: 1
+  GreenPref: {fileID: 1508142483324970, guid: 1ec4e4e96e7514d45b7ebc3ba5a9a481, type: 3}
+  RedPref: {fileID: 1811317785436014, guid: d13ee2db77b3a4dcc8664d2fe2a0f219, type: 3}
+  numberOfGreen: 1
+  numberOfRed: 1
 --- !u!4 &1795599558
 Transform:
   m_ObjectHideFlags: 0
@@ -3132,10 +3086,6 @@ PrefabInstance:
     - target: {fileID: 1625008366184734, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
       propertyPath: m_Name
       value: Area (7)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1625008366184734, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4124767863011510, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 3}
       propertyPath: m_LocalPosition.x
