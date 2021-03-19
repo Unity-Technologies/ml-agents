@@ -1,9 +1,12 @@
 fileFormatVersion: 2
 guid: 6942431e411b146be9a597663eca89af
 ScriptedImporter:
-  fileIDToRecycleName:
-    11400000: Assets/ML-Agents/Examples/3DBall/Demos/Expert3DBallHard.demo
+  internalIDToNameTable:
+  - first:
+      114: 11400000
+    second: Assets/ML-Agents/Examples/3DBall/Demos/Expert3DBallHard.demo
   externalObjects: {}
+  serializedVersion: 2
   userData: ' (Unity.MLAgents.Demonstrations.DemonstrationSummary)'
   assetBundleName: 
   assetBundleVariant: 
