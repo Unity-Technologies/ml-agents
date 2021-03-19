@@ -143,6 +143,8 @@ public class TankShooting : MonoBehaviour, IInputActionAssetProvider
 
         // Reset the launch force.  This is a precaution in case of missing button events.
         m_CurrentLaunchForce = minLaunchForce;
+
+        m_TankAgent.AddReward(-0.001f);
     }
 
     // The callback from the TanksInputActions Player Input asset that is

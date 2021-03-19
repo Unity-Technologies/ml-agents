@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
-using UnityEngine.Windows.Speech;
-using Object = System.Object;
 using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
@@ -84,7 +82,10 @@ public class GameManager : MonoBehaviour
         }
 
         // These are the targets the camera should follow.
-        cameraControl.targets = targets;
+        if (!ReferenceEquals(null, cameraControl))
+        {
+            cameraControl.targets = targets;
+        }
     }
 
     // This is called from start and will run each phase of the game one after another.
@@ -120,7 +121,10 @@ public class GameManager : MonoBehaviour
         DisableTankControl();
 
         // Snap the camera's zoom and position to something appropriate for the reset tanks.
-        cameraControl.SetStartPositionAndSize();
+        if (!ReferenceEquals(null, cameraControl))
+        {
+            cameraControl.SetStartPositionAndSize();
+        }
 
         // Increment the round number and display text showing the players what round it is.
         m_RoundNumber++;

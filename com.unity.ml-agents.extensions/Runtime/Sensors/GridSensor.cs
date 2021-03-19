@@ -448,6 +448,19 @@ namespace Unity.MLAgents.Extensions.Sensors
             Start();
         }
 
+        void OnDestroy()
+        {
+            DisposeNativeArray(m_Hits);
+            DisposeNativeArray(m_HitIndexes);
+            DisposeNativeArray(m_PerceptionBuffer);
+            DisposeNativeArray(m_BoxcastCommands);
+            DisposeNativeArray(CellActivity);
+            DisposeNativeArray(CellPoints);
+            DisposeNativeArray(m_ChannelHotDefaultPerceptionBuffer);
+            DisposeNativeArray(ChannelOffsets);
+        }
+
+
         /// <summary>
         /// Calls the initialization methods. Creates the data storing properties used to send the data
         /// Establishes
@@ -556,21 +569,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             Profiler.EndSample();
         }
 
-        void OnDisable()
-        {
-        }
-
-        void OnDestroy()
-        {
-            DisposeNativeArray(m_Hits);
-            DisposeNativeArray(m_HitIndexes);
-            DisposeNativeArray(m_BoxcastCommands);
-            DisposeNativeArray(CellActivity);
-            DisposeNativeArray(CellPoints);
-            DisposeNativeArray(m_ChannelHotDefaultPerceptionBuffer);
-            DisposeNativeArray(ChannelOffsets);
-        }
-
         static void DisposeNativeArray<TD>(NativeArray<TD> array)
         where TD : struct
         {
@@ -656,17 +654,21 @@ namespace Unity.MLAgents.Extensions.Sensors
         struct CreateBoxcastBatch : IJobParallelFor
         {
             public NativeArray<BoxcastCommand> Commands;
+            [ReadOnly]
+            public float YOffset;
+            [ReadOnly]
             public Vector3 halfScale;
             public int ObserveMask;
             [ReadOnly]
             public NativeArray<Vector3> CellPoints;
+            [ReadOnly]
             public Vector3 Pos;
 
             public void Execute(int index)
             {
                 var cellCenter = Pos + CellPoints[index];
                 var rotation = Quaternion.identity;
-                Commands[index] = new BoxcastCommand(new Vector3(cellCenter.x, cellCenter.y + 2.0f, cellCenter.z),
+                Commands[index] = new BoxcastCommand(new Vector3(cellCenter.x, cellCenter.y + YOffset, cellCenter.z),
                     halfScale,
                     rotation,
                     Vector3.down,
@@ -685,6 +687,8 @@ namespace Unity.MLAgents.Extensions.Sensors
             [ReadOnly]
             public NativeArray<Vector3> CellPoints;
             [ReadOnly]
+            public float YOffset;
+            [ReadOnly]
             public Matrix4x4 Mat;
             public Quaternion Rotation;
 
@@ -693,7 +697,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 var cellCenter = Mat.MultiplyPoint(CellPoints[index]);
                 var rotation = Rotation;
-                Commands[index] = new BoxcastCommand(new Vector3(cellCenter.x, cellCenter.y + 5.0f, cellCenter.z),
+                Commands[index] = new BoxcastCommand(new Vector3(cellCenter.x, cellCenter.y + YOffset, cellCenter.z),
                     halfScale,
                     rotation,
                     Vector3.down,
@@ -764,7 +768,8 @@ namespace Unity.MLAgents.Extensions.Sensors
                         Mat = t.localToWorldMatrix,
                         CellPoints = CellPoints,
                         ObserveMask = ObserveMask,
-                        Rotation = t.rotation
+                        Rotation = t.rotation,
+                        YOffset = GizmoYOffset
                     };
                     createBoxHandle = createBoxcasts.Schedule(NumCells, NumCells / 12, clearHandle);
                 }
@@ -777,7 +782,8 @@ namespace Unity.MLAgents.Extensions.Sensors
                         halfScale = halfCellScale,
                         Pos = t.position,
                         CellPoints = CellPoints,
-                        ObserveMask = ObserveMask
+                        ObserveMask = ObserveMask,
+                        YOffset = GizmoYOffset
                     };
                     createBoxHandle = createBoxcasts.Schedule(NumCells, NumCells / 12, clearHandle);
                 }
@@ -1047,7 +1053,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 UpdateBufferFromJob();
 
                 var scale = new Vector3(CellScaleX, CellScaleY, CellScaleZ);
-                var offset = new Vector3(0, 5.0f, 0);
+                var offset = new Vector3(0, GizmoYOffset, 0);
                 var oldGizmoMatrix = Gizmos.matrix;
                 for (var i = 0; i < NumCells; i++)
                 {

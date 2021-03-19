@@ -5163,7 +5163,7 @@ MonoBehaviour:
     m_ActionId: 9822b927-f006-4158-a954-6a7921d46d87
     m_ActionName: UI/Click[/Mouse/leftButton]
   m_NeverAutoSwitchControlSchemes: 1
-  m_DefaultControlScheme: 
+  m_DefaultControlScheme: Gamepad
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
@@ -5196,7 +5196,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BrainParameters:
     VectorObservationSize: 4
-    NumStackedVectorObservations: 8
+    NumStackedVectorObservations: 5
     m_ActionSpec:
       m_NumContinuousActions: 0
       BranchSizes: 
@@ -5204,7 +5204,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 2473d2d483f914b869221ca66f5770e9, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Tanks
@@ -5255,29 +5255,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: TankGrid
-  CellScaleX: 3
-  CellScaleZ: 3
+  CellScaleX: 1
+  CellScaleZ: 1
   GridNumSideX: 40
   GridNumSideZ: 40
-  CellScaleY: 5
+  CellScaleY: 0.01
   RotateToAgent: 1
-  ChannelDepth: 03000000
+  ChannelDepth: 04000000
   DetectableObjects:
   - tank
   - shell
+  - terrain
   ObserveMask:
     serializedVersion: 2
-    m_Bits: 1280
+    m_Bits: 1792
   gridDepthType: 1
   rootReference: {fileID: 2855894493477824887}
   MaxColliderBufferSize: 500
   InitialColliderBufferSize: 4
-  ObservationPerCell: 3
-  NumberOfObservations: 4800
+  ObservationPerCell: 4
+  NumberOfObservations: 6400
   DebugColors:
-  - {r: 0.8113208, g: 0, b: 0.027757771, a: 0}
+  - {r: 0, g: 0.41726232, b: 0.8117647, a: 0}
   - {r: 0, g: 1, b: 0.022001743, a: 0}
-  GizmoYOffset: 0.5
+  - {r: 1, g: 0, b: 0.75294113, a: 0}
+  GizmoYOffset: 6
   ShowGizmos: 1
   CompressionType: 1
 --- !u!114 &1740605957079586335

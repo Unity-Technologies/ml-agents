@@ -5,11 +5,8 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Samples/Input System/1.0.2/Tanks Demo/Scenes/ButtonRemapScreen.unity
-    guid: 6d897b03f2c393542b51d405e97f9f92
   - enabled: 1
-    path: Assets/Samples/Input System/1.0.2/Tanks Demo/Scenes/NewInput.unity
+    path: Assets/Samples/Input System/1.0.2/Tanks Demo/Scenes/Tanks_Training.unity
     guid: 37961ba4d27bd46428d20c2ffe403dc3
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: fe070b6f942ad418d965ebcea37bd28b,
