@@ -241,29 +241,4 @@ namespace Unity.MLAgents.SideChannels
             }
         }
     }
-
-    /// <summary>
-    /// Deprecated, use <see cref="SideChannelManager"/> instead.
-    /// </summary>
-    [Obsolete("Use SideChannelManager instead.")]
-    public static class SideChannelsManager
-    {
-        /// <summary>
-        /// Deprecated, use <see cref="SideChannelManager.RegisterSideChannel"/> instead.
-        /// </summary>
-        /// <param name="sideChannel"></param>
-        public static void RegisterSideChannel(SideChannel sideChannel)
-        {
-            SideChannelManager.RegisterSideChannel(sideChannel);
-        }
-
-        /// <summary>
-        /// Deprecated, use <see cref="SideChannelManager.UnregisterSideChannel"/> instead.
-        /// </summary>
-        /// <param name="sideChannel"></param>
-        public static void UnregisterSideChannel(SideChannel sideChannel)
-        {
-            SideChannelManager.UnregisterSideChannel(sideChannel);
-        }
-    }
 }

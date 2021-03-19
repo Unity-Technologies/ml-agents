@@ -35,7 +35,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             gridSensor.Start();
 
             int[] expectedShape = { 10, 10, 1 };
-            GridObsTestUtils.AssertArraysAreEqual(expectedShape, gridSensor.GetFloatObservationShape());
+            GridObsTestUtils.AssertArraysAreEqual(expectedShape, gridSensor.GetObservationShape());
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             gridSensor.Start();
 
             int[] expectedShape = { 10, 10, 2 };
-            GridObsTestUtils.AssertArraysAreEqual(expectedShape, gridSensor.GetFloatObservationShape());
+            GridObsTestUtils.AssertArraysAreEqual(expectedShape, gridSensor.GetObservationShape());
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             gridSensor.Start();
 
             int[] expectedShape = { 10, 10, 7 };
-            GridObsTestUtils.AssertArraysAreEqual(expectedShape, gridSensor.GetFloatObservationShape());
+            GridObsTestUtils.AssertArraysAreEqual(expectedShape, gridSensor.GetObservationShape());
         }
     }
 }

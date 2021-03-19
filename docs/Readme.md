@@ -20,6 +20,7 @@
 - [Designing a Learning Environment](Learning-Environment-Design.md)
   - [Designing Agents](Learning-Environment-Design-Agents.md)
 - [Using an Executable Environment](Learning-Environment-Executable.md)
+- [ML-Agents Package Settings](Package-Settings.md)
 
 ## Training & Inference
 

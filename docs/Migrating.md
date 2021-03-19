@@ -14,6 +14,56 @@ double-check that the versions are in the same. The versions can be found in
 
 
 # Migrating
+## Migrating the package to version 2.0
+- If you used any of the APIs that were deprecated before version 2.0, you need to use their replacement. These deprecated APIs have been removed. See the migration steps bellow for specific API replacements.
+### IDiscreteActionMask changes
+- The interface for disabling specific discrete actions has changed. `IDiscreteActionMask.WriteMask()` was removed,
+and replaced with `SetActionEnabled()`. Instead of returning an IEnumerable with indices to disable, you can
+now call `SetActionEnabled` for each index to disable (or enable). As an example, if you overrode
+`Agent.WriteDiscreteActionMask()` with something that looked like:
+
+```csharp
+public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
+{
+    var branch = 2;
+    var actionsToDisable = new[] {1, 3};
+    actionMask.WriteMask(branch, actionsToDisable);
+}
+```
+
+the equivalent code would now be
+
+```csharp
+public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
+{
+    var branch = 2;
+    actionMask.SetActionEnabled(branch, 1, false);
+    actionMask.SetActionEnabled(branch, 3, false);
+}
+```
+- The `IActuator` interface now implements `IHeuristicProvider`.  Please add the corresponding `Heuristic(in ActionBuffers)`
+method to your custom Actuator classes.
+
+- The `ISensor.GetObservationShape()` method was removed, and `GetObservationSpec()` was added. You can use
+`ObservationSpec.Vector()` or `ObservationSpec.Visual()` to generate `ObservationSpec`s that are equivalent to
+the previous shape. For example, if your old ISensor looked like:
+
+```csharp
+public override int[] GetObservationShape()
+{
+    return new[] { m_Height, m_Width, m_NumChannels };
+}
+```
+
+the equivalent code would now be
+
+```csharp
+public override ObservationSpec GetObservationSpec()
+{
+    return ObservationSpec.Visual(m_Height, m_Width, m_NumChannels);
+}
+```
+
 ## Migrating to Release 13
 ### Implementing IHeuristic in your IActuator implementations
  - If you have any custom actuators, you can now implement the `IHeuristicProvider` interface to have your actuator

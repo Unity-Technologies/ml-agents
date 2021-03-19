@@ -5,7 +5,7 @@ namespace Unity.MLAgents.Actuators
     /// <summary>
     /// IActuator implementation that forwards calls to an <see cref="IActionReceiver"/> and an <see cref="IHeuristicProvider"/>.
     /// </summary>
-    internal class VectorActuator : IActuator, IHeuristicProvider, IBuiltInActuator
+    internal class VectorActuator : IActuator, IBuiltInActuator
     {
         IActionReceiver m_ActionReceiver;
         IHeuristicProvider m_HeuristicProvider;

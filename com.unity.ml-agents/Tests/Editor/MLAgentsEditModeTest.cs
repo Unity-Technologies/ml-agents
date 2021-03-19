@@ -124,9 +124,9 @@ namespace Unity.MLAgents.Tests
             sensorName = n;
         }
 
-        public int[] GetObservationShape()
+        public ObservationSpec GetObservationSpec()
         {
-            return new[] { 0 };
+            return ObservationSpec.Vector(0);
         }
 
         public int Write(ObservationWriter writer)
@@ -711,16 +711,10 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(numSteps, agent1.sensor1.numWriteCalls);
             Assert.AreEqual(numSteps, agent1.sensor2.numCompressedCalls);
 
-            // Disable deprecation warnings so we can read/write the old fields.
-#pragma warning disable CS0618
-
-            // Make sure the Heuristic method read the observation and set the action
-            Assert.AreEqual(agent1.collectObservationsCallsForEpisode, agent1.GetAction()[0]);
             Assert.AreEqual(
                 agent1.collectObservationsCallsForEpisode,
                 agent1.GetStoredActionBuffers().ContinuousActions[0]
             );
-#pragma warning restore CS0618
         }
     }
 
