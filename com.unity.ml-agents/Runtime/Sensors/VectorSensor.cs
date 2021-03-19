@@ -28,7 +28,7 @@ namespace Unity.MLAgents.Sensors
                 name = $"VectorSensor_size{observationSize}";
                 if (observationType != ObservationType.Default)
                 {
-                    name += "_goal";
+                    name += $"_{observationType.ToString()}";
                 }
             }
 

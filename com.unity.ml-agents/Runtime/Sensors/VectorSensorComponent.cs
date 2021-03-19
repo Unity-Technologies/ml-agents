@@ -20,17 +20,17 @@ namespace Unity.MLAgents.Sensors
 
         public int ObservationSize
         {
-            get { return m_observationSize; }
-            set { m_observationSize = value; }
+            get { return m_ObservationSize; }
+            set { m_ObservationSize = value; }
         }
 
         [HideInInspector, SerializeField]
-        int m_observationSize;
+        int m_ObservationSize;
 
         [HideInInspector, SerializeField]
         ObservationType m_ObservationType;
 
-        VectorSensor m_sensor;
+        VectorSensor m_Sensor;
 
         public ObservationType ObservationType
         {
@@ -44,19 +44,19 @@ namespace Unity.MLAgents.Sensors
         /// <returns></returns>
         public override ISensor CreateSensor()
         {
-            m_sensor = new VectorSensor(m_observationSize, m_SensorName, m_ObservationType);
-            return m_sensor;
+            m_Sensor = new VectorSensor(m_ObservationSize, m_SensorName, m_ObservationType);
+            return m_Sensor;
         }
 
         /// <inheritdoc/>
         public override int[] GetObservationShape()
         {
-            return new[] { m_observationSize };
+            return new[] { m_ObservationSize };
         }
 
         public VectorSensor GetSensor()
         {
-            return m_sensor;
+            return m_Sensor;
         }
     }
 }
