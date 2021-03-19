@@ -85,9 +85,9 @@ def set_version(
             f.write(new_contents)
 
     if csharp_version is not None:
-        package_version = f"{csharp_version}-pre.1"
+        package_version = f"{csharp_version}-exp"
         if csharp_extensions_version is not None:
-            extension_version = f"{csharp_extensions_version}-pre.1"
+            extension_version = f"{csharp_extensions_version}-exp"
         print(
             f"Setting package version to {package_version} in {MLAGENTS_PACKAGE_JSON_PATH}"
             f" and {MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH}"
