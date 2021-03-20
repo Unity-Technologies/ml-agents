@@ -3,9 +3,9 @@
 # For each "other" test, we only run it against a single version of the
 # editor to reduce the number of yamato jobs
 test_editors:
-  - version: 2018.4
-    extra_test: llapi
   - version: 2019.4
     extra_test: gym
-  - version: 2020.2
+  - version: 2020.3
     extra_test: sensor
+  - version: 2021.1
+    extra_test: llapi

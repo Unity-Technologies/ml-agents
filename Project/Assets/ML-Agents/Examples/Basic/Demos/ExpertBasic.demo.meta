@@ -1,9 +1,12 @@
 fileFormatVersion: 2
 guid: 414224ce8b3e247ad936b17f574b10ab
 ScriptedImporter:
-  fileIDToRecycleName:
-    11400000: Assets/ML-Agents/Examples/Basic/Demos/ExpertBasic.demo
+  internalIDToNameTable:
+  - first:
+      114: 11400000
+    second: Assets/ML-Agents/Examples/Basic/Demos/ExpertBasic.demo
   externalObjects: {}
+  serializedVersion: 2
   userData: ' (Unity.MLAgents.Demonstrations.DemonstrationSummary)'
   assetBundleName: 
   assetBundleVariant: 

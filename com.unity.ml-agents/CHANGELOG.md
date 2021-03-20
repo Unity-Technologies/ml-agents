@@ -9,6 +9,7 @@ and this project adheres to
 ## [Unreleased]
 ### Major Changes
 #### com.unity.ml-agents (C#)
+- The minimum supported Unity version was updated to 2019.4. (#5166)
 - Several breaking interface changes were made. See the
 [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_14_docs/docs/Migrating.md) for more
 details.

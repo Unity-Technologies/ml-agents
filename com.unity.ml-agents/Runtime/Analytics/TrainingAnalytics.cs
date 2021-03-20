@@ -1,14 +1,10 @@
-#if MLA_UNITY_ANALYTICS_MODULE || !UNITY_2019_4_OR_NEWER
-#define MLA_UNITY_ANALYTICS_MODULE_ENABLED
-#endif
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
-#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
+#if MLA_UNITY_ANALYTICS_MODULE
 using UnityEngine.Analytics;
 #if UNITY_EDITOR
 using UnityEditor.Analytics;
@@ -65,7 +61,7 @@ namespace Unity.MLAgents.Analytics
 
         static bool EnableAnalytics()
         {
-#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
+#if MLA_UNITY_ANALYTICS_MODULE
             if (s_EventsRegistered)
             {
                 return true;
@@ -94,7 +90,7 @@ namespace Unity.MLAgents.Analytics
             return s_EventsRegistered;
 #else
             return false;
-#endif // MLA_UNITY_ANALYTICS_MODULE_ENABLED
+#endif // MLA_UNITY_ANALYTICS_MODULE
         }
 
         /// <summary>
@@ -102,7 +98,7 @@ namespace Unity.MLAgents.Analytics
         /// </summary>
         /// <param name="communicationVersion"></param>
         /// <param name="packageVersion"></param>
-        [Conditional("MLA_UNITY_ANALYTICS_MODULE_ENABLED")]
+        [Conditional("MLA_UNITY_ANALYTICS_MODULE")]
         public static void SetTrainerInformation(string packageVersion, string communicationVersion)
         {
             s_TrainerPackageVersion = packageVersion;
@@ -111,14 +107,14 @@ namespace Unity.MLAgents.Analytics
 
         public static bool IsAnalyticsEnabled()
         {
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE_ENABLED
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
             return EditorAnalytics.enabled;
 #else
             return false;
 #endif
         }
 
-        [Conditional("MLA_UNITY_ANALYTICS_MODULE_ENABLED")]
+        [Conditional("MLA_UNITY_ANALYTICS_MODULE")]
         public static void TrainingEnvironmentInitialized(TrainingEnvironmentInitializedEvent tbiEvent)
         {
             if (!IsAnalyticsEnabled())
@@ -140,7 +136,7 @@ namespace Unity.MLAgents.Analytics
             // Debug.Log(
             //     $"Would send event {k_TrainingEnvironmentInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
             // );
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE_ENABLED
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
                 EditorAnalytics.SendEventWithLimit(k_TrainingEnvironmentInitializedEventName, tbiEvent);
@@ -148,7 +144,7 @@ namespace Unity.MLAgents.Analytics
 #endif
         }
 
-        [Conditional("MLA_UNITY_ANALYTICS_MODULE_ENABLED")]
+        [Conditional("MLA_UNITY_ANALYTICS_MODULE")]
         public static void RemotePolicyInitialized(
             string fullyQualifiedBehaviorName,
             IList<ISensor> sensors,
@@ -177,7 +173,7 @@ namespace Unity.MLAgents.Analytics
             // Debug.Log(
             //     $"Would send event {k_RemotePolicyInitializedEventName} with body {JsonUtility.ToJson(data, true)}"
             // );
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE_ENABLED
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
                 EditorAnalytics.SendEventWithLimit(k_RemotePolicyInitializedEventName, data);
@@ -197,7 +193,7 @@ namespace Unity.MLAgents.Analytics
             return fullyQualifiedBehaviorName.Substring(0, lastQuestionIndex);
         }
 
-        [Conditional("MLA_UNITY_ANALYTICS_MODULE_ENABLED")]
+        [Conditional("MLA_UNITY_ANALYTICS_MODULE")]
         public static void TrainingBehaviorInitialized(TrainingBehaviorInitializedEvent tbiEvent)
         {
             if (!IsAnalyticsEnabled())
@@ -223,7 +219,7 @@ namespace Unity.MLAgents.Analytics
             // Debug.Log(
             //     $"Would send event {k_TrainingBehaviorInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
             // );
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE_ENABLED
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
                 EditorAnalytics.SendEventWithLimit(k_TrainingBehaviorInitializedEventName, tbiEvent);

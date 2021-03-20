@@ -7,7 +7,7 @@ pack:
   commands:
     - |
       python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
-      unity-downloader-cli -u 2018.4 -c editor --wait --fast
+      unity-downloader-cli -u 2019.4 -c editor --wait --fast
       ./.Editor/Unity -projectPath Project -batchMode -executeMethod Unity.MLAgents.SampleExporter.ExportCuratedSamples -logFile -
       npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
       upm-ci project pack --project-path Project
