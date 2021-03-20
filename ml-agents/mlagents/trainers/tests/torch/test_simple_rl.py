@@ -84,7 +84,7 @@ def test_var_len_obs_and_goal_poca(num_vis, num_vector, num_var_len, conditionin
         goal_indices=[0],
     )
     new_network = attr.evolve(
-        POCA_TORCH_CONFIG.network_settings, conditioning_type=conditioning_type
+        POCA_TORCH_CONFIG.network_settings, goal_conditioning_type=conditioning_type
     )
     new_hyperparams = attr.evolve(
         POCA_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4
@@ -181,7 +181,7 @@ def test_var_len_obs_and_goal_ppo(
         goal_indices=[0],
     )
     new_network = attr.evolve(
-        POCA_TORCH_CONFIG.network_settings, conditioning_type=conditioning_type
+        POCA_TORCH_CONFIG.network_settings, goal_conditioning_type=conditioning_type
     )
     new_hyperparams = attr.evolve(
         PPO_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4

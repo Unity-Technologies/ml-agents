@@ -74,7 +74,7 @@ class ObservationEncoder(nn.Module):
     @property
     def total_goal_enc_size(self) -> int:
         """
-        Returns the total encoding size for this ObservationEncoder.
+        Returns the total goal encoding size for this ObservationEncoder.
         """
         return self._total_goal_enc_size
 
@@ -193,9 +193,9 @@ class NetworkBody(nn.Module):
 
         if (
             self.observation_encoder.total_goal_enc_size > 0
-            and network_settings.conditioning_type == ConditioningType.HYPER
+            and network_settings.goal_conditioning_type == ConditioningType.HYPER
         ):
-            self.linear_encoder = ConditionalEncoder(
+            self._body_endoder = ConditionalEncoder(
                 total_enc_size,
                 self.observation_encoder.total_goal_enc_size,
                 self.h_size,
@@ -203,7 +203,7 @@ class NetworkBody(nn.Module):
                 1,
             )
         else:
-            self.linear_encoder = LinearEncoder(
+            self._body_endoder = LinearEncoder(
                 total_enc_size, network_settings.num_layers, self.h_size
             )
 
@@ -232,11 +232,11 @@ class NetworkBody(nn.Module):
         encoded_self = self.observation_encoder(inputs)
         if actions is not None:
             encoded_self = torch.cat([encoded_self, actions], dim=1)
-        if isinstance(self.linear_encoder, ConditionalEncoder):
+        if isinstance(self._body_endoder, ConditionalEncoder):
             goal = self.observation_encoder.get_goal_encoding(inputs)
-            encoding = self.linear_encoder(encoded_self, goal)
+            encoding = self._body_endoder(encoded_self, goal)
         else:
-            encoding = self.linear_encoder(encoded_self)
+            encoding = self._body_endoder(encoded_self)
 
         if self.use_lstm:
             # Resize to (batch, sequence length, encoding size)
