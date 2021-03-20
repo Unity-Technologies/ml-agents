@@ -1,4 +1,4 @@
-#if MLA_INPUT_TESTS && UNITY_2019_4_OR_NEWER
+#if MLA_INPUT_TESTS
 using NUnit.Framework;
 using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
@@ -80,4 +80,4 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
         }
     }
 }
-#endif // MLA_INPUT_TESTS && UNITY_2019_4_OR_NEWER
+#endif // MLA_INPUT_TESTS

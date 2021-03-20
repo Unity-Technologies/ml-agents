@@ -20,7 +20,8 @@
     - [Recording Demonstrations](#recording-demonstrations)
   - [Summary](#summary)
 - [Training Methods: Environment-specific](#training-methods-environment-specific)
-  - [Training in Multi-Agent Environments with Self-Play](#training-in-multi-agent-environments-with-self-play)
+  - [Training in Competitive Multi-Agent Environments with Self-Play](#training-in-competitive-multi-agent-environments-with-self-play)
+  - [Training in Cooperative Multi-Agent Environments with MA-POCA](#training-in-cooperative-multi-agent-environments-with-ma-poca)
   - [Solving Complex Tasks using Curriculum Learning](#solving-complex-tasks-using-curriculum-learning)
   - [Training Robust Agents using Environment Parameter Randomization](#training-robust-agents-using-environment-parameter-randomization)
 - [Model Types](#model-types)
@@ -613,7 +614,7 @@ they result in the individual being removed from the game (i.e., self-sacrifice)
 MA-POCA can also be combined with self-play to train teams of agents to play against each other.
 
 To learn more about enabling cooperative behaviors for agents in an ML-Agents environment,
-check out [this page](Learning-Environment-Design-Agents.md#cooperative-scenarios).
+check out [this page](Learning-Environment-Design-Agents.md#groups-for-cooperative-scenarios).
 
 For further reading, MA-POCA builds on previous work in multi-agent cooperative learning
 ([Lowe et al.](https://arxiv.org/abs/1706.02275), [Foerster et al.](https://arxiv.org/pdf/1705.08926.pdf),

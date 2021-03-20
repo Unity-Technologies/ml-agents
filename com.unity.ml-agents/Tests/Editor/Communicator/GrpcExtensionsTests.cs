@@ -1,10 +1,12 @@
+using System;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Analytics;
-using Unity.MLAgents.CommunicatorObjects;
 using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
+
+using Unity.MLAgents.Analytics;
+using Unity.MLAgents.CommunicatorObjects;
 
 namespace Unity.MLAgents.Tests
 {
@@ -54,16 +56,16 @@ namespace Unity.MLAgents.Tests
 
         class DummySensor : ISensor
         {
-            public int[] Shape;
+            public ObservationSpec ObservationSpec;
             public SensorCompressionType CompressionType;
 
             internal DummySensor()
             {
             }
 
-            public int[] GetObservationShape()
+            public ObservationSpec GetObservationSpec()
             {
-                return Shape;
+                return ObservationSpec;
             }
 
             public int Write(ObservationWriter writer)
@@ -124,12 +126,24 @@ namespace Unity.MLAgents.Tests
 
             foreach (var (shape, compressionType, supportsMultiPngObs, expectCompressed) in variants)
             {
+                var inplaceShape = InplaceArray<int>.FromList(shape);
                 var dummySensor = new DummySensor();
                 var obsWriter = new ObservationWriter();
 
-                dummySensor.Shape = shape;
+                if (shape.Length == 1)
+                {
+                    dummySensor.ObservationSpec = ObservationSpec.Vector(shape[0]);
+                }
+                else if (shape.Length == 3)
+                {
+                    dummySensor.ObservationSpec = ObservationSpec.Visual(shape[0], shape[1], shape[2]);
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
                 dummySensor.CompressionType = compressionType;
-                obsWriter.SetTarget(new float[128], shape, 0);
+                obsWriter.SetTarget(new float[128], inplaceShape, 0);
 
                 var caps = new UnityRLCapabilities
                 {
@@ -171,7 +185,6 @@ namespace Unity.MLAgents.Tests
             sparseChannelSensor.Mapping = new[] { 0, 0, 0, 1, 1, 1 };
             Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), false);
         }
-
         [Test]
         public void TestDefaultTrainingEvents()
         {

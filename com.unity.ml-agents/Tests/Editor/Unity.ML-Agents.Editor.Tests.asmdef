@@ -4,7 +4,8 @@
         "Unity.ML-Agents.Editor",
         "Unity.ML-Agents",
         "Unity.Barracuda",
-        "Unity.ML-Agents.CommunicatorObjects"
+        "Unity.ML-Agents.CommunicatorObjects",
+        "Unity.ML-Agents.Runtime.Utils.Tests"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
@@ -23,5 +24,12 @@
     "autoReferenced": false,
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.modules.unityanalytics",
+            "expression": "1.0.0",
+            "define": "MLA_UNITY_ANALYTICS_MODULE"
+        }
     ]
 }

@@ -106,7 +106,7 @@ public class AgentSoccer : Agent
         dirToGo += transform.right * right * m_LateralSpeed;
         rotateDir = -transform.up * rotate * m_RotateSpeed;
 
-        
+
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
         agentRb.AddForce(dirToGo * m_SoccerSettings.agentRunSpeed,
             ForceMode.VelocityChange);

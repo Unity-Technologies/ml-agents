@@ -280,7 +280,7 @@ you would like to contribute environments, please see our
 - Goal:
   - Get the ball into the opponent's goal while preventing the ball from
     entering own goal.
-- Agents: The environment contains four agents, with the same Behavior
+- Agents: The environment contains two different Multi Agent Groups with two agents in each.
   Parameters : SoccerTwos.
 - Agent Reward Function (dependent):
   - (1 - `accumulated time penalty`) When ball enters opponent's goal
@@ -315,7 +315,7 @@ you would like to contribute environments, please see our
 - Goal:
   - Striker: Get the ball into the opponent's goal.
   - Goalie: Keep the ball out of the goal.
-- Agents: The environment contains three agents. Two Strikers and one Goalie.
+- Agents: The environment contains two different Multi Agent Groups. One with two Strikers and the other one Goalie.
   Behavior Parameters : Striker, Goalie.
 - Striker Agent Reward Function (dependent):
   - +1 When ball enters opponent's goal.
@@ -476,3 +476,25 @@ blocks require all 3 agents to push and are worth +3.
     and counterclockwise, move along four different face directions, or do nothing.
 - Float Properties: None
 - Benchmark Mean Reward: 11 (Group Reward)
+
+## Dungeon Escape
+![DungeonEscape](images/dungeon_escape.png)
+
+- Set-up: Agents are trapped in a dungeon with a dragon, and must work together to escape.
+  To retrieve the key, one of the agents must find and slay the dragon, sacrificing itself
+  to do so. The dragon will drop a key for the others to use. The other agents can then pick
+  up this key and unlock the dungeon door. If the agents take too long, the dragon will escape
+  through a portal and the environment resets.
+- Goal: Unlock the dungeon door and leave.
+- Agents: The environment contains three Agents in a Multi Agent Group and one Dragon, which
+  moves in a predetermined pattern.
+- Agent Reward Function:
+  - +1 group reward if any agent successfully unlocks the door and leaves the dungeon.
+- Behavior Parameters:
+  - Observation space: A Ray Perception Sensor with separate tags for the walls, other agents,
+    the door, key, the dragon, and the dragon's portal. A single Vector Observation which indicates
+    whether the agent is holding a key.
+  - Actions: 1 discrete action branch with 7 actions, corresponding to turn clockwise
+    and counterclockwise, move along four different face directions, or do nothing.
+- Float Properties: None
+- Benchmark Mean Reward: 1.0 (Group Reward)

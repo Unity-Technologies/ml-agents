@@ -4,7 +4,7 @@ from mlagents.trainers.torch.components.reward_providers.extrinsic_reward_provid
 )
 import numpy as np
 import math
-from mlagents.torch_utils import torch
+from mlagents.torch_utils import torch, default_device
 
 from mlagents.trainers.buffer import (
     AgentBuffer,
@@ -155,6 +155,8 @@ class TorchPOCAOptimizer(TorchOptimizer):
             network_settings=trainer_settings.network_settings,
             action_spec=policy.behavior_spec.action_spec,
         )
+        # Move to GPU if needed
+        self._critic.to(default_device())
 
         params = list(self.policy.actor.parameters()) + list(self.critic.parameters())
         self.hyperparameters: POCASettings = cast(

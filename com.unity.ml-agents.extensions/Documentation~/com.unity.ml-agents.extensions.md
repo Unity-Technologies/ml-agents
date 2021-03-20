@@ -29,24 +29,24 @@ The ML-Agents Extensions package is not currently available in the Package Manag
 recommended ways to install the package:
 
 ### Local Installation
-[Clone the repository](https://github.com/Unity-Technologies/ml-agents/tree/release_14_docs/docs/Installation.md#clone-the-ml-agents-toolkit-repository-optional) and follow the
-[Local Installation for Development](https://github.com/Unity-Technologies/ml-agents/tree/release_14_docs/docs/Installation.md#advanced-local-installation-for-development-1)
+[Clone the repository](https://github.com/Unity-Technologies/ml-agents/tree/release_15_docs/docs/Installation.md#clone-the-ml-agents-toolkit-repository-optional) and follow the
+[Local Installation for Development](https://github.com/Unity-Technologies/ml-agents/tree/release_15_docs/docs/Installation.md#advanced-local-installation-for-development-1)
 directions (substituting `com.unity.ml-agents.extensions` for the package name).
 
 ### Github via Package Manager
 In Unity 2019.4 or later, open the Package Manager, hit the "+" button, and select "Add package from git URL".
 
-![Package Manager git URL](https://github.com/Unity-Technologies/ml-agents/blob/release_14_docs/docs/images/unity_package_manager_git_url.png)
+![Package Manager git URL](https://github.com/Unity-Technologies/ml-agents/blob/release_15_docs/docs/images/unity_package_manager_git_url.png)
 
 In the dialog that appears, enter
  ```
-git+https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents.extensions#release_14
+git+https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents.extensions#release_15
 ```
 
 You can also edit your project's `manifest.json` directly and add the following line to the `dependencies`
 section:
 ```
-"com.unity.ml-agents.extensions": "git+https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents.extensions#release_14",
+"com.unity.ml-agents.extensions": "git+https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents.extensions#release_15",
 ```
 See [Git dependencies](https://docs.unity3d.com/Manual/upm-git.html#subfolder) for more information. Note that this
 may take several minutes to resolve the packages the first time that you add it.
@@ -54,13 +54,13 @@ may take several minutes to resolve the packages the first time that you add it.
 
 ## Requirements
 
-This version of the Unity ML-Agents Extensions package is compatible with the
-following versions of the Unity Editor:
+This version of the Unity ML-Agents package is compatible with the following
+versions of the Unity Editor:
 
-- If using the `InputActuatorComponent`
-    - 2019.4 or later
-    - install the `com.unity.inputsystem` package version `1.1.0-preview.3` or later.
-- Else 2018.4 and later
+- 2019.4 and later
+
+If using the `InputActuatorComponent`
+- install the `com.unity.inputsystem` package version `1.1.0-preview.3` or later.
 
 ## Known Limitations
 - For the `InputActuatorComponent`
@@ -68,4 +68,4 @@ following versions of the Unity Editor:
     - No way to customize the action space of the `InputActuatorComponent`
 
 ## Need Help?
-The main [README](https://github.com/Unity-Technologies/ml-agents/tree/release_14_docs/README.md) contains links for contacting the team or getting support.
+The main [README](https://github.com/Unity-Technologies/ml-agents/tree/release_15_docs/README.md) contains links for contacting the team or getting support.

@@ -101,5 +101,3 @@ environment_parameters:
         value: 18.0
       - name: Lesson9
         value: 20.0
-env_settings:
-  num_envs: 8

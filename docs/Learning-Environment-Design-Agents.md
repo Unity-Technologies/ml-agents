@@ -30,6 +30,8 @@
 - [Agent Properties](#agent-properties)
 - [Destroying an Agent](#destroying-an-agent)
 - [Defining Multi-agent Scenarios](#defining-multi-agent-scenarios)
+  - [Teams for Adversarial Scenarios](#teams-for-adversarial-scenarios)
+  - [Groups for Cooperative Scenarios](#groups-for-cooperative-scenarios)
 - [Recording Demonstrations](#recording-demonstrations)
 
 An agent is an entity that can observe its environment, decide on the best
@@ -665,38 +667,40 @@ When using Discrete Actions, it is possible to specify that some actions are
 impossible for the next decision. When the Agent is controlled by a neural
 network, the Agent will be unable to perform the specified action. Note that
 when the Agent is controlled by its Heuristic, the Agent will still be able to
-decide to perform the masked action. In order to mask an action, override the
-`Agent.WriteDiscreteActionMask()` virtual method, and call
-`WriteMask()` on the provided `IDiscreteActionMask`:
+decide to perform the masked action. In order to disallow an action, override
+the `Agent.WriteDiscreteActionMask()` virtual method, and call
+`SetActionEnabled()` on the provided `IDiscreteActionMask`:
 
 ```csharp
 public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
 {
-    actionMask.WriteMask(branch, actionIndices);
+    actionMask.SetActionEnabled(branch, actionIndex, isEnabled);
 }
 ```
 
 Where:
 
-- `branch` is the index (starting at 0) of the branch on which you want to mask
-  the action
-- `actionIndices` is a list of `int` corresponding to the indices of the actions
-  that the Agent **cannot** perform.
+- `branch` is the index (starting at 0) of the branch on which you want to
+allow or disallow the action
+- `actionIndex` is the index of the action that you want to allow or disallow.
+- `isEnabled` is a bool indicating whether the action should be allowed or now.
 
 For example, if you have an Agent with 2 branches and on the first branch
 (branch 0) there are 4 possible actions : _"do nothing"_, _"jump"_, _"shoot"_
 and _"change weapon"_. Then with the code bellow, the Agent will either _"do
-nothing"_ or _"change weapon"_ for his next decision (since action index 1 and 2
+nothing"_ or _"change weapon"_ for their next decision (since action index 1 and 2
 are masked)
 
 ```csharp
-WriteMask(0, new int[2]{1,2});
+actionMask.SetActionEnabled(0, 1, false);
+actionMask.SetActionEnabled(0, 2, false);
 ```
 
 Notes:
 
-- You can call `WriteMask` multiple times if you want to put masks on multiple
+- You can call `SetActionEnabled` multiple times if you want to put masks on multiple
   branches.
+- At each step, the state of an action is reset and enabled by default.
 - You cannot mask all the actions of a branch.
 - You cannot mask actions in continuous control.
 
@@ -705,7 +709,7 @@ Notes:
 The Actuator API allows users to abstract behavior out of Agents and in to
 components (similar to the ISensor API).  The `IActuator` interface and `Agent`
 class both implement the `IActionReceiver` interface to allow for backward compatibility
-with the current `Agent.OnActionReceived` and `Agent.CollectDiscreteActionMasks` APIs.
+with the current `Agent.OnActionReceived`.
 This means you will not have to change your code until you decide to use the `IActuator` API.
 
 Like the `ISensor` interface, the `IActuator` interface is intended for advanced users.
@@ -970,6 +974,11 @@ configuring MA-POCA. When using MA-POCA, agents which are deactivated or removed
 during the episode will still learn to contribute to the group's long term rewards, even
 if they are not active in the scene to experience them.
 
+See the [Cooperative Push Block](Learning-Environment-Examples.md#cooperative-push-block) environment
+for an example of how to use Multi Agent Groups, and the
+[Dungeon Escape](Learning-Environment-Examples.md#dungeon-escape) environment for an example of
+how the Multi Agent Group can be used with agents that are removed from the scene mid-episode.
+
 **NOTE**: Groups differ from Teams (for competitive settings) in the following way - Agents
 working together should be added to the same Group, while agents playing against each other
 should be given different Team Ids. If in the Scene there is one playing field and two teams,
@@ -986,6 +995,8 @@ and two playing fields where teams are pitted against each other. All the blue a
        alt="Group Manager vs Team Id"
        width="650" border="10" />
 </p>
+
+Please see the [SoccerTwos](Learning-Environment-Examples.md#soccer-twos) environment for an example.
 
 #### Cooperative Behaviors Notes and Best Practices
 * An agent can only be registered to one MultiAgentGroup at a time. If you want to re-assign an

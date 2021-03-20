@@ -1,17 +1,23 @@
-using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
+
+#if MLA_UNITY_ANALYTICS_MODULE
 using UnityEngine.Analytics;
+#endif
+
 
 #if UNITY_EDITOR
 using UnityEditor;
+#if MLA_UNITY_ANALYTICS_MODULE
 using UnityEditor.Analytics;
-#endif
+#endif // MLA_UNITY_ANALYTICS_MODULE
+#endif // UNITY_EDITOR
 
 
 namespace Unity.MLAgents.Analytics
@@ -50,16 +56,19 @@ namespace Unity.MLAgents.Analytics
                 return true;
             }
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
             AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(k_EventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey, k_EventVersion);
-#else
-            AnalyticsResult result = AnalyticsResult.UnsupportedPlatform;
-#endif
             if (result == AnalyticsResult.Ok)
             {
                 s_EventRegistered = true;
             }
-
+#elif MLA_UNITY_ANALYTICS_MODULE
+            AnalyticsResult result = AnalyticsResult.UnsupportedPlatform;
+            if (result == AnalyticsResult.Ok)
+            {
+                s_EventRegistered = true;
+            }
+#endif
             if (s_EventRegistered && s_SentModels == null)
             {
                 s_SentModels = new HashSet<NNModel>();
@@ -89,6 +98,7 @@ namespace Unity.MLAgents.Analytics
         /// <param name="actionSpec">ActionSpec for the Agent. Used to generate information about the action space.</param>
         /// <param name="actuators">List of IActuators for the Agent. Used to generate information about the action space.</param>
         /// <returns></returns>
+        [Conditional("MLA_UNITY_ANALYTICS_MODULE")]
         public static void InferenceModelSet(
             NNModel nnModel,
             string behaviorName,
@@ -117,7 +127,7 @@ namespace Unity.MLAgents.Analytics
             var data = GetEventForModel(nnModel, behaviorName, inferenceDevice, sensors, actionSpec, actuators);
             // Note - to debug, use JsonUtility.ToJson on the event.
             // Debug.Log(JsonUtility.ToJson(data, true));
-#if UNITY_EDITOR
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
                 EditorAnalytics.SendEventWithLimit(k_EventName, data, k_EventVersion);
@@ -165,7 +175,7 @@ namespace Unity.MLAgents.Analytics
                 inferenceEvent.BarracudaModelProducer = "tensorflow_to_barracuda.py";
             }
 
-#if UNITY_2019_3_OR_NEWER && UNITY_EDITOR
+#if UNITY_EDITOR
             var barracudaPackageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(Tensor).Assembly);
             inferenceEvent.BarracudaPackageVersion = barracudaPackageInfo.version;
 #else
