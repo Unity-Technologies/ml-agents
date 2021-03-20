@@ -1,10 +1,14 @@
 test_editors:
   - version: 2019.4
     enableCodeCoverage: !!bool true
-    # We want some scene tests to run in the DevProject, but packages there only support 2019+
+    # We want some scene tests to run in the DevProject, but packages there only support 2020+
     testProject: Project
     enableNoDefaultPackages: !!bool true
   - version: 2020.2
+    enableCodeCoverage: !!bool true
+    testProject: DevProject
+    enableNoDefaultPackages: !!bool true
+  - version: 2021.1
     enableCodeCoverage: !!bool true
     testProject: DevProject
     enableNoDefaultPackages: !!bool true
