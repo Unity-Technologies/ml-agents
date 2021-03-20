@@ -97,13 +97,10 @@ You can [add the local](https://docs.unity3d.com/Manual/upm-ui-local.html)
 project by:
 
 1. navigating to the menu `Window` -> `Package Manager`.
-1. In the package manager window click on the `+` button.
+1. In the package manager window click on the `+` button on the top left of the packages list).
 1. Select `Add package from disk...`
 1. Navigate into the `com.unity.ml-agents` folder.
 1. Select the `package.json` file.
-
-**NOTE:** In Unity 2018.4 the `+` button is on the bottom right of the packages
-list, and in Unity 2019.3 it's on the top left of the packages list.
 
 <p align="center">
   <img src="images/unity_package_manager_window.png"
