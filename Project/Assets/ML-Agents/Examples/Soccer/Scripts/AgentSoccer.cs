@@ -21,6 +21,7 @@ public class AgentSoccer : Agent
     // * own teammate
     // * opposing player
 
+    public SoccerEnvController GameController;
     public enum Position
     {
         Striker,
@@ -120,6 +121,8 @@ public class AgentSoccer : Agent
             {
                 sensor.AddObservation(CurrentRayAngleLerp);
                 sensor.AddObservation(CurrentSpherecastRadiusLerp);
+                sensor.AddObservation(GameController.LocalBallVelocity);
+                sensor.AddObservation(GameController.LocalBallPositionNormalizedToFieldSize);
             }
         }
     }

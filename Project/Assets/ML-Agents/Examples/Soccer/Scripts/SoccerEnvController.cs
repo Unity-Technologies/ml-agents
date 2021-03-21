@@ -47,7 +47,8 @@ public class SoccerEnvController : MonoBehaviour
     private SimpleMultiAgentGroup m_PurpleAgentGroup;
 
     private int m_ResetTimer;
-
+    public Vector3 LocalBallVelocity;
+    public Vector3 LocalBallPositionNormalizedToFieldSize = new Vector3();
     void Start()
     {
 
@@ -76,6 +77,9 @@ public class SoccerEnvController : MonoBehaviour
 
     void FixedUpdate()
     {
+        LocalBallVelocity = transform.InverseTransformDirection(ballRb.velocity);
+        //normalize to a 60x30 field. Use half extents
+        LocalBallPositionNormalizedToFieldSize = Vector3.Scale(ballRb.transform.localPosition, new Vector3(1/30f, 1f, 1/15f));
         m_ResetTimer += 1;
         if (m_ResetTimer >= MaxEnvironmentSteps && MaxEnvironmentSteps > 0)
         {
