@@ -1,5 +1,5 @@
-
 using System.Collections.Generic;
+using System.Diagnostics;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Analytics;
@@ -17,7 +17,9 @@ namespace Unity.MLAgents.Policies
         string m_FullyQualifiedBehaviorName;
         ActionSpec m_ActionSpec;
         ActionBuffers m_LastActionBuffer;
+#if MLA_UNITY_ANALYTICS_MODULE
         private bool m_AnalyticsSent = false;
+#endif
 
         internal ICommunicator m_Communicator;
 
@@ -42,6 +44,14 @@ namespace Unity.MLAgents.Policies
         /// <inheritdoc />
         public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
+            SendAnalytics(sensors);
+            m_AgentId = info.episodeId;
+            m_Communicator?.PutObservations(m_FullyQualifiedBehaviorName, info, sensors);
+        }
+
+        [Conditional("MLA_UNITY_ANALYTICS_MODULE")]
+        void SendAnalytics(IList<ISensor> sensors)
+        {
             if (!m_AnalyticsSent)
             {
                 m_AnalyticsSent = true;
@@ -52,8 +62,6 @@ namespace Unity.MLAgents.Policies
                     m_Actuators
                 );
             }
-            m_AgentId = info.episodeId;
-            m_Communicator?.PutObservations(m_FullyQualifiedBehaviorName, info, sensors);
         }
 
         /// <inheritdoc />
