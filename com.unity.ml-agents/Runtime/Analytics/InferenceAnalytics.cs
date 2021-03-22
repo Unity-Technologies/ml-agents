@@ -44,36 +44,34 @@ namespace Unity.MLAgents.Analytics
         const int k_MaxNumberOfElements = 1000;
 
 
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
         /// <summary>
         /// Models that we've already sent events for.
         /// </summary>
         private static HashSet<NNModel> s_SentModels;
+#endif
 
         static bool EnableAnalytics()
         {
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
             if (s_EventRegistered)
             {
                 return true;
             }
 
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
             AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(k_EventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey, k_EventVersion);
             if (result == AnalyticsResult.Ok)
             {
                 s_EventRegistered = true;
             }
-#elif MLA_UNITY_ANALYTICS_MODULE
-            AnalyticsResult result = AnalyticsResult.UnsupportedPlatform;
-            if (result == AnalyticsResult.Ok)
-            {
-                s_EventRegistered = true;
-            }
-#endif
             if (s_EventRegistered && s_SentModels == null)
             {
                 s_SentModels = new HashSet<NNModel>();
             }
 
+#else  // no editor, no analytics
+            s_EventRegistered = false;
+#endif
             return s_EventRegistered;
         }
 
@@ -108,6 +106,7 @@ namespace Unity.MLAgents.Analytics
             IList<IActuator> actuators
         )
         {
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
             // The event shouldn't be able to report if this is disabled but if we know we're not going to report
             // Lets early out and not waste time gathering all the data
             if (!IsAnalyticsEnabled())
@@ -127,13 +126,10 @@ namespace Unity.MLAgents.Analytics
             var data = GetEventForModel(nnModel, behaviorName, inferenceDevice, sensors, actionSpec, actuators);
             // Note - to debug, use JsonUtility.ToJson on the event.
             // Debug.Log(JsonUtility.ToJson(data, true));
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
                 EditorAnalytics.SendEventWithLimit(k_EventName, data, k_EventVersion);
             }
-#else
-            return;
 #endif
         }
 
