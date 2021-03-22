@@ -166,7 +166,6 @@ namespace Unity.MLAgents.Tests
             {
                 return "Dummy";
             }
-
         }
 
         [Test]

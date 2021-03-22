@@ -77,7 +77,6 @@ namespace Unity.MLAgents.Tests.Analytics
 #else
             Assert.IsFalse(TrainingAnalytics.EnableAnalytics());
 #endif
-
         }
     }
 }

@@ -220,20 +220,6 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
-        /// Returns the observation shape for this raycast sensor which depends on the number
-        /// of tags for detected objects and the number of rays.
-        /// </summary>
-        /// <returns></returns>
-        public override int[] GetObservationShape()
-        {
-            var numRays = 2 * RaysPerDirection + 1;
-            var numTags = m_DetectableTags?.Count ?? 0;
-            var obsSize = (numTags + 2) * numRays;
-            var stacks = ObservationStacks > 1 ? ObservationStacks : 1;
-            return new[] { obsSize * stacks };
-        }
-
-        /// <summary>
         /// Get the RayPerceptionInput that is used by the <see cref="RayPerceptionSensor"/>.
         /// </summary>
         /// <returns></returns>

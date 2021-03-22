@@ -99,7 +99,6 @@ namespace Unity.MLAgents.Sensors
             return BuiltInSensorType.RenderTextureSensor;
         }
 
-
         /// <summary>
         /// Converts a RenderTexture to a 2D texture.
         /// </summary>

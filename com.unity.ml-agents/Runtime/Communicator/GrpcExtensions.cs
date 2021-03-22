@@ -532,7 +532,7 @@ namespace Unity.MLAgents
                 NumNetworkHiddenUnits = inputProto.NumNetworkHiddenUnits,
             };
         }
-        #endregion
 
+        #endregion
     }
 }

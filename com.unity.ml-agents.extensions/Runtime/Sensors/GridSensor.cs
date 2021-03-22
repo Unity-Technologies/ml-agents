@@ -918,13 +918,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <inheritdoc/>
-        public override int[] GetObservationShape()
-        {
-            var shape = m_ObservationSpec.Shape;
-            return new int[] { shape[0], shape[1], shape[2] };
-        }
-
-        /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
             using (TimerStack.Instance.Scoped("GridSensor.WriteToTensor"))

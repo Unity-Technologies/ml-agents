@@ -42,7 +42,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 0f, 0f, 0f, 1f // LocalSpaceRotations
             };
             SensorTestHelper.CompareObservation(sensor, expected);
-            Assert.AreEqual(expected.Length, sensorComponent.GetObservationShape()[0]);
+            Assert.AreEqual(expected.Length, sensorComponent.CreateSensor().GetObservationSpec().Shape[0]);
         }
 
         [Test]
@@ -110,7 +110,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 #endif
             };
             SensorTestHelper.CompareObservation(sensor, expected);
-            Assert.AreEqual(expected.Length, sensorComponent.GetObservationShape()[0]);
+            Assert.AreEqual(expected.Length, sensorComponent.CreateSensor().GetObservationSpec().Shape[0]);
 
             // Update the settings to only process joint observations
             sensorComponent.Settings = new PhysicsSensorSettings
@@ -133,7 +133,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 0f, // joint2.force
             };
             SensorTestHelper.CompareObservation(sensor, expected);
-            Assert.AreEqual(expected.Length, sensorComponent.GetObservationShape()[0]);
+            Assert.AreEqual(expected.Length, sensorComponent.CreateSensor().GetObservationSpec().Shape[0]);
         }
     }
 }

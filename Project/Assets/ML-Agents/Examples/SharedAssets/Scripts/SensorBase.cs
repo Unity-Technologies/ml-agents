@@ -9,7 +9,7 @@ namespace Unity.MLAgentsExamples
     {
         /// <summary>
         /// Write the observations to the output buffer. This size of the buffer will be product
-        /// of the sizes returned by <see cref="GetObservationShape"/>.
+        /// of the Shape array values returned by <see cref="ObservationSpec"/>.
         /// </summary>
         /// <param name="output"></param>
         public abstract void WriteObservation(float[] output);
@@ -28,7 +28,7 @@ namespace Unity.MLAgentsExamples
         /// <returns>The number of elements written.</returns>
         public virtual int Write(ObservationWriter writer)
         {
-            // TODO reuse buffer for similar agents, don't call GetObservationShape()
+            // TODO reuse buffer for similar agents
             var numFloats = this.ObservationSize();
             float[] buffer = new float[numFloats];
             WriteObservation(buffer);

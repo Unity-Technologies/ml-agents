@@ -165,6 +165,5 @@ namespace Unity.MLAgents.Utils.Tests
 
     public class TestClasses
     {
-
     }
 }

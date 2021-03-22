@@ -107,6 +107,5 @@ namespace Unity.MLAgents.Sensors.Reflection
         {
             return BuiltInSensorType.ReflectionSensor;
         }
-
     }
 }

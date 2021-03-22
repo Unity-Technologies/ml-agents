@@ -18,7 +18,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         public void TestVectorObservations()
         {
             var boardString =
-                @"000
+@"000
                   000
                   010";
             var gameObj = new GameObject("board");
@@ -29,9 +29,8 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             sensorComponent.ObservationType = Match3ObservationType.Vector;
             var sensor = sensorComponent.CreateSensor();
 
-            var expectedShape = new[] { 3 * 3 * 2 };
-            Assert.AreEqual(expectedShape, sensorComponent.GetObservationShape());
-            Assert.AreEqual(InplaceArray<int>.FromList(expectedShape), sensor.GetObservationSpec().Shape);
+            var expectedShape = new InplaceArray<int>(3 * 3 * 2);
+            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
 
             var expectedObs = new float[]
             {
@@ -46,11 +45,11 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         public void TestVectorObservationsSpecial()
         {
             var boardString =
-                @"000
+@"000
                   000
                   010";
             var specialString =
-                @"010
+@"010
                   200
                   000";
 
@@ -63,9 +62,8 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             sensorComponent.ObservationType = Match3ObservationType.Vector;
             var sensor = sensorComponent.CreateSensor();
 
-            var expectedShape = new[] { 3 * 3 * (2 + 3) };
-            Assert.AreEqual(expectedShape, sensorComponent.GetObservationShape());
-            Assert.AreEqual(InplaceArray<int>.FromList(expectedShape), sensor.GetObservationSpec().Shape);
+            var expectedShape = new InplaceArray<int>(3 * 3 * (2 + 3));
+            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
 
             var expectedObs = new float[]
             {
@@ -76,12 +74,11 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             SensorTestHelper.CompareObservation(sensor, expectedObs);
         }
 
-
         [Test]
         public void TestVisualObservations()
         {
             var boardString =
-                @"000
+@"000
                   000
                   010";
             var gameObj = new GameObject("board");
@@ -92,9 +89,8 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             sensorComponent.ObservationType = Match3ObservationType.UncompressedVisual;
             var sensor = sensorComponent.CreateSensor();
 
-            var expectedShape = new[] { 3, 3, 2 };
-            Assert.AreEqual(expectedShape, sensorComponent.GetObservationShape());
-            Assert.AreEqual(InplaceArray<int>.FromList(expectedShape), sensor.GetObservationSpec().Shape);
+            var expectedShape = new InplaceArray<int>(3, 3, 2);
+            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
 
             Assert.AreEqual(SensorCompressionType.None, sensor.GetCompressionSpec().SensorCompressionType);
 
@@ -119,11 +115,11 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         public void TestVisualObservationsSpecial()
         {
             var boardString =
-                @"000
+@"000
                   000
                   010";
             var specialString =
-                @"010
+@"010
                   200
                   000";
 
@@ -136,9 +132,8 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             sensorComponent.ObservationType = Match3ObservationType.UncompressedVisual;
             var sensor = sensorComponent.CreateSensor();
 
-            var expectedShape = new[] { 3, 3, 2 + 3 };
-            Assert.AreEqual(expectedShape, sensorComponent.GetObservationShape());
-            Assert.AreEqual(InplaceArray<int>.FromList(expectedShape), sensor.GetObservationSpec().Shape);
+            var expectedShape = new InplaceArray<int>(3, 3, 2 + 3);
+            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
 
             Assert.AreEqual(SensorCompressionType.None, sensor.GetCompressionSpec().SensorCompressionType);
 
@@ -163,7 +158,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         public void TestCompressedVisualObservations()
         {
             var boardString =
-                @"000
+@"000
                   000
                   010";
             var gameObj = new GameObject("board");
@@ -174,9 +169,8 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             sensorComponent.ObservationType = Match3ObservationType.CompressedVisual;
             var sensor = sensorComponent.CreateSensor();
 
-            var expectedShape = new[] { 3, 3, 2 };
-            Assert.AreEqual(expectedShape, sensorComponent.GetObservationShape());
-            Assert.AreEqual(InplaceArray<int>.FromList(expectedShape), sensor.GetObservationSpec().Shape);
+            var expectedShape = new InplaceArray<int>(3, 3, 2);
+            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
 
             Assert.AreEqual(SensorCompressionType.PNG, sensor.GetCompressionSpec().SensorCompressionType);
 
@@ -191,17 +185,15 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             Assert.AreEqual(expectedPng, pngData);
         }
 
-
-
         [Test]
         public void TestCompressedVisualObservationsSpecial()
         {
             var boardString =
-                @"000
+@"000
                   000
                   010";
             var specialString =
-                @"010
+@"010
                   200
                   000";
 
@@ -214,9 +206,8 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             sensorComponent.ObservationType = Match3ObservationType.CompressedVisual;
             var sensor = sensorComponent.CreateSensor();
 
-            var expectedShape = new[] { 3, 3, 2 + 3 };
-            Assert.AreEqual(expectedShape, sensorComponent.GetObservationShape());
-            Assert.AreEqual(InplaceArray<int>.FromList(expectedShape), sensor.GetObservationSpec().Shape);
+            var expectedShape = new InplaceArray<int>(3, 3, 2 + 3);
+            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
 
             Assert.AreEqual(SensorCompressionType.PNG, sensor.GetCompressionSpec().SensorCompressionType);
 
@@ -229,7 +220,6 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             }
             var expectedPng = LoadPNGs(pathPrefix, 2);
             Assert.AreEqual(expectedPng, concatenatedPngData);
-
         }
 
         /// <summary>
@@ -306,7 +296,6 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             }
 
             return bytesOut.ToArray();
-
         }
     }
 }
