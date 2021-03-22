@@ -120,9 +120,7 @@ namespace Unity.MLAgents.Sensors
 
         void AddFloatObs(float obs)
         {
-#if DEBUG
             Utilities.DebugCheckNanAndInfinity(obs, nameof(obs), nameof(AddFloatObs));
-#endif
             m_Observations.Add(obs);
         }
 

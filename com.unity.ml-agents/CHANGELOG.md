@@ -30,6 +30,8 @@ interface was removed. (#5164)
 - The `.onnx` models input names have changed. All input placeholders will now use the prefix `obs_` removing the distinction between visual and vector observations. Models created with this version will not be usable with previous versions of the package (#5080)
 - The `.onnx` models discrete action output now contains the discrete actions values and not the logits. Models created with this version will not be usable with previous versions of the package (#5080)
 - Added ML-Agents package settings. (#5027)
+- Make com.unity.modules.unityanalytics an optional dependency. (#5109)
+- Make com.unity.modules.physics and com.unity.modules.physics2d optional dependencies. (#5112)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Bug Fixes
