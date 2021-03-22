@@ -565,7 +565,7 @@ between -1 and 1.
 ### Goal Signals
 
 It is possible for agents to collect observations that will be treated as "goal signals".
-A goal signal is used to condition the policy of the Agent, meaning that if the goal
+A goal signal is used to condition the policy of the agent, meaning that if the goal
 changes, the policy (i.e. the mapping from observations to actions) will change
 as well. Note that this is true
 for any observation since all observations influence the policy of the Agent to
