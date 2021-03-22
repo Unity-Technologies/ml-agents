@@ -5,6 +5,7 @@ using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Analytics;
 using Unity.MLAgents.Policies;
+using UnityEditor;
 
 namespace Unity.MLAgents.Tests.Analytics
 {
@@ -48,7 +49,6 @@ namespace Unity.MLAgents.Tests.Analytics
 
             Assert.AreEqual(2, remotePolicyEvent.ActuatorInfos[0].NumContinuousActions);
             Assert.AreEqual(0, remotePolicyEvent.ActuatorInfos[0].NumDiscreteActions);
-
         }
 
         [Test]
@@ -67,6 +67,17 @@ namespace Unity.MLAgents.Tests.Analytics
             }
 
             Academy.Instance.Dispose();
+        }
+
+        [Test]
+        public void TestEnableAnalytics()
+        {
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
+            Assert.IsTrue(EditorAnalytics.enabled == TrainingAnalytics.EnableAnalytics());
+#else
+            Assert.IsFalse(TrainingAnalytics.EnableAnalytics());
+#endif
+
         }
     }
 }
