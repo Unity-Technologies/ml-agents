@@ -110,9 +110,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         public void Reset() { }
 
         /// <inheritdoc/>
-        public SensorCompressionType GetCompressionType()
+        public CompressionSpec GetCompressionSpec()
         {
-            return SensorCompressionType.None;
+            return CompressionSpec.Default();
         }
 
         /// <inheritdoc/>

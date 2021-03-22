@@ -82,27 +82,14 @@ namespace Unity.MLAgents.Tests
 
             public void Reset() { }
 
-            public SensorCompressionType GetCompressionType()
+            public CompressionSpec GetCompressionSpec()
             {
-                return CompressionType;
+                return new CompressionSpec(CompressionType);
             }
 
             public string GetName()
             {
                 return "Dummy";
-            }
-        }
-
-        class DummySparseChannelSensor : DummySensor, ISparseChannelSensor
-        {
-            public int[] Mapping;
-            internal DummySparseChannelSensor()
-            {
-            }
-
-            public int[] GetCompressedChannelMapping()
-            {
-                return Mapping;
             }
         }
 
@@ -168,23 +155,6 @@ namespace Unity.MLAgents.Tests
 
         }
 
-        [Test]
-        public void TestIsTrivialMapping()
-        {
-            Assert.AreEqual(GrpcExtensions.IsTrivialMapping(new DummySensor()), true);
-
-            var sparseChannelSensor = new DummySparseChannelSensor();
-            sparseChannelSensor.Mapping = null;
-            Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), true);
-            sparseChannelSensor.Mapping = new[] { 0, 0, 0 };
-            Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), true);
-            sparseChannelSensor.Mapping = new[] { 0, 1, 2, 3, 4 };
-            Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), true);
-            sparseChannelSensor.Mapping = new[] { 1, 2, 3, 4, -1, -1 };
-            Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), false);
-            sparseChannelSensor.Mapping = new[] { 0, 0, 0, 1, 1, 1 };
-            Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), false);
-        }
         [Test]
         public void TestDefaultTrainingEvents()
         {

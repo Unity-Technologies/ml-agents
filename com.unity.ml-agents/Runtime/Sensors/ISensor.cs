@@ -1,22 +1,6 @@
 namespace Unity.MLAgents.Sensors
 {
     /// <summary>
-    /// The compression setting for visual/camera observations.
-    /// </summary>
-    public enum SensorCompressionType
-    {
-        /// <summary>
-        /// No compression. Data is preserved as float arrays.
-        /// </summary>
-        None,
-
-        /// <summary>
-        /// PNG format. Data will be stored in binary format.
-        /// </summary>
-        PNG
-    }
-
-    /// <summary>
     /// The Dimension property flags of the observations
     /// </summary>
     [System.Flags]
@@ -112,11 +96,11 @@ namespace Unity.MLAgents.Sensors
         void Reset();
 
         /// <summary>
-        /// Return the compression type being used. If no compression is used, return
-        /// <see cref="SensorCompressionType.None"/>.
+        /// Return information on the compression type being used. If no compression is used, return
+        /// <see cref="CompressionSpec.Default()"/>.
         /// </summary>
-        /// <returns>Compression type used by the sensor.</returns>
-        SensorCompressionType GetCompressionType();
+        /// <returns>CompressionSpec used by the sensor.</returns>
+        CompressionSpec GetCompressionSpec();
 
         /// <summary>
         /// Get the name of the sensor. This is used to ensure deterministic sorting of the sensors

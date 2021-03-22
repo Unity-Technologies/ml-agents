@@ -112,7 +112,7 @@ namespace Unity.MLAgents.Tests
             SensorTestHelper.CompareObservation(sensor, new[] { 0f, 0f, 0f, 0f, 5f, 6f });
         }
 
-        class Dummy3DSensor : ISparseChannelSensor
+        class Dummy3DSensor : ISensor
         {
             public SensorCompressionType CompressionType = SensorCompressionType.PNG;
             public int[] Mapping;
@@ -157,19 +157,14 @@ namespace Unity.MLAgents.Tests
 
             public void Reset() { }
 
-            public SensorCompressionType GetCompressionType()
+            public CompressionSpec GetCompressionSpec()
             {
-                return CompressionType;
+                return new CompressionSpec(CompressionType, Mapping);
             }
 
             public string GetName()
             {
                 return "Dummy";
-            }
-
-            public int[] GetCompressedChannelMapping()
-            {
-                return Mapping;
             }
 
         }
@@ -181,27 +176,27 @@ namespace Unity.MLAgents.Tests
             var cameraSensor = new CameraSensor(new Camera(), 64, 64,
                 true, "grayscaleCamera", SensorCompressionType.PNG);
             var stackedCameraSensor = new StackingSensor(cameraSensor, 2);
-            Assert.AreEqual(stackedCameraSensor.GetCompressedChannelMapping(), new[] { 0, 0, 0, 1, 1, 1 });
+            Assert.AreEqual(stackedCameraSensor.GetCompressionSpec().CompressedChannelMapping, new[] { 0, 0, 0, 1, 1, 1 });
 
             // Test RGB stacked mapping with RenderTextureSensor
             var renderTextureSensor = new RenderTextureSensor(new RenderTexture(24, 16, 0),
                 false, "renderTexture", SensorCompressionType.PNG);
             var stackedRenderTextureSensor = new StackingSensor(renderTextureSensor, 2);
-            Assert.AreEqual(stackedRenderTextureSensor.GetCompressedChannelMapping(), new[] { 0, 1, 2, 3, 4, 5 });
+            Assert.AreEqual(stackedRenderTextureSensor.GetCompressionSpec().CompressedChannelMapping, new[] { 0, 1, 2, 3, 4, 5 });
 
             // Test mapping with number of layers not being multiple of 3
             var dummySensor = new Dummy3DSensor();
             dummySensor.ObservationSpec = ObservationSpec.Visual(2, 2, 4);
             dummySensor.Mapping = new[] { 0, 1, 2, 3 };
             var stackedDummySensor = new StackingSensor(dummySensor, 2);
-            Assert.AreEqual(stackedDummySensor.GetCompressedChannelMapping(), new[] { 0, 1, 2, 3, -1, -1, 4, 5, 6, 7, -1, -1 });
+            Assert.AreEqual(stackedDummySensor.GetCompressionSpec().CompressedChannelMapping, new[] { 0, 1, 2, 3, -1, -1, 4, 5, 6, 7, -1, -1 });
 
             // Test mapping with dummy layers that should be dropped
             var paddedDummySensor = new Dummy3DSensor();
             paddedDummySensor.ObservationSpec = ObservationSpec.Visual(2, 2, 4);
             paddedDummySensor.Mapping = new[] { 0, 1, 2, 3, -1, -1 };
             var stackedPaddedDummySensor = new StackingSensor(paddedDummySensor, 2);
-            Assert.AreEqual(stackedPaddedDummySensor.GetCompressedChannelMapping(), new[] { 0, 1, 2, 3, -1, -1, 4, 5, 6, 7, -1, -1 });
+            Assert.AreEqual(stackedPaddedDummySensor.GetCompressionSpec().CompressedChannelMapping, new[] { 0, 1, 2, 3, -1, -1, 4, 5, 6, 7, -1, -1 });
         }
 
         [Test]

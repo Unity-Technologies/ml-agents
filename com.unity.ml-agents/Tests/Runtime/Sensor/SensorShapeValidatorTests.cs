@@ -50,9 +50,9 @@ namespace Unity.MLAgents.Tests
         public void Update() { }
         public void Reset() { }
 
-        public SensorCompressionType GetCompressionType()
+        public CompressionSpec GetCompressionSpec()
         {
-            return SensorCompressionType.None;
+            return CompressionSpec.Default();
         }
     }
 

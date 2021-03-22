@@ -47,7 +47,8 @@ public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
 - The `IActuator` interface now implements `IHeuristicProvider`.  Please add the corresponding `Heuristic(in ActionBuffers)`
 method to your custom Actuator classes.
 
-- The `ISensor.GetObservationShape()` method was removed, and `GetObservationSpec()` was added. You can use
+- The `ISensor.GetObservationShape()` method and `ITypedSensor`
+and `IDimensionPropertiesSensor` interfaces were removed, and `GetObservationSpec()` was added. You can use
 `ObservationSpec.Vector()` or `ObservationSpec.Visual()` to generate `ObservationSpec`s that are equivalent to
 the previous shape. For example, if your old ISensor looked like:
 
@@ -64,6 +65,26 @@ the equivalent code would now be
 public override ObservationSpec GetObservationSpec()
 {
     return ObservationSpec.Visual(m_Height, m_Width, m_NumChannels);
+}
+```
+
+- The `ISensor.GetCompressionType()` method and `ISparseChannelSensor` interface was removed,
+and `GetCompressionSpec()` was added. You can use `CompressionSpec.Default()` or
+`CompressionSpec.Compressed()` to generate `CompressionSpec`s that are  equivalent to
+ the previous values. For example, if your old ISensor looked like:
+ ```csharp
+public virtual SensorCompressionType GetCompressionType()
+{
+    return SensorCompressionType.None;
+}
+```
+
+the equivalent code would now be
+
+```csharp
+public CompressionSpec GetCompressionSpec()
+{
+    return CompressionSpec.Default();
 }
 ```
 

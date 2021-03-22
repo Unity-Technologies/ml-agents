@@ -18,7 +18,10 @@ details.
 `WriteMask(int branch, IEnumerable<int> actionIndices)` was replaced with
 `SetActionEnabled(int branch, int actionIndex, bool isEnabled)`. (#5060)
 - IActuator now implements IHeuristicProvider. (#5110)
-- `ISensor.GetObservationShape()` was removed, and `GetObservationSpec()` was added. (#5127)
+- `ISensor.GetObservationShape()` was removed, and `GetObservationSpec()` was added. The `ITypedSensor`
+and `IDimensionPropertiesSensor` interfaces were removed. (#5127)
+- `ISensor.GetCompressionType()` was removed, and `GetCompressionSpec()` was added. The `ISparseChannelSensor`
+interface was removed. (#5164)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 

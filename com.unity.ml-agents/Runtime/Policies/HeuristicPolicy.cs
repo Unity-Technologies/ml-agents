@@ -127,7 +127,7 @@ namespace Unity.MLAgents.Policies
         {
             foreach (var sensor in sensors)
             {
-                if (sensor.GetCompressionType() == SensorCompressionType.None)
+                if (sensor.GetCompressionSpec().SensorCompressionType == SensorCompressionType.None)
                 {
                     m_ObservationWriter.SetTarget(m_NullList, sensor.GetObservationSpec(), 0);
                     sensor.Write(m_ObservationWriter);

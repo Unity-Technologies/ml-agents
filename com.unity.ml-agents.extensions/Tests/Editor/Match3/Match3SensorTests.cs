@@ -96,7 +96,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             Assert.AreEqual(expectedShape, sensorComponent.GetObservationShape());
             Assert.AreEqual(InplaceArray<int>.FromList(expectedShape), sensor.GetObservationSpec().Shape);
 
-            Assert.AreEqual(SensorCompressionType.None, sensor.GetCompressionType());
+            Assert.AreEqual(SensorCompressionType.None, sensor.GetCompressionSpec().SensorCompressionType);
 
             var expectedObs = new float[]
             {
@@ -140,7 +140,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             Assert.AreEqual(expectedShape, sensorComponent.GetObservationShape());
             Assert.AreEqual(InplaceArray<int>.FromList(expectedShape), sensor.GetObservationSpec().Shape);
 
-            Assert.AreEqual(SensorCompressionType.None, sensor.GetCompressionType());
+            Assert.AreEqual(SensorCompressionType.None, sensor.GetCompressionSpec().SensorCompressionType);
 
             var expectedObs = new float[]
             {
@@ -178,7 +178,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             Assert.AreEqual(expectedShape, sensorComponent.GetObservationShape());
             Assert.AreEqual(InplaceArray<int>.FromList(expectedShape), sensor.GetObservationSpec().Shape);
 
-            Assert.AreEqual(SensorCompressionType.PNG, sensor.GetCompressionType());
+            Assert.AreEqual(SensorCompressionType.PNG, sensor.GetCompressionSpec().SensorCompressionType);
 
             var pngData = sensor.GetCompressedObservation();
             if (WritePNGDataToFile)
@@ -218,7 +218,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             Assert.AreEqual(expectedShape, sensorComponent.GetObservationShape());
             Assert.AreEqual(InplaceArray<int>.FromList(expectedShape), sensor.GetObservationSpec().Shape);
 
-            Assert.AreEqual(SensorCompressionType.PNG, sensor.GetCompressionType());
+            Assert.AreEqual(SensorCompressionType.PNG, sensor.GetCompressionSpec().SensorCompressionType);
 
             var concatenatedPngData = sensor.GetCompressedObservation();
             var pathPrefix = "match3obs_special";

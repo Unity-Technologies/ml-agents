@@ -342,7 +342,8 @@ namespace Unity.MLAgents
             var obsSpec = sensor.GetObservationSpec();
             var shape = obsSpec.Shape;
             ObservationProto observationProto = null;
-            var compressionType = sensor.GetCompressionType();
+            var compressionSpec = sensor.GetCompressionSpec();
+            var compressionType = compressionSpec.SensorCompressionType;
             // Check capabilities if we need to concatenate PNGs
             if (compressionType == SensorCompressionType.PNG && shape.Length == 3 && shape[2] > 3)
             {
@@ -365,7 +366,7 @@ namespace Unity.MLAgents
             if (compressionType != SensorCompressionType.None && shape.Length == 3 && shape[2] > 3)
             {
                 var trainerCanHandleMapping = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.CompressedChannelMapping;
-                var isTrivialMapping = IsTrivialMapping(sensor);
+                var isTrivialMapping = compressionSpec.IsTrivialMapping();
                 if (!trainerCanHandleMapping && !isTrivialMapping)
                 {
                     if (!s_HaveWarnedTrainerCapabilitiesMapping)
@@ -411,18 +412,17 @@ namespace Unity.MLAgents
                     throw new UnityAgentsException(
                         $"GetCompressedObservation() returned null data for sensor named {sensor.GetName()}. " +
                         "You must return a byte[]. If you don't want to use compressed observations, " +
-                        "return SensorCompressionType.None from GetCompressionType()."
+                        "return CompressionSpec.Default() from GetCompressionSpec()."
                     );
                 }
                 observationProto = new ObservationProto
                 {
                     CompressedData = ByteString.CopyFrom(compressedObs),
-                    CompressionType = (CompressionTypeProto)sensor.GetCompressionType(),
+                    CompressionType = (CompressionTypeProto)sensor.GetCompressionSpec().SensorCompressionType,
                 };
-                var compressibleSensor = sensor as ISparseChannelSensor;
-                if (compressibleSensor != null)
+                if (compressionSpec.CompressedChannelMapping != null)
                 {
-                    observationProto.CompressedChannelMapping.AddRange(compressibleSensor.GetCompressedChannelMapping());
+                    observationProto.CompressedChannelMapping.AddRange(compressionSpec.CompressedChannelMapping);
                 }
             }
 
@@ -486,34 +486,6 @@ namespace Unity.MLAgents
                 VariableLengthObservation = rlCaps.VariableLengthObservation,
                 MultiAgentGroups = rlCaps.MultiAgentGroups,
             };
-        }
-
-        internal static bool IsTrivialMapping(ISensor sensor)
-        {
-            var compressibleSensor = sensor as ISparseChannelSensor;
-            if (compressibleSensor is null)
-            {
-                return true;
-            }
-            var mapping = compressibleSensor.GetCompressedChannelMapping();
-            if (mapping == null)
-            {
-                return true;
-            }
-            // check if mapping equals zero mapping
-            if (mapping.Length == 3 && mapping.All(m => m == 0))
-            {
-                return true;
-            }
-            // check if mapping equals identity mapping
-            for (var i = 0; i < mapping.Length; i++)
-            {
-                if (mapping[i] != i)
-                {
-                    return false;
-                }
-            }
-            return true;
         }
 
         #region Analytics
