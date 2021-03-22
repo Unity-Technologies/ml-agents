@@ -8,11 +8,6 @@ using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Policies
 {
-    /// <summary>
-    /// The Barracuda Policy uses a Barracuda Model to make decisions at
-    /// every step. It uses a ModelRunner that is shared across all
-    /// Barracuda Policies that use the same model and inference devices.
-    /// </summary>
     internal class TrainingPolicy : IPolicy
     {
         protected TrainingModelRunner m_ModelRunner;
@@ -20,55 +15,24 @@ namespace Unity.MLAgents.Policies
 
         int m_AgentId;
 
-        /// <summary>
-        /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their Sensors.
-        /// </summary>
-        List<int[]> m_SensorShapes;
         ActionSpec m_ActionSpec;
 
         private string m_BehaviorName;
 
-        /// <summary>
-        /// List of actuators, only used for analytics
-        /// </summary>
-        private IList<IActuator> m_Actuators;
-
-        /// <summary>
-        /// Whether or not we've tried to send analytics for this model. We only ever try to send once per policy,
-        /// and do additional deduplication in the analytics code.
-        /// </summary>
-        private bool m_AnalyticsSent;
-
-        private AgentInfo m_LastInfo;
-
         /// <inheritdoc />
         public TrainingPolicy(
             ActionSpec actionSpec,
-            IList<IActuator> actuators,
             string behaviorName
         )
         {
             m_ModelRunner = Academy.Instance.GetOrCreateTrainingModelRunner(behaviorName, actionSpec);
             m_BehaviorName = behaviorName;
             m_ActionSpec = actionSpec;
-            m_Actuators = actuators;
         }
 
         /// <inheritdoc />
         public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
-            if (!m_AnalyticsSent)
-            {
-                m_AnalyticsSent = true;
-                Analytics.InferenceAnalytics.InferenceModelSet(
-                    m_ModelRunner.Model,
-                    m_BehaviorName,
-                    m_ModelRunner.InferenceDevice,
-                    sensors,
-                    m_ActionSpec,
-                    m_Actuators
-                );
-            }
             m_AgentId = info.episodeId;
             m_ModelRunner?.PutObservations(info, sensors);
         }

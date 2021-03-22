@@ -1,3 +1,5 @@
+// ModelRunner for C# training.
+
 using System;
 using System.Collections.Generic;
 using Unity.Barracuda;
@@ -181,11 +183,6 @@ namespace Unity.MLAgents
             m_Infos.Clear();
 
             m_OrderedAgentsRequestingDecisions.Clear();
-        }
-
-        public bool HasModel(NNModel other, InferenceDevice otherInferenceDevice)
-        {
-            return m_Model == other && m_InferenceDevice == otherInferenceDevice;
         }
 
         public ActionBuffers GetAction(int agentId)

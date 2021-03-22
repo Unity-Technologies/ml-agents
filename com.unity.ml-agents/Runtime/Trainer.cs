@@ -1,12 +1,7 @@
 // Trainer for C# training. One trainer per behavior.
 
 using System;
-using System.Collections.Generic;
-using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Sensors;
-using Unity.MLAgents.Analytics;
-using Unity.MLAgents.Inference;
 
 
 namespace Unity.MLAgents

@@ -236,7 +236,7 @@ namespace Unity.MLAgents.Policies
                         return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName);
                     }
                 case BehaviorType.InEditorTraining:
-                    return new TrainingPolicy(actionSpec, actuatorManager, m_BehaviorName);
+                    return new TrainingPolicy(actionSpec, m_BehaviorName);
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
                     {
