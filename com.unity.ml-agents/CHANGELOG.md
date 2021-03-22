@@ -22,6 +22,7 @@ details.
 and `IDimensionPropertiesSensor` interfaces were removed. (#5127)
 - `ISensor.GetCompressionType()` was removed, and `GetCompressionSpec()` was added. The `ISparseChannelSensor`
 interface was removed. (#5164)
+- The abstract method `SensorComponent.GetObservationShape()` was no longer being called, so it has been removed. (#5172)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
