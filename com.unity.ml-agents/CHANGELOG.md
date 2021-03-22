@@ -32,6 +32,9 @@ interface was removed. (#5164)
 - Added ML-Agents package settings. (#5027)
 - Make com.unity.modules.unityanalytics an optional dependency. (#5109)
 - Make com.unity.modules.physics and com.unity.modules.physics2d optional dependencies. (#5112)
+- The default `InferenceDevice` is now `InferenceDevice.Default`, which is equivalent to `InferenceDevice.Burst`. If you
+depend on the previous behavior, you can explicitly set the Agent's `InferenceDevice` to `InferenceDevice.CPU`. (#5175)
+
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Bug Fixes
