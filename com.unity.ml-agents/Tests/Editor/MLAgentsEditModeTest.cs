@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
@@ -535,6 +537,44 @@ namespace Unity.MLAgents.Tests
                 agent1.collectObservationsCallsForEpisode,
                 agent1.GetStoredActionBuffers().ContinuousActions[0]
             );
+        }
+
+        [Test]
+        public void TestNullList()
+        {
+            var nullList = new HeuristicPolicy.NullList();
+            Assert.Throws<NotImplementedException>(() =>
+            {
+                _ = ((IEnumerable<float>)nullList).GetEnumerator();
+            });
+
+            Assert.Throws<NotImplementedException>(() =>
+            {
+                _ = ((IEnumerable)nullList).GetEnumerator();
+            });
+
+            Assert.Throws<NotImplementedException>(() =>
+            {
+                nullList.CopyTo(new[] { 0f }, 0);
+            });
+
+            nullList.Add(0);
+            Assert.IsTrue(nullList.Count == 0);
+
+            nullList.Clear();
+            Assert.IsTrue(nullList.Count == 0);
+
+            nullList.Add(0);
+            Assert.IsFalse(nullList.Contains(0));
+            Assert.IsFalse(nullList.Remove(0));
+            Assert.IsFalse(nullList.IsReadOnly);
+            Assert.IsTrue(nullList.IndexOf(0) == -1);
+            nullList.Insert(0, 0);
+            Assert.IsFalse(nullList.Count > 0);
+            nullList.RemoveAt(0);
+            Assert.IsTrue(nullList.Count == 0);
+            Assert.IsTrue(Mathf.Approximately(0f, nullList[0]));
+            Assert.IsTrue(Mathf.Approximately(0f, nullList[1]));
         }
     }
 

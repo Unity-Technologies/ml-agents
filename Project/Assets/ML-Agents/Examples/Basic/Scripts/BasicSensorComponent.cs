@@ -19,12 +19,6 @@ namespace Unity.MLAgentsExamples
         {
             return new BasicSensor(basicController);
         }
-
-        /// <inheritdoc/>
-        public override int[] GetObservationShape()
-        {
-            return new[] { BasicController.k_Extents };
-        }
     }
 
     /// <summary>

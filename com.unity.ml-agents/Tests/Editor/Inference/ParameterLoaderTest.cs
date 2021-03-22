@@ -18,13 +18,8 @@ namespace Unity.MLAgents.Tests
         {
             return Sensor;
         }
-
-        public override int[] GetObservationShape()
-        {
-            var shape = Sensor.GetObservationSpec().Shape;
-            return new int[] { shape[0], shape[1], shape[2] };
-        }
     }
+
     public class Test3DSensor : ISensor, IBuiltInSensor
     {
         int m_Width;
@@ -64,9 +59,9 @@ namespace Unity.MLAgents.Tests
         public void Update() { }
         public void Reset() { }
 
-        public SensorCompressionType GetCompressionType()
+        public CompressionSpec GetCompressionSpec()
         {
-            return SensorCompressionType.None;
+            return CompressionSpec.Default();
         }
 
         public string GetName()

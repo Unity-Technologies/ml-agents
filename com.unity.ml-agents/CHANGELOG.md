@@ -18,7 +18,11 @@ details.
 `WriteMask(int branch, IEnumerable<int> actionIndices)` was replaced with
 `SetActionEnabled(int branch, int actionIndex, bool isEnabled)`. (#5060)
 - IActuator now implements IHeuristicProvider. (#5110)
-- `ISensor.GetObservationShape()` was removed, and `GetObservationSpec()` was added. (#5127)
+- `ISensor.GetObservationShape()` was removed, and `GetObservationSpec()` was added. The `ITypedSensor`
+and `IDimensionPropertiesSensor` interfaces were removed. (#5127)
+- `ISensor.GetCompressionType()` was removed, and `GetCompressionSpec()` was added. The `ISparseChannelSensor`
+interface was removed. (#5164)
+- The abstract method `SensorComponent.GetObservationShape()` was no longer being called, so it has been removed. (#5172)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
@@ -27,6 +31,8 @@ details.
 - The `.onnx` models input names have changed. All input placeholders will now use the prefix `obs_` removing the distinction between visual and vector observations. Models created with this version will not be usable with previous versions of the package (#5080)
 - The `.onnx` models discrete action output now contains the discrete actions values and not the logits. Models created with this version will not be usable with previous versions of the package (#5080)
 - Added ML-Agents package settings. (#5027)
+- Make com.unity.modules.unityanalytics an optional dependency. (#5109)
+- Make com.unity.modules.physics and com.unity.modules.physics2d optional dependencies. (#5112)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Bug Fixes

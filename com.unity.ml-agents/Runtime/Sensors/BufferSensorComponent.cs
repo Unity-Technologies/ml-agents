@@ -55,12 +55,6 @@ namespace Unity.MLAgents.Sensors
             return m_Sensor;
         }
 
-        /// <inheritdoc/>
-        public override int[] GetObservationShape()
-        {
-            return new[] { MaxNumObservables, ObservableSize };
-        }
-
         /// <summary>
         /// Appends an observation to the buffer. If the buffer is full (maximum number
         /// of observation is reached) the observation will be ignored. the length of

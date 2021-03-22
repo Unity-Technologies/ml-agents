@@ -1,4 +1,3 @@
-#if UNITY_INCLUDE_TESTS
 using System.Collections;
 using System.Collections.Generic;
 using Unity.MLAgents;
@@ -37,17 +36,6 @@ namespace Tests
             var wrappedSensor = wrappedComponent.CreateSensor();
             return new StackingSensor(wrappedSensor, numStacks);
         }
-
-        public override int[] GetObservationShape()
-        {
-            int[] shape = (int[])wrappedComponent.GetObservationShape().Clone();
-            for (var i = 0; i < shape.Length; i++)
-            {
-                shape[i] *= numStacks;
-            }
-
-            return shape;
-        }
     }
 
     public class RuntimeApiTest
@@ -72,7 +60,7 @@ namespace Tests
             behaviorParams.BrainParameters.VectorObservationSize = 3;
             behaviorParams.BrainParameters.NumStackedVectorObservations = 2;
             behaviorParams.BrainParameters.VectorActionDescriptions = new[] { "Continuous1", "TestActionA", "TestActionB" };
-            behaviorParams.BrainParameters.ActionSpec = new ActionSpec(1, new []{2, 2});
+            behaviorParams.BrainParameters.ActionSpec = new ActionSpec(1, new[] { 2, 2 });
             behaviorParams.BehaviorName = "TestBehavior";
             behaviorParams.TeamId = 42;
             behaviorParams.UseChildSensors = true;
@@ -81,7 +69,7 @@ namespace Tests
 
             // Can't actually create an Agent with InferenceOnly and no model, so change back
             behaviorParams.BehaviorType = BehaviorType.Default;
-
+#if MLA_UNITY_PHSYICS_MODULE
             var sensorComponent = gameObject.AddComponent<RayPerceptionSensorComponent3D>();
             sensorComponent.SensorName = "ray3d";
             sensorComponent.DetectableTags = new List<string> { "Player", "Respawn" };
@@ -95,6 +83,7 @@ namespace Tests
 
             // ISensor isn't set up yet.
             Assert.IsNull(sensorComponent.RaySensor);
+#endif
 
 
             // Make sure we can set the behavior type correctly after the agent is initialized
@@ -109,10 +98,10 @@ namespace Tests
             decisionRequester.DecisionPeriod = 2;
             decisionRequester.TakeActionsBetweenDecisions = true;
 
-
+#if MLA_UNITY_PHSYICS_MODULE
             // Initialization should set up the sensors
             Assert.IsNotNull(sensorComponent.RaySensor);
-
+#endif
             // Let's change the inference device
             var otherDevice = behaviorParams.InferenceDevice == InferenceDevice.CPU ? InferenceDevice.GPU : InferenceDevice.CPU;
             agent.SetModel(behaviorParams.BehaviorName, behaviorParams.Model, otherDevice);
@@ -126,7 +115,7 @@ namespace Tests
 
             var actions = agent.GetStoredActionBuffers().DiscreteActions;
             // default Heuristic implementation should return zero actions.
-            Assert.AreEqual(new ActionSegment<int>(new[] {0, 0}), actions);
+            Assert.AreEqual(new ActionSegment<int>(new[] { 0, 0 }), actions);
             Assert.AreEqual(1, agent.numHeuristicCalls);
 
             Academy.Instance.EnvironmentStep();
@@ -137,4 +126,3 @@ namespace Tests
         }
     }
 }
-#endif
