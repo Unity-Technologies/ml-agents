@@ -16,9 +16,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// Creates a PhysicsBodySensor.
         /// </summary>
         /// <returns></returns>
-        public override ISensor CreateSensor()
+        public override ISensor[] CreateSensors()
         {
-            return new PhysicsBodySensor(RootBody, Settings, sensorName);
+            return new ISensor[] {new PhysicsBodySensor(RootBody, Settings, sensorName)};
         }
 
     }

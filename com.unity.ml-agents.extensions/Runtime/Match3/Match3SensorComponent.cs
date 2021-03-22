@@ -21,10 +21,10 @@ namespace Unity.MLAgents.Extensions.Match3
         public Match3ObservationType ObservationType = Match3ObservationType.Vector;
 
         /// <inheritdoc/>
-        public override ISensor CreateSensor()
+        public override ISensor[] CreateSensors()
         {
             var board = GetComponent<AbstractBoard>();
-            return new Match3Sensor(board, ObservationType, SensorName);
+            return new ISensor[] { new Match3Sensor(board, ObservationType, SensorName) };
         }
 
     }

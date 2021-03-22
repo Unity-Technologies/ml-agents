@@ -31,10 +31,16 @@ namespace Tests
         public SensorComponent wrappedComponent;
         public int numStacks;
 
-        public override ISensor CreateSensor()
+        public override ISensor[] CreateSensors()
         {
-            var wrappedSensor = wrappedComponent.CreateSensor();
-            return new StackingSensor(wrappedSensor, numStacks);
+            var wrappedSensors = wrappedComponent.CreateSensors();
+            var sensorsOut = new ISensor[wrappedSensors.Length];
+            for (var i = 0; i < wrappedSensors.Length; i++)
+            {
+                sensorsOut[i] = new StackingSensor(wrappedSensors[i], numStacks);
+            }
+
+            return sensorsOut;
         }
     }
 

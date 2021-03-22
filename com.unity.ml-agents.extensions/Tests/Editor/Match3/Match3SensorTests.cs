@@ -27,7 +27,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
             var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
             sensorComponent.ObservationType = Match3ObservationType.Vector;
-            var sensor = sensorComponent.CreateSensor();
+            var sensor = sensorComponent.CreateSensors()[0];
 
             var expectedShape = new InplaceArray<int>(3 * 3 * 2);
             Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
@@ -60,7 +60,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
             var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
             sensorComponent.ObservationType = Match3ObservationType.Vector;
-            var sensor = sensorComponent.CreateSensor();
+            var sensor = sensorComponent.CreateSensors()[0];
 
             var expectedShape = new InplaceArray<int>(3 * 3 * (2 + 3));
             Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
@@ -87,7 +87,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
             var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
             sensorComponent.ObservationType = Match3ObservationType.UncompressedVisual;
-            var sensor = sensorComponent.CreateSensor();
+            var sensor = sensorComponent.CreateSensors()[0];
 
             var expectedShape = new InplaceArray<int>(3, 3, 2);
             Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
@@ -130,7 +130,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
             var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
             sensorComponent.ObservationType = Match3ObservationType.UncompressedVisual;
-            var sensor = sensorComponent.CreateSensor();
+            var sensor = sensorComponent.CreateSensors()[0];
 
             var expectedShape = new InplaceArray<int>(3, 3, 2 + 3);
             Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
@@ -167,7 +167,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
             var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
             sensorComponent.ObservationType = Match3ObservationType.CompressedVisual;
-            var sensor = sensorComponent.CreateSensor();
+            var sensor = sensorComponent.CreateSensors()[0];
 
             var expectedShape = new InplaceArray<int>(3, 3, 2);
             Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
@@ -204,7 +204,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
             var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
             sensorComponent.ObservationType = Match3ObservationType.CompressedVisual;
-            var sensor = sensorComponent.CreateSensor();
+            var sensor = sensorComponent.CreateSensors()[0];
 
             var expectedShape = new InplaceArray<int>(3, 3, 2 + 3);
             Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);

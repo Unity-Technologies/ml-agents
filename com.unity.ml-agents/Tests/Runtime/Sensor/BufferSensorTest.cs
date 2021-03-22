@@ -55,7 +55,7 @@ namespace Unity.MLAgents.Tests
             bufferComponent.ObservableSize = 4;
             bufferComponent.SensorName = "TestName";
 
-            var sensor = bufferComponent.CreateSensor();
+            var sensor = bufferComponent.CreateSensors()[0];
             var shape = sensor.GetObservationSpec().Shape;
 
             Assert.AreEqual(shape[0], 20);

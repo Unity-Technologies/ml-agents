@@ -10,9 +10,9 @@ namespace Unity.MLAgents.Sensors
     public abstract class SensorComponent : MonoBehaviour
     {
         /// <summary>
-        /// Create the ISensor. This is called by the Agent when it is initialized.
+        /// Create the ISensors. This is called by the Agent when it is initialized.
         /// </summary>
-        /// <returns>Created ISensor object.</returns>
-        public abstract ISensor CreateSensor();
+        /// <returns>Created ISensor objects.</returns>
+        public abstract ISensor[] CreateSensors();
     }
 }

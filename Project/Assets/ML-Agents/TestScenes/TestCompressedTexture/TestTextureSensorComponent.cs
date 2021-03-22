@@ -23,14 +23,14 @@ public class TestTextureSensorComponent : SensorComponent
 
 
     /// <inheritdoc/>
-    public override ISensor CreateSensor()
+    public override ISensor[] CreateSensors()
     {
         m_Sensor = new TestTextureSensor(TestTexture, SensorName, CompressionType);
         if (ObservationStacks != 1)
         {
-            return new StackingSensor(m_Sensor, ObservationStacks);
+            return new ISensor[] { new StackingSensor(m_Sensor, ObservationStacks) };
         }
-        return m_Sensor;
+        return new ISensor[] { m_Sensor };
     }
 }
 

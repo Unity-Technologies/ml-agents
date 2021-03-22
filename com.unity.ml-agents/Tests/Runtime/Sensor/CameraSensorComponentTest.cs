@@ -29,7 +29,7 @@ namespace Unity.MLAgents.Tests
                     cameraComponent.Grayscale = grayscale;
                     cameraComponent.CompressionType = compression;
 
-                    var sensor = cameraComponent.CreateSensor();
+                    var sensor = cameraComponent.CreateSensors()[0];
                     var expectedShape = new InplaceArray<int>(height, width, grayscale ? 1 : 3);
                     Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
                     Assert.AreEqual(typeof(CameraSensor), sensor.GetType());

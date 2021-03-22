@@ -32,7 +32,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             var gameObj = new GameObject();
 
             var sensorComponent = gameObj.AddComponent<RigidBodySensorComponent>();
-            var sensor = sensorComponent.CreateSensor();
+            var sensor = sensorComponent.CreateSensors()[0];
             SensorTestHelper.CompareObservation(sensor, new float[0]);
         }
 
@@ -50,13 +50,13 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 UseLocalSpaceRotations = true
             };
 
-            var sensor = sensorComponent.CreateSensor();
+            var sensor = sensorComponent.CreateSensors()[0];
             sensor.Update();
 
             // The root body is ignored since it always generates identity values
             // and there are no other bodies to generate observations.
             var expected = new float[0];
-            Assert.AreEqual(expected.Length, sensorComponent.CreateSensor().GetObservationSpec().Shape[0]);
+            Assert.AreEqual(expected.Length, sensor.GetObservationSpec().Shape[0]);
             SensorTestHelper.CompareObservation(sensor, expected);
         }
 
@@ -95,7 +95,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             };
             sensorComponent.VirtualRoot = virtualRoot;
 
-            var sensor = sensorComponent.CreateSensor();
+            var sensor = sensorComponent.CreateSensors()[0];
             sensor.Update();
 
             // Note that the VirtualRoot is ignored from the observations
@@ -115,7 +115,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 -1f, 1f, 0f, // Attached vel
                 0f, -1f, 1f // Leaf vel
             };
-            Assert.AreEqual(expected.Length, sensorComponent.CreateSensor().GetObservationSpec().Shape[0]);
+            Assert.AreEqual(expected.Length, sensor.GetObservationSpec().Shape[0]);
             SensorTestHelper.CompareObservation(sensor, expected);
 
             // Update the settings to only process joint observations
@@ -125,7 +125,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 UseJointForces = true,
             };
 
-            sensor = sensorComponent.CreateSensor();
+            sensor = sensorComponent.CreateSensors()[0];
             sensor.Update();
 
             expected = new[]
@@ -136,7 +136,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 0f, 0f, 0f, // joint2.torque
             };
             SensorTestHelper.CompareObservation(sensor, expected);
-            Assert.AreEqual(expected.Length, sensorComponent.CreateSensor().GetObservationSpec().Shape[0]);
+            Assert.AreEqual(expected.Length, sensor.GetObservationSpec().Shape[0]);
 
         }
     }
