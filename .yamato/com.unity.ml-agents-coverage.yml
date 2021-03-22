@@ -1,26 +1,9 @@
-test_editors:
-    - version: 2020.2
-      testProject: DevProject
-
-test_platforms:
-    - name: linux
-      type: Unity::VM
-      image: package-ci/ubuntu:stable
-      flavor: b1.medium
-
-packages:
-    - name: com.unity.ml-agents
-      assembly: Unity.ML-Agents
-      minCoveragePct: 72
-    - name: com.unity.ml-agents.extensions
-      assembly: Unity.ML-Agents.Extensions*
-      minCoveragePct: 75
+{% metadata_file .yamato/coverage_tests.metafile %}
 ---
-{% for package in packages %}
-  {% for editor in test_editors %}
-  {% for platform in test_platforms %}
-
-  {% capture coverageOptions %} --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+{{ package.assembly }}'{% endcapture %}
+{% for package in coverage_packages %}
+{% for editor in coverage_test_editors %}
+{% for platform in coverage_test_platforms %}
+{% capture coverageOptions %} --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+{{ package.assembly }}'{% endcapture %}
 
 test_coverage_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
     name : Coverage {{ package.name }} test {{ editor.version }} on {{ platform.name }}
@@ -48,10 +31,10 @@ test_coverage_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
             (pull_request.changes.any match "com.unity.ml-agents/**" OR
              pull_request.changes.any match " {{ editor.testProject }}/**" OR
             {% if package.name == "com.unity.ml-agents.extensions" %}
-              pull_request.changes.any match "com.unity.ml-agents.extensions/**" OR
+            pull_request.changes.any match "com.unity.ml-agents.extensions/**" OR
             {% endif %}
             pull_request.changes.any match ".yamato/com.unity.ml-agents-test.yml")
       {% endif %}
-      {% endfor %}
-  {% endfor %}
-  {% endfor %}
+{% endfor %}
+{% endfor %}
+{% endfor %}

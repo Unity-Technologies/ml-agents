@@ -1,3 +1,4 @@
+{% metadata_file .yamato/coverage_tests.metafile %}
 test_editors:
     - version: 2019.4
       enableCodeCoverage: !!bool true
@@ -45,8 +46,13 @@ packages:
 all_package_tests:
     name: Run All Combinations of Editors/Platforms Tests
     dependencies:
-        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_com.unity.ml-agents_linux_2019.4
-        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_com.unity.ml-agents.extensions_linux_2019.4
+        {% for coverage_editor in coverage_test_editors %}
+        {% for coverage_plathform in coverage_test_platforms %}
+        {% for coverage_package in coverage_test_packages %}
+        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ coverage_package.name }}_{{ coverage_platform.name }}_{{ coverage_editor.version }}
+        {% endfor %}
+        {% endfor %}
+        {% endfor %}
         {% for editor in test_editors %}
         {% for platform in test_platforms %}
         - .yamato/com.unity.ml-agents-test.yml#test_com.unity.ml-agents_{{ platform.name }}_{{ editor.version }}
@@ -88,7 +94,13 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
                 - "upm-ci~/test-results/**/*"
     dependencies:
         - .yamato/com.unity.ml-agents-pack.yml#pack
-        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ package.name }}_linux_2019.4
+        {% for coverage_editor in coverage_test_editors %}
+        {% for coverage_plathform in coverage_test_platforms %}
+        {% for coverage_package in coverage_test_packages %}
+        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ coverage_package.name }}_{{ coverage_platform.name }}_{{ coverage_editor.version }}
+        {% endfor %}
+        {% endfor %}
+        {% endfor %}
     triggers:
         cancel_old_ci: true
       {% if platform.name == "linux" %}
@@ -136,6 +148,13 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
                 - "upm-ci~/test-results/**/*"
     dependencies:
         - .yamato/com.unity.ml-agents-pack.yml#pack
+        {% for coverage_editor in coverage_test_editors %}
+        {% for coverage_plathform in coverage_test_platforms %}
+        {% for coverage_package in coverage_test_packages %}
+        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ coverage_package.name }}_{{ coverage_platform.name }}_{{ coverage_editor.version }}
+        {% endfor %}
+        {% endfor %}
+        {% endfor %}
     triggers:
         cancel_old_ci: true
       {% endfor %}

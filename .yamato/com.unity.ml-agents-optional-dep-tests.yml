@@ -46,8 +46,13 @@ OptionalDependencyTests_{{ optional_dep.name }}:
                 - "upm-ci~/test-results/**/*"
     dependencies:
         - .yamato/com.unity.ml-agents-pack.yml#pack
-        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_com.unity.ml-agents_linux_{{ optional_dep.version }}
-        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_com.unity.ml-agents.extensions_linux_{{ optional_dep.version }}
+        {% for coverage_editor in coverage_test_editors %}
+        {% for coverage_plathform in coverage_test_platforms %}
+        {% for coverage_package in coverage_test_packages %}
+        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ coverage_package.name }}_{{ coverage_platform.name }}_{{ coverage_editor.version }}
+        {% endfor %}
+        {% endfor %}
+        {% endfor %}
     triggers:
         cancel_old_ci: true
         expression: |
