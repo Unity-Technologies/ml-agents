@@ -48,7 +48,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
 #if UNITY_2020_1_OR_NEWER
-        public PhysicsBodySensor(ArticulationBody rootBody, PhysicsSensorSettings settings, string sensorName=null)
+        public PhysicsBodySensor(ArticulationBody rootBody, PhysicsSensorSettings settings, string sensorName = null)
         {
             var poseExtractor = new ArticulationBodyPoseExtractor(rootBody);
             m_PoseExtractor = poseExtractor;
@@ -57,7 +57,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             var numJointExtractorObservations = 0;
             m_JointExtractors = new List<IJointExtractor>(poseExtractor.NumEnabledPoses);
-            foreach(var articBody in poseExtractor.GetEnabledArticulationBodies())
+            foreach (var articBody in poseExtractor.GetEnabledArticulationBodies())
             {
                 var jointExtractor = new ArticulationBodyJointExtractor(articBody);
                 numJointExtractorObservations += jointExtractor.NumObservations(settings);
@@ -67,6 +67,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             var numTransformObservations = m_PoseExtractor.GetNumPoseObservations(settings);
             m_ObservationSpec = ObservationSpec.Vector(numTransformObservations + numJointExtractorObservations);
         }
+
 #endif
 
         /// <inheritdoc/>
@@ -126,6 +127,5 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             return BuiltInSensorType.PhysicsBodySensor;
         }
-
     }
 }

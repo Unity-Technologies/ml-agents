@@ -36,17 +36,6 @@ namespace Tests
             var wrappedSensor = wrappedComponent.CreateSensor();
             return new StackingSensor(wrappedSensor, numStacks);
         }
-
-        public override int[] GetObservationShape()
-        {
-            int[] shape = (int[])wrappedComponent.GetObservationShape().Clone();
-            for (var i = 0; i < shape.Length; i++)
-            {
-                shape[i] *= numStacks;
-            }
-
-            return shape;
-        }
     }
 
     public class RuntimeApiTest

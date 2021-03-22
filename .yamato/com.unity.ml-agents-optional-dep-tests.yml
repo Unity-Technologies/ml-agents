@@ -47,7 +47,7 @@ OptionalDependencyTests_{{ optional_dep.name }}:
     dependencies:
         - .yamato/com.unity.ml-agents-pack.yml#pack
         {% for coverage_editor in coverage_test_editors %}
-        {% for coverage_plathform in coverage_test_platforms %}
+        {% for coverage_platform in coverage_test_platforms %}
         {% for coverage_package in coverage_test_packages %}
         - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ coverage_package.name }}_{{ coverage_platform.name }}_{{ coverage_editor.version }}
         {% endfor %}

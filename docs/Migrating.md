@@ -44,9 +44,11 @@ public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
     actionMask.SetActionEnabled(branch, 3, false);
 }
 ```
+### IActuator changes
 - The `IActuator` interface now implements `IHeuristicProvider`.  Please add the corresponding `Heuristic(in ActionBuffers)`
 method to your custom Actuator classes.
 
+### ISensor and SensorComponent changes
 - The `ISensor.GetObservationShape()` method and `ITypedSensor`
 and `IDimensionPropertiesSensor` interfaces were removed, and `GetObservationSpec()` was added. You can use
 `ObservationSpec.Vector()` or `ObservationSpec.Visual()` to generate `ObservationSpec`s that are equivalent to
@@ -87,6 +89,8 @@ public CompressionSpec GetCompressionSpec()
     return CompressionSpec.Default();
 }
 ```
+
+- The abstract method `SensorComponent.GetObservationShape()` was removed.
 
 ## Migrating to Release 13
 ### Implementing IHeuristic in your IActuator implementations

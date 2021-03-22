@@ -13,7 +13,6 @@ using Unity.MLAgents.Utils.Tests;
 
 namespace Unity.MLAgents.Tests
 {
-
     [TestFixture]
     public class EditModeTestGeneration
     {

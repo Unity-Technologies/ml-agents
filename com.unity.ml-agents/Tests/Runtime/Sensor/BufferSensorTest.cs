@@ -56,7 +56,7 @@ namespace Unity.MLAgents.Tests
             bufferComponent.SensorName = "TestName";
 
             var sensor = bufferComponent.CreateSensor();
-            var shape = bufferComponent.GetObservationShape();
+            var shape = sensor.GetObservationSpec().Shape;
 
             Assert.AreEqual(shape[0], 20);
             Assert.AreEqual(shape[1], 4);
@@ -68,7 +68,7 @@ namespace Unity.MLAgents.Tests
             var obsWriter = new ObservationWriter();
             var obs = sensor.GetObservationProto(obsWriter);
 
-            Assert.AreEqual(shape, obs.Shape);
+            Assert.AreEqual(shape, InplaceArray<int>.FromList(obs.Shape));
             Assert.AreEqual(obs.DimensionProperties.Count, 2);
 
             Assert.AreEqual(sensor.GetName(), "TestName");
