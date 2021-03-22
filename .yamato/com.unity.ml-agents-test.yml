@@ -43,7 +43,7 @@ all_package_tests:
     name: Run All Combinations of Editors/Platforms Tests
     dependencies:
         {% for coverage_editor in coverage_test_editors %}
-        {% for coverage_plathform in coverage_test_platforms %}
+        {% for coverage_platform in coverage_test_platforms %}
         {% for coverage_package in coverage_test_packages %}
         - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ coverage_package.name }}_{{ coverage_platform.name }}_{{ coverage_editor.version }}
         {% endfor %}
@@ -91,7 +91,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
     dependencies:
         - .yamato/com.unity.ml-agents-pack.yml#pack
         {% for coverage_editor in coverage_test_editors %}
-        {% for coverage_plathform in coverage_test_platforms %}
+        {% for coverage_platform in coverage_test_platforms %}
         {% for coverage_package in coverage_test_packages %}
         - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ coverage_package.name }}_{{ coverage_platform.name }}_{{ coverage_editor.version }}
         {% endfor %}
@@ -137,7 +137,7 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
     dependencies:
         - .yamato/com.unity.ml-agents-pack.yml#pack
         {% for coverage_editor in coverage_test_editors %}
-        {% for coverage_plathform in coverage_test_platforms %}
+        {% for coverage_platform in coverage_test_platforms %}
         {% for coverage_package in coverage_test_packages %}
         - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ coverage_package.name }}_{{ coverage_platform.name }}_{{ coverage_editor.version }}
         {% endfor %}
