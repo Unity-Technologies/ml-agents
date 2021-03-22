@@ -163,6 +163,7 @@ namespace Unity.MLAgents
 
         bool m_Initialized;
         List<ModelRunner> m_ModelRunners = new List<ModelRunner>();
+        List<Trainer> m_Trainers = new List<Trainer>();
 
         // Flag used to keep track of the first time the Academy is reset.
         bool m_HadFirstReset;
@@ -206,6 +207,7 @@ namespace Unity.MLAgents
         // This will mark the Agent as Done if it has reached its maxSteps.
         internal event Action AgentIncrementStep;
 
+        internal event Action TrainerUpdate;
 
         /// <summary>
         /// Signals to all of the <see cref="Agent"/>s that their step is about to begin.
@@ -588,6 +590,8 @@ namespace Unity.MLAgents
                 {
                     AgentAct?.Invoke();
                 }
+
+                TrainerUpdate?.Invoke();
             }
         }
 
@@ -622,6 +626,16 @@ namespace Unity.MLAgents
                 m_InferenceSeed++;
             }
             return modelRunner;
+        }
+        internal TrainingModelRunner GetOrCreateTrainingModelRunner(string behaviorName, ActionSpec actionSpec)
+        {
+            var trainer = m_Trainers.Find(x => x.BehaviorName == behaviorName);
+            if (trainer == null)
+            {
+                trainer = new Trainer(behaviorName, actionSpec);
+                m_Trainers.Add(trainer);
+            }
+            return trainer.TrainerModelRunner;
         }
 
         /// <summary>

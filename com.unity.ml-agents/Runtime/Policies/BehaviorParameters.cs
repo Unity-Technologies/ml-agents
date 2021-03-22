@@ -29,7 +29,12 @@ namespace Unity.MLAgents.Policies
         /// The Agent will always use inference with the provided
         /// neural network model.
         /// </summary>
-        InferenceOnly
+        InferenceOnly,
+
+        /// <summary>
+        /// C# training
+        /// </summary>
+        InEditorTraining
     }
 
     /// <summary>
@@ -230,6 +235,8 @@ namespace Unity.MLAgents.Policies
                         }
                         return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName);
                     }
+                case BehaviorType.InEditorTraining:
+                    return new TrainingPolicy(actionSpec, actuatorManager, m_BehaviorName);
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
                     {
