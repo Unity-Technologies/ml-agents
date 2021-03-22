@@ -14,12 +14,5 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         /// <returns>Created ISensor object.</returns>
         public abstract ISensor CreateSensor();
-
-        /// <summary>
-        /// Returns the shape of the sensor observations that will be created.
-        /// </summary>
-        /// <returns>Shape of the sensor observation.</returns>
-        public abstract int[] GetObservationShape();
-
     }
 }

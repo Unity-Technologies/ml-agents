@@ -197,6 +197,5 @@ namespace Unity.MLAgents.Sensors
         {
             return BuiltInSensorType.CameraSensor;
         }
-
     }
 }

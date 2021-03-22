@@ -45,26 +45,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             return new PhysicsBodySensor(GetPoseExtractor(), Settings, _sensorName);
         }
 
-        /// <inheritdoc/>
-        public override int[] GetObservationShape()
-        {
-            if (RootBody == null)
-            {
-                return new[] { 0 };
-            }
-
-            var poseExtractor = GetPoseExtractor();
-            var numPoseObservations = poseExtractor.GetNumPoseObservations(Settings);
-
-            var numJointObservations = 0;
-            foreach (var rb in poseExtractor.GetEnabledRigidbodies())
-            {
-                var joint = rb.GetComponent<Joint>();
-                numJointObservations += RigidBodyJointExtractor.NumObservations(rb, joint, Settings);
-            }
-            return new[] { numPoseObservations + numJointObservations };
-        }
-
         /// <summary>
         /// Get the DisplayNodes of the hierarchy.
         /// </summary>

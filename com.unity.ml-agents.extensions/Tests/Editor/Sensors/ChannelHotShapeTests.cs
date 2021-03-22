@@ -34,9 +34,8 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
             gridSensor.Start();
 
-            int[] expectedShape = { 10, 10, 1 };
-            GridObsTestUtils.AssertArraysAreEqual(expectedShape, gridSensor.GetObservationShape());
-
+            var expectedShape = new InplaceArray<int>(10, 10, 1);
+            Assert.AreEqual(expectedShape, gridSensor.GetObservationSpec().Shape);
         }
 
 
@@ -51,9 +50,8 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
             gridSensor.Start();
 
-            int[] expectedShape = { 10, 10, 2 };
-            GridObsTestUtils.AssertArraysAreEqual(expectedShape, gridSensor.GetObservationShape());
-
+            var expectedShape = new InplaceArray<int>(10, 10, 2);
+            Assert.AreEqual(expectedShape, gridSensor.GetObservationSpec().Shape);
         }
 
         [Test]
@@ -66,8 +64,8 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
             gridSensor.Start();
 
-            int[] expectedShape = { 10, 10, 3 };
-            GridObsTestUtils.AssertArraysAreEqual(expectedShape, gridSensor.GetObservationShape());
+            var expectedShape = new InplaceArray<int>(10, 10, 3);
+            Assert.AreEqual(expectedShape, gridSensor.GetObservationSpec().Shape);
 
         }
 
@@ -81,9 +79,8 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
             gridSensor.Start();
 
-            int[] expectedShape = { 10, 10, 6 };
-            GridObsTestUtils.AssertArraysAreEqual(expectedShape, gridSensor.GetObservationShape());
-
+            var expectedShape = new InplaceArray<int>(10, 10, 6);
+            Assert.AreEqual(expectedShape, gridSensor.GetObservationSpec().Shape);
         }
 
     }

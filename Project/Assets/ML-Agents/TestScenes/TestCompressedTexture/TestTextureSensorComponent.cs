@@ -32,21 +32,5 @@ public class TestTextureSensorComponent : SensorComponent
         }
         return m_Sensor;
     }
-
-    /// <inheritdoc/>
-    public override int[] GetObservationShape()
-    {
-        var width = TestTexture.width;
-        var height = TestTexture.height;
-        var observationShape = new[] { height, width, 3 };
-
-        var stacks = ObservationStacks > 1 ? ObservationStacks : 1;
-        if (stacks > 1)
-        {
-            observationShape[2] *= stacks;
-        }
-
-        return observationShape;
-    }
 }
 

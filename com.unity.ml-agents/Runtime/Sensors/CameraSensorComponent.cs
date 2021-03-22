@@ -118,21 +118,6 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
-        /// Computes the observation shape of the sensor.
-        /// </summary>
-        /// <returns>The observation shape of the associated <see cref="CameraSensor"/> object.</returns>
-        public override int[] GetObservationShape()
-        {
-            var stacks = ObservationStacks > 1 ? ObservationStacks : 1;
-            var cameraSensorshape = CameraSensor.GenerateShape(m_Width, m_Height, Grayscale);
-            if (stacks > 1)
-            {
-                cameraSensorshape[cameraSensorshape.Length - 1] *= stacks;
-            }
-            return cameraSensorshape;
-        }
-
-        /// <summary>
         /// Update fields that are safe to change on the Sensor at runtime.
         /// </summary>
         internal void UpdateSensor()

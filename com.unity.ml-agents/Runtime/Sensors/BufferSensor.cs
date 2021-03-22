@@ -110,7 +110,5 @@ namespace Unity.MLAgents.Sensors
         {
             return BuiltInSensorType.BufferSensor;
         }
-
     }
-
 }
