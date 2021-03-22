@@ -159,7 +159,7 @@ namespace Unity.MLAgents.Tests
 
             public CompressionSpec GetCompressionSpec()
             {
-                return CompressionSpec.Compressed(CompressionType, Mapping);
+                return new CompressionSpec(CompressionType, Mapping);
             }
 
             public string GetName()

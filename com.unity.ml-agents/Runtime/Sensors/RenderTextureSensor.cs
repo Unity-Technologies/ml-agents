@@ -90,7 +90,7 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public CompressionSpec GetCompressionSpec()
         {
-            return CompressionSpec.Compressed(m_CompressionType);
+            return new CompressionSpec(m_CompressionType);
         }
 
         /// <inheritdoc/>

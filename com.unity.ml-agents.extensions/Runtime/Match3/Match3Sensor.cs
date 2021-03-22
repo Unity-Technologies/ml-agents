@@ -223,7 +223,7 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public CompressionSpec GetCompressionSpec()
         {
-            return CompressionSpec.Compressed(GetCompressionType(), m_SparseChannelMapping);
+            return new CompressionSpec(GetCompressionType(), m_SparseChannelMapping);
         }
 
         /// <inheritdoc/>

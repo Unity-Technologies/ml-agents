@@ -203,7 +203,7 @@ namespace Unity.MLAgents.Sensors
         public CompressionSpec GetCompressionSpec()
         {
             var wrappedSpec = m_WrappedSensor.GetCompressionSpec();
-            return CompressionSpec.Compressed(wrappedSpec.SensorCompressionType, m_CompressionMapping);
+            return new CompressionSpec(wrappedSpec.SensorCompressionType, m_CompressionMapping);
         }
 
         /// <summary>

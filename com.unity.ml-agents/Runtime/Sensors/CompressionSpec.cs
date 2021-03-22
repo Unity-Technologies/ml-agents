@@ -54,6 +54,18 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
+        /// Return a CompressionSpec indicating possible compression.
+        /// </summary>
+        /// <param name="sensorCompressionType">The compression type to use.</param>
+        /// <param name="compressedChannelMapping">Optional mapping mapping of the channels in compressed data to the
+        /// actual channel after decompression.</param>
+        public CompressionSpec(SensorCompressionType sensorCompressionType, int[] compressedChannelMapping = null)
+        {
+            m_SensorCompressionType = sensorCompressionType;
+            m_CompressedChannelMapping = compressedChannelMapping;
+        }
+
+        /// <summary>
         /// Return a CompressionSpec indicating no compression. This is recommended for most sensors.
         /// </summary>
         /// <returns></returns>
@@ -63,21 +75,6 @@ namespace Unity.MLAgents.Sensors
             {
                 m_SensorCompressionType = SensorCompressionType.None,
                 m_CompressedChannelMapping = null
-            };
-        }
-
-        /// <summary>
-        /// Return a CompressionSpec indicating possible compression.
-        /// </summary>
-        /// <param name="sensorCompressionType">The compression type to use.</param>
-        /// <param name="compressedChannelMapping">Optional mapping mapping of the channels in compressed data to the actual channel after decompression.</param>
-        /// <returns></returns>
-        public static CompressionSpec Compressed(SensorCompressionType sensorCompressionType, int[] compressedChannelMapping = null)
-        {
-            return new CompressionSpec
-            {
-                m_SensorCompressionType = sensorCompressionType,
-                m_CompressedChannelMapping = compressedChannelMapping
             };
         }
 
