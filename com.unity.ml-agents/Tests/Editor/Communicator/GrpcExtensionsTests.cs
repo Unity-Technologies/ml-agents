@@ -10,7 +10,6 @@ using Unity.MLAgents.Sensors;
 
 using Unity.MLAgents.Analytics;
 using Unity.MLAgents.CommunicatorObjects;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -254,25 +253,6 @@ namespace Unity.MLAgents.Tests
         }
 
         [Test]
-        public void TestIsTrivialMapping()
-        {
-            Assert.AreEqual(GrpcExtensions.IsTrivialMapping(new DummySensor()), true);
-
-            var sparseChannelSensor = new DummySparseChannelSensor();
-            sparseChannelSensor.Mapping = null;
-            Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), true);
-            sparseChannelSensor.Mapping = new[] { 0, 0, 0 };
-            Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), true);
-            sparseChannelSensor.Mapping = new[] { 0, 1, 2, 3, 4 };
-            Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), true);
-            sparseChannelSensor.Mapping = new[] { 1, 2, 3, 4, -1, -1 };
-            Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), false);
-            sparseChannelSensor.Mapping = new[] { 0, 0, 0, 1, 1, 1 };
-            Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), false);
-        }
-
-        [Test]
->>>>>>> Low hanging fruit tests for coverage.
         public void TestDefaultTrainingEvents()
         {
             var trainingEnvInit = new TrainingEnvironmentInitialized
