@@ -17,9 +17,7 @@ namespace Unity.MLAgents.Policies
         string m_FullyQualifiedBehaviorName;
         ActionSpec m_ActionSpec;
         ActionBuffers m_LastActionBuffer;
-#if MLA_UNITY_ANALYTICS_MODULE
         bool m_AnalyticsSent;
-#endif
 
         internal ICommunicator m_Communicator;
 
