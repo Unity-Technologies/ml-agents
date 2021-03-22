@@ -121,8 +121,8 @@ public class AgentSoccer : Agent
             {
                 sensor.AddObservation(CurrentRayAngleLerp);
                 sensor.AddObservation(CurrentSpherecastRadiusLerp);
-                sensor.AddObservation(GameController.LocalBallVelocity);
-                sensor.AddObservation(GameController.LocalBallPositionNormalizedToFieldSize);
+                // sensor.AddObservation(GameController.LocalBallVelocity);
+                // sensor.AddObservation(GameController.LocalBallPositionNormalizedToFieldSize);
             }
         }
     }
