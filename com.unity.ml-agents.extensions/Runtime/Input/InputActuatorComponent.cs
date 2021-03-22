@@ -1,4 +1,4 @@
-#if MLA_INPUT_SYSTEM && UNITY_2019_4_OR_NEWER
+#if MLA_INPUT_SYSTEM
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -374,4 +374,4 @@ namespace Unity.MLAgents.Extensions.Input
         }
     }
 }
-#endif // MLA_INPUT_SYSTEM && UNITY_2019_4_OR_NEWER
+#endif // MLA_INPUT_SYSTEM
