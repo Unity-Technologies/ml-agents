@@ -18,7 +18,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         public void TestVectorObservations()
         {
             var boardString =
-@"000
+                @"000
                   000
                   010";
             var gameObj = new GameObject("board");
@@ -45,11 +45,11 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         public void TestVectorObservationsSpecial()
         {
             var boardString =
-@"000
+                @"000
                   000
                   010";
             var specialString =
-@"010
+                @"010
                   200
                   000";
 
@@ -78,7 +78,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         public void TestVisualObservations()
         {
             var boardString =
-@"000
+                @"000
                   000
                   010";
             var gameObj = new GameObject("board");
@@ -115,11 +115,11 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         public void TestVisualObservationsSpecial()
         {
             var boardString =
-@"000
+                @"000
                   000
                   010";
             var specialString =
-@"010
+                @"010
                   200
                   000";
 
@@ -158,7 +158,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         public void TestCompressedVisualObservations()
         {
             var boardString =
-@"000
+                @"000
                   000
                   010";
             var gameObj = new GameObject("board");
@@ -189,11 +189,11 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         public void TestCompressedVisualObservationsSpecial()
         {
             var boardString =
-@"000
+                @"000
                   000
                   010";
             var specialString =
-@"010
+                @"010
                   200
                   000";
 
