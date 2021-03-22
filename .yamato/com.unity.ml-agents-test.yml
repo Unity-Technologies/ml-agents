@@ -1,17 +1,17 @@
 test_editors:
-  - version: 2019.4
-    enableCodeCoverage: !!bool true
-    # We want some scene tests to run in the DevProject, but packages there only support 2020+
-    testProject: Project
-    enableNoDefaultPackages: !!bool true
-  - version: 2020.2
-    enableCodeCoverage: !!bool true
-    testProject: DevProject
-    enableNoDefaultPackages: !!bool true
-  - version: 2021.1
-    enableCodeCoverage: !!bool true
-    testProject: DevProject
-    enableNoDefaultPackages: !!bool true
+    - version: 2019.4
+      enableCodeCoverage: !!bool true
+        # We want some scene tests to run in the DevProject, but packages there only support 2020+
+      testProject: Project
+      enableNoDefaultPackages: !!bool true
+    - version: 2020.2
+      enableCodeCoverage: !!bool true
+      testProject: DevProject
+      enableNoDefaultPackages: !!bool true
+    - version: 2021.1
+      enableCodeCoverage: !!bool true
+      testProject: DevProject
+      enableNoDefaultPackages: !!bool true
 
 trunk_editor:
     - version: trunk
@@ -45,19 +45,18 @@ packages:
 all_package_tests:
     name: Run All Combinations of Editors/Platforms Tests
     dependencies:
-      - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_com.unity.ml-agents_linux_2019.4
-      - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_com.unity.ml-agents.extensions_linux_2019.4
-  {% for editor in test_editors %}
-    {% for platform in test_platforms %}
-      - .yamato/com.unity.ml-agents-test.yml#test_com.unity.ml-agents_{{ platform.name }}_{{ editor.version }}
-    {% endfor %}
-  {% endfor %}
-
-  {% for editor in trunk_editor %}
-    {% for platform in test_platforms %}
-      - .yamato/com.unity.ml-agents-test.yml#test_com.unity.ml-agents_{{ platform.name }}_{{ editor.version }}
-    {% endfor %}
-  {% endfor %}
+        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_com.unity.ml-agents_linux_2019.4
+        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_com.unity.ml-agents.extensions_linux_2019.4
+        {% for editor in test_editors %}
+        {% for platform in test_platforms %}
+        - .yamato/com.unity.ml-agents-test.yml#test_com.unity.ml-agents_{{ platform.name }}_{{ editor.version }}
+        {% endfor %}
+        {% endfor %}
+        {% for editor in trunk_editor %}
+        {% for platform in test_platforms %}
+        - .yamato/com.unity.ml-agents-test.yml#test_com.unity.ml-agents_{{ platform.name }}_{{ editor.version }}
+        {% endfor %}
+        {% endfor %}
     triggers:
         cancel_old_ci: true
         recurring:
@@ -114,9 +113,9 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
 
   {% if editor.enableCodeCoverage %}
   {% capture coverageOptions %} --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+{{ package.assembly }}'{% endcapture %}
-  {% else %}
-  {% assign coverageOptions = "" %}
-  {% endif %}
+    {% else %}
+    {% assign coverageOptions = "" %}
+    {% endif %}
 test_{{ package.name }}_{{ platform.name }}_trunk:
     name : {{ package.name }} test {{ editor.version }} on {{ platform.name }}
     agent:
