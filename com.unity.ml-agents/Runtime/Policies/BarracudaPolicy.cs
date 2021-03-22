@@ -1,5 +1,6 @@
 using Unity.Barracuda;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Sensors;
@@ -59,7 +60,14 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         private bool m_AnalyticsSent;
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Instantiate a BarracudaPolicy with the necessary objects for it to run.
+        /// </summary>
+        /// <param name="actionSpec">The action spec of the behavior.</param>
+        /// <param name="actuators">The actuators used for this behavior.</param>
+        /// <param name="model">The Neural Network to use.</param>
+        /// <param name="inferenceDevice">Which device Barracuda will run on.</param>
+        /// <param name="behaviorName">The name of the behavior.</param>
         public BarracudaPolicy(
             ActionSpec actionSpec,
             IList<IActuator> actuators,
@@ -78,6 +86,14 @@ namespace Unity.MLAgents.Policies
         /// <inheritdoc />
         public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
+            SendAnalytics(sensors);
+            m_AgentId = info.episodeId;
+            m_ModelRunner?.PutObservations(info, sensors);
+        }
+
+        [Conditional("MLA_UNITY_ANALYTICS_MODULE")]
+        void SendAnalytics(IList<ISensor> sensors)
+        {
             if (!m_AnalyticsSent)
             {
                 m_AnalyticsSent = true;
@@ -90,8 +106,6 @@ namespace Unity.MLAgents.Policies
                     m_Actuators
                 );
             }
-            m_AgentId = info.episodeId;
-            m_ModelRunner?.PutObservations(info, sensors);
         }
 
         /// <inheritdoc />
