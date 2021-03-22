@@ -1,6 +1,6 @@
 {% metadata_file .yamato/coverage_tests.metafile %}
 ---
-{% for package in coverage_packages %}
+{% for package in coverage_test_packages %}
 {% for editor in coverage_test_editors %}
 {% for platform in coverage_test_platforms %}
 {% capture coverageOptions %} --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+{{ package.assembly }}'{% endcapture %}
