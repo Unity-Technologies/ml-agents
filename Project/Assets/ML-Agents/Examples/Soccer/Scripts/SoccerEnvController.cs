@@ -49,10 +49,16 @@ public class SoccerEnvController : MonoBehaviour
     private int m_ResetTimer;
     public Vector3 LocalBallVelocity;
     public Vector3 LocalBallPositionNormalizedToFieldSize = new Vector3();
+
+    public MeshRenderer CenterPitchRenderer;
+    private Material m_CenterPitchMat;
+    public Material PurpleMat;
+    public Material BlueMat;
     void Start()
     {
 
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
+        m_CenterPitchMat = CenterPitchRenderer.material;
         // Initialize TeamManager
         m_BlueAgentGroup = new SimpleMultiAgentGroup();
         m_PurpleAgentGroup = new SimpleMultiAgentGroup();
@@ -89,6 +95,15 @@ public class SoccerEnvController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Swap ground material, wait time seconds, then swap back to the regular material.
+    /// </summary>
+    IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
+    {
+        CenterPitchRenderer.material = mat;
+        yield return new WaitForSeconds(time); // Wait for 2 sec
+        CenterPitchRenderer.material = m_CenterPitchMat;
+    }
 
     public void ResetBall()
     {
@@ -107,11 +122,13 @@ public class SoccerEnvController : MonoBehaviour
         {
             m_BlueAgentGroup.AddGroupReward(1 - m_ResetTimer / MaxEnvironmentSteps);
             m_PurpleAgentGroup.AddGroupReward(-1);
+            StartCoroutine(GoalScoredSwapGroundMaterial(BlueMat, 1f));
         }
         else
         {
             m_PurpleAgentGroup.AddGroupReward(1 - m_ResetTimer / MaxEnvironmentSteps);
             m_BlueAgentGroup.AddGroupReward(-1);
+            StartCoroutine(GoalScoredSwapGroundMaterial(PurpleMat, 1f));
         }
         m_PurpleAgentGroup.EndGroupEpisode();
         m_BlueAgentGroup.EndGroupEpisode();
