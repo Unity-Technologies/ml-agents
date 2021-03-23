@@ -13,6 +13,8 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         // Whether the expected PNG data should be written to a file.
         // Only set this to true if the compressed observation format changes.
         private bool WritePNGDataToFile = false;
+        private const string k_CellObservationPng = "match3obs";
+        private const string k_SpecialObservationPng = "match3obs_special";
 
         [Test]
         public void TestVectorObservations()
@@ -60,18 +62,35 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
             var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
             sensorComponent.ObservationType = Match3ObservationType.Vector;
-            var sensor = sensorComponent.CreateSensors()[0];
+            var sensors = sensorComponent.CreateSensors();
+            var cellSensor = sensors[0];
+            var specialSensor = sensors[1];
 
-            var expectedShape = new InplaceArray<int>(3 * 3 * (2 + 3));
-            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
 
-            var expectedObs = new float[]
             {
-                1, 0, 1, 0, 0, /* (0, 0) */ 0, 1, 1, 0, 0, /* (0, 1) */ 1, 0, 1, 0, 0, /* (0, 0) */
-                1, 0, 0, 0, 1, /* (0, 2) */ 1, 0, 1, 0, 0, /* (0, 0) */ 1, 0, 1, 0, 0, /* (0, 0) */
-                1, 0, 1, 0, 0, /* (0, 0) */ 1, 0, 0, 1, 0, /* (0, 1) */ 1, 0, 1, 0, 0, /* (0, 0) */
-            };
-            SensorTestHelper.CompareObservation(sensor, expectedObs);
+                var expectedShape = new InplaceArray<int>(3 * 3 * 2);
+                Assert.AreEqual(expectedShape, cellSensor.GetObservationSpec().Shape);
+
+                var expectedObs = new float[]
+                {
+                    1, 0, /* (0) */ 0, 1, /* (1) */ 1, 0, /* (0) */
+                    1, 0, /* (0) */ 1, 0, /* (0) */ 1, 0, /* (0) */
+                    1, 0, /* (0) */ 1, 0, /* (0) */ 1, 0, /* (0) */
+                };
+                SensorTestHelper.CompareObservation(cellSensor, expectedObs);
+            }
+            {
+                var expectedShape = new InplaceArray<int>(3 * 3 * 3);
+                Assert.AreEqual(expectedShape, specialSensor.GetObservationSpec().Shape);
+
+                var expectedObs = new float[]
+                {
+                    1, 0, 0, /* (0) */ 1, 0, 0, /* (1) */ 1, 0, 0, /* (0) */
+                    0, 0, 1, /* (2) */ 1, 0, 0, /* (0) */ 1, 0, 0, /* (0) */
+                    1, 0, 0, /* (0) */ 0, 1, 0, /* (1) */ 1, 0, 0, /* (0) */
+                };
+                SensorTestHelper.CompareObservation(specialSensor, expectedObs);
+            }
         }
 
         [Test]
@@ -130,28 +149,54 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
             var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
             sensorComponent.ObservationType = Match3ObservationType.UncompressedVisual;
-            var sensor = sensorComponent.CreateSensors()[0];
+            var sensors = sensorComponent.CreateSensors();
+            var cellSensor = sensors[0];
+            var specialSensor = sensors[1];
 
-            var expectedShape = new InplaceArray<int>(3, 3, 2 + 3);
-            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
-
-            Assert.AreEqual(SensorCompressionType.None, sensor.GetCompressionSpec().SensorCompressionType);
-
-            var expectedObs = new float[]
             {
-                1, 0, 1, 0, 0, /* (0, 0) */ 0, 1, 1, 0, 0, /* (0, 1) */ 1, 0, 1, 0, 0, /* (0, 0) */
-                1, 0, 0, 0, 1, /* (0, 2) */ 1, 0, 1, 0, 0, /* (0, 0) */ 1, 0, 1, 0, 0, /* (0, 0) */
-                1, 0, 1, 0, 0, /* (0, 0) */ 1, 0, 0, 1, 0, /* (0, 1) */ 1, 0, 1, 0, 0, /* (0, 0) */
-            };
-            SensorTestHelper.CompareObservation(sensor, expectedObs);
+                var expectedShape = new InplaceArray<int>(3, 3, 2);
+                Assert.AreEqual(expectedShape, cellSensor.GetObservationSpec().Shape);
 
-            var expectedObs3D = new float[,,]
+                Assert.AreEqual(SensorCompressionType.None, cellSensor.GetCompressionSpec().SensorCompressionType);
+
+                var expectedObs = new float[]
+                {
+                    1, 0, /* (0) */ 0, 1, /* (1) */ 1, 0, /* (0) */
+                    1, 0, /* (0) */ 1, 0, /* (0) */ 1, 0, /* (0) */
+                    1, 0, /* (0) */ 1, 0, /* (0) */ 1, 0, /* (0) */
+                };
+                SensorTestHelper.CompareObservation(cellSensor, expectedObs);
+
+                var expectedObs3D = new float[,,]
+                {
+                    {{1, 0}, {0, 1}, {1, 0}},
+                    {{1, 0}, {1, 0}, {1, 0}},
+                    {{1, 0}, {1, 0}, {1, 0}},
+                };
+                SensorTestHelper.CompareObservation(cellSensor, expectedObs3D);
+            }
             {
-                {{1, 0, 1, 0, 0}, {0, 1, 1, 0, 0}, {1, 0, 1, 0, 0}},
-                {{1, 0, 0, 0, 1}, {1, 0, 1, 0, 0}, {1, 0, 1, 0, 0}},
-                {{1, 0, 1, 0, 0}, {1, 0, 0, 1, 0}, {1, 0, 1, 0, 0}},
-            };
-            SensorTestHelper.CompareObservation(sensor, expectedObs3D);
+                var expectedShape = new InplaceArray<int>(3, 3, 3);
+                Assert.AreEqual(expectedShape, specialSensor.GetObservationSpec().Shape);
+
+                Assert.AreEqual(SensorCompressionType.None, specialSensor.GetCompressionSpec().SensorCompressionType);
+
+                var expectedObs = new float[]
+                {
+                    1, 0, 0, /* (0) */ 1, 0, 0, /* (1) */ 1, 0, 0, /* (0) */
+                    0, 0, 1, /* (2) */ 1, 0, 0, /* (0) */ 1, 0, 0, /* (0) */
+                    1, 0, 0, /* (0) */ 0, 1, 0, /* (1) */ 1, 0, 0, /* (0) */
+                };
+                SensorTestHelper.CompareObservation(specialSensor, expectedObs);
+
+                var expectedObs3D = new float[,,]
+                {
+                    {{1, 0, 0}, {1, 0, 0}, {1, 0, 0}},
+                    {{0, 0, 1}, {1, 0, 0}, {1, 0, 0}},
+                    {{1, 0, 0}, {0, 1, 0}, {1, 0, 0}},
+                };
+                SensorTestHelper.CompareObservation(specialSensor, expectedObs3D);
+            }
         }
 
         [Test]
@@ -178,10 +223,10 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             if (WritePNGDataToFile)
             {
                 // Enable this if the format of the observation changes
-                SavePNGs(pngData, "match3obs");
+                SavePNGs(pngData, k_CellObservationPng);
             }
 
-            var expectedPng = LoadPNGs("match3obs", 1);
+            var expectedPng = LoadPNGs(k_CellObservationPng, 1);
             Assert.AreEqual(expectedPng, pngData);
         }
 
@@ -204,22 +249,30 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
             var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
             sensorComponent.ObservationType = Match3ObservationType.CompressedVisual;
-            var sensor = sensorComponent.CreateSensors()[0];
+            var sensors = sensorComponent.CreateSensors();
 
-            var expectedShape = new InplaceArray<int>(3, 3, 2 + 3);
-            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
+            var paths = new[] { k_CellObservationPng, k_SpecialObservationPng };
+            var expectedChannels = new[] { 2, 3 };
 
-            Assert.AreEqual(SensorCompressionType.PNG, sensor.GetCompressionSpec().SensorCompressionType);
-
-            var concatenatedPngData = sensor.GetCompressedObservation();
-            var pathPrefix = "match3obs_special";
-            if (WritePNGDataToFile)
+            for (var i = 0; i < 2; i++)
             {
-                // Enable this if the format of the observation changes
-                SavePNGs(concatenatedPngData, pathPrefix);
+                var sensor = sensors[i];
+                var expectedShape = new InplaceArray<int>(3, 3, expectedChannels[i]);
+                Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
+
+                Assert.AreEqual(SensorCompressionType.PNG, sensor.GetCompressionSpec().SensorCompressionType);
+
+                var pngData = sensor.GetCompressedObservation();
+                if (WritePNGDataToFile)
+                {
+                    // Enable this if the format of the observation changes
+                    SavePNGs(pngData, paths[i]);
+                }
+
+                var expectedPng = LoadPNGs(paths[i], 1);
+                Assert.AreEqual(expectedPng, pngData);
             }
-            var expectedPng = LoadPNGs(pathPrefix, 2);
-            Assert.AreEqual(expectedPng, concatenatedPngData);
+
         }
 
         /// <summary>
