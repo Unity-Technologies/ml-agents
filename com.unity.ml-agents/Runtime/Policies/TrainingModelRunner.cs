@@ -50,16 +50,18 @@ namespace Unity.MLAgents
         /// </exception>
         public TrainingModelRunner(
             ActionSpec actionSpec,
+            NNModel model,
             int seed = 0)
         {
             Model barracudaModel;
             m_TensorAllocator = new TensorCachingAllocator();
 
             // barracudaModel = Barracuda.SomeModelBuilder.CreateModel();
-            barracudaModel = ModelLoader.Load(new NNModel());
+            // barracudaModel = ModelLoader.Load(new NNModel());
+            barracudaModel = ModelLoader.Load(model);
+            m_Model = barracudaModel;
             WorkerFactory.Type executionDevice = WorkerFactory.Type.CSharpBurst;
             m_Engine = WorkerFactory.CreateWorker(executionDevice, barracudaModel, m_Verbose);
-
 
             m_InferenceInputs = barracudaModel.GetInputTensors();
             m_OutputNames = barracudaModel.GetOutputNames();

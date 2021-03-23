@@ -16,11 +16,11 @@ namespace Unity.MLAgents
         int batchSize = 64;
         float GAMMA;
 
-        public Trainer(string behaviorName, ActionSpec actionSpec, int seed=0)
+        public Trainer(string behaviorName, ActionSpec actionSpec, NNModel model, int seed=0)
         {
             m_behaviorName = behaviorName;
             m_Buffer = new ReplayBuffer(m_BufferSize);
-            m_ModelRunner = new TrainingModelRunner(actionSpec, seed);
+            m_ModelRunner = new TrainingModelRunner(actionSpec, model, seed);
             Academy.Instance.TrainerUpdate += Update;
         }
 

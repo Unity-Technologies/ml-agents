@@ -30,7 +30,8 @@ namespace Unity.MLAgents.Policies
         /// <inheritdoc />
         public TrainingPolicy(
             ActionSpec actionSpec,
-            string behaviorName
+            string behaviorName,
+            NNModel model
         )
         {
             var trainer = Academy.Instance.GetOrCreateTrainer(behaviorName, actionSpec, model);

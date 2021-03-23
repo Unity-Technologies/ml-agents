@@ -632,7 +632,7 @@ namespace Unity.MLAgents
             var trainer = m_Trainers.Find(x => x.BehaviorName == behaviorName);
             if (trainer == null)
             {
-                trainer = new Trainer(behaviorName, actionSpec);
+                trainer = new Trainer(behaviorName, actionSpec, model);
                 m_Trainers.Add(trainer);
             }
             return trainer;
