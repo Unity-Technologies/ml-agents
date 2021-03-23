@@ -617,7 +617,7 @@ namespace Unity.MLAgents
         public void SetModel(
             string behaviorName,
             NNModel model,
-            InferenceDevice inferenceDevice = InferenceDevice.CPU)
+            InferenceDevice inferenceDevice = InferenceDevice.Default)
         {
             if (behaviorName == m_PolicyFactory.BehaviorName &&
                 model == m_PolicyFactory.Model &&
