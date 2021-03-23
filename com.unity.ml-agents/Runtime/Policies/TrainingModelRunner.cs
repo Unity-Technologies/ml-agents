@@ -161,32 +161,18 @@ namespace Unity.MLAgents
                 m_ObservationsInitialized = true;
             }
 
-            Profiler.BeginSample("ModelRunner.DecideAction");
-
-            Profiler.BeginSample($"GenerateTensors");
             // Prepare the input tensors to be feed into the engine
             m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_Infos);
-            Profiler.EndSample();
 
-            Profiler.BeginSample($"PrepareBarracudaInputs");
             PrepareBarracudaInputs(m_InferenceInputs);
-            Profiler.EndSample();
 
             // Execute the Model
-            Profiler.BeginSample($"ExecuteGraph");
             m_Engine.Execute(m_InputsByName);
-            Profiler.EndSample();
 
-            Profiler.BeginSample($"FetchBarracudaOutputs");
             FetchBarracudaOutputs(m_OutputNames);
-            Profiler.EndSample();
 
-            Profiler.BeginSample($"ApplyTensors");
             // Update the outputs
             m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_OrderedAgentsRequestingDecisions, m_LastActionsReceived);
-            Profiler.EndSample();
-
-            Profiler.EndSample(); // end ModelRunner.DecideAction
 
             m_Infos.Clear();
 
