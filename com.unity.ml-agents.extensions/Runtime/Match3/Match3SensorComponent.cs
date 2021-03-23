@@ -24,11 +24,11 @@ namespace Unity.MLAgents.Extensions.Match3
         public override ISensor[] CreateSensors()
         {
             var board = GetComponent<AbstractBoard>();
-            var cellSensor = Match3SensorNew.CellTypeSensor(board, ObservationType, SensorName + " (cells)");
+            var cellSensor = Match3Sensor.CellTypeSensor(board, ObservationType, SensorName + " (cells)");
             if (board.NumSpecialTypes > 0)
             {
                 var specialSensor =
-                    Match3SensorNew.SpecialTypeSensor(board, ObservationType, SensorName + " (special)");
+                    Match3Sensor.SpecialTypeSensor(board, ObservationType, SensorName + " (special)");
                 return new ISensor[] { cellSensor, specialSensor };
             }
             else

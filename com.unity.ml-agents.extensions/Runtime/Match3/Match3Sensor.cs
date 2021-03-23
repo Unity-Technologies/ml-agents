@@ -38,7 +38,11 @@ namespace Unity.MLAgents.Extensions.Match3
         CompressedVisual
     }
 
-    public class Match3SensorNew : ISensor, IBuiltInSensor
+    /// <summary>
+    /// Sensor for Match3 games. Can generate either vector, compressed visual,
+    /// or uncompressed visual observations. Uses a GridValueProvider to determine the observation values.
+    /// </summary>
+    public class Match3Sensor : ISensor, IBuiltInSensor
     {
         private Match3ObservationType m_ObservationType;
         private ObservationSpec m_ObservationSpec;
@@ -49,7 +53,19 @@ namespace Unity.MLAgents.Extensions.Match3
         private GridValueProvider m_GridValues;
         private int m_OneHotSize;
 
-        public Match3SensorNew(AbstractBoard board, GridValueProvider gvp, int oneHotSize, Match3ObservationType obsType, string name)
+        /// <summary>
+        /// Create a sensor for the GridValueProvider with the specified observation type.
+        /// </summary>
+        /// <remarks>
+        /// Use Match3Sensor.CellTypeSensor() or Match3Sensor.SpecialTypeSensor() instead of calling
+        /// the constructor directly.
+        /// </remarks>
+        /// <param name="board">The abstract board. This is only used to get the size.</param>
+        /// <param name="gvp">The GridValueProvider, should be either board.GetCellType or board.GetSpecialType.</param>
+        /// <param name="oneHotSize">The number of possible values that the GridValueProvider can return.</param>
+        /// <param name="obsType">Whether to produce vector or visual observations</param>
+        /// <param name="name">Name of the sensor.</param>
+        public Match3Sensor(AbstractBoard board, GridValueProvider gvp, int oneHotSize, Match3ObservationType obsType, string name)
         {
             m_Name = name;
             m_Rows = board.Rows;
@@ -63,15 +79,29 @@ namespace Unity.MLAgents.Extensions.Match3
                 : ObservationSpec.Visual(m_Rows, m_Columns, oneHotSize);
         }
 
-        public static Match3SensorNew CellTypeSensor(AbstractBoard board, Match3ObservationType obsType, string name)
+        /// <summary>
+        /// Create a sensor that encodes the board cells as observations.
+        /// </summary>
+        /// <param name="board">The abstract board.</param>
+        /// <param name="obsType">Whether to produce vector or visual observations</param>
+        /// <param name="name">Name of the sensor.</param>
+        /// <returns></returns>
+        public static Match3Sensor CellTypeSensor(AbstractBoard board, Match3ObservationType obsType, string name)
         {
-            return new Match3SensorNew(board, board.GetCellType, board.NumCellTypes, obsType, name);
+            return new Match3Sensor(board, board.GetCellType, board.NumCellTypes, obsType, name);
         }
 
-        public static Match3SensorNew SpecialTypeSensor(AbstractBoard board, Match3ObservationType obsType, string name)
+        /// <summary>
+        /// Create a sensor that encodes the cell special types as observations.
+        /// </summary>
+        /// <param name="board">The abstract board.</param>
+        /// <param name="obsType">Whether to produce vector or visual observations</param>
+        /// <param name="name">Name of the sensor.</param>
+        /// <returns></returns>
+        public static Match3Sensor SpecialTypeSensor(AbstractBoard board, Match3ObservationType obsType, string name)
         {
             var specialSize = board.NumSpecialTypes == 0 ? 0 : board.NumSpecialTypes + 1;
-            return new Match3SensorNew(board, board.GetSpecialType, specialSize, obsType, name);
+            return new Match3Sensor(board, board.GetSpecialType, specialSize, obsType, name);
         }
 
         /// <inheritdoc/>

@@ -91,6 +91,7 @@ public CompressionSpec GetCompressionSpec()
 ```
 
 - The abstract method `SensorComponent.GetObservationShape()` was removed.
+- The abstract method `SensorComponent.CreateSensor()` was replaced with `CreateSensors()`, which returns an `ISensor[]`.
 
 ## Migrating to Release 13
 ### Implementing IHeuristic in your IActuator implementations

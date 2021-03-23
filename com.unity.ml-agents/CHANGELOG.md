@@ -8,7 +8,7 @@ and this project adheres to
 
 ## [Unreleased]
 ### Major Changes
-#### com.unity.ml-agents (C#)
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - The minimum supported Unity version was updated to 2019.4. (#5166)
 - Several breaking interface changes were made. See the
 [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_14_docs/docs/Migrating.md) for more
@@ -23,6 +23,10 @@ and `IDimensionPropertiesSensor` interfaces were removed. (#5127)
 - `ISensor.GetCompressionType()` was removed, and `GetCompressionSpec()` was added. The `ISparseChannelSensor`
 interface was removed. (#5164)
 - The abstract method `SensorComponent.GetObservationShape()` was no longer being called, so it has been removed. (#5172)
+- `SensorComponent.CreateSensor()` was replaced with `SensorComponent.CreateSensor()`, which returns an `ISensor[]`. (#5181)
+- `Match3Sensor` was refactored to produce cell and special type observations separately, and `Match3SensorComponent` now
+produces two `Match3Sensor`s (unless there are no special types). Previously trained models will have different observation
+sizes and will need to be retrained. (#5181)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
@@ -39,7 +43,7 @@ depend on the previous behavior, you can explicitly set the Agent's `InferenceDe
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Bug Fixes
-#### com.unity.ml-agents (C#)
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 
