@@ -627,7 +627,7 @@ namespace Unity.MLAgents
             }
             return modelRunner;
         }
-        internal TrainingModelRunner GetOrCreateTrainingModelRunner(string behaviorName, ActionSpec actionSpec)
+        internal Trainer GetOrCreateTrainer(string behaviorName, ActionSpec actionSpec, NNModel model)
         {
             var trainer = m_Trainers.Find(x => x.BehaviorName == behaviorName);
             if (trainer == null)
@@ -635,7 +635,7 @@ namespace Unity.MLAgents
                 trainer = new Trainer(behaviorName, actionSpec);
                 m_Trainers.Add(trainer);
             }
-            return trainer.TrainerModelRunner;
+            return trainer;
         }
 
         /// <summary>

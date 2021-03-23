@@ -17,7 +17,15 @@ namespace Unity.MLAgents.Policies
 
         ActionSpec m_ActionSpec;
 
-        private string m_BehaviorName;
+        string m_BehaviorName;
+
+        AgentInfo m_LastInfo;
+
+        IReadOnlyList<TensorProxy> m_LastObservations;
+
+        ReplayBuffer m_buffer;
+
+        IReadOnlyList<TensorProxy> m_CurrentObservations;
 
         /// <inheritdoc />
         public TrainingPolicy(
@@ -25,7 +33,10 @@ namespace Unity.MLAgents.Policies
             string behaviorName
         )
         {
-            m_ModelRunner = Academy.Instance.GetOrCreateTrainingModelRunner(behaviorName, actionSpec);
+            var trainer = Academy.Instance.GetOrCreateTrainer(behaviorName, actionSpec, model);
+            m_ModelRunner = trainer.TrainerModelRunner;
+            m_buffer = trainer.Buffer;
+            m_CurrentObservations = m_ModelRunner.GetInputTensors();
             m_BehaviorName = behaviorName;
             m_ActionSpec = actionSpec;
         }
@@ -34,21 +45,30 @@ namespace Unity.MLAgents.Policies
         public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
             m_AgentId = info.episodeId;
-            m_ModelRunner?.PutObservations(info, sensors);
+            m_ModelRunner.PutObservations(info, sensors);
+            m_ModelRunner.GetObservationTensors(m_CurrentObservations, info, sensors);
+
+            if (m_LastObservations != null)
+            {
+                m_buffer.Push(m_LastInfo, m_LastObservations, m_CurrentObservations);
+            }
+
+            if (info.done == true)
+            {
+                m_LastObservations = null;
+            }
+            else
+            {
+                m_LastInfo = info;
+                m_LastObservations = m_CurrentObservations;
+            }
         }
 
         /// <inheritdoc />
         public ref readonly ActionBuffers DecideAction()
         {
-            if (m_ModelRunner == null)
-            {
-                m_LastActionBuffer = ActionBuffers.Empty;
-            }
-            else
-            {
-                m_ModelRunner?.DecideBatch();
-                m_LastActionBuffer = m_ModelRunner.GetAction(m_AgentId);
-            }
+            m_ModelRunner.DecideBatch();
+            m_LastActionBuffer = m_ModelRunner.GetAction(m_AgentId);
             return ref m_LastActionBuffer;
         }
 

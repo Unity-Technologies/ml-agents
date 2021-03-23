@@ -5,15 +5,16 @@ using System.Linq;
 using Unity.Barracuda;
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Inference;
 
 namespace Unity.MLAgents
 {
     internal struct Transition
     {
-        public List<Tensor> state;
+        public IReadOnlyList<TensorProxy> state;
         public ActionBuffers action;
         public float reward;
-        public List<Tensor> nextState;
+        public IReadOnlyList<TensorProxy> nextState;
     }
 
     internal class ReplayBuffer
@@ -29,14 +30,26 @@ namespace Unity.MLAgents
             m_MaxSize = maxSize;
         }
 
-        public void Push(AgentInfo info, List<Tensor> state, List<Tensor> nextState)
+        public int Count
         {
-            m_Buffer[currentIndex] = new Transition() {state=state, action=info.storedActions, reward=info.reward, nextState=nextState};
+            get => m_Buffer.Count;
+        }
+
+        public void Push(AgentInfo info, IReadOnlyList<TensorProxy> state, IReadOnlyList<TensorProxy> nextState)
+        {
+            if (m_Buffer.Count < m_MaxSize)
+            {
+                m_Buffer.Append(new Transition() {state=state, action=info.storedActions, reward=info.reward, nextState=nextState});
+            }
+            else
+            {
+                m_Buffer[currentIndex] = new Transition() {state=state, action=info.storedActions, reward=info.reward, nextState=nextState};
+            }
             currentIndex += 1;
             currentIndex = currentIndex % m_MaxSize;
         }
 
-        public Transition[] Sample(int batchSize)
+        public Transition[] SampleBatch(int batchSize)
         {
             var indexList = SampleIndex(batchSize);
             var samples = new Transition[batchSize];

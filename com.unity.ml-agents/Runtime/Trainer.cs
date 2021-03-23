@@ -2,6 +2,7 @@
 
 using System;
 using Unity.MLAgents.Actuators;
+using Unity.Barracuda;
 
 
 namespace Unity.MLAgents
@@ -11,8 +12,8 @@ namespace Unity.MLAgents
         ReplayBuffer m_Buffer;
         TrainingModelRunner m_ModelRunner;
         string m_behaviorName;
-        int m_BufferSize;
-        int batchSize;
+        int m_BufferSize = 1024;
+        int batchSize = 64;
         float GAMMA;
 
         public Trainer(string behaviorName, ActionSpec actionSpec, int seed=0)
@@ -28,6 +29,11 @@ namespace Unity.MLAgents
             get => m_behaviorName;
         }
 
+        public ReplayBuffer Buffer
+        {
+            get => m_Buffer;
+        }
+
         public TrainingModelRunner TrainerModelRunner
         {
             get => m_ModelRunner;
@@ -40,7 +46,12 @@ namespace Unity.MLAgents
 
         public void Update()
         {
-            var samples = m_Buffer.Sample(batchSize);
+            if (m_Buffer.Count < batchSize * 2)
+            {
+                return;
+            }
+
+            var samples = m_Buffer.SampleBatch(batchSize);
             // states = [s.state for s in samples]
             // actions = [s.action for s in samples]
             // q_values = policy_net(states).gather(1, action_batch)
