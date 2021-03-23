@@ -267,9 +267,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         private Color DebugDefaultColor = new Color(1f, 1f, 1f, 0.25f);
 
         /// <inheritdoc/>
-        public override ISensor CreateSensor()
+        public override ISensor[] CreateSensors()
         {
-            return this;
+            return new ISensor[] { this };
         }
 
         /// <summary>

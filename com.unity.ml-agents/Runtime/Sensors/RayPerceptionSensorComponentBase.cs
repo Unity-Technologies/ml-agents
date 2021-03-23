@@ -181,7 +181,7 @@ namespace Unity.MLAgents.Sensors
         /// Returns an initialized raycast sensor.
         /// </summary>
         /// <returns></returns>
-        public override ISensor CreateSensor()
+        public override ISensor[] CreateSensors()
         {
             var rayPerceptionInput = GetRayPerceptionInput();
 
@@ -190,10 +190,10 @@ namespace Unity.MLAgents.Sensors
             if (ObservationStacks != 1)
             {
                 var stackingSensor = new StackingSensor(m_RaySensor, ObservationStacks);
-                return stackingSensor;
+                return new ISensor[] { stackingSensor };
             }
 
-            return m_RaySensor;
+            return new ISensor[] { m_RaySensor };
         }
 
         /// <summary>

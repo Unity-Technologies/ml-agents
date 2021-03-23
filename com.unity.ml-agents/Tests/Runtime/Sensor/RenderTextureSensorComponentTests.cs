@@ -28,7 +28,7 @@ namespace Unity.MLAgents.Tests
 
                     var expectedShape = new InplaceArray<int>(height, width, grayscale ? 1 : 3);
 
-                    var sensor = renderTexComponent.CreateSensor();
+                    var sensor = renderTexComponent.CreateSensors()[0];
                     Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
                     Assert.AreEqual(typeof(RenderTextureSensor), sensor.GetType());
                 }

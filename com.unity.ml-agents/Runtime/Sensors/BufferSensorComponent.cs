@@ -49,10 +49,10 @@ namespace Unity.MLAgents.Sensors
         private BufferSensor m_Sensor;
 
         /// <inheritdoc/>
-        public override ISensor CreateSensor()
+        public override ISensor[] CreateSensors()
         {
             m_Sensor = new BufferSensor(MaxNumObservables, ObservableSize, m_SensorName);
-            return m_Sensor;
+            return new ISensor[] { m_Sensor };
         }
 
         /// <summary>

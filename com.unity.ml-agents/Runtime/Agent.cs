@@ -968,7 +968,7 @@ namespace Unity.MLAgents
             sensors.Capacity += attachedSensorComponents.Length;
             foreach (var component in attachedSensorComponents)
             {
-                sensors.Add(component.CreateSensor());
+                sensors.AddRange(component.CreateSensors());
             }
 
             // Support legacy CollectObservations

@@ -106,15 +106,15 @@ namespace Unity.MLAgents.Sensors
         /// Creates the <see cref="CameraSensor"/>
         /// </summary>
         /// <returns>The created <see cref="CameraSensor"/> object for this component.</returns>
-        public override ISensor CreateSensor()
+        public override ISensor[] CreateSensors()
         {
             m_Sensor = new CameraSensor(m_Camera, m_Width, m_Height, Grayscale, m_SensorName, m_Compression);
 
             if (ObservationStacks != 1)
             {
-                return new StackingSensor(m_Sensor, ObservationStacks);
+                return new ISensor[] { new StackingSensor(m_Sensor, ObservationStacks) };
             }
-            return m_Sensor;
+            return new ISensor[] { m_Sensor };
         }
 
         /// <summary>
