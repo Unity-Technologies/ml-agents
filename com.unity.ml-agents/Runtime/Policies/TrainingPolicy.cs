@@ -54,14 +54,13 @@ namespace Unity.MLAgents.Policies
                 m_buffer.Push(m_LastInfo, m_LastObservations, m_CurrentObservations);
             }
 
+            m_LastInfo = info;
+            m_LastObservations = m_CurrentObservations;
+
             if (info.done == true)
             {
+                m_buffer.Push(info, m_CurrentObservations, m_CurrentObservations); // dummy next_state
                 m_LastObservations = null;
-            }
-            else
-            {
-                m_LastInfo = info;
-                m_LastObservations = m_CurrentObservations;
             }
         }
 
