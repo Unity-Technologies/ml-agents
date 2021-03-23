@@ -6,10 +6,26 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 {
     internal class SimpleBoard : AbstractBoard
     {
+        public int Rows;
+        public int Columns;
+        public int NumCellTypes;
+        public int NumSpecialTypes;
+
         public int LastMoveIndex;
         public bool MovesAreValid = true;
 
         public bool CallbackCalled;
+
+        public override BoardSize GetMaxBoardSize()
+        {
+            return new BoardSize
+            {
+                Rows = Rows,
+                Columns = Columns,
+                NumCellTypes = NumCellTypes,
+                NumSpecialTypes = NumSpecialTypes
+            };
+        }
 
         public override int GetCellType(int row, int col)
         {

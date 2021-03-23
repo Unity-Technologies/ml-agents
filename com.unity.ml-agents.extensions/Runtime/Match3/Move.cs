@@ -256,5 +256,16 @@ namespace Unity.MLAgents.Extensions.Match3
         {
             return maxRows * (maxCols - 1) + (maxRows - 1) * (maxCols);
         }
+
+        /// <summary>
+        /// Return the number of potential moves for a board of the given size.
+        /// This is equivalent to the number of internal edges in the board.
+        /// </summary>
+        /// <param name="boardSize"></param>
+        /// <returns></returns>
+        public static int NumPotentialMoves(BoardSize boardSize)
+        {
+            return boardSize.Rows * (boardSize.Columns - 1) + (boardSize.Rows - 1) * (boardSize.Columns);
+        }
     }
 }

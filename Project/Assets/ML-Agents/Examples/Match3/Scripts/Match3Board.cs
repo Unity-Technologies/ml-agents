@@ -8,6 +8,11 @@ namespace Unity.MLAgentsExamples
 
     public class Match3Board : AbstractBoard
     {
+        public int Rows;
+        public int Columns;
+        public int NumCellTypes;
+        public int NumSpecialTypes;
+
         public const int k_EmptyCell = -1;
         [Tooltip("Points earned for clearing a basic cell (cube)")]
         public int BasicCellPoints = 1;
@@ -39,6 +44,17 @@ namespace Unity.MLAgentsExamples
         {
             m_Random = new System.Random(RandomSeed == -1 ? gameObject.GetInstanceID() : RandomSeed);
             InitRandom();
+        }
+
+        public override BoardSize GetMaxBoardSize()
+        {
+            return new BoardSize
+            {
+                Rows = Rows,
+                Columns = Columns,
+                NumCellTypes = NumCellTypes,
+                NumSpecialTypes = NumSpecialTypes
+            };
         }
 
         public override bool MakeMove(Move move)

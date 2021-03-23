@@ -16,10 +16,7 @@ namespace Unity.MLAgents.Extensions.Match3
         private ActionSpec m_ActionSpec;
         private bool m_ForceHeuristic;
         private Agent m_Agent;
-
-        private int m_Rows;
-        private int m_Columns;
-        private int m_NumCellTypes;
+        private BoardSize m_MaxBoardSize;
 
         /// <summary>
         /// Create a Match3Actuator.
@@ -37,15 +34,13 @@ namespace Unity.MLAgents.Extensions.Match3
                               string name)
         {
             m_Board = board;
-            m_Rows = board.Rows;
-            m_Columns = board.Columns;
-            m_NumCellTypes = board.NumCellTypes;
+            m_MaxBoardSize = m_Board.GetMaxBoardSize();
             Name = name;
 
             m_ForceHeuristic = forceHeuristic;
             m_Agent = agent;
 
-            var numMoves = Move.NumPotentialMoves(m_Board.Rows, m_Board.Columns);
+            var numMoves = Move.NumPotentialMoves(m_MaxBoardSize);
             m_ActionSpec = ActionSpec.MakeDiscrete(numMoves);
             m_Random = new System.Random(seed);
         }
@@ -62,16 +57,20 @@ namespace Unity.MLAgents.Extensions.Match3
             }
             var moveIndex = actions.DiscreteActions[0];
 
-            if (m_Board.Rows != m_Rows || m_Board.Columns != m_Columns || m_Board.NumCellTypes != m_NumCellTypes)
             {
-                Debug.LogWarning(
-                    $"Board shape changes since actuator initialization. This may cause unexpected results. " +
-                    $"Old shape: Rows={m_Rows} Columns={m_Columns}, NumCellTypes={m_NumCellTypes} " +
-                    $"Current shape: Rows={m_Board.Rows} Columns={m_Board.Columns}, NumCellTypes={m_Board.NumCellTypes}"
-                );
+                var currentMaxBoardSize = m_Board.GetMaxBoardSize();
+
+                if (currentMaxBoardSize != m_MaxBoardSize)
+                {
+                    Debug.LogWarning(
+                        $"Board shape changes since actuator initialization. This may cause unexpected results. " +
+                        $"Old MaxBoardSize: {m_MaxBoardSize} " +
+                        $"Current MaxBoardSize: {currentMaxBoardSize}"
+                    );
+                }
             }
 
-            Move move = Move.FromMoveIndex(moveIndex, m_Rows, m_Columns);
+            Move move = Move.FromMoveIndex(moveIndex, m_MaxBoardSize.Rows, m_MaxBoardSize.Columns);
             m_Board.MakeMove(move);
         }
 
@@ -84,7 +83,7 @@ namespace Unity.MLAgents.Extensions.Match3
             {
                 var numMoves = m_Board.NumMoves();
 
-                var currentMove = Move.FromMoveIndex(0, m_Board.Rows, m_Board.Columns);
+                var currentMove = Move.FromMoveIndex(0, m_MaxBoardSize.Rows, m_MaxBoardSize.Columns);
                 for (var i = 0; i < numMoves; i++)
                 {
                     if (m_Board.IsMoveValid(currentMove))
@@ -95,7 +94,7 @@ namespace Unity.MLAgents.Extensions.Match3
                     {
                         actionMask.SetActionEnabled(branch, i, false);
                     }
-                    currentMove.Next(m_Board.Rows, m_Board.Columns);
+                    currentMove.Next(m_MaxBoardSize.Rows, m_MaxBoardSize.Columns);
                 }
 
                 if (!foundValidMove)

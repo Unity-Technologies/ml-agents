@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
-    public abstract class AbstractBoard : MonoBehaviour
+    public struct BoardSize : IEquatable<BoardSize>
     {
         /// <summary>
         /// Number of rows on the board
@@ -26,6 +26,39 @@ namespace Unity.MLAgents.Extensions.Match3
         /// all cells of the same type are assumed to be equivalent.
         /// </summary>
         public int NumSpecialTypes;
+
+
+        public static bool operator ==(BoardSize lhs, BoardSize rhs)
+        {
+            return lhs.Equals(rhs);
+        }
+
+        public static bool operator !=(BoardSize lhs, BoardSize rhs) => !lhs.Equals(rhs);
+
+        public override bool Equals(object other) => other is BoardSize other1 && this.Equals(other1);
+
+        public bool Equals(BoardSize other)
+        {
+            // See https://montemagno.com/optimizing-c-struct-equality-with-iequatable/
+            var thisTuple = (Rows, Columns, NumCellTypes, NumSpecialTypes);
+            var otherTuple = (other.Rows, other.Columns, other.NumCellTypes, other.NumSpecialTypes);
+            return thisTuple.Equals(otherTuple);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Rows, Columns, NumCellTypes, NumSpecialTypes).GetHashCode();
+        }
+    }
+
+    public abstract class AbstractBoard : MonoBehaviour
+    {
+        public abstract BoardSize GetMaxBoardSize();
+
+        public virtual BoardSize GetCurrentBoardSize()
+        {
+            return GetMaxBoardSize();
+        }
 
         /// <summary>
         /// Returns the "color" of the piece at the given row and column.
@@ -71,7 +104,7 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         public int NumMoves()
         {
-            return Move.NumPotentialMoves(Rows, Columns);
+            return Move.NumPotentialMoves(GetMaxBoardSize());
         }
 
         /// <summary>
@@ -86,11 +119,13 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         public IEnumerable<Move> AllMoves()
         {
-            var currentMove = Move.FromMoveIndex(0, Rows, Columns);
+            var maxBoardSize = GetMaxBoardSize();
+
+            var currentMove = Move.FromMoveIndex(0, maxBoardSize.Rows, maxBoardSize.Columns);
             for (var i = 0; i < NumMoves(); i++)
             {
                 yield return currentMove;
-                currentMove.Next(Rows, Columns);
+                currentMove.Next(maxBoardSize.Rows, maxBoardSize.Columns);
             }
         }
 
@@ -100,14 +135,15 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         public IEnumerable<Move> ValidMoves()
         {
-            var currentMove = Move.FromMoveIndex(0, Rows, Columns);
+            var maxBoardSize = GetMaxBoardSize();
+            var currentMove = Move.FromMoveIndex(0, maxBoardSize.Rows, maxBoardSize.Columns);
             for (var i = 0; i < NumMoves(); i++)
             {
                 if (IsMoveValid(currentMove))
                 {
                     yield return currentMove;
                 }
-                currentMove.Next(Rows, Columns);
+                currentMove.Next(maxBoardSize.Rows, maxBoardSize.Columns);
             }
         }
 
@@ -117,14 +153,15 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         public IEnumerable<Move> InvalidMoves()
         {
-            var currentMove = Move.FromMoveIndex(0, Rows, Columns);
+            var maxBoardSize = GetMaxBoardSize();
+            var currentMove = Move.FromMoveIndex(0, maxBoardSize.Rows, maxBoardSize.Columns);
             for (var i = 0; i < NumMoves(); i++)
             {
                 if (!IsMoveValid(currentMove))
                 {
                     yield return currentMove;
                 }
-                currentMove.Next(Rows, Columns);
+                currentMove.Next(maxBoardSize.Rows, maxBoardSize.Columns);
             }
         }
 
@@ -175,6 +212,7 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         bool CheckHalfMove(int newRow, int newCol, int newValue, Direction incomingDirection)
         {
+            var currentBoardSize = GetCurrentBoardSize();
             int matchedLeft = 0, matchedRight = 0, matchedUp = 0, matchedDown = 0;
 
             if (incomingDirection != Direction.Right)
@@ -190,7 +228,7 @@ namespace Unity.MLAgents.Extensions.Match3
 
             if (incomingDirection != Direction.Left)
             {
-                for (var c = newCol + 1; c < Columns; c++)
+                for (var c = newCol + 1; c < currentBoardSize.Columns; c++)
                 {
                     if (GetCellType(newRow, c) == newValue)
                         matchedRight++;
@@ -201,7 +239,7 @@ namespace Unity.MLAgents.Extensions.Match3
 
             if (incomingDirection != Direction.Down)
             {
-                for (var r = newRow + 1; r < Rows; r++)
+                for (var r = newRow + 1; r < currentBoardSize.Rows; r++)
                 {
                     if (GetCellType(r, newCol) == newValue)
                         matchedUp++;

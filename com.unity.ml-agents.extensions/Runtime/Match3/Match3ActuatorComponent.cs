@@ -48,7 +48,7 @@ namespace Unity.MLAgents.Extensions.Match3
                     return ActionSpec.MakeContinuous(0);
                 }
 
-                var numMoves = Move.NumPotentialMoves(board.Rows, board.Columns);
+                var numMoves = Move.NumPotentialMoves(board.GetMaxBoardSize());
                 return ActionSpec.MakeDiscrete(numMoves);
             }
         }

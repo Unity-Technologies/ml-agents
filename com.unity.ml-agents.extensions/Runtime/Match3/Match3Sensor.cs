@@ -48,8 +48,7 @@ namespace Unity.MLAgents.Extensions.Match3
         private ObservationSpec m_ObservationSpec;
         private string m_Name;
 
-        private int m_Rows;
-        private int m_Columns;
+        private BoardSize m_MaxBoardSize;
         private GridValueProvider m_GridValues;
         private int m_OneHotSize;
 
@@ -60,23 +59,22 @@ namespace Unity.MLAgents.Extensions.Match3
         /// Use Match3Sensor.CellTypeSensor() or Match3Sensor.SpecialTypeSensor() instead of calling
         /// the constructor directly.
         /// </remarks>
-        /// <param name="board">The abstract board. This is only used to get the size.</param>
+        /// <param name="maxBoardSize">The maximum board size.</param>
         /// <param name="gvp">The GridValueProvider, should be either board.GetCellType or board.GetSpecialType.</param>
         /// <param name="oneHotSize">The number of possible values that the GridValueProvider can return.</param>
         /// <param name="obsType">Whether to produce vector or visual observations</param>
         /// <param name="name">Name of the sensor.</param>
-        public Match3Sensor(AbstractBoard board, GridValueProvider gvp, int oneHotSize, Match3ObservationType obsType, string name)
+        public Match3Sensor(BoardSize maxBoardSize, GridValueProvider gvp, int oneHotSize, Match3ObservationType obsType, string name)
         {
             m_Name = name;
-            m_Rows = board.Rows;
-            m_Columns = board.Columns;
+            m_MaxBoardSize = maxBoardSize;
             m_GridValues = gvp;
             m_OneHotSize = oneHotSize;
 
             m_ObservationType = obsType;
             m_ObservationSpec = obsType == Match3ObservationType.Vector
-                ? ObservationSpec.Vector(m_Rows * m_Columns * oneHotSize)
-                : ObservationSpec.Visual(m_Rows, m_Columns, oneHotSize);
+                ? ObservationSpec.Vector(maxBoardSize.Rows * maxBoardSize.Columns * oneHotSize)
+                : ObservationSpec.Visual(maxBoardSize.Rows, maxBoardSize.Columns, oneHotSize);
         }
 
         /// <summary>
@@ -88,11 +86,13 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         public static Match3Sensor CellTypeSensor(AbstractBoard board, Match3ObservationType obsType, string name)
         {
-            return new Match3Sensor(board, board.GetCellType, board.NumCellTypes, obsType, name);
+            var maxBoardSize = board.GetMaxBoardSize();
+            return new Match3Sensor(maxBoardSize, board.GetCellType, maxBoardSize.NumCellTypes, obsType, name);
         }
 
         /// <summary>
-        /// Create a sensor that encodes the cell special types as observations.
+        /// Create a sensor that encodes the cell special types as observations. Returns null if the board's
+        /// NumSpecialTypes is 0 (indicating the sensor isn't needed).
         /// </summary>
         /// <param name="board">The abstract board.</param>
         /// <param name="obsType">Whether to produce vector or visual observations</param>
@@ -100,8 +100,13 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         public static Match3Sensor SpecialTypeSensor(AbstractBoard board, Match3ObservationType obsType, string name)
         {
-            var specialSize = board.NumSpecialTypes == 0 ? 0 : board.NumSpecialTypes + 1;
-            return new Match3Sensor(board, board.GetSpecialType, specialSize, obsType, name);
+            var maxBoardSize = board.GetMaxBoardSize();
+            if (maxBoardSize.NumSpecialTypes == 0)
+            {
+                return null;
+            }
+            var specialSize = maxBoardSize.NumSpecialTypes + 1;
+            return new Match3Sensor(maxBoardSize, board.GetSpecialType, specialSize, obsType, name);
         }
 
         /// <inheritdoc/>
@@ -113,21 +118,12 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
-            // if (m_Board.Rows != m_Rows || m_Board.Columns != m_Columns || m_Board.NumCellTypes != m_NumCellTypes)
-            // {
-            //     Debug.LogWarning(
-            //         $"Board shape changes since sensor initialization. This may cause unexpected results. " +
-            //         $"Old shape: Rows={m_Rows} Columns={m_Columns}, NumCellTypes={m_NumCellTypes} " +
-            //         $"Current shape: Rows={m_Board.Rows} Columns={m_Board.Columns}, NumCellTypes={m_Board.NumCellTypes}"
-            //     );
-            // }
-
             if (m_ObservationType == Match3ObservationType.Vector)
             {
                 int offset = 0;
-                for (var r = 0; r < m_Rows; r++)
+                for (var r = 0; r < m_MaxBoardSize.Rows; r++)
                 {
-                    for (var c = 0; c < m_Columns; c++)
+                    for (var c = 0; c < m_MaxBoardSize.Columns; c++)
                     {
                         var val = m_GridValues(r, c);
 
@@ -145,9 +141,9 @@ namespace Unity.MLAgents.Extensions.Match3
             {
                 // TODO combine loops? Only difference is inner-most statement.
                 int offset = 0;
-                for (var r = 0; r < m_Rows; r++)
+                for (var r = 0; r < m_MaxBoardSize.Rows; r++)
                 {
-                    for (var c = 0; c < m_Columns; c++)
+                    for (var c = 0; c < m_MaxBoardSize.Columns; c++)
                     {
                         var val = m_GridValues(r, c);
                         for (var i = 0; i < m_OneHotSize; i++)
@@ -165,8 +161,8 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public byte[] GetCompressedObservation()
         {
-            var height = m_Rows;
-            var width = m_Columns;
+            var height = m_MaxBoardSize.Rows;
+            var width = m_MaxBoardSize.Columns;
             var tempTexture = new Texture2D(width, height, TextureFormat.RGB24, false);
             var converter = new OneHotToTextureUtil(height, width);
             var bytesOut = new List<byte>();

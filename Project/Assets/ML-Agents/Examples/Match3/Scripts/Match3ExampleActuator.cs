@@ -39,6 +39,7 @@ namespace Unity.MLAgentsExamples
         int EvalHalfMove(int newRow, int newCol, int newValue, int newSpecial, Direction incomingDirection, int[] pointsByType)
         {
             // This is a essentially a duplicate of AbstractBoard.CheckHalfMove but also counts the points for the move.
+            var currentBoardSize = m_Board.GetCurrentBoardSize();
             int matchedLeft = 0, matchedRight = 0, matchedUp = 0, matchedDown = 0;
             int scoreLeft = 0, scoreRight = 0, scoreUp = 0, scoreDown = 0;
 
@@ -58,7 +59,7 @@ namespace Unity.MLAgentsExamples
 
             if (incomingDirection != Direction.Left)
             {
-                for (var c = newCol + 1; c < m_Board.Columns; c++)
+                for (var c = newCol + 1; c < currentBoardSize.Columns; c++)
                 {
                     if (m_Board.GetCellType(newRow, c) == newValue)
                     {
@@ -72,7 +73,7 @@ namespace Unity.MLAgentsExamples
 
             if (incomingDirection != Direction.Down)
             {
-                for (var r = newRow + 1; r < m_Board.Rows; r++)
+                for (var r = newRow + 1; r < currentBoardSize.Rows; r++)
                 {
                     if (m_Board.GetCellType(r, newCol) == newValue)
                     {
