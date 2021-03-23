@@ -39,7 +39,7 @@ namespace Unity.MLAgents
         {
             if (m_Buffer.Count < m_MaxSize)
             {
-                m_Buffer.Append(new Transition() {state=state, action=info.storedActions, reward=info.reward, nextState=nextState});
+                m_Buffer.Add(new Transition() {state=state, action=info.storedActions, reward=info.reward, nextState=nextState});
             }
             else
             {
