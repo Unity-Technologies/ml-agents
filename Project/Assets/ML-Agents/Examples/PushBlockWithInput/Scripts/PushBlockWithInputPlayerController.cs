@@ -18,8 +18,8 @@ using UnityEngine.InputSystem;
 /// need to share the instance of the generated C# <see cref="IInputActionCollection2"/> (named <see cref="m_PushBlockActions"/>
 /// here) in order to ensure that all of your actions are bound correctly for ml-agents training and inference.
 /// </summary>
-    public class PushBlockWithInputPlayerController : MonoBehaviour, IInputActionAssetProvider
-    {
+public class PushBlockWithInputPlayerController : MonoBehaviour, IInputActionAssetProvider
+{
 
     PushBlockWithInputSettings m_PushBlockSettings;
     public float JumpTime = 0.5f;
@@ -111,4 +111,4 @@ using UnityEngine.InputSystem;
         LazyInitializeActions();
         return (m_PushBlockActions.asset, m_PushBlockActions);
     }
-    }
+}
