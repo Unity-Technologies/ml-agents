@@ -60,7 +60,7 @@ namespace Unity.MLAgents
             // barracudaModel = ModelLoader.Load(new NNModel());
             barracudaModel = ModelLoader.Load(model);
             m_Model = barracudaModel;
-            WorkerFactory.Type executionDevice = WorkerFactory.Type.CSharpBurst;
+            WorkerFactory.Type executionDevice = WorkerFactory.Type.CSharp;
             m_Engine = WorkerFactory.CreateWorker(executionDevice, barracudaModel, m_Verbose);
 
             m_InferenceInputs = barracudaModel.GetInputTensors();
