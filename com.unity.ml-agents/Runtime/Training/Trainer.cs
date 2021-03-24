@@ -9,11 +9,11 @@ namespace Unity.MLAgents
 {
     internal class TrainerConfig
     {
-        public int bufferSize = 100;
-        public int batchSize = 4;
-        public float gamma = 0.99f;
-        public float learningRate = 0.0005f;
-        public int updateTargetFreq = 200;
+        public int bufferSize = 1024;
+        public int batchSize = 128;
+        public float gamma = 0.9f;
+        public float learningRate = 0.005f;
+        // public int updateTargetFreq = 200;
     }
 
     internal class Trainer: IDisposable

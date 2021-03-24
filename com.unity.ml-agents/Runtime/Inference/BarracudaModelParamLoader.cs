@@ -5,7 +5,6 @@ using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
-using UnityEngine;
 
 namespace Unity.MLAgents.Inference
 {
