@@ -65,7 +65,7 @@ namespace Unity.MLAgents
             }
 
             var samples = m_Buffer.SampleBatch(m_Config.batchSize);
-            // m_ModelRunner.UpdateModel(samples);
+            m_ModelRunner.UpdateModel(samples);
 
             // Update target network
             // if (m_TrainingStep % m_Config.updateTargetFreq == 0)

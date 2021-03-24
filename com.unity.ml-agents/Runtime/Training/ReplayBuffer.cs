@@ -67,7 +67,7 @@ namespace Unity.MLAgents
             var samples = new List<Transition>(batchSize);
             for (var i = 0; i < batchSize; i++)
             {
-                samples.Add(m_Buffer[m_CurrentIndex-1]);
+                samples.Add(m_Buffer[0]);
             }
             return samples;
         }
