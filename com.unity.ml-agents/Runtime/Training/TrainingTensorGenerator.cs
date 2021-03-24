@@ -257,11 +257,8 @@ namespace Unity.MLAgents.Inference
 
         public void Generate(TensorProxy tensorProxy, int batchSize, IList<Transition> transitions, TensorProxy trainingState)
         {
-            TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
-            for (var index = 0; index < batchSize; index++)
-            {
-                TensorUtils.CopyTensor(trainingState, tensorProxy);
-            }
+            TensorUtils.ResizeTensor(tensorProxy, trainingState.data.batch, m_Allocator);
+            TensorUtils.CopyTensor(trainingState, tensorProxy);
         }
     }
 }
