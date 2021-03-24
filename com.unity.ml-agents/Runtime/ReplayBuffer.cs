@@ -20,7 +20,7 @@ namespace Unity.MLAgents
     internal class ReplayBuffer
     {
         List<Transition> m_Buffer;
-        int currentIndex;
+        int m_CurrentIndex;
         int m_MaxSize;
 
         public ReplayBuffer(int maxSize)
@@ -43,10 +43,10 @@ namespace Unity.MLAgents
             }
             else
             {
-                m_Buffer[currentIndex] = new Transition() {state=state, action=info.storedActions, reward=info.reward, nextState=nextState};
+                m_Buffer[m_CurrentIndex] = new Transition() {state=state, action=info.storedActions, reward=info.reward, nextState=nextState};
             }
-            currentIndex += 1;
-            currentIndex = currentIndex % m_MaxSize;
+            m_CurrentIndex += 1;
+            m_CurrentIndex = m_CurrentIndex % m_MaxSize;
         }
 
         public List<Transition> SampleBatch(int batchSize)
@@ -56,6 +56,17 @@ namespace Unity.MLAgents
             for (var i = 0; i < batchSize; i++)
             {
                 samples.Add(m_Buffer[indexList[i]]);
+            }
+            return samples;
+        }
+
+        public List<Transition> SampleDummyBatch(int batchSize)
+        {
+            var indexList = SampleIndex(batchSize);
+            var samples = new List<Transition>(batchSize);
+            for (var i = 0; i < batchSize; i++)
+            {
+                samples.Add(m_Buffer[m_CurrentIndex-1]);
             }
             return samples;
         }

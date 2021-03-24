@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.Barracuda;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents;
+using UnityEngine;
 
 namespace Unity.MLAgents.Inference
 {
@@ -30,10 +31,11 @@ namespace Unity.MLAgents.Inference
             var model = (Model)barracudaModel;
 
             // Generator for Inputs
-            m_Dict[TensorNames.ActionInput] =
-                new ActionInputGenerator(allocator);
-            m_Dict[TensorNames.RewardInput] =
-                new RewardInputGenerator(allocator);
+            m_Dict[TensorNames.ActionInput] = new ActionInputGenerator(allocator);
+            m_Dict[TensorNames.TargetInput] = new RewardInputGenerator(allocator);
+            m_Dict[TensorNames.RewardInput] = new RewardInputGenerator(allocator);
+            m_Dict[TensorNames.LearningRate] = new ConstantGenerator(allocator, 0.0001f);
+            m_Dict[TensorNames.BatchSizePlaceholder] = new TrainingBatchSizeGenerator(allocator);
 
             // Generators for Outputs
         }
@@ -50,7 +52,7 @@ namespace Unity.MLAgents.Inference
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated generator.</exception>
         public void GenerateTensors(
-            IReadOnlyList<TensorProxy> tensors, int currentBatchSize, IList<Transition> transitions)
+            IReadOnlyList<TensorProxy> tensors, int currentBatchSize, IList<Transition> transitions, bool training=false)
         {
             for (var tensorIndex = 0; tensorIndex < tensors.Count; tensorIndex++)
             {
@@ -60,7 +62,17 @@ namespace Unity.MLAgents.Inference
                     throw new UnityAgentsException(
                         $"Unknown tensorProxy expected as input : {tensor.name}");
                 }
-                m_Dict[tensor.name].Generate(tensor, currentBatchSize, transitions);
+                if (tensor.name.StartsWith("obs_") || tensor.name == TensorNames.BatchSizePlaceholder)
+                {
+                    if (training == true)
+                    {
+                        m_Dict[tensor.name].Generate(tensor, currentBatchSize, transitions);
+                    }
+                }
+                else
+                {
+                    m_Dict[tensor.name].Generate(tensor, currentBatchSize, transitions);
+                }
             }
         }
 
@@ -68,7 +80,7 @@ namespace Unity.MLAgents.Inference
         {
             for (var sensorIndex = 0; sensorIndex < transition.state.Count; sensorIndex++)
             {
-                var obsGen = new CopyNextObservationTensorsGenerator(allocator);
+                var obsGen = new CopyObservationTensorsGenerator(allocator);
                 var obsGenName = TensorNames.GetObservationName(sensorIndex);
                 obsGen.SetSensorIndex(sensorIndex);
                 m_Dict[obsGenName] = obsGen;
@@ -76,7 +88,7 @@ namespace Unity.MLAgents.Inference
 
             for (var sensorIndex = 0; sensorIndex < transition.nextState.Count; sensorIndex++)
             {
-                var obsGen = new CopyObservationTensorsGenerator(allocator);
+                var obsGen = new CopyNextObservationTensorsGenerator(allocator);
                 var obsGenName = TensorNames.GetNextObservationName(sensorIndex);
                 obsGen.SetSensorIndex(sensorIndex);
                 m_Dict[obsGenName] = obsGen;
@@ -120,6 +132,7 @@ namespace Unity.MLAgents.Inference
             }
         }
     }
+
     internal class RewardInputGenerator: TrainingTensorGenerator.ITrainingGenerator
     {
         readonly ITensorAllocator m_Allocator;
@@ -138,6 +151,7 @@ namespace Unity.MLAgents.Inference
             }
         }
     }
+
     internal class CopyObservationTensorsGenerator: TrainingTensorGenerator.ITrainingGenerator
     {
         readonly ITensorAllocator m_Allocator;
@@ -163,6 +177,7 @@ namespace Unity.MLAgents.Inference
             }
         }
     }
+
     internal class CopyNextObservationTensorsGenerator: TrainingTensorGenerator.ITrainingGenerator
     {
         readonly ITensorAllocator m_Allocator;
@@ -188,4 +203,44 @@ namespace Unity.MLAgents.Inference
             }
         }
     }
+
+    internal class ConstantGenerator: TrainingTensorGenerator.ITrainingGenerator
+    {
+        readonly ITensorAllocator m_Allocator;
+        float m_Const;
+
+        public ConstantGenerator(ITensorAllocator allocator, float c)
+        {
+            m_Allocator = allocator;
+            m_Const = c;
+        }
+
+        public void Generate(TensorProxy tensorProxy, int batchSize, IList<Transition> transitions)
+        {
+            TensorUtils.ResizeTensor(tensorProxy, 1, m_Allocator);
+            for (var index = 0; index < batchSize; index++)
+            {
+                tensorProxy.data?.Dispose();
+                tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1));
+                tensorProxy.data[0] = m_Const;
+            }
+        }
+    }
+    internal class TrainingBatchSizeGenerator : TrainingTensorGenerator.ITrainingGenerator
+    {
+        readonly ITensorAllocator m_Allocator;
+
+        public TrainingBatchSizeGenerator(ITensorAllocator allocator)
+        {
+            m_Allocator = allocator;
+        }
+
+        public void Generate(TensorProxy tensorProxy, int batchSize, IList<Transition> transitions)
+        {
+            tensorProxy.data?.Dispose();
+            tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1));
+            tensorProxy.data[0] = batchSize;
+        }
+    }
+
 }

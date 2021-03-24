@@ -4,6 +4,7 @@ using System;
 using Unity.MLAgents.Actuators;
 using Unity.Barracuda;
 using UnityEngine;
+
 namespace Unity.MLAgents
 {
     internal class TrainerConfig
@@ -28,8 +29,8 @@ namespace Unity.MLAgents
             m_Config = config ?? new TrainerConfig();
             m_behaviorName = behaviorName;
             m_Buffer = new ReplayBuffer(m_Config.bufferSize);
-            m_ModelRunner = new TrainingModelRunner(actionSpec, model, seed);
-            m_TargetModelRunner = new TrainingModelRunner(actionSpec, model, seed);
+            m_ModelRunner = new TrainingModelRunner(actionSpec, model, m_Buffer, seed);
+            m_TargetModelRunner = new TrainingModelRunner(actionSpec, model, m_Buffer, seed);
             // copy weights from model to target model
             // m_TargetModelRunner.model.weights = m_ModelRunner.model.weights
             Academy.Instance.TrainerUpdate += Update;

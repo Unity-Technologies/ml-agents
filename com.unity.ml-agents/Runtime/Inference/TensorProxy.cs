@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Unity.Barracuda;
 using Unity.MLAgents.Inference.Utils;
@@ -155,6 +156,38 @@ namespace Unity.MLAgents.Inference
             for (var i = 0; i < tensorProxy.data.length; i++)
             {
                 tensorProxy.data[i] = (float)randomNormal.NextDouble();
+            }
+        }
+
+        public static void RandomInitialize(
+            TensorProxy tensorProxy, RandomNormal randomNormal, ITensorAllocator allocator)
+        {
+            if (tensorProxy.data == null)
+            {
+                tensorProxy.data = allocator.Alloc(
+                    new TensorShape(tensorProxy.shape.Select(x => (int)x).ToArray()));
+            }
+
+            for (var i = 0; i < tensorProxy.data.length; i++)
+            {
+                tensorProxy.data[i] = (float)randomNormal.NextDouble();
+            }
+        }
+
+        public static void CopyTensor(TensorProxy source, TensorProxy target)
+        {
+            for (var b = 0; b < source.data.batch; b++)
+            {
+                for (var i = 0; i < source.data.height; i++)
+                {
+                    for (var j = 0; j < source.data.width; j++)
+                    {
+                        for(var k = 0; k < source.data.channels; k++)
+                        {
+                            target.data[b, i, j, k] = source.data[b, i, j, k];
+                        }
+                    }
+                }
             }
         }
     }

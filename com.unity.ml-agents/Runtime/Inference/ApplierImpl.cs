@@ -85,6 +85,50 @@ namespace Unity.MLAgents.Inference
         }
     }
 
+    internal class MaxActionOutputApplier : TensorApplier.IApplier
+    {
+        readonly ActionSpec m_ActionSpec;
+
+
+        public MaxActionOutputApplier(ActionSpec actionSpec, int seed, ITensorAllocator allocator)
+        {
+            m_ActionSpec = actionSpec;
+        }
+
+        public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
+        {
+            var agentIndex = 0;
+            var actionSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
+
+            for (var i = 0; i < actionIds.Count; i++)
+            {
+                var agentId = actionIds[i];
+                if (lastActions.ContainsKey(agentId))
+                {
+                    var actionBuffer = lastActions[agentId];
+                    if (actionBuffer.IsEmpty())
+                    {
+                        actionBuffer = new ActionBuffers(m_ActionSpec);
+                        lastActions[agentId] = actionBuffer;
+                    }
+                    var discreteBuffer = actionBuffer.DiscreteActions;
+                    var maxIndex = 0;
+                    var maxValue = 0;
+                    for (var j = 0; j < actionSize; j++)
+                    {
+                        var value = (int)tensorProxy.data[agentIndex, j];
+                        if (value > maxValue)
+                        {
+                            maxIndex = j;
+                        }
+                    }
+                    discreteBuffer[0] = maxIndex;
+                }
+                agentIndex++;
+            }
+        }
+    }
+
 
     /// <summary>
     /// The Applier for the Discrete Action output tensor. Uses multinomial to sample discrete

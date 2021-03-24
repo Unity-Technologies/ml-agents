@@ -53,6 +53,11 @@ namespace Unity.MLAgents.Policies
             {
                 m_buffer.Push(m_LastInfo, m_LastObservations, m_CurrentObservations);
             }
+            else if (m_buffer.Count == 0)
+            {
+                // hack
+                m_buffer.Push(info, m_CurrentObservations, m_CurrentObservations);
+            }
 
             m_LastInfo = info;
             m_LastObservations = m_CurrentObservations;

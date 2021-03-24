@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Barracuda;
 using FailedCheck = Unity.MLAgents.Inference.BarracudaModelParamLoader.FailedCheck;
+using UnityEngine;
 
 namespace Unity.MLAgents.Inference
 {
@@ -67,7 +68,7 @@ namespace Unity.MLAgents.Inference
 
             foreach (var input in model.inputs)
             {
-                if (!TensorNames.IsTrainingInputNames(input.name))
+                if (TensorNames.IsInferenceInputNames(input.name))
                 {
                     tensors.Add(new TensorProxy
                     {
@@ -104,7 +105,7 @@ namespace Unity.MLAgents.Inference
 
             foreach (var input in model.inputs)
             {
-                if (TensorNames.IsTrainingInputNames(input.name) || input.name.StartsWith(TensorNames.ObservationPlaceholderPrefix))
+                if (TensorNames.IsTrainingInputNames(input.name))
                 {
                     tensors.Add(new TensorProxy
                     {
@@ -119,6 +120,49 @@ namespace Unity.MLAgents.Inference
             tensors.Sort((el1, el2) => el1.name.CompareTo(el2.name));
 
             return tensors;
+        }
+
+        public static IReadOnlyList<TensorProxy> GetModelParamTensors(this Model model)
+        {
+            var tensors = new List<TensorProxy>();
+
+            if (model == null)
+                return tensors;
+
+            foreach (var input in model.inputs)
+            {
+                if (TensorNames.IsModelParamNames(input.name))
+                {
+                    tensors.Add(new TensorProxy
+                    {
+                        name = input.name,
+                        valueType = TensorProxy.TensorType.FloatingPoint,
+                        data = null,
+                        shape = GetShape(input)
+                    });
+                }
+            }
+
+            tensors.Sort((el1, el2) => el1.name.CompareTo(el2.name));
+
+            return tensors;
+        }
+
+        // hack the shape for now
+        public static long[] GetShape(Model.Input tensor)
+        {
+            if (tensor.name == "b_2")
+            {
+                return new long[] {1, 1, 1, 1, 1, 1, 1, 3}; //output
+            }
+            else if (tensor.name.StartsWith("b_"))
+            {
+                return new long[] {1, 1, 1, 1, 1, 1, 1, 128}; //hidden
+            }
+            else
+            {
+                return tensor.shape.Select(i => (long)i).ToArray();
+            }
         }
 
         /// <summary>

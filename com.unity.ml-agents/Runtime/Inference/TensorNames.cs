@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System;
 namespace Unity.MLAgents.Inference
 {
     /// <summary>
@@ -33,6 +36,12 @@ namespace Unity.MLAgents.Inference
         public const string ActionInput = "action_in";
         public const string RewardInput = "reward";
         public const string NextObservationPlaceholderPrefix = "next_obs_";
+        public const string TargetInput = "target";
+        public const string LearningRate = "lr";
+        public const string InputWeightsPrefix = "w_";
+        public const string InputBiasPrefix = "b_";
+        public const string OutputWeightsPrefix = "nw_";
+        public const string OutputBiasPrefix = "nb_";
 
         /// <summary>
         /// Returns the name of the visual observation with a given index
@@ -41,6 +50,42 @@ namespace Unity.MLAgents.Inference
         {
             return VisualObservationPlaceholderPrefix + index;
         }
+
+        static HashSet<string> InferenceInput = new HashSet<string>
+            {
+                BatchSizePlaceholder,
+                SequenceLengthPlaceholder,
+                VectorObservationPlaceholder,
+                RecurrentInPlaceholder,
+                VisualObservationPlaceholderPrefix,
+                ObservationPlaceholderPrefix,
+                PreviousActionPlaceholder,
+                ActionMaskPlaceholder,
+                RandomNormalEpsilonPlaceholder
+            };
+        static HashSet<string> InferenceInputPrefix = new HashSet<string>
+            {
+                VisualObservationPlaceholderPrefix,
+                ObservationPlaceholderPrefix,
+            };
+        static HashSet<string> TrainingInput = new HashSet<string>
+            {
+                ActionInput,
+                RewardInput,
+                TargetInput,
+                LearningRate,
+                BatchSizePlaceholder,
+            };
+        static HashSet<string> TrainingInputPrefix = new HashSet<string>
+            {
+                ObservationPlaceholderPrefix,
+                NextObservationPlaceholderPrefix,
+            };
+         static HashSet<string> ModelParamPrefix = new HashSet<string>
+            {
+                InputWeightsPrefix,
+                InputBiasPrefix,
+            };
 
         /// <summary>
         /// Returns the name of the observation with a given index
@@ -54,9 +99,27 @@ namespace Unity.MLAgents.Inference
             return ObservationPlaceholderPrefix + index;
         }
 
+        public static string GetInputWeightName(int index)
+        {
+            return InputWeightsPrefix + index;
+        }
+
+        public static string GetInputBiasName(int index)
+        {
+            return InputBiasPrefix + index;
+        }
+
+        public static bool IsInferenceInputNames(string name)
+        {
+            return InferenceInput.Contains(name) || InferenceInputPrefix.Any(s=>name.Contains(s));
+        }
         public static bool IsTrainingInputNames(string name)
         {
-            return name == ActionInput || name == RewardInput || name.StartsWith(NextObservationPlaceholderPrefix);
+            return TrainingInput.Contains(name) || TrainingInputPrefix.Any(s=>name.Contains(s));
+        }
+        public static bool IsModelParamNames(string name)
+        {
+            return ModelParamPrefix.Any(s=>name.Contains(s));
         }
     }
 }

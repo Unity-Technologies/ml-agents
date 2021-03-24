@@ -7,6 +7,7 @@ using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
+using Unity.MLAgents.Inference.Utils;
 
 namespace Unity.MLAgents
 {
@@ -31,6 +32,7 @@ namespace Unity.MLAgents
         string[] m_TrainingOutputNames;
         IReadOnlyList<TensorProxy> m_InferenceInputs;
         IReadOnlyList<TensorProxy> m_TrainingInputs;
+        IReadOnlyList<TensorProxy> m_ModelParametersInputs;
         List<TensorProxy> m_InferenceOutputs;
         Dictionary<string, Tensor> m_InputsByName;
         Dictionary<int, List<float>> m_Memories = new Dictionary<int, List<float>>();
@@ -39,6 +41,8 @@ namespace Unity.MLAgents
 
         bool m_ObservationsInitialized;
         bool m_TrainingObservationsInitialized;
+
+        ReplayBuffer m_Buffer;
 
         /// <summary>
         /// Initializes the Brain with the Model that it will use when selecting actions for
@@ -55,6 +59,7 @@ namespace Unity.MLAgents
         public TrainingModelRunner(
             ActionSpec actionSpec,
             NNModel model,
+            ReplayBuffer buffer,
             int seed = 0)
         {
             Model barracudaModel;
@@ -64,11 +69,13 @@ namespace Unity.MLAgents
             // barracudaModel = ModelLoader.Load(new NNModel());
             barracudaModel = ModelLoader.Load(model);
             m_Model = barracudaModel;
-            WorkerFactory.Type executionDevice = WorkerFactory.Type.CSharp;
+            WorkerFactory.Type executionDevice = WorkerFactory.Type.CSharpBurst;
             m_Engine = WorkerFactory.CreateWorker(executionDevice, barracudaModel, m_Verbose);
 
             m_InferenceInputs = barracudaModel.GetInputTensors();
             m_TrainingInputs = barracudaModel.GetTrainingInputTensors();
+            m_ModelParametersInputs = barracudaModel.GetModelParamTensors();
+            InitializeModelParam();
             m_OutputNames = barracudaModel.GetOutputNames();
             m_TrainingOutputNames = barracudaModel.GetTrainingOutputNames();
             m_TensorGenerator = new TensorGenerator(
@@ -79,14 +86,40 @@ namespace Unity.MLAgents
                 actionSpec, seed, m_TensorAllocator, m_Memories, barracudaModel);
             m_InputsByName = new Dictionary<string, Tensor>();
             m_InferenceOutputs = new List<TensorProxy>();
+            m_Buffer = buffer;
         }
 
-        void PrepareBarracudaInputs(IReadOnlyList<TensorProxy> infInputs)
+        void InitializeModelParam()
+        {
+            RandomNormal randomNormal = new RandomNormal(10);
+            foreach (var tensor in m_ModelParametersInputs)
+            {
+                TensorUtils.RandomInitialize(tensor, randomNormal, m_TensorAllocator);
+            }
+        }
+
+        void PrepareBarracudaInputs(IReadOnlyList<TensorProxy> infInputs, bool training=false)
         {
             m_InputsByName.Clear();
             for (var i = 0; i < infInputs.Count; i++)
             {
                 var inp = infInputs[i];
+                m_InputsByName[inp.name] = inp.data;
+            }
+
+            for (var i = 0; i < m_TrainingInputs.Count; i++)
+            {
+                var inp = m_TrainingInputs[i];
+                if (m_InputsByName.ContainsKey(inp.name) && training==false)
+                {
+                    continue;
+                }
+                m_InputsByName[inp.name] = inp.data;
+            }
+
+            for (var i = 0; i < m_ModelParametersInputs.Count; i++)
+            {
+                var inp = m_ModelParametersInputs[i];
                 m_InputsByName[inp.name] = inp.data;
             }
         }
@@ -168,9 +201,17 @@ namespace Unity.MLAgents
                 m_TensorGenerator.InitializeObservations(firstInfo.sensors, m_TensorAllocator);
                 m_ObservationsInitialized = true;
             }
+            if (!m_TrainingObservationsInitialized)
+            {
+                // Just grab the first agent in the collection (any will suffice, really).
+                // We check for an empty Collection above, so this will always return successfully.
+                m_TrainingTensorGenerator.InitializeObservations(m_Buffer.SampleDummyBatch(1)[0], m_TensorAllocator);
+                m_TrainingObservationsInitialized = true;
+            }
 
             // Prepare the input tensors to be feed into the engine
             m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_Infos);
+            m_TrainingTensorGenerator.GenerateTensors(m_TrainingInputs, currentBatchSize, m_Buffer.SampleDummyBatch(currentBatchSize));
 
             PrepareBarracudaInputs(m_InferenceInputs);
 
@@ -201,9 +242,9 @@ namespace Unity.MLAgents
                 m_TrainingTensorGenerator.InitializeObservations(transitions[0], m_TensorAllocator);
                 m_TrainingObservationsInitialized = true;
             }
-            m_TrainingTensorGenerator.GenerateTensors(m_TrainingInputs, currentBatchSize, transitions);
+            m_TrainingTensorGenerator.GenerateTensors(m_TrainingInputs, currentBatchSize, transitions, true);
 
-            PrepareBarracudaInputs(m_TrainingInputs);
+            PrepareBarracudaInputs(m_TrainingInputs, true);
 
             // Execute the Model
             m_Engine.Execute(m_InputsByName);
@@ -211,7 +252,7 @@ namespace Unity.MLAgents
             FetchBarracudaOutputs(m_TrainingOutputNames);
 
             // Update the model
-            // m_Model.weights = m_InferenceOutputs.weights
+            // CopyWeights(w_0, nw_0)
         }
 
         public ActionBuffers GetAction(int agentId)

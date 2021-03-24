@@ -77,7 +77,8 @@ namespace Unity.MLAgents.Inference
                 }
                 if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
                 {
-                    m_Dict[tensorName] = new DiscreteActionOutputApplier(actionSpec, seed, allocator);
+                    // m_Dict[tensorName] = new DiscreteActionOutputApplier(actionSpec, seed, allocator);
+                    m_Dict[tensorName] = new MaxActionOutputApplier(actionSpec, seed, allocator);
                 }
             }
             m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
