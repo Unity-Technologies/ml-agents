@@ -26,6 +26,7 @@ namespace Unity.MLAgents.Policies
         ReplayBuffer m_buffer;
 
         IReadOnlyList<TensorProxy> m_CurrentObservations;
+        bool m_HasLastObservation;
 
         /// <inheritdoc />
         public TrainingPolicy(
@@ -38,8 +39,10 @@ namespace Unity.MLAgents.Policies
             m_ModelRunner = trainer.TrainerModelRunner;
             m_buffer = trainer.Buffer;
             m_CurrentObservations = m_ModelRunner.GetInputTensors();
+            m_LastObservations = m_ModelRunner.GetInputTensors();
             m_BehaviorName = behaviorName;
             m_ActionSpec = actionSpec;
+            m_HasLastObservation = false;
         }
 
         /// <inheritdoc />
@@ -49,23 +52,27 @@ namespace Unity.MLAgents.Policies
             m_ModelRunner.PutObservations(info, sensors);
             m_ModelRunner.GetObservationTensors(m_CurrentObservations, info, sensors);
 
-            if (m_LastObservations != null)
+            if (m_HasLastObservation)
             {
                 m_buffer.Push(m_LastInfo, m_LastObservations, m_CurrentObservations);
             }
             else if (m_buffer.Count == 0)
             {
-                // hack
+                // force push a sample so that buffer can generate dummy samples
                 m_buffer.Push(info, m_CurrentObservations, m_CurrentObservations);
             }
 
             m_LastInfo = info;
-            m_LastObservations = m_CurrentObservations;
+            for (var i = 0; i < m_CurrentObservations.Count; i++)
+            {
+                TensorUtils.CopyTensor(m_CurrentObservations[i], m_LastObservations[i]);
+            }
+            m_HasLastObservation = true;
 
             if (info.done == true)
             {
                 m_buffer.Push(info, m_CurrentObservations, m_CurrentObservations); // dummy next_state
-                m_LastObservations = null;
+                m_HasLastObservation = false;
             }
         }
 
