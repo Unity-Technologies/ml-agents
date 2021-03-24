@@ -159,21 +159,6 @@ namespace Unity.MLAgents.Inference
             }
         }
 
-        public static void RandomInitialize(
-            TensorProxy tensorProxy, RandomNormal randomNormal, ITensorAllocator allocator)
-        {
-            if (tensorProxy.data == null)
-            {
-                tensorProxy.data = allocator.Alloc(
-                    new TensorShape(tensorProxy.shape.Select(x => (int)x).ToArray()));
-            }
-
-            for (var i = 0; i < tensorProxy.data.length; i++)
-            {
-                tensorProxy.data[i] = (float)randomNormal.NextDouble();
-            }
-        }
-
         public static void CopyTensor(TensorProxy source, TensorProxy target)
         {
             for (var b = 0; b < source.data.batch; b++)

@@ -29,19 +29,24 @@ namespace Unity.MLAgents.Inference
 
         // Deprecated TensorNames entries for backward compatibility
         public const string IsContinuousControlDeprecated = "is_continuous_control";
-        public const string ActionOutputDeprecated = "action";
+        public const string ActionOutputDeprecated = "action_";
         public const string ActionOutputShapeDeprecated = "action_output_shape";
 
         // Tensors for in-editor training
-        public const string ActionInput = "action_in";
+        public const string Observations = "input";
+        public const string ActionInput = "action";
         public const string RewardInput = "reward";
-        public const string NextObservationPlaceholderPrefix = "next_obs_";
-        public const string TargetInput = "target";
+        public const string DoneInput = "done";
+        public const string Gamma = "gamma";
+        public const string NextObservations = "next_state";
         public const string LearningRate = "lr";
-        public const string InputWeightsPrefix = "w_";
-        public const string InputBiasPrefix = "b_";
-        public const string OutputWeightsPrefix = "nw_";
-        public const string OutputBiasPrefix = "nb_";
+        public const string TrainingStateIn = "training_state.1";
+
+
+        public const string TrainingOutput = "output";
+        public const string OuputLoss = "loss";
+        public const string TrainingStateOut = "training_state";
+        public const string InitialTrainingState = "initial_training_state";
 
         /// <summary>
         /// Returns the name of the visual observation with a given index
@@ -51,75 +56,12 @@ namespace Unity.MLAgents.Inference
             return VisualObservationPlaceholderPrefix + index;
         }
 
-        static HashSet<string> InferenceInput = new HashSet<string>
-            {
-                BatchSizePlaceholder,
-                SequenceLengthPlaceholder,
-                VectorObservationPlaceholder,
-                RecurrentInPlaceholder,
-                VisualObservationPlaceholderPrefix,
-                ObservationPlaceholderPrefix,
-                PreviousActionPlaceholder,
-                ActionMaskPlaceholder,
-                RandomNormalEpsilonPlaceholder
-            };
-        static HashSet<string> InferenceInputPrefix = new HashSet<string>
-            {
-                VisualObservationPlaceholderPrefix,
-                ObservationPlaceholderPrefix,
-            };
-        static HashSet<string> TrainingInput = new HashSet<string>
-            {
-                ActionInput,
-                RewardInput,
-                TargetInput,
-                LearningRate,
-                BatchSizePlaceholder,
-            };
-        static HashSet<string> TrainingInputPrefix = new HashSet<string>
-            {
-                ObservationPlaceholderPrefix,
-                NextObservationPlaceholderPrefix,
-            };
-         static HashSet<string> ModelParamPrefix = new HashSet<string>
-            {
-                InputWeightsPrefix,
-                InputBiasPrefix,
-            };
-
         /// <summary>
         /// Returns the name of the observation with a given index
         /// </summary>
         public static string GetObservationName(int index)
         {
             return ObservationPlaceholderPrefix + index;
-        }
-        public static string GetNextObservationName(int index)
-        {
-            return ObservationPlaceholderPrefix + index;
-        }
-
-        public static string GetInputWeightName(int index)
-        {
-            return InputWeightsPrefix + index;
-        }
-
-        public static string GetInputBiasName(int index)
-        {
-            return InputBiasPrefix + index;
-        }
-
-        public static bool IsInferenceInputNames(string name)
-        {
-            return InferenceInput.Contains(name) || InferenceInputPrefix.Any(s=>name.Contains(s));
-        }
-        public static bool IsTrainingInputNames(string name)
-        {
-            return TrainingInput.Contains(name) || TrainingInputPrefix.Any(s=>name.Contains(s));
-        }
-        public static bool IsModelParamNames(string name)
-        {
-            return ModelParamPrefix.Any(s=>name.Contains(s));
         }
     }
 }

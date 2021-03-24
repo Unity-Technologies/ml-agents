@@ -49,7 +49,8 @@ namespace Unity.MLAgents.Inference
         /// <returns>The api version of the model</returns>
         public static int GetVersion(this Model model)
         {
-            return (int)model.GetTensorByName(TensorNames.VersionNumber)[0];
+            // return (int)model.GetTensorByName(TensorNames.VersionNumber)[0];
+            return 3;
         }
 
         /// <summary>
@@ -68,16 +69,13 @@ namespace Unity.MLAgents.Inference
 
             foreach (var input in model.inputs)
             {
-                if (TensorNames.IsInferenceInputNames(input.name))
+                tensors.Add(new TensorProxy
                 {
-                    tensors.Add(new TensorProxy
-                    {
-                        name = input.name,
-                        valueType = TensorProxy.TensorType.FloatingPoint,
-                        data = null,
-                        shape = input.shape.Select(i => (long)i).ToArray()
-                    });
-                }
+                    name = input.name,
+                    valueType = TensorProxy.TensorType.FloatingPoint,
+                    data = null,
+                    shape = input.shape.Select(i => (long)i).ToArray()
+                });
             }
 
             foreach (var mem in model.memories)
@@ -105,64 +103,18 @@ namespace Unity.MLAgents.Inference
 
             foreach (var input in model.inputs)
             {
-                if (TensorNames.IsTrainingInputNames(input.name))
+                tensors.Add(new TensorProxy
                 {
-                    tensors.Add(new TensorProxy
-                    {
-                        name = input.name,
-                        valueType = TensorProxy.TensorType.FloatingPoint,
-                        data = null,
-                        shape = input.shape.Select(i => (long)i).ToArray()
-                    });
-                }
+                    name = input.name,
+                    valueType = TensorProxy.TensorType.FloatingPoint,
+                    data = null,
+                    shape = input.shape.Select(i => (long)i).ToArray()
+                });
             }
 
             tensors.Sort((el1, el2) => el1.name.CompareTo(el2.name));
 
             return tensors;
-        }
-
-        public static IReadOnlyList<TensorProxy> GetModelParamTensors(this Model model)
-        {
-            var tensors = new List<TensorProxy>();
-
-            if (model == null)
-                return tensors;
-
-            foreach (var input in model.inputs)
-            {
-                if (TensorNames.IsModelParamNames(input.name))
-                {
-                    tensors.Add(new TensorProxy
-                    {
-                        name = input.name,
-                        valueType = TensorProxy.TensorType.FloatingPoint,
-                        data = null,
-                        shape = GetShape(input)
-                    });
-                }
-            }
-
-            tensors.Sort((el1, el2) => el1.name.CompareTo(el2.name));
-
-            return tensors;
-        }
-
-        // hack the shape for now
-        public static long[] GetShape(Model.Input tensor)
-        {
-            if (tensor.name == "b_2")
-            {
-                return new long[] {1, 1, 1, 1, 1, 1, 1, 3}; //output
-            }
-            else if (tensor.name.StartsWith("b_"))
-            {
-                return new long[] {1, 1, 1, 1, 1, 1, 1, 128}; //hidden
-            }
-            else
-            {
-                return tensor.shape.Select(i => (long)i).ToArray();
-            }
         }
 
         /// <summary>
@@ -237,13 +189,9 @@ namespace Unity.MLAgents.Inference
                 return names.ToArray();
             }
 
-            foreach (var output in model.outputs)
-            {
-                if (output.Contains("weight") || output.Contains("bias"))
-                {
-                    names.Add(output);
-                }
-            }
+            names.Add(TensorNames.TrainingStateOut);
+            names.Add(TensorNames.OuputLoss);
+            names.Add(TensorNames.TrainingOutput);
 
             names.Sort();
 
@@ -429,24 +377,24 @@ namespace Unity.MLAgents.Inference
         public static bool CheckExpectedTensors(this Model model, List<FailedCheck> failedModelChecks)
         {
             // Check the presence of model version
-            var modelApiVersionTensor = model.GetTensorByName(TensorNames.VersionNumber);
-            if (modelApiVersionTensor == null)
-            {
-                failedModelChecks.Add(
-                    FailedCheck.Warning($"Required constant \"{TensorNames.VersionNumber}\" was not found in the model file.")
-                    );
-                return false;
-            }
+            // var modelApiVersionTensor = model.GetTensorByName(TensorNames.VersionNumber);
+            // if (modelApiVersionTensor == null)
+            // {
+            //     failedModelChecks.Add(
+            //         FailedCheck.Warning($"Required constant \"{TensorNames.VersionNumber}\" was not found in the model file.")
+            //         );
+            //     return false;
+            // }
 
             // Check the presence of memory size
-            var memorySizeTensor = model.GetTensorByName(TensorNames.MemorySize);
-            if (memorySizeTensor == null)
-            {
-                failedModelChecks.Add(
-                    FailedCheck.Warning($"Required constant \"{TensorNames.MemorySize}\" was not found in the model file.")
-                    );
-                return false;
-            }
+            // var memorySizeTensor = model.GetTensorByName(TensorNames.MemorySize);
+            // if (memorySizeTensor == null)
+            // {
+            //     failedModelChecks.Add(
+            //         FailedCheck.Warning($"Required constant \"{TensorNames.MemorySize}\" was not found in the model file.")
+            //         );
+            //     return false;
+            // }
 
             // Check the presence of action output tensor
             if (!model.outputs.Contains(TensorNames.ActionOutputDeprecated) &&

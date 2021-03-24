@@ -12,6 +12,7 @@ namespace Unity.MLAgents
         public int bufferSize = 100;
         public int batchSize = 4;
         public float gamma = 0.99f;
+        public float learningRate = 0.0005f;
         public int updateTargetFreq = 200;
     }
 
@@ -29,8 +30,8 @@ namespace Unity.MLAgents
             m_Config = config ?? new TrainerConfig();
             m_behaviorName = behaviorName;
             m_Buffer = new ReplayBuffer(m_Config.bufferSize);
-            m_ModelRunner = new TrainingModelRunner(actionSpec, model, m_Buffer, seed);
-            m_TargetModelRunner = new TrainingModelRunner(actionSpec, model, m_Buffer, seed);
+            m_ModelRunner = new TrainingModelRunner(actionSpec, model, m_Buffer, m_Config, seed);
+            m_TargetModelRunner = new TrainingModelRunner(actionSpec, model, m_Buffer, m_Config, seed);
             // copy weights from model to target model
             // m_TargetModelRunner.model.weights = m_ModelRunner.model.weights
             Academy.Instance.TrainerUpdate += Update;

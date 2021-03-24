@@ -14,6 +14,7 @@ namespace Unity.MLAgents
         public IReadOnlyList<TensorProxy> state;
         public ActionBuffers action;
         public float reward;
+        public bool done;
         public IReadOnlyList<TensorProxy> nextState;
     }
 
@@ -39,11 +40,11 @@ namespace Unity.MLAgents
         {
             if (m_Buffer.Count < m_MaxSize)
             {
-                m_Buffer.Add(new Transition() {state=state, action=info.storedActions, reward=info.reward, nextState=nextState});
+                m_Buffer.Add(new Transition() {state=state, action=info.storedActions, reward=info.reward, done=info.done, nextState=nextState});
             }
             else
             {
-                m_Buffer[m_CurrentIndex] = new Transition() {state=state, action=info.storedActions, reward=info.reward, nextState=nextState};
+                m_Buffer[m_CurrentIndex] = new Transition() {state=state, action=info.storedActions, reward=info.reward, done=info.done, nextState=nextState};
             }
             m_CurrentIndex += 1;
             m_CurrentIndex = m_CurrentIndex % m_MaxSize;

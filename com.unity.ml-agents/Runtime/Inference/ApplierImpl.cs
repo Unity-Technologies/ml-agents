@@ -98,7 +98,7 @@ namespace Unity.MLAgents.Inference
         public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
             var agentIndex = 0;
-            var actionSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
+            var actionSpaceSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
 
             for (var i = 0; i < actionIds.Count; i++)
             {
@@ -114,7 +114,7 @@ namespace Unity.MLAgents.Inference
                     var discreteBuffer = actionBuffer.DiscreteActions;
                     var maxIndex = 0;
                     var maxValue = 0;
-                    for (var j = 0; j < actionSize; j++)
+                    for (var j = 0; j < actionSpaceSize; j++)
                     {
                         var value = (int)tensorProxy.data[agentIndex, j];
                         if (value > maxValue)
@@ -122,7 +122,55 @@ namespace Unity.MLAgents.Inference
                             maxIndex = j;
                         }
                     }
+                    var actionSize = discreteBuffer.Length;
                     discreteBuffer[0] = maxIndex;
+                }
+                agentIndex++;
+            }
+        }
+    }
+
+    internal class ContinuousFromDiscreteOutputApplier : TensorApplier.IApplier
+    {
+        readonly ActionSpec m_ActionSpec;
+        int m_NumDiscretization;
+
+
+        public ContinuousFromDiscreteOutputApplier(ActionSpec actionSpec, int seed, ITensorAllocator allocator, int numDiscretization)
+        {
+            m_ActionSpec = actionSpec;
+            m_NumDiscretization = numDiscretization;
+        }
+
+        public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
+        {
+            var agentIndex = 0;
+            var actionSpaceSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
+
+            for (var i = 0; i < actionIds.Count; i++)
+            {
+                var agentId = actionIds[i];
+                if (lastActions.ContainsKey(agentId))
+                {
+                    var actionBuffer = lastActions[agentId];
+                    if (actionBuffer.IsEmpty())
+                    {
+                        actionBuffer = new ActionBuffers(m_ActionSpec);
+                        lastActions[agentId] = actionBuffer;
+                    }
+                    var continuousBuffer = actionBuffer.ContinuousActions;
+                    var maxIndex = 0;
+                    var maxValue = 0;
+                    for (var j = 0; j < actionSpaceSize; j++)
+                    {
+                        var value = (int)tensorProxy.data[agentIndex, j];
+                        if (value > maxValue)
+                        {
+                            maxIndex = j;
+                        }
+                    }
+                    continuousBuffer[0] = ((maxIndex/m_NumDiscretization)/(m_NumDiscretization-1)/2)-1;
+                    continuousBuffer[1] = ((maxIndex%m_NumDiscretization)/(m_NumDiscretization-1)/2)-1;
                 }
                 agentIndex++;
             }
