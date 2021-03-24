@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
-    public struct BoardSize : IEquatable<BoardSize>
+    public struct BoardSize
     {
         /// <summary>
         /// Number of rows on the board
@@ -26,30 +26,8 @@ namespace Unity.MLAgents.Extensions.Match3
         /// all cells of the same type are assumed to be equivalent.
         /// </summary>
         public int NumSpecialTypes;
-
-
-        public static bool operator ==(BoardSize lhs, BoardSize rhs)
-        {
-            return lhs.Equals(rhs);
-        }
-
-        public static bool operator !=(BoardSize lhs, BoardSize rhs) => !lhs.Equals(rhs);
-
-        public override bool Equals(object other) => other is BoardSize other1 && this.Equals(other1);
-
-        public bool Equals(BoardSize other)
-        {
-            // See https://montemagno.com/optimizing-c-struct-equality-with-iequatable/
-            var thisTuple = (Rows, Columns, NumCellTypes, NumSpecialTypes);
-            var otherTuple = (other.Rows, other.Columns, other.NumCellTypes, other.NumSpecialTypes);
-            return thisTuple.Equals(otherTuple);
-        }
-
-        public override int GetHashCode()
-        {
-            return (Rows, Columns, NumCellTypes, NumSpecialTypes).GetHashCode();
-        }
     }
+
 
     public abstract class AbstractBoard : MonoBehaviour
     {

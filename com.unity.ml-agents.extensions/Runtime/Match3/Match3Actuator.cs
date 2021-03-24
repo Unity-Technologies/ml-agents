@@ -60,7 +60,7 @@ namespace Unity.MLAgents.Extensions.Match3
             {
                 var currentMaxBoardSize = m_Board.GetMaxBoardSize();
 
-                if (currentMaxBoardSize != m_MaxBoardSize)
+                if (!currentMaxBoardSize.Equals(m_MaxBoardSize))
                 {
                     Debug.LogWarning(
                         $"Board shape changes since actuator initialization. This may cause unexpected results. " +
