@@ -65,6 +65,7 @@ namespace Unity.MLAgents.Policies
             m_LastInfo = info;
             for (var i = 0; i < m_CurrentObservations.Count; i++)
             {
+                TensorUtils.ResizeTensor(m_LastObservations[i], 1, m_ModelRunner.Allocator);
                 TensorUtils.CopyTensor(m_CurrentObservations[i], m_LastObservations[i]);
             }
             m_HasLastObservation = true;

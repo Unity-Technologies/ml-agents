@@ -13,7 +13,7 @@ namespace Unity.MLAgents.Inference
         public const string VectorObservationPlaceholder = "vector_observation";
         public const string RecurrentInPlaceholder = "recurrent_in";
         public const string VisualObservationPlaceholderPrefix = "visual_observation_";
-        public const string ObservationPlaceholderPrefix = "obs_";
+        public const string ObservationPlaceholderPrefix = "iobs_";
         public const string PreviousActionPlaceholder = "prev_action";
         public const string ActionMaskPlaceholder = "action_masks";
         public const string RandomNormalEpsilonPlaceholder = "epsilon";
@@ -33,12 +33,12 @@ namespace Unity.MLAgents.Inference
         public const string ActionOutputShapeDeprecated = "action_output_shape";
 
         // Tensors for in-editor training
-        public const string Observations = "input";
+        public const string Observations = "obs_0";
         public const string ActionInput = "action";
         public const string RewardInput = "reward";
         public const string DoneInput = "done";
         public const string Gamma = "gamma";
-        public const string NextObservations = "next_state";
+        public const string NextObservations = "next_obs_0";
         public const string LearningRate = "lr";
         public const string TrainingStateIn = "training_state.1";
 

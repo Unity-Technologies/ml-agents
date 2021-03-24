@@ -80,6 +80,10 @@ namespace Unity.MLAgents.Inference
             m_Dict[TensorNames.RandomNormalEpsilonPlaceholder] =
                 new RandomNormalInputGenerator(seed, allocator);
 
+            var obsGen = new ObservationGenerator(allocator);
+            obsGen.AddSensorIndex(0);
+            m_Dict[TensorNames.Observations] = obsGen;
+
 
             // Generators for Outputs
             if (model.HasContinuousOutputs())

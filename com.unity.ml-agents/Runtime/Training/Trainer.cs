@@ -31,7 +31,7 @@ namespace Unity.MLAgents
             m_behaviorName = behaviorName;
             m_Buffer = new ReplayBuffer(m_Config.bufferSize);
             m_ModelRunner = new TrainingModelRunner(actionSpec, model, m_Buffer, m_Config, seed);
-            m_TargetModelRunner = new TrainingModelRunner(actionSpec, model, m_Buffer, m_Config, seed);
+            // m_TargetModelRunner = new TrainingModelRunner(actionSpec, model, m_Buffer, m_Config, seed);
             // copy weights from model to target model
             // m_TargetModelRunner.model.weights = m_ModelRunner.model.weights
             Academy.Instance.TrainerUpdate += Update;
@@ -65,13 +65,13 @@ namespace Unity.MLAgents
             }
 
             var samples = m_Buffer.SampleBatch(m_Config.batchSize);
-            m_ModelRunner.UpdateModel(samples);
+            // m_ModelRunner.UpdateModel(samples);
 
             // Update target network
-            if (m_TrainingStep % m_Config.updateTargetFreq == 0)
-            {
-                // copy weights
-            }
+            // if (m_TrainingStep % m_Config.updateTargetFreq == 0)
+            // {
+            //     // copy weights
+            // }
 
             m_TrainingStep += 1;
         }

@@ -117,6 +117,33 @@ namespace Unity.MLAgents.Inference
             return tensors;
         }
 
+        // This is for creating a Tensor to store observations/nextObservations in buffer
+        public static IReadOnlyList<TensorProxy> GetTrainingObservationInputTensors(this Model model)
+        {
+            var tensors = new List<TensorProxy>();
+
+            if (model == null)
+                return tensors;
+
+            foreach (var input in model.inputs)
+            {
+                if (input.name == TensorNames.Observations)
+                {
+                    tensors.Add(new TensorProxy
+                    {
+                        name = input.name,
+                        valueType = TensorProxy.TensorType.FloatingPoint,
+                        data = null,
+                        shape = input.shape.Select(i => (long)i).ToArray()
+                    });
+                }
+            }
+
+            tensors.Sort((el1, el2) => el1.name.CompareTo(el2.name));
+
+            return tensors;
+        }
+
         /// <summary>
         /// Get number of visual observation inputs to the model.
         /// </summary>
@@ -209,15 +236,16 @@ namespace Unity.MLAgents.Inference
         {
             if (model == null)
                 return false;
-            if (!model.SupportsContinuousAndDiscrete())
-            {
-                return (int)model.GetTensorByName(TensorNames.IsContinuousControlDeprecated)[0] > 0;
-            }
-            else
-            {
-                return model.outputs.Contains(TensorNames.ContinuousActionOutput) &&
-                    (int)model.GetTensorByName(TensorNames.ContinuousActionOutputShape)[0] > 0;
-            }
+            return false;
+            // if (!model.SupportsContinuousAndDiscrete())
+            // {
+            //     return (int)model.GetTensorByName(TensorNames.IsContinuousControlDeprecated)[0] > 0;
+            // }
+            // else
+            // {
+            //     return model.outputs.Contains(TensorNames.ContinuousActionOutput) &&
+            //         (int)model.GetTensorByName(TensorNames.ContinuousActionOutputShape)[0] > 0;
+            // }
         }
 
         /// <summary>
@@ -275,15 +303,16 @@ namespace Unity.MLAgents.Inference
         {
             if (model == null)
                 return false;
-            if (!model.SupportsContinuousAndDiscrete())
-            {
-                return (int)model.GetTensorByName(TensorNames.IsContinuousControlDeprecated)[0] == 0;
-            }
-            else
-            {
-                return model.outputs.Contains(TensorNames.DiscreteActionOutput) &&
-                    (int)model.DiscreteOutputSize() > 0;
-            }
+            return false;
+            // if (!model.SupportsContinuousAndDiscrete())
+            // {
+            //     return (int)model.GetTensorByName(TensorNames.IsContinuousControlDeprecated)[0] == 0;
+            // }
+            // else
+            // {
+            //     return model.outputs.Contains(TensorNames.DiscreteActionOutput) &&
+            //         (int)model.DiscreteOutputSize() > 0;
+            // }
         }
 
         /// <summary>
