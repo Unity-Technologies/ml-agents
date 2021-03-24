@@ -63,7 +63,6 @@ namespace Unity.MLAgents
 
         public List<Transition> SampleDummyBatch(int batchSize)
         {
-            var indexList = SampleIndex(batchSize);
             var samples = new List<Transition>(batchSize);
             for (var i = 0; i < batchSize; i++)
             {
