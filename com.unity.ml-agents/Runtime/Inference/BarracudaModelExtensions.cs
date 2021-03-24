@@ -180,24 +180,6 @@ namespace Unity.MLAgents.Inference
             return names.ToArray();
         }
 
-        public static string[] GetTrainingOutputNames(this Model model)
-        {
-            var names = new List<string>();
-
-            if (model == null)
-            {
-                return names.ToArray();
-            }
-
-            names.Add(TensorNames.TrainingStateOut);
-            names.Add(TensorNames.OuputLoss);
-            names.Add(TensorNames.TrainingOutput);
-
-            names.Sort();
-
-            return names.ToArray();
-        }
-
         /// <summary>
         /// Check if the model has continuous action outputs.
         /// </summary>

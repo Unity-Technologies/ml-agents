@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
+using System.Linq;
+using Unity.MLAgents.Inference.Utils;
+using UnityEngine;
+
 
 
 namespace Unity.MLAgents.Inference
@@ -13,28 +17,10 @@ namespace Unity.MLAgents.Inference
     /// This action takes as input the tensor and the Dictionary of Agent to AgentInfo for
     /// the current batch.
     /// </summary>
-    internal class TensorApplier
+    internal class TrainingForwardTensorApplier
     {
-        /// <summary>
-        /// A tensor Applier's Execute method takes a tensor and a Dictionary of Agent to AgentInfo.
-        /// Uses the data contained inside the tensor to modify the state of the Agent. The Tensors
-        /// are assumed to have the batch size on the first dimension and the agents to be ordered
-        /// the same way in the dictionary and in the tensor.
-        /// </summary>
-        public interface IApplier
-        {
-            /// <summary>
-            /// Applies the values in the Tensor to the Agents present in the agentInfos
-            /// </summary>
-            /// <param name="tensorProxy">
-            /// The Tensor containing the data to be applied to the Agents
-            /// </param>
-            /// <param name="actionIds"> List of Agents Ids that will be updated using the tensor's data</param>
-            /// <param name="lastActions"> Dictionary of AgentId to Actions to be updated</param>
-            void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions);
-        }
 
-        readonly Dictionary<string, IApplier> m_Dict = new Dictionary<string, IApplier>();
+        readonly Dictionary<string, TensorApplier.IApplier> m_Dict = new Dictionary<string, TensorApplier.IApplier>();
 
         /// <summary>
         /// Returns a new TensorAppliers object.
@@ -44,11 +30,10 @@ namespace Unity.MLAgents.Inference
         /// <param name="allocator"> Tensor allocator</param>
         /// <param name="memories">Dictionary of AgentInfo.id to memory used to pass to the inference model.</param>
         /// <param name="barracudaModel"></param>
-        public TensorApplier(
+        public TrainingForwardTensorApplier(
             ActionSpec actionSpec,
             int seed,
             ITensorAllocator allocator,
-            Dictionary<int, List<float>> memories,
             object barracudaModel = null)
         {
             // If model is null, no inference to run and exception is thrown before reaching here.
@@ -56,37 +41,19 @@ namespace Unity.MLAgents.Inference
             {
                 return;
             }
-
-            var model = (Model)barracudaModel;
-            if (!model.SupportsContinuousAndDiscrete())
-            {
-                actionSpec.CheckAllContinuousOrDiscrete();
-            }
             if (actionSpec.NumContinuousActions > 0)
             {
-                var tensorName = model.ContinuousOutputName();
-                m_Dict[tensorName] = new ContinuousActionOutputApplier(actionSpec);
+                throw new System.Exception("Cannot do continuous actions");
             }
-            if (actionSpec.NumDiscreteActions > 0)
+            if (actionSpec.NumDiscreteActions != 1)
             {
-                var tensorName = model.DiscreteOutputName();
-                var modelVersion = model.GetVersion();
-                if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents1_0)
-                {
-                    m_Dict[tensorName] = new LegacyDiscreteActionOutputApplier(actionSpec, seed, allocator);
-                }
-                if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
-                {
-                    m_Dict[tensorName] = new DiscreteActionOutputApplier(actionSpec, seed, allocator);
-                }
+                throw new System.Exception("Cannot do multi discrete actions, only single discrete");
             }
-            m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
 
-            for (var i = 0; i < model?.memories.Count; i++)
-            {
-                m_Dict[model.memories[i].output] =
-                    new BarracudaMemoryOutputApplier(model.memories.Count, i, memories);
-            }
+            var model = (Model)barracudaModel;
+
+
+            m_Dict[TensorNames.TrainingOutput] = new MaxActionOutputApplier(actionSpec, seed, allocator);
         }
 
         /// <summary>
@@ -111,5 +78,53 @@ namespace Unity.MLAgents.Inference
                 m_Dict[tensor.name].Apply(tensor, actionIds, lastActions);
             }
         }
+
     }
+
+    internal class MaxActionOutputApplier : TensorApplier.IApplier
+    {
+        readonly ActionSpec m_ActionSpec;
+
+
+        public MaxActionOutputApplier(ActionSpec actionSpec, int seed, ITensorAllocator allocator)
+        {
+            m_ActionSpec = actionSpec;
+        }
+
+        public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
+        {
+            var agentIndex = 0;
+            var actionSpaceSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
+
+            for (var i = 0; i < actionIds.Count; i++)
+            {
+                var agentId = actionIds[i];
+                if (lastActions.ContainsKey(agentId))
+                {
+                    var actionBuffer = lastActions[agentId];
+                    if (actionBuffer.IsEmpty())
+                    {
+                        actionBuffer = new ActionBuffers(m_ActionSpec);
+                        lastActions[agentId] = actionBuffer;
+                    }
+                    var discreteBuffer = actionBuffer.DiscreteActions;
+                    var maxIndex = 0;
+                    var maxValue = 0;
+                    for (var j = 0; j < actionSpaceSize; j++)
+                    {
+                        var value = (int)tensorProxy.data[agentIndex, j];
+                        if (value > maxValue)
+                        {
+                            maxIndex = j;
+                        }
+                    }
+                    var actionSize = discreteBuffer.Length;
+                    discreteBuffer[0] = maxIndex;
+                }
+                agentIndex++;
+            }
+        }
+
+    }
+
 }
