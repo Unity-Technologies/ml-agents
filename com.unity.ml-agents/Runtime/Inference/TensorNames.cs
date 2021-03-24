@@ -29,6 +29,11 @@ namespace Unity.MLAgents.Inference
         public const string ActionOutputDeprecated = "action";
         public const string ActionOutputShapeDeprecated = "action_output_shape";
 
+        // Tensors for in-editor training
+        public const string ActionInput = "action_in";
+        public const string RewardInput = "reward";
+        public const string NextObservationPlaceholderPrefix = "next_obs_";
+
         /// <summary>
         /// Returns the name of the visual observation with a given index
         /// </summary>
@@ -43,6 +48,15 @@ namespace Unity.MLAgents.Inference
         public static string GetObservationName(int index)
         {
             return ObservationPlaceholderPrefix + index;
+        }
+        public static string GetNextObservationName(int index)
+        {
+            return ObservationPlaceholderPrefix + index;
+        }
+
+        public static bool IsTrainingInputNames(string name)
+        {
+            return name == ActionInput || name == RewardInput || name.StartsWith(NextObservationPlaceholderPrefix);
         }
     }
 }

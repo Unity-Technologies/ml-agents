@@ -2,11 +2,11 @@
 
 using System.Collections.Generic;
 using Unity.Barracuda;
-using UnityEngine.Profiling;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
+using UnityEngine;
 
 namespace Unity.MLAgents
 {
@@ -18,6 +18,7 @@ namespace Unity.MLAgents
 
         ITensorAllocator m_TensorAllocator;
         TensorGenerator m_TensorGenerator;
+        TrainingTensorGenerator m_TrainingTensorGenerator;
         TensorApplier m_TensorApplier;
 
         Model m_Model;
@@ -27,7 +28,9 @@ namespace Unity.MLAgents
         IWorker m_Engine;
         bool m_Verbose = false;
         string[] m_OutputNames;
+        string[] m_TrainingOutputNames;
         IReadOnlyList<TensorProxy> m_InferenceInputs;
+        IReadOnlyList<TensorProxy> m_TrainingInputs;
         List<TensorProxy> m_InferenceOutputs;
         Dictionary<string, Tensor> m_InputsByName;
         Dictionary<int, List<float>> m_Memories = new Dictionary<int, List<float>>();
@@ -35,6 +38,7 @@ namespace Unity.MLAgents
         SensorShapeValidator m_SensorShapeValidator = new SensorShapeValidator();
 
         bool m_ObservationsInitialized;
+        bool m_TrainingObservationsInitialized;
 
         /// <summary>
         /// Initializes the Brain with the Model that it will use when selecting actions for
@@ -64,9 +68,13 @@ namespace Unity.MLAgents
             m_Engine = WorkerFactory.CreateWorker(executionDevice, barracudaModel, m_Verbose);
 
             m_InferenceInputs = barracudaModel.GetInputTensors();
+            m_TrainingInputs = barracudaModel.GetTrainingInputTensors();
             m_OutputNames = barracudaModel.GetOutputNames();
+            m_TrainingOutputNames = barracudaModel.GetTrainingOutputNames();
             m_TensorGenerator = new TensorGenerator(
                 seed, m_TensorAllocator, m_Memories, barracudaModel);
+            m_TrainingTensorGenerator = new TrainingTensorGenerator(
+                seed, m_TensorAllocator, barracudaModel);
             m_TensorApplier = new TensorApplier(
                 actionSpec, seed, m_TensorAllocator, m_Memories, barracudaModel);
             m_InputsByName = new Dictionary<string, Tensor>();
@@ -179,6 +187,33 @@ namespace Unity.MLAgents
             m_OrderedAgentsRequestingDecisions.Clear();
         }
 
+        public void UpdateModel(List<Transition> transitions)
+        {
+            var currentBatchSize = transitions.Count;
+            if (currentBatchSize == 0)
+            {
+                return;
+            }
+            if (!m_TrainingObservationsInitialized)
+            {
+                // Just grab the first agent in the collection (any will suffice, really).
+                // We check for an empty Collection above, so this will always return successfully.
+                m_TrainingTensorGenerator.InitializeObservations(transitions[0], m_TensorAllocator);
+                m_TrainingObservationsInitialized = true;
+            }
+            m_TrainingTensorGenerator.GenerateTensors(m_TrainingInputs, currentBatchSize, transitions);
+
+            PrepareBarracudaInputs(m_TrainingInputs);
+
+            // Execute the Model
+            m_Engine.Execute(m_InputsByName);
+
+            FetchBarracudaOutputs(m_TrainingOutputNames);
+
+            // Update the model
+            // m_Model.weights = m_InferenceOutputs.weights
+        }
+
         public ActionBuffers GetAction(int agentId)
         {
             if (m_LastActionsReceived.ContainsKey(agentId))
@@ -187,5 +222,25 @@ namespace Unity.MLAgents
             }
             return ActionBuffers.Empty;
         }
+
+        // void PrintTensor(TensorProxy tensor)
+        // {
+        //     Debug.Log($"Print tensor {tensor.name}");
+        //     for (var b = 0; b < tensor.data.batch; b++)
+        //     {
+        //         var message = new List<float>();
+        //         for (var i = 0; i < tensor.data.height; i++)
+        //         {
+        //             for (var j = 0; j < tensor.data.width; j++)
+        //             {
+        //                 for(var k = 0; k < tensor.data.channels; k++)
+        //                 {
+        //                     message.Add(tensor.data[b, i, j, k]);
+        //                 }
+        //             }
+        //         }
+        //         Debug.Log(string.Join(", ", message));
+        //     }
+        // }
     }
 }

@@ -49,13 +49,13 @@ namespace Unity.MLAgents
             currentIndex = currentIndex % m_MaxSize;
         }
 
-        public Transition[] SampleBatch(int batchSize)
+        public List<Transition> SampleBatch(int batchSize)
         {
             var indexList = SampleIndex(batchSize);
-            var samples = new Transition[batchSize];
+            var samples = new List<Transition>(batchSize);
             for (var i = 0; i < batchSize; i++)
             {
-                samples[i] = m_Buffer[indexList[i]];
+                samples.Add(m_Buffer[indexList[i]]);
             }
             return samples;
         }

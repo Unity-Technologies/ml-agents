@@ -4,13 +4,12 @@ using System;
 using Unity.MLAgents.Actuators;
 using Unity.Barracuda;
 using UnityEngine;
-
 namespace Unity.MLAgents
 {
     internal class TrainerConfig
     {
-        public int bufferSize = 1024;
-        public int batchSize = 64;
+        public int bufferSize = 100;
+        public int batchSize = 4;
         public float gamma = 0.99f;
         public int updateTargetFreq = 200;
     }
@@ -64,18 +63,7 @@ namespace Unity.MLAgents
             }
 
             var samples = m_Buffer.SampleBatch(m_Config.batchSize);
-            // states = [s.state for s in samples]
-            // actions = [s.action for s in samples]
-            // q_values = policy_net(states).gather(1, actions)
-
-            // next_states = [s.next_state for s in samples]
-            // rewards = [s.reward for s in samples]
-            // next_state_values = target_net(non_final_next_states).max(1)[0]
-            // expected_q_values = (next_state_values * GAMMA) + rewards
-
-            // loss = MSE(q_values, expected_q_values);
-            // m_ModelRunner.model = Barracuda.ModelUpdate(m_ModelRunner.model, loss);
-
+            m_ModelRunner.UpdateModel(samples);
 
             // Update target network
             if (m_TrainingStep % m_Config.updateTargetFreq == 0)

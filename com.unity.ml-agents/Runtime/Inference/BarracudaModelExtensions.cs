@@ -67,13 +67,16 @@ namespace Unity.MLAgents.Inference
 
             foreach (var input in model.inputs)
             {
-                tensors.Add(new TensorProxy
+                if (!TensorNames.IsTrainingInputNames(input.name))
                 {
-                    name = input.name,
-                    valueType = TensorProxy.TensorType.FloatingPoint,
-                    data = null,
-                    shape = input.shape.Select(i => (long)i).ToArray()
-                });
+                    tensors.Add(new TensorProxy
+                    {
+                        name = input.name,
+                        valueType = TensorProxy.TensorType.FloatingPoint,
+                        data = null,
+                        shape = input.shape.Select(i => (long)i).ToArray()
+                    });
+                }
             }
 
             foreach (var mem in model.memories)
@@ -85,6 +88,32 @@ namespace Unity.MLAgents.Inference
                     data = null,
                     shape = TensorUtils.TensorShapeFromBarracuda(mem.shape)
                 });
+            }
+
+            tensors.Sort((el1, el2) => el1.name.CompareTo(el2.name));
+
+            return tensors;
+        }
+
+        public static IReadOnlyList<TensorProxy> GetTrainingInputTensors(this Model model)
+        {
+            var tensors = new List<TensorProxy>();
+
+            if (model == null)
+                return tensors;
+
+            foreach (var input in model.inputs)
+            {
+                if (TensorNames.IsTrainingInputNames(input.name) || input.name.StartsWith(TensorNames.ObservationPlaceholderPrefix))
+                {
+                    tensors.Add(new TensorProxy
+                    {
+                        name = input.name,
+                        valueType = TensorProxy.TensorType.FloatingPoint,
+                        data = null,
+                        shape = input.shape.Select(i => (long)i).ToArray()
+                    });
+                }
             }
 
             tensors.Sort((el1, el2) => el1.name.CompareTo(el2.name));
@@ -147,6 +176,28 @@ namespace Unity.MLAgents.Inference
                 foreach (var mem in model.memories)
                 {
                     names.Add(mem.output);
+                }
+            }
+
+            names.Sort();
+
+            return names.ToArray();
+        }
+
+        public static string[] GetTrainingOutputNames(this Model model)
+        {
+            var names = new List<string>();
+
+            if (model == null)
+            {
+                return names.ToArray();
+            }
+
+            foreach (var output in model.outputs)
+            {
+                if (output.Contains("weight") || output.Contains("bias"))
+                {
+                    names.Add(output);
                 }
             }
 
