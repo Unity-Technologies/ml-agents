@@ -77,7 +77,6 @@ namespace Unity.MLAgents
                 }
             }
             m_InferenceInputs = (IReadOnlyList<TensorProxy>) infTensors;
-            m_TrainingOutputNames = barracudaModel.GetTrainingOutputNames();
             m_TensorGenerator = new TensorGenerator(
                 seed, m_TensorAllocator, m_Memories, barracudaModel);
             m_TrainingTensorGenerator = new TrainingTensorGenerator(
