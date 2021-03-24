@@ -22,13 +22,12 @@ namespace Unity.MLAgents
         ITensorAllocator m_TensorAllocator;
         TensorGenerator m_TensorGenerator;
         TrainingTensorGenerator m_TrainingTensorGenerator;
-        TensorApplier m_TensorApplier;
+        TrainingForwardTensorApplier m_TensorApplier;
 
         Model m_Model;
         IWorker m_Engine;
         bool m_Verbose = false;
         string[] m_OutputNames;
-        string[] m_TrainingOutputNames;
         IReadOnlyList<TensorProxy> m_TrainingInputs;
         List<TensorProxy> m_TrainingOutputs;
         Dictionary<string, Tensor> m_InputsByName;
@@ -69,21 +68,24 @@ namespace Unity.MLAgents
 
             m_TrainingInputs = barracudaModel.GetTrainingInputTensors();
             m_OutputNames = barracudaModel.GetOutputNames();
-            m_TrainingOutputNames = barracudaModel.GetTrainingOutputNames();
+            InitializeTrainingState(barracudaModel);
             m_TensorGenerator = new TensorGenerator(
                 seed, m_TensorAllocator, m_Memories, barracudaModel);
             m_TrainingTensorGenerator = new TrainingTensorGenerator(
                 seed, m_TensorAllocator, config.learningRate, config.gamma, barracudaModel);
-            m_TensorApplier = new TensorApplier(
-                actionSpec, seed, m_TensorAllocator, m_Memories, barracudaModel);
+            m_TensorApplier = new TrainingForwardTensorApplier(
+                actionSpec, seed, m_TensorAllocator, barracudaModel);
             m_InputsByName = new Dictionary<string, Tensor>();
             m_TrainingOutputs = new List<TensorProxy>();
             m_Buffer = buffer;
         }
 
-        void InitializeTrainingState()
+        void InitializeTrainingState(Model barracudaModel)
         {
-            // TODO: initialize m_TrainingState
+            m_TrainingState = new TensorProxy
+            {
+                data = barracudaModel.GetTensorByName(TensorNames.InitialTrainingState)
+            };
         }
 
         void PrepareBarracudaInputs(IReadOnlyList<TensorProxy> infInputs)
@@ -208,10 +210,10 @@ namespace Unity.MLAgents
             // Execute the Model
             m_Engine.Execute(m_InputsByName);
 
-            FetchBarracudaOutputs(m_TrainingOutputNames);
-
             // Update the model
-            // m_TensorApplier.UpdateModel(m_TrainingOutputs, m_OrderedAgentsRequestingDecisions, m_LastActionsReceived);
+            FetchBarracudaOutputs(new string[] { TensorNames.TrainingStateOut });
+            m_TrainingState = m_TrainingOutputs[0];
+
         }
 
         public ActionBuffers GetAction(int agentId)
