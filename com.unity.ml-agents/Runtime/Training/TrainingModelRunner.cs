@@ -10,6 +10,9 @@ using Unity.MLAgents.Sensors;
 using UnityEngine;
 using Unity.MLAgents.Inference.Utils;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+using System;
 
 namespace Unity.MLAgents
 {
@@ -40,6 +43,7 @@ namespace Unity.MLAgents
         bool m_TrainingObservationsInitialized;
 
         ReplayBuffer m_Buffer;
+        string m_ModelFileName = "Assets/model.dat";
 
         /// <summary>
         /// Initializes the Brain with the Model that it will use when selecting actions for
@@ -96,12 +100,19 @@ namespace Unity.MLAgents
         void InitializeTrainingState()
         {
             var initState = m_Model.GetTensorByName(TensorNames.InitialTrainingState);
+            int[] stateShape = initState.shape.ToArray();
+            if (MyTimeScaleSetting.instance.LoadFile)
+            {
+                Debug.Log("load model");
+                initState = LoadModelFromFile(stateShape);
+            }
+
             m_TrainingState = new TensorProxy
             {
                 name = TensorNames.InitialTrainingState,
                 valueType = TensorProxy.TensorType.FloatingPoint,
                 data = initState.DeepCopy(),
-                shape = initState.shape.ToArray().Select(i => (long)i).ToArray()
+                shape = stateShape.Select(i => (long)i).ToArray()
             };
         }
 
@@ -301,5 +312,24 @@ namespace Unity.MLAgents
         //         Debug.Log(string.Join(", ", message));
         //     }
         // }
+
+        public void SaveModelToFile()
+        {
+            float[] array = m_TrainingState.data.ToReadOnlyArray();
+            var byteArray = new byte[array.Length * 4];
+            Buffer.BlockCopy(array, 0, byteArray, 0, byteArray.Length);
+            File.WriteAllBytes(m_ModelFileName, byteArray);
+            Debug.Log($"Save ModelParam: {m_TrainingState.data[0]}, {m_TrainingState.data[1]}, {m_TrainingState.data[2]}, " +
+                $"{m_TrainingState.data[3]}, {m_TrainingState.data[4]}, {m_TrainingState.data[5]}, " +
+                $"{m_TrainingState.data[6]}, {m_TrainingState.data[7]}, {m_TrainingState.data[8]}, {m_TrainingState.data[9]}");
+        }
+
+        public Tensor LoadModelFromFile(int[] shape)
+        {
+            var byteArray = File.ReadAllBytes(m_ModelFileName);
+            float[] array = new float[byteArray.Length / 4];
+            Buffer.BlockCopy(byteArray, 0, array, 0, byteArray.Length);
+            return new Tensor(shape, array);
+        }
     }
 }

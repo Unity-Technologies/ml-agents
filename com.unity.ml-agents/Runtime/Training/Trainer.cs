@@ -75,12 +75,14 @@ namespace Unity.MLAgents
                 return;
             }
 
-            for (int i = 0; i < m_Config.numSamplingAndUpdates; i++)
+            float loss = 0f;
+            for (var i = 0; i < m_Config.numSamplingAndUpdates; i++)
             {
                 var samples = m_Buffer.SampleBatch(m_Config.batchSize);
-                m_ModelRunner.UpdateModel(samples);
+                loss += m_ModelRunner.UpdateModel(samples);
             }
-            UnityEngine.Debug.Log("Update !");
+            Debug.Log($"Loss: {loss/m_Config.numSamplingAndUpdates}");
+            m_ModelRunner.SaveModelToFile();
 
             // Update target network
             // if (m_TrainingStep % m_Config.updateTargetFreq == 0)

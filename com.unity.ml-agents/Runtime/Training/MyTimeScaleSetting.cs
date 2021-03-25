@@ -67,6 +67,14 @@ public class MyTimeScaleSetting : MonoBehaviour
         set { m_Train = value; }
     }
 
+    [SerializeField]
+    bool m_LoadFile = true;
+    public bool LoadFile
+    {
+        get { return m_LoadFile; }
+        set { m_LoadFile = value; }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
