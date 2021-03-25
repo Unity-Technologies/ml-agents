@@ -125,6 +125,7 @@ namespace Unity.MLAgents.Inference
                         if (value > maxValue)
                         {
                             maxIndex = j;
+                            maxValue = value;
                         }
                     }
                     var actionSize = discreteBuffer.Length;
