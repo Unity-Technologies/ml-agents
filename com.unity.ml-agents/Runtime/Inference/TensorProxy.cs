@@ -175,5 +175,16 @@ namespace Unity.MLAgents.Inference
                 }
             }
         }
+
+        public static TensorProxy DeepCopy(TensorProxy tensor)
+        {
+            return new TensorProxy
+            {
+                name = tensor.name,
+                valueType = tensor.valueType,
+                data = tensor.data.DeepCopy(),
+                shape = (long[]) tensor.shape.Clone()
+            };
+        }
     }
 }

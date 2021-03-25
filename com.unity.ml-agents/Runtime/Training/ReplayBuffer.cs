@@ -23,8 +23,9 @@ namespace Unity.MLAgents
         List<Transition> m_Buffer;
         int m_CurrentIndex;
         int m_MaxSize;
+        ITensorAllocator m_Allocator;
 
-        public ReplayBuffer(int maxSize)
+        public ReplayBuffer(int maxSize, ITensorAllocator allocator)
         {
             m_Buffer = new List<Transition>();
             m_Buffer.Capacity = maxSize;
@@ -40,11 +41,23 @@ namespace Unity.MLAgents
         {
             if (m_Buffer.Count < m_MaxSize)
             {
-                m_Buffer.Add(new Transition() { state = state, action = info.storedActions, reward = info.reward, done = info.done, nextState = nextState });
+                m_Buffer.Add(new Transition() {
+                    state = CopyTensorList(state),
+                    action = info.storedActions,
+                    reward = info.reward,
+                    done = info.done,
+                    nextState = CopyTensorList(nextState)
+                });
             }
             else
             {
-                m_Buffer[m_CurrentIndex] = new Transition() { state = state, action = info.storedActions, reward = info.reward, done = info.done, nextState = nextState };
+                m_Buffer[m_CurrentIndex] = new Transition() {
+                    state = CopyTensorList(state),
+                    action = info.storedActions,
+                    reward = info.reward,
+                    done = info.done,
+                    nextState = CopyTensorList(nextState)
+                };
             }
             m_CurrentIndex += 1;
             m_CurrentIndex = m_CurrentIndex % m_MaxSize;
@@ -85,6 +98,16 @@ namespace Unity.MLAgents
                 index.Add(random.Next(m_Buffer.Count));
             }
             return index.ToList();
+        }
+
+        IReadOnlyList<TensorProxy> CopyTensorList(IReadOnlyList<TensorProxy> inputList)
+        {
+            var newList = new List<TensorProxy>();
+            for (var i = 0; i < inputList.Count; i++)
+            {
+                newList.Add(TensorUtils.DeepCopy(inputList[i]));
+            }
+            return (IReadOnlyList<TensorProxy>) newList;
         }
     }
 }
