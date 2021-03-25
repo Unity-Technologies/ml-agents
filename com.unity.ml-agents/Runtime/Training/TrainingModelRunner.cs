@@ -2,17 +2,14 @@
 
 using System.Collections.Generic;
 using Unity.Barracuda;
-using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
-using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
-using Unity.MLAgents.Inference.Utils;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System;
+using UnityEditor;
 
 namespace Unity.MLAgents
 {
@@ -43,7 +40,6 @@ namespace Unity.MLAgents
         bool m_TrainingObservationsInitialized;
 
         ReplayBuffer m_Buffer;
-        string m_ModelFileName = "Assets/model.dat";
 
         /// <summary>
         /// Initializes the Brain with the Model that it will use when selecting actions for
@@ -101,10 +97,11 @@ namespace Unity.MLAgents
         {
             var initState = m_Model.GetTensorByName(TensorNames.InitialTrainingState);
             int[] stateShape = initState.shape.ToArray();
-            if (MyTimeScaleSetting.instance.LoadFile)
+            if (MyTimeScaleSetting.instance.LoadTrainedModel && MyTimeScaleSetting.instance.Model != null)
             {
                 Debug.Log("load model");
-                initState = LoadModelFromFile(stateShape);
+                var modelPath = AssetDatabase.GetAssetPath(MyTimeScaleSetting.instance.Model);
+                initState = LoadModelFromFile(modelPath, stateShape);
             }
 
             m_TrainingState = new TensorProxy
@@ -318,15 +315,12 @@ namespace Unity.MLAgents
             float[] array = m_TrainingState.data.ToReadOnlyArray();
             var byteArray = new byte[array.Length * 4];
             Buffer.BlockCopy(array, 0, byteArray, 0, byteArray.Length);
-            File.WriteAllBytes(m_ModelFileName, byteArray);
-            Debug.Log($"Save ModelParam: {m_TrainingState.data[0]}, {m_TrainingState.data[1]}, {m_TrainingState.data[2]}, " +
-                $"{m_TrainingState.data[3]}, {m_TrainingState.data[4]}, {m_TrainingState.data[5]}, " +
-                $"{m_TrainingState.data[6]}, {m_TrainingState.data[7]}, {m_TrainingState.data[8]}, {m_TrainingState.data[9]}");
+            File.WriteAllBytes("Assets/model_" + MyTimeScaleSetting.instance.TrainingId, byteArray);
         }
 
-        public Tensor LoadModelFromFile(int[] shape)
+        public Tensor LoadModelFromFile(string path, int[] shape)
         {
-            var byteArray = File.ReadAllBytes(m_ModelFileName);
+            var byteArray = File.ReadAllBytes(path);
             float[] array = new float[byteArray.Length / 4];
             Buffer.BlockCopy(byteArray, 0, array, 0, byteArray.Length);
             return new Tensor(shape, array);

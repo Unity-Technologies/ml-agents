@@ -37,6 +37,14 @@ public class MyTimeScaleSetting : MonoBehaviour
         s_Instance = null;
     }
 
+    [SerializeField]
+    string m_TrainingId = "default";
+    public string TrainingId
+    {
+        get { return m_TrainingId; }
+        set { m_TrainingId = value; }
+    }
+
 
     [SerializeField]
     float m_TimeScale = 1f;
@@ -68,11 +76,19 @@ public class MyTimeScaleSetting : MonoBehaviour
     }
 
     [SerializeField]
-    bool m_LoadFile = true;
-    public bool LoadFile
+    bool m_LoadTrainedModel = true;
+    public bool LoadTrainedModel
     {
-        get { return m_LoadFile; }
-        set { m_LoadFile = value; }
+        get { return m_LoadTrainedModel; }
+        set { m_LoadTrainedModel = value; }
+    }
+
+    [SerializeField]
+    Object m_Model;
+    public Object Model
+    {
+        get { return m_Model; }
+        set { m_Model = value; }
     }
 
     // Start is called before the first frame update
