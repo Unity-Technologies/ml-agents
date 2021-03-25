@@ -90,7 +90,7 @@ namespace Unity.MLAgents.Extensions.Match3
                 {
                     // Check that the move is allowed for the current boardSize (e.g. it won't move a piece out of
                     // bounds), and that it's allowed by the game itself.
-                    if (currentBoardSize.IsMoveValid(currentMove) && m_Board.IsMoveValid(currentMove))
+                    if (currentMove.IsValidForBoardSize(currentBoardSize) && m_Board.IsMoveValid(currentMove))
                     {
                         foundValidMove = true;
                     }
@@ -190,24 +190,6 @@ namespace Unity.MLAgents.Extensions.Match3
         protected virtual int EvalMovePoints(Move move)
         {
             return 1;
-        }
-    }
-
-    internal static class BoardSizeExtensions
-    {
-        /// <summary>
-        /// Check whether the move is allowed for the BoardSize
-        /// </summary>
-        /// <param name="boardSize"></param>
-        /// <param name="m"></param>
-        /// <returns></returns>
-        public static bool IsMoveValid(this BoardSize boardSize, Move m)
-        {
-            var (otherRow, otherCol) = m.OtherCell();
-            // Get the maximum row and column this move would affect.
-            var maxMoveRow = Mathf.Max(m.Row, otherRow);
-            var maxMoveCol = Mathf.Max(m.Column, otherCol);
-            return maxMoveRow < boardSize.Rows && maxMoveCol < boardSize.Columns;
         }
     }
 

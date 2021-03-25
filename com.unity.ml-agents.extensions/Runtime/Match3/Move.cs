@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
@@ -198,6 +199,21 @@ namespace Unity.MLAgents.Extensions.Match3
                 Direction = dir,
                 MoveIndex = moveIndex,
             };
+        }
+
+        /// <summary>
+        /// Check if the move is valid for the given board size.
+        /// This will be passed the return value from AbstractBoard.GetCurrentBoardSize().
+        /// </summary>
+        /// <param name="boardSize"></param>
+        /// <returns></returns>
+        public bool IsValidForBoardSize(BoardSize boardSize)
+        {
+            var (otherRow, otherCol) = OtherCell();
+            // Get the maximum row and column this move would affect.
+            var maxMoveRow = Mathf.Max(Row, otherRow);
+            var maxMoveCol = Mathf.Max(Column, otherCol);
+            return maxMoveRow < boardSize.Rows && maxMoveCol < boardSize.Columns;
         }
 
         /// <summary>

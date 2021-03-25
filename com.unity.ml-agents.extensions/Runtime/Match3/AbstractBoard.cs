@@ -97,13 +97,16 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         public IEnumerable<Move> AllMoves()
         {
-            // TODO account for current board size too? Maybe just remove.
             var maxBoardSize = GetMaxBoardSize();
+            var currentBoardSize = GetCurrentBoardSize();
 
             var currentMove = Move.FromMoveIndex(0, maxBoardSize.Rows, maxBoardSize.Columns);
             for (var i = 0; i < NumMoves(); i++)
             {
-                yield return currentMove;
+                if (currentMove.IsValidForBoardSize(currentBoardSize))
+                {
+                    yield return currentMove;
+                }
                 currentMove.Next(maxBoardSize.Rows, maxBoardSize.Columns);
             }
         }
@@ -115,30 +118,12 @@ namespace Unity.MLAgents.Extensions.Match3
         public IEnumerable<Move> ValidMoves()
         {
             var maxBoardSize = GetMaxBoardSize();
-            var currentMove = Move.FromMoveIndex(0, maxBoardSize.Rows, maxBoardSize.Columns);
-            for (var i = 0; i < NumMoves(); i++)
-            {
-                // TODO account for current board size too.
-                if (IsMoveValid(currentMove))
-                {
-                    yield return currentMove;
-                }
-                currentMove.Next(maxBoardSize.Rows, maxBoardSize.Columns);
-            }
-        }
+            var currentBoardSize = GetCurrentBoardSize();
 
-        /// <summary>
-        /// Iterate through all invalid Moves on the board.
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<Move> InvalidMoves()
-        {
-            var maxBoardSize = GetMaxBoardSize();
             var currentMove = Move.FromMoveIndex(0, maxBoardSize.Rows, maxBoardSize.Columns);
             for (var i = 0; i < NumMoves(); i++)
             {
-                // TODO account for current board size too.
-                if (!IsMoveValid(currentMove))
+                if (currentMove.IsValidForBoardSize(currentBoardSize) && IsMoveValid(currentMove))
                 {
                     yield return currentMove;
                 }

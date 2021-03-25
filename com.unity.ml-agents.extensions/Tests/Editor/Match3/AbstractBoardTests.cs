@@ -140,6 +140,32 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             }
         }
 
+        internal static List<Move> GetValidMoves4x4(bool fullBoard, BoardSize boardSize)
+        {
+            var validMoves = new List<Move>
+            {
+                Move.FromPositionAndDirection(2, 1, Direction.Down, boardSize), // equivalent to (1, 1, Up)
+                Move.FromPositionAndDirection(1, 1, Direction.Down, boardSize),
+                Move.FromPositionAndDirection(1, 1, Direction.Left, boardSize),
+                Move.FromPositionAndDirection(1, 1, Direction.Right, boardSize),
+                Move.FromPositionAndDirection(0, 1, Direction.Left, boardSize),
+            };
+
+            if (fullBoard)
+            {
+                // This would move out of range on the small board
+                // Equivalent to (3, 1, Down)
+                validMoves.Add(Move.FromPositionAndDirection(2, 1, Direction.Up, boardSize));
+
+                // These moves require matching with a cell that's off the small board, so they're invalid
+                // (even though the move itself doesn't go out of range).
+                validMoves.Add(Move.FromPositionAndDirection(2, 1, Direction.Left, boardSize)); // Equivalent to (2, 0, Right)
+                validMoves.Add(Move.FromPositionAndDirection(2, 1, Direction.Right, boardSize));
+            }
+
+            return validMoves;
+        }
+
         [TestCase(true, TestName = "Full Board")]
         [TestCase(false, TestName = "Small Board")]
         public void TestCheckValidMoves(bool fullBoard)
@@ -159,30 +185,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
                 board.CurrentRows -= 1;
             }
 
-            var validMoves = new List<Move>
-            {
-                //Move.FromPositionAndDirection(2, 1, Direction.Up, boardSize), // equivalent to (3, 1, Down)
-                //Move.FromPositionAndDirection(2, 1, Direction.Left, boardSize), // equivalent to (2, 0, Right)
-                Move.FromPositionAndDirection(2, 1, Direction.Down, boardSize), // equivalent to (1, 1, Up)
-                //Move.FromPositionAndDirection(2, 1, Direction.Right, boardSize),
-                Move.FromPositionAndDirection(1, 1, Direction.Down, boardSize),
-                Move.FromPositionAndDirection(1, 1, Direction.Left, boardSize),
-                Move.FromPositionAndDirection(1, 1, Direction.Right, boardSize),
-                Move.FromPositionAndDirection(0, 1, Direction.Left, boardSize),
-            };
-
-            if (fullBoard)
-            {
-                // This would move out of range on the small board
-                // Equivalent to (3, 1, Down)
-                validMoves.Add(Move.FromPositionAndDirection(2, 1, Direction.Up, boardSize));
-
-                // These moves require matching with a cell that's off the small board, so they're invalid
-                // (even though the move itself doesn't go out of range).
-
-                validMoves.Add(Move.FromPositionAndDirection(2, 1, Direction.Left, boardSize)); // Equivalent to (2, 0, Right)
-                validMoves.Add(Move.FromPositionAndDirection(2, 1, Direction.Right, boardSize));
-            }
+            var validMoves = GetValidMoves4x4(fullBoard, boardSize);
 
             foreach (var m in validMoves)
             {
@@ -196,6 +199,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
                 validIndices.Add(m.MoveIndex);
             }
 
+            // Make sure iterating over AllMoves is OK with the smaller board
             foreach (var move in board.AllMoves())
             {
                 var expected = validIndices.Contains(move.MoveIndex);
