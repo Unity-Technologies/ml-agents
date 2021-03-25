@@ -35,7 +35,7 @@ namespace Unity.MLAgentsExamples
         /// </summary>
         public int RandomSeed;
 
-        (int, int)[,] m_Cells;
+        (int CellType, int SpecialType)[,] m_Cells;
         bool[,] m_Matched;
 
         private BoardSize m_CurrentBoardSize;
@@ -107,7 +107,7 @@ namespace Unity.MLAgentsExamples
             {
                 throw new IndexOutOfRangeException();
             }
-            return m_Cells[col, row].Item1;
+            return m_Cells[col, row].CellType;
         }
 
         public override int GetSpecialType(int row, int col)
@@ -116,7 +116,7 @@ namespace Unity.MLAgentsExamples
             {
                 throw new IndexOutOfRangeException();
             }
-            return m_Cells[col, row].Item2;
+            return m_Cells[col, row].SpecialType;
         }
 
         public override bool IsMoveValid(Move m)
@@ -141,7 +141,7 @@ namespace Unity.MLAgentsExamples
                     var matchedRows = 0;
                     for (var iOffset = i; iOffset < m_CurrentBoardSize.Rows; iOffset++)
                     {
-                        if (m_Cells[j, i].Item1 != m_Cells[j, iOffset].Item1)
+                        if (m_Cells[j, i].CellType != m_Cells[j, iOffset].CellType)
                         {
                             break;
                         }
@@ -162,7 +162,7 @@ namespace Unity.MLAgentsExamples
                     var matchedCols = 0;
                     for (var jOffset = j; jOffset < m_CurrentBoardSize.Columns; jOffset++)
                     {
-                        if (m_Cells[j, i].Item1 != m_Cells[jOffset, i].Item1)
+                        if (m_Cells[j, i].CellType != m_Cells[jOffset, i].CellType)
                         {
                             break;
                         }
@@ -219,7 +219,7 @@ namespace Unity.MLAgentsExamples
                 for (var readIndex = 0; readIndex < m_CurrentBoardSize.Rows; readIndex++)
                 {
                     m_Cells[j, writeIndex] = m_Cells[j, readIndex];
-                    if (m_Cells[j, readIndex].Item1 != k_EmptyCell)
+                    if (m_Cells[j, readIndex].CellType != k_EmptyCell)
                     {
                         writeIndex++;
                     }
@@ -243,7 +243,7 @@ namespace Unity.MLAgentsExamples
             {
                 for (var j = 0; j < m_CurrentBoardSize.Columns; j++)
                 {
-                    if (m_Cells[j, i].Item1 == k_EmptyCell)
+                    if (m_Cells[j, i].CellType == k_EmptyCell)
                     {
                         madeChanges = true;
                         m_Cells[j, i] = (GetRandomCellType(), GetRandomSpecialType());
