@@ -30,6 +30,8 @@ namespace Unity.MLAgents
         bool m_Verbose = false;
         IReadOnlyList<TensorProxy> m_TrainingInputs;
         IReadOnlyList<TensorProxy> m_InferenceInputs;
+        string[] m_TrainingOutputNames;
+        string[] m_InferenceOutputNames;
         List<TensorProxy> m_TrainingOutputs;
         Dictionary<string, Tensor> m_InputsByName;
         Dictionary<int, List<float>> m_Memories = new Dictionary<int, List<float>>();
@@ -85,6 +87,8 @@ namespace Unity.MLAgents
                 actionSpec, seed, m_TensorAllocator, barracudaModel);
             m_InputsByName = new Dictionary<string, Tensor>();
             m_TrainingOutputs = new List<TensorProxy>();
+            m_TrainingOutputNames = new string[] {TensorNames.TrainingStateOut, TensorNames.OuputLoss};
+            m_InferenceOutputNames = new string[] {TensorNames.TrainingOutput};
             m_Buffer = buffer;
             InitializeTrainingState();
         }
@@ -96,7 +100,7 @@ namespace Unity.MLAgents
             {
                 name = TensorNames.InitialTrainingState,
                 valueType = TensorProxy.TensorType.FloatingPoint,
-                data = initState,
+                data = initState.DeepCopy(),
                 shape = initState.shape.ToArray().Select(i => (long)i).ToArray()
             };
         }
@@ -203,7 +207,7 @@ namespace Unity.MLAgents
             // Execute the Model
             m_Engine.Execute(m_InputsByName);
 
-            FetchBarracudaOutputs(new string[] { TensorNames.TrainingOutput });
+            FetchBarracudaOutputs(m_InferenceOutputNames);
 
             // Update the outputs
             m_TensorApplier.ApplyTensors(m_TrainingOutputs, m_OrderedAgentsRequestingDecisions, m_LastActionsReceived);
@@ -213,12 +217,12 @@ namespace Unity.MLAgents
             m_OrderedAgentsRequestingDecisions.Clear();
         }
 
-        public void UpdateModel(List<Transition> transitions)
+        public float UpdateModel(List<Transition> transitions)
         {
             var currentBatchSize = transitions.Count;
             if (currentBatchSize == 0)
             {
-                return;
+                return 0;
             }
 
             m_TrainingTensorGenerator.GenerateTensors(m_TrainingInputs, currentBatchSize, transitions, m_TrainingState, true);
@@ -229,7 +233,7 @@ namespace Unity.MLAgents
             m_Engine.Execute(m_InputsByName);
 
             // Update the model
-            FetchBarracudaOutputs(new string[] { TensorNames.TrainingStateOut });
+            FetchBarracudaOutputs(m_TrainingOutputNames);
             TensorUtils.CopyTensor(m_TrainingOutputs[0], m_TrainingState);
 
             // UnityEngine.Debug.Log(m_TrainingState.data[0]);
@@ -238,6 +242,7 @@ namespace Unity.MLAgents
             //     UnityEngine.Debug.Log(m_TrainingOutputs[0].data[i]);
             // }
             // throw new System.Exception("STOP");
+            return m_TrainingOutputs[1].data[0];
         }
 
         public ActionBuffers GetAction(int agentId)
