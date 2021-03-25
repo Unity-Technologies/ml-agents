@@ -42,7 +42,7 @@ namespace Unity.MLAgents
             {
                 m_Buffer.Add(new Transition() {
                     state = CopyTensorList(state),
-                    action = info.storedActions,
+                    action = CopyActionBuffer(info.storedActions),
                     reward = info.reward,
                     done = info.done,
                     nextState = CopyTensorList(nextState)
@@ -52,7 +52,7 @@ namespace Unity.MLAgents
             {
                 m_Buffer[m_CurrentIndex] = new Transition() {
                     state = CopyTensorList(state),
-                    action = info.storedActions,
+                    action = CopyActionBuffer(info.storedActions),
                     reward = info.reward,
                     done = info.done,
                     nextState = CopyTensorList(nextState)
@@ -107,6 +107,21 @@ namespace Unity.MLAgents
                 newList.Add(TensorUtils.DeepCopy(inputList[i]));
             }
             return (IReadOnlyList<TensorProxy>) newList;
+        }
+
+        ActionBuffers CopyActionBuffer(ActionBuffers actionBuffer)
+        {
+            float[] continuous = new float[] {actionBuffer.ContinuousActions.Length};
+            for (var i = 0; i < actionBuffer.ContinuousActions.Length; i++)
+            {
+                continuous[i] = actionBuffer.ContinuousActions[i];
+            }
+            int[] discrete = new int[] {actionBuffer.DiscreteActions.Length};
+            for (var i = 0; i < actionBuffer.DiscreteActions.Length; i++)
+            {
+                discrete[i] = actionBuffer.DiscreteActions[i];
+            }
+            return new ActionBuffers(continuous, discrete);
         }
     }
 }
