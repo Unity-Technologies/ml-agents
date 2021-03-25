@@ -54,7 +54,7 @@ namespace Unity.MLAgents.Policies
 
             if (m_HasLastObservation)
             {
-                m_buffer.Push(m_LastInfo, m_LastObservations, m_CurrentObservations);
+                m_buffer.Push(info, m_LastObservations, m_CurrentObservations);
             }
             else if (m_buffer.Count == 0)
             {
@@ -62,18 +62,12 @@ namespace Unity.MLAgents.Policies
                 m_buffer.Push(info, m_CurrentObservations, m_CurrentObservations);
             }
 
-            m_LastInfo = info;
+            m_HasLastObservation = !info.done;
+
             for (var i = 0; i < m_CurrentObservations.Count; i++)
             {
                 TensorUtils.ResizeTensor(m_LastObservations[i], 1, m_ModelRunner.Allocator);
                 TensorUtils.CopyTensor(m_CurrentObservations[i], m_LastObservations[i]);
-            }
-            m_HasLastObservation = true;
-
-            if (info.done == true)
-            {
-                m_buffer.Push(info, m_CurrentObservations, m_CurrentObservations); // dummy next_state
-                m_HasLastObservation = false;
             }
         }
 
