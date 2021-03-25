@@ -141,29 +141,28 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <param name="row"></param>
         /// <param name="col"></param>
         /// <param name="dir"></param>
-        /// <param name="maxRows"></param>
-        /// <param name="maxCols"></param>
+        /// <param name="boardSize"></param>
         /// <returns></returns>
-        public static Move FromPositionAndDirection(int row, int col, Direction dir, int maxRows, int maxCols)
+        public static Move FromPositionAndDirection(int row, int col, Direction dir, BoardSize boardSize)
         {
 
             // Check for out-of-bounds
-            if (row < 0 || row >= maxRows)
+            if (row < 0 || row >= boardSize.Rows)
             {
-                throw new IndexOutOfRangeException($"row was {row}, but must be between 0 and {maxRows - 1}.");
+                throw new IndexOutOfRangeException($"row was {row}, but must be between 0 and {boardSize.Rows - 1}.");
             }
 
-            if (col < 0 || col >= maxCols)
+            if (col < 0 || col >= boardSize.Columns)
             {
-                throw new IndexOutOfRangeException($"col was {col}, but must be between 0 and {maxCols - 1}.");
+                throw new IndexOutOfRangeException($"col was {col}, but must be between 0 and {boardSize.Columns - 1}.");
             }
 
             // Check moves that would go out of bounds e.g. col == 0 and dir == Left
             if (
                 row == 0 && dir == Direction.Down ||
-                row == maxRows - 1 && dir == Direction.Up ||
+                row == boardSize.Rows - 1 && dir == Direction.Up ||
                 col == 0 && dir == Direction.Left ||
-                col == maxCols - 1 && dir == Direction.Right
+                col == boardSize.Columns - 1 && dir == Direction.Right
             )
             {
                 throw new IndexOutOfRangeException($"Cannot move cell at row={row} col={col} in Direction={dir}");
@@ -184,12 +183,12 @@ namespace Unity.MLAgents.Extensions.Match3
             int moveIndex;
             if (dir == Direction.Right)
             {
-                moveIndex = col + row * (maxCols - 1);
+                moveIndex = col + row * (boardSize.Columns - 1);
             }
             else
             {
-                var offset = (maxCols - 1) * maxRows;
-                moveIndex = offset + col + row * maxCols;
+                var offset = (boardSize.Columns - 1) * boardSize.Rows;
+                moveIndex = offset + col + row * boardSize.Columns;
             }
 
             return new Move

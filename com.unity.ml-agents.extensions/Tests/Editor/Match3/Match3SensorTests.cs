@@ -36,9 +36,38 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
             var expectedObs = new float[]
             {
-                1, 0, /**/ 0, 1, /**/ 1, 0,
-                1, 0, /**/ 1, 0, /**/ 1, 0,
-                1, 0, /**/ 1, 0, /**/ 1, 0,
+                1, 0, /* 0 */ 0, 1, /* 1 */ 1, 0, /* 0 */
+                1, 0, /* 0 */ 1, 0, /* 0 */ 1, 0, /* 0 */
+                1, 0, /* 0 */ 1, 0, /* 0 */ 1, 0, /* 0 */
+            };
+            SensorTestHelper.CompareObservation(sensor, expectedObs);
+        }
+
+        [Test]
+        public void TestVectorObservationsSmallerSize()
+        {
+            var boardString =
+                @"000
+                  000
+                  010";
+            var gameObj = new GameObject("board");
+            var board = gameObj.AddComponent<StringBoard>();
+            board.SetBoard(boardString);
+            board.CurrentRows = 2;
+            board.CurrentColumns = 2;
+
+            var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
+            sensorComponent.ObservationType = Match3ObservationType.Vector;
+            var sensor = sensorComponent.CreateSensors()[0];
+
+            var expectedShape = new InplaceArray<int>(3 * 3 * 2);
+            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
+
+            var expectedObs = new float[]
+            {
+                1, 0, /*   0   */ 0, 1, /*   1   */ 0, 0, /* empty */
+                1, 0, /*   0   */ 1, 0, /*   0   */ 0, 0, /* empty */
+                0, 0, /* empty */ 0, 0, /* empty */ 0, 0, /* empty */
             };
             SensorTestHelper.CompareObservation(sensor, expectedObs);
         }
@@ -126,6 +155,45 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
                 {{1, 0}, {0, 1}, {1, 0}},
                 {{1, 0}, {1, 0}, {1, 0}},
                 {{1, 0}, {1, 0}, {1, 0}},
+            };
+            SensorTestHelper.CompareObservation(sensor, expectedObs3D);
+        }
+
+        [Test]
+        public void TestVisualObservationsSmallerSize()
+        {
+            var boardString =
+                @"000
+                  000
+                  010";
+            var gameObj = new GameObject("board");
+            var board = gameObj.AddComponent<StringBoard>();
+            board.SetBoard(boardString);
+            board.CurrentRows = 2;
+            board.CurrentColumns = 2;
+
+            var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
+            sensorComponent.ObservationType = Match3ObservationType.UncompressedVisual;
+            var sensor = sensorComponent.CreateSensors()[0];
+
+            var expectedShape = new InplaceArray<int>(3, 3, 2);
+            Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
+
+            Assert.AreEqual(SensorCompressionType.None, sensor.GetCompressionSpec().SensorCompressionType);
+
+            var expectedObs = new float[]
+            {
+                1, 0, /*   0   */ 0, 1, /*   1   */ 0, 0, /* empty */
+                1, 0, /*   0   */ 1, 0, /*   0   */ 0, 0, /* empty */
+                0, 0, /* empty */ 0, 0, /* empty */ 0, 0, /* empty */
+            };
+            SensorTestHelper.CompareObservation(sensor, expectedObs);
+
+            var expectedObs3D = new float[,,]
+            {
+                {{1, 0}, {0, 1}, {0, 0}},
+                {{1, 0}, {1, 0}, {0, 0}},
+                {{0, 0}, {0, 0}, {0, 0}},
             };
             SensorTestHelper.CompareObservation(sensor, expectedObs3D);
         }
