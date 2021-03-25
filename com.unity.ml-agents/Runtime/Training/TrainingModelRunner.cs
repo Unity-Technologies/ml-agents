@@ -87,8 +87,8 @@ namespace Unity.MLAgents
                 actionSpec, seed, m_TensorAllocator, barracudaModel);
             m_InputsByName = new Dictionary<string, Tensor>();
             m_TrainingOutputs = new List<TensorProxy>();
-            m_TrainingOutputNames = new string[] {TensorNames.TrainingStateOut, TensorNames.OuputLoss};
-            m_InferenceOutputNames = new string[] {TensorNames.TrainingOutput};
+            m_TrainingOutputNames = new string[] { TensorNames.TrainingStateOut, TensorNames.OuputLoss };
+            m_InferenceOutputNames = new string[] { TensorNames.TrainingOutput };
             m_Buffer = buffer;
             InitializeTrainingState();
         }
@@ -242,6 +242,34 @@ namespace Unity.MLAgents
             //     UnityEngine.Debug.Log(m_TrainingOutputs[0].data[i]);
             // }
             // throw new System.Exception("STOP");
+
+            // UnityEngine.Debug.Log(m_TrainingState.data[m_TrainingState.data.length - 1] );
+            // m_TrainingState = m_TrainingOutputs[0];
+
+            // for (int i = 0; i < transitions.Count; i++){
+            //     string message = "";
+            //     for (int j = 0; j < transitions[i].state[0].data.length; j ++){
+            //         if( transitions[i].state[0].data[j] > 0.5f){
+            //             message += j;
+            //         }
+            //     }
+            //     message += " | ";
+            //     for (int j = 0; j < transitions[i].nextState[0].data.length; j ++){
+            //         if( transitions[i].nextState[0].data[j] > 0.5f){
+            //             message += j;
+            //         }
+            //     }
+            //     message += " | ";
+            //     message += transitions[i].action.DiscreteActions[0];
+            //     message += " | ";
+            //     message += transitions[i].reward;
+            //     message += " | ";
+            //     message += transitions[i].done;
+            //     UnityEngine.Debug.Log(message);
+            // }
+
+
+
             return m_TrainingOutputs[1].data[0];
         }
 

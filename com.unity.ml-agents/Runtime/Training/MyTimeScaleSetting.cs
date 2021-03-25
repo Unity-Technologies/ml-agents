@@ -71,6 +71,10 @@ public class MyTimeScaleSetting : MonoBehaviour
     void Start()
     {
         DontDestroyOnLoad(this.gameObject);
+        if (FindObjectsOfType<MyTimeScaleSetting>().Length > 1)
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     // Update is called once per frame

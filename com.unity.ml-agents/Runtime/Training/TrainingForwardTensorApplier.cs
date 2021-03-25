@@ -119,9 +119,11 @@ namespace Unity.MLAgents.Inference
                     var discreteBuffer = actionBuffer.DiscreteActions;
                     var maxIndex = 0;
                     var maxValue = float.MinValue;
+                    // UnityEngine.Debug.Log(" ");
                     for (var j = 0; j < actionSpaceSize; j++)
                     {
                         var value = tensorProxy.data[agentIndex, j];
+                        // UnityEngine.Debug.Log(value);
                         if (value > maxValue)
                         {
                             maxIndex = j;

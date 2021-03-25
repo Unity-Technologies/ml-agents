@@ -1045,10 +1045,10 @@ namespace Unity.MLAgents
                 return;
             }
 
-            if (m_Info.done)
-            {
-                m_Info.ClearActions();
-            }
+            // if (m_Info.done)
+            // {
+            //     m_Info.ClearActions();
+            // }
             else
             {
                 m_Info.CopyActions(m_ActuatorManager.StoredActions);

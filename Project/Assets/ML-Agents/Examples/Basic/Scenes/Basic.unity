@@ -482,4 +482,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TimeScale: 1
-  m_Greedy: 1
+  m_Greedy: 0.5
+  m_Train: 1

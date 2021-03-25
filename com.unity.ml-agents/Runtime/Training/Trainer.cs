@@ -13,7 +13,8 @@ namespace Unity.MLAgents
         public int batchSize = 100;
         public float gamma = 0.9f;
         public float learningRate = 0.0001f;
-        public int updatePeriod = 10;
+        public int updatePeriod = 500;
+        public int numSamplingAndUpdates = 50;
         // public int updateTargetFreq = 200;
     }
 
@@ -74,9 +75,12 @@ namespace Unity.MLAgents
                 return;
             }
 
-            var samples = m_Buffer.SampleBatch(m_Config.batchSize);
-            m_ModelRunner.UpdateModel(samples);
-            // UnityEngine.Debug.Log("Update");
+            for (int i = 0; i < m_Config.numSamplingAndUpdates; i++)
+            {
+                var samples = m_Buffer.SampleBatch(m_Config.batchSize);
+                m_ModelRunner.UpdateModel(samples);
+            }
+            UnityEngine.Debug.Log("Update !");
 
             // Update target network
             // if (m_TrainingStep % m_Config.updateTargetFreq == 0)

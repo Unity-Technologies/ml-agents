@@ -161,13 +161,20 @@ namespace Unity.MLAgents.Inference
 
         public static void CopyTensor(TensorProxy source, TensorProxy target)
         {
+            if (source.data.batch != target.data.batch ||
+            source.data.height != target.data.height ||
+            source.data.width != target.data.width ||
+            source.data.channels != target.data.channels)
+            {
+                UnityEngine.Debug.Log("Error");
+            }
             for (var b = 0; b < source.data.batch; b++)
             {
                 for (var i = 0; i < source.data.height; i++)
                 {
                     for (var j = 0; j < source.data.width; j++)
                     {
-                        for(var k = 0; k < source.data.channels; k++)
+                        for (var k = 0; k < source.data.channels; k++)
                         {
                             target.data[b, i, j, k] = source.data[b, i, j, k];
                         }
@@ -183,7 +190,7 @@ namespace Unity.MLAgents.Inference
                 name = tensor.name,
                 valueType = tensor.valueType,
                 data = tensor.data.DeepCopy(),
-                shape = (long[]) tensor.shape.Clone()
+                shape = (long[])tensor.shape.Clone()
             };
         }
     }
