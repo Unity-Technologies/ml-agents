@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace Unity.MLAgents.Extensions.Match3
     /// Actuator for a Match3 game. It translates valid moves (defined by AbstractBoard.IsMoveValid())
     /// in action masks, and applies the action to the board via AbstractBoard.MakeMove().
     /// </summary>
-    public class Match3Actuator : IActuator, IHeuristicProvider, IBuiltInActuator
+    public class Match3Actuator : IActuator, IBuiltInActuator
     {
         protected AbstractBoard m_Board;
         protected System.Random m_Random;
@@ -77,6 +78,7 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
+            var currentBoardSize = m_Board.GetCurrentBoardSize();
             const int branch = 0;
             bool foundValidMove = false;
             using (TimerStack.Instance.Scoped("WriteDiscreteActionMask"))
@@ -86,7 +88,9 @@ namespace Unity.MLAgents.Extensions.Match3
                 var currentMove = Move.FromMoveIndex(0, m_MaxBoardSize.Rows, m_MaxBoardSize.Columns);
                 for (var i = 0; i < numMoves; i++)
                 {
-                    if (m_Board.IsMoveValid(currentMove))
+                    // Check that the move is allowed for the current boardSize (e.g. it won't move a piece out of
+                    // bounds), and that it's allowed by the game itself.
+                    if (currentBoardSize.IsMoveValid(currentMove) && m_Board.IsMoveValid(currentMove))
                     {
                         foundValidMove = true;
                     }
@@ -188,4 +192,23 @@ namespace Unity.MLAgents.Extensions.Match3
             return 1;
         }
     }
+
+    internal static class BoardSizeExtensions
+    {
+        /// <summary>
+        /// Check whether the move is allowed for the BoardSize
+        /// </summary>
+        /// <param name="boardSize"></param>
+        /// <param name="m"></param>
+        /// <returns></returns>
+        public static bool IsMoveValid(this BoardSize boardSize, Move m)
+        {
+            var (otherRow, otherCol) = m.OtherCell();
+            // Get the maximum row and column this move would affect.
+            var maxMoveRow = Mathf.Max(m.Row, otherRow);
+            var maxMoveCol = Mathf.Max(m.Column, otherCol);
+            return maxMoveRow < boardSize.Rows && maxMoveCol < boardSize.Columns;
+        }
+    }
+
 }

@@ -57,6 +57,18 @@ namespace Unity.MLAgentsExamples
             };
         }
 
+        public override BoardSize GetCurrentBoardSize()
+        {
+            return new BoardSize
+            {
+                Rows = Rows - 2,
+                Columns = Columns - 2,
+                NumCellTypes = NumCellTypes,
+                NumSpecialTypes = NumSpecialTypes
+            };
+        }
+
+
         public override bool MakeMove(Move move)
         {
             if (!IsMoveValid(move))
