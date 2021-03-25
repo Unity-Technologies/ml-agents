@@ -23,9 +23,8 @@ namespace Unity.MLAgents
         List<Transition> m_Buffer;
         int m_CurrentIndex;
         int m_MaxSize;
-        ITensorAllocator m_Allocator;
 
-        public ReplayBuffer(int maxSize, ITensorAllocator allocator)
+        public ReplayBuffer(int maxSize)
         {
             m_Buffer = new List<Transition>();
             m_Buffer.Capacity = maxSize;
