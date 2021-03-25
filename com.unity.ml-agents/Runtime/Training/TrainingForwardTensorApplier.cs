@@ -84,15 +84,24 @@ namespace Unity.MLAgents.Inference
     internal class MaxActionOutputApplier : TensorApplier.IApplier
     {
         readonly ActionSpec m_ActionSpec;
+        int saved_id = -1;
+        System.Random rand = new System.Random();
+        // MyTimeScaleSetting greedySetting;
 
 
         public MaxActionOutputApplier(ActionSpec actionSpec, int seed, ITensorAllocator allocator)
         {
             m_ActionSpec = actionSpec;
+            // greedySetting = UnityEngine.GameObject.FindObjectsOfType<MyTimeScaleSetting>()[0];
         }
 
         public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
+            if (saved_id == -1)
+            {
+                saved_id = actionIds[0];
+            }
+
             var agentIndex = 0;
             var actionSpaceSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
 
@@ -109,17 +118,28 @@ namespace Unity.MLAgents.Inference
                     }
                     var discreteBuffer = actionBuffer.DiscreteActions;
                     var maxIndex = 0;
-                    var maxValue = 0;
+                    var maxValue = float.MinValue;
                     for (var j = 0; j < actionSpaceSize; j++)
                     {
-                        var value = (int)tensorProxy.data[agentIndex, j];
+                        var value = tensorProxy.data[agentIndex, j];
                         if (value > maxValue)
                         {
                             maxIndex = j;
                         }
                     }
                     var actionSize = discreteBuffer.Length;
+
                     discreteBuffer[0] = maxIndex;
+                    // Greedy
+                    // if (saved_id != agentId){
+
+                    if (rand.NextDouble() < MyTimeScaleSetting.instance.GreedyEpislon)
+                    {
+                        discreteBuffer[0] = rand.Next((int)actionSpaceSize);
+                        // UnityEngine.Debug.Log(discreteBuffer[0]);
+                    }
+                    // }
+
                 }
                 agentIndex++;
             }

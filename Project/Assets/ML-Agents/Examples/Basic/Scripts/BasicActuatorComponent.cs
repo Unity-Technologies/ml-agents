@@ -67,10 +67,10 @@ namespace Unity.MLAgentsExamples
             switch (movement)
             {
                 case 1:
-                    direction = -1;
+                    direction = 1;
                     break;
                 case 2:
-                    direction = 1;
+                    direction = -1;
                     break;
             }
 
