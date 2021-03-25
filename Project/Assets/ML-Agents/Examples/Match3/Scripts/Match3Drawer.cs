@@ -107,11 +107,19 @@ namespace Unity.MLAgentsExamples
                 m_Board = GetComponent<Match3Board>();
             }
 
+            var currentSize = m_Board.GetCurrentBoardSize();
             for (var i = 0; i < m_Board.MaxRows; i++)
             {
                 for (var j = 0; j < m_Board.MaxColumns; j++)
                 {
-                    var value = m_Board.Cells != null ? m_Board.GetCellType(i, j) : Match3Board.k_EmptyCell;
+                    int value = Match3Board.k_EmptyCell;
+                    int specialType = 0;
+                    if (m_Board.Cells != null && i < currentSize.Rows && j < currentSize.Columns)
+                    {
+                        value = m_Board.GetCellType(i, j);
+                        specialType = m_Board.GetSpecialType(i, j);
+                    }
+
                     if (value >= 0 && value < s_Colors.Length)
                     {
                         Gizmos.color = s_Colors[value];
@@ -124,7 +132,6 @@ namespace Unity.MLAgentsExamples
                     var pos = new Vector3(j, i, 0);
                     pos *= CubeSpacing;
 
-                    var specialType = m_Board.Cells != null ? m_Board.GetSpecialType(i, j) : 0;
                     if (specialType == 2)
                     {
                         Gizmos.DrawCube(transform.TransformPoint(pos), cubeSize * new Vector3(1f, .5f, .5f));

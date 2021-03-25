@@ -103,11 +103,19 @@ namespace Unity.MLAgentsExamples
 
         public override int GetCellType(int row, int col)
         {
+            if (row >= m_CurrentBoardSize.Rows || col >= m_CurrentBoardSize.Columns)
+            {
+                throw new IndexOutOfRangeException();
+            }
             return m_Cells[col, row].Item1;
         }
 
         public override int GetSpecialType(int row, int col)
         {
+            if (row >= m_CurrentBoardSize.Rows || col >= m_CurrentBoardSize.Columns)
+            {
+                throw new IndexOutOfRangeException();
+            }
             return m_Cells[col, row].Item2;
         }
 
@@ -125,13 +133,13 @@ namespace Unity.MLAgentsExamples
         {
             ClearMarked();
             bool madeMatch = false;
-            for (var i = 0; i < MaxRows; i++)
+            for (var i = 0; i < m_CurrentBoardSize.Rows; i++)
             {
-                for (var j = 0; j < MaxColumns; j++)
+                for (var j = 0; j < m_CurrentBoardSize.Columns; j++)
                 {
                     // Check vertically
                     var matchedRows = 0;
-                    for (var iOffset = i; iOffset < MaxRows; iOffset++)
+                    for (var iOffset = i; iOffset < m_CurrentBoardSize.Rows; iOffset++)
                     {
                         if (m_Cells[j, i].Item1 != m_Cells[j, iOffset].Item1)
                         {
@@ -152,7 +160,7 @@ namespace Unity.MLAgentsExamples
 
                     // Check vertically
                     var matchedCols = 0;
-                    for (var jOffset = j; jOffset < MaxColumns; jOffset++)
+                    for (var jOffset = j; jOffset < m_CurrentBoardSize.Columns; jOffset++)
                     {
                         if (m_Cells[j, i].Item1 != m_Cells[jOffset, i].Item1)
                         {
@@ -184,9 +192,9 @@ namespace Unity.MLAgentsExamples
         {
             var pointsByType = new[] { BasicCellPoints, SpecialCell1Points, SpecialCell2Points };
             int pointsEarned = 0;
-            for (var i = 0; i < MaxRows; i++)
+            for (var i = 0; i < m_CurrentBoardSize.Rows; i++)
             {
-                for (var j = 0; j < MaxColumns; j++)
+                for (var j = 0; j < m_CurrentBoardSize.Columns; j++)
                 {
                     if (m_Matched[j, i])
                     {
@@ -205,10 +213,10 @@ namespace Unity.MLAgentsExamples
         {
             var madeChanges = false;
             // Gravity is applied in the negative row direction
-            for (var j = 0; j < MaxColumns; j++)
+            for (var j = 0; j < m_CurrentBoardSize.Columns; j++)
             {
                 var writeIndex = 0;
-                for (var readIndex = 0; readIndex < MaxRows; readIndex++)
+                for (var readIndex = 0; readIndex < m_CurrentBoardSize.Rows; readIndex++)
                 {
                     m_Cells[j, writeIndex] = m_Cells[j, readIndex];
                     if (m_Cells[j, readIndex].Item1 != k_EmptyCell)
@@ -218,7 +226,7 @@ namespace Unity.MLAgentsExamples
                 }
 
                 // Fill in empties at the end
-                for (; writeIndex < MaxRows; writeIndex++)
+                for (; writeIndex < m_CurrentBoardSize.Rows; writeIndex++)
                 {
                     madeChanges = true;
                     m_Cells[j, writeIndex] = (k_EmptyCell, 0);
@@ -231,9 +239,9 @@ namespace Unity.MLAgentsExamples
         public bool FillFromAbove()
         {
             bool madeChanges = false;
-            for (var i = 0; i < MaxRows; i++)
+            for (var i = 0; i < m_CurrentBoardSize.Rows; i++)
             {
-                for (var j = 0; j < MaxColumns; j++)
+                for (var j = 0; j < m_CurrentBoardSize.Columns; j++)
                 {
                     if (m_Cells[j, i].Item1 == k_EmptyCell)
                     {
