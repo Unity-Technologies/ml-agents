@@ -37,6 +37,7 @@ public class Ball3DAgent : Agent
         int d_act = actionBuffers.DiscreteActions[0];
         var actionZ = (d_act % 10) * 1.0f / 4.5f - 1;
         var actionX = (d_act / 10) * 1.0f / 4.5f - 1;
+        // UnityEngine.Debug.Log((d_act / 10) +"  "+ (d_act % 10) +"  "+d_act);
         // var actionZ = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[0], -1f, 1f);
         // var actionX = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[1], -1f, 1f);
 

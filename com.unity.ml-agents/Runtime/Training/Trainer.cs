@@ -9,14 +9,15 @@ namespace Unity.MLAgents
 {
     internal class TrainerConfig
     {
-        public int bufferSize = 1024;
-        public int batchSize = 128;
+        public int bufferSize = 500000;
+        public int batchSize = 100;
         public float gamma = 0.9f;
-        public float learningRate = 0.005f;
+        public float learningRate = 0.0001f;
+        public int updatePeriod = 10;
         // public int updateTargetFreq = 200;
     }
 
-    internal class Trainer: IDisposable
+    internal class Trainer : IDisposable
     {
         ReplayBuffer m_Buffer;
         TrainingModelRunner m_ModelRunner;
@@ -25,7 +26,7 @@ namespace Unity.MLAgents
         TrainerConfig m_Config;
         int m_TrainingStep;
 
-        public Trainer(string behaviorName, ActionSpec actionSpec, NNModel model, int seed=0, TrainerConfig config=null)
+        public Trainer(string behaviorName, ActionSpec actionSpec, NNModel model, int seed = 0, TrainerConfig config = null)
         {
             m_Config = config ?? new TrainerConfig();
             m_behaviorName = behaviorName;
@@ -59,6 +60,15 @@ namespace Unity.MLAgents
 
         public void Update()
         {
+            if (!MyTimeScaleSetting.instance.IsTraining)
+            {
+                return;
+            }
+            if (m_TrainingStep % m_Config.updatePeriod != 0)
+            {
+                m_TrainingStep += 1;
+                return;
+            }
             if (m_Buffer.Count < m_Config.batchSize * 2)
             {
                 return;
@@ -66,6 +76,7 @@ namespace Unity.MLAgents
 
             var samples = m_Buffer.SampleBatch(m_Config.batchSize);
             m_ModelRunner.UpdateModel(samples);
+            // UnityEngine.Debug.Log("Update");
 
             // Update target network
             // if (m_TrainingStep % m_Config.updateTargetFreq == 0)

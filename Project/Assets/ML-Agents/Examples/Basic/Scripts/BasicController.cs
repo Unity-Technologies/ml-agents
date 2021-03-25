@@ -83,7 +83,7 @@ public class BasicController : MonoBehaviour
         {
             return;
         }
-        if (Academy.Instance.IsCommunicatorOn)
+        if (Academy.Instance.IsCommunicatorOn || true)
         {
             m_Agent?.RequestDecision();
         }

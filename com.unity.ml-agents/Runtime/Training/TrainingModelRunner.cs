@@ -69,14 +69,14 @@ namespace Unity.MLAgents
 
             m_TrainingInputs = barracudaModel.GetTrainingInputTensors();
             List<TensorProxy> infTensors = new List<TensorProxy>();
-            foreach(var tensor in m_TrainingInputs)
+            foreach (var tensor in m_TrainingInputs)
             {
                 if (tensor.name == TensorNames.Observations || tensor.name == TensorNames.BatchSizePlaceholder)
                 {
                     infTensors.Add(tensor);
                 }
             }
-            m_InferenceInputs = (IReadOnlyList<TensorProxy>) infTensors;
+            m_InferenceInputs = (IReadOnlyList<TensorProxy>)infTensors;
             m_TensorGenerator = new TensorGenerator(
                 seed, m_TensorAllocator, m_Memories, barracudaModel);
             m_TrainingTensorGenerator = new TrainingTensorGenerator(
@@ -230,7 +230,14 @@ namespace Unity.MLAgents
 
             // Update the model
             FetchBarracudaOutputs(new string[] { TensorNames.TrainingStateOut });
-            m_TrainingState = m_TrainingOutputs[0];
+            TensorUtils.CopyTensor(m_TrainingOutputs[0], m_TrainingState);
+
+            // UnityEngine.Debug.Log(m_TrainingState.data[0]);
+            // m_TrainingState = m_TrainingOutputs[0];
+            // for (int i = 0; i < m_TrainingOutputs[0].data.length; i++){
+            //     UnityEngine.Debug.Log(m_TrainingOutputs[0].data[i]);
+            // }
+            // throw new System.Exception("STOP");
         }
 
         public ActionBuffers GetAction(int agentId)
