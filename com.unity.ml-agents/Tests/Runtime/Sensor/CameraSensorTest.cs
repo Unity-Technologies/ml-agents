@@ -50,9 +50,9 @@ namespace Unity.MLAgents.Tests
             sensor = new CameraSensor(camera, width, height, true, "TestCameraSensor", SensorCompressionType.None, ObservationType.Default);
             spec = sensor.GetObservationSpec();
             Assert.AreEqual((int)spec.ObservationType, (int)ObservationType.Default);
-            sensor = new CameraSensor(camera, width, height, true, "TestCameraSensor", SensorCompressionType.None, ObservationType.Goal);
+            sensor = new CameraSensor(camera, width, height, true, "TestCameraSensor", SensorCompressionType.None, ObservationType.GoalSignal);
             spec = sensor.GetObservationSpec();
-            Assert.AreEqual((int)spec.ObservationType, (int)ObservationType.Goal);
+            Assert.AreEqual((int)spec.ObservationType, (int)ObservationType.GoalSignal);
         }
     }
 }

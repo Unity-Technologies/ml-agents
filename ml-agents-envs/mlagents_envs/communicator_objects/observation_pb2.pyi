@@ -64,13 +64,9 @@ class ObservationTypeProto(builtin___int):
     @classmethod
     def items(cls) -> typing___List[typing___Tuple[builtin___str, 'ObservationTypeProto']]: ...
     DEFAULT = typing___cast('ObservationTypeProto', 0)
-    GOAL = typing___cast('ObservationTypeProto', 1)
-    REWARD = typing___cast('ObservationTypeProto', 2)
-    MESSAGE = typing___cast('ObservationTypeProto', 3)
+    GOAL_SIGNAL = typing___cast('ObservationTypeProto', 1)
 DEFAULT = typing___cast('ObservationTypeProto', 0)
-GOAL = typing___cast('ObservationTypeProto', 1)
-REWARD = typing___cast('ObservationTypeProto', 2)
-MESSAGE = typing___cast('ObservationTypeProto', 3)
+GOAL_SIGNAL = typing___cast('ObservationTypeProto', 1)
 
 class ObservationProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...

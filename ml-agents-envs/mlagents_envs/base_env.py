@@ -486,7 +486,7 @@ class ObservationType(Enum):
     # Observation information is generic.
     DEFAULT = 0
     # Observation contains goal information for current task.
-    GOAL = 1
+    GOAL_SIGNAL = 1
 
 
 class ObservationSpec(NamedTuple):
