@@ -13,9 +13,9 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         // Whether the expected PNG data should be written to a file.
         // Only set this to true if the compressed observation format changes.
         private bool WritePNGDataToFile = false;
-        private const string k_CellObservationPng = "match3obs";
-        private const string k_SpecialObservationPng = "match3obs_special";
-        private const string k_Suffix2x2 = "_2x2_";
+        private const string k_CellObservationPng = "match3obs_";
+        private const string k_SpecialObservationPng = "match3obs_special_";
+        private const string k_Suffix2x2 = "2x2_";
 
         [TestCase(true, TestName = "Full Board")]
         [TestCase(false, TestName = "Small Board")]
@@ -254,11 +254,11 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         public void TestCompressedVisualObservationsSpecial(bool fullBoard, bool useSpecial)
         {
             var boardString =
-                @"000
+                @"003
                   000
                   010";
             var specialString =
-                @"010
+                @"014
                   200
                   000";
 
@@ -287,7 +287,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             sensorComponent.ObservationType = Match3ObservationType.CompressedVisual;
             var sensors = sensorComponent.CreateSensors();
 
-            var expectedNumChannels = new[] { 2, 3 };
+            var expectedNumChannels = new[] { 4, 5 };
 
             for (var i = 0; i < paths.Count; i++)
             {
@@ -304,11 +304,10 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
                     SavePNGs(pngData, paths[i]);
                 }
 
-                var expectedPng = LoadPNGs(paths[i], 1);
+                var expectedPng = LoadPNGs(paths[i], 2);
                 Assert.AreEqual(expectedPng, pngData);
             }
         }
-
 
         /// <summary>
         /// Helper method for un-concatenating PNG observations.
