@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
+    /// <summary>
+    /// Representation of the AbstractBoard size and number of cell and special types.
+    /// </summary>
     public struct BoardSize
     {
         /// <summary>
@@ -29,10 +32,25 @@ namespace Unity.MLAgents.Extensions.Match3
     }
 
 
+    /// <summary>
+    /// An adapter between ML Agents and a Match-3 game.
+    /// </summary>
     public abstract class AbstractBoard : MonoBehaviour
     {
+        /// <summary>
+        /// Return the maximum size of the board. This is used to determine the size of observations and actions,
+        /// so the returned values must not change.
+        /// </summary>
+        /// <returns></returns>
         public abstract BoardSize GetMaxBoardSize();
 
+        /// <summary>
+        /// Return the current size of the board. The values must less than or equal to the values returned from
+        /// GetMaxBoardSize().
+        /// By default, this will return GetMaxBoardSize(); if your board doesn't change size, you don't need to
+        /// override it.
+        /// </summary>
+        /// <returns></returns>
         public virtual BoardSize GetCurrentBoardSize()
         {
             return GetMaxBoardSize();
@@ -232,6 +250,5 @@ namespace Unity.MLAgents.Extensions.Match3
 
             return false;
         }
-
     }
 }

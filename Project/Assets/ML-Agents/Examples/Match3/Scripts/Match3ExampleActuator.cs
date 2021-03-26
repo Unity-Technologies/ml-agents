@@ -5,26 +5,30 @@ namespace Unity.MLAgentsExamples
 {
     public class Match3ExampleActuator : Match3Actuator
     {
-        Match3Board Board => (Match3Board)m_Board;
+        private Match3Board m_Board;
+        Match3Board Board => m_Board;
 
         public Match3ExampleActuator(Match3Board board,
             bool forceHeuristic,
             Agent agent,
             string name,
             int seed
-            )
-            : base(board, forceHeuristic, seed, agent, name) { }
+        )
+            : base(board, forceHeuristic, seed, agent, name)
+        {
+            m_Board = board;
+        }
 
 
         protected override int EvalMovePoints(Move move)
         {
             var pointsByType = new[] { Board.BasicCellPoints, Board.SpecialCell1Points, Board.SpecialCell2Points };
             // Counts the expected points for making the move.
-            var moveVal = m_Board.GetCellType(move.Row, move.Column);
-            var moveSpecial = m_Board.GetSpecialType(move.Row, move.Column);
+            var moveVal = Board.GetCellType(move.Row, move.Column);
+            var moveSpecial = Board.GetSpecialType(move.Row, move.Column);
             var (otherRow, otherCol) = move.OtherCell();
-            var oppositeVal = m_Board.GetCellType(otherRow, otherCol);
-            var oppositeSpecial = m_Board.GetSpecialType(otherRow, otherCol);
+            var oppositeVal = Board.GetCellType(otherRow, otherCol);
+            var oppositeSpecial = Board.GetSpecialType(otherRow, otherCol);
 
 
             int movePoints = EvalHalfMove(
@@ -39,7 +43,7 @@ namespace Unity.MLAgentsExamples
         int EvalHalfMove(int newRow, int newCol, int newValue, int newSpecial, Direction incomingDirection, int[] pointsByType)
         {
             // This is a essentially a duplicate of AbstractBoard.CheckHalfMove but also counts the points for the move.
-            var currentBoardSize = m_Board.GetCurrentBoardSize();
+            var currentBoardSize = Board.GetCurrentBoardSize();
             int matchedLeft = 0, matchedRight = 0, matchedUp = 0, matchedDown = 0;
             int scoreLeft = 0, scoreRight = 0, scoreUp = 0, scoreDown = 0;
 
@@ -47,10 +51,10 @@ namespace Unity.MLAgentsExamples
             {
                 for (var c = newCol - 1; c >= 0; c--)
                 {
-                    if (m_Board.GetCellType(newRow, c) == newValue)
+                    if (Board.GetCellType(newRow, c) == newValue)
                     {
                         matchedLeft++;
-                        scoreLeft += pointsByType[m_Board.GetSpecialType(newRow, c)];
+                        scoreLeft += pointsByType[Board.GetSpecialType(newRow, c)];
                     }
                     else
                         break;
@@ -61,10 +65,10 @@ namespace Unity.MLAgentsExamples
             {
                 for (var c = newCol + 1; c < currentBoardSize.Columns; c++)
                 {
-                    if (m_Board.GetCellType(newRow, c) == newValue)
+                    if (Board.GetCellType(newRow, c) == newValue)
                     {
                         matchedRight++;
-                        scoreRight += pointsByType[m_Board.GetSpecialType(newRow, c)];
+                        scoreRight += pointsByType[Board.GetSpecialType(newRow, c)];
                     }
                     else
                         break;
@@ -75,10 +79,10 @@ namespace Unity.MLAgentsExamples
             {
                 for (var r = newRow + 1; r < currentBoardSize.Rows; r++)
                 {
-                    if (m_Board.GetCellType(r, newCol) == newValue)
+                    if (Board.GetCellType(r, newCol) == newValue)
                     {
                         matchedUp++;
-                        scoreUp += pointsByType[m_Board.GetSpecialType(r, newCol)];
+                        scoreUp += pointsByType[Board.GetSpecialType(r, newCol)];
                     }
                     else
                         break;
@@ -89,10 +93,10 @@ namespace Unity.MLAgentsExamples
             {
                 for (var r = newRow - 1; r >= 0; r--)
                 {
-                    if (m_Board.GetCellType(r, newCol) == newValue)
+                    if (Board.GetCellType(r, newCol) == newValue)
                     {
                         matchedDown++;
-                        scoreDown += pointsByType[m_Board.GetSpecialType(r, newCol)];
+                        scoreDown += pointsByType[Board.GetSpecialType(r, newCol)];
                     }
                     else
                         break;

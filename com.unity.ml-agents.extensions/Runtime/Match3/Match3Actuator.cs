@@ -12,8 +12,8 @@ namespace Unity.MLAgents.Extensions.Match3
     /// </summary>
     public class Match3Actuator : IActuator, IBuiltInActuator
     {
-        protected AbstractBoard m_Board;
-        protected System.Random m_Random;
+        private AbstractBoard m_Board;
+        private System.Random m_Random;
         private ActionSpec m_ActionSpec;
         private bool m_ForceHeuristic;
         private Agent m_Agent;
@@ -137,12 +137,22 @@ namespace Unity.MLAgents.Extensions.Match3
             return BuiltInActuatorType.Match3Actuator;
         }
 
+        /// <inheritdoc/>
         public void Heuristic(in ActionBuffers actionsOut)
         {
             var discreteActions = actionsOut.DiscreteActions;
             discreteActions[0] = GreedyMove();
         }
 
+        /// <summary>
+        /// Returns a valid move that gives the highest value for EvalMovePoints(). If multiple moves have the same
+        /// value, one of them will be chosen with uniform probability.
+        /// </summary>
+        /// <remarks>
+        /// By default, EvalMovePoints() returns 1, so all valid moves are equally likely. Inherit from this class and
+        /// override EvalMovePoints() to use your game's scoring as a better estimate.
+        /// </remarks>
+        /// <returns></returns>
         protected int GreedyMove()
         {
             var bestMoveIndex = 0;
@@ -192,5 +202,4 @@ namespace Unity.MLAgents.Extensions.Match3
             return 1;
         }
     }
-
 }
