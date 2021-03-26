@@ -51,9 +51,9 @@ namespace Unity.MLAgents.Tests
             sensor = new VectorSensor(1, observationType: ObservationType.Default);
             spec = sensor.GetObservationSpec();
             Assert.AreEqual((int)spec.ObservationType, (int)ObservationType.Default);
-            sensor = new VectorSensor(1, observationType: ObservationType.Goal);
+            sensor = new VectorSensor(1, observationType: ObservationType.GoalSignal);
             spec = sensor.GetObservationSpec();
-            Assert.AreEqual((int)spec.ObservationType, (int)ObservationType.Goal);
+            Assert.AreEqual((int)spec.ObservationType, (int)ObservationType.GoalSignal);
         }
 
         [Test]

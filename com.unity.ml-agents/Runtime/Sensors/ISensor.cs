@@ -58,7 +58,7 @@ namespace Unity.MLAgents.Sensors
         /// <summary>
         /// Collected observations contain goal information.
         /// </summary>
-        Goal = 1,
+        GoalSignal = 1,
     }
 
     /// <summary>
