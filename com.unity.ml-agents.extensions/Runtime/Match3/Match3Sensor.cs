@@ -266,11 +266,10 @@ namespace Unity.MLAgents.Extensions.Match3
                     if (h < currentHeight && w < currentWidth)
                     {
                         int oneHotValue = gridValueProvider(h, w);
-                        if (oneHotValue >= channelOffset && oneHotValue <= channelOffset + 3)
+                        if (oneHotValue >= channelOffset && oneHotValue < channelOffset + 3)
                         {
                             colorVal = s_OneHotColors[oneHotValue - channelOffset];
                         }
-
                     }
                     m_Colors[i++] = colorVal;
                 }

@@ -87,7 +87,6 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             var cellSensor = sensors[0];
             var specialSensor = sensors[1];
 
-
             {
                 var expectedShape = new InplaceArray<int>(3 * 3 * 2);
                 Assert.AreEqual(expectedShape, cellSensor.GetObservationSpec().Shape);
