@@ -155,6 +155,7 @@ namespace Unity.MLAgents.Extensions.Match3
             var tempTexture = new Texture2D(width, height, TextureFormat.RGB24, false);
             var converter = new OneHotToTextureUtil(height, width);
             var bytesOut = new List<byte>();
+            var currentBoardSize = m_Board.GetCurrentBoardSize();
 
             // Encode the cell types or special types as batches of PNGs
             // This is potentially wasteful, e.g. if there are 4 cell types and 1 special type, we could
@@ -163,7 +164,13 @@ namespace Unity.MLAgents.Extensions.Match3
             var numCellImages = (m_OneHotSize + 2) / 3;
             for (var i = 0; i < numCellImages; i++)
             {
-                converter.EncodeToTexture(m_GridValues, tempTexture, 3 * i);
+                converter.EncodeToTexture(
+                    m_GridValues,
+                    tempTexture,
+                    3 * i,
+                    currentBoardSize.Rows,
+                    currentBoardSize.Columns
+                );
                 bytesOut.AddRange(tempTexture.EncodeToPNG());
             }
 
@@ -229,35 +236,43 @@ namespace Unity.MLAgents.Extensions.Match3
     internal class OneHotToTextureUtil
     {
         Color[] m_Colors;
-        int m_Height;
-        int m_Width;
+        int m_MaxHeight;
+        int m_MaxWidth;
         private static Color[] s_OneHotColors = { Color.red, Color.green, Color.blue };
 
-        public OneHotToTextureUtil(int height, int width)
+        public OneHotToTextureUtil(int maxHeight, int maxWidth)
         {
-            m_Colors = new Color[height * width];
-            m_Height = height;
-            m_Width = width;
+            m_Colors = new Color[maxHeight * maxWidth];
+            m_MaxHeight = maxHeight;
+            m_MaxWidth = maxWidth;
         }
 
-        public void EncodeToTexture(GridValueProvider gridValueProvider, Texture2D texture, int channelOffset)
+        public void EncodeToTexture(
+            GridValueProvider gridValueProvider,
+            Texture2D texture,
+            int channelOffset,
+            int currentHeight,
+            int currentWidth
+            )
         {
             var i = 0;
             // There's an implicit flip converting to PNG from texture, so make sure we
             // counteract that when forming the texture by iterating through h in reverse.
-            for (var h = m_Height - 1; h >= 0; h--)
+            for (var h = m_MaxHeight - 1; h >= 0; h--)
             {
-                for (var w = 0; w < m_Width; w++)
+                for (var w = 0; w < m_MaxWidth; w++)
                 {
-                    int oneHotValue = gridValueProvider(h, w);
-                    if (oneHotValue < channelOffset || oneHotValue >= channelOffset + 3)
+                    var colorVal = Color.black;
+                    if (h < currentHeight && w < currentWidth)
                     {
-                        m_Colors[i++] = Color.black;
+                        int oneHotValue = gridValueProvider(h, w);
+                        if (oneHotValue >= channelOffset && oneHotValue <= channelOffset + 3)
+                        {
+                            colorVal = s_OneHotColors[oneHotValue - channelOffset];
+                        }
+
                     }
-                    else
-                    {
-                        m_Colors[i++] = s_OneHotColors[oneHotValue - channelOffset];
-                    }
+                    m_Colors[i++] = colorVal;
                 }
             }
             texture.SetPixels(m_Colors);

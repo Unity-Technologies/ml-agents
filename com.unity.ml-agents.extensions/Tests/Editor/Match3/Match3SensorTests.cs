@@ -15,6 +15,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         private bool WritePNGDataToFile = false;
         private const string k_CellObservationPng = "match3obs";
         private const string k_SpecialObservationPng = "match3obs_special";
+        private const string k_Suffix2x2 = "_2x2_";
 
         [Test]
         public void TestVectorObservations()
@@ -267,8 +268,9 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             }
         }
 
-        [Test]
-        public void TestCompressedVisualObservations()
+        [TestCase(true, TestName = "Full Board")]
+        [TestCase(false, TestName = "Small Board")]
+        public void TestCompressedVisualObservations(bool fullBoard)
         {
             var boardString =
                 @"000
@@ -277,6 +279,14 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             var gameObj = new GameObject("board");
             var board = gameObj.AddComponent<StringBoard>();
             board.SetBoard(boardString);
+            string pngPrefix = k_CellObservationPng;
+            if (!fullBoard)
+            {
+                board.CurrentRows = 2;
+                board.CurrentColumns = 2;
+                pngPrefix = k_CellObservationPng + k_Suffix2x2;
+            }
+
 
             var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
             sensorComponent.ObservationType = Match3ObservationType.CompressedVisual;
@@ -291,15 +301,17 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             if (WritePNGDataToFile)
             {
                 // Enable this if the format of the observation changes
-                SavePNGs(pngData, k_CellObservationPng);
+                SavePNGs(pngData, pngPrefix);
             }
 
-            var expectedPng = LoadPNGs(k_CellObservationPng, 1);
+            var expectedPng = LoadPNGs(pngPrefix, 1);
             Assert.AreEqual(expectedPng, pngData);
         }
 
-        [Test]
-        public void TestCompressedVisualObservationsSpecial()
+
+        [TestCase(true, TestName = "Full Board")]
+        [TestCase(false, TestName = "Small Board")]
+        public void TestCompressedVisualObservationsSpecial(bool fullBoard)
         {
             var boardString =
                 @"000
@@ -314,18 +326,24 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             var board = gameObj.AddComponent<StringBoard>();
             board.SetBoard(boardString);
             board.SetSpecial(specialString);
+            var paths = new[] { k_CellObservationPng, k_SpecialObservationPng };
+            if (!fullBoard)
+            {
+                board.CurrentRows = 2;
+                board.CurrentColumns = 2;
+                paths = new[] { k_CellObservationPng + k_Suffix2x2, k_SpecialObservationPng + k_Suffix2x2 };
+            }
 
             var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
             sensorComponent.ObservationType = Match3ObservationType.CompressedVisual;
             var sensors = sensorComponent.CreateSensors();
 
-            var paths = new[] { k_CellObservationPng, k_SpecialObservationPng };
-            var expectedChannels = new[] { 2, 3 };
+            var expectedNumChannels = new[] { 2, 3 };
 
             for (var i = 0; i < 2; i++)
             {
                 var sensor = sensors[i];
-                var expectedShape = new InplaceArray<int>(3, 3, expectedChannels[i]);
+                var expectedShape = new InplaceArray<int>(3, 3, expectedNumChannels[i]);
                 Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
 
                 Assert.AreEqual(SensorCompressionType.PNG, sensor.GetCompressionSpec().SensorCompressionType);
@@ -340,7 +358,6 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
                 var expectedPng = LoadPNGs(paths[i], 1);
                 Assert.AreEqual(expectedPng, pngData);
             }
-
         }
 
         /// <summary>
