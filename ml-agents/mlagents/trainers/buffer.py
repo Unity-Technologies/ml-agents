@@ -430,7 +430,7 @@ class AgentBuffer(MutableMapping):
             * sequence_length
         )  # Sample random sequence starts
         for key in self:
-            mb_list = [self[key][i : i + sequence_length] for i in start_idxes]
+            mb_list = (self[key][i : i + sequence_length] for i in start_idxes)
             # See comparison of ways to make a list from a list of lists here:
             # https://stackoverflow.com/questions/952914/how-to-make-a-flat-list-out-of-list-of-lists
             mini_batch[key].set(list(itertools.chain.from_iterable(mb_list)))
