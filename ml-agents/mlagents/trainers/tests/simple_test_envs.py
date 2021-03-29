@@ -121,7 +121,7 @@ class SimpleEnvironment(BaseEnv):
                     obs_spec[i] = ObservationSpec(
                         shape=obs_spec[i].shape,
                         dimension_property=obs_spec[i].dimension_property,
-                        observation_type=ObservationType.GOAL,
+                        observation_type=ObservationType.GOAL_SIGNAL,
                         name=obs_spec[i].name,
                     )
         return obs_spec

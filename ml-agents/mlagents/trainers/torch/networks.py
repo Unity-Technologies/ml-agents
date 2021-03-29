@@ -60,7 +60,7 @@ class ObservationEncoder(nn.Module):
         self._total_goal_enc_size = 0
         self._goal_processor_indices: List[int] = []
         for i in range(len(observation_specs)):
-            if observation_specs[i].observation_type == ObservationType.GOAL:
+            if observation_specs[i].observation_type == ObservationType.GOAL_SIGNAL:
                 self._total_goal_enc_size += self.embedding_sizes[i]
                 self._goal_processor_indices.append(i)
 
