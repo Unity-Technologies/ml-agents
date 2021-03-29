@@ -575,7 +575,7 @@ must learn to solve different tasks that are similar by some aspects because the
 agent will learn to reuse learnings from different tasks to generalize better.
 In Unity, you can specify that a `VectorSensor` or
 a `CameraSensor` is a goal by attaching a `VectorSensorComponent` or a
-`CameraSensorComponent` to the Agent can selecting `Goal` as `Observation Type`.
+`CameraSensorComponent` to the Agent and selecting `Goal Signal` as `Observation Type`.
 On the trainer side, there are two different ways to condition the policy. This
 setting is determined by the
 [conditioning_type parameter](Training-Configuration-File.md#common-trainer-configurations).
