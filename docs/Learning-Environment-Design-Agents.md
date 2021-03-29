@@ -562,7 +562,7 @@ between -1 and 1.
  of an entity to the `BufferSensor`.
  - Normalize the entities observations before feeding them into the `BufferSensor`.
 
-### Goal Signals
+### Goal Signal
 
 It is possible for agents to collect observations that will be treated as "goal signals".
 A goal signal is used to condition the policy of the agent, meaning that if the goal
