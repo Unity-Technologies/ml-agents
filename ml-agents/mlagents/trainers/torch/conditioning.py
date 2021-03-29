@@ -38,7 +38,7 @@ class ConditionalEncoder(torch.nn.Module):
         """
         super().__init__()
         layers: List[torch.nn.Module] = []
-        prev_size = input_size + goal_size
+        prev_size = input_size
         for i in range(num_layers):
             if num_layers - i <= num_conditional_layers:
                 # This means layer i is a conditional layer since the conditional
@@ -62,7 +62,7 @@ class ConditionalEncoder(torch.nn.Module):
     def forward(
         self, input_tensor: torch.Tensor, goal_tensor: torch.Tensor
     ) -> torch.Tensor:  # type: ignore
-        activation = torch.cat([input_tensor, goal_tensor], dim=-1)
+        activation = input_tensor
         for layer in self.layers:
             if isinstance(layer, HyperNetwork):
                 activation = layer(activation, goal_tensor)

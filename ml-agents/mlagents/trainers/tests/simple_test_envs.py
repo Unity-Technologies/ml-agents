@@ -5,6 +5,7 @@ import numpy as np
 from mlagents_envs.base_env import (
     ActionSpec,
     ObservationSpec,
+    ObservationType,
     ActionTuple,
     BaseEnv,
     BehaviorSpec,
@@ -49,6 +50,7 @@ class SimpleEnvironment(BaseEnv):
         vec_obs_size=OBS_SIZE,
         var_len_obs_size=VAR_LEN_SIZE,
         action_sizes=(1, 0),
+        goal_indices=None,
     ):
         super().__init__()
         self.num_visual = num_visual
@@ -57,6 +59,7 @@ class SimpleEnvironment(BaseEnv):
         self.vis_obs_size = vis_obs_size
         self.vec_obs_size = vec_obs_size
         self.var_len_obs_size = var_len_obs_size
+        self.goal_indices = goal_indices
         continuous_action_size, discrete_action_size = action_sizes
         discrete_tuple = tuple(2 for _ in range(discrete_action_size))
         action_spec = ActionSpec(continuous_action_size, discrete_tuple)
@@ -112,6 +115,15 @@ class SimpleEnvironment(BaseEnv):
         for _ in range(self.num_var_len):
             obs_shape.append(self.var_len_obs_size)
         obs_spec = create_observation_specs_with_shapes(obs_shape)
+        if self.goal_indices is not None:
+            for i in range(len(obs_spec)):
+                if i in self.goal_indices:
+                    obs_spec[i] = ObservationSpec(
+                        shape=obs_spec[i].shape,
+                        dimension_property=obs_spec[i].dimension_property,
+                        observation_type=ObservationType.GOAL,
+                        name=obs_spec[i].name,
+                    )
         return obs_spec
 
     def _make_obs(self, value: float) -> List[np.ndarray]:
@@ -348,6 +360,7 @@ class MultiAgentEnvironment(BaseEnv):
         var_len_obs_size=VAR_LEN_SIZE,
         action_sizes=(1, 0),
         num_agents=2,
+        goal_indices=None,
     ):
         super().__init__()
         self.envs = {}
@@ -369,6 +382,7 @@ class MultiAgentEnvironment(BaseEnv):
                     vec_obs_size,
                     var_len_obs_size,
                     action_sizes,
+                    goal_indices,
                 )
                 self.dones[name_and_num] = False
                 self.envs[name_and_num].reset()
