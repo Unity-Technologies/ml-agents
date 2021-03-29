@@ -24,17 +24,22 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         {
             var maxRows = 8;
             var maxCols = 13;
-            // make sure using Next agrees with FromMoveIndex.
-            var advanceMove = Move.FromMoveIndex(0, maxRows, maxCols);
-            for (var moveIndex = 0; moveIndex < Move.NumPotentialMoves(maxRows, maxCols); moveIndex++)
+            var boardSize = new BoardSize
             {
-                var moveFromIndex = Move.FromMoveIndex(moveIndex, maxRows, maxCols);
+                Rows = maxRows,
+                Columns = maxCols
+            };
+            // make sure using Next agrees with FromMoveIndex.
+            var advanceMove = Move.FromMoveIndex(0, boardSize);
+            for (var moveIndex = 0; moveIndex < Move.NumPotentialMoves(boardSize); moveIndex++)
+            {
+                var moveFromIndex = Move.FromMoveIndex(moveIndex, boardSize);
                 Assert.AreEqual(advanceMove.MoveIndex, moveFromIndex.MoveIndex);
                 Assert.AreEqual(advanceMove.Row, moveFromIndex.Row);
                 Assert.AreEqual(advanceMove.Column, moveFromIndex.Column);
                 Assert.AreEqual(advanceMove.Direction, moveFromIndex.Direction);
 
-                advanceMove.Next(maxRows, maxCols);
+                advanceMove.Next(boardSize);
             }
         }
 

@@ -118,14 +118,14 @@ namespace Unity.MLAgents.Extensions.Match3
             var maxBoardSize = GetMaxBoardSize();
             var currentBoardSize = GetCurrentBoardSize();
 
-            var currentMove = Move.FromMoveIndex(0, maxBoardSize.Rows, maxBoardSize.Columns);
+            var currentMove = Move.FromMoveIndex(0, maxBoardSize);
             for (var i = 0; i < NumMoves(); i++)
             {
                 if (currentMove.IsValidForBoardSize(currentBoardSize))
                 {
                     yield return currentMove;
                 }
-                currentMove.Next(maxBoardSize.Rows, maxBoardSize.Columns);
+                currentMove.Next(maxBoardSize);
             }
         }
 
@@ -138,14 +138,14 @@ namespace Unity.MLAgents.Extensions.Match3
             var maxBoardSize = GetMaxBoardSize();
             var currentBoardSize = GetCurrentBoardSize();
 
-            var currentMove = Move.FromMoveIndex(0, maxBoardSize.Rows, maxBoardSize.Columns);
+            var currentMove = Move.FromMoveIndex(0, maxBoardSize);
             for (var i = 0; i < NumMoves(); i++)
             {
                 if (currentMove.IsValidForBoardSize(currentBoardSize) && IsMoveValid(currentMove))
                 {
                     yield return currentMove;
                 }
-                currentMove.Next(maxBoardSize.Rows, maxBoardSize.Columns);
+                currentMove.Next(maxBoardSize);
             }
         }
 

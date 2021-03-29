@@ -65,13 +65,15 @@ namespace Unity.MLAgents.Extensions.Match3
         /// the Move corresponding to an Agent decision.
         /// </summary>
         /// <param name="moveIndex">Must be between 0 and NumPotentialMoves(maxRows, maxCols).</param>
-        /// <param name="maxRows"></param>
-        /// <param name="maxCols"></param>
+        /// <param name="maxBoardSize"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public static Move FromMoveIndex(int moveIndex, int maxRows, int maxCols)
+        public static Move FromMoveIndex(int moveIndex, BoardSize maxBoardSize)
         {
-            if (moveIndex < 0 || moveIndex >= NumPotentialMoves(maxRows, maxCols))
+            var maxRows = maxBoardSize.Rows;
+            var maxCols = maxBoardSize.Columns;
+
+            if (moveIndex < 0 || moveIndex >= NumPotentialMoves(maxBoardSize))
             {
                 throw new ArgumentOutOfRangeException("Invalid move index.");
             }
@@ -102,10 +104,12 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <summary>
         /// Increment the Move to the next MoveIndex, and update the Row, Column, and Direction accordingly.
         /// </summary>
-        /// <param name="maxRows"></param>
-        /// <param name="maxCols"></param>
-        public void Next(int maxRows, int maxCols)
+        /// <param name="maxBoardSize"></param>
+        public void Next(BoardSize maxBoardSize)
         {
+            var maxRows = maxBoardSize.Rows;
+            var maxCols = maxBoardSize.Columns;
+
             var switchoverIndex = (maxCols - 1) * maxRows;
 
             MoveIndex++;
@@ -258,18 +262,6 @@ namespace Unity.MLAgents.Extensions.Match3
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-
-        /// <summary>
-        /// Return the number of potential moves for a board of the given size.
-        /// This is equivalent to the number of internal edges in the board.
-        /// </summary>
-        /// <param name="maxRows"></param>
-        /// <param name="maxCols"></param>
-        /// <returns></returns>
-        public static int NumPotentialMoves(int maxRows, int maxCols)
-        {
-            return maxRows * (maxCols - 1) + (maxRows - 1) * (maxCols);
         }
 
         /// <summary>

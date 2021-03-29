@@ -71,7 +71,7 @@ namespace Unity.MLAgents.Extensions.Match3
                 }
             }
 
-            Move move = Move.FromMoveIndex(moveIndex, m_MaxBoardSize.Rows, m_MaxBoardSize.Columns);
+            Move move = Move.FromMoveIndex(moveIndex, m_MaxBoardSize);
             m_Board.MakeMove(move);
         }
 
@@ -85,7 +85,7 @@ namespace Unity.MLAgents.Extensions.Match3
             {
                 var numMoves = m_Board.NumMoves();
 
-                var currentMove = Move.FromMoveIndex(0, m_MaxBoardSize.Rows, m_MaxBoardSize.Columns);
+                var currentMove = Move.FromMoveIndex(0, m_MaxBoardSize);
                 for (var i = 0; i < numMoves; i++)
                 {
                     // Check that the move is allowed for the current boardSize (e.g. it won't move a piece out of
@@ -98,7 +98,7 @@ namespace Unity.MLAgents.Extensions.Match3
                     {
                         actionMask.SetActionEnabled(branch, i, false);
                     }
-                    currentMove.Next(m_MaxBoardSize.Rows, m_MaxBoardSize.Columns);
+                    currentMove.Next(m_MaxBoardSize);
                 }
 
                 if (!foundValidMove)
