@@ -584,7 +584,7 @@ will be used to generate some of the
 weights of the policy using the goal observations as input. Note that using a
 HyperNetwork requires a lot of computations, it is recommended to use a smaller
 number of hidden units in the policy to alleviate this.
-If set to `none` the goal signals will be considered as regular observations.
+If set to `none` the goal signal will be considered as regular observations.
 
 #### Goal Signal Summary & Best Practices
  - Attach a `VectorSensorComponent` or `CameraSensorComponent` to an agent and
