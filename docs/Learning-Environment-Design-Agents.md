@@ -19,7 +19,7 @@
     - [RayCast Observation Summary & Best Practices](#raycast-observation-summary--best-practices)
   - [Variable Length Observations](#variable-length-observations)
     - [Variable Length Observation Summary & Best Practices](#variable-length-observation-summary--best-practices)
-  - [Goal Signals](#goal-signals)
+  - [Goal Signal](#goal-signal)
     - [Goal Signal Summary & Best Practices](#goal-signal-summary--best-practices)
 - [Actions and Actuators](#actions-and-actuators)
   - [Continuous Actions](#continuous-actions)
