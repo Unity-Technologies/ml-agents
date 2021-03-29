@@ -989,7 +989,7 @@ namespace Unity.MLAgents
             }
 
             // Sort the Sensors by name to ensure determinism
-            sensors.Sort((x, y) => x.GetName().CompareTo(y.GetName()));
+            SensorUtils.SortSensors(sensors);
 
 #if DEBUG
             // Make sure the names are actually unique

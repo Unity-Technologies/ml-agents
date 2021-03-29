@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Unity.MLAgents.Sensors
 {
     /// <summary>
@@ -122,6 +126,15 @@ namespace Unity.MLAgents.Sensors
             }
 
             return count;
+        }
+    }
+
+    internal static class SensorUtils
+    {
+        internal static void SortSensors(List<ISensor> sensors)
+        {
+            // Use CompareOrdinal to ensure consistent sorting between different culture settings.
+            sensors.Sort((x, y) => string.CompareOrdinal(x.GetName(), y.GetName()));
         }
     }
 }
