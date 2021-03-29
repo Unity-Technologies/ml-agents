@@ -99,8 +99,8 @@ namespace Unity.MLAgents
             int[] stateShape = initState.shape.ToArray();
             if (MyTimeScaleSetting.instance.LoadTrainedModel && MyTimeScaleSetting.instance.Model != null)
             {
-                Debug.Log("load model");
                 var modelPath = AssetDatabase.GetAssetPath(MyTimeScaleSetting.instance.Model);
+                Debug.Log($"load model: {modelPath}");
                 initState = LoadModelFromFile(modelPath, stateShape);
             }
 

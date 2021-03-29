@@ -81,7 +81,7 @@ namespace Unity.MLAgents
                 var samples = m_Buffer.SampleBatch(m_Config.batchSize);
                 loss += m_ModelRunner.UpdateModel(samples);
             }
-            Debug.Log($"Loss: {loss/m_Config.numSamplingAndUpdates}");
+            Debug.Log($"Step {m_TrainingStep} Loss: {loss/m_Config.numSamplingAndUpdates}");
             m_ModelRunner.SaveModelToFile();
 
             // Update target network
