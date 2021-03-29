@@ -3,6 +3,9 @@ using UnityEngine.Serialization;
 
 namespace Unity.MLAgents.Sensors
 {
+    /// <summary>
+    /// A SensorComponent that creates a <see cref="VectorSensor"/>.
+    /// </summary>
     [AddComponentMenu("ML Agents/Vector Sensor", (int)MenuGroup.Sensors)]
     public class VectorSensorComponent : SensorComponent
     {
@@ -18,6 +21,9 @@ namespace Unity.MLAgents.Sensors
         [HideInInspector, SerializeField]
         private string m_SensorName = "VectorSensor";
 
+        /// <summary>
+        /// The number of float observations in the VectorSensor
+        /// </summary>
         public int ObservationSize
         {
             get { return m_ObservationSize; }
@@ -32,6 +38,9 @@ namespace Unity.MLAgents.Sensors
 
         VectorSensor m_Sensor;
 
+        /// <summary>
+        /// The type of the observation.
+        /// </summary>
         public ObservationType ObservationType
         {
             get { return m_ObservationType; }
@@ -48,6 +57,9 @@ namespace Unity.MLAgents.Sensors
             return new ISensor[] { m_Sensor };
         }
 
+        /// <summary>
+        /// Returns the underlying VectorSensor
+        /// </summary>
         public VectorSensor GetSensor()
         {
             return m_Sensor;

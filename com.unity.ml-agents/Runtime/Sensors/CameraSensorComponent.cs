@@ -81,7 +81,7 @@ namespace Unity.MLAgents.Sensors
         /// <summary>
         /// The type of the observation.
         /// </summary>
-        public ObservationType SensorObservationType
+        public ObservationType ObservationType
         {
             get { return m_ObservationType; }
             set { m_ObservationType = value; UpdateSensor(); }
