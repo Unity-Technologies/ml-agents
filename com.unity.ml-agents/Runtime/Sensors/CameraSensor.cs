@@ -118,9 +118,9 @@ namespace Unity.MLAgents.Sensors
         public void Reset() { }
 
         /// <inheritdoc/>
-        public SensorCompressionType GetCompressionType()
+        public CompressionSpec GetCompressionSpec()
         {
-            return m_CompressionType;
+            return new CompressionSpec(m_CompressionType);
         }
 
         /// <summary>
@@ -198,6 +198,5 @@ namespace Unity.MLAgents.Sensors
         {
             return BuiltInSensorType.CameraSensor;
         }
-
     }
 }

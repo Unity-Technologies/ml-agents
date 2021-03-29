@@ -62,9 +62,9 @@ public class TestTextureSensor : ISensor
     public void Reset() { }
 
     /// <inheritdoc/>
-    public SensorCompressionType GetCompressionType()
+    public CompressionSpec GetCompressionSpec()
     {
-        return m_CompressionType;
+        return CompressionSpec.Default();
     }
 }
 

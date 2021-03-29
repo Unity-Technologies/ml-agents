@@ -82,30 +82,14 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public override ISensor CreateSensor()
+        public override ISensor[] CreateSensors()
         {
             m_Sensor = new RenderTextureSensor(RenderTexture, Grayscale, SensorName, m_Compression);
             if (ObservationStacks != 1)
             {
-                return new StackingSensor(m_Sensor, ObservationStacks);
+                return new ISensor[] { new StackingSensor(m_Sensor, ObservationStacks) };
             }
-            return m_Sensor;
-        }
-
-        /// <inheritdoc/>
-        public override int[] GetObservationShape()
-        {
-            var width = RenderTexture != null ? RenderTexture.width : 0;
-            var height = RenderTexture != null ? RenderTexture.height : 0;
-            var observationShape = new[] { height, width, Grayscale ? 1 : 3 };
-
-            var stacks = ObservationStacks > 1 ? ObservationStacks : 1;
-            if (stacks > 1)
-            {
-                observationShape[2] *= stacks;
-            }
-
-            return observationShape;
+            return new ISensor[] { m_Sensor };
         }
 
         /// <summary>

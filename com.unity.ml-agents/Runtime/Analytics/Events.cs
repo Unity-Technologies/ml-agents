@@ -117,7 +117,7 @@ namespace Unity.MLAgents.Analytics
             return new EventObservationSpec
             {
                 SensorName = sensor.GetName(),
-                CompressionType = sensor.GetCompressionType().ToString(),
+                CompressionType = sensor.GetCompressionSpec().SensorCompressionType.ToString(),
                 BuiltInSensorType = (int)builtInSensorType,
                 DimensionInfos = dimInfos,
             };

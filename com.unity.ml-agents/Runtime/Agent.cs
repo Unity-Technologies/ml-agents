@@ -87,9 +87,9 @@ namespace Unity.MLAgents
     internal class AgentVectorActuator : VectorActuator
     {
         public AgentVectorActuator(IActionReceiver actionReceiver,
-            IHeuristicProvider heuristicProvider,
-            ActionSpec actionSpec,
-            string name = "VectorActuator"
+                                   IHeuristicProvider heuristicProvider,
+                                   ActionSpec actionSpec,
+                                   string name = "VectorActuator"
         ) : base(actionReceiver, heuristicProvider, actionSpec, name)
         { }
 
@@ -617,7 +617,7 @@ namespace Unity.MLAgents
         public void SetModel(
             string behaviorName,
             NNModel model,
-            InferenceDevice inferenceDevice = InferenceDevice.CPU)
+            InferenceDevice inferenceDevice = InferenceDevice.Default)
         {
             if (behaviorName == m_PolicyFactory.BehaviorName &&
                 model == m_PolicyFactory.Model &&
@@ -692,9 +692,7 @@ namespace Unity.MLAgents
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
         {
-#if DEBUG
             Utilities.DebugCheckNanAndInfinity(reward, nameof(reward), nameof(SetReward));
-#endif
             m_CumulativeReward += (reward - m_Reward);
             m_Reward = reward;
         }
@@ -722,26 +720,20 @@ namespace Unity.MLAgents
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
         {
-#if DEBUG
             Utilities.DebugCheckNanAndInfinity(increment, nameof(increment), nameof(AddReward));
-#endif
             m_Reward += increment;
             m_CumulativeReward += increment;
         }
 
         internal void SetGroupReward(float reward)
         {
-#if DEBUG
             Utilities.DebugCheckNanAndInfinity(reward, nameof(reward), nameof(SetGroupReward));
-#endif
             m_GroupReward = reward;
         }
 
         internal void AddGroupReward(float increment)
         {
-#if DEBUG
             Utilities.DebugCheckNanAndInfinity(increment, nameof(increment), nameof(AddGroupReward));
-#endif
             m_GroupReward += increment;
         }
 
@@ -976,7 +968,7 @@ namespace Unity.MLAgents
             sensors.Capacity += attachedSensorComponents.Length;
             foreach (var component in attachedSensorComponents)
             {
-                sensors.Add(component.CreateSensor());
+                sensors.AddRange(component.CreateSensors());
             }
 
             // Support legacy CollectObservations

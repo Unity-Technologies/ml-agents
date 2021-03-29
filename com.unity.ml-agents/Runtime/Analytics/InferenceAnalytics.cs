@@ -1,9 +1,3 @@
-#if MLA_UNITY_ANALYTICS_MODULE || !UNITY_2019_4_OR_NEWER
-#define MLA_UNITY_ANALYTICS_MODULE_ENABLED
-#endif
-
-
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Unity.Barracuda;
@@ -13,16 +7,16 @@ using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
-#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
+#if MLA_UNITY_ANALYTICS_MODULE
 using UnityEngine.Analytics;
 #endif
 
 
 #if UNITY_EDITOR
 using UnityEditor;
-#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
+#if MLA_UNITY_ANALYTICS_MODULE
 using UnityEditor.Analytics;
-#endif // MLA_UNITY_ANALYTICS_MODULE_ENABLED
+#endif // MLA_UNITY_ANALYTICS_MODULE
 #endif // UNITY_EDITOR
 
 
@@ -50,36 +44,34 @@ namespace Unity.MLAgents.Analytics
         const int k_MaxNumberOfElements = 1000;
 
 
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
         /// <summary>
         /// Models that we've already sent events for.
         /// </summary>
         private static HashSet<NNModel> s_SentModels;
+#endif
 
         static bool EnableAnalytics()
         {
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
             if (s_EventRegistered)
             {
                 return true;
             }
 
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE_ENABLED
             AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(k_EventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey, k_EventVersion);
             if (result == AnalyticsResult.Ok)
             {
                 s_EventRegistered = true;
             }
-#elif MLA_UNITY_ANALYTICS_MODULE_ENABLED
-            AnalyticsResult result = AnalyticsResult.UnsupportedPlatform;
-            if (result == AnalyticsResult.Ok)
-            {
-                s_EventRegistered = true;
-            }
-#endif
             if (s_EventRegistered && s_SentModels == null)
             {
                 s_SentModels = new HashSet<NNModel>();
             }
 
+#else  // no editor, no analytics
+            s_EventRegistered = false;
+#endif
             return s_EventRegistered;
         }
 
@@ -104,7 +96,7 @@ namespace Unity.MLAgents.Analytics
         /// <param name="actionSpec">ActionSpec for the Agent. Used to generate information about the action space.</param>
         /// <param name="actuators">List of IActuators for the Agent. Used to generate information about the action space.</param>
         /// <returns></returns>
-        [Conditional("MLA_UNITY_ANALYTICS_MODULE_ENABLED")]
+        [Conditional("MLA_UNITY_ANALYTICS_MODULE")]
         public static void InferenceModelSet(
             NNModel nnModel,
             string behaviorName,
@@ -114,6 +106,7 @@ namespace Unity.MLAgents.Analytics
             IList<IActuator> actuators
         )
         {
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
             // The event shouldn't be able to report if this is disabled but if we know we're not going to report
             // Lets early out and not waste time gathering all the data
             if (!IsAnalyticsEnabled())
@@ -133,13 +126,10 @@ namespace Unity.MLAgents.Analytics
             var data = GetEventForModel(nnModel, behaviorName, inferenceDevice, sensors, actionSpec, actuators);
             // Note - to debug, use JsonUtility.ToJson on the event.
             // Debug.Log(JsonUtility.ToJson(data, true));
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE_ENABLED
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
                 EditorAnalytics.SendEventWithLimit(k_EventName, data, k_EventVersion);
             }
-#else
-            return;
 #endif
         }
 
@@ -181,7 +171,7 @@ namespace Unity.MLAgents.Analytics
                 inferenceEvent.BarracudaModelProducer = "tensorflow_to_barracuda.py";
             }
 
-#if UNITY_2019_3_OR_NEWER && UNITY_EDITOR
+#if UNITY_EDITOR
             var barracudaPackageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(Tensor).Assembly);
             inferenceEvent.BarracudaPackageVersion = barracudaPackageInfo.version;
 #else

@@ -26,11 +26,10 @@ namespace Unity.MLAgents.Tests
                     renderTexComponent.Grayscale = grayscale;
                     renderTexComponent.CompressionType = compression;
 
-                    var expectedShape = new[] { height, width, grayscale ? 1 : 3 };
-                    Assert.AreEqual(expectedShape, renderTexComponent.GetObservationShape());
+                    var expectedShape = new InplaceArray<int>(height, width, grayscale ? 1 : 3);
 
-                    var sensor = renderTexComponent.CreateSensor();
-                    Assert.AreEqual(InplaceArray<int>.FromList(expectedShape), sensor.GetObservationSpec().Shape);
+                    var sensor = renderTexComponent.CreateSensors()[0];
+                    Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
                     Assert.AreEqual(typeof(RenderTextureSensor), sensor.GetType());
                 }
             }

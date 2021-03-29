@@ -54,13 +54,13 @@ may take several minutes to resolve the packages the first time that you add it.
 
 ## Requirements
 
-This version of the Unity ML-Agents Extensions package is compatible with the
-following versions of the Unity Editor:
+This version of the Unity ML-Agents package is compatible with the following
+versions of the Unity Editor:
 
-- If using the `InputActuatorComponent`
-    - 2019.4 or later
-    - install the `com.unity.inputsystem` package version `1.1.0-preview.3` or later.
-- Else 2018.4 and later
+- 2019.4 and later
+
+If using the `InputActuatorComponent`
+- install the `com.unity.inputsystem` package version `1.1.0-preview.3` or later.
 
 ## Known Limitations
 - For the `InputActuatorComponent`

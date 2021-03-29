@@ -83,6 +83,7 @@ namespace Unity.MLAgents.Inference
                     case InferenceDevice.Burst:
                         executionDevice = WorkerFactory.Type.CSharpBurst;
                         break;
+                    case InferenceDevice.Default: // fallthrough
                     default:
                         executionDevice = WorkerFactory.Type.CSharpBurst;
                         break;

@@ -21,25 +21,21 @@ namespace Unity.MLAgents.Extensions.Match3
         public Match3ObservationType ObservationType = Match3ObservationType.Vector;
 
         /// <inheritdoc/>
-        public override ISensor CreateSensor()
+        public override ISensor[] CreateSensors()
         {
             var board = GetComponent<AbstractBoard>();
-            return new Match3Sensor(board, ObservationType, SensorName);
-        }
-
-        /// <inheritdoc/>
-        public override int[] GetObservationShape()
-        {
-            var board = GetComponent<AbstractBoard>();
-            if (board == null)
+            var cellSensor = Match3Sensor.CellTypeSensor(board, ObservationType, SensorName + " (cells)");
+            if (board.NumSpecialTypes > 0)
             {
-                return System.Array.Empty<int>();
+                var specialSensor =
+                    Match3Sensor.SpecialTypeSensor(board, ObservationType, SensorName + " (special)");
+                return new ISensor[] { cellSensor, specialSensor };
             }
-
-            var specialSize = board.NumSpecialTypes == 0 ? 0 : board.NumSpecialTypes + 1;
-            return ObservationType == Match3ObservationType.Vector ?
-                new[] { board.Rows * board.Columns * (board.NumCellTypes + specialSize) } :
-                new[] { board.Rows, board.Columns, board.NumCellTypes + specialSize };
+            else
+            {
+                return new ISensor[] { cellSensor };
+            }
         }
+
     }
 }

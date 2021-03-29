@@ -118,30 +118,15 @@ namespace Unity.MLAgents.Sensors
         /// Creates the <see cref="CameraSensor"/>
         /// </summary>
         /// <returns>The created <see cref="CameraSensor"/> object for this component.</returns>
-        public override ISensor CreateSensor()
+        public override ISensor[] CreateSensors()
         {
             m_Sensor = new CameraSensor(m_Camera, m_Width, m_Height, Grayscale, m_SensorName, m_Compression, m_ObservationType);
 
             if (ObservationStacks != 1)
             {
-                return new StackingSensor(m_Sensor, ObservationStacks);
+                return new ISensor[] { new StackingSensor(m_Sensor, ObservationStacks) };
             }
-            return m_Sensor;
-        }
-
-        /// <summary>
-        /// Computes the observation shape of the sensor.
-        /// </summary>
-        /// <returns>The observation shape of the associated <see cref="CameraSensor"/> object.</returns>
-        public override int[] GetObservationShape()
-        {
-            var stacks = ObservationStacks > 1 ? ObservationStacks : 1;
-            var cameraSensorshape = CameraSensor.GenerateShape(m_Width, m_Height, Grayscale);
-            if (stacks > 1)
-            {
-                cameraSensorshape[cameraSensorshape.Length - 1] *= stacks;
-            }
-            return cameraSensorshape;
+            return new ISensor[] { m_Sensor };
         }
 
         /// <summary>
