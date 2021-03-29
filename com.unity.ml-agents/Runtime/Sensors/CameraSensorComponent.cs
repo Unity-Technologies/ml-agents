@@ -76,6 +76,18 @@ namespace Unity.MLAgents.Sensors
         }
 
         [HideInInspector, SerializeField]
+        ObservationType m_ObservationType;
+
+        /// <summary>
+        /// The type of the observation.
+        /// </summary>
+        public ObservationType ObservationType
+        {
+            get { return m_ObservationType; }
+            set { m_ObservationType = value; UpdateSensor(); }
+        }
+
+        [HideInInspector, SerializeField]
         [Range(1, 50)]
         [Tooltip("Number of camera frames that will be stacked before being fed to the neural network.")]
         int m_ObservationStacks = 1;
@@ -108,7 +120,7 @@ namespace Unity.MLAgents.Sensors
         /// <returns>The created <see cref="CameraSensor"/> object for this component.</returns>
         public override ISensor[] CreateSensors()
         {
-            m_Sensor = new CameraSensor(m_Camera, m_Width, m_Height, Grayscale, m_SensorName, m_Compression);
+            m_Sensor = new CameraSensor(m_Camera, m_Width, m_Height, Grayscale, m_SensorName, m_Compression, m_ObservationType);
 
             if (ObservationStacks != 1)
             {

@@ -44,8 +44,9 @@ namespace Unity.MLAgents.Sensors
         /// <param name="grayscale">Whether to convert the generated image to grayscale or keep color.</param>
         /// <param name="name">The name of the camera sensor.</param>
         /// <param name="compression">The compression to apply to the generated image.</param>
+        /// <param name="observationType">The type of observation.</param>
         public CameraSensor(
-            Camera camera, int width, int height, bool grayscale, string name, SensorCompressionType compression)
+            Camera camera, int width, int height, bool grayscale, string name, SensorCompressionType compression, ObservationType observationType = ObservationType.Default)
         {
             m_Camera = camera;
             m_Width = width;
@@ -53,7 +54,7 @@ namespace Unity.MLAgents.Sensors
             m_Grayscale = grayscale;
             m_Name = name;
             var channels = grayscale ? 1 : 3;
-            m_ObservationSpec = ObservationSpec.Visual(height, width, channels);
+            m_ObservationSpec = ObservationSpec.Visual(height, width, channels, observationType);
             m_CompressionType = compression;
         }
 

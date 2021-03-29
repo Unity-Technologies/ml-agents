@@ -10,9 +10,9 @@ enum CompressionTypeProto {
 
 enum ObservationTypeProto {
     DEFAULT = 0;
-    GOAL = 1;
-    REWARD = 2;
-    MESSAGE = 3;
+    GOAL_SIGNAL = 1;
+    reserved 2; // Reserved for potential "reward" type
+    reserved 3; // Reserved for potential "message" type
 }
 
 message ObservationProto {

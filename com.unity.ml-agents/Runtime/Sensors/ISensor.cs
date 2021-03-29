@@ -42,17 +42,7 @@ namespace Unity.MLAgents.Sensors
         /// <summary>
         /// Collected observations contain goal information.
         /// </summary>
-        Goal = 1,
-
-        /// <summary>
-        /// Collected observations contain reward information.
-        /// </summary>
-        Reward = 2,
-
-        /// <summary>
-        /// Collected observations are messages from other agents.
-        /// </summary>
-        Message = 3,
+        GoalSignal = 1,
     }
 
     /// <summary>

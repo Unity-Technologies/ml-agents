@@ -43,6 +43,20 @@ namespace Unity.MLAgents.Tests
         }
 
         [Test]
+        public void TestObservationType()
+        {
+            var sensor = new VectorSensor(1);
+            var spec = sensor.GetObservationSpec();
+            Assert.AreEqual((int)spec.ObservationType, (int)ObservationType.Default);
+            sensor = new VectorSensor(1, observationType: ObservationType.Default);
+            spec = sensor.GetObservationSpec();
+            Assert.AreEqual((int)spec.ObservationType, (int)ObservationType.Default);
+            sensor = new VectorSensor(1, observationType: ObservationType.GoalSignal);
+            spec = sensor.GetObservationSpec();
+            Assert.AreEqual((int)spec.ObservationType, (int)ObservationType.GoalSignal);
+        }
+
+        [Test]
         public void TestAddObservationInt()
         {
             var sensor = new VectorSensor(1);
