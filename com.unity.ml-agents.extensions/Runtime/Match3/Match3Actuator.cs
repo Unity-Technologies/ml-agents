@@ -1,7 +1,6 @@
-using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using Unity.MLAgents.Actuators;
-using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 
 namespace Unity.MLAgents.Extensions.Match3
@@ -49,27 +48,29 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public ActionSpec ActionSpec => m_ActionSpec;
 
+        [Conditional("DEBUG")]
+        void CheckBoardSizes()
+        {
+            var currentBoardSize = m_Board.GetCurrentBoardSize();
+            if (currentBoardSize >= m_MaxBoardSize)
+            {
+                Debug.LogWarning(
+                    "Current BoardSize is larger than maximum board size was on initialization. This may cause unexpected results.\n" +
+                    $"Original GetMaxBoardSize() result: {m_MaxBoardSize}\n" +
+                    $"GetCurrentBoardSize() result: {currentBoardSize}"
+                );
+            }
+        }
+
         /// <inheritdoc/>
         public void OnActionReceived(ActionBuffers actions)
         {
+            CheckBoardSizes();
             if (m_ForceHeuristic)
             {
                 Heuristic(actions);
             }
             var moveIndex = actions.DiscreteActions[0];
-
-            {
-                var currentMaxBoardSize = m_Board.GetMaxBoardSize();
-
-                if (!currentMaxBoardSize.Equals(m_MaxBoardSize))
-                {
-                    Debug.LogWarning(
-                        $"Board shape changes since actuator initialization. This may cause unexpected results. " +
-                        $"Old MaxBoardSize: {m_MaxBoardSize} " +
-                        $"Current MaxBoardSize: {currentMaxBoardSize}"
-                    );
-                }
-            }
 
             Move move = Move.FromMoveIndex(moveIndex, m_MaxBoardSize);
             m_Board.MakeMove(move);
@@ -79,6 +80,7 @@ namespace Unity.MLAgents.Extensions.Match3
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
             var currentBoardSize = m_Board.GetCurrentBoardSize();
+            CheckBoardSizes();
             const int branch = 0;
             bool foundValidMove = false;
             using (TimerStack.Instance.Scoped("WriteDiscreteActionMask"))

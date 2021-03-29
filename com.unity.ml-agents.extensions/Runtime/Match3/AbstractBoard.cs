@@ -29,8 +29,41 @@ namespace Unity.MLAgents.Extensions.Match3
         /// all cells of the same type are assumed to be equivalent.
         /// </summary>
         public int NumSpecialTypes;
-    }
 
+        /// <summary>
+        /// Check that all fields of the left-hand BoardSize are less than or equal to the field of the right-hand BoardSize
+        /// </summary>
+        /// <param name="lhs"></param>
+        /// <param name="rhs"></param>
+        /// <returns>True if all fields are less than or equal.</returns>
+        public static bool operator <=(BoardSize lhs, BoardSize rhs)
+        {
+            return lhs.Rows <= rhs.Rows && lhs.Columns <= rhs.Columns && lhs.NumCellTypes <= rhs.NumCellTypes &&
+                   lhs.NumSpecialTypes <= rhs.NumSpecialTypes;
+        }
+
+        /// <summary>
+        /// Check that all fields of the left-hand BoardSize are greater than or equal to the field of the right-hand BoardSize
+        /// </summary>
+        /// <param name="lhs"></param>
+        /// <param name="rhs"></param>
+        /// <returns>True if all fields are greater than or equal.</returns>
+        public static bool operator >=(BoardSize lhs, BoardSize rhs)
+        {
+            return lhs.Rows >= rhs.Rows && lhs.Columns >= rhs.Columns && lhs.NumCellTypes >= rhs.NumCellTypes &&
+                   lhs.NumSpecialTypes >= rhs.NumSpecialTypes;
+        }
+
+        /// <summary>
+        /// Return a string representation of the BoardSize.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return
+                $"Rows: {Rows}, Columns: {Columns}, NumCellTypes: {NumCellTypes}, NumSpecialTypes: {NumSpecialTypes}";
+        }
+    }
 
     /// <summary>
     /// An adapter between ML Agents and a Match-3 game.

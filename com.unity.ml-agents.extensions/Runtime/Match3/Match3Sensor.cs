@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
@@ -112,6 +114,20 @@ namespace Unity.MLAgents.Extensions.Match3
             return new Match3Sensor(board, board.GetSpecialType, specialSize, obsType, name);
         }
 
+        [Conditional("DEBUG")]
+        void CheckBoardSizes()
+        {
+            var currentBoardSize = m_Board.GetCurrentBoardSize();
+            if (currentBoardSize >= m_MaxBoardSize)
+            {
+                Debug.LogWarning(
+                    "Current BoardSize is larger than maximum board size was on initialization. This may cause unexpected results.\n" +
+                    $"Original GetMaxBoardSize() result: {m_MaxBoardSize}\n" +
+                    $"GetCurrentBoardSize() result: {currentBoardSize}"
+                );
+            }
+        }
+
         /// <inheritdoc/>
         public ObservationSpec GetObservationSpec()
         {
@@ -121,6 +137,7 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
+            CheckBoardSizes();
             var currentBoardSize = m_Board.GetCurrentBoardSize();
 
             int offset = 0;
@@ -150,6 +167,7 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public byte[] GetCompressedObservation()
         {
+            CheckBoardSizes();
             var height = m_MaxBoardSize.Rows;
             var width = m_MaxBoardSize.Columns;
             var tempTexture = new Texture2D(width, height, TextureFormat.RGB24, false);
