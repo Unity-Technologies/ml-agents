@@ -133,8 +133,8 @@ namespace Unity.MLAgents.Sensors
     {
         internal static void SortSensors(List<ISensor> sensors)
         {
-            // Use CompareOrdinal to ensure consistent sorting between different culture settings.
-            sensors.Sort((x, y) => string.CompareOrdinal(x.GetName(), y.GetName()));
+            // Use InvariantCulture to ensure consistent sorting between different culture settings.
+            sensors.Sort((x, y) => string.Compare(x.GetName(), y.GetName(), StringComparison.InvariantCulture));
         }
     }
 }

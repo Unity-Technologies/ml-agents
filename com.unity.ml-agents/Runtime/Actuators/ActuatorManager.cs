@@ -319,7 +319,7 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         internal static void SortActuators(List<IActuator> actuators)
         {
-            actuators.Sort((x, y) => string.CompareOrdinal(x.Name, y.Name));
+            actuators.Sort((x, y) => string.Compare(x.Name, y.Name, StringComparison.InvariantCulture));
         }
 
         /// <summary>

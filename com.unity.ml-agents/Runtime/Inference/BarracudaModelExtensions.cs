@@ -35,7 +35,7 @@ namespace Unity.MLAgents.Inference
                 names.Add(mem.input);
             }
 
-            names.Sort(StringComparer.Ordinal);
+            names.Sort(StringComparer.InvariantCulture);
 
             return names.ToArray();
         }
@@ -88,7 +88,7 @@ namespace Unity.MLAgents.Inference
                 });
             }
 
-            tensors.Sort((el1, el2) => string.CompareOrdinal(el1.name, el2.name));
+            tensors.Sort((el1, el2) => string.Compare(el1.name, el2.name, StringComparison.InvariantCulture));
 
             return tensors;
         }
@@ -151,7 +151,7 @@ namespace Unity.MLAgents.Inference
                 }
             }
 
-            names.Sort(StringComparer.Ordinal);
+            names.Sort(StringComparer.InvariantCulture);
 
             return names.ToArray();
         }

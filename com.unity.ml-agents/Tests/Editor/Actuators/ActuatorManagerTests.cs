@@ -346,8 +346,8 @@ namespace Unity.MLAgents.Tests.Actuators
             ActuatorManager.SortActuators(actuators);
             CultureInfo.CurrentCulture = originalCulture;
 
-            Assert.AreEqual(actuator0, actuators[0]);
-            Assert.AreEqual(actuator1, actuators[1]);
+            Assert.AreEqual(actuator1, actuators[0]);
+            Assert.AreEqual(actuator0, actuators[1]);
         }
     }
 }

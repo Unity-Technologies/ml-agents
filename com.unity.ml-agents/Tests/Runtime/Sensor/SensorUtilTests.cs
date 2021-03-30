@@ -49,8 +49,8 @@ namespace Unity.MLAgents.Tests
             SensorUtils.SortSensors(sensors);
             CultureInfo.CurrentCulture = originalCulture;
 
-            Assert.AreEqual(sensor0, sensors[0]);
-            Assert.AreEqual(sensor1, sensors[1]);
+            Assert.AreEqual(sensor1, sensors[0]);
+            Assert.AreEqual(sensor0, sensors[1]);
         }
 
     }
