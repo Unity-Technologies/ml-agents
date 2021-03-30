@@ -908,7 +908,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <returns>int[] of the observation shape</returns>
         public ObservationSpec GetObservationSpec()
         {
-            // Lazy update
+            m_ObservationSpec = ObservationSpec.Visual(GridNumSideX, GridNumSideZ, ObservationPerCell);
             var shape = m_ObservationSpec.Shape;
             if (shape[0] != GridNumSideX || shape[1] != GridNumSideZ || shape[2] != ObservationPerCell)
             {
