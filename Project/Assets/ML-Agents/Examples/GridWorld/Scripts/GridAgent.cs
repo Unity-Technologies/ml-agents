@@ -145,12 +145,12 @@ public class GridAgent : Agent
         {
             transform.position = targetPos;
 
-            if (hit.Where(col => col.gameObject.CompareTag("goal")).ToArray().Length == 1)
+            if (hit.Where(col => col.gameObject.CompareTag("plus")).ToArray().Length == 1)
             {
                 ProvideReward(GridGoal.Plus);
                 EndEpisode();
             }
-            else if (hit.Where(col => col.gameObject.CompareTag("pit")).ToArray().Length == 1)
+            else if (hit.Where(col => col.gameObject.CompareTag("ex")).ToArray().Length == 1)
             {
                 ProvideReward(GridGoal.Ex);
                 EndEpisode();

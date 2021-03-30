@@ -15,11 +15,11 @@ public class GridArea : MonoBehaviour
 
     Camera m_AgentCam;
 
-    public GameObject GreenPref;
-    public GameObject RedPref;
+    public GameObject PlusPref;
+    public GameObject ExPref;
     GameObject[] m_Objects;
-    public int numberOfGreen = 1;
-    public int numberOfRed = 1;
+    public int numberOfPlus = 1;
+    public int numberOfEx = 1;
 
     GameObject m_Plane;
     GameObject m_Sn;
@@ -35,7 +35,7 @@ public class GridArea : MonoBehaviour
     {
         m_ResetParams = Academy.Instance.EnvironmentParameters;
 
-        m_Objects = new[] { GreenPref, RedPref };
+        m_Objects = new[] { PlusPref, ExPref };
 
         m_AgentCam = transform.Find("agentCam").GetComponent<Camera>();
 
@@ -56,12 +56,12 @@ public class GridArea : MonoBehaviour
         transform.position = m_InitialPosition * (m_ResetParams.GetWithDefault("gridSize", 5f) + 1);
         var playersList = new List<int>();
 
-        for (var i = 0; i < (int)m_ResetParams.GetWithDefault("numGreenGoals", numberOfGreen); i++)
+        for (var i = 0; i < (int)m_ResetParams.GetWithDefault("numPlusGoals", numberOfPlus); i++)
         {
             playersList.Add(0);
         }
 
-        for (var i = 0; i < (int)m_ResetParams.GetWithDefault("numRedGoals", numberOfRed); i++)
+        for (var i = 0; i < (int)m_ResetParams.GetWithDefault("numExGoals", numberOfEx); i++)
         {
             playersList.Add(1);
         }

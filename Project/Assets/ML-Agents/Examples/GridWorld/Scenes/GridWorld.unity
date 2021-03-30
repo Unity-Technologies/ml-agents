@@ -2725,10 +2725,10 @@ MonoBehaviour:
   actorObjs: []
   players: 
   trueAgent: {fileID: 125487785}
-  GreenPref: {fileID: 1508142483324970, guid: 1ec4e4e96e7514d45b7ebc3ba5a9a481, type: 3}
-  RedPref: {fileID: 1811317785436014, guid: d13ee2db77b3a4dcc8664d2fe2a0f219, type: 3}
-  numberOfGreen: 1
-  numberOfRed: 1
+  PlusPref: {fileID: 1508142483324970, guid: 1ec4e4e96e7514d45b7ebc3ba5a9a481, type: 3}
+  ExPref: {fileID: 1811317785436014, guid: d13ee2db77b3a4dcc8664d2fe2a0f219, type: 3}
+  numberOfPlus: 1
+  numberOfEx: 1
 --- !u!4 &1795599558
 Transform:
   m_ObjectHideFlags: 0
