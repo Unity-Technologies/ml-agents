@@ -171,6 +171,7 @@ class TrainerController:
         try:
             # Initial reset
             self._reset_env(env_manager)
+            self.param_manager.log_current_lesson()
             while self._not_done_training():
                 n_steps = self.advance(env_manager)
                 for _ in range(n_steps):
