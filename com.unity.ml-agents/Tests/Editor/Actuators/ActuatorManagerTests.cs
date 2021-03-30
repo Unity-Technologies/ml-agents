@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
@@ -320,6 +322,32 @@ namespace Unity.MLAgents.Tests.Actuators
             Assert.AreEqual(va1.m_DiscreteBufferSize, 3);
             Assert.IsTrue(va2.m_HeuristicCalled);
             Assert.AreEqual(va2.m_DiscreteBufferSize, 4);
+        }
+
+
+        /// <summary>
+        /// Test that sensors sort by name consistently across culture settings.
+        /// Example strings and cultures taken from
+        /// https://docs.microsoft.com/en-us/globalization/locale/sorting-and-string-comparison
+        /// </summary>
+        /// <param name="culture"></param>
+        [TestCase("da-DK")]
+        [TestCase("en-US")]
+        public void TestSortActuators(string culture)
+        {
+            List<IActuator> actuators = new List<IActuator>();
+            var actuator0 = new TestActuator(ActionSpec.MakeContinuous(2), "Apple");
+            var actuator1 = new TestActuator(ActionSpec.MakeContinuous(2), "Æble");
+            actuators.Add(actuator0);
+            actuators.Add(actuator1);
+
+            var originalCulture = CultureInfo.CurrentCulture;
+            CultureInfo.CurrentCulture = new CultureInfo(culture);
+            ActuatorManager.SortActuators(actuators);
+            CultureInfo.CurrentCulture = originalCulture;
+
+            Assert.AreEqual(actuator1, actuators[0]);
+            Assert.AreEqual(actuator0, actuators[1]);
         }
     }
 }

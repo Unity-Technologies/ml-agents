@@ -44,6 +44,9 @@ depend on the previous behavior, you can explicitly set the Agent's `InferenceDe
 
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Fixed a bug where sensors and actuators could get sorted inconsistently on different systems to different Culture
+settings. Unfortunately, this may require retraining models if it changes the resulting order of the sensors
+or actuators on your system. (#5194)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 
