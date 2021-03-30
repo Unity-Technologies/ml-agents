@@ -30,14 +30,14 @@ behaviors:
         learning_rate: 0.0003
         use_actions: false
         use_vail: false
-        demo_path: Project/Assets/ML-Agents/Examples/PushBlock/Demos/ExpertPush.demo
+        demo_path: Project/Assets/ML-Agents/Examples/PushBlock/Demos/ExpertPushBlock.demo
     keep_checkpoints: 5
-    max_steps: 1000000
+    max_steps: 100000
     time_horizon: 64
     summary_freq: 60000
     threaded: true
     behavioral_cloning:
-      demo_path: Project/Assets/ML-Agents/Examples/PushBlock/Demos/ExpertPush.demo
+      demo_path: Project/Assets/ML-Agents/Examples/PushBlock/Demos/ExpertPushBlock.demo
       steps: 50000
       strength: 1.0
       samples_per_update: 0
