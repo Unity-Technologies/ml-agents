@@ -174,6 +174,12 @@ class UnityToGymWrapper(gym.Env):
             done (boolean/list): whether the episode has ended.
             info (dict): contains auxiliary diagnostic information.
         """
+        if self.game_over:
+            raise UnityGymException(
+                "You are calling 'step()' even though this environment has already "
+                "returned done = True. You must always call 'reset()' once you "
+                "receive 'done = True'."
+            )
         if self._flattener is not None:
             # Translate action into list
             action = self._flattener.lookup_action(action)
