@@ -24,10 +24,13 @@ public class GridAgent : Agent
 
     public enum GridGoal
     {
-        Plus,
-        Ex,
+        GreenPlus,
+        RedEx,
     }
 
+    // Visual representations of the agent. Both are blue on top, but different colors on the bottom - this
+    // allows the user to see which corresponds to the current goal, but it's not visible to the camera.
+    // Only one is active at a time.
     public GameObject GreenBottom;
     public GameObject RedBottom;
 
@@ -40,11 +43,11 @@ public class GridAgent : Agent
         {
             switch (value)
             {
-                case GridGoal.Plus:
+                case GridGoal.GreenPlus:
                     GreenBottom.SetActive(true);
                     RedBottom.SetActive(false);
                     break;
-                case GridGoal.Ex:
+                case GridGoal.RedEx:
                     GreenBottom.SetActive(false);
                     RedBottom.SetActive(true);
                     break;
@@ -147,12 +150,12 @@ public class GridAgent : Agent
 
             if (hit.Where(col => col.gameObject.CompareTag("plus")).ToArray().Length == 1)
             {
-                ProvideReward(GridGoal.Plus);
+                ProvideReward(GridGoal.GreenPlus);
                 EndEpisode();
             }
             else if (hit.Where(col => col.gameObject.CompareTag("ex")).ToArray().Length == 1)
             {
-                ProvideReward(GridGoal.Ex);
+                ProvideReward(GridGoal.RedEx);
                 EndEpisode();
             }
         }

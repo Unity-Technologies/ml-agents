@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Unity.MLAgents;
+using UnityEngine.Serialization;
 
 
 public class GridArea : MonoBehaviour
@@ -15,8 +16,8 @@ public class GridArea : MonoBehaviour
 
     Camera m_AgentCam;
 
-    public GameObject PlusPref;
-    public GameObject ExPref;
+    [FormerlySerializedAs("PlusPref")] public GameObject GreenPlusPrefab;
+    [FormerlySerializedAs("ExPref")] public GameObject RedExPrefab;
     GameObject[] m_Objects;
     public int numberOfPlus = 1;
     public int numberOfEx = 1;
@@ -35,7 +36,7 @@ public class GridArea : MonoBehaviour
     {
         m_ResetParams = Academy.Instance.EnvironmentParameters;
 
-        m_Objects = new[] { PlusPref, ExPref };
+        m_Objects = new[] { GreenPlusPrefab, RedExPrefab };
 
         m_AgentCam = transform.Find("agentCam").GetComponent<Camera>();
 
