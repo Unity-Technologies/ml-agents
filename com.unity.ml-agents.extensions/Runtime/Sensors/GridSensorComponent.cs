@@ -138,14 +138,14 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        GridDepthType m_GridSensorDepthType = GridDepthType.Channel;
+        GridDepthType m_DepthType = GridDepthType.Channel;
         /// <summary>
         /// The data layout that the grid should output.
         /// </summary>
-        public GridDepthType GridSensorDepthType
+        public GridDepthType DepthType
         {
-            get { return m_GridSensorDepthType; }
-            set { m_GridSensorDepthType = value; }
+            get { return m_DepthType; }
+            set { m_DepthType = value; }
         }
 
         [HideInInspector, SerializeField]
@@ -261,7 +261,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 m_ChannelDepth,
                 m_DetectableObjects,
                 m_ObserveMask,
-                m_GridSensorDepthType,
+                m_DepthType,
                 RootReference,
                 m_MaxColliderBufferSize,
                 m_InitialColliderBufferSize,
@@ -302,11 +302,11 @@ namespace Unity.MLAgents.Extensions.Sensors
                     Matrix4x4 cubeTransform;
                     if (m_RotateWithAgent)
                     {
-                        cubeTransform = Matrix4x4.TRS(m_Sensor.CellToPoint(i) + offset, m_RootReference.transform.rotation, scale);
+                        cubeTransform = Matrix4x4.TRS(m_Sensor.CellToPoint(i) + offset, RootReference.transform.rotation, scale);
                     }
                     else
                     {
-                        cubeTransform = Matrix4x4.TRS(m_Sensor.CellToPoint(i, false) + m_RootReference.transform.position + offset, Quaternion.identity, scale);
+                        cubeTransform = Matrix4x4.TRS(m_Sensor.CellToPoint(i, false) + RootReference.transform.position + offset, Quaternion.identity, scale);
                     }
                     Gizmos.matrix = oldGizmoMatrix * cubeTransform;
                     Gizmos.color = m_Sensor.CellActivity[i];

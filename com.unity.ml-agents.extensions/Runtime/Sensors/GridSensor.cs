@@ -39,7 +39,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         Color[] m_DebugColors;
 
         // Buffers and intermediate objects
+        // The buffer to store all collider found
         Collider[] m_ColliderBuffer;
+        // The starting index of each channel in one-hot representation for channel-hot type
         float[] m_ChannelBuffer;
         // The offsets used to specify where within a cell's allotted data, certain observations will be inserted.
         int[] m_ChannelOffsets;
@@ -233,10 +235,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 m_PerceptionBuffer = new float[m_ObservationPerCell * m_NumCells];
                 m_ColliderBuffer = new Collider[Math.Min(m_MaxColliderBufferSize, m_InitialColliderBufferSize)];
-            }
-
-            if (m_PerceptionColors == null)
-            {
+                m_ChannelBuffer = new float[m_ChannelDepth.Length];
                 m_PerceptionColors = new Color[m_NumCells];
             }
 
@@ -323,7 +322,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// at the end, Perceive returns the float array of the perceptions
         /// </summary>
         /// <returns>A float[] containing all of the information collected from the gridsensor</returns>
-        internal void Perceive()
+        void Perceive()
         {
             if (m_ColliderBuffer == null)
             {
@@ -449,6 +448,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="cellCenter">the center of the cell the collider is in</param>
         void ParseCollidersAll(Collider[] foundColliders, int numFound, int cellIndex, Vector3 cellCenter)
         {
+            Profiler.BeginSample("GridSensor.ParseColliders");
             GameObject currentColliderGo = null;
             Vector3 closestColliderPoint = Vector3.zero;
 
@@ -465,6 +465,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 LoadObjectData(currentColliderGo, cellIndex,
                     Vector3.Distance(closestColliderPoint, m_RootReference.transform.position) * m_InverseSphereRadius);
             }
+            Profiler.EndSample();
         }
 
         /// <summary>
@@ -552,9 +553,9 @@ namespace Unity.MLAgents.Extensions.Sensors
                 {
                     // TODO: Create the array already then set the values using "out" in GetObjectData
                     // Using i+1 as the type index as "0" represents "empty"
-                    float[] channelValues = GetObjectData(currentColliderGo, (float)i + 1, normalizedDistance);
-
+                    var channelValues = GetObjectData(currentColliderGo, (float)i + 1, normalizedDistance);
                     ValidateValues(channelValues, currentColliderGo);
+
                     if (m_ShowGizmos)
                     {
                         Color debugRayColor = Color.white;

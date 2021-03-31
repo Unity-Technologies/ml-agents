@@ -33,7 +33,7 @@ namespace Unity.MLAgents.Extensions.Editor
                 EditorGUILayout.PropertyField(so.FindProperty("m_RootReference"), true);
 
                 EditorGUILayout.LabelField("Channel Settings", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(so.FindProperty("m_GridSensorDepthType"), true);
+                EditorGUILayout.PropertyField(so.FindProperty("m_DepthType"), true);
 
                 // channel depth
                 var channelDepth = so.FindProperty("m_ChannelDepth");
