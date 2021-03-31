@@ -2157,7 +2157,7 @@ GameObject:
   - component: {fileID: 114176228333253036}
   - component: {fileID: 8297075921230369060}
   - component: {fileID: 1222199865870203693}
-  - component: {fileID: 4139810307614108350}
+  - component: {fileID: 2010492400}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -2294,7 +2294,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugCommandLineOverride: 
---- !u!114 &4139810307614108350
+--- !u!114 &2010492400
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2323,15 +2323,15 @@ MonoBehaviour:
   m_ObserveMask:
     serializedVersion: 2
     m_Bits: 307
-  m_GridSensorDepthType: 1
+  m_DepthType: 1
   m_RootReference: {fileID: 0}
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
   - {r: 0.40392157, g: 0.7372549, b: 0.41960785, a: 0}
-  - {r: 0.12941177, g: 0.5882353, b: 0.95294124, a: 0}
-  - {r: 0.3921569, g: 0.3921569, b: 0.3921569, a: 0}
-  - {r: 0.74509805, g: 0.227451, b: 0.15294118, a: 0}
+  - {r: 0.12941177, g: 0.5882353, b: 0.9529412, a: 0}
+  - {r: 0.39215687, g: 0.39215687, b: 0.39215687, a: 0}
+  - {r: 0.74509805, g: 0.22745098, b: 0.15294118, a: 0}
   - {r: 0, g: 0, b: 0, a: 0}
   m_GizmoYOffset: 0
   m_ShowGizmos: 0
@@ -2518,7 +2518,7 @@ GameObject:
   - component: {fileID: 114522573150607728}
   - component: {fileID: 114711827726849508}
   - component: {fileID: 259154752087955944}
-  - component: {fileID: 2457109160791959119}
+  - component: {fileID: 7409303125559953495}
   m_Layer: 0
   m_Name: Agent (1)
   m_TagString: agent
@@ -2642,7 +2642,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
---- !u!114 &2457109160791959119
+--- !u!114 &7409303125559953495
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2671,15 +2671,15 @@ MonoBehaviour:
   m_ObserveMask:
     serializedVersion: 2
     m_Bits: 307
-  m_GridSensorDepthType: 1
+  m_DepthType: 1
   m_RootReference: {fileID: 0}
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
-  - {r: 0.4039216, g: 0.7372549, b: 0.41960788, a: 0}
-  - {r: 0.12941177, g: 0.5882353, b: 0.95294124, a: 0}
-  - {r: 0.3921569, g: 0.3921569, b: 0.3921569, a: 0}
-  - {r: 0.74509805, g: 0.227451, b: 0.15294118, a: 0}
+  - {r: 0.40392157, g: 0.7372549, b: 0.41960785, a: 0}
+  - {r: 0.12941177, g: 0.5882353, b: 0.9529412, a: 0}
+  - {r: 0.39215687, g: 0.39215687, b: 0.39215687, a: 0}
+  - {r: 0.74509805, g: 0.22745098, b: 0.15294118, a: 0}
   - {r: 0, g: 0, b: 0, a: 0}
   m_GizmoYOffset: 0
   m_ShowGizmos: 0
@@ -2871,7 +2871,7 @@ GameObject:
   - component: {fileID: 114980787530065684}
   - component: {fileID: 114542632553128056}
   - component: {fileID: 5519119940433428255}
-  - component: {fileID: 9005326418974121781}
+  - component: {fileID: 1115669858669834387}
   m_Layer: 0
   m_Name: Agent (2)
   m_TagString: agent
@@ -2995,7 +2995,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
---- !u!114 &9005326418974121781
+--- !u!114 &1115669858669834387
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3024,15 +3024,15 @@ MonoBehaviour:
   m_ObserveMask:
     serializedVersion: 2
     m_Bits: 307
-  m_GridSensorDepthType: 1
+  m_DepthType: 1
   m_RootReference: {fileID: 0}
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
-  - {r: 0.4039216, g: 0.7372549, b: 0.41960788, a: 0}
-  - {r: 0.12941177, g: 0.5882353, b: 0.95294124, a: 0}
-  - {r: 0.3921569, g: 0.3921569, b: 0.3921569, a: 0}
-  - {r: 0.74509805, g: 0.227451, b: 0.15294118, a: 0}
+  - {r: 0.40392157, g: 0.7372549, b: 0.41960785, a: 0}
+  - {r: 0.12941177, g: 0.5882353, b: 0.9529412, a: 0}
+  - {r: 0.39215687, g: 0.39215687, b: 0.39215687, a: 0}
+  - {r: 0.74509805, g: 0.22745098, b: 0.15294118, a: 0}
   - {r: 0, g: 0, b: 0, a: 0}
   m_GizmoYOffset: 0
   m_ShowGizmos: 0
@@ -3493,7 +3493,7 @@ GameObject:
   - component: {fileID: 114878550018296316}
   - component: {fileID: 114189751434580810}
   - component: {fileID: 5884750436653390196}
-  - component: {fileID: 2793952276816765456}
+  - component: {fileID: 3147256093106034163}
   m_Layer: 0
   m_Name: Agent (4)
   m_TagString: agent
@@ -3617,7 +3617,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
---- !u!114 &2793952276816765456
+--- !u!114 &3147256093106034163
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3646,15 +3646,15 @@ MonoBehaviour:
   m_ObserveMask:
     serializedVersion: 2
     m_Bits: 307
-  m_GridSensorDepthType: 1
+  m_DepthType: 1
   m_RootReference: {fileID: 0}
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
-  - {r: 0.4039216, g: 0.7372549, b: 0.41960788, a: 0}
-  - {r: 0.12941177, g: 0.5882353, b: 0.95294124, a: 0}
-  - {r: 0.3921569, g: 0.3921569, b: 0.3921569, a: 0}
-  - {r: 0.74509805, g: 0.227451, b: 0.15294118, a: 0}
+  - {r: 0.40392157, g: 0.7372549, b: 0.41960785, a: 0}
+  - {r: 0.12941177, g: 0.5882353, b: 0.9529412, a: 0}
+  - {r: 0.39215687, g: 0.39215687, b: 0.39215687, a: 0}
+  - {r: 0.74509805, g: 0.22745098, b: 0.15294118, a: 0}
   - {r: 0, g: 0, b: 0, a: 0}
   m_GizmoYOffset: 0
   m_ShowGizmos: 0
@@ -3832,7 +3832,7 @@ GameObject:
   - component: {fileID: 114035338027591536}
   - component: {fileID: 114235147148547996}
   - component: {fileID: 4768752321433982785}
-  - component: {fileID: 1777454713731295841}
+  - component: {fileID: 3712017990468381030}
   m_Layer: 0
   m_Name: Agent (3)
   m_TagString: agent
@@ -3956,7 +3956,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
---- !u!114 &1777454713731295841
+--- !u!114 &3712017990468381030
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3985,15 +3985,15 @@ MonoBehaviour:
   m_ObserveMask:
     serializedVersion: 2
     m_Bits: 307
-  m_GridSensorDepthType: 1
+  m_DepthType: 1
   m_RootReference: {fileID: 0}
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
-  - {r: 0.4039216, g: 0.7372549, b: 0.41960788, a: 0}
-  - {r: 0.12941177, g: 0.5882353, b: 0.95294124, a: 0}
-  - {r: 0.3921569, g: 0.3921569, b: 0.3921569, a: 0}
-  - {r: 0.74509805, g: 0.227451, b: 0.15294118, a: 0}
+  - {r: 0.40392157, g: 0.7372549, b: 0.41960785, a: 0}
+  - {r: 0.12941177, g: 0.5882353, b: 0.9529412, a: 0}
+  - {r: 0.39215687, g: 0.39215687, b: 0.39215687, a: 0}
+  - {r: 0.74509805, g: 0.22745098, b: 0.15294118, a: 0}
   - {r: 0, g: 0, b: 0, a: 0}
   m_GizmoYOffset: 0
   m_ShowGizmos: 0
