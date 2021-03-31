@@ -147,14 +147,14 @@ def test_poca_get_value_estimates(dummy_config, rnn, visual, discrete):
     )
     for key, val in value_estimates.items():
         assert type(key) is str
-        assert len(val) == 15
+        assert len(val) == time_horizon
     for key, val in baseline_estimates.items():
         assert type(key) is str
-        assert len(val) == 15
+        assert len(val) == time_horizon
 
     if value_memories is not None:
-        assert len(value_memories) == 15
-        assert len(baseline_memories) == 15
+        assert len(value_memories) == time_horizon
+        assert len(baseline_memories) == time_horizon
 
     (
         value_estimates,
