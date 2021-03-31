@@ -45,7 +45,7 @@ depend on the previous behavior, you can explicitly set the Agent's `InferenceDe
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-
+- Fixed an issue with LSTM when used with POCA and `sequence_length` < `time_horizon`. Also improved behavior of LSTMs slightly. (#5206)
 
 ## [1.9.0-preview] - 2021-03-17
 ### Major Changes
