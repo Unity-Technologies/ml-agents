@@ -69,7 +69,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         float m_OffsetGridNumSide;
         // Cached ObservationSpec
         ObservationSpec m_ObservationSpec;
-        // Color m_DebugDefaultColor = new Color(1f, 1f, 1f, 0.25f);
 
 
         public GridSensor(
@@ -203,7 +202,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             for (int i = 0; i < m_NumCells; i++)
             {
-                m_CellPoints[i] = CellToPoint(i, false);
+                m_CellPoints[i] = CellToPoint(i);
             }
         }
 
@@ -336,18 +335,8 @@ namespace Unity.MLAgents.Extensions.Sensors
 
                 for (var cellIndex = 0; cellIndex < m_NumCells; cellIndex++)
                 {
-                    int numFound;
-                    Vector3 cellCenter;
-                    if (m_RotateWithAgent)
-                    {
-                        cellCenter = m_RootReference.transform.TransformPoint(m_CellPoints[cellIndex]);
-                        numFound = BufferResizingOverlapBoxNonAlloc(cellCenter, halfCellScale, m_RootReference.transform.rotation);
-                    }
-                    else
-                    {
-                        cellCenter = m_RootReference.transform.position + m_CellPoints[cellIndex];
-                        numFound = BufferResizingOverlapBoxNonAlloc(cellCenter, halfCellScale, Quaternion.identity);
-                    }
+                    var cellCenter = GetCellGlobalPosition(cellIndex);
+                    var numFound = BufferResizingOverlapBoxNonAlloc(cellCenter, halfCellScale, GetGridRotation());
 
                     if (numFound > 0)
                     {
@@ -625,18 +614,31 @@ namespace Unity.MLAgents.Extensions.Sensors
             Profiler.EndSample();
         }
 
-        /// <summary>Converts the index of the cell to the 3D point (y is zero)</summary>
-        /// <returns>Vector3 of the position of the center of the cell</returns>
+        /// <summary>Converts the index of the cell to the 3D point (y is zero) relative to grid center</summary>
+        /// <returns>Vector3 of the position of the center of the cell relative to grid center</returns>
         /// <param name="cell">The index of the cell</param>
-        /// <param name="shouldTransformPoint">Bool weather to transform the point to the current transform</param>
-        internal Vector3 CellToPoint(int cell, bool shouldTransformPoint = true)
+        Vector3 CellToPoint(int cellIndex)
         {
-            float x = (cell % m_GridNumSideZ - m_OffsetGridNumSide) * m_CellScaleX;
-            float z = (cell / m_GridNumSideZ - m_OffsetGridNumSide) * m_CellScaleZ - (m_GridNumSideZ - m_GridNumSideX);
-
-            if (shouldTransformPoint)
-                return m_RootReference.transform.TransformPoint(new Vector3(x, 0, z));
+            float x = (cellIndex % m_GridNumSideZ - m_OffsetGridNumSide) * m_CellScaleX;
+            float z = (cellIndex / m_GridNumSideZ - m_OffsetGridNumSide) * m_CellScaleZ - (m_GridNumSideZ - m_GridNumSideX);
             return new Vector3(x, 0, z);
+        }
+
+        internal Vector3 GetCellGlobalPosition(int cellIndex)
+        {
+            if (m_RotateWithAgent)
+            {
+                return m_RootReference.transform.TransformPoint(m_CellPoints[cellIndex]);
+            }
+            else
+            {
+                return m_CellPoints[cellIndex] + m_RootReference.transform.position;
+            }
+        }
+
+        internal Quaternion GetGridRotation()
+        {
+            return m_RotateWithAgent ? m_RootReference.transform.rotation : Quaternion.identity;
         }
 
         /// <inheritdoc/>

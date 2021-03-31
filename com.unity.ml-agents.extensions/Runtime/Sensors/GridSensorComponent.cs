@@ -299,24 +299,19 @@ namespace Unity.MLAgents.Extensions.Sensors
                     CreateSensors();
                 }
                 m_Sensor.Perceive();
+
                 var scale = new Vector3(m_CellScaleX, 1, m_CellScaleZ);
-                var offset = new Vector3(0, m_GizmoYOffset, 0);
+                var gizmoYOffset = new Vector3(0, m_GizmoYOffset, 0);
                 var oldGizmoMatrix = Gizmos.matrix;
                 for (var i = 0; i < m_GridNumSideX * m_GridNumSideZ; i++)
                 {
                     Matrix4x4 cubeTransform;
-                    if (m_RotateWithAgent)
-                    {
-                        cubeTransform = Matrix4x4.TRS(m_Sensor.CellToPoint(i) + offset, RootReference.transform.rotation, scale);
-                    }
-                    else
-                    {
-                        cubeTransform = Matrix4x4.TRS(m_Sensor.CellToPoint(i, false) + RootReference.transform.position + offset, Quaternion.identity, scale);
-                    }
+                    var cellPoints = m_Sensor.GetCellGlobalPosition(i);
+                    cubeTransform = Matrix4x4.TRS(cellPoints + gizmoYOffset, m_Sensor.GetGridRotation(), scale);
                     Gizmos.matrix = oldGizmoMatrix * cubeTransform;
                     var colorIndex = m_Sensor.CellActivity[i];
                     var debugRayColor = Color.white;;
-                    if (colorIndex > 0 && m_DebugColors.Length > colorIndex)
+                    if (colorIndex >= 0 && m_DebugColors.Length > colorIndex)
                     {
                         debugRayColor = m_DebugColors[colorIndex];
                     }
