@@ -77,8 +77,8 @@ class TorchOptimizer(Optimizer):
         """
         num_experiences = tensor_obs[0].shape[0]
         all_next_memories = AgentBufferField()
-        # In the buffer, the 1st sequence are the ones that are padded. So if seq_len = 3 and
-        # trajectory is of length 10, the 1st sequence is [pad,pad,obs].
+        # In the buffer, the last sequence are the ones that are padded. So if seq_len = 3 and
+        # trajectory is of length 10, the last sequence is [obs,pad,pad].
         # Compute the number of elements in this padded seq.
         leftover = num_experiences % self.policy.sequence_length
 
@@ -109,11 +109,11 @@ class TorchOptimizer(Optimizer):
         last_seq_len = leftover
         if last_seq_len > 0:
             for _obs in tensor_obs:
-                last_seq_obs = _obs[0:last_seq_len]
+                last_seq_obs = _obs[-last_seq_len:]
                 seq_obs.append(last_seq_obs)
 
-            # For the first sequence, the initial memory should be the one at the
-            # beginning of this trajectory.
+            # For the last sequence, the initial memory should be the one at the
+            # end of this trajectory.
             for _ in range(last_seq_len):
                 all_next_memories.append(ModelUtils.to_numpy(_mem.squeeze()))
 
