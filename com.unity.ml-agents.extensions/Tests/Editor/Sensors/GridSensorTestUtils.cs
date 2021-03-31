@@ -66,33 +66,6 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             return duplicated;
         }
 
-        /// <summary>
-        /// Asserts that 2 int arrays are the same
-        /// </summary>
-        /// <param name="expected">The expected array</param>
-        /// <param name="actual">The actual array</param>
-        public static void AssertArraysAreEqual(int[] expected, int[] actual)
-        {
-            Assert.AreEqual(expected.Length, actual.Length, "Lengths are not the same");
-            for (int i = 0; i < actual.Length; i++)
-            {
-                Assert.AreEqual(expected[i], actual[i], "Got " + Array2Str(actual) + ", expected " + Array2Str(expected));
-            }
-        }
-
-        /// <summary>
-        /// Asserts that 2 float arrays are the same
-        /// </summary>
-        /// <param name="expected">The expected array</param>
-        /// <param name="actual">The actual array</param>
-        public static void AssertArraysAreEqual(float[] expected, float[] actual)
-        {
-            Assert.AreEqual(expected.Length, actual.Length, "Lengths are not the same");
-            for (int i = 0; i < actual.Length; i++)
-            {
-                Assert.AreEqual(expected[i], actual[i], "Got " + Array2Str(actual) + ", expected " + Array2Str(expected));
-            }
-        }
 
         /// <summary>
         /// Asserts that the sub-arrays of the total array are equal to specific subarrays at specific subarray indicies and equal to a default everywhere else.

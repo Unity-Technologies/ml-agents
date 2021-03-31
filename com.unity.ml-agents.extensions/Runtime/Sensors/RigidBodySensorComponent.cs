@@ -39,30 +39,10 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// Creates a PhysicsBodySensor.
         /// </summary>
         /// <returns></returns>
-        public override ISensor CreateSensor()
+        public override ISensor[] CreateSensors()
         {
             var _sensorName = string.IsNullOrEmpty(sensorName) ? $"PhysicsBodySensor:{RootBody?.name}" : sensorName;
-            return new PhysicsBodySensor(GetPoseExtractor(), Settings, _sensorName);
-        }
-
-        /// <inheritdoc/>
-        public override int[] GetObservationShape()
-        {
-            if (RootBody == null)
-            {
-                return new[] { 0 };
-            }
-
-            var poseExtractor = GetPoseExtractor();
-            var numPoseObservations = poseExtractor.GetNumPoseObservations(Settings);
-
-            var numJointObservations = 0;
-            foreach (var rb in poseExtractor.GetEnabledRigidbodies())
-            {
-                var joint = rb.GetComponent<Joint>();
-                numJointObservations += RigidBodyJointExtractor.NumObservations(rb, joint, Settings);
-            }
-            return new[] { numPoseObservations + numJointObservations };
+            return new ISensor[] { new PhysicsBodySensor(GetPoseExtractor(), Settings, _sensorName) };
         }
 
         /// <summary>

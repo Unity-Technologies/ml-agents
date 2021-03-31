@@ -1,5 +1,6 @@
 using Unity.Barracuda;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Sensors;
@@ -12,10 +13,9 @@ namespace Unity.MLAgents.Policies
     public enum InferenceDevice
     {
         /// <summary>
-        /// CPU inference. Corresponds to in WorkerFactory.Type.CSharp Barracuda.
-        /// Burst is recommended instead; this is kept for legacy compatibility.
+        /// Default inference. This is currently the same as Burst, but may change in the future.
         /// </summary>
-        CPU = 0,
+        Default = 0,
 
         /// <summary>
         /// GPU inference. Corresponds to WorkerFactory.Type.ComputePrecompiled in Barracuda.
@@ -26,6 +26,12 @@ namespace Unity.MLAgents.Policies
         /// CPU inference using Burst. Corresponds to WorkerFactory.Type.CSharpBurst in Barracuda.
         /// </summary>
         Burst = 2,
+
+        /// <summary>
+        /// CPU inference. Corresponds to in WorkerFactory.Type.CSharp Barracuda.
+        /// Burst is recommended instead; this is kept for legacy compatibility.
+        /// </summary>
+        CPU = 3,
     }
 
     /// <summary>
@@ -59,7 +65,14 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         private bool m_AnalyticsSent;
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Instantiate a BarracudaPolicy with the necessary objects for it to run.
+        /// </summary>
+        /// <param name="actionSpec">The action spec of the behavior.</param>
+        /// <param name="actuators">The actuators used for this behavior.</param>
+        /// <param name="model">The Neural Network to use.</param>
+        /// <param name="inferenceDevice">Which device Barracuda will run on.</param>
+        /// <param name="behaviorName">The name of the behavior.</param>
         public BarracudaPolicy(
             ActionSpec actionSpec,
             IList<IActuator> actuators,
@@ -78,6 +91,14 @@ namespace Unity.MLAgents.Policies
         /// <inheritdoc />
         public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
+            SendAnalytics(sensors);
+            m_AgentId = info.episodeId;
+            m_ModelRunner?.PutObservations(info, sensors);
+        }
+
+        [Conditional("MLA_UNITY_ANALYTICS_MODULE")]
+        void SendAnalytics(IList<ISensor> sensors)
+        {
             if (!m_AnalyticsSent)
             {
                 m_AnalyticsSent = true;
@@ -90,8 +111,6 @@ namespace Unity.MLAgents.Policies
                     m_Actuators
                 );
             }
-            m_AgentId = info.episodeId;
-            m_ModelRunner?.PutObservations(info, sensors);
         }
 
         /// <inheritdoc />

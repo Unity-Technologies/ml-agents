@@ -267,9 +267,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         private Color DebugDefaultColor = new Color(1f, 1f, 1f, 0.25f);
 
         /// <inheritdoc/>
-        public override ISensor CreateSensor()
+        public override ISensor[] CreateSensors()
         {
-            return this;
+            return new ISensor[] { this };
         }
 
         /// <summary>
@@ -482,9 +482,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <inheritdoc/>
-        public virtual SensorCompressionType GetCompressionType()
+        public virtual CompressionSpec GetCompressionSpec()
         {
-            return CompressionType;
+            return new CompressionSpec(CompressionType);
         }
 
         /// <inheritdoc/>
@@ -915,13 +915,6 @@ namespace Unity.MLAgents.Extensions.Sensors
                 m_ObservationSpec = ObservationSpec.Visual(GridNumSideX, GridNumSideZ, ObservationPerCell);
             }
             return m_ObservationSpec;
-        }
-
-        /// <inheritdoc/>
-        public override int[] GetObservationShape()
-        {
-            var shape = m_ObservationSpec.Shape;
-            return new int[] { shape[0], shape[1], shape[2] };
         }
 
         /// <inheritdoc/>

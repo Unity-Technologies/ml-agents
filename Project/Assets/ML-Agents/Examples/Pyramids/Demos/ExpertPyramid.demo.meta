@@ -1,9 +1,12 @@
 fileFormatVersion: 2
 guid: 2f9d53c90f11846d7a6499ce0f1dfebb
 ScriptedImporter:
-  fileIDToRecycleName:
-    11400000: Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
+  internalIDToNameTable:
+  - first:
+      114: 11400000
+    second: Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
   externalObjects: {}
+  serializedVersion: 2
   userData: ' (Unity.MLAgents.Demonstrations.DemonstrationSummary)'
   assetBundleName: 
   assetBundleVariant: 

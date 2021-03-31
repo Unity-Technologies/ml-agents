@@ -53,23 +53,17 @@ namespace Unity.MLAgents.Editor
 
         private static bool IsPlayerSettingsDirty()
         {
-#if UNITY_2019_OR_NEWER
             var settings = Resources.FindObjectsOfTypeAll<PlayerSettings>();
             if (settings != null && settings.Length > 0)
                 return EditorUtility.IsDirty(settings[0]);
             return false;
-#else
-            return false;
-#endif
         }
 
         private static void ClearPlayerSettingsDirtyFlag()
         {
-#if UNITY_2019_OR_NEWER
             var settings = Resources.FindObjectsOfTypeAll<PlayerSettings>();
             if (settings != null && settings.Length > 0)
                 EditorUtility.ClearDirty(settings[0]);
-#endif
         }
     }
 }

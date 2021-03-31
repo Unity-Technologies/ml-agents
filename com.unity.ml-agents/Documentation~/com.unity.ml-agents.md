@@ -58,7 +58,7 @@ To install the companion Python package to enable training behaviors, follow the
 This version of the Unity ML-Agents package is compatible with the following
 versions of the Unity Editor:
 
-- 2018.4 and later
+- 2019.4 and later
 
 ## Known Limitations
 

@@ -94,9 +94,9 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public SensorCompressionType GetCompressionType()
+        public CompressionSpec GetCompressionSpec()
         {
-            return SensorCompressionType.None;
+            return CompressionSpec.Default();
         }
 
         /// <inheritdoc/>
@@ -110,7 +110,5 @@ namespace Unity.MLAgents.Sensors
         {
             return BuiltInSensorType.BufferSensor;
         }
-
     }
-
 }

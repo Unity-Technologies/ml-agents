@@ -1,21 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Unity.MLAgents.Sensors
 {
-    /// <summary>
-    /// The compression setting for visual/camera observations.
-    /// </summary>
-    public enum SensorCompressionType
-    {
-        /// <summary>
-        /// No compression. Data is preserved as float arrays.
-        /// </summary>
-        None,
-
-        /// <summary>
-        /// PNG format. Data will be stored in binary format.
-        /// </summary>
-        PNG
-    }
-
     /// <summary>
     /// The Dimension property flags of the observations
     /// </summary>
@@ -58,17 +46,7 @@ namespace Unity.MLAgents.Sensors
         /// <summary>
         /// Collected observations contain goal information.
         /// </summary>
-        Goal = 1,
-
-        /// <summary>
-        /// Collected observations contain reward information.
-        /// </summary>
-        Reward = 2,
-
-        /// <summary>
-        /// Collected observations are messages from other agents.
-        /// </summary>
-        Message = 3,
+        GoalSignal = 1,
     }
 
     /// <summary>
@@ -112,11 +90,11 @@ namespace Unity.MLAgents.Sensors
         void Reset();
 
         /// <summary>
-        /// Return the compression type being used. If no compression is used, return
-        /// <see cref="SensorCompressionType.None"/>.
+        /// Return information on the compression type being used. If no compression is used, return
+        /// <see cref="CompressionSpec.Default()"/>.
         /// </summary>
-        /// <returns>Compression type used by the sensor.</returns>
-        SensorCompressionType GetCompressionType();
+        /// <returns>CompressionSpec used by the sensor.</returns>
+        CompressionSpec GetCompressionSpec();
 
         /// <summary>
         /// Get the name of the sensor. This is used to ensure deterministic sorting of the sensors
@@ -148,6 +126,15 @@ namespace Unity.MLAgents.Sensors
             }
 
             return count;
+        }
+    }
+
+    internal static class SensorUtils
+    {
+        internal static void SortSensors(List<ISensor> sensors)
+        {
+            // Use InvariantCulture to ensure consistent sorting between different culture settings.
+            sensors.Sort((x, y) => string.Compare(x.GetName(), y.GetName(), StringComparison.InvariantCulture));
         }
     }
 }

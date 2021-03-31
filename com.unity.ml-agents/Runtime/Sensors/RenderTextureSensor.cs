@@ -88,9 +88,9 @@ namespace Unity.MLAgents.Sensors
         public void Reset() { }
 
         /// <inheritdoc/>
-        public SensorCompressionType GetCompressionType()
+        public CompressionSpec GetCompressionSpec()
         {
-            return m_CompressionType;
+            return new CompressionSpec(m_CompressionType);
         }
 
         /// <inheritdoc/>
@@ -98,7 +98,6 @@ namespace Unity.MLAgents.Sensors
         {
             return BuiltInSensorType.RenderTextureSensor;
         }
-
 
         /// <summary>
         /// Converts a RenderTexture to a 2D texture.

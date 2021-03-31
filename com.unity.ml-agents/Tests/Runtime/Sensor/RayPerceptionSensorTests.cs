@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 using Unity.MLAgents.Sensors;
+using UnityEngine.TestTools;
 
 namespace Unity.MLAgents.Tests
 {
@@ -24,6 +24,18 @@ namespace Unity.MLAgents.Tests
 
     public class RayPerception3DTests
     {
+        [Test]
+        public void TestDefaultLayersAreNegativeFive()
+        {
+#if MLA_UNITY_PHYSICS_MODULE
+            Assert.IsTrue(Physics.DefaultRaycastLayers == -5);
+#endif
+#if MLA_UNITY_PHYSICS2D_MODULE
+            Assert.IsTrue(Physics2D.DefaultRaycastLayers == -5);
+#endif
+        }
+
+#if MLA_UNITY_PHYSICS_MODULE
         // Use built-in tags
         const string k_CubeTag = "Player";
         const string k_SphereTag = "Respawn";
@@ -72,6 +84,7 @@ namespace Unity.MLAgents.Tests
             sphere3.tag = k_SphereTag;
             sphere3.name = "sphere3";
 
+
             Physics.SyncTransforms();
         }
 
@@ -93,7 +106,7 @@ namespace Unity.MLAgents.Tests
             foreach (var castRadius in radii)
             {
                 perception.SphereCastRadius = castRadius;
-                var sensor = perception.CreateSensor();
+                var sensor = perception.CreateSensors()[0];
 
                 var expectedObs = (2 * perception.RaysPerDirection + 1) * (perception.DetectableTags.Count + 2);
                 Assert.AreEqual(sensor.GetObservationSpec().Shape[0], expectedObs);
@@ -152,7 +165,7 @@ namespace Unity.MLAgents.Tests
             perception.DetectableTags.Add(k_CubeTag);
             perception.DetectableTags.Add(k_SphereTag);
 
-            var sensor = perception.CreateSensor();
+            var sensor = perception.CreateSensors()[0];
             var expectedObs = (2 * perception.RaysPerDirection + 1) * (perception.DetectableTags.Count + 2);
             Assert.AreEqual(sensor.GetObservationSpec().Shape[0], expectedObs);
             var outputBuffer = new float[expectedObs];
@@ -200,7 +213,7 @@ namespace Unity.MLAgents.Tests
                 }
                 perception.RayLayerMask = layerMask;
 
-                var sensor = perception.CreateSensor();
+                var sensor = perception.CreateSensors()[0];
                 var expectedObs = (2 * perception.RaysPerDirection + 1) * (perception.DetectableTags.Count + 2);
                 Assert.AreEqual(sensor.GetObservationSpec().Shape[0], expectedObs);
                 var outputBuffer = new float[expectedObs];
@@ -246,7 +259,7 @@ namespace Unity.MLAgents.Tests
             foreach (var castRadius in radii)
             {
                 perception.SphereCastRadius = castRadius;
-                var sensor = perception.CreateSensor();
+                var sensor = perception.CreateSensors()[0];
 
                 var expectedObs = (2 * perception.RaysPerDirection + 1) * (perception.DetectableTags.Count + 2);
                 Assert.AreEqual(sensor.GetObservationSpec().Shape[0], expectedObs);
@@ -295,7 +308,7 @@ namespace Unity.MLAgents.Tests
             {
                 // Set the layer mask to either the default, or one that ignores the close cube's layer
 
-                var sensor = perception.CreateSensor();
+                var sensor = perception.CreateSensors()[0];
                 var expectedObs = (2 * perception.RaysPerDirection + 1) * (perception.DetectableTags.Count + 2);
                 Assert.AreEqual(sensor.GetObservationSpec().Shape[0], expectedObs);
                 var outputBuffer = new float[expectedObs];
@@ -402,5 +415,6 @@ namespace Unity.MLAgents.Tests
                 Assert.AreEqual(-1, castOutput.RayOutputs[0].HitTagIndex);
             }
         }
+#endif
     }
 }

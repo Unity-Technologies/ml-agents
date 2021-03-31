@@ -8,7 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 ### Major Changes
-#### com.unity.ml-agents (C#)
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- The minimum supported Unity version was updated to 2019.4. (#5166)
 - Several breaking interface changes were made. See the
 [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_14_docs/docs/Migrating.md) for more
 details.
@@ -17,7 +18,15 @@ details.
 `WriteMask(int branch, IEnumerable<int> actionIndices)` was replaced with
 `SetActionEnabled(int branch, int actionIndex, bool isEnabled)`. (#5060)
 - IActuator now implements IHeuristicProvider. (#5110)
-- `ISensor.GetObservationShape()` was removed, and `GetObservationSpec()` was added. (#5127)
+- `ISensor.GetObservationShape()` was removed, and `GetObservationSpec()` was added. The `ITypedSensor`
+and `IDimensionPropertiesSensor` interfaces were removed. (#5127)
+- `ISensor.GetCompressionType()` was removed, and `GetCompressionSpec()` was added. The `ISparseChannelSensor`
+interface was removed. (#5164)
+- The abstract method `SensorComponent.GetObservationShape()` was no longer being called, so it has been removed. (#5172)
+- `SensorComponent.CreateSensor()` was replaced with `SensorComponent.CreateSensor()`, which returns an `ISensor[]`. (#5181)
+- `Match3Sensor` was refactored to produce cell and special type observations separately, and `Match3SensorComponent` now
+produces two `Match3Sensor`s (unless there are no special types). Previously trained models will have different observation
+sizes and will need to be retrained. (#5181)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
@@ -26,10 +35,18 @@ details.
 - The `.onnx` models input names have changed. All input placeholders will now use the prefix `obs_` removing the distinction between visual and vector observations. Models created with this version will not be usable with previous versions of the package (#5080)
 - The `.onnx` models discrete action output now contains the discrete actions values and not the logits. Models created with this version will not be usable with previous versions of the package (#5080)
 - Added ML-Agents package settings. (#5027)
+- Make com.unity.modules.unityanalytics an optional dependency. (#5109)
+- Make com.unity.modules.physics and com.unity.modules.physics2d optional dependencies. (#5112)
+- The default `InferenceDevice` is now `InferenceDevice.Default`, which is equivalent to `InferenceDevice.Burst`. If you
+depend on the previous behavior, you can explicitly set the Agent's `InferenceDevice` to `InferenceDevice.CPU`. (#5175)
+
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Bug Fixes
-#### com.unity.ml-agents (C#)
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Fixed a bug where sensors and actuators could get sorted inconsistently on different systems to different Culture
+settings. Unfortunately, this may require retraining models if it changes the resulting order of the sensors
+or actuators on your system. (#5194)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 

@@ -486,11 +486,7 @@ class ObservationType(Enum):
     # Observation information is generic.
     DEFAULT = 0
     # Observation contains goal information for current task.
-    GOAL = 1
-    # Observation contains reward information for current task.
-    REWARD = 2
-    # Observation contains a message from another agent.
-    MESSAGE = 3
+    GOAL_SIGNAL = 1
 
 
 class ObservationSpec(NamedTuple):

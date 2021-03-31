@@ -15,6 +15,9 @@ double-check that the versions are in the same. The versions can be found in
 
 # Migrating
 ## Migrating the package to version 2.0
+- The official version of Unity ML-Agents supports is now 2019.4 LTS. If you run
+  into issues, please consider deleting your project's Library folder and reponening your
+  project.
 - If you used any of the APIs that were deprecated before version 2.0, you need to use their replacement. These deprecated APIs have been removed. See the migration steps bellow for specific API replacements.
 ### IDiscreteActionMask changes
 - The interface for disabling specific discrete actions has changed. `IDiscreteActionMask.WriteMask()` was removed,
@@ -41,10 +44,13 @@ public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
     actionMask.SetActionEnabled(branch, 3, false);
 }
 ```
+### IActuator changes
 - The `IActuator` interface now implements `IHeuristicProvider`.  Please add the corresponding `Heuristic(in ActionBuffers)`
 method to your custom Actuator classes.
 
-- The `ISensor.GetObservationShape()` method was removed, and `GetObservationSpec()` was added. You can use
+### ISensor and SensorComponent changes
+- The `ISensor.GetObservationShape()` method and `ITypedSensor`
+and `IDimensionPropertiesSensor` interfaces were removed, and `GetObservationSpec()` was added. You can use
 `ObservationSpec.Vector()` or `ObservationSpec.Visual()` to generate `ObservationSpec`s that are equivalent to
 the previous shape. For example, if your old ISensor looked like:
 
@@ -63,6 +69,29 @@ public override ObservationSpec GetObservationSpec()
     return ObservationSpec.Visual(m_Height, m_Width, m_NumChannels);
 }
 ```
+
+- The `ISensor.GetCompressionType()` method and `ISparseChannelSensor` interface was removed,
+and `GetCompressionSpec()` was added. You can use `CompressionSpec.Default()` or
+`CompressionSpec.Compressed()` to generate `CompressionSpec`s that are  equivalent to
+ the previous values. For example, if your old ISensor looked like:
+ ```csharp
+public virtual SensorCompressionType GetCompressionType()
+{
+    return SensorCompressionType.None;
+}
+```
+
+the equivalent code would now be
+
+```csharp
+public CompressionSpec GetCompressionSpec()
+{
+    return CompressionSpec.Default();
+}
+```
+
+- The abstract method `SensorComponent.GetObservationShape()` was removed.
+- The abstract method `SensorComponent.CreateSensor()` was replaced with `CreateSensors()`, which returns an `ISensor[]`.
 
 ## Migrating to Release 13
 ### Implementing IHeuristic in your IActuator implementations

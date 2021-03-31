@@ -100,10 +100,10 @@ namespace Unity.MLAgents.Tests
             var modelRunner = new ModelRunner(discreteONNXModel, actionSpec, InferenceDevice.Burst);
             var info1 = new AgentInfo();
             info1.episodeId = 1;
-            modelRunner.PutObservations(info1, new[] { sensor_21_20_3.CreateSensor() }.ToList());
+            modelRunner.PutObservations(info1, new[] { sensor_21_20_3.CreateSensors()[0] }.ToList());
             var info2 = new AgentInfo();
             info2.episodeId = 2;
-            modelRunner.PutObservations(info2, new[] { sensor_21_20_3.CreateSensor() }.ToList());
+            modelRunner.PutObservations(info2, new[] { sensor_21_20_3.CreateSensors()[0] }.ToList());
 
             modelRunner.DecideBatch();
 

@@ -53,6 +53,7 @@ namespace Unity.MLAgentsExamples
             Assert.IsTrue(sensorComponent.Grayscale);
         }
 
+#if MLA_UNITY_PHYSICS_MODULE
         [Test]
         public void CheckSetupRayPerceptionSensorComponent()
         {
@@ -67,7 +68,8 @@ namespace Unity.MLAgentsExamples
             sensorComponent.RayLayerMask = 0;
             sensorComponent.ObservationStacks = 2;
 
-            sensorComponent.CreateSensor();
+            sensorComponent.CreateSensors();
         }
+#endif
     }
 }

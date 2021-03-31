@@ -97,9 +97,11 @@ namespace Unity.MLAgents.Sensors
             set { m_RayLength = value; UpdateSensor(); }
         }
 
+        // The value of the default layers.
+        const int k_PhysicsDefaultLayers = -5;
         [HideInInspector, SerializeField, FormerlySerializedAs("rayLayerMask")]
         [Tooltip("Controls which layers the rays can hit.")]
-        LayerMask m_RayLayerMask = Physics.DefaultRaycastLayers;
+        LayerMask m_RayLayerMask = k_PhysicsDefaultLayers;
 
         /// <summary>
         /// Controls which layers the rays can hit.
@@ -179,7 +181,7 @@ namespace Unity.MLAgents.Sensors
         /// Returns an initialized raycast sensor.
         /// </summary>
         /// <returns></returns>
-        public override ISensor CreateSensor()
+        public override ISensor[] CreateSensors()
         {
             var rayPerceptionInput = GetRayPerceptionInput();
 
@@ -188,10 +190,10 @@ namespace Unity.MLAgents.Sensors
             if (ObservationStacks != 1)
             {
                 var stackingSensor = new StackingSensor(m_RaySensor, ObservationStacks);
-                return stackingSensor;
+                return new ISensor[] { stackingSensor };
             }
 
-            return m_RaySensor;
+            return new ISensor[] { m_RaySensor };
         }
 
         /// <summary>
@@ -217,20 +219,6 @@ namespace Unity.MLAgents.Sensors
                 anglesOut[2 * i + 2] = 90 + (i + 1) * delta;
             }
             return anglesOut;
-        }
-
-        /// <summary>
-        /// Returns the observation shape for this raycast sensor which depends on the number
-        /// of tags for detected objects and the number of rays.
-        /// </summary>
-        /// <returns></returns>
-        public override int[] GetObservationShape()
-        {
-            var numRays = 2 * RaysPerDirection + 1;
-            var numTags = m_DetectableTags?.Count ?? 0;
-            var obsSize = (numTags + 2) * numRays;
-            var stacks = ObservationStacks > 1 ? ObservationStacks : 1;
-            return new[] { obsSize * stacks };
         }
 
         /// <summary>
