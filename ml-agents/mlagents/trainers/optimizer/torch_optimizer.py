@@ -1,7 +1,6 @@
 from typing import Dict, Optional, Tuple, List
 from mlagents.torch_utils import torch
 import numpy as np
-import math
 from collections import defaultdict
 
 from mlagents.trainers.buffer import AgentBuffer, AgentBufferField
@@ -77,18 +76,18 @@ class TorchOptimizer(Optimizer):
         """
         num_experiences = tensor_obs[0].shape[0]
         all_next_memories = AgentBufferField()
-        # In the buffer, the last sequence are the ones that are padded. So if seq_len = 3 and
-        # trajectory is of length 10, the last sequence is [obs,pad,pad].
-        # Compute the number of elements in this padded seq.
-        leftover = num_experiences % self.policy.sequence_length
+        # When using LSTM, we need to divide the trajectory into sequences of even length. Sometimes,
+        # that division isn't even, and we must pad the leftover sequence.
+        # When it is added to the buffer, the last sequence will be padded. So if seq_len = 3 and
+        # trajectory is of length 10, the last sequence is [obs,pad,pad] once it is added to the buffer.
+        # Compute the number of elements in this sequence that will end up being padded.
+        leftover_seq_len = num_experiences % self.policy.sequence_length
 
         all_values: Dict[str, List[np.ndarray]] = defaultdict(list)
         _mem = initial_memory
         # Evaluate other trajectories, carrying over _mem after each
         # trajectory
-        for seq_num in range(
-            0, math.floor((num_experiences) / (self.policy.sequence_length))
-        ):
+        for seq_num in range(num_experiences // (self.policy.sequence_length)):
             seq_obs = []
             for _ in range(self.policy.sequence_length):
                 all_next_memories.append(ModelUtils.to_numpy(_mem.squeeze()))
@@ -103,22 +102,22 @@ class TorchOptimizer(Optimizer):
             for signal_name, _val in values.items():
                 all_values[signal_name].append(_val)
 
-        # Compute values for the potentially truncated last sequence
+        # Compute values for the potentially truncated last sequence. Note that this
+        # sequence isn't padded yet, but will be.
         seq_obs = []
 
-        last_seq_len = leftover
-        if last_seq_len > 0:
+        if leftover_seq_len > 0:
             for _obs in tensor_obs:
-                last_seq_obs = _obs[-last_seq_len:]
+                last_seq_obs = _obs[-leftover_seq_len:]
                 seq_obs.append(last_seq_obs)
 
             # For the last sequence, the initial memory should be the one at the
             # end of this trajectory.
-            for _ in range(last_seq_len):
+            for _ in range(leftover_seq_len):
                 all_next_memories.append(ModelUtils.to_numpy(_mem.squeeze()))
 
             last_values, _mem = self.critic.critic_pass(
-                seq_obs, _mem, sequence_length=last_seq_len
+                seq_obs, _mem, sequence_length=leftover_seq_len
             )
             for signal_name, _val in last_values.items():
                 all_values[signal_name].append(_val)

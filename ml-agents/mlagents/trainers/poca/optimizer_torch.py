@@ -4,7 +4,6 @@ from mlagents.trainers.torch.components.reward_providers.extrinsic_reward_provid
     ExtrinsicRewardProvider,
 )
 import numpy as np
-import math
 from mlagents.torch_utils import torch, default_device
 
 from mlagents.trainers.buffer import (
@@ -382,10 +381,13 @@ class TorchPOCAOptimizer(TorchOptimizer):
         num_experiences = self_obs[0].shape[0]
         all_next_value_mem = AgentBufferField()
         all_next_baseline_mem = AgentBufferField()
+
+        # When using LSTM, we need to divide the trajectory into sequences of even length. Sometimes,
+        # that division isn't even, and we must pad the leftover sequence.
         # In the buffer, the last sequence are the ones that are padded. So if seq_len = 3 and
         # trajectory is of length 10, the last sequence is [obs,pad,pad].
         # Compute the number of elements in this padded seq.
-        leftover = num_experiences % self.policy.sequence_length
+        leftover_seq_len = num_experiences % self.policy.sequence_length
 
         all_values: Dict[str, List[np.ndarray]] = defaultdict(list)
         all_baseline: Dict[str, List[np.ndarray]] = defaultdict(list)
@@ -394,9 +396,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
 
         # Evaluate other trajectories, carrying over _mem after each
         # trajectory
-        for seq_num in range(
-            0, math.floor((num_experiences) / (self.policy.sequence_length))
-        ):
+        for seq_num in range(num_experiences // self.policy.sequence_length):
             for _ in range(self.policy.sequence_length):
                 all_next_value_mem.append(ModelUtils.to_numpy(_value_mem.squeeze()))
                 all_next_baseline_mem.append(
@@ -441,31 +441,29 @@ class TorchPOCAOptimizer(TorchOptimizer):
                 all_baseline[signal_name].append(_val)
 
         # Compute values for the potentially truncated initial sequence
-        last_seq_len = leftover
-        if last_seq_len > 0:
+        if leftover_seq_len > 0:
             self_seq_obs = []
             groupmate_seq_obs = []
             groupmate_seq_act = []
             seq_obs = []
             for _self_obs in self_obs:
-                last_seq_obs = _self_obs[-last_seq_len:]
+                last_seq_obs = _self_obs[-leftover_seq_len:]
                 seq_obs.append(last_seq_obs)
             self_seq_obs.append(seq_obs)
 
             for groupmate_obs, groupmate_action in zip(obs, actions):
                 seq_obs = []
                 for _obs in groupmate_obs:
-                    last_seq_obs = _obs[-last_seq_len:]
+                    last_seq_obs = _obs[-leftover_seq_len:]
                     seq_obs.append(last_seq_obs)
                 groupmate_seq_obs.append(seq_obs)
-                _act = groupmate_action.slice(len(_obs) - last_seq_len, len(_obs))
+                _act = groupmate_action.slice(len(_obs) - leftover_seq_len, len(_obs))
                 groupmate_seq_act.append(_act)
 
             # For the last sequence, the initial memory should be the one at the
             # beginning of this trajectory.
             seq_obs = []
-            last_seq_len = leftover
-            for _ in range(last_seq_len):
+            for _ in range(leftover_seq_len):
                 all_next_value_mem.append(ModelUtils.to_numpy(_value_mem.squeeze()))
                 all_next_baseline_mem.append(
                     ModelUtils.to_numpy(_baseline_mem.squeeze())
@@ -473,7 +471,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
 
             all_seq_obs = self_seq_obs + groupmate_seq_obs
             last_values, _value_mem = self.critic.critic_pass(
-                all_seq_obs, _value_mem, sequence_length=last_seq_len
+                all_seq_obs, _value_mem, sequence_length=leftover_seq_len
             )
             for signal_name, _val in last_values.items():
                 all_values[signal_name].append(_val)
@@ -482,7 +480,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
                 self_seq_obs[0],
                 groupmate_obs_and_actions,
                 _baseline_mem,
-                sequence_length=last_seq_len,
+                sequence_length=leftover_seq_len,
             )
             for signal_name, _val in last_baseline.items():
                 all_baseline[signal_name].append(_val)
