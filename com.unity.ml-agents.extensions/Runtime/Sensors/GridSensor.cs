@@ -51,8 +51,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         float[] m_ChannelHotDefaultPerceptionBuffer;
         // Array of Colors needed in order to load the values of the perception buffer to a texture.
         Color[] m_PerceptionColors;
-        // Array of colors displaying the DebugColors for each cell in OnDrawGizmos. Only updated if ShowGizmos.
-        Color[] m_CellActivity;
+        // Array of index of colors displaying the DebugColors for each cell in OnDrawGizmos. Only updated if ShowGizmos.
+        int[] m_CellActivity;
         // Array of positions where each position is the center of a cell.
         Vector3[] m_CellPoints;
         // Texture where the colors are written to so that they can be compressed in PNG format.
@@ -69,7 +69,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         float m_OffsetGridNumSide;
         // Cached ObservationSpec
         ObservationSpec m_ObservationSpec;
-        Color m_DebugDefaultColor = new Color(1f, 1f, 1f, 0.25f);
+        // Color m_DebugDefaultColor = new Color(1f, 1f, 1f, 0.25f);
 
 
         public GridSensor(
@@ -143,7 +143,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             set { m_DebugColors = value;}
         }
 
-        public Color[] CellActivity
+        public int[] CellActivity
         {
             get { return m_CellActivity; }
         }
@@ -243,12 +243,12 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 // Ensure to init arrays if not yet assigned (for editor)
                 if (m_CellActivity == null)
-                    m_CellActivity = new Color[m_NumCells];
+                    m_CellActivity = new int[m_NumCells];
 
                 // Assign the default color to the cell activities
                 for (int i = 0; i < m_NumCells; i++)
                 {
-                    m_CellActivity[i] = m_DebugDefaultColor;
+                    m_CellActivity[i] = -1;
                 }
             }
         }
@@ -322,7 +322,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// at the end, Perceive returns the float array of the perceptions
         /// </summary>
         /// <returns>A float[] containing all of the information collected from the gridsensor</returns>
-        void Perceive()
+        internal void Perceive()
         {
             if (m_ColliderBuffer == null)
             {
@@ -558,13 +558,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
                     if (m_ShowGizmos)
                     {
-                        Color debugRayColor = Color.white;
-                        if (m_DebugColors.Length > 0)
-                        {
-                            debugRayColor = m_DebugColors[i];
-                        }
-
-                        m_CellActivity[cellIndex] = new Color(debugRayColor.r, debugRayColor.g, debugRayColor.b, .5f);
+                        m_CellActivity[cellIndex] = i;
                     }
 
                     switch (m_GridDepthType)

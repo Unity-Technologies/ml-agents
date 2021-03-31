@@ -294,6 +294,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             if (m_ShowGizmos)
             {
+                m_Sensor.Perceive();
                 var scale = new Vector3(m_CellScaleX, 1, m_CellScaleZ);
                 var offset = new Vector3(0, m_GizmoYOffset, 0);
                 var oldGizmoMatrix = Gizmos.matrix;
@@ -309,7 +310,13 @@ namespace Unity.MLAgents.Extensions.Sensors
                         cubeTransform = Matrix4x4.TRS(m_Sensor.CellToPoint(i, false) + RootReference.transform.position + offset, Quaternion.identity, scale);
                     }
                     Gizmos.matrix = oldGizmoMatrix * cubeTransform;
-                    Gizmos.color = m_Sensor.CellActivity[i];
+                    var colorIndex = m_Sensor.CellActivity[i];
+                    var debugRayColor = Color.white;;
+                    if (colorIndex > 0 && m_DebugColors.Length > colorIndex)
+                    {
+                        debugRayColor = m_DebugColors[colorIndex];
+                    }
+                    Gizmos.color = new Color(debugRayColor.r, debugRayColor.g, debugRayColor.b, .5f);
                     Gizmos.DrawCube(Vector3.zero, Vector3.one);
                 }
 
