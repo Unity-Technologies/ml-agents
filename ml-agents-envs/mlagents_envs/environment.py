@@ -366,7 +366,7 @@ class UnityEnvironment(BaseEnv):
             return
         action_spec = self._env_specs[behavior_name].action_spec
         num_agents = len(self._env_state[behavior_name][0])
-        action = action_spec._validate_action(action, None, behavior_name)
+        action = action_spec._validate_action(action, 1, behavior_name)
         if behavior_name not in self._env_actions:
             self._env_actions[behavior_name] = action_spec.empty_action(num_agents)
         try:
