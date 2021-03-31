@@ -82,7 +82,7 @@ you would like to contribute environments, please see our
 
 ![GridWorld](images/gridworld.png)
 
-- Set-up: A version of the grid-world task. Scene contains agent, goal,
+- Set-up: A multi-goal version of the grid-world task. Scene contains agent, goal,
   and obstacles.
 - Goal: The agent must navigate the grid to the appropriate goal while
   avoiding the obstacles.
