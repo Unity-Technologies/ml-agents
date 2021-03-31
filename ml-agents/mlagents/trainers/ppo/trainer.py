@@ -149,10 +149,8 @@ class PPOTrainer(RLTrainer):
         global_returns = list(np.mean(np.array(tmp_returns, dtype=np.float32), axis=0))
         agent_buffer_trajectory[BufferKey.ADVANTAGES].set(global_advantages)
         agent_buffer_trajectory[BufferKey.DISCOUNTED_RETURNS].set(global_returns)
-        # Append to update buffer
-        agent_buffer_trajectory.resequence_and_append(
-            self.update_buffer, training_length=self.policy.sequence_length
-        )
+
+        self._append_to_update_buffer(agent_buffer_trajectory)
 
         # If this was a terminal trajectory, append stats and reset reward collection
         if trajectory.done_reached:
