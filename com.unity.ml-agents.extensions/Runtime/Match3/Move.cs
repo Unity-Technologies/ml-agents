@@ -146,28 +146,28 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <param name="row"></param>
         /// <param name="col"></param>
         /// <param name="dir"></param>
-        /// <param name="boardSize"></param>
+        /// <param name="maxBoardSize"></param>
         /// <returns></returns>
-        public static Move FromPositionAndDirection(int row, int col, Direction dir, BoardSize boardSize)
+        public static Move FromPositionAndDirection(int row, int col, Direction dir, BoardSize maxBoardSize)
         {
 
             // Check for out-of-bounds
-            if (row < 0 || row >= boardSize.Rows)
+            if (row < 0 || row >= maxBoardSize.Rows)
             {
-                throw new IndexOutOfRangeException($"row was {row}, but must be between 0 and {boardSize.Rows - 1}.");
+                throw new IndexOutOfRangeException($"row was {row}, but must be between 0 and {maxBoardSize.Rows - 1}.");
             }
 
-            if (col < 0 || col >= boardSize.Columns)
+            if (col < 0 || col >= maxBoardSize.Columns)
             {
-                throw new IndexOutOfRangeException($"col was {col}, but must be between 0 and {boardSize.Columns - 1}.");
+                throw new IndexOutOfRangeException($"col was {col}, but must be between 0 and {maxBoardSize.Columns - 1}.");
             }
 
             // Check moves that would go out of bounds e.g. col == 0 and dir == Left
             if (
                 row == 0 && dir == Direction.Down ||
-                row == boardSize.Rows - 1 && dir == Direction.Up ||
+                row == maxBoardSize.Rows - 1 && dir == Direction.Up ||
                 col == 0 && dir == Direction.Left ||
-                col == boardSize.Columns - 1 && dir == Direction.Right
+                col == maxBoardSize.Columns - 1 && dir == Direction.Right
             )
             {
                 throw new IndexOutOfRangeException($"Cannot move cell at row={row} col={col} in Direction={dir}");
@@ -188,12 +188,12 @@ namespace Unity.MLAgents.Extensions.Match3
             int moveIndex;
             if (dir == Direction.Right)
             {
-                moveIndex = col + row * (boardSize.Columns - 1);
+                moveIndex = col + row * (maxBoardSize.Columns - 1);
             }
             else
             {
-                var offset = (boardSize.Columns - 1) * boardSize.Rows;
-                moveIndex = offset + col + row * boardSize.Columns;
+                var offset = (maxBoardSize.Columns - 1) * maxBoardSize.Rows;
+                moveIndex = offset + col + row * maxBoardSize.Columns;
             }
 
             return new Move
@@ -268,11 +268,11 @@ namespace Unity.MLAgents.Extensions.Match3
         /// Return the number of potential moves for a board of the given size.
         /// This is equivalent to the number of internal edges in the board.
         /// </summary>
-        /// <param name="boardSize"></param>
+        /// <param name="maxBoardSize"></param>
         /// <returns></returns>
-        public static int NumPotentialMoves(BoardSize boardSize)
+        public static int NumPotentialMoves(BoardSize maxBoardSize)
         {
-            return boardSize.Rows * (boardSize.Columns - 1) + (boardSize.Rows - 1) * (boardSize.Columns);
+            return maxBoardSize.Rows * (maxBoardSize.Columns - 1) + (maxBoardSize.Rows - 1) * (maxBoardSize.Columns);
         }
     }
 }

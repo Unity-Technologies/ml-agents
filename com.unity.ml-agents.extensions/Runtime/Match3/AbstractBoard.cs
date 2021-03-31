@@ -116,6 +116,10 @@ namespace Unity.MLAgents.Extensions.Match3
         /// The actual results will depend on the rules of the game, but we provide SimpleIsMoveValid()
         /// that handles basic match3 rules with no special or immovable pieces.
         /// </summary>
+        /// <remarks>
+        /// Moves that would go outside of GetCurrentBoardSize() are filtered out before they are
+        /// passed to IsMoveValid().
+        /// </remarks>
         /// <param name="m"></param>
         /// <returns></returns>
         public abstract bool IsMoveValid(Move m);
