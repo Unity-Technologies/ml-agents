@@ -93,7 +93,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         bool m_RotateWithAgent = true;
         /// <summary>
         /// Rotate the grid based on the direction the agent is facing.
-        /// Note that changing this after the sensor is created has no effect.
         /// </summary>
         public bool RotateWithAgent
         {
@@ -129,7 +128,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         LayerMask m_ObserveMask;
         /// <summary>
         /// The layer mask.
-        /// Note that changing this after the sensor is created has no effect.
         /// </summary>
         public LayerMask ObserveMask
         {
@@ -141,6 +139,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         GridDepthType m_DepthType = GridDepthType.Channel;
         /// <summary>
         /// The data layout that the grid should output.
+        /// Note that changing this after the sensor is created has no effect.
         /// </summary>
         public GridDepthType DepthType
         {
@@ -159,7 +158,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             get { return m_RootReference == null ? gameObject : m_RootReference; }
             set { m_RootReference = value; }
         }
-
 
         [HideInInspector, SerializeField]
         int m_MaxColliderBufferSize = 500;
@@ -235,7 +233,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         [HideInInspector, SerializeField]
         [Range(1, 50)]
-        [Tooltip("Number of camera frames that will be stacked before being fed to the neural network.")]
+        [Tooltip("Number of frames of observations that will be stacked before being fed to the neural network.")]
         int m_ObservationStacks = 1;
         /// <summary>
         /// Whether to stack previous observations. Using 1 means no previous observations.

@@ -49,9 +49,13 @@ namespace Unity.MLAgents.Extensions.Editor
                 EditorGUILayout.PropertyField(so.FindProperty(k_CellScaleYName), true);
                 EditorGUILayout.PropertyField(so.FindProperty(k_GridNumSideXName), true);
                 EditorGUILayout.PropertyField(so.FindProperty(k_GridNumSideZName), true);
-                EditorGUILayout.PropertyField(so.FindProperty(k_RotateWithAgentName), true);
                 EditorGUILayout.PropertyField(so.FindProperty(k_RootReferenceName), true);
+            }
+            EditorGUI.EndDisabledGroup();
+            EditorGUILayout.PropertyField(so.FindProperty(k_RotateWithAgentName), true);
 
+            EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
+            {
                 EditorGUILayout.LabelField("Channel Settings", EditorStyles.boldLabel);
                 EditorGUILayout.PropertyField(so.FindProperty(k_DepthTypeName), true);
 
@@ -88,11 +92,13 @@ namespace Unity.MLAgents.Extensions.Editor
                 EditorGUILayout.LabelField("Collider and Buffer", EditorStyles.boldLabel);
                 EditorGUILayout.PropertyField(so.FindProperty(k_MaxColliderBufferSizeName), true);
                 EditorGUILayout.PropertyField(so.FindProperty(k_InitialColliderBufferSizeName), true);
-                EditorGUILayout.PropertyField(so.FindProperty(k_ObserveMaskName), true);
-
+            }
+            EditorGUI.EndDisabledGroup();
+            EditorGUILayout.PropertyField(so.FindProperty(k_ObserveMaskName), true);
+            EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
+            {
                 EditorGUILayout.LabelField("Sensor Settings", EditorStyles.boldLabel);
                 EditorGUILayout.PropertyField(so.FindProperty(k_ObservationStacksName), true);
-
             }
             EditorGUI.EndDisabledGroup();
             EditorGUILayout.PropertyField(so.FindProperty(k_CompressionTypeName), true);
