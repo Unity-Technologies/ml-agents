@@ -129,7 +129,6 @@ class GhostTrainer(Trainer):
         self.last_swap: int = 0
         self.last_team_change: int = 0
 
-        # Chosen because it is the initial ELO in Chess
         self.initial_elo = GlobalTrainingStatus.get_parameter_state(
             self.brain_name, StatusType.ELO
         )
