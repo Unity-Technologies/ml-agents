@@ -294,6 +294,10 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             if (m_ShowGizmos)
             {
+                if (m_Sensor == null)
+                {
+                    CreateSensors();
+                }
                 m_Sensor.Perceive();
                 var scale = new Vector3(m_CellScaleX, 1, m_CellScaleZ);
                 var offset = new Vector3(0, m_GizmoYOffset, 0);
