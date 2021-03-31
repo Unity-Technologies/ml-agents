@@ -414,13 +414,13 @@ class TorchPOCAOptimizer(TorchOptimizer):
                 seq_obs.append(_self_obs[start:end])
             self_seq_obs.append(seq_obs)
 
-            for groupmate_obs, team_action in zip(obs, actions):
+            for groupmate_obs, groupmate_action in zip(obs, actions):
                 seq_obs = []
-                for (_obs,) in groupmate_obs:
-                    first_seq_obs = _obs[start:end]
-                    seq_obs.append(first_seq_obs)
+                for _obs in groupmate_obs:
+                    sliced_seq_obs = _obs[start:end]
+                    seq_obs.append(sliced_seq_obs)
                 groupmate_seq_obs.append(seq_obs)
-                _act = team_action.slice(start, end)
+                _act = groupmate_action.slice(start, end)
                 groupmate_seq_act.append(_act)
 
             all_seq_obs = self_seq_obs + groupmate_seq_obs

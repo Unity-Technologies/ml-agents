@@ -46,7 +46,7 @@ def create_test_ppo_optimizer(dummy_config, use_rnn, use_discrete, use_visual):
 
     trainer_settings = attr.evolve(dummy_config)
     trainer_settings.network_settings.memory = (
-        NetworkSettings.MemorySettings(sequence_length=16, memory_size=10)
+        NetworkSettings.MemorySettings(sequence_length=8, memory_size=10)
         if use_rnn
         else None
     )
@@ -197,6 +197,8 @@ def test_ppo_get_value_estimates(dummy_config, rnn, visual, discrete):
     optimizer = create_test_ppo_optimizer(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
+    # Time horizon is longer than sequence length, make sure to test
+    # process trajectory on multiple sequences in trajectory + some padding
     time_horizon = 15
     trajectory = make_fake_trajectory(
         length=time_horizon,

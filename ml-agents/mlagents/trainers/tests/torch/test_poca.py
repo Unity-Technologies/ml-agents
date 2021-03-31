@@ -60,7 +60,7 @@ def create_test_poca_optimizer(dummy_config, use_rnn, use_discrete, use_visual):
     }
 
     trainer_settings.network_settings.memory = (
-        NetworkSettings.MemorySettings(sequence_length=16, memory_size=10)
+        NetworkSettings.MemorySettings(sequence_length=8, memory_size=10)
         if use_rnn
         else None
     )
