@@ -264,8 +264,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 m_CompressionType,
                 m_MaxColliderBufferSize,
                 m_InitialColliderBufferSize,
-                m_ShowGizmos,
-                m_DebugColors
+                m_ShowGizmos
             );
 
             if (ObservationStacks != 1)
@@ -284,7 +283,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 m_Sensor.CompressionType = m_CompressionType;
                 m_Sensor.ShowGizmos = m_ShowGizmos;
-                m_Sensor.DebugColors = (Color[])m_DebugColors.Clone();
             }
         }
 

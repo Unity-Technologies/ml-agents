@@ -19,57 +19,157 @@ namespace Unity.MLAgents.Extensions.Sensors
     [AddComponentMenu("ML Agents/Grid Sensor", (int)MenuGroup.Sensors)]
     public class GridSensor : ISensor, IBuiltInSensor
     {
-        // Sensor parameters configured in UI
-        string m_Name;
-        float m_CellScaleX;
-        float m_CellScaleY;
-        float m_CellScaleZ;
-        int m_GridNumSideX;
-        int m_GridNumSideZ;
-        bool m_RotateWithAgent;
-        int[] m_ChannelDepth;
-        string[] m_DetectableObjects;
-        LayerMask m_ObserveMask;
-        GridDepthType m_GridDepthType;
-        GameObject m_RootReference;
-        int m_MaxColliderBufferSize;
-        int m_InitialColliderBufferSize;
-        SensorCompressionType m_CompressionType;
-        bool m_ShowGizmos;
-        Color[] m_DebugColors;
+        /// <summary>
+        /// Name of this grid sensor.
+        /// </summary>
+        string Name;
 
-        // Buffers and intermediate objects
-        // The buffer to store all collider found
+        //
+        // Main Parameters
+        //
+
+        /// <summary>
+        /// The width of each grid cell.
+        /// </summary>
+        float CellScaleX = 1f;
+
+        /// <summary>
+        /// The depth of each grid cell.
+        /// </summary>
+        float CellScaleZ = 1f;
+
+        /// <summary>
+        /// The width of the grid .
+        /// </summary>
+        int GridNumSideX = 16;
+
+        /// <summary>
+        /// The depth of the grid .
+        /// </summary>
+        int GridNumSideZ = 16;
+
+        /// <summary>
+        /// The height of each grid cell. Changes how much of the vertical axis is observed by a cell.
+        /// </summary>
+        float CellScaleY = 0.01f;
+
+        /// <summary>
+        /// Rotate the grid based on the direction the agent is facing.
+        /// </summary>
+        bool RotateWithAgent;
+
+        /// <summary>
+        /// Array holding the depth of each channel.
+        /// </summary>
+        int[] ChannelDepth;
+
+        /// <summary>
+        /// List of tags that are detected.
+        /// </summary>
+        string[] DetectableObjects;
+
+        /// <summary>
+        /// The layer mask.
+        /// </summary>
+        LayerMask ObserveMask;
+
+        /// <summary>
+        /// The data layout that the grid should output.
+        /// </summary>
+        GridDepthType gridDepthType = GridDepthType.Channel;
+
+        /// <summary>
+        /// The reference of the root of the agent. This is used to disambiguate objects with the same tag as the agent. Defaults to current GameObject.
+        /// </summary>
+        GameObject rootReference;
+
+        int MaxColliderBufferSize;
+
+        int InitialColliderBufferSize;
         Collider[] m_ColliderBuffer;
-        // The starting index of each channel in one-hot representation for channel-hot type
-        float[] m_ChannelBuffer;
-        // The offsets used to specify where within a cell's allotted data, certain observations will be inserted.
-        int[] m_ChannelOffsets;
-        // The main storage of perceptual information.
-        float[] m_PerceptionBuffer;
-        // The default value of the perceptionBuffer when using the ChannelHot DepthType. Used to reset the array.
-        float[] m_ChannelHotDefaultPerceptionBuffer;
-        // Array of Colors needed in order to load the values of the perception buffer to a texture.
-        Color[] m_PerceptionColors;
-        // Array of index of colors displaying the DebugColors for each cell in OnDrawGizmos. Only updated if ShowGizmos.
-        int[] m_CellActivity;
-        // Array of positions where each position is the center of a cell.
-        Vector3[] m_CellLocalPosition;
-        // Texture where the colors are written to so that they can be compressed in PNG format.
-        Texture2D m_Texture2D;
 
-        // Utility constants calculated on init
-        // Total Number of cells (width*height)
-        int m_NumCells;
-        // The total number of observations per cell of the grid. Its equivalent to the "channel" on the outgoing tensor.
-        int m_ObservationPerCell;
-        // Radius of grid, used for normalizing the distance.
-        float m_InverseSphereRadius;
-        //  (gridNumSideZ - 1) / 2; Offset used for calculating CellToPoint
-        float m_OffsetGridNumSide;
-        // Cached ObservationSpec
+        float[] m_ChannelBuffer;
+
+        //
+        // Hidden Parameters
+        //
+
+        /// <summary>
+        /// The total number of observations per cell of the grid. Its equivalent to the "channel" on the outgoing tensor.
+        /// </summary>
+        int ObservationPerCell;
+
+        /// <summary>
+        /// The offsets used to specify where within a cell's allotted data, certain observations will be inserted.
+        /// </summary>
+        int[] ChannelOffsets;
+
+        /// <summary>
+        /// The main storage of perceptual information.
+        /// </summary>
+        float[] m_PerceptionBuffer;
+
+        /// <summary>
+        ///  The default value of the perceptionBuffer when using the ChannelHot DepthType. Used to reset the array/
+        /// </summary>
+        float[] m_ChannelHotDefaultPerceptionBuffer;
+
+        /// <summary>
+        /// Array of Colors needed in order to load the values of the perception buffer to a texture.
+        /// </summary>
+        Color[] m_PerceptionColors;
+
+        /// <summary>
+        /// Texture where the colors are written to so that they can be compressed in PNG format.
+        /// </summary>
+        Texture2D m_perceptionTexture2D;
+
+        //
+        // Utility Constants Calculated on Init
+        //
+
+        /// <summary>
+        /// Radius of grid, used for normalizing the distance.
+        /// </summary>
+        float InverseSphereRadius;
+
+        /// <summary>
+        /// Total Number of cells (width*height)
+        /// </summary>
+        int NumCells;
+
+        /// <summary>
+        /// Offset used for calculating CellToPoint
+        /// </summary>
+        float OffsetGridNumSide = 7.5f; //  (gridNumSideZ - 1) / 2;
+
+        /// <summary>
+        /// Cached ObservationSpec
+        /// </summary>
         ObservationSpec m_ObservationSpec;
 
+        //
+        // Debug Parameters
+        //
+
+        /// <summary>
+        /// Whether to show gizmos or not.
+        /// </summary>
+        bool m_ShowGizmos = false;
+
+        SensorCompressionType m_CompressionType = SensorCompressionType.PNG;
+
+        /// <summary>
+        /// Array of colors displaying the DebugColors for each cell in OnDrawGizmos. Only updated if ShowGizmos.
+        /// </summary>
+        int[] m_CellActivity;
+
+        /// <summary>
+        /// Array of positions where each position is the center of a cell.
+        /// </summary>
+        Vector3[] CellPoints;
+
+        ////////////////////////
 
         public GridSensor(
             string name,
@@ -82,41 +182,39 @@ namespace Unity.MLAgents.Extensions.Sensors
             int[] channelDepth,
             string[] detectableObjects,
             LayerMask observeMask,
-            GridDepthType gridDepthType,
-            GameObject rootReference,
+            GridDepthType depthType,
+            GameObject root,
             SensorCompressionType compression,
             int maxColliderBufferSize,
             int initialColliderBufferSize,
-            bool showGizmos,
-            Color[] debugColors
+            bool showGizmos
         )
         {
-            m_Name = name;
-            m_CellScaleX = cellScaleX;
-            m_CellScaleY = cellScaleY;
-            m_CellScaleZ = cellScaleZ;
-            m_GridNumSideX = gridNumSideX;
-            m_GridNumSideZ = gridNumSideZ;
-            m_RotateWithAgent = rotateWithAgent;
-            m_ChannelDepth = channelDepth;
-            m_DetectableObjects = detectableObjects;
-            m_ObserveMask = observeMask;
-            m_GridDepthType = gridDepthType;
-            m_RootReference = rootReference;
-            m_CompressionType = compression;
-            m_MaxColliderBufferSize = maxColliderBufferSize;
-            m_InitialColliderBufferSize = initialColliderBufferSize;
+            Name = name;
+            CellScaleX = cellScaleX;
+            CellScaleY = cellScaleY;
+            CellScaleZ = cellScaleZ;
+            GridNumSideX = gridNumSideX;
+            GridNumSideZ = gridNumSideZ;
+            RotateWithAgent = rotateWithAgent;
+            ChannelDepth = channelDepth;
+            DetectableObjects = detectableObjects;
+            ObserveMask = observeMask;
+            gridDepthType = depthType;
+            rootReference = root;
+            CompressionType = compression;
+            MaxColliderBufferSize = maxColliderBufferSize;
+            InitialColliderBufferSize = initialColliderBufferSize;
             m_ShowGizmos = showGizmos;
-            m_DebugColors = debugColors;
 
-            if (m_GridDepthType == GridDepthType.Counting && m_DetectableObjects.Length != m_ChannelDepth.Length)
+            if (gridDepthType == GridDepthType.Counting && DetectableObjects.Length != ChannelDepth.Length)
             {
                 throw new UnityAgentsException("The channels of a CountingGridSensor is equal to the number of detectableObjects");
             }
 
-            m_ObservationSpec = ObservationSpec.Visual(m_GridNumSideX, m_GridNumSideZ, m_ObservationPerCell);
-            m_Texture2D = new Texture2D(m_GridNumSideX, m_GridNumSideZ, TextureFormat.RGB24, false);
-            m_ColliderBuffer = new Collider[Math.Min(m_MaxColliderBufferSize, m_InitialColliderBufferSize)];
+            m_ObservationSpec = ObservationSpec.Visual(GridNumSideX, GridNumSideZ, ObservationPerCell);
+            m_perceptionTexture2D = new Texture2D(GridNumSideX, GridNumSideZ, TextureFormat.RGB24, false);
+            m_ColliderBuffer = new Collider[Math.Min(MaxColliderBufferSize, InitialColliderBufferSize)];
 
             InitGridParameters();
             InitDepthType();
@@ -136,12 +234,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             set { m_ShowGizmos = value; }
         }
 
-        public Color[] DebugColors
-        {
-            get { return m_DebugColors; }
-            set { m_DebugColors = value; }
-        }
-
         public int[] CellActivity
         {
             get { return m_CellActivity; }
@@ -152,11 +244,11 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         void InitGridParameters()
         {
-            m_NumCells = m_GridNumSideX * m_GridNumSideZ;
-            float sphereRadiusX = (m_CellScaleX * m_GridNumSideX) / Mathf.Sqrt(2);
-            float sphereRadiusZ = (m_CellScaleZ * m_GridNumSideZ) / Mathf.Sqrt(2);
-            m_InverseSphereRadius = 1.0f / Mathf.Max(sphereRadiusX, sphereRadiusZ);
-            m_OffsetGridNumSide = (m_GridNumSideZ - 1f) / 2f;
+            NumCells = GridNumSideX * GridNumSideZ;
+            float sphereRadiusX = (CellScaleX * GridNumSideX) / Mathf.Sqrt(2);
+            float sphereRadiusZ = (CellScaleZ * GridNumSideZ) / Mathf.Sqrt(2);
+            InverseSphereRadius = 1.0f / Mathf.Max(sphereRadiusX, sphereRadiusZ);
+            OffsetGridNumSide = (GridNumSideZ - 1f) / 2f;
         }
 
         /// <summary>
@@ -165,32 +257,32 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         void InitDepthType()
         {
-            if (m_GridDepthType == GridDepthType.ChannelHot)
+            if (gridDepthType == GridDepthType.ChannelHot)
             {
-                m_ObservationPerCell = m_ChannelDepth.Sum();
+                ObservationPerCell = ChannelDepth.Sum();
 
-                m_ChannelOffsets = new int[m_ChannelDepth.Length];
-                for (int i = 1; i < m_ChannelDepth.Length; i++)
+                ChannelOffsets = new int[ChannelDepth.Length];
+                for (int i = 1; i < ChannelDepth.Length; i++)
                 {
-                    m_ChannelOffsets[i] = m_ChannelOffsets[i - 1] + m_ChannelDepth[i - 1];
+                    ChannelOffsets[i] = ChannelOffsets[i - 1] + ChannelDepth[i - 1];
                 }
 
-                m_ChannelHotDefaultPerceptionBuffer = new float[m_ObservationPerCell];
-                for (int i = 0; i < m_ChannelDepth.Length; i++)
+                m_ChannelHotDefaultPerceptionBuffer = new float[ObservationPerCell];
+                for (int i = 0; i < ChannelDepth.Length; i++)
                 {
-                    if (m_ChannelDepth[i] > 1)
+                    if (ChannelDepth[i] > 1)
                     {
-                        m_ChannelHotDefaultPerceptionBuffer[m_ChannelOffsets[i]] = 1;
+                        m_ChannelHotDefaultPerceptionBuffer[ChannelOffsets[i]] = 1;
                     }
                 }
             }
             else
             {
-                m_ObservationPerCell = m_ChannelDepth.Length;
+                ObservationPerCell = ChannelDepth.Length;
             }
 
             // The maximum number of channels in the final output must be less than 255 * 3 because the "number of PNG images" to generate must fit in one byte
-            Assert.IsTrue(m_ObservationPerCell < (255 * 3), "The maximum number of channels per cell must be less than 255 * 3");
+            Assert.IsTrue(ObservationPerCell < (255 * 3), "The maximum number of channels per cell must be less than 255 * 3");
         }
 
         /// <summary>
@@ -198,11 +290,11 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         void InitCellPoints()
         {
-            m_CellLocalPosition = new Vector3[m_NumCells];
+            CellPoints = new Vector3[NumCells];
 
-            for (int i = 0; i < m_NumCells; i++)
+            for (int i = 0; i < NumCells; i++)
             {
-                m_CellLocalPosition[i] = CellToLocalPosition(i);
+                CellPoints[i] = CellToLocalPosition(i);
             }
         }
 
@@ -217,12 +309,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             if (m_PerceptionBuffer != null)
             {
-                if (m_GridDepthType == GridDepthType.ChannelHot)
+                if (gridDepthType == GridDepthType.ChannelHot)
                 {
                     // Copy the default value to the array
-                    for (int i = 0; i < m_NumCells; i++)
+                    for (int i = 0; i < NumCells; i++)
                     {
-                        Array.Copy(m_ChannelHotDefaultPerceptionBuffer, 0, m_PerceptionBuffer, i * m_ObservationPerCell, m_ObservationPerCell);
+                        Array.Copy(m_ChannelHotDefaultPerceptionBuffer, 0, m_PerceptionBuffer, i * ObservationPerCell, ObservationPerCell);
                     }
                 }
                 else
@@ -232,20 +324,20 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
             else
             {
-                m_PerceptionBuffer = new float[m_ObservationPerCell * m_NumCells];
-                m_ColliderBuffer = new Collider[Math.Min(m_MaxColliderBufferSize, m_InitialColliderBufferSize)];
-                m_ChannelBuffer = new float[m_ChannelDepth.Length];
-                m_PerceptionColors = new Color[m_NumCells];
+                m_PerceptionBuffer = new float[ObservationPerCell * NumCells];
+                m_ColliderBuffer = new Collider[Math.Min(MaxColliderBufferSize, InitialColliderBufferSize)];
+                m_ChannelBuffer = new float[ChannelDepth.Length];
+                m_PerceptionColors = new Color[NumCells];
             }
 
-            if (m_ShowGizmos)
+            if (ShowGizmos)
             {
                 // Ensure to init arrays if not yet assigned (for editor)
                 if (m_CellActivity == null)
-                    m_CellActivity = new int[m_NumCells];
+                    m_CellActivity = new int[NumCells];
 
                 // Assign the default color to the cell activities
-                for (int i = 0; i < m_NumCells; i++)
+                for (int i = 0; i < NumCells; i++)
                 {
                     m_CellActivity[i] = -1;
                 }
@@ -255,13 +347,13 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <inheritdoc/>
         public string GetName()
         {
-            return m_Name;
+            return Name;
         }
 
         /// <inheritdoc/>
         public CompressionSpec GetCompressionSpec()
         {
-            return new CompressionSpec(m_CompressionType);
+            return new CompressionSpec(CompressionType);
         }
 
         /// <inheritdoc/>
@@ -280,12 +372,12 @@ namespace Unity.MLAgents.Extensions.Sensors
             using (TimerStack.Instance.Scoped("GridSensor.GetCompressedObservation"))
             {
                 var allBytes = new List<byte>();
-                var numImages = (m_ObservationPerCell + 2) / 3;
+                var numImages = (ObservationPerCell + 2) / 3;
                 for (int i = 0; i < numImages; i++)
                 {
                     var channelIndex = 3 * i;
-                    ChannelsToTexture(channelIndex, Math.Min(3, m_ObservationPerCell - channelIndex));
-                    allBytes.AddRange(m_Texture2D.EncodeToPNG());
+                    ChannelsToTexture(channelIndex, Math.Min(3, ObservationPerCell - channelIndex));
+                    allBytes.AddRange(m_perceptionTexture2D.EncodeToPNG());
                 }
 
                 return allBytes.ToArray();
@@ -303,14 +395,14 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="numChannelsToAdd"></param>
         void ChannelsToTexture(int channelIndex, int numChannelsToAdd)
         {
-            for (int i = 0; i < m_NumCells; i++)
+            for (int i = 0; i < NumCells; i++)
             {
                 for (int j = 0; j < numChannelsToAdd; j++)
                 {
-                    m_PerceptionColors[i][j] = m_PerceptionBuffer[i * m_ObservationPerCell + channelIndex + j];
+                    m_PerceptionColors[i][j] = m_PerceptionBuffer[i * ObservationPerCell + channelIndex + j];
                 }
             }
-            m_Texture2D.SetPixels(m_PerceptionColors);
+            m_perceptionTexture2D.SetPixels(m_PerceptionColors);
         }
 
         /// <summary>
@@ -329,16 +421,16 @@ namespace Unity.MLAgents.Extensions.Sensors
             ResetPerceptionBuffer();
             using (TimerStack.Instance.Scoped("GridSensor.Perceive"))
             {
-                var halfCellScale = new Vector3(m_CellScaleX / 2f, m_CellScaleY, m_CellScaleZ / 2f);
+                var halfCellScale = new Vector3(CellScaleX / 2f, CellScaleY, CellScaleZ / 2f);
 
-                for (var cellIndex = 0; cellIndex < m_NumCells; cellIndex++)
+                for (var cellIndex = 0; cellIndex < NumCells; cellIndex++)
                 {
                     var cellCenter = GetCellGlobalPosition(cellIndex);
                     var numFound = BufferResizingOverlapBoxNonAlloc(cellCenter, halfCellScale, GetGridRotation());
 
                     if (numFound > 0)
                     {
-                        if (m_GridDepthType == GridDepthType.Counting)
+                        if (gridDepthType == GridDepthType.Counting)
                         {
                             ParseCollidersAll(m_ColliderBuffer, numFound, cellIndex, cellCenter);
                         }
@@ -366,11 +458,11 @@ namespace Unity.MLAgents.Extensions.Sensors
             // until we're sure we can hold them all (or until we hit the max size).
             while (true)
             {
-                numFound = Physics.OverlapBoxNonAlloc(cellCenter, halfCellScale, m_ColliderBuffer, rotation, m_ObserveMask);
-                if (numFound == m_ColliderBuffer.Length && m_ColliderBuffer.Length < m_MaxColliderBufferSize)
+                numFound = Physics.OverlapBoxNonAlloc(cellCenter, halfCellScale, m_ColliderBuffer, rotation, ObserveMask);
+                if (numFound == m_ColliderBuffer.Length && m_ColliderBuffer.Length < MaxColliderBufferSize)
                 {
-                    m_ColliderBuffer = new Collider[Math.Min(m_MaxColliderBufferSize, m_ColliderBuffer.Length * 2)];
-                    m_InitialColliderBufferSize = m_ColliderBuffer.Length;
+                    m_ColliderBuffer = new Collider[Math.Min(MaxColliderBufferSize, m_ColliderBuffer.Length * 2)];
+                    InitialColliderBufferSize = m_ColliderBuffer.Length;
                 }
                 else
                 {
@@ -399,17 +491,17 @@ namespace Unity.MLAgents.Extensions.Sensors
                 var currentColliderGo = foundColliders[i].gameObject;
 
                 // Continue if the current collider go is the root reference
-                if (ReferenceEquals(currentColliderGo, m_RootReference))
+                if (ReferenceEquals(currentColliderGo, rootReference))
                     continue;
 
                 var closestColliderPoint = foundColliders[i].ClosestPointOnBounds(cellCenter);
-                var currentDistanceSquared = (closestColliderPoint - m_RootReference.transform.position).sqrMagnitude;
+                var currentDistanceSquared = (closestColliderPoint - rootReference.transform.position).sqrMagnitude;
 
                 // Checks if our colliders contain a detectable object
                 var index = -1;
-                for (var ii = 0; ii < m_DetectableObjects.Length; ii++)
+                for (var ii = 0; ii < DetectableObjects.Length; ii++)
                 {
-                    if (currentColliderGo.CompareTag(m_DetectableObjects[ii]))
+                    if (currentColliderGo.CompareTag(DetectableObjects[ii]))
                     {
                         index = ii;
                         break;
@@ -423,7 +515,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             if (!ReferenceEquals(closestColliderGo, null))
-                LoadObjectData(closestColliderGo, cellIndex, (float)Math.Sqrt(minDistanceSquared) * m_InverseSphereRadius);
+                LoadObjectData(closestColliderGo, cellIndex, (float)Math.Sqrt(minDistanceSquared) * InverseSphereRadius);
             Profiler.EndSample();
         }
 
@@ -444,13 +536,13 @@ namespace Unity.MLAgents.Extensions.Sensors
                 currentColliderGo = foundColliders[i].gameObject;
 
                 // Continue if the current collider go is the root reference
-                if (currentColliderGo == m_RootReference)
+                if (currentColliderGo == rootReference)
                     continue;
 
                 closestColliderPoint = foundColliders[i].ClosestPointOnBounds(cellCenter);
 
                 LoadObjectData(currentColliderGo, cellIndex,
-                    Vector3.Distance(closestColliderPoint, m_RootReference.transform.position) * m_InverseSphereRadius);
+                    Vector3.Distance(closestColliderPoint, rootReference.transform.position) * InverseSphereRadius);
             }
             Profiler.EndSample();
         }
@@ -507,8 +599,8 @@ namespace Unity.MLAgents.Extensions.Sensors
                 if (channelValues[j] < 0)
                     throw new UnityAgentsException("Expected ChannelValue[" + j + "] for " + currentColliderGo.name + " to be non-negative, was " + channelValues[j]);
 
-                if (channelValues[j] > m_ChannelDepth[j])
-                    throw new UnityAgentsException("Expected ChannelValue[" + j + "]  for " + currentColliderGo.name + " to be less than ChannelDepth[" + j + "] (" + m_ChannelDepth[j] + "), was " + channelValues[j]);
+                if (channelValues[j] > ChannelDepth[j])
+                    throw new UnityAgentsException("Expected ChannelValue[" + j + "]  for " + currentColliderGo.name + " to be less than ChannelDepth[" + j + "] (" + ChannelDepth[j] + "), was " + channelValues[j]);
             }
         }
 
@@ -524,27 +616,27 @@ namespace Unity.MLAgents.Extensions.Sensors
         protected virtual void LoadObjectData(GameObject currentColliderGo, int cellIndex, float normalizedDistance)
         {
             Profiler.BeginSample("GridSensor.LoadObjectData");
-            var channelHotVals = new ArraySegment<float>(m_PerceptionBuffer, cellIndex * m_ObservationPerCell, m_ObservationPerCell);
-            for (var i = 0; i < m_DetectableObjects.Length; i++)
+            var channelHotVals = new ArraySegment<float>(m_PerceptionBuffer, cellIndex * ObservationPerCell, ObservationPerCell);
+            for (var i = 0; i < DetectableObjects.Length; i++)
             {
                 for (var ii = 0; ii < channelHotVals.Count; ii++)
                 {
                     m_PerceptionBuffer[channelHotVals.Offset + ii] = 0f;
                 }
 
-                if (!ReferenceEquals(currentColliderGo, null) && currentColliderGo.CompareTag(m_DetectableObjects[i]))
+                if (!ReferenceEquals(currentColliderGo, null) && currentColliderGo.CompareTag(DetectableObjects[i]))
                 {
                     // TODO: Create the array already then set the values using "out" in GetObjectData
                     // Using i+1 as the type index as "0" represents "empty"
                     var channelValues = GetObjectData(currentColliderGo, (float)i + 1, normalizedDistance);
                     ValidateValues(channelValues, currentColliderGo);
 
-                    if (m_ShowGizmos)
+                    if (ShowGizmos)
                     {
-                        m_CellActivity[cellIndex] = i;
+                        CellActivity[cellIndex] = i;
                     }
 
-                    switch (m_GridDepthType)
+                    switch (gridDepthType)
                     {
                         case GridDepthType.Channel:
                             {
@@ -560,10 +652,10 @@ namespace Unity.MLAgents.Extensions.Sensors
                                 // Array.Copy(channelValues, 0, PerceptionBuffer, cell_id*ObservationPerCell, ObservationPerCell);
                                 for (int j = 0; j < channelValues.Length; j++)
                                 {
-                                    channelValues[j] /= m_ChannelDepth[j];
+                                    channelValues[j] /= ChannelDepth[j];
                                 }
 
-                                Array.Copy(channelValues, 0, m_PerceptionBuffer, cellIndex * m_ObservationPerCell, m_ObservationPerCell);
+                                Array.Copy(channelValues, 0, m_PerceptionBuffer, cellIndex * ObservationPerCell, ObservationPerCell);
                                 break;
                             }
 
@@ -580,13 +672,13 @@ namespace Unity.MLAgents.Extensions.Sensors
                                 // Array.Copy(channelHotVals, 0, PerceptionBuffer, cell_id*ObservationPerCell, ObservationPerCell);
                                 for (int j = 0; j < channelValues.Length; j++)
                                 {
-                                    if (m_ChannelDepth[j] > 1)
+                                    if (ChannelDepth[j] > 1)
                                     {
-                                        m_PerceptionBuffer[channelHotVals.Offset + (int)channelValues[j] + m_ChannelOffsets[j]] = 1f;
+                                        m_PerceptionBuffer[channelHotVals.Offset + (int)channelValues[j] + ChannelOffsets[j]] = 1f;
                                     }
                                     else
                                     {
-                                        m_PerceptionBuffer[channelHotVals.Offset + m_ChannelOffsets[j]] = channelValues[j];
+                                        m_PerceptionBuffer[channelHotVals.Offset + ChannelOffsets[j]] = channelValues[j];
                                     }
                                 }
                                 break;
@@ -596,8 +688,8 @@ namespace Unity.MLAgents.Extensions.Sensors
                                 // The observations are "channel count" so each grid is WxHxC where C is the number of tags
                                 // This means that each value channelValues[i] is a counter of gameobject included into grid cells
                                 // where i is the index of the tag in DetectableObjects
-                                int countIndex = cellIndex * m_ObservationPerCell + i;
-                                m_PerceptionBuffer[countIndex] = Mathf.Min(1f, m_PerceptionBuffer[countIndex] + 1f / m_ChannelDepth[i]);
+                                int countIndex = cellIndex * ObservationPerCell + i;
+                                m_PerceptionBuffer[countIndex] = Mathf.Min(1f, m_PerceptionBuffer[countIndex] + 1f / ChannelDepth[i]);
                                 break;
                             }
                     }
@@ -613,26 +705,26 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="cell">The index of the cell</param>
         Vector3 CellToLocalPosition(int cellIndex)
         {
-            float x = (cellIndex % m_GridNumSideZ - m_OffsetGridNumSide) * m_CellScaleX;
-            float z = (cellIndex / m_GridNumSideZ - m_OffsetGridNumSide) * m_CellScaleZ - (m_GridNumSideZ - m_GridNumSideX);
+            float x = (cellIndex % GridNumSideZ - OffsetGridNumSide) * CellScaleX;
+            float z = (cellIndex / GridNumSideZ - OffsetGridNumSide) * CellScaleZ - (GridNumSideZ - GridNumSideX);
             return new Vector3(x, 0, z);
         }
 
         internal Vector3 GetCellGlobalPosition(int cellIndex)
         {
-            if (m_RotateWithAgent)
+            if (RotateWithAgent)
             {
-                return m_RootReference.transform.TransformPoint(m_CellLocalPosition[cellIndex]);
+                return rootReference.transform.TransformPoint(CellPoints[cellIndex]);
             }
             else
             {
-                return m_CellLocalPosition[cellIndex] + m_RootReference.transform.position;
+                return CellPoints[cellIndex] + rootReference.transform.position;
             }
         }
 
         internal Quaternion GetGridRotation()
         {
-            return m_RotateWithAgent ? m_RootReference.transform.rotation : Quaternion.identity;
+            return RotateWithAgent ? rootReference.transform.rotation : Quaternion.identity;
         }
 
         /// <inheritdoc/>
@@ -656,11 +748,11 @@ namespace Unity.MLAgents.Extensions.Sensors
             using (TimerStack.Instance.Scoped("GridSensor.Write"))
             {
                 int index = 0;
-                for (var h = m_GridNumSideZ - 1; h >= 0; h--) // height
+                for (var h = GridNumSideZ - 1; h >= 0; h--) // height
                 {
-                    for (var w = 0; w < m_GridNumSideX; w++) // width
+                    for (var w = 0; w < GridNumSideX; w++) // width
                     {
-                        for (var d = 0; d < m_ObservationPerCell; d++) // depth
+                        for (var d = 0; d < ObservationPerCell; d++) // depth
                         {
                             writer[h, w, d] = m_PerceptionBuffer[index];
                             index++;
