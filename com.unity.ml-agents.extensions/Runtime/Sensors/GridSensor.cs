@@ -127,19 +127,19 @@ namespace Unity.MLAgents.Extensions.Sensors
         public SensorCompressionType CompressionType
         {
             get { return m_CompressionType; }
-            set { m_CompressionType = value;}
+            set { m_CompressionType = value; }
         }
 
         public bool ShowGizmos
         {
             get { return m_ShowGizmos; }
-            set { m_ShowGizmos = value;}
+            set { m_ShowGizmos = value; }
         }
 
         public Color[] DebugColors
         {
             get { return m_DebugColors; }
-            set { m_DebugColors = value;}
+            set { m_DebugColors = value; }
         }
 
         public int[] CellActivity

@@ -284,7 +284,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 m_Sensor.CompressionType = m_CompressionType;
                 m_Sensor.ShowGizmos = m_ShowGizmos;
-                m_Sensor.DebugColors = (Color[]) m_DebugColors.Clone();
+                m_Sensor.DebugColors = (Color[])m_DebugColors.Clone();
             }
         }
 
@@ -308,7 +308,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                     cubeTransform = Matrix4x4.TRS(cellPoints + gizmoYOffset, m_Sensor.GetGridRotation(), scale);
                     Gizmos.matrix = oldGizmoMatrix * cubeTransform;
                     var colorIndex = m_Sensor.CellActivity[i];
-                    var debugRayColor = Color.white;;
+                    var debugRayColor = Color.white;
                     if (colorIndex >= 0 && m_DebugColors.Length > colorIndex)
                     {
                         debugRayColor = m_DebugColors[colorIndex];
