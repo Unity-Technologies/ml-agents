@@ -718,12 +718,26 @@ class TrainerSettings(ExportableSettings):
                 super().__init__(*args)
             else:
                 super().__init__(TrainerSettings, *args)
+            self._strict = False
+
+        def set_strict(self, is_strict: bool) -> None:
+            self._strict = is_strict
 
         def __missing__(self, key: Any) -> "TrainerSettings":
             if TrainerSettings.default_override is not None:
-                return copy.deepcopy(TrainerSettings.default_override)
+                self[key] = copy.deepcopy(TrainerSettings.default_override)
+            elif self._strict:
+                raise TrainerConfigError(
+                    f"The behavior name {key} has not been specified in the trainer configuration. "
+                    f"Please add an entry in the configuration file for {key}."
+                )
             else:
-                return TrainerSettings()
+                warnings.warn(
+                    f"Behavior name {key} does not match any behaviors specified "
+                    f"in the trainer configuration file. A default configuration will be used."
+                )
+                self[key] = TrainerSettings()
+            return self[key]
 
 
 # COMMAND LINE #########################################################################
@@ -800,6 +814,7 @@ class RunOptions(ExportableSettings):
     # These are options that are relevant to the run itself, and not the engine or environment.
     # They will be left here.
     debug: bool = parser.get_default("debug")
+    strict: bool = parser.get_default("strict")
     # Strict conversion
     cattr.register_structure_hook(EnvironmentSettings, strict_to_cls)
     cattr.register_structure_hook(EngineSettings, strict_to_cls)
@@ -819,6 +834,10 @@ class RunOptions(ExportableSettings):
         DefaultDict[str, TrainerSettings], TrainerSettings.dict_to_defaultdict
     )
     cattr.register_unstructure_hook(collections.defaultdict, defaultdict_to_dict)
+
+    # Set strict check on DefaultTrainerDict
+    def __attrs_post_init__(self):
+        self.behaviors.set_strict(self.strict)
 
     @staticmethod
     def from_argparse(args: argparse.Namespace) -> "RunOptions":
