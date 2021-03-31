@@ -9,6 +9,26 @@ namespace Unity.MLAgents.Extensions.Editor
     [CanEditMultipleObjects]
     internal class GridSensorComponentEditor : UnityEditor.Editor
     {
+        const string k_SensorName = "m_SensorName";
+        const string k_CellScaleXName = "m_CellScaleX";
+        const string k_CellScaleZName = "m_CellScaleZ";
+        const string k_CellScaleYName = "m_CellScaleY";
+        const string k_GridNumSideXName = "m_GridNumSideX";
+        const string k_GridNumSideZName = "m_GridNumSideZ";
+        const string k_RotateWithAgentName = "m_RotateWithAgent";
+        const string k_RootReferenceName = "m_RootReference";
+        const string k_DepthTypeName = "m_DepthType";
+        const string k_ChannelDepthName = "m_ChannelDepth";
+        const string k_DetectableObjectsName = "m_DetectableObjects";
+        const string k_MaxColliderBufferSizeName = "m_MaxColliderBufferSize";
+        const string k_InitialColliderBufferSizeName = "m_InitialColliderBufferSize";
+        const string k_ObserveMaskName = "m_ObserveMask";
+        const string k_ObservationStacksName = "m_ObservationStacks";
+        const string k_CompressionTypeName = "m_CompressionType";
+        const string k_ShowGizmosName = "m_ShowGizmos";
+        const string k_GizmoYOffsetName = "m_GizmoYOffset";
+        const string k_DebugColorsName = "m_DebugColors";
+
         public override void OnInspectorGUI()
         {
             var so = serializedObject;
@@ -21,22 +41,22 @@ namespace Unity.MLAgents.Extensions.Editor
             {
                 // These fields affect the sensor order or observation size,
                 // So can't be changed at runtime.
-                EditorGUILayout.PropertyField(so.FindProperty("m_SensorName"), true);
+                EditorGUILayout.PropertyField(so.FindProperty(k_SensorName), true);
 
                 EditorGUILayout.LabelField("Grid Settings", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(so.FindProperty("m_CellScaleX"), true);
-                EditorGUILayout.PropertyField(so.FindProperty("m_CellScaleZ"), true);
-                EditorGUILayout.PropertyField(so.FindProperty("m_CellScaleY"), true);
-                EditorGUILayout.PropertyField(so.FindProperty("m_GridNumSideX"), true);
-                EditorGUILayout.PropertyField(so.FindProperty("m_GridNumSideZ"), true);
-                EditorGUILayout.PropertyField(so.FindProperty("m_RotateWithAgent"), true);
-                EditorGUILayout.PropertyField(so.FindProperty("m_RootReference"), true);
+                EditorGUILayout.PropertyField(so.FindProperty(k_CellScaleXName), true);
+                EditorGUILayout.PropertyField(so.FindProperty(k_CellScaleZName), true);
+                EditorGUILayout.PropertyField(so.FindProperty(k_CellScaleYName), true);
+                EditorGUILayout.PropertyField(so.FindProperty(k_GridNumSideXName), true);
+                EditorGUILayout.PropertyField(so.FindProperty(k_GridNumSideZName), true);
+                EditorGUILayout.PropertyField(so.FindProperty(k_RotateWithAgentName), true);
+                EditorGUILayout.PropertyField(so.FindProperty(k_RootReferenceName), true);
 
                 EditorGUILayout.LabelField("Channel Settings", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(so.FindProperty("m_DepthType"), true);
+                EditorGUILayout.PropertyField(so.FindProperty(k_DepthTypeName), true);
 
                 // channel depth
-                var channelDepth = so.FindProperty("m_ChannelDepth");
+                var channelDepth = so.FindProperty(k_ChannelDepthName);
                 var newDepth = EditorGUILayout.IntField("Channel Depth", channelDepth.arraySize);
                 if (newDepth != channelDepth.arraySize)
                 {
@@ -51,7 +71,7 @@ namespace Unity.MLAgents.Extensions.Editor
                 EditorGUI.indentLevel--;
 
                 // detectable objects
-                var detectableObjects = so.FindProperty("m_DetectableObjects");
+                var detectableObjects = so.FindProperty(k_DetectableObjectsName);
                 var newSize = EditorGUILayout.IntField("Detectable Objects", detectableObjects.arraySize);
                 if (newSize != detectableObjects.arraySize)
                 {
@@ -66,25 +86,24 @@ namespace Unity.MLAgents.Extensions.Editor
                 EditorGUI.indentLevel--;
 
                 EditorGUILayout.LabelField("Collider and Buffer", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(so.FindProperty("m_MaxColliderBufferSize"), true);
-                EditorGUILayout.PropertyField(so.FindProperty("m_InitialColliderBufferSize"), true);
-                EditorGUILayout.PropertyField(so.FindProperty("m_ObserveMask"), true);
+                EditorGUILayout.PropertyField(so.FindProperty(k_MaxColliderBufferSizeName), true);
+                EditorGUILayout.PropertyField(so.FindProperty(k_InitialColliderBufferSizeName), true);
+                EditorGUILayout.PropertyField(so.FindProperty(k_ObserveMaskName), true);
 
                 EditorGUILayout.LabelField("Sensor Settings", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(so.FindProperty("m_ObservationStacks"), true);
+                EditorGUILayout.PropertyField(so.FindProperty(k_ObservationStacksName), true);
 
             }
             EditorGUI.EndDisabledGroup();
-            EditorGUILayout.PropertyField(so.FindProperty("m_CompressionType"), true);
+            EditorGUILayout.PropertyField(so.FindProperty(k_CompressionTypeName), true);
 
             EditorGUILayout.LabelField("Debug Gizmo", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(so.FindProperty("m_ShowGizmos"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("m_GizmoYOffset"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("m_DebugColors"), true);
+            EditorGUILayout.PropertyField(so.FindProperty(k_ShowGizmosName), true);
+            EditorGUILayout.PropertyField(so.FindProperty(k_GizmoYOffsetName), true);
 
             // detectable objects
             var debugColors = so.FindProperty("m_DebugColors");
-            var detectableObjectSize = so.FindProperty("m_DetectableObjects").arraySize;
+            var detectableObjectSize = so.FindProperty(k_DetectableObjectsName).arraySize;
             if (detectableObjectSize != debugColors.arraySize)
             {
                 debugColors.arraySize = detectableObjectSize;

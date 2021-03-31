@@ -296,7 +296,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 if (m_Sensor == null)
                 {
-                    CreateSensors();
+                    return;
                 }
                 m_Sensor.Perceive();
 
