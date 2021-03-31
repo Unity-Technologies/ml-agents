@@ -120,3 +120,11 @@ type, etc).
 `GameObject`.
 * Call `Agent.RequestDecision()` when you're ready for the `Agent` to make a move on the next `Academy` step. During
 the next `Academy` step, the `MakeMove()` method on the board will be called.
+
+## Implementation Details
+
+### Action Space
+The indexing for actions is the same as described in
+[Human Like Playtesting with Deep Learning](https://www.researchgate.net/publication/328307928_Human-Like_Playtesting_with_Deep_Learning)
+(for example, Figure 2b). The horizontal moves are enumerated first, then the vertical ones.
+<img src="images/match3-moves.png" align="center"/>
