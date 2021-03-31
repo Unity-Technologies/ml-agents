@@ -169,8 +169,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         Vector3[] CellPoints;
 
-        ////////////////////////
-
         public GridSensor(
             string name,
             float cellScaleX,
