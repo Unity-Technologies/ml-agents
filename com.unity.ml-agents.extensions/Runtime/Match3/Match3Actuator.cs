@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Unity.MLAgents.Actuators;
 using Debug = UnityEngine.Debug;
 
@@ -11,12 +10,11 @@ namespace Unity.MLAgents.Extensions.Match3
     /// </summary>
     public class Match3Actuator : IActuator, IBuiltInActuator
     {
-        private AbstractBoard m_Board;
-        private System.Random m_Random;
-        private ActionSpec m_ActionSpec;
-        private bool m_ForceHeuristic;
-        private Agent m_Agent;
-        private BoardSize m_MaxBoardSize;
+        AbstractBoard m_Board;
+        System.Random m_Random;
+        ActionSpec m_ActionSpec;
+        bool m_ForceHeuristic;
+        BoardSize m_MaxBoardSize;
 
         /// <summary>
         /// Create a Match3Actuator.
@@ -30,7 +28,6 @@ namespace Unity.MLAgents.Extensions.Match3
         public Match3Actuator(AbstractBoard board,
                               bool forceHeuristic,
                               int seed,
-                              Agent agent,
                               string name)
         {
             m_Board = board;
@@ -38,7 +35,6 @@ namespace Unity.MLAgents.Extensions.Match3
             Name = name;
 
             m_ForceHeuristic = forceHeuristic;
-            m_Agent = agent;
 
             var numMoves = Move.NumPotentialMoves(m_MaxBoardSize);
             m_ActionSpec = ActionSpec.MakeDiscrete(numMoves);
@@ -48,24 +44,10 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public ActionSpec ActionSpec => m_ActionSpec;
 
-        [Conditional("DEBUG")]
-        void CheckBoardSizes()
-        {
-            var currentBoardSize = m_Board.GetCurrentBoardSize();
-            if (currentBoardSize >= m_MaxBoardSize)
-            {
-                Debug.LogWarning(
-                    "Current BoardSize is larger than maximum board size was on initialization. This may cause unexpected results.\n" +
-                    $"Original GetMaxBoardSize() result: {m_MaxBoardSize}\n" +
-                    $"GetCurrentBoardSize() result: {currentBoardSize}"
-                );
-            }
-        }
-
         /// <inheritdoc/>
         public void OnActionReceived(ActionBuffers actions)
         {
-            CheckBoardSizes();
+            m_Board.CheckBoardSizes(m_MaxBoardSize);
             if (m_ForceHeuristic)
             {
                 Heuristic(actions);
@@ -80,7 +62,7 @@ namespace Unity.MLAgents.Extensions.Match3
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
             var currentBoardSize = m_Board.GetCurrentBoardSize();
-            CheckBoardSizes();
+            m_Board.CheckBoardSizes(m_MaxBoardSize);
             const int branch = 0;
             bool foundValidMove = false;
             using (TimerStack.Instance.Scoped("WriteDiscreteActionMask"))
@@ -92,7 +74,7 @@ namespace Unity.MLAgents.Extensions.Match3
                 {
                     // Check that the move is allowed for the current boardSize (e.g. it won't move a piece out of
                     // bounds), and that it's allowed by the game itself.
-                    if (currentMove.IsValidForBoardSize(currentBoardSize) && m_Board.IsMoveValid(currentMove))
+                    if (currentMove.InRangeForBoard(currentBoardSize) && m_Board.IsMoveValid(currentMove))
                     {
                         foundValidMove = true;
                     }
@@ -155,7 +137,7 @@ namespace Unity.MLAgents.Extensions.Match3
         /// override EvalMovePoints() to use your game's scoring as a better estimate.
         /// </remarks>
         /// <returns></returns>
-        protected int GreedyMove()
+        internal int GreedyMove()
         {
             var bestMoveIndex = 0;
             var bestMovePoints = -1;

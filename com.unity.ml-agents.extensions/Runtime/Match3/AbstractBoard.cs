@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
@@ -154,7 +156,7 @@ namespace Unity.MLAgents.Extensions.Match3
             var currentMove = Move.FromMoveIndex(0, maxBoardSize);
             for (var i = 0; i < NumMoves(); i++)
             {
-                if (currentMove.IsValidForBoardSize(currentBoardSize))
+                if (currentMove.InRangeForBoard(currentBoardSize))
                 {
                     yield return currentMove;
                 }
@@ -174,7 +176,7 @@ namespace Unity.MLAgents.Extensions.Match3
             var currentMove = Move.FromMoveIndex(0, maxBoardSize);
             for (var i = 0; i < NumMoves(); i++)
             {
-                if (currentMove.IsValidForBoardSize(currentBoardSize) && IsMoveValid(currentMove))
+                if (currentMove.InRangeForBoard(currentBoardSize) && IsMoveValid(currentMove))
                 {
                     yield return currentMove;
                 }
@@ -282,6 +284,25 @@ namespace Unity.MLAgents.Extensions.Match3
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Make sure that the current BoardSize isn't larger than the original value of GetMaxBoardSize().
+        /// If it is, log a warning.
+        /// </summary>
+        /// <param name="originalMaxBoardSize"></param>
+        [Conditional("DEBUG")]
+        internal void CheckBoardSizes(BoardSize originalMaxBoardSize)
+        {
+            var currentBoardSize = GetCurrentBoardSize();
+            if (!(currentBoardSize <= originalMaxBoardSize))
+            {
+                Debug.LogWarning(
+                    "Current BoardSize is larger than maximum board size was on initialization. This may cause unexpected results.\n" +
+                    $"Original GetMaxBoardSize() result: {originalMaxBoardSize}\n" +
+                    $"GetCurrentBoardSize() result: {currentBoardSize}"
+                );
+            }
         }
     }
 }

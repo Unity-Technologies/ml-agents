@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -46,14 +45,14 @@ namespace Unity.MLAgents.Extensions.Match3
     /// </summary>
     public class Match3Sensor : ISensor, IBuiltInSensor
     {
-        private Match3ObservationType m_ObservationType;
-        private ObservationSpec m_ObservationSpec;
-        private string m_Name;
+        Match3ObservationType m_ObservationType;
+        ObservationSpec m_ObservationSpec;
+        string m_Name;
 
-        private AbstractBoard m_Board;
-        private BoardSize m_MaxBoardSize;
-        private GridValueProvider m_GridValues;
-        private int m_OneHotSize;
+        AbstractBoard m_Board;
+        BoardSize m_MaxBoardSize;
+        GridValueProvider m_GridValues;
+        int m_OneHotSize;
 
         /// <summary>
         /// Create a sensor for the GridValueProvider with the specified observation type.
@@ -114,20 +113,6 @@ namespace Unity.MLAgents.Extensions.Match3
             return new Match3Sensor(board, board.GetSpecialType, specialSize, obsType, name);
         }
 
-        [Conditional("DEBUG")]
-        void CheckBoardSizes()
-        {
-            var currentBoardSize = m_Board.GetCurrentBoardSize();
-            if (currentBoardSize >= m_MaxBoardSize)
-            {
-                Debug.LogWarning(
-                    "Current BoardSize is larger than maximum board size was on initialization. This may cause unexpected results.\n" +
-                    $"Original GetMaxBoardSize() result: {m_MaxBoardSize}\n" +
-                    $"GetCurrentBoardSize() result: {currentBoardSize}"
-                );
-            }
-        }
-
         /// <inheritdoc/>
         public ObservationSpec GetObservationSpec()
         {
@@ -137,28 +122,46 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
-            CheckBoardSizes();
+            m_Board.CheckBoardSizes(m_MaxBoardSize);
             var currentBoardSize = m_Board.GetCurrentBoardSize();
 
             int offset = 0;
             var isVisual = m_ObservationType != Match3ObservationType.Vector;
-            for (var r = 0; r < m_MaxBoardSize.Rows; r++)
-            {
-                for (var c = 0; c < m_MaxBoardSize.Columns; c++)
-                {
-                    if (r < currentBoardSize.Rows && c < currentBoardSize.Columns)
-                    {
-                        var val = m_GridValues(r, c);
-                        writer.WriteOneHot(offset, r, c, val, m_OneHotSize, isVisual);
-                    }
-                    else
-                    {
-                        writer.WriteZero(offset, r, c, m_OneHotSize, isVisual);
-                    }
 
+            // This is equivalent to
+            // for (var r = 0; r < m_MaxBoardSize.Rows; r++)
+            //     for (var c = 0; c < m_MaxBoardSize.Columns; c++)
+            //          if (r < currentBoardSize.Rows && c < currentBoardSize.Columns)
+            //              WriteOneHot
+            //          else
+            //              WriteZero
+            // but rearranged to avoid the branching.
+
+            for (var r = 0; r < currentBoardSize.Rows; r++)
+            {
+                for (var c = 0; c < currentBoardSize.Columns; c++)
+                {
+                    var val = m_GridValues(r, c);
+                    writer.WriteOneHot(offset, r, c, val, m_OneHotSize, isVisual);
+                    offset += m_OneHotSize;
+                }
+
+                for (var c = currentBoardSize.Columns; c < m_MaxBoardSize.Columns; c++)
+                {
+                    writer.WriteZero(offset, r, c, m_OneHotSize, isVisual);
                     offset += m_OneHotSize;
                 }
             }
+
+            for (var r = currentBoardSize.Rows; r < m_MaxBoardSize.Columns; r++)
+            {
+                for (var c = 0; c < m_MaxBoardSize.Columns; c++)
+                {
+                    writer.WriteZero(offset, r, c, m_OneHotSize, isVisual);
+                    offset += m_OneHotSize;
+                }
+            }
+
 
             return offset;
 
@@ -167,7 +170,7 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public byte[] GetCompressedObservation()
         {
-            CheckBoardSizes();
+            m_Board.CheckBoardSizes(m_MaxBoardSize);
             var height = m_MaxBoardSize.Rows;
             var width = m_MaxBoardSize.Columns;
             var tempTexture = new Texture2D(width, height, TextureFormat.RGB24, false);
@@ -296,6 +299,9 @@ namespace Unity.MLAgents.Extensions.Match3
         }
     }
 
+    /// <summary>
+    /// Utility methods for writing one-hot observations.
+    /// </summary>
     internal static class ObservationWriterMatch3Extensions
     {
         public static void WriteOneHot(this ObservationWriter writer, int offset, int row, int col, int value, int oneHotSize, bool isVisual)

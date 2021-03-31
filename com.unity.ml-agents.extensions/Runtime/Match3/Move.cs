@@ -211,7 +211,7 @@ namespace Unity.MLAgents.Extensions.Match3
         /// </summary>
         /// <param name="boardSize"></param>
         /// <returns></returns>
-        public bool IsValidForBoardSize(BoardSize boardSize)
+        public bool InRangeForBoard(BoardSize boardSize)
         {
             var (otherRow, otherCol) = OtherCell();
             // Get the maximum row and column this move would affect.

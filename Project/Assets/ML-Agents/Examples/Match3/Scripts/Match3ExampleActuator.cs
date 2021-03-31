@@ -10,11 +10,10 @@ namespace Unity.MLAgentsExamples
 
         public Match3ExampleActuator(Match3Board board,
             bool forceHeuristic,
-            Agent agent,
             string name,
             int seed
         )
-            : base(board, forceHeuristic, seed, agent, name)
+            : base(board, forceHeuristic, seed, name)
         {
             m_Board = board;
         }

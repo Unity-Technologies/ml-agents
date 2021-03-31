@@ -47,6 +47,7 @@ namespace Unity.MLAgentsExamples
             m_Cells = new (int, int)[MaxColumns, MaxRows];
             m_Matched = new bool[MaxColumns, MaxRows];
 
+            // Start using the max rows and columns, but we'll update the current size at the start of each episode.
             m_CurrentBoardSize = new BoardSize
             {
                 Rows = MaxRows,
@@ -78,6 +79,11 @@ namespace Unity.MLAgentsExamples
             return m_CurrentBoardSize;
         }
 
+        /// <summary>
+        /// Change the board size to a random size between the min and max rows and columns. This is
+        /// cached so that the size is consistent until it is updated.
+        /// This is just for an example; you can change your board size however you want.
+        /// </summary>
         public void UpdateCurrentBoardSize()
         {
             var newRows = m_Random.Next(MinRows, MaxRows + 1);
