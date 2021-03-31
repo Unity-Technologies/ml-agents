@@ -125,7 +125,7 @@ def test_poca_get_value_estimates(dummy_config, rnn, visual, discrete):
     optimizer = create_test_poca_optimizer(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
-    time_horizon = 15
+    time_horizon = 30
     trajectory = make_fake_trajectory(
         length=time_horizon,
         observation_specs=optimizer.policy.behavior_spec.observation_specs,
