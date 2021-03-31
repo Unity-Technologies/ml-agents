@@ -84,11 +84,11 @@ namespace Unity.MLAgents.Extensions.Sensors
             LayerMask observeMask,
             GridDepthType gridDepthType,
             GameObject rootReference,
+            SensorCompressionType compression,
             int maxColliderBufferSize,
             int initialColliderBufferSize,
-            Color[] debugColors,
             bool showGizmos,
-            SensorCompressionType compression
+            Color[] debugColors
         )
         {
             m_Name = name;
@@ -103,11 +103,11 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_ObserveMask = observeMask;
             m_GridDepthType = gridDepthType;
             m_RootReference = rootReference;
+            m_CompressionType = compression;
             m_MaxColliderBufferSize = maxColliderBufferSize;
             m_InitialColliderBufferSize = initialColliderBufferSize;
-            m_DebugColors = debugColors;
             m_ShowGizmos = showGizmos;
-            m_CompressionType = compression;
+            m_DebugColors = debugColors;
 
             if (m_GridDepthType == GridDepthType.Counting && m_DetectableObjects.Length != m_ChannelDepth.Length)
             {
@@ -279,8 +279,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             using (TimerStack.Instance.Scoped("GridSensor.GetCompressedObservation"))
             {
-                Perceive(); // Fill the perception buffer with observed data
-
                 var allBytes = new List<byte>();
                 var numImages = (m_ObservationPerCell + 2) / 3;
                 for (int i = 0; i < numImages; i++)
@@ -492,10 +490,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </example>
         protected virtual float[] GetObjectData(GameObject currentColliderGo, float typeIndex, float normalizedDistance)
         {
-            if (m_ChannelBuffer == null)
-            {
-                m_ChannelBuffer = new float[m_ChannelDepth.Length];
-            }
             Array.Clear(m_ChannelBuffer, 0, m_ChannelBuffer.Length);
             m_ChannelBuffer[0] = typeIndex;
             return m_ChannelBuffer;

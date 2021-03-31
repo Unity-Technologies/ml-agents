@@ -263,11 +263,11 @@ namespace Unity.MLAgents.Extensions.Sensors
                 m_ObserveMask,
                 m_DepthType,
                 RootReference,
+                m_CompressionType,
                 m_MaxColliderBufferSize,
                 m_InitialColliderBufferSize,
-                m_DebugColors,
                 m_ShowGizmos,
-                m_CompressionType
+                m_DebugColors
             );
 
             if (ObservationStacks != 1)
