@@ -204,7 +204,7 @@ def test_update_buffer_append():
         trainer._append_to_update_buffer(agentbuffer_trajectory)
         assert trainer.update_buffer.num_experiences == (i + 1) * time_horizon
 
-    # Check fhat if we append after stopping training, nothing happens.
+    # Check that if we append after stopping training, nothing happens.
     # We process enough trajectories to hit max steps
     trainer.set_is_policy_updating(False)
     trainer._process_trajectory(trajectory)
