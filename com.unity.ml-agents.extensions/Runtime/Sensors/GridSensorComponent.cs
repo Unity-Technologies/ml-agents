@@ -102,7 +102,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        int[] m_ChannelDepth = new int[] {};
+        int[] m_ChannelDepth = new int[] { 1 };
         /// <summary>
         /// Array holding the depth of each channel.
         /// Note that changing this after the sensor is created has no effect.
@@ -294,8 +294,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             if (m_ShowGizmos)
             {
-                m_Sensor.Perceive();
-
                 var scale = new Vector3(m_CellScaleX, 1, m_CellScaleZ);
                 var offset = new Vector3(0, m_GizmoYOffset, 0);
                 var oldGizmoMatrix = Gizmos.matrix;

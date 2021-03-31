@@ -19,13 +19,14 @@ namespace Unity.MLAgents.Extensions.Sensors
     [AddComponentMenu("ML Agents/Grid Sensor", (int)MenuGroup.Sensors)]
     public class GridSensor : ISensor, IBuiltInSensor
     {
+        // Sensor parameters configured in UI
         string m_Name;
         float m_CellScaleX;
         float m_CellScaleY;
         float m_CellScaleZ;
         int m_GridNumSideX;
         int m_GridNumSideZ;
-        bool m_RotateToAgent;
+        bool m_RotateWithAgent;
         int[] m_ChannelDepth;
         string[] m_DetectableObjects;
         LayerMask m_ObserveMask;
@@ -34,35 +35,39 @@ namespace Unity.MLAgents.Extensions.Sensors
         int m_MaxColliderBufferSize;
         int m_InitialColliderBufferSize;
         SensorCompressionType m_CompressionType;
+        bool m_ShowGizmos;
+        Color[] m_DebugColors;
 
+        // Buffers and intermediate objects
         Collider[] m_ColliderBuffer;
         float[] m_ChannelBuffer;
+        // The offsets used to specify where within a cell's allotted data, certain observations will be inserted.
+        int[] m_ChannelOffsets;
+        // The main storage of perceptual information.
+        float[] m_PerceptionBuffer;
+        // The default value of the perceptionBuffer when using the ChannelHot DepthType. Used to reset the array.
+        float[] m_ChannelHotDefaultPerceptionBuffer;
+        // Array of Colors needed in order to load the values of the perception buffer to a texture.
+        Color[] m_PerceptionColors;
+        // Array of colors displaying the DebugColors for each cell in OnDrawGizmos. Only updated if ShowGizmos.
+        Color[] m_CellActivity;
+        // Array of positions where each position is the center of a cell.
+        Vector3[] m_CellPoints;
+        // Texture where the colors are written to so that they can be compressed in PNG format.
+        Texture2D m_Texture2D;
 
-        Color[] m_DebugColors;
-        bool m_ShowGizmos;
-
+        // Utility constants calculated on init
+        // Total Number of cells (width*height)
+        int m_NumCells;
+        // The total number of observations per cell of the grid. Its equivalent to the "channel" on the outgoing tensor.
+        int m_ObservationPerCell;
+        // Radius of grid, used for normalizing the distance.
+        float m_InverseSphereRadius;
+        //  (gridNumSideZ - 1) / 2; Offset used for calculating CellToPoint
+        float m_OffsetGridNumSide;
+        // Cached ObservationSpec
+        ObservationSpec m_ObservationSpec;
         Color m_DebugDefaultColor = new Color(1f, 1f, 1f, 0.25f);
-
-
-        //
-        // Hidden Parameters
-        //
-        int m_ObservationPerCell; // The total number of observations per cell of the grid. Its equivalent to the "channel" on the outgoing tensor.
-        int[] m_ChannelOffsets; // The offsets used to specify where within a cell's allotted data, certain observations will be inserted.
-        float[] m_PerceptionBuffer; // The main storage of perceptual information.
-        float[] m_ChannelHotDefaultPerceptionBuffer; // The default value of the perceptionBuffer when using the ChannelHot DepthType. Used to reset the array.
-        Color[] m_PerceptionColors; // Array of Colors needed in order to load the values of the perception buffer to a texture.
-        Texture2D m_Texture2D; // Texture where the colors are written to so that they can be compressed in PNG format.
-
-        //
-        // Utility Constants Calculated on Init
-        //
-        protected float m_InverseSphereRadius; // Radius of grid, used for normalizing the distance.
-        private int m_NumCells; // Total Number of cells (width*height)
-        protected float m_OffsetGridNumSide = 7.5f; //  (gridNumSideZ - 1) / 2; // Offset used for calculating CellToPoint
-        private ObservationSpec m_ObservationSpec; // Cached ObservationSpec
-        protected Color[] m_CellActivity; // Array of colors displaying the DebugColors for each cell in OnDrawGizmos. Only updated if ShowGizmos.
-        private Vector3[] m_CellPoints; // Array of positions where each position is the center of a cell.
 
 
         public GridSensor(
@@ -72,7 +77,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             float cellScaleZ,
             int gridNumSideX,
             int gridNumSideZ,
-            bool rotateToAgent,
+            bool rotateWithAgent,
             int[] channelDepth,
             string[] detectableObjects,
             LayerMask observeMask,
@@ -91,7 +96,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_CellScaleZ = cellScaleZ;
             m_GridNumSideX = gridNumSideX;
             m_GridNumSideZ = gridNumSideZ;
-            m_RotateToAgent = rotateToAgent;
+            m_RotateWithAgent = rotateWithAgent;
             m_ChannelDepth = channelDepth;
             m_DetectableObjects = detectableObjects;
             m_ObserveMask = observeMask;
@@ -104,7 +109,9 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_CompressionType = compression;
 
             if (m_GridDepthType == GridDepthType.Counting && m_DetectableObjects.Length != m_ChannelDepth.Length)
+            {
                 throw new UnityAgentsException("The channels of a CountingGridSensor is equal to the number of detectableObjects");
+            }
 
             m_ObservationSpec = ObservationSpec.Visual(m_GridNumSideX, m_GridNumSideZ, m_ObservationPerCell);
             m_Texture2D = new Texture2D(m_GridNumSideX, m_GridNumSideZ, TextureFormat.RGB24, false);
@@ -114,6 +121,29 @@ namespace Unity.MLAgents.Extensions.Sensors
             InitDepthType();
             InitCellPoints();
             ResetPerceptionBuffer();
+        }
+
+        public SensorCompressionType CompressionType
+        {
+            get { return m_CompressionType; }
+            set { m_CompressionType = value;}
+        }
+
+        public bool ShowGizmos
+        {
+            get { return m_ShowGizmos; }
+            set { m_ShowGizmos = value;}
+        }
+
+        public Color[] DebugColors
+        {
+            get { return m_DebugColors; }
+            set { m_DebugColors = value;}
+        }
+
+        public Color[] CellActivity
+        {
+            get { return m_CellActivity; }
         }
 
         /// <summary>
@@ -174,6 +204,9 @@ namespace Unity.MLAgents.Extensions.Sensors
                 m_CellPoints[i] = CellToPoint(i, false);
             }
         }
+
+        /// <inheritdoc/>
+        public void Reset() { }
 
         /// <summary>
         /// Clears the perception buffer before loading in new data. If the gridDepthType is ChannelHot, then it initializes the
@@ -238,28 +271,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             return BuiltInSensorType.GridSensor;
         }
-        public SensorCompressionType CompressionType
-        {
-            get { return m_CompressionType; }
-            set { m_CompressionType = value;}
-        }
-        public bool ShowGizmos
-        {
-            get { return m_ShowGizmos; }
-            set { m_ShowGizmos = value;}
-        }
-        public Color[] DebugColors
-        {
-            get { return m_DebugColors; }
-            set { m_DebugColors = value;}
-        }
-        public Color[] CellActivity
-        {
-            get { return m_CellActivity; }
-        }
-
-        /// <inheritdoc/>
-        public void Reset() { }
 
         /// <summary>
         /// GetCompressedObservation - Calls Perceive then puts the data stored on the perception buffer
@@ -294,7 +305,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         /// <param name="channelIndex"></param>
         /// <param name="numChannelsToAdd"></param>
-        protected void ChannelsToTexture(int channelIndex, int numChannelsToAdd)
+        void ChannelsToTexture(int channelIndex, int numChannelsToAdd)
         {
             for (int i = 0; i < m_NumCells; i++)
             {
@@ -312,12 +323,13 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// at the end, Perceive returns the float array of the perceptions
         /// </summary>
         /// <returns>A float[] containing all of the information collected from the gridsensor</returns>
-        public float[] Perceive()
+        internal void Perceive()
         {
             if (m_ColliderBuffer == null)
             {
-                return Array.Empty<float>();
+                return;
             }
+
             ResetPerceptionBuffer();
             using (TimerStack.Instance.Scoped("GridSensor.Perceive"))
             {
@@ -327,11 +339,10 @@ namespace Unity.MLAgents.Extensions.Sensors
                 {
                     int numFound;
                     Vector3 cellCenter;
-                    if (m_RotateToAgent)
+                    if (m_RotateWithAgent)
                     {
-                        Transform transform1;
-                        cellCenter = (transform1 = m_RootReference.transform).TransformPoint(m_CellPoints[cellIndex]);
-                        numFound = BufferResizingOverlapBoxNonAlloc(cellCenter, halfCellScale, transform1.rotation);
+                        cellCenter = m_RootReference.transform.TransformPoint(m_CellPoints[cellIndex]);
+                        numFound = BufferResizingOverlapBoxNonAlloc(cellCenter, halfCellScale, m_RootReference.transform.rotation);
                     }
                     else
                     {
@@ -352,7 +363,6 @@ namespace Unity.MLAgents.Extensions.Sensors
                     }
                 }
             }
-            return m_PerceptionBuffer;
         }
 
         /// <summary>
@@ -643,8 +653,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
         }
 
-        /// <summary>Gets the observation shape</summary>
-        /// <returns>int[] of the observation shape</returns>
+        /// <inheritdoc/>
         public ObservationSpec GetObservationSpec()
         {
             return m_ObservationSpec;
@@ -653,7 +662,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
-            using (TimerStack.Instance.Scoped("GridSensor.WriteToTensor"))
+            using (TimerStack.Instance.Scoped("GridSensor.Write"))
             {
                 int index = 0;
                 for (var h = m_GridNumSideZ - 1; h >= 0; h--) // height
