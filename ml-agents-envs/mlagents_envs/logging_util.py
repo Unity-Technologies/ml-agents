@@ -1,4 +1,5 @@
 import logging  # noqa I251
+import sys
 
 CRITICAL = logging.CRITICAL
 FATAL = logging.FATAL
@@ -20,10 +21,14 @@ def get_logger(name: str) -> logging.Logger:
     specified by set_log_level()
     """
     logger = logging.getLogger(name=name)
-
     # If we've already set the log level, make sure new loggers use it
     if _log_level != NOTSET:
         logger.setLevel(_log_level)
+
+    handler = logging.StreamHandler(stream=sys.stdout)
+    formatter = logging.Formatter(fmt=LOG_FORMAT, datefmt=DATE_FORMAT)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
 
     # Keep track of this logger so that we can change the log level later
     _loggers.add(logger)
@@ -36,11 +41,6 @@ def set_log_level(log_level: int) -> None:
     """
     global _log_level
     _log_level = log_level
-
-    # Configure the log format.
-    # In theory, this would be sufficient, but if another library calls logging.basicConfig
-    # first, it doesn't have any effect.
-    logging.basicConfig(level=_log_level, format=LOG_FORMAT, datefmt=DATE_FORMAT)
 
     for logger in _loggers:
         logger.setLevel(log_level)
