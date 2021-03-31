@@ -40,6 +40,7 @@ sizes and will need to be retrained. (#5181)
 - The default `InferenceDevice` is now `InferenceDevice.Default`, which is equivalent to `InferenceDevice.Burst`. If you
 depend on the previous behavior, you can explicitly set the Agent's `InferenceDevice` to `InferenceDevice.CPU`. (#5175)
  - Added support for `Goal Signal` as a type of observation. Trainers can now use HyperNetowrks to process `Goal Signal`. (#5142, #5159, #5149)
+ - Modified the GridWorld environment to use the new `Goal Signal` feature. (#5193)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
