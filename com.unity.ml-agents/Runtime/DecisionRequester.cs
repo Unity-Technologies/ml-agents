@@ -42,6 +42,14 @@ namespace Unity.MLAgents
         [NonSerialized]
         Agent m_Agent;
 
+        /// <summary>
+        /// Get the Agent attached to the DecisionRequester.
+        /// </summary>
+        public Agent Agent
+        {
+            get => m_Agent;
+        }
+
         internal void Awake()
         {
             m_Agent = gameObject.GetComponent<Agent>();
@@ -64,14 +72,24 @@ namespace Unity.MLAgents
         /// <param name="academyStepCount">The current step count of the academy.</param>
         void MakeRequests(int academyStepCount)
         {
-            if (academyStepCount % DecisionPeriod == 0)
+            if (ShouldRequestDecision(academyStepCount))
             {
                 m_Agent?.RequestDecision();
             }
-            if (TakeActionsBetweenDecisions)
+            if (ShouldRequestAction(academyStepCount))
             {
                 m_Agent?.RequestAction();
             }
+        }
+
+        protected virtual bool ShouldRequestDecision(int academyStepCount)
+        {
+            return academyStepCount % DecisionPeriod == 0;
+        }
+
+        protected virtual bool ShouldRequestAction(int academyStepCount)
+        {
+            return TakeActionsBetweenDecisions;
         }
     }
 }

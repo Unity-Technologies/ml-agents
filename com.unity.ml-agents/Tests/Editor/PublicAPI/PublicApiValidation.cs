@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.MLAgents.Sensors;
 using NUnit.Framework;
+using Unity.MLAgents;
 using UnityEngine;
 
 namespace Unity.MLAgentsExamples
@@ -71,5 +72,17 @@ namespace Unity.MLAgentsExamples
             sensorComponent.CreateSensors();
         }
 #endif
+
+        class CustomDecisionRequester : DecisionRequester
+        {
+            public CustomDecisionRequester()
+            {
+
+            }
+            protected override void MakeRequests(int academyStep)
+            {
+                Agent?.RequestDecision();
+            }
+        }
     }
 }
