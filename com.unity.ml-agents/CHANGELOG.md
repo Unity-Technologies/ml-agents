@@ -41,6 +41,8 @@ sizes and will need to be retrained. (#5181)
 depend on the previous behavior, you can explicitly set the Agent's `InferenceDevice` to `InferenceDevice.CPU`. (#5175)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- A `--strict` command line option has been added. `--strict` will require all behaviors found in a Unity
+executable to be defined in the trainer configuration YAML, or that `default_settings` is specified. (#5210)
 
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
