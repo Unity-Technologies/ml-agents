@@ -54,7 +54,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         // Array of index of colors displaying the DebugColors for each cell in OnDrawGizmos. Only updated if ShowGizmos.
         int[] m_CellActivity;
         // Array of positions where each position is the center of a cell.
-        Vector3[] m_CellPoints;
+        Vector3[] m_CellLocalPosition;
         // Texture where the colors are written to so that they can be compressed in PNG format.
         Texture2D m_Texture2D;
 
@@ -198,11 +198,11 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         void InitCellPoints()
         {
-            m_CellPoints = new Vector3[m_NumCells];
+            m_CellLocalPosition = new Vector3[m_NumCells];
 
             for (int i = 0; i < m_NumCells; i++)
             {
-                m_CellPoints[i] = CellToPoint(i);
+                m_CellLocalPosition[i] = CellToLocalPosition(i);
             }
         }
 
@@ -617,7 +617,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>Converts the index of the cell to the 3D point (y is zero) relative to grid center</summary>
         /// <returns>Vector3 of the position of the center of the cell relative to grid center</returns>
         /// <param name="cell">The index of the cell</param>
-        Vector3 CellToPoint(int cellIndex)
+        Vector3 CellToLocalPosition(int cellIndex)
         {
             float x = (cellIndex % m_GridNumSideZ - m_OffsetGridNumSide) * m_CellScaleX;
             float z = (cellIndex / m_GridNumSideZ - m_OffsetGridNumSide) * m_CellScaleZ - (m_GridNumSideZ - m_GridNumSideX);
@@ -628,11 +628,11 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             if (m_RotateWithAgent)
             {
-                return m_RootReference.transform.TransformPoint(m_CellPoints[cellIndex]);
+                return m_RootReference.transform.TransformPoint(m_CellLocalPosition[cellIndex]);
             }
             else
             {
-                return m_CellPoints[cellIndex] + m_RootReference.transform.position;
+                return m_CellLocalPosition[cellIndex] + m_RootReference.transform.position;
             }
         }
 
