@@ -12,7 +12,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         protected GridSensor m_Sensor;
 
         [HideInInspector, SerializeField]
-        string m_SensorName = "GridSensor";
+        internal string m_SensorName = "GridSensor";
         // <summary>
         /// Name of the generated <see cref="GridSensor"/> object.
         /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
@@ -24,7 +24,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        Vector3 m_CellScale = new Vector3(1f, 0.01f, 1f);
+        internal Vector3 m_CellScale = new Vector3(1f, 0.01f, 1f);
 
         /// <summary>
         /// The scale of each grid cell.
@@ -37,7 +37,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        Vector3Int m_GridNumSide = new Vector3Int(16, 1, 16);
+        internal Vector3Int m_GridNumSide = new Vector3Int(16, 1, 16);
         /// <summary>
         /// The number of grid on each side.
         /// Note that changing this after the sensor is created has no effect.
@@ -59,7 +59,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        bool m_RotateWithAgent = true;
+        internal bool m_RotateWithAgent = true;
         /// <summary>
         /// Rotate the grid based on the direction the agent is facing.
         /// </summary>
@@ -70,7 +70,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        int[] m_ChannelDepth = new int[] { 1 };
+        internal int[] m_ChannelDepth = new int[] { 1 };
         /// <summary>
         /// Array holding the depth of each channel.
         /// Note that changing this after the sensor is created has no effect.
@@ -82,7 +82,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        string[] m_DetectableObjects;
+        internal string[] m_DetectableObjects;
         /// <summary>
         /// List of tags that are detected.
         /// Note that changing this after the sensor is created has no effect.
@@ -94,7 +94,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        LayerMask m_ObserveMask;
+        internal LayerMask m_ObserveMask;
         /// <summary>
         /// The layer mask.
         /// </summary>
@@ -105,7 +105,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        GridDepthType m_DepthType = GridDepthType.Channel;
+        internal GridDepthType m_DepthType = GridDepthType.Channel;
         /// <summary>
         /// The data layout that the grid should output.
         /// Note that changing this after the sensor is created has no effect.
@@ -117,7 +117,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        GameObject m_RootReference;
+        internal GameObject m_RootReference;
         /// <summary>
         /// The reference of the root of the agent. This is used to disambiguate objects with the same tag as the agent. Defaults to current GameObject.
         /// Note that changing this after the sensor is created has no effect.
@@ -129,7 +129,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        int m_MaxColliderBufferSize = 500;
+        internal int m_MaxColliderBufferSize = 500;
         /// <summary>
         /// The absolute max size of the Collider buffer used in the non-allocating Physics calls.  In other words
         /// the Collider buffer will never grow beyond this number even if there are more Colliders in the Grid Cell.
@@ -142,7 +142,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        int m_InitialColliderBufferSize = 4;
+        internal int m_InitialColliderBufferSize = 4;
         /// <summary>
         /// The Estimated Max Number of Colliders to expect per cell.  This number is used to
         /// pre-allocate an array of Colliders in order to take advantage of the OverlapBoxNonAlloc
@@ -157,7 +157,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        Color[] m_DebugColors;
+        internal Color[] m_DebugColors;
         /// <summary>
         /// Array of Colors used for the grid gizmos.
         /// </summary>
@@ -168,7 +168,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        float m_GizmoYOffset = 0f;
+        internal float m_GizmoYOffset = 0f;
         /// <summary>
         /// The height of the gizmos grid.
         /// </summary>
@@ -179,7 +179,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        bool m_ShowGizmos = false;
+        internal bool m_ShowGizmos = false;
         /// <summary>
         /// Whether to show gizmos or not.
         /// </summary>
@@ -190,7 +190,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        SensorCompressionType m_CompressionType = SensorCompressionType.PNG;
+        internal SensorCompressionType m_CompressionType = SensorCompressionType.PNG;
         /// <summary>
         /// The compression type to use for the sensor.
         /// </summary>
@@ -203,7 +203,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         [HideInInspector, SerializeField]
         [Range(1, 50)]
         [Tooltip("Number of frames of observations that will be stacked before being fed to the neural network.")]
-        int m_ObservationStacks = 1;
+        internal int m_ObservationStacks = 1;
         /// <summary>
         /// Whether to stack previous observations. Using 1 means no previous observations.
         /// Note that changing this after the sensor is created has no effect.
