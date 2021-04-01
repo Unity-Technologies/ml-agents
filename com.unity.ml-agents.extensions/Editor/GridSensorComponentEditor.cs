@@ -41,7 +41,7 @@ namespace Unity.MLAgents.Extensions.Editor
                 EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_DepthType)), true);
 
                 // channel depth
-                var channelDepth = so.FindProperty(nameof(GridSensorComponent.m_ChannelDepth));
+                var channelDepth = so.FindProperty(nameof(GridSensorComponent.m_ChannelDepths));
                 var newDepth = EditorGUILayout.IntField("Channel Depth", channelDepth.arraySize);
                 if (newDepth != channelDepth.arraySize)
                 {
@@ -75,7 +75,7 @@ namespace Unity.MLAgents.Extensions.Editor
                 EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_InitialColliderBufferSize)), true);
             }
             EditorGUI.EndDisabledGroup();
-            EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_ObserveMask)), true);
+            EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_ColliderMask)), true);
             EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
                 EditorGUILayout.LabelField("Sensor Settings", EditorStyles.boldLabel);
