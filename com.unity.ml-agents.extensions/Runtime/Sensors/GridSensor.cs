@@ -106,6 +106,18 @@ namespace Unity.MLAgents.Extensions.Sensors
             set { m_CompressionType = value; }
         }
 
+        public bool RotateWithAgent
+        {
+            get { return m_RotateWithAgent; }
+            set { m_RotateWithAgent = value; }
+        }
+
+        public LayerMask ColliderMask
+        {
+            get { return m_ColliderMask; }
+            set { m_ColliderMask = value; }
+        }
+
         public int[] GizmoColorIndexes
         {
             get { return m_GizmoColorIndexes; }
