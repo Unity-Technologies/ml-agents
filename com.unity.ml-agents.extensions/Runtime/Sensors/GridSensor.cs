@@ -30,29 +30,14 @@ namespace Unity.MLAgents.Extensions.Sensors
         //
 
         /// <summary>
-        /// The width of each grid cell.
+        /// The scale of each grid cell.
         /// </summary>
-        float CellScaleX = 1f;
+        Vector3 CellScale;
 
         /// <summary>
-        /// The depth of each grid cell.
+        /// The number of grid on each side.
         /// </summary>
-        float CellScaleZ = 1f;
-
-        /// <summary>
-        /// The width of the grid .
-        /// </summary>
-        int GridNumSideX = 16;
-
-        /// <summary>
-        /// The depth of the grid .
-        /// </summary>
-        int GridNumSideZ = 16;
-
-        /// <summary>
-        /// The height of each grid cell. Changes how much of the vertical axis is observed by a cell.
-        /// </summary>
-        float CellScaleY = 0.01f;
+        Vector3Int GridNumSide;
 
         /// <summary>
         /// Rotate the grid based on the direction the agent is facing.
@@ -172,11 +157,8 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         public GridSensor(
             string name,
-            float cellScaleX,
-            float cellScaleY,
-            float cellScaleZ,
-            int gridNumSideX,
-            int gridNumSideZ,
+            Vector3 cellScale,
+            Vector3Int gridNumSide,
             bool rotateWithAgent,
             int[] channelDepth,
             string[] detectableObjects,
@@ -190,11 +172,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         )
         {
             Name = name;
-            CellScaleX = cellScaleX;
-            CellScaleY = cellScaleY;
-            CellScaleZ = cellScaleZ;
-            GridNumSideX = gridNumSideX;
-            GridNumSideZ = gridNumSideZ;
+            CellScale = cellScale;
+            GridNumSide = gridNumSide;
+            if (GridNumSide.y != 1)
+            {
+                throw new UnityAgentsException("GridSensor only supports 2D grids.");
+            }
             RotateWithAgent = rotateWithAgent;
             ChannelDepth = channelDepth;
             DetectableObjects = detectableObjects;
@@ -216,8 +199,8 @@ namespace Unity.MLAgents.Extensions.Sensors
             InitCellPoints();
             ResetPerceptionBuffer();
 
-            m_ObservationSpec = ObservationSpec.Visual(GridNumSideX, GridNumSideZ, ObservationPerCell);
-            m_perceptionTexture2D = new Texture2D(GridNumSideX, GridNumSideZ, TextureFormat.RGB24, false);
+            m_ObservationSpec = ObservationSpec.Visual(GridNumSide.x, GridNumSide.z, ObservationPerCell);
+            m_perceptionTexture2D = new Texture2D(GridNumSide.x, GridNumSide.z, TextureFormat.RGB24, false);
             m_ColliderBuffer = new Collider[Math.Min(MaxColliderBufferSize, InitialColliderBufferSize)];
         }
 
@@ -243,11 +226,11 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         void InitGridParameters()
         {
-            NumCells = GridNumSideX * GridNumSideZ;
-            float sphereRadiusX = (CellScaleX * GridNumSideX) / Mathf.Sqrt(2);
-            float sphereRadiusZ = (CellScaleZ * GridNumSideZ) / Mathf.Sqrt(2);
+            NumCells = GridNumSide.x * GridNumSide.z;
+            float sphereRadiusX = (CellScale.x * GridNumSide.x) / Mathf.Sqrt(2);
+            float sphereRadiusZ = (CellScale.z * GridNumSide.z) / Mathf.Sqrt(2);
             InverseSphereRadius = 1.0f / Mathf.Max(sphereRadiusX, sphereRadiusZ);
-            OffsetGridNumSide = (GridNumSideZ - 1f) / 2f;
+            OffsetGridNumSide = (GridNumSide.z - 1f) / 2f;
         }
 
         /// <summary>
@@ -420,7 +403,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             ResetPerceptionBuffer();
             using (TimerStack.Instance.Scoped("GridSensor.Perceive"))
             {
-                var halfCellScale = new Vector3(CellScaleX / 2f, CellScaleY, CellScaleZ / 2f);
+                var halfCellScale = new Vector3(CellScale.x / 2f, CellScale.y, CellScale.z / 2f);
 
                 for (var cellIndex = 0; cellIndex < NumCells; cellIndex++)
                 {
@@ -709,8 +692,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="cell">The index of the cell</param>
         Vector3 CellToLocalPosition(int cellIndex)
         {
-            float x = (cellIndex % GridNumSideZ - OffsetGridNumSide) * CellScaleX;
-            float z = (cellIndex / GridNumSideZ - OffsetGridNumSide) * CellScaleZ - (GridNumSideZ - GridNumSideX);
+            float x = (cellIndex % GridNumSide.z - OffsetGridNumSide) * CellScale.x;
+            float z = (cellIndex / GridNumSide.z - OffsetGridNumSide) * CellScale.z - (GridNumSide.z - GridNumSide.x);
             return new Vector3(x, 0, z);
         }
 
@@ -752,11 +735,11 @@ namespace Unity.MLAgents.Extensions.Sensors
             using (TimerStack.Instance.Scoped("GridSensor.Write"))
             {
                 int index = 0;
-                for (var h = GridNumSideZ - 1; h >= 0; h--) // height
+                for (var h = GridNumSide.z - 1; h >= 0; h--)
                 {
-                    for (var w = 0; w < GridNumSideX; w++) // width
+                    for (var w = 0; w < GridNumSide.x; w++)
                     {
-                        for (var d = 0; d < ObservationPerCell; d++) // depth
+                        for (var d = 0; d < ObservationPerCell; d++)
                         {
                             writer[h, w, d] = m_PerceptionBuffer[index];
                             index++;

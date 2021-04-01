@@ -137,10 +137,8 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             gridComponent.DetectableObjects = detectableObjects;
             gridComponent.ChannelDepth = channelDepth;
             gridComponent.DepthType = gridDepthType;
-            gridComponent.CellScaleX = cellScaleX;
-            gridComponent.CellScaleZ = cellScaleZ;
-            gridComponent.GridNumSideX = gridWidth;
-            gridComponent.GridNumSideZ = gridHeight;
+            gridComponent.CellScale = new Vector3(cellScaleX, 0.01f, cellScaleZ);
+            gridComponent.GridNumSide = new Vector3Int(gridWidth, 1, gridHeight);
             gridComponent.ObserveMask = observeMaskInt;
             gridComponent.RotateWithAgent = rotateWithAgent;
             gridComponent.DebugColors = debugColors;

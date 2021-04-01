@@ -10,11 +10,8 @@ namespace Unity.MLAgents.Extensions.Editor
     internal class GridSensorComponentEditor : UnityEditor.Editor
     {
         const string k_SensorName = "m_SensorName";
-        const string k_CellScaleXName = "m_CellScaleX";
-        const string k_CellScaleZName = "m_CellScaleZ";
-        const string k_CellScaleYName = "m_CellScaleY";
-        const string k_GridNumSideXName = "m_GridNumSideX";
-        const string k_GridNumSideZName = "m_GridNumSideZ";
+        const string k_CellScaleName = "m_CellScale";
+        const string k_GridNumSideName = "m_GridNumSide";
         const string k_RotateWithAgentName = "m_RotateWithAgent";
         const string k_RootReferenceName = "m_RootReference";
         const string k_DepthTypeName = "m_DepthType";
@@ -44,11 +41,12 @@ namespace Unity.MLAgents.Extensions.Editor
                 EditorGUILayout.PropertyField(so.FindProperty(k_SensorName), true);
 
                 EditorGUILayout.LabelField("Grid Settings", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(so.FindProperty(k_CellScaleXName), true);
-                EditorGUILayout.PropertyField(so.FindProperty(k_CellScaleZName), true);
-                EditorGUILayout.PropertyField(so.FindProperty(k_CellScaleYName), true);
-                EditorGUILayout.PropertyField(so.FindProperty(k_GridNumSideXName), true);
-                EditorGUILayout.PropertyField(so.FindProperty(k_GridNumSideZName), true);
+                EditorGUILayout.PropertyField(so.FindProperty(k_CellScaleName), true);
+                // We only supports 2D GridSensor now so display gridNumSide as Vector2
+                var gridNumSide = so.FindProperty(k_GridNumSideName);
+                var gridNumSide2d = new Vector2Int(gridNumSide.vector3IntValue.x, gridNumSide.vector3IntValue.z);
+                var newGridNumSide = EditorGUILayout.Vector2IntField("Grid Num Side", gridNumSide2d);
+                gridNumSide.vector3IntValue = new Vector3Int(newGridNumSide.x, 1, newGridNumSide.y);
                 EditorGUILayout.PropertyField(so.FindProperty(k_RootReferenceName), true);
             }
             EditorGUI.EndDisabledGroup();

@@ -8,11 +8,8 @@ namespace Unity.MLAgents.Extensions.TestUtils.Sensors
     {
         public SimpleTestGridSensor(
             string name,
-            float cellScaleX,
-            float cellScaleY,
-            float cellScaleZ,
-            int gridNumSideX,
-            int gridNumSideZ,
+            Vector3 cellScale,
+            Vector3Int gridNumSide,
             bool rotateWithAgent,
             int[] channelDepth,
             string[] detectableObjects,
@@ -25,11 +22,8 @@ namespace Unity.MLAgents.Extensions.TestUtils.Sensors
             bool showGizmos
         ) : base(
             name,
-            cellScaleX,
-            cellScaleY,
-            cellScaleZ,
-            gridNumSideX,
-            gridNumSideZ,
+            cellScale,
+            gridNumSide,
             rotateWithAgent,
             channelDepth,
             detectableObjects,
@@ -40,7 +34,7 @@ namespace Unity.MLAgents.Extensions.TestUtils.Sensors
             maxColliderBufferSize,
             initialColliderBufferSize,
             showGizmos)
-        {}
+        { }
         protected override float[] GetObjectData(GameObject currentColliderGo,
             float type_index, float normalized_distance)
         {
@@ -54,11 +48,8 @@ namespace Unity.MLAgents.Extensions.TestUtils.Sensors
         {
             m_Sensor = new SimpleTestGridSensor(
                 SensorName,
-                CellScaleX,
-                CellScaleY,
-                CellScaleZ,
-                GridNumSideX,
-                GridNumSideZ,
+                CellScale,
+                GridNumSide,
                 RotateWithAgent,
                 ChannelDepth,
                 DetectableObjects,

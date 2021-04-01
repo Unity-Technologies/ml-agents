@@ -24,69 +24,38 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        [Range(0.05f, 1000f)]
-        float m_CellScaleX = 1f;
+        Vector3 m_CellScale = new Vector3(1f, 0.01f, 1f);
 
         /// <summary>
-        /// The width of each grid cell.
+        /// The scale of each grid cell.
         /// Note that changing this after the sensor is created has no effect.
         /// </summary>
-        public float CellScaleX
+        public Vector3 CellScale
         {
-            get { return m_CellScaleX; }
-            set { m_CellScaleX = value; }
+            get { return m_CellScale; }
+            set { m_CellScale = value; }
         }
 
         [HideInInspector, SerializeField]
-        [Range(0.05f, 1000f)]
-        float m_CellScaleZ = 1f;
+        Vector3Int m_GridNumSide = new Vector3Int(16, 1, 16);
         /// <summary>
-        /// The depth of each grid cell.
+        /// The number of grid on each side.
         /// Note that changing this after the sensor is created has no effect.
         /// </summary>
-        public float CellScaleZ
+        public Vector3Int GridNumSide
         {
-            get { return m_CellScaleZ; }
-            set { m_CellScaleZ = value; }
-        }
-
-        [HideInInspector, SerializeField]
-        [Range(0.01f, 1000f)]
-        float m_CellScaleY = 0.01f;
-        /// <summary>
-        /// The height of each grid cell. Changes how much of the vertical axis is observed by a cell.
-        /// Note that changing this after the sensor is created has no effect.
-        /// </summary>
-        public float CellScaleY
-        {
-            get { return m_CellScaleY; }
-            set { m_CellScaleY = value; }
-        }
-
-        [HideInInspector, SerializeField]
-        [Range(2, 2000)]
-        int m_GridNumSideX = 16;
-        /// <summary>
-        /// The width of the grid .
-        /// Note that changing this after the sensor is created has no effect.
-        /// </summary>
-        public int GridNumSideX
-        {
-            get { return m_GridNumSideX; }
-            set { m_GridNumSideX = value; }
-        }
-
-        [HideInInspector, SerializeField]
-        [Range(2, 2000)]
-        int m_GridNumSideZ = 16;
-        /// <summary>
-        /// The depth of the grid .
-        /// Note that changing this after the sensor is created has no effect.
-        /// </summary>
-        public int GridNumSideZ
-        {
-            get { return m_GridNumSideZ; }
-            set { m_GridNumSideZ = value; }
+            get { return m_GridNumSide; }
+            set
+            {
+                if (value.y != 1)
+                {
+                    m_GridNumSide = new Vector3Int(value.x, 1, value.z);
+                }
+                else
+                {
+                    m_GridNumSide = value;
+                }
+            }
         }
 
         [HideInInspector, SerializeField]
@@ -250,11 +219,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             m_Sensor = new GridSensor(
                 m_SensorName,
-                m_CellScaleX,
-                m_CellScaleY,
-                m_CellScaleZ,
-                m_GridNumSideX,
-                m_GridNumSideZ,
+                m_CellScale,
+                m_GridNumSide,
                 m_RotateWithAgent,
                 m_ChannelDepth,
                 m_DetectableObjects,
@@ -296,14 +262,13 @@ namespace Unity.MLAgents.Extensions.Sensors
                 }
                 m_Sensor.Perceive();
 
-                var scale = new Vector3(m_CellScaleX, 1, m_CellScaleZ);
+                var scale = new Vector3(m_CellScale.x, 1, m_CellScale.z);
                 var gizmoYOffset = new Vector3(0, m_GizmoYOffset, 0);
                 var oldGizmoMatrix = Gizmos.matrix;
-                for (var i = 0; i < m_GridNumSideX * m_GridNumSideZ; i++)
+                for (var i = 0; i < m_GridNumSide.x * m_GridNumSide.z; i++)
                 {
-                    Matrix4x4 cubeTransform;
                     var cellPoints = m_Sensor.GetCellGlobalPosition(i);
-                    cubeTransform = Matrix4x4.TRS(cellPoints + gizmoYOffset, m_Sensor.GetGridRotation(), scale);
+                    var cubeTransform = Matrix4x4.TRS(cellPoints + gizmoYOffset, m_Sensor.GetGridRotation(), scale);
                     Gizmos.matrix = oldGizmoMatrix * cubeTransform;
                     var colorIndex = m_Sensor.CellActivity[i];
                     var debugRayColor = Color.white;

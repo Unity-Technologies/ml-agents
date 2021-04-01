@@ -2307,11 +2307,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SensorName: GridSensor
-  m_CellScaleX: 1
-  m_CellScaleZ: 1
-  m_CellScaleY: 0.01
-  m_GridNumSideX: 40
-  m_GridNumSideZ: 40
+  m_CellScale: {x: 1, y: 0.01, z: 1}
+  m_GridNumSide: {x: 40, y: 1, z: 40}
   m_RotateWithAgent: 1
   m_ChannelDepth: 06000000
   m_DetectableObjects:
@@ -2655,11 +2652,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SensorName: GridSensor
-  m_CellScaleX: 1
-  m_CellScaleZ: 1
-  m_CellScaleY: 0.01
-  m_GridNumSideX: 40
-  m_GridNumSideZ: 40
+  m_CellScale: {x: 1, y: 0.01, z: 1}
+  m_GridNumSide: {x: 40, y: 1, z: 40}
   m_RotateWithAgent: 1
   m_ChannelDepth: 06000000
   m_DetectableObjects:
@@ -3008,11 +3002,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SensorName: GridSensor
-  m_CellScaleX: 1
-  m_CellScaleZ: 1
-  m_CellScaleY: 0.01
-  m_GridNumSideX: 40
-  m_GridNumSideZ: 40
+  m_CellScale: {x: 1, y: 0.01, z: 1}
+  m_GridNumSide: {x: 40, y: 1, z: 40}
   m_RotateWithAgent: 1
   m_ChannelDepth: 06000000
   m_DetectableObjects:
@@ -3630,11 +3621,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SensorName: GridSensor
-  m_CellScaleX: 1
-  m_CellScaleZ: 1
-  m_CellScaleY: 0.01
-  m_GridNumSideX: 40
-  m_GridNumSideZ: 40
+  m_CellScale: {x: 1, y: 0.01, z: 1}
+  m_GridNumSide: {x: 40, y: 1, z: 40}
   m_RotateWithAgent: 1
   m_ChannelDepth: 06000000
   m_DetectableObjects:
@@ -3969,11 +3957,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SensorName: GridSensor
-  m_CellScaleX: 1
-  m_CellScaleZ: 1
-  m_CellScaleY: 0.01
-  m_GridNumSideX: 40
-  m_GridNumSideZ: 40
+  m_CellScale: {x: 1, y: 0.01, z: 1}
+  m_GridNumSide: {x: 40, y: 1, z: 40}
   m_RotateWithAgent: 1
   m_ChannelDepth: 06000000
   m_DetectableObjects:
