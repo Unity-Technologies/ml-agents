@@ -245,6 +245,21 @@ class RLTrainer(Trainer):
         if step_after_process >= self._next_summary_step and self.get_step != 0:
             self._write_summary(self._next_summary_step)
 
+    def _append_to_update_buffer(self, agentbuffer_trajectory: AgentBuffer) -> None:
+        """
+        Append an AgentBuffer to the update buffer. If the trainer isn't training,
+        don't update to avoid a memory leak.
+        """
+        if self.should_still_train:
+            seq_len = (
+                self.trainer_settings.network_settings.memory.sequence_length
+                if self.trainer_settings.network_settings.memory is not None
+                else 1
+            )
+            agentbuffer_trajectory.resequence_and_append(
+                self.update_buffer, training_length=seq_len
+            )
+
     def _maybe_save_model(self, step_after_process: int) -> None:
         """
         If processing the trajectory will make the step exceed the next model write,
@@ -298,5 +313,3 @@ class RLTrainer(Trainer):
                         for q in self.policy_queues:
                             # Get policies that correspond to the policy queue in question
                             q.put(self.get_policy(q.behavior_id))
-        else:
-            self._clear_update_buffer()
