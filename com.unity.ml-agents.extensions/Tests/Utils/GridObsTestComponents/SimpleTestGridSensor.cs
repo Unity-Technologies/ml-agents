@@ -18,8 +18,7 @@ namespace Unity.MLAgents.Extensions.TestUtils.Sensors
             GameObject root,
             SensorCompressionType compression,
             int maxColliderBufferSize,
-            int initialColliderBufferSize,
-            bool showGizmos
+            int initialColliderBufferSize
         ) : base(
             name,
             cellScale,
@@ -32,8 +31,7 @@ namespace Unity.MLAgents.Extensions.TestUtils.Sensors
             root,
             compression,
             maxColliderBufferSize,
-            initialColliderBufferSize,
-            showGizmos)
+            initialColliderBufferSize)
         { }
         protected override float[] GetObjectData(GameObject currentColliderGo,
             float type_index, float normalized_distance)
@@ -58,8 +56,7 @@ namespace Unity.MLAgents.Extensions.TestUtils.Sensors
                 RootReference,
                 CompressionType,
                 MaxColliderBufferSize,
-                InitialColliderBufferSize,
-                ShowGizmos
+                InitialColliderBufferSize
             );
             return new ISensor[] { m_Sensor };
         }

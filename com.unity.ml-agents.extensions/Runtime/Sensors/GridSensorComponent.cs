@@ -229,8 +229,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 RootReference,
                 m_CompressionType,
                 m_MaxColliderBufferSize,
-                m_InitialColliderBufferSize,
-                m_ShowGizmos
+                m_InitialColliderBufferSize
             );
 
             if (ObservationStacks != 1)
@@ -248,7 +247,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             if (m_Sensor != null)
             {
                 m_Sensor.CompressionType = m_CompressionType;
-                m_Sensor.ShowGizmos = m_ShowGizmos;
             }
         }
 
@@ -260,19 +258,20 @@ namespace Unity.MLAgents.Extensions.Sensors
                 {
                     return;
                 }
-                m_Sensor.Perceive();
+                var cellColors = m_Sensor.PerceiveGizmoColor();
+                var cellPositions = m_Sensor.GetGizmoPositions();
+                var rotation = m_Sensor.GetGridRotation();
 
                 var scale = new Vector3(m_CellScale.x, 1, m_CellScale.z);
                 var gizmoYOffset = new Vector3(0, m_GizmoYOffset, 0);
                 var oldGizmoMatrix = Gizmos.matrix;
-                for (var i = 0; i < m_GridNumSide.x * m_GridNumSide.z; i++)
+                for (var i = 0; i < cellPositions.Length; i++)
                 {
-                    var cellPoints = m_Sensor.GetCellGlobalPosition(i);
-                    var cubeTransform = Matrix4x4.TRS(cellPoints + gizmoYOffset, m_Sensor.GetGridRotation(), scale);
+                    var cubeTransform = Matrix4x4.TRS(cellPositions[i] + gizmoYOffset, rotation, scale);
                     Gizmos.matrix = oldGizmoMatrix * cubeTransform;
-                    var colorIndex = m_Sensor.CellActivity[i];
+                    var colorIndex = cellColors[i];
                     var debugRayColor = Color.white;
-                    if (colorIndex >= 0 && m_DebugColors.Length > colorIndex)
+                    if (colorIndex > -1 && m_DebugColors.Length > colorIndex)
                     {
                         debugRayColor = m_DebugColors[colorIndex];
                     }

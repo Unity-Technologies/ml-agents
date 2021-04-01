@@ -138,11 +138,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         // Debug Parameters
         //
 
-        /// <summary>
-        /// Whether to show gizmos or not.
-        /// </summary>
-        bool m_ShowGizmos = false;
-
         SensorCompressionType m_CompressionType = SensorCompressionType.PNG;
 
         /// <summary>
@@ -151,7 +146,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         int[] m_CellActivity;
 
         /// <summary>
-        /// Array of positions where each position is the center of a cell.
+        /// Array of global positions where each position is the center of a cell.
+        /// </summary>
+        Vector3[] m_GizmoCellPosition;
+
+        /// <summary>
+        /// Array of local positions where each position is the center of a cell.
         /// </summary>
         Vector3[] CellPoints;
 
@@ -167,8 +167,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             GameObject root,
             SensorCompressionType compression,
             int maxColliderBufferSize,
-            int initialColliderBufferSize,
-            bool showGizmos
+            int initialColliderBufferSize
         )
         {
             Name = name;
@@ -187,7 +186,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             CompressionType = compression;
             MaxColliderBufferSize = maxColliderBufferSize;
             InitialColliderBufferSize = initialColliderBufferSize;
-            m_ShowGizmos = showGizmos;
 
             if (gridDepthType == GridDepthType.Counting && DetectableObjects.Length != ChannelDepth.Length)
             {
@@ -208,12 +206,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             get { return m_CompressionType; }
             set { m_CompressionType = value; }
-        }
-
-        public bool ShowGizmos
-        {
-            get { return m_ShowGizmos; }
-            set { m_ShowGizmos = value; }
         }
 
         public int[] CellActivity
@@ -310,21 +302,23 @@ namespace Unity.MLAgents.Extensions.Sensors
                 m_ColliderBuffer = new Collider[Math.Min(MaxColliderBufferSize, InitialColliderBufferSize)];
                 m_ChannelBuffer = new float[ChannelDepth.Length];
                 m_PerceptionColors = new Color[NumCells];
-            }
-
-            if (ShowGizmos)
-            {
-                // Ensure to init arrays if not yet assigned (for editor)
-                if (m_CellActivity == null)
-                    m_CellActivity = new int[NumCells];
-
-                // Assign the default color to the cell activities
-                for (int i = 0; i < NumCells; i++)
-                {
-                    m_CellActivity[i] = -1;
-                }
+                m_GizmoCellPosition = new Vector3[NumCells];
             }
         }
+
+        public void ResetGizmoBuffer()
+        {
+            // Ensure to init arrays if not yet assigned (for editor)
+            if (m_CellActivity == null)
+                m_CellActivity = new int[NumCells];
+
+            // Assign the default color to the cell activities
+            for (int i = 0; i < NumCells; i++)
+            {
+                m_CellActivity[i] = -1;
+            }
+        }
+
 
         /// <inheritdoc/>
         public string GetName()
@@ -390,9 +384,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Perceive - Clears the buffers, calls overlap box on the actual cell (the actual perception part)
         /// for all found colliders, LoadObjectData is called
-        /// at the end, Perceive returns the float array of the perceptions
         /// </summary>
-        /// <returns>A float[] containing all of the information collected from the gridsensor</returns>
         internal void Perceive()
         {
             if (m_ColliderBuffer == null)
@@ -618,11 +610,6 @@ namespace Unity.MLAgents.Extensions.Sensors
                     var channelValues = GetObjectData(currentColliderGo, (float)i + 1, normalizedDistance);
                     ValidateValues(channelValues, currentColliderGo);
 
-                    if (ShowGizmos)
-                    {
-                        CellActivity[cellIndex] = i;
-                    }
-
                     switch (gridDepthType)
                     {
                         case GridDepthType.Channel:
@@ -748,6 +735,58 @@ namespace Unity.MLAgents.Extensions.Sensors
                 }
                 return index;
             }
+        }
+
+        internal int[] PerceiveGizmoColor()
+        {
+            ResetGizmoBuffer();
+            var halfCellScale = new Vector3(CellScale.x / 2f, CellScale.y, CellScale.z / 2f);
+
+            for (var cellIndex = 0; cellIndex < NumCells; cellIndex++)
+            {
+                var cellCenter = GetCellGlobalPosition(cellIndex);
+                var numFound = BufferResizingOverlapBoxNonAlloc(cellCenter, halfCellScale, GetGridRotation());
+
+                var minDistanceSquared = float.MaxValue;
+                var tagIndex = -1;
+
+                for (var i = 0; i < numFound; i++)
+                {
+                    var currentColliderGo = m_ColliderBuffer[i].gameObject;
+                    if (ReferenceEquals(currentColliderGo, rootReference))
+                        continue;
+
+                    var closestColliderPoint = m_ColliderBuffer[i].ClosestPointOnBounds(cellCenter);
+                    var currentDistanceSquared = (closestColliderPoint - rootReference.transform.position).sqrMagnitude;
+
+                    // Checks if our colliders contain a detectable object
+                    var index = -1;
+                    for (var ii = 0; ii < DetectableObjects.Length; ii++)
+                    {
+                        if (currentColliderGo.CompareTag(DetectableObjects[ii]))
+                        {
+                            index = ii;
+                            break;
+                        }
+                    }
+                    if (index > -1 && currentDistanceSquared < minDistanceSquared)
+                    {
+                        minDistanceSquared = currentDistanceSquared;
+                        tagIndex = index;
+                    }
+                }
+                CellActivity[cellIndex] = tagIndex;
+            }
+            return CellActivity;
+        }
+
+        internal Vector3[] GetGizmoPositions()
+        {
+            for (var i = 0; i < NumCells; i++)
+            {
+                m_GizmoCellPosition[i] = GetCellGlobalPosition(i);
+            }
+            return m_GizmoCellPosition;
         }
     }
 }
