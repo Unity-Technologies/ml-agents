@@ -104,7 +104,7 @@ class SACTrainer(RLTrainer):
         Save the training buffer's update buffer to a pickle file.
         """
         filename = os.path.join(self.artifact_path, "last_replay_buffer.hdf5")
-        logger.info(f"Saving Experience Replay Buffer to {filename}")
+        logger.debug(f"Saving Experience Replay Buffer to {filename}")
         with open(filename, "wb") as file_object:
             self.update_buffer.save_to_file(file_object)
 
@@ -113,10 +113,10 @@ class SACTrainer(RLTrainer):
         Loads the last saved replay buffer from a file.
         """
         filename = os.path.join(self.artifact_path, "last_replay_buffer.hdf5")
-        logger.info(f"Loading Experience Replay Buffer from {filename}")
+        logger.debug(f"Loading Experience Replay Buffer from {filename}")
         with open(filename, "rb+") as file_object:
             self.update_buffer.load_from_file(file_object)
-        logger.info(
+        logger.debug(
             "Experience replay buffer has {} experiences.".format(
                 self.update_buffer.num_experiences
             )
