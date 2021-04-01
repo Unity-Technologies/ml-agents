@@ -47,7 +47,7 @@ namespace Unity.MLAgents.Extensions.TestUtils.Sensors
             m_Sensor = new SimpleTestGridSensor(
                 SensorName,
                 CellScale,
-                GridNum,
+                GridSize,
                 RotateWithAgent,
                 ChannelDepths,
                 DetectableObjects,

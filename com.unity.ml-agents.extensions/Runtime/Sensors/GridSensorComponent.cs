@@ -37,23 +37,23 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        internal Vector3Int m_GridNum = new Vector3Int(16, 1, 16);
+        internal Vector3Int m_GridSize = new Vector3Int(16, 1, 16);
         /// <summary>
         /// The number of grid on each side.
         /// Note that changing this after the sensor is created has no effect.
         /// </summary>
-        public Vector3Int GridNum
+        public Vector3Int GridSize
         {
-            get { return m_GridNum; }
+            get { return m_GridSize; }
             set
             {
                 if (value.y != 1)
                 {
-                    m_GridNum = new Vector3Int(value.x, 1, value.z);
+                    m_GridSize = new Vector3Int(value.x, 1, value.z);
                 }
                 else
                 {
-                    m_GridNum = value;
+                    m_GridSize = value;
                 }
             }
         }
@@ -220,7 +220,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_Sensor = new GridSensor(
                 m_SensorName,
                 m_CellScale,
-                m_GridNum,
+                m_GridSize,
                 m_RotateWithAgent,
                 m_ChannelDepths,
                 m_DetectableObjects,

@@ -138,7 +138,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             gridComponent.ChannelDepths = channelDepth;
             gridComponent.DepthType = gridDepthType;
             gridComponent.CellScale = new Vector3(cellScaleX, 0.01f, cellScaleZ);
-            gridComponent.GridNum = new Vector3Int(gridWidth, 1, gridHeight);
+            gridComponent.GridSize = new Vector3Int(gridWidth, 1, gridHeight);
             gridComponent.ColliderMask = colliderMaskInt;
             gridComponent.RotateWithAgent = rotateWithAgent;
             gridComponent.DebugColors = debugColors;
