@@ -168,14 +168,6 @@ def _create_parser() -> argparse.ArgumentParser:
         help="Whether to enable debug-level logging for some parts of the code",
     )
     argparser.add_argument(
-        "--strict",
-        default=False,
-        action=DetectDefaultStoreTrue,
-        help="Use strict matching for behavior names. If a behavior name is found in the Unity environment."
-        "and not specified in the trainer configuration, an exception will be thrown unless default_config "
-        "is used.",
-    )
-    argparser.add_argument(
         "--env-args",
         default=None,
         nargs=argparse.REMAINDER,
