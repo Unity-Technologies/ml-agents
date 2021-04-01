@@ -96,12 +96,12 @@ class TorchModelSaver(BaseModelSaver):
                     logger.warning(f"Failed to load directly for module {name}.")
                     for mod_element in mod.state_dict():
                         try:
-                            logger.warning(f"Copying {mod_element}")
+                            logger.debug(f"Copying {mod_element}")
                             mod.state_dict()[mod_element].copy_(
                                 saved_state_dict[name][mod_element]
                             )
                         except Exception:
-                            logger.warning(
+                            logger.debug(
                                 f"{mod_element} was not found or is not loadable (changed shape). Initializing."
                             )
                 else:
