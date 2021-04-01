@@ -86,6 +86,7 @@ namespace Unity.MLAgentsExamples
         {
             base.OnEpisodeBegin();
 
+            Board.UpdateCurrentBoardSize();
             Board.InitSettled();
             m_CurrentState = State.FindMatches;
             m_TimeUntilMove = MoveTime;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
@@ -44,14 +45,14 @@ namespace Unity.MLAgents.Extensions.Match3
     /// </summary>
     public class Match3Sensor : ISensor, IBuiltInSensor
     {
-        private Match3ObservationType m_ObservationType;
-        private ObservationSpec m_ObservationSpec;
-        private string m_Name;
+        Match3ObservationType m_ObservationType;
+        ObservationSpec m_ObservationSpec;
+        string m_Name;
 
-        private int m_Rows;
-        private int m_Columns;
-        private GridValueProvider m_GridValues;
-        private int m_OneHotSize;
+        AbstractBoard m_Board;
+        BoardSize m_MaxBoardSize;
+        GridValueProvider m_GridValues;
+        int m_OneHotSize;
 
         /// <summary>
         /// Create a sensor for the GridValueProvider with the specified observation type.
@@ -60,23 +61,24 @@ namespace Unity.MLAgents.Extensions.Match3
         /// Use Match3Sensor.CellTypeSensor() or Match3Sensor.SpecialTypeSensor() instead of calling
         /// the constructor directly.
         /// </remarks>
-        /// <param name="board">The abstract board. This is only used to get the size.</param>
+        /// <param name="board">The abstract board.</param>
         /// <param name="gvp">The GridValueProvider, should be either board.GetCellType or board.GetSpecialType.</param>
         /// <param name="oneHotSize">The number of possible values that the GridValueProvider can return.</param>
         /// <param name="obsType">Whether to produce vector or visual observations</param>
         /// <param name="name">Name of the sensor.</param>
         public Match3Sensor(AbstractBoard board, GridValueProvider gvp, int oneHotSize, Match3ObservationType obsType, string name)
         {
+            var maxBoardSize = board.GetMaxBoardSize();
             m_Name = name;
-            m_Rows = board.Rows;
-            m_Columns = board.Columns;
+            m_MaxBoardSize = maxBoardSize;
             m_GridValues = gvp;
             m_OneHotSize = oneHotSize;
+            m_Board = board;
 
             m_ObservationType = obsType;
             m_ObservationSpec = obsType == Match3ObservationType.Vector
-                ? ObservationSpec.Vector(m_Rows * m_Columns * oneHotSize)
-                : ObservationSpec.Visual(m_Rows, m_Columns, oneHotSize);
+                ? ObservationSpec.Vector(maxBoardSize.Rows * maxBoardSize.Columns * oneHotSize)
+                : ObservationSpec.Visual(maxBoardSize.Rows, maxBoardSize.Columns, oneHotSize);
         }
 
         /// <summary>
@@ -88,11 +90,13 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         public static Match3Sensor CellTypeSensor(AbstractBoard board, Match3ObservationType obsType, string name)
         {
-            return new Match3Sensor(board, board.GetCellType, board.NumCellTypes, obsType, name);
+            var maxBoardSize = board.GetMaxBoardSize();
+            return new Match3Sensor(board, board.GetCellType, maxBoardSize.NumCellTypes, obsType, name);
         }
 
         /// <summary>
-        /// Create a sensor that encodes the cell special types as observations.
+        /// Create a sensor that encodes the cell special types as observations. Returns null if the board's
+        /// NumSpecialTypes is 0 (indicating the sensor isn't needed).
         /// </summary>
         /// <param name="board">The abstract board.</param>
         /// <param name="obsType">Whether to produce vector or visual observations</param>
@@ -100,7 +104,12 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         public static Match3Sensor SpecialTypeSensor(AbstractBoard board, Match3ObservationType obsType, string name)
         {
-            var specialSize = board.NumSpecialTypes == 0 ? 0 : board.NumSpecialTypes + 1;
+            var maxBoardSize = board.GetMaxBoardSize();
+            if (maxBoardSize.NumSpecialTypes == 0)
+            {
+                return null;
+            }
+            var specialSize = maxBoardSize.NumSpecialTypes + 1;
             return new Match3Sensor(board, board.GetSpecialType, specialSize, obsType, name);
         }
 
@@ -113,73 +122,76 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
-            // if (m_Board.Rows != m_Rows || m_Board.Columns != m_Columns || m_Board.NumCellTypes != m_NumCellTypes)
-            // {
-            //     Debug.LogWarning(
-            //         $"Board shape changes since sensor initialization. This may cause unexpected results. " +
-            //         $"Old shape: Rows={m_Rows} Columns={m_Columns}, NumCellTypes={m_NumCellTypes} " +
-            //         $"Current shape: Rows={m_Board.Rows} Columns={m_Board.Columns}, NumCellTypes={m_Board.NumCellTypes}"
-            //     );
-            // }
+            m_Board.CheckBoardSizes(m_MaxBoardSize);
+            var currentBoardSize = m_Board.GetCurrentBoardSize();
 
-            if (m_ObservationType == Match3ObservationType.Vector)
+            int offset = 0;
+            var isVisual = m_ObservationType != Match3ObservationType.Vector;
+
+            // This is equivalent to
+            // for (var r = 0; r < m_MaxBoardSize.Rows; r++)
+            //     for (var c = 0; c < m_MaxBoardSize.Columns; c++)
+            //          if (r < currentBoardSize.Rows && c < currentBoardSize.Columns)
+            //              WriteOneHot
+            //          else
+            //              WriteZero
+            // but rearranged to avoid the branching.
+
+            for (var r = 0; r < currentBoardSize.Rows; r++)
             {
-                int offset = 0;
-                for (var r = 0; r < m_Rows; r++)
+                for (var c = 0; c < currentBoardSize.Columns; c++)
                 {
-                    for (var c = 0; c < m_Columns; c++)
-                    {
-                        var val = m_GridValues(r, c);
-
-                        for (var i = 0; i < m_OneHotSize; i++)
-                        {
-                            writer[offset] = (i == val) ? 1.0f : 0.0f;
-                            offset++;
-                        }
-                    }
+                    var val = m_GridValues(r, c);
+                    writer.WriteOneHot(offset, r, c, val, m_OneHotSize, isVisual);
+                    offset += m_OneHotSize;
                 }
 
-                return offset;
-            }
-            else
-            {
-                // TODO combine loops? Only difference is inner-most statement.
-                int offset = 0;
-                for (var r = 0; r < m_Rows; r++)
+                for (var c = currentBoardSize.Columns; c < m_MaxBoardSize.Columns; c++)
                 {
-                    for (var c = 0; c < m_Columns; c++)
-                    {
-                        var val = m_GridValues(r, c);
-                        for (var i = 0; i < m_OneHotSize; i++)
-                        {
-                            writer[r, c, i] = (i == val) ? 1.0f : 0.0f;
-                            offset++;
-                        }
-                    }
+                    writer.WriteZero(offset, r, c, m_OneHotSize, isVisual);
+                    offset += m_OneHotSize;
                 }
-
-                return offset;
             }
+
+            for (var r = currentBoardSize.Rows; r < m_MaxBoardSize.Columns; r++)
+            {
+                for (var c = 0; c < m_MaxBoardSize.Columns; c++)
+                {
+                    writer.WriteZero(offset, r, c, m_OneHotSize, isVisual);
+                    offset += m_OneHotSize;
+                }
+            }
+
+
+            return offset;
+
         }
 
         /// <inheritdoc/>
         public byte[] GetCompressedObservation()
         {
-            var height = m_Rows;
-            var width = m_Columns;
+            m_Board.CheckBoardSizes(m_MaxBoardSize);
+            var height = m_MaxBoardSize.Rows;
+            var width = m_MaxBoardSize.Columns;
             var tempTexture = new Texture2D(width, height, TextureFormat.RGB24, false);
             var converter = new OneHotToTextureUtil(height, width);
             var bytesOut = new List<byte>();
+            var currentBoardSize = m_Board.GetCurrentBoardSize();
 
-            // Encode the cell types and special types as separate batches of PNGs
+            // Encode the cell types or special types as batches of PNGs
             // This is potentially wasteful, e.g. if there are 4 cell types and 1 special type, we could
-            // fit in in 2 images, but we'll use 3 here (2 PNGs for the 4 cell type channels, and 1 for
-            // the special types). Note that we have to also implement the sparse channel mapping.
-            // Optimize this it later.
+            // fit in in 2 images, but we'll use 3 total (2 PNGs for the 4 cell type channels, and 1 for
+            // the special types).
             var numCellImages = (m_OneHotSize + 2) / 3;
             for (var i = 0; i < numCellImages; i++)
             {
-                converter.EncodeToTexture(m_GridValues, tempTexture, 3 * i);
+                converter.EncodeToTexture(
+                    m_GridValues,
+                    tempTexture,
+                    3 * i,
+                    currentBoardSize.Rows,
+                    currentBoardSize.Columns
+                );
                 bytesOut.AddRange(tempTexture.EncodeToPNG());
             }
 
@@ -245,38 +257,89 @@ namespace Unity.MLAgents.Extensions.Match3
     internal class OneHotToTextureUtil
     {
         Color[] m_Colors;
-        int m_Height;
-        int m_Width;
+        int m_MaxHeight;
+        int m_MaxWidth;
         private static Color[] s_OneHotColors = { Color.red, Color.green, Color.blue };
 
-        public OneHotToTextureUtil(int height, int width)
+        public OneHotToTextureUtil(int maxHeight, int maxWidth)
         {
-            m_Colors = new Color[height * width];
-            m_Height = height;
-            m_Width = width;
+            m_Colors = new Color[maxHeight * maxWidth];
+            m_MaxHeight = maxHeight;
+            m_MaxWidth = maxWidth;
         }
 
-        public void EncodeToTexture(GridValueProvider gridValueProvider, Texture2D texture, int channelOffset)
+        public void EncodeToTexture(
+            GridValueProvider gridValueProvider,
+            Texture2D texture,
+            int channelOffset,
+            int currentHeight,
+            int currentWidth
+            )
         {
             var i = 0;
             // There's an implicit flip converting to PNG from texture, so make sure we
             // counteract that when forming the texture by iterating through h in reverse.
-            for (var h = m_Height - 1; h >= 0; h--)
+            for (var h = m_MaxHeight - 1; h >= 0; h--)
             {
-                for (var w = 0; w < m_Width; w++)
+                for (var w = 0; w < m_MaxWidth; w++)
                 {
-                    int oneHotValue = gridValueProvider(h, w);
-                    if (oneHotValue < channelOffset || oneHotValue >= channelOffset + 3)
+                    var colorVal = Color.black;
+                    if (h < currentHeight && w < currentWidth)
                     {
-                        m_Colors[i++] = Color.black;
+                        int oneHotValue = gridValueProvider(h, w);
+                        if (oneHotValue >= channelOffset && oneHotValue < channelOffset + 3)
+                        {
+                            colorVal = s_OneHotColors[oneHotValue - channelOffset];
+                        }
                     }
-                    else
-                    {
-                        m_Colors[i++] = s_OneHotColors[oneHotValue - channelOffset];
-                    }
+                    m_Colors[i++] = colorVal;
                 }
             }
             texture.SetPixels(m_Colors);
+        }
+    }
+
+    /// <summary>
+    /// Utility methods for writing one-hot observations.
+    /// </summary>
+    internal static class ObservationWriterMatch3Extensions
+    {
+        public static void WriteOneHot(this ObservationWriter writer, int offset, int row, int col, int value, int oneHotSize, bool isVisual)
+        {
+            if (isVisual)
+            {
+                for (var i = 0; i < oneHotSize; i++)
+                {
+                    writer[row, col, i] = (i == value) ? 1.0f : 0.0f;
+                }
+            }
+            else
+            {
+                for (var i = 0; i < oneHotSize; i++)
+                {
+                    writer[offset] = (i == value) ? 1.0f : 0.0f;
+                    offset++;
+                }
+            }
+        }
+
+        public static void WriteZero(this ObservationWriter writer, int offset, int row, int col, int oneHotSize, bool isVisual)
+        {
+            if (isVisual)
+            {
+                for (var i = 0; i < oneHotSize; i++)
+                {
+                    writer[row, col, i] = 0.0f;
+                }
+            }
+            else
+            {
+                for (var i = 0; i < oneHotSize; i++)
+                {
+                    writer[offset] = 0.0f;
+                    offset++;
+                }
+            }
         }
     }
 }

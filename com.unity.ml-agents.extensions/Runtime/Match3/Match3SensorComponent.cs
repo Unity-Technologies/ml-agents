@@ -25,16 +25,9 @@ namespace Unity.MLAgents.Extensions.Match3
         {
             var board = GetComponent<AbstractBoard>();
             var cellSensor = Match3Sensor.CellTypeSensor(board, ObservationType, SensorName + " (cells)");
-            if (board.NumSpecialTypes > 0)
-            {
-                var specialSensor =
-                    Match3Sensor.SpecialTypeSensor(board, ObservationType, SensorName + " (special)");
-                return new ISensor[] { cellSensor, specialSensor };
-            }
-            else
-            {
-                return new ISensor[] { cellSensor };
-            }
+            // This can be null if numSpecialTypes is 0
+            var specialSensor = Match3Sensor.SpecialTypeSensor(board, ObservationType, SensorName + " (special)");
+            return specialSensor != null ? new ISensor[] { cellSensor, specialSensor } : new ISensor[] { cellSensor };
         }
 
     }
