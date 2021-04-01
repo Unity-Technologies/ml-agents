@@ -247,6 +247,8 @@ namespace Unity.MLAgents.Extensions.Sensors
             if (m_Sensor != null)
             {
                 m_Sensor.CompressionType = m_CompressionType;
+                m_Sensor.RotateWithAgent = m_RotateWithAgent;
+                m_Sensor.ColliderMask = m_ColliderMask;
             }
         }
 
