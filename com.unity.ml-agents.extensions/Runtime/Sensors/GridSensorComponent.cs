@@ -37,23 +37,23 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        internal Vector3Int m_GridNumSide = new Vector3Int(16, 1, 16);
+        internal Vector3Int m_GridSize = new Vector3Int(16, 1, 16);
         /// <summary>
         /// The number of grid on each side.
         /// Note that changing this after the sensor is created has no effect.
         /// </summary>
-        public Vector3Int GridNumSide
+        public Vector3Int GridSize
         {
-            get { return m_GridNumSide; }
+            get { return m_GridSize; }
             set
             {
                 if (value.y != 1)
                 {
-                    m_GridNumSide = new Vector3Int(value.x, 1, value.z);
+                    m_GridSize = new Vector3Int(value.x, 1, value.z);
                 }
                 else
                 {
-                    m_GridNumSide = value;
+                    m_GridSize = value;
                 }
             }
         }
@@ -70,15 +70,15 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        internal int[] m_ChannelDepth = new int[] { 1 };
+        internal int[] m_ChannelDepths = new int[] { 1 };
         /// <summary>
         /// Array holding the depth of each channel.
         /// Note that changing this after the sensor is created has no effect.
         /// </summary>
-        public int[] ChannelDepth
+        public int[] ChannelDepths
         {
-            get { return m_ChannelDepth; }
-            set { m_ChannelDepth = value; }
+            get { return m_ChannelDepths; }
+            set { m_ChannelDepths = value; }
         }
 
         [HideInInspector, SerializeField]
@@ -94,14 +94,14 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        internal LayerMask m_ObserveMask;
+        internal LayerMask m_ColliderMask;
         /// <summary>
         /// The layer mask.
         /// </summary>
-        public LayerMask ObserveMask
+        public LayerMask ColliderMask
         {
-            get { return m_ObserveMask; }
-            set { m_ObserveMask = value; }
+            get { return m_ColliderMask; }
+            set { m_ColliderMask = value; }
         }
 
         [HideInInspector, SerializeField]
@@ -220,11 +220,11 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_Sensor = new GridSensor(
                 m_SensorName,
                 m_CellScale,
-                m_GridNumSide,
+                m_GridSize,
                 m_RotateWithAgent,
-                m_ChannelDepth,
+                m_ChannelDepths,
                 m_DetectableObjects,
-                m_ObserveMask,
+                m_ColliderMask,
                 m_DepthType,
                 RootReference,
                 m_CompressionType,
@@ -247,6 +247,8 @@ namespace Unity.MLAgents.Extensions.Sensors
             if (m_Sensor != null)
             {
                 m_Sensor.CompressionType = m_CompressionType;
+                m_Sensor.RotateWithAgent = m_RotateWithAgent;
+                m_Sensor.ColliderMask = m_ColliderMask;
             }
         }
 
