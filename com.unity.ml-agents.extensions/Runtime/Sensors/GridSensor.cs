@@ -50,7 +50,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         int m_NumCells;
         int m_CellObservationSize;
         float m_InverseSphereRadius;
-        float m_OffsetGridNumSide;
 
 
         public GridSensor(
@@ -121,7 +120,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             float sphereRadiusX = (m_CellScale.x * m_GridNum.x) / Mathf.Sqrt(2);
             float sphereRadiusZ = (m_CellScale.z * m_GridNum.z) / Mathf.Sqrt(2);
             m_InverseSphereRadius = 1.0f / Mathf.Max(sphereRadiusX, sphereRadiusZ);
-            m_OffsetGridNumSide = (m_GridNum.z - 1f) / 2f;
         }
 
         /// <summary>
@@ -578,8 +576,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="cell">The index of the cell</param>
         Vector3 CellToLocalPoint(int cellIndex)
         {
-            float x = (cellIndex % m_GridNum.z - m_OffsetGridNumSide) * m_CellScale.x;
-            float z = (cellIndex / m_GridNum.z - m_OffsetGridNumSide) * m_CellScale.z - (m_GridNum.z - m_GridNum.x);
+            float x = (cellIndex / m_GridNum.z - m_GridNum.x / 2) * m_CellScale.x;
+            float z = (cellIndex % m_GridNum.z - m_GridNum.z / 2) * m_CellScale.z;
             return new Vector3(x, 0, z);
         }
 
