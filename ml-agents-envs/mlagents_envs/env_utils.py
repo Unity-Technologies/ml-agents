@@ -106,6 +106,8 @@ def launch_executable(file_name: str, args: List[str]) -> subprocess.Popen:
         logger.debug(f"Running with args {args}")
         # Launch Unity environment
         subprocess_args = [launch_string] + args
+        # std_out_option = DEVNULL means the outputs will not be displayed on terminal.
+        # std_out_option = None is default behavior: the outputs are displayed on terminal.
         std_out_option = subprocess.DEVNULL if logger.level > DEBUG else None
         try:
             return subprocess.Popen(
