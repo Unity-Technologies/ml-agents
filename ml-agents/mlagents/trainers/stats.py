@@ -234,14 +234,15 @@ class TensorboardWriter(StatsWriter):
     def _delete_all_events_files(self, directory_name: str) -> None:
         for file_name in os.listdir(directory_name):
             if file_name.startswith("events.out"):
-                logger.debug(
-                    f"{file_name} was left over from a previous run. Deleting."
+                logger.warning(
+                    f"Deleting TensorBoard data {file_name} that was left over from a"
+                    "previous run."
                 )
                 full_fname = os.path.join(directory_name, file_name)
                 try:
                     os.remove(full_fname)
                 except OSError:
-                    logger.debug(
+                    logger.error(
                         "{} was left over from a previous run and "
                         "not deleted.".format(full_fname)
                     )

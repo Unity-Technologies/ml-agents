@@ -52,11 +52,12 @@ def set_log_level(log_level: int) -> None:
 
     if log_level == DEBUG:
         formatter = logging.Formatter(fmt=DEBUG_LOG_FORMAT, datefmt=DATE_FORMAT)
-        for logger in _loggers:
-            for handler in logger.handlers[:]:
-                handler.setFormatter(formatter)
     else:
         formatter = logging.Formatter(LOG_FORMAT)
-        for logger in _loggers:
-            for handler in logger.handlers[:]:
-                handler.setFormatter(formatter)
+    _set_formatter_for_all_loggers(formatter)
+
+
+def _set_formatter_for_all_loggers(formatter: logging.Formatter) -> None:
+    for logger in _loggers:
+        for handler in logger.handlers[:]:
+            handler.setFormatter(formatter)
