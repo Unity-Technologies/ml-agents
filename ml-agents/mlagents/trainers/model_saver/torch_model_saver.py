@@ -99,7 +99,7 @@ class TorchModelSaver(BaseModelSaver):
                     )
                 if unexpected_keys:
                     logger.warning(
-                        f"Did not expect these keys {unexpected_keys} in checkpoint. Initializing"
+                        f"Did not expect these keys {unexpected_keys} in checkpoint. Ignoring"
                     )
 
             except (KeyError, TypeError):
