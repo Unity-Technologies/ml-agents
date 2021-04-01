@@ -104,9 +104,12 @@ class SACTrainer(RLTrainer):
         Save the training buffer's update buffer to a pickle file.
         """
         filename = os.path.join(self.artifact_path, "last_replay_buffer.hdf5")
-        logger.debug(f"Saving Experience Replay Buffer to {filename}")
+        logger.debug(f"Saving Experience Replay Buffer to {filename}...")
         with open(filename, "wb") as file_object:
             self.update_buffer.save_to_file(file_object)
+            logger.info(
+                f"Saved Experience Replay Buffer ({os.path.getsize(filename)} bytes)."
+            )
 
     def load_replay_buffer(self) -> None:
         """
@@ -175,10 +178,7 @@ class SACTrainer(RLTrainer):
                 agent_buffer_trajectory[ObsUtil.get_name_at_next(i)][-1] = obs
             agent_buffer_trajectory[BufferKey.DONE][-1] = False
 
-        # Append to update buffer
-        agent_buffer_trajectory.resequence_and_append(
-            self.update_buffer, training_length=self.policy.sequence_length
-        )
+        self._append_to_update_buffer(agent_buffer_trajectory)
 
         if trajectory.done_reached:
             self._update_end_episode_stats(agent_id, self.optimizer)

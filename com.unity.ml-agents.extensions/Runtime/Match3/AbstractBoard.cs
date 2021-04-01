@@ -1,10 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
-    public abstract class AbstractBoard : MonoBehaviour
+    /// <summary>
+    /// Representation of the AbstractBoard size and number of cell and special types.
+    /// </summary>
+    public struct BoardSize
     {
         /// <summary>
         /// Number of rows on the board
@@ -26,6 +31,65 @@ namespace Unity.MLAgents.Extensions.Match3
         /// all cells of the same type are assumed to be equivalent.
         /// </summary>
         public int NumSpecialTypes;
+
+        /// <summary>
+        /// Check that all fields of the left-hand BoardSize are less than or equal to the field of the right-hand BoardSize
+        /// </summary>
+        /// <param name="lhs"></param>
+        /// <param name="rhs"></param>
+        /// <returns>True if all fields are less than or equal.</returns>
+        public static bool operator <=(BoardSize lhs, BoardSize rhs)
+        {
+            return lhs.Rows <= rhs.Rows && lhs.Columns <= rhs.Columns && lhs.NumCellTypes <= rhs.NumCellTypes &&
+                   lhs.NumSpecialTypes <= rhs.NumSpecialTypes;
+        }
+
+        /// <summary>
+        /// Check that all fields of the left-hand BoardSize are greater than or equal to the field of the right-hand BoardSize
+        /// </summary>
+        /// <param name="lhs"></param>
+        /// <param name="rhs"></param>
+        /// <returns>True if all fields are greater than or equal.</returns>
+        public static bool operator >=(BoardSize lhs, BoardSize rhs)
+        {
+            return lhs.Rows >= rhs.Rows && lhs.Columns >= rhs.Columns && lhs.NumCellTypes >= rhs.NumCellTypes &&
+                   lhs.NumSpecialTypes >= rhs.NumSpecialTypes;
+        }
+
+        /// <summary>
+        /// Return a string representation of the BoardSize.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return
+                $"Rows: {Rows}, Columns: {Columns}, NumCellTypes: {NumCellTypes}, NumSpecialTypes: {NumSpecialTypes}";
+        }
+    }
+
+    /// <summary>
+    /// An adapter between ML Agents and a Match-3 game.
+    /// </summary>
+    public abstract class AbstractBoard : MonoBehaviour
+    {
+        /// <summary>
+        /// Return the maximum size of the board. This is used to determine the size of observations and actions,
+        /// so the returned values must not change.
+        /// </summary>
+        /// <returns></returns>
+        public abstract BoardSize GetMaxBoardSize();
+
+        /// <summary>
+        /// Return the current size of the board. The values must less than or equal to the values returned from
+        /// GetMaxBoardSize().
+        /// By default, this will return GetMaxBoardSize(); if your board doesn't change size, you don't need to
+        /// override it.
+        /// </summary>
+        /// <returns></returns>
+        public virtual BoardSize GetCurrentBoardSize()
+        {
+            return GetMaxBoardSize();
+        }
 
         /// <summary>
         /// Returns the "color" of the piece at the given row and column.
@@ -52,6 +116,10 @@ namespace Unity.MLAgents.Extensions.Match3
         /// The actual results will depend on the rules of the game, but we provide SimpleIsMoveValid()
         /// that handles basic match3 rules with no special or immovable pieces.
         /// </summary>
+        /// <remarks>
+        /// Moves that would go outside of GetCurrentBoardSize() are filtered out before they are
+        /// passed to IsMoveValid().
+        /// </remarks>
         /// <param name="m"></param>
         /// <returns></returns>
         public abstract bool IsMoveValid(Move m);
@@ -71,7 +139,7 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         public int NumMoves()
         {
-            return Move.NumPotentialMoves(Rows, Columns);
+            return Move.NumPotentialMoves(GetMaxBoardSize());
         }
 
         /// <summary>
@@ -86,11 +154,17 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         public IEnumerable<Move> AllMoves()
         {
-            var currentMove = Move.FromMoveIndex(0, Rows, Columns);
+            var maxBoardSize = GetMaxBoardSize();
+            var currentBoardSize = GetCurrentBoardSize();
+
+            var currentMove = Move.FromMoveIndex(0, maxBoardSize);
             for (var i = 0; i < NumMoves(); i++)
             {
-                yield return currentMove;
-                currentMove.Next(Rows, Columns);
+                if (currentMove.InRangeForBoard(currentBoardSize))
+                {
+                    yield return currentMove;
+                }
+                currentMove.Next(maxBoardSize);
             }
         }
 
@@ -100,31 +174,17 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         public IEnumerable<Move> ValidMoves()
         {
-            var currentMove = Move.FromMoveIndex(0, Rows, Columns);
-            for (var i = 0; i < NumMoves(); i++)
-            {
-                if (IsMoveValid(currentMove))
-                {
-                    yield return currentMove;
-                }
-                currentMove.Next(Rows, Columns);
-            }
-        }
+            var maxBoardSize = GetMaxBoardSize();
+            var currentBoardSize = GetCurrentBoardSize();
 
-        /// <summary>
-        /// Iterate through all invalid Moves on the board.
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<Move> InvalidMoves()
-        {
-            var currentMove = Move.FromMoveIndex(0, Rows, Columns);
+            var currentMove = Move.FromMoveIndex(0, maxBoardSize);
             for (var i = 0; i < NumMoves(); i++)
             {
-                if (!IsMoveValid(currentMove))
+                if (currentMove.InRangeForBoard(currentBoardSize) && IsMoveValid(currentMove))
                 {
                     yield return currentMove;
                 }
-                currentMove.Next(Rows, Columns);
+                currentMove.Next(maxBoardSize);
             }
         }
 
@@ -175,6 +235,7 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         bool CheckHalfMove(int newRow, int newCol, int newValue, Direction incomingDirection)
         {
+            var currentBoardSize = GetCurrentBoardSize();
             int matchedLeft = 0, matchedRight = 0, matchedUp = 0, matchedDown = 0;
 
             if (incomingDirection != Direction.Right)
@@ -190,7 +251,7 @@ namespace Unity.MLAgents.Extensions.Match3
 
             if (incomingDirection != Direction.Left)
             {
-                for (var c = newCol + 1; c < Columns; c++)
+                for (var c = newCol + 1; c < currentBoardSize.Columns; c++)
                 {
                     if (GetCellType(newRow, c) == newValue)
                         matchedRight++;
@@ -201,7 +262,7 @@ namespace Unity.MLAgents.Extensions.Match3
 
             if (incomingDirection != Direction.Down)
             {
-                for (var r = newRow + 1; r < Rows; r++)
+                for (var r = newRow + 1; r < currentBoardSize.Rows; r++)
                 {
                     if (GetCellType(r, newCol) == newValue)
                         matchedUp++;
@@ -229,5 +290,23 @@ namespace Unity.MLAgents.Extensions.Match3
             return false;
         }
 
+        /// <summary>
+        /// Make sure that the current BoardSize isn't larger than the original value of GetMaxBoardSize().
+        /// If it is, log a warning.
+        /// </summary>
+        /// <param name="originalMaxBoardSize"></param>
+        [Conditional("DEBUG")]
+        internal void CheckBoardSizes(BoardSize originalMaxBoardSize)
+        {
+            var currentBoardSize = GetCurrentBoardSize();
+            if (!(currentBoardSize <= originalMaxBoardSize))
+            {
+                Debug.LogWarning(
+                    "Current BoardSize is larger than maximum board size was on initialization. This may cause unexpected results.\n" +
+                    $"Original GetMaxBoardSize() result: {originalMaxBoardSize}\n" +
+                    $"GetCurrentBoardSize() result: {currentBoardSize}"
+                );
+            }
+        }
     }
 }
