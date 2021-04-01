@@ -531,7 +531,8 @@ def test_strict():
     run_options_dict = {"behaviors": behaviors, "strict": True}
     ro = RunOptions.from_dict(run_options_dict)
     with pytest.raises(TrainerConfigError):
-        ro.behaviors["test2"]
+        # Variable must be accessed otherwise Python won't query the dict
+        print(ro.behaviors["test2"])
 
     # Create strict RunOptions with default settings
     default_settings = {"max_steps": 1, "network_settings": {"num_layers": 1000}}
