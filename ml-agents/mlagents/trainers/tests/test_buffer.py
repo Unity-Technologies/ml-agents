@@ -110,9 +110,6 @@ def test_buffer():
         np.array(a),
         np.array(
             [
-                [0, 0, 0],
-                [0, 0, 0],
-                [0, 0, 0],
                 [201, 202, 203],
                 [211, 212, 213],
                 [221, 222, 223],
@@ -122,6 +119,9 @@ def test_buffer():
                 [261, 262, 263],
                 [271, 272, 273],
                 [281, 282, 283],
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
             ]
         ),
     )
@@ -129,10 +129,10 @@ def test_buffer():
     a = agent_2_buffer[BufferKey.GROUP_CONTINUOUS_ACTION].get_batch(
         batch_size=None, training_length=4, sequential=True
     )
-    for _group_entry in a[:3]:
-        assert len(_group_entry) == 0
-    for _group_entry in a[3:]:
+    for _group_entry in a[:-3]:
         assert len(_group_entry) == 3
+    for _group_entry in a[-3:]:
+        assert len(_group_entry) == 0
 
     agent_1_buffer.reset_agent()
     assert agent_1_buffer.num_experiences == 0
