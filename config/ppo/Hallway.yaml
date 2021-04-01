@@ -1,5 +1,5 @@
 behaviors:
-  Hallway2:
+  Hallway:
     trainer_type: ppo
     hyperparameters:
       batch_size: 128
