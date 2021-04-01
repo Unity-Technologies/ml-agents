@@ -1,6 +1,8 @@
 using NUnit.Framework;
 using System;
 using System.Linq;
+using Unity.MLAgents.Extensions.Sensors;
+using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Tests.Sensors
 {
@@ -129,5 +131,17 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             }
         }
 
+        public static void SetComponentParameters(GridSensorComponent gridComponent, string[] detectableObjects, int[] channelDepth, GridDepthType gridDepthType,
+            float cellScaleX, float cellScaleZ, int gridWidth, int gridHeight, int observeMaskInt, bool rotateWithAgent, Color[] debugColors)
+        {
+            gridComponent.DetectableObjects = detectableObjects;
+            gridComponent.ChannelDepth = channelDepth;
+            gridComponent.DepthType = gridDepthType;
+            gridComponent.CellScale = new Vector3(cellScaleX, 0.01f, cellScaleZ);
+            gridComponent.GridNumSide = new Vector3Int(gridWidth, 1, gridHeight);
+            gridComponent.ObserveMask = observeMaskInt;
+            gridComponent.RotateWithAgent = rotateWithAgent;
+            gridComponent.DebugColors = debugColors;
+        }
     }
 }
