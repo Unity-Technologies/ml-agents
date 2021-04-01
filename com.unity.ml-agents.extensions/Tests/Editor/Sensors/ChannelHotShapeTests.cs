@@ -32,7 +32,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Color[] colors = { Color.magenta };
             GridObsTestUtils.SetComponentParameters(gridSensorComponent, tags, depths, GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
-            var gridSensor = (GridSensor) gridSensorComponent.CreateSensors()[0];
+            var gridSensor = (GridSensor)gridSensorComponent.CreateSensors()[0];
 
             var expectedShape = new InplaceArray<int>(10, 10, 1);
             Assert.AreEqual(expectedShape, gridSensor.GetObservationSpec().Shape);
@@ -48,7 +48,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Color[] colors = { Color.magenta };
             GridObsTestUtils.SetComponentParameters(gridSensorComponent, tags, depths, GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
-            var gridSensor = (GridSensor) gridSensorComponent.CreateSensors()[0];
+            var gridSensor = (GridSensor)gridSensorComponent.CreateSensors()[0];
 
             var expectedShape = new InplaceArray<int>(10, 10, 2);
             Assert.AreEqual(expectedShape, gridSensor.GetObservationSpec().Shape);
@@ -62,7 +62,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Color[] colors = { Color.magenta };
             GridObsTestUtils.SetComponentParameters(gridSensorComponent, tags, depths, GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
-            var gridSensor = (GridSensor) gridSensorComponent.CreateSensors()[0];
+            var gridSensor = (GridSensor)gridSensorComponent.CreateSensors()[0];
 
             var expectedShape = new InplaceArray<int>(10, 10, 3);
             Assert.AreEqual(expectedShape, gridSensor.GetObservationSpec().Shape);
@@ -77,7 +77,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Color[] colors = { Color.magenta };
             GridObsTestUtils.SetComponentParameters(gridSensorComponent, tags, depths, GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
-            var gridSensor = (GridSensor) gridSensorComponent.CreateSensors()[0];
+            var gridSensor = (GridSensor)gridSensorComponent.CreateSensors()[0];
 
             var expectedShape = new InplaceArray<int>(10, 10, 6);
             Assert.AreEqual(expectedShape, gridSensor.GetObservationSpec().Shape);

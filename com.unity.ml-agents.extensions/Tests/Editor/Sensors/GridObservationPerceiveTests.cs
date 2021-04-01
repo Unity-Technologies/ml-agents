@@ -48,7 +48,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Color[] colors = { Color.red, Color.magenta };
             GridObsTestUtils.SetComponentParameters(gridSensorComponent, tags, depths, GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
-            var gridSensor = (GridSensor) gridSensorComponent.CreateSensors()[0];
+            var gridSensor = (GridSensor)gridSensorComponent.CreateSensors()[0];
 
             yield return null;
 
@@ -72,7 +72,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Color[] colors = { Color.red, Color.magenta };
             GridObsTestUtils.SetComponentParameters(gridSensorComponent, tags, depths, GridDepthType.Channel,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
-            var gridSensor = (GridSensor) gridSensorComponent.CreateSensors()[0];
+            var gridSensor = (GridSensor)gridSensorComponent.CreateSensors()[0];
 
             yield return null;
 
@@ -96,7 +96,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Color[] colors = { Color.red, Color.magenta };
             GridObsTestUtils.SetComponentParameters(gridSensorComponent, tags, depths, GridDepthType.Channel,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
-            var gridSensor = (GridSensor) gridSensorComponent.CreateSensors()[0];
+            var gridSensor = (GridSensor)gridSensorComponent.CreateSensors()[0];
 
             yield return null;
 
