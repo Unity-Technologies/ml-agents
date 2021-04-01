@@ -42,6 +42,7 @@ namespace Unity.MLAgents.Tests.Analytics
             Assert.AreEqual(3, remotePolicyEvent.ObservationSpecs[0].DimensionInfos.Length);
             Assert.AreEqual(20, remotePolicyEvent.ObservationSpecs[0].DimensionInfos[0].Size);
             Assert.AreEqual("None", remotePolicyEvent.ObservationSpecs[0].CompressionType);
+            Assert.AreEqual(20, remotePolicyEvent.ObservationSpecs[0].DimensionInfos[0].Size);
             Assert.AreEqual(Test3DSensor.k_BuiltInSensorType, remotePolicyEvent.ObservationSpecs[0].BuiltInSensorType);
 
             Assert.AreEqual(2, remotePolicyEvent.ActionSpec.NumContinuousActions);

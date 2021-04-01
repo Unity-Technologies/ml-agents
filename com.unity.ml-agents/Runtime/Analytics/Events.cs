@@ -97,6 +97,7 @@ namespace Unity.MLAgents.Analytics
         public string SensorName;
         public string CompressionType;
         public int BuiltInSensorType;
+        public int ObservationType;
         public EventObservationDimensionInfo[] DimensionInfos;
 
         public static EventObservationSpec FromSensor(ISensor sensor)
@@ -119,6 +120,7 @@ namespace Unity.MLAgents.Analytics
                 SensorName = sensor.GetName(),
                 CompressionType = sensor.GetCompressionSpec().SensorCompressionType.ToString(),
                 BuiltInSensorType = (int)builtInSensorType,
+                ObservationType = (int)obsSpec.ObservationType,
                 DimensionInfos = dimInfos,
             };
         }
