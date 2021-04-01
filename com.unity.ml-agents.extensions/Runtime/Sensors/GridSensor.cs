@@ -1,11 +1,13 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Unity.MLAgents.Sensors;
 using UnityEngine.Profiling;
 
+[assembly: InternalsVisibleTo("Unity.ML-Agents.Extensions.EditorTests")]
 namespace Unity.MLAgents.Extensions.Sensors
 {
     /// <summary>
@@ -106,7 +108,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// The main storage of perceptual information.
         /// </summary>
-        float[] m_PerceptionBuffer;
+        internal float[] m_PerceptionBuffer;
 
         /// <summary>
         ///  The default value of the perceptionBuffer when using the ChannelHot DepthType. Used to reset the array/
@@ -209,14 +211,14 @@ namespace Unity.MLAgents.Extensions.Sensors
                 throw new UnityAgentsException("The channels of a CountingGridSensor is equal to the number of detectableObjects");
             }
 
-            m_ObservationSpec = ObservationSpec.Visual(GridNumSideX, GridNumSideZ, ObservationPerCell);
-            m_perceptionTexture2D = new Texture2D(GridNumSideX, GridNumSideZ, TextureFormat.RGB24, false);
-            m_ColliderBuffer = new Collider[Math.Min(MaxColliderBufferSize, InitialColliderBufferSize)];
-
             InitGridParameters();
             InitDepthType();
             InitCellPoints();
             ResetPerceptionBuffer();
+
+            m_ObservationSpec = ObservationSpec.Visual(GridNumSideX, GridNumSideZ, ObservationPerCell);
+            m_perceptionTexture2D = new Texture2D(GridNumSideX, GridNumSideZ, TextureFormat.RGB24, false);
+            m_ColliderBuffer = new Collider[Math.Min(MaxColliderBufferSize, InitialColliderBufferSize)];
         }
 
         public SensorCompressionType CompressionType
@@ -512,7 +514,9 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             if (!ReferenceEquals(closestColliderGo, null))
+            {
                 LoadObjectData(closestColliderGo, cellIndex, (float)Math.Sqrt(minDistanceSquared) * InverseSphereRadius);
+            }
             Profiler.EndSample();
         }
 
@@ -616,9 +620,12 @@ namespace Unity.MLAgents.Extensions.Sensors
             var channelHotVals = new ArraySegment<float>(m_PerceptionBuffer, cellIndex * ObservationPerCell, ObservationPerCell);
             for (var i = 0; i < DetectableObjects.Length; i++)
             {
-                for (var ii = 0; ii < channelHotVals.Count; ii++)
+                if (gridDepthType != GridDepthType.Counting)
                 {
-                    m_PerceptionBuffer[channelHotVals.Offset + ii] = 0f;
+                    for (var ii = 0; ii < channelHotVals.Count; ii++)
+                    {
+                        m_PerceptionBuffer[channelHotVals.Offset + ii] = 0f;
+                    }
                 }
 
                 if (!ReferenceEquals(currentColliderGo, null) && currentColliderGo.CompareTag(DetectableObjects[i]))

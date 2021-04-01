@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     [AddComponentMenu("ML Agents/Grid Sensor", (int)MenuGroup.Sensors)]
     public class GridSensorComponent : SensorComponent
     {
-        GridSensor m_Sensor;
+        protected GridSensor m_Sensor;
 
         [HideInInspector, SerializeField]
         string m_SensorName = "GridSensor";
