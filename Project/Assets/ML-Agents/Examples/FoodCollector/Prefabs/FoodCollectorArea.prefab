@@ -2308,16 +2308,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: GridSensor
   m_CellScale: {x: 1, y: 0.01, z: 1}
-  m_GridNumSide: {x: 40, y: 1, z: 40}
+  m_GridNum: {x: 40, y: 1, z: 40}
   m_RotateWithAgent: 1
-  m_ChannelDepth: 06000000
+  m_ChannelDepths: 06000000
   m_DetectableObjects:
   - food
   - agent
   - wall
   - badFood
   - frozenAgent
-  m_ObserveMask:
+  m_ColliderMask:
     serializedVersion: 2
     m_Bits: 307
   m_DepthType: 1
@@ -2653,16 +2653,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: GridSensor
   m_CellScale: {x: 1, y: 0.01, z: 1}
-  m_GridNumSide: {x: 40, y: 1, z: 40}
+  m_GridNum: {x: 40, y: 1, z: 40}
   m_RotateWithAgent: 1
-  m_ChannelDepth: 06000000
+  m_ChannelDepths: 06000000
   m_DetectableObjects:
   - food
   - agent
   - wall
   - badFood
   - frozenAgent
-  m_ObserveMask:
+  m_ColliderMask:
     serializedVersion: 2
     m_Bits: 307
   m_DepthType: 1
@@ -3003,16 +3003,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: GridSensor
   m_CellScale: {x: 1, y: 0.01, z: 1}
-  m_GridNumSide: {x: 40, y: 1, z: 40}
+  m_GridNum: {x: 40, y: 1, z: 40}
   m_RotateWithAgent: 1
-  m_ChannelDepth: 06000000
+  m_ChannelDepths: 06000000
   m_DetectableObjects:
   - food
   - agent
   - wall
   - badFood
   - frozenAgent
-  m_ObserveMask:
+  m_ColliderMask:
     serializedVersion: 2
     m_Bits: 307
   m_DepthType: 1
@@ -3622,16 +3622,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: GridSensor
   m_CellScale: {x: 1, y: 0.01, z: 1}
-  m_GridNumSide: {x: 40, y: 1, z: 40}
+  m_GridNum: {x: 40, y: 1, z: 40}
   m_RotateWithAgent: 1
-  m_ChannelDepth: 06000000
+  m_ChannelDepths: 06000000
   m_DetectableObjects:
   - food
   - agent
   - wall
   - badFood
   - frozenAgent
-  m_ObserveMask:
+  m_ColliderMask:
     serializedVersion: 2
     m_Bits: 307
   m_DepthType: 1
@@ -3958,16 +3958,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: GridSensor
   m_CellScale: {x: 1, y: 0.01, z: 1}
-  m_GridNumSide: {x: 40, y: 1, z: 40}
+  m_GridNum: {x: 40, y: 1, z: 40}
   m_RotateWithAgent: 1
-  m_ChannelDepth: 06000000
+  m_ChannelDepths: 06000000
   m_DetectableObjects:
   - food
   - agent
   - wall
   - badFood
   - frozenAgent
-  m_ObserveMask:
+  m_ColliderMask:
     serializedVersion: 2
     m_Bits: 307
   m_DepthType: 1
