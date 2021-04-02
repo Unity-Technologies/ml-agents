@@ -263,7 +263,7 @@ namespace Unity.MLAgents.Sensors
 
                 foreach (var rayInfo in m_RaySensor.debugDisplayInfo.rayInfos)
                 {
-                    DrawRaycastGizmos(rayInfo, alpha);
+                    DrawRaycastGizmos(rayInfo.rayOutput, alpha);
                 }
             }
             else
@@ -278,7 +278,7 @@ namespace Unity.MLAgents.Sensors
                 {
                     DebugDisplayInfo.RayInfo debugRay;
                     RayPerceptionSensor.PerceiveSingleRay(rayInput, rayIndex, out debugRay);
-                    DrawRaycastGizmos(debugRay);
+                    DrawRaycastGizmos(debugRay.rayOutput);
                 }
             }
         }
@@ -286,24 +286,24 @@ namespace Unity.MLAgents.Sensors
         /// <summary>
         /// Draw the debug information from the sensor (if available).
         /// </summary>
-        void DrawRaycastGizmos(DebugDisplayInfo.RayInfo rayInfo, float alpha = 1.0f)
+        void DrawRaycastGizmos(RayPerceptionOutput.RayOutput rayOutput, float alpha = 1.0f)
         {
-            var startPositionWorld = rayInfo.worldStart;
-            var endPositionWorld = rayInfo.worldEnd;
+            var startPositionWorld = rayOutput.StartPositionWorld;
+            var endPositionWorld = rayOutput.EndPositionWorld;
             var rayDirection = endPositionWorld - startPositionWorld;
-            rayDirection *= rayInfo.rayOutput.HitFraction;
+            rayDirection *= rayOutput.HitFraction;
 
             // hit fraction ^2 will shift "far" hits closer to the hit color
-            var lerpT = rayInfo.rayOutput.HitFraction * rayInfo.rayOutput.HitFraction;
+            var lerpT = rayOutput.HitFraction * rayOutput.HitFraction;
             var color = Color.Lerp(rayHitColor, rayMissColor, lerpT);
             color.a *= alpha;
             Gizmos.color = color;
             Gizmos.DrawRay(startPositionWorld, rayDirection);
 
             // Draw the hit point as a sphere. If using rays to cast (0 radius), use a small sphere.
-            if (rayInfo.rayOutput.HasHit)
+            if (rayOutput.HasHit)
             {
-                var hitRadius = Mathf.Max(rayInfo.castRadius, .05f);
+                var hitRadius = Mathf.Max(rayOutput.ScaledCastRadius, .05f);
                 Gizmos.DrawWireSphere(startPositionWorld + rayDirection, hitRadius);
             }
         }
