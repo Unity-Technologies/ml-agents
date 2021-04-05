@@ -53,6 +53,7 @@ depend on the previous behavior, you can explicitly set the Agent's `InferenceDe
 settings. Unfortunately, this may require retraining models if it changes the resulting order of the sensors
 or actuators on your system. (#5194)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Fixed an issue which was causing increased variance when using LSTMs. Also fixed an issue with LSTM when used with POCA and `sequence_length` < `time_horizon`. (#5206)
 - Fixed a bug where the SAC replay buffer would not be saved out at the end of a run, even if `save_replay_buffer` was enabled. (#5205)
 
 ## [1.9.0-preview] - 2021-03-17
