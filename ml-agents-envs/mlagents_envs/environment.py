@@ -279,7 +279,7 @@ class UnityEnvironment(BaseEnv):
                 agent = agent_infos.value[0]
                 new_spec = behavior_spec_from_proto(brain_param, agent)
                 self._env_specs[brain_param.brain_name] = new_spec
-                logger.info(f"Connected new brain:\n{brain_param.brain_name}")
+                logger.info(f"Connected new brain: {brain_param.brain_name}")
 
     def _update_state(self, output: UnityRLOutputProto) -> None:
         """
@@ -365,9 +365,9 @@ class UnityEnvironment(BaseEnv):
         if behavior_name not in self._env_state:
             return
         action_spec = self._env_specs[behavior_name].action_spec
-        num_agents = len(self._env_state[behavior_name][0])
-        action = action_spec._validate_action(action, None, behavior_name)
+        action = action_spec._validate_action(action, 1, behavior_name)
         if behavior_name not in self._env_actions:
+            num_agents = len(self._env_state[behavior_name][0])
             self._env_actions[behavior_name] = action_spec.empty_action(num_agents)
         try:
             index = np.where(self._env_state[behavior_name][0].agent_id == agent_id)[0][
@@ -426,9 +426,9 @@ class UnityEnvironment(BaseEnv):
             # Wait a bit for the process to shutdown, but kill it if it takes too long
             try:
                 self._process.wait(timeout=timeout)
-                logger.info(self._returncode_to_env_message(self._process.returncode))
+                logger.debug(self._returncode_to_env_message(self._process.returncode))
             except subprocess.TimeoutExpired:
-                logger.info("Environment timed out shutting down. Killing...")
+                logger.warning("Environment timed out shutting down. Killing...")
                 self._process.kill()
             # Set to None so we don't try to close multiple times.
             self._process = None

@@ -587,6 +587,8 @@ weights of the policy using the goal observations as input. Note that using a
 HyperNetwork requires a lot of computations, it is recommended to use a smaller
 number of hidden units in the policy to alleviate this.
 If set to `none` the goal signal will be considered as regular observations.
+For an example on how to use a goal signal, see the
+[GridWorld example](Learning-Environment-Examples.md#gridworld).
 
 #### Goal Signal Summary & Best Practices
  - Attach a `VectorSensorComponent` or `CameraSensorComponent` to an agent and

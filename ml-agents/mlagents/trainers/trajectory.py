@@ -246,13 +246,13 @@ class Trajectory(NamedTuple):
                 exp.action.discrete
             )
 
-            cont_next_actions = np.zeros_like(exp.action.continuous)
-            disc_next_actions = np.zeros_like(exp.action.discrete)
-
             if not is_last_step:
                 next_action = self.steps[step + 1].action
                 cont_next_actions = next_action.continuous
                 disc_next_actions = next_action.discrete
+            else:
+                cont_next_actions = np.zeros_like(exp.action.continuous)
+                disc_next_actions = np.zeros_like(exp.action.discrete)
 
             agent_buffer_trajectory[BufferKey.NEXT_CONT_ACTION].append(
                 cont_next_actions

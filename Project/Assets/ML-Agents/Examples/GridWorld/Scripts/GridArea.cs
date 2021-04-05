@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Unity.MLAgents;
+using UnityEngine.Serialization;
 
 
 public class GridArea : MonoBehaviour
@@ -15,10 +16,11 @@ public class GridArea : MonoBehaviour
 
     Camera m_AgentCam;
 
-    public GameObject goalPref;
-    public GameObject pitPref;
+    [FormerlySerializedAs("PlusPref")] public GameObject GreenPlusPrefab;
+    [FormerlySerializedAs("ExPref")] public GameObject RedExPrefab;
     GameObject[] m_Objects;
-    public int numberOfObstacles = 1;
+    public int numberOfPlus = 1;
+    public int numberOfEx = 1;
 
     GameObject m_Plane;
     GameObject m_Sn;
@@ -34,7 +36,7 @@ public class GridArea : MonoBehaviour
     {
         m_ResetParams = Academy.Instance.EnvironmentParameters;
 
-        m_Objects = new[] { goalPref, pitPref };
+        m_Objects = new[] { GreenPlusPrefab, RedExPrefab };
 
         m_AgentCam = transform.Find("agentCam").GetComponent<Camera>();
 
@@ -55,14 +57,14 @@ public class GridArea : MonoBehaviour
         transform.position = m_InitialPosition * (m_ResetParams.GetWithDefault("gridSize", 5f) + 1);
         var playersList = new List<int>();
 
-        for (var i = 0; i < (int)m_ResetParams.GetWithDefault("numObstacles", numberOfObstacles); i++)
-        {
-            playersList.Add(1);
-        }
-
-        for (var i = 0; i < (int)m_ResetParams.GetWithDefault("numGoals", 1f); i++)
+        for (var i = 0; i < (int)m_ResetParams.GetWithDefault("numPlusGoals", numberOfPlus); i++)
         {
             playersList.Add(0);
+        }
+
+        for (var i = 0; i < (int)m_ResetParams.GetWithDefault("numExGoals", numberOfEx); i++)
+        {
+            playersList.Add(1);
         }
         players = playersList.ToArray();
 

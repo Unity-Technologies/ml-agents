@@ -32,9 +32,8 @@ namespace Unity.MLAgents.Extensions.Match3
         public override IActuator[] CreateActuators()
         {
             var board = GetComponent<AbstractBoard>();
-            var agent = GetComponentInParent<Agent>();
             var seed = RandomSeed == -1 ? gameObject.GetInstanceID() : RandomSeed + 1;
-            return new IActuator[] { new Match3Actuator(board, ForceHeuristic, seed, agent, ActuatorName) };
+            return new IActuator[] { new Match3Actuator(board, ForceHeuristic, seed, ActuatorName) };
         }
 
         /// <inheritdoc/>
@@ -48,7 +47,7 @@ namespace Unity.MLAgents.Extensions.Match3
                     return ActionSpec.MakeContinuous(0);
                 }
 
-                var numMoves = Move.NumPotentialMoves(board.Rows, board.Columns);
+                var numMoves = Move.NumPotentialMoves(board.GetMaxBoardSize());
                 return ActionSpec.MakeDiscrete(numMoves);
             }
         }

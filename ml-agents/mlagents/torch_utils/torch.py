@@ -55,7 +55,7 @@ def set_torch_config(torch_settings: TorchSettings) -> None:
         torch.set_default_tensor_type(torch.cuda.FloatTensor)
     else:
         torch.set_default_tensor_type(torch.FloatTensor)
-    logger.info(f"default Torch device: {_device}")
+    logger.debug(f"default Torch device: {_device}")
 
 
 # Initialize to default settings

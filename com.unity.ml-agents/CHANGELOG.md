@@ -27,6 +27,8 @@ interface was removed. (#5164)
 - `Match3Sensor` was refactored to produce cell and special type observations separately, and `Match3SensorComponent` now
 produces two `Match3Sensor`s (unless there are no special types). Previously trained models will have different observation
 sizes and will need to be retrained. (#5181)
+- The `AbstractBoard` class for integration with Match-3 games was changed to make it easier to support boards with
+different sizes using the same model. For a summary of the interface changes, please see the Migration Guide. (##5189)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
@@ -39,13 +41,19 @@ sizes and will need to be retrained. (#5181)
 - Make com.unity.modules.physics and com.unity.modules.physics2d optional dependencies. (#5112)
 - The default `InferenceDevice` is now `InferenceDevice.Default`, which is equivalent to `InferenceDevice.Burst`. If you
 depend on the previous behavior, you can explicitly set the Agent's `InferenceDevice` to `InferenceDevice.CPU`. (#5175)
+ - Added support for `Goal Signal` as a type of observation. Trainers can now use HyperNetworks to process `Goal Signal`. Trainers with HyperNetworks are more effective at solving multiple tasks. (#5142, #5159, #5149)
+ - Modified the [GridWorld environment](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Learning-Environment-Examples.md#gridworld) to use the new `Goal Signal` feature. (#5193)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Some console output have been moved from `info` to `debug` and will not be printed by default. If you want all messages to be printed, you can run `mlagents-learn` with the `--debug` option or add the line `debug: true` at the top of the yaml config file. (#5211)
 
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Fixed a bug where sensors and actuators could get sorted inconsistently on different systems to different Culture
+settings. Unfortunately, this may require retraining models if it changes the resulting order of the sensors
+or actuators on your system. (#5194)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-
+- Fixed a bug where the SAC replay buffer would not be saved out at the end of a run, even if `save_replay_buffer` was enabled. (#5205)
 
 ## [1.9.0-preview] - 2021-03-17
 ### Major Changes
