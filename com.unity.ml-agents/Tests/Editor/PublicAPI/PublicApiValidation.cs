@@ -73,15 +73,23 @@ namespace Unity.MLAgentsExamples
         }
 #endif
 
+        /// <summary>
+        /// Make sure we can inherit from DecisionRequester and override some logic.
+        /// </summary>
         class CustomDecisionRequester : DecisionRequester
         {
+            /// <summary>
+            /// Example logic. If the killswitch flag is set, the Agent never requests a decision.
+            /// </summary>
+            public bool KillswitchEnabled;
+
             public CustomDecisionRequester()
             {
-
             }
-            protected override void MakeRequests(int academyStep)
+
+            protected override bool ShouldRequestDecision(DecisionRequestContext context)
             {
-                Agent?.RequestDecision();
+                return !KillswitchEnabled && base.ShouldRequestDecision(context);
             }
         }
     }

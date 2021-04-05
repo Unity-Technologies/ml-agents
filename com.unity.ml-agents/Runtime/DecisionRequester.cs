@@ -66,28 +66,55 @@ namespace Unity.MLAgents
         }
 
         /// <summary>
+        /// Information about Academy step used to make decisions about whether to request a decision.
+        /// </summary>
+        public struct DecisionRequestContext
+        {
+            /// <summary>
+            /// The current step count of the Academy, equivalent to Academy.StepCount.
+            /// </summary>
+            public int AcademyStepCount;
+        }
+
+        /// <summary>
         /// Method that hooks into the Academy in order inform the Agent on whether or not it should request a
         /// decision, and whether or not it should take actions between decisions.
         /// </summary>
         /// <param name="academyStepCount">The current step count of the academy.</param>
         void MakeRequests(int academyStepCount)
         {
-            if (ShouldRequestDecision(academyStepCount))
+            var context = new DecisionRequestContext
+            {
+                AcademyStepCount = academyStepCount
+            };
+
+            if (ShouldRequestDecision(context))
             {
                 m_Agent?.RequestDecision();
             }
-            if (ShouldRequestAction(academyStepCount))
+
+            if (ShouldRequestAction(context))
             {
                 m_Agent?.RequestAction();
             }
         }
 
-        protected virtual bool ShouldRequestDecision(int academyStepCount)
+        /// <summary>
+        /// Whether Agent.RequestDecision should be called on this update step.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        protected virtual bool ShouldRequestDecision(DecisionRequestContext context)
         {
-            return academyStepCount % DecisionPeriod == 0;
+            return context.AcademyStepCount % DecisionPeriod == 0;
         }
 
-        protected virtual bool ShouldRequestAction(int academyStepCount)
+        /// <summary>
+        /// Whether Agent.RequestAction should be called on this update step.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        protected virtual bool ShouldRequestAction(DecisionRequestContext context)
         {
             return TakeActionsBetweenDecisions;
         }
