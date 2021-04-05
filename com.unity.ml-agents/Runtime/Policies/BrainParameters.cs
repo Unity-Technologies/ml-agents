@@ -80,6 +80,7 @@ namespace Unity.MLAgents.Policies
         /// For the discrete actions: the number of branches.
         /// </value>
         [Obsolete("VectorActionSize has been deprecated, please use ActionSpec instead.")]
+        [SerializeField]
         [FormerlySerializedAs("vectorActionSize")]
         internal int[] VectorActionSize = new[] { 1 };
 
@@ -93,6 +94,7 @@ namespace Unity.MLAgents.Policies
         /// (Deprecated) Defines if the action is discrete or continuous.
         /// </summary>
         [Obsolete("VectorActionSpaceType has been deprecated, please use ActionSpec instead.")]
+        [SerializeField]
         [FormerlySerializedAs("vectorActionSpaceType")]
         internal SpaceType VectorActionSpaceType = SpaceType.Discrete;
 
@@ -129,16 +131,14 @@ namespace Unity.MLAgents.Policies
 #pragma warning disable CS0618
             if (!hasUpgradedBrainParametersWithActionSpec
                 && m_ActionSpec.NumContinuousActions == 0
-                && m_ActionSpec.BranchSizes == null)
+                && m_ActionSpec.NumDiscreteActions == 0)
             {
                 if (VectorActionSpaceType == SpaceType.Continuous)
                 {
                     m_ActionSpec.NumContinuousActions = VectorActionSize[0];
-                    m_ActionSpec.BranchSizes = null;
                 }
                 if (VectorActionSpaceType == SpaceType.Discrete)
                 {
-                    m_ActionSpec.NumContinuousActions = 0;
                     m_ActionSpec.BranchSizes = (int[])VectorActionSize.Clone();
                 }
             }
