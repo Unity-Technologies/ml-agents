@@ -95,15 +95,16 @@ class TorchModelSaver(BaseModelSaver):
                 )
                 if missing_keys:
                     logger.warning(
-                        f"Did not find these keys {missing_keys} in checkpoint. Initializing"
+                        f"Did not find these keys {missing_keys} in checkpoint. Initializing."
                     )
                 if unexpected_keys:
                     logger.warning(
-                        f"Did not expect these keys {unexpected_keys} in checkpoint. Ignoring"
+                        f"Did not expect these keys {unexpected_keys} in checkpoint. Ignoring."
                     )
 
-            except (KeyError, TypeError):
+            except (KeyError, TypeError, RuntimeError) as err:
                 logger.warning(f"Failed to load for module {name}. Initializing")
+                logger.debug(f"Module loading error : {err}")
 
         if reset_global_steps:
             policy.set_step(0)
