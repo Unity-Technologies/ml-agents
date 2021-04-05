@@ -29,10 +29,10 @@ produces two `Match3Sensor`s (unless there are no special types). Previously tra
 sizes and will need to be retrained. (#5181)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-- The `--resume` flag now supports resuming experimennts with additional reward providers or
+- The `--resume` flag now supports resuming experiments with additional reward providers or
  loading partial models if the network architecture has changed. See
  [here](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Training-ML-Agents.md#loading-an-existing-model)
- for more details.
+ for more details. (#5213)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
