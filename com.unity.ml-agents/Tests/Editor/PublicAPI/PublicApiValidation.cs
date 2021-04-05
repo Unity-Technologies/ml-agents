@@ -69,6 +69,11 @@ namespace Unity.MLAgentsExamples
             sensorComponent.ObservationStacks = 2;
 
             sensorComponent.CreateSensors();
+
+            var sensor = sensorComponent.RaySensor;
+            sensor.Update();
+            var outputs = sensor.RayPerceptionOutput;
+            Assert.AreEqual(outputs.RayOutputs.Length, 2*sensorComponent.RaysPerDirection + 1);
         }
 #endif
     }

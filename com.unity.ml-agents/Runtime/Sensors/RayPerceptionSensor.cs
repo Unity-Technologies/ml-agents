@@ -200,7 +200,6 @@ namespace Unity.MLAgents.Sensors
             /// </remarks>
             public float ScaledCastRadius;
 
-
             /// <summary>
             /// Writes the ray output information to a subset of the float array.  Each element in the rayAngles array
             /// determines a sublist of data to the observation. The sublist contains the observation data for a single cast.
@@ -246,6 +245,9 @@ namespace Unity.MLAgents.Sensors
         RayPerceptionInput m_RayPerceptionInput;
         internal RayPerceptionOutput m_rayPerceptionOutput;
 
+        /// <summary>
+        /// Time.frameCount at the last time Update() was called. This is only used for display in gizmos.
+        /// </summary>
         int m_DebugLastFrameCount;
 
         internal int DebugLastFrameCount
@@ -265,11 +267,16 @@ namespace Unity.MLAgents.Sensors
 
             SetNumObservations(rayInput.OutputSize());
 
-            if (Application.isEditor)
-            {
-                m_DebugLastFrameCount = Time.frameCount;
-            }
+            m_DebugLastFrameCount = Time.frameCount;
             m_rayPerceptionOutput = new RayPerceptionOutput();
+        }
+
+        /// <summary>
+        /// The most recent raycast results.
+        /// </summary>
+        public RayPerceptionOutput RayPerceptionOutput
+        {
+            get { return m_rayPerceptionOutput; }
         }
 
         void SetNumObservations(int numObservations)
