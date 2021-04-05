@@ -101,11 +101,19 @@ def test_load_policy_different_hidden_units(tmp_path, vis_encode_type):
     # asserts convolutions have different parameters before load
     for conv1, conv2 in zip(conv_params, conv_params2):
         assert not torch.equal(conv1, conv2)
+    # asserts layers still  have different dimensions
+    for mod1, mod2 in zip(policy.actor.parameters(), policy2.actor.parameters()):
+        if mod1.shape[0] == 12:
+            assert mod2.shape[0] == 10
     model_saver2.register(policy2)
     model_saver2.initialize_or_load(policy2)
     # asserts convolutions have same parameters after load
     for conv1, conv2 in zip(conv_params, conv_params2):
         assert torch.equal(conv1, conv2)
+    # asserts layers still  have different dimensions
+    for mod1, mod2 in zip(policy.actor.parameters(), policy2.actor.parameters()):
+        if mod1.shape[0] == 12:
+            assert mod2.shape[0] == 10
 
 
 @pytest.mark.parametrize(
