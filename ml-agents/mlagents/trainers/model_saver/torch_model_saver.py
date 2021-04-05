@@ -113,7 +113,7 @@ class TorchModelSaver(BaseModelSaver):
             # function because it is not an nn.Module.
             # RuntimeError is raised by PyTorch if there  is a size mismatch between modules
             # of the same name. This will still partially assign values to those layers that
-            # have no changed shape.
+            # have not changed shape.
             except (KeyError, ValueError, RuntimeError) as err:
                 logger.warning(f"Failed to load for module {name}. Initializing")
                 logger.debug(f"Module loading error : {err}")
