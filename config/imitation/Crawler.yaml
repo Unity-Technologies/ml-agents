@@ -32,7 +32,7 @@ behaviors:
     max_steps: 10000000
     time_horizon: 1000
     summary_freq: 30000
-    threaded: true
+    threaded: false
     behavioral_cloning:
       demo_path: Project/Assets/ML-Agents/Examples/Crawler/Demos/ExpertCrawler.demo
       steps: 50000

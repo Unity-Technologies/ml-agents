@@ -22,7 +22,7 @@ default_settings:
   max_steps: 5000000
   time_horizon: 128
   summary_freq: 10000
-  threaded: true
+  threaded: false
 
 behaviors:
   Match3SimpleHeuristic:
@@ -36,7 +36,7 @@ behaviors:
       num_layers: 1
     max_steps: 5000000
     summary_freq: 10000
-    threaded: true
+    threaded: false
   Match3SmartHeuristic:
     # Settings can be very simple since we don't care about actually training the model
     trainer_type: ppo
@@ -48,4 +48,4 @@ behaviors:
       num_layers: 1
     max_steps: 5000000
     summary_freq: 10000
-    threaded: true
+    threaded: false

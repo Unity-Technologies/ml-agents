@@ -641,7 +641,7 @@ class TrainerSettings(ExportableSettings):
     max_steps: int = 500000
     time_horizon: int = 64
     summary_freq: int = 50000
-    threaded: bool = True
+    threaded: bool = False
     self_play: Optional[SelfPlaySettings] = None
     behavioral_cloning: Optional[BehavioralCloningSettings] = None
 
