@@ -103,7 +103,7 @@ class TorchModelSaver(BaseModelSaver):
                             f"Did not expect these keys {unexpected_keys} in checkpoint. Ignoring."
                         )
                 else:
-                    # optimizers are treated separately
+                    # If module is not an nn.Module, try to load as one piece
                     mod.load_state_dict(saved_state_dict[name])
 
             # KeyError is raised if the module was not present in the last run but is being
