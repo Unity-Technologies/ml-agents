@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Linq;
 using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
 using UnityEngine.Rendering;
 using UnityEngine.Serialization;
@@ -19,6 +20,42 @@ public class GridAgent : Agent
         "RenderTexture as observations.")]
     public Camera renderCamera;
 
+    VectorSensorComponent m_GoalSensor;
+
+    public enum GridGoal
+    {
+        GreenPlus,
+        RedEx,
+    }
+
+    // Visual representations of the agent. Both are blue on top, but different colors on the bottom - this
+    // allows the user to see which corresponds to the current goal, but it's not visible to the camera.
+    // Only one is active at a time.
+    public GameObject GreenBottom;
+    public GameObject RedBottom;
+
+    GridGoal m_CurrentGoal;
+
+    public GridGoal CurrentGoal
+    {
+        get { return m_CurrentGoal; }
+        set
+        {
+            switch (value)
+            {
+                case GridGoal.GreenPlus:
+                    GreenBottom.SetActive(true);
+                    RedBottom.SetActive(false);
+                    break;
+                case GridGoal.RedEx:
+                    GreenBottom.SetActive(false);
+                    RedBottom.SetActive(true);
+                    break;
+            }
+            m_CurrentGoal = value;
+        }
+    }
+
     [Tooltip("Selecting will turn on action masking. Note that a model trained with action " +
         "masking turned on may not behave optimally when action masking is turned off.")]
     public bool maskActions = true;
@@ -33,7 +70,15 @@ public class GridAgent : Agent
 
     public override void Initialize()
     {
+        m_GoalSensor = this.GetComponent<VectorSensorComponent>();
         m_ResetParams = Academy.Instance.EnvironmentParameters;
+    }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        Array values = Enum.GetValues(typeof(GridGoal));
+        int goalNum = (int)CurrentGoal;
+        m_GoalSensor.GetSensor().AddOneHotObservation(goalNum, values.Length);
     }
 
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
@@ -103,16 +148,28 @@ public class GridAgent : Agent
         {
             transform.position = targetPos;
 
-            if (hit.Where(col => col.gameObject.CompareTag("goal")).ToArray().Length == 1)
+            if (hit.Where(col => col.gameObject.CompareTag("plus")).ToArray().Length == 1)
             {
-                SetReward(1f);
+                ProvideReward(GridGoal.GreenPlus);
                 EndEpisode();
             }
-            else if (hit.Where(col => col.gameObject.CompareTag("pit")).ToArray().Length == 1)
+            else if (hit.Where(col => col.gameObject.CompareTag("ex")).ToArray().Length == 1)
             {
-                SetReward(-1f);
+                ProvideReward(GridGoal.RedEx);
                 EndEpisode();
             }
+        }
+    }
+
+    private void ProvideReward(GridGoal hitObject)
+    {
+        if (CurrentGoal == hitObject)
+        {
+            SetReward(1f);
+        }
+        else
+        {
+            SetReward(-1f);
         }
     }
 
@@ -142,6 +199,8 @@ public class GridAgent : Agent
     public override void OnEpisodeBegin()
     {
         area.AreaReset();
+        Array values = Enum.GetValues(typeof(GridGoal));
+        CurrentGoal = (GridGoal)values.GetValue(UnityEngine.Random.Range(0, values.Length));
     }
 
     public void FixedUpdate()

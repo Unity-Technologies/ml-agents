@@ -8,14 +8,14 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
     {
 
         GameObject testGo;
-        CountingGridSensor gridSensor;
+        GridSensorComponent gridSensorComponent;
 
         [SetUp]
         public void SetupScene()
         {
             testGo = new GameObject("test");
             testGo.transform.position = Vector3.zero;
-            gridSensor = testGo.AddComponent<CountingGridSensor>();
+            gridSensorComponent = testGo.AddComponent<GridSensorComponent>();
         }
 
         [TearDown]
@@ -30,11 +30,11 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             string[] tags = { "block" };
             int[] depths = { 1, 1 };
             Color[] colors = { Color.magenta };
+            GridObsTestUtils.SetComponentParameters(gridSensorComponent, tags, depths, GridDepthType.Counting, 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
             Assert.Throws<UnityAgentsException>(() =>
             {
-                gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.Channel, 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
+                gridSensorComponent.CreateSensors();
             });
-
         }
     }
 }

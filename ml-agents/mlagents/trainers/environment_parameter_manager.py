@@ -103,6 +103,35 @@ class EnvironmentParameterManager:
             )
         return result
 
+    def log_current_lesson(self, parameter_name: Optional[str] = None) -> None:
+        """
+        Logs the current lesson number and sampler value of the parameter with name
+        parameter_name. If no parameter_name is provided, the values and lesson
+        numbers of all parameters will be displayed.
+        """
+        if parameter_name is not None:
+            settings = self._dict_settings[parameter_name]
+            lesson_number = GlobalTrainingStatus.get_parameter_state(
+                parameter_name, StatusType.LESSON_NUM
+            )
+            lesson_name = settings.curriculum[lesson_number].name
+            lesson_value = settings.curriculum[lesson_number].value
+            logger.info(
+                f"Parameter '{parameter_name}' is in lesson '{lesson_name}' "
+                f"and has value '{lesson_value}'."
+            )
+        else:
+            for parameter_name, settings in self._dict_settings.items():
+                lesson_number = GlobalTrainingStatus.get_parameter_state(
+                    parameter_name, StatusType.LESSON_NUM
+                )
+                lesson_name = settings.curriculum[lesson_number].name
+                lesson_value = settings.curriculum[lesson_number].value
+                logger.info(
+                    f"Parameter '{parameter_name}' is in lesson '{lesson_name}' "
+                    f"and has value '{lesson_value}'."
+                )
+
     def update_lessons(
         self,
         trainer_steps: Dict[str, int],
@@ -147,13 +176,7 @@ class EnvironmentParameterManager:
                         GlobalTrainingStatus.set_parameter_state(
                             param_name, StatusType.LESSON_NUM, next_lesson_num
                         )
-                        new_lesson_name = settings.curriculum[next_lesson_num].name
-                        new_lesson_value = settings.curriculum[next_lesson_num].value
-
-                        logger.info(
-                            f"Parameter '{param_name}' has been updated to {new_lesson_value}."
-                            + f" Now in lesson '{new_lesson_name}'"
-                        )
+                        self.log_current_lesson(param_name)
                         updated = True
                         if lesson.completion_criteria.require_reset:
                             must_reset = True

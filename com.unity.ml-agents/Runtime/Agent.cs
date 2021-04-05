@@ -572,13 +572,14 @@ namespace Unity.MLAgents
             // Request the last decision with no callbacks
             // We request a decision so Python knows the Agent is done immediately
             m_Brain?.RequestDecision(m_Info, sensors);
-            ResetSensors();
 
             // We also have to write any to any DemonstationStores so that they get the "done" flag.
             foreach (var demoWriter in DemonstrationWriters)
             {
                 demoWriter.Record(m_Info, sensors);
             }
+
+            ResetSensors();
 
             if (doneReason != DoneReason.Disabled)
             {
@@ -989,7 +990,7 @@ namespace Unity.MLAgents
             }
 
             // Sort the Sensors by name to ensure determinism
-            sensors.Sort((x, y) => x.GetName().CompareTo(y.GetName()));
+            SensorUtils.SortSensors(sensors);
 
 #if DEBUG
             // Make sure the names are actually unique

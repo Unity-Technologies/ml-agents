@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Policies
     /// This is deprecated. Agents can now use both continuous and discrete actions together.
     /// </summary>
     [Obsolete("Continuous and discrete actions on the same Agent are now supported; see ActionSpec.")]
-    public enum SpaceType
+    internal enum SpaceType
     {
         /// <summary>
         /// Discrete action space: a fixed number of options are available.
@@ -81,7 +81,7 @@ namespace Unity.MLAgents.Policies
         /// </value>
         [Obsolete("VectorActionSize has been deprecated, please use ActionSpec instead.")]
         [FormerlySerializedAs("vectorActionSize")]
-        public int[] VectorActionSize = new[] { 1 };
+        internal int[] VectorActionSize = new[] { 1 };
 
         /// <summary>
         /// The list of strings describing what the actions correspond to.
@@ -94,7 +94,7 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         [Obsolete("VectorActionSpaceType has been deprecated, please use ActionSpec instead.")]
         [FormerlySerializedAs("vectorActionSpaceType")]
-        public SpaceType VectorActionSpaceType = SpaceType.Discrete;
+        internal SpaceType VectorActionSpaceType = SpaceType.Discrete;
 
         [SerializeField]
         [HideInInspector]
@@ -121,7 +121,7 @@ namespace Unity.MLAgents.Policies
         }
 
         /// <summary>
-        /// Propogate ActionSpec fields from deprecated fields
+        /// Propagate ActionSpec fields from deprecated fields
         /// </summary>
         private void UpdateToActionSpec()
         {

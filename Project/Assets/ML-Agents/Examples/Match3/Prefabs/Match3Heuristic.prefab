@@ -113,8 +113,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d852a063770348b68caa91b8e7642a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Rows: 9
-  Columns: 8
+  MinRows: 6
+  MaxRows: 9
+  MinColumns: 6
+  MaxColumns: 8
   NumCellTypes: 6
   NumSpecialTypes: 2
   BasicCellPoints: 1
