@@ -43,6 +43,7 @@ depend on the previous behavior, you can explicitly set the Agent's `InferenceDe
  - Modified the [GridWorld environment](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Learning-Environment-Examples.md#gridworld) to use the new `Goal Signal` feature. (#5193)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Some console output have been moved from `info` to `debug` and will not be printed by default. If you want all messages to be printed, you can run `mlagents-learn` with the `--debug` option or add the line `debug: true` at the top of the yaml config file. (#5211)
 
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)

@@ -116,10 +116,10 @@ class SACTrainer(RLTrainer):
         Loads the last saved replay buffer from a file.
         """
         filename = os.path.join(self.artifact_path, "last_replay_buffer.hdf5")
-        logger.info(f"Loading Experience Replay Buffer from {filename}")
+        logger.info(f"Loading Experience Replay Buffer from {filename}...")
         with open(filename, "rb+") as file_object:
             self.update_buffer.load_from_file(file_object)
-        logger.info(
+        logger.debug(
             "Experience replay buffer has {} experiences.".format(
                 self.update_buffer.num_experiences
             )

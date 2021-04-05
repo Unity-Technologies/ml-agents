@@ -12,7 +12,8 @@ NOTSET = logging.NOTSET
 _loggers = set()
 _log_level = NOTSET
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
-LOG_FORMAT = "%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
+DEBUG_LOG_FORMAT = "%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
+LOG_FORMAT = "[%(levelname)s] %(message)s"
 
 
 def get_logger(name: str) -> logging.Logger:
@@ -21,14 +22,18 @@ def get_logger(name: str) -> logging.Logger:
     specified by set_log_level()
     """
     logger = logging.getLogger(name=name)
+
+    if _log_level == DEBUG:
+        formatter = logging.Formatter(fmt=DEBUG_LOG_FORMAT, datefmt=DATE_FORMAT)
+    else:
+        formatter = logging.Formatter(fmt=LOG_FORMAT)
+    handler = logging.StreamHandler(stream=sys.stdout)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     # If we've already set the log level, make sure new loggers use it
     if _log_level != NOTSET:
         logger.setLevel(_log_level)
-
-    handler = logging.StreamHandler(stream=sys.stdout)
-    formatter = logging.Formatter(fmt=LOG_FORMAT, datefmt=DATE_FORMAT)
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
 
     # Keep track of this logger so that we can change the log level later
     _loggers.add(logger)
@@ -44,3 +49,15 @@ def set_log_level(log_level: int) -> None:
 
     for logger in _loggers:
         logger.setLevel(log_level)
+
+    if log_level == DEBUG:
+        formatter = logging.Formatter(fmt=DEBUG_LOG_FORMAT, datefmt=DATE_FORMAT)
+    else:
+        formatter = logging.Formatter(LOG_FORMAT)
+    _set_formatter_for_all_loggers(formatter)
+
+
+def _set_formatter_for_all_loggers(formatter: logging.Formatter) -> None:
+    for logger in _loggers:
+        for handler in logger.handlers[:]:
+            handler.setFormatter(formatter)
