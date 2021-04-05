@@ -117,6 +117,13 @@ Python by using both the `--resume` and `--inference` flags. Note that if you
 want to run inference in Unity, you should use the
 [Unity Inference Engine](Getting-Started.md#running-a-pre-trained-model).
 
+Additionally, if the network architecture changes, you may still load an existing model,
+and ML-Agents will only load the parts of the model that haven't changed. For instance,
+if you add a new reward signal, the existing model will load but the new reward signal
+will be initialized from scratch. If you have a model with a visual encoder (CNN) but
+change the `hidden_units`, the CNN will be loaded but the body of the network will be
+initialized from scratch.
+
 Alternatively, you might want to start a new training run but _initialize_ it
 using an already-trained model. You may want to do this, for instance, if your
 environment changed and you want a new model, but the old behavior is still
