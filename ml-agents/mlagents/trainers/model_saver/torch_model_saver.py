@@ -111,7 +111,7 @@ class TorchModelSaver(BaseModelSaver):
             # ValueError is raised by the optimizer's load_state_dict if the parameters have
             # have changed. Note, the optimizer uses a completely different load_state_dict
             # function because it is not an nn.Module.
-            # RuntimeError is raised by PyTorch if there  is a size mismatch between modules
+            # RuntimeError is raised by PyTorch if there is a size mismatch between modules
             # of the same name. This will still partially assign values to those layers that
             # have not changed shape.
             except (KeyError, ValueError, RuntimeError) as err:
