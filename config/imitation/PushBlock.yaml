@@ -35,7 +35,6 @@ behaviors:
     max_steps: 100000
     time_horizon: 64
     summary_freq: 60000
-    threaded: false
     behavioral_cloning:
       demo_path: Project/Assets/ML-Agents/Examples/PushBlock/Demos/ExpertPushBlock.demo
       steps: 50000

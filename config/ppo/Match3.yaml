@@ -36,7 +36,6 @@ behaviors:
       num_layers: 1
     max_steps: 5000000
     summary_freq: 10000
-    threaded: false
   Match3SmartHeuristic:
     # Settings can be very simple since we don't care about actually training the model
     trainer_type: ppo
@@ -48,4 +47,3 @@ behaviors:
       num_layers: 1
     max_steps: 5000000
     summary_freq: 10000
-    threaded: false

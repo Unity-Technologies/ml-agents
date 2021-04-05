@@ -23,7 +23,6 @@ behaviors:
     max_steps: 5000000
     time_horizon: 256
     summary_freq: 10000
-    threaded: false
 environment_parameters:
   num_tiles:
     curriculum:
