@@ -382,7 +382,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
         all_next_value_mem = AgentBufferField()
         all_next_baseline_mem = AgentBufferField()
 
-        # When using LSTM, we need to divide the trajectory into sequences of even length. Sometimes,
+        # When using LSTM, we need to divide the trajectory into sequences of equal length. Sometimes,
         # that division isn't even, and we must pad the leftover sequence.
         # In the buffer, the last sequence are the ones that are padded. So if seq_len = 3 and
         # trajectory is of length 10, the last sequence is [obs,pad,pad].

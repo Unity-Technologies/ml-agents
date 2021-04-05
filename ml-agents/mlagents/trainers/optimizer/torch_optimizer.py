@@ -76,7 +76,7 @@ class TorchOptimizer(Optimizer):
         """
         num_experiences = tensor_obs[0].shape[0]
         all_next_memories = AgentBufferField()
-        # When using LSTM, we need to divide the trajectory into sequences of even length. Sometimes,
+        # When using LSTM, we need to divide the trajectory into sequences of equal length. Sometimes,
         # that division isn't even, and we must pad the leftover sequence.
         # When it is added to the buffer, the last sequence will be padded. So if seq_len = 3 and
         # trajectory is of length 10, the last sequence is [obs,pad,pad] once it is added to the buffer.
@@ -87,7 +87,7 @@ class TorchOptimizer(Optimizer):
         _mem = initial_memory
         # Evaluate other trajectories, carrying over _mem after each
         # trajectory
-        for seq_num in range(num_experiences // (self.policy.sequence_length)):
+        for seq_num in range(num_experiences // self.policy.sequence_length):
             seq_obs = []
             for _ in range(self.policy.sequence_length):
                 all_next_memories.append(ModelUtils.to_numpy(_mem.squeeze()))
