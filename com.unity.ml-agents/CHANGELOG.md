@@ -27,6 +27,8 @@ interface was removed. (#5164)
 - `Match3Sensor` was refactored to produce cell and special type observations separately, and `Match3SensorComponent` now
 produces two `Match3Sensor`s (unless there are no special types). Previously trained models will have different observation
 sizes and will need to be retrained. (#5181)
+- The `AbstractBoard` class for integration with Match-3 games was changed to make it easier to support boards with
+different sizes using the same model. For a summary of the interface changes, please see the Migration Guide. (##5189)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
