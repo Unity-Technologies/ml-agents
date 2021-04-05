@@ -252,18 +252,28 @@ namespace Unity.MLAgents.Sensors
             }
         }
 
+        internal int SensorObservationAge()
+        {
+            if (m_RaySensor != null)
+            {
+                return Time.frameCount - m_RaySensor.DebugLastFrameCount;
+            }
+
+            return 0;
+        }
+
         void OnDrawGizmosSelected()
         {
-            if (m_RaySensor?.debugDisplayInfo?.rayInfos != null)
+            if (m_RaySensor?.m_rayPerceptionOutput?.RayOutputs != null)
             {
                 // If we have cached debug info from the sensor, draw that.
                 // Draw "old" observations in a lighter color.
                 // Since the agent may not step every frame, this helps de-emphasize "stale" hit information.
-                var alpha = Mathf.Pow(.5f, m_RaySensor.debugDisplayInfo.age);
+                var alpha = Mathf.Pow(.5f, SensorObservationAge());
 
-                foreach (var rayInfo in m_RaySensor.debugDisplayInfo.rayInfos)
+                foreach (var rayInfo in m_RaySensor.m_rayPerceptionOutput.RayOutputs)
                 {
-                    DrawRaycastGizmos(rayInfo.rayOutput, alpha);
+                    DrawRaycastGizmos(rayInfo, alpha);
                 }
             }
             else
@@ -276,9 +286,8 @@ namespace Unity.MLAgents.Sensors
                 rayInput.DetectableTags = null;
                 for (var rayIndex = 0; rayIndex < rayInput.Angles.Count; rayIndex++)
                 {
-                    DebugDisplayInfo.RayInfo debugRay;
-                    RayPerceptionSensor.PerceiveSingleRay(rayInput, rayIndex, out debugRay);
-                    DrawRaycastGizmos(debugRay.rayOutput);
+                    var rayOutput = RayPerceptionSensor.PerceiveSingleRay(rayInput, rayIndex);
+                    DrawRaycastGizmos(rayOutput);
                 }
             }
         }

@@ -235,37 +235,6 @@ namespace Unity.MLAgents.Sensors
     }
 
     /// <summary>
-    /// Debug information for the raycast hits. This is used by the RayPerceptionSensorComponent.
-    /// </summary>
-    internal class DebugDisplayInfo
-    {
-        public struct RayInfo
-        {
-            // public Vector3 worldStart;
-            // public Vector3 worldEnd;
-            //public float castRadius;
-            public RayPerceptionOutput.RayOutput rayOutput;
-        }
-
-        public void Reset()
-        {
-            m_Frame = Time.frameCount;
-        }
-
-        /// <summary>
-        /// "Age" of the results in number of frames. This is used to adjust the alpha when drawing.
-        /// </summary>
-        public int age
-        {
-            get { return Time.frameCount - m_Frame; }
-        }
-
-        public RayInfo[] rayInfos;
-
-        int m_Frame;
-    }
-
-    /// <summary>
     /// A sensor implementation that supports ray cast-based observations.
     /// </summary>
     public class RayPerceptionSensor : ISensor, IBuiltInSensor
@@ -275,13 +244,13 @@ namespace Unity.MLAgents.Sensors
         string m_Name;
 
         RayPerceptionInput m_RayPerceptionInput;
-        RayPerceptionOutput m_rayPerceptionOutput;
+        internal RayPerceptionOutput m_rayPerceptionOutput;
 
-        DebugDisplayInfo m_DebugDisplayInfo;
+        int m_DebugLastFrameCount;
 
-        internal DebugDisplayInfo debugDisplayInfo
+        internal int DebugLastFrameCount
         {
-            get { return m_DebugDisplayInfo; }
+            get { return m_DebugLastFrameCount; }
         }
 
         /// <summary>
@@ -298,7 +267,7 @@ namespace Unity.MLAgents.Sensors
 
             if (Application.isEditor)
             {
-                m_DebugDisplayInfo = new DebugDisplayInfo();
+                m_DebugLastFrameCount = Time.frameCount;
             }
             m_rayPerceptionOutput = new RayPerceptionOutput();
         }
@@ -355,17 +324,8 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public void Update()
         {
+            m_DebugLastFrameCount = Time.frameCount;
             var numRays = m_RayPerceptionInput.Angles.Count;
-
-            if (m_DebugDisplayInfo != null)
-            {
-                // Reset the age information, and resize the buffer if needed.
-                m_DebugDisplayInfo.Reset();
-                if (m_DebugDisplayInfo.rayInfos == null || m_DebugDisplayInfo.rayInfos.Length != numRays)
-                {
-                    m_DebugDisplayInfo.rayInfos = new DebugDisplayInfo.RayInfo[numRays];
-                }
-            }
 
             if (m_rayPerceptionOutput.RayOutputs == null || m_rayPerceptionOutput.RayOutputs.Length != numRays)
             {
@@ -375,15 +335,7 @@ namespace Unity.MLAgents.Sensors
             // For each ray, do the casting and save the results.
             for (var rayIndex = 0; rayIndex < numRays; rayIndex++)
             {
-                DebugDisplayInfo.RayInfo debugRay;
-                var rayOutput = PerceiveSingleRay(m_RayPerceptionInput, rayIndex, out debugRay);
-
-                if (m_DebugDisplayInfo != null)
-                {
-                    m_DebugDisplayInfo.rayInfos[rayIndex] = debugRay;
-                }
-
-                m_rayPerceptionOutput.RayOutputs[rayIndex] = rayOutput;
+                m_rayPerceptionOutput.RayOutputs[rayIndex] = PerceiveSingleRay(m_RayPerceptionInput, rayIndex);
             }
         }
 
@@ -432,8 +384,7 @@ namespace Unity.MLAgents.Sensors
 
             for (var rayIndex = 0; rayIndex < input.Angles.Count; rayIndex++)
             {
-                DebugDisplayInfo.RayInfo debugRay;
-                output.RayOutputs[rayIndex] = PerceiveSingleRay(input, rayIndex, out debugRay);
+                output.RayOutputs[rayIndex] = PerceiveSingleRay(input, rayIndex);
             }
 
             return output;
@@ -444,12 +395,10 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         /// <param name="input"></param>
         /// <param name="rayIndex"></param>
-        /// <param name="debugRayOut"></param>
         /// <returns></returns>
         internal static RayPerceptionOutput.RayOutput PerceiveSingleRay(
             RayPerceptionInput input,
-            int rayIndex,
-            out DebugDisplayInfo.RayInfo debugRayOut
+            int rayIndex
         )
         {
             var unscaledRayLength = input.RayLength;
@@ -556,7 +505,6 @@ namespace Unity.MLAgents.Sensors
                 }
             }
 
-            debugRayOut.rayOutput = rayOutput;
 
             return rayOutput;
         }
