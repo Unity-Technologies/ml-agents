@@ -29,6 +29,9 @@ produces two `Match3Sensor`s (unless there are no special types). Previously tra
 sizes and will need to be retrained. (#5181)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- The `--resume` flag now supports loading partial models if the architecture has changed. See
+ [here](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Training-ML-Agents.md#loading-an-existing-model)
+ for more details.
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
