@@ -856,9 +856,9 @@ class RunOptions(ExportableSettings):
         }
         _require_all_behaviors = True
         if config_path is not None:
-            # If we're loading for a file, make sure we strictly match the behavior names
             configured_dict.update(load_config(config_path))
         else:
+            # If we're not loading from a file, we don't require all behavior names to be specified.
             _require_all_behaviors = False
 
         # Use the YAML file values for all values not specified in the CLI.
