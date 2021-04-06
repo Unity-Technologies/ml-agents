@@ -60,7 +60,7 @@ def create_test_poca_optimizer(dummy_config, use_rnn, use_discrete, use_visual):
     }
 
     trainer_settings.network_settings.memory = (
-        NetworkSettings.MemorySettings(sequence_length=16, memory_size=10)
+        NetworkSettings.MemorySettings(sequence_length=8, memory_size=10)
         if use_rnn
         else None
     )
@@ -125,7 +125,7 @@ def test_poca_get_value_estimates(dummy_config, rnn, visual, discrete):
     optimizer = create_test_poca_optimizer(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
-    time_horizon = 15
+    time_horizon = 30
     trajectory = make_fake_trajectory(
         length=time_horizon,
         observation_specs=optimizer.policy.behavior_spec.observation_specs,
@@ -147,14 +147,14 @@ def test_poca_get_value_estimates(dummy_config, rnn, visual, discrete):
     )
     for key, val in value_estimates.items():
         assert type(key) is str
-        assert len(val) == 15
+        assert len(val) == time_horizon
     for key, val in baseline_estimates.items():
         assert type(key) is str
-        assert len(val) == 15
+        assert len(val) == time_horizon
 
     if value_memories is not None:
-        assert len(value_memories) == 15
-        assert len(baseline_memories) == 15
+        assert len(value_memories) == time_horizon
+        assert len(baseline_memories) == time_horizon
 
     (
         value_estimates,

@@ -3,8 +3,10 @@ import os
 
 import numpy as np
 
+from mlagents_envs.logging_util import WARNING
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
+from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer
 from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
 from mlagents.trainers.settings import (
     TrainerSettings,
@@ -14,11 +16,13 @@ from mlagents.trainers.settings import (
     RNDSettings,
     PPOSettings,
     SACSettings,
+    POCASettings,
 )
 from mlagents.trainers.tests.torch.test_policy import create_policy_mock
 from mlagents.trainers.tests.torch.test_reward_providers.utils import (
     create_agent_buffer,
 )
+
 
 DEMO_PATH = (
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
@@ -28,8 +32,12 @@ DEMO_PATH = (
 
 @pytest.mark.parametrize(
     "optimizer",
-    [(TorchPPOOptimizer, PPOSettings), (TorchSACOptimizer, SACSettings)],
-    ids=["ppo", "sac"],
+    [
+        (TorchPPOOptimizer, PPOSettings),
+        (TorchSACOptimizer, SACSettings),
+        (TorchPOCAOptimizer, POCASettings),
+    ],
+    ids=["ppo", "sac", "poca"],
 )
 def test_reward_provider_save(tmp_path, optimizer):
     OptimizerClass, HyperparametersClass = optimizer
@@ -87,3 +95,55 @@ def test_reward_provider_save(tmp_path, optimizer):
         rp_1 = optimizer.reward_signals[reward_name]
         rp_2 = optimizer2.reward_signals[reward_name]
         assert np.array_equal(rp_1.evaluate(data), rp_2.evaluate(data))
+
+
+@pytest.mark.parametrize(
+    "optimizer",
+    [
+        (TorchPPOOptimizer, PPOSettings),
+        (TorchSACOptimizer, SACSettings),
+        (TorchPOCAOptimizer, POCASettings),
+    ],
+    ids=["ppo", "sac", "poca"],
+)
+def test_load_different_reward_provider(caplog, tmp_path, optimizer):
+    OptimizerClass, HyperparametersClass = optimizer
+
+    trainer_settings = TrainerSettings()
+    trainer_settings.hyperparameters = HyperparametersClass()
+    trainer_settings.reward_signals = {
+        RewardSignalType.CURIOSITY: CuriositySettings(),
+        RewardSignalType.RND: RNDSettings(),
+    }
+
+    policy = create_policy_mock(trainer_settings, use_discrete=False)
+    optimizer = OptimizerClass(policy, trainer_settings)
+
+    # save at path 1
+    path1 = os.path.join(tmp_path, "runid1")
+    model_saver = TorchModelSaver(trainer_settings, path1)
+    model_saver.register(policy)
+    model_saver.register(optimizer)
+    model_saver.initialize_or_load()
+    assert len(optimizer.critic.value_heads.stream_names) == 2
+    policy.set_step(2000)
+    model_saver.save_checkpoint("MockBrain", 2000)
+
+    trainer_settings2 = TrainerSettings()
+    trainer_settings2.hyperparameters = HyperparametersClass()
+    trainer_settings2.reward_signals = {
+        RewardSignalType.GAIL: GAILSettings(demo_path=DEMO_PATH)
+    }
+
+    # create a new optimizer and policy
+    policy2 = create_policy_mock(trainer_settings2, use_discrete=False)
+    optimizer2 = OptimizerClass(policy2, trainer_settings2)
+
+    # load weights
+    model_saver2 = TorchModelSaver(trainer_settings2, path1, load=True)
+    model_saver2.register(policy2)
+    model_saver2.register(optimizer2)
+    assert len(optimizer2.critic.value_heads.stream_names) == 1
+    model_saver2.initialize_or_load()  # This is to load the optimizers
+    messages = [rec.message for rec in caplog.records if rec.levelno == WARNING]
+    assert len(messages) > 0
