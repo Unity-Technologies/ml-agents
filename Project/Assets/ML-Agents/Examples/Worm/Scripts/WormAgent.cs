@@ -54,7 +54,7 @@ public class WormAgent : Agent
     /// <param name="pos"></param>
     void SpawnTarget(Transform prefab, Vector3 pos)
     {
-        m_Target = Instantiate(prefab, pos, Quaternion.identity, transform);
+        m_Target = Instantiate(prefab, pos, Quaternion.identity);
     }
 
     /// <summary>
