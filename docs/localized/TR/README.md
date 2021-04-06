@@ -10,7 +10,7 @@
 ([tüm sürümler](https://github.com/Unity-Technologies/ml-agents/releases))
 
 **Unity Machine Learning Agents Araç Seti** (ML-Agents) oyun ve simülasyon projeleri için akıllı ajanlar(botlar, etkiye uğrayan temsilciler) eğitecek ortamları sağlayan açık kaynaklı bir projedir. Ajanlar(Agents) pekiştirmeli öğrenme, taklit ederek öğrenme, nöroevrim veya diğer makine öğrenimi metodlarıyla kullanımı kolay Python API ile eğitilebilir. Ayrıca; oyun geliştiricilere ve hobi olarak yapanlara 2B, 3B ve VR / AR oyunlarına yönelik akıllı ajanları kolayca eğitmesini sağlamak için son teknoloji algoritmaları (TensorFlow tabanlı) kolayca uygulamalarını da sağlıyoruz. Bu eğitimli ajanlar(karakterler), NPC davranışı kontrol etme(çeşitli
-çoklu bot ve rakip gibi ayarlanabilen), oyun yapılarının otomatik testleri, farklı oyun tasarımlarının yayın öncesi değerlendirilmesi gibi birden çok amaç için kullanılabilir. ML-Agents Araç Seti hem oyun geliştiricileri hem de yapay zeka araştırmacıları için karşılıklı olarak faydalıdır. Yapay zekadaki gelişmelerin Unity'nin zengin ortamlarında değerlendirilebileceği, daha geniş araştırma ve oyun geliştirici toplulukları için erişilebilir hale getirilebileceği merkezi bir platform sağlar. 
+çoklu bot ve rakip gibi ayarlanabilen), oyun yapılarının otomatik testleri, farklı oyun tasarımlarının yayın öncesi değerlendirilmesi gibi birden çok amaç için kullanılabilir. ML-Agents Araç Seti hem oyun geliştiricileri hem de yapay zeka araştırmacıları için karşılıklı olarak faydalıdır. Yapay zekadaki gelişmelerin Unity'nin zengin ortamlarında değerlendirilebileceği, daha geniş araştırma ve oyun geliştirici toplulukları için erişilebilir hale getirilebileceği merkezi bir platform sağlar.
 
 **Kısacası;** Unity oyun motorunda kendi başına eğitildikleri yönde kararlar alabilen karakter, araç gibi objeleri eğitmemizi sağlayan bir araç setidir.
 
@@ -20,9 +20,9 @@
 - 15+ [örnek Unity ortamları](docs/Learning-Environment-Examples.md)
 - Birden çok ortam yapılandırması ve eğitim senaryosu desteği
 - Oyununuza veya özel Unity sahnenize entegre edilebilen esnek Unity SDK
-- İki derin güçlendirme öğrenme algoritması, Proximal Policy Optimization (PPO) ve 
+- İki derin güçlendirme öğrenme algoritması, Proximal Policy Optimization (PPO) ve
   Soft Actor-Critic (SAC) kullanarak eğitme
-- Davranışsal Klonlama veya Üretken Tartışmalı Taklit Öğrenme yoluyla 
+- Davranışsal Klonlama veya Üretken Tartışmalı Taklit Öğrenme yoluyla
   Taklit Öğrenme için yerleşik destek
 - Düşman senaryolarında ajanları(agents) eğitmek için kendi kendine oyun mekanizması
 - Karmaşık görevler için kolayca tanımlanabilen Müfredat Öğrenme(Curriculum Learning) senaryoları
@@ -37,7 +37,7 @@
 
 ## Sürümler & Dokümantasyon
 
-**Unity ML-Agents Araç Seti son kararlı sürümü `Release 8` 'dir. 
+**Unity ML-Agents Araç Seti son kararlı sürümü `Release 8` 'dir.
 [Buradan](docs/Readme.md) en son ML-Agents Türkçe dokümantasyonuna giderek öğrenmeye ve kullanmaya başlayabilirsiniz.**
 
 - [Sürümler sayfasında](https://github.com/Unity-Technologies/ml-agents/releases) tüm versiyonları inceleyebilirsiniz.
