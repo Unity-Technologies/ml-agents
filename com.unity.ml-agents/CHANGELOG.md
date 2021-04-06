@@ -31,6 +31,10 @@ sizes and will need to be retrained. (#5181)
 different sizes using the same model. For a summary of the interface changes, please see the Migration Guide. (##5189)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- The `--resume` flag now supports resuming experiments with additional reward providers or
+ loading partial models if the network architecture has changed. See
+ [here](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Training-ML-Agents.md#loading-an-existing-model)
+ for more details. (#5213)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
