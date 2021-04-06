@@ -7,6 +7,12 @@ and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [1.9.1-preview]
+### Major Changes
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- The `--resume` flag now supports resuming experiments with additional reward providers or
+ loading partial models if the network architecture has changed. See
+ [here](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Training-ML-Agents.md#loading-an-existing-model)
+ for more details. (#5213)
 ### Bug Fixes
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed an issue which was causing increased variance when using LSTMs. Also fixed an issue with LSTM when used with POCA and `sequence_length` < `time_horizon`. (#5206)
