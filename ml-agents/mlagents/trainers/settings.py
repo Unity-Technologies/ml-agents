@@ -14,7 +14,6 @@ from typing import (
     Union,
     ClassVar,
 )
-
 from enum import Enum
 import collections
 import argparse
