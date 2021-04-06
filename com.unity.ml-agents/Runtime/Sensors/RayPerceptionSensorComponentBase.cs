@@ -264,14 +264,14 @@ namespace Unity.MLAgents.Sensors
 
         void OnDrawGizmosSelected()
         {
-            if (m_RaySensor?.m_rayPerceptionOutput?.RayOutputs != null)
+            if (m_RaySensor?.RayPerceptionOutput?.RayOutputs != null)
             {
                 // If we have cached debug info from the sensor, draw that.
                 // Draw "old" observations in a lighter color.
                 // Since the agent may not step every frame, this helps de-emphasize "stale" hit information.
                 var alpha = Mathf.Pow(.5f, SensorObservationAge());
 
-                foreach (var rayInfo in m_RaySensor.m_rayPerceptionOutput.RayOutputs)
+                foreach (var rayInfo in m_RaySensor.RayPerceptionOutput.RayOutputs)
                 {
                     DrawRaycastGizmos(rayInfo, alpha);
                 }

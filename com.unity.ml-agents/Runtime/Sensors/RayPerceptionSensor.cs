@@ -243,7 +243,7 @@ namespace Unity.MLAgents.Sensors
         string m_Name;
 
         RayPerceptionInput m_RayPerceptionInput;
-        internal RayPerceptionOutput m_rayPerceptionOutput;
+        RayPerceptionOutput m_RayPerceptionOutput;
 
         /// <summary>
         /// Time.frameCount at the last time Update() was called. This is only used for display in gizmos.
@@ -268,7 +268,7 @@ namespace Unity.MLAgents.Sensors
             SetNumObservations(rayInput.OutputSize());
 
             m_DebugLastFrameCount = Time.frameCount;
-            m_rayPerceptionOutput = new RayPerceptionOutput();
+            m_RayPerceptionOutput = new RayPerceptionOutput();
         }
 
         /// <summary>
@@ -276,7 +276,7 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         public RayPerceptionOutput RayPerceptionOutput
         {
-            get { return m_rayPerceptionOutput; }
+            get { return m_RayPerceptionOutput; }
         }
 
         void SetNumObservations(int numObservations)
@@ -319,7 +319,7 @@ namespace Unity.MLAgents.Sensors
                 // For each ray, write the information to the observation buffer
                 for (var rayIndex = 0; rayIndex < numRays; rayIndex++)
                 {
-                    m_rayPerceptionOutput.RayOutputs[rayIndex].ToFloatArray(numDetectableTags, rayIndex, m_Observations);
+                    m_RayPerceptionOutput.RayOutputs[rayIndex].ToFloatArray(numDetectableTags, rayIndex, m_Observations);
                 }
 
                 // Finally, add the observations to the ObservationWriter
@@ -334,15 +334,15 @@ namespace Unity.MLAgents.Sensors
             m_DebugLastFrameCount = Time.frameCount;
             var numRays = m_RayPerceptionInput.Angles.Count;
 
-            if (m_rayPerceptionOutput.RayOutputs == null || m_rayPerceptionOutput.RayOutputs.Length != numRays)
+            if (m_RayPerceptionOutput.RayOutputs == null || m_RayPerceptionOutput.RayOutputs.Length != numRays)
             {
-                m_rayPerceptionOutput.RayOutputs = new RayPerceptionOutput.RayOutput[numRays];
+                m_RayPerceptionOutput.RayOutputs = new RayPerceptionOutput.RayOutput[numRays];
             }
 
             // For each ray, do the casting and save the results.
             for (var rayIndex = 0; rayIndex < numRays; rayIndex++)
             {
-                m_rayPerceptionOutput.RayOutputs[rayIndex] = PerceiveSingleRay(m_RayPerceptionInput, rayIndex);
+                m_RayPerceptionOutput.RayOutputs[rayIndex] = PerceiveSingleRay(m_RayPerceptionInput, rayIndex);
             }
         }
 
