@@ -48,6 +48,8 @@ depend on the previous behavior, you can explicitly set the Agent's `InferenceDe
 - Added support for `Goal Signal` as a type of observation. Trainers can now use HyperNetworks to process `Goal Signal`. Trainers with HyperNetworks are more effective at solving multiple tasks. (#5142, #5159, #5149)
 - Modified the [GridWorld environment](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Learning-Environment-Examples.md#gridworld) to use the new `Goal Signal` feature. (#5193)
 - `RaycastPerceptionSensor` now caches its raycast results; they can be accessed via `RayPerceptionSensor.RayPerceptionOutput`. (#5222)
+- `ActionBuffers` are now reset to zero before being passed to `Agent.Heuristic()` and
+`IHeuristicProvider.Heuristic()`. (#5227)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Some console output have been moved from `info` to `debug` and will not be printed by default. If you want all messages to be printed, you can run `mlagents-learn` with the `--debug` option or add the line `debug: true` at the top of the yaml config file. (#5211)
