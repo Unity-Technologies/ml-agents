@@ -238,7 +238,6 @@ public class SorterAgent : Agent
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var discreteActionsOut = actionsOut.DiscreteActions;
-        discreteActionsOut.Clear();
         //forward
         if (Input.GetKey(KeyCode.W))
         {

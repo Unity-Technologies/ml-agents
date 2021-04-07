@@ -180,7 +180,7 @@ class AgentBufferField(list):
                 else:
                     # We want to duplicate the last value in the array, multiplied by the padding_value.
                     padding = np.array(self[-1], dtype=np.float32) * self.padding_value
-                return [padding] * (training_length - leftover) + self[:]
+                return self[:] + [padding] * (training_length - leftover)
 
             else:
                 return self[len(self) - batch_size * training_length :]
@@ -394,10 +394,11 @@ class AgentBuffer(MutableMapping):
         s = np.arange(len(self[key_list[0]]) // sequence_length)
         np.random.shuffle(s)
         for key in key_list:
+            buffer_field = self[key]
             tmp: List[np.ndarray] = []
             for i in s:
-                tmp += self[key][i * sequence_length : (i + 1) * sequence_length]
-            self[key][:] = tmp
+                tmp += buffer_field[i * sequence_length : (i + 1) * sequence_length]
+            buffer_field.set(tmp)
 
     def make_mini_batch(self, start: int, end: int) -> "AgentBuffer":
         """
@@ -430,7 +431,8 @@ class AgentBuffer(MutableMapping):
             * sequence_length
         )  # Sample random sequence starts
         for key in self:
-            mb_list = [self[key][i : i + sequence_length] for i in start_idxes]
+            buffer_field = self[key]
+            mb_list = (buffer_field[i : i + sequence_length] for i in start_idxes)
             # See comparison of ways to make a list from a list of lists here:
             # https://stackoverflow.com/questions/952914/how-to-make-a-flat-list-out-of-list-of-lists
             mini_batch[key].set(list(itertools.chain.from_iterable(mb_list)))

@@ -25,4 +25,3 @@ behaviors:
     max_steps: 500000
     time_horizon: 10
     summary_freq: 2000
-    threaded: true

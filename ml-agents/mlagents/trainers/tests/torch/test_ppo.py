@@ -197,7 +197,9 @@ def test_ppo_get_value_estimates(dummy_config, rnn, visual, discrete):
     optimizer = create_test_ppo_optimizer(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
-    time_horizon = 15
+    # Time horizon is longer than sequence length, make sure to test
+    # process trajectory on multiple sequences in trajectory + some padding
+    time_horizon = 30
     trajectory = make_fake_trajectory(
         length=time_horizon,
         observation_specs=optimizer.policy.behavior_spec.observation_specs,
@@ -214,9 +216,9 @@ def test_ppo_get_value_estimates(dummy_config, rnn, visual, discrete):
 
     for key, val in run_out.items():
         assert type(key) is str
-        assert len(val) == 15
+        assert len(val) == time_horizon
     if all_memories is not None:
-        assert len(all_memories) == 15
+        assert len(all_memories) == time_horizon
 
     run_out, final_value_out, _ = optimizer.get_trajectory_value_estimates(
         trajectory.to_agentbuffer(), trajectory.next_obs, done=True

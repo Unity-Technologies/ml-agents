@@ -2,41 +2,15 @@
 
 <img src="images/match3.png" align="center" width="3000"/>
 
-## Overview
-One of the main feedback we get is to illustrate more real game examples using ML-Agents. We are excited to provide an
-example implementation of Match-3 using ML-Agents and additional utilities to integrate ML-Agents with Match-3 games.
-
-Our aim is to enable Match-3 teams to leverage ML-Agents to create player agents to learn and play different Match-3
-levels. This implementation is intended as a starting point and guide for teams to get started (as there are many
-nuances with Match-3 for training ML-Agents) and for us to iterate both on the C#, hyperparameters, and trainers to
-improve ML-Agents for Match-3.
-
-This implementation includes:
-
-* C# implementation catered toward a Match-3 setup including concepts around encoding for moves based on
-[Human Like Playtesting with Deep Learning](https://www.researchgate.net/publication/328307928_Human-Like_Playtesting_with_Deep_Learning)
-* An example Match-3 scene with ML-Agents implemented (located under /Project/Assets/ML-Agents/Examples/Match3).
-More information on the Match-3 example is [here](https://github.com/Unity-Technologies/ml-agents/tree/release_15_docs/docs/docs/Learning-Environment-Examples.md#match-3).
-
-### Feedback
-If you are a Match-3 developer and are trying to leverage ML-Agents for this scenario,
-[we want to hear from you](https://forms.gle/TBsB9jc8WshgzViU9). Additionally, we are also looking for interested
-Match-3 teams to speak with us for 45 minutes. If you are interested, please indicate that in the
-[form](https://forms.gle/TBsB9jc8WshgzViU9).  If selected, we will provide gift cards as a token of appreciation.
-
-### Interested in more game templates?
-Do you have a type of game you are interested for ML-Agents?  If so, please post a
-[forum issue](https://forum.unity.com/forums/ml-agents.453/) with [GAME TEMPLATE] in the title.
-
 ## Getting started
-The C# code for Match-3 exists inside of the extensions package (com.unity.ml-agents.extensions).  A good first step
+The C# code for Match-3 exists inside of the extensions package (com.unity.ml-agents.extensions). A good first step
 would be to familiarize with the extensions package by reading the document [here](com.unity.ml-agents.extensions.md).
 The second step would be to take a look at how we have implemented the C# code in the example Match-3 scene (located
- under /Project/Assets/ML-Agents/Examples/match3).  Once you have some familiarity, then the next step would be to
-  implement the C# code for Match-3 from the extensions package.
+under /Project/Assets/ML-Agents/Examples/match3). Once you have some familiarity, then the next step would be to
+implement the C# code for Match-3 from the extensions package.
 
-Additionally, see below for additional technical specifications on the C# code for Match-3. Please note the Match-3
-game isn't human playable as implemented and can be only played via training.
+Additionally, see below for additional technical specifications on the C# code for Match-3. Please note the Match-3 game
+ isn't human playable as implemented and can be only played via training.
 
 ## Technical specifications for Match-3 with ML-Agents
 
@@ -128,3 +102,13 @@ The indexing for actions is the same as described in
 [Human Like Playtesting with Deep Learning](https://www.researchgate.net/publication/328307928_Human-Like_Playtesting_with_Deep_Learning)
 (for example, Figure 2b). The horizontal moves are enumerated first, then the vertical ones.
 <img src="images/match3-moves.png" align="center"/>
+
+## Feedback
+If you are a Match-3 developer and are trying to leverage ML-Agents for this scenario,
+[we want to hear from you](https://forms.gle/TBsB9jc8WshgzViU9). Additionally, we are also looking for interested
+Match-3 teams to speak with us for 45 minutes. If you are interested, please indicate that in the
+[form](https://forms.gle/TBsB9jc8WshgzViU9). If selected, we will provide gift cards as a token of appreciation.
+
+### Interested in more game templates?
+Do you have a type of game you are interested for ML-Agents? If so, please post a
+[forum issue](https://forum.unity.com/forums/ml-agents.453/) with [GAME TEMPLATE] in the title.

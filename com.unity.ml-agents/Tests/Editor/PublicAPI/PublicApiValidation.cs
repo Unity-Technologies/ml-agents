@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.MLAgents.Sensors;
 using NUnit.Framework;
+using Unity.MLAgents;
 using UnityEngine;
 
 namespace Unity.MLAgentsExamples
@@ -69,7 +70,32 @@ namespace Unity.MLAgentsExamples
             sensorComponent.ObservationStacks = 2;
 
             sensorComponent.CreateSensors();
+
+            var sensor = sensorComponent.RaySensor;
+            sensor.Update();
+            var outputs = sensor.RayPerceptionOutput;
+            Assert.AreEqual(outputs.RayOutputs.Length, 2*sensorComponent.RaysPerDirection + 1);
         }
 #endif
+
+        /// <summary>
+        /// Make sure we can inherit from DecisionRequester and override some logic.
+        /// </summary>
+        class CustomDecisionRequester : DecisionRequester
+        {
+            /// <summary>
+            /// Example logic. If the killswitch flag is set, the Agent never requests a decision.
+            /// </summary>
+            public bool KillswitchEnabled;
+
+            public CustomDecisionRequester()
+            {
+            }
+
+            protected override bool ShouldRequestDecision(DecisionRequestContext context)
+            {
+                return !KillswitchEnabled && base.ShouldRequestDecision(context);
+            }
+        }
     }
 }

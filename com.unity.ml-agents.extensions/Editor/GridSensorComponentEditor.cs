@@ -26,10 +26,10 @@ namespace Unity.MLAgents.Extensions.Editor
                 EditorGUILayout.LabelField("Grid Settings", EditorStyles.boldLabel);
                 EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_CellScale)), true);
                 // We only supports 2D GridSensor now so display gridNumSide as Vector2
-                var gridNumSide = so.FindProperty(nameof(GridSensorComponent.m_GridNumSide));
-                var gridNumSide2d = new Vector2Int(gridNumSide.vector3IntValue.x, gridNumSide.vector3IntValue.z);
-                var newGridNumSide = EditorGUILayout.Vector2IntField("Grid Num Side", gridNumSide2d);
-                gridNumSide.vector3IntValue = new Vector3Int(newGridNumSide.x, 1, newGridNumSide.y);
+                var gridSize = so.FindProperty(nameof(GridSensorComponent.m_GridSize));
+                var gridSize2d = new Vector2Int(gridSize.vector3IntValue.x, gridSize.vector3IntValue.z);
+                var newGridSize = EditorGUILayout.Vector2IntField("Grid Size", gridSize2d);
+                gridSize.vector3IntValue = new Vector3Int(newGridSize.x, 1, newGridSize.y);
                 EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_RootReference)), true);
             }
             EditorGUI.EndDisabledGroup();
@@ -41,7 +41,7 @@ namespace Unity.MLAgents.Extensions.Editor
                 EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_DepthType)), true);
 
                 // channel depth
-                var channelDepth = so.FindProperty(nameof(GridSensorComponent.m_ChannelDepth));
+                var channelDepth = so.FindProperty(nameof(GridSensorComponent.m_ChannelDepths));
                 var newDepth = EditorGUILayout.IntField("Channel Depth", channelDepth.arraySize);
                 if (newDepth != channelDepth.arraySize)
                 {
@@ -75,7 +75,7 @@ namespace Unity.MLAgents.Extensions.Editor
                 EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_InitialColliderBufferSize)), true);
             }
             EditorGUI.EndDisabledGroup();
-            EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_ObserveMask)), true);
+            EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_ColliderMask)), true);
             EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
                 EditorGUILayout.LabelField("Sensor Settings", EditorStyles.boldLabel);

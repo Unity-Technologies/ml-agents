@@ -192,9 +192,6 @@ public class FoodCollectorAgent : Agent
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var continuousActionsOut = actionsOut.ContinuousActions;
-        continuousActionsOut[0] = 0;
-        continuousActionsOut[1] = 0;
-        continuousActionsOut[2] = 0;
         if (Input.GetKey(KeyCode.D))
         {
             continuousActionsOut[2] = 1;

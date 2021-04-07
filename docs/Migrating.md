@@ -18,7 +18,8 @@ double-check that the versions are in the same. The versions can be found in
 - The official version of Unity ML-Agents supports is now 2019.4 LTS. If you run
   into issues, please consider deleting your project's Library folder and reponening your
   project.
-- If you used any of the APIs that were deprecated before version 2.0, you need to use their replacement. These deprecated APIs have been removed. See the migration steps bellow for specific API replacements.
+- If you used any of the APIs that were deprecated before version 2.0, you need to use their replacement. These
+deprecated APIs have been removed. See the migration steps bellow for specific API replacements.
 ### IDiscreteActionMask changes
 - The interface for disabling specific discrete actions has changed. `IDiscreteActionMask.WriteMask()` was removed,
 and replaced with `SetActionEnabled()`. Instead of returning an IEnumerable with indices to disable, you can
@@ -92,6 +93,17 @@ public CompressionSpec GetCompressionSpec()
 
 - The abstract method `SensorComponent.GetObservationShape()` was removed.
 - The abstract method `SensorComponent.CreateSensor()` was replaced with `CreateSensors()`, which returns an `ISensor[]`.
+
+### Match3 integration changes
+The `AbstractBoard` interface was changed:
+* `AbstractBoard` no longer contains `Rows`, `Columns`, `NumCellTypes`, and `NumSpecialTypes` fields.
+* `public abstract BoardSize GetMaxBoardSize()` was added as an abstract method. `BoardSize` is a new struct that
+contains `Rows`, `Columns`, `NumCellTypes`, and `NumSpecialTypes` fields, with the same meanings as the old
+`AbstractBoard` fields.
+* `public virtual BoardSize GetCurrentBoardSize()` is an optional method; by default it returns `GetMaxBoardSize()`. If
+you wish to use a single behavior to work with multiple board sizes, override `GetCurrentBoardSize()` to return the
+current `BoardSize`. The values returned by `GetCurrentBoardSize()` must be less than or equal to the corresponding
+values from `GetMaxBoardSize()`.
 
 ## Migrating to Release 13
 ### Implementing IHeuristic in your IActuator implementations
