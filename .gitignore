@@ -36,6 +36,8 @@
 # Unity3D Generated File On Crash Reports
 /com.unity.ml-agents/sysinfo.txt
 
+*/UserSettings/
+
 # Builds
 *.apk
 *.unitypackage

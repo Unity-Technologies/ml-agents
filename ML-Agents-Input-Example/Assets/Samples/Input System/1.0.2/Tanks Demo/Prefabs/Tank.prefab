@@ -5204,7 +5204,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: 5cee4ff9633744c7ba9d151aab2d0500, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Tanks
@@ -5261,14 +5261,13 @@ MonoBehaviour:
   GridNumSideZ: 40
   CellScaleY: 0.01
   RotateToAgent: 1
-  ChannelDepth: 04000000
+  ChannelDepth: 03000000
   DetectableObjects:
   - tank
   - shell
-  - terrain
   ObserveMask:
     serializedVersion: 2
-    m_Bits: 1792
+    m_Bits: 1280
   gridDepthType: 1
   rootReference: {fileID: 2855894493477824887}
   MaxColliderBufferSize: 500
@@ -5280,7 +5279,7 @@ MonoBehaviour:
   - {r: 0, g: 1, b: 0.022001743, a: 0}
   - {r: 1, g: 0, b: 0.75294113, a: 0}
   GizmoYOffset: 6
-  ShowGizmos: 1
+  ShowGizmos: 0
   CompressionType: 1
 --- !u!114 &1740605957079586335
 MonoBehaviour:

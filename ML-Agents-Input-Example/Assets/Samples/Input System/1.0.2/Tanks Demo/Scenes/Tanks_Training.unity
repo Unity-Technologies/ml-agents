@@ -1180,6 +1180,11 @@ PrefabInstance:
       propertyPath: tanks.Array.size
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 4811314458562839759, guid: eeb939637a08c4d79851400b17822966,
+        type: 3}
+      propertyPath: tanks.Array.data[0].isHeuristic
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4811314459191862654, guid: eeb939637a08c4d79851400b17822966,
         type: 3}
       propertyPath: m_LocalPosition.z
