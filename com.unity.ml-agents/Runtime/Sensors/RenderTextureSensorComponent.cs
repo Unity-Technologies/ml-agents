@@ -102,5 +102,15 @@ namespace Unity.MLAgents.Sensors
                 m_Sensor.CompressionType = m_Compression;
             }
         }
+
+        public override void Dispose()
+        {
+            if (!ReferenceEquals(null, m_Sensor))
+            {
+                m_Sensor.Dispose();
+                m_Sensor = null;
+            }
+            base.Dispose();
+        }
     }
 }
