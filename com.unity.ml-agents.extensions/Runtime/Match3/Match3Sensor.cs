@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using Object = UnityEngine.Object;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
@@ -43,7 +45,7 @@ namespace Unity.MLAgents.Extensions.Match3
     /// Sensor for Match3 games. Can generate either vector, compressed visual,
     /// or uncompressed visual observations. Uses a GridValueProvider to determine the observation values.
     /// </summary>
-    public class Match3Sensor : ISensor, IBuiltInSensor
+    public class Match3Sensor : ISensor, IBuiltInSensor, IDisposable
     {
         Match3ObservationType m_ObservationType;
         ObservationSpec m_ObservationSpec;
@@ -53,6 +55,9 @@ namespace Unity.MLAgents.Extensions.Match3
         BoardSize m_MaxBoardSize;
         GridValueProvider m_GridValues;
         int m_OneHotSize;
+
+        Texture2D m_ObservationTexture;
+        OneHotToTextureUtil m_TextureUtil;
 
         /// <summary>
         /// Create a sensor for the GridValueProvider with the specified observation type.
@@ -173,8 +178,15 @@ namespace Unity.MLAgents.Extensions.Match3
             m_Board.CheckBoardSizes(m_MaxBoardSize);
             var height = m_MaxBoardSize.Rows;
             var width = m_MaxBoardSize.Columns;
-            var tempTexture = new Texture2D(width, height, TextureFormat.RGB24, false);
-            var converter = new OneHotToTextureUtil(height, width);
+            if (ReferenceEquals(null, m_ObservationTexture))
+            {
+                m_ObservationTexture = new Texture2D(width, height, TextureFormat.RGB24, false);
+            }
+
+            if (ReferenceEquals(null, m_TextureUtil))
+            {
+                m_TextureUtil = new OneHotToTextureUtil(height, width);
+            }
             var bytesOut = new List<byte>();
             var currentBoardSize = m_Board.GetCurrentBoardSize();
 
@@ -185,17 +197,16 @@ namespace Unity.MLAgents.Extensions.Match3
             var numCellImages = (m_OneHotSize + 2) / 3;
             for (var i = 0; i < numCellImages; i++)
             {
-                converter.EncodeToTexture(
+                m_TextureUtil.EncodeToTexture(
                     m_GridValues,
-                    tempTexture,
+                    m_ObservationTexture,
                     3 * i,
                     currentBoardSize.Rows,
                     currentBoardSize.Columns
                 );
-                bytesOut.AddRange(tempTexture.EncodeToPNG());
+                bytesOut.AddRange(m_ObservationTexture.EncodeToPNG());
             }
 
-            DestroyTexture(tempTexture);
             return bytesOut.ToArray();
         }
 
@@ -244,6 +255,15 @@ namespace Unity.MLAgents.Extensions.Match3
             else
             {
                 Object.Destroy(texture);
+            }
+        }
+
+        public void Dispose()
+        {
+            if (!ReferenceEquals(null, m_ObservationTexture))
+            {
+                DestroyTexture(m_ObservationTexture);
+                m_ObservationTexture = null;
             }
         }
     }

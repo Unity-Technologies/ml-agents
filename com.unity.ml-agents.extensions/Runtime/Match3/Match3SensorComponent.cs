@@ -1,3 +1,4 @@
+using System;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
@@ -20,15 +21,36 @@ namespace Unity.MLAgents.Extensions.Match3
         /// </summary>
         public Match3ObservationType ObservationType = Match3ObservationType.Vector;
 
+        private ISensor[] m_Sensors;
+
         /// <inheritdoc/>
         public override ISensor[] CreateSensors()
         {
+            // Clean up any existing sensors
+            Dispose();
+
             var board = GetComponent<AbstractBoard>();
             var cellSensor = Match3Sensor.CellTypeSensor(board, ObservationType, SensorName + " (cells)");
             // This can be null if numSpecialTypes is 0
             var specialSensor = Match3Sensor.SpecialTypeSensor(board, ObservationType, SensorName + " (special)");
-            return specialSensor != null ? new ISensor[] { cellSensor, specialSensor } : new ISensor[] { cellSensor };
+            m_Sensors = specialSensor != null
+                ? new ISensor[] { cellSensor, specialSensor }
+                : new ISensor[] { cellSensor };
+            return m_Sensors;
         }
 
+        /// <inheritdoc/>
+        public override void Dispose()
+        {
+            if (m_Sensors != null)
+            {
+                for (var i = 0; i < m_Sensors.Length; i++)
+                {
+                    ((Match3Sensor)m_Sensors[i]).Dispose();
+                }
+
+                m_Sensors = null;
+            }
+        }
     }
 }

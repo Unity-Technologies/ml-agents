@@ -542,6 +542,8 @@ namespace Unity.MLAgents
                 Academy.Instance.AgentForceReset -= _AgentReset;
                 NotifyAgentDone(DoneReason.Disabled);
             }
+
+            CleanupSensors();
             m_Brain?.Dispose();
             OnAgentDisabled?.Invoke(this);
             m_Initialized = false;
@@ -1002,6 +1004,25 @@ namespace Unity.MLAgents
                     "Sensor names must be unique.");
             }
 #endif
+        }
+
+        void CleanupSensors()
+        {
+            // Get all attached sensor components
+            SensorComponent[] attachedSensorComponents;
+            if (m_PolicyFactory.UseChildSensors)
+            {
+                attachedSensorComponents = GetComponentsInChildren<SensorComponent>();
+            }
+            else
+            {
+                attachedSensorComponents = GetComponents<SensorComponent>();
+            }
+
+            for (var i = 0; i < attachedSensorComponents.Length; i++)
+            {
+                attachedSensorComponents[i].Dispose();
+            }
         }
 
         void InitializeActuators()
