@@ -95,7 +95,7 @@ public class CrawlerAgent : Agent
     /// <param name="pos"></param>
     void SpawnTarget(Transform prefab, Vector3 pos)
     {
-        m_Target = Instantiate(prefab, pos, Quaternion.identity);
+        m_Target = Instantiate(prefab, pos, Quaternion.identity, transform.parent);
     }
 
     /// <summary>
