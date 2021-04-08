@@ -16,7 +16,7 @@ and this project adheres to
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
-- Fixed erroneous warnings when using Demonstration Recorder. (#5216)
+- Fixed erroneous warnings when using the Demonstration Recorder. (#5216)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed an issue which was causing increased variance when using LSTMs. Also fixed an issue with LSTM when used with POCA and `sequence_length` < `time_horizon`. (#5206)
