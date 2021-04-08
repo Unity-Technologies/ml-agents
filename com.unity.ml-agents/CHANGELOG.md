@@ -22,7 +22,7 @@ and this project adheres to
 - Fixed an issue which was causing increased variance when using LSTMs. Also fixed an issue with LSTM when used with POCA and `sequence_length` < `time_horizon`. (#5206)
 - Fixed a bug where the SAC replay buffer would not be saved out at the end of a run, even if `save_replay_buffer` was enabled. (#5205)
 - ELO now correctly resumes when loading from a checkpoint. (#5202)
-- In the Python API, fixed validate_action to expect the right dimensions when set_action_single_agent is called. (#5208)
+- In the Python API, fixed `validate_action` to expect the right dimensions when `set_action_single_agent` is called. (#5208)
 - In the `GymToUnityWrapper`, raise an appropriate warning if `step()` is called after an environment is done. (#5204)
 - Fixed an issue where using one of the `gym` wrappers would override user-set log levels. (#5201)
 
