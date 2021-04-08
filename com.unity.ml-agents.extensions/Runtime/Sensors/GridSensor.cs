@@ -48,7 +48,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         // Utility Constants Calculated on Init
         int m_NumCells;
         int m_CellObservationSize;
-        float m_InverseSphereRadius;
         Vector3 m_CellCenterOffset;
 
 
@@ -129,9 +128,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         void InitGridParameters()
         {
             m_NumCells = m_GridSize.x * m_GridSize.z;
-            float sphereRadiusX = (m_CellScale.x * m_GridSize.x) / Mathf.Sqrt(2);
-            float sphereRadiusZ = (m_CellScale.z * m_GridSize.z) / Mathf.Sqrt(2);
-            m_InverseSphereRadius = 1.0f / Mathf.Max(sphereRadiusX, sphereRadiusZ);
             m_CellCenterOffset = new Vector3((m_GridSize.x - 1f) / 2, 0, (m_GridSize.z - 1f) / 2);
         }
 
@@ -380,7 +376,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             if (!ReferenceEquals(closestColliderGo, null))
             {
-                LoadObjectData(closestColliderGo, cellIndex, (float)Math.Sqrt(minDistanceSquared) * m_InverseSphereRadius);
+                LoadObjectData(closestColliderGo, cellIndex);
             }
             Profiler.EndSample();
         }
@@ -407,8 +403,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
                 closestColliderPoint = foundColliders[i].ClosestPointOnBounds(cellCenter);
 
-                LoadObjectData(currentColliderGo, cellIndex,
-                    Vector3.Distance(closestColliderPoint, m_RootReference.transform.position) * m_InverseSphereRadius);
+                LoadObjectData(currentColliderGo, cellIndex);
             }
             Profiler.EndSample();
         }
@@ -446,7 +441,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         ///     }
         ///  </code>
         /// </example>
-        protected virtual float[] GetObjectData(GameObject currentColliderGo, float typeIndex, float normalizedDistance)
+        protected virtual float[] GetObjectData(GameObject currentColliderGo, int typeIndex)
         {
             Array.Clear(m_CellDataBuffer, 0, m_CellDataBuffer.Length);
             m_CellDataBuffer[0] = typeIndex;
@@ -477,9 +472,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         /// <param name="currentColliderGo">The game object that was found colliding with a certain cell</param>
         /// <param name="cellIndex">The index of the current cell</param>
-        /// <param name="normalizedDistance">A float between 0 and 1 describing the ratio of
-        ///            the distance currentColliderGo is compared to the edge of the gridsensor</param>
-        protected virtual void LoadObjectData(GameObject currentColliderGo, int cellIndex, float normalizedDistance)
+        protected virtual void LoadObjectData(GameObject currentColliderGo, int cellIndex)
         {
             Profiler.BeginSample("GridSensor.LoadObjectData");
             var channelHotVals = new ArraySegment<float>(m_PerceptionBuffer, cellIndex * m_CellObservationSize, m_CellObservationSize);
@@ -488,7 +481,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 if (!ReferenceEquals(currentColliderGo, null) && currentColliderGo.CompareTag(m_DetectableObjects[i]))
                 {
                     // TODO: Create the array already then set the values using "out" in GetObjectData
-                    var channelValues = GetObjectData(currentColliderGo, (float)i, normalizedDistance);
+                    var channelValues = GetObjectData(currentColliderGo, i);
                     ValidateValues(channelValues, currentColliderGo);
 
                     switch (m_GridDepthType)
