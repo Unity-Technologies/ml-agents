@@ -289,8 +289,7 @@ namespace Unity.MLAgents.Inference
             // If the model has a non-negative memory size but requires a recurrent input
             if (memory > 0)
             {
-                if (!tensorsNames.Any(x => x.EndsWith("_h")) ||
-                    !tensorsNames.Any(x => x.EndsWith("_c")))
+                if (!tensorsNames.Any(x => x == TensorNames.RecurrentInPlaceholder))
                 {
                     failedModelChecks.Add(
                         FailedCheck.Warning("The model does not contain a Recurrent Input Node but has memory_size.")

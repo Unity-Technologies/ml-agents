@@ -2,6 +2,7 @@ from mlagents.torch_utils import torch
 import abc
 from typing import Tuple
 from enum import Enum
+from mlagents.trainers.torch.model_serialization import exporting_to_onnx
 
 
 class Swish(torch.nn.Module):
@@ -206,7 +207,16 @@ class LSTM(MemoryModule):
         # We don't use torch.split here since it is not supported by Barracuda
         h0 = memories[:, :, : self.hidden_size].contiguous()
         c0 = memories[:, :, self.hidden_size :].contiguous()
+
+        if exporting_to_onnx.is_exporting():
+            h0 = torch.transpose(h0, 0, 1)
+            c0 = torch.transpose(c0, 0, 1)
+
         hidden = (h0, c0)
         lstm_out, hidden_out = self.lstm(input_tensor, hidden)
         output_mem = torch.cat(hidden_out, dim=-1)
+
+        if exporting_to_onnx.is_exporting():
+            output_mem = torch.transpose(output_mem, 0, 1)
+
         return lstm_out, output_mem

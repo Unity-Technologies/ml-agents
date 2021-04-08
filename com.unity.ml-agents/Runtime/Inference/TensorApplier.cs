@@ -82,11 +82,11 @@ namespace Unity.MLAgents.Inference
             }
             m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
 
-            for (var i = 0; i < model?.memories.Count; i++)
-            {
-                m_Dict[model.memories[i].output] =
-                    new BarracudaMemoryOutputApplier(model.memories.Count, i, memories);
-            }
+            // for (var i = 0; i < model?.memories.Count; i++)
+            // {
+            //     m_Dict[model.memories[i].output] =
+            //         new BarracudaMemoryOutputApplier(model.memories.Count, i, memories);
+            // }
         }
 
         /// <summary>

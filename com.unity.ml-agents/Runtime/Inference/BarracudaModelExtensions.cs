@@ -77,16 +77,16 @@ namespace Unity.MLAgents.Inference
                 });
             }
 
-            foreach (var mem in model.memories)
-            {
-                tensors.Add(new TensorProxy
-                {
-                    name = mem.input,
-                    valueType = TensorProxy.TensorType.FloatingPoint,
-                    data = null,
-                    shape = TensorUtils.TensorShapeFromBarracuda(mem.shape)
-                });
-            }
+            // foreach (var mem in model.memories)
+            // {
+            //     tensors.Add(new TensorProxy
+            //     {
+            //         name = mem.input,
+            //         valueType = TensorProxy.TensorType.FloatingPoint,
+            //         data = null,
+            //         shape = TensorUtils.TensorShapeFromBarracuda(mem.shape)
+            //     });
+            // }
 
             tensors.Sort((el1, el2) => string.Compare(el1.name, el2.name, StringComparison.InvariantCulture));
 
@@ -142,14 +142,14 @@ namespace Unity.MLAgents.Inference
                 names.Add(model.DiscreteOutputName());
             }
 
-            var memory = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
-            if (memory > 0)
-            {
-                foreach (var mem in model.memories)
-                {
-                    names.Add(mem.output);
-                }
-            }
+            // var memory = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
+            // if (memory > 0)
+            // {
+            //     foreach (var mem in model.memories)
+            //     {
+            //         names.Add(mem.output);
+            //     }
+            // }
 
             names.Sort(StringComparer.InvariantCulture);
 
