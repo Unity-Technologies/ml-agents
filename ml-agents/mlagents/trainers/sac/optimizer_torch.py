@@ -555,8 +555,10 @@ class TorchSACOptimizer(TorchOptimizer):
             q1_stream, q2_stream = q1_out, q2_out
 
         with torch.no_grad():
-            # Since we didn't record the next value memories, get them.
+            # Since we didn't record the next value memories, evaluate one step in the critic to
+            # get them.
             if value_memories is not None:
+                # Get the first observation in each sequence
                 just_first_obs = [
                     _obs[:: self.policy.sequence_length] for _obs in current_obs
                 ]
