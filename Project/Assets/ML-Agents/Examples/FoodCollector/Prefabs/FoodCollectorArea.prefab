@@ -2232,7 +2232,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 75910f45f20be49b18e2b95879a217b2, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: f4b8757bd574543b1aa06d9294a5d707, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -2321,7 +2321,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 307
   m_DepthType: 1
-  m_RootReference: {fileID: 0}
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
@@ -2590,7 +2589,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 75910f45f20be49b18e2b95879a217b2, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: f4b8757bd574543b1aa06d9294a5d707, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -2666,7 +2665,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 307
   m_DepthType: 1
-  m_RootReference: {fileID: 0}
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
@@ -2940,7 +2938,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 75910f45f20be49b18e2b95879a217b2, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: f4b8757bd574543b1aa06d9294a5d707, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -3016,7 +3014,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 307
   m_DepthType: 1
-  m_RootReference: {fileID: 0}
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
@@ -3559,7 +3556,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 75910f45f20be49b18e2b95879a217b2, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: f4b8757bd574543b1aa06d9294a5d707, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -3635,7 +3632,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 307
   m_DepthType: 1
-  m_RootReference: {fileID: 0}
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
@@ -3895,7 +3891,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 11400000, guid: 75910f45f20be49b18e2b95879a217b2, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: f4b8757bd574543b1aa06d9294a5d707, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: GridFoodCollector
@@ -3971,7 +3967,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 307
   m_DepthType: 1
-  m_RootReference: {fileID: 0}
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
