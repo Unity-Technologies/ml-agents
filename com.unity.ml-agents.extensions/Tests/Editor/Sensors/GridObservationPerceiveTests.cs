@@ -57,8 +57,8 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(10 * 10 * 3, gridSensor.m_PerceptionBuffer.Length);
 
             int[] subarrayIndicies = new int[] { 77, 78, 87, 88 };
-            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new float[] { 0, 0, 1 }, 4);
-            float[] expectedDefault = new float[] { 1, 0, 0 };
+            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new float[] { 0, 1, 0 }, 4);
+            float[] expectedDefault = new float[] { 0, 0, 0 };
             GridObsTestUtils.AssertSubarraysAtIndex(gridSensor.m_PerceptionBuffer, subarrayIndicies, expectedSubarrays, expectedDefault);
         }
 
@@ -81,7 +81,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(10 * 10 * 1, gridSensor.m_PerceptionBuffer.Length);
 
             int[] subarrayIndicies = new int[] { 77, 78, 87, 88 };
-            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new[] { 2f / 3f }, 4);
+            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new[] { 1f / 3f }, 4);
             float[] expectedDefault = new float[] { 0f };
             GridObsTestUtils.AssertSubarraysAtIndex(gridSensor.m_PerceptionBuffer, subarrayIndicies, expectedSubarrays, expectedDefault);
         }
@@ -105,7 +105,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(10 * 10 * 1, gridSensor.m_PerceptionBuffer.Length);
 
             int[] subarrayIndicies = new int[] { 77, 78, 87, 88 };
-            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new[] { 1f / 3f }, 4);
+            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new[] { 0f }, 4);
             float[] expectedDefault = new float[] { 0f };
             GridObsTestUtils.AssertSubarraysAtIndex(gridSensor.m_PerceptionBuffer, subarrayIndicies, expectedSubarrays, expectedDefault);
         }
