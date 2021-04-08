@@ -36,7 +36,6 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         // Buffers
         internal float[] m_PerceptionBuffer;
-        float[] m_ChannelHotDefaultPerceptionBuffer;
         Color[] m_PerceptionColors;
         Texture2D m_PerceptionTexture;
         Collider[] m_ColliderBuffer;
@@ -149,15 +148,6 @@ namespace Unity.MLAgents.Extensions.Sensors
                 {
                     m_ChannelOffsets[i] = m_ChannelOffsets[i - 1] + m_ChannelDepths[i - 1];
                 }
-
-                m_ChannelHotDefaultPerceptionBuffer = new float[m_CellObservationSize];
-                for (int i = 0; i < m_ChannelDepths.Length; i++)
-                {
-                    if (m_ChannelDepths[i] > 1)
-                    {
-                        m_ChannelHotDefaultPerceptionBuffer[m_ChannelOffsets[i]] = 1;
-                    }
-                }
             }
             else
             {
@@ -192,18 +182,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             if (m_PerceptionBuffer != null)
             {
-                if (m_GridDepthType == GridDepthType.ChannelHot)
-                {
-                    // Copy the default value to the array
-                    for (int i = 0; i < m_NumCells; i++)
-                    {
-                        Array.Copy(m_ChannelHotDefaultPerceptionBuffer, 0, m_PerceptionBuffer, i * m_CellObservationSize, m_CellObservationSize);
-                    }
-                }
-                else
-                {
-                    Array.Clear(m_PerceptionBuffer, 0, m_PerceptionBuffer.Length);
-                }
+                Array.Clear(m_PerceptionBuffer, 0, m_PerceptionBuffer.Length);
             }
             else
             {
@@ -504,19 +483,10 @@ namespace Unity.MLAgents.Extensions.Sensors
             var channelHotVals = new ArraySegment<float>(m_PerceptionBuffer, cellIndex * m_CellObservationSize, m_CellObservationSize);
             for (var i = 0; i < m_DetectableObjects.Length; i++)
             {
-                if (m_GridDepthType != GridDepthType.Counting)
-                {
-                    for (var ii = 0; ii < channelHotVals.Count; ii++)
-                    {
-                        m_PerceptionBuffer[channelHotVals.Offset + ii] = 0f;
-                    }
-                }
-
                 if (!ReferenceEquals(currentColliderGo, null) && currentColliderGo.CompareTag(m_DetectableObjects[i]))
                 {
                     // TODO: Create the array already then set the values using "out" in GetObjectData
-                    // Using i+1 as the type index as "0" represents "empty"
-                    var channelValues = GetObjectData(currentColliderGo, (float)i + 1, normalizedDistance);
+                    var channelValues = GetObjectData(currentColliderGo, (float)i, normalizedDistance);
                     ValidateValues(channelValues, currentColliderGo);
 
                     switch (m_GridDepthType)
