@@ -67,11 +67,14 @@ namespace Unity.MLAgents.Inference
             m_Dict[TensorNames.RecurrentInPlaceholder] =
                 new RecurrentInputGenerator(allocator, memories);
 
-            // for (var i = 0; i < model.memories.Count; i++)
-            // {
-            //     m_Dict[model.memories[i].input] =
-            //         new BarracudaRecurrentInputGenerator(i, allocator, memories);
-            // }
+            if (m_ApiVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0_Recurrent)
+            {
+                for (var i = 0; i < model.memories.Count; i++)
+                {
+                    m_Dict[model.memories[i].input] =
+                        new BarracudaRecurrentInputGenerator(i, allocator, memories);
+                }
+            }
 
             m_Dict[TensorNames.PreviousActionPlaceholder] =
                 new PreviousActionInputGenerator(allocator);
@@ -141,7 +144,7 @@ namespace Unity.MLAgents.Inference
                 }
             }
 
-            if (m_ApiVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
+            if (m_ApiVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0 || m_ApiVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0_Recurrent)
             {
                 for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
                 {
