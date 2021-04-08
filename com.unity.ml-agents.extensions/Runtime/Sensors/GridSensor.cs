@@ -117,11 +117,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             set { m_ColliderMask = value; }
         }
 
-        public int[] GizmoColorIndexes
-        {
-            get { return m_GizmoColorIndexes; }
-        }
-
         /// <summary>
         /// Initializes the constant parameters used within the perceive method call
         /// </summary>
