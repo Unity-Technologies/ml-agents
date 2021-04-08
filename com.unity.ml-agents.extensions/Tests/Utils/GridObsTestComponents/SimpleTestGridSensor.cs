@@ -53,7 +53,7 @@ namespace Unity.MLAgents.Extensions.TestUtils.Sensors
                 DetectableObjects,
                 ColliderMask,
                 DepthType,
-                RootReference,
+                gameObject,
                 CompressionType,
                 MaxColliderBufferSize,
                 InitialColliderBufferSize
