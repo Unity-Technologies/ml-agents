@@ -13,7 +13,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// <summary>
     /// Grid-based sensor.
     /// </summary>
-    public class GridSensor : ISensor, IBuiltInSensor, IDisposable
+    public class GridSensorBase : ISensor, IBuiltInSensor, IDisposable
     {
         string m_Name;
         Vector3 m_CellScale;
@@ -36,7 +36,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         Vector3 m_CellCenterOffset;
 
 
-        public GridSensor(
+        public GridSensorBase(
             string name,
             Vector3 cellScale,
             Vector3Int gridNum,

@@ -6,7 +6,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// <summary>
     /// Grid-based sensor with one-hot observations.
     /// </summary>
-    public class OneHotGridSensor : GridSensor
+    public class OneHotGridSensor : GridSensorBase
     {
         public OneHotGridSensor(
             string name,

@@ -11,7 +11,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     public class GridSensorComponent : SensorComponent
     {
         // dummy sensor only used for debug gizmo
-        GridSensor m_DebugSensor;
+        GridSensorBase m_DebugSensor;
         protected List<ISensor> m_Sensors;
         BoxOverlapChecker m_BoxOverlapChecker;
 
@@ -233,7 +233,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 m_MaxColliderBufferSize
             );
             // debug data is positive int value and will trigger data validation exception if SensorCompressionType is not None.
-            m_DebugSensor = new GridSensor("DebugGridSensor", m_CellScale, m_GridSize, new int[] { 1 }, m_DetectableObjects, SensorCompressionType.None);
+            m_DebugSensor = new GridSensorBase("DebugGridSensor", m_CellScale, m_GridSize, new int[] { 1 }, m_DetectableObjects, SensorCompressionType.None);
             m_BoxOverlapChecker.GridOverlapDetectedDebug += m_DebugSensor.LoadObjectData;
 
             if (m_UseOneHotTag)
@@ -263,7 +263,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 m_BoxOverlapChecker.GridOverlapDetectedAll += sensor.LoadObjectData;
             }
             // Only one sensor needs to reference the boxOverlapChecker, so that it gets updated exactly once
-            ((GridSensor)m_Sensors[0]).m_BoxOverlapChecker = m_BoxOverlapChecker;
+            ((GridSensorBase)m_Sensors[0]).m_BoxOverlapChecker = m_BoxOverlapChecker;
             return m_Sensors.ToArray();
         }
 
@@ -278,7 +278,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 m_BoxOverlapChecker.ColliderMask = m_ColliderMask;
                 foreach (var sensor in m_Sensors)
                 {
-                    ((GridSensor)sensor).CompressionType = m_CompressionType;
+                    ((GridSensorBase)sensor).CompressionType = m_CompressionType;
                 }
             }
         }
