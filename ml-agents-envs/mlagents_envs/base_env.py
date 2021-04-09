@@ -410,28 +410,20 @@ class ActionSpec(NamedTuple):
         return ActionTuple(continuous=_continuous, discrete=_discrete)
 
     def _validate_action(
-        self, actions: ActionTuple, n_agents: Optional[int], name: str
+        self, actions: ActionTuple, n_agents: int, name: str
     ) -> ActionTuple:
         """
         Validates that action has the correct action dim
         for the correct number of agents and ensures the type.
         """
-        _expected_shape = (
-            (n_agents, self.continuous_size)
-            if n_agents is not None
-            else (self.continuous_size,)
-        )
+        _expected_shape = (n_agents, self.continuous_size)
         if actions.continuous.shape != _expected_shape:
             raise UnityActionException(
                 f"The behavior {name} needs a continuous input of dimension "
                 f"{_expected_shape} for (<number of agents>, <action size>) but "
                 f"received input of dimension {actions.continuous.shape}"
             )
-        _expected_shape = (
-            (n_agents, self.discrete_size)
-            if n_agents is not None
-            else (self.discrete_size,)
-        )
+        _expected_shape = (n_agents, self.discrete_size)
         if actions.discrete.shape != _expected_shape:
             raise UnityActionException(
                 f"The behavior {name} needs a discrete input of dimension "

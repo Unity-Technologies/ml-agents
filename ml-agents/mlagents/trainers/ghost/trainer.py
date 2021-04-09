@@ -18,6 +18,7 @@ from mlagents.trainers.behavior_id_utils import (
     BehaviorIdentifiers,
     create_name_behavior_id,
 )
+from mlagents.trainers.training_status import GlobalTrainingStatus, StatusType
 
 
 logger = get_logger(__name__)
@@ -128,8 +129,11 @@ class GhostTrainer(Trainer):
         self.last_swap: int = 0
         self.last_team_change: int = 0
 
-        # Chosen because it is the initial ELO in Chess
-        self.initial_elo: float = self_play_parameters.initial_elo
+        self.initial_elo = GlobalTrainingStatus.get_parameter_state(
+            self.brain_name, StatusType.ELO
+        )
+        if self.initial_elo is None:
+            self.initial_elo = self_play_parameters.initial_elo
         self.policy_elos: List[float] = [self.initial_elo] * (
             self.window + 1
         )  # for learning policy
@@ -323,6 +327,9 @@ class GhostTrainer(Trainer):
         """
         Forwarding call to wrapped trainers save_model.
         """
+        GlobalTrainingStatus.set_parameter_state(
+            self.brain_name, StatusType.ELO, self.current_elo
+        )
         self.trainer.save_model()
 
     def create_policy(

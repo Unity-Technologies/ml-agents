@@ -77,8 +77,7 @@ def test_clear_update_buffer():
 
 
 @mock.patch("mlagents.trainers.trainer.trainer.Trainer.save_model")
-@mock.patch("mlagents.trainers.trainer.rl_trainer.RLTrainer._clear_update_buffer")
-def test_advance(mocked_clear_update_buffer, mocked_save_model):
+def test_advance(mocked_save_model):
     trainer = create_rl_trainer()
     mock_policy = mock.Mock()
     trainer.add_policy("TestBrain", mock_policy)
@@ -115,9 +114,8 @@ def test_advance(mocked_clear_update_buffer, mocked_save_model):
         with pytest.raises(AgentManagerQueue.Empty):
             policy_queue.get_nowait()
 
-    # Check that the buffer has been cleared
+    # Check that no model has been saved
     assert not trainer.should_still_train
-    assert mocked_clear_update_buffer.call_count > 0
     assert mocked_save_model.call_count == 0
 
 
@@ -179,6 +177,39 @@ def test_summary_checkpoint(mock_add_checkpoint, mock_write_summary):
         for step in checkpoint_range
     ]
     mock_add_checkpoint.assert_has_calls(add_checkpoint_calls)
+
+
+def test_update_buffer_append():
+    trainer = create_rl_trainer()
+    mock_policy = mock.Mock()
+    trainer.add_policy("TestBrain", mock_policy)
+    trajectory_queue = AgentManagerQueue("testbrain")
+    policy_queue = AgentManagerQueue("testbrain")
+    trainer.subscribe_trajectory_queue(trajectory_queue)
+    trainer.publish_policy_queue(policy_queue)
+    time_horizon = 10
+    trajectory = mb.make_fake_trajectory(
+        length=time_horizon,
+        observation_specs=create_observation_specs_with_shapes([(1,)]),
+        max_step_complete=True,
+        action_spec=ActionSpec.create_discrete((2,)),
+    )
+    agentbuffer_trajectory = trajectory.to_agentbuffer()
+    assert trainer.update_buffer.num_experiences == 0
+
+    # Check that if we append, our update buffer gets longer.
+    # max_steps = 100
+    for i in range(10):
+        trainer._process_trajectory(trajectory)
+        trainer._append_to_update_buffer(agentbuffer_trajectory)
+        assert trainer.update_buffer.num_experiences == (i + 1) * time_horizon
+
+    # Check that if we append after stopping training, nothing happens.
+    # We process enough trajectories to hit max steps
+    trainer.set_is_policy_updating(False)
+    trainer._process_trajectory(trajectory)
+    trainer._append_to_update_buffer(agentbuffer_trajectory)
+    assert trainer.update_buffer.num_experiences == (i + 1) * time_horizon
 
 
 class RLTrainerWarningTest(unittest.TestCase):
