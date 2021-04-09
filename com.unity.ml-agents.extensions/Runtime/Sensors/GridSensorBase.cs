@@ -18,7 +18,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         string m_Name;
         Vector3 m_CellScale;
         Vector3Int m_GridSize;
-        int[] m_ChannelDepths;
         string[] m_DetectableObjects;
         SensorCompressionType m_CompressionType;
         ObservationSpec m_ObservationSpec;
@@ -40,7 +39,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             string name,
             Vector3 cellScale,
             Vector3Int gridNum,
-            int[] channelDepths,
             string[] detectableObjects,
             SensorCompressionType compression
         )
@@ -48,7 +46,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_Name = name;
             m_CellScale = cellScale;
             m_GridSize = gridNum;
-            m_ChannelDepths = channelDepths;
             m_DetectableObjects = detectableObjects;
             m_CompressionType = compression;
 

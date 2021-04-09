@@ -37,20 +37,6 @@ namespace Unity.MLAgents.Extensions.Editor
             EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
                 EditorGUILayout.LabelField("Channel Settings", EditorStyles.boldLabel);
-                // channel depth
-                var channelDepth = so.FindProperty(nameof(GridSensorComponent.m_ChannelDepths));
-                var newDepth = EditorGUILayout.IntField("Channel Depth", channelDepth.arraySize);
-                if (newDepth != channelDepth.arraySize)
-                {
-                    channelDepth.arraySize = newDepth;
-                }
-                EditorGUI.indentLevel++;
-                for (var i = 0; i < channelDepth.arraySize; i++)
-                {
-                    var objectTag = channelDepth.GetArrayElementAtIndex(i);
-                    EditorGUILayout.PropertyField(objectTag, new GUIContent("Channel " + i + " Depth"), true);
-                }
-                EditorGUI.indentLevel--;
 
                 // detectable objects
                 var detectableObjects = so.FindProperty(nameof(GridSensorComponent.m_DetectableObjects));

@@ -74,18 +74,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        internal int[] m_ChannelDepths = new int[] { 1 };
-        /// <summary>
-        /// Array holding the depth of each channel.
-        /// Note that changing this after the sensor is created has no effect.
-        /// </summary>
-        public int[] ChannelDepths
-        {
-            get { return m_ChannelDepths; }
-            set { m_ChannelDepths = value; }
-        }
-
-        [HideInInspector, SerializeField]
         internal string[] m_DetectableObjects;
         /// <summary>
         /// List of tags that are detected.
@@ -234,12 +222,12 @@ namespace Unity.MLAgents.Extensions.Sensors
             );
 
             // debug data is positive int value and will trigger data validation exception if SensorCompressionType is not None.
-            m_DebugSensor = new GridSensorBase("DebugGridSensor", m_CellScale, m_GridSize, new int[] { 1 }, m_DetectableObjects, SensorCompressionType.None);
+            m_DebugSensor = new GridSensorBase("DebugGridSensor", m_CellScale, m_GridSize, m_DetectableObjects, SensorCompressionType.None);
             m_BoxOverlapChecker.GridOverlapDetectedDebug += m_DebugSensor.LoadObjectData;
 
             if (m_UseOneHotTag)
             {
-                var sensor = new OneHotGridSensor(m_SensorName, m_CellScale, m_GridSize, m_ChannelDepths, m_DetectableObjects, m_CompressionType);
+                var sensor = new OneHotGridSensor(m_SensorName, m_CellScale, m_GridSize, m_DetectableObjects, m_CompressionType);
                 if (ObservationStacks != 1)
                 {
                     m_Sensors.Add(new StackingSensor(sensor, ObservationStacks));
@@ -252,7 +240,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
             if (m_CountColliders)
             {
-                var sensor = new CountingGridSensor(m_SensorName, m_CellScale, m_GridSize, m_ChannelDepths, m_DetectableObjects, m_CompressionType);
+                var sensor = new CountingGridSensor(m_SensorName, m_CellScale, m_GridSize, m_DetectableObjects, m_CompressionType);
                 if (ObservationStacks != 1)
                 {
                     m_Sensors.Add(new StackingSensor(sensor, ObservationStacks));

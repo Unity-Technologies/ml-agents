@@ -12,10 +12,9 @@ namespace Unity.MLAgents.Extensions.Sensors
             string name,
             Vector3 cellScale,
             Vector3Int gridNum,
-            int[] channelDepths,
             string[] detectableObjects,
             SensorCompressionType compression
-        ) : base(name, cellScale, gridNum, channelDepths, detectableObjects, compression)
+        ) : base(name, cellScale, gridNum, detectableObjects, compression)
         {
 
         }
