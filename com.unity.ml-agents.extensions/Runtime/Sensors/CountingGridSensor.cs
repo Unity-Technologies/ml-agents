@@ -20,6 +20,16 @@ namespace Unity.MLAgents.Extensions.Sensors
             CompressionType = SensorCompressionType.None;
         }
 
+        protected override int GetObservationSize()
+        {
+            return DetectableObjects.Length;
+        }
+
+        protected override bool IsDataNormalized()
+        {
+            return false;
+        }
+
         protected override void GetObjectData(GameObject currentColliderGo, int typeIndex, float[] dataBuffer)
         {
             dataBuffer[typeIndex] += 1;

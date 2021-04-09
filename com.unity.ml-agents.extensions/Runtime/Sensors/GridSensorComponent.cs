@@ -13,7 +13,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         // dummy sensor only used for debug gizmo
         GridSensorBase m_DebugSensor;
         protected List<ISensor> m_Sensors;
-        BoxOverlapChecker m_BoxOverlapChecker;
+        internal BoxOverlapChecker m_BoxOverlapChecker;
 
         [HideInInspector, SerializeField]
         internal string m_SensorName = "GridSensor";

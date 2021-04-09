@@ -7,7 +7,7 @@ using Unity.MLAgents.Sensors;
 using UnityEngine.Profiling;
 using Object = UnityEngine.Object;
 
-[assembly: InternalsVisibleTo("Unity.ML-Agents.Extensions.EditorTests")]
+[assembly: InternalsVisibleTo("Unity.ML-Agents.Extensions.TestUtils")]
 namespace Unity.MLAgents.Extensions.Sensors
 {
     /// <summary>
@@ -58,7 +58,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             m_NumCells = m_GridSize.x * m_GridSize.z;
-            m_CellObservationSize = m_ChannelDepths.Sum();
+            m_CellObservationSize = GetObservationSize();
             m_ObservationSpec = ObservationSpec.Visual(m_GridSize.x, m_GridSize.z, m_CellObservationSize);
             m_PerceptionTexture = new Texture2D(m_GridSize.x, m_GridSize.z, TextureFormat.RGB24, false);
 
@@ -68,12 +68,26 @@ namespace Unity.MLAgents.Extensions.Sensors
         public SensorCompressionType CompressionType
         {
             get { return m_CompressionType; }
-            set { m_CompressionType = value; }
+            set
+            {
+                if (!IsDataNormalized() && value == SensorCompressionType.PNG)
+                {
+                    Debug.LogWarning("Compression type {m_CompressionType} is only supported with normalized data. " +
+                        "The sensor will not compress the data.");
+                    return;
+                }
+                m_CompressionType = value;
+            }
         }
 
         internal float[] PerceptionBuffer
         {
             get { return m_PerceptionBuffer; }
+        }
+
+        protected string[] DetectableObjects
+        {
+            get { return m_DetectableObjects; }
         }
 
         /// <inheritdoc/>
@@ -195,6 +209,22 @@ namespace Unity.MLAgents.Extensions.Sensors
         protected virtual void GetObjectData(GameObject currentColliderGo, int typeIndex, float[] dataBuffer)
         {
             dataBuffer[0] = typeIndex;
+        }
+
+        /// <summary>
+        /// Get the observation size for each cell. This will be the size of dataBuffer in GetObjectData().
+        /// </summary>
+        protected virtual int GetObservationSize()
+        {
+            return 1;
+        }
+
+        /// <summary>
+        /// Whether the data is normailzed within [0, 1]. The sensor can only use PNG compression if the data is normailzed.
+        /// </summary>
+        protected virtual bool IsDataNormalized()
+        {
+            return false;
         }
 
         /// <summary>
