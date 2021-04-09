@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using NUnit.Framework;
 using Unity.MLAgents.Extensions.Match3;
 using UnityEngine;
@@ -244,6 +245,17 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
                 };
                 SensorTestHelper.CompareObservation(specialSensor, expectedObs3D);
             }
+
+            // Test that Dispose() cleans up the component and its sensors
+            sensorComponent.Dispose();
+
+            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            var componentSensors = (ISensor[])typeof(Match3SensorComponent).GetField("m_Sensors", flags).GetValue(sensorComponent);
+            Assert.IsNull(componentSensors);
+            var cellTexture = (Texture2D)typeof(Match3Sensor).GetField("m_ObservationTexture", flags).GetValue(cellSensor);
+            Assert.IsNull(cellTexture);
+            var specialTexture = (Texture2D)typeof(Match3Sensor).GetField("m_ObservationTexture", flags).GetValue(cellSensor);
+            Assert.IsNull(specialTexture);
         }
 
 

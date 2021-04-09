@@ -164,19 +164,6 @@ namespace Unity.MLAgents.Sensors
             RenderTexture.ReleaseTemporary(tempRt);
         }
 
-        /// <summary>
-        /// Computes the observation shape for a camera sensor based on the height, width
-        /// and grayscale flag.
-        /// </summary>
-        /// <param name="width">Width of the image captures from the camera.</param>
-        /// <param name="height">Height of the image captures from the camera.</param>
-        /// <param name="grayscale">Whether or not to convert the image to grayscale.</param>
-        /// <returns>The observation shape.</returns>
-        internal static int[] GenerateShape(int width, int height, bool grayscale)
-        {
-            return new[] { height, width, grayscale ? 1 : 3 };
-        }
-
         /// <inheritdoc/>
         public BuiltInSensorType GetBuiltInSensorType()
         {

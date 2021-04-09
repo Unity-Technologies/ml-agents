@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using Unity.MLAgents.Sensors;
@@ -33,6 +34,14 @@ namespace Unity.MLAgents.Tests
                     var expectedShape = new InplaceArray<int>(height, width, grayscale ? 1 : 3);
                     Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
                     Assert.AreEqual(typeof(CameraSensor), sensor.GetType());
+
+                    // Make sure cleaning up the component cleans up the sensor too
+                    cameraComponent.Dispose();
+                    var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                    var cameraComponentSensor = (CameraSensor)typeof(CameraSensorComponent).GetField("m_Sensor", flags).GetValue(cameraComponent);
+                    Assert.IsNull(cameraComponentSensor);
+                    var cameraTexture = (Texture2D)typeof(CameraSensor).GetField("m_Texture", flags).GetValue(sensor);
+                    Assert.IsNull(cameraTexture);
                 }
             }
         }
