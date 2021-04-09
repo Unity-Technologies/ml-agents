@@ -232,9 +232,6 @@ namespace Unity.MLAgents.Extensions.Sensors
                 m_InitialColliderBufferSize,
                 m_MaxColliderBufferSize
             );
-            // debug data is positive int value and will trigger data validation exception if SensorCompressionType is not None.
-            m_DebugSensor = new GridSensorBase("DebugGridSensor", m_CellScale, m_GridSize, new int[] { 1 }, m_DetectableObjects, SensorCompressionType.None);
-            m_BoxOverlapChecker.GridOverlapDetectedDebug += m_DebugSensor.LoadObjectData;
 
             if (m_UseOneHotTag)
             {
@@ -291,6 +288,13 @@ namespace Unity.MLAgents.Extensions.Sensors
                 {
                     return;
                 }
+                if (m_DebugSensor == null)
+                {
+                    // debug data is positive int value and will trigger data validation exception if SensorCompressionType is not None.
+                    m_DebugSensor = new GridSensorBase("DebugGridSensor", m_CellScale, m_GridSize, new int[] { 1 }, m_DetectableObjects, SensorCompressionType.None);
+                    m_BoxOverlapChecker.GridOverlapDetectedDebug += m_DebugSensor.LoadObjectData;
+                }
+
                 // hack for debug sensor: data is int value in [0, detectableTag.Length], so fill the buffer will -1 as default value.
                 for (var i = 0; i < m_DebugSensor.PerceptionBuffer.Length; i++)
                 {
