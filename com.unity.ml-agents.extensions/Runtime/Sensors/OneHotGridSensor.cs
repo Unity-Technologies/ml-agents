@@ -20,7 +20,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         }
 
-        protected override int GetObservationSize()
+        protected override int GetCellObservationSize()
         {
             return DetectableObjects.Length;
         }

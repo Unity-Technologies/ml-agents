@@ -58,7 +58,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             m_NumCells = m_GridSize.x * m_GridSize.z;
-            m_CellObservationSize = GetObservationSize();
+            m_CellObservationSize = GetCellObservationSize();
             m_ObservationSpec = ObservationSpec.Visual(m_GridSize.x, m_GridSize.z, m_CellObservationSize);
             m_PerceptionTexture = new Texture2D(m_GridSize.x, m_GridSize.z, TextureFormat.RGB24, false);
 
@@ -214,7 +214,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Get the observation size for each cell. This will be the size of dataBuffer in GetObjectData().
         /// </summary>
-        protected virtual int GetObservationSize()
+        protected virtual int GetCellObservationSize()
         {
             return 1;
         }

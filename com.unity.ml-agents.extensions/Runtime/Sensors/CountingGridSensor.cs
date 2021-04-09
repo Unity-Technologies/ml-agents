@@ -20,7 +20,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             CompressionType = SensorCompressionType.None;
         }
 
-        protected override int GetObservationSize()
+        protected override int GetCellObservationSize()
         {
             return DetectableObjects.Length;
         }
