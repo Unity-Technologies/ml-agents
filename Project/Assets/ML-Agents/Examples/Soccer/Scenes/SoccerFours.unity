@@ -685,7 +685,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7774113, y: 1}
+    m_SensorSize: {x: 1.778125, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -701,8 +701,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 384649698}
-  m_LocalRotation: {x: 0.28359753, y: 0.0000000118377015, z: -0.0000000035008767,
-    w: 0.9589434}
+  m_LocalRotation: {x: 0.2835975, y: 0.000000019095708, z: -0.0000000056473564, w: 0.9589434}
   m_LocalPosition: {x: 0, y: 20.5, z: -30}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1308,8 +1307,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1009000883}
-  m_LocalRotation: {x: 0.28359753, y: 0.0000000118377015, z: -0.0000000035008767,
-    w: 0.9589434}
+  m_LocalRotation: {x: 0.2835975, y: 0.000000019095708, z: -0.0000000056473564, w: 0.9589434}
   m_LocalPosition: {x: 0, y: 20.5, z: -30}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -1392,7 +1390,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 18.010666
+  field of view: 18.003555
   orthographic: 0
   orthographic size: 6.98
   m_Depth: 2
