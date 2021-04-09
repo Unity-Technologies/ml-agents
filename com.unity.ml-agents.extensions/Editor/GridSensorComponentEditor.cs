@@ -30,7 +30,6 @@ namespace Unity.MLAgents.Extensions.Editor
                 var gridSize2d = new Vector2Int(gridSize.vector3IntValue.x, gridSize.vector3IntValue.z);
                 var newGridSize = EditorGUILayout.Vector2IntField("Grid Size", gridSize2d);
                 gridSize.vector3IntValue = new Vector3Int(newGridSize.x, 1, newGridSize.y);
-                EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_RootReference)), true);
             }
             EditorGUI.EndDisabledGroup();
             EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_RotateWithAgent)), true);
