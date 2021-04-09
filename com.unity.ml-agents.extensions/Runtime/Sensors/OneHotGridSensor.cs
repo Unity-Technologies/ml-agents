@@ -30,6 +30,11 @@ namespace Unity.MLAgents.Extensions.Sensors
             return true;
         }
 
+        protected internal override bool ProcessAllCollidersInCell()
+        {
+            return false;
+        }
+
         protected override void GetObjectData(GameObject currentColliderGo, int typeIndex, float[] dataBuffer)
         {
             dataBuffer[typeIndex] = 1;

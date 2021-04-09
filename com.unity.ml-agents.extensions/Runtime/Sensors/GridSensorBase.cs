@@ -228,6 +228,14 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
+        /// Whether to process all the colliders detected in a cell. Default to false and only use the one closest to th agent.
+        /// </summary>
+        protected internal virtual bool ProcessAllCollidersInCell()
+        {
+            return false;
+        }
+
+        /// <summary>
         /// Runs basic validation assertions to check that the values can be normalized
         /// </summary>
         /// <param name="channelValues">The values to be validated</param>
