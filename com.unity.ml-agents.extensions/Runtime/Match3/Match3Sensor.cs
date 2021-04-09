@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
-using Object = UnityEngine.Object;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
@@ -245,24 +243,11 @@ namespace Unity.MLAgents.Extensions.Match3
             return BuiltInSensorType.Match3Sensor;
         }
 
-        static void DestroyTexture(Texture2D texture)
-        {
-            if (Application.isEditor)
-            {
-                // Edit Mode tests complain if we use Destroy()
-                Object.DestroyImmediate(texture);
-            }
-            else
-            {
-                Object.Destroy(texture);
-            }
-        }
-
         public void Dispose()
         {
             if (!ReferenceEquals(null, m_ObservationTexture))
             {
-                DestroyTexture(m_ObservationTexture);
+                Utilities.DestroyTexture(m_ObservationTexture);
                 m_ObservationTexture = null;
             }
         }

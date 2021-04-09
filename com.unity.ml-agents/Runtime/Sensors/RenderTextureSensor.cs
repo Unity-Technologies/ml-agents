@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Unity.MLAgents.Sensors
 {
@@ -121,25 +120,11 @@ namespace Unity.MLAgents.Sensors
             RenderTexture.active = prevActiveRt;
         }
 
-        static void DestroyTexture(Texture2D texture)
-        {
-            if (Application.isEditor)
-            {
-                // Edit Mode tests complain if we use Destroy()
-                // TODO move to extension methods for UnityEngine.Object?
-                Object.DestroyImmediate(texture);
-            }
-            else
-            {
-                Object.Destroy(texture);
-            }
-        }
-
         public void Dispose()
         {
             if (!ReferenceEquals(null, m_Texture))
             {
-                DestroyTexture(m_Texture);
+                Utilities.DestroyTexture(m_Texture);
                 m_Texture = null;
             }
         }
