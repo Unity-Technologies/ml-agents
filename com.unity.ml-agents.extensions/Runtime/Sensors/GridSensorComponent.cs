@@ -251,9 +251,37 @@ namespace Unity.MLAgents.Extensions.Sensors
                 }
                 m_BoxOverlapChecker.GridOverlapDetectedAll += sensor.LoadObjectData;
             }
+            var customSensors = GetGridSensors();
+            if (customSensors != null)
+            {
+                foreach (var sensor in customSensors)
+                {
+                    if (ObservationStacks != 1)
+                    {
+                        m_Sensors.Add(new StackingSensor(sensor, ObservationStacks));
+                    }
+                    else
+                    {
+                        m_Sensors.Add(sensor);
+                    }
+                    if (sensor.ProcessAllCollidersInCell())
+                    {
+                        m_BoxOverlapChecker.GridOverlapDetectedAll += sensor.LoadObjectData;
+                    }
+                    else
+                    {
+                        m_BoxOverlapChecker.GridOverlapDetectedClosest += sensor.LoadObjectData;
+                    }
+                }
+            }
             // Only one sensor needs to reference the boxOverlapChecker, so that it gets updated exactly once
             ((GridSensorBase)m_Sensors[0]).m_BoxOverlapChecker = m_BoxOverlapChecker;
             return m_Sensors.ToArray();
+        }
+
+        protected virtual GridSensorBase[] GetGridSensors()
+        {
+            return null;
         }
 
         /// <summary>
