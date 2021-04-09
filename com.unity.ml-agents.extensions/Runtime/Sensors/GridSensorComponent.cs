@@ -227,7 +227,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             if (m_UseOneHotTag)
             {
-                var sensor = new OneHotGridSensor(m_SensorName, m_CellScale, m_GridSize, m_DetectableObjects, m_CompressionType);
+                var sensor = new OneHotGridSensor(m_SensorName + "-OneHot", m_CellScale, m_GridSize, m_DetectableObjects, m_CompressionType);
                 if (ObservationStacks != 1)
                 {
                     m_Sensors.Add(new StackingSensor(sensor, ObservationStacks));
@@ -240,7 +240,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
             if (m_CountColliders)
             {
-                var sensor = new CountingGridSensor(m_SensorName, m_CellScale, m_GridSize, m_DetectableObjects, m_CompressionType);
+                var sensor = new CountingGridSensor(m_SensorName + "-Counting", m_CellScale, m_GridSize, m_DetectableObjects, m_CompressionType);
                 if (ObservationStacks != 1)
                 {
                     m_Sensors.Add(new StackingSensor(sensor, ObservationStacks));

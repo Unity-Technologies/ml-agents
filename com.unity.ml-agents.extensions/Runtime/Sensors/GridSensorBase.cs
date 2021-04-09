@@ -15,7 +15,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// </summary>
     public class GridSensorBase : ISensor, IBuiltInSensor, IDisposable
     {
-        string m_Name;
+        protected string m_Name;
         Vector3 m_CellScale;
         Vector3Int m_GridSize;
         string[] m_DetectableObjects;
