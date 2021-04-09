@@ -10,6 +10,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     [AddComponentMenu("ML Agents/Grid Sensor", (int)MenuGroup.Sensors)]
     public class GridSensorComponent : SensorComponent
     {
+        // dummy sensor only used for debug gizmo
         GridSensor m_DebugSensor;
         protected List<ISensor> m_Sensors;
         BoxOverlapChecker m_BoxOverlapChecker;
@@ -196,7 +197,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         [HideInInspector, SerializeField]
         internal bool m_UseOneHotTag = true;
         /// <summary>
-        /// Whether to stack previous observations. Using 1 means no previous observations.
+        /// Whether to use one-hot detected tag as observation.
         /// Note that changing this after the sensor is created has no effect.
         /// </summary>
         public bool UseOneHotTag
@@ -208,7 +209,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         [HideInInspector, SerializeField]
         internal bool m_CountColliders = false;
         /// <summary>
-        /// Whether to stack previous observations. Using 1 means no previous observations.
+        /// Whether to use the number of count for each detectable tag as observation.
         /// Note that changing this after the sensor is created has no effect.
         /// </summary>
         public bool CountColliders
@@ -231,6 +232,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 m_InitialColliderBufferSize,
                 m_MaxColliderBufferSize
             );
+            // debug data is positive int value and will trigger data validation exception if SensorCompressionType is not None.
             m_DebugSensor = new GridSensor("DebugGridSensor", m_CellScale, m_GridSize, new int[] { 1 }, m_DetectableObjects, SensorCompressionType.None);
             m_BoxOverlapChecker.GridOverlapDetectedDebug += m_DebugSensor.LoadObjectData;
 
@@ -289,6 +291,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 {
                     return;
                 }
+                // hack for debug sensor: data is int value in [0, detectableTag.Length], so fill the buffer will -1 as default value.
                 for (var i = 0; i < m_DebugSensor.PerceptionBuffer.Length; i++)
                 {
                     m_DebugSensor.PerceptionBuffer[i] = -1f;
