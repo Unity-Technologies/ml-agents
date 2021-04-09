@@ -67,7 +67,7 @@ namespace Unity.MLAgents.Inference
             m_Dict[TensorNames.RecurrentInPlaceholder] =
                 new RecurrentInputGenerator(allocator, memories);
 
-            if (m_ApiVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0_Recurrent)
+            if (m_ApiVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
             {
                 for (var i = 0; i < model.memories.Count; i++)
                 {
@@ -144,7 +144,7 @@ namespace Unity.MLAgents.Inference
                 }
             }
 
-            if (m_ApiVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0 || m_ApiVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0_Recurrent)
+            if (m_ApiVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
             {
                 for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
                 {

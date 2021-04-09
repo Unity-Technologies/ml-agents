@@ -19,9 +19,8 @@ namespace Unity.MLAgents.Inference
         {
             MLAgents1_0 = 2,
             MLAgents2_0 = 3,
-            MLAgents2_0_Recurrent = 4,
             MinSupportedVersion = MLAgents1_0,
-            MaxSupportedVersion = MLAgents2_0_Recurrent
+            MaxSupportedVersion = MLAgents2_0
         }
 
         internal class FailedCheck
@@ -122,7 +121,7 @@ namespace Unity.MLAgents.Inference
                     CheckInputTensorShapeLegacy(model, brainParameters, sensors, observableAttributeTotalSize)
                 );
             }
-            else if (modelApiVersion == (int)ModelApiVersion.MLAgents2_0 || modelApiVersion == (int)ModelApiVersion.MLAgents2_0_Recurrent)
+            else if (modelApiVersion == (int)ModelApiVersion.MLAgents2_0)
             {
                 failedModelChecks.AddRange(
                     CheckInputTensorPresence(model, brainParameters, memorySize, sensors)
@@ -292,7 +291,7 @@ namespace Unity.MLAgents.Inference
             {
                 var modelVersion = model.GetVersion();
                 var netHasMemories = false;
-                if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0_Recurrent)
+                if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
                 {
                     netHasMemories = tensorsNames.Any(x => x.EndsWith("_h")) &&
                         tensorsNames.Any(x => x.EndsWith("_c"));
@@ -343,7 +342,7 @@ namespace Unity.MLAgents.Inference
 
                 var netHasMemories = false;
                 var modelVersion = model.GetVersion();
-                if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0_Recurrent)
+                if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
                 {
                     var memOutputs = model.memories.Select(x => x.output).ToList();
                     netHasMemories = memOutputs.Any(x => x.EndsWith("_h")) &&
@@ -741,7 +740,7 @@ namespace Unity.MLAgents.Inference
                 var modelSumDiscreteBranchSizes = model.DiscreteOutputSize();
                 discreteError = CheckDiscreteActionOutputShapeLegacy(brainParameters, actuatorComponents, modelSumDiscreteBranchSizes);
             }
-            if (modelApiVersion == (int)ModelApiVersion.MLAgents2_0 || modelApiVersion == (int)ModelApiVersion.MLAgents2_0_Recurrent)
+            if (modelApiVersion == (int)ModelApiVersion.MLAgents2_0)
             {
                 var modelDiscreteBranches = model.GetTensorByName(TensorNames.DiscreteActionOutputShape);
                 discreteError = CheckDiscreteActionOutputShape(brainParameters, actuatorComponents, modelDiscreteBranches);

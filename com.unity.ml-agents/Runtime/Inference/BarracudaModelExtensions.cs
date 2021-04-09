@@ -78,7 +78,7 @@ namespace Unity.MLAgents.Inference
             }
 
             var modelVersion = model.GetVersion();
-            if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0_Recurrent)
+            if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
             {
                 foreach (var mem in model.memories)
                 {
@@ -150,7 +150,7 @@ namespace Unity.MLAgents.Inference
             var memory = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
             if (memory > 0)
             {
-                if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0_Recurrent)
+                if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
                 {
                     foreach (var mem in model.memories)
                     {

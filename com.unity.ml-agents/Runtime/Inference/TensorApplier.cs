@@ -75,14 +75,14 @@ namespace Unity.MLAgents.Inference
                 {
                     m_Dict[tensorName] = new LegacyDiscreteActionOutputApplier(actionSpec, seed, allocator);
                 }
-                if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0 || modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0_Recurrent)
+                if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
                 {
                     m_Dict[tensorName] = new DiscreteActionOutputApplier(actionSpec, seed, allocator);
                 }
             }
             m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
 
-            if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0_Recurrent)
+            if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
             {
                 for (var i = 0; i < model?.memories.Count; i++)
                 {
