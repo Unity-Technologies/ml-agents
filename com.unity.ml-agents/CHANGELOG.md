@@ -52,6 +52,11 @@ determine whether `Agent.RequestDecision()` and `Agent.RequestAction()` are call
 - `RaycastPerceptionSensor` now caches its raycast results; they can be accessed via `RayPerceptionSensor.RayPerceptionOutput`. (#5222)
 - `ActionBuffers` are now reset to zero before being passed to `Agent.Heuristic()` and
 `IHeuristicProvider.Heuristic()`. (#5227)
+- `Agent` will now call `IDisposable.Dispose()` on all `ISensor`s that implement the `IDisposable` interface. (#5233)
+- `CameraSensor`, `RenderTextureSensor`, and `Match3Sensor` will now reuse their `Texture2D`s, reducing the
+amount of memory that needs to be allocated during runtime. (#5233)
+- Optimzed `ObservationWriter.WriteTexture()` so that it doesn't call `Texture2D.GetPixels32()` for `RGB24` textures.
+This results in much less memory being allocated during inference with `CameraSensor` and `RenderTextureSensor`. (#5233)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Some console output have been moved from `info` to `debug` and will not be printed by default. If you want all messages to be printed, you can run `mlagents-learn` with the `--debug` option or add the line `debug: true` at the top of the yaml config file. (#5211)
