@@ -29,6 +29,7 @@ produces two `Match3Sensor`s (unless there are no special types). Previously tra
 sizes and will need to be retrained. (#5181)
 - The `AbstractBoard` class for integration with Match-3 games was changed to make it easier to support boards with
 different sizes using the same model. For a summary of the interface changes, please see the Migration Guide. (##5189)
+- Updated the Barracuda package to version `1.3.3-preview`(#5236)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `--resume` flag now supports resuming experiments with additional reward providers or
@@ -38,7 +39,7 @@ different sizes using the same model. For a summary of the interface changes, pl
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- The `.onnx` models input names have changed. All input placeholders will now use the prefix `obs_` removing the distinction between visual and vector observations. Models created with this version will not be usable with previous versions of the package (#5080)
+- The `.onnx` models input names have changed. All input placeholders will now use the prefix `obs_` removing the distinction between visual and vector observations. Models created with this version will not be usable with previous versions of the package (#5080, #5236)
 - The `.onnx` models discrete action output now contains the discrete actions values and not the logits. Models created with this version will not be usable with previous versions of the package (#5080)
 - Added ML-Agents package settings. (#5027)
 - Make com.unity.modules.unityanalytics an optional dependency. (#5109)
