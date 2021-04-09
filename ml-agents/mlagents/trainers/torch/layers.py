@@ -209,6 +209,9 @@ class LSTM(MemoryModule):
         c0 = memories[:, :, self.hidden_size :].contiguous()
 
         if exporting_to_onnx.is_exporting():
+            # This transpose is needed both at input and output of the LSTM when
+            # exporting because ONNX will expect (sequence_len, batch, memory_size)
+            # instead of (batch, sequence_len, memory_size)
             h0 = torch.transpose(h0, 0, 1)
             c0 = torch.transpose(c0, 0, 1)
 
