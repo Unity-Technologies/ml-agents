@@ -546,7 +546,7 @@ class Actor(abc.ABC):
 
 
 class SimpleActor(nn.Module, Actor):
-    MODEL_EXPORT_VERSION = 3 # Corresponds to ModelApiVersion.MLAgents2_0
+    MODEL_EXPORT_VERSION = 3  # Corresponds to ModelApiVersion.MLAgents2_0
 
     def __init__(
         self,
