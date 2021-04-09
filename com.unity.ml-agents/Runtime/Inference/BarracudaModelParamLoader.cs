@@ -17,7 +17,21 @@ namespace Unity.MLAgents.Inference
 
         internal enum ModelApiVersion
         {
+            /// <summary>
+            /// ML-Agents model version for versions 1.x.y
+            /// The observations are split between vector and visual observations
+            /// There are legacy action outputs for discrete and continuous actions
+            /// LSTM inputs and outputs are handled by Barracuda
+            /// </summary>
             MLAgents1_0 = 2,
+
+            /// <summary>
+            /// All observations are treated the same and named obs_{i} with i being
+            /// the sensor index
+            /// Legacy "action" output is no longer present
+            /// LSTM inputs and outputs are treated like regular inputs and outputs
+            /// and no longer managed by Barracuda
+            /// </summary>
             MLAgents2_0 = 3,
             MinSupportedVersion = MLAgents1_0,
             MaxSupportedVersion = MLAgents2_0
