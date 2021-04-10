@@ -185,7 +185,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         [HideInInspector, SerializeField]
         internal bool m_UseOneHotTag = true;
         /// <summary>
-        /// Whether to use one-hot detected tag as observation.
+        /// Whether to use one-hot representation of detected tag as observation.
         /// Note that changing this after the sensor is created has no effect.
         /// </summary>
         public bool UseOneHotTag
@@ -272,6 +272,10 @@ namespace Unity.MLAgents.Extensions.Sensors
             return m_Sensors.ToArray();
         }
 
+        /// <summary>
+        /// Get an array of GridSensors to be added in this component.
+        /// Override this method and return custom GridSensor implementations.
+        /// </summary>
         protected virtual GridSensorBase[] GetGridSensors()
         {
             return null;

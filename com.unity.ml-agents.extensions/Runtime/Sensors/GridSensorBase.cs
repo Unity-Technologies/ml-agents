@@ -90,8 +90,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         public void Reset() { }
 
         /// <summary>
-        /// Clears the perception buffer before loading in new data. If the gridDepthType is ChannelHot, then it initializes the
-        /// Reset() also reinits the cell activity array (for debug)
+        /// Clears the perception buffer before loading in new data.
         /// </summary>
         public void ResetPerceptionBuffer()
         {
@@ -126,11 +125,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             return BuiltInSensorType.GridSensor;
         }
 
-        /// <summary>
-        /// GetCompressedObservation - Calls Perceive then puts the data stored on the perception buffer
-        /// onto the m_perceptionTexture2D to be converted to a byte array and returned
-        /// </summary>
-        /// <returns>byte[] containing the compressed observation of the grid observation</returns>
+        /// <inheritdoc/>
         public byte[] GetCompressedObservation()
         {
             using (TimerStack.Instance.Scoped("GridSensor.GetCompressedObservation"))
@@ -149,14 +144,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// ChannelsToTexture - Takes the channel index and the numChannelsToAdd.
-        /// For each cell and for each channel to add, sets it to a value of the color specified for that cell.
-        ///  All colors are then set to the perceptionTexture via SetPixels.
-        /// m_perceptionTexture2D can then be read as an image as it now contains all of the information that was
-        /// stored in the channels
+        /// Convert observation values to texture for PNG compression.
         /// </summary>
-        /// <param name="channelIndex"></param>
-        /// <param name="numChannelsToAdd"></param>
         void GridValuesToTexture(int channelIndex, int numChannelsToAdd)
         {
             for (int i = 0; i < m_NumCells; i++)
@@ -170,45 +159,41 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// GetObjectData - returns an array of values that represent the game object
-        /// This is one of the few methods that one may need to override to get their required functionality
-        /// For instance, if one wants specific information about the current gameobject, they can use this method
-        /// to extract it and then return it in an array format.
+        /// Get the observation values of the detected game object.
+        /// Default is to record the detected tag index.
+        ///
+        /// This method can be overridden to encode the observation differently or get custom data from the object.
+        /// When overriding this method, <seealso cref="GetCellObservationSize"/> and <seealso cref="IsDataNormalized"/>
+        /// might also need to change accordingly.
         /// </summary>
-        /// <returns>
-        /// A float[] containing the data that holds the representative information of the passed in gameObject
-        /// </returns>
-        /// <param name="currentColliderGo">The game object that was found colliding with a certain cell</param>
-        /// <param name="typeIndex">The index of the type (tag) of the gameObject.
-        ///           (e.g., if this GameObject had the 3rd tag out of 4, type_index would be 2.0f)</param>
-        /// <param name="normalizedDistance">A float between 0 and 1 describing the ratio of
-        ///            the distance currentColliderGo is compared to the edge of the gridsensor</param>
+        /// <param name="detectedObject">The game object that was detected within a certain cell</param>
+        /// <param name="tagIndex">The index of the detectedObject's tag in the DetectableObjects list</param>
+        /// <param name="dataBuffer">The buffer to write the observation values.
+        ///         The buffer size is configured by <seealso cref="GetCellObservationSize"/>.
+        /// </param>
         /// <example>
-        ///   Here is an example of extenind GetObjectData to include information about a potential Rigidbody:
+        ///   Here is an example of overriding GetObjectData to get the velocity of a potential Rigidbody:
         ///   <code>
-        ///     protected override float[] GetObjectData(GameObject currentColliderGo,
-        ///                                     float type_index, float normalized_distance)
+        ///     protected override void GetObjectData(GameObject detectedObject, int tagIndex, float[] dataBuffer)
         ///     {
-        ///         float[] channelValues = new float[ChannelDepth.Length]; // ChannelDepth.Length = 4 in this example
-        ///         channelValues[0] = type_index;
-        ///         Rigidbody goRb = currentColliderGo.GetComponent&lt;Rigidbody&gt;();
-        ///         if (goRb != null)
+        ///         if (tagIndex == Array.IndexOf(DetectableTags, "RigidBodyObject"))
         ///         {
-        ///             channelValues[1] = goRb.velocity.x;
-        ///             channelValues[2] = goRb.velocity.y;
-        ///             channelValues[3] = goRb.velocity.z;
+        ///             Rigidbody rigidbody = detectedObject.GetComponent&lt;Rigidbody&gt;();
+        ///             dataBuffer[0] = rigidbody.velocity.x;
+        ///             dataBuffer[1] = rigidbody.velocity.y;
+        ///             dataBuffer[2] = rigidbody.velocity.z;
         ///         }
-        ///         return channelValues;
         ///     }
         ///  </code>
         /// </example>
-        protected virtual void GetObjectData(GameObject currentColliderGo, int typeIndex, float[] dataBuffer)
+        protected virtual void GetObjectData(GameObject detectedObject, int tagIndex, float[] dataBuffer)
         {
-            dataBuffer[0] = typeIndex;
+            dataBuffer[0] = tagIndex;
         }
 
         /// <summary>
-        /// Get the observation size for each cell. This will be the size of dataBuffer in GetObjectData().
+        /// Get the observation size for each cell. This will be the size of dataBuffer for <seealso cref="GetObjectData"/>.
+        /// If overriding <seealso cref="GetObjectData"/>, override this method as well to the custom observation size.
         /// </summary>
         protected virtual int GetCellObservationSize()
         {
@@ -217,6 +202,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         /// <summary>
         /// Whether the data is normailzed within [0, 1]. The sensor can only use PNG compression if the data is normailzed.
+        /// If overriding <seealso cref="GetObjectData"/>, override this method as well according to the custom observation values.
         /// </summary>
         protected virtual bool IsDataNormalized()
         {
@@ -224,7 +210,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// Whether to process all the colliders detected in a cell. Default to false and only use the one closest to th agent.
+        /// Whether to process all the colliders detected in a cell. Default to false and only use the one closest to the agent.
         /// </summary>
         protected internal virtual bool ProcessAllCollidersInCell()
         {
@@ -232,42 +218,36 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// Runs basic validation assertions to check that the values can be normalized
+        /// If using PNG compression, check if the values are normalized.
         /// </summary>
-        /// <param name="channelValues">The values to be validated</param>
-        /// <param name="currentColliderGo">The gameobject used for better error messages</param>
-        protected virtual void ValidateValues(float[] channelValues, GameObject currentColliderGo)
+        void ValidateValues(float[] dataValues, GameObject detectedObject)
         {
             if (m_CompressionType != SensorCompressionType.PNG)
             {
                 return;
             }
 
-            for (int j = 0; j < channelValues.Length; j++)
+            for (int j = 0; j < dataValues.Length; j++)
             {
-                if (channelValues[j] < 0 || channelValues[j] > 1)
+                if (dataValues[j] < 0 || dataValues[j] > 1)
                     throw new UnityAgentsException($"When using compression type {m_CompressionType} the data value has to be normalized between 0-1. " +
-                        $"Received value[{channelValues[j]}] for {currentColliderGo.name}");
+                        $"Received value[{dataValues[j]}] for {detectedObject.name}");
             }
         }
 
         /// <summary>
-        /// LoadObjectData - If the GameObject matches a tag, GetObjectData is called to extract the data from the GameObject
-        /// then the data is transformed based on the GridDepthType of the gridsensor.
-        /// Further documetation on the GridDepthType can be found below
+        /// Collect data from the detected object if a detectable tag is matched.
         /// </summary>
-        /// <param name="currentColliderGo">The game object that was found colliding with a certain cell</param>
-        /// <param name="cellIndex">The index of the current cell</param>
-        protected internal void ProcessDetectedObject(GameObject currentColliderGo, int cellIndex)
+        internal void ProcessDetectedObject(GameObject detectedObject, int cellIndex)
         {
             Profiler.BeginSample("GridSensor.ProcessDetectedObject");
             for (var i = 0; i < m_DetectableTags.Length; i++)
             {
-                if (!ReferenceEquals(currentColliderGo, null) && currentColliderGo.CompareTag(m_DetectableTags[i]))
+                if (!ReferenceEquals(detectedObject, null) && detectedObject.CompareTag(m_DetectableTags[i]))
                 {
                     Array.Clear(m_CellDataBuffer, 0, m_CellDataBuffer.Length);
-                    GetObjectData(currentColliderGo, i, m_CellDataBuffer);
-                    ValidateValues(m_CellDataBuffer, currentColliderGo);
+                    GetObjectData(detectedObject, i, m_CellDataBuffer);
+                    ValidateValues(m_CellDataBuffer, detectedObject);
                     Array.Copy(m_CellDataBuffer, 0, m_PerceptionBuffer, cellIndex * m_CellObservationSize, m_CellObservationSize);
                     break;
                 }
