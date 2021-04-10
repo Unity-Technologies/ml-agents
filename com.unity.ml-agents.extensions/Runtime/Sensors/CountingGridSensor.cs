@@ -38,16 +38,16 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// Get the count of object for each detectable tags detected in a cell.
+        /// Get object counts for each detectable tags detected in a cell.
         /// </summary>
         /// <param name="detectedObject">The game object that was detected within a certain cell</param>
         /// <param name="tagIndex">The index of the detectedObject's tag in the DetectableObjects list</param>
         /// <param name="dataBuffer">The buffer to write the observation values.
         ///         The buffer size is configured by <seealso cref="GetCellObservationSize"/>.
         /// </param>
-        protected override void GetObjectData(GameObject currentColliderGo, int typeIndex, float[] dataBuffer)
+        protected override void GetObjectData(GameObject detectedObject, int tagIndex, float[] dataBuffer)
         {
-            dataBuffer[typeIndex] += 1;
+            dataBuffer[tagIndex] += 1;
         }
     }
 }

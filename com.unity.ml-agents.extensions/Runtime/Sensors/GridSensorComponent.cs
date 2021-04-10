@@ -318,7 +318,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 var scale = new Vector3(m_CellScale.x, 1, m_CellScale.z);
                 var gizmoYOffset = new Vector3(0, m_GizmoYOffset, 0);
                 var oldGizmoMatrix = Gizmos.matrix;
-                for (var i = 0; i < m_GridSize.x * m_GridSize.z; i++)
+                for (var i = 0; i < m_DebugSensor.PerceptionBuffer.Length; i++)
                 {
                     var cellPosition = m_BoxOverlapChecker.GetCellGlobalPosition(i);
                     var cubeTransform = Matrix4x4.TRS(cellPosition + gizmoYOffset, rotation, scale);

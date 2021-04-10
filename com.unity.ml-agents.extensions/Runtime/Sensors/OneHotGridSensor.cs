@@ -45,9 +45,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="dataBuffer">The buffer to write the observation values.
         ///         The buffer size is configured by <seealso cref="GetCellObservationSize"/>.
         /// </param>
-        protected override void GetObjectData(GameObject currentColliderGo, int typeIndex, float[] dataBuffer)
+        protected override void GetObjectData(GameObject detectedObject, int tagIndex, float[] dataBuffer)
         {
-            dataBuffer[typeIndex] = 1;
+            dataBuffer[tagIndex] = 1;
         }
     }
 }
