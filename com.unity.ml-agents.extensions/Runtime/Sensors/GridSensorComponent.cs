@@ -223,7 +223,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             // debug data is positive int value and will trigger data validation exception if SensorCompressionType is not None.
             m_DebugSensor = new GridSensorBase("DebugGridSensor", m_CellScale, m_GridSize, m_DetectableObjects, SensorCompressionType.None);
-            m_BoxOverlapChecker.GridOverlapDetectedDebug += m_DebugSensor.LoadObjectData;
+            m_BoxOverlapChecker.RegisterDebugSensor(m_DebugSensor);
 
             if (m_UseOneHotTag)
             {
@@ -236,7 +236,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 {
                     m_Sensors.Add(sensor);
                 }
-                m_BoxOverlapChecker.GridOverlapDetectedClosest += sensor.LoadObjectData;
+                m_BoxOverlapChecker.RegisterSensor(sensor);
             }
             if (m_CountColliders)
             {
@@ -249,7 +249,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 {
                     m_Sensors.Add(sensor);
                 }
-                m_BoxOverlapChecker.GridOverlapDetectedAll += sensor.LoadObjectData;
+                m_BoxOverlapChecker.RegisterSensor(sensor);
             }
             var customSensors = GetGridSensors();
             if (customSensors != null)
@@ -264,14 +264,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                     {
                         m_Sensors.Add(sensor);
                     }
-                    if (sensor.ProcessAllCollidersInCell())
-                    {
-                        m_BoxOverlapChecker.GridOverlapDetectedAll += sensor.LoadObjectData;
-                    }
-                    else
-                    {
-                        m_BoxOverlapChecker.GridOverlapDetectedClosest += sensor.LoadObjectData;
-                    }
+                    m_BoxOverlapChecker.RegisterSensor(sensor);
                 }
             }
             // Only one sensor needs to reference the boxOverlapChecker, so that it gets updated exactly once
