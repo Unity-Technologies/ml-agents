@@ -74,15 +74,15 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        internal string[] m_DetectableObjects;
+        internal string[] m_DetectableTags;
         /// <summary>
         /// List of tags that are detected.
         /// Note that changing this after the sensor is created has no effect.
         /// </summary>
-        public string[] DetectableObjects
+        public string[] DetectableTags
         {
-            get { return m_DetectableObjects; }
-            set { m_DetectableObjects = value; }
+            get { return m_DetectableTags; }
+            set { m_DetectableTags = value; }
         }
 
         [HideInInspector, SerializeField]
@@ -216,18 +216,18 @@ namespace Unity.MLAgents.Extensions.Sensors
                 m_RotateWithAgent,
                 m_ColliderMask,
                 gameObject,
-                m_DetectableObjects,
+                m_DetectableTags,
                 m_InitialColliderBufferSize,
                 m_MaxColliderBufferSize
             );
 
             // debug data is positive int value and will trigger data validation exception if SensorCompressionType is not None.
-            m_DebugSensor = new GridSensorBase("DebugGridSensor", m_CellScale, m_GridSize, m_DetectableObjects, SensorCompressionType.None);
+            m_DebugSensor = new GridSensorBase("DebugGridSensor", m_CellScale, m_GridSize, m_DetectableTags, SensorCompressionType.None);
             m_BoxOverlapChecker.RegisterDebugSensor(m_DebugSensor);
 
             if (m_UseOneHotTag)
             {
-                var sensor = new OneHotGridSensor(m_SensorName + "-OneHot", m_CellScale, m_GridSize, m_DetectableObjects, m_CompressionType);
+                var sensor = new OneHotGridSensor(m_SensorName + "-OneHot", m_CellScale, m_GridSize, m_DetectableTags, m_CompressionType);
                 if (ObservationStacks != 1)
                 {
                     m_Sensors.Add(new StackingSensor(sensor, ObservationStacks));
@@ -240,7 +240,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
             if (m_CountColliders)
             {
-                var sensor = new CountingGridSensor(m_SensorName + "-Counting", m_CellScale, m_GridSize, m_DetectableObjects, m_CompressionType);
+                var sensor = new CountingGridSensor(m_SensorName + "-Counting", m_CellScale, m_GridSize, m_DetectableTags, m_CompressionType);
                 if (ObservationStacks != 1)
                 {
                     m_Sensors.Add(new StackingSensor(sensor, ObservationStacks));

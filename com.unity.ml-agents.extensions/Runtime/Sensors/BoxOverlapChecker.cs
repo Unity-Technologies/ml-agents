@@ -231,17 +231,17 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             if (sensor.ProcessAllCollidersInCell())
             {
-                GridOverlapDetectedAll += sensor.LoadObjectData;
+                GridOverlapDetectedAll += sensor.ProcessDetectedObject;
             }
             else
             {
-                GridOverlapDetectedClosest += sensor.LoadObjectData;
+                GridOverlapDetectedClosest += sensor.ProcessDetectedObject;
             }
         }
 
         internal void RegisterDebugSensor(GridSensorBase debugSensor)
         {
-            GridOverlapDetectedDebug += debugSensor.LoadObjectData;
+            GridOverlapDetectedDebug += debugSensor.ProcessDetectedObject;
         }
     }
 }

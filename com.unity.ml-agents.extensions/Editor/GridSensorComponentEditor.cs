@@ -39,16 +39,16 @@ namespace Unity.MLAgents.Extensions.Editor
                 EditorGUILayout.LabelField("Channel Settings", EditorStyles.boldLabel);
 
                 // detectable objects
-                var detectableObjects = so.FindProperty(nameof(GridSensorComponent.m_DetectableObjects));
-                var newSize = EditorGUILayout.IntField("Detectable Objects", detectableObjects.arraySize);
-                if (newSize != detectableObjects.arraySize)
+                var detectableTags = so.FindProperty(nameof(GridSensorComponent.m_DetectableTags));
+                var newSize = EditorGUILayout.IntField("Detectable Objects", detectableTags.arraySize);
+                if (newSize != detectableTags.arraySize)
                 {
-                    detectableObjects.arraySize = newSize;
+                    detectableTags.arraySize = newSize;
                 }
                 EditorGUI.indentLevel++;
-                for (var i = 0; i < detectableObjects.arraySize; i++)
+                for (var i = 0; i < detectableTags.arraySize; i++)
                 {
-                    var objectTag = detectableObjects.GetArrayElementAtIndex(i);
+                    var objectTag = detectableTags.GetArrayElementAtIndex(i);
                     EditorGUILayout.PropertyField(objectTag, new GUIContent("Tag " + i), true);
                 }
                 EditorGUI.indentLevel--;
@@ -73,7 +73,7 @@ namespace Unity.MLAgents.Extensions.Editor
 
             // detectable objects
             var debugColors = so.FindProperty(nameof(GridSensorComponent.m_DebugColors));
-            var detectableObjectSize = so.FindProperty(nameof(GridSensorComponent.m_DetectableObjects)).arraySize;
+            var detectableObjectSize = so.FindProperty(nameof(GridSensorComponent.m_DetectableTags)).arraySize;
             if (detectableObjectSize != debugColors.arraySize)
             {
                 debugColors.arraySize = detectableObjectSize;

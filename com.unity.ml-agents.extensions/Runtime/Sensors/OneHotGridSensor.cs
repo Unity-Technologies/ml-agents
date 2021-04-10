@@ -12,16 +12,16 @@ namespace Unity.MLAgents.Extensions.Sensors
             string name,
             Vector3 cellScale,
             Vector3Int gridNum,
-            string[] detectableObjects,
+            string[] detectableTags,
             SensorCompressionType compression
-        ) : base(name, cellScale, gridNum, detectableObjects, compression)
+        ) : base(name, cellScale, gridNum, detectableTags, compression)
         {
 
         }
 
         protected override int GetCellObservationSize()
         {
-            return DetectableObjects.Length;
+            return DetectableTags.Length;
         }
 
         protected override bool IsDataNormalized()

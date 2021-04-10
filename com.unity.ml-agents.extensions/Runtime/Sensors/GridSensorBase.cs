@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -18,7 +17,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         protected string m_Name;
         Vector3 m_CellScale;
         Vector3Int m_GridSize;
-        string[] m_DetectableObjects;
+        string[] m_DetectableTags;
         SensorCompressionType m_CompressionType;
         ObservationSpec m_ObservationSpec;
         internal BoxOverlapChecker m_BoxOverlapChecker;
@@ -39,14 +38,14 @@ namespace Unity.MLAgents.Extensions.Sensors
             string name,
             Vector3 cellScale,
             Vector3Int gridNum,
-            string[] detectableObjects,
+            string[] detectableTags,
             SensorCompressionType compression
         )
         {
             m_Name = name;
             m_CellScale = cellScale;
             m_GridSize = gridNum;
-            m_DetectableObjects = detectableObjects;
+            m_DetectableTags = detectableTags;
             m_CompressionType = compression;
 
             if (m_GridSize.y != 1)
@@ -69,7 +68,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 if (!IsDataNormalized() && value == SensorCompressionType.PNG)
                 {
-                    Debug.LogWarning("Compression type {m_CompressionType} is only supported with normalized data. " +
+                    Debug.LogWarning($"Compression type {m_CompressionType} is only supported with normalized data. " +
                         "The sensor will not compress the data.");
                     return;
                 }
@@ -82,9 +81,9 @@ namespace Unity.MLAgents.Extensions.Sensors
             get { return m_PerceptionBuffer; }
         }
 
-        protected string[] DetectableObjects
+        protected string[] DetectableTags
         {
-            get { return m_DetectableObjects; }
+            get { return m_DetectableTags; }
         }
 
         /// <inheritdoc/>
@@ -141,7 +140,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 for (int i = 0; i < numImages; i++)
                 {
                     var channelIndex = 3 * i;
-                    ChannelsToTexture(channelIndex, Math.Min(3, m_CellObservationSize - channelIndex));
+                    GridValuesToTexture(channelIndex, Math.Min(3, m_CellObservationSize - channelIndex));
                     allBytes.AddRange(m_PerceptionTexture.EncodeToPNG());
                 }
 
@@ -158,7 +157,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         /// <param name="channelIndex"></param>
         /// <param name="numChannelsToAdd"></param>
-        void ChannelsToTexture(int channelIndex, int numChannelsToAdd)
+        void GridValuesToTexture(int channelIndex, int numChannelsToAdd)
         {
             for (int i = 0; i < m_NumCells; i++)
             {
@@ -259,12 +258,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         /// <param name="currentColliderGo">The game object that was found colliding with a certain cell</param>
         /// <param name="cellIndex">The index of the current cell</param>
-        protected internal void LoadObjectData(GameObject currentColliderGo, int cellIndex)
+        protected internal void ProcessDetectedObject(GameObject currentColliderGo, int cellIndex)
         {
-            Profiler.BeginSample("GridSensor.LoadObjectData");
-            for (var i = 0; i < m_DetectableObjects.Length; i++)
+            Profiler.BeginSample("GridSensor.ProcessDetectedObject");
+            for (var i = 0; i < m_DetectableTags.Length; i++)
             {
-                if (!ReferenceEquals(currentColliderGo, null) && currentColliderGo.CompareTag(m_DetectableObjects[i]))
+                if (!ReferenceEquals(currentColliderGo, null) && currentColliderGo.CompareTag(m_DetectableTags[i]))
                 {
                     Array.Clear(m_CellDataBuffer, 0, m_CellDataBuffer.Length);
                     GetObjectData(currentColliderGo, i, m_CellDataBuffer);
@@ -324,6 +323,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 m_PerceptionTexture = null;
             }
         }
+
         static void DestroyTexture(Texture2D texture)
         {
             if (Application.isEditor)
