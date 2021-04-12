@@ -83,7 +83,6 @@ class StatsWriter(abc.ABC):
     and writes it out by some method.
     """
 
-    @abc.abstractmethod
     def add_stat(
         self,
         key: str,
@@ -98,7 +97,6 @@ class StatsWriter(abc.ABC):
         :param aggregation: the aggregation method for the statistic, default StatsAggregationMethod.AVERAGE.
         """
         pass
-
 
     @abc.abstractmethod
     def write_stats(
