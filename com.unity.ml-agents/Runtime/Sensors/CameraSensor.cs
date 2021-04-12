@@ -170,6 +170,7 @@ namespace Unity.MLAgents.Sensors
             return BuiltInSensorType.CameraSensor;
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             if (!ReferenceEquals(null, m_Texture))

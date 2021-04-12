@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Extensions.Match3
     /// Sensor component for a Match3 game.
     /// </summary>
     [AddComponentMenu("ML Agents/Match 3 Sensor", (int)MenuGroup.Sensors)]
-    public class Match3SensorComponent : SensorComponent
+    public class Match3SensorComponent : SensorComponent, IDisposable
     {
         /// <summary>
         /// Name of the generated Match3Sensor object.
@@ -40,7 +40,7 @@ namespace Unity.MLAgents.Extensions.Match3
         }
 
         /// <inheritdoc/>
-        public override void Dispose()
+        public void Dispose()
         {
             if (m_Sensors != null)
             {

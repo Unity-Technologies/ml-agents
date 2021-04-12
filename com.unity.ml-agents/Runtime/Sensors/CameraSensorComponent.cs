@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -7,7 +8,7 @@ namespace Unity.MLAgents.Sensors
     /// A SensorComponent that creates a <see cref="CameraSensor"/>.
     /// </summary>
     [AddComponentMenu("ML Agents/Camera Sensor", (int)MenuGroup.Sensors)]
-    public class CameraSensorComponent : SensorComponent
+    public class CameraSensorComponent : SensorComponent, IDisposable
     {
         [HideInInspector, SerializeField, FormerlySerializedAs("camera")]
         Camera m_Camera;
@@ -120,6 +121,7 @@ namespace Unity.MLAgents.Sensors
         /// <returns>The created <see cref="CameraSensor"/> object for this component.</returns>
         public override ISensor[] CreateSensors()
         {
+            Dispose();
             m_Sensor = new CameraSensor(m_Camera, m_Width, m_Height, Grayscale, m_SensorName, m_Compression, m_ObservationType);
 
             if (ObservationStacks != 1)
@@ -141,14 +143,13 @@ namespace Unity.MLAgents.Sensors
             }
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             if (!ReferenceEquals(m_Sensor, null))
             {
                 m_Sensor.Dispose();
                 m_Sensor = null;
             }
-            base.Dispose();
         }
     }
 }

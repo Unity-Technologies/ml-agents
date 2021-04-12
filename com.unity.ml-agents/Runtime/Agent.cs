@@ -1008,20 +1008,14 @@ namespace Unity.MLAgents
 
         void CleanupSensors()
         {
-            // Get all attached sensor components
-            SensorComponent[] attachedSensorComponents;
-            if (m_PolicyFactory.UseChildSensors)
+            // Dispose all attached sensor
+            for (var i = 0; i < sensors.Count; i++)
             {
-                attachedSensorComponents = GetComponentsInChildren<SensorComponent>();
-            }
-            else
-            {
-                attachedSensorComponents = GetComponents<SensorComponent>();
-            }
-
-            for (var i = 0; i < attachedSensorComponents.Length; i++)
-            {
-                attachedSensorComponents[i].Dispose();
+                var sensor = sensors[i];
+                if (sensor is IDisposable disposableSensor)
+                {
+                    disposableSensor.Dispose();
+                }
             }
         }
 
