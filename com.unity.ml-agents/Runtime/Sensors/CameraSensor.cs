@@ -126,7 +126,6 @@ namespace Unity.MLAgents.Sensors
         /// <summary>
         /// Renders a Camera instance to a 2D texture at the corresponding resolution.
         /// </summary>
-        /// <returns>The 2D texture.</returns>
         /// <param name="obsCamera">Camera.</param>
         /// <param name="texture2D">Texture2D to render to.</param>
         /// <param name="width">Width of resulting 2D texture.</param>
@@ -170,7 +169,9 @@ namespace Unity.MLAgents.Sensors
             return BuiltInSensorType.CameraSensor;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Clean up the owned Texture2D.
+        /// </summary>
         public void Dispose()
         {
             if (!ReferenceEquals(null, m_Texture))

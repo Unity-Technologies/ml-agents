@@ -105,7 +105,9 @@ namespace Unity.MLAgents.Sensors
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Clean up the sensor created by CreateSensors().
+        /// </summary>
         public void Dispose()
         {
             if (!ReferenceEquals(null, m_Sensor))

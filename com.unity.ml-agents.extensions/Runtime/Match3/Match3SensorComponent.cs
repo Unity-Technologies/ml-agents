@@ -35,11 +35,13 @@ namespace Unity.MLAgents.Extensions.Match3
             var specialSensor = Match3Sensor.SpecialTypeSensor(board, ObservationType, SensorName + " (special)");
             m_Sensors = specialSensor != null
                 ? new ISensor[] { cellSensor, specialSensor }
-                : new ISensor[] { cellSensor };
+            : new ISensor[] { cellSensor };
             return m_Sensors;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Clean up the sensors created by CreateSensors().
+        /// </summary>
         public void Dispose()
         {
             if (m_Sensors != null)

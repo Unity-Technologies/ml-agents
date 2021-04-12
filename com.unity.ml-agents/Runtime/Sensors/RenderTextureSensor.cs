@@ -45,7 +45,6 @@ namespace Unity.MLAgents.Sensors
             m_ObservationSpec = ObservationSpec.Visual(height, width, grayscale ? 1 : 3);
             m_CompressionType = compressionType;
             m_Texture = new Texture2D(width, height, TextureFormat.RGB24, false);
-
         }
 
         /// <inheritdoc/>
@@ -104,7 +103,6 @@ namespace Unity.MLAgents.Sensors
         /// <summary>
         /// Converts a RenderTexture to a 2D texture.
         /// </summary>
-        /// <returns>The 2D texture.</returns>
         /// <param name="obsTexture">RenderTexture.</param>
         /// <param name="texture2D">Texture2D to render to.</param>
         public static void ObservationToTexture(RenderTexture obsTexture, Texture2D texture2D)
@@ -120,6 +118,9 @@ namespace Unity.MLAgents.Sensors
             RenderTexture.active = prevActiveRt;
         }
 
+        /// <summary>
+        /// Clean up the owned Texture2D.
+        /// </summary>
         public void Dispose()
         {
             if (!ReferenceEquals(null, m_Texture))

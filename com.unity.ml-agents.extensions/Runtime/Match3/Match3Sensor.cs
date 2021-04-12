@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
-
     /// <summary>
     /// Delegate that provides integer values at a given (x,y) coordinate.
     /// </summary>
@@ -167,7 +166,6 @@ namespace Unity.MLAgents.Extensions.Match3
 
 
             return offset;
-
         }
 
         /// <inheritdoc/>
@@ -243,6 +241,9 @@ namespace Unity.MLAgents.Extensions.Match3
             return BuiltInSensorType.Match3Sensor;
         }
 
+        /// <summary>
+        /// Clean up the owned Texture2D.
+        /// </summary>
         public void Dispose()
         {
             if (!ReferenceEquals(null, m_ObservationTexture))
@@ -279,7 +280,7 @@ namespace Unity.MLAgents.Extensions.Match3
             int channelOffset,
             int currentHeight,
             int currentWidth
-            )
+        )
         {
             var i = 0;
             // There's an implicit flip converting to PNG from texture, so make sure we
