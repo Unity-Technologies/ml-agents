@@ -6,7 +6,7 @@ using Unity.MLAgents.Sensors;
 using UnityEngine.Profiling;
 using Object = UnityEngine.Object;
 
-[assembly: InternalsVisibleTo("Unity.ML-Agents.Extensions.TestUtils")]
+[assembly: InternalsVisibleTo("Unity.ML-Agents.Extensions.EditorTests")]
 namespace Unity.MLAgents.Extensions.Sensors
 {
     /// <summary>
@@ -46,7 +46,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_CellScale = cellScale;
             m_GridSize = gridNum;
             m_DetectableTags = detectableTags;
-            m_CompressionType = compression;
+            CompressionType = compression;
 
             if (m_GridSize.y != 1)
             {
@@ -68,7 +68,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 if (!IsDataNormalized() && value == SensorCompressionType.PNG)
                 {
-                    Debug.LogWarning($"Compression type {m_CompressionType} is only supported with normalized data. " +
+                    Debug.LogWarning($"Compression type {value} is only supported with normalized data. " +
                         "The sensor will not compress the data.");
                     return;
                 }
@@ -245,7 +245,15 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 if (!ReferenceEquals(detectedObject, null) && detectedObject.CompareTag(m_DetectableTags[i]))
                 {
-                    Array.Clear(m_CellDataBuffer, 0, m_CellDataBuffer.Length);
+                    if (ProcessAllCollidersInCell())
+                    {
+                        Array.Copy(m_PerceptionBuffer, cellIndex * m_CellObservationSize, m_CellDataBuffer, 0, m_CellObservationSize);
+                    }
+                    else
+                    {
+                        Array.Clear(m_CellDataBuffer, 0, m_CellDataBuffer.Length);
+                    }
+
                     GetObjectData(detectedObject, i, m_CellDataBuffer);
                     ValidateValues(m_CellDataBuffer, detectedObject);
                     Array.Copy(m_CellDataBuffer, 0, m_PerceptionBuffer, cellIndex * m_CellObservationSize, m_CellObservationSize);

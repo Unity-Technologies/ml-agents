@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using Unity.MLAgents.Sensors;
 
+[assembly: InternalsVisibleTo("Unity.ML-Agents.Extensions.EditorTests")]
 namespace Unity.MLAgents.Extensions.Sensors
 {
     /// <summary>
