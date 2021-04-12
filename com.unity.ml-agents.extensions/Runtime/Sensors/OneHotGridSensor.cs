@@ -8,6 +8,14 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// </summary>
     public class OneHotGridSensor : GridSensorBase
     {
+        /// <summary>
+        /// Create a OneHotGridSensor with the specified configuration.
+        /// </summary>
+        /// <param name="name">The sensor name</param>
+        /// <param name="cellScale">The scale of each cell in the grid</param>
+        /// <param name="gridNum">Number of cells on each side of the grid</param>
+        /// <param name="detectableTags">Tags to be detected by the sensor</param>
+        /// <param name="compression">Compression type</param>
         public OneHotGridSensor(
             string name,
             Vector3 cellScale,
@@ -16,7 +24,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             SensorCompressionType compression
         ) : base(name, cellScale, gridNum, detectableTags, compression)
         {
-
         }
 
         /// <inheritdoc/>

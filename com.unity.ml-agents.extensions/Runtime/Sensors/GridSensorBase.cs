@@ -14,7 +14,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// </summary>
     public class GridSensorBase : ISensor, IBuiltInSensor, IDisposable
     {
-        protected string m_Name;
+        string m_Name;
         Vector3 m_CellScale;
         Vector3Int m_GridSize;
         string[] m_DetectableTags;
@@ -34,6 +34,14 @@ namespace Unity.MLAgents.Extensions.Sensors
         Vector3 m_CellCenterOffset;
 
 
+        /// <summary>
+        /// Create a GridSensorBase with the specified configuration.
+        /// </summary>
+        /// <param name="name">The sensor name</param>
+        /// <param name="cellScale">The scale of each cell in the grid</param>
+        /// <param name="gridNum">Number of cells on each side of the grid</param>
+        /// <param name="detectableTags">Tags to be detected by the sensor</param>
+        /// <param name="compression">Compression type</param>
         public GridSensorBase(
             string name,
             Vector3 cellScale,
@@ -61,6 +69,9 @@ namespace Unity.MLAgents.Extensions.Sensors
             ResetPerceptionBuffer();
         }
 
+        /// <summary>
+        /// The compression type used by the sensor.
+        /// </summary>
         public SensorCompressionType CompressionType
         {
             get { return m_CompressionType; }
@@ -81,6 +92,9 @@ namespace Unity.MLAgents.Extensions.Sensors
             get { return m_PerceptionBuffer; }
         }
 
+        /// <summary>
+        /// The tags which the sensor dectects.
+        /// </summary>
         protected string[] DetectableTags
         {
             get { return m_DetectableTags; }
@@ -195,23 +209,26 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// Get the observation size for each cell. This will be the size of dataBuffer for <seealso cref="GetObjectData"/>.
         /// If overriding <seealso cref="GetObjectData"/>, override this method as well to the custom observation size.
         /// </summary>
+        /// <returns>The observation size of each cell.</returns>
         protected virtual int GetCellObservationSize()
         {
             return 1;
         }
 
         /// <summary>
-        /// Whether the data is normailzed within [0, 1]. The sensor can only use PNG compression if the data is normailzed.
+        /// Whether the data is normalized within [0, 1]. The sensor can only use PNG compression if the data is normailzed.
         /// If overriding <seealso cref="GetObjectData"/>, override this method as well according to the custom observation values.
         /// </summary>
+        /// <returns>Bool value indicating whether data is normalized.</returns>
         protected virtual bool IsDataNormalized()
         {
             return false;
         }
 
         /// <summary>
-        /// Whether to process all the colliders detected in a cell. Default to false and only use the one closest to the agent.
+        /// Whether to process all detected colliders in a cell. Default to false and only use the one closest to the agent.
         /// </summary>
+        /// <returns>Bool value indicating whether to process all detected colliders in a cell.</returns>
         protected internal virtual bool ProcessAllCollidersInCell()
         {
             return false;
@@ -303,6 +320,9 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
         }
 
+        /// <summary>
+        /// Clean up the internal objects.
+        /// </summary>
         public void Dispose()
         {
             if (!ReferenceEquals(null, m_PerceptionTexture))

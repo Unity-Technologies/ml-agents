@@ -14,12 +14,12 @@ namespace Unity.MLAgents.Extensions.Sensors
     {
         // dummy sensor only used for debug gizmo
         GridSensorBase m_DebugSensor;
-        protected List<ISensor> m_Sensors;
+        List<ISensor> m_Sensors;
         internal BoxOverlapChecker m_BoxOverlapChecker;
 
         [HideInInspector, SerializeField]
         internal string m_SensorName = "GridSensor";
-        // <summary>
+        /// <summary>
         /// Name of the generated <see cref="GridSensor"/> object.
         /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
         /// </summary>
@@ -278,6 +278,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// Get an array of GridSensors to be added in this component.
         /// Override this method and return custom GridSensor implementations.
         /// </summary>
+        /// <returns>Array of grid sensors to be added to the component.</returns>
         protected virtual GridSensorBase[] GetGridSensors()
         {
             return null;

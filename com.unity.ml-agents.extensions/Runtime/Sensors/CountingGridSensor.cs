@@ -8,6 +8,14 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// </summary>
     public class CountingGridSensor : GridSensorBase
     {
+        /// <summary>
+        /// Create a CountingGridSensor with the specified configuration.
+        /// </summary>
+        /// <param name="name">The sensor name</param>
+        /// <param name="cellScale">The scale of each cell in the grid</param>
+        /// <param name="gridNum">Number of cells on each side of the grid</param>
+        /// <param name="detectableTags">Tags to be detected by the sensor</param>
+        /// <param name="compression">Compression type</param>
         public CountingGridSensor(
             string name,
             Vector3 cellScale,
