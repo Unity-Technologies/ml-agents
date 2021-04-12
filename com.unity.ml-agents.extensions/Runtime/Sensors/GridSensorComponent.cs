@@ -301,16 +301,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             if (m_ShowGizmos)
             {
-                if (m_BoxOverlapChecker == null)
+                if (m_BoxOverlapChecker == null || m_DebugSensor == null)
                 {
                     return;
                 }
 
-                // hack for debug sensor: data is int value in [0, detectableTag.Length], so fill the buffer will -1 as default value.
-                for (var i = 0; i < m_DebugSensor.PerceptionBuffer.Length; i++)
-                {
-                    m_DebugSensor.PerceptionBuffer[i] = -1f;
-                }
+                m_DebugSensor.ResetPerceptionBuffer();
                 m_BoxOverlapChecker.UpdateGizmo();
                 var cellColors = m_DebugSensor.PerceptionBuffer;
                 var rotation = m_BoxOverlapChecker.GetGridRotation();
@@ -323,7 +319,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                     var cellPosition = m_BoxOverlapChecker.GetCellGlobalPosition(i);
                     var cubeTransform = Matrix4x4.TRS(cellPosition + gizmoYOffset, rotation, scale);
                     Gizmos.matrix = oldGizmoMatrix * cubeTransform;
-                    var colorIndex = cellColors[i];
+                    var colorIndex = cellColors[i] - 1;
                     var debugRayColor = Color.white;
                     if (colorIndex > -1 && m_DebugColors.Length > colorIndex)
                     {

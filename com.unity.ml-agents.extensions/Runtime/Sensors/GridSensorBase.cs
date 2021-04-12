@@ -188,7 +188,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </example>
         protected virtual void GetObjectData(GameObject detectedObject, int tagIndex, float[] dataBuffer)
         {
-            dataBuffer[0] = tagIndex;
+            dataBuffer[0] = tagIndex + 1;
         }
 
         /// <summary>

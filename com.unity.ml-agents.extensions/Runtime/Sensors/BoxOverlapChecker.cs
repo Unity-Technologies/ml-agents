@@ -138,7 +138,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// Perceive the latest grid status. Call OverlapBoxNonAlloc once to detect colliders.
         /// Then parse the collider arrays according to all available gridSensor delegates.
         /// </summary>
-        public void Update()
+        internal void Update()
         {
             for (var cellIndex = 0; cellIndex < m_NumCells; cellIndex++)
             {
@@ -159,7 +159,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Same as Update(), but only load data for debug gizmo.
         /// </summary>
-        public void UpdateGizmo()
+        internal void UpdateGizmo()
         {
             for (var cellIndex = 0; cellIndex < m_NumCells; cellIndex++)
             {
