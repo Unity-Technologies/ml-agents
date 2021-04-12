@@ -269,6 +269,13 @@ namespace Unity.MLAgents.Extensions.Sensors
                     m_BoxOverlapChecker.RegisterSensor(sensor);
                 }
             }
+
+            if (m_Sensors == null || m_Sensors.Count < 1)
+            {
+                throw new UnityAgentsException("GridSensorComponent received no sensors. Specify at least one observation type (OneHot/Counting) to use grid sensors." +
+                    "If you're overriding GridSensorComponent.GetGridSensors(), return at least one grid sensor.");
+            }
+
             // Only one sensor needs to reference the boxOverlapChecker, so that it gets updated exactly once
             ((GridSensorBase)m_Sensors[0]).m_BoxOverlapChecker = m_BoxOverlapChecker;
             return m_Sensors.ToArray();

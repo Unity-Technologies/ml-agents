@@ -57,11 +57,8 @@ namespace Unity.MLAgents.Extensions.Editor
             }
             EditorGUI.EndDisabledGroup();
             EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_ColliderMask)), true);
-            EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
-            {
-                EditorGUILayout.LabelField("Sensor Settings", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_ObservationStacks)), true);
-            }
+            EditorGUILayout.LabelField("Sensor Settings", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_ObservationStacks)), true);
             EditorGUI.EndDisabledGroup();
             EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_CompressionType)), true);
             EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());

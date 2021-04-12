@@ -184,10 +184,17 @@ namespace Unity.MLAgents.Extensions.Sensors
 
                 // Continue if the current collider go is the root reference
                 if (ReferenceEquals(currentColliderGo, m_RootReference))
+                {
                     continue;
+                }
 
                 var closestColliderPoint = foundColliders[i].ClosestPointOnBounds(cellCenter);
                 var currentDistanceSquared = (closestColliderPoint - m_RootReference.transform.position).sqrMagnitude;
+
+                if (currentDistanceSquared >= minDistanceSquared)
+                {
+                    continue;
+                }
 
                 // Checks if our colliders contain a detectable object
                 var index = -1;

@@ -194,5 +194,17 @@ namespace Unity.MLAgents.Extensions.Tests.GridSensors
             Assert.IsNull(((GridSensorBase)gridSensors[1]).m_BoxOverlapChecker);
             Assert.IsNull(((GridSensorBase)gridSensors[2]).m_BoxOverlapChecker);
         }
+
+        [Test]
+        public void TestNoSensors()
+        {
+            testGo.tag = k_Tag2;
+            string[] tags = { k_Tag1, k_Tag2 };
+            gridSensorComponent.SetComponentParameters(tags);
+            Assert.Throws<UnityAgentsException>(() =>
+            {
+                gridSensorComponent.CreateSensors();
+            });
+        }
     }
 }
