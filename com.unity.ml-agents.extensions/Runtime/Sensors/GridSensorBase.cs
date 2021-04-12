@@ -227,6 +227,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         /// <summary>
         /// Whether to process all detected colliders in a cell. Default to false and only use the one closest to the agent.
+        /// If overriding <seealso cref="GetObjectData"/>, consider override this method when needed.
         /// </summary>
         /// <returns>Bool value indicating whether to process all detected colliders in a cell.</returns>
         protected internal virtual bool ProcessAllCollidersInCell()

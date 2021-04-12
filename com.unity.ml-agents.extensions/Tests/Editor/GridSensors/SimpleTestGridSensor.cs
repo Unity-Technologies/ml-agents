@@ -28,9 +28,6 @@ namespace Unity.MLAgents.Extensions.Tests.GridSensors
 
     public class SimpleTestGridSensor : GridSensorBase
     {
-        int m_ObservationSize;
-        bool m_IsNormalized;
-        bool m_ParseAllColliders;
         public float[] DummyData;
 
         public SimpleTestGridSensor(
@@ -68,13 +65,6 @@ namespace Unity.MLAgents.Extensions.Tests.GridSensors
             {
                 dataBuffer[i] = DummyData[i];
             }
-        }
-
-        public void SetParameters(int observationSize, bool isNormalized, bool parseAllColliders)
-        {
-            m_ObservationSize = observationSize;
-            m_IsNormalized = isNormalized;
-            m_ParseAllColliders = parseAllColliders;
         }
     }
 
