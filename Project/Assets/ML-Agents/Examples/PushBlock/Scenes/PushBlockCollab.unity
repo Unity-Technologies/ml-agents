@@ -871,18 +871,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8191066182862526892, guid: f5bbed44a6ea747a687fbbb738eb1730,
-        type: 3}
-      propertyPath: ShowGizmos
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8191903532335653025, guid: f5bbed44a6ea747a687fbbb738eb1730,
         type: 3}
       propertyPath: m_Name
       value: PushBlockCollabAreaGrid
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 8191066182862526892, guid: f5bbed44a6ea747a687fbbb738eb1730, type: 3}
-    - {fileID: 8696048509000480034, guid: f5bbed44a6ea747a687fbbb738eb1730, type: 3}
-    - {fileID: 9116780590443581139, guid: f5bbed44a6ea747a687fbbb738eb1730, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f5bbed44a6ea747a687fbbb738eb1730, type: 3}
