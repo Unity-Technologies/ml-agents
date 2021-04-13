@@ -51,20 +51,20 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         /// <param name="name">The sensor name</param>
         /// <param name="cellScale">The scale of each cell in the grid</param>
-        /// <param name="gridNum">Number of cells on each side of the grid</param>
+        /// <param name="gridSize">Number of cells on each side of the grid</param>
         /// <param name="detectableTags">Tags to be detected by the sensor</param>
         /// <param name="compression">Compression type</param>
         public GridSensorBase(
             string name,
             Vector3 cellScale,
-            Vector3Int gridNum,
+            Vector3Int gridSize,
             string[] detectableTags,
             SensorCompressionType compression
         )
         {
             m_Name = name;
             m_CellScale = cellScale;
-            m_GridSize = gridNum;
+            m_GridSize = gridSize;
             m_DetectableTags = detectableTags;
             CompressionType = compression;
 

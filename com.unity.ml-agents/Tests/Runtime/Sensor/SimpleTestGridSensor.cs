@@ -57,6 +57,7 @@ namespace Unity.MLAgents.Tests
         {
             return TestGridSensorConfig.ParseAllColliders ? ProcessCollidersMethod.ProcessAllColliders : ProcessCollidersMethod.ProcessClosestColliders;
         }
+
         protected override void GetObjectData(GameObject detectedObject, int typeIndex, float[] dataBuffer)
         {
             for (var i = 0; i < DummyData.Length; i++)

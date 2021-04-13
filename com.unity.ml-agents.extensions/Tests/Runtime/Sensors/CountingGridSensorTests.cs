@@ -44,15 +44,25 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 
         public class TestCountingGridSensorComponent : GridSensorComponent
         {
+            public void SetParameters(string[] detectableTags)
+            {
+                DetectableTags = detectableTags;
+                CellScale = new Vector3(1, 0.01f, 1);
+                GridSize = new Vector3Int(10, 1, 10);
+                ColliderMask = LayerMask.GetMask("Default");
+                RotateWithAgent = false;
+                CompressionType = SensorCompressionType.None;
+            }
+
             protected override GridSensorBase[] GetGridSensors()
             {
                 return new GridSensorBase[] {
                     new CountingGridSensor(
                         "TestSensor",
-                        new Vector3(1, 0.01f, 1),
-                        new Vector3Int(10, 1, 10),
+                        CellScale,
+                        GridSize,
                         DetectableTags,
-                        SensorCompressionType.None) };
+                        CompressionType) };
             }
         }
 
@@ -104,9 +114,8 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [Test]
         public void TestCountingSensor()
         {
-            testGo.tag = k_Tag2;
             string[] tags = { k_Tag1, k_Tag2 };
-            gridSensorComponent.DetectableTags = tags;
+            gridSensorComponent.SetParameters(tags);
             var gridSensor = (CountingGridSensor)gridSensorComponent.CreateSensors()[0];
             Assert.AreEqual(gridSensor.PerceptionBuffer.Length, 10 * 10 * 2);
 
