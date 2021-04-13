@@ -32,6 +32,15 @@ def test_stat_reporter_add_summary_write():
         statsreporter1.add_stat("key1", float(i))
         statsreporter2.add_stat("key2", float(i))
 
+    statsreportercalls = [
+        mock.call(f"key{j}", float(i), StatsAggregationMethod.AVERAGE)
+        for i in range(10)
+        for j in [1, 2]
+    ]
+
+    mock_writer1.on_add_stat.assert_has_calls(statsreportercalls)
+    mock_writer2.on_add_stat.assert_has_calls(statsreportercalls)
+
     statssummary1 = statsreporter1.get_stats_summaries("key1")
     statssummary2 = statsreporter2.get_stats_summaries("key2")
 
