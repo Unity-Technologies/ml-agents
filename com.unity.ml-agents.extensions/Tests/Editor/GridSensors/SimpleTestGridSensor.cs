@@ -54,11 +54,10 @@ namespace Unity.MLAgents.Extensions.Tests.GridSensors
             return TestGridSensorConfig.IsNormalized;
         }
 
-        protected internal override bool ProcessAllCollidersInCell()
+        protected internal override ProcessCollidersMethod GetProcessCollidersMethod()
         {
-            return TestGridSensorConfig.ParseAllColliders;
+            return TestGridSensorConfig.ParseAllColliders ? ProcessCollidersMethod.ProcessAllColliders : ProcessCollidersMethod.ProcessClosestColliders;
         }
-
         protected override void GetObjectData(GameObject detectedObject, int typeIndex, float[] dataBuffer)
         {
             for (var i = 0; i < DummyData.Length; i++)
