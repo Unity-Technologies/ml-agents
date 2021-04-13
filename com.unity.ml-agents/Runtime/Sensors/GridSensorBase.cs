@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
-using Unity.MLAgents.Sensors;
 using UnityEngine.Profiling;
 using Object = UnityEngine.Object;
 
-[assembly: InternalsVisibleTo("Unity.ML-Agents.Extensions.EditorTests")]
-namespace Unity.MLAgents.Extensions.Sensors
+namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// The way the GridSensor process detected colliders in a cell.

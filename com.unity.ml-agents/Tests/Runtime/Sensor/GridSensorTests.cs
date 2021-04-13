@@ -3,9 +3,8 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Unity.MLAgents.Sensors;
-using Unity.MLAgents.Extensions.Sensors;
 
-namespace Unity.MLAgents.Extensions.Tests.GridSensors
+namespace Unity.MLAgents.Tests
 {
     public class GridSensorTests
     {
@@ -137,35 +136,35 @@ namespace Unity.MLAgents.Extensions.Tests.GridSensors
             GridObsTestUtils.AssertSubarraysAtIndex(gridSensor.PerceptionBuffer, subarrayIndicies, expectedSubarrays, expectedDefault);
         }
 
-        [Test]
-        public void TestCountingSensor()
-        {
-            testGo.tag = k_Tag2;
-            string[] tags = { k_Tag1, k_Tag2 };
-            gridSensorComponent.SetComponentParameters(tags, countColliders: true);
-            var gridSensor = (CountingGridSensor)gridSensorComponent.CreateSensors()[0];
-            Assert.AreEqual(gridSensor.PerceptionBuffer.Length, 10 * 10 * 2);
+        // [Test]
+        // public void TestCountingSensor()
+        // {
+        //     testGo.tag = k_Tag2;
+        //     string[] tags = { k_Tag1, k_Tag2 };
+        //     gridSensorComponent.SetComponentParameters(tags, countColliders: true);
+        //     var gridSensor = (CountingGridSensor)gridSensorComponent.CreateSensors()[0];
+        //     Assert.AreEqual(gridSensor.PerceptionBuffer.Length, 10 * 10 * 2);
 
-            gridSensor.Update();
+        //     gridSensor.Update();
 
-            int[] subarrayIndicies = new int[] { 77, 78, 87, 88 };
-            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new float[] { 1, 0 }, 4);
-            float[] expectedDefault = new float[] { 0, 0 };
-            GridObsTestUtils.AssertSubarraysAtIndex(gridSensor.PerceptionBuffer, subarrayIndicies, expectedSubarrays, expectedDefault);
+        //     int[] subarrayIndicies = new int[] { 77, 78, 87, 88 };
+        //     float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new float[] { 1, 0 }, 4);
+        //     float[] expectedDefault = new float[] { 0, 0 };
+        //     GridObsTestUtils.AssertSubarraysAtIndex(gridSensor.PerceptionBuffer, subarrayIndicies, expectedSubarrays, expectedDefault);
 
-            var boxGo2 = new GameObject("block");
-            boxGo2.tag = k_Tag1;
-            boxGo2.transform.position = new Vector3(3.1f, 0f, 3f);
-            boxGo2.AddComponent<BoxCollider>();
+        //     var boxGo2 = new GameObject("block");
+        //     boxGo2.tag = k_Tag1;
+        //     boxGo2.transform.position = new Vector3(3.1f, 0f, 3f);
+        //     boxGo2.AddComponent<BoxCollider>();
 
-            gridSensor.Update();
+        //     gridSensor.Update();
 
-            subarrayIndicies = new int[] { 77, 78, 87, 88 };
-            expectedSubarrays = GridObsTestUtils.DuplicateArray(new float[] { 2, 0 }, 4);
-            expectedDefault = new float[] { 0, 0 };
-            GridObsTestUtils.AssertSubarraysAtIndex(gridSensor.PerceptionBuffer, subarrayIndicies, expectedSubarrays, expectedDefault);
-            Object.DestroyImmediate(boxGo2);
-        }
+        //     subarrayIndicies = new int[] { 77, 78, 87, 88 };
+        //     expectedSubarrays = GridObsTestUtils.DuplicateArray(new float[] { 2, 0 }, 4);
+        //     expectedDefault = new float[] { 0, 0 };
+        //     GridObsTestUtils.AssertSubarraysAtIndex(gridSensor.PerceptionBuffer, subarrayIndicies, expectedSubarrays, expectedDefault);
+        //     Object.DestroyImmediate(boxGo2);
+        // }
 
         [Test]
         public void TestCustomSensorInvalidData()
@@ -188,7 +187,7 @@ namespace Unity.MLAgents.Extensions.Tests.GridSensors
         {
             testGo.tag = k_Tag2;
             string[] tags = { k_Tag1, k_Tag2 };
-            gridSensorComponent.SetComponentParameters(tags, useOneHotTag: true, countColliders: true, useTestingGridSensor: true);
+            gridSensorComponent.SetComponentParameters(tags, useOneHotTag: true, useGridSensorBase: true, useTestingGridSensor: true);
             var gridSensors = gridSensorComponent.CreateSensors();
             Assert.IsNotNull(((GridSensorBase)gridSensors[0]).m_BoxOverlapChecker);
             Assert.IsNull(((GridSensorBase)gridSensors[1]).m_BoxOverlapChecker);

@@ -2,8 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-[assembly: InternalsVisibleTo("Unity.ML-Agents.Extensions.EditorTests")]
-namespace Unity.MLAgents.Extensions.Sensors
+namespace Unity.MLAgents.Sensors
 {
     internal class BoxOverlapChecker
     {

@@ -1,9 +1,8 @@
 using UnityEditor;
 using UnityEngine;
-using Unity.MLAgents.Editor;
-using Unity.MLAgents.Extensions.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace Unity.MLAgents.Extensions.Editor
+namespace Unity.MLAgents.Editor
 {
     [CustomEditor(typeof(GridSensorComponent))]
     [CanEditMultipleObjects]
@@ -50,10 +49,6 @@ namespace Unity.MLAgents.Extensions.Editor
                     EditorGUILayout.PropertyField(objectTag, new GUIContent("Tag " + i), true);
                 }
                 EditorGUI.indentLevel--;
-
-                EditorGUILayout.LabelField("Observation Settings", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_UseOneHotTag)), new GUIContent("One-Hot Tag Index"), true);
-                EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_CountColliders)), new GUIContent("Detectable Tag Count"), true);
             }
             EditorGUI.EndDisabledGroup();
             EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_ColliderMask)), true);
