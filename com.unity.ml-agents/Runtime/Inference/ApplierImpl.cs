@@ -182,7 +182,7 @@ namespace Unity.MLAgents.Inference
         public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
             var agentIndex = 0;
-            var memorySize = (int)tensorProxy.shape[tensorProxy.shape.Length - 1];
+            var memorySize = tensorProxy.data.width;
             for (var i = 0; i < actionIds.Count; i++)
             {
                 var agentId = actionIds[i];
@@ -192,6 +192,11 @@ namespace Unity.MLAgents.Inference
                 {
                     memory = new List<float>();
                     memory.AddRange(Enumerable.Repeat(0f, memorySize));
+                }
+
+                for (var j = 0; j < memorySize; j++)
+                {
+                    memory[j] = tensorProxy.data[agentIndex, 0, j, 0];
                 }
 
                 m_Memories[agentId] = memory;

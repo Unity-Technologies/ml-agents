@@ -2,6 +2,7 @@ from mlagents.torch_utils import torch
 import abc
 from typing import Tuple
 from enum import Enum
+from mlagents.trainers.torch.model_serialization import exporting_to_onnx
 
 
 class Swish(torch.nn.Module):
@@ -203,10 +204,22 @@ class LSTM(MemoryModule):
     def forward(
         self, input_tensor: torch.Tensor, memories: torch.Tensor
     ) -> Tuple[torch.Tensor, torch.Tensor]:
+
+        if exporting_to_onnx.is_exporting():
+            # This transpose is needed both at input and output of the LSTM when
+            # exporting because ONNX will expect (sequence_len, batch, memory_size)
+            # instead of (batch, sequence_len, memory_size)
+            memories = torch.transpose(memories, 0, 1)
+
         # We don't use torch.split here since it is not supported by Barracuda
         h0 = memories[:, :, : self.hidden_size].contiguous()
         c0 = memories[:, :, self.hidden_size :].contiguous()
+
         hidden = (h0, c0)
         lstm_out, hidden_out = self.lstm(input_tensor, hidden)
         output_mem = torch.cat(hidden_out, dim=-1)
+
+        if exporting_to_onnx.is_exporting():
+            output_mem = torch.transpose(output_mem, 0, 1)
+
         return lstm_out, output_mem

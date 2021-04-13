@@ -17,7 +17,21 @@ namespace Unity.MLAgents.Inference
 
         internal enum ModelApiVersion
         {
+            /// <summary>
+            /// ML-Agents model version for versions 1.x.y
+            /// The observations are split between vector and visual observations
+            /// There are legacy action outputs for discrete and continuous actions
+            /// LSTM inputs and outputs are handled by Barracuda
+            /// </summary>
             MLAgents1_0 = 2,
+
+            /// <summary>
+            /// All observations are treated the same and named obs_{i} with i being
+            /// the sensor index
+            /// Legacy "action" output is no longer present
+            /// LSTM inputs and outputs are treated like regular inputs and outputs
+            /// and no longer managed by Barracuda
+            /// </summary>
             MLAgents2_0 = 3,
             MinSupportedVersion = MLAgents1_0,
             MaxSupportedVersion = MLAgents2_0
@@ -289,12 +303,22 @@ namespace Unity.MLAgents.Inference
             // If the model has a non-negative memory size but requires a recurrent input
             if (memory > 0)
             {
-                if (!tensorsNames.Any(x => x.EndsWith("_h")) ||
-                    !tensorsNames.Any(x => x.EndsWith("_c")))
+                var modelVersion = model.GetVersion();
+                var netHasMemories = false;
+                if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
+                {
+                    netHasMemories = tensorsNames.Any(x => x.EndsWith("_h")) &&
+                        tensorsNames.Any(x => x.EndsWith("_c"));
+                }
+                else
+                {
+                    netHasMemories = tensorsNames.Any(x => x == TensorNames.RecurrentInPlaceholder);
+                }
+                if (!netHasMemories)
                 {
                     failedModelChecks.Add(
-                        FailedCheck.Warning("The model does not contain a Recurrent Input Node but has memory_size.")
-                        );
+                            FailedCheck.Warning("The model does not contain a Recurrent Input Node but has memory_size.")
+                            );
                 }
             }
 
@@ -329,15 +353,27 @@ namespace Unity.MLAgents.Inference
             // If there is no Recurrent Output but the model is Recurrent.
             if (memory > 0)
             {
-                var memOutputs = model.memories.Select(x => x.output).ToList();
 
-                if (!memOutputs.Any(x => x.EndsWith("_h")) ||
-                    !memOutputs.Any(x => x.EndsWith("_c")))
+                var netHasMemories = false;
+                var modelVersion = model.GetVersion();
+                if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
+                {
+                    var memOutputs = model.memories.Select(x => x.output).ToList();
+                    netHasMemories = memOutputs.Any(x => x.EndsWith("_h")) &&
+                        memOutputs.Any(x => x.EndsWith("_c"));
+                }
+                else
+                {
+                    var allOutputs = model.GetOutputNames().ToList();
+                    netHasMemories = allOutputs.Any(x => x == TensorNames.RecurrentOutput);
+                }
+                if (!netHasMemories)
                 {
                     failedModelChecks.Add(
                         FailedCheck.Warning("The model does not contain a Recurrent Output Node but has memory_size.")
                         );
                 }
+
             }
             return failedModelChecks;
         }

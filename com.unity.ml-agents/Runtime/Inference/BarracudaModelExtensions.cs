@@ -77,15 +77,19 @@ namespace Unity.MLAgents.Inference
                 });
             }
 
-            foreach (var mem in model.memories)
+            var modelVersion = model.GetVersion();
+            if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
             {
-                tensors.Add(new TensorProxy
+                foreach (var mem in model.memories)
                 {
-                    name = mem.input,
-                    valueType = TensorProxy.TensorType.FloatingPoint,
-                    data = null,
-                    shape = TensorUtils.TensorShapeFromBarracuda(mem.shape)
-                });
+                    tensors.Add(new TensorProxy
+                    {
+                        name = mem.input,
+                        valueType = TensorProxy.TensorType.FloatingPoint,
+                        data = null,
+                        shape = TensorUtils.TensorShapeFromBarracuda(mem.shape)
+                    });
+                }
             }
 
             tensors.Sort((el1, el2) => string.Compare(el1.name, el2.name, StringComparison.InvariantCulture));
@@ -142,12 +146,20 @@ namespace Unity.MLAgents.Inference
                 names.Add(model.DiscreteOutputName());
             }
 
+            var modelVersion = model.GetVersion();
             var memory = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
             if (memory > 0)
             {
-                foreach (var mem in model.memories)
+                if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
                 {
-                    names.Add(mem.output);
+                    foreach (var mem in model.memories)
+                    {
+                        names.Add(mem.output);
+                    }
+                }
+                else
+                {
+                    names.Add(TensorNames.RecurrentOutput);
                 }
             }
 

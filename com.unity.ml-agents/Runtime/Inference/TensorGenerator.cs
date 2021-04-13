@@ -67,10 +67,13 @@ namespace Unity.MLAgents.Inference
             m_Dict[TensorNames.RecurrentInPlaceholder] =
                 new RecurrentInputGenerator(allocator, memories);
 
-            for (var i = 0; i < model.memories.Count; i++)
+            if (m_ApiVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
             {
-                m_Dict[model.memories[i].input] =
-                    new BarracudaRecurrentInputGenerator(i, allocator, memories);
+                for (var i = 0; i < model.memories.Count; i++)
+                {
+                    m_Dict[model.memories[i].input] =
+                        new BarracudaRecurrentInputGenerator(i, allocator, memories);
+                }
             }
 
             m_Dict[TensorNames.PreviousActionPlaceholder] =
