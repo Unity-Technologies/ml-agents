@@ -94,9 +94,10 @@ class StatsWriter(abc.ABC):
         Callback method for handling an individual stat value as reported to the StatsReporter add_stat
         or set_stat methods.
 
+        :param category: Category of the statistics. Usually this is the behavior name.
         :param key: The type of statistic, e.g. Environment/Reward.
-        :param value: the value of the statistic.
-        :param aggregation: the aggregation method for the statistic, default StatsAggregationMethod.AVERAGE.
+        :param value: The value of the statistic.
+        :param aggregation: The aggregation method for the statistic, default StatsAggregationMethod.AVERAGE.
         """
         pass
 
