@@ -3,7 +3,7 @@ import os
 import subprocess
 from sys import platform
 from typing import Optional, List
-from mlagents_envs.logging_util import get_logger
+from mlagents_envs.logging_util import get_logger, DEBUG
 from mlagents_envs.exception import UnityEnvironmentException
 
 
@@ -106,6 +106,9 @@ def launch_executable(file_name: str, args: List[str]) -> subprocess.Popen:
         logger.debug(f"Running with args {args}")
         # Launch Unity environment
         subprocess_args = [launch_string] + args
+        # std_out_option = DEVNULL means the outputs will not be displayed on terminal.
+        # std_out_option = None is default behavior: the outputs are displayed on terminal.
+        std_out_option = subprocess.DEVNULL if logger.level > DEBUG else None
         try:
             return subprocess.Popen(
                 subprocess_args,
@@ -115,6 +118,8 @@ def launch_executable(file_name: str, args: List[str]) -> subprocess.Popen:
                 # but may be undesirable in come cases; if so, we'll add a command-line toggle.
                 # Note that on Windows, the CTRL_C signal will still be sent.
                 start_new_session=True,
+                stdout=std_out_option,
+                stderr=std_out_option,
             )
         except PermissionError as perm:
             # This is likely due to missing read or execute permissions on file.

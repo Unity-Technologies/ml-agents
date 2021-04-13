@@ -542,6 +542,8 @@ namespace Unity.MLAgents
                 Academy.Instance.AgentForceReset -= _AgentReset;
                 NotifyAgentDone(DoneReason.Disabled);
             }
+
+            CleanupSensors();
             m_Brain?.Dispose();
             OnAgentDisabled?.Invoke(this);
             m_Initialized = false;
@@ -572,13 +574,17 @@ namespace Unity.MLAgents
             // Request the last decision with no callbacks
             // We request a decision so Python knows the Agent is done immediately
             m_Brain?.RequestDecision(m_Info, sensors);
-            ResetSensors();
 
             // We also have to write any to any DemonstationStores so that they get the "done" flag.
-            foreach (var demoWriter in DemonstrationWriters)
+            if (DemonstrationWriters.Count != 0)
             {
-                demoWriter.Record(m_Info, sensors);
+                foreach (var demoWriter in DemonstrationWriters)
+                {
+                    demoWriter.Record(m_Info, sensors);
+                }
             }
+
+            ResetSensors();
 
             if (doneReason != DoneReason.Disabled)
             {
@@ -1003,6 +1009,19 @@ namespace Unity.MLAgents
 #endif
         }
 
+        void CleanupSensors()
+        {
+            // Dispose all attached sensor
+            for (var i = 0; i < sensors.Count; i++)
+            {
+                var sensor = sensors[i];
+                if (sensor is IDisposable disposableSensor)
+                {
+                    disposableSensor.Dispose();
+                }
+            }
+        }
+
         void InitializeActuators()
         {
             ActuatorComponent[] attachedActuators;
@@ -1081,9 +1100,12 @@ namespace Unity.MLAgents
             }
 
             // If we have any DemonstrationWriters, write the AgentInfo and sensors to them.
-            foreach (var demoWriter in DemonstrationWriters)
+            if (DemonstrationWriters.Count != 0)
             {
-                demoWriter.Record(m_Info, sensors);
+                foreach (var demoWriter in DemonstrationWriters)
+                {
+                    demoWriter.Record(m_Info, sensors);
+                }
             }
         }
 

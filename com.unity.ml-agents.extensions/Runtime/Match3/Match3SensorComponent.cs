@@ -1,3 +1,4 @@
+using System;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ namespace Unity.MLAgents.Extensions.Match3
     /// Sensor component for a Match3 game.
     /// </summary>
     [AddComponentMenu("ML Agents/Match 3 Sensor", (int)MenuGroup.Sensors)]
-    public class Match3SensorComponent : SensorComponent
+    public class Match3SensorComponent : SensorComponent, IDisposable
     {
         /// <summary>
         /// Name of the generated Match3Sensor object.
@@ -20,22 +21,38 @@ namespace Unity.MLAgents.Extensions.Match3
         /// </summary>
         public Match3ObservationType ObservationType = Match3ObservationType.Vector;
 
+        private ISensor[] m_Sensors;
+
         /// <inheritdoc/>
         public override ISensor[] CreateSensors()
         {
+            // Clean up any existing sensors
+            Dispose();
+
             var board = GetComponent<AbstractBoard>();
             var cellSensor = Match3Sensor.CellTypeSensor(board, ObservationType, SensorName + " (cells)");
-            if (board.NumSpecialTypes > 0)
-            {
-                var specialSensor =
-                    Match3Sensor.SpecialTypeSensor(board, ObservationType, SensorName + " (special)");
-                return new ISensor[] { cellSensor, specialSensor };
-            }
-            else
-            {
-                return new ISensor[] { cellSensor };
-            }
+            // This can be null if numSpecialTypes is 0
+            var specialSensor = Match3Sensor.SpecialTypeSensor(board, ObservationType, SensorName + " (special)");
+            m_Sensors = specialSensor != null
+                ? new ISensor[] { cellSensor, specialSensor }
+            : new ISensor[] { cellSensor };
+            return m_Sensors;
         }
 
+        /// <summary>
+        /// Clean up the sensors created by CreateSensors().
+        /// </summary>
+        public void Dispose()
+        {
+            if (m_Sensors != null)
+            {
+                for (var i = 0; i < m_Sensors.Length; i++)
+                {
+                    ((Match3Sensor)m_Sensors[i]).Dispose();
+                }
+
+                m_Sensors = null;
+            }
+        }
     }
 }

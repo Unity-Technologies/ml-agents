@@ -20,6 +20,7 @@ class StatusType(Enum):
     STATS_METADATA = "metadata"
     CHECKPOINTS = "checkpoints"
     FINAL_CHECKPOINT = "final_checkpoint"
+    ELO = "elo"
 
 
 @attr.s(auto_attribs=True)

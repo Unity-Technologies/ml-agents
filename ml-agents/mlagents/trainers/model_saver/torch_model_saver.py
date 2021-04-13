@@ -67,10 +67,12 @@ class TorchModelSaver(BaseModelSaver):
         # This argument is mainly for initialization of the ghost trainer's fixed policy.
         reset_steps = not self.load
         if self.initialize_path is not None:
+            logger.info(f"Initializing from {self.initialize_path}.")
             self._load_model(
                 self.initialize_path, policy, reset_global_steps=reset_steps
             )
         elif self.load:
+            logger.info(f"Resuming from {self.model_path}.")
             self._load_model(self.model_path, policy, reset_global_steps=reset_steps)
 
     def _load_model(
@@ -89,7 +91,34 @@ class TorchModelSaver(BaseModelSaver):
         policy = cast(TorchPolicy, policy)
 
         for name, mod in modules.items():
-            mod.load_state_dict(saved_state_dict[name])
+            try:
+                if isinstance(mod, torch.nn.Module):
+                    missing_keys, unexpected_keys = mod.load_state_dict(
+                        saved_state_dict[name], strict=False
+                    )
+                    if missing_keys:
+                        logger.warning(
+                            f"Did not find these keys {missing_keys} in checkpoint. Initializing."
+                        )
+                    if unexpected_keys:
+                        logger.warning(
+                            f"Did not expect these keys {unexpected_keys} in checkpoint. Ignoring."
+                        )
+                else:
+                    # If module is not an nn.Module, try to load as one piece
+                    mod.load_state_dict(saved_state_dict[name])
+
+            # KeyError is raised if the module was not present in the last run but is being
+            # accessed in the saved_state_dict.
+            # ValueError is raised by the optimizer's load_state_dict if the parameters have
+            # have changed. Note, the optimizer uses a completely different load_state_dict
+            # function because it is not an nn.Module.
+            # RuntimeError is raised by PyTorch if there is a size mismatch between modules
+            # of the same name. This will still partially assign values to those layers that
+            # have not changed shape.
+            except (KeyError, ValueError, RuntimeError) as err:
+                logger.warning(f"Failed to load for module {name}. Initializing")
+                logger.debug(f"Module loading error : {err}")
 
         if reset_global_steps:
             policy.set_step(0)

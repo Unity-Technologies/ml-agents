@@ -25,23 +25,29 @@ namespace Unity.MLAgents.Sensors
             else
             {
                 // Check for compatibility with the other Agents' Sensors
-                // TODO make sure this only checks once per agent
-                Debug.AssertFormat(
-                    m_SensorShapes.Count == sensors.Count,
-                    "Number of Sensors must match. {0} != {1}",
-                    m_SensorShapes.Count,
-                    sensors.Count
-                );
+                if (m_SensorShapes.Count != sensors.Count)
+                {
+                    Debug.AssertFormat(
+                        m_SensorShapes.Count == sensors.Count,
+                        "Number of Sensors must match. {0} != {1}",
+                        m_SensorShapes.Count,
+                        sensors.Count
+                    );
+                }
                 for (var i = 0; i < Mathf.Min(m_SensorShapes.Count, sensors.Count); i++)
                 {
                     var cachedSpec = m_SensorShapes[i];
                     var sensorSpec = sensors[i].GetObservationSpec();
-                    Debug.AssertFormat(
-                        cachedSpec.Shape == sensorSpec.Shape,
-                        "Sensor shapes must match. {0} != {1}",
-                        cachedSpec.Shape,
-                        sensorSpec.Shape
-                    );
+                    if (cachedSpec.Shape != sensorSpec.Shape)
+                    {
+                        Debug.AssertFormat(
+                            cachedSpec.Shape == sensorSpec.Shape,
+                            "Sensor shapes must match. {0} != {1}",
+                            cachedSpec.Shape,
+                            sensorSpec.Shape
+                        );
+
+                    }
                 }
             }
         }

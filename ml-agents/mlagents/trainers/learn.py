@@ -242,7 +242,7 @@ def run_cli(options: RunOptions) -> None:
 
     if options.env_settings.seed == -1:
         run_seed = np.random.randint(0, 10000)
-        logger.info(f"run_seed set to {run_seed}")
+        logger.debug(f"run_seed set to {run_seed}")
     run_training(run_seed, options)
 
 

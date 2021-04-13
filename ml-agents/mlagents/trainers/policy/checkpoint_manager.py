@@ -40,9 +40,9 @@ class ModelCheckpointManager:
         file_path: str = checkpoint["file_path"]
         if os.path.exists(file_path):
             os.remove(file_path)
-            logger.info(f"Removed checkpoint model {file_path}.")
+            logger.debug(f"Removed checkpoint model {file_path}.")
         else:
-            logger.info(f"Checkpoint at {file_path} could not be found.")
+            logger.debug(f"Checkpoint at {file_path} could not be found.")
         return
 
     @classmethod

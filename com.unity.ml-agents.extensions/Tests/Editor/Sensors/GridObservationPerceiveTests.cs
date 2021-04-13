@@ -10,7 +10,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
     {
         GameObject testGo;
         GameObject boxGo;
-        GridSensor gridSensor;
+        GridSensorComponent gridSensorComponent;
 
         // Use built-in tags
         const string k_Tag1 = "Player";
@@ -21,7 +21,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             testGo = new GameObject("test");
             testGo.transform.position = Vector3.zero;
-            gridSensor = testGo.AddComponent<GridSensor>();
+            gridSensorComponent = testGo.AddComponent<GridSensorComponent>();
 
             boxGo = new GameObject("block");
             boxGo.tag = k_Tag1;
@@ -37,6 +37,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Object.DestroyImmediate(testGo);
         }
 
+
         [UnityTest]
         public IEnumerator PerceiveNotSelfChannelHot()
         {
@@ -45,20 +46,20 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             string[] tags = { k_Tag2, k_Tag1 };
             int[] depths = { 3 };
             Color[] colors = { Color.red, Color.magenta };
-            gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.ChannelHot,
+            GridObsTestUtils.SetComponentParameters(gridSensorComponent, tags, depths, GridDepthType.ChannelHot,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
-            gridSensor.Start();
+            var gridSensor = (GridSensor)gridSensorComponent.CreateSensors()[0];
 
             yield return null;
 
-            float[] output = gridSensor.Perceive();
+            gridSensor.Perceive();
 
-            Assert.AreEqual(10 * 10 * 3, output.Length);
+            Assert.AreEqual(10 * 10 * 3, gridSensor.m_PerceptionBuffer.Length);
 
             int[] subarrayIndicies = new int[] { 77, 78, 87, 88 };
-            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new float[] { 0, 0, 1 }, 4);
-            float[] expectedDefault = new float[] { 1, 0, 0 };
-            GridObsTestUtils.AssertSubarraysAtIndex(output, subarrayIndicies, expectedSubarrays, expectedDefault);
+            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new float[] { 0, 1, 0 }, 4);
+            float[] expectedDefault = new float[] { 0, 0, 0 };
+            GridObsTestUtils.AssertSubarraysAtIndex(gridSensor.m_PerceptionBuffer, subarrayIndicies, expectedSubarrays, expectedDefault);
         }
 
         [UnityTest]
@@ -69,20 +70,20 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             string[] tags = { k_Tag2, k_Tag1 };
             int[] depths = { 3 };
             Color[] colors = { Color.red, Color.magenta };
-            gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.Channel,
+            GridObsTestUtils.SetComponentParameters(gridSensorComponent, tags, depths, GridDepthType.Channel,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
-            gridSensor.Start();
+            var gridSensor = (GridSensor)gridSensorComponent.CreateSensors()[0];
 
             yield return null;
 
-            float[] output = gridSensor.Perceive();
+            gridSensor.Perceive();
 
-            Assert.AreEqual(10 * 10 * 1, output.Length);
+            Assert.AreEqual(10 * 10 * 1, gridSensor.m_PerceptionBuffer.Length);
 
             int[] subarrayIndicies = new int[] { 77, 78, 87, 88 };
-            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new[] { 2f / 3f }, 4);
+            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new[] { 1f / 3f }, 4);
             float[] expectedDefault = new float[] { 0f };
-            GridObsTestUtils.AssertSubarraysAtIndex(output, subarrayIndicies, expectedSubarrays, expectedDefault);
+            GridObsTestUtils.AssertSubarraysAtIndex(gridSensor.m_PerceptionBuffer, subarrayIndicies, expectedSubarrays, expectedDefault);
         }
 
         [UnityTest]
@@ -93,20 +94,20 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             string[] tags = { k_Tag1 };
             int[] depths = { 3 };
             Color[] colors = { Color.red, Color.magenta };
-            gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.Channel,
+            GridObsTestUtils.SetComponentParameters(gridSensorComponent, tags, depths, GridDepthType.Channel,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
-            gridSensor.Start();
+            var gridSensor = (GridSensor)gridSensorComponent.CreateSensors()[0];
 
             yield return null;
 
-            float[] output = gridSensor.Perceive();
+            gridSensor.Perceive();
 
-            Assert.AreEqual(10 * 10 * 1, output.Length);
+            Assert.AreEqual(10 * 10 * 1, gridSensor.m_PerceptionBuffer.Length);
 
             int[] subarrayIndicies = new int[] { 77, 78, 87, 88 };
-            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new[] { 1f / 3f }, 4);
+            float[][] expectedSubarrays = GridObsTestUtils.DuplicateArray(new[] { 0f }, 4);
             float[] expectedDefault = new float[] { 0f };
-            GridObsTestUtils.AssertSubarraysAtIndex(output, subarrayIndicies, expectedSubarrays, expectedDefault);
+            GridObsTestUtils.AssertSubarraysAtIndex(gridSensor.m_PerceptionBuffer, subarrayIndicies, expectedSubarrays, expectedDefault);
         }
     }
 }

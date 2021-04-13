@@ -78,7 +78,7 @@ class TrainerController:
 
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].save_model()
-        self.logger.info("Saved Model")
+        self.logger.debug("Saved Model")
 
     @staticmethod
     def _create_output_path(output_path):
