@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
-using Object = UnityEngine.Object;
 
 namespace Unity.MLAgents.Sensors
 {
@@ -341,22 +340,8 @@ namespace Unity.MLAgents.Sensors
         {
             if (!ReferenceEquals(null, m_PerceptionTexture))
             {
-                DestroyTexture(m_PerceptionTexture);
+                Utilities.DestroyTexture(m_PerceptionTexture);
                 m_PerceptionTexture = null;
-            }
-        }
-
-        static void DestroyTexture(Texture2D texture)
-        {
-            if (Application.isEditor)
-            {
-                // Edit Mode tests complain if we use Destroy()
-                // TODO move to extension methods for UnityEngine.Object?
-                Object.DestroyImmediate(texture);
-            }
-            else
-            {
-                Object.Destroy(texture);
             }
         }
     }
