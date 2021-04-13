@@ -643,7 +643,6 @@ class SimpleActor(nn.Module, Actor):
         At this moment, torch.onnx.export() doesn't accept None as tensor to be exported,
         so the size of return tuple varies with action spec.
         """
-
         encoding, memories_out = self.network_body(
             inputs, memories=memories, sequence_length=1
         )

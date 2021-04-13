@@ -204,16 +204,16 @@ class LSTM(MemoryModule):
     def forward(
         self, input_tensor: torch.Tensor, memories: torch.Tensor
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-        # We don't use torch.split here since it is not supported by Barracuda
-        h0 = memories[:, :, : self.hidden_size].contiguous()
-        c0 = memories[:, :, self.hidden_size :].contiguous()
 
         if exporting_to_onnx.is_exporting():
             # This transpose is needed both at input and output of the LSTM when
             # exporting because ONNX will expect (sequence_len, batch, memory_size)
             # instead of (batch, sequence_len, memory_size)
-            h0 = torch.transpose(h0, 0, 1)
-            c0 = torch.transpose(c0, 0, 1)
+            memories = torch.transpose(memories, 0, 1)
+
+        # We don't use torch.split here since it is not supported by Barracuda
+        h0 = memories[:, :, : self.hidden_size].contiguous()
+        c0 = memories[:, :, self.hidden_size :].contiguous()
 
         hidden = (h0, c0)
         lstm_out, hidden_out = self.lstm(input_tensor, hidden)
