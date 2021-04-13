@@ -1,6 +1,9 @@
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using Unity.MLAgents.Sensors;
 
+[assembly: InternalsVisibleTo("Unity.ML-Agents.Extensions.EditorTests")]
 namespace Unity.MLAgents.Extensions.Sensors
 {
     /// <summary>
@@ -9,11 +12,14 @@ namespace Unity.MLAgents.Extensions.Sensors
     [AddComponentMenu("ML Agents/Grid Sensor", (int)MenuGroup.Sensors)]
     public class GridSensorComponent : SensorComponent
     {
-        protected GridSensor m_Sensor;
+        // dummy sensor only used for debug gizmo
+        GridSensorBase m_DebugSensor;
+        List<ISensor> m_Sensors;
+        internal BoxOverlapChecker m_BoxOverlapChecker;
 
         [HideInInspector, SerializeField]
         internal string m_SensorName = "GridSensor";
-        // <summary>
+        /// <summary>
         /// Name of the generated <see cref="GridSensor"/> object.
         /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
         /// </summary>
@@ -70,27 +76,15 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        internal int[] m_ChannelDepths = new int[] { 1 };
-        /// <summary>
-        /// Array holding the depth of each channel.
-        /// Note that changing this after the sensor is created has no effect.
-        /// </summary>
-        public int[] ChannelDepths
-        {
-            get { return m_ChannelDepths; }
-            set { m_ChannelDepths = value; }
-        }
-
-        [HideInInspector, SerializeField]
-        internal string[] m_DetectableObjects;
+        internal string[] m_DetectableTags;
         /// <summary>
         /// List of tags that are detected.
         /// Note that changing this after the sensor is created has no effect.
         /// </summary>
-        public string[] DetectableObjects
+        public string[] DetectableTags
         {
-            get { return m_DetectableObjects; }
-            set { m_DetectableObjects = value; }
+            get { return m_DetectableTags; }
+            set { m_DetectableTags = value; }
         }
 
         [HideInInspector, SerializeField]
@@ -102,18 +96,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             get { return m_ColliderMask; }
             set { m_ColliderMask = value; }
-        }
-
-        [HideInInspector, SerializeField]
-        internal GridDepthType m_DepthType = GridDepthType.Channel;
-        /// <summary>
-        /// The data layout that the grid should output.
-        /// Note that changing this after the sensor is created has no effect.
-        /// </summary>
-        public GridDepthType DepthType
-        {
-            get { return m_DepthType; }
-            set { m_DepthType = value; }
         }
 
         [HideInInspector, SerializeField]
@@ -202,29 +184,93 @@ namespace Unity.MLAgents.Extensions.Sensors
             set { m_ObservationStacks = value; }
         }
 
+        [HideInInspector, SerializeField]
+        internal bool m_UseOneHotTag = true;
+        /// <summary>
+        /// Whether to use one-hot representation of detected tag as observation.
+        /// Note that changing this after the sensor is created has no effect.
+        /// </summary>
+        public bool UseOneHotTag
+        {
+            get { return m_UseOneHotTag; }
+            set { m_UseOneHotTag = value; }
+        }
+
+        [HideInInspector, SerializeField]
+        internal bool m_CountColliders = false;
+        /// <summary>
+        /// Whether to use the number of count for each detectable tag as observation.
+        /// Note that changing this after the sensor is created has no effect.
+        /// </summary>
+        public bool CountColliders
+        {
+            get { return m_CountColliders; }
+            set { m_CountColliders = value; }
+        }
+
         /// <inheritdoc/>
         public override ISensor[] CreateSensors()
         {
-            m_Sensor = new GridSensor(
-                m_SensorName,
+            List<ISensor> m_Sensors = new List<ISensor>();
+            m_BoxOverlapChecker = new BoxOverlapChecker(
                 m_CellScale,
                 m_GridSize,
                 m_RotateWithAgent,
-                m_ChannelDepths,
-                m_DetectableObjects,
                 m_ColliderMask,
-                m_DepthType,
                 gameObject,
-                m_CompressionType,
-                m_MaxColliderBufferSize,
-                m_InitialColliderBufferSize
+                m_DetectableTags,
+                m_InitialColliderBufferSize,
+                m_MaxColliderBufferSize
             );
 
-            if (ObservationStacks != 1)
+            // debug data is positive int value and will trigger data validation exception if SensorCompressionType is not None.
+            m_DebugSensor = new GridSensorBase("DebugGridSensor", m_CellScale, m_GridSize, m_DetectableTags, SensorCompressionType.None);
+            m_BoxOverlapChecker.RegisterDebugSensor(m_DebugSensor);
+
+            var gridSensors = GetGridSensors();
+            if (gridSensors == null || gridSensors.Length < 1)
             {
-                return new ISensor[] { new StackingSensor(m_Sensor, ObservationStacks) };
+                throw new UnityAgentsException("GridSensorComponent received no sensors. Specify at least one observation type (OneHot/Counting) to use grid sensors." +
+                    "If you're overriding GridSensorComponent.GetGridSensors(), return at least one grid sensor.");
             }
-            return new ISensor[] { m_Sensor };
+
+            foreach (var sensor in gridSensors)
+            {
+                if (ObservationStacks != 1)
+                {
+                    m_Sensors.Add(new StackingSensor(sensor, ObservationStacks));
+                }
+                else
+                {
+                    m_Sensors.Add(sensor);
+                }
+                m_BoxOverlapChecker.RegisterSensor(sensor);
+            }
+
+            // Only one sensor needs to reference the boxOverlapChecker, so that it gets updated exactly once
+            ((GridSensorBase)m_Sensors[0]).m_BoxOverlapChecker = m_BoxOverlapChecker;
+            return m_Sensors.ToArray();
+        }
+
+        /// <summary>
+        /// Get an array of GridSensors to be added in this component.
+        /// Override this method and return custom GridSensor implementations.
+        /// </summary>
+        /// <returns>Array of grid sensors to be added to the component.</returns>
+        protected virtual GridSensorBase[] GetGridSensors()
+        {
+            List<GridSensorBase> sensorList = new List<GridSensorBase>();
+            if (m_UseOneHotTag)
+            {
+                var sensor = new OneHotGridSensor(m_SensorName + "-OneHot", m_CellScale, m_GridSize, m_DetectableTags, m_CompressionType);
+                sensorList.Add(sensor);
+            }
+            if (m_CountColliders)
+            {
+                var sensor = new CountingGridSensor(m_SensorName + "-Counting", m_CellScale, m_GridSize, m_DetectableTags, m_CompressionType);
+                sensorList.Add(sensor);
+            }
+            return sensorList.ToArray();
         }
 
         /// <summary>
@@ -232,11 +278,14 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         internal void UpdateSensor()
         {
-            if (m_Sensor != null)
+            if (m_Sensors != null)
             {
-                m_Sensor.CompressionType = m_CompressionType;
-                m_Sensor.RotateWithAgent = m_RotateWithAgent;
-                m_Sensor.ColliderMask = m_ColliderMask;
+                m_BoxOverlapChecker.RotateWithAgent = m_RotateWithAgent;
+                m_BoxOverlapChecker.ColliderMask = m_ColliderMask;
+                foreach (var sensor in m_Sensors)
+                {
+                    ((GridSensorBase)sensor).CompressionType = m_CompressionType;
+                }
             }
         }
 
@@ -244,26 +293,29 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             if (m_ShowGizmos)
             {
-                if (m_Sensor == null)
+                if (m_BoxOverlapChecker == null || m_DebugSensor == null)
                 {
                     return;
                 }
-                var cellColors = m_Sensor.PerceiveGizmoColor();
-                var cellPositions = m_Sensor.GetGizmoPositions();
-                var rotation = m_Sensor.GetGridRotation();
+
+                m_DebugSensor.ResetPerceptionBuffer();
+                m_BoxOverlapChecker.UpdateGizmo();
+                var cellColors = m_DebugSensor.PerceptionBuffer;
+                var rotation = m_BoxOverlapChecker.GetGridRotation();
 
                 var scale = new Vector3(m_CellScale.x, 1, m_CellScale.z);
                 var gizmoYOffset = new Vector3(0, m_GizmoYOffset, 0);
                 var oldGizmoMatrix = Gizmos.matrix;
-                for (var i = 0; i < cellPositions.Length; i++)
+                for (var i = 0; i < m_DebugSensor.PerceptionBuffer.Length; i++)
                 {
-                    var cubeTransform = Matrix4x4.TRS(cellPositions[i] + gizmoYOffset, rotation, scale);
+                    var cellPosition = m_BoxOverlapChecker.GetCellGlobalPosition(i);
+                    var cubeTransform = Matrix4x4.TRS(cellPosition + gizmoYOffset, rotation, scale);
                     Gizmos.matrix = oldGizmoMatrix * cubeTransform;
-                    var colorIndex = cellColors[i];
+                    var colorIndex = cellColors[i] - 1;
                     var debugRayColor = Color.white;
                     if (colorIndex > -1 && m_DebugColors.Length > colorIndex)
                     {
-                        debugRayColor = m_DebugColors[colorIndex];
+                        debugRayColor = m_DebugColors[(int)colorIndex];
                     }
                     Gizmos.color = new Color(debugRayColor.r, debugRayColor.g, debugRayColor.b, .5f);
                     Gizmos.DrawCube(Vector3.zero, Vector3.one);

@@ -1,57 +1,11 @@
 using NUnit.Framework;
 using System;
 using System.Linq;
-using Unity.MLAgents.Extensions.Sensors;
-using UnityEngine;
 
-namespace Unity.MLAgents.Extensions.Tests.Sensors
+namespace Unity.MLAgents.Extensions.Tests.GridSensors
 {
     public static class GridObsTestUtils
     {
-
-
-        /// <summary>
-        /// Returns a human readable string of an array. Optional arguments are the index to start from and the number of elements to add to the string
-        /// </summary>
-        /// <param name="arr">The array to convert to string</param>
-        /// <param name="initialIndex">The initial index. Default 0</param>
-        /// <param name="maxNumberOfElements">The number of elements to print</param>
-        /// <returns>Human readable string</returns>
-        public static string Array2Str<T>(T[] arr, int initialIndex = 0, int maxNumberOfElements = int.MaxValue)
-        {
-            return String.Join(", ", arr.Skip(initialIndex).Take(maxNumberOfElements));
-        }
-
-        /// <summary>
-        /// Given a flattened matrix and a shape, returns a string in human readable format
-        /// </summary>
-        /// <param name="arr">Flattened matrix array</param>
-        /// <param name="shape">Shape of matrix</param>
-        /// <returns>human readable string</returns>
-        public static string Matrix2Str(float[] arr, int[] shape)
-        {
-            string log = "[";
-
-            int t = 0;
-            for (int i = 0; i < shape[0]; i++)
-            {
-                log += "\n[";
-                for (int j = 0; j < shape[1]; j++)
-                {
-                    log += "[";
-                    for (int k = 0; k < shape[2]; k++)
-                    {
-                        log += arr[t] + ", ";
-                        t++;
-                    }
-                    log += "],";
-                }
-                log += "]";
-            }
-            log += "]";
-            return log;
-        }
-
         /// <summary>
         /// Utility function to duplicate an array into an array of arrays
         /// </summary>
@@ -129,19 +83,6 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                     }
                 }
             }
-        }
-
-        public static void SetComponentParameters(GridSensorComponent gridComponent, string[] detectableObjects, int[] channelDepth, GridDepthType gridDepthType,
-            float cellScaleX, float cellScaleZ, int gridWidth, int gridHeight, int colliderMaskInt, bool rotateWithAgent, Color[] debugColors)
-        {
-            gridComponent.DetectableObjects = detectableObjects;
-            gridComponent.ChannelDepths = channelDepth;
-            gridComponent.DepthType = gridDepthType;
-            gridComponent.CellScale = new Vector3(cellScaleX, 0.01f, cellScaleZ);
-            gridComponent.GridSize = new Vector3Int(gridWidth, 1, gridHeight);
-            gridComponent.ColliderMask = colliderMaskInt;
-            gridComponent.RotateWithAgent = rotateWithAgent;
-            gridComponent.DebugColors = debugColors;
         }
     }
 }

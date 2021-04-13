@@ -36,52 +36,38 @@ namespace Unity.MLAgents.Extensions.Editor
 
             EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
-                EditorGUILayout.LabelField("Channel Settings", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_DepthType)), true);
-
-                // channel depth
-                var channelDepth = so.FindProperty(nameof(GridSensorComponent.m_ChannelDepths));
-                var newDepth = EditorGUILayout.IntField("Channel Depth", channelDepth.arraySize);
-                if (newDepth != channelDepth.arraySize)
+                // detectable tags
+                var detectableTags = so.FindProperty(nameof(GridSensorComponent.m_DetectableTags));
+                var newSize = EditorGUILayout.IntField("Detectable Tags", detectableTags.arraySize);
+                if (newSize != detectableTags.arraySize)
                 {
-                    channelDepth.arraySize = newDepth;
+                    detectableTags.arraySize = newSize;
                 }
                 EditorGUI.indentLevel++;
-                for (var i = 0; i < channelDepth.arraySize; i++)
+                for (var i = 0; i < detectableTags.arraySize; i++)
                 {
-                    var objectTag = channelDepth.GetArrayElementAtIndex(i);
-                    EditorGUILayout.PropertyField(objectTag, new GUIContent("Channel " + i + " Depth"), true);
-                }
-                EditorGUI.indentLevel--;
-
-                // detectable objects
-                var detectableObjects = so.FindProperty(nameof(GridSensorComponent.m_DetectableObjects));
-                var newSize = EditorGUILayout.IntField("Detectable Objects", detectableObjects.arraySize);
-                if (newSize != detectableObjects.arraySize)
-                {
-                    detectableObjects.arraySize = newSize;
-                }
-                EditorGUI.indentLevel++;
-                for (var i = 0; i < detectableObjects.arraySize; i++)
-                {
-                    var objectTag = detectableObjects.GetArrayElementAtIndex(i);
+                    var objectTag = detectableTags.GetArrayElementAtIndex(i);
                     EditorGUILayout.PropertyField(objectTag, new GUIContent("Tag " + i), true);
                 }
                 EditorGUI.indentLevel--;
 
-                EditorGUILayout.LabelField("Collider and Buffer", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_MaxColliderBufferSize)), true);
-                EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_InitialColliderBufferSize)), true);
+                EditorGUILayout.LabelField("Observation Settings", EditorStyles.boldLabel);
+                EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_UseOneHotTag)), new GUIContent("One-Hot Tag Index"), true);
+                EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_CountColliders)), new GUIContent("Detectable Tag Count"), true);
             }
             EditorGUI.EndDisabledGroup();
             EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_ColliderMask)), true);
-            EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
-            {
-                EditorGUILayout.LabelField("Sensor Settings", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_ObservationStacks)), true);
-            }
+            EditorGUILayout.LabelField("Sensor Settings", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_ObservationStacks)), true);
             EditorGUI.EndDisabledGroup();
             EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_CompressionType)), true);
+            EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
+            {
+                EditorGUILayout.LabelField("Collider and Buffer", EditorStyles.boldLabel);
+                EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_InitialColliderBufferSize)), true);
+                EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_MaxColliderBufferSize)), true);
+            }
+            EditorGUI.EndDisabledGroup();
 
             EditorGUILayout.LabelField("Debug Gizmo", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_ShowGizmos)), true);
@@ -89,7 +75,7 @@ namespace Unity.MLAgents.Extensions.Editor
 
             // detectable objects
             var debugColors = so.FindProperty(nameof(GridSensorComponent.m_DebugColors));
-            var detectableObjectSize = so.FindProperty(nameof(GridSensorComponent.m_DetectableObjects)).arraySize;
+            var detectableObjectSize = so.FindProperty(nameof(GridSensorComponent.m_DetectableTags)).arraySize;
             if (detectableObjectSize != debugColors.arraySize)
             {
                 debugColors.arraySize = detectableObjectSize;
