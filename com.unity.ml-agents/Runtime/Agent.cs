@@ -576,9 +576,12 @@ namespace Unity.MLAgents
             m_Brain?.RequestDecision(m_Info, sensors);
 
             // We also have to write any to any DemonstationStores so that they get the "done" flag.
-            foreach (var demoWriter in DemonstrationWriters)
+            if (DemonstrationWriters.Count != 0)
             {
-                demoWriter.Record(m_Info, sensors);
+                foreach (var demoWriter in DemonstrationWriters)
+                {
+                    demoWriter.Record(m_Info, sensors);
+                }
             }
 
             ResetSensors();
@@ -1097,9 +1100,12 @@ namespace Unity.MLAgents
             }
 
             // If we have any DemonstrationWriters, write the AgentInfo and sensors to them.
-            foreach (var demoWriter in DemonstrationWriters)
+            if (DemonstrationWriters.Count != 0)
             {
-                demoWriter.Record(m_Info, sensors);
+                foreach (var demoWriter in DemonstrationWriters)
+                {
+                    demoWriter.Record(m_Info, sensors);
+                }
             }
         }
 

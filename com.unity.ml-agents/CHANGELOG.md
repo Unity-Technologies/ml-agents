@@ -66,6 +66,7 @@ This results in much less memory being allocated during inference with `CameraSe
 - Fixed a bug where sensors and actuators could get sorted inconsistently on different systems to different Culture
 settings. Unfortunately, this may require retraining models if it changes the resulting order of the sensors
 or actuators on your system. (#5194)
+- Removed additional memory allocations that were occurring due to assert messages and iterating of DemonstrationRecorders. (#5246)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed an issue which was causing increased variance when using LSTMs. Also fixed an issue with LSTM when used with POCA and `sequence_length` < `time_horizon`. (#5206)
 - Fixed a bug where the SAC replay buffer would not be saved out at the end of a run, even if `save_replay_buffer` was enabled. (#5205)
