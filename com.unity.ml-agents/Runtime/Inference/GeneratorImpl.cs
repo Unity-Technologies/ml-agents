@@ -96,7 +96,7 @@ namespace Unity.MLAgents.Inference
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
 
-            var memorySize = tensorProxy.data.width;//tensorProxy.shape[tensorProxy.shape.Length - 1];
+            var memorySize = tensorProxy.data.width;
 
             var agentIndex = 0;
             for (var infoIndex = 0; infoIndex < infos.Count; infoIndex++)
