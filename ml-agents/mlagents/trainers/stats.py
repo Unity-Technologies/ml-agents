@@ -344,7 +344,9 @@ class StatsReporter:
                 key
             ] = StatsAggregationMethod.MOST_RECENT
             for writer in StatsReporter.writers:
-                writer.on_add_stat(self.category, key, value, StatsAggregationMethod.MOST_RECENT)
+                writer.on_add_stat(
+                    self.category, key, value, StatsAggregationMethod.MOST_RECENT
+                )
 
     def write_stats(self, step: int) -> None:
         """
