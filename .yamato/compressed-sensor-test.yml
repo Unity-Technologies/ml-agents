@@ -5,7 +5,7 @@ test_compressed_obs_{{ editor.version }}:
   name: Test Compressed Sensor Observation {{ editor.version }}
   agent:
     type: Unity::VM
-    image: package-ci/ubuntu:stable
+    image: package-ci/ubuntu:v1.3.1-719011
     flavor: b1.medium
   variables:
     UNITY_VERSION: {{ editor.version }}

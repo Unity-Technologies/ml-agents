@@ -27,7 +27,7 @@ test_platforms:
       flavor: b1.small
     - name: linux
       type: Unity::VM
-      image: package-ci/ubuntu:stable
+      image: package-ci/ubuntu:v1.3.1-719011
       flavor: b1.medium
 
 packages:

@@ -15,7 +15,7 @@ OptionalDependencyTests_{{ optional_dep.name }}:
     name : Test Optional Package Dependencies {{ optional_dep.name }}
     agent:
         type: Unity::VM
-        image: package-ci/ubuntu:stable
+        image: package-ci/ubuntu:v1.3.1-719011
         flavor: b1.medium
     commands:
         - |
