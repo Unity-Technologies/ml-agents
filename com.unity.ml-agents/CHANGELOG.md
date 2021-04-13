@@ -51,6 +51,13 @@ depend on the previous behavior, you can explicitly set the Agent's `InferenceDe
 - `DecisionRequester.ShouldRequestDecision()` and `ShouldRequestAction()`methods were added. These are used to
 determine whether `Agent.RequestDecision()` and `Agent.RequestAction()` are called (respectively). (#5223)
 - `RaycastPerceptionSensor` now caches its raycast results; they can be accessed via `RayPerceptionSensor.RayPerceptionOutput`. (#5222)
+- `ActionBuffers` are now reset to zero before being passed to `Agent.Heuristic()` and
+`IHeuristicProvider.Heuristic()`. (#5227)
+- `Agent` will now call `IDisposable.Dispose()` on all `ISensor`s that implement the `IDisposable` interface. (#5233)
+- `CameraSensor`, `RenderTextureSensor`, and `Match3Sensor` will now reuse their `Texture2D`s, reducing the
+amount of memory that needs to be allocated during runtime. (#5233)
+- Optimzed `ObservationWriter.WriteTexture()` so that it doesn't call `Texture2D.GetPixels32()` for `RGB24` textures.
+This results in much less memory being allocated during inference with `CameraSensor` and `RenderTextureSensor`. (#5233)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Some console output have been moved from `info` to `debug` and will not be printed by default. If you want all messages to be printed, you can run `mlagents-learn` with the `--debug` option or add the line `debug: true` at the top of the yaml config file. (#5211)
@@ -60,6 +67,7 @@ determine whether `Agent.RequestDecision()` and `Agent.RequestAction()` are call
 - Fixed a bug where sensors and actuators could get sorted inconsistently on different systems to different Culture
 settings. Unfortunately, this may require retraining models if it changes the resulting order of the sensors
 or actuators on your system. (#5194)
+- Removed additional memory allocations that were occurring due to assert messages and iterating of DemonstrationRecorders. (#5246)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed an issue which was causing increased variance when using LSTMs. Also fixed an issue with LSTM when used with POCA and `sequence_length` < `time_horizon`. (#5206)
 - Fixed a bug where the SAC replay buffer would not be saved out at the end of a run, even if `save_replay_buffer` was enabled. (#5205)

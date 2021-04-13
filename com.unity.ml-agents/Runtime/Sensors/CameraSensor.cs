@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -6,7 +7,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// A sensor that wraps a Camera object to generate visual observations for an agent.
     /// </summary>
-    public class CameraSensor : ISensor, IBuiltInSensor
+    public class CameraSensor : ISensor, IBuiltInSensor, IDisposable
     {
         Camera m_Camera;
         int m_Width;
@@ -15,6 +16,7 @@ namespace Unity.MLAgents.Sensors
         string m_Name;
         private ObservationSpec m_ObservationSpec;
         SensorCompressionType m_CompressionType;
+        Texture2D m_Texture;
 
         /// <summary>
         /// The Camera used for rendering the sensor observations.
@@ -33,7 +35,6 @@ namespace Unity.MLAgents.Sensors
             get { return m_CompressionType; }
             set { m_CompressionType = value; }
         }
-
 
         /// <summary>
         /// Creates and returns the camera sensor.
@@ -56,6 +57,7 @@ namespace Unity.MLAgents.Sensors
             var channels = grayscale ? 1 : 3;
             m_ObservationSpec = ObservationSpec.Visual(height, width, channels, observationType);
             m_CompressionType = compression;
+            m_Texture = new Texture2D(width, height, TextureFormat.RGB24, false);
         }
 
         /// <summary>
@@ -87,10 +89,9 @@ namespace Unity.MLAgents.Sensors
         {
             using (TimerStack.Instance.Scoped("CameraSensor.GetCompressedObservation"))
             {
-                var texture = ObservationToTexture(m_Camera, m_Width, m_Height);
+                ObservationToTexture(m_Camera, m_Texture, m_Width, m_Height);
                 // TODO support more types here, e.g. JPG
-                var compressed = texture.EncodeToPNG();
-                DestroyTexture(texture);
+                var compressed = m_Texture.EncodeToPNG();
                 return compressed;
             }
         }
@@ -104,9 +105,8 @@ namespace Unity.MLAgents.Sensors
         {
             using (TimerStack.Instance.Scoped("CameraSensor.WriteToTensor"))
             {
-                var texture = ObservationToTexture(m_Camera, m_Width, m_Height);
-                var numWritten = writer.WriteTexture(texture, m_Grayscale);
-                DestroyTexture(texture);
+                ObservationToTexture(m_Camera, m_Texture, m_Width, m_Height);
+                var numWritten = writer.WriteTexture(m_Texture, m_Grayscale);
                 return numWritten;
             }
         }
@@ -126,19 +126,17 @@ namespace Unity.MLAgents.Sensors
         /// <summary>
         /// Renders a Camera instance to a 2D texture at the corresponding resolution.
         /// </summary>
-        /// <returns>The 2D texture.</returns>
         /// <param name="obsCamera">Camera.</param>
+        /// <param name="texture2D">Texture2D to render to.</param>
         /// <param name="width">Width of resulting 2D texture.</param>
         /// <param name="height">Height of resulting 2D texture.</param>
-        /// <returns name="texture2D">Texture2D to render to.</returns>
-        public static Texture2D ObservationToTexture(Camera obsCamera, int width, int height)
+        public static void ObservationToTexture(Camera obsCamera, Texture2D texture2D, int width, int height)
         {
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
             {
                 Debug.LogError("GraphicsDeviceType is Null. This will likely crash when trying to render.");
             }
 
-            var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
             var oldRec = obsCamera.rect;
             obsCamera.rect = new Rect(0f, 0f, 1f, 1f);
             var depth = 24;
@@ -163,40 +161,24 @@ namespace Unity.MLAgents.Sensors
             obsCamera.rect = oldRec;
             RenderTexture.active = prevActiveRt;
             RenderTexture.ReleaseTemporary(tempRt);
-            return texture2D;
-        }
-
-        /// <summary>
-        /// Computes the observation shape for a camera sensor based on the height, width
-        /// and grayscale flag.
-        /// </summary>
-        /// <param name="width">Width of the image captures from the camera.</param>
-        /// <param name="height">Height of the image captures from the camera.</param>
-        /// <param name="grayscale">Whether or not to convert the image to grayscale.</param>
-        /// <returns>The observation shape.</returns>
-        internal static int[] GenerateShape(int width, int height, bool grayscale)
-        {
-            return new[] { height, width, grayscale ? 1 : 3 };
-        }
-
-        static void DestroyTexture(Texture2D texture)
-        {
-            if (Application.isEditor)
-            {
-                // Edit Mode tests complain if we use Destroy()
-                // TODO move to extension methods for UnityEngine.Object?
-                Object.DestroyImmediate(texture);
-            }
-            else
-            {
-                Object.Destroy(texture);
-            }
         }
 
         /// <inheritdoc/>
         public BuiltInSensorType GetBuiltInSensorType()
         {
             return BuiltInSensorType.CameraSensor;
+        }
+
+        /// <summary>
+        /// Clean up the owned Texture2D.
+        /// </summary>
+        public void Dispose()
+        {
+            if (!ReferenceEquals(null, m_Texture))
+            {
+                Utilities.DestroyTexture(m_Texture);
+                m_Texture = null;
+            }
         }
     }
 }

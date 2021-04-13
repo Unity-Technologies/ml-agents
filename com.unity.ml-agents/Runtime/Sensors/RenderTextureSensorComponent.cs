@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -7,7 +8,7 @@ namespace Unity.MLAgents.Sensors
     /// Component that wraps a <see cref="RenderTextureSensor"/>.
     /// </summary>
     [AddComponentMenu("ML Agents/Render Texture Sensor", (int)MenuGroup.Sensors)]
-    public class RenderTextureSensorComponent : SensorComponent
+    public class RenderTextureSensorComponent : SensorComponent, IDisposable
     {
         RenderTextureSensor m_Sensor;
 
@@ -84,6 +85,7 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public override ISensor[] CreateSensors()
         {
+            Dispose();
             m_Sensor = new RenderTextureSensor(RenderTexture, Grayscale, SensorName, m_Compression);
             if (ObservationStacks != 1)
             {
@@ -100,6 +102,18 @@ namespace Unity.MLAgents.Sensors
             if (m_Sensor != null)
             {
                 m_Sensor.CompressionType = m_Compression;
+            }
+        }
+
+        /// <summary>
+        /// Clean up the sensor created by CreateSensors().
+        /// </summary>
+        public void Dispose()
+        {
+            if (!ReferenceEquals(null, m_Sensor))
+            {
+                m_Sensor.Dispose();
+                m_Sensor = null;
             }
         }
     }

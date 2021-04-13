@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using UnityEngine;
 
 namespace Unity.MLAgents
 {
@@ -24,6 +25,23 @@ namespace Unity.MLAgents
                 result[actionIndex + 1] = runningSum;
             }
             return result;
+        }
+
+        /// <summary>
+        /// Safely destroy a texture. This has to be used differently in unit tests.
+        /// </summary>
+        /// <param name="texture"></param>
+        internal static void DestroyTexture(Texture2D texture)
+        {
+            if (Application.isEditor)
+            {
+                // Edit Mode tests complain if we use Destroy()
+                UnityEngine.Object.DestroyImmediate(texture);
+            }
+            else
+            {
+                UnityEngine.Object.Destroy(texture);
+            }
         }
 
         [Conditional("DEBUG")]

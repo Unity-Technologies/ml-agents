@@ -264,7 +264,6 @@ public class WallJumpAgent : Agent
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var discreteActionsOut = actionsOut.DiscreteActions;
-        discreteActionsOut.Clear();
         if (Input.GetKey(KeyCode.D))
         {
             discreteActionsOut[1] = 2;

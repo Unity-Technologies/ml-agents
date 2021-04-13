@@ -33,8 +33,7 @@ namespace Unity.MLAgents.Extensions.TestUtils.Sensors
             maxColliderBufferSize,
             initialColliderBufferSize)
         { }
-        protected override float[] GetObjectData(GameObject currentColliderGo,
-            float type_index, float normalized_distance)
+        protected override float[] GetObjectData(GameObject currentColliderGo, int type_index)
         {
             return (float[])currentColliderGo.GetComponent<GridSensorDummyData>().Data.Clone();
         }
@@ -53,7 +52,7 @@ namespace Unity.MLAgents.Extensions.TestUtils.Sensors
                 DetectableObjects,
                 ColliderMask,
                 DepthType,
-                RootReference,
+                gameObject,
                 CompressionType,
                 MaxColliderBufferSize,
                 InitialColliderBufferSize

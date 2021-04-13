@@ -117,18 +117,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         [HideInInspector, SerializeField]
-        internal GameObject m_RootReference;
-        /// <summary>
-        /// The reference of the root of the agent. This is used to disambiguate objects with the same tag as the agent. Defaults to current GameObject.
-        /// Note that changing this after the sensor is created has no effect.
-        /// </summary>
-        public GameObject RootReference
-        {
-            get { return m_RootReference == null ? gameObject : m_RootReference; }
-            set { m_RootReference = value; }
-        }
-
-        [HideInInspector, SerializeField]
         internal int m_MaxColliderBufferSize = 500;
         /// <summary>
         /// The absolute max size of the Collider buffer used in the non-allocating Physics calls.  In other words
@@ -226,7 +214,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 m_DetectableObjects,
                 m_ColliderMask,
                 m_DepthType,
-                RootReference,
+                gameObject,
                 m_CompressionType,
                 m_MaxColliderBufferSize,
                 m_InitialColliderBufferSize

@@ -67,10 +67,12 @@ class TorchModelSaver(BaseModelSaver):
         # This argument is mainly for initialization of the ghost trainer's fixed policy.
         reset_steps = not self.load
         if self.initialize_path is not None:
+            logger.info(f"Initializing from {self.initialize_path}.")
             self._load_model(
                 self.initialize_path, policy, reset_global_steps=reset_steps
             )
         elif self.load:
+            logger.info(f"Resuming from {self.model_path}.")
             self._load_model(self.model_path, policy, reset_global_steps=reset_steps)
 
     def _load_model(
