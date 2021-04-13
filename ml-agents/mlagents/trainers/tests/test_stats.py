@@ -33,7 +33,7 @@ def test_stat_reporter_add_summary_write():
         statsreporter2.add_stat("key2", float(i))
 
     statsreportercalls = [
-        mock.call(f"key{j}", float(i), StatsAggregationMethod.AVERAGE)
+        mock.call(f"category{j}", f"key{j}", float(i), StatsAggregationMethod.AVERAGE)
         for i in range(10)
         for j in [1, 2]
     ]

@@ -85,6 +85,7 @@ class StatsWriter(abc.ABC):
 
     def on_add_stat(
         self,
+        category: str,
         key: str,
         value: float,
         aggregation: StatsAggregationMethod = StatsAggregationMethod.AVERAGE,
@@ -327,7 +328,7 @@ class StatsReporter:
             StatsReporter.stats_dict[self.category][key].append(value)
             StatsReporter.stats_aggregation[self.category][key] = aggregation
             for writer in StatsReporter.writers:
-                writer.on_add_stat(key, value, aggregation)
+                writer.on_add_stat(self.category, key, value, aggregation)
 
     def set_stat(self, key: str, value: float) -> None:
         """
@@ -343,7 +344,7 @@ class StatsReporter:
                 key
             ] = StatsAggregationMethod.MOST_RECENT
             for writer in StatsReporter.writers:
-                writer.on_add_stat(key, value, StatsAggregationMethod.MOST_RECENT)
+                writer.on_add_stat(self.category, key, value, StatsAggregationMethod.MOST_RECENT)
 
     def write_stats(self, step: int) -> None:
         """
