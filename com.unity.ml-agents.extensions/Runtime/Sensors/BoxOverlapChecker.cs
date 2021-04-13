@@ -236,7 +236,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         internal void RegisterSensor(GridSensorBase sensor)
         {
-            if (sensor.ProcessAllCollidersInCell())
+            if (sensor.GetProcessCollidersMethod() == ProcessCollidersMethod.ProcessAllColliders)
             {
                 GridOverlapDetectedAll += sensor.ProcessDetectedObject;
             }

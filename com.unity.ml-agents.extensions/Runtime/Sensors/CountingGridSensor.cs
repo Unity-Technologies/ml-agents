@@ -40,9 +40,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <inheritdoc/>
-        protected internal override bool ProcessAllCollidersInCell()
+        protected internal override ProcessCollidersMethod GetProcessCollidersMethod()
         {
-            return true;
+            return ProcessCollidersMethod.ProcessAllColliders;
         }
 
         /// <summary>

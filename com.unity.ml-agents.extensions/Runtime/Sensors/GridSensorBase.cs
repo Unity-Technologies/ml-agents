@@ -10,6 +10,22 @@ using Object = UnityEngine.Object;
 namespace Unity.MLAgents.Extensions.Sensors
 {
     /// <summary>
+    /// The way the GridSensor process detected colliders in a cell.
+    /// </summary>
+    public enum ProcessCollidersMethod
+    {
+        /// <summary>
+        /// Get data from all colliders detected in a cell
+        /// </summary>
+        ProcessAllColliders,
+
+        /// <summary>
+        /// Get data from the collider closest to the agent
+        /// </summary>
+        ProcessClosestColliders
+    }
+
+    /// <summary>
     /// Grid-based sensor.
     /// </summary>
     public class GridSensorBase : ISensor, IBuiltInSensor, IDisposable
@@ -230,9 +246,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// If overriding <seealso cref="GetObjectData"/>, consider override this method when needed.
         /// </summary>
         /// <returns>Bool value indicating whether to process all detected colliders in a cell.</returns>
-        protected internal virtual bool ProcessAllCollidersInCell()
+        protected internal virtual ProcessCollidersMethod GetProcessCollidersMethod()
         {
-            return false;
+            return ProcessCollidersMethod.ProcessClosestColliders;
         }
 
         /// <summary>
@@ -263,7 +279,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 if (!ReferenceEquals(detectedObject, null) && detectedObject.CompareTag(m_DetectableTags[i]))
                 {
-                    if (ProcessAllCollidersInCell())
+                    if (GetProcessCollidersMethod() == ProcessCollidersMethod.ProcessAllColliders)
                     {
                         Array.Copy(m_PerceptionBuffer, cellIndex * m_CellObservationSize, m_CellDataBuffer, 0, m_CellObservationSize);
                     }
