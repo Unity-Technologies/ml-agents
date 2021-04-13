@@ -227,53 +227,24 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_DebugSensor = new GridSensorBase("DebugGridSensor", m_CellScale, m_GridSize, m_DetectableTags, SensorCompressionType.None);
             m_BoxOverlapChecker.RegisterDebugSensor(m_DebugSensor);
 
-            if (m_UseOneHotTag)
-            {
-                var sensor = new OneHotGridSensor(m_SensorName + "-OneHot", m_CellScale, m_GridSize, m_DetectableTags, m_CompressionType);
-                if (ObservationStacks != 1)
-                {
-                    m_Sensors.Add(new StackingSensor(sensor, ObservationStacks));
-                }
-                else
-                {
-                    m_Sensors.Add(sensor);
-                }
-                m_BoxOverlapChecker.RegisterSensor(sensor);
-            }
-            if (m_CountColliders)
-            {
-                var sensor = new CountingGridSensor(m_SensorName + "-Counting", m_CellScale, m_GridSize, m_DetectableTags, m_CompressionType);
-                if (ObservationStacks != 1)
-                {
-                    m_Sensors.Add(new StackingSensor(sensor, ObservationStacks));
-                }
-                else
-                {
-                    m_Sensors.Add(sensor);
-                }
-                m_BoxOverlapChecker.RegisterSensor(sensor);
-            }
-            var customSensors = GetGridSensors();
-            if (customSensors != null)
-            {
-                foreach (var sensor in customSensors)
-                {
-                    if (ObservationStacks != 1)
-                    {
-                        m_Sensors.Add(new StackingSensor(sensor, ObservationStacks));
-                    }
-                    else
-                    {
-                        m_Sensors.Add(sensor);
-                    }
-                    m_BoxOverlapChecker.RegisterSensor(sensor);
-                }
-            }
-
-            if (m_Sensors == null || m_Sensors.Count < 1)
+            var gridSensors = GetGridSensors();
+            if (gridSensors == null || gridSensors.Length < 1)
             {
                 throw new UnityAgentsException("GridSensorComponent received no sensors. Specify at least one observation type (OneHot/Counting) to use grid sensors." +
                     "If you're overriding GridSensorComponent.GetGridSensors(), return at least one grid sensor.");
+            }
+
+            foreach (var sensor in gridSensors)
+            {
+                if (ObservationStacks != 1)
+                {
+                    m_Sensors.Add(new StackingSensor(sensor, ObservationStacks));
+                }
+                else
+                {
+                    m_Sensors.Add(sensor);
+                }
+                m_BoxOverlapChecker.RegisterSensor(sensor);
             }
 
             // Only one sensor needs to reference the boxOverlapChecker, so that it gets updated exactly once
@@ -288,7 +259,18 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <returns>Array of grid sensors to be added to the component.</returns>
         protected virtual GridSensorBase[] GetGridSensors()
         {
-            return null;
+            List<GridSensorBase> sensorList = new List<GridSensorBase>();
+            if (m_UseOneHotTag)
+            {
+                var sensor = new OneHotGridSensor(m_SensorName + "-OneHot", m_CellScale, m_GridSize, m_DetectableTags, m_CompressionType);
+                sensorList.Add(sensor);
+            }
+            if (m_CountColliders)
+            {
+                var sensor = new CountingGridSensor(m_SensorName + "-Counting", m_CellScale, m_GridSize, m_DetectableTags, m_CompressionType);
+                sensorList.Add(sensor);
+            }
+            return sensorList.ToArray();
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Extensions.Sensors;
@@ -75,7 +75,7 @@ namespace Unity.MLAgents.Extensions.Tests.GridSensors
 
         protected override GridSensorBase[] GetGridSensors()
         {
-            var sensorList = new List<GridSensorBase>();
+            var sensorList = base.GetGridSensors().ToList();
             if (m_UseGridSensorBase)
             {
                 var testSensor = new GridSensorBase(
