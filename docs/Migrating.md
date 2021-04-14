@@ -112,7 +112,7 @@ will not work in newer version. Some errors might show up when loading the old s
 You'll need to remove the old sensor and create a new GridSensor.
 * These parameters names have changed but still refer to the same concept in the sensor: `GridNumSide` -> `GridSize`,
 `RotateToAgent` -> `RotateWithAgent`, `ObserveMask` -> `ColliderMask`, `DetectableObjects` -> `DetectableTags`
-* `RootReference` is removed and default to the sensor component's GameObject.
+* `RootReference` is removed and the sensor component's GameObject will always be ignored for hit results.
 * `DepthType` (`ChanelBase`/`ChannelHot`) option and `ChannelDepth` are removed. Now the default is
 one-hot encoding for detected tag. If you were using original GridSensor without overriding any method,
 switching to new GridSensor will produce similar effect for training although the actual observations
