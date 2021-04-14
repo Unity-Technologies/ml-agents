@@ -117,15 +117,6 @@ namespace Unity.MLAgents.Inference
                     );
                 return failedModelChecks;
             }
-            if (modelApiVersion > k_ApiVersion)
-            {
-                failedModelChecks.Add(
-                    "Model was trained with a newer version of the trainer than is supported. " +
-                    "Either retrain with an older trainer, or update to a newer version of com.unity.ml-agents.\n" +
-                    $"Model version: {modelApiVersion}  Supported version: {k_ApiVersion}"
-                );
-                return failedModelChecks;
-            }
 
             var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
             if (memorySize == -1)
