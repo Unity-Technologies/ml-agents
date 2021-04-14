@@ -1151,7 +1151,7 @@ namespace Unity.MLAgents
         ///     - <see cref="VectorSensor.AddObservation(Vector2)"/>
         ///     - <see cref="VectorSensor.AddObservation(Quaternion)"/>
         ///     - <see cref="VectorSensor.AddObservation(bool)"/>
-        ///     - <see cref="VectorSensor.AddObservation(IEnumerable{float})"/>
+        ///     - <see cref="VectorSensor.AddObservation(IList{float})"/>
         ///     - <see cref="VectorSensor.AddOneHotObservation(int, int)"/>
         ///
         /// You can use any combination of these helper functions to build the agent's

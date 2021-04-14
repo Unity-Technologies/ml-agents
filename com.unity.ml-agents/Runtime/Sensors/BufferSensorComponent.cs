@@ -11,7 +11,7 @@ namespace Unity.MLAgents.Sensors
     {
 
         /// <summary>
-        /// Name of the generated <see cref="bufferSensor"/> object.
+        /// Name of the generated <see cref="BufferSensor"/> object.
         /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
         /// </summary>
         public string SensorName

@@ -60,6 +60,7 @@ namespace Unity.MLAgents.Sensors
         /// <summary>
         /// Returns the underlying VectorSensor
         /// </summary>
+        /// <returns></returns>
         public VectorSensor GetSensor()
         {
             return m_Sensor;

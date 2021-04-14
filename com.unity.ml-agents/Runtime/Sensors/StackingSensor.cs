@@ -200,6 +200,7 @@ namespace Unity.MLAgents.Sensors
             return outputBytes;
         }
 
+        /// <inheritdoc/>
         public CompressionSpec GetCompressionSpec()
         {
             var wrappedSpec = m_WrappedSensor.GetCompressionSpec();
