@@ -52,6 +52,7 @@ determine whether `Agent.RequestDecision()` and `Agent.RequestAction()` are call
 amount of memory that needs to be allocated during runtime. (#5233)
 - Optimzed `ObservationWriter.WriteTexture()` so that it doesn't call `Texture2D.GetPixels32()` for `RGB24` textures.
 This results in much less memory being allocated during inference with `CameraSensor` and `RenderTextureSensor`. (#5233)
+- The Match-3 integration utilities were moved from `com.unity.ml-agents.extensions` to `com.unity.ml-agents`. (#5259)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Some console output have been moved from `info` to `debug` and will not be printed by default. If you want all messages to be printed, you can run `mlagents-learn` with the `--debug` option or add the line `debug: true` at the top of the yaml config file. (#5211)
