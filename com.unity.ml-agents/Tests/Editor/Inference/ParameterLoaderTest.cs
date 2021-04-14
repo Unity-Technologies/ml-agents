@@ -79,6 +79,8 @@ namespace Unity.MLAgents.Tests
     public class ParameterLoaderTest
     {
         const string k_discrete_ONNX_v2 = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete_rank2_vector_v2_0.onnx";
+        const string k_hybrid_ONNX_recurr_v2 = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/hybrid0vis8vec_2c_2_3d_v2_0.onnx";
+
 
         // ONNX model with continuous/discrete action output (support hybrid action)
         const string k_continuousONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action_v1_0.onnx";
@@ -90,6 +92,7 @@ namespace Unity.MLAgents.Tests
         const string k_discreteNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_recurr_deprecated_v1_0.nn";
 
         NNModel rank2ONNXModel;
+        NNModel hybridRecurrV2Model;
         NNModel continuousONNXModel;
         NNModel discreteONNXModel;
         NNModel hybridONNXModel;
@@ -137,6 +140,15 @@ namespace Unity.MLAgents.Tests
             return validBrainParameters;
         }
 
+        BrainParameters GetRankRecurrHybridBrainParameters()
+        {
+            var validBrainParameters = new BrainParameters();
+            validBrainParameters.VectorObservationSize = 8;
+            validBrainParameters.NumStackedVectorObservations = 1;
+            validBrainParameters.ActionSpec = new ActionSpec(2, new int[] { 2, 3 });
+            return validBrainParameters;
+        }
+
         [SetUp]
         public void SetUp()
         {
@@ -146,6 +158,7 @@ namespace Unity.MLAgents.Tests
             continuousNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuousNNPath, typeof(NNModel));
             discreteNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_discreteNNPath, typeof(NNModel));
             rank2ONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_discrete_ONNX_v2, typeof(NNModel));
+            hybridRecurrV2Model = (NNModel)AssetDatabase.LoadAssetAtPath(k_hybrid_ONNX_recurr_v2, typeof(NNModel));
             var go = new GameObject("SensorA");
             sensor_21_20_3 = go.AddComponent<Test3DSensorComponent>();
             sensor_21_20_3.Sensor = new Test3DSensor("SensorA", 21, 20, 3);
@@ -165,6 +178,7 @@ namespace Unity.MLAgents.Tests
             Assert.IsNotNull(continuousNNModel);
             Assert.IsNotNull(discreteNNModel);
             Assert.IsNotNull(rank2ONNXModel);
+            Assert.IsNotNull(hybridRecurrV2Model);
         }
 
         [TestCase(true)]
@@ -302,13 +316,43 @@ namespace Unity.MLAgents.Tests
         public void TestCheckModelValidDiscrete(bool useDeprecatedNNModel)
         {
             var model = useDeprecatedNNModel ? ModelLoader.Load(discreteNNModel) : ModelLoader.Load(discreteONNXModel);
+            var num_errors = useDeprecatedNNModel ? 1 : 0; // When using a deprecated model with LSTM, an error should raise
             var validBrainParameters = GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters();
 
             var errors = BarracudaModelParamLoader.CheckModel(
                 model, validBrainParameters,
                 new ISensor[] { sensor_21_20_3.CreateSensors()[0] }, new ActuatorComponent[0]
             );
-            Assert.AreEqual(0, errors.Count()); // There should not be any errors
+            Assert.AreEqual(num_errors, errors.Count()); // There should not be any errors
+        }
+
+        [Test]
+        public void TestCheckModelValidRecurrent()
+        {
+            var model = ModelLoader.Load(hybridRecurrV2Model);
+            var num_errors = 0; // A model trained with v2 should not raise errors
+            var validBrainParameters = GetRankRecurrHybridBrainParameters();
+
+            var errors = BarracudaModelParamLoader.CheckModel(
+                model, validBrainParameters,
+                new ISensor[] { sensor_8 }, new ActuatorComponent[0]
+            );
+            Assert.AreEqual(num_errors, errors.Count()); // There should not be any errors
+
+            var invalidBrainParameters = GetRankRecurrHybridBrainParameters();
+            invalidBrainParameters.ActionSpec = new ActionSpec(1, new int[] { 2, 3 });
+            errors = BarracudaModelParamLoader.CheckModel(
+                model, invalidBrainParameters,
+                new ISensor[] { sensor_8 }, new ActuatorComponent[0]
+            );
+            Assert.AreEqual(1, errors.Count()); // 1 continuous action instead of 2
+
+            invalidBrainParameters.ActionSpec = new ActionSpec(2, new int[] { 3, 2 });
+            errors = BarracudaModelParamLoader.CheckModel(
+                model, invalidBrainParameters,
+                new ISensor[] { sensor_8 }, new ActuatorComponent[0]
+            );
+            Assert.AreEqual(1, errors.Count()); // Discrete action branches flipped
         }
 
         [Test]
