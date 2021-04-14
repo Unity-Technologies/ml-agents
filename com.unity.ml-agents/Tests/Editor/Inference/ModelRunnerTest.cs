@@ -15,7 +15,7 @@ namespace Unity.MLAgents.Tests
         const string k_hybrid_ONNX_recurr_v2 = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/hybrid0vis8vec_2c_2_3d_v2_0.onnx";
 
         const string k_continuousONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action_v1_0.onnx";
-        const string k_discreteONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_recurr_v1_0.onnx";
+        const string k_discreteONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_obsolete_recurr_v1_0.onnx";
         const string k_hybridONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/hybrid0vis53vec_3c_2daction_v1_0.onnx";
         const string k_continuousNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action_deprecated_v1_0.nn";
         const string k_discreteNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_recurr_deprecated_v1_0.nn";
@@ -79,8 +79,12 @@ namespace Unity.MLAgents.Tests
             var inferenceDevice = InferenceDevice.Burst;
             var modelRunner = new ModelRunner(continuousONNXModel, GetContinuous2vis8vec2actionActionSpec(), inferenceDevice);
             modelRunner.Dispose();
-            modelRunner = new ModelRunner(discreteONNXModel, GetDiscrete1vis0vec_2_3action_recurrModelActionSpec(), inferenceDevice);
-            modelRunner.Dispose();
+            Assert.Throws<UnityAgentsException>(() =>
+            {
+                // Cannot load a model trained with 1.x that has an LSTM
+                modelRunner = new ModelRunner(discreteONNXModel, GetDiscrete1vis0vec_2_3action_recurrModelActionSpec(), inferenceDevice);
+                modelRunner.Dispose();
+            });
             modelRunner = new ModelRunner(hybridONNXModel, GetHybrid0vis53vec_3c_2dActionSpec(), inferenceDevice);
             modelRunner.Dispose();
             modelRunner = new ModelRunner(continuousNNModel, GetContinuous2vis8vec2actionActionSpec(), inferenceDevice);
@@ -110,14 +114,21 @@ namespace Unity.MLAgents.Tests
         [Test]
         public void TestRunModel()
         {
-            var actionSpec = GetDiscrete1vis0vec_2_3action_recurrModelActionSpec();
-            var modelRunner = new ModelRunner(discreteONNXModel, actionSpec, InferenceDevice.Burst);
+            var actionSpec = GetContinuous2vis8vec2actionActionSpec();
+            var modelRunner = new ModelRunner(continuousONNXModel, actionSpec, InferenceDevice.Burst);
+            var sensor_8 = new Sensors.VectorSensor(8, "VectorSensor8");
             var info1 = new AgentInfo();
             info1.episodeId = 1;
-            modelRunner.PutObservations(info1, new[] { sensor_21_20_3.CreateSensors()[0] }.ToList());
+            modelRunner.PutObservations(info1, new[] {
+                sensor_8,
+                sensor_21_20_3.CreateSensors()[0],
+                sensor_20_22_3.CreateSensors()[0] }.ToList());
             var info2 = new AgentInfo();
             info2.episodeId = 2;
-            modelRunner.PutObservations(info2, new[] { sensor_21_20_3.CreateSensors()[0] }.ToList());
+            modelRunner.PutObservations(info2, new[] {
+                sensor_8,
+                sensor_21_20_3.CreateSensors()[0],
+                sensor_20_22_3.CreateSensors()[0] }.ToList());
 
             modelRunner.DecideBatch();
 

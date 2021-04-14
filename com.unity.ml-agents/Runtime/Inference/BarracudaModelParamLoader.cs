@@ -347,17 +347,7 @@ namespace Unity.MLAgents.Inference
             if (memory > 0)
             {
                 var modelVersion = model.GetVersion();
-                var netHasMemories = false;
-                if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
-                {
-                    netHasMemories = tensorsNames.Any(x => x.EndsWith("_h")) &&
-                        tensorsNames.Any(x => x.EndsWith("_c"));
-                }
-                else
-                {
-                    netHasMemories = tensorsNames.Any(x => x == TensorNames.RecurrentInPlaceholder);
-                }
-                if (!netHasMemories)
+                if (!tensorsNames.Any(x => x == TensorNames.RecurrentInPlaceholder))
                 {
                     failedModelChecks.Add(
                             FailedCheck.Warning("The model does not contain a Recurrent Input Node but has memory_size.")
@@ -396,21 +386,8 @@ namespace Unity.MLAgents.Inference
             // If there is no Recurrent Output but the model is Recurrent.
             if (memory > 0)
             {
-
-                var netHasMemories = false;
-                var modelVersion = model.GetVersion();
-                if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
-                {
-                    var memOutputs = model.memories.Select(x => x.output).ToList();
-                    netHasMemories = memOutputs.Any(x => x.EndsWith("_h")) &&
-                        memOutputs.Any(x => x.EndsWith("_c"));
-                }
-                else
-                {
-                    var allOutputs = model.GetOutputNames().ToList();
-                    netHasMemories = allOutputs.Any(x => x == TensorNames.RecurrentOutput);
-                }
-                if (!netHasMemories)
+                var allOutputs = model.GetOutputNames().ToList();
+                if (!allOutputs.Any(x => x == TensorNames.RecurrentOutput))
                 {
                     failedModelChecks.Add(
                         FailedCheck.Warning("The model does not contain a Recurrent Output Node but has memory_size.")

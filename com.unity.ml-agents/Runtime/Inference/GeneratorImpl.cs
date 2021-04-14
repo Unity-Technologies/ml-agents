@@ -131,63 +131,6 @@ namespace Unity.MLAgents.Inference
         }
     }
 
-    internal class BarracudaRecurrentInputGenerator : TensorGenerator.IGenerator
-    {
-        int m_MemoriesCount;
-        readonly int m_MemoryIndex;
-        readonly ITensorAllocator m_Allocator;
-
-        Dictionary<int, List<float>> m_Memories;
-
-        public BarracudaRecurrentInputGenerator(
-            int memoryIndex,
-            ITensorAllocator allocator,
-            Dictionary<int, List<float>> memories)
-        {
-            m_MemoryIndex = memoryIndex;
-            m_Allocator = allocator;
-            m_Memories = memories;
-        }
-
-        public void Generate(TensorProxy tensorProxy, int batchSize, IList<AgentInfoSensorsPair> infos)
-        {
-            TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
-
-            var memorySize = (int)tensorProxy.shape[tensorProxy.shape.Length - 1];
-            var agentIndex = 0;
-            for (var infoIndex = 0; infoIndex < infos.Count; infoIndex++)
-            {
-                var infoSensorPair = infos[infoIndex];
-                var info = infoSensorPair.agentInfo;
-                var offset = memorySize * m_MemoryIndex;
-                List<float> memory;
-                if (info.done)
-                {
-                    m_Memories.Remove(info.episodeId);
-                }
-                if (!m_Memories.TryGetValue(info.episodeId, out memory))
-                {
-                    for (var j = 0; j < memorySize; j++)
-                    {
-                        tensorProxy.data[agentIndex, j] = 0;
-                    }
-                    agentIndex++;
-                    continue;
-                }
-                for (var j = 0; j < memorySize; j++)
-                {
-                    if (j >= memory.Count)
-                    {
-                        break;
-                    }
-
-                    tensorProxy.data[agentIndex, j] = memory[j + offset];
-                }
-                agentIndex++;
-            }
-        }
-    }
-
     /// <summary>
     /// Generates the Tensor corresponding to the Previous Action input : Will be a two
     /// dimensional integer array of dimension [batchSize x actionSize].

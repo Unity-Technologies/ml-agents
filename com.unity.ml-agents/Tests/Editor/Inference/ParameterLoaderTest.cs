@@ -84,7 +84,7 @@ namespace Unity.MLAgents.Tests
 
         // ONNX model with continuous/discrete action output (support hybrid action)
         const string k_continuousONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action_v1_0.onnx";
-        const string k_discreteONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_recurr_v1_0.onnx";
+        const string k_discreteONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_obsolete_recurr_v1_0.onnx";
         const string k_hybridONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/hybrid0vis53vec_3c_2daction_v1_0.onnx";
         // NN model with single action output (deprecated, does not support hybrid action).
         // Same BrainParameters settings as the corresponding ONNX model.
@@ -316,14 +316,17 @@ namespace Unity.MLAgents.Tests
         public void TestCheckModelValidDiscrete(bool useDeprecatedNNModel)
         {
             var model = useDeprecatedNNModel ? ModelLoader.Load(discreteNNModel) : ModelLoader.Load(discreteONNXModel);
-            var num_errors = useDeprecatedNNModel ? 1 : 0; // When using a deprecated model with LSTM, an error should raise
             var validBrainParameters = GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters();
 
             var errors = BarracudaModelParamLoader.CheckModel(
                 model, validBrainParameters,
                 new ISensor[] { sensor_21_20_3.CreateSensors()[0] }, new ActuatorComponent[0]
             );
-            Assert.AreEqual(num_errors, errors.Count()); // There should not be any errors
+            foreach (var e in errors)
+            {
+                Debug.Log(e.Message);
+            }
+            Assert.Greater(errors.Count(), 0); // There should be an error since LSTM v1.x is not supported
         }
 
         [Test]
