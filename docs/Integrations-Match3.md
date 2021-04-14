@@ -3,14 +3,13 @@
 <img src="images/match3.png" align="center" width="3000"/>
 
 ## Getting started
-The C# code for Match-3 exists inside of the extensions package (com.unity.ml-agents.extensions). A good first step
-would be to familiarize with the extensions package by reading the document [here](com.unity.ml-agents.extensions.md).
-The second step would be to take a look at how we have implemented the C# code in the example Match-3 scene (located
+The C# code for Match-3 exists inside of the Unity package (`com.unity.ml-agents`).
+The good first step would be to take a look at how we have implemented the C# code in the example Match-3 scene (located
 under /Project/Assets/ML-Agents/Examples/match3). Once you have some familiarity, then the next step would be to
 implement the C# code for Match-3 from the extensions package.
 
 Additionally, see below for additional technical specifications on the C# code for Match-3. Please note the Match-3 game
- isn't human playable as implemented and can be only played via training.
+isn't human playable as implemented and can be only played via training.
 
 ## Technical specifications for Match-3 with ML-Agents
 
