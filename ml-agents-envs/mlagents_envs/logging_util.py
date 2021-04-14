@@ -35,11 +35,6 @@ def get_logger(name: str) -> logging.Logger:
     if _log_level != NOTSET:
         logger.setLevel(_log_level)
 
-    handler = logging.StreamHandler(stream=sys.stdout)
-    formatter = logging.Formatter(fmt=LOG_FORMAT, datefmt=DATE_FORMAT)
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-
     # Keep track of this logger so that we can change the log level later
     _loggers.add(logger)
     return logger
