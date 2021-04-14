@@ -35,13 +35,14 @@ GitHub repo].
 
 The following table describes the package folder structure:
 
-| **Location**     | **Description**                                                        |
-| ---------------- | ---------------------------------------------------------------------- |
-| _Documentation~_ | Contains the documentation for the Unity package.                      |
-| _Editor_         | Contains utilities for Editor windows and drawers.                     |
-| _Plugins_        | Contains third-party DLLs.                                             |
-| _Runtime_        | Contains core C# APIs for integrating ML-Agents into your Unity scene. |
-| _Tests_          | Contains the unit tests for the package.                               |
+| **Location**           | **Description**                                                         |
+| ---------------------- | ----------------------------------------------------------------------- |
+| _Documentation~_       | Contains the documentation for the Unity package.                       |
+| _Editor_               | Contains utilities for Editor windows and drawers.                      |
+| _Plugins_              | Contains third-party DLLs.                                              |
+| _Runtime_              | Contains core C# APIs for integrating ML-Agents into your Unity scene.  |
+| _Runtime/Integrations_ | Contains utilities for integrating ML-Agents into specific game genres. |
+| _Tests_                | Contains the unit tests for the package.                                |
 
 <a name="Installation"></a>
 

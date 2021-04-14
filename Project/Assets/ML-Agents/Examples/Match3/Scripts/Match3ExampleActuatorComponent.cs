@@ -1,6 +1,6 @@
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Extensions.Match3;
+using Unity.MLAgents.Integrations.Match3;
 
 namespace Unity.MLAgentsExamples
 {

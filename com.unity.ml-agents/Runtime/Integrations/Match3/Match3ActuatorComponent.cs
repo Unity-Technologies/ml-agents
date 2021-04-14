@@ -2,7 +2,7 @@ using Unity.MLAgents.Actuators;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Unity.MLAgents.Extensions.Match3
+namespace Unity.MLAgents.Integrations.Match3
 {
     /// <summary>
     /// Actuator component for a Match3 game. Generates a Match3Actuator at runtime.

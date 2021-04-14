@@ -18,8 +18,7 @@ The following table describes the package folder structure:
 | _Runtime_        | Contains core C# APIs for integrating ML-Agents into your Unity scene. |
 | _Tests_          | Contains the unit tests for the package.                               |
 
-The Runtime directory currently contains three features:
- * [Match-3 sensor and actuator](Match3.md)
+The Runtime directory currently contains these features:
  * [Grid-based sensor](Grid-Sensor.md)
  * Physics-based sensors
  * [Input System Package Integration](InputActuatorComponent.md)
