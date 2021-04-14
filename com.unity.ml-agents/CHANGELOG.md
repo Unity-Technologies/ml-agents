@@ -63,6 +63,7 @@ This results in much less memory being allocated during inference with `CameraSe
 settings. Unfortunately, this may require retraining models if it changes the resulting order of the sensors
 or actuators on your system. (#5194)
 - Removed additional memory allocations that were occurring due to assert messages and iterating of DemonstrationRecorders. (#5246)
+- Fixed a bug where agent trying to access unintialized fields when creating a new RayPerceptionSensorComponent on an agent. (#5261)
 
 ## [1.9.1-preview] - 2021-04-13
 ### Major Changes
