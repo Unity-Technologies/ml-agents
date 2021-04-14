@@ -2157,7 +2157,7 @@ GameObject:
   - component: {fileID: 114176228333253036}
   - component: {fileID: 8297075921230369060}
   - component: {fileID: 1222199865870203693}
-  - component: {fileID: 2010492400}
+  - component: {fileID: 2106566910232743969}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -2294,7 +2294,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugCommandLineOverride: 
---- !u!114 &2010492400
+--- !u!114 &2106566910232743969
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2310,8 +2310,7 @@ MonoBehaviour:
   m_CellScale: {x: 1, y: 0.01, z: 1}
   m_GridSize: {x: 40, y: 1, z: 40}
   m_RotateWithAgent: 1
-  m_ChannelDepths: 05000000
-  m_DetectableObjects:
+  m_DetectableTags:
   - food
   - agent
   - wall
@@ -2320,7 +2319,6 @@ MonoBehaviour:
   m_ColliderMask:
     serializedVersion: 2
     m_Bits: 307
-  m_DepthType: 1
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
@@ -2333,6 +2331,8 @@ MonoBehaviour:
   m_ShowGizmos: 0
   m_CompressionType: 1
   m_ObservationStacks: 1
+  m_UseOneHotTag: 1
+  m_CountColliders: 0
 --- !u!1 &1482701732800114
 GameObject:
   m_ObjectHideFlags: 0
@@ -2514,7 +2514,7 @@ GameObject:
   - component: {fileID: 114522573150607728}
   - component: {fileID: 114711827726849508}
   - component: {fileID: 259154752087955944}
-  - component: {fileID: 7409303125559953495}
+  - component: {fileID: 556732721703992837}
   m_Layer: 0
   m_Name: Agent (1)
   m_TagString: agent
@@ -2638,7 +2638,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
---- !u!114 &7409303125559953495
+--- !u!114 &556732721703992837
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2654,8 +2654,7 @@ MonoBehaviour:
   m_CellScale: {x: 1, y: 0.01, z: 1}
   m_GridSize: {x: 40, y: 1, z: 40}
   m_RotateWithAgent: 1
-  m_ChannelDepths: 05000000
-  m_DetectableObjects:
+  m_DetectableTags:
   - food
   - agent
   - wall
@@ -2664,7 +2663,6 @@ MonoBehaviour:
   m_ColliderMask:
     serializedVersion: 2
     m_Bits: 307
-  m_DepthType: 1
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
@@ -2677,6 +2675,8 @@ MonoBehaviour:
   m_ShowGizmos: 0
   m_CompressionType: 1
   m_ObservationStacks: 1
+  m_UseOneHotTag: 1
+  m_CountColliders: 0
 --- !u!1 &1528397385587768
 GameObject:
   m_ObjectHideFlags: 0
@@ -2863,7 +2863,7 @@ GameObject:
   - component: {fileID: 114980787530065684}
   - component: {fileID: 114542632553128056}
   - component: {fileID: 5519119940433428255}
-  - component: {fileID: 1115669858669834387}
+  - component: {fileID: 1408842157152425307}
   m_Layer: 0
   m_Name: Agent (2)
   m_TagString: agent
@@ -2987,7 +2987,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
---- !u!114 &1115669858669834387
+--- !u!114 &1408842157152425307
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3003,8 +3003,7 @@ MonoBehaviour:
   m_CellScale: {x: 1, y: 0.01, z: 1}
   m_GridSize: {x: 40, y: 1, z: 40}
   m_RotateWithAgent: 1
-  m_ChannelDepths: 05000000
-  m_DetectableObjects:
+  m_DetectableTags:
   - food
   - agent
   - wall
@@ -3013,7 +3012,6 @@ MonoBehaviour:
   m_ColliderMask:
     serializedVersion: 2
     m_Bits: 307
-  m_DepthType: 1
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
@@ -3026,6 +3024,8 @@ MonoBehaviour:
   m_ShowGizmos: 0
   m_CompressionType: 1
   m_ObservationStacks: 1
+  m_UseOneHotTag: 1
+  m_CountColliders: 0
 --- !u!1 &1617924810425504
 GameObject:
   m_ObjectHideFlags: 0
@@ -3481,7 +3481,7 @@ GameObject:
   - component: {fileID: 114878550018296316}
   - component: {fileID: 114189751434580810}
   - component: {fileID: 5884750436653390196}
-  - component: {fileID: 3147256093106034163}
+  - component: {fileID: 455231854019269609}
   m_Layer: 0
   m_Name: Agent (4)
   m_TagString: agent
@@ -3605,7 +3605,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
---- !u!114 &3147256093106034163
+--- !u!114 &455231854019269609
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3621,8 +3621,7 @@ MonoBehaviour:
   m_CellScale: {x: 1, y: 0.01, z: 1}
   m_GridSize: {x: 40, y: 1, z: 40}
   m_RotateWithAgent: 1
-  m_ChannelDepths: 05000000
-  m_DetectableObjects:
+  m_DetectableTags:
   - food
   - agent
   - wall
@@ -3631,7 +3630,6 @@ MonoBehaviour:
   m_ColliderMask:
     serializedVersion: 2
     m_Bits: 307
-  m_DepthType: 1
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
@@ -3644,6 +3642,8 @@ MonoBehaviour:
   m_ShowGizmos: 0
   m_CompressionType: 1
   m_ObservationStacks: 1
+  m_UseOneHotTag: 1
+  m_CountColliders: 0
 --- !u!1 &1688105343773098
 GameObject:
   m_ObjectHideFlags: 0
@@ -3816,7 +3816,7 @@ GameObject:
   - component: {fileID: 114035338027591536}
   - component: {fileID: 114235147148547996}
   - component: {fileID: 4768752321433982785}
-  - component: {fileID: 3712017990468381030}
+  - component: {fileID: 653284020512459243}
   m_Layer: 0
   m_Name: Agent (3)
   m_TagString: agent
@@ -3940,7 +3940,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
---- !u!114 &3712017990468381030
+--- !u!114 &653284020512459243
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3956,8 +3956,7 @@ MonoBehaviour:
   m_CellScale: {x: 1, y: 0.01, z: 1}
   m_GridSize: {x: 40, y: 1, z: 40}
   m_RotateWithAgent: 1
-  m_ChannelDepths: 05000000
-  m_DetectableObjects:
+  m_DetectableTags:
   - food
   - agent
   - wall
@@ -3966,7 +3965,6 @@ MonoBehaviour:
   m_ColliderMask:
     serializedVersion: 2
     m_Bits: 307
-  m_DepthType: 1
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
@@ -3979,6 +3977,8 @@ MonoBehaviour:
   m_ShowGizmos: 0
   m_CompressionType: 1
   m_ObservationStacks: 1
+  m_UseOneHotTag: 1
+  m_CountColliders: 0
 --- !u!1 &1729825611722018
 GameObject:
   m_ObjectHideFlags: 0
