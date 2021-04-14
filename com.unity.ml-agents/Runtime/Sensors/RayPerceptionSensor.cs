@@ -78,7 +78,7 @@ namespace Unity.MLAgents.Sensors
         /// <returns></returns>
         public int OutputSize()
         {
-            return (DetectableTags.Count + 2) * Angles.Count;
+            return ((DetectableTags?.Count ?? 0) + 2) * (Angles?.Count ?? 0);
         }
 
         /// <summary>
