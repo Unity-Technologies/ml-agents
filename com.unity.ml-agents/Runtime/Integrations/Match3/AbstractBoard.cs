@@ -7,7 +7,7 @@ using Debug = UnityEngine.Debug;
 namespace Unity.MLAgents.Integrations.Match3
 {
     /// <summary>
-    /// Representation of the AbstractBoard size and number of cell and special types.
+    /// Representation of the AbstractBoard dimensions, and number of cell and special types.
     /// </summary>
     public struct BoardSize
     {
@@ -125,7 +125,7 @@ namespace Unity.MLAgents.Integrations.Match3
         public abstract bool IsMoveValid(Move m);
 
         /// <summary>
-        /// Instruct the game to make the given move. Returns true if the move was made.
+        /// Instruct the game to make the given Move. Returns true if the move was made.
         /// Note that during training, a move that was marked as invalid may occasionally still be
         /// requested. If this happens, it is safe to do nothing and request another move.
         /// </summary>

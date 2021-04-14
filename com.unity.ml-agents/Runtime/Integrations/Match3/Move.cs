@@ -141,7 +141,7 @@ namespace Unity.MLAgents.Integrations.Match3
         }
 
         /// <summary>
-        /// Construct a Move from the row, column, and direction.
+        /// Construct a Move from the row, column, direction, and board size.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="col"></param>

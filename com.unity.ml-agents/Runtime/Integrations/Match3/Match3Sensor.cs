@@ -164,7 +164,6 @@ namespace Unity.MLAgents.Integrations.Match3
                 }
             }
 
-
             return offset;
         }
 
