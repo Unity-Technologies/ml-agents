@@ -71,30 +71,36 @@ namespace Unity.MLAgents.Inference
         public static FailedCheck CheckModelVersion(Model model)
         {
             var modelApiVersion = model.GetVersion();
-            if (modelApiVersion < (int)ModelApiVersion.MinSupportedVersion || modelApiVersion > (int)ModelApiVersion.MaxSupportedVersion)
+            if (modelApiVersion < (int)ModelApiVersion.MinSupportedVersion)
             {
-                return FailedCheck.Error($"Version of the trainer the model was trained with ({modelApiVersion}) " +
-                    $"is not compatible with the current range of supported versions:  " +
-                    $"({(int)ModelApiVersion.MinSupportedVersion} to {(int)ModelApiVersion.MaxSupportedVersion}). \n" +
-                    "You need to retrain your model with a compatible trainer.");
+                return FailedCheck.Error(
+                    "Model was trained with a older version of the trainer than is supported. " +
+                    "Either retrain with an newer trainer, or use an older version of com.unity.ml-agents.\n" +
+                    $"Model version: {modelApiVersion} Minimum supported version: {(int)ModelApiVersion.MinSupportedVersion}"
+                );
+            }
+
+            if (modelApiVersion > (int)ModelApiVersion.MaxSupportedVersion)
+            {
+                return FailedCheck.Error(
+                    "Model was trained with a newer version of the trainer than is supported. " +
+                    "Either retrain with an older trainer, or update to a newer version of com.unity.ml-agents.\n" +
+                    $"Model version: {modelApiVersion}  Maximum supported version: {(int)ModelApiVersion.MaxSupportedVersion}"
+                );
             }
 
             var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
 
-            if (modelApiVersion == (int)ModelApiVersion.MLAgents1_0)
+            if (modelApiVersion == (int)ModelApiVersion.MLAgents1_0 && memorySize > 0)
             {
-
-                /// This block is to make sure that models that are trained with MLAgents version 1.x and have
-                /// an LSTM (i.e. use the barracuda _c and _h inputs and outputs) will not work with MLAgents version
-                /// 2.x. This is because Barracuda version 2.x will eventually drop support for the _c and _h inputs
-                /// and only ML-Agents 2.x models will be compatible.
-                if (memorySize > 0)
-                {
-                    return FailedCheck.Error($"Version of the trainer the model was trained with ({modelApiVersion}) " +
-                        $"is not compatible with the expected version ({(int)ModelApiVersion.MaxSupportedVersion}) for " +
-                        "models that use recurrent neural networks. \n" +
-                        "You need to retrain your model with a compatible trainer.");
-                }
+                // This block is to make sure that models that are trained with MLAgents version 1.x and have
+                // an LSTM (i.e. use the barracuda _c and _h inputs and outputs) will not work with MLAgents version
+                // 2.x. This is because Barracuda version 2.x will eventually drop support for the _c and _h inputs
+                // and only ML-Agents 2.x models will be compatible.
+                return FailedCheck.Error(
+                    "Models from com.unity.ml-agents 1.x that use recurrent neural networks are not supported in newer versions. " +
+                    "Either retrain with an newer trainer, or use an older version of com.unity.ml-agents.\n"
+                );
             }
             return null;
 
