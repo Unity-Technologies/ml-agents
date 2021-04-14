@@ -2,7 +2,7 @@ using Unity.MLAgents.Actuators;
 using Debug = UnityEngine.Debug;
 
 
-namespace Unity.MLAgents.Extensions.Match3
+namespace Unity.MLAgents.Integrations.Match3
 {
     /// <summary>
     /// Actuator for a Match3 game. It translates valid moves (defined by AbstractBoard.IsMoveValid())

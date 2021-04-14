@@ -4,7 +4,7 @@ using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace Unity.MLAgents.Extensions.Match3
+namespace Unity.MLAgents.Integrations.Match3
 {
     /// <summary>
     /// Representation of the AbstractBoard size and number of cell and special types.

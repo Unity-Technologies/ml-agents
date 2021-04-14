@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
-namespace Unity.MLAgents.Extensions.Match3
+namespace Unity.MLAgents.Integrations.Match3
 {
     /// <summary>
     /// Delegate that provides integer values at a given (x,y) coordinate.

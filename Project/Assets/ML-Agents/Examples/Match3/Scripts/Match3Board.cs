@@ -1,5 +1,5 @@
 using System;
-using Unity.MLAgents.Extensions.Match3;
+using Unity.MLAgents.Integrations.Match3;
 using UnityEngine;
 using UnityEngine.Serialization;
 

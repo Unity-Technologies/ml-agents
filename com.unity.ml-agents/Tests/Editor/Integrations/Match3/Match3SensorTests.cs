@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using NUnit.Framework;
-using Unity.MLAgents.Extensions.Match3;
 using UnityEngine;
-using Unity.MLAgents.Extensions.Tests.Sensors;
+using Unity.MLAgents.Integrations.Match3;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Tests;
 
-namespace Unity.MLAgents.Extensions.Tests.Match3
+namespace Unity.MLAgents.Tests.Integrations.Match3
 {
     public class Match3SensorTests
     {

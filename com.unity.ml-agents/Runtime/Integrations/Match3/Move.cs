@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Unity.MLAgents.Extensions.Match3
+namespace Unity.MLAgents.Integrations.Match3
 {
     /// <summary>
     /// Directions for a Move.
