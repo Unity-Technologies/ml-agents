@@ -68,7 +68,7 @@ or actuators on your system. (#5194)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `--resume` flag now supports resuming experiments with additional reward providers or
  loading partial models if the network architecture has changed. See
- [here](https://github.com/Unity-Technologies/ml-agents/blob/release-16_docs/docs/Training-ML-Agents.md#loading-an-existing-model)
+ [here](https://github.com/Unity-Technologies/ml-agents/blob/release_16_docs/docs/Training-ML-Agents.md#loading-an-existing-model)
  for more details. (#5213)
 
 ### Bug Fixes
