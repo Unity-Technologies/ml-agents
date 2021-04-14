@@ -81,6 +81,7 @@ namespace Unity.MLAgents.Editor
             {
                 debugColors.arraySize = detectableObjectSize;
             }
+            EditorGUILayout.LabelField("Debug Colors");
             EditorGUI.indentLevel++;
             for (var i = 0; i < debugColors.arraySize; i++)
             {
