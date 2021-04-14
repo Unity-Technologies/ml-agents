@@ -105,6 +105,34 @@ you wish to use a single behavior to work with multiple board sizes, override `G
 current `BoardSize`. The values returned by `GetCurrentBoardSize()` must be less than or equal to the corresponding
 values from `GetMaxBoardSize()`.
 
+### GridSensor changes
+The sensor configuration has changed:
+* The sensor implementation has been refactored and exsisting GridSensor created from extension package
+will not work in newer version. Some errors might show up when loading the old sensor in the scene.
+You'll need to remove the old sensor and create a new GridSensor.
+* These parameters names have changed but still refer to the same concept in the sensor: `GridNumSide` -> `GridSize`,
+`RotateToAgent` -> `RotateWithAgent`, `ObserveMask` -> `ColliderMask`, `DetectableObjects` -> `DetectableTags`
+* `RootReference` is removed and default to the sensor component's GameObject.
+* `DepthType` (`ChanelBase`/`ChannelHot`) option and `ChannelDepth` are removed. Now the default is
+one-hot encoding for detected tag. If you were using original GridSensor without overriding any method,
+switching to new GridSensor will produce similar effect for training although the actual observations
+will be slightly different.
+
+For creating your GridSensor implementation with custom data:
+* To create custom GridSensor, derive from `GridSensorBase` instead of `GridSensor`. Besides overriding
+`GetObjectData()`, you will also need to consider override `GetCellObservationSize()`, `IsDataNormalized()`
+and `GetProcessCollidersMethod()` according to the data you collect. Also you'll need to override
+`GridSensorComponent.GetGridSensors()` and return your custom GridSensor.
+* The input argument `tagIndex` in `GetObjectData()` has changed from 1-indexed to 0-indexed and the
+data type changed from `float` to `int`. The index of first detectable tag will be 0 instead of 1.
+`normalizedDistance` was removed from input.
+* The observation data should be written to the input `dataBuffer` instead of creating and returning a new array.
+* Removed the constraint of all data required to be normalized. You should specify it in `IsDataNormalized()`.
+Sensors with non-normalized data cannot use PNG compression type.
+* The sensor will not further encode the data recieved from `GetObjectData()` anymore. The values
+recieved from `GetObjectData()` will be the observation sent to the trainer.
+
+
 ## Migrating to Release 13
 ### Implementing IHeuristic in your IActuator implementations
  - If you have any custom actuators, you can now implement the `IHeuristicProvider` interface to have your actuator

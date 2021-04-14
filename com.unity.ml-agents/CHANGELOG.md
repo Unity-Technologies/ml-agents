@@ -23,13 +23,16 @@ and `IDimensionPropertiesSensor` interfaces were removed. (#5127)
 - `ISensor.GetCompressionType()` was removed, and `GetCompressionSpec()` was added. The `ISparseChannelSensor`
 interface was removed. (#5164)
 - The abstract method `SensorComponent.GetObservationShape()` was no longer being called, so it has been removed. (#5172)
-- `SensorComponent.CreateSensor()` was replaced with `SensorComponent.CreateSensor()`, which returns an `ISensor[]`. (#5181)
+- `SensorComponent.CreateSensor()` was replaced with `SensorComponent.CreateSensors()`, which returns an `ISensor[]`. (#5181)
 - `Match3Sensor` was refactored to produce cell and special type observations separately, and `Match3SensorComponent` now
 produces two `Match3Sensor`s (unless there are no special types). Previously trained models will have different observation
 sizes and will need to be retrained. (#5181)
 - The `AbstractBoard` class for integration with Match-3 games was changed to make it easier to support boards with
 different sizes using the same model. For a summary of the interface changes, please see the Migration Guide. (##5189)
 - Updated the Barracuda package to version `1.3.3-preview`(#5236)
+- `GridSensor` has been refactored and moved to main package, with changes to both sensor interfaces and behaviors.
+Exsisting GridSensor created by extension package will not work in newer version. Previously trained models will
+need to be retrained. Please see the Migration Guide for more details.
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `--resume` flag now supports resuming experiments with additional reward providers or
