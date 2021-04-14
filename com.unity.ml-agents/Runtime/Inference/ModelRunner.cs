@@ -71,6 +71,15 @@ namespace Unity.MLAgents.Inference
                 D.logEnabled = m_Verbose;
 
                 barracudaModel = ModelLoader.Load(model);
+
+                var failedCheck = Inference.BarracudaModelParamLoader.CheckModelVersion(
+                        barracudaModel
+                    );
+                if (failedCheck != null)
+                {
+                    throw new UnityAgentsException(failedCheck.Message);
+                }
+
                 WorkerFactory.Type executionDevice;
                 switch (inferenceDevice)
                 {

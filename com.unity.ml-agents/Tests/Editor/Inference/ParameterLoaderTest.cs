@@ -140,7 +140,7 @@ namespace Unity.MLAgents.Tests
             return validBrainParameters;
         }
 
-        BrainParameters GetRankRecurrHybridBrainParameters()
+        BrainParameters GetRecurrHybridBrainParameters()
         {
             var validBrainParameters = new BrainParameters();
             validBrainParameters.VectorObservationSize = 8;
@@ -331,7 +331,7 @@ namespace Unity.MLAgents.Tests
         {
             var model = ModelLoader.Load(hybridRecurrV2Model);
             var num_errors = 0; // A model trained with v2 should not raise errors
-            var validBrainParameters = GetRankRecurrHybridBrainParameters();
+            var validBrainParameters = GetRecurrHybridBrainParameters();
 
             var errors = BarracudaModelParamLoader.CheckModel(
                 model, validBrainParameters,
@@ -339,7 +339,7 @@ namespace Unity.MLAgents.Tests
             );
             Assert.AreEqual(num_errors, errors.Count()); // There should not be any errors
 
-            var invalidBrainParameters = GetRankRecurrHybridBrainParameters();
+            var invalidBrainParameters = GetRecurrHybridBrainParameters();
             invalidBrainParameters.ActionSpec = new ActionSpec(1, new int[] { 2, 3 });
             errors = BarracudaModelParamLoader.CheckModel(
                 model, invalidBrainParameters,
