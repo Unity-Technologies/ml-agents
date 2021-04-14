@@ -209,6 +209,7 @@ class RLTrainer(Trainer):
         p = self.get_policy(name_behavior_id)
         if p:
             p.increment_step(n_steps)
+        self.stats_reporter.set_stat("Step", float(self.get_step))
 
     def _get_next_interval_step(self, interval: int) -> int:
         """
