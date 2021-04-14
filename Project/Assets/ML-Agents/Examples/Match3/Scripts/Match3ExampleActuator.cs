@@ -1,4 +1,3 @@
-using Unity.MLAgents;
 using Unity.MLAgents.Integrations.Match3;
 
 namespace Unity.MLAgentsExamples
