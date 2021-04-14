@@ -1,10 +1,11 @@
+#if MLA_UNITY_PHYSICS_MODULE
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
-using Unity.MLAgents.Extensions.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace Unity.MLAgents.Extensions.Tests.GridSensors
+namespace Unity.MLAgents.Tests
 {
     internal class TestBoxOverlapChecker : BoxOverlapChecker
     {
@@ -280,7 +281,7 @@ namespace Unity.MLAgents.Extensions.Tests.GridSensors
             var testGo = new GameObject("test");
             testGo.transform.position = Vector3.zero;
             var gridSensorComponent = testGo.AddComponent<SimpleTestGridSensorComponent>();
-            gridSensorComponent.SetComponentParameters(useGridSensorBase: true, useOneHotTag: true, countColliders: true);
+            gridSensorComponent.SetComponentParameters(useGridSensorBase: true, useTestingGridSensor: true);
             var sensors = gridSensorComponent.CreateSensors();
             int numChecker = 0;
             foreach (var sensor in sensors)
@@ -295,3 +296,4 @@ namespace Unity.MLAgents.Extensions.Tests.GridSensors
         }
     }
 }
+#endif

@@ -1,9 +1,8 @@
 using UnityEditor;
 using UnityEngine;
-using Unity.MLAgents.Editor;
-using Unity.MLAgents.Extensions.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace Unity.MLAgents.Extensions.Editor
+namespace Unity.MLAgents.Editor
 {
     [CustomEditor(typeof(GridSensorComponent))]
     [CanEditMultipleObjects]
@@ -11,6 +10,12 @@ namespace Unity.MLAgents.Extensions.Editor
     {
         public override void OnInspectorGUI()
         {
+#if !MLA_UNITY_PHYSICS_MODULE
+            EditorGUILayout.HelpBox("The Physics Module is not currently present.  " +
+            "Please add it to your project in order to use the GridSensor APIs in the " +
+            $"{nameof(GridSensorComponent)}", MessageType.Warning);
+#endif
+
             var so = serializedObject;
             so.Update();
 
@@ -25,11 +30,11 @@ namespace Unity.MLAgents.Extensions.Editor
 
                 EditorGUILayout.LabelField("Grid Settings", EditorStyles.boldLabel);
                 EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_CellScale)), true);
-                // We only supports 2D GridSensor now so display gridNumSide as Vector2
+                // We only supports 2D GridSensor now so lock gridSize.y to 1
                 var gridSize = so.FindProperty(nameof(GridSensorComponent.m_GridSize));
-                var gridSize2d = new Vector2Int(gridSize.vector3IntValue.x, gridSize.vector3IntValue.z);
-                var newGridSize = EditorGUILayout.Vector2IntField("Grid Size", gridSize2d);
-                gridSize.vector3IntValue = new Vector3Int(newGridSize.x, 1, newGridSize.y);
+                var gridSize2d = new Vector3Int(gridSize.vector3IntValue.x, 1, gridSize.vector3IntValue.z);
+                var newGridSize = EditorGUILayout.Vector3IntField("Grid Size", gridSize2d);
+                gridSize.vector3IntValue = new Vector3Int(newGridSize.x, 1, newGridSize.z);
             }
             EditorGUI.EndDisabledGroup();
             EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_RotateWithAgent)), true);
@@ -50,10 +55,6 @@ namespace Unity.MLAgents.Extensions.Editor
                     EditorGUILayout.PropertyField(objectTag, new GUIContent("Tag " + i), true);
                 }
                 EditorGUI.indentLevel--;
-
-                EditorGUILayout.LabelField("Observation Settings", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_UseOneHotTag)), new GUIContent("One-Hot Tag Index"), true);
-                EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_CountColliders)), new GUIContent("Detectable Tag Count"), true);
             }
             EditorGUI.EndDisabledGroup();
             EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_ColliderMask)), true);
@@ -80,6 +81,7 @@ namespace Unity.MLAgents.Extensions.Editor
             {
                 debugColors.arraySize = detectableObjectSize;
             }
+            EditorGUILayout.LabelField("Debug Colors");
             EditorGUI.indentLevel++;
             for (var i = 0; i < debugColors.arraySize; i++)
             {

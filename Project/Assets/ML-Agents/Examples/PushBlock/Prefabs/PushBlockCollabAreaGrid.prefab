@@ -1486,47 +1486,6 @@ MonoBehaviour:
   onTriggerExitEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1809664679221531284
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8191066182862526894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a501962d056745d1a30e99146ee39fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: GridSensor
-  m_CellScale: {x: 1, y: 0.01, z: 1}
-  m_GridSize: {x: 20, y: 1, z: 20}
-  m_RotateWithAgent: 1
-  m_DetectableTags:
-  - wall
-  - agent
-  - goal
-  - blockSmall
-  - blockLarge
-  - blockVeryLarge
-  m_ColliderMask:
-    serializedVersion: 2
-    m_Bits: 1
-  m_MaxColliderBufferSize: 500
-  m_InitialColliderBufferSize: 16
-  m_DebugColors:
-  - {r: 0, g: 0, b: 0, a: 0}
-  - {r: 0, g: 0.5176471, b: 1, a: 0}
-  - {r: 0.46666667, g: 0.7058824, b: 0.3529412, a: 0}
-  - {r: 1, g: 0.99607843, b: 0.9843137, a: 0}
-  - {r: 0.48235294, g: 0.48235294, b: 0.48235294, a: 0}
-  - {r: 0.35686275, g: 0.35686275, b: 0.35686275, a: 0}
-  m_GizmoYOffset: 0
-  m_ShowGizmos: 0
-  m_CompressionType: 1
-  m_ObservationStacks: 1
-  m_UseOneHotTag: 1
-  m_CountColliders: 0
 --- !u!1 &8191066182918326564
 GameObject:
   m_ObjectHideFlags: 0
@@ -2214,47 +2173,6 @@ MonoBehaviour:
   UseRandomAgentPosition: 1
   UseRandomBlockRotation: 1
   UseRandomBlockPosition: 1
---- !u!114 &4609315540733531199
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8696048509000480032}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a501962d056745d1a30e99146ee39fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: GridSensor
-  m_CellScale: {x: 1, y: 0.01, z: 1}
-  m_GridSize: {x: 20, y: 1, z: 20}
-  m_RotateWithAgent: 1
-  m_DetectableTags:
-  - wall
-  - agent
-  - goal
-  - blockSmall
-  - blockLarge
-  - blockVeryLarge
-  m_ColliderMask:
-    serializedVersion: 2
-    m_Bits: 1
-  m_MaxColliderBufferSize: 500
-  m_InitialColliderBufferSize: 16
-  m_DebugColors:
-  - {r: 0, g: 0, b: 0, a: 0}
-  - {r: 0, g: 0.5176471, b: 1, a: 0}
-  - {r: 0.46666667, g: 0.7058824, b: 0.3529412, a: 0}
-  - {r: 1, g: 0.99607843, b: 0.9843137, a: 0}
-  - {r: 0.48235294, g: 0.48235294, b: 0.48235294, a: 0}
-  - {r: 0.35686275, g: 0.35686275, b: 0.35686275, a: 0}
-  m_GizmoYOffset: 0
-  m_ShowGizmos: 0
-  m_CompressionType: 1
-  m_ObservationStacks: 1
-  m_UseOneHotTag: 1
-  m_CountColliders: 0
 --- !u!1 &8821353056066081524
 GameObject:
   m_ObjectHideFlags: 0
@@ -2336,47 +2254,6 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
---- !u!114 &6319243058783963332
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9116780590443581137}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a501962d056745d1a30e99146ee39fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: GridSensor
-  m_CellScale: {x: 1, y: 0.01, z: 1}
-  m_GridSize: {x: 20, y: 1, z: 20}
-  m_RotateWithAgent: 1
-  m_DetectableTags:
-  - wall
-  - agent
-  - goal
-  - blockSmall
-  - blockLarge
-  - blockVeryLarge
-  m_ColliderMask:
-    serializedVersion: 2
-    m_Bits: 1
-  m_MaxColliderBufferSize: 500
-  m_InitialColliderBufferSize: 16
-  m_DebugColors:
-  - {r: 0, g: 0, b: 0, a: 0}
-  - {r: 0, g: 0.5176471, b: 1, a: 0}
-  - {r: 0.46666667, g: 0.7058824, b: 0.3529412, a: 0}
-  - {r: 1, g: 0.99607843, b: 0.9843137, a: 0}
-  - {r: 0.48235294, g: 0.48235294, b: 0.48235294, a: 0}
-  - {r: 0.35686275, g: 0.35686275, b: 0.35686275, a: 0}
-  m_GizmoYOffset: 0
-  m_ShowGizmos: 0
-  m_CompressionType: 1
-  m_ObservationStacks: 1
-  m_UseOneHotTag: 1
-  m_CountColliders: 0
 --- !u!1001 &6067781793364901444
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2453,12 +2330,6 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 2709359580712052712, guid: ac01d0f42c5e1463e943632a60d99967, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ac01d0f42c5e1463e943632a60d99967, type: 3}
---- !u!1 &8191066182862526894 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2709359580712052714, guid: ac01d0f42c5e1463e943632a60d99967,
-    type: 3}
-  m_PrefabInstance: {fileID: 6067781793364901444}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8190299122290044756 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2710286047221272848, guid: ac01d0f42c5e1463e943632a60d99967,
@@ -2558,12 +2429,6 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 2709359580712052712, guid: ac01d0f42c5e1463e943632a60d99967, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ac01d0f42c5e1463e943632a60d99967, type: 3}
---- !u!1 &9116780590443581137 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2709359580712052714, guid: ac01d0f42c5e1463e943632a60d99967,
-    type: 3}
-  m_PrefabInstance: {fileID: 6565363751102736699}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &9115291448867436587 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2710286047221272848, guid: ac01d0f42c5e1463e943632a60d99967,
@@ -2663,12 +2528,6 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 2709359580712052712, guid: ac01d0f42c5e1463e943632a60d99967, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ac01d0f42c5e1463e943632a60d99967, type: 3}
---- !u!1 &8696048509000480032 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2709359580712052714, guid: ac01d0f42c5e1463e943632a60d99967,
-    type: 3}
-  m_PrefabInstance: {fileID: 6716844123244810954}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8695281997955662810 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2710286047221272848, guid: ac01d0f42c5e1463e943632a60d99967,
