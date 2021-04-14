@@ -119,6 +119,7 @@ namespace Unity.MLAgents.Sensors
             {
                 var cellCenter = GetCellGlobalPosition(cellIndex);
                 var numFound = BufferResizingOverlapBoxNonAlloc(cellCenter, m_HalfCellScale, GetGridRotation());
+
                 if (GridOverlapDetectedAll != null)
                 {
                     ParseCollidersAll(m_ColliderBuffer, numFound, cellIndex, cellCenter, GridOverlapDetectedAll);

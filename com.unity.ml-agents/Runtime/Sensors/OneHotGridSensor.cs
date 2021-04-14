@@ -1,4 +1,5 @@
 using UnityEngine;
+
 namespace Unity.MLAgents.Sensors
 {
     /// <summary>
