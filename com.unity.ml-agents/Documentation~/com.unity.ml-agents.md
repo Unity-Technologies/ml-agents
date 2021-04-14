@@ -53,6 +53,34 @@ Manager documentation].
 To install the companion Python package to enable training behaviors, follow the
 [installation instructions] on our [GitHub repository].
 
+### Advanced Installation
+With the changes to Unity Package Manager in 2021, experimental packages will not show up in package list and have to be installed manually. There are two recommended ways to install the package manually:
+
+#### Github via Package Manager
+
+In Unity 2019.4 or later, open the Package Manager, hit the "+" button, and select "Add package from git URL".
+
+![Package Manager git URL](https://github.com/Unity-Technologies/ml-agents/blob/release_16_docs/docs/images/unity_package_manager_git_url.png)
+
+In the dialog that appears, enter
+ ```
+git+https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents#release_16
+```
+
+You can also edit your project's `manifest.json` directly and add the following line to the `dependencies`
+section:
+```
+"com.unity.ml-agents": "git+https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents#release_16",
+```
+See [Git dependencies](https://docs.unity3d.com/Manual/upm-git.html#subfolder) for more information. Note that this
+may take several minutes to resolve the packages the first time that you add it.
+
+#### Local Installation for Development
+
+[Clone the repository](https://github.com/Unity-Technologies/ml-agents/tree/release_16_docs/docs/Installation.md#clone-the-ml-agents-toolkit-repository-optional) and follow the
+[Local Installation for Development](https://github.com/Unity-Technologies/ml-agents/tree/release_16_docs/docs/Installation.md#advanced-local-installation-for-development-1)
+directions.
+
 ## Requirements
 
 This version of the Unity ML-Agents package is compatible with the following
