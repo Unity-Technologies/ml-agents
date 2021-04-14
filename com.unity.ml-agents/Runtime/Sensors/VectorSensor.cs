@@ -13,7 +13,7 @@ namespace Unity.MLAgents.Sensors
         // TODO use float[] instead
         // TODO allow setting float[]
         List<float> m_Observations;
-        int[] m_Shape;
+        ObservationSpec m_ObservationSpec;
         string m_Name;
 
         /// <summary>
@@ -21,22 +21,26 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         /// <param name="observationSize">Number of vector observations.</param>
         /// <param name="name">Name of the sensor.</param>
-        public VectorSensor(int observationSize, string name = null)
+        public VectorSensor(int observationSize, string name = null, ObservationType observationType = ObservationType.Default)
         {
-            if (name == null)
+            if (string.IsNullOrEmpty(name))
             {
                 name = $"VectorSensor_size{observationSize}";
+                if (observationType != ObservationType.Default)
+                {
+                    name += $"_{observationType.ToString()}";
+                }
             }
 
             m_Observations = new List<float>(observationSize);
             m_Name = name;
-            m_Shape = new[] { observationSize };
+            m_ObservationSpec = ObservationSpec.Vector(observationSize, observationType);
         }
 
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
-            var expectedObservations = m_Shape[0];
+            var expectedObservations = m_ObservationSpec.Shape[0];
             if (m_Observations.Count > expectedObservations)
             {
                 // Too many observations, truncate
@@ -84,9 +88,9 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public int[] GetObservationShape()
+        public ObservationSpec GetObservationSpec()
         {
-            return m_Shape;
+            return m_ObservationSpec;
         }
 
         /// <inheritdoc/>
@@ -102,9 +106,9 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public virtual SensorCompressionType GetCompressionType()
+        public CompressionSpec GetCompressionSpec()
         {
-            return SensorCompressionType.None;
+            return CompressionSpec.Default();
         }
 
         /// <inheritdoc/>
@@ -120,9 +124,7 @@ namespace Unity.MLAgents.Sensors
 
         void AddFloatObs(float obs)
         {
-#if DEBUG
             Utilities.DebugCheckNanAndInfinity(obs, nameof(obs), nameof(AddFloatObs));
-#endif
             m_Observations.Add(obs);
         }
 
@@ -165,19 +167,6 @@ namespace Unity.MLAgents.Sensors
         {
             AddFloatObs(observation.x);
             AddFloatObs(observation.y);
-        }
-
-        /// <summary>
-        /// Adds a collection of float observations to the vector observations of the agent.
-        /// </summary>
-        /// <param name="observation">Observation.</param>
-        [Obsolete("Use AddObservation(IList<float>) for better performance.")]
-        public void AddObservation(IEnumerable<float> observation)
-        {
-            foreach (var f in observation)
-            {
-                AddFloatObs(f);
-            }
         }
 
         /// <summary>

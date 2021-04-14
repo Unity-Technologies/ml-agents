@@ -37,7 +37,8 @@ namespace Unity.MLAgents.Sensors.Reflection
 
         // Cached sensor names and shapes.
         string m_SensorName;
-        int[] m_Shape;
+        ObservationSpec m_ObservationSpec;
+        int m_NumFloats;
 
         public ReflectionSensorBase(ReflectionSensorInfo reflectionSensorInfo, int size)
         {
@@ -46,20 +47,21 @@ namespace Unity.MLAgents.Sensors.Reflection
             m_PropertyInfo = reflectionSensorInfo.PropertyInfo;
             m_ObservableAttribute = reflectionSensorInfo.ObservableAttribute;
             m_SensorName = reflectionSensorInfo.SensorName;
-            m_Shape = new[] { size };
+            m_ObservationSpec = ObservationSpec.Vector(size);
+            m_NumFloats = size;
         }
 
         /// <inheritdoc/>
-        public int[] GetObservationShape()
+        public ObservationSpec GetObservationSpec()
         {
-            return m_Shape;
+            return m_ObservationSpec;
         }
 
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
             WriteReflectedField(writer);
-            return m_Shape[0];
+            return m_NumFloats;
         }
 
         internal abstract void WriteReflectedField(ObservationWriter writer);
@@ -89,9 +91,9 @@ namespace Unity.MLAgents.Sensors.Reflection
         public void Reset() { }
 
         /// <inheritdoc/>
-        public SensorCompressionType GetCompressionType()
+        public CompressionSpec GetCompressionSpec()
         {
-            return SensorCompressionType.None;
+            return CompressionSpec.Default();
         }
 
         /// <inheritdoc/>
@@ -105,6 +107,5 @@ namespace Unity.MLAgents.Sensors.Reflection
         {
             return BuiltInSensorType.ReflectionSensor;
         }
-
     }
 }

@@ -14,6 +14,97 @@ double-check that the versions are in the same. The versions can be found in
 
 
 # Migrating
+## Migrating the package to version 2.0
+- The official version of Unity ML-Agents supports is now 2019.4 LTS. If you run
+  into issues, please consider deleting your project's Library folder and reponening your
+  project.
+- If you used any of the APIs that were deprecated before version 2.0, you need to use their replacement. These
+deprecated APIs have been removed. See the migration steps bellow for specific API replacements.
+### IDiscreteActionMask changes
+- The interface for disabling specific discrete actions has changed. `IDiscreteActionMask.WriteMask()` was removed,
+and replaced with `SetActionEnabled()`. Instead of returning an IEnumerable with indices to disable, you can
+now call `SetActionEnabled` for each index to disable (or enable). As an example, if you overrode
+`Agent.WriteDiscreteActionMask()` with something that looked like:
+
+```csharp
+public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
+{
+    var branch = 2;
+    var actionsToDisable = new[] {1, 3};
+    actionMask.WriteMask(branch, actionsToDisable);
+}
+```
+
+the equivalent code would now be
+
+```csharp
+public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
+{
+    var branch = 2;
+    actionMask.SetActionEnabled(branch, 1, false);
+    actionMask.SetActionEnabled(branch, 3, false);
+}
+```
+### IActuator changes
+- The `IActuator` interface now implements `IHeuristicProvider`.  Please add the corresponding `Heuristic(in ActionBuffers)`
+method to your custom Actuator classes.
+
+### ISensor and SensorComponent changes
+- The `ISensor.GetObservationShape()` method and `ITypedSensor`
+and `IDimensionPropertiesSensor` interfaces were removed, and `GetObservationSpec()` was added. You can use
+`ObservationSpec.Vector()` or `ObservationSpec.Visual()` to generate `ObservationSpec`s that are equivalent to
+the previous shape. For example, if your old ISensor looked like:
+
+```csharp
+public override int[] GetObservationShape()
+{
+    return new[] { m_Height, m_Width, m_NumChannels };
+}
+```
+
+the equivalent code would now be
+
+```csharp
+public override ObservationSpec GetObservationSpec()
+{
+    return ObservationSpec.Visual(m_Height, m_Width, m_NumChannels);
+}
+```
+
+- The `ISensor.GetCompressionType()` method and `ISparseChannelSensor` interface was removed,
+and `GetCompressionSpec()` was added. You can use `CompressionSpec.Default()` or
+`CompressionSpec.Compressed()` to generate `CompressionSpec`s that are  equivalent to
+ the previous values. For example, if your old ISensor looked like:
+ ```csharp
+public virtual SensorCompressionType GetCompressionType()
+{
+    return SensorCompressionType.None;
+}
+```
+
+the equivalent code would now be
+
+```csharp
+public CompressionSpec GetCompressionSpec()
+{
+    return CompressionSpec.Default();
+}
+```
+
+- The abstract method `SensorComponent.GetObservationShape()` was removed.
+- The abstract method `SensorComponent.CreateSensor()` was replaced with `CreateSensors()`, which returns an `ISensor[]`.
+
+### Match3 integration changes
+The `AbstractBoard` interface was changed:
+* `AbstractBoard` no longer contains `Rows`, `Columns`, `NumCellTypes`, and `NumSpecialTypes` fields.
+* `public abstract BoardSize GetMaxBoardSize()` was added as an abstract method. `BoardSize` is a new struct that
+contains `Rows`, `Columns`, `NumCellTypes`, and `NumSpecialTypes` fields, with the same meanings as the old
+`AbstractBoard` fields.
+* `public virtual BoardSize GetCurrentBoardSize()` is an optional method; by default it returns `GetMaxBoardSize()`. If
+you wish to use a single behavior to work with multiple board sizes, override `GetCurrentBoardSize()` to return the
+current `BoardSize`. The values returned by `GetCurrentBoardSize()` must be less than or equal to the corresponding
+values from `GetMaxBoardSize()`.
+
 ## Migrating to Release 13
 ### Implementing IHeuristic in your IActuator implementations
  - If you have any custom actuators, you can now implement the `IHeuristicProvider` interface to have your actuator

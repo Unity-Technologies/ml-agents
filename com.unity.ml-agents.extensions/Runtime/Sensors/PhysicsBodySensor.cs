@@ -11,7 +11,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// </summary>
     public class PhysicsBodySensor : ISensor, IBuiltInSensor
     {
-        int[] m_Shape;
+        ObservationSpec m_ObservationSpec;
         string m_SensorName;
 
         PoseExtractor m_PoseExtractor;
@@ -44,11 +44,11 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             var numTransformObservations = m_PoseExtractor.GetNumPoseObservations(settings);
-            m_Shape = new[] { numTransformObservations + numJointExtractorObservations };
+            m_ObservationSpec = ObservationSpec.Vector(numTransformObservations + numJointExtractorObservations);
         }
 
 #if UNITY_2020_1_OR_NEWER
-        public PhysicsBodySensor(ArticulationBody rootBody, PhysicsSensorSettings settings, string sensorName=null)
+        public PhysicsBodySensor(ArticulationBody rootBody, PhysicsSensorSettings settings, string sensorName = null)
         {
             var poseExtractor = new ArticulationBodyPoseExtractor(rootBody);
             m_PoseExtractor = poseExtractor;
@@ -57,7 +57,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             var numJointExtractorObservations = 0;
             m_JointExtractors = new List<IJointExtractor>(poseExtractor.NumEnabledPoses);
-            foreach(var articBody in poseExtractor.GetEnabledArticulationBodies())
+            foreach (var articBody in poseExtractor.GetEnabledArticulationBodies())
             {
                 var jointExtractor = new ArticulationBodyJointExtractor(articBody);
                 numJointExtractorObservations += jointExtractor.NumObservations(settings);
@@ -65,14 +65,15 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             var numTransformObservations = m_PoseExtractor.GetNumPoseObservations(settings);
-            m_Shape = new[] { numTransformObservations + numJointExtractorObservations };
+            m_ObservationSpec = ObservationSpec.Vector(numTransformObservations + numJointExtractorObservations);
         }
+
 #endif
 
         /// <inheritdoc/>
-        public int[] GetObservationShape()
+        public ObservationSpec GetObservationSpec()
         {
-            return m_Shape;
+            return m_ObservationSpec;
         }
 
         /// <inheritdoc/>
@@ -110,9 +111,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         public void Reset() { }
 
         /// <inheritdoc/>
-        public SensorCompressionType GetCompressionType()
+        public CompressionSpec GetCompressionSpec()
         {
-            return SensorCompressionType.None;
+            return CompressionSpec.Default();
         }
 
         /// <inheritdoc/>
@@ -126,6 +127,5 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             return BuiltInSensorType.PhysicsBodySensor;
         }
-
     }
 }

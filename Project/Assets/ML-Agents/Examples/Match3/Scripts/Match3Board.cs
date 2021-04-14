@@ -1,6 +1,7 @@
 using System;
 using Unity.MLAgents.Extensions.Match3;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Unity.MLAgentsExamples
 {
@@ -8,6 +9,17 @@ namespace Unity.MLAgentsExamples
 
     public class Match3Board : AbstractBoard
     {
+        public int MinRows;
+        [FormerlySerializedAs("Rows")]
+        public int MaxRows;
+
+        public int MinColumns;
+        [FormerlySerializedAs("Columns")]
+        public int MaxColumns;
+
+        public int NumCellTypes;
+        public int NumSpecialTypes;
+
         public const int k_EmptyCell = -1;
         [Tooltip("Points earned for clearing a basic cell (cube)")]
         public int BasicCellPoints = 1;
@@ -23,22 +35,61 @@ namespace Unity.MLAgentsExamples
         /// </summary>
         public int RandomSeed;
 
-        (int, int)[,] m_Cells;
+        (int CellType, int SpecialType)[,] m_Cells;
         bool[,] m_Matched;
+
+        private BoardSize m_CurrentBoardSize;
 
         System.Random m_Random;
 
         void Awake()
         {
-            m_Cells = new (int, int)[Columns, Rows];
-            m_Matched = new bool[Columns, Rows];
+            m_Cells = new (int, int)[MaxColumns, MaxRows];
+            m_Matched = new bool[MaxColumns, MaxRows];
 
+            // Start using the max rows and columns, but we'll update the current size at the start of each episode.
+            m_CurrentBoardSize = new BoardSize
+            {
+                Rows = MaxRows,
+                Columns = MaxColumns,
+                NumCellTypes = NumCellTypes,
+                NumSpecialTypes = NumSpecialTypes
+            };
         }
 
         void Start()
         {
             m_Random = new System.Random(RandomSeed == -1 ? gameObject.GetInstanceID() : RandomSeed);
             InitRandom();
+        }
+
+        public override BoardSize GetMaxBoardSize()
+        {
+            return new BoardSize
+            {
+                Rows = MaxRows,
+                Columns = MaxColumns,
+                NumCellTypes = NumCellTypes,
+                NumSpecialTypes = NumSpecialTypes
+            };
+        }
+
+        public override BoardSize GetCurrentBoardSize()
+        {
+            return m_CurrentBoardSize;
+        }
+
+        /// <summary>
+        /// Change the board size to a random size between the min and max rows and columns. This is
+        /// cached so that the size is consistent until it is updated.
+        /// This is just for an example; you can change your board size however you want.
+        /// </summary>
+        public void UpdateCurrentBoardSize()
+        {
+            var newRows = m_Random.Next(MinRows, MaxRows + 1);
+            var newCols = m_Random.Next(MinColumns, MaxColumns + 1);
+            m_CurrentBoardSize.Rows = newRows;
+            m_CurrentBoardSize.Columns = newCols;
         }
 
         public override bool MakeMove(Move move)
@@ -58,12 +109,20 @@ namespace Unity.MLAgentsExamples
 
         public override int GetCellType(int row, int col)
         {
-            return m_Cells[col, row].Item1;
+            if (row >= m_CurrentBoardSize.Rows || col >= m_CurrentBoardSize.Columns)
+            {
+                throw new IndexOutOfRangeException();
+            }
+            return m_Cells[col, row].CellType;
         }
 
         public override int GetSpecialType(int row, int col)
         {
-            return m_Cells[col, row].Item2;
+            if (row >= m_CurrentBoardSize.Rows || col >= m_CurrentBoardSize.Columns)
+            {
+                throw new IndexOutOfRangeException();
+            }
+            return m_Cells[col, row].SpecialType;
         }
 
         public override bool IsMoveValid(Move m)
@@ -80,15 +139,15 @@ namespace Unity.MLAgentsExamples
         {
             ClearMarked();
             bool madeMatch = false;
-            for (var i = 0; i < Rows; i++)
+            for (var i = 0; i < m_CurrentBoardSize.Rows; i++)
             {
-                for (var j = 0; j < Columns; j++)
+                for (var j = 0; j < m_CurrentBoardSize.Columns; j++)
                 {
                     // Check vertically
                     var matchedRows = 0;
-                    for (var iOffset = i; iOffset < Rows; iOffset++)
+                    for (var iOffset = i; iOffset < m_CurrentBoardSize.Rows; iOffset++)
                     {
-                        if (m_Cells[j, i].Item1 != m_Cells[j, iOffset].Item1)
+                        if (m_Cells[j, i].CellType != m_Cells[j, iOffset].CellType)
                         {
                             break;
                         }
@@ -107,9 +166,9 @@ namespace Unity.MLAgentsExamples
 
                     // Check vertically
                     var matchedCols = 0;
-                    for (var jOffset = j; jOffset < Columns; jOffset++)
+                    for (var jOffset = j; jOffset < m_CurrentBoardSize.Columns; jOffset++)
                     {
-                        if (m_Cells[j, i].Item1 != m_Cells[jOffset, i].Item1)
+                        if (m_Cells[j, i].CellType != m_Cells[jOffset, i].CellType)
                         {
                             break;
                         }
@@ -139,9 +198,9 @@ namespace Unity.MLAgentsExamples
         {
             var pointsByType = new[] { BasicCellPoints, SpecialCell1Points, SpecialCell2Points };
             int pointsEarned = 0;
-            for (var i = 0; i < Rows; i++)
+            for (var i = 0; i < m_CurrentBoardSize.Rows; i++)
             {
-                for (var j = 0; j < Columns; j++)
+                for (var j = 0; j < m_CurrentBoardSize.Columns; j++)
                 {
                     if (m_Matched[j, i])
                     {
@@ -160,20 +219,20 @@ namespace Unity.MLAgentsExamples
         {
             var madeChanges = false;
             // Gravity is applied in the negative row direction
-            for (var j = 0; j < Columns; j++)
+            for (var j = 0; j < m_CurrentBoardSize.Columns; j++)
             {
                 var writeIndex = 0;
-                for (var readIndex = 0; readIndex < Rows; readIndex++)
+                for (var readIndex = 0; readIndex < m_CurrentBoardSize.Rows; readIndex++)
                 {
                     m_Cells[j, writeIndex] = m_Cells[j, readIndex];
-                    if (m_Cells[j, readIndex].Item1 != k_EmptyCell)
+                    if (m_Cells[j, readIndex].CellType != k_EmptyCell)
                     {
                         writeIndex++;
                     }
                 }
 
                 // Fill in empties at the end
-                for (; writeIndex < Rows; writeIndex++)
+                for (; writeIndex < m_CurrentBoardSize.Rows; writeIndex++)
                 {
                     madeChanges = true;
                     m_Cells[j, writeIndex] = (k_EmptyCell, 0);
@@ -186,11 +245,11 @@ namespace Unity.MLAgentsExamples
         public bool FillFromAbove()
         {
             bool madeChanges = false;
-            for (var i = 0; i < Rows; i++)
+            for (var i = 0; i < m_CurrentBoardSize.Rows; i++)
             {
-                for (var j = 0; j < Columns; j++)
+                for (var j = 0; j < m_CurrentBoardSize.Columns; j++)
                 {
-                    if (m_Cells[j, i].Item1 == k_EmptyCell)
+                    if (m_Cells[j, i].CellType == k_EmptyCell)
                     {
                         madeChanges = true;
                         m_Cells[j, i] = (GetRandomCellType(), GetRandomSpecialType());
@@ -214,9 +273,9 @@ namespace Unity.MLAgentsExamples
         // Initialize the board to random values.
         public void InitRandom()
         {
-            for (var i = 0; i < Rows; i++)
+            for (var i = 0; i < MaxRows; i++)
             {
-                for (var j = 0; j < Columns; j++)
+                for (var j = 0; j < MaxColumns; j++)
                 {
                     m_Cells[j, i] = (GetRandomCellType(), GetRandomSpecialType());
                 }
@@ -241,9 +300,9 @@ namespace Unity.MLAgentsExamples
 
         void ClearMarked()
         {
-            for (var i = 0; i < Rows; i++)
+            for (var i = 0; i < MaxRows; i++)
             {
-                for (var j = 0; j < Columns; j++)
+                for (var j = 0; j < MaxColumns; j++)
                 {
                     m_Matched[j, i] = false;
                 }

@@ -107,7 +107,7 @@ namespace Unity.MLAgents
         /// Unity package version of com.unity.ml-agents.
         /// This must match the version string in package.json and is checked in a unit test.
         /// </summary>
-        internal const string k_PackageVersion = "1.9.1-preview";
+        internal const string k_PackageVersion = "2.0.0-exp.1";
 
         const int k_EditorTrainingPort = 5004;
 
@@ -370,7 +370,7 @@ namespace Unity.MLAgents
                 // No arg passed, or malformed port number.
 #if UNITY_EDITOR
                 // Try connecting on the default editor port
-                return k_EditorTrainingPort;
+                return MLAgentsSettingsManager.Settings.ConnectTrainer ? MLAgentsSettingsManager.Settings.EditorPort : -1;
 #else
                 // This is an executable, so we don't try to connect.
                 return -1;

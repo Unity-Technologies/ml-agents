@@ -1,4 +1,4 @@
-#if MLA_INPUT_SYSTEM && UNITY_2019_4_OR_NEWER
+#if MLA_INPUT_SYSTEM
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -255,11 +255,6 @@ namespace Unity.MLAgents.Extensions.Input
             return inputControlScheme;
         }
 
-#pragma warning disable 672
-        /// <inheritdoc cref="ActuatorComponent.CreateActuator"/>
-        public override IActuator CreateActuator() { return null; }
-#pragma warning restore 672
-
         /// <summary>
         ///
         /// </summary>
@@ -379,4 +374,4 @@ namespace Unity.MLAgents.Extensions.Input
         }
     }
 }
-#endif // MLA_INPUT_SYSTEM && UNITY_2019_4_OR_NEWER
+#endif // MLA_INPUT_SYSTEM

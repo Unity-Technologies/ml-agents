@@ -1,0 +1,24 @@
+{
+    "name": "Unity.ML-Agents.Runtime.Utils.Tests",
+    "references": [
+        "Unity.ML-Agents",
+        "Unity.Barracuda",
+        "Unity.ML-Agents.CommunicatorObjects"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "System.IO.Abstractions.dll",
+        "System.IO.Abstractions.TestingHelpers.dll",
+        "Google.Protobuf.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ]
+}

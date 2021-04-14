@@ -6,14 +6,15 @@ using Unity.MLAgents.CommunicatorObjects;
 using UnityEngine;
 using System.Runtime.CompilerServices;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Analytics;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Policies;
 
+using Unity.MLAgents.Analytics;
 
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor")]
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor.Tests")]
+[assembly: InternalsVisibleTo("Unity.ML-Agents.Runtime.Utils.Tests")]
 
 namespace Unity.MLAgents
 {
@@ -60,7 +61,7 @@ namespace Unity.MLAgents
         /// <returns>The protobuf version of the AgentInfo.</returns>
         public static AgentInfoProto ToAgentInfoProto(this AgentInfo ai)
         {
-            if(ai.groupId > 0)
+            if (ai.groupId > 0)
             {
                 var trainerCanHandle = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.MultiAgentGroups;
                 if (!trainerCanHandle)
@@ -338,9 +339,11 @@ namespace Unity.MLAgents
         /// <returns></returns>
         public static ObservationProto GetObservationProto(this ISensor sensor, ObservationWriter observationWriter)
         {
-            var shape = sensor.GetObservationShape();
+            var obsSpec = sensor.GetObservationSpec();
+            var shape = obsSpec.Shape;
             ObservationProto observationProto = null;
-            var compressionType = sensor.GetCompressionType();
+            var compressionSpec = sensor.GetCompressionSpec();
+            var compressionType = compressionSpec.SensorCompressionType;
             // Check capabilities if we need to concatenate PNGs
             if (compressionType == SensorCompressionType.PNG && shape.Length == 3 && shape[2] > 3)
             {
@@ -363,7 +366,7 @@ namespace Unity.MLAgents
             if (compressionType != SensorCompressionType.None && shape.Length == 3 && shape[2] > 3)
             {
                 var trainerCanHandleMapping = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.CompressedChannelMapping;
-                var isTrivialMapping = IsTrivialMapping(sensor);
+                var isTrivialMapping = compressionSpec.IsTrivialMapping();
                 if (!trainerCanHandleMapping && !isTrivialMapping)
                 {
                     if (!s_HaveWarnedTrainerCapabilitiesMapping)
@@ -392,7 +395,7 @@ namespace Unity.MLAgents
                     floatDataProto.Data.Add(0.0f);
                 }
 
-                observationWriter.SetTarget(floatDataProto.Data, sensor.GetObservationShape(), 0);
+                observationWriter.SetTarget(floatDataProto.Data, sensor.GetObservationSpec(), 0);
                 sensor.Write(observationWriter);
 
                 observationProto = new ObservationProto
@@ -409,60 +412,49 @@ namespace Unity.MLAgents
                     throw new UnityAgentsException(
                         $"GetCompressedObservation() returned null data for sensor named {sensor.GetName()}. " +
                         "You must return a byte[]. If you don't want to use compressed observations, " +
-                        "return SensorCompressionType.None from GetCompressionType()."
+                        "return CompressionSpec.Default() from GetCompressionSpec()."
                     );
                 }
                 observationProto = new ObservationProto
                 {
                     CompressedData = ByteString.CopyFrom(compressedObs),
-                    CompressionType = (CompressionTypeProto)sensor.GetCompressionType(),
+                    CompressionType = (CompressionTypeProto)sensor.GetCompressionSpec().SensorCompressionType,
                 };
-                var compressibleSensor = sensor as ISparseChannelSensor;
-                if (compressibleSensor != null)
+                if (compressionSpec.CompressedChannelMapping != null)
                 {
-                    observationProto.CompressedChannelMapping.AddRange(compressibleSensor.GetCompressedChannelMapping());
+                    observationProto.CompressedChannelMapping.AddRange(compressionSpec.CompressedChannelMapping);
                 }
             }
-            // Add the dimension properties if any to the observationProto
-            var dimensionPropertySensor = sensor as IDimensionPropertiesSensor;
-            if (dimensionPropertySensor != null)
+
+            // Add the dimension properties to the observationProto
+            var dimensionProperties = obsSpec.DimensionProperties;
+            for (int i = 0; i < dimensionProperties.Length; i++)
             {
-                var dimensionProperties = dimensionPropertySensor.GetDimensionProperties();
-                for (int i = 0; i < dimensionProperties.Length; i++)
+                observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
+            }
+
+            // Checking trainer compatibility with variable length observations
+            if (dimensionProperties == new InplaceArray<DimensionProperty>(DimensionProperty.VariableSize, DimensionProperty.None))
+            {
+                var trainerCanHandleVarLenObs = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.VariableLengthObservation;
+                if (!trainerCanHandleVarLenObs)
                 {
-                    observationProto.DimensionProperties.Add((int)dimensionProperties[i]);
-                }
-                // Checking trainer compatibility with variable length observations
-                if (dimensionProperties.Length == 2)
-                {
-                    if (dimensionProperties[0] == DimensionProperty.VariableSize &&
-                    dimensionProperties[1] == DimensionProperty.None)
-                    {
-                        var trainerCanHandleVarLenObs = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.VariableLengthObservation;
-                        if (!trainerCanHandleVarLenObs)
-                        {
-                            throw new UnityAgentsException("Variable Length Observations are not supported by the trainer");
-                        }
-                    }
+                    throw new UnityAgentsException("Variable Length Observations are not supported by the trainer");
                 }
             }
-            observationProto.Shape.AddRange(shape);
+
+            for (var i = 0; i < shape.Length; i++)
+            {
+                observationProto.Shape.Add(shape[i]);
+            }
+
             var sensorName = sensor.GetName();
             if (!string.IsNullOrEmpty(sensorName))
             {
                 observationProto.Name = sensorName;
             }
 
-            // Add the observation type, if any, to the observationProto
-            var typeSensor = sensor as ITypedSensor;
-            if (typeSensor != null)
-            {
-                observationProto.ObservationType = (ObservationTypeProto)typeSensor.GetObservationType();
-            }
-            else
-            {
-                observationProto.ObservationType = ObservationTypeProto.Default;
-            }
+            observationProto.ObservationType = (ObservationTypeProto)obsSpec.ObservationType;
             return observationProto;
         }
 
@@ -496,36 +488,7 @@ namespace Unity.MLAgents
             };
         }
 
-        internal static bool IsTrivialMapping(ISensor sensor)
-        {
-            var compressibleSensor = sensor as ISparseChannelSensor;
-            if (compressibleSensor is null)
-            {
-                return true;
-            }
-            var mapping = compressibleSensor.GetCompressedChannelMapping();
-            if (mapping == null)
-            {
-                return true;
-            }
-            // check if mapping equals zero mapping
-            if (mapping.Length == 3 && mapping.All(m => m == 0))
-            {
-                return true;
-            }
-            // check if mapping equals identity mapping
-            for (var i = 0; i < mapping.Length; i++)
-            {
-                if (mapping[i] != i)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
         #region Analytics
-
         internal static TrainingEnvironmentInitializedEvent ToTrainingEnvironmentInitializedEvent(
             this TrainingEnvironmentInitialized inputProto)
         {
@@ -571,6 +534,5 @@ namespace Unity.MLAgents
         }
 
         #endregion
-
     }
 }

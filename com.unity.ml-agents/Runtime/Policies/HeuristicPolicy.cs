@@ -46,6 +46,7 @@ namespace Unity.MLAgents.Policies
         {
             if (!m_Done && m_DecisionRequested)
             {
+                m_ActionBuffers.Clear();
                 m_ActuatorManager.ApplyHeuristic(m_ActionBuffers);
             }
             m_DecisionRequested = false;
@@ -60,7 +61,7 @@ namespace Unity.MLAgents.Policies
         /// Trivial implementation of the IList interface that does nothing.
         /// This is only used for "writing" observations that we will discard.
         /// </summary>
-        class NullList : IList<float>
+        internal class NullList : IList<float>
         {
             public IEnumerator<float> GetEnumerator()
             {
@@ -127,9 +128,9 @@ namespace Unity.MLAgents.Policies
         {
             foreach (var sensor in sensors)
             {
-                if (sensor.GetCompressionType() == SensorCompressionType.None)
+                if (sensor.GetCompressionSpec().SensorCompressionType == SensorCompressionType.None)
                 {
-                    m_ObservationWriter.SetTarget(m_NullList, sensor.GetObservationShape(), 0);
+                    m_ObservationWriter.SetTarget(m_NullList, sensor.GetObservationSpec(), 0);
                     sensor.Write(m_ObservationWriter);
                 }
                 else

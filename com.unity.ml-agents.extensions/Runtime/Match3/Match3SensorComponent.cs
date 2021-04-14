@@ -1,3 +1,4 @@
+using System;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ namespace Unity.MLAgents.Extensions.Match3
     /// Sensor component for a Match3 game.
     /// </summary>
     [AddComponentMenu("ML Agents/Match 3 Sensor", (int)MenuGroup.Sensors)]
-    public class Match3SensorComponent : SensorComponent
+    public class Match3SensorComponent : SensorComponent, IDisposable
     {
         /// <summary>
         /// Name of the generated Match3Sensor object.
@@ -20,26 +21,38 @@ namespace Unity.MLAgents.Extensions.Match3
         /// </summary>
         public Match3ObservationType ObservationType = Match3ObservationType.Vector;
 
+        private ISensor[] m_Sensors;
+
         /// <inheritdoc/>
-        public override ISensor CreateSensor()
+        public override ISensor[] CreateSensors()
         {
+            // Clean up any existing sensors
+            Dispose();
+
             var board = GetComponent<AbstractBoard>();
-            return new Match3Sensor(board, ObservationType, SensorName);
+            var cellSensor = Match3Sensor.CellTypeSensor(board, ObservationType, SensorName + " (cells)");
+            // This can be null if numSpecialTypes is 0
+            var specialSensor = Match3Sensor.SpecialTypeSensor(board, ObservationType, SensorName + " (special)");
+            m_Sensors = specialSensor != null
+                ? new ISensor[] { cellSensor, specialSensor }
+            : new ISensor[] { cellSensor };
+            return m_Sensors;
         }
 
-        /// <inheritdoc/>
-        public override int[] GetObservationShape()
+        /// <summary>
+        /// Clean up the sensors created by CreateSensors().
+        /// </summary>
+        public void Dispose()
         {
-            var board = GetComponent<AbstractBoard>();
-            if (board == null)
+            if (m_Sensors != null)
             {
-                return System.Array.Empty<int>();
-            }
+                for (var i = 0; i < m_Sensors.Length; i++)
+                {
+                    ((Match3Sensor)m_Sensors[i]).Dispose();
+                }
 
-            var specialSize = board.NumSpecialTypes == 0 ? 0 : board.NumSpecialTypes + 1;
-            return ObservationType == Match3ObservationType.Vector ?
-                new[] { board.Rows * board.Columns * (board.NumCellTypes + specialSize) } :
-                new[] { board.Rows, board.Columns, board.NumCellTypes + specialSize };
+                m_Sensors = null;
+            }
         }
     }
 }

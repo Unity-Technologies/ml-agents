@@ -217,7 +217,7 @@ def worker(
         UnityEnvironmentException,
         UnityCommunicatorStoppedException,
     ) as ex:
-        logger.info(f"UnityEnvironment worker {worker_id}: environment stopping.")
+        logger.debug(f"UnityEnvironment worker {worker_id}: environment stopping.")
         step_queue.put(
             EnvironmentResponse(EnvironmentCommand.ENV_EXITED, worker_id, ex)
         )

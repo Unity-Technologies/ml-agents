@@ -19,6 +19,8 @@
     - [RayCast Observation Summary & Best Practices](#raycast-observation-summary--best-practices)
   - [Variable Length Observations](#variable-length-observations)
     - [Variable Length Observation Summary & Best Practices](#variable-length-observation-summary--best-practices)
+  - [Goal Signal](#goal-signal)
+    - [Goal Signal Summary & Best Practices](#goal-signal-summary--best-practices)
 - [Actions and Actuators](#actions-and-actuators)
   - [Continuous Actions](#continuous-actions)
   - [Discrete Actions](#discrete-actions)
@@ -562,6 +564,38 @@ between -1 and 1.
  of an entity to the `BufferSensor`.
  - Normalize the entities observations before feeding them into the `BufferSensor`.
 
+### Goal Signal
+
+It is possible for agents to collect observations that will be treated as "goal signal".
+A goal signal is used to condition the policy of the agent, meaning that if the goal
+changes, the policy (i.e. the mapping from observations to actions) will change
+as well. Note that this is true
+for any observation since all observations influence the policy of the Agent to
+some degree. But by specifying a goal signal explicitly, we can make this conditioning
+more important to the agent. This feature can be used in settings where an agent
+must learn to solve different tasks that are similar by some aspects because the
+agent will learn to reuse learnings from different tasks to generalize better.
+In Unity, you can specify that a `VectorSensor` or
+a `CameraSensor` is a goal by attaching a `VectorSensorComponent` or a
+`CameraSensorComponent` to the Agent and selecting `Goal Signal` as `Observation Type`.
+On the trainer side, there are two different ways to condition the policy. This
+setting is determined by the
+[conditioning_type parameter](Training-Configuration-File.md#common-trainer-configurations).
+If set to `hyper` (default) a [HyperNetwork](https://arxiv.org/pdf/1609.09106.pdf)
+will be used to generate some of the
+weights of the policy using the goal observations as input. Note that using a
+HyperNetwork requires a lot of computations, it is recommended to use a smaller
+number of hidden units in the policy to alleviate this.
+If set to `none` the goal signal will be considered as regular observations.
+For an example on how to use a goal signal, see the
+[GridWorld example](Learning-Environment-Examples.md#gridworld).
+
+#### Goal Signal Summary & Best Practices
+ - Attach a `VectorSensorComponent` or `CameraSensorComponent` to an agent and
+ set the observation type to goal to use the feature.
+ - Set the conditioning_type parameter in the training configuration.
+ - Reduce the number of hidden units in the network when using the HyperNetwork
+ conditioning type.
 
 ## Actions and Actuators
 
@@ -667,38 +701,40 @@ When using Discrete Actions, it is possible to specify that some actions are
 impossible for the next decision. When the Agent is controlled by a neural
 network, the Agent will be unable to perform the specified action. Note that
 when the Agent is controlled by its Heuristic, the Agent will still be able to
-decide to perform the masked action. In order to mask an action, override the
-`Agent.WriteDiscreteActionMask()` virtual method, and call
-`WriteMask()` on the provided `IDiscreteActionMask`:
+decide to perform the masked action. In order to disallow an action, override
+the `Agent.WriteDiscreteActionMask()` virtual method, and call
+`SetActionEnabled()` on the provided `IDiscreteActionMask`:
 
 ```csharp
 public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
 {
-    actionMask.WriteMask(branch, actionIndices);
+    actionMask.SetActionEnabled(branch, actionIndex, isEnabled);
 }
 ```
 
 Where:
 
-- `branch` is the index (starting at 0) of the branch on which you want to mask
-  the action
-- `actionIndices` is a list of `int` corresponding to the indices of the actions
-  that the Agent **cannot** perform.
+- `branch` is the index (starting at 0) of the branch on which you want to
+allow or disallow the action
+- `actionIndex` is the index of the action that you want to allow or disallow.
+- `isEnabled` is a bool indicating whether the action should be allowed or now.
 
 For example, if you have an Agent with 2 branches and on the first branch
 (branch 0) there are 4 possible actions : _"do nothing"_, _"jump"_, _"shoot"_
 and _"change weapon"_. Then with the code bellow, the Agent will either _"do
-nothing"_ or _"change weapon"_ for his next decision (since action index 1 and 2
+nothing"_ or _"change weapon"_ for their next decision (since action index 1 and 2
 are masked)
 
 ```csharp
-WriteMask(0, new int[2]{1,2});
+actionMask.SetActionEnabled(0, 1, false);
+actionMask.SetActionEnabled(0, 2, false);
 ```
 
 Notes:
 
-- You can call `WriteMask` multiple times if you want to put masks on multiple
+- You can call `SetActionEnabled` multiple times if you want to put masks on multiple
   branches.
+- At each step, the state of an action is reset and enabled by default.
 - You cannot mask all the actions of a branch.
 - You cannot mask actions in continuous control.
 
@@ -707,7 +743,7 @@ Notes:
 The Actuator API allows users to abstract behavior out of Agents and in to
 components (similar to the ISensor API).  The `IActuator` interface and `Agent`
 class both implement the `IActionReceiver` interface to allow for backward compatibility
-with the current `Agent.OnActionReceived` and `Agent.CollectDiscreteActionMasks` APIs.
+with the current `Agent.OnActionReceived`.
 This means you will not have to change your code until you decide to use the `IActuator` API.
 
 Like the `ISensor` interface, the `IActuator` interface is intended for advanced users.

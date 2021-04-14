@@ -1,3 +1,4 @@
+from typing import Tuple
 import threading
 from mlagents.torch_utils import torch
 
@@ -90,28 +91,13 @@ class ModelSerializer:
         observation_specs = self.policy.behavior_spec.observation_specs
         batch_dim = [1]
         seq_len_dim = [1]
-        vec_obs_size = 0
-        for obs_spec in observation_specs:
-            if len(obs_spec.shape) == 1:
-                vec_obs_size += obs_spec.shape[0]
-        num_vis_obs = sum(
-            1 for obs_spec in observation_specs if len(obs_spec.shape) == 3
-        )
-        dummy_vec_obs = [torch.zeros(batch_dim + [vec_obs_size])]
-        # create input shape of NCHW
-        # (It's NHWC in observation_specs.shape)
-        dummy_vis_obs = [
+        num_obs = len(observation_specs)
+
+        dummy_obs = [
             torch.zeros(
-                batch_dim + [obs_spec.shape[2], obs_spec.shape[0], obs_spec.shape[1]]
+                batch_dim + list(ModelSerializer._get_onnx_shape(obs_spec.shape))
             )
             for obs_spec in observation_specs
-            if len(obs_spec.shape) == 3
-        ]
-
-        dummy_var_len_obs = [
-            torch.zeros(batch_dim + [obs_spec.shape[0], obs_spec.shape[1]])
-            for obs_spec in observation_specs
-            if len(obs_spec.shape) == 2
         ]
 
         dummy_masks = torch.ones(
@@ -121,20 +107,9 @@ class ModelSerializer:
             batch_dim + seq_len_dim + [self.policy.export_memory_size]
         )
 
-        self.dummy_input = (
-            dummy_vec_obs,
-            dummy_vis_obs,
-            dummy_var_len_obs,
-            dummy_masks,
-            dummy_memories,
-        )
+        self.dummy_input = (dummy_obs, dummy_masks, dummy_memories)
 
-        self.input_names = [TensorNames.vector_observation_placeholder]
-        for i in range(num_vis_obs):
-            self.input_names.append(TensorNames.get_visual_observation_name(i))
-        for i, obs_spec in enumerate(observation_specs):
-            if len(obs_spec.shape) == 2:
-                self.input_names.append(TensorNames.get_observation_name(i))
+        self.input_names = [TensorNames.get_observation_name(i) for i in range(num_obs)]
         self.input_names += [
             TensorNames.action_mask_placeholder,
             TensorNames.recurrent_in_placeholder,
@@ -157,21 +132,19 @@ class ModelSerializer:
                 TensorNames.discrete_action_output_shape,
             ]
             self.dynamic_axes.update({TensorNames.discrete_action_output: {0: "batch"}})
-        if (
-            self.policy.behavior_spec.action_spec.continuous_size == 0
-            or self.policy.behavior_spec.action_spec.discrete_size == 0
-        ):
-            self.output_names += [
-                TensorNames.action_output_deprecated,
-                TensorNames.is_continuous_control_deprecated,
-                TensorNames.action_output_shape_deprecated,
-            ]
-            self.dynamic_axes.update(
-                {TensorNames.action_output_deprecated: {0: "batch"}}
-            )
 
         if self.policy.export_memory_size > 0:
             self.output_names += [TensorNames.recurrent_output]
+
+    @staticmethod
+    def _get_onnx_shape(shape: Tuple[int, ...]) -> Tuple[int, ...]:
+        """
+        Converts the shape of an observation to be compatible with the NCHW format
+        of ONNX
+        """
+        if len(shape) == 3:
+            return shape[2], shape[0], shape[1]
+        return shape
 
     def export_policy_model(self, output_filepath: str) -> None:
         """
@@ -180,7 +153,7 @@ class ModelSerializer:
         :param output_filepath: file path to output the model (without file suffix)
         """
         onnx_output_path = f"{output_filepath}.onnx"
-        logger.info(f"Converting to {onnx_output_path}")
+        logger.debug(f"Converting to {onnx_output_path}")
 
         with exporting_to_onnx():
             torch.onnx.export(

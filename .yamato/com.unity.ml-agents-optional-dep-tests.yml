@@ -1,0 +1,65 @@
+optional_deps:
+    - name: Analytics
+      project: "OptionalDepedencyTests/NoAnalyticsModule"
+      version: 2020.2
+    - name: Physics
+      project: OptionalDepedencyTests/NoPhysicsModule
+      version: 2020.2
+    - name: Physics2D
+      project: OptionalDepedencyTests/NoPhysics2DModule
+      version: 2020.2
+---
+
+  {% for optional_dep in optional_deps %}
+OptionalDependencyTests_{{ optional_dep.name }}:
+    name : Test Optional Package Dependencies {{ optional_dep.name }}
+    agent:
+        type: Unity::VM
+        image: package-ci/ubuntu:v1.3.1-719011
+        flavor: b1.medium
+    commands:
+        - |
+            curl -L https://artifactory.prd.it.unity3d.com/artifactory/api/gpg/key/public | sudo apt-key add -
+            sudo sh -c "echo 'deb https://artifactory.prd.it.unity3d.com/artifactory/unity-apt-local bionic main' > /etc/apt/sources.list.d/unity.list"
+            sudo apt update
+            sudo apt install -y unity-config
+            npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+            unity-config settings editor-path ./.Editor
+            unity-config project create opt-deps-test
+            unity-config project add dependency com.unity.ml-agents/
+            unity-config project add testable com.unity.ml-agents
+            unity-config project add dependency com.unity.modules.imageconversion@1.0.0
+            unity-config project add dependency com.unity.modules.jsonserialize@1.0.0
+            {% unless optional_dep.name == "Physics" %}
+            unity-config project add dependency com.unity.modules.physics@1.0.0
+            {% endunless %}
+            {% unless optional_dep.name == "Physics2D" %}
+            unity-config project add dependency com.unity.modules.physics2d@1.0.0
+            {% endunless %}
+            {% unless optional_dep.name == "Analytics" %}
+            unity-config project add dependency com.unity.modules.unityanalytics@1.0.0
+            {% endunless %}
+            upm-ci project test -u {{ optional_dep.version }} --type project-tests --project-path opt-deps-test --package-filter com.unity.ml-agents
+    artifacts:
+        logs:
+            paths:
+                - "upm-ci~/test-results/**/*"
+    dependencies:
+        - .yamato/com.unity.ml-agents-pack.yml#pack
+        {% for coverage_editor in coverage_test_editors %}
+        {% for coverage_platform in coverage_test_platforms %}
+        {% for coverage_package in coverage_test_packages %}
+        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ coverage_package.name }}_{{ coverage_platform.name }}_{{ coverage_editor.version }}
+        {% endfor %}
+        {% endfor %}
+        {% endfor %}
+    triggers:
+        cancel_old_ci: true
+        expression: |
+            (pull_request.target eq "main" OR
+            pull_request.target match "release.+") AND
+            NOT pull_request.draft AND
+            (pull_request.changes.any match "com.unity.ml-agents/**" OR
+            pull_request.changes.any match ".yamato/com.unity.ml-agents-test.yml")
+  {% endfor %}
+

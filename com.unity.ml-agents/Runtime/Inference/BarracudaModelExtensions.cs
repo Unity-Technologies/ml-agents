@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Barracuda;
+using FailedCheck = Unity.MLAgents.Inference.BarracudaModelParamLoader.FailedCheck;
 
 namespace Unity.MLAgents.Inference
 {
@@ -33,9 +35,21 @@ namespace Unity.MLAgents.Inference
                 names.Add(mem.input);
             }
 
-            names.Sort();
+            names.Sort(StringComparer.InvariantCulture);
 
             return names.ToArray();
+        }
+
+        /// <summary>
+        /// Get the version of the model.
+        /// </summary>
+        /// <param name="model">
+        /// The Barracuda engine model for loading static parameters.
+        /// </param>
+        /// <returns>The api version of the model</returns>
+        public static int GetVersion(this Model model)
+        {
+            return (int)model.GetTensorByName(TensorNames.VersionNumber)[0];
         }
 
         /// <summary>
@@ -63,18 +77,22 @@ namespace Unity.MLAgents.Inference
                 });
             }
 
-            foreach (var mem in model.memories)
+            var modelVersion = model.GetVersion();
+            if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
             {
-                tensors.Add(new TensorProxy
+                foreach (var mem in model.memories)
                 {
-                    name = mem.input,
-                    valueType = TensorProxy.TensorType.FloatingPoint,
-                    data = null,
-                    shape = TensorUtils.TensorShapeFromBarracuda(mem.shape)
-                });
+                    tensors.Add(new TensorProxy
+                    {
+                        name = mem.input,
+                        valueType = TensorProxy.TensorType.FloatingPoint,
+                        data = null,
+                        shape = TensorUtils.TensorShapeFromBarracuda(mem.shape)
+                    });
+                }
             }
 
-            tensors.Sort((el1, el2) => el1.name.CompareTo(el2.name));
+            tensors.Sort((el1, el2) => string.Compare(el1.name, el2.name, StringComparison.InvariantCulture));
 
             return tensors;
         }
@@ -128,16 +146,24 @@ namespace Unity.MLAgents.Inference
                 names.Add(model.DiscreteOutputName());
             }
 
+            var modelVersion = model.GetVersion();
             var memory = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
             if (memory > 0)
             {
-                foreach (var mem in model.memories)
+                if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
                 {
-                    names.Add(mem.output);
+                    foreach (var mem in model.memories)
+                    {
+                        names.Add(mem.output);
+                    }
+                }
+                else
+                {
+                    names.Add(TensorNames.RecurrentOutput);
                 }
             }
 
-            names.Sort();
+            names.Sort(StringComparer.InvariantCulture);
 
             return names.ToArray();
         }
@@ -226,12 +252,20 @@ namespace Unity.MLAgents.Inference
             else
             {
                 return model.outputs.Contains(TensorNames.DiscreteActionOutput) &&
-                    (int)model.GetTensorByName(TensorNames.DiscreteActionOutputShape)[0] > 0;
+                    (int)model.DiscreteOutputSize() > 0;
             }
         }
 
         /// <summary>
         /// Discrete action output size of the model. This is equal to the sum of the branch sizes.
+        /// This method gets the tensor representing the list of branch size and returns the
+        /// sum of all the elements in the Tensor.
+        ///  - In version 1.X this tensor contains a single number, the sum of all branch
+        /// size values.
+        ///  - In version 2.X this tensor contains a 1D Tensor with each element corresponding
+        /// to a branch size.
+        /// Since this method does the sum of all elements in the tensor, the output
+        /// will be the same on both 1.X and 2.X.
         /// </summary>
         /// <param name="model">
         /// The Barracuda engine model for loading static parameters.
@@ -249,7 +283,19 @@ namespace Unity.MLAgents.Inference
             else
             {
                 var discreteOutputShape = model.GetTensorByName(TensorNames.DiscreteActionOutputShape);
-                return discreteOutputShape == null ? 0 : (int)discreteOutputShape[0];
+                if (discreteOutputShape == null)
+                {
+                    return 0;
+                }
+                else
+                {
+                    int result = 0;
+                    for (int i = 0; i < discreteOutputShape.length; i++)
+                    {
+                        result += (int)discreteOutputShape[i];
+                    }
+                    return result;
+                }
             }
         }
 
@@ -298,13 +344,15 @@ namespace Unity.MLAgents.Inference
         /// <param name="failedModelChecks">Output list of failure messages</param>
         ///
         /// <returns>True if the model contains all the expected tensors.</returns>
-        public static bool CheckExpectedTensors(this Model model, List<string> failedModelChecks)
+        public static bool CheckExpectedTensors(this Model model, List<FailedCheck> failedModelChecks)
         {
             // Check the presence of model version
             var modelApiVersionTensor = model.GetTensorByName(TensorNames.VersionNumber);
             if (modelApiVersionTensor == null)
             {
-                failedModelChecks.Add($"Required constant \"{TensorNames.VersionNumber}\" was not found in the model file.");
+                failedModelChecks.Add(
+                    FailedCheck.Warning($"Required constant \"{TensorNames.VersionNumber}\" was not found in the model file.")
+                    );
                 return false;
             }
 
@@ -312,7 +360,9 @@ namespace Unity.MLAgents.Inference
             var memorySizeTensor = model.GetTensorByName(TensorNames.MemorySize);
             if (memorySizeTensor == null)
             {
-                failedModelChecks.Add($"Required constant \"{TensorNames.MemorySize}\" was not found in the model file.");
+                failedModelChecks.Add(
+                    FailedCheck.Warning($"Required constant \"{TensorNames.MemorySize}\" was not found in the model file.")
+                    );
                 return false;
             }
 
@@ -321,7 +371,9 @@ namespace Unity.MLAgents.Inference
                 !model.outputs.Contains(TensorNames.ContinuousActionOutput) &&
                 !model.outputs.Contains(TensorNames.DiscreteActionOutput))
             {
-                failedModelChecks.Add("The model does not contain any Action Output Node.");
+                failedModelChecks.Add(
+                    FailedCheck.Warning("The model does not contain any Action Output Node.")
+                    );
                 return false;
             }
 
@@ -330,13 +382,18 @@ namespace Unity.MLAgents.Inference
             {
                 if (model.GetTensorByName(TensorNames.ActionOutputShapeDeprecated) == null)
                 {
-                    failedModelChecks.Add("The model does not contain any Action Output Shape Node.");
+                    failedModelChecks.Add(
+                        FailedCheck.Warning("The model does not contain any Action Output Shape Node.")
+                        );
                     return false;
                 }
                 if (model.GetTensorByName(TensorNames.IsContinuousControlDeprecated) == null)
                 {
-                    failedModelChecks.Add($"Required constant \"{TensorNames.IsContinuousControlDeprecated}\" was not found in the model file. " +
-                        "This is only required for model that uses a deprecated model format.");
+                    failedModelChecks.Add(
+                        FailedCheck.Warning($"Required constant \"{TensorNames.IsContinuousControlDeprecated}\" was " +
+                        "not found in the model file. " +
+                        "This is only required for model that uses a deprecated model format.")
+                        );
                     return false;
                 }
             }
@@ -345,13 +402,17 @@ namespace Unity.MLAgents.Inference
                 if (model.outputs.Contains(TensorNames.ContinuousActionOutput) &&
                     model.GetTensorByName(TensorNames.ContinuousActionOutputShape) == null)
                 {
-                    failedModelChecks.Add("The model uses continuous action but does not contain Continuous Action Output Shape Node.");
+                    failedModelChecks.Add(
+                        FailedCheck.Warning("The model uses continuous action but does not contain Continuous Action Output Shape Node.")
+                        );
                     return false;
                 }
                 if (model.outputs.Contains(TensorNames.DiscreteActionOutput) &&
                     model.GetTensorByName(TensorNames.DiscreteActionOutputShape) == null)
                 {
-                    failedModelChecks.Add("The model uses discrete action but does not contain Discrete Action Output Shape Node.");
+                    failedModelChecks.Add(
+                        FailedCheck.Warning("The model uses discrete action but does not contain Discrete Action Output Shape Node.")
+                        );
                     return false;
                 }
             }

@@ -97,9 +97,11 @@ namespace Unity.MLAgents.Sensors
             set { m_RayLength = value; UpdateSensor(); }
         }
 
+        // The value of the default layers.
+        const int k_PhysicsDefaultLayers = -5;
         [HideInInspector, SerializeField, FormerlySerializedAs("rayLayerMask")]
         [Tooltip("Controls which layers the rays can hit.")]
-        LayerMask m_RayLayerMask = Physics.DefaultRaycastLayers;
+        LayerMask m_RayLayerMask = k_PhysicsDefaultLayers;
 
         /// <summary>
         /// Controls which layers the rays can hit.
@@ -179,7 +181,7 @@ namespace Unity.MLAgents.Sensors
         /// Returns an initialized raycast sensor.
         /// </summary>
         /// <returns></returns>
-        public override ISensor CreateSensor()
+        public override ISensor[] CreateSensors()
         {
             var rayPerceptionInput = GetRayPerceptionInput();
 
@@ -188,10 +190,10 @@ namespace Unity.MLAgents.Sensors
             if (ObservationStacks != 1)
             {
                 var stackingSensor = new StackingSensor(m_RaySensor, ObservationStacks);
-                return stackingSensor;
+                return new ISensor[] { stackingSensor };
             }
 
-            return m_RaySensor;
+            return new ISensor[] { m_RaySensor };
         }
 
         /// <summary>
@@ -217,20 +219,6 @@ namespace Unity.MLAgents.Sensors
                 anglesOut[2 * i + 2] = 90 + (i + 1) * delta;
             }
             return anglesOut;
-        }
-
-        /// <summary>
-        /// Returns the observation shape for this raycast sensor which depends on the number
-        /// of tags for detected objects and the number of rays.
-        /// </summary>
-        /// <returns></returns>
-        public override int[] GetObservationShape()
-        {
-            var numRays = 2 * RaysPerDirection + 1;
-            var numTags = m_DetectableTags?.Count ?? 0;
-            var obsSize = (numTags + 2) * numRays;
-            var stacks = ObservationStacks > 1 ? ObservationStacks : 1;
-            return new[] { obsSize * stacks };
         }
 
         /// <summary>
@@ -264,16 +252,26 @@ namespace Unity.MLAgents.Sensors
             }
         }
 
+        internal int SensorObservationAge()
+        {
+            if (m_RaySensor != null)
+            {
+                return Time.frameCount - m_RaySensor.DebugLastFrameCount;
+            }
+
+            return 0;
+        }
+
         void OnDrawGizmosSelected()
         {
-            if (m_RaySensor?.debugDisplayInfo?.rayInfos != null)
+            if (m_RaySensor?.RayPerceptionOutput?.RayOutputs != null)
             {
                 // If we have cached debug info from the sensor, draw that.
                 // Draw "old" observations in a lighter color.
                 // Since the agent may not step every frame, this helps de-emphasize "stale" hit information.
-                var alpha = Mathf.Pow(.5f, m_RaySensor.debugDisplayInfo.age);
+                var alpha = Mathf.Pow(.5f, SensorObservationAge());
 
-                foreach (var rayInfo in m_RaySensor.debugDisplayInfo.rayInfos)
+                foreach (var rayInfo in m_RaySensor.RayPerceptionOutput.RayOutputs)
                 {
                     DrawRaycastGizmos(rayInfo, alpha);
                 }
@@ -288,9 +286,8 @@ namespace Unity.MLAgents.Sensors
                 rayInput.DetectableTags = null;
                 for (var rayIndex = 0; rayIndex < rayInput.Angles.Count; rayIndex++)
                 {
-                    DebugDisplayInfo.RayInfo debugRay;
-                    RayPerceptionSensor.PerceiveSingleRay(rayInput, rayIndex, out debugRay);
-                    DrawRaycastGizmos(debugRay);
+                    var rayOutput = RayPerceptionSensor.PerceiveSingleRay(rayInput, rayIndex);
+                    DrawRaycastGizmos(rayOutput);
                 }
             }
         }
@@ -298,24 +295,24 @@ namespace Unity.MLAgents.Sensors
         /// <summary>
         /// Draw the debug information from the sensor (if available).
         /// </summary>
-        void DrawRaycastGizmos(DebugDisplayInfo.RayInfo rayInfo, float alpha = 1.0f)
+        void DrawRaycastGizmos(RayPerceptionOutput.RayOutput rayOutput, float alpha = 1.0f)
         {
-            var startPositionWorld = rayInfo.worldStart;
-            var endPositionWorld = rayInfo.worldEnd;
+            var startPositionWorld = rayOutput.StartPositionWorld;
+            var endPositionWorld = rayOutput.EndPositionWorld;
             var rayDirection = endPositionWorld - startPositionWorld;
-            rayDirection *= rayInfo.rayOutput.HitFraction;
+            rayDirection *= rayOutput.HitFraction;
 
             // hit fraction ^2 will shift "far" hits closer to the hit color
-            var lerpT = rayInfo.rayOutput.HitFraction * rayInfo.rayOutput.HitFraction;
+            var lerpT = rayOutput.HitFraction * rayOutput.HitFraction;
             var color = Color.Lerp(rayHitColor, rayMissColor, lerpT);
             color.a *= alpha;
             Gizmos.color = color;
             Gizmos.DrawRay(startPositionWorld, rayDirection);
 
             // Draw the hit point as a sphere. If using rays to cast (0 radius), use a small sphere.
-            if (rayInfo.rayOutput.HasHit)
+            if (rayOutput.HasHit)
             {
-                var hitRadius = Mathf.Max(rayInfo.castRadius, .05f);
+                var hitRadius = Mathf.Max(rayOutput.ScaledCastRadius, .05f);
                 Gizmos.DrawWireSphere(startPositionWorld + rayDirection, hitRadius);
             }
         }

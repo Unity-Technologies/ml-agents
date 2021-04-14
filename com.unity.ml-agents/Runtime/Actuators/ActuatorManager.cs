@@ -12,7 +12,7 @@ namespace Unity.MLAgents.Actuators
     internal class ActuatorManager : IList<IActuator>
     {
         // IActuators managed by this object.
-        IList<IActuator> m_Actuators;
+        List<IActuator> m_Actuators;
 
         // An implementation of IDiscreteActionMask that allows for writing to it based on an offset.
         ActuatorDiscreteActionMask m_DiscreteActionMask;
@@ -95,7 +95,7 @@ namespace Unity.MLAgents.Actuators
 #endif
 
             // Sort the Actuators by name to ensure determinism
-            SortActuators();
+            SortActuators(m_Actuators);
             var continuousActions = numContinuousActions == 0 ? ActionSegment<float>.Empty :
                 new ActionSegment<float>(new float[numContinuousActions]);
             var discreteActions = numDiscreteBranches == 0 ? ActionSegment<int>.Empty : new ActionSegment<int>(new int[numDiscreteBranches]);
@@ -174,10 +174,13 @@ namespace Unity.MLAgents.Actuators
             }
             else
             {
-                Debug.AssertFormat(sourceActionBuffer.Length == destination.Length,
-                    "sourceActionBuffer: {0} is a different size than destination: {1}.",
-                    sourceActionBuffer.Length,
-                    destination.Length);
+                if (sourceActionBuffer.Length != destination.Length)
+                {
+                    Debug.AssertFormat(sourceActionBuffer.Length == destination.Length,
+                        "sourceActionBuffer: {0} is a different size than destination: {1}.",
+                        sourceActionBuffer.Length,
+                        destination.Length);
+                }
 
                 Array.Copy(sourceActionBuffer.Array,
                     sourceActionBuffer.Offset,
@@ -244,9 +247,7 @@ namespace Unity.MLAgents.Actuators
                         discreteStart,
                         numDiscreteActions);
                 }
-
-                var heuristic = actuator as IHeuristicProvider;
-                heuristic?.Heuristic(new ActionBuffers(continuousActions, discreteActions));
+                actuator.Heuristic(new ActionBuffers(continuousActions, discreteActions));
                 continuousStart += numContinuousActions;
                 discreteStart += numDiscreteActions;
             }
@@ -319,11 +320,9 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Sorts the <see cref="IActuator"/>s according to their <see cref="IActuator.Name"/> value.
         /// </summary>
-        void SortActuators()
+        internal static void SortActuators(List<IActuator> actuators)
         {
-            ((List<IActuator>)m_Actuators).Sort((x,
-                y) => x.Name
-                .CompareTo(y.Name));
+            actuators.Sort((x, y) => string.Compare(x.Name, y.Name, StringComparison.InvariantCulture));
         }
 
         /// <summary>

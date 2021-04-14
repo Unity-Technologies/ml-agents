@@ -92,6 +92,11 @@ class ScheduleType(Enum):
     LINEAR = "linear"
 
 
+class ConditioningType(Enum):
+    HYPER = "hyper"
+    NONE = "none"
+
+
 @attr.s(auto_attribs=True)
 class NetworkSettings:
     @attr.s
@@ -115,6 +120,7 @@ class NetworkSettings:
     num_layers: int = 2
     vis_encode_type: EncoderType = EncoderType.SIMPLE
     memory: Optional[MemorySettings] = None
+    goal_conditioning_type: ConditioningType = ConditioningType.HYPER
 
 
 @attr.s(auto_attribs=True)
@@ -635,7 +641,7 @@ class TrainerSettings(ExportableSettings):
     max_steps: int = 500000
     time_horizon: int = 64
     summary_freq: int = 50000
-    threaded: bool = True
+    threaded: bool = False
     self_play: Optional[SelfPlaySettings] = None
     behavioral_cloning: Optional[BehavioralCloningSettings] = None
 

@@ -1,5 +1,5 @@
 {
-    "name": "Tests",
+    "name": "Unity.ML-Agents.Runtime.Tests",
     "references": [
         "Unity.ML-Agents",
         "Unity.Barracuda",
@@ -21,5 +21,17 @@
     "autoReferenced": false,
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.modules.physics",
+            "expression": "1.0.0",
+            "define": "MLA_UNITY_PHYSICS_MODULE"
+        },
+        {
+            "name": "com.unity.modules.physics2d",
+            "expression": "1.0.0",
+            "define": "MLA_UNITY_PHYSICS2D_MODULE"
+        }
     ]
 }

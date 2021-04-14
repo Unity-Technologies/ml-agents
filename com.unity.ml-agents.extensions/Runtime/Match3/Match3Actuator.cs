@@ -1,6 +1,5 @@
-using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
-using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 
 namespace Unity.MLAgents.Extensions.Match3
@@ -9,17 +8,13 @@ namespace Unity.MLAgents.Extensions.Match3
     /// Actuator for a Match3 game. It translates valid moves (defined by AbstractBoard.IsMoveValid())
     /// in action masks, and applies the action to the board via AbstractBoard.MakeMove().
     /// </summary>
-    public class Match3Actuator : IActuator, IHeuristicProvider, IBuiltInActuator
+    public class Match3Actuator : IActuator, IBuiltInActuator
     {
-        protected AbstractBoard m_Board;
-        protected System.Random m_Random;
-        private ActionSpec m_ActionSpec;
-        private bool m_ForceHeuristic;
-        private Agent m_Agent;
-
-        private int m_Rows;
-        private int m_Columns;
-        private int m_NumCellTypes;
+        AbstractBoard m_Board;
+        System.Random m_Random;
+        ActionSpec m_ActionSpec;
+        bool m_ForceHeuristic;
+        BoardSize m_MaxBoardSize;
 
         /// <summary>
         /// Create a Match3Actuator.
@@ -31,21 +26,17 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <param name="agent"></param>
         /// <param name="name"></param>
         public Match3Actuator(AbstractBoard board,
-            bool forceHeuristic,
-            int seed,
-            Agent agent,
-            string name)
+                              bool forceHeuristic,
+                              int seed,
+                              string name)
         {
             m_Board = board;
-            m_Rows = board.Rows;
-            m_Columns = board.Columns;
-            m_NumCellTypes = board.NumCellTypes;
+            m_MaxBoardSize = m_Board.GetMaxBoardSize();
             Name = name;
 
             m_ForceHeuristic = forceHeuristic;
-            m_Agent = agent;
 
-            var numMoves = Move.NumPotentialMoves(m_Board.Rows, m_Board.Columns);
+            var numMoves = Move.NumPotentialMoves(m_MaxBoardSize);
             m_ActionSpec = ActionSpec.MakeDiscrete(numMoves);
             m_Random = new System.Random(seed);
         }
@@ -56,31 +47,63 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public void OnActionReceived(ActionBuffers actions)
         {
+            m_Board.CheckBoardSizes(m_MaxBoardSize);
             if (m_ForceHeuristic)
             {
                 Heuristic(actions);
             }
             var moveIndex = actions.DiscreteActions[0];
 
-            if (m_Board.Rows != m_Rows || m_Board.Columns != m_Columns || m_Board.NumCellTypes != m_NumCellTypes)
-            {
-                Debug.LogWarning(
-                    $"Board shape changes since actuator initialization. This may cause unexpected results. " +
-                    $"Old shape: Rows={m_Rows} Columns={m_Columns}, NumCellTypes={m_NumCellTypes} " +
-                    $"Current shape: Rows={m_Board.Rows} Columns={m_Board.Columns}, NumCellTypes={m_Board.NumCellTypes}"
-                );
-            }
-
-            Move move = Move.FromMoveIndex(moveIndex, m_Rows, m_Columns);
+            Move move = Move.FromMoveIndex(moveIndex, m_MaxBoardSize);
             m_Board.MakeMove(move);
         }
 
         /// <inheritdoc/>
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
+            var currentBoardSize = m_Board.GetCurrentBoardSize();
+            m_Board.CheckBoardSizes(m_MaxBoardSize);
+            const int branch = 0;
+            bool foundValidMove = false;
             using (TimerStack.Instance.Scoped("WriteDiscreteActionMask"))
             {
-                actionMask.WriteMask(0, InvalidMoveIndices());
+                var numMoves = m_Board.NumMoves();
+
+                var currentMove = Move.FromMoveIndex(0, m_MaxBoardSize);
+                for (var i = 0; i < numMoves; i++)
+                {
+                    // Check that the move is allowed for the current boardSize (e.g. it won't move a piece out of
+                    // bounds), and that it's allowed by the game itself.
+                    if (currentMove.InRangeForBoard(currentBoardSize) && m_Board.IsMoveValid(currentMove))
+                    {
+                        foundValidMove = true;
+                    }
+                    else
+                    {
+                        actionMask.SetActionEnabled(branch, i, false);
+                    }
+                    currentMove.Next(m_MaxBoardSize);
+                }
+
+                if (!foundValidMove)
+                {
+                    // If all the moves are invalid and we mask all the actions out, this will cause an assert
+                    // later on in IDiscreteActionMask. Instead, fire a callback to the user if they provided one,
+                    // (or log a warning if not) and leave the last action unmasked. This isn't great, but
+                    // an invalid move should be easier to handle than an exception..
+                    if (m_Board.OnNoValidMovesAction != null)
+                    {
+                        m_Board.OnNoValidMovesAction();
+                    }
+                    else
+                    {
+                        Debug.LogWarning(
+                            "No valid moves are available. The last action will be left unmasked, so " +
+                            "an invalid move will be passed to AbstractBoard.MakeMove()."
+                        );
+                    }
+                    actionMask.SetActionEnabled(branch, numMoves - 1, true);
+                }
             }
         }
 
@@ -98,47 +121,24 @@ namespace Unity.MLAgents.Extensions.Match3
             return BuiltInActuatorType.Match3Actuator;
         }
 
-        IEnumerable<int> InvalidMoveIndices()
-        {
-            var numValidMoves = m_Board.NumMoves();
-
-            foreach (var move in m_Board.InvalidMoves())
-            {
-                numValidMoves--;
-                if (numValidMoves == 0)
-                {
-                    // If all the moves are invalid and we mask all the actions out, this will cause an assert
-                    // later on in IDiscreteActionMask. Instead, fire a callback to the user if they provided one,
-                    // (or log a warning if not) and leave the last action unmasked. This isn't great, but
-                    // an invalid move should be easier to handle than an exception..
-                    if (m_Board.OnNoValidMovesAction != null)
-                    {
-                        m_Board.OnNoValidMovesAction();
-                    }
-                    else
-                    {
-                        Debug.LogWarning(
-                            "No valid moves are available. The last action will be left unmasked, so " +
-                            "an invalid move will be passed to AbstractBoard.MakeMove()."
-                        );
-                    }
-                    // This means the last move won't be returned as an invalid index.
-                    yield break;
-                }
-                yield return move.MoveIndex;
-            }
-        }
-
+        /// <inheritdoc/>
         public void Heuristic(in ActionBuffers actionsOut)
         {
             var discreteActions = actionsOut.DiscreteActions;
             discreteActions[0] = GreedyMove();
         }
 
-
-        protected int GreedyMove()
+        /// <summary>
+        /// Returns a valid move that gives the highest value for EvalMovePoints(). If multiple moves have the same
+        /// value, one of them will be chosen with uniform probability.
+        /// </summary>
+        /// <remarks>
+        /// By default, EvalMovePoints() returns 1, so all valid moves are equally likely. Inherit from this class and
+        /// override EvalMovePoints() to use your game's scoring as a better estimate.
+        /// </remarks>
+        /// <returns></returns>
+        internal int GreedyMove()
         {
-
             var bestMoveIndex = 0;
             var bestMovePoints = -1;
             var numMovesAtCurrentScore = 0;

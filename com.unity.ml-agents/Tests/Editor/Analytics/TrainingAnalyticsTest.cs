@@ -5,6 +5,7 @@ using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Analytics;
 using Unity.MLAgents.Policies;
+using UnityEditor;
 
 namespace Unity.MLAgents.Tests.Analytics
 {
@@ -40,6 +41,7 @@ namespace Unity.MLAgents.Tests.Analytics
             Assert.AreEqual(2, remotePolicyEvent.ObservationSpecs.Count);
             Assert.AreEqual(3, remotePolicyEvent.ObservationSpecs[0].DimensionInfos.Length);
             Assert.AreEqual(20, remotePolicyEvent.ObservationSpecs[0].DimensionInfos[0].Size);
+            Assert.AreEqual(0, remotePolicyEvent.ObservationSpecs[0].ObservationType);
             Assert.AreEqual("None", remotePolicyEvent.ObservationSpecs[0].CompressionType);
             Assert.AreEqual(Test3DSensor.k_BuiltInSensorType, remotePolicyEvent.ObservationSpecs[0].BuiltInSensorType);
 
@@ -48,7 +50,6 @@ namespace Unity.MLAgents.Tests.Analytics
 
             Assert.AreEqual(2, remotePolicyEvent.ActuatorInfos[0].NumContinuousActions);
             Assert.AreEqual(0, remotePolicyEvent.ActuatorInfos[0].NumDiscreteActions);
-
         }
 
         [Test]
@@ -67,6 +68,16 @@ namespace Unity.MLAgents.Tests.Analytics
             }
 
             Academy.Instance.Dispose();
+        }
+
+        [Test]
+        public void TestEnableAnalytics()
+        {
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
+            Assert.IsTrue(EditorAnalytics.enabled == TrainingAnalytics.EnableAnalytics());
+#else
+            Assert.IsFalse(TrainingAnalytics.EnableAnalytics());
+#endif
         }
     }
 }

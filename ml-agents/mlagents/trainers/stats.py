@@ -83,6 +83,24 @@ class StatsWriter(abc.ABC):
     and writes it out by some method.
     """
 
+    def on_add_stat(
+        self,
+        category: str,
+        key: str,
+        value: float,
+        aggregation: StatsAggregationMethod = StatsAggregationMethod.AVERAGE,
+    ) -> None:
+        """
+        Callback method for handling an individual stat value as reported to the StatsReporter add_stat
+        or set_stat methods.
+
+        :param category: Category of the statistics. Usually this is the behavior name.
+        :param key: The type of statistic, e.g. Environment/Reward.
+        :param value: The value of the statistic.
+        :param aggregation: The aggregation method for the statistic, default StatsAggregationMethod.AVERAGE.
+        """
+        pass
+
     @abc.abstractmethod
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
@@ -235,13 +253,14 @@ class TensorboardWriter(StatsWriter):
         for file_name in os.listdir(directory_name):
             if file_name.startswith("events.out"):
                 logger.warning(
-                    f"{file_name} was left over from a previous run. Deleting."
+                    f"Deleting TensorBoard data {file_name} that was left over from a "
+                    "previous run."
                 )
                 full_fname = os.path.join(directory_name, file_name)
                 try:
                     os.remove(full_fname)
                 except OSError:
-                    logger.warning(
+                    logger.error(
                         "{} was left over from a previous run and "
                         "not deleted.".format(full_fname)
                     )
@@ -309,6 +328,8 @@ class StatsReporter:
         with StatsReporter.lock:
             StatsReporter.stats_dict[self.category][key].append(value)
             StatsReporter.stats_aggregation[self.category][key] = aggregation
+            for writer in StatsReporter.writers:
+                writer.on_add_stat(self.category, key, value, aggregation)
 
     def set_stat(self, key: str, value: float) -> None:
         """
@@ -323,6 +344,10 @@ class StatsReporter:
             StatsReporter.stats_aggregation[self.category][
                 key
             ] = StatsAggregationMethod.MOST_RECENT
+            for writer in StatsReporter.writers:
+                writer.on_add_stat(
+                    self.category, key, value, StatsAggregationMethod.MOST_RECENT
+                )
 
     def write_stats(self, step: int) -> None:
         """

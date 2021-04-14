@@ -5,7 +5,7 @@ namespace Unity.MLAgents.Sensors
 {
     internal class SensorShapeValidator
     {
-        List<int[]> m_SensorShapes;
+        List<ObservationSpec> m_SensorShapes;
 
         /// <summary>
         /// Check that the List Sensors are the same shape as the previous ones.
@@ -15,31 +15,38 @@ namespace Unity.MLAgents.Sensors
         {
             if (m_SensorShapes == null)
             {
-                m_SensorShapes = new List<int[]>(sensors.Count);
+                m_SensorShapes = new List<ObservationSpec>(sensors.Count);
                 // First agent, save the sensor sizes
                 foreach (var sensor in sensors)
                 {
-                    m_SensorShapes.Add(sensor.GetObservationShape());
+                    m_SensorShapes.Add(sensor.GetObservationSpec());
                 }
             }
             else
             {
                 // Check for compatibility with the other Agents' Sensors
-                // TODO make sure this only checks once per agent
-                Debug.AssertFormat(
-                    m_SensorShapes.Count == sensors.Count,
-                    "Number of Sensors must match. {0} != {1}",
-                    m_SensorShapes.Count,
-                    sensors.Count
-                );
+                if (m_SensorShapes.Count != sensors.Count)
+                {
+                    Debug.AssertFormat(
+                        m_SensorShapes.Count == sensors.Count,
+                        "Number of Sensors must match. {0} != {1}",
+                        m_SensorShapes.Count,
+                        sensors.Count
+                    );
+                }
                 for (var i = 0; i < Mathf.Min(m_SensorShapes.Count, sensors.Count); i++)
                 {
-                    var cachedShape = m_SensorShapes[i];
-                    var sensorShape = sensors[i].GetObservationShape();
-                    Debug.Assert(cachedShape.Length == sensorShape.Length, "Sensor dimensions must match.");
-                    for (var j = 0; j < Mathf.Min(cachedShape.Length, sensorShape.Length); j++)
+                    var cachedSpec = m_SensorShapes[i];
+                    var sensorSpec = sensors[i].GetObservationSpec();
+                    if (cachedSpec.Shape != sensorSpec.Shape)
                     {
-                        Debug.Assert(cachedShape[j] == sensorShape[j], "Sensor sizes must match.");
+                        Debug.AssertFormat(
+                            cachedSpec.Shape == sensorSpec.Shape,
+                            "Sensor shapes must match. {0} != {1}",
+                            cachedSpec.Shape,
+                            sensorSpec.Shape
+                        );
+
                     }
                 }
             }

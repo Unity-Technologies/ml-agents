@@ -1,4 +1,4 @@
-#if MLA_INPUT_SYSTEM && UNITY_2019_4_OR_NEWER
+#if MLA_INPUT_SYSTEM
 
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
@@ -14,7 +14,7 @@ namespace Unity.MLAgents.Extensions.Input
     /// <see cref="Agent"/>'s <see cref="BehaviorParameters"/> indicate that the Agent is running in Heuristic Mode,
     /// this Actuator will write actions from the <see cref="InputSystem"/> to the <see cref="ActionBuffers"/> object.
     /// </summary>
-    public class InputActionActuator : IActuator, IHeuristicProvider, IBuiltInActuator
+    public class InputActionActuator : IActuator, IBuiltInActuator
     {
         readonly BehaviorParameters m_BehaviorParameters;
         readonly InputAction m_Action;
@@ -100,4 +100,4 @@ namespace Unity.MLAgents.Extensions.Input
     }
 }
 
-#endif // MLA_INPUT_SYSTEM && UNITY_2019_4_OR_NEWER
+#endif // MLA_INPUT_SYSTEM

@@ -10,6 +10,22 @@ namespace Unity.MLAgents.Editor
 
         protected void OnRayPerceptionInspectorGUI(bool is3d)
         {
+#if !MLA_UNITY_PHYSICS_MODULE
+            if (is3d)
+            {
+                EditorGUILayout.HelpBox("The Physics Module is not currently present.  " +
+                "Please add it to your project in order to use the Ray Perception APIs in the " +
+                $"{nameof(RayPerceptionSensorComponent3D)}", MessageType.Warning);
+            }
+#endif
+#if !MLA_UNITY_PHYSICS2D_MODULE
+            if (!is3d)
+            {
+                EditorGUILayout.HelpBox("The Physics2D Module is not currently present.  " +
+                "Please add it to your project in order to use the Ray Perception APIs in the " +
+                $"{nameof(RayPerceptionSensorComponent3D)}", MessageType.Warning);
+            }
+#endif
             var so = serializedObject;
             so.Update();
 

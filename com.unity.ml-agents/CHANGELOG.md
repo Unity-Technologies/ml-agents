@@ -6,6 +6,63 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Major Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- The minimum supported Unity version was updated to 2019.4. (#5166)
+- Several breaking interface changes were made. See the
+[Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_14_docs/docs/Migrating.md) for more
+details.
+- Some methods previously marked as `Obsolete` have been removed. If you were using these methods, you need to replace them with their supported counterpart.
+- The interface for disabling discrete actions in `IDiscreteActionMask` has changed.
+`WriteMask(int branch, IEnumerable<int> actionIndices)` was replaced with
+`SetActionEnabled(int branch, int actionIndex, bool isEnabled)`. (#5060)
+- IActuator now implements IHeuristicProvider. (#5110)
+- `ISensor.GetObservationShape()` was removed, and `GetObservationSpec()` was added. The `ITypedSensor`
+and `IDimensionPropertiesSensor` interfaces were removed. (#5127)
+- `ISensor.GetCompressionType()` was removed, and `GetCompressionSpec()` was added. The `ISparseChannelSensor`
+interface was removed. (#5164)
+- The abstract method `SensorComponent.GetObservationShape()` was no longer being called, so it has been removed. (#5172)
+- `SensorComponent.CreateSensor()` was replaced with `SensorComponent.CreateSensor()`, which returns an `ISensor[]`. (#5181)
+- `Match3Sensor` was refactored to produce cell and special type observations separately, and `Match3SensorComponent` now
+produces two `Match3Sensor`s (unless there are no special types). Previously trained models will have different observation
+sizes and will need to be retrained. (#5181)
+- The `AbstractBoard` class for integration with Match-3 games was changed to make it easier to support boards with
+different sizes using the same model. For a summary of the interface changes, please see the Migration Guide. (##5189)
+- Updated the Barracuda package to version `1.3.3-preview`(#5236)
+
+### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- The `.onnx` models input names have changed. All input placeholders will now use the prefix `obs_` removing the distinction between visual and vector observations. In addition, the inputs and outputs of LSTM changed. Models created with this version will not be usable with previous versions of the package (#5080, #5236)
+- The `.onnx` models discrete action output now contains the discrete actions values and not the logits. Models created with this version will not be usable with previous versions of the package (#5080)
+- Added ML-Agents package settings. (#5027)
+- Make com.unity.modules.unityanalytics an optional dependency. (#5109)
+- Make com.unity.modules.physics and com.unity.modules.physics2d optional dependencies. (#5112)
+- The default `InferenceDevice` is now `InferenceDevice.Default`, which is equivalent to `InferenceDevice.Burst`. If you
+depend on the previous behavior, you can explicitly set the Agent's `InferenceDevice` to `InferenceDevice.CPU`. (#5175)
+- Added support for `Goal Signal` as a type of observation. Trainers can now use HyperNetworks to process `Goal Signal`. Trainers with HyperNetworks are more effective at solving multiple tasks. (#5142, #5159, #5149)
+- Modified the [GridWorld environment](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Learning-Environment-Examples.md#gridworld) to use the new `Goal Signal` feature. (#5193)
+- `DecisionRequester.ShouldRequestDecision()` and `ShouldRequestAction()`methods were added. These are used to
+determine whether `Agent.RequestDecision()` and `Agent.RequestAction()` are called (respectively). (#5223)
+- `RaycastPerceptionSensor` now caches its raycast results; they can be accessed via `RayPerceptionSensor.RayPerceptionOutput`. (#5222)
+- `ActionBuffers` are now reset to zero before being passed to `Agent.Heuristic()` and
+`IHeuristicProvider.Heuristic()`. (#5227)
+- `Agent` will now call `IDisposable.Dispose()` on all `ISensor`s that implement the `IDisposable` interface. (#5233)
+- `CameraSensor`, `RenderTextureSensor`, and `Match3Sensor` will now reuse their `Texture2D`s, reducing the
+amount of memory that needs to be allocated during runtime. (#5233)
+- Optimzed `ObservationWriter.WriteTexture()` so that it doesn't call `Texture2D.GetPixels32()` for `RGB24` textures.
+This results in much less memory being allocated during inference with `CameraSensor` and `RenderTextureSensor`. (#5233)
+
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- Some console output have been moved from `info` to `debug` and will not be printed by default. If you want all messages to be printed, you can run `mlagents-learn` with the `--debug` option or add the line `debug: true` at the top of the yaml config file. (#5211)
+
+### Bug Fixes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Fixed a bug where sensors and actuators could get sorted inconsistently on different systems to different Culture
+settings. Unfortunately, this may require retraining models if it changes the resulting order of the sensors
+or actuators on your system. (#5194)
+- Removed additional memory allocations that were occurring due to assert messages and iterating of DemonstrationRecorders. (#5246)
+
 ## [1.9.1-preview] - 2021-04-13
 ### Major Changes
 #### ml-agents / ml-agents-envs / gym-unity (Python)
@@ -25,7 +82,6 @@ and this project adheres to
 - In the Python API, fixed `validate_action` to expect the right dimensions when `set_action_single_agent` is called. (#5208)
 - In the `GymToUnityWrapper`, raise an appropriate warning if `step()` is called after an environment is done. (#5204)
 - Fixed an issue where using one of the `gym` wrappers would override user-set log levels. (#5201)
-
 ## [1.9.0-preview] - 2021-03-17
 ### Major Changes
 #### com.unity.ml-agents (C#)
@@ -40,6 +96,8 @@ and this project adheres to
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - Updated com.unity.barracuda to 1.3.2-preview. (#5084)
 - Added 3D Ball to the `com.unity.ml-agents` samples. (#5077)
+- Make com.unity.modules.unityanalytics an optional dependency. (#5109)
+
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `encoding_size` setting for RewardSignals has been deprecated. Please use `network_settings` instead. (#4982)
 - Sensor names are now passed through to `ObservationSpec.name`. (#5036)
