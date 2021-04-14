@@ -32,7 +32,7 @@ different sizes using the same model. For a summary of the interface changes, pl
 - Updated the Barracuda package to version `1.3.3-preview`(#5236)
 - `GridSensor` has been refactored and moved to main package, with changes to both sensor interfaces and behaviors.
 Exsisting GridSensor created by extension package will not work in newer version. Previously trained models will
-need to be retrained. Please see the Migration Guide for more details.
+need to be retrained. Please see the Migration Guide for more details. (#5256)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
