@@ -3,7 +3,7 @@ using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Editor
 {
-    [CustomEditor(typeof(CameraSensorComponent))]
+    [CustomEditor(typeof(CameraSensorComponent), editorForChildClasses: true)]
     [CanEditMultipleObjects]
     internal class CameraSensorComponentEditor : UnityEditor.Editor
     {

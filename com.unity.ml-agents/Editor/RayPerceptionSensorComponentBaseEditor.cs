@@ -87,7 +87,7 @@ namespace Unity.MLAgents.Editor
         }
     }
 
-    [CustomEditor(typeof(RayPerceptionSensorComponent2D))]
+    [CustomEditor(typeof(RayPerceptionSensorComponent2D), editorForChildClasses: true)]
     [CanEditMultipleObjects]
     internal class RayPerceptionSensorComponent2DEditor : RayPerceptionSensorComponentBaseEditor
     {
@@ -97,7 +97,7 @@ namespace Unity.MLAgents.Editor
         }
     }
 
-    [CustomEditor(typeof(RayPerceptionSensorComponent3D))]
+    [CustomEditor(typeof(RayPerceptionSensorComponent3D), editorForChildClasses: true)]
     [CanEditMultipleObjects]
     internal class RayPerceptionSensorComponent3DEditor : RayPerceptionSensorComponentBaseEditor
     {
