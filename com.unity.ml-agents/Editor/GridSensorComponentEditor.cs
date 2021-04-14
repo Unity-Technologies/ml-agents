@@ -30,11 +30,11 @@ namespace Unity.MLAgents.Editor
 
                 EditorGUILayout.LabelField("Grid Settings", EditorStyles.boldLabel);
                 EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_CellScale)), true);
-                // We only supports 2D GridSensor now so display gridSize as Vector2
+                // We only supports 2D GridSensor now so lock gridSize.y to 1
                 var gridSize = so.FindProperty(nameof(GridSensorComponent.m_GridSize));
-                var gridSize2d = new Vector2Int(gridSize.vector3IntValue.x, gridSize.vector3IntValue.z);
-                var newGridSize = EditorGUILayout.Vector2IntField("Grid Size", gridSize2d);
-                gridSize.vector3IntValue = new Vector3Int(newGridSize.x, 1, newGridSize.y);
+                var gridSize2d = new Vector3Int(gridSize.vector3IntValue.x, 1, gridSize.vector3IntValue.z);
+                var newGridSize = EditorGUILayout.Vector3IntField("Grid Size", gridSize2d);
+                gridSize.vector3IntValue = new Vector3Int(newGridSize.x, 1, newGridSize.z);
             }
             EditorGUI.EndDisabledGroup();
             EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_RotateWithAgent)), true);
