@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using NUnit.Framework;
-using Unity.MLAgents.Extensions.Match3;
 using UnityEngine;
-using Unity.MLAgents.Extensions.Tests.Sensors;
+using Unity.MLAgents.Integrations.Match3;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Tests;
 
-namespace Unity.MLAgents.Extensions.Tests.Match3
+namespace Unity.MLAgents.Tests.Integrations.Match3
 {
     public class Match3SensorTests
     {
@@ -373,7 +373,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             for (var i = 0; i < splitPngs.Count; i++)
             {
                 var pngData = splitPngs[i];
-                var path = $"Packages/com.unity.ml-agents.extensions/Tests/Editor/Match3/{pathPrefix}{i}.png";
+                var path = $"Packages/com.unity.ml-agents/Tests/Editor/Integrations/Match3/{pathPrefix}{i}.png";
                 using (var sw = File.Create(path))
                 {
                     foreach (var b in pngData)
@@ -389,7 +389,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             var bytesOut = new List<byte>();
             for (var i = 0; i < numExpected; i++)
             {
-                var path = $"Packages/com.unity.ml-agents.extensions/Tests/Editor/Match3/{pathPrefix}{i}.png";
+                var path = $"Packages/com.unity.ml-agents/Tests/Editor/Integrations/Match3/{pathPrefix}{i}.png";
                 var res = File.ReadAllBytes(path);
                 bytesOut.AddRange(res);
             }

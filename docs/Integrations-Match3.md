@@ -3,14 +3,13 @@
 <img src="images/match3.png" align="center" width="3000"/>
 
 ## Getting started
-The C# code for Match-3 exists inside of the extensions package (com.unity.ml-agents.extensions). A good first step
-would be to familiarize with the extensions package by reading the document [here](com.unity.ml-agents.extensions.md).
-The second step would be to take a look at how we have implemented the C# code in the example Match-3 scene (located
+The C# code for Match-3 exists inside of the Unity package (`com.unity.ml-agents`).
+The good first step would be to take a look at how we have implemented the C# code in the example Match-3 scene (located
 under /Project/Assets/ML-Agents/Examples/match3). Once you have some familiarity, then the next step would be to
 implement the C# code for Match-3 from the extensions package.
 
 Additionally, see below for additional technical specifications on the C# code for Match-3. Please note the Match-3 game
- isn't human playable as implemented and can be only played via training.
+isn't human playable as implemented and can be only played via training.
 
 ## Technical specifications for Match-3 with ML-Agents
 
@@ -108,7 +107,3 @@ If you are a Match-3 developer and are trying to leverage ML-Agents for this sce
 [we want to hear from you](https://forms.gle/TBsB9jc8WshgzViU9). Additionally, we are also looking for interested
 Match-3 teams to speak with us for 45 minutes. If you are interested, please indicate that in the
 [form](https://forms.gle/TBsB9jc8WshgzViU9). If selected, we will provide gift cards as a token of appreciation.
-
-### Interested in more game templates?
-Do you have a type of game you are interested for ML-Agents? If so, please post a
-[forum issue](https://forum.unity.com/forums/ml-agents.453/) with [GAME TEMPLATE] in the title.

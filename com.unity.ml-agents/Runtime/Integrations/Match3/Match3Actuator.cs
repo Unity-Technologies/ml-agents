@@ -2,7 +2,7 @@ using Unity.MLAgents.Actuators;
 using Debug = UnityEngine.Debug;
 
 
-namespace Unity.MLAgents.Extensions.Match3
+namespace Unity.MLAgents.Integrations.Match3
 {
     /// <summary>
     /// Actuator for a Match3 game. It translates valid moves (defined by AbstractBoard.IsMoveValid())
@@ -23,7 +23,6 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <param name="forceHeuristic">Whether the inference action should be ignored and the Agent's Heuristic
         /// should be called. This should only be used for generating comparison stats of the Heuristic.</param>
         /// <param name="seed">The seed used to initialize <see cref="System.Random"/>.</param>
-        /// <param name="agent"></param>
         /// <param name="name"></param>
         public Match3Actuator(AbstractBoard board,
                               bool forceHeuristic,

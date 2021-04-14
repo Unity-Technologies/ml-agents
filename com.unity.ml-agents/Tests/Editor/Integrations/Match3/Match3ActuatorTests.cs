@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Extensions.Match3;
+using Unity.MLAgents.Integrations.Match3;
 using UnityEngine;
 
-namespace Unity.MLAgents.Extensions.Tests.Match3
+namespace Unity.MLAgents.Tests.Integrations.Match3
 {
     internal class SimpleBoard : AbstractBoard
     {
