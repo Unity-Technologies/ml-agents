@@ -1,9 +1,8 @@
-using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents.Sensors;
-using Unity.MLAgents.Extensions.Sensors;
 
-namespace Unity.MLAgents.Extensions.Tests.GridSensors
+namespace Unity.MLAgents.Tests
 {
     public static class TestGridSensorConfig
     {
@@ -58,6 +57,7 @@ namespace Unity.MLAgents.Extensions.Tests.GridSensors
         {
             return TestGridSensorConfig.ParseAllColliders ? ProcessCollidersMethod.ProcessAllColliders : ProcessCollidersMethod.ProcessClosestColliders;
         }
+
         protected override void GetObjectData(GameObject detectedObject, int typeIndex, float[] dataBuffer)
         {
             for (var i = 0; i < DummyData.Length; i++)
@@ -69,12 +69,24 @@ namespace Unity.MLAgents.Extensions.Tests.GridSensors
 
     public class SimpleTestGridSensorComponent : GridSensorComponent
     {
+        bool m_UseOneHotTag;
         bool m_UseTestingGridSensor;
         bool m_UseGridSensorBase;
 
         protected override GridSensorBase[] GetGridSensors()
         {
-            var sensorList = base.GetGridSensors().ToList();
+            List<GridSensorBase> sensorList = new List<GridSensorBase>();
+            if (m_UseOneHotTag)
+            {
+                var testSensor = new OneHotGridSensor(
+                    SensorName,
+                    CellScale,
+                    GridSize,
+                    DetectableTags,
+                    CompressionType
+                );
+                sensorList.Add(testSensor);
+            }
             if (m_UseGridSensorBase)
             {
                 var testSensor = new GridSensorBase(
@@ -111,7 +123,6 @@ namespace Unity.MLAgents.Extensions.Tests.GridSensors
             SensorCompressionType compression = SensorCompressionType.None,
             bool rotateWithAgent = false,
             bool useOneHotTag = false,
-            bool countColliders = false,
             bool useTestingGridSensor = false,
             bool useGridSensorBase = false
         )
@@ -122,8 +133,7 @@ namespace Unity.MLAgents.Extensions.Tests.GridSensors
             ColliderMask = colliderMaskInt < 0 ? LayerMask.GetMask("Default") : colliderMaskInt;
             RotateWithAgent = rotateWithAgent;
             CompressionType = compression;
-            UseOneHotTag = useOneHotTag;
-            CountColliders = countColliders;
+            m_UseOneHotTag = useOneHotTag;
             m_UseGridSensorBase = useGridSensorBase;
             m_UseTestingGridSensor = useTestingGridSensor;
         }

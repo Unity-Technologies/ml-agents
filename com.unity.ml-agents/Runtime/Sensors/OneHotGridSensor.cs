@@ -1,7 +1,6 @@
 using UnityEngine;
-using Unity.MLAgents.Sensors;
 
-namespace Unity.MLAgents.Extensions.Sensors
+namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// Grid-based sensor with one-hot observations.
@@ -13,16 +12,16 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         /// <param name="name">The sensor name</param>
         /// <param name="cellScale">The scale of each cell in the grid</param>
-        /// <param name="gridNum">Number of cells on each side of the grid</param>
+        /// <param name="gridSize">Number of cells on each side of the grid</param>
         /// <param name="detectableTags">Tags to be detected by the sensor</param>
         /// <param name="compression">Compression type</param>
         public OneHotGridSensor(
             string name,
             Vector3 cellScale,
-            Vector3Int gridNum,
+            Vector3Int gridSize,
             string[] detectableTags,
             SensorCompressionType compression
-        ) : base(name, cellScale, gridNum, detectableTags, compression)
+        ) : base(name, cellScale, gridSize, detectableTags, compression)
         {
         }
 

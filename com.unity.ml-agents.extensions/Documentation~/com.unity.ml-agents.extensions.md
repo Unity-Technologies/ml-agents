@@ -19,7 +19,6 @@ The following table describes the package folder structure:
 | _Tests_          | Contains the unit tests for the package.                               |
 
 The Runtime directory currently contains these features:
- * [Grid-based sensor](Grid-Sensor.md)
  * Physics-based sensors
  * [Input System Package Integration](InputActuatorComponent.md)
 
