@@ -111,9 +111,10 @@ namespace Unity.MLAgents.Inference
             if (modelApiVersion < (int)ModelApiVersion.MinSupportedVersion || modelApiVersion > (int)ModelApiVersion.MaxSupportedVersion)
             {
                 failedModelChecks.Add(
-                    FailedCheck.Warning($"Version of the trainer the model was trained with ({modelApiVersion}) " +
+                    FailedCheck.Error($"Version of the trainer the model was trained with ({modelApiVersion}) " +
                     $"is not compatible with the current range of supported versions:  " +
-                    $"({(int)ModelApiVersion.MinSupportedVersion} to {(int)ModelApiVersion.MaxSupportedVersion}).")
+                    $"({(int)ModelApiVersion.MinSupportedVersion} to {(int)ModelApiVersion.MaxSupportedVersion}). \n" +
+                    "You need to retrain your model with a compatible trainer.")
                     );
                 return failedModelChecks;
             }
@@ -134,6 +135,21 @@ namespace Unity.MLAgents.Inference
                 failedModelChecks.AddRange(
                     CheckInputTensorShapeLegacy(model, brainParameters, sensors, observableAttributeTotalSize)
                 );
+
+                /// This block is to make sure that models that are trained with MLAgents version 1.x and have
+                /// an LSTM (i.e. use the barracuda _c and _h inputs and outputs) will not work with MLAgents version
+                /// 2.x. This is because Barracuda version 2.x will eventually drop support for the _c and _h inputs
+                /// and only ML-Agents 2.x models will be compatible.
+                if (memorySize > 0)
+                {
+                    failedModelChecks.Add(
+                        FailedCheck.Error($"Version of the trainer the model was trained with ({modelApiVersion}) " +
+                        $"is not compatible with the expected version ({(int)ModelApiVersion.MaxSupportedVersion}) for " +
+                        "models that use recurrent neural networks. \n" +
+                        "You need to retrain your model with a compatible trainer.")
+                        );
+                }
+
             }
             else if (modelApiVersion == (int)ModelApiVersion.MLAgents2_0)
             {
