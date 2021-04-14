@@ -18,11 +18,14 @@ namespace Unity.MLAgents.Sensors
         Vector3 m_HalfCellScale;
         Vector3 m_CellCenterOffset;
         Vector3[] m_CellLocalPositions;
+
+#if MLA_UNITY_PHYSICS_MODULE
         Collider[] m_ColliderBuffer;
 
         public event Action<GameObject, int> GridOverlapDetectedAll;
         public event Action<GameObject, int> GridOverlapDetectedClosest;
         public event Action<GameObject, int> GridOverlapDetectedDebug;
+#endif
 
         public BoxOverlapChecker(
             Vector3 cellScale,
@@ -46,7 +49,9 @@ namespace Unity.MLAgents.Sensors
             m_NumCells = gridSize.x * gridSize.z;
             m_HalfCellScale = new Vector3(cellScale.x / 2f, cellScale.y, cellScale.z / 2f);
             m_CellCenterOffset = new Vector3((gridSize.x - 1f) / 2, 0, (gridSize.z - 1f) / 2);
+#if MLA_UNITY_PHYSICS_MODULE
             m_ColliderBuffer = new Collider[Math.Min(m_MaxColliderBufferSize, m_InitialColliderBufferSize)];
+#endif
 
             InitCellLocalPositions();
         }
@@ -104,6 +109,46 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
+        /// Perceive the latest grid status. Call OverlapBoxNonAlloc once to detect colliders.
+        /// Then parse the collider arrays according to all available gridSensor delegates.
+        /// </summary>
+        internal void Update()
+        {
+#if MLA_UNITY_PHYSICS_MODULE
+            for (var cellIndex = 0; cellIndex < m_NumCells; cellIndex++)
+            {
+                var cellCenter = GetCellGlobalPosition(cellIndex);
+                var numFound = BufferResizingOverlapBoxNonAlloc(cellCenter, m_HalfCellScale, GetGridRotation());
+                if (GridOverlapDetectedAll != null)
+                {
+                    ParseCollidersAll(m_ColliderBuffer, numFound, cellIndex, cellCenter, GridOverlapDetectedAll);
+                }
+                if (GridOverlapDetectedClosest != null)
+                {
+                    ParseCollidersClosest(m_ColliderBuffer, numFound, cellIndex, cellCenter, GridOverlapDetectedClosest);
+                }
+            }
+#endif
+        }
+
+        /// <summary>
+        /// Same as Update(), but only load data for debug gizmo.
+        /// </summary>
+        internal void UpdateGizmo()
+        {
+#if MLA_UNITY_PHYSICS_MODULE
+            for (var cellIndex = 0; cellIndex < m_NumCells; cellIndex++)
+            {
+                var cellCenter = GetCellGlobalPosition(cellIndex);
+                var numFound = BufferResizingOverlapBoxNonAlloc(cellCenter, m_HalfCellScale, GetGridRotation());
+
+                ParseCollidersClosest(m_ColliderBuffer, numFound, cellIndex, cellCenter, GridOverlapDetectedDebug);
+            }
+#endif
+        }
+
+#if MLA_UNITY_PHYSICS_MODULE
+        /// <summary>
         /// This method attempts to perform the Physics.OverlapBoxNonAlloc and will double the size of the Collider buffer
         /// if the number of Colliders in the buffer after the call is equal to the length of the buffer.
         /// </summary>
@@ -130,42 +175,6 @@ namespace Unity.MLAgents.Sensors
                 }
             }
             return numFound;
-        }
-
-        /// <summary>
-        /// Perceive the latest grid status. Call OverlapBoxNonAlloc once to detect colliders.
-        /// Then parse the collider arrays according to all available gridSensor delegates.
-        /// </summary>
-        internal void Update()
-        {
-            for (var cellIndex = 0; cellIndex < m_NumCells; cellIndex++)
-            {
-                var cellCenter = GetCellGlobalPosition(cellIndex);
-                var numFound = BufferResizingOverlapBoxNonAlloc(cellCenter, m_HalfCellScale, GetGridRotation());
-
-                if (GridOverlapDetectedAll != null)
-                {
-                    ParseCollidersAll(m_ColliderBuffer, numFound, cellIndex, cellCenter, GridOverlapDetectedAll);
-                }
-                if (GridOverlapDetectedClosest != null)
-                {
-                    ParseCollidersClosest(m_ColliderBuffer, numFound, cellIndex, cellCenter, GridOverlapDetectedClosest);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Same as Update(), but only load data for debug gizmo.
-        /// </summary>
-        internal void UpdateGizmo()
-        {
-            for (var cellIndex = 0; cellIndex < m_NumCells; cellIndex++)
-            {
-                var cellCenter = GetCellGlobalPosition(cellIndex);
-                var numFound = BufferResizingOverlapBoxNonAlloc(cellCenter, m_HalfCellScale, GetGridRotation());
-
-                ParseCollidersClosest(m_ColliderBuffer, numFound, cellIndex, cellCenter, GridOverlapDetectedDebug);
-            }
         }
 
         /// <summary>
@@ -231,9 +240,11 @@ namespace Unity.MLAgents.Sensors
                 }
             }
         }
+#endif
 
         internal void RegisterSensor(GridSensorBase sensor)
         {
+#if MLA_UNITY_PHYSICS_MODULE
             if (sensor.GetProcessCollidersMethod() == ProcessCollidersMethod.ProcessAllColliders)
             {
                 GridOverlapDetectedAll += sensor.ProcessDetectedObject;
@@ -242,11 +253,14 @@ namespace Unity.MLAgents.Sensors
             {
                 GridOverlapDetectedClosest += sensor.ProcessDetectedObject;
             }
+#endif
         }
 
         internal void RegisterDebugSensor(GridSensorBase debugSensor)
         {
+#if MLA_UNITY_PHYSICS_MODULE
             GridOverlapDetectedDebug += debugSensor.ProcessDetectedObject;
+#endif
         }
     }
 }

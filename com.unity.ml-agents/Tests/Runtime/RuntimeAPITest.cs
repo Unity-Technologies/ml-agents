@@ -75,7 +75,7 @@ namespace Tests
 
             // Can't actually create an Agent with InferenceOnly and no model, so change back
             behaviorParams.BehaviorType = BehaviorType.Default;
-#if MLA_UNITY_PHSYICS_MODULE
+#if MLA_UNITY_PHYSICS_MODULE
             var sensorComponent = gameObject.AddComponent<RayPerceptionSensorComponent3D>();
             sensorComponent.SensorName = "ray3d";
             sensorComponent.DetectableTags = new List<string> { "Player", "Respawn" };
@@ -104,7 +104,7 @@ namespace Tests
             decisionRequester.DecisionPeriod = 2;
             decisionRequester.TakeActionsBetweenDecisions = true;
 
-#if MLA_UNITY_PHSYICS_MODULE
+#if MLA_UNITY_PHYSICS_MODULE
             // Initialization should set up the sensors
             Assert.IsNotNull(sensorComponent.RaySensor);
 #endif

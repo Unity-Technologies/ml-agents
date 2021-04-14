@@ -1,3 +1,4 @@
+#if MLA_UNITY_PHYSICS_MODULE
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
@@ -295,3 +296,4 @@ namespace Unity.MLAgents.Tests
         }
     }
 }
+#endif
