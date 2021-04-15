@@ -1,6 +1,4 @@
 //Put this script on your blue cube.
-
-using System;
 using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
@@ -18,7 +16,7 @@ public class PushBlockWithInputAgentBasic : Agent
 
     /// <summary>
     /// The area bounds.
-    /// </summary'PushAgentBasic'>
+    /// </summary>
     [HideInInspector]
     public Bounds areaBounds;
 

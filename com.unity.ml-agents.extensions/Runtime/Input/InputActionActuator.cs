@@ -2,7 +2,6 @@
 
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
-using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Profiling;
 

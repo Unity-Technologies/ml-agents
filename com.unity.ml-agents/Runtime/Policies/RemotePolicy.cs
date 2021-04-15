@@ -26,7 +26,6 @@ namespace Unity.MLAgents.Policies
         /// </summary>
         private IList<IActuator> m_Actuators;
 
-        /// <inheritdoc />
         public RemotePolicy(
             ActionSpec actionSpec,
             IList<IActuator> actuators,
