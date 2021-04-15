@@ -14,7 +14,6 @@ from mlagents_envs.timers import set_gauge
 from torch.utils.tensorboard import SummaryWriter
 from mlagents.torch_utils.globals import get_rank
 
-
 logger = get_logger(__name__)
 
 
@@ -212,7 +211,7 @@ class ConsoleWriter(StatsWriter):
 
 
 class TensorboardWriter(StatsWriter):
-    def __init__(self, base_dir: str, clear_past_data: bool = False):
+    def __init__(self, base_dir: str, clear_past_data: bool = False, hidden_keys: [str] = ["Is Training", "Step"]):
         """
         A StatsWriter that writes to a Tensorboard summary.
 
@@ -224,12 +223,15 @@ class TensorboardWriter(StatsWriter):
         self.summary_writers: Dict[str, SummaryWriter] = {}
         self.base_dir: str = base_dir
         self._clear_past_data = clear_past_data
+        self.hidden_keys: [str] = hidden_keys
 
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
     ) -> None:
         self._maybe_create_summary_writer(category)
         for key, value in values.items():
+            if key in self.hidden_keys:
+                continue
             self.summary_writers[category].add_scalar(
                 f"{key}", value.aggregated_value, step
             )
