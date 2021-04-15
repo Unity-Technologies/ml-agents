@@ -12,7 +12,7 @@ from mlagents.trainers.exception import TrainerError
 
 logger = get_logger(__name__)
 
-STATUS_FORMAT_VERSION = "0.2.0"
+STATUS_FORMAT_VERSION = "0.2.1"
 
 
 class StatusType(Enum):
