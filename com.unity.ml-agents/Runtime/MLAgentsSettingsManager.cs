@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
+#else
+using System.Linq;
 #endif
 
 namespace Unity.MLAgents
