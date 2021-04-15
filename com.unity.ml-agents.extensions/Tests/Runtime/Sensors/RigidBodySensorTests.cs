@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using NUnit.Framework;
 using Unity.MLAgents.Sensors;

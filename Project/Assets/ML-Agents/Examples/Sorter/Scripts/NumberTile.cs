@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class NumberTile : MonoBehaviour
@@ -8,7 +6,7 @@ public class NumberTile : MonoBehaviour
     public Material DefaultMaterial;
     public Material SuccessMaterial;
 
-    private bool m_Visited = false;
+    private bool m_Visited;
     private MeshRenderer m_Renderer;
 
     public bool IsVisited

@@ -81,7 +81,7 @@ public class SorterAgent : Agent
             // Here, the observation for the tile is added to the BufferSensor
             m_BufferSensor.AppendObservation(listObservation);
 
-        };
+        }
 
     }
 

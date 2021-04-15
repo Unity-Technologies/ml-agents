@@ -1,8 +1,6 @@
 using NUnit.Framework;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
-using System.Reflection;
-using Unity.MLAgents;
 
 namespace Unity.MLAgents.Tests
 {

@@ -41,7 +41,7 @@ namespace Unity.MLAgents.Tests.Policies
 
         class ActionClearedAgent : Agent
         {
-            public int HeuristicCalls = 0;
+            public int HeuristicCalls;
             public override void Heuristic(in ActionBuffers actionsOut)
             {
                 CheckAndSetBuffer(actionsOut);
@@ -51,7 +51,7 @@ namespace Unity.MLAgents.Tests.Policies
 
         class ActionClearedActuator : IActuator
         {
-            public int HeuristicCalls = 0;
+            public int HeuristicCalls;
             public ActionClearedActuator(ActionSpec actionSpec)
             {
                 ActionSpec = actionSpec;

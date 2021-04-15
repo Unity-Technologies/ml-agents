@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Unity.MLAgents.Sensors
 {
     /// <summary>
-    /// A SensorComponent that creates a <see cref="GridSensor"/>.
+    /// A SensorComponent that creates a <see cref="GridSensorBase"/>.
     /// </summary>
     [AddComponentMenu("ML Agents/Grid Sensor", (int)MenuGroup.Sensors)]
     public class GridSensorComponent : SensorComponent

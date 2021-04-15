@@ -83,7 +83,7 @@ namespace Unity.MLAgents.Sensors
 
         /// <summary>Converts the index of the cell to the 3D point (y is zero) relative to grid center</summary>
         /// <returns>Vector3 of the position of the center of the cell relative to grid center</returns>
-        /// <param name="cell">The index of the cell</param>
+        /// <param name="cellIndex">The index of the cell</param>
         Vector3 GetCellLocalPosition(int cellIndex)
         {
             float x = (cellIndex / m_GridSize.z - m_CellCenterOffset.x) * m_CellScale.x;

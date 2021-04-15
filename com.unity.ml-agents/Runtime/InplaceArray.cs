@@ -29,9 +29,9 @@ namespace Unity.MLAgents
         {
             m_Length = 1;
             m_Elem0 = elem0;
-            m_Elem1 = new T { };
-            m_Elem2 = new T { };
-            m_Elem3 = new T { };
+            m_Elem1 = new T();
+            m_Elem2 = new T();
+            m_Elem3 = new T();
         }
 
         /// <summary>
@@ -44,8 +44,8 @@ namespace Unity.MLAgents
             m_Length = 2;
             m_Elem0 = elem0;
             m_Elem1 = elem1;
-            m_Elem2 = new T { };
-            m_Elem3 = new T { };
+            m_Elem2 = new T();
+            m_Elem3 = new T();
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Unity.MLAgents
             m_Elem0 = elem0;
             m_Elem1 = elem1;
             m_Elem2 = elem2;
-            m_Elem3 = new T { };
+            m_Elem3 = new T();
         }
 
         /// <summary>

@@ -251,8 +251,7 @@ namespace Unity.MLAgents.Inference
             }
             else
             {
-                return model.outputs.Contains(TensorNames.DiscreteActionOutput) &&
-                    (int)model.DiscreteOutputSize() > 0;
+                return model.outputs.Contains(TensorNames.DiscreteActionOutput) && model.DiscreteOutputSize() > 0;
             }
         }
 

@@ -5,7 +5,6 @@ using NUnit.Framework;
 using UnityEngine;
 using Unity.MLAgents.Integrations.Match3;
 using Unity.MLAgents.Sensors;
-using Unity.MLAgents.Tests;
 
 namespace Unity.MLAgents.Tests.Integrations.Match3
 {

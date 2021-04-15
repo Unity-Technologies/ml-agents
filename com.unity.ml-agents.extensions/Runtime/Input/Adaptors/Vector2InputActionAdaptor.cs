@@ -1,9 +1,7 @@
 #if MLA_INPUT_SYSTEM
-using System;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.LowLevel;
 
 namespace Unity.MLAgents.Extensions.Input

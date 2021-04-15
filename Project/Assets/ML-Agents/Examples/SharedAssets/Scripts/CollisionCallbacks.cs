@@ -1,6 +1,4 @@
 using UnityEngine;
-using Random = UnityEngine.Random;
-using Unity.MLAgents;
 using UnityEngine.Events;
 
 namespace Unity.MLAgentsExamples

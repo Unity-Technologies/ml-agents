@@ -194,7 +194,7 @@ namespace Unity.MLAgents.Tests
                 gridSizeX: 2,
                 gridSizeZ: 2,
                 rootReference: testGo,
-                detectableTags: new string[] { tag1 });
+                detectableTags: new [] { tag1 });
             var helper = new VerifyParseCollidersHelper();
             boxOverlap.GridOverlapDetectedClosest += helper.DetectedAction;
 
@@ -230,7 +230,7 @@ namespace Unity.MLAgents.Tests
                 gridSizeX: 2,
                 gridSizeZ: 2,
                 rootReference: testGo,
-                detectableTags: new string[] { tag1 });
+                detectableTags: new [] { tag1 });
             var helper = new VerifyParseCollidersHelper();
             boxOverlap.GridOverlapDetectedAll += helper.DetectedAction;
 

@@ -107,9 +107,6 @@ namespace Unity.MLAgents.Sensors
         /// <param name="texture2D">Texture2D to render to.</param>
         public static void ObservationToTexture(RenderTexture obsTexture, Texture2D texture2D)
         {
-            var height = obsTexture.height;
-            var width = obsTexture.width;
-
             var prevActiveRt = RenderTexture.active;
             RenderTexture.active = obsTexture;
 

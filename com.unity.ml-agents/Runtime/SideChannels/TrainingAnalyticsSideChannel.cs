@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 using Unity.MLAgents.Analytics;
 using Unity.MLAgents.CommunicatorObjects;
 

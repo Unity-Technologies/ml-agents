@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using NUnit.Framework;
-using UnityEngine;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Utils.Tests;
 

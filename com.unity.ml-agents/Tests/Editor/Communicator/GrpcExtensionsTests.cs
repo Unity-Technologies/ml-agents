@@ -1,7 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
 using Google.Protobuf;
-using Google.Protobuf.Collections;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Demonstrations;
@@ -157,10 +156,6 @@ namespace Unity.MLAgents.Tests
         {
             public ObservationSpec ObservationSpec;
             public SensorCompressionType CompressionType;
-
-            internal DummySensor()
-            {
-            }
 
             public ObservationSpec GetObservationSpec()
             {
