@@ -501,7 +501,7 @@ of demonstrations. GAIL can be used with or without environment rewards, and
 works well when there are a limited number of demonstrations. In this framework,
 a second neural network, the discriminator, is taught to distinguish whether an
 observation/action is from a demonstration or produced by the agent. This
-discriminator can the examine a new observation/action and provide it a reward
+discriminator can then examine a new observation/action and provide it a reward
 based on how close it believes this new observation/action is to the provided
 demonstrations.
 

@@ -164,7 +164,7 @@ unseen, data. More specifically:
   learned mapping.
 - For our reinforcement learning example, the training phase learns the optimal
   policy through guided trials, and in the inference phase, the agent observes
-  and tales actions in the wild using its learned policy.
+  and takes actions in the wild using its learned policy.
 
 To briefly summarize: all three classes of algorithms involve training and
 inference phases in addition to attribute and model selections. What ultimately
