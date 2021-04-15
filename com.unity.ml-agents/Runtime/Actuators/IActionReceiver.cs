@@ -127,7 +127,11 @@ namespace Unity.MLAgents.Actuators
             return ContinuousActions.IsEmpty() && DiscreteActions.IsEmpty();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Indicates whether the current ActionBuffers is equal to another ActionBuffers.
+        /// </summary>
+        /// <param name="obj">An ActionBuffers to compare with this ActionBuffers.</param>
+        /// <returns>true if the current ActionBuffers is equal to the other parameter; otherwise, false.</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ActionBuffers))
@@ -140,7 +144,10 @@ namespace Unity.MLAgents.Actuators
                 ab.DiscreteActions.SequenceEqual(DiscreteActions);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Computes the hash code of the ActionBuffers.
+        /// </summary>
+        /// <returns>A hash code for the current ActionBuffers.</returns>
         public override int GetHashCode()
         {
             unchecked
