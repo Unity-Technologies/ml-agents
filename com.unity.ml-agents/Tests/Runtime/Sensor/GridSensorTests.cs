@@ -80,6 +80,19 @@ namespace Unity.MLAgents.Tests
         }
 
         [Test]
+        public void TestCreateSensor()
+        {
+            testGo.tag = k_Tag2;
+            string[] tags = { k_Tag1, k_Tag2 };
+            gridSensorComponent.SetComponentParameters(tags, useBaseGridSensor: true);
+
+            var gridSensor = (GridSensorBase)gridSensorComponent.CreateSensors()[0];
+            var componentSensor = (GridSensorBase[])typeof(GridSensorComponent).GetField("m_Sensor",
+                        BindingFlags.Instance | BindingFlags.NonPublic).GetValue(gridSensorComponent);
+            Assert.AreEqual(componentSensor.Count, 1);
+        }
+
+        [Test]
         public void PerceiveNotSelf()
         {
             testGo.tag = k_Tag2;

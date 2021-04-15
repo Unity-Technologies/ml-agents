@@ -184,7 +184,7 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public override ISensor[] CreateSensors()
         {
-            List<ISensor> m_Sensors = new List<ISensor>();
+            m_Sensors = new List<ISensor>();
             m_BoxOverlapChecker = new BoxOverlapChecker(
                 m_CellScale,
                 m_GridSize,
