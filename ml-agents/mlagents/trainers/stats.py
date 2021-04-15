@@ -211,7 +211,7 @@ class ConsoleWriter(StatsWriter):
 
 
 class TensorboardWriter(StatsWriter):
-    def __init__(self, base_dir: str, clear_past_data: bool = False, hidden_keys: [str] = ["Is Training", "Step"]):
+    def __init__(self, base_dir: str, clear_past_data: bool = False, hidden_keys: [str] = None):
         """
         A StatsWriter that writes to a Tensorboard summary.
 
@@ -223,6 +223,8 @@ class TensorboardWriter(StatsWriter):
         self.summary_writers: Dict[str, SummaryWriter] = {}
         self.base_dir: str = base_dir
         self._clear_past_data = clear_past_data
+        if hidden_keys is None:
+            hidden_keys = ["Is Training", "Step"]
         self.hidden_keys: [str] = hidden_keys
 
     def write_stats(
