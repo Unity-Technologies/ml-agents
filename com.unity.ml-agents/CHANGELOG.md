@@ -60,6 +60,7 @@ This results in much less memory being allocated during inference with `CameraSe
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Some console output have been moved from `info` to `debug` and will not be printed by default. If you want all messages to be printed, you can run `mlagents-learn` with the `--debug` option or add the line `debug: true` at the top of the yaml config file. (#5211)
+- The embedding size of attention layers used when a BufferSensor is in the scene has been changed. It is now fixed to 128 units. It might be impossible to resume training from a checkpoint of a previous version. (#5272)
 
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
