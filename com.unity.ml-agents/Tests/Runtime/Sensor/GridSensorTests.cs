@@ -1,5 +1,7 @@
 #if MLA_UNITY_PHYSICS_MODULE
+using System.Collections.Generic;
 using System.Collections;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -77,6 +79,19 @@ namespace Unity.MLAgents.Tests
             LogAssert.Expect(LogType.Warning, $"Compression type {SensorCompressionType.PNG} is only supported with normalized data. " +
                         "The sensor will not compress the data.");
             Assert.AreEqual(gridSensor.CompressionType, SensorCompressionType.None);
+        }
+
+        [Test]
+        public void TestCreateSensor()
+        {
+            testGo.tag = k_Tag2;
+            string[] tags = { k_Tag1, k_Tag2 };
+            gridSensorComponent.SetComponentParameters(tags, useGridSensorBase: true);
+
+            gridSensorComponent.CreateSensors();
+            var componentSensor = (List<ISensor>)typeof(GridSensorComponent).GetField("m_Sensors",
+                        BindingFlags.Instance | BindingFlags.NonPublic).GetValue(gridSensorComponent);
+            Assert.AreEqual(componentSensor.Count, 1);
         }
 
         [Test]
