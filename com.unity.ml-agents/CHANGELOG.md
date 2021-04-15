@@ -68,6 +68,9 @@ or actuators on your system. (#5194)
 - Removed additional memory allocations that were occurring due to assert messages and iterating of DemonstrationRecorders. (#5246)
 - Fixed a bug where agent trying to access unintialized fields when creating a new RayPerceptionSensorComponent on an agent. (#5261)
 
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- Fixed a bug where --results-dir has no effect. (#5269)
+
 ## [1.9.1-preview] - 2021-04-13
 ### Major Changes
 #### ml-agents / ml-agents-envs / gym-unity (Python)
