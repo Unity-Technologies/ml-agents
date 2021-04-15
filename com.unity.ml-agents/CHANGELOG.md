@@ -35,12 +35,6 @@ Exsisting GridSensor created by extension package will not work in newer version
 need to be retrained. Please see the Migration Guide for more details. (#5256)
 - Models trained with 1.x versions of ML-Agents will no longer work at inference if they were trained using recurrent neural networks (#5254)
 
-#### ml-agents / ml-agents-envs / gym-unity (Python)
-- The `--resume` flag now supports resuming experiments with additional reward providers or
- loading partial models if the network architecture has changed. See
- [here](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Training-ML-Agents.md#loading-an-existing-model)
- for more details. (#5213)
-
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - The `.onnx` models input names have changed. All input placeholders will now use the prefix `obs_` removing the distinction between visual and vector observations. In addition, the inputs and outputs of LSTM changed. Models created with this version will not be usable with previous versions of the package (#5080, #5236)
