@@ -211,7 +211,12 @@ class ConsoleWriter(StatsWriter):
 
 
 class TensorboardWriter(StatsWriter):
-    def __init__(self, base_dir: str, clear_past_data: bool = False, hidden_keys: [str] = None):
+    def __init__(
+        self,
+        base_dir: str,
+        clear_past_data: bool = False,
+        hidden_keys: List[str] = None,
+    ):
         """
         A StatsWriter that writes to a Tensorboard summary.
 
