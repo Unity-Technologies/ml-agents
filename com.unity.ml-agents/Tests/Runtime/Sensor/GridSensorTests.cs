@@ -1,5 +1,7 @@
 #if MLA_UNITY_PHYSICS_MODULE
+using System.Collections.Generic;
 using System.Collections;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -84,10 +86,10 @@ namespace Unity.MLAgents.Tests
         {
             testGo.tag = k_Tag2;
             string[] tags = { k_Tag1, k_Tag2 };
-            gridSensorComponent.SetComponentParameters(tags, useBaseGridSensor: true);
+            gridSensorComponent.SetComponentParameters(tags, useGridSensorBase: true);
 
-            var gridSensor = (GridSensorBase)gridSensorComponent.CreateSensors()[0];
-            var componentSensor = (GridSensorBase[])typeof(GridSensorComponent).GetField("m_Sensor",
+            gridSensorComponent.CreateSensors();
+            var componentSensor = (List<ISensor>)typeof(GridSensorComponent).GetField("m_Sensors",
                         BindingFlags.Instance | BindingFlags.NonPublic).GetValue(gridSensorComponent);
             Assert.AreEqual(componentSensor.Count, 1);
         }
