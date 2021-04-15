@@ -1,30 +1,37 @@
 using UnityEditor;
-using Unity.MLAgents.Sensors;
-
+using Unity.MLAgents.Integrations.Match3;
 namespace Unity.MLAgents.Editor
 {
-    [CustomEditor(typeof(VectorSensorComponent), editorForChildClasses: true)]
+    [CustomEditor(typeof(Match3SensorComponent), editorForChildClasses: true)]
     [CanEditMultipleObjects]
-    internal class VectorSensorComponentEditor : UnityEditor.Editor
+    internal class Match3SensorComponentEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
             var so = serializedObject;
             so.Update();
 
-            // Drawing the VectorSensorComponent
+            // Drawing the RenderTextureComponent
+            EditorGUI.BeginChangeCheck();
 
             EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
-                // These fields affect the sensor order or observation size,
-                // So can't be changed at runtime.
                 EditorGUILayout.PropertyField(so.FindProperty("m_SensorName"), true);
-                EditorGUILayout.PropertyField(so.FindProperty("m_ObservationSize"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_ObservationType"), true);
             }
             EditorGUI.EndDisabledGroup();
 
+            var requireSensorUpdate = EditorGUI.EndChangeCheck();
             so.ApplyModifiedProperties();
+
+            if (requireSensorUpdate)
+            {
+                UpdateSensor();
+            }
+        }
+
+        void UpdateSensor()
+        {
         }
     }
 }

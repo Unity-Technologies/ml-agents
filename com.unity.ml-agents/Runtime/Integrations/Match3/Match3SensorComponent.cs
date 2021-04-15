@@ -1,6 +1,7 @@
 using System;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Unity.MLAgents.Integrations.Match3
 {
@@ -10,16 +11,30 @@ namespace Unity.MLAgents.Integrations.Match3
     [AddComponentMenu("ML Agents/Match 3 Sensor", (int)MenuGroup.Sensors)]
     public class Match3SensorComponent : SensorComponent, IDisposable
     {
+        [HideInInspector, SerializeField, FormerlySerializedAs("SensorName")]
+        string m_SensorName = "Match3 Sensor";
+
         /// <summary>
         /// Name of the generated Match3Sensor object.
         /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
         /// </summary>
-        public string SensorName = "Match3 Sensor";
+        public string SensorName
+        {
+            get => m_SensorName;
+            set => m_SensorName = value;
+        }
+
+        [HideInInspector, SerializeField, FormerlySerializedAs("ObservationType")]
+        Match3ObservationType m_ObservationType = Match3ObservationType.Vector;
 
         /// <summary>
         /// Type of observation to generate.
         /// </summary>
-        public Match3ObservationType ObservationType = Match3ObservationType.Vector;
+        public Match3ObservationType ObservationType
+        {
+            get => m_ObservationType;
+            set => m_ObservationType = value;
+        }
 
         private ISensor[] m_Sensors;
 
@@ -30,9 +45,9 @@ namespace Unity.MLAgents.Integrations.Match3
             Dispose();
 
             var board = GetComponent<AbstractBoard>();
-            var cellSensor = Match3Sensor.CellTypeSensor(board, ObservationType, SensorName + " (cells)");
+            var cellSensor = Match3Sensor.CellTypeSensor(board, m_ObservationType, m_SensorName + " (cells)");
             // This can be null if numSpecialTypes is 0
-            var specialSensor = Match3Sensor.SpecialTypeSensor(board, ObservationType, SensorName + " (special)");
+            var specialSensor = Match3Sensor.SpecialTypeSensor(board, m_ObservationType, m_SensorName + " (special)");
             m_Sensors = specialSensor != null
                 ? new ISensor[] { cellSensor, specialSensor }
             : new ISensor[] { cellSensor };
