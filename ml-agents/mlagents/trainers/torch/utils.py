@@ -142,13 +142,15 @@ class ModelUtils:
         obs_spec: ObservationSpec,
         normalize: bool,
         h_size: int,
+        attention_embedding_size: int,
         vis_encode_type: EncoderType,
     ) -> Tuple[nn.Module, int]:
         """
         Returns the encoder and the size of the appropriate encoder.
         :param shape: Tuples that represent the observation dimension.
         :param normalize: Normalize all vector inputs.
-        :param h_size: Number of hidden units per layer.
+        :param h_size: Number of hidden units per layer excluding attention layers.
+        :param attention_embedding_size: Number of hidden units per attention layer.
         :param vis_encode_type: Type of visual encoder to use.
         """
         shape = obs_spec.shape
@@ -167,7 +169,7 @@ class ModelUtils:
                 EntityEmbedding(
                     entity_size=shape[1],
                     entity_num_max_elements=shape[0],
-                    embedding_size=h_size,
+                    embedding_size=attention_embedding_size,
                 ),
                 0,
             )
@@ -179,6 +181,7 @@ class ModelUtils:
         observation_specs: List[ObservationSpec],
         h_size: int,
         vis_encode_type: EncoderType,
+        attention_embedding_size: int,
         normalize: bool = False,
     ) -> Tuple[nn.ModuleList, List[int]]:
         """
@@ -186,7 +189,8 @@ class ModelUtils:
         :param observation_specs: List of ObservationSpec that represent the observation dimensions.
         :param action_size: Number of additional un-normalized inputs to each vector encoder. Used for
             conditioning network on other values (e.g. actions for a Q function)
-        :param h_size: Number of hidden units per layer.
+        :param h_size: Number of hidden units per layer excluding attention layers.
+        :param attention_embedding_size: Number of hidden units per attention layer.
         :param vis_encode_type: Type of visual encoder to use.
         :param unnormalized_inputs: Vector inputs that should not be normalized, and added to the vector
             obs.
@@ -200,7 +204,7 @@ class ModelUtils:
         embedding_sizes: List[int] = []
         for obs_spec in observation_specs:
             encoder, embedding_size = ModelUtils.get_encoder_for_obs(
-                obs_spec, normalize, h_size, vis_encode_type
+                obs_spec, normalize, h_size, attention_embedding_size, vis_encode_type
             )
             encoders.append(encoder)
             embedding_sizes.append(embedding_size)
@@ -209,7 +213,7 @@ class ModelUtils:
         if x_self_size > 0:
             for enc in encoders:
                 if isinstance(enc, EntityEmbedding):
-                    enc.add_self_embedding(h_size)
+                    enc.add_self_embedding(attention_embedding_size)
         return (nn.ModuleList(encoders), embedding_sizes)
 
     @staticmethod
