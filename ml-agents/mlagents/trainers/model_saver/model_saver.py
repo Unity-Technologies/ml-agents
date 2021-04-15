@@ -1,6 +1,6 @@
 # # Unity ML-Agents Toolkit
 import abc
-from typing import Any
+from typing import Any, Tuple, List
 
 
 class BaseModelSaver(abc.ABC):
@@ -34,11 +34,14 @@ class BaseModelSaver(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def save_checkpoint(self, behavior_name: str, step: int) -> str:
+    def save_checkpoint(self, behavior_name: str, step: int) -> Tuple[str, List[str]]:
         """
         Checkpoints the policy on disk.
         :param checkpoint_path: filepath to write the checkpoint
         :param behavior_name: Behavior name of bevavior to be trained
+        :return: A Tuple of the path to the exported file, as well as a List of any
+            auxillary files that were returned. For instance, an exported file would be Model.onnx,
+            and the auxillary files would be [Model.pt] for PyTorch
         """
         pass
 
