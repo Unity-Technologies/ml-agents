@@ -62,6 +62,53 @@ namespace Unity.MLAgents.Inference
         }
 
         /// <summary>
+        /// Checks that a model has the appropriate version.
+        /// </summary>
+        /// <param name="model">
+        /// The Barracuda engine model for loading static parameters
+        /// </param>
+        /// <returns>A FailedCheck containing the error message if the version of the model does not mach, else null</returns>
+        public static FailedCheck CheckModelVersion(Model model)
+        {
+            var modelApiVersion = model.GetVersion();
+            if (modelApiVersion < (int)ModelApiVersion.MinSupportedVersion)
+            {
+                return FailedCheck.Error(
+                    "Model was trained with a older version of the trainer than is supported. " +
+                    "Either retrain with an newer trainer, or use an older version of com.unity.ml-agents.\n" +
+                    $"Model version: {modelApiVersion} Minimum supported version: {(int)ModelApiVersion.MinSupportedVersion}"
+                );
+            }
+
+            if (modelApiVersion > (int)ModelApiVersion.MaxSupportedVersion)
+            {
+                return FailedCheck.Error(
+                    "Model was trained with a newer version of the trainer than is supported. " +
+                    "Either retrain with an older trainer, or update to a newer version of com.unity.ml-agents.\n" +
+                    $"Model version: {modelApiVersion}  Maximum supported version: {(int)ModelApiVersion.MaxSupportedVersion}"
+                );
+            }
+
+            var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
+
+            if (modelApiVersion == (int)ModelApiVersion.MLAgents1_0 && memorySize > 0)
+            {
+                // This block is to make sure that models that are trained with MLAgents version 1.x and have
+                // an LSTM (i.e. use the barracuda _c and _h inputs and outputs) will not work with MLAgents version
+                // 2.x. This is because Barracuda version 2.x will eventually drop support for the _c and _h inputs
+                // and only ML-Agents 2.x models will be compatible.
+                return FailedCheck.Error(
+                    "Models from com.unity.ml-agents 1.x that use recurrent neural networks are not supported in newer versions. " +
+                    "Either retrain with an newer trainer, or use an older version of com.unity.ml-agents.\n"
+                );
+            }
+            return null;
+
+        }
+
+
+
+        /// <summary>
         /// Factory for the ModelParamLoader : Creates a ModelParamLoader and runs the checks
         /// on it.
         /// </summary>
@@ -108,14 +155,10 @@ namespace Unity.MLAgents.Inference
             }
 
             var modelApiVersion = model.GetVersion();
-            if (modelApiVersion < (int)ModelApiVersion.MinSupportedVersion || modelApiVersion > (int)ModelApiVersion.MaxSupportedVersion)
+            var versionCheck = CheckModelVersion(model);
+            if (versionCheck != null)
             {
-                failedModelChecks.Add(
-                    FailedCheck.Warning($"Version of the trainer the model was trained with ({modelApiVersion}) " +
-                    $"is not compatible with the current range of supported versions:  " +
-                    $"({(int)ModelApiVersion.MinSupportedVersion} to {(int)ModelApiVersion.MaxSupportedVersion}).")
-                    );
-                return failedModelChecks;
+                failedModelChecks.Add(versionCheck);
             }
 
             var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
@@ -304,17 +347,7 @@ namespace Unity.MLAgents.Inference
             if (memory > 0)
             {
                 var modelVersion = model.GetVersion();
-                var netHasMemories = false;
-                if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
-                {
-                    netHasMemories = tensorsNames.Any(x => x.EndsWith("_h")) &&
-                        tensorsNames.Any(x => x.EndsWith("_c"));
-                }
-                else
-                {
-                    netHasMemories = tensorsNames.Any(x => x == TensorNames.RecurrentInPlaceholder);
-                }
-                if (!netHasMemories)
+                if (!tensorsNames.Any(x => x == TensorNames.RecurrentInPlaceholder))
                 {
                     failedModelChecks.Add(
                             FailedCheck.Warning("The model does not contain a Recurrent Input Node but has memory_size.")
@@ -353,21 +386,8 @@ namespace Unity.MLAgents.Inference
             // If there is no Recurrent Output but the model is Recurrent.
             if (memory > 0)
             {
-
-                var netHasMemories = false;
-                var modelVersion = model.GetVersion();
-                if (modelVersion < (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
-                {
-                    var memOutputs = model.memories.Select(x => x.output).ToList();
-                    netHasMemories = memOutputs.Any(x => x.EndsWith("_h")) &&
-                        memOutputs.Any(x => x.EndsWith("_c"));
-                }
-                else
-                {
-                    var allOutputs = model.GetOutputNames().ToList();
-                    netHasMemories = allOutputs.Any(x => x == TensorNames.RecurrentOutput);
-                }
-                if (!netHasMemories)
+                var allOutputs = model.GetOutputNames().ToList();
+                if (!allOutputs.Any(x => x == TensorNames.RecurrentOutput))
                 {
                     failedModelChecks.Add(
                         FailedCheck.Warning("The model does not contain a Recurrent Output Node but has memory_size.")

@@ -134,6 +134,13 @@ Sensors with non-normalized data cannot use PNG compression type.
 * The sensor will not further encode the data recieved from `GetObjectData()` anymore. The values
 recieved from `GetObjectData()` will be the observation sent to the trainer.
 
+### LSTM models from previous releases no longer supported
+The way the Unity Inference Engine processes LSTM (recurrent neural networks) has changed. As a result, models
+trained with previous versions of ML-Agents will not be usable at inference if they were trained with a `memory`
+setting in the `.yaml` config file.
+If you want to use a model that has a recurrent neural network in this release of ML-Agents, you need to train
+the model using the python trainer from this release.
+
 
 ## Migrating to Release 13
 ### Implementing IHeuristic in your IActuator implementations
