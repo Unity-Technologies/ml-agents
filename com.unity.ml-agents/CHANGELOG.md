@@ -30,6 +30,7 @@ sizes and will need to be retrained. (#5181)
 - The `AbstractBoard` class for integration with Match-3 games was changed to make it easier to support boards with
 different sizes using the same model. For a summary of the interface changes, please see the Migration Guide. (##5189)
 - Updated the Barracuda package to version `1.3.3-preview`(#5236)
+- Models trained with 1.x versions of ML-Agents will no longer work at inference if they were trained using recurrent neural networks (#5254)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `--resume` flag now supports resuming experiments with additional reward providers or
