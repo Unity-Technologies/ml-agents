@@ -74,21 +74,21 @@ namespace Unity.MLAgents.Demonstrations
 
         void Update()
         {
-            if (Record)
+            if (!Record)
             {
-                LazyInitialize();
-
-                // Quit when num steps to record is reached
-                if (NumStepsToRecord > 0 && m_DemoWriter.NumSteps >= NumStepsToRecord)
-                {
-                    Application.Quit(0);
-#if UNITY_EDITOR
-                    UnityEditor.EditorApplication.isPlaying = false;
-#endif
-                }
+                return;
             }
 
+            LazyInitialize();
 
+            // Quit when num steps to record is reached
+            if (NumStepsToRecord > 0 && m_DemoWriter.NumSteps >= NumStepsToRecord)
+            {
+                Application.Quit(0);
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#endif
+            }
         }
 
         /// <summary>
