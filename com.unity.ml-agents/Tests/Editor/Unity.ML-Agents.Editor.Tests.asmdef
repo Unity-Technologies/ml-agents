@@ -5,7 +5,8 @@
         "Unity.ML-Agents",
         "Unity.Barracuda",
         "Unity.ML-Agents.CommunicatorObjects",
-        "Unity.ML-Agents.Runtime.Utils.Tests"
+        "Unity.ML-Agents.Runtime.Utils.Tests",
+        "Unity.ML-Agents.Runtime.Sensor.Tests"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

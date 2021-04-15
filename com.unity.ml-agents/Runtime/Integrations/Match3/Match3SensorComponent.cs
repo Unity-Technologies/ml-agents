@@ -2,7 +2,7 @@ using System;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
-namespace Unity.MLAgents.Extensions.Match3
+namespace Unity.MLAgents.Integrations.Match3
 {
     /// <summary>
     /// Sensor component for a Match3 game.

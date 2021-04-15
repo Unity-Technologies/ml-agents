@@ -1,8 +1,8 @@
 using System;
 using NUnit.Framework;
-using Unity.MLAgents.Extensions.Match3;
+using Unity.MLAgents.Integrations.Match3;
 
-namespace Unity.MLAgents.Extensions.Tests.Match3
+namespace Unity.MLAgents.Tests.Integrations.Match3
 {
     public class MoveTests
     {

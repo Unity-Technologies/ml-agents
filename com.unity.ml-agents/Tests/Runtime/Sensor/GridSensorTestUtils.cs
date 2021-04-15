@@ -2,7 +2,7 @@ using NUnit.Framework;
 using System;
 using System.Linq;
 
-namespace Unity.MLAgents.Extensions.Tests.GridSensors
+namespace Unity.MLAgents.Tests
 {
     public static class GridObsTestUtils
     {

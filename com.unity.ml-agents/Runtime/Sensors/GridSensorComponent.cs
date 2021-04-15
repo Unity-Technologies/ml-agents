@@ -1,10 +1,7 @@
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
-using Unity.MLAgents.Sensors;
 
-[assembly: InternalsVisibleTo("Unity.ML-Agents.Extensions.EditorTests")]
-namespace Unity.MLAgents.Extensions.Sensors
+namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// A SensorComponent that creates a <see cref="GridSensor"/>.
@@ -18,7 +15,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         internal BoxOverlapChecker m_BoxOverlapChecker;
 
         [HideInInspector, SerializeField]
-        internal string m_SensorName = "GridSensor";
+        protected internal string m_SensorName = "GridSensor";
         /// <summary>
         /// Name of the generated <see cref="GridSensor"/> object.
         /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
@@ -184,30 +181,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             set { m_ObservationStacks = value; }
         }
 
-        [HideInInspector, SerializeField]
-        internal bool m_UseOneHotTag = true;
-        /// <summary>
-        /// Whether to use one-hot representation of detected tag as observation.
-        /// Note that changing this after the sensor is created has no effect.
-        /// </summary>
-        public bool UseOneHotTag
-        {
-            get { return m_UseOneHotTag; }
-            set { m_UseOneHotTag = value; }
-        }
-
-        [HideInInspector, SerializeField]
-        internal bool m_CountColliders = false;
-        /// <summary>
-        /// Whether to use the number of count for each detectable tag as observation.
-        /// Note that changing this after the sensor is created has no effect.
-        /// </summary>
-        public bool CountColliders
-        {
-            get { return m_CountColliders; }
-            set { m_CountColliders = value; }
-        }
-
         /// <inheritdoc/>
         public override ISensor[] CreateSensors()
         {
@@ -260,16 +233,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         protected virtual GridSensorBase[] GetGridSensors()
         {
             List<GridSensorBase> sensorList = new List<GridSensorBase>();
-            if (m_UseOneHotTag)
-            {
-                var sensor = new OneHotGridSensor(m_SensorName + "-OneHot", m_CellScale, m_GridSize, m_DetectableTags, m_CompressionType);
-                sensorList.Add(sensor);
-            }
-            if (m_CountColliders)
-            {
-                var sensor = new CountingGridSensor(m_SensorName + "-Counting", m_CellScale, m_GridSize, m_DetectableTags, m_CompressionType);
-                sensorList.Add(sensor);
-            }
+            var sensor = new OneHotGridSensor(m_SensorName + "-OneHot", m_CellScale, m_GridSize, m_DetectableTags, m_CompressionType);
+            sensorList.Add(sensor);
             return sensorList.ToArray();
         }
 
