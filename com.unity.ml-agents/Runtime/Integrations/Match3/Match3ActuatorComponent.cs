@@ -1,3 +1,4 @@
+using System;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -52,6 +53,11 @@ namespace Unity.MLAgents.Integrations.Match3
         public override IActuator[] CreateActuators()
         {
             var board = GetComponent<AbstractBoard>();
+            if (!board)
+            {
+                return Array.Empty<IActuator>();
+            }
+
             var seed = m_RandomSeed == -1 ? gameObject.GetInstanceID() : m_RandomSeed + 1;
             return new IActuator[] { new Match3Actuator(board, m_ForceHeuristic, seed, m_ActuatorName) };
         }
