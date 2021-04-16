@@ -27,8 +27,8 @@ jobs:
             pip_constraints: test_constraints_mid_version.txt
           - python-version: 3.8.x
             pip_constraints: test_constraints_mid_version.txt
-          - python-version: 3.9.x
-            pip_constraints: test_constraints_max_version.txt
+#           - python-version: 3.9.x
+#             pip_constraints: test_constraints_max_version.txt
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
