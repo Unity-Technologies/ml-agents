@@ -8,6 +8,12 @@ and this project adheres to
 
 ## [Unreleased]
 ### Major Changes
+### Minor Changes
+### Bug Fixes
+
+
+## [2.0.0-preview] - 2021-04-22
+### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - The minimum supported Unity version was updated to 2019.4. (#5166)
 - Several breaking interface changes were made. See the
