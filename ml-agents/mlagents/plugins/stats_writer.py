@@ -31,6 +31,7 @@ def get_default_stats_writers(run_options: RunOptions) -> List[StatsWriter]:
         TensorboardWriter(
             checkpoint_settings.write_path,
             clear_past_data=not checkpoint_settings.resume,
+            hidden_keys=["Is Training", "Step"],
         ),
         GaugeWriter(),
         ConsoleWriter(),
