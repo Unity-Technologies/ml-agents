@@ -153,12 +153,6 @@ def test_tensorboard_writer_hidden_keys(mock_summary):
         mock_summary.return_value.add_scalar.assert_not_called()
         mock_summary.return_value.flush.assert_not_called()
 
-        tb_writer.write_stats("category1", {"visibleKey": statssummary1}, 10)
-        mock_summary.return_value.add_scalar.assert_called_once_with(
-            "visibleKey", 1.0, 10
-        )
-        mock_summary.return_value.flush.assert_called_once()
-
 
 def test_gauge_stat_writer_sanitize():
     assert GaugeWriter.sanitize_string("Policy/Learning Rate") == "Policy.LearningRate"
