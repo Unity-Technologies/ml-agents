@@ -228,7 +228,7 @@ class TensorboardWriter(StatsWriter):
         self.summary_writers: Dict[str, SummaryWriter] = {}
         self.base_dir: str = base_dir
         self._clear_past_data = clear_past_data
-        self.hidden_keys: List[str] = hidden_keys if hidden_keys else []
+        self.hidden_keys: List[str] = hidden_keys if hidden_keys is not None else []
 
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
