@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Unity.MLAgents.Sensors
 {
@@ -60,6 +59,7 @@ namespace Unity.MLAgents.Sensors
         /// <summary>
         /// Returns the underlying VectorSensor
         /// </summary>
+        /// <returns></returns>
         public VectorSensor GetSensor()
         {
             return m_Sensor;

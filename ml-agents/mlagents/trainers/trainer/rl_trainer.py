@@ -154,13 +154,15 @@ class RLTrainer(Trainer):
             logger.warning(
                 "Trainer has multiple policies, but default behavior only saves the first."
             )
-        checkpoint_path = self.model_saver.save_checkpoint(self.brain_name, self._step)
-        export_ext = "onnx"
+        export_path, auxillary_paths = self.model_saver.save_checkpoint(
+            self.brain_name, self._step
+        )
         new_checkpoint = ModelCheckpoint(
             int(self._step),
-            f"{checkpoint_path}.{export_ext}",
+            export_path,
             self._policy_mean_reward(),
             time.time(),
+            auxillary_file_paths=auxillary_paths,
         )
         ModelCheckpointManager.add_checkpoint(
             self.brain_name, new_checkpoint, self.trainer_settings.keep_checkpoints

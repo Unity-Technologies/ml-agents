@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using Unity.Barracuda;
 
@@ -200,6 +199,7 @@ namespace Unity.MLAgents.Sensors
             return outputBytes;
         }
 
+        /// <inheritdoc/>
         public CompressionSpec GetCompressionSpec()
         {
             var wrappedSpec = m_WrappedSensor.GetCompressionSpec();

@@ -6975,7 +6975,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  DefaultMaxNumTiles: 8
+  DefaultMaxNumTiles: 20
   NumberTilesList:
   - {fileID: 1917831257363183701}
   - {fileID: 7854509637219396240}

@@ -16,7 +16,7 @@ package.
 Install the `mlagents` package with:
 
 ```sh
-python -m pip install mlagents==0.25.0
+python -m pip install mlagents==0.25.1
 ```
 
 ## Usage & More Information

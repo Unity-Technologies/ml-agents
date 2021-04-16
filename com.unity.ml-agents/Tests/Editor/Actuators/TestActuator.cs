@@ -1,7 +1,7 @@
 using Unity.MLAgents.Actuators;
 namespace Unity.MLAgents.Tests.Actuators
 {
-    internal class TestActuator : IActuator, IHeuristicProvider
+    internal class TestActuator : IActuator
     {
         public ActionBuffers LastActionBuffer;
         public int[][] Masks;

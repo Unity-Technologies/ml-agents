@@ -31,7 +31,7 @@ namespace Unity.MLAgentsExamples
     /// <summary>
     /// Simple actuator that converts the action into a {-1, 0, 1} direction
     /// </summary>
-    public class BasicActuator : IActuator, IHeuristicProvider
+    public class BasicActuator : IActuator
     {
         public BasicController basicController;
         ActionSpec m_ActionSpec;

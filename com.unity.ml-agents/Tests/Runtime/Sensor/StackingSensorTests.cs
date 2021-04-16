@@ -119,10 +119,6 @@ namespace Unity.MLAgents.Tests
             public ObservationSpec ObservationSpec;
             public float[,,] CurrentObservation;
 
-            internal Dummy3DSensor()
-            {
-            }
-
             public ObservationSpec GetObservationSpec()
             {
                 return ObservationSpec;

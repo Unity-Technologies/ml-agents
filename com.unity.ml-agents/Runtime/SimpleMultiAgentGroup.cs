@@ -59,7 +59,7 @@ namespace Unity.MLAgents
         /// </returns>
         public IReadOnlyCollection<Agent> GetRegisteredAgents()
         {
-            return (IReadOnlyCollection<Agent>)m_Agents;
+            return m_Agents;
         }
 
         /// <summary>

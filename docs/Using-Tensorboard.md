@@ -98,11 +98,11 @@ The ML-Agents training program saves the following statistics:
   This should increase while the agent is learning, and then decrease once the
   reward stabilizes.
 
-- `Losses/Forward Loss` (PPO/SAC+Curiosity) - The mean magnitude of the inverse
+- `Losses/Forward Loss` (PPO/SAC+Curiosity) - The mean magnitude of the forward
   model loss function. Corresponds to how well the model is able to predict the
   new observation encoding.
 
-- `Losses/Inverse Loss` (PPO/SAC+Curiosity) - The mean magnitude of the forward
+- `Losses/Inverse Loss` (PPO/SAC+Curiosity) - The mean magnitude of the inverse
   model loss function. Corresponds to how well the model is able to predict the
   action taken between two observations.
 
