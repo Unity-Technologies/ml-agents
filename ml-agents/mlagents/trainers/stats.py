@@ -215,7 +215,7 @@ class TensorboardWriter(StatsWriter):
         self,
         base_dir: str,
         clear_past_data: bool = False,
-        hidden_keys: List[str] = None,
+        hidden_keys: Optional[List[str]] = None,
     ):
         """
         A StatsWriter that writes to a Tensorboard summary.
