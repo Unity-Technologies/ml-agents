@@ -395,5 +395,14 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
 
             return bytesOut.ToArray();
         }
+
+        [Test]
+        public void TestNoBoardReturnsEmptySensors()
+        {
+            var gameObj = new GameObject("board");
+            var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
+            var sensors = sensorComponent.CreateSensors();
+            Assert.AreEqual(0, sensors.Length);
+        }
     }
 }
