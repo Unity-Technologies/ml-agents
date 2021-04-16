@@ -13,6 +13,7 @@ from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
 from torch.utils.tensorboard import SummaryWriter
 from mlagents.torch_utils.globals import get_rank
+from typing import Optional
 
 logger = get_logger(__name__)
 
