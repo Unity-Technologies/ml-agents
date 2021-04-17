@@ -5,7 +5,7 @@ test_linux_standalone_{{ editor.version }}:
   name: Test Linux Standalone {{ editor.version }}
   agent:
     type: Unity::VM
-    image: package-ci/ubuntu:v1.3.1-719011
+    image: package-ci/ubuntu:stable
     flavor: b1.large
   variables:
     UNITY_VERSION: {{ editor.version }}
