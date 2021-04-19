@@ -526,14 +526,14 @@ def test_config_specified():
     behaviors = {"test1": {"max_steps": 2, "network_settings": {"hidden_units": 2000}}}
     run_options_dict = {"behaviors": behaviors}
     ro = RunOptions.from_dict(run_options_dict)
-    # Don't require all behavior names
-    ro.behaviors.set_config_specified(False)
     # Test that we can grab an entry that is not in the dict.
     assert isinstance(ro.behaviors["test2"], TrainerSettings)
 
     # Create strict RunOptions with no defualt_settings
     run_options_dict = {"behaviors": behaviors}
     ro = RunOptions.from_dict(run_options_dict)
+    # Require all behavior names
+    ro.behaviors.set_config_specified(True)
     with pytest.raises(TrainerConfigError):
         # Variable must be accessed otherwise Python won't query the dict
         print(ro.behaviors["test2"])
@@ -542,6 +542,8 @@ def test_config_specified():
     default_settings = {"max_steps": 1, "network_settings": {"num_layers": 1000}}
     run_options_dict = {"default_settings": default_settings, "behaviors": behaviors}
     ro = RunOptions.from_dict(run_options_dict)
+    # Require all behavior names
+    ro.behaviors.set_config_specified(True)
     # Test that we can grab an entry that is not in the dict.
     assert isinstance(ro.behaviors["test2"], TrainerSettings)
 
