@@ -519,16 +519,20 @@ def test_default_settings():
     check_if_different(test1_settings, default_settings_cls)
 
 
-def test_strict():
-    # Create normal non-strict RunOptions
+def test_config_specified():
+    # Test require all behavior names to be specified (or not)
+    # Remove any pre-set defaults
+    TrainerSettings.default_override = None
     behaviors = {"test1": {"max_steps": 2, "network_settings": {"hidden_units": 2000}}}
     run_options_dict = {"behaviors": behaviors}
     ro = RunOptions.from_dict(run_options_dict)
+    # Don't require all behavior names
+    ro.behaviors.set_config_specified(False)
     # Test that we can grab an entry that is not in the dict.
     assert isinstance(ro.behaviors["test2"], TrainerSettings)
 
     # Create strict RunOptions with no defualt_settings
-    run_options_dict = {"behaviors": behaviors, "strict": True}
+    run_options_dict = {"behaviors": behaviors}
     ro = RunOptions.from_dict(run_options_dict)
     with pytest.raises(TrainerConfigError):
         # Variable must be accessed otherwise Python won't query the dict
