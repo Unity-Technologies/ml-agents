@@ -56,11 +56,6 @@ class TrainerFactory:
         self.ghost_controller = GhostController()
 
     def generate(self, behavior_name: str) -> Trainer:
-        if behavior_name not in self.trainer_config.keys():
-            logger.warning(
-                f"Behavior name {behavior_name} does not match any behaviors specified"
-                f"in the trainer configuration file: {sorted(self.trainer_config.keys())}"
-            )
         trainer_settings = self.trainer_config[behavior_name]
         return TrainerFactory._initialize_trainer(
             trainer_settings,
