@@ -718,7 +718,7 @@ class TrainerSettings(ExportableSettings):
                 super().__init__(*args)
             else:
                 super().__init__(TrainerSettings, *args)
-            self._config_specified = False
+            self._config_specified = True
 
         def set_config_specified(self, require_config_specified: bool) -> None:
             self._config_specified = require_config_specified
