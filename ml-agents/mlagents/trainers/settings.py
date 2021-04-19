@@ -729,7 +729,7 @@ class TrainerSettings(ExportableSettings):
             elif self._config_specified:
                 raise TrainerConfigError(
                     f"The behavior name {key} has not been specified in the trainer configuration. "
-                    f"Please add an entry in the configuration file for {key}."
+                    f"Please add an entry in the configuration file for {key}, or set default_settings."
                 )
             else:
                 logger.warn(
