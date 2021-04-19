@@ -198,7 +198,7 @@ folder
 - The Parameter Randomization feature has been merged with the Curriculum feature. It is now possible to specify a sampler
 in the lesson of a Curriculum. Curriculum has been refactored and is now specified at the level of the parameter, not the
 behavior. More information
-[here](https://github.com/Unity-Technologies/ml-agents/blob/release_16_docs/docs/Training-ML-Agents.md).(#4160)
+[here](https://github.com/Unity-Technologies/ml-agents/blob/release_17_docs/docs/Training-ML-Agents.md).(#4160)
 
 ### Steps to Migrate
 - The configuration format for curriculum and parameter randomization has changed. To upgrade your configuration files,
