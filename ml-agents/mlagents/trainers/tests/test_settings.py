@@ -77,9 +77,9 @@ def test_no_configuration():
     Verify that a new config will have a PPO trainer with extrinsic rewards.
     """
     blank_runoptions = RunOptions()
+    blank_runoptions.behaviors.set_config_specified(False)
     assert isinstance(blank_runoptions.behaviors["test"], TrainerSettings)
     assert isinstance(blank_runoptions.behaviors["test"].hyperparameters, PPOSettings)
-
     assert (
         RewardSignalType.EXTRINSIC in blank_runoptions.behaviors["test"].reward_signals
     )
@@ -526,6 +526,8 @@ def test_config_specified():
     behaviors = {"test1": {"max_steps": 2, "network_settings": {"hidden_units": 2000}}}
     run_options_dict = {"behaviors": behaviors}
     ro = RunOptions.from_dict(run_options_dict)
+    # Don't require all behavior names
+    ro.behaviors.set_config_specified(False)
     # Test that we can grab an entry that is not in the dict.
     assert isinstance(ro.behaviors["test2"], TrainerSettings)
 

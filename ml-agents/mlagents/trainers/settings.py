@@ -661,7 +661,7 @@ class TrainerSettings(ExportableSettings):
                 )
 
     @staticmethod
-    def dict_to_defaultdict(d: Dict, t: type) -> DefaultDict:
+    def dict_to_trainerdict(d: Dict, t: type) -> "TrainerSettings.DefaultTrainerDict":
         return TrainerSettings.DefaultTrainerDict(
             cattr.structure(d, Dict[str, TrainerSettings])
         )
@@ -802,7 +802,7 @@ class TorchSettings:
 @attr.s(auto_attribs=True)
 class RunOptions(ExportableSettings):
     default_settings: Optional[TrainerSettings] = None
-    behaviors: DefaultDict[str, TrainerSettings] = attr.ib(
+    behaviors: TrainerSettings.DefaultTrainerDict = attr.ib(
         factory=TrainerSettings.DefaultTrainerDict
     )
     env_settings: EnvironmentSettings = attr.ib(factory=EnvironmentSettings)
@@ -831,7 +831,7 @@ class RunOptions(ExportableSettings):
     )
     cattr.register_structure_hook(TrainerSettings, TrainerSettings.structure)
     cattr.register_structure_hook(
-        DefaultDict[str, TrainerSettings], TrainerSettings.dict_to_defaultdict
+        TrainerSettings.DefaultTrainerDict, TrainerSettings.dict_to_trainerdict
     )
     cattr.register_unstructure_hook(collections.defaultdict, defaultdict_to_dict)
 
