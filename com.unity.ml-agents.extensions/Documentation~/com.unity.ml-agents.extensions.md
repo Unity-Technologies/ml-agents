@@ -21,6 +21,7 @@ The following table describes the package folder structure:
 The Runtime directory currently contains these features:
  * Physics-based sensors
  * [Input System Package Integration](InputActuatorComponent.md)
+ * [Custom Grid-based Sensors](CustomGridSensors.md)
 
 ## Installation
 The ML-Agents Extensions package is not currently available in the Package Manager. There are two
