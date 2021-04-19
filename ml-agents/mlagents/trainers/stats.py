@@ -1,6 +1,6 @@
 from collections import defaultdict
 from enum import Enum
-from typing import List, Dict, NamedTuple, Any
+from typing import List, Dict, NamedTuple, Any, Optional
 import numpy as np
 import abc
 import os
@@ -13,7 +13,6 @@ from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
 from torch.utils.tensorboard import SummaryWriter
 from mlagents.torch_utils.globals import get_rank
-from typing import Optional
 
 logger = get_logger(__name__)
 
@@ -225,6 +224,8 @@ class TensorboardWriter(StatsWriter):
         {base_dir}/{category} directory.
         :param clear_past_data: Whether or not to clean up existing Tensorboard files associated with the base_dir and
         category.
+        :param hidden_keys: If provided, Tensorboard Writer won't write statistics identified with these Keys in
+        Tensorboard summary.
         """
         self.summary_writers: Dict[str, SummaryWriter] = {}
         self.base_dir: str = base_dir
