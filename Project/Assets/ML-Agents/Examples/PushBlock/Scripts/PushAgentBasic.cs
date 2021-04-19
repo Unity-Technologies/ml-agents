@@ -4,6 +4,7 @@ using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Sensors;
 
 public class PushAgentBasic : Agent
 {
@@ -75,6 +76,21 @@ public class PushAgentBasic : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
+        GetComponent<VectorSensorComponent>().CreateSensors();
+        m_DiversitySettingSensor = GetComponent<VectorSensorComponent>();
+    }
+
+    VectorSensorComponent m_DiversitySettingSensor;
+    public int m_DiversitySetting = 0;
+
+
+    /// <summary>
+    /// Loop over body parts to add them to observation.
+    /// </summary>
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        m_DiversitySettingSensor.GetSensor().Reset();
+        m_DiversitySettingSensor.GetSensor().AddOneHotObservation(m_DiversitySetting, 8);
     }
 
     /// <summary>
@@ -226,6 +242,7 @@ public class PushAgentBasic : Agent
         m_AgentRb.angularVelocity = Vector3.zero;
 
         SetResetParameters();
+        m_DiversitySetting = Random.Range(0, 8);
     }
 
     public void SetGroundMaterialFriction()

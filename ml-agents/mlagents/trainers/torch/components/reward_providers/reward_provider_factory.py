@@ -18,6 +18,9 @@ from mlagents.trainers.torch.components.reward_providers.gail_reward_provider im
 from mlagents.trainers.torch.components.reward_providers.rnd_reward_provider import (
     RNDRewardProvider,
 )
+from mlagents.trainers.torch.components.reward_providers.diverse_reward_provider import (
+    DiverseRewardProvider,
+)
 
 from mlagents_envs.base_env import BehaviorSpec
 
@@ -26,6 +29,7 @@ NAME_TO_CLASS: Dict[RewardSignalType, Type[BaseRewardProvider]] = {
     RewardSignalType.CURIOSITY: CuriosityRewardProvider,
     RewardSignalType.GAIL: GAILRewardProvider,
     RewardSignalType.RND: RNDRewardProvider,
+    RewardSignalType.DIVERSE: DiverseRewardProvider,
 }
 
 

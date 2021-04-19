@@ -86,7 +86,12 @@ public class WalkerAgent : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
+        GetComponent<VectorSensorComponent>().CreateSensors();
+        m_DiversitySettingSensor = GetComponent<VectorSensorComponent>();
     }
+
+    VectorSensorComponent m_DiversitySettingSensor;
+    public int m_DiversitySetting = 0;
 
     /// <summary>
     /// Loop over body parts and reset them to initial conditions.
@@ -109,6 +114,8 @@ public class WalkerAgent : Agent
             randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : MTargetWalkingSpeed;
 
         SetResetParameters();
+
+        m_DiversitySetting = Random.Range(0, 8);
     }
 
     /// <summary>
@@ -139,6 +146,9 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
+        m_DiversitySettingSensor.GetSensor().Reset();
+        m_DiversitySettingSensor.GetSensor().AddOneHotObservation(m_DiversitySetting, 8);
+
         var cubeForward = m_OrientationCube.transform.forward;
 
         //velocity we want to match

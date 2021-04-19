@@ -178,6 +178,7 @@ class RewardSignalType(Enum):
     GAIL: str = "gail"
     CURIOSITY: str = "curiosity"
     RND: str = "rnd"
+    DIVERSE:str = "diverse"
 
     def to_settings(self) -> type:
         _mapping = {
@@ -185,6 +186,7 @@ class RewardSignalType(Enum):
             RewardSignalType.GAIL: GAILSettings,
             RewardSignalType.CURIOSITY: CuriositySettings,
             RewardSignalType.RND: RNDSettings,
+            RewardSignalType.DIVERSE: DiverseSettings,
         }
         return _mapping[self]
 
@@ -242,6 +244,11 @@ class CuriositySettings(RewardSignalSettings):
 
 @attr.s(auto_attribs=True)
 class RNDSettings(RewardSignalSettings):
+    learning_rate: float = 1e-4
+    encoding_size: Optional[int] = None
+
+@attr.s(auto_attribs=True)
+class DiverseSettings(RewardSignalSettings):
     learning_rate: float = 1e-4
     encoding_size: Optional[int] = None
 
