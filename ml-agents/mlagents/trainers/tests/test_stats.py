@@ -129,6 +129,31 @@ def test_tensorboard_writer_clear(tmp_path):
     assert len(os.listdir(os.path.join(tmp_path, "category1"))) == 1
 
 
+@mock.patch("mlagents.trainers.stats.SummaryWriter")
+def test_tensorboard_writer_hidden_keys(mock_summary):
+    # Test write_stats
+    category = "category1"
+    with tempfile.TemporaryDirectory(prefix="unittest-") as base_dir:
+        tb_writer = TensorboardWriter(
+            base_dir, clear_past_data=False, hidden_keys="hiddenKey"
+        )
+        statssummary1 = StatsSummary(
+            full_dist=[1.0], aggregation_method=StatsAggregationMethod.AVERAGE
+        )
+        tb_writer.write_stats("category1", {"hiddenKey": statssummary1}, 10)
+
+        # Test that the filewriter has been created and the directory has been created.
+        filewriter_dir = "{basedir}/{category}".format(
+            basedir=base_dir, category=category
+        )
+        assert os.path.exists(filewriter_dir)
+        mock_summary.assert_called_once_with(filewriter_dir)
+
+        # Test that the filewriter was not written to since we used the hidden key.
+        mock_summary.return_value.add_scalar.assert_not_called()
+        mock_summary.return_value.flush.assert_not_called()
+
+
 def test_gauge_stat_writer_sanitize():
     assert GaugeWriter.sanitize_string("Policy/Learning Rate") == "Policy.LearningRate"
     assert (
