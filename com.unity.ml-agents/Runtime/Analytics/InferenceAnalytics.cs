@@ -31,7 +31,7 @@ namespace Unity.MLAgents.Analytics
         /// <summary>
         /// Whether or not we've registered this particular event yet
         /// </summary>
-        static bool s_EventRegistered = false;
+        static bool s_EventRegistered;
 
         /// <summary>
         /// Hourly limit for this event name

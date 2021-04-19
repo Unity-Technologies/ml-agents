@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEditor;
 using Unity.MLAgents.Demonstrations;
-using Unity.MLAgents.Policies;
-
 
 namespace Unity.MLAgents.Editor
 {

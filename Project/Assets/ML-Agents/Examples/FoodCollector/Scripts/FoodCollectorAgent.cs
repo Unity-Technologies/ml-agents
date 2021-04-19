@@ -105,7 +105,7 @@ public class FoodCollectorAgent : Agent
             dirToGo += transform.right * right;
             rotateDir = -transform.up * rotate;
 
-            var shootCommand = (int)discreteActions[0] > 0;
+            var shootCommand = discreteActions[0] > 0;
             if (shootCommand)
             {
                 m_Shoot = true;

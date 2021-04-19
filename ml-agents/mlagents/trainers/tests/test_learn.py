@@ -187,6 +187,7 @@ def test_yaml_args(mock_file):
         "--num-envs=2",
         "--no-graphics",
         "--debug",
+        "--results-dir=myresults",
     ]
 
     opt = parse_command_line(full_args)
@@ -200,6 +201,7 @@ def test_yaml_args(mock_file):
     assert opt.debug is True
     assert opt.checkpoint_settings.inference is True
     assert opt.checkpoint_settings.resume is True
+    assert opt.checkpoint_settings.results_dir == "myresults"
 
 
 @patch("builtins.open", new_callable=mock_open, read_data=MOCK_YAML)

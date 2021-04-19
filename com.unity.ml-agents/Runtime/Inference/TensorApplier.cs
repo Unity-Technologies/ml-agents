@@ -67,10 +67,10 @@ namespace Unity.MLAgents.Inference
                 var tensorName = model.ContinuousOutputName();
                 m_Dict[tensorName] = new ContinuousActionOutputApplier(actionSpec);
             }
+            var modelVersion = model.GetVersion();
             if (actionSpec.NumDiscreteActions > 0)
             {
                 var tensorName = model.DiscreteOutputName();
-                var modelVersion = model.GetVersion();
                 if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents1_0)
                 {
                     m_Dict[tensorName] = new LegacyDiscreteActionOutputApplier(actionSpec, seed, allocator);
@@ -81,12 +81,6 @@ namespace Unity.MLAgents.Inference
                 }
             }
             m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
-
-            for (var i = 0; i < model?.memories.Count; i++)
-            {
-                m_Dict[model.memories[i].output] =
-                    new BarracudaMemoryOutputApplier(model.memories.Count, i, memories);
-            }
         }
 
         /// <summary>

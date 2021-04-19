@@ -47,7 +47,7 @@ namespace Unity.MLAgents.Analytics
         /// <summary>
         /// Whether or not we've registered this particular event yet
         /// </summary>
-        static bool s_EventsRegistered = false;
+        static bool s_EventsRegistered;
 
         /// <summary>
         /// Behaviors that we've already sent events for.

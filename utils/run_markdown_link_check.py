@@ -19,5 +19,5 @@ if __name__ == "__main__":
     )
 
     for f in args.files:
-        subprocess_args = ["markdown-link-check", "-c", config_file, f]
+        subprocess_args = ["markdown-link-check", "-q", "-c", config_file, f]
         subprocess.check_call(subprocess_args)

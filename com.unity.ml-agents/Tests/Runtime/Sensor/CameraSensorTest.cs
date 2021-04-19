@@ -2,7 +2,6 @@ using System;
 using NUnit.Framework;
 using UnityEngine;
 using Unity.MLAgents.Sensors;
-using Object = System.Object;
 
 namespace Unity.MLAgents.Tests
 {

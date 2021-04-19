@@ -3,7 +3,7 @@ using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Editor
 {
-    [CustomEditor(typeof(BufferSensorComponent))]
+    [CustomEditor(typeof(BufferSensorComponent), editorForChildClasses: true)]
     [CanEditMultipleObjects]
     internal class BufferSensorComponentEditor : UnityEditor.Editor
     {

@@ -182,7 +182,7 @@ namespace Unity.MLAgents.Inference
         public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
             var agentIndex = 0;
-            var memorySize = (int)tensorProxy.shape[tensorProxy.shape.Length - 1];
+            var memorySize = tensorProxy.data.width;
             for (var i = 0; i < actionIds.Count; i++)
             {
                 var agentId = actionIds[i];
@@ -194,48 +194,9 @@ namespace Unity.MLAgents.Inference
                     memory.AddRange(Enumerable.Repeat(0f, memorySize));
                 }
 
-                m_Memories[agentId] = memory;
-                agentIndex++;
-            }
-        }
-    }
-
-    internal class BarracudaMemoryOutputApplier : TensorApplier.IApplier
-    {
-        readonly int m_MemoriesCount;
-        readonly int m_MemoryIndex;
-
-        Dictionary<int, List<float>> m_Memories;
-
-        public BarracudaMemoryOutputApplier(
-            int memoriesCount,
-            int memoryIndex,
-            Dictionary<int, List<float>> memories)
-        {
-            m_MemoriesCount = memoriesCount;
-            m_MemoryIndex = memoryIndex;
-            m_Memories = memories;
-        }
-
-        public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
-        {
-            var agentIndex = 0;
-            var memorySize = (int)tensorProxy.shape[tensorProxy.shape.Length - 1];
-
-            for (var i = 0; i < actionIds.Count; i++)
-            {
-                var agentId = actionIds[i];
-                List<float> memory;
-                if (!m_Memories.TryGetValue(agentId, out memory)
-                    || memory.Count < memorySize * m_MemoriesCount)
-                {
-                    memory = new List<float>();
-                    memory.AddRange(Enumerable.Repeat(0f, memorySize * m_MemoriesCount));
-                }
-
                 for (var j = 0; j < memorySize; j++)
                 {
-                    memory[memorySize * m_MemoryIndex + j] = tensorProxy.data[agentIndex, j];
+                    memory[j] = tensorProxy.data[agentIndex, 0, j, 0];
                 }
 
                 m_Memories[agentId] = memory;

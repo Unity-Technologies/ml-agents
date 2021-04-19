@@ -1,6 +1,6 @@
 from collections import defaultdict
 from enum import Enum
-from typing import List, Dict, NamedTuple, Any
+from typing import List, Dict, NamedTuple, Any, Optional
 import numpy as np
 import abc
 import os
@@ -13,7 +13,6 @@ from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
 from torch.utils.tensorboard import SummaryWriter
 from mlagents.torch_utils.globals import get_rank
-
 
 logger = get_logger(__name__)
 
@@ -82,6 +81,24 @@ class StatsWriter(abc.ABC):
     A StatsWriter abstract class. A StatsWriter takes in a category, key, scalar value, and step
     and writes it out by some method.
     """
+
+    def on_add_stat(
+        self,
+        category: str,
+        key: str,
+        value: float,
+        aggregation: StatsAggregationMethod = StatsAggregationMethod.AVERAGE,
+    ) -> None:
+        """
+        Callback method for handling an individual stat value as reported to the StatsReporter add_stat
+        or set_stat methods.
+
+        :param category: Category of the statistics. Usually this is the behavior name.
+        :param key: The type of statistic, e.g. Environment/Reward.
+        :param value: The value of the statistic.
+        :param aggregation: The aggregation method for the statistic, default StatsAggregationMethod.AVERAGE.
+        """
+        pass
 
     @abc.abstractmethod
     def write_stats(
@@ -194,7 +211,12 @@ class ConsoleWriter(StatsWriter):
 
 
 class TensorboardWriter(StatsWriter):
-    def __init__(self, base_dir: str, clear_past_data: bool = False):
+    def __init__(
+        self,
+        base_dir: str,
+        clear_past_data: bool = False,
+        hidden_keys: Optional[List[str]] = None,
+    ):
         """
         A StatsWriter that writes to a Tensorboard summary.
 
@@ -202,16 +224,21 @@ class TensorboardWriter(StatsWriter):
         {base_dir}/{category} directory.
         :param clear_past_data: Whether or not to clean up existing Tensorboard files associated with the base_dir and
         category.
+        :param hidden_keys: If provided, Tensorboard Writer won't write statistics identified with these Keys in
+        Tensorboard summary.
         """
         self.summary_writers: Dict[str, SummaryWriter] = {}
         self.base_dir: str = base_dir
         self._clear_past_data = clear_past_data
+        self.hidden_keys: List[str] = hidden_keys if hidden_keys is not None else []
 
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
     ) -> None:
         self._maybe_create_summary_writer(category)
         for key, value in values.items():
+            if key in self.hidden_keys:
+                continue
             self.summary_writers[category].add_scalar(
                 f"{key}", value.aggregated_value, step
             )
@@ -310,6 +337,8 @@ class StatsReporter:
         with StatsReporter.lock:
             StatsReporter.stats_dict[self.category][key].append(value)
             StatsReporter.stats_aggregation[self.category][key] = aggregation
+            for writer in StatsReporter.writers:
+                writer.on_add_stat(self.category, key, value, aggregation)
 
     def set_stat(self, key: str, value: float) -> None:
         """
@@ -324,6 +353,10 @@ class StatsReporter:
             StatsReporter.stats_aggregation[self.category][
                 key
             ] = StatsAggregationMethod.MOST_RECENT
+            for writer in StatsReporter.writers:
+                writer.on_add_stat(
+                    self.category, key, value, StatsAggregationMethod.MOST_RECENT
+                )
 
     def write_stats(self, step: int) -> None:
         """

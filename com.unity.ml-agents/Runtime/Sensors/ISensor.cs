@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// The Dimension property flags of the observations
     /// </summary>
-    [System.Flags]
+    [Flags]
     public enum DimensionProperty
     {
         /// <summary>

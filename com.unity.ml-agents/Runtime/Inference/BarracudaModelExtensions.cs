@@ -77,17 +77,6 @@ namespace Unity.MLAgents.Inference
                 });
             }
 
-            foreach (var mem in model.memories)
-            {
-                tensors.Add(new TensorProxy
-                {
-                    name = mem.input,
-                    valueType = TensorProxy.TensorType.FloatingPoint,
-                    data = null,
-                    shape = TensorUtils.TensorShapeFromBarracuda(mem.shape)
-                });
-            }
-
             tensors.Sort((el1, el2) => string.Compare(el1.name, el2.name, StringComparison.InvariantCulture));
 
             return tensors;
@@ -142,13 +131,11 @@ namespace Unity.MLAgents.Inference
                 names.Add(model.DiscreteOutputName());
             }
 
+            var modelVersion = model.GetVersion();
             var memory = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
             if (memory > 0)
             {
-                foreach (var mem in model.memories)
-                {
-                    names.Add(mem.output);
-                }
+                names.Add(TensorNames.RecurrentOutput);
             }
 
             names.Sort(StringComparer.InvariantCulture);
@@ -239,8 +226,7 @@ namespace Unity.MLAgents.Inference
             }
             else
             {
-                return model.outputs.Contains(TensorNames.DiscreteActionOutput) &&
-                    (int)model.DiscreteOutputSize() > 0;
+                return model.outputs.Contains(TensorNames.DiscreteActionOutput) && model.DiscreteOutputSize() > 0;
             }
         }
 

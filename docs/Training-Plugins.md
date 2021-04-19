@@ -51,7 +51,8 @@ each summary period. By default, we log this information to the console and writ
 #### Interface
 The `StatsWriter.write_stats()` method must be implemented in any derived classes. It takes a "category" parameter,
 which typically is the behavior name of the Agents being trained, and a dictionary of `StatSummary` values with
-string keys.
+string keys. Additionally, `StatsWriter.on_add_stat()` may be extended to register a callback handler for each stat
+emission.
 
 #### Registration
 The `StatsWriter` registration function takes a `RunOptions` argument and returns a list of `StatsWriter`s. An

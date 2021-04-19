@@ -1,6 +1,4 @@
 //Put this script on your blue cube.
-
-using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;

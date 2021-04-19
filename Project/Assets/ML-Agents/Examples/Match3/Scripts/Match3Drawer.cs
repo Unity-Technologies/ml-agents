@@ -105,6 +105,10 @@ namespace Unity.MLAgentsExamples
             if (!m_Board)
             {
                 m_Board = GetComponent<Match3Board>();
+                if (m_Board == null)
+                {
+                    return;
+                }
             }
 
             var currentSize = m_Board.GetCurrentBoardSize();

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
@@ -419,6 +418,19 @@ namespace Unity.MLAgents.Tests
                 Assert.AreEqual("cube", castOutput.RayOutputs[0].HitGameObject.name);
                 Assert.AreEqual(-1, castOutput.RayOutputs[0].HitTagIndex);
             }
+        }
+
+        [Test]
+        public void TestCreateDefault()
+        {
+            SetupScene();
+            var obj = new GameObject("agent");
+            var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
+
+            Assert.DoesNotThrow(() =>
+            {
+                perception.CreateSensors();
+            });
         }
 #endif
     }

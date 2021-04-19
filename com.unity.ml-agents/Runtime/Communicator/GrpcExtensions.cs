@@ -24,7 +24,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// Static flag to make sure that we only fire the warning once.
         /// </summary>
-        private static bool s_HaveWarnedTrainerCapabilitiesAgentGroup = false;
+        private static bool s_HaveWarnedTrainerCapabilitiesAgentGroup;
 
         /// <summary>
         /// Converts a AgentInfo to a protobuf generated AgentInfoActionPairProto
@@ -326,8 +326,8 @@ namespace Unity.MLAgents
         /// <summary>
         /// Static flag to make sure that we only fire the warning once.
         /// </summary>
-        private static bool s_HaveWarnedTrainerCapabilitiesMultiPng = false;
-        private static bool s_HaveWarnedTrainerCapabilitiesMapping = false;
+        private static bool s_HaveWarnedTrainerCapabilitiesMultiPng;
+        private static bool s_HaveWarnedTrainerCapabilitiesMapping;
 
         /// <summary>
         /// Generate an ObservationProto for the sensor using the provided ObservationWriter.
