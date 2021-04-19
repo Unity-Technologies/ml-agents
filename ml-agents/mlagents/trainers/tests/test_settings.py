@@ -77,9 +77,9 @@ def test_no_configuration():
     Verify that a new config will have a PPO trainer with extrinsic rewards.
     """
     blank_runoptions = RunOptions()
+    blank_runoptions.behaviors.set_config_specified(False)
     assert isinstance(blank_runoptions.behaviors["test"], TrainerSettings)
     assert isinstance(blank_runoptions.behaviors["test"].hyperparameters, PPOSettings)
-
     assert (
         RewardSignalType.EXTRINSIC in blank_runoptions.behaviors["test"].reward_signals
     )
@@ -508,7 +508,7 @@ def test_default_settings():
     default_settings_cls = cattr.structure(default_settings, TrainerSettings)
     check_if_different(default_settings_cls, run_options.behaviors["test2"])
 
-    # Check that an existing beehavior overrides the defaults in specified fields
+    # Check that an existing behavior overrides the defaults in specified fields
     test1_settings = run_options.behaviors["test1"]
     assert test1_settings.max_steps == 2
     assert test1_settings.network_settings.hidden_units == 2000
@@ -517,6 +517,37 @@ def test_default_settings():
     test1_settings.max_steps = 1
     test1_settings.network_settings.hidden_units == default_settings_cls.network_settings.hidden_units
     check_if_different(test1_settings, default_settings_cls)
+
+
+def test_config_specified():
+    # Test require all behavior names to be specified (or not)
+    # Remove any pre-set defaults
+    TrainerSettings.default_override = None
+    behaviors = {"test1": {"max_steps": 2, "network_settings": {"hidden_units": 2000}}}
+    run_options_dict = {"behaviors": behaviors}
+    ro = RunOptions.from_dict(run_options_dict)
+    # Don't require all behavior names
+    ro.behaviors.set_config_specified(False)
+    # Test that we can grab an entry that is not in the dict.
+    assert isinstance(ro.behaviors["test2"], TrainerSettings)
+
+    # Create strict RunOptions with no defualt_settings
+    run_options_dict = {"behaviors": behaviors}
+    ro = RunOptions.from_dict(run_options_dict)
+    # Require all behavior names
+    ro.behaviors.set_config_specified(True)
+    with pytest.raises(TrainerConfigError):
+        # Variable must be accessed otherwise Python won't query the dict
+        print(ro.behaviors["test2"])
+
+    # Create strict RunOptions with default settings
+    default_settings = {"max_steps": 1, "network_settings": {"num_layers": 1000}}
+    run_options_dict = {"default_settings": default_settings, "behaviors": behaviors}
+    ro = RunOptions.from_dict(run_options_dict)
+    # Require all behavior names
+    ro.behaviors.set_config_specified(True)
+    # Test that we can grab an entry that is not in the dict.
+    assert isinstance(ro.behaviors["test2"], TrainerSettings)
 
 
 def test_pickle():
