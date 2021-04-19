@@ -92,7 +92,7 @@ def test_var_len_obs_and_goal_poca(num_vis, num_vector, num_var_len, conditionin
     config = attr.evolve(
         POCA_TORCH_CONFIG, hyperparameters=new_hyperparams, network_settings=new_network
     )
-    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.8)
+    check_environment_trains(env, {BRAIN_NAME: config})
 
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
