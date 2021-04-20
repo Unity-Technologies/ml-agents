@@ -75,7 +75,8 @@ namespace Unity.MLAgents.Sensors
         [HideInInspector, SerializeField]
         internal GameObject m_RootReference;
         /// <summary>
-        /// Rotate the grid based on the direction the agent is facing.
+        /// The reference of the root of the agent. This is used to disambiguate objects with
+        /// the same tag as the agent. Defaults to current GameObject.
         /// </summary>
         public GameObject RootReference
         {
