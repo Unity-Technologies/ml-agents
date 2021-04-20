@@ -34,6 +34,8 @@ namespace Unity.MLAgentsExamples
         // The attached Agent
         Agent m_Agent;
 
+        private bool m_ProcessedCommandLine;
+
         string m_BehaviorNameOverrideDirectory;
 
         private List<string> m_OverrideExtensions = new List<string>();
@@ -92,6 +94,10 @@ namespace Unity.MLAgentsExamples
         /// <returns></returns>
         void GetAssetPathFromCommandLine()
         {
+            if (m_ProcessedCommandLine)
+            {
+                return;
+            }
             var maxEpisodes = 0;
             var timeoutSeconds = 0;
 
@@ -147,8 +153,9 @@ namespace Unity.MLAgentsExamples
             {
                 m_Deadline = DateTime.Now + TimeSpan.FromSeconds(timeoutSeconds);
                 Debug.Log($"setting deadline to {timeoutSeconds} from now.");
-
             }
+
+            m_ProcessedCommandLine = true;
         }
 
         void OnEnable()
