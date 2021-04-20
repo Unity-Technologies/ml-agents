@@ -52,7 +52,9 @@ namespace Unity.MLAgentsExamples
                 Application.Quit(22);
                 return;
             }
+
             SceneManager.LoadSceneAsync(sceneName);
+            ModelOverrider.CheckSceneForModelOverrides();
         }
     }
 }
