@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Unity.MLAgents;
+using UnityEngine.Rendering;
 
 namespace Unity.MLAgentsExamples
 {
@@ -93,7 +94,9 @@ namespace Unity.MLAgentsExamples
 
         private void FixedUpdate()
         {
-            if (Academy.Instance.IsCommunicatorOn)
+            // Make a move every step if we're training, or graphics are disabled.
+            var useFast = Academy.Instance.IsCommunicatorOn || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
+            if (useFast)
             {
                 FastUpdate();
             }
