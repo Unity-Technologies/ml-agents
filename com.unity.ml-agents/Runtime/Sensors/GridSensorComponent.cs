@@ -73,6 +73,17 @@ namespace Unity.MLAgents.Sensors
         }
 
         [HideInInspector, SerializeField]
+        internal GameObject m_RootReference;
+        /// <summary>
+        /// Rotate the grid based on the direction the agent is facing.
+        /// </summary>
+        public GameObject RootReference
+        {
+            get { return (m_RootReference == null ? gameObject : m_RootReference); }
+            set { m_RootReference = value; }
+        }
+
+        [HideInInspector, SerializeField]
         internal string[] m_DetectableTags;
         /// <summary>
         /// List of tags that are detected.
@@ -190,7 +201,7 @@ namespace Unity.MLAgents.Sensors
                 m_GridSize,
                 m_RotateWithAgent,
                 m_ColliderMask,
-                gameObject,
+                RootReference,
                 m_DetectableTags,
                 m_InitialColliderBufferSize,
                 m_MaxColliderBufferSize
