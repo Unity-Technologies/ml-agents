@@ -202,6 +202,7 @@ namespace Unity.MLAgents.Sensors
                 m_GridSize,
                 m_RotateWithAgent,
                 m_ColliderMask,
+                gameObject,
                 RootReference,
                 m_DetectableTags,
                 m_InitialColliderBufferSize,

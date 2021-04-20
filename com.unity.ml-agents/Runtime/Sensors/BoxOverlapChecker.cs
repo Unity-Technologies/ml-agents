@@ -9,6 +9,7 @@ namespace Unity.MLAgents.Sensors
         Vector3Int m_GridSize;
         bool m_RotateWithAgent;
         LayerMask m_ColliderMask;
+        GameObject m_CenterObject;
         GameObject m_RootReference;
         string[] m_DetectableTags;
         int m_InitialColliderBufferSize;
@@ -32,6 +33,7 @@ namespace Unity.MLAgents.Sensors
             Vector3Int gridSize,
             bool rotateWithAgent,
             LayerMask colliderMask,
+            GameObject centerObject,
             GameObject rootReference,
             string[] detectableTags,
             int initialColliderBufferSize,
@@ -41,6 +43,7 @@ namespace Unity.MLAgents.Sensors
             m_GridSize = gridSize;
             m_RotateWithAgent = rotateWithAgent;
             m_ColliderMask = colliderMask;
+            m_CenterObject = centerObject;
             m_RootReference = rootReference;
             m_DetectableTags = detectableTags;
             m_InitialColliderBufferSize = initialColliderBufferSize;
@@ -95,17 +98,17 @@ namespace Unity.MLAgents.Sensors
         {
             if (m_RotateWithAgent)
             {
-                return m_RootReference.transform.TransformPoint(m_CellLocalPositions[cellIndex]);
+                return m_CenterObject.transform.TransformPoint(m_CellLocalPositions[cellIndex]);
             }
             else
             {
-                return m_CellLocalPositions[cellIndex] + m_RootReference.transform.position;
+                return m_CellLocalPositions[cellIndex] + m_CenterObject.transform.position;
             }
         }
 
         internal Quaternion GetGridRotation()
         {
-            return m_RotateWithAgent ? m_RootReference.transform.rotation : Quaternion.identity;
+            return m_RotateWithAgent ? m_CenterObject.transform.rotation : Quaternion.identity;
         }
 
         /// <summary>
@@ -197,7 +200,7 @@ namespace Unity.MLAgents.Sensors
                 }
 
                 var closestColliderPoint = foundColliders[i].ClosestPointOnBounds(cellCenter);
-                var currentDistanceSquared = (closestColliderPoint - m_RootReference.transform.position).sqrMagnitude;
+                var currentDistanceSquared = (closestColliderPoint - m_CenterObject.transform.position).sqrMagnitude;
 
                 if (currentDistanceSquared >= minDistanceSquared)
                 {
