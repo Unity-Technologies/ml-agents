@@ -6,6 +6,7 @@ using System.IO;
 using Unity.Barracuda.ONNX;
 using Unity.MLAgents;
 using Unity.MLAgents.Policies;
+using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -24,19 +25,36 @@ namespace Unity.MLAgentsExamples
     /// </summary>
     public class ModelOverrider : MonoBehaviour
     {
-        HashSet<string> k_SupportedExtensions = new HashSet<string> { "nn", "onnx" };
+        static HashSet<string> k_SupportedExtensions = new HashSet<string> { "nn", "onnx" };
         const string k_CommandLineModelOverrideDirectoryFlag = "--mlagents-override-model-directory";
         const string k_CommandLineModelOverrideExtensionFlag = "--mlagents-override-model-extension";
         const string k_CommandLineQuitAfterEpisodesFlag = "--mlagents-quit-after-episodes";
         const string k_CommandLineQuitAfterSeconds = "--mlagents-quit-after-seconds";
         const string k_CommandLineQuitOnLoadFailure = "--mlagents-quit-on-load-failure";
 
+        public struct OverrideSettings
+        {
+            public string BehaviorNameOverrideDirectory;
+
+            public List<string> OverrideExtensions;
+            public int MaxEpisodes;
+            public int TimeoutSeconds;
+            public bool QuitOnLoadFailure;
+
+            public bool HasOverrides()
+            {
+                return !string.IsNullOrEmpty(BehaviorNameOverrideDirectory);
+            }
+        }
+
+        private OverrideSettings m_OverrideSettings;
+
         // The attached Agent
         Agent m_Agent;
 
-        string m_BehaviorNameOverrideDirectory;
+        //string m_BehaviorNameOverrideDirectory;
 
-        private List<string> m_OverrideExtensions = new List<string>();
+        //private List<string> m_OverrideExtensions = new List<string>();
 
         // Cached loaded NNModels, with the behavior name as the key.
         Dictionary<string, NNModel> m_CachedModels = new Dictionary<string, NNModel>();
@@ -44,7 +62,7 @@ namespace Unity.MLAgentsExamples
 
         // Max episodes to run. Only used if > 0
         // Will default to 1 if override models are specified, otherwise 0.
-        int m_MaxEpisodes;
+        //int m_MaxEpisodes;
 
         // Deadline - exit if the time exceeds this
         DateTime m_Deadline = DateTime.MaxValue;
@@ -53,7 +71,7 @@ namespace Unity.MLAgentsExamples
         int m_PreviousNumSteps;
         int m_PreviousAgentCompletedEpisodes;
 
-        bool m_QuitOnLoadFailure;
+        //bool m_QuitOnLoadFailure;
         [Tooltip("Debug values to be used in place of the command line for overriding models.")]
         public string debugCommandLineOverride;
 
@@ -77,7 +95,7 @@ namespace Unity.MLAgentsExamples
             get
             {
                 GetAssetPathFromCommandLine();
-                return !string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory);
+                return m_OverrideSettings.HasOverrides();
             }
         }
 
@@ -86,14 +104,10 @@ namespace Unity.MLAgentsExamples
             return $"Override_{originalBehaviorName}";
         }
 
-        /// <summary>
-        /// Get the asset path to use from the commandline arguments.
-        /// </summary>
-        /// <returns></returns>
-        void GetAssetPathFromCommandLine()
+        static OverrideSettings GetSettingsFromCommandLine(string debugCommandLineOverride = null)
         {
-            var maxEpisodes = 0;
-            var timeoutSeconds = 0;
+            var overrideSettings = new OverrideSettings();
+            overrideSettings.OverrideExtensions = new List<string>();
 
             string[] commandLineArgsOverride = null;
             if (!string.IsNullOrEmpty(debugCommandLineOverride) && Application.isEditor)
@@ -106,7 +120,7 @@ namespace Unity.MLAgentsExamples
             {
                 if (args[i] == k_CommandLineModelOverrideDirectoryFlag && i < args.Length - 1)
                 {
-                    m_BehaviorNameOverrideDirectory = args[i + 1].Trim();
+                    overrideSettings.BehaviorNameOverrideDirectory = args[i + 1].Trim();
                 }
                 else if (args[i] == k_CommandLineModelOverrideExtensionFlag && i < args.Length - 1)
                 {
@@ -120,34 +134,44 @@ namespace Unity.MLAgentsExamples
                         EditorApplication.isPlaying = false;
 #endif
                     }
-                    m_OverrideExtensions.Add(overrideExtension);
+                    overrideSettings.OverrideExtensions.Add(overrideExtension);
                 }
                 else if (args[i] == k_CommandLineQuitAfterEpisodesFlag && i < args.Length - 1)
                 {
-                    Int32.TryParse(args[i + 1], out maxEpisodes);
+                    Int32.TryParse(args[i + 1], out overrideSettings.MaxEpisodes);
                 }
                 else if (args[i] == k_CommandLineQuitAfterSeconds && i < args.Length - 1)
                 {
-                    Int32.TryParse(args[i + 1], out timeoutSeconds);
+                    Int32.TryParse(args[i + 1], out overrideSettings.TimeoutSeconds);
                 }
                 else if (args[i] == k_CommandLineQuitOnLoadFailure)
                 {
-                    m_QuitOnLoadFailure = true;
+                    overrideSettings.QuitOnLoadFailure = true;
                 }
             }
 
-            if (!string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory))
+            return overrideSettings;
+        }
+
+        /// <summary>
+        /// Get the asset path to use from the commandline arguments.
+        /// </summary>
+        /// <returns></returns>
+        void GetAssetPathFromCommandLine()
+        {
+            m_OverrideSettings = GetSettingsFromCommandLine(debugCommandLineOverride);
+
+            if (!string.IsNullOrEmpty(m_OverrideSettings.BehaviorNameOverrideDirectory))
             {
                 // If overriding models, set maxEpisodes to 1 or the command line value
-                m_MaxEpisodes = maxEpisodes > 0 ? maxEpisodes : 1;
-                Debug.Log($"setting m_MaxEpisodes to {maxEpisodes}");
+                m_OverrideSettings.MaxEpisodes = m_OverrideSettings.MaxEpisodes > 0 ? m_OverrideSettings.MaxEpisodes : 1;
+                Debug.Log($"setting m_MaxEpisodes to {m_OverrideSettings.MaxEpisodes}");
             }
 
-            if (timeoutSeconds > 0)
+            if (m_OverrideSettings.TimeoutSeconds > 0)
             {
-                m_Deadline = DateTime.Now + TimeSpan.FromSeconds(timeoutSeconds);
-                Debug.Log($"setting deadline to {timeoutSeconds} from now.");
-
+                m_Deadline = DateTime.Now + TimeSpan.FromSeconds(m_OverrideSettings.TimeoutSeconds);
+                Debug.Log($"Setting deadline to {m_OverrideSettings.TimeoutSeconds} seconds from now.");
             }
         }
 
@@ -177,13 +201,13 @@ namespace Unity.MLAgentsExamples
 
         void FixedUpdate()
         {
-            if (m_MaxEpisodes > 0)
+            if (m_OverrideSettings.MaxEpisodes > 0)
             {
                 // For Agents without maxSteps, exit as soon as we've hit the target number of episodes.
                 // For Agents that specify MaxStep, also make sure we've gone at least that many steps.
                 // Since we exit as soon as *any* Agent hits its target, the maxSteps condition keeps us running
                 // a bit longer in case there's an early failure.
-                if (TotalCompletedEpisodes >= m_MaxEpisodes && TotalNumSteps > m_MaxEpisodes * m_Agent.MaxStep)
+                if (TotalCompletedEpisodes >= m_OverrideSettings.MaxEpisodes && TotalNumSteps > m_OverrideSettings.MaxEpisodes * m_Agent.MaxStep)
                 {
                     Debug.Log($"ModelOverride reached {TotalCompletedEpisodes} episodes and {TotalNumSteps} steps. Exiting.");
                     Application.Quit(0);
@@ -195,8 +219,8 @@ namespace Unity.MLAgentsExamples
                 {
                     Debug.Log(
                         $"Deadline exceeded. " +
-                        $"{TotalCompletedEpisodes}/{m_MaxEpisodes} episodes and " +
-                        $"{TotalNumSteps}/{m_MaxEpisodes * m_Agent.MaxStep} steps completed. Exiting.");
+                        $"{TotalCompletedEpisodes}/{m_OverrideSettings.MaxEpisodes} episodes and " +
+                        $"{TotalNumSteps}/{m_OverrideSettings.MaxEpisodes * m_Agent.MaxStep} steps completed. Exiting.");
                     Application.Quit(0);
 #if UNITY_EDITOR
                     EditorApplication.isPlaying = false;
@@ -214,15 +238,15 @@ namespace Unity.MLAgentsExamples
                 return m_CachedModels[behaviorName];
             }
 
-            if (string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory))
+            if (string.IsNullOrEmpty(m_OverrideSettings.BehaviorNameOverrideDirectory))
             {
                 Debug.Log($"No override directory set.");
                 return null;
             }
 
             // Try the override extensions in order. If they weren't set, try .nn first, then .onnx.
-            var overrideExtensions = (m_OverrideExtensions.Count > 0)
-                ? m_OverrideExtensions.ToArray()
+            var overrideExtensions = (m_OverrideSettings.OverrideExtensions.Count > 0)
+                ? m_OverrideSettings.OverrideExtensions.ToArray()
                 : new[] { "nn", "onnx" };
 
             byte[] rawModel = null;
@@ -230,7 +254,7 @@ namespace Unity.MLAgentsExamples
             string assetName = null;
             foreach (var overrideExtension in overrideExtensions)
             {
-                var assetPath = Path.Combine(m_BehaviorNameOverrideDirectory, $"{behaviorName}.{overrideExtension}");
+                var assetPath = Path.Combine(m_OverrideSettings.BehaviorNameOverrideDirectory, $"{behaviorName}.{overrideExtension}");
                 try
                 {
                     rawModel = File.ReadAllBytes(assetPath);
@@ -246,7 +270,7 @@ namespace Unity.MLAgentsExamples
 
             if (rawModel == null)
             {
-                Debug.Log($"Couldn't load model file(s) for {behaviorName} in {m_BehaviorNameOverrideDirectory} (full path: {Path.GetFullPath(m_BehaviorNameOverrideDirectory)}");
+                Debug.Log($"Couldn't load model file(s) for {behaviorName} in {m_OverrideSettings.BehaviorNameOverrideDirectory} (full path: {Path.GetFullPath(m_OverrideSettings.BehaviorNameOverrideDirectory)}");
                 // Cache the null so we don't repeatedly try to load a missing file
                 m_CachedModels[behaviorName] = null;
                 return null;
@@ -334,7 +358,7 @@ namespace Unity.MLAgentsExamples
                 }
             }
 
-            if (!overrideOk && m_QuitOnLoadFailure)
+            if (!overrideOk && m_OverrideSettings.QuitOnLoadFailure)
             {
                 if (!string.IsNullOrEmpty(overrideError))
                 {
@@ -346,6 +370,52 @@ namespace Unity.MLAgentsExamples
 #endif
             }
 
+        }
+
+        public static void CheckSceneForModelOverrides()
+        {
+            var overrideSettings = GetSettingsFromCommandLine();
+            if (!overrideSettings.HasOverrides())
+            {
+                // No overrides specified on the commmandline, so don't check the scene.
+                return;
+            }
+
+            var overrideComponentsFound = SceneHasModelOverrideComponents();
+            if (overrideComponentsFound)
+            {
+                // Expected override components and found them.
+                return;
+            }
+
+            Debug.LogError("Model overriding set on command line, but scene contains no ModelOverride components.");
+            if (overrideSettings.QuitOnLoadFailure)
+            {
+                Application.Quit(1);
+#if UNITY_EDITOR
+                EditorApplication.isPlaying = false;
+#endif
+            }
+        }
+
+        static bool SceneHasModelOverrideComponents()
+        {
+
+            GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
+            Debug.Log($"Found {allObjects.Length} total GameObjects.");
+            foreach (var gameObj in allObjects)
+            {
+                Debug.Log($"Checking GameObject {gameObj.name}.");
+                var modeloverride = gameObj.GetComponentsInChildren<ModelOverrider>();
+                if (modeloverride != null && modeloverride.Length > 0)
+                {
+                    // Found at least 1 model override.
+                    return true;
+                }
+            }
+
+            Debug.Log($"No ModelOverriders found.");
+            return false;
         }
     }
 }
