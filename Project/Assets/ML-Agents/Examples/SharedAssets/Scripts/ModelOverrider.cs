@@ -34,6 +34,10 @@ namespace Unity.MLAgentsExamples
         // The attached Agent
         Agent m_Agent;
 
+        // Whether or not the commandline args have already been processed.
+        // Used to make sure that HasOverrides doesn't spam the logs if it's called multiple times.
+        private bool m_HaveProcessedCommandLine;
+
         string m_BehaviorNameOverrideDirectory;
 
         private List<string> m_OverrideExtensions = new List<string>();
@@ -88,10 +92,15 @@ namespace Unity.MLAgentsExamples
 
         /// <summary>
         /// Get the asset path to use from the commandline arguments.
+        /// Can be called multiple times - if m_HaveProcessedCommandLine is set, will have no effect.
         /// </summary>
         /// <returns></returns>
         void GetAssetPathFromCommandLine()
         {
+            if (m_HaveProcessedCommandLine)
+            {
+                return;
+            }
             var maxEpisodes = 0;
             var timeoutSeconds = 0;
 
@@ -147,8 +156,9 @@ namespace Unity.MLAgentsExamples
             {
                 m_Deadline = DateTime.Now + TimeSpan.FromSeconds(timeoutSeconds);
                 Debug.Log($"setting deadline to {timeoutSeconds} from now.");
-
             }
+
+            m_HaveProcessedCommandLine = true;
         }
 
         void OnEnable()
