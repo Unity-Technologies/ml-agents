@@ -110,7 +110,7 @@ public class PushBlockEnvController : MonoBehaviour
         }
 
         //Hurry Up Penalty
-        m_AgentGroup.AddGroupReward(-1.0f / MaxEnvironmentSteps);
+        m_AgentGroup.AddGroupReward(-5.0f / MaxEnvironmentSteps);
     }
 
     /// <summary>
