@@ -23,12 +23,13 @@ namespace Unity.MLAgents.Sensors
             SensorCompressionType compression
         ) : base(name, cellScale, gridSize, detectableTags, compression)
         {
+            m_DefaultObservation[0] = 1;
         }
 
         /// <inheritdoc/>
         protected override int GetCellObservationSize()
         {
-            return DetectableTags == null ? 0 : DetectableTags.Length;
+            return DetectableTags == null ? 0 : (DetectableTags.Length + 1);
         }
 
         /// <inheritdoc/>
@@ -53,7 +54,7 @@ namespace Unity.MLAgents.Sensors
         /// </param>
         protected override void GetObjectData(GameObject detectedObject, int tagIndex, float[] dataBuffer)
         {
-            dataBuffer[tagIndex] = 1;
+            dataBuffer[tagIndex + 1] = 1;
         }
     }
 }

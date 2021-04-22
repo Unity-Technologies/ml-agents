@@ -39,6 +39,7 @@ namespace Unity.MLAgents.Sensors
         Color[] m_PerceptionColors;
         Texture2D m_PerceptionTexture;
         float[] m_CellDataBuffer;
+        protected float[] m_DefaultObservation;
 
         // Utility Constants Calculated on Init
         int m_NumCells;
@@ -124,12 +125,14 @@ namespace Unity.MLAgents.Sensors
             {
                 Array.Clear(m_PerceptionBuffer, 0, m_PerceptionBuffer.Length);
                 Array.Clear(m_CellDataBuffer, 0, m_CellDataBuffer.Length);
+                Array.Copy(m_DefaultObservation, m_CellDataBuffer, m_DefaultObservation.Length);
             }
             else
             {
                 m_PerceptionBuffer = new float[m_CellObservationSize * m_NumCells];
                 m_CellDataBuffer = new float[m_CellObservationSize];
                 m_PerceptionColors = new Color[m_NumCells];
+                m_DefaultObservation = new float[m_CellObservationSize];
             }
         }
 
