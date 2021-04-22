@@ -1,18 +1,5 @@
 # Upgrading
 
-## :warning: Warning :warning:
-
-The C# editor code and python trainer code are not compatible between releases.
-This means that if you upgrade one, you _must_ upgrade the other as well. If you
-experience new errors or unable to connect to training after updating, please
-double-check that the versions are in the same. The versions can be found in
-
-- `Academy.k_ApiVersion` in Academy.cs
-  ([example](https://github.com/Unity-Technologies/ml-agents/blob/b255661084cb8f701c716b040693069a3fb9a257/UnitySDK/Assets/ML-Agents/Scripts/Academy.cs#L95))
-- `UnityEnvironment.API_VERSION` in environment.py
-  ([example](https://github.com/Unity-Technologies/ml-agents/blob/b255661084cb8f701c716b040693069a3fb9a257/ml-agents-envs/mlagents/envs/environment.py#L45))
-
-
 # Migrating
 ## Migrating the package to version 2.0
 - The official version of Unity ML-Agents supports is now 2019.4 LTS. If you run
@@ -20,6 +7,22 @@ double-check that the versions are in the same. The versions can be found in
   project.
 - If you used any of the APIs that were deprecated before version 2.0, you need to use their replacement. These
 deprecated APIs have been removed. See the migration steps bellow for specific API replacements.
+
+### Deprecated methods removed
+| **Deprecated API** | **Suggested Replacement** |
+|:-------:|:------:|
+| `IActuator ActuatorComponent.CreateActuator()` | `IActuator[] ActuatorComponent.CreateActuators()` |
+| `IActionReceiver.PackActions(in float[] destination)` | none |
+| `Agent.CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)` | `void void WriteDiscreteActionMask(IDiscreteActionMask actionMask)` |
+| `Agent.Heuristic(float[] actionsOut)` | `void Agent.Heuristic(in ActionBuffers actionsOut)` |
+| `Agent.OnActionReceived(float[] vectorAction)` | `Agent.OnActionReceived(ActionBuffers actions)` |
+| `Agent.GetAction()` | `Agent.GetStoredActionBuffers()` |
+| `BrainParameters.SpaceType`, `VectorActionSize`, `VectorActionSpaceType`, and `NumActions` | `BrainParameters.ActionSpec` |
+| `ObservationWriter.AddRange(IEnumerable<float> data, int writeOffset = 0)` | `ObservationWriter. AddList(IList<float> data, int writeOffset = 0` |
+| `SensorComponent.IsVisual()` and `IsVector()` | none |
+| `VectorSensor.AddObservation(IEnumerable<float> observation)` | `VectorSensor.AddObservation(IList<float> observation)` |
+| `SideChannelsManager` | `SideChannelManager` |
+
 ### IDiscreteActionMask changes
 - The interface for disabling specific discrete actions has changed. `IDiscreteActionMask.WriteMask()` was removed,
 and replaced with `SetActionEnabled()`. Instead of returning an IEnumerable with indices to disable, you can
