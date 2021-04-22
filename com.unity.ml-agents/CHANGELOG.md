@@ -21,7 +21,7 @@ be used to set the random seed on the resulting action space. (#5303)
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - The minimum supported Unity version was updated to 2019.4. (#5166)
 - Several breaking interface changes were made. See the
-[Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_14_docs/docs/Migrating.md) for more
+[Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_17_docs/docs/Migrating.md) for more
 details.
 - Some methods previously marked as `Obsolete` have been removed. If you were using these methods, you need to replace them with their supported counterpart.
 - The interface for disabling discrete actions in `IDiscreteActionMask` has changed.
