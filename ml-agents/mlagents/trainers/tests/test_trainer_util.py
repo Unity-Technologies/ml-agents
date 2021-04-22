@@ -71,6 +71,8 @@ def test_handles_no_config_provided():
     """
     brain_name = "testbrain"
     no_default_config = RunOptions().behaviors
+    # Pretend this was created without a YAML file
+    no_default_config.set_config_specified(False)
 
     trainer_factory = TrainerFactory(
         trainer_config=no_default_config,
