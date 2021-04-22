@@ -2,6 +2,7 @@
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Sensors;
 
 public class PushAgentCollab : Agent
 {
@@ -64,6 +65,15 @@ public class PushAgentCollab : Agent
     {
         // Move the agent using the action.
         MoveAgent(actionBuffers.DiscreteActions);
+    }
+
+    /// <summary>
+    /// Called every time a decision is requested.
+    /// </summary>
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        sensor.AddObservation(Vector3.Dot(m_AgentRb.velocity, m_AgentRb.transform.forward));
+        sensor.AddObservation(Vector3.Dot(m_AgentRb.velocity, m_AgentRb.transform.right));
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
