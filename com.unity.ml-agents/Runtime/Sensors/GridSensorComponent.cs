@@ -73,15 +73,15 @@ namespace Unity.MLAgents.Sensors
         }
 
         [HideInInspector, SerializeField]
-        internal GameObject m_RootReference;
+        internal GameObject m_AgentGameObject;
         /// <summary>
         /// The reference of the root of the agent. This is used to disambiguate objects with
         /// the same tag as the agent. Defaults to current GameObject.
         /// </summary>
-        public GameObject RootReference
+        public GameObject AgentGameObject
         {
-            get { return (m_RootReference == null ? gameObject : m_RootReference); }
-            set { m_RootReference = value; }
+            get { return (m_AgentGameObject == null ? gameObject : m_AgentGameObject); }
+            set { m_AgentGameObject = value; }
         }
 
         [HideInInspector, SerializeField]
@@ -203,7 +203,7 @@ namespace Unity.MLAgents.Sensors
                 m_RotateWithAgent,
                 m_ColliderMask,
                 gameObject,
-                RootReference,
+                AgentGameObject,
                 m_DetectableTags,
                 m_InitialColliderBufferSize,
                 m_MaxColliderBufferSize
