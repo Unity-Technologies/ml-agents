@@ -13,8 +13,8 @@ deprecated APIs have been removed. See the migration steps bellow for specific A
 |:-------:|:------:|
 | `IActuator ActuatorComponent.CreateActuator()` | `IActuator[] ActuatorComponent.CreateActuators()` |
 | `IActionReceiver.PackActions(in float[] destination)` | none |
-| `Agent.CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)` | `void void WriteDiscreteActionMask(IDiscreteActionMask actionMask)` |
-| `Agent.Heuristic(float[] actionsOut)` | `void Agent.Heuristic(in ActionBuffers actionsOut)` |
+| `Agent.CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)` | `Agent.WriteDiscreteActionMask(IDiscreteActionMask actionMask)` |
+| `Agent.Heuristic(float[] actionsOut)` | `Agent.Heuristic(in ActionBuffers actionsOut)` |
 | `Agent.OnActionReceived(float[] vectorAction)` | `Agent.OnActionReceived(ActionBuffers actions)` |
 | `Agent.GetAction()` | `Agent.GetStoredActionBuffers()` |
 | `BrainParameters.SpaceType`, `VectorActionSize`, `VectorActionSpaceType`, and `NumActions` | `BrainParameters.ActionSpec` |
