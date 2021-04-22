@@ -9,6 +9,10 @@ and this project adheres to
 ## [Unreleased]
 ### Major Changes
 ### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+The `UnityToGymWrapper` initializer now accepts an optional `action_space_seed` seed. If this is specified, it will
+be used to set the random seed on the resulting action space. (#5303)
 ### Bug Fixes
 
 
