@@ -76,6 +76,7 @@ or actuators on your system. (#5194)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed a bug where --results-dir has no effect. (#5269)
+- Fixed a bug where old `.pt` checkpoints were not deleted during training. (#5271)
 
 ## [1.9.1-preview] - 2021-04-13
 ### Major Changes
