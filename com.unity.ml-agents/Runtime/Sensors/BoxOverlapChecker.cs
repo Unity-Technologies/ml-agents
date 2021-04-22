@@ -10,7 +10,7 @@ namespace Unity.MLAgents.Sensors
         bool m_RotateWithAgent;
         LayerMask m_ColliderMask;
         GameObject m_CenterObject;
-        GameObject m_RootReference;
+        GameObject m_AgentGameObject;
         string[] m_DetectableTags;
         int m_InitialColliderBufferSize;
         int m_MaxColliderBufferSize;
@@ -34,7 +34,7 @@ namespace Unity.MLAgents.Sensors
             bool rotateWithAgent,
             LayerMask colliderMask,
             GameObject centerObject,
-            GameObject rootReference,
+            GameObject agentGameObject,
             string[] detectableTags,
             int initialColliderBufferSize,
             int maxColliderBufferSize)
@@ -44,7 +44,7 @@ namespace Unity.MLAgents.Sensors
             m_RotateWithAgent = rotateWithAgent;
             m_ColliderMask = colliderMask;
             m_CenterObject = centerObject;
-            m_RootReference = rootReference;
+            m_AgentGameObject = agentGameObject;
             m_DetectableTags = detectableTags;
             m_InitialColliderBufferSize = initialColliderBufferSize;
             m_MaxColliderBufferSize = maxColliderBufferSize;
@@ -194,7 +194,7 @@ namespace Unity.MLAgents.Sensors
                 var currentColliderGo = foundColliders[i].gameObject;
 
                 // Continue if the current collider go is the root reference
-                if (ReferenceEquals(currentColliderGo, m_RootReference))
+                if (ReferenceEquals(currentColliderGo, m_AgentGameObject))
                 {
                     continue;
                 }
@@ -238,7 +238,7 @@ namespace Unity.MLAgents.Sensors
             for (int i = 0; i < numFound; i++)
             {
                 var currentColliderGo = foundColliders[i].gameObject;
-                if (!ReferenceEquals(currentColliderGo, m_RootReference))
+                if (!ReferenceEquals(currentColliderGo, m_AgentGameObject))
                 {
                     detectedAction.Invoke(currentColliderGo, cellIndex);
                 }

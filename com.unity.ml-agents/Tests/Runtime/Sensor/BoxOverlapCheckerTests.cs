@@ -15,7 +15,7 @@ namespace Unity.MLAgents.Tests
             bool rotateWithAgent,
             LayerMask colliderMask,
             GameObject centerObject,
-            GameObject rootReference,
+            GameObject agentGameObject,
             string[] detectableTags,
             int initialColliderBufferSize,
             int maxColliderBufferSize
@@ -25,7 +25,7 @@ namespace Unity.MLAgents.Tests
                 rotateWithAgent,
                 colliderMask,
                 centerObject,
-                rootReference,
+                agentGameObject,
                 detectableTags,
                 initialColliderBufferSize,
                 maxColliderBufferSize)
@@ -56,7 +56,7 @@ namespace Unity.MLAgents.Tests
             int gridSizeZ = 10,
             bool rotateWithAgent = true,
             GameObject centerObject = null,
-            GameObject rootReference = null,
+            GameObject agentGameObject = null,
             string[] detectableTags = null,
             int initialColliderBufferSize = 4,
             int maxColliderBufferSize = 500)
@@ -67,7 +67,7 @@ namespace Unity.MLAgents.Tests
                 rotateWithAgent,
                 LayerMask.GetMask("Default"),
                 centerObject,
-                rootReference,
+                agentGameObject,
                 detectableTags,
                 initialColliderBufferSize,
                 maxColliderBufferSize);
@@ -81,7 +81,7 @@ namespace Unity.MLAgents.Tests
         {
             var testGo = new GameObject("test");
             testGo.transform.position = Vector3.zero;
-            var boxOverlapSquare = TestBoxOverlapChecker.CreateChecker(gridSizeX: 10, gridSizeZ: 10, rotateWithAgent: false, rootReference: testGo);
+            var boxOverlapSquare = TestBoxOverlapChecker.CreateChecker(gridSizeX: 10, gridSizeZ: 10, rotateWithAgent: false, agentGameObject: testGo);
 
             var localPos = boxOverlapSquare.CellLocalPositions;
             Assert.AreEqual(new Vector3(-4.5f, 0, -4.5f), localPos[0]);
@@ -92,7 +92,7 @@ namespace Unity.MLAgents.Tests
 
             var testGo2 = new GameObject("test");
             testGo2.transform.position = new Vector3(3.5f, 8f, 17f); // random, should have no effect on local positions
-            var boxOverlapRect = TestBoxOverlapChecker.CreateChecker(gridSizeX: 5, gridSizeZ: 15, rotateWithAgent: true, rootReference: testGo);
+            var boxOverlapRect = TestBoxOverlapChecker.CreateChecker(gridSizeX: 5, gridSizeZ: 15, rotateWithAgent: true, agentGameObject: testGo);
 
             localPos = boxOverlapRect.CellLocalPositions;
             Assert.AreEqual(new Vector3(-2f, 0, -7f), localPos[0]);
@@ -108,7 +108,7 @@ namespace Unity.MLAgents.Tests
             var testGo = new GameObject("test");
             var position = new Vector3(3.5f, 8f, 17f);
             testGo.transform.position = position;
-            var boxOverlap = TestBoxOverlapChecker.CreateChecker(gridSizeX: 10, gridSizeZ: 10, rotateWithAgent: false, rootReference: testGo, centerObject: testGo);
+            var boxOverlap = TestBoxOverlapChecker.CreateChecker(gridSizeX: 10, gridSizeZ: 10, rotateWithAgent: false, agentGameObject: testGo, centerObject: testGo);
 
             Assert.AreEqual(new Vector3(-4.5f, 0, -4.5f) + position, boxOverlap.GetCellGlobalPosition(0));
             Assert.AreEqual(new Vector3(-4.5f, 0, 4.5f) + position, boxOverlap.GetCellGlobalPosition(9));
@@ -130,7 +130,7 @@ namespace Unity.MLAgents.Tests
             var testGo = new GameObject("test");
             var position = new Vector3(15f, 6f, 13f);
             testGo.transform.position = position;
-            var boxOverlap = TestBoxOverlapChecker.CreateChecker(gridSizeX: 5, gridSizeZ: 15, rotateWithAgent: true, rootReference: testGo, centerObject: testGo);
+            var boxOverlap = TestBoxOverlapChecker.CreateChecker(gridSizeX: 5, gridSizeZ: 15, rotateWithAgent: true, agentGameObject: testGo, centerObject: testGo);
 
             Assert.AreEqual(new Vector3(-2f, 0, -7f) + position, boxOverlap.GetCellGlobalPosition(0));
             Assert.AreEqual(new Vector3(-2f, 0, 7f) + position, boxOverlap.GetCellGlobalPosition(14));
@@ -154,7 +154,7 @@ namespace Unity.MLAgents.Tests
             var testGo = new GameObject("test");
             testGo.transform.position = Vector3.zero;
             testObjects.Add(testGo);
-            var boxOverlap = TestBoxOverlapChecker.CreateChecker(rootReference: testGo, centerObject: testGo, initialColliderBufferSize: 2, maxColliderBufferSize: 5);
+            var boxOverlap = TestBoxOverlapChecker.CreateChecker(agentGameObject: testGo, centerObject: testGo, initialColliderBufferSize: 2, maxColliderBufferSize: 5);
             boxOverlap.Update();
             Assert.AreEqual(2, boxOverlap.ColliderBuffer.Length);
 
@@ -197,7 +197,7 @@ namespace Unity.MLAgents.Tests
                 cellScaleZ: 10f,
                 gridSizeX: 2,
                 gridSizeZ: 2,
-                rootReference: testGo,
+                agentGameObject: testGo,
                 centerObject: testGo,
                 detectableTags: new [] { tag1 });
             var helper = new VerifyParseCollidersHelper();
@@ -234,7 +234,7 @@ namespace Unity.MLAgents.Tests
                 cellScaleZ: 10f,
                 gridSizeX: 2,
                 gridSizeZ: 2,
-                rootReference: testGo,
+                agentGameObject: testGo,
                 centerObject: testGo,
                 detectableTags: new [] { tag1 });
             var helper = new VerifyParseCollidersHelper();
