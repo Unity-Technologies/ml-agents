@@ -2266,6 +2266,11 @@ PrefabInstance:
       propertyPath: m_RootReference
       value: 
       objectReference: {fileID: 8190299122290044757}
+    - target: {fileID: 1548337883655231979, guid: ac01d0f42c5e1463e943632a60d99967,
+        type: 3}
+      propertyPath: m_AgentGameObject
+      value: 
+      objectReference: {fileID: 8190299122290044757}
     - target: {fileID: 2598450485826216109, guid: ac01d0f42c5e1463e943632a60d99967,
         type: 3}
       propertyPath: m_Model
@@ -2369,6 +2374,11 @@ PrefabInstance:
     - target: {fileID: 1548337883655231979, guid: ac01d0f42c5e1463e943632a60d99967,
         type: 3}
       propertyPath: m_RootReference
+      value: 
+      objectReference: {fileID: 9115291448867436586}
+    - target: {fileID: 1548337883655231979, guid: ac01d0f42c5e1463e943632a60d99967,
+        type: 3}
+      propertyPath: m_AgentGameObject
       value: 
       objectReference: {fileID: 9115291448867436586}
     - target: {fileID: 2598450485826216109, guid: ac01d0f42c5e1463e943632a60d99967,
@@ -2479,6 +2489,11 @@ PrefabInstance:
     - target: {fileID: 1548337883655231979, guid: ac01d0f42c5e1463e943632a60d99967,
         type: 3}
       propertyPath: m_RootReference
+      value: 
+      objectReference: {fileID: 8695281997955662811}
+    - target: {fileID: 1548337883655231979, guid: ac01d0f42c5e1463e943632a60d99967,
+        type: 3}
+      propertyPath: m_AgentGameObject
       value: 
       objectReference: {fileID: 8695281997955662811}
     - target: {fileID: 2598450485826216109, guid: ac01d0f42c5e1463e943632a60d99967,
