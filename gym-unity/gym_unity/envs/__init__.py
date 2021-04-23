@@ -1,6 +1,6 @@
 import itertools
 import numpy as np
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import gym
 from gym import error, spaces
@@ -35,6 +35,7 @@ class UnityToGymWrapper(gym.Env):
         uint8_visual: bool = False,
         flatten_branched: bool = False,
         allow_multiple_obs: bool = False,
+        action_space_seed: Optional[int] = None,
     ):
         """
         Environment initialization
@@ -46,6 +47,7 @@ class UnityToGymWrapper(gym.Env):
             containing the visual observations and the last element containing the array of vector observations.
             If False, returns a single np.ndarray containing either only a single visual observation or the array of
             vector observations.
+        :param action_space_seed: If non-None, will be used to set the random seed on created gym.Space instances.
         """
         self._env = unity_env
 
@@ -129,6 +131,9 @@ class UnityToGymWrapper(gym.Env):
                 "The gym wrapper does not provide explicit support for both discrete "
                 "and continuous actions."
             )
+
+        if action_space_seed is not None:
+            self._action_space.seed(action_space_seed)
 
         # Set observations space
         list_spaces: List[gym.Space] = []
@@ -305,7 +310,7 @@ class UnityToGymWrapper(gym.Env):
         return -float("inf"), float("inf")
 
     @property
-    def action_space(self):
+    def action_space(self) -> gym.Space:
         return self._action_space
 
     @property
