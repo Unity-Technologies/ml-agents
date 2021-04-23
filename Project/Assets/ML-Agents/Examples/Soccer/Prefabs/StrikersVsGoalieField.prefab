@@ -2016,7 +2016,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 3000
+  MaxStep: 0
   team: 0
   position: 1
   agentRb: {fileID: 0}
@@ -2266,7 +2266,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 3000
+  MaxStep: 0
   team: 1
   position: 0
   agentRb: {fileID: 0}
@@ -3979,7 +3979,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 3000
+  MaxStep: 0
   team: 1
   position: 0
   agentRb: {fileID: 0}
