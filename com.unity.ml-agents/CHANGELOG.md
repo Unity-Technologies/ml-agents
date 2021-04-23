@@ -6,7 +6,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-
 ## [2.0.0-exp.1] - 2021-04-22
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
@@ -77,6 +76,9 @@ or actuators on your system. (#5194)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed a bug where --results-dir has no effect. (#5269)
 - Fixed a bug where old `.pt` checkpoints were not deleted during training. (#5271)
+- The `UnityToGymWrapper` initializer now accepts an optional `action_space_seed` seed. If this is specified, it will
+be used to set the random seed on the resulting action space. (#5303)
+
 
 ## [1.9.1-preview] - 2021-04-13
 ### Major Changes
