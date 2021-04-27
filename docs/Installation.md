@@ -64,7 +64,7 @@ of our tutorials / guides assume you have access to our example environments).
 the repository if you would like to explore more examples.
 
 ```sh
-git clone --branch release_17 https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch release_17 --depth 1 https://github.com/Unity-Technologies/ml-agents.git
 ```
 
 The `--branch release_17` option will switch to the tag of the latest stable

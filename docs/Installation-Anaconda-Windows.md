@@ -123,7 +123,7 @@ commands in an Anaconda Prompt _(if you open a new prompt, be sure to activate
 the ml-agents Conda environment by typing `activate ml-agents`)_:
 
 ```sh
-git clone --branch release_17 https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch release_17 --depth 1 https://github.com/Unity-Technologies/ml-agents.git
 ```
 
 The `--branch release_17` option will switch to the tag of the latest stable
