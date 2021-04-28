@@ -1,9 +1,6 @@
 apiRules:
 - exclude:
-    uidRegex: ^Test.*
-    type: Namespace
-- exclude:
-    uidRegex: ^Unity.MLAgents\.Tests.*
+    uidRegex: .*Test.*
     type: Namespace
 - exclude:
     uidRegex: ^Unity.MLAgents\.CommunicatorObjects$
