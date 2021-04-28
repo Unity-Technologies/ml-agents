@@ -60,18 +60,21 @@ def test_model_management(tmpdir):
             "file_path": os.path.join(final_model_path, f"{brain_name}-1.nn"),
             "reward": 1.312,
             "creation_time": time.time(),
+            "auxillary_file_paths": [],
         },
         {
             "steps": 2,
             "file_path": os.path.join(final_model_path, f"{brain_name}-2.nn"),
             "reward": 1.912,
             "creation_time": time.time(),
+            "auxillary_file_paths": [],
         },
         {
             "steps": 3,
             "file_path": os.path.join(final_model_path, f"{brain_name}-3.nn"),
             "reward": 2.312,
             "creation_time": time.time(),
+            "auxillary_file_paths": [],
         },
     ]
     GlobalTrainingStatus.set_parameter_state(

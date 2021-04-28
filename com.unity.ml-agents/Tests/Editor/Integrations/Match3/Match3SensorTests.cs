@@ -5,7 +5,6 @@ using NUnit.Framework;
 using UnityEngine;
 using Unity.MLAgents.Integrations.Match3;
 using Unity.MLAgents.Sensors;
-using Unity.MLAgents.Tests;
 
 namespace Unity.MLAgents.Tests.Integrations.Match3
 {
@@ -395,6 +394,15 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
             }
 
             return bytesOut.ToArray();
+        }
+
+        [Test]
+        public void TestNoBoardReturnsEmptySensors()
+        {
+            var gameObj = new GameObject("board");
+            var sensorComponent = gameObj.AddComponent<Match3SensorComponent>();
+            var sensors = sensorComponent.CreateSensors();
+            Assert.AreEqual(0, sensors.Length);
         }
     }
 }

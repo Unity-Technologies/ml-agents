@@ -1,9 +1,7 @@
-using Unity.MLAgents;
 using System;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
-using Unity;
 
 namespace Unity.MLAgents.Tests
 {

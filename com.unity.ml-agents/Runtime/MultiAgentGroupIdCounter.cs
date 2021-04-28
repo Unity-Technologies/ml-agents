@@ -7,7 +7,7 @@ namespace Unity.MLAgents
         static int s_Counter;
         public static int GetGroupId()
         {
-            return Interlocked.Increment(ref s_Counter); ;
+            return Interlocked.Increment(ref s_Counter);
         }
     }
 }

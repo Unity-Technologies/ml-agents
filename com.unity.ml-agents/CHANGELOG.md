@@ -8,10 +8,18 @@ and this project adheres to
 
 ## [Unreleased]
 ### Major Changes
+### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+### Bug Fixes
+
+
+## [2.0.0-exp.1] - 2021-04-22
+### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - The minimum supported Unity version was updated to 2019.4. (#5166)
 - Several breaking interface changes were made. See the
-[Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_14_docs/docs/Migrating.md) for more
+[Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_17_docs/docs/Migrating.md) for more
 details.
 - Some methods previously marked as `Obsolete` have been removed. If you were using these methods, you need to replace them with their supported counterpart.
 - The interface for disabling discrete actions in `IDiscreteActionMask` has changed.
@@ -29,10 +37,11 @@ produces two `Match3Sensor`s (unless there are no special types). Previously tra
 sizes and will need to be retrained. (#5181)
 - The `AbstractBoard` class for integration with Match-3 games was changed to make it easier to support boards with
 different sizes using the same model. For a summary of the interface changes, please see the Migration Guide. (##5189)
-- Updated the Barracuda package to version `1.3.3-preview`(#5236)
+- Updated the Barracuda package to version `1.4.0-preview`(#5236)
 - `GridSensor` has been refactored and moved to main package, with changes to both sensor interfaces and behaviors.
 Exsisting GridSensor created by extension package will not work in newer version. Previously trained models will
 need to be retrained. Please see the Migration Guide for more details. (#5256)
+- Models trained with 1.x versions of ML-Agents will no longer work at inference if they were trained using recurrent neural networks (#5254)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
@@ -59,6 +68,9 @@ This results in much less memory being allocated during inference with `CameraSe
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Some console output have been moved from `info` to `debug` and will not be printed by default. If you want all messages to be printed, you can run `mlagents-learn` with the `--debug` option or add the line `debug: true` at the top of the yaml config file. (#5211)
+- When using a configuration YAML, it is required to define all behaviors found in a Unity
+executable in the trainer configuration YAML, or specify `default_settings`. (#5210)
+- The embedding size of attention layers used when a BufferSensor is in the scene has been changed. It is now fixed to 128 units. It might be impossible to resume training from a checkpoint of a previous version. (#5272)
 
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
@@ -67,6 +79,14 @@ settings. Unfortunately, this may require retraining models if it changes the re
 or actuators on your system. (#5194)
 - Removed additional memory allocations that were occurring due to assert messages and iterating of DemonstrationRecorders. (#5246)
 - Fixed a bug where agent trying to access unintialized fields when creating a new RayPerceptionSensorComponent on an agent. (#5261)
+- Fixed a bug where the DemonstrationRecorder would throw a null reference exception if Num Steps To Record was > 0 and Record was turned off. (#5274)
+
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- Fixed a bug where --results-dir has no effect. (#5269)
+- Fixed a bug where old `.pt` checkpoints were not deleted during training. (#5271)
+- The `UnityToGymWrapper` initializer now accepts an optional `action_space_seed` seed. If this is specified, it will
+be used to set the random seed on the resulting action space. (#5303)
+
 
 ## [1.9.1-preview] - 2021-04-13
 ### Major Changes

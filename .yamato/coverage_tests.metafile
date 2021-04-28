@@ -5,7 +5,7 @@ coverage_test_editors:
 coverage_test_platforms:
     - name: linux
       type: Unity::VM
-      image: package-ci/ubuntu:v1.3.1-719011
+      image: package-ci/ubuntu:stable
       flavor: b1.medium
 
 coverage_test_packages:

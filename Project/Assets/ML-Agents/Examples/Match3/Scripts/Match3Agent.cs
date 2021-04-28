@@ -1,8 +1,6 @@
 using System;
 using UnityEngine;
 using Unity.MLAgents;
-using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Integrations.Match3;
 
 namespace Unity.MLAgentsExamples
 {
@@ -75,11 +73,13 @@ namespace Unity.MLAgentsExamples
         State m_CurrentState = State.WaitForMove;
         float m_TimeUntilMove;
         private int m_MovesMade;
+        private ModelOverrider m_ModelOverrider;
 
         private const float k_RewardMultiplier = 0.01f;
         void Awake()
         {
             Board = GetComponent<Match3Board>();
+            m_ModelOverrider = GetComponent<ModelOverrider>();
         }
 
         public override void OnEpisodeBegin()
@@ -95,7 +95,9 @@ namespace Unity.MLAgentsExamples
 
         private void FixedUpdate()
         {
-            if (Academy.Instance.IsCommunicatorOn)
+            // Make a move every step if we're training, or we're overriding models in CI.
+            var useFast = Academy.Instance.IsCommunicatorOn || (m_ModelOverrider != null && m_ModelOverrider.HasOverrides);
+            if (useFast)
             {
                 FastUpdate();
             }

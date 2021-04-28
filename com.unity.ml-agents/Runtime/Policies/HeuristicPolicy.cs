@@ -22,7 +22,6 @@ namespace Unity.MLAgents.Policies
         NullList m_NullList = new NullList();
 
 
-        /// <inheritdoc />
         public HeuristicPolicy(ActuatorManager actuatorManager, ActionSpec actionSpec)
         {
             m_ActuatorManager = actuatorManager;

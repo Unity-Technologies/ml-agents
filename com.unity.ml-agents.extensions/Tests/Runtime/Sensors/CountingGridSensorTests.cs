@@ -133,7 +133,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 
             gridSensor.Update();
 
-            subarrayIndicies = new int[] { 77, 78, 87, 88 };
+            subarrayIndicies = new[] { 77, 78, 87, 88 };
             expectedSubarrays = DuplicateArray(new float[] { 2, 0 }, 4);
             expectedDefault = new float[] { 0, 0 };
             AssertSubarraysAtIndex(gridSensor.PerceptionBuffer, subarrayIndicies, expectedSubarrays, expectedDefault);

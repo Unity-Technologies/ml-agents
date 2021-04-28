@@ -1,10 +1,7 @@
 fileFormatVersion: 2
-guid: 34586a8d0f1c342a49973b36a609e73b
+guid: 258df0219226d4b5191ced1365c20f67
 ScriptedImporter:
-  internalIDToNameTable:
-  - first:
-      114: 11400002
-    second: Assets/ML-Agents/Examples/Crawler/Demos/ExpertCrawler.demo
+  internalIDToNameTable: []
   externalObjects: {}
   serializedVersion: 2
   userData: ' (Unity.MLAgents.Demonstrations.DemonstrationSummary)'

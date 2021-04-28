@@ -9,7 +9,8 @@ namespace Unity.MLAgents.Sensors
         Vector3Int m_GridSize;
         bool m_RotateWithAgent;
         LayerMask m_ColliderMask;
-        GameObject m_RootReference;
+        GameObject m_CenterObject;
+        GameObject m_AgentGameObject;
         string[] m_DetectableTags;
         int m_InitialColliderBufferSize;
         int m_MaxColliderBufferSize;
@@ -32,7 +33,8 @@ namespace Unity.MLAgents.Sensors
             Vector3Int gridSize,
             bool rotateWithAgent,
             LayerMask colliderMask,
-            GameObject rootReference,
+            GameObject centerObject,
+            GameObject agentGameObject,
             string[] detectableTags,
             int initialColliderBufferSize,
             int maxColliderBufferSize)
@@ -41,7 +43,8 @@ namespace Unity.MLAgents.Sensors
             m_GridSize = gridSize;
             m_RotateWithAgent = rotateWithAgent;
             m_ColliderMask = colliderMask;
-            m_RootReference = rootReference;
+            m_CenterObject = centerObject;
+            m_AgentGameObject = agentGameObject;
             m_DetectableTags = detectableTags;
             m_InitialColliderBufferSize = initialColliderBufferSize;
             m_MaxColliderBufferSize = maxColliderBufferSize;
@@ -83,7 +86,7 @@ namespace Unity.MLAgents.Sensors
 
         /// <summary>Converts the index of the cell to the 3D point (y is zero) relative to grid center</summary>
         /// <returns>Vector3 of the position of the center of the cell relative to grid center</returns>
-        /// <param name="cell">The index of the cell</param>
+        /// <param name="cellIndex">The index of the cell</param>
         Vector3 GetCellLocalPosition(int cellIndex)
         {
             float x = (cellIndex / m_GridSize.z - m_CellCenterOffset.x) * m_CellScale.x;
@@ -95,17 +98,17 @@ namespace Unity.MLAgents.Sensors
         {
             if (m_RotateWithAgent)
             {
-                return m_RootReference.transform.TransformPoint(m_CellLocalPositions[cellIndex]);
+                return m_CenterObject.transform.TransformPoint(m_CellLocalPositions[cellIndex]);
             }
             else
             {
-                return m_CellLocalPositions[cellIndex] + m_RootReference.transform.position;
+                return m_CellLocalPositions[cellIndex] + m_CenterObject.transform.position;
             }
         }
 
         internal Quaternion GetGridRotation()
         {
-            return m_RotateWithAgent ? m_RootReference.transform.rotation : Quaternion.identity;
+            return m_RotateWithAgent ? m_CenterObject.transform.rotation : Quaternion.identity;
         }
 
         /// <summary>
@@ -191,13 +194,13 @@ namespace Unity.MLAgents.Sensors
                 var currentColliderGo = foundColliders[i].gameObject;
 
                 // Continue if the current collider go is the root reference
-                if (ReferenceEquals(currentColliderGo, m_RootReference))
+                if (ReferenceEquals(currentColliderGo, m_AgentGameObject))
                 {
                     continue;
                 }
 
                 var closestColliderPoint = foundColliders[i].ClosestPointOnBounds(cellCenter);
-                var currentDistanceSquared = (closestColliderPoint - m_RootReference.transform.position).sqrMagnitude;
+                var currentDistanceSquared = (closestColliderPoint - m_CenterObject.transform.position).sqrMagnitude;
 
                 if (currentDistanceSquared >= minDistanceSquared)
                 {
@@ -235,7 +238,7 @@ namespace Unity.MLAgents.Sensors
             for (int i = 0; i < numFound; i++)
             {
                 var currentColliderGo = foundColliders[i].gameObject;
-                if (!ReferenceEquals(currentColliderGo, m_RootReference))
+                if (!ReferenceEquals(currentColliderGo, m_AgentGameObject))
                 {
                     detectedAction.Invoke(currentColliderGo, cellIndex);
                 }

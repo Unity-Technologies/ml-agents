@@ -14,7 +14,7 @@ namespace Unity.MLAgents
     ///
     /// The DecisionRequester component provides a convenient and flexible way to
     /// trigger the agent decision making process. Without a DecisionRequester,
-    /// your <see cref="Agent"/> implmentation must manually call its
+    /// your <see cref="Agent"/> implementation must manually call its
     /// <seealso cref="Agent.RequestDecision"/> function.
     /// </remarks>
     [AddComponentMenu("ML Agents/Decision Requester", (int)MenuGroup.Default)]

@@ -261,7 +261,6 @@ public class WalkerAgent : Agent
     Vector3 GetAvgVelocity()
     {
         Vector3 velSum = Vector3.zero;
-        Vector3 avgVel = Vector3.zero;
 
         //ALL RBS
         int numOfRb = 0;
@@ -271,7 +270,7 @@ public class WalkerAgent : Agent
             velSum += item.rb.velocity;
         }
 
-        avgVel = velSum / numOfRb;
+        var avgVel = velSum / numOfRb;
         return avgVel;
     }
 

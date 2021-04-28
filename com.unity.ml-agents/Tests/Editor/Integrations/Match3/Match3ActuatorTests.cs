@@ -194,5 +194,14 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
             // And they should add up to all the potential moves
             Assert.AreEqual(validIndices.Count + masks.HashSets[0].Count, board.NumMoves());
         }
+
+        [Test]
+        public void TestNoBoardReturnsEmptyActuators()
+        {
+            var gameObj = new GameObject("board");
+            var actuatorComponent = gameObj.AddComponent<Match3ActuatorComponent>();
+            var actuators = actuatorComponent.CreateActuators();
+            Assert.AreEqual(0, actuators.Length);
+        }
     }
 }

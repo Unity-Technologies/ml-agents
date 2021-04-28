@@ -233,16 +233,19 @@ The `SensorComponent` abstract class is used to create the actual `ISensor` at
 runtime. It must be attached to the same `GameObject` as the `Agent`, or to a
 child `GameObject`.
 
-There are several SensorComponents provided in the API:
-- `CameraSensorComponent` - Allows image from `Camera` to be used as
-  observation.
-- `RenderTextureSensorComponent` - Allows content of `RenderTexture` to be used
-  as observation.
-- `RayPerceptionSensorComponent` - Allows information from set of ray-casts to
-  be used as observation.
+There are several SensorComponents provided in the API, including:
+- `CameraSensorComponent` - Uses images from a `Camera` as observations.
+- `RenderTextureSensorComponent` - Uses the content of a `RenderTexture` as
+observations.
+- `RayPerceptionSensorComponent` - Uses the information from set of ray casts
+as observations.
+- `Match3SensorComponent` - Uses the board of a [Match-3 game](Integrations-Match3.md)
+as observations.
+- `GridSensorComponent` - Uses a set of box queries in a grid shape as
+observations.
 
 **NOTE**: you do not need to adjust the Space Size in the Agent's
-`Behavior Parameters` when using an ISensor SensorComponents.
+`Behavior Parameters` when using `SensorComponents`s.
 
 Internally, both `Agent.CollectObservations` and `[Observable]` attribute use an
 ISensors to write observations, although this is mostly abstracted from the user.

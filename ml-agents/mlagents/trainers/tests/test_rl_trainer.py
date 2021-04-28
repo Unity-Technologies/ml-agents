@@ -29,7 +29,13 @@ class FakeTrainer(RLTrainer):
 
     def add_policy(self, mock_behavior_id, mock_policy):
         def checkpoint_path(brain_name, step):
-            return os.path.join(self.model_saver.model_path, f"{brain_name}-{step}")
+            onnx_file_path = os.path.join(
+                self.model_saver.model_path, f"{brain_name}-{step}.onnx"
+            )
+            other_file_paths = [
+                os.path.join(self.model_saver.model_path, f"{brain_name}-{step}.pt")
+            ]
+            return onnx_file_path, other_file_paths
 
         self.policies[mock_behavior_id] = mock_policy
         mock_model_saver = mock.Mock()
@@ -171,6 +177,9 @@ def test_summary_checkpoint(mock_add_checkpoint, mock_write_summary):
                 f"{trainer.model_saver.model_path}{os.path.sep}{trainer.brain_name}-{step}.{export_ext}",
                 None,
                 mock.ANY,
+                [
+                    f"{trainer.model_saver.model_path}{os.path.sep}{trainer.brain_name}-{step}.pt"
+                ],
             ),
             trainer.trainer_settings.keep_checkpoints,
         )

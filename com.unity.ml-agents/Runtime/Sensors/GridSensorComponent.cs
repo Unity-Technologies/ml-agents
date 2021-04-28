@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Unity.MLAgents.Sensors
 {
     /// <summary>
-    /// A SensorComponent that creates a <see cref="GridSensor"/>.
+    /// A SensorComponent that creates a <see cref="GridSensorBase"/>.
     /// </summary>
     [AddComponentMenu("ML Agents/Grid Sensor", (int)MenuGroup.Sensors)]
     public class GridSensorComponent : SensorComponent
@@ -70,6 +70,18 @@ namespace Unity.MLAgents.Sensors
         {
             get { return m_RotateWithAgent; }
             set { m_RotateWithAgent = value; }
+        }
+
+        [HideInInspector, SerializeField]
+        internal GameObject m_AgentGameObject;
+        /// <summary>
+        /// The reference of the root of the agent. This is used to disambiguate objects with
+        /// the same tag as the agent. Defaults to current GameObject.
+        /// </summary>
+        public GameObject AgentGameObject
+        {
+            get { return (m_AgentGameObject == null ? gameObject : m_AgentGameObject); }
+            set { m_AgentGameObject = value; }
         }
 
         [HideInInspector, SerializeField]
@@ -184,13 +196,14 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public override ISensor[] CreateSensors()
         {
-            List<ISensor> m_Sensors = new List<ISensor>();
+            m_Sensors = new List<ISensor>();
             m_BoxOverlapChecker = new BoxOverlapChecker(
                 m_CellScale,
                 m_GridSize,
                 m_RotateWithAgent,
                 m_ColliderMask,
                 gameObject,
+                AgentGameObject,
                 m_DetectableTags,
                 m_InitialColliderBufferSize,
                 m_MaxColliderBufferSize

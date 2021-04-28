@@ -661,7 +661,7 @@ class TrainerSettings(ExportableSettings):
                 )
 
     @staticmethod
-    def dict_to_defaultdict(d: Dict, t: type) -> DefaultDict:
+    def dict_to_trainerdict(d: Dict, t: type) -> "TrainerSettings.DefaultTrainerDict":
         return TrainerSettings.DefaultTrainerDict(
             cattr.structure(d, Dict[str, TrainerSettings])
         )
@@ -718,12 +718,26 @@ class TrainerSettings(ExportableSettings):
                 super().__init__(*args)
             else:
                 super().__init__(TrainerSettings, *args)
+            self._config_specified = True
+
+        def set_config_specified(self, require_config_specified: bool) -> None:
+            self._config_specified = require_config_specified
 
         def __missing__(self, key: Any) -> "TrainerSettings":
             if TrainerSettings.default_override is not None:
-                return copy.deepcopy(TrainerSettings.default_override)
+                self[key] = copy.deepcopy(TrainerSettings.default_override)
+            elif self._config_specified:
+                raise TrainerConfigError(
+                    f"The behavior name {key} has not been specified in the trainer configuration. "
+                    f"Please add an entry in the configuration file for {key}, or set default_settings."
+                )
             else:
-                return TrainerSettings()
+                logger.warn(
+                    f"Behavior name {key} does not match any behaviors specified "
+                    f"in the trainer configuration file. A default configuration will be used."
+                )
+                self[key] = TrainerSettings()
+            return self[key]
 
 
 # COMMAND LINE #########################################################################
@@ -788,7 +802,7 @@ class TorchSettings:
 @attr.s(auto_attribs=True)
 class RunOptions(ExportableSettings):
     default_settings: Optional[TrainerSettings] = None
-    behaviors: DefaultDict[str, TrainerSettings] = attr.ib(
+    behaviors: TrainerSettings.DefaultTrainerDict = attr.ib(
         factory=TrainerSettings.DefaultTrainerDict
     )
     env_settings: EnvironmentSettings = attr.ib(factory=EnvironmentSettings)
@@ -800,7 +814,8 @@ class RunOptions(ExportableSettings):
     # These are options that are relevant to the run itself, and not the engine or environment.
     # They will be left here.
     debug: bool = parser.get_default("debug")
-    # Strict conversion
+
+    # Convert to settings while making sure all fields are valid
     cattr.register_structure_hook(EnvironmentSettings, strict_to_cls)
     cattr.register_structure_hook(EngineSettings, strict_to_cls)
     cattr.register_structure_hook(CheckpointSettings, strict_to_cls)
@@ -816,7 +831,7 @@ class RunOptions(ExportableSettings):
     )
     cattr.register_structure_hook(TrainerSettings, TrainerSettings.structure)
     cattr.register_structure_hook(
-        DefaultDict[str, TrainerSettings], TrainerSettings.dict_to_defaultdict
+        TrainerSettings.DefaultTrainerDict, TrainerSettings.dict_to_trainerdict
     )
     cattr.register_unstructure_hook(collections.defaultdict, defaultdict_to_dict)
 
@@ -839,8 +854,12 @@ class RunOptions(ExportableSettings):
             "engine_settings": {},
             "torch_settings": {},
         }
+        _require_all_behaviors = True
         if config_path is not None:
             configured_dict.update(load_config(config_path))
+        else:
+            # If we're not loading from a file, we don't require all behavior names to be specified.
+            _require_all_behaviors = False
 
         # Use the YAML file values for all values not specified in the CLI.
         for key in configured_dict.keys():
@@ -868,6 +887,10 @@ class RunOptions(ExportableSettings):
                     configured_dict[key] = val
 
         final_runoptions = RunOptions.from_dict(configured_dict)
+        # Need check to bypass type checking but keep structure on dict working
+        if isinstance(final_runoptions.behaviors, TrainerSettings.DefaultTrainerDict):
+            # configure whether or not we should require all behavior names to be found in the config YAML
+            final_runoptions.behaviors.set_config_specified(_require_all_behaviors)
         return final_runoptions
 
     @staticmethod

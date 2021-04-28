@@ -10,7 +10,6 @@ namespace Unity.MLAgentsExamples
         public override IActuator[] CreateActuators()
         {
             var board = GetComponent<Match3Board>();
-            var agent = GetComponentInParent<Agent>();
             var seed = RandomSeed == -1 ? gameObject.GetInstanceID() : RandomSeed + 1;
             return new IActuator[] { new Match3ExampleActuator(board, ForceHeuristic, ActuatorName, seed) };
         }

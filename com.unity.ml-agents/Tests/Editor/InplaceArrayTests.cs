@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using NUnit.Framework;
-using Unity.MLAgents;
-using UnityEngine;
 
 
 namespace Unity.MLAgents.Tests

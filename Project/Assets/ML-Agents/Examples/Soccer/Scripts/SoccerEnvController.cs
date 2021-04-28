@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using Unity.MLAgents;
 using UnityEngine;
@@ -91,7 +90,7 @@ public class SoccerEnvController : MonoBehaviour
         var randomPosX = Random.Range(-2.5f, 2.5f);
         var randomPosZ = Random.Range(-2.5f, 2.5f);
 
-        ball.transform.position = m_BallStartingPos + new Vector3(randomPosX, 0f, randomPosZ); ;
+        ball.transform.position = m_BallStartingPos + new Vector3(randomPosX, 0f, randomPosZ);
         ballRb.velocity = Vector3.zero;
         ballRb.angularVelocity = Vector3.zero;
 

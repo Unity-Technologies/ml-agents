@@ -4,7 +4,7 @@ using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Editor
 {
-    [CustomEditor(typeof(GridSensorComponent))]
+    [CustomEditor(typeof(GridSensorComponent), editorForChildClasses: true)]
     [CanEditMultipleObjects]
     internal class GridSensorComponentEditor : UnityEditor.Editor
     {
@@ -37,6 +37,7 @@ namespace Unity.MLAgents.Editor
                 gridSize.vector3IntValue = new Vector3Int(newGridSize.x, 1, newGridSize.z);
             }
             EditorGUI.EndDisabledGroup();
+            EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_AgentGameObject)), true);
             EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensorComponent.m_RotateWithAgent)), true);
 
             EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());

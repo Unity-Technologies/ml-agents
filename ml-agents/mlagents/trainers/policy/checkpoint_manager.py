@@ -14,6 +14,7 @@ class ModelCheckpoint:
     file_path: str
     reward: Optional[float]
     creation_time: float
+    auxillary_file_paths: List[str] = attr.ib(factory=list)
 
 
 class ModelCheckpointManager:
@@ -37,12 +38,14 @@ class ModelCheckpointManager:
 
         :param checkpoint: A checkpoint stored in checkpoint_list
         """
-        file_path: str = checkpoint["file_path"]
-        if os.path.exists(file_path):
-            os.remove(file_path)
-            logger.debug(f"Removed checkpoint model {file_path}.")
-        else:
-            logger.debug(f"Checkpoint at {file_path} could not be found.")
+        file_paths: List[str] = [checkpoint["file_path"]]
+        file_paths.extend(checkpoint["auxillary_file_paths"])
+        for file_path in file_paths:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                logger.debug(f"Removed checkpoint model {file_path}.")
+            else:
+                logger.debug(f"Checkpoint at {file_path} could not be found.")
         return
 
     @classmethod

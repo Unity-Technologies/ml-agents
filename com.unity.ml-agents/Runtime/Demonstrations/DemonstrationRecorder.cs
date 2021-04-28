@@ -19,7 +19,7 @@ namespace Unity.MLAgents.Demonstrations
     /// See [Imitation Learning - Recording Demonstrations] for more information.
     ///
     /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
-    /// [Imitation Learning - Recording Demonstrations]: https://github.com/Unity-Technologies/ml-agents/blob/release_16_docs/docs//Learning-Environment-Design-Agents.md#recording-demonstrations
+    /// [Imitation Learning - Recording Demonstrations]: https://github.com/Unity-Technologies/ml-agents/blob/release_17_docs/docs//Learning-Environment-Design-Agents.md#recording-demonstrations
     /// </remarks>
     [RequireComponent(typeof(Agent))]
     [AddComponentMenu("ML Agents/Demonstration Recorder", (int)MenuGroup.Default)]
@@ -74,11 +74,14 @@ namespace Unity.MLAgents.Demonstrations
 
         void Update()
         {
-            if (Record)
+            if (!Record)
             {
-                LazyInitialize();
+                return;
             }
 
+            LazyInitialize();
+
+            // Quit when num steps to record is reached
             if (NumStepsToRecord > 0 && m_DemoWriter.NumSteps >= NumStepsToRecord)
             {
                 Application.Quit(0);

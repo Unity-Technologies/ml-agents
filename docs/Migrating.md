@@ -1,18 +1,5 @@
 # Upgrading
 
-## :warning: Warning :warning:
-
-The C# editor code and python trainer code are not compatible between releases.
-This means that if you upgrade one, you _must_ upgrade the other as well. If you
-experience new errors or unable to connect to training after updating, please
-double-check that the versions are in the same. The versions can be found in
-
-- `Academy.k_ApiVersion` in Academy.cs
-  ([example](https://github.com/Unity-Technologies/ml-agents/blob/b255661084cb8f701c716b040693069a3fb9a257/UnitySDK/Assets/ML-Agents/Scripts/Academy.cs#L95))
-- `UnityEnvironment.API_VERSION` in environment.py
-  ([example](https://github.com/Unity-Technologies/ml-agents/blob/b255661084cb8f701c716b040693069a3fb9a257/ml-agents-envs/mlagents/envs/environment.py#L45))
-
-
 # Migrating
 ## Migrating the package to version 2.0
 - The official version of Unity ML-Agents supports is now 2019.4 LTS. If you run
@@ -20,6 +7,22 @@ double-check that the versions are in the same. The versions can be found in
   project.
 - If you used any of the APIs that were deprecated before version 2.0, you need to use their replacement. These
 deprecated APIs have been removed. See the migration steps bellow for specific API replacements.
+
+### Deprecated methods removed
+| **Deprecated API** | **Suggested Replacement** |
+|:-------:|:------:|
+| `IActuator ActuatorComponent.CreateActuator()` | `IActuator[] ActuatorComponent.CreateActuators()` |
+| `IActionReceiver.PackActions(in float[] destination)` | none |
+| `Agent.CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)` | `Agent.WriteDiscreteActionMask(IDiscreteActionMask actionMask)` |
+| `Agent.Heuristic(float[] actionsOut)` | `Agent.Heuristic(in ActionBuffers actionsOut)` |
+| `Agent.OnActionReceived(float[] vectorAction)` | `Agent.OnActionReceived(ActionBuffers actions)` |
+| `Agent.GetAction()` | `Agent.GetStoredActionBuffers()` |
+| `BrainParameters.SpaceType`, `VectorActionSize`, `VectorActionSpaceType`, and `NumActions` | `BrainParameters.ActionSpec` |
+| `ObservationWriter.AddRange(IEnumerable<float> data, int writeOffset = 0)` | `ObservationWriter. AddList(IList<float> data, int writeOffset = 0` |
+| `SensorComponent.IsVisual()` and `IsVector()` | none |
+| `VectorSensor.AddObservation(IEnumerable<float> observation)` | `VectorSensor.AddObservation(IList<float> observation)` |
+| `SideChannelsManager` | `SideChannelManager` |
+
 ### IDiscreteActionMask changes
 - The interface for disabling specific discrete actions has changed. `IDiscreteActionMask.WriteMask()` was removed,
 and replaced with `SetActionEnabled()`. Instead of returning an IEnumerable with indices to disable, you can
@@ -114,7 +117,6 @@ will not work in newer version. Some errors might show up when loading the old s
 You'll need to remove the old sensor and create a new GridSensor.
 * These parameters names have changed but still refer to the same concept in the sensor: `GridNumSide` -> `GridSize`,
 `RotateToAgent` -> `RotateWithAgent`, `ObserveMask` -> `ColliderMask`, `DetectableObjects` -> `DetectableTags`
-* `RootReference` is removed and the sensor component's GameObject will always be ignored for hit results.
 * `DepthType` (`ChanelBase`/`ChannelHot`) option and `ChannelDepth` are removed. Now the default is
 one-hot encoding for detected tag. If you were using original GridSensor without overriding any method,
 switching to new GridSensor will produce similar effect for training although the actual observations
@@ -133,6 +135,13 @@ data type changed from `float` to `int`. The index of first detectable tag will 
 Sensors with non-normalized data cannot use PNG compression type.
 * The sensor will not further encode the data recieved from `GetObjectData()` anymore. The values
 recieved from `GetObjectData()` will be the observation sent to the trainer.
+
+### LSTM models from previous releases no longer supported
+The way the Unity Inference Engine processes LSTM (recurrent neural networks) has changed. As a result, models
+trained with previous versions of ML-Agents will not be usable at inference if they were trained with a `memory`
+setting in the `.yaml` config file.
+If you want to use a model that has a recurrent neural network in this release of ML-Agents, you need to train
+the model using the python trainer from this release.
 
 
 ## Migrating to Release 13
@@ -191,7 +200,7 @@ folder
 - The Parameter Randomization feature has been merged with the Curriculum feature. It is now possible to specify a sampler
 in the lesson of a Curriculum. Curriculum has been refactored and is now specified at the level of the parameter, not the
 behavior. More information
-[here](https://github.com/Unity-Technologies/ml-agents/blob/release_16_docs/docs/Training-ML-Agents.md).(#4160)
+[here](https://github.com/Unity-Technologies/ml-agents/blob/release_17_docs/docs/Training-ML-Agents.md).(#4160)
 
 ### Steps to Migrate
 - The configuration format for curriculum and parameter randomization has changed. To upgrade your configuration files,

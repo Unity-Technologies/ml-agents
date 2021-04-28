@@ -75,7 +75,7 @@ namespace Unity.MLAgents.Integrations.Match3
 
             if (moveIndex < 0 || moveIndex >= NumPotentialMoves(maxBoardSize))
             {
-                throw new ArgumentOutOfRangeException("Invalid move index.");
+                throw new ArgumentOutOfRangeException("moveIndex");
             }
             Direction dir;
             int row, col;
