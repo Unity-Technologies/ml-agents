@@ -293,7 +293,7 @@ namespace Unity.MLAgents.Tests
             foreach (var sensor in sensors)
             {
                 var gridsensor = (GridSensorBase)sensor;
-                if (gridsensor.m_BoxOverlapChecker != null)
+                if (gridsensor.m_OverlapChecker != null)
                 {
                     numChecker += 1;
                 }
