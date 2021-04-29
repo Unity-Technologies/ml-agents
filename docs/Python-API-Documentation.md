@@ -178,7 +178,7 @@ when launching the executable.
 <a name="mlagents_envs.base_env"></a>
 # mlagents\_envs.base\_env
 
-Python Environment API for the ML-Agents toolkit
+Python Environment API for the ML-Agents Toolkit
 The aim of this API is to expose Agents evolving in a simulation
 to perform reinforcement learning on.
 This API supports multi-agent scenarios and groups similar Agents (same
@@ -1224,7 +1224,7 @@ Set the internal buffer to a new bytearray. This will overwrite any existing dat
 
 **Arguments**:
 
-- `buffer`: 
+- `buffer`:
 
 **Returns**:
 
@@ -1352,7 +1352,7 @@ Receive the message from the environment, and save it for later retrieval.
 
 **Arguments**:
 
-- `msg`: 
+- `msg`:
 
 **Returns**:
 
