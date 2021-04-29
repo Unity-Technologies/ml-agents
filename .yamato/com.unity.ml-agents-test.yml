@@ -7,7 +7,7 @@ test_editors:
     - version: 2020.2
       testProject: DevProject
       enableNoDefaultPackages: !!bool true
-    - version: 2021.1
+    - version: 2021.2
       testProject: DevProject
       enableNoDefaultPackages: !!bool true
 
