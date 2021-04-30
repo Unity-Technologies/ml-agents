@@ -548,7 +548,7 @@ The sensor component has the following settings:
   of objects.
 - _Initial Collider Buffer Size_ The initial size of the Collider buffer used
   in the non-allocating Physics calls for each cell.
-- _Max_ Collider Buffer Size_ The max size of the Collider buffer used in the
+- _Max Collider Buffer Size_ The max size of the Collider buffer used in the
   non-allocating Physics calls for each cell.
 
 The observation for each grid cell is a one-hot encoding of the detected object.
