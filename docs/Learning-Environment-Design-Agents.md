@@ -519,6 +519,64 @@ setting the State Size.
 - Use as few rays and tags as necessary to solve the problem in order to improve
   learning stability and agent performance.
 
+### Grid Observations
+Grid-base observations combine the advantages of 2D spatial representation in
+visual observations, and the flexibility of defining detectable objects in
+RayCast observations. The sensor uses a set of box queries in a grid shape and
+gives a top-down 2D view around the agent. This can be implemented by adding a
+`GridSensorComponent` to the Agent GameObject.
+
+During observations, the sensor detects the presence of detectable objects in
+each cell and encode that into one-hot representation. The collected information
+from each cell forms a 3D tensor observation and will be fed into the
+convolutional neural network (CNN) of the agent policy just like visual
+observations.
+
+![Agent with GridSensorComponent](images/grid_sensor.png)
+
+The sensor component has the following settings:
+- _Cell Scale_ The scale of each cell in the grid.
+- _Grid Size_ Number of cells on each side of the grid.
+- _Agent Game Object_ The Agent that holds the grid sensor. This is used to
+  disambiguate objects with the same tag as the agent so that the agent doesn't
+  detect itself.
+- _Rotate With Agent_ Whether the grid rotates with the Agent.
+- _Detectable Tags_ A list of strings corresponding to the types of objects that
+  the Agent should be able to distinguish between.
+- _Collider Mask_ The [LayerMask](https://docs.unity3d.com/ScriptReference/LayerMask.html)
+  passed to the collider detection. This can be used to ignore certain types
+  of objects.
+- _Initial Collider Buffer Size_ The initial size of the Collider buffer used
+  in the non-allocating Physics calls for each cell.
+- _Max_ Collider Buffer Size_ The max size of the Collider buffer used in the
+  non-allocating Physics calls for each cell.
+
+The observation for each grid cell is a one-hot encoding of the detected object.
+The total size of the created observations is
+
+```
+GridSize.x * GridSize.z * Num Detectable Tags
+```
+
+so the number of detectable tags and size of the grid should be kept as small as
+possible to reduce the amount of data used. This makes a trade-off between the
+granularity of the observation and training speed.
+
+To allow more variety of observations that grid sensor can capture, the
+`GridSensorComponent` and the underlying `GridSensorBase` also provides interfaces
+that can be overridden to collect customized observation from detected objects.
+See the doc on
+[extending grid Sensors](https://github.com/Unity-Technologies/ml-agents/blob/release_17/com.unity.ml-agents.extensions/Documentation~/CustomGridSensors.md)
+for more details on custom grid sensors.
+
+#### Grid Observation Summary & Best Practices
+
+- Attach `GridSensorComponent` to use.
+- This observation type is best used when there is relevant non-visual spatial information that
+  can be best captured in 2D representations.
+- Use as small grid size and as few tags as necessary to solve the problem in order to improve
+  learning stability and agent performance.
+
 ### Variable Length Observations
 
 It is possible for agents to collect observations from a varying number of
