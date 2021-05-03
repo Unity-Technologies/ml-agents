@@ -17,18 +17,19 @@ behaviors:
       hidden_units: 512
       num_layers: 3
       vis_encode_type: simple
+      goal_conditioning_type: none
     reward_signals:
       extrinsic:
         gamma: 0.995
         strength: 2.0
-      gail:
-        gamma: 0.99
-        strength: 0.01
-        learning_rate: 0.0003
-        use_actions: true
-        use_vail: false
-        demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
+      # gail:
+      #   gamma: 0.99
+      #   strength: 0.01
+      #   learning_rate: 0.0003
+      #   use_actions: true
+      #   use_vail: false
+      #   demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
     keep_checkpoints: 5
-    max_steps: 3000000
+    max_steps: 30000000
     time_horizon: 128
     summary_freq: 30000
