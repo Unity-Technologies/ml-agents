@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Unity.MLAgents.Sensors
@@ -11,7 +12,7 @@ namespace Unity.MLAgents.Sensors
     {
         // dummy sensor only used for debug gizmo
         GridSensorBase m_DebugSensor;
-        List<ISensor> m_Sensors;
+        List<GridSensorBase> m_Sensors;
         internal BoxOverlapChecker m_BoxOverlapChecker;
 
         [HideInInspector, SerializeField]
@@ -196,7 +197,6 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public override ISensor[] CreateSensors()
         {
-            m_Sensors = new List<ISensor>();
             m_BoxOverlapChecker = new BoxOverlapChecker(
                 m_CellScale,
                 m_GridSize,
@@ -213,29 +213,33 @@ namespace Unity.MLAgents.Sensors
             m_DebugSensor = new GridSensorBase("DebugGridSensor", m_CellScale, m_GridSize, m_DetectableTags, SensorCompressionType.None);
             m_BoxOverlapChecker.RegisterDebugSensor(m_DebugSensor);
 
-            var gridSensors = GetGridSensors();
-            if (gridSensors == null || gridSensors.Length < 1)
+            m_Sensors = GetGridSensors().ToList();
+            if (m_Sensors == null || m_Sensors.Count < 1)
             {
                 throw new UnityAgentsException("GridSensorComponent received no sensors. Specify at least one observation type (OneHot/Counting) to use grid sensors." +
                     "If you're overriding GridSensorComponent.GetGridSensors(), return at least one grid sensor.");
             }
 
-            foreach (var sensor in gridSensors)
+            // Only one sensor needs to reference the boxOverlapChecker, so that it gets updated exactly once
+            m_Sensors[0].m_BoxOverlapChecker = m_BoxOverlapChecker;
+            foreach (var sensor in m_Sensors)
             {
-                if (ObservationStacks != 1)
-                {
-                    m_Sensors.Add(new StackingSensor(sensor, ObservationStacks));
-                }
-                else
-                {
-                    m_Sensors.Add(sensor);
-                }
                 m_BoxOverlapChecker.RegisterSensor(sensor);
             }
 
-            // Only one sensor needs to reference the boxOverlapChecker, so that it gets updated exactly once
-            ((GridSensorBase)m_Sensors[0]).m_BoxOverlapChecker = m_BoxOverlapChecker;
-            return m_Sensors.ToArray();
+            if (ObservationStacks != 1)
+            {
+                var sensors = new ISensor[m_Sensors.Count];
+                for (var i = 0; i < m_Sensors.Count; i++)
+                {
+                    sensors[i] = new StackingSensor(m_Sensors[i], ObservationStacks);
+                }
+                return sensors;
+            }
+            else
+            {
+                return m_Sensors.ToArray();
+            }
         }
 
         /// <summary>
@@ -262,7 +266,7 @@ namespace Unity.MLAgents.Sensors
                 m_BoxOverlapChecker.ColliderMask = m_ColliderMask;
                 foreach (var sensor in m_Sensors)
                 {
-                    ((GridSensorBase)sensor).CompressionType = m_CompressionType;
+                    sensor.CompressionType = m_CompressionType;
                 }
             }
         }
