@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Unity.MLAgents.Sensors
@@ -11,7 +12,7 @@ namespace Unity.MLAgents.Sensors
     {
         // dummy sensor only used for debug gizmo
         GridSensorBase m_DebugSensor;
-        GridSensorBase[] m_Sensors;
+        List<GridSensorBase> m_Sensors;
         internal BoxOverlapChecker m_BoxOverlapChecker;
 
         [HideInInspector, SerializeField]
@@ -212,8 +213,8 @@ namespace Unity.MLAgents.Sensors
             m_DebugSensor = new GridSensorBase("DebugGridSensor", m_CellScale, m_GridSize, m_DetectableTags, SensorCompressionType.None);
             m_BoxOverlapChecker.RegisterDebugSensor(m_DebugSensor);
 
-            m_Sensors = GetGridSensors();
-            if (m_Sensors == null || m_Sensors.Length < 1)
+            m_Sensors = GetGridSensors().ToList();
+            if (m_Sensors == null || m_Sensors.Count < 1)
             {
                 throw new UnityAgentsException("GridSensorComponent received no sensors. Specify at least one observation type (OneHot/Counting) to use grid sensors." +
                     "If you're overriding GridSensorComponent.GetGridSensors(), return at least one grid sensor.");
@@ -228,8 +229,8 @@ namespace Unity.MLAgents.Sensors
 
             if (ObservationStacks != 1)
             {
-                var sensors = new ISensor[m_Sensors.Length];
-                for (var i = 0; i < m_Sensors.Length; i++)
+                var sensors = new ISensor[m_Sensors.Count];
+                for (var i = 0; i < m_Sensors.Count; i++)
                 {
                     sensors[i] = new StackingSensor(m_Sensors[i], ObservationStacks);
                 }
@@ -237,7 +238,7 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
-                return m_Sensors;
+                return m_Sensors.ToArray();
             }
         }
 
