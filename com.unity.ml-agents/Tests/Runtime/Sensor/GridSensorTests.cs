@@ -89,7 +89,7 @@ namespace Unity.MLAgents.Tests
             gridSensorComponent.SetComponentParameters(tags, useGridSensorBase: true);
 
             gridSensorComponent.CreateSensors();
-            var componentSensor = (List<ISensor>)typeof(GridSensorComponent).GetField("m_Sensors",
+            var componentSensor = (List<GridSensorBase>)typeof(GridSensorComponent).GetField("m_Sensors",
                         BindingFlags.Instance | BindingFlags.NonPublic).GetValue(gridSensorComponent);
             Assert.AreEqual(componentSensor.Count, 1);
         }
@@ -190,6 +190,17 @@ namespace Unity.MLAgents.Tests
             {
                 gridSensorComponent.CreateSensors();
             });
+        }
+
+        [Test]
+        public void TestStackedSensors()
+        {
+            testGo.tag = k_Tag2;
+            string[] tags = { k_Tag1, k_Tag2 };
+            gridSensorComponent.SetComponentParameters(tags, useGridSensorBase: true);
+            gridSensorComponent.ObservationStacks = 3;
+            var sensors = gridSensorComponent.CreateSensors();
+            Assert.IsInstanceOf(typeof(StackingSensor), sensors[0]);
         }
     }
 }
