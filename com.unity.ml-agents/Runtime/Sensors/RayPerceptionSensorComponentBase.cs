@@ -143,7 +143,7 @@ namespace Unity.MLAgents.Sensors
         internal Color rayMissColor = Color.white;
 
         [NonSerialized]
-        RayPerceptionSensor m_RaySensor;
+        protected RayPerceptionSensor m_RaySensor;
 
         /// <summary>
         /// Get the RayPerceptionSensor that was created.

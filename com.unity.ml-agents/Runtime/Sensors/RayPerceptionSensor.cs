@@ -78,7 +78,17 @@ namespace Unity.MLAgents.Sensors
         /// <returns></returns>
         public int OutputSize()
         {
-            return ((DetectableTags?.Count ?? 0) + 2) * (Angles?.Count ?? 0);
+            return OutputSizePerRay() * NumRays();
+        }
+
+        public int OutputSizePerRay()
+        {
+            return (DetectableTags?.Count ?? 0) + 2;
+        }
+
+        public int NumRays()
+        {
+            return Angles?.Count ?? 0;
         }
 
         /// <summary>
@@ -227,6 +237,10 @@ namespace Unity.MLAgents.Sensors
             }
         }
 
+        public int CustomObservationSizePerRay;
+
+        public virtual void GetCustomObservationData(RayOutput rayOutput, float[] buffer) { }
+
         /// <summary>
         /// RayOutput for each ray that was cast.
         /// </summary>
@@ -239,6 +253,7 @@ namespace Unity.MLAgents.Sensors
     public class RayPerceptionSensor : ISensor, IBuiltInSensor
     {
         float[] m_Observations;
+        float[] m_SingleRayObservation;
         ObservationSpec m_ObservationSpec;
         string m_Name;
 
@@ -255,6 +270,11 @@ namespace Unity.MLAgents.Sensors
             get { return m_DebugLastFrameCount; }
         }
 
+        internal int ObservationSizePerRay
+        {
+            get { return m_RayPerceptionOutput.CustomObservationSizePerRay + ((m_RayPerceptionInput.DetectableTags?.Count ?? 0) + 2); }
+        }
+
         /// <summary>
         /// Creates the RayPerceptionSensor.
         /// </summary>
@@ -269,6 +289,27 @@ namespace Unity.MLAgents.Sensors
 
             m_DebugLastFrameCount = Time.frameCount;
             m_RayPerceptionOutput = new RayPerceptionOutput();
+        }
+
+        /// <summary>
+        /// Creates the RayPerceptionSensor.
+        /// </summary>
+        /// <param name="name">The name of the sensor.</param>
+        /// <param name="rayInput">The inputs for the sensor.</param>
+        /// <param name="rayOutput">The outputs for the sensor.</param>
+        public RayPerceptionSensor(string name, RayPerceptionInput rayInput, RayPerceptionOutput rayOutput)
+        {
+            m_Name = name;
+            m_RayPerceptionInput = rayInput;
+
+            SetNumObservations((rayOutput.CustomObservationSizePerRay + rayInput.OutputSizePerRay()) * rayInput.NumRays());
+            if (rayOutput.CustomObservationSizePerRay > 0)
+            {
+                m_SingleRayObservation = new float[rayOutput.CustomObservationSizePerRay];
+            }
+
+            m_DebugLastFrameCount = Time.frameCount;
+            m_RayPerceptionOutput = rayOutput;
         }
 
         /// <summary>
@@ -320,6 +361,18 @@ namespace Unity.MLAgents.Sensors
                 for (var rayIndex = 0; rayIndex < numRays; rayIndex++)
                 {
                     m_RayPerceptionOutput.RayOutputs?[rayIndex].ToFloatArray(numDetectableTags, rayIndex, m_Observations);
+                    if (m_RayPerceptionOutput.CustomObservationSizePerRay > 0)
+                    {
+                        Array.Clear(m_SingleRayObservation, 0, m_SingleRayObservation.Length);
+                        m_RayPerceptionOutput.GetCustomObservationData(m_RayPerceptionOutput.RayOutputs[rayIndex], m_SingleRayObservation);
+                        Array.Copy(
+                            m_SingleRayObservation,
+                            0,
+                            m_Observations,
+                            ObservationSizePerRay * rayIndex + m_RayPerceptionInput.OutputSizePerRay(),
+                            m_RayPerceptionOutput.CustomObservationSizePerRay
+                        );
+                    }
                 }
 
                 // Finally, add the observations to the ObservationWriter
