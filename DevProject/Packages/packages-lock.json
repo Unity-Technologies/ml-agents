@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.unity.barracuda": {
-      "version": "2.0.0-pre.2",
+      "version": "2.0.0-pre.3",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -55,7 +55,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.unity.barracuda": "2.0.0-pre.2",
+        "com.unity.barracuda": "2.0.0-pre.3",
         "com.unity.modules.imageconversion": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       }
@@ -65,7 +65,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.unity.ml-agents": "2.0.0-pre.2",
+        "com.unity.ml-agents": "2.0.0-pre.3",
         "com.unity.modules.physics": "1.0.0"
       }
     },

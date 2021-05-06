@@ -5,7 +5,7 @@
   "unity": "2019.4",
   "description": "A source-only package for new features based on ML-Agents",
   "dependencies": {
-    "com.unity.ml-agents": "2.0.0-pre.2",
+    "com.unity.ml-agents": "2.0.0-pre.3",
     "com.unity.modules.physics": "1.0.0"
   }
 }

@@ -6,9 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.0.0-pre.2] - 2021-04-22
+## [2.0.0-pre.3] - 2021-04-22
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- update Barracuda to 2.0.0-pre.3.
 - The minimum supported Unity version was updated to 2019.4. (#5166)
 - Several breaking interface changes were made. See the
 [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_17_docs/docs/Migrating.md) for more
