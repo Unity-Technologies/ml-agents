@@ -85,7 +85,7 @@ def set_version(
             f.write(new_contents)
 
     if csharp_version is not None:
-        package_version = f"{csharp_version}-pre.2"
+        package_version = f"{csharp_version}-pre.3"
         if csharp_extensions_version is not None:
             # since this has never been promoted we need to keep
             # it in preview forever or CI will fail

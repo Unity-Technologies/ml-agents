@@ -63,7 +63,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.unity.ml-agents": "2.0.0-pre.2",
+        "com.unity.ml-agents": "2.0.0-pre.3",
         "com.unity.modules.physics": "1.0.0"
       }
     },
