@@ -43,26 +43,29 @@ class DiverseRewardProvider(BaseRewardProvider):
             truth = ModelUtils.list_to_tensor(
                 ObsUtil.from_buffer(mini_batch, self._max_index)[self._diverse_index]
             )
-            rewards = torch.log(torch.sum((prediction * truth), dim=1) + 1e-10) \
-              - np.log(1 / self._network.diverse_size)
+            # print(prediction[0,:], truth[0,:], torch.log(torch.sum((prediction * truth), dim=1) + 1e-10)[0], (torch.log(torch.sum((prediction * truth), dim=1))- np.log(1 / self._network.diverse_size))[0])
+            rewards = torch.log(
+                torch.sum((prediction * truth), dim=1) + 1e-10
+            ) - np.log(1 / self._network.diverse_size)
 
         return rewards.detach().cpu().numpy()
 
     def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
-        prediction = self._network(mini_batch)
-        truth = ModelUtils.list_to_tensor(
-            ObsUtil.from_buffer(mini_batch, self._max_index)[self._diverse_index]
-        )
-        # loss = torch.mean(
-        #     torch.sum(-torch.log(prediction + 1e-10) * truth, dim=1), dim=0
-        # )
-        loss = - torch.mean(
-            torch.log(torch.sum((prediction * truth), dim=1))
-        )
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
-        return {"Losses/DIVERSE Loss": loss.detach().cpu().numpy()}
+        all_loss = 0
+        for _ in range(1):
+            prediction = self._network(mini_batch)
+            truth = ModelUtils.list_to_tensor(
+                ObsUtil.from_buffer(mini_batch, self._max_index)[self._diverse_index]
+            )
+            # loss = torch.mean(
+            #     torch.sum(-torch.log(prediction + 1e-10) * truth, dim=1), dim=0
+            # )
+            loss = -torch.mean(torch.log(torch.sum((prediction * truth), dim=1)))
+            self.optimizer.zero_grad()
+            loss.backward()
+            self.optimizer.step()
+            all_loss += loss.item()
+        return {"Losses/DIVERSE Loss": all_loss}
 
     def get_modules(self):
         return {f"Module:{self.name}": self._network}
@@ -71,7 +74,9 @@ class DiverseRewardProvider(BaseRewardProvider):
 class DiverseNetwork(torch.nn.Module):
     EPSILON = 1e-10
 
-    def __init__(self, specs: BehaviorSpec, settings: DiverseSettings, use_actions:bool) -> None:
+    def __init__(
+        self, specs: BehaviorSpec, settings: DiverseSettings, use_actions: bool
+    ) -> None:
         super().__init__()
         self._use_actions = use_actions
         state_encoder_settings = settings.network_settings
@@ -92,7 +97,7 @@ class DiverseNetwork(torch.nn.Module):
             if spec.observation_type == ObservationType.GOAL_SIGNAL
         ][0]
 
-        print(" > ",new_spec , "\n\n\n", " >> ", diverse_spec)
+        print(" > ", new_spec, "\n\n\n", " >> ", diverse_spec)
         self._all_obs_specs = specs.observation_specs
 
         self.diverse_size = diverse_spec.shape[0]
@@ -102,9 +107,7 @@ class DiverseNetwork(torch.nn.Module):
                 new_spec, state_encoder_settings, self._action_flattener.flattened_size
             )
         else:
-            self._encoder = NetworkBody(
-                new_spec, state_encoder_settings
-            )
+            self._encoder = NetworkBody(new_spec, state_encoder_settings)
         self._last_layer = torch.nn.Linear(
             state_encoder_settings.hidden_units, self.diverse_size
         )
