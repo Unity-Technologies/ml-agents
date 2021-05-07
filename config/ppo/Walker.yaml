@@ -23,6 +23,12 @@ behaviors:
       diverse:
         gamma: 0.99
         strength: 0.1
+        network_settings:
+          normalize: false
+          hidden_units: 512
+          num_layers: 3
+          vis_encode_type: simple
+          goal_conditioning_type: none
     keep_checkpoints: 5
     max_steps: 30000000
     time_horizon: 1000
