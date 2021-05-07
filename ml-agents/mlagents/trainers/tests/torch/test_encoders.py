@@ -5,6 +5,8 @@ import pytest
 from mlagents.trainers.torch.encoders import (
     VectorInput,
     Normalizer,
+    SmallVisualEncoder,
+    FullyConnectedVisualEncoder,
     SimpleVisualEncoder,
     ResNetVisualEncoder,
     NatureVisualEncoder,
@@ -73,7 +75,14 @@ def test_vector_encoder(mock_normalizer):
 
 @pytest.mark.parametrize("image_size", [(36, 36, 3), (84, 84, 4), (256, 256, 5)])
 @pytest.mark.parametrize(
-    "vis_class", [SimpleVisualEncoder, ResNetVisualEncoder, NatureVisualEncoder]
+    "vis_class",
+    [
+        SimpleVisualEncoder,
+        ResNetVisualEncoder,
+        NatureVisualEncoder,
+        SmallVisualEncoder,
+        FullyConnectedVisualEncoder,
+    ],
 )
 def test_visual_encoder(vis_class, image_size):
     num_outputs = 128
