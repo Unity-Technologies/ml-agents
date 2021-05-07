@@ -159,6 +159,9 @@ class ModelUtils:
         # VISUAL
         if dim_prop in ModelUtils.VALID_VISUAL_PROP:
             visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
+            ModelUtils._check_resolution_for_encoder(
+                shape[0], shape[1], vis_encode_type
+            )
             return (visual_encoder_class(shape[0], shape[1], shape[2], h_size), h_size)
         # VECTOR
         if dim_prop in ModelUtils.VALID_VECTOR_PROP:
