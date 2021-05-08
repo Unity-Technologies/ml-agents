@@ -1,5 +1,5 @@
 """
-Python Environment API for the ML-Agents toolkit
+Python Environment API for the ML-Agents Toolkit
 The aim of this API is to expose Agents evolving in a simulation
 to perform reinforcement learning on.
 This API supports multi-agent scenarios and groups similar Agents (same
