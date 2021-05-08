@@ -36,6 +36,7 @@ def run_standalone_build(
     output_path: str = None,
     scene_path: str = None,
     build_target: str = None,
+    scripting_backend: str = "mono",
     log_output_path: Optional[str] = f"{get_base_output_path()}/standalone_build.txt",
 ) -> int:
     """
@@ -80,6 +81,8 @@ def run_standalone_build(
         test_args += ["--mlagents-build-scene-path", scene_path]
     if build_target_enum is not None:
         test_args += ["--mlagents-build-target", build_target_enum]
+    if scripting_backend != "mono":
+        test_args += ["--mlagents-scripting-backend", scripting_backend]
     print(f"{' '.join(test_args)} ...")
 
     timeout = 30 * 60  # 30 minutes, just in case

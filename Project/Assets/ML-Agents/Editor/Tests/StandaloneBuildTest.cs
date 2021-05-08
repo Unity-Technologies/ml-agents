@@ -9,7 +9,8 @@ namespace Unity.MLAgents
     {
         const string k_OutputCommandLineFlag = "--mlagents-build-output-path";
         const string k_SceneCommandLineFlag = "--mlagents-build-scene-path";
-        private const string k_BuildTargetFlag = "--mlagents-build-target";
+        const string k_BuildTargetFlag = "--mlagents-build-target";
+        const string k_ScriptingBackendFlag = "--mlagents-scripting-backend";
 
         public static void BuildStandalonePlayerOSX()
         {
@@ -17,6 +18,7 @@ namespace Unity.MLAgents
             var outputPath = "testPlayer";
             var scenePath = "Assets/ML-Agents/Examples/3DBall/Scenes/3DBall.unity";
             var buildTarget = BuildTarget.StandaloneOSX;
+            var scriptingBackend = ScriptingImplementation.Mono2x;
 
             var args = Environment.GetCommandLineArgs();
             for (var i = 0; i < args.Length - 1; i++)
@@ -34,9 +36,22 @@ namespace Unity.MLAgents
                 {
                     buildTarget = (BuildTarget)Enum.Parse(typeof(BuildTarget), args[i + 1], ignoreCase: true);
                 }
+                else if (args[i] == k_ScriptingBackendFlag)
+                {
+                    var val = args[i + 1];
+                    if (val == "mono")
+                    {
+                        scriptingBackend = ScriptingImplementation.Mono2x;
+                    }
+                    else
+                    {
+                        scriptingBackend = ScriptingImplementation.IL2CPP;
+                    }
+                }
             }
 
             string[] scenes = { scenePath };
+            PlayerSettings.SetScriptingBackend(BuildTargetGroup.Standalone, scriptingBackend);
             var buildResult = BuildPipeline.BuildPlayer(
                 scenes,
                 outputPath,

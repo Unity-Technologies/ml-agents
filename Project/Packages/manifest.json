@@ -13,7 +13,10 @@
     "com.unity.modules.physics": "1.0.0",
     "com.unity.modules.physics2d": "1.0.0",
     "com.unity.modules.uielements": "1.0.0",
-    "com.unity.modules.unityanalytics": "1.0.0"
+    "com.unity.modules.unityanalytics": "1.0.0",
+    "com.unity.sysroot.linux-x86_64": "0.1.15-preview",
+    "com.unity.toolchain.win-x86_64-linux-x86_64": "0.1.17-preview",
+    "com.unity.sysroot": "0.1.17-preview"
   },
   "testables": [
     "com.unity.ml-agents",

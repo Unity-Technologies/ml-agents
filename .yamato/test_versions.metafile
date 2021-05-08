@@ -9,3 +9,6 @@ test_editors:
     extra_test: sensor
   - version: 2021.1
     extra_test: llapi
+scripting_backends:
+    - backend: mono
+    - backend: il2cpp

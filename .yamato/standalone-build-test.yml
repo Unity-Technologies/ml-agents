@@ -1,8 +1,9 @@
 {% metadata_file .yamato/test_versions.metafile %}
 ---
 {% for editor in test_editors %}
-test_linux_standalone_{{ editor.version }}:
-  name: Test Linux Standalone {{ editor.version }}
+{% for backend in scripting_backends %}
+test_linux_standalone_{{ editor.version }}_{{ backend.backend }}:
+  name: Test Linux Standalone {{ editor.version }} {{ backend.backend }}
   agent:
     type: Unity::VM
     image: package-ci/ubuntu:stable
@@ -10,15 +11,16 @@ test_linux_standalone_{{ editor.version }}:
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
+    - sudo apt-get install -y lld
     - python3 -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
     - python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
-    - unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
-    - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux
-    - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --scene=Assets/ML-Agents/Examples/Basic/Scenes/Basic.unity
-    - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --scene=Assets/ML-Agents/Examples/Match3/Scenes/Match3.unity
-    - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --scene=Assets/ML-Agents/Examples/WallJump/Scenes/WallJump.unity
-    - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --scene=Assets/ML-Agents/TestScenes/TestCompressedGrid/TestGridCompressed.unity
-    - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --scene=Assets/ML-Agents/TestScenes/TestCompressedTexture/TestTextureCompressed.unity
+    - unity-downloader-cli -u {{ editor.version }} -c editor -c il2cpp --wait --fast
+    - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --mlagents-scripting-backend={{ backend.backend }}
+    - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --scene=Assets/ML-Agents/Examples/Basic/Scenes/Basic.unity --mlagents-scripting-backend={{ backend.backend }}
+    - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --scene=Assets/ML-Agents/Examples/Match3/Scenes/Match3.unity --mlagents-scripting-backend={{ backend.backend }}
+    - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --scene=Assets/ML-Agents/Examples/WallJump/Scenes/WallJump.unity --mlagents-scripting-backend={{ backend.backend }}
+    - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --scene=Assets/ML-Agents/TestScenes/TestCompressedGrid/TestGridCompressed.unity --mlagents-scripting-backend={{ backend.backend }}
+    - python3 -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=linux --scene=Assets/ML-Agents/TestScenes/TestCompressedTexture/TestTextureCompressed.unity --mlagents-scripting-backend={{ backend.backend }}
   triggers:
     cancel_old_ci: true
     expression: |
@@ -37,4 +39,5 @@ test_linux_standalone_{{ editor.version }}:
       paths:
         - "artifacts/testPlayer*/**"
         - "artifacts/**/UnityPlayer.so"
+{% endfor %}
 {% endfor %}
