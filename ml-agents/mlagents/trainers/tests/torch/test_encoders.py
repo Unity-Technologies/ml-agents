@@ -94,7 +94,7 @@ def test_visual_encoder(vis_class, image_size):
 
 
 @pytest.mark.parametrize(
-    "vis_class_and_size",
+    "vis_class, size",
     [
         (SimpleVisualEncoder, 36),
         (ResNetVisualEncoder, 36),
@@ -103,9 +103,8 @@ def test_visual_encoder(vis_class, image_size):
         (FullyConnectedVisualEncoder, 36),
     ],
 )
-def test_visual_encoder_trains(vis_class_and_size):
+def test_visual_encoder_trains(vis_class, size):
     torch.manual_seed(0)
-    vis_class, size = vis_class_and_size
     image_size = (size, size, 1)
     batch = 100
 
@@ -122,5 +121,4 @@ def test_visual_encoder_trains(vis_class_and_size):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        print(loss.item())
     assert loss.item() < 0.05
