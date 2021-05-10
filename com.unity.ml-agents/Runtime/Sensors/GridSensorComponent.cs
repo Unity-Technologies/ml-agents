@@ -18,7 +18,7 @@ namespace Unity.MLAgents.Sensors
         [HideInInspector, SerializeField]
         protected internal string m_SensorName = "GridSensor";
         /// <summary>
-        /// Name of the generated <see cref="GridSensor"/> object.
+        /// Name of the generated GridSensor object.
         /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
         /// </summary>
         public string SensorName
