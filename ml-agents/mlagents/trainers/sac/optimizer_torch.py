@@ -531,7 +531,7 @@ class TorchSACOptimizer(TorchOptimizer):
             with torch.no_grad():
                 cont_log_probs = log_probs.continuous_tensor
                 target_current_diff = torch.sum(
-                    cont_log_probs, dim=1) + self.target_entropy.continuous
+                    cont_log_probs, dim=1) + 10 * self.target_entropy.continuous
                 # print(self.target_entropy.continuous, cont_log_probs, torch.sum(
                 #     cont_log_probs, dim=1) + self.target_entropy.continuous)
             # We update all the _cont_ent_coef as one block
