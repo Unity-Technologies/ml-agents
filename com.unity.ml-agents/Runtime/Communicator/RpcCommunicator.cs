@@ -20,10 +20,6 @@ namespace Unity.MLAgents
     /// Responsible for communication with External using gRPC.
     internal class RpcCommunicator : ICommunicator
     {
-        // The python package version must be >= s_MinSupportedPythonPackageVersion
-        // and <= s_MaxSupportedPythonPackageVersion.
-        static Version s_MinSupportedPythonPackageVersion = new Version("0.16.1");
-        static Version s_MaxSupportedPythonPackageVersion = new Version("0.20.0");
 
         public event QuitCommandHandler QuitCommandReceived;
         public event ResetCommandHandler ResetCommandReceived;
@@ -115,8 +111,8 @@ namespace Unity.MLAgents
                 return false;
             }
 
-            if (pythonVersion < s_MinSupportedPythonPackageVersion ||
-                pythonVersion > s_MaxSupportedPythonPackageVersion)
+            if (pythonVersion < PythonTrainerVersions.s_MinSupportedVersion ||
+                pythonVersion > PythonTrainerVersions.s_MaxSupportedVersion)
             {
                 return false;
             }
@@ -194,8 +190,8 @@ namespace Unity.MLAgents
                         "It is strongly recommended that you use a Python package between {1} and {2}. " +
                         "Training will proceed, but the output format may be different.",
                         pythonPackageVersion,
-                        s_MinSupportedPythonPackageVersion,
-                        s_MaxSupportedPythonPackageVersion
+                        PythonTrainerVersions.s_MinSupportedVersion,
+                        PythonTrainerVersions.s_MaxSupportedVersion
                     );
                 }
             }
