@@ -109,7 +109,7 @@ def main():
     logger.configure('./logs') # Change to log in a different directory
     act = deepq.learn(
         env,
-        "cnn", # conv_only is also a good choice for visual inputs
+        "cnn", # For visual inputs
         lr=2.5e-4,
         total_timesteps=1000000,
         buffer_size=50000,
