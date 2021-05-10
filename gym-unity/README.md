@@ -88,11 +88,10 @@ pip install git+git://github.com/openai/baselines
 Next, create a file called `train_unity.py`. Then create an `/envs/` directory
 and build the environment to that directory. For more information on
 building Unity environments, see
-[here](../docs/Learning-Environment-Executable.md). Note that for the DQN baseline,
-the environment must have a single visual observation, a single discrete action and
-a single Agent in the scene.
-Add the following code to
-the `train_unity.py` file:
+[here](../docs/Learning-Environment-Executable.md). Note that because of
+limitations of the DQN baseline, the environment must have a single visual
+observation, a single discrete action and a single Agent in the scene.
+Add the following code to the `train_unity.py` file:
 
 ```python
 import gym
@@ -258,8 +257,7 @@ rather than on the Python side.
 
 Since Dopamine is designed around variants of DQN, it is only compatible with
 discrete action spaces, and specifically the Discrete Gym space. For
-environments that use branched discrete action spaces (e.g.
-[VisualBanana](../docs/Learning-Environment-Examples.md)), you can enable the
+environments that use branched discrete action spaces, you can enable the
 `flatten_branched` parameter in `UnityToGymWrapper`, which treats each
 combination of branched actions as separate actions.
 
@@ -350,11 +348,3 @@ certain features (e.g. dueling-Q) that are not enabled in Dopamine DQN.
 
 ![Dopamine on GridWorld](images/dopamine_gridworld_plot.png)
 
-### Example: VisualBanana
-
-As an example of using the `flatten_branched` option, we also used the Rainbow
-algorithm to train on the VisualBanana environment, and provide the results
-below. The same hyperparameters were used as in the GridWorld case, except that
-`replay_history` and `epsilon_decay` were increased to 100000.
-
-![Dopamine on VisualBanana](images/dopamine_visualbanana_plot.png)
