@@ -148,10 +148,6 @@ namespace Unity.MLAgents.Inference
             }
 
             var modelApiVersion = (int)model.GetTensorByName(TensorNames.VersionNumber)[0];
-            var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
-            var isContinuousInt = (int)model.GetTensorByName(TensorNames.IsContinuousControl)[0];
-            var isContinuous = GetActionType(isContinuousInt);
-            var actionSize = (int)model.GetTensorByName(TensorNames.ActionOutputShape)[0];
             if (modelApiVersion == -1)
             {
                 failedModelChecks.Add(
@@ -169,13 +165,22 @@ namespace Unity.MLAgents.Inference
 
             if (modelApiVersion > k_ApiVersion)
             {
+                var minTrainerVersion = PythonTrainerVersions.s_MinSupportedVersion;
+                var maxTrainerVersion = PythonTrainerVersions.s_MaxSupportedVersion;
+
                 failedModelChecks.Add(
                     "Model was trained with a newer version of the trainer than is supported. " +
-                    "Either retrain with an older trainer, or update to a newer version of com.unity.ml-agents.\n" +
+                    $"Either retrain with an older trainer (between versions {minTrainerVersion} and {maxTrainerVersion}), " +
+                    $"or update to a newer version of com.unity.ml-agents.\n" +
                     $"Model version: {modelApiVersion}  Supported version: {k_ApiVersion}"
                 );
                 return failedModelChecks;
             }
+
+            var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
+            var isContinuousInt = (int)model.GetTensorByName(TensorNames.IsContinuousControl)[0];
+            var isContinuous = GetActionType(isContinuousInt);
+            var actionSize = (int)model.GetTensorByName(TensorNames.ActionOutputShape)[0];
 
             failedModelChecks.AddRange(
                 CheckIntScalarPresenceHelper(new Dictionary<string, int>()
