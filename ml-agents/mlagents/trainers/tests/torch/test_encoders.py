@@ -91,3 +91,36 @@ def test_visual_encoder(vis_class, image_size):
     sample_input = torch.ones((1, image_size[0], image_size[1], image_size[2]))
     encoding = enc(sample_input)
     assert encoding.shape == (1, num_outputs)
+
+
+@pytest.mark.parametrize(
+    "vis_class_and_size",
+    [
+        (SimpleVisualEncoder, 36),
+        (ResNetVisualEncoder, 36),
+        (NatureVisualEncoder, 36),
+        (SmallVisualEncoder, 10),
+        (FullyConnectedVisualEncoder, 36),
+    ],
+)
+def test_visual_encoder_trains(vis_class_and_size):
+    torch.manual_seed(0)
+    vis_class, size = vis_class_and_size
+    image_size = (size, size, 1)
+    batch = 100
+
+    inputs = torch.cat(
+        [torch.zeros((batch,) + image_size), torch.ones((batch,) + image_size)], dim=0
+    )
+    target = torch.cat([torch.zeros((batch,)), torch.ones((batch,))], dim=0)
+    enc = vis_class(image_size[0], image_size[1], image_size[2], 1)
+    optimizer = torch.optim.Adam(enc.parameters(), lr=0.001)
+
+    for _ in range(15):
+        prediction = enc(inputs)[:, 0]
+        loss = torch.mean((target - prediction) ** 2)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        print(loss.item())
+    assert loss.item() < 0.05
