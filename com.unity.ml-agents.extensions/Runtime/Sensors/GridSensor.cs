@@ -409,11 +409,12 @@ namespace Unity.MLAgents.Extensions.Sensors
             CellActivity = new Color[NumCells];
         }
 
-        /// <summary>
-        /// Calls the initialization methods. Creates the data storing properties used to send the data
-        /// Establishes
-        /// </summary>
-        public virtual void Start()
+        public void Awake()
+        {
+            Initialize();
+        }
+
+        public virtual void Initialize()
         {
             InitGridParameters();
             InitDepthType();
@@ -429,6 +430,15 @@ namespace Unity.MLAgents.Extensions.Sensors
             byteSizesBytesList = new List<byte[]>();
 
             m_perceptionTexture2D = new Texture2D(GridNumSideX, GridNumSideZ, TextureFormat.RGB24, false);
+        }
+
+        /// <summary>
+        /// Calls the initialization methods. Creates the data storing properties used to send the data
+        /// Establishes
+        /// </summary>
+        public virtual void Start()
+        {
+            Initialize();
         }
 
         /// <inheritdoc cref="ISensor.Reset"/>
@@ -681,7 +691,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="normalizedDistance">A float between 0 and 1 describing the ratio of
         ///            the distance currentColliderGo is compared to the edge of the gridsensor</param>
         /// <example>
-        ///   Here is an example of extenind GetObjectData to include information about a potential Rigidbody:
+        ///   Here is an example of extend GetObjectData to include information about a potential Rigidbody:
         ///   <code>
         ///     protected override float[] GetObjectData(GameObject currentColliderGo,
         ///                                     float type_index, float normalized_distance)
@@ -730,7 +740,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// LoadObjectData - If the GameObject matches a tag, GetObjectData is called to extract the data from the GameObject
         /// then the data is transformed based on the GridDepthType of the gridsensor.
-        /// Further documetation on the GridDepthType can be found below
+        /// Further documentation on the GridDepthType can be found below
         /// </summary>
         /// <param name="currentColliderGo">The game object that was found colliding with a certain cell</param>
         /// <param name="cellIndex">The index of the current cell</param>
@@ -873,7 +883,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             if (ShowGizmos)
             {
                 if (Application.isEditor && !Application.isPlaying)
-                    Start();
+                    Initialize();
 
                 Perceive();
 
