@@ -38,12 +38,12 @@ the current board size.
 
 ##### `public abstract int GetCellType(int row, int col)`
 Returns the "color" of piece at the given row and column.
-This should be between 0 and NumCellTypes-1 (inclusive).
+This should be between 0 and BoardSize.NumCellTypes-1 (inclusive).
 The actual order of the values doesn't matter.
 
 ##### `public abstract int GetSpecialType(int row, int col)`
 Returns the special type of the piece at the given row and column.
-This should be between 0 and NumSpecialTypes (inclusive).
+This should be between 0 and BoardSize.NumSpecialTypes (inclusive).
 The actual order of the values doesn't matter.
 
 ##### `public abstract bool IsMoveValid(Move m)`

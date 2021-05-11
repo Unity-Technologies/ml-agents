@@ -93,7 +93,7 @@ namespace Unity.MLAgents.Integrations.Match3
 
         /// <summary>
         /// Returns the "color" of the piece at the given row and column.
-        /// This should be between 0 and NumCellTypes-1 (inclusive).
+        /// This should be between 0 and BoardSize.NumCellTypes-1 (inclusive).
         /// The actual order of the values doesn't matter.
         /// </summary>
         /// <param name="row"></param>
@@ -103,7 +103,7 @@ namespace Unity.MLAgents.Integrations.Match3
 
         /// <summary>
         /// Returns the special type of the piece at the given row and column.
-        /// This should be between 0 and NumSpecialTypes (inclusive).
+        /// This should be between 0 and BoardSize.NumSpecialTypes (inclusive).
         /// The actual order of the values doesn't matter.
         /// </summary>
         /// <param name="row"></param>
