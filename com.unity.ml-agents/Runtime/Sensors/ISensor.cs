@@ -92,7 +92,7 @@ namespace Unity.MLAgents.Sensors
         /// Return information on the compression type being used. If no compression is used, return
         /// <see cref="CompressionSpec.Default()"/>.
         /// </summary>
-        /// <returns>The type of compression used by the sensor.</returns>
+        /// <returns>An object describing the compression used by the sensor.</returns>
         CompressionSpec GetCompressionSpec();
 
         /// <summary>
