@@ -301,6 +301,13 @@ public class WalkerAgent : Agent
     public void TouchedTarget()
     {
         AddReward(1f);
+        //Set our goal walking speed
+        MTargetWalkingSpeed =
+            randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : MTargetWalkingSpeed;
+
+        SetResetParameters();
+
+        m_DiversitySetting = Random.Range(0, 8);
     }
 
     public void SetTorsoMass()
