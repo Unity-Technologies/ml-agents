@@ -60,6 +60,6 @@ OptionalDependencyTests_{{ optional_dep.name }}:
             pull_request.target match "release.+") AND
             NOT pull_request.draft AND
             (pull_request.changes.any match "com.unity.ml-agents/**" OR
-            pull_request.changes.any match ".yamato/com.unity.ml-agents-test.yml")
+            pull_request.changes.any match ".yamato/com.unity.ml-agents-optional-dep-tests.yml")
   {% endfor %}
 
