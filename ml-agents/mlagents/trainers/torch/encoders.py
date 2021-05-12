@@ -259,7 +259,7 @@ class ResNetVisualEncoder(nn.Module):
         layers.append(Swish())
         self.final_flat_size = n_channels[-1] * height * width
         self.dense = linear_layer(
-            n_channels[-1] * height * width,
+            self.final_flat_size,
             output_size,
             kernel_init=Initialization.KaimingHeNormal,
             kernel_gain=1.41,  # Use ReLU gain
