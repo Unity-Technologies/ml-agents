@@ -18,5 +18,3 @@ build.sh.meta
 build.bat
 build.bat.meta
 upm-ci.log
-TestRunnerOptions.json
-TestRunnerOptions.json.meta
