@@ -1,12 +1,12 @@
 {% metadata_file .yamato/coverage_tests.metafile %}
 test_editors:
-    - version: 2019.4
-        # We want some scene tests to run in the DevProject, but packages there only support 2020+
-      testProject: Project
-      enableNoDefaultPackages: !!bool true
-    - version: 2020.2
-      testProject: DevProject
-      enableNoDefaultPackages: !!bool true
+#    - version: 2019.4
+#        # We want some scene tests to run in the DevProject, but packages there only support 2020+
+#      testProject: Project
+#      enableNoDefaultPackages: !!bool true
+#    - version: 2020.2
+#      testProject: DevProject
+#      enableNoDefaultPackages: !!bool true
     - version: 2021.1
       testProject: DevProject
       enableNoDefaultPackages: !!bool true
@@ -38,6 +38,7 @@ packages:
       assembly: Unity.ML-Agents.Extensions*
       minCoveragePct: 75
 ---
+{% capture utrOptions %}"--reruncount=2 --fail-on-assert"{% endcapture %}
 
 all_package_tests:
     name: Run All Combinations of Editors/Platforms Tests
@@ -83,7 +84,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
         flavor: {{ platform.flavor}}
     commands:
         - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-        - upm-ci package test -u {{ editor.version }} --package-path {{ package.name }} {{ noDefaultPackagesOptions }} --warnings-as-errors --extra-utr-arg "reruncount=2"
+        - upm-ci package test -u {{ editor.version }} --package-path {{ package.name }} {{ noDefaultPackagesOptions }} --warnings-as-errors --extra-utr-arg {{ utrOptions }}
     artifacts:
         logs:
             paths:
@@ -129,7 +130,7 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
         - python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
         - unity-downloader-cli -u trunk -c editor --wait --fast
         - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-        - upm-ci project test -u {{ editor.version }} --project-path {{ editor.testProject }} --package-filter {{ package.name }} --extra-create-project-arg="-upmNoDefaultPackages" --extra-utr-arg "reruncount=2"
+        - upm-ci project test -u {{ editor.version }} --project-path {{ editor.testProject }} --package-filter {{ package.name }} --extra-create-project-arg="-upmNoDefaultPackages" --extra-utr-arg {{ utrOptions }}
     artifacts:
         logs:
             paths:

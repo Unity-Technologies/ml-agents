@@ -4,6 +4,7 @@
 {% for editor in coverage_test_editors %}
 {% for platform in coverage_test_platforms %}
 {% capture coverageOptions %} --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+{{ package.assembly }}'{% endcapture %}
+{% capture utrOptions %}"--reruncount=2 --fail-on-assert"{% endcapture %}
 
 test_coverage_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
     name : Coverage {{ package.name }} test {{ editor.version }} on {{ platform.name }}
@@ -13,7 +14,7 @@ test_coverage_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
         flavor: {{ platform.flavor}}
     commands:
         - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-        - upm-ci project test -u {{ editor.version }} --type project-tests --project-path {{ editor.testProject }} --package-filter {{ package.name }} {{ coverageOptions }} --extra-utr-arg "reruncount=2"
+        - upm-ci project test -u {{ editor.version }} --type project-tests --project-path {{ editor.testProject }} --package-filter {{ package.name }} {{ coverageOptions }} --extra-utr-arg {{ utrOptions }}
         - python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ package.minCoveragePct }}
     artifacts:
         logs:
