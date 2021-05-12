@@ -1,13 +1,16 @@
 {
-  "ignoreNonTestAssertionFailures":
-  [
+  "ignoreNonTestAssertionFailures": [
     {
-      "test":"Unity.MLAgents.Tests.Actuators.ActuatorManagerTests.TestFailOnSameActuatorName",
-      "ignorePatterns": ["Actuator names must be unique."]
+      "test": "Unity.MLAgents.Tests.Actuators.ActuatorManagerTests.TestFailOnSameActuatorName",
+      "ignorePatterns": [
+        "Actuator names must be unique."
+      ]
     },
     {
       "test": "Unity.MLAgents.Tests.RayPerception3DTests.TestStaticPerceiveInvalidTags",
-      "ignorePatterns": ["Bad tag is not defined."]
+      "ignorePatterns": [
+        "Bad tag is not defined."
+      ]
     },
     {
       "test": "Unity.MLAgents.Tests.SensorShapeValidatorTests.TestDimensionMismatch",
@@ -18,15 +21,26 @@
     },
     {
       "test": "Unity.MLAgents.Tests.SensorShapeValidatorTests.TestEverythingMismatch",
-      "ignorePatterns": ["Number of Sensors must match. 3 != 2", "Sensor shapes must match. [2, 3] != [9]", "Number of Sensors must match. 2 != 3", "Sensor shapes must match. [9] != [2, 3]"]
+      "ignorePatterns": [
+        "Number of Sensors must match. 3 != 2",
+        "Sensor shapes must match. [2, 3] != [9]",
+        "Number of Sensors must match. 2 != 3",
+        "Sensor shapes must match. [9] != [2, 3]"
+      ]
     },
     {
       "test": "Unity.MLAgents.Tests.SensorShapeValidatorTests.TestNumSensorMismatch",
-      "ignorePatterns": ["Number of Sensors must match. 3 != 2", "Number of Sensors must match. 2 != 3"]
+      "ignorePatterns": [
+        "Number of Sensors must match. 3 != 2",
+        "Number of Sensors must match. 2 != 3"
+      ]
     },
     {
       "test": "Unity.MLAgents.Tests.SensorShapeValidatorTests.TestSizeMismatch",
-      "ignorePatterns": ["Sensor shapes must match. [4, 5, 6] != [4, 5, 7]", "Sensor shapes must match. [4, 5, 7] != [4, 5, 6]"]
+      "ignorePatterns": [
+        "Sensor shapes must match. [4, 5, 6] != [4, 5, 7]",
+        "Sensor shapes must match. [4, 5, 7] != [4, 5, 6]"
+      ]
     }
   ]
 }
