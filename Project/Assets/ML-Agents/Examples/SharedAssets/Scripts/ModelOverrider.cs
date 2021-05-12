@@ -40,6 +40,8 @@ namespace Unity.MLAgentsExamples
 
         string m_BehaviorNameOverrideDirectory;
 
+        private string m_OriginalBehaviorName;
+
         private List<string> m_OverrideExtensions = new List<string>();
 
         // Cached loaded NNModels, with the behavior name as the key.
@@ -82,6 +84,23 @@ namespace Unity.MLAgentsExamples
             {
                 GetAssetPathFromCommandLine();
                 return !string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory);
+            }
+        }
+
+        /// <summary>
+        /// The original behavior name of the agent. The actual behavior name will change when it is overridden.
+        /// </summary>
+        public string OriginalBehaviorName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(m_OriginalBehaviorName))
+                {
+                    var bp = m_Agent.GetComponent<BehaviorParameters>();
+                    m_OriginalBehaviorName = bp.BehaviorName;
+                }
+
+                return m_OriginalBehaviorName;
             }
         }
 
@@ -306,13 +325,11 @@ namespace Unity.MLAgentsExamples
             string overrideError = null;
 
             m_Agent.LazyInitialize();
-            var bp = m_Agent.GetComponent<BehaviorParameters>();
-            var behaviorName = bp.BehaviorName;
 
             NNModel nnModel = null;
             try
             {
-                nnModel = GetModelForBehaviorName(behaviorName);
+                nnModel = GetModelForBehaviorName(OriginalBehaviorName);
             }
             catch (Exception e)
             {
@@ -324,7 +341,7 @@ namespace Unity.MLAgentsExamples
                 if (string.IsNullOrEmpty(overrideError))
                 {
                     overrideError =
-                        $"Didn't find a model for behaviorName {behaviorName}. Make " +
+                        $"Didn't find a model for behaviorName {OriginalBehaviorName}. Make " +
                         "sure the behaviorName is set correctly in the commandline " +
                         "and that the model file exists";
                 }
@@ -332,10 +349,10 @@ namespace Unity.MLAgentsExamples
             else
             {
                 var modelName = nnModel != null ? nnModel.name : "<null>";
-                Debug.Log($"Overriding behavior {behaviorName} for agent with model {modelName}");
+                Debug.Log($"Overriding behavior {OriginalBehaviorName} for agent with model {modelName}");
                 try
                 {
-                    m_Agent.SetModel(GetOverrideBehaviorName(behaviorName), nnModel);
+                    m_Agent.SetModel(GetOverrideBehaviorName(OriginalBehaviorName), nnModel);
                     overrideOk = true;
                 }
                 catch (Exception e)
