@@ -36,14 +36,15 @@ class DiverseNetworkVariational(torch.nn.Module):
     # gradient_penalty_weight = 10.0
     z_size = 128
     alpha = 0.0005
-    mutual_information = 10#0.5
+    mutual_information = 100#0.5
     EPSILON = 1e-7
     initial_beta = 0.0
 
     def __init__(self, specs: BehaviorSpec, settings) -> None:
         super().__init__()
         self._use_actions = True
-        print("VARIATIONAL : Settings : strength:", self.STRENGTH, " use_actions:", self._use_actions, " mutual_information : ", self.mutual_information)
+        sigma_start = 0.5
+        print("VARIATIONAL : Settings : strength:", self.STRENGTH, " use_actions:", self._use_actions, " mutual_information : ", self.mutual_information, "Sigma_Start : ", sigma_start)
         # state_encoder_settings = settings
         state_encoder_settings = NetworkSettings(normalize=True, num_layers=1)
         if state_encoder_settings.memory is not None:
@@ -76,7 +77,7 @@ class DiverseNetworkVariational(torch.nn.Module):
             self._encoder = NetworkBody(new_spec, state_encoder_settings)
 
         self._z_sigma = torch.nn.Parameter(
-                torch.ones((self.z_size), dtype=torch.float), requires_grad=True
+                sigma_start * torch.ones((self.z_size), dtype=torch.float), requires_grad=True
             )
         # self._z_mu_layer = linear_layer(
         #     state_encoder_settings.hidden_units,

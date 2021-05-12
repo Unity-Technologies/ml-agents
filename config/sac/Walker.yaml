@@ -14,8 +14,8 @@ behaviors:
       reward_signal_steps_per_update: 30.0
     network_settings:
       normalize: true
-      hidden_units: 512
-      num_layers: 4
+      hidden_units: 256
+      num_layers: 3
       vis_encode_type: simple
       goal_conditioning_type: none
     reward_signals:
@@ -23,6 +23,6 @@ behaviors:
         gamma: 0.995
         strength: 0.1
     keep_checkpoints: 5
-    max_steps: 150000000
+    max_steps: 15000000
     time_horizon: 1000
     summary_freq: 30000
