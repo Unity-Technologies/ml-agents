@@ -8,6 +8,7 @@ from mlagents.trainers.torch.encoders import (
     ResNetVisualEncoder,
     NatureVisualEncoder,
     SmallVisualEncoder,
+    FullyConnectedVisualEncoder,
     VectorInput,
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
@@ -20,6 +21,7 @@ class ModelUtils:
     # Minimum supported side for each encoder type. If refactoring an encoder, please
     # adjust these also.
     MIN_RESOLUTION_FOR_ENCODER = {
+        EncoderType.FULLY_CONNECTED: 1,
         EncoderType.MATCH3: 5,
         EncoderType.SIMPLE: 20,
         EncoderType.NATURE_CNN: 36,
@@ -123,6 +125,7 @@ class ModelUtils:
             EncoderType.NATURE_CNN: NatureVisualEncoder,
             EncoderType.RESNET: ResNetVisualEncoder,
             EncoderType.MATCH3: SmallVisualEncoder,
+            EncoderType.FULLY_CONNECTED: FullyConnectedVisualEncoder,
         }
         return ENCODER_FUNCTION_BY_TYPE.get(encoder_type)
 
@@ -159,6 +162,9 @@ class ModelUtils:
         # VISUAL
         if dim_prop in ModelUtils.VALID_VISUAL_PROP:
             visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
+            ModelUtils._check_resolution_for_encoder(
+                shape[0], shape[1], vis_encode_type
+            )
             return (visual_encoder_class(shape[0], shape[1], shape[2], h_size), h_size)
         # VECTOR
         if dim_prop in ModelUtils.VALID_VECTOR_PROP:

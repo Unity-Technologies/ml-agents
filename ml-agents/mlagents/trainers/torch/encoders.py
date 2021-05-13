@@ -111,6 +111,30 @@ class VectorInput(nn.Module):
             self.normalizer.update(inputs)
 
 
+class FullyConnectedVisualEncoder(nn.Module):
+    def __init__(
+        self, height: int, width: int, initial_channels: int, output_size: int
+    ):
+        super().__init__()
+        self.output_size = output_size
+        self.input_size = height * width * initial_channels
+        self.dense = nn.Sequential(
+            linear_layer(
+                self.input_size,
+                self.output_size,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=1.41,  # Use ReLU gain
+            ),
+            nn.LeakyReLU(),
+        )
+
+    def forward(self, visual_obs: torch.Tensor) -> torch.Tensor:
+        if not exporting_to_onnx.is_exporting():
+            visual_obs = visual_obs.permute([0, 3, 1, 2])
+        hidden = visual_obs.reshape(-1, self.input_size)
+        return self.dense(hidden)
+
+
 class SmallVisualEncoder(nn.Module):
     """
     CNN architecture used by King in their Candy Crush predictor

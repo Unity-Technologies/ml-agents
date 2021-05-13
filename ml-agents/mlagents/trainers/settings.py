@@ -81,6 +81,7 @@ class ExportableSettings:
 
 
 class EncoderType(Enum):
+    FULLY_CONNECTED = "fully_connected"
     MATCH3 = "match3"
     SIMPLE = "simple"
     NATURE_CNN = "nature_cnn"
