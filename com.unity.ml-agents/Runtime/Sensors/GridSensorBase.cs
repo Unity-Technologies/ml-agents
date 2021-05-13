@@ -32,7 +32,7 @@ namespace Unity.MLAgents.Sensors
         string[] m_DetectableTags;
         SensorCompressionType m_CompressionType;
         ObservationSpec m_ObservationSpec;
-        internal IOverlapChecker m_OverlapChecker;
+        internal IGridPerception m_GridPerception;
 
         // Buffers
         float[] m_PerceptionBuffer;
@@ -299,9 +299,9 @@ namespace Unity.MLAgents.Sensors
             ResetPerceptionBuffer();
             using (TimerStack.Instance.Scoped("GridSensor.Update"))
             {
-                if (m_OverlapChecker != null)
+                if (m_GridPerception != null)
                 {
-                    m_OverlapChecker.Update();
+                    m_GridPerception.Perceive();
                 }
             }
         }

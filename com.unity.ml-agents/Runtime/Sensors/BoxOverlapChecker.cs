@@ -3,7 +3,10 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Sensors
 {
-    internal class BoxOverlapChecker : IOverlapChecker
+    /// <summary>
+    /// The grid perception strategy that uses box overlap to detect objects.
+    /// </summary>
+    internal class BoxOverlapChecker : IGridPerception
     {
         Vector3 m_CellScale;
         Vector3Int m_GridSize;
@@ -108,7 +111,7 @@ namespace Unity.MLAgents.Sensors
             return m_RotateWithAgent ? m_CenterObject.transform.rotation : Quaternion.identity;
         }
 
-        public void Update()
+        public void Perceive()
         {
 #if MLA_UNITY_PHYSICS_MODULE
             for (var cellIndex = 0; cellIndex < m_NumCells; cellIndex++)
