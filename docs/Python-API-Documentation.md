@@ -1,6 +1,4 @@
-# Python Low level API Documentation
-
-## Table of Contents
+# Table of Contents
 
 * [mlagents\_envs.env\_utils](#mlagents_envs.env_utils)
   * [get\_platform](#mlagents_envs.env_utils.get_platform)
@@ -195,7 +193,7 @@ Agents can request decisions at different frequencies, a simulation step does
 not necessarily correspond to a fixed simulation time increment.
 
 <a name="mlagents_envs.base_env.DecisionStep"></a>
-## DecisionStep
+## DecisionStep Objects
 
 ```python
 class DecisionStep(NamedTuple)
@@ -214,7 +212,7 @@ simulation step.
  the agent during this simulation step.
 
 <a name="mlagents_envs.base_env.DecisionSteps"></a>
-## DecisionSteps
+## DecisionSteps Objects
 
 ```python
 class DecisionSteps(Mapping)
@@ -285,7 +283,7 @@ Returns an empty DecisionSteps.
 - `spec`: The BehaviorSpec for the DecisionSteps
 
 <a name="mlagents_envs.base_env.TerminalStep"></a>
-## TerminalStep
+## TerminalStep Objects
 
 ```python
 class TerminalStep(NamedTuple)
@@ -301,7 +299,7 @@ Contains the data a single Agent collected when its episode ended.
  - agent_id is an int and an unique identifier for the corresponding Agent.
 
 <a name="mlagents_envs.base_env.TerminalSteps"></a>
-## TerminalSteps
+## TerminalSteps Objects
 
 ```python
 class TerminalSteps(Mapping)
@@ -368,7 +366,7 @@ Returns an empty TerminalSteps.
 - `spec`: The BehaviorSpec for the TerminalSteps
 
 <a name="mlagents_envs.base_env.ActionTuple"></a>
-## ActionTuple
+## ActionTuple Objects
 
 ```python
 class ActionTuple(_ActionTupleBase)
@@ -392,7 +390,7 @@ zero.
 The dtype of a discrete action.
 
 <a name="mlagents_envs.base_env.ActionSpec"></a>
-## ActionSpec
+## ActionSpec Objects
 
 ```python
 class ActionSpec(NamedTuple)
@@ -482,7 +480,7 @@ Creates an ActionSpec that is homogenously continuous
 Creates an ActionSpec that is homogenously discrete
 
 <a name="mlagents_envs.base_env.DimensionProperty"></a>
-## DimensionProperty
+## DimensionProperty Objects
 
 ```python
 class DimensionProperty(IntFlag)
@@ -508,7 +506,7 @@ Means that there can be a variable number of observations in this dimension.
 The observations are unordered.
 
 <a name="mlagents_envs.base_env.ObservationType"></a>
-## ObservationType
+## ObservationType Objects
 
 ```python
 class ObservationType(Enum)
@@ -518,7 +516,7 @@ An Enum which defines the type of information carried in the observation
 of the agent.
 
 <a name="mlagents_envs.base_env.ObservationSpec"></a>
-## ObservationSpec
+## ObservationSpec Objects
 
 ```python
 class ObservationSpec(NamedTuple)
@@ -532,7 +530,7 @@ dimension.
 - observation_type is an enum of ObservationType.
 
 <a name="mlagents_envs.base_env.BehaviorSpec"></a>
-## BehaviorSpec
+## BehaviorSpec Objects
 
 ```python
 class BehaviorSpec(NamedTuple)
@@ -547,7 +545,7 @@ agent.
 - action_spec is an ActionSpec NamedTuple.
 
 <a name="mlagents_envs.base_env.BaseEnv"></a>
-## BaseEnv
+## BaseEnv Objects
 
 ```python
 class BaseEnv(ABC)
@@ -667,7 +665,7 @@ episode terminated last step.
 # mlagents\_envs.communicator
 
 <a name="mlagents_envs.communicator.Communicator"></a>
-## Communicator
+## Communicator Objects
 
 ```python
 class Communicator()
@@ -734,7 +732,7 @@ Sends a shutdown signal to the unity environment, and closes the connection.
 # mlagents\_envs.environment
 
 <a name="mlagents_envs.environment.UnityEnvironment"></a>
-## UnityEnvironment
+## UnityEnvironment Objects
 
 ```python
 class UnityEnvironment(BaseEnv)
@@ -777,7 +775,7 @@ Sends a shutdown signal to the unity environment, and closes the socket connecti
 # mlagents\_envs.registry.unity\_env\_registry
 
 <a name="mlagents_envs.registry.unity_env_registry.UnityEnvRegistry"></a>
-## UnityEnvRegistry
+## UnityEnvRegistry Objects
 
 ```python
 class UnityEnvRegistry(Mapping)
@@ -973,7 +971,7 @@ load_local_manifest(path: str) -> Dict[str, Any]
 Converts a local yaml file into a Python dictionary
 
 <a name="mlagents_envs.registry.binary_utils.ZipFileWithProgress"></a>
-## ZipFileWithProgress
+## ZipFileWithProgress Objects
 
 ```python
 class ZipFileWithProgress(ZipFile)
@@ -986,7 +984,7 @@ bar while the files are being extracted.
 # mlagents\_envs.registry.remote\_registry\_entry
 
 <a name="mlagents_envs.registry.remote_registry_entry.RemoteRegistryEntry"></a>
-## RemoteRegistryEntry
+## RemoteRegistryEntry Objects
 
 ```python
 class RemoteRegistryEntry(BaseRegistryEntry)
@@ -1033,7 +1031,7 @@ constructor of the UnityEnvironment (except for the file_name argument)
 # mlagents\_envs.registry.base\_registry\_entry
 
 <a name="mlagents_envs.registry.base_registry_entry.BaseRegistryEntry"></a>
-## BaseRegistryEntry
+## BaseRegistryEntry Objects
 
 ```python
 class BaseRegistryEntry()
@@ -1106,7 +1104,7 @@ This method creates a Unity BaseEnv (usually a UnityEnvironment).
 # mlagents\_envs.side\_channel.raw\_bytes\_channel
 
 <a name="mlagents_envs.side_channel.raw_bytes_channel.RawBytesChannel"></a>
-## RawBytesChannel
+## RawBytesChannel Objects
 
 ```python
 class RawBytesChannel(SideChannel)
@@ -1149,7 +1147,7 @@ step.
 # mlagents\_envs.side\_channel.outgoing\_message
 
 <a name="mlagents_envs.side_channel.outgoing_message.OutgoingMessage"></a>
-## OutgoingMessage
+## OutgoingMessage Objects
 
 ```python
 class OutgoingMessage()
@@ -1234,7 +1232,7 @@ Set the internal buffer to a new bytearray. This will overwrite any existing dat
 # mlagents\_envs.side\_channel.engine\_configuration\_channel
 
 <a name="mlagents_envs.side_channel.engine_configuration_channel.EngineConfigurationChannel"></a>
-## EngineConfigurationChannel
+## EngineConfigurationChannel Objects
 
 ```python
 class EngineConfigurationChannel(SideChannel)
@@ -1298,7 +1296,7 @@ Sets the engine configuration. Takes as input an EngineConfig.
 # mlagents\_envs.side\_channel.side\_channel\_manager
 
 <a name="mlagents_envs.side_channel.side_channel_manager.SideChannelManager"></a>
-## SideChannelManager
+## SideChannelManager Objects
 
 ```python
 class SideChannelManager()
@@ -1332,7 +1330,7 @@ and combines them into a single message ready to be sent.
 # mlagents\_envs.side\_channel.stats\_side\_channel
 
 <a name="mlagents_envs.side_channel.stats_side_channel.StatsSideChannel"></a>
-## StatsSideChannel
+## StatsSideChannel Objects
 
 ```python
 class StatsSideChannel(SideChannel)
@@ -1375,7 +1373,7 @@ Returns the current stats, and resets the internal storage of the stats.
 # mlagents\_envs.side\_channel.incoming\_message
 
 <a name="mlagents_envs.side_channel.incoming_message.IncomingMessage"></a>
-## IncomingMessage
+## IncomingMessage Objects
 
 ```python
 class IncomingMessage()
@@ -1491,7 +1489,7 @@ Get a copy of the internal bytes used by the message.
 # mlagents\_envs.side\_channel.float\_properties\_channel
 
 <a name="mlagents_envs.side_channel.float_properties_channel.FloatPropertiesChannel"></a>
-## FloatPropertiesChannel
+## FloatPropertiesChannel Objects
 
 ```python
 class FloatPropertiesChannel(SideChannel)
@@ -1571,7 +1569,7 @@ Returns a copy of the float properties.
 # mlagents\_envs.side\_channel.environment\_parameters\_channel
 
 <a name="mlagents_envs.side_channel.environment_parameters_channel.EnvironmentParametersChannel"></a>
-## EnvironmentParametersChannel
+## EnvironmentParametersChannel Objects
 
 ```python
 class EnvironmentParametersChannel(SideChannel)
@@ -1646,7 +1644,7 @@ Sets a multirangeuniform environment parameter sampler.
 # mlagents\_envs.side\_channel.side\_channel
 
 <a name="mlagents_envs.side_channel.side_channel.SideChannel"></a>
-## SideChannel
+## SideChannel Objects
 
 ```python
 class SideChannel(ABC)
@@ -1692,4 +1690,3 @@ SideChannel.
 
 The type of side channel used. Will influence how the data is
 processed in the environment.
-
