@@ -11,6 +11,7 @@ and this project adheres to
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Added a fully connected visual encoder for environments with very small image inputs. (#5351)
 ### Bug Fixes
 
 
