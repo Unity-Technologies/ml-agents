@@ -155,7 +155,7 @@ namespace Unity.MLAgents.Tests
             testGo.transform.position = Vector3.zero;
             testObjects.Add(testGo);
             var boxOverlap = TestBoxOverlapChecker.CreateChecker(agentGameObject: testGo, centerObject: testGo, initialColliderBufferSize: 2, maxColliderBufferSize: 5);
-            boxOverlap.Update();
+            boxOverlap.Perceive();
             Assert.AreEqual(2, boxOverlap.ColliderBuffer.Length);
 
             for (var i = 0; i < 3; i++)
@@ -165,7 +165,7 @@ namespace Unity.MLAgents.Tests
                 boxGo.AddComponent<BoxCollider>();
                 testObjects.Add(boxGo);
             }
-            boxOverlap.Update();
+            boxOverlap.Perceive();
             Assert.AreEqual(4, boxOverlap.ColliderBuffer.Length);
 
             for (var i = 0; i < 2; i++)
@@ -175,7 +175,7 @@ namespace Unity.MLAgents.Tests
                 boxGo.AddComponent<BoxCollider>();
                 testObjects.Add(boxGo);
             }
-            boxOverlap.Update();
+            boxOverlap.Perceive();
             Assert.AreEqual(5, boxOverlap.ColliderBuffer.Length);
 
             Object.DestroyImmediate(testGo);
@@ -212,7 +212,7 @@ namespace Unity.MLAgents.Tests
                 testObjects.Add(boxGo);
             }
 
-            boxOverlap.Update();
+            boxOverlap.Perceive();
             helper.Verify(1, new List<GameObject> { testObjects[0] });
 
             Object.DestroyImmediate(testGo);
@@ -249,7 +249,7 @@ namespace Unity.MLAgents.Tests
                 testObjects.Add(boxGo);
             }
 
-            boxOverlap.Update();
+            boxOverlap.Perceive();
             helper.Verify(3, testObjects);
 
             Object.DestroyImmediate(testGo);
@@ -293,7 +293,7 @@ namespace Unity.MLAgents.Tests
             foreach (var sensor in sensors)
             {
                 var gridsensor = (GridSensorBase)sensor;
-                if (gridsensor.m_BoxOverlapChecker != null)
+                if (gridsensor.m_GridPerception != null)
                 {
                     numChecker += 1;
                 }

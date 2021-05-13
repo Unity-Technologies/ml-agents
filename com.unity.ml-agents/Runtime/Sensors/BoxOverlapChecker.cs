@@ -3,7 +3,10 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Sensors
 {
-    internal class BoxOverlapChecker
+    /// <summary>
+    /// The grid perception strategy that uses box overlap to detect objects.
+    /// </summary>
+    internal class BoxOverlapChecker : IGridPerception
     {
         Vector3 m_CellScale;
         Vector3Int m_GridSize;
@@ -84,17 +87,14 @@ namespace Unity.MLAgents.Sensors
             }
         }
 
-        /// <summary>Converts the index of the cell to the 3D point (y is zero) relative to grid center</summary>
-        /// <returns>Vector3 of the position of the center of the cell relative to grid center</returns>
-        /// <param name="cellIndex">The index of the cell</param>
-        Vector3 GetCellLocalPosition(int cellIndex)
+        public Vector3 GetCellLocalPosition(int cellIndex)
         {
             float x = (cellIndex / m_GridSize.z - m_CellCenterOffset.x) * m_CellScale.x;
             float z = (cellIndex % m_GridSize.z - m_CellCenterOffset.z) * m_CellScale.z;
             return new Vector3(x, 0, z);
         }
 
-        internal Vector3 GetCellGlobalPosition(int cellIndex)
+        public Vector3 GetCellGlobalPosition(int cellIndex)
         {
             if (m_RotateWithAgent)
             {
@@ -106,16 +106,12 @@ namespace Unity.MLAgents.Sensors
             }
         }
 
-        internal Quaternion GetGridRotation()
+        public Quaternion GetGridRotation()
         {
             return m_RotateWithAgent ? m_CenterObject.transform.rotation : Quaternion.identity;
         }
 
-        /// <summary>
-        /// Perceive the latest grid status. Call OverlapBoxNonAlloc once to detect colliders.
-        /// Then parse the collider arrays according to all available gridSensor delegates.
-        /// </summary>
-        internal void Update()
+        public void Perceive()
         {
 #if MLA_UNITY_PHYSICS_MODULE
             for (var cellIndex = 0; cellIndex < m_NumCells; cellIndex++)
@@ -135,10 +131,7 @@ namespace Unity.MLAgents.Sensors
 #endif
         }
 
-        /// <summary>
-        /// Same as Update(), but only load data for debug gizmo.
-        /// </summary>
-        internal void UpdateGizmo()
+        public void UpdateGizmo()
         {
 #if MLA_UNITY_PHYSICS_MODULE
             for (var cellIndex = 0; cellIndex < m_NumCells; cellIndex++)
@@ -246,7 +239,7 @@ namespace Unity.MLAgents.Sensors
         }
 #endif
 
-        internal void RegisterSensor(GridSensorBase sensor)
+        public void RegisterSensor(GridSensorBase sensor)
         {
 #if MLA_UNITY_PHYSICS_MODULE
             if (sensor.GetProcessCollidersMethod() == ProcessCollidersMethod.ProcessAllColliders)
@@ -260,7 +253,7 @@ namespace Unity.MLAgents.Sensors
 #endif
         }
 
-        internal void RegisterDebugSensor(GridSensorBase debugSensor)
+        public void RegisterDebugSensor(GridSensorBase debugSensor)
         {
 #if MLA_UNITY_PHYSICS_MODULE
             GridOverlapDetectedDebug += debugSensor.ProcessDetectedObject;
