@@ -48,7 +48,7 @@ Manager documentation].
 To install the companion Python package to enable training behaviors, follow the
 [installation instructions] on our [GitHub repository]. It is strongly recommended that you
 use the Python package that corresponds to this release (version 0.16.1) for the best experience;
-versions between 0.16.1 and 0.20.0 are supported.
+versions between 0.16.1 and 0.20.0 are supported. Versions after 0.25.1 cannot be used.
 
 ## Requirements
 

@@ -11,6 +11,7 @@ and this project adheres to
 #### com.unity.ml-agents (C#)
 - Fixed a null reference exception that occurred when loading an ONNX model file that was generated with a new
 version of the Python trainer (0.26.0 or newer).
+- Added checked to prevent training with incompatible versions of the python trainer (0.26.0 or newer).
 
 ## [1.0.7] - 2021-03-04
 ### Minor Changes
