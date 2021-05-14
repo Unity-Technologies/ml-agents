@@ -54,17 +54,39 @@ namespace Unity.MLAgents.Tests.Communicator
         [Test]
         public void TestCheckPythonPackageVersionIsCompatible()
         {
-            Assert.IsFalse(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.13.37")); // too low
-            Assert.IsFalse(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.42.0")); // too high
+            Assert.IsTrue(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.13.37")); // low is OK
+            Assert.IsFalse(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.26.0")); // too high
 
             // These are fine
             Assert.IsTrue(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.16.1"));
             Assert.IsTrue(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.17.17"));
-            Assert.IsTrue(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.20.0"));
+            Assert.IsTrue(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.25.0"));
+            Assert.IsTrue(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.25.1"));
+            Assert.IsTrue(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.25.2"));
+
+            // "dev" strings should get removed before parsing
+            Assert.IsTrue(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.17.0.dev0"));
+            Assert.IsTrue(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.25.0.dev0"));
+            Assert.IsFalse(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.26.0.dev0"));
+
+            // otherwise unparseable - keep support for these
+            Assert.IsTrue(RpcCommunicator.CheckPythonPackageVersionIsCompatible("the airspeed velocity of an unladen swallow"));
+        }
+
+        [Test]
+        public void TestCheckPythonPackageVersionIsSupported()
+        {
+            Assert.IsFalse(RpcCommunicator.CheckPythonPackageVersionIsSupported("0.13.37")); // too low
+            Assert.IsFalse(RpcCommunicator.CheckPythonPackageVersionIsSupported("0.42.0")); // too high
+
+            // These are fine
+            Assert.IsTrue(RpcCommunicator.CheckPythonPackageVersionIsSupported("0.16.1"));
+            Assert.IsTrue(RpcCommunicator.CheckPythonPackageVersionIsSupported("0.17.17"));
+            Assert.IsTrue(RpcCommunicator.CheckPythonPackageVersionIsSupported("0.20.0"));
 
             // "dev" string or otherwise unparseable
-            Assert.IsFalse(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.17.0-dev0"));
-            Assert.IsFalse(RpcCommunicator.CheckPythonPackageVersionIsCompatible("oh point seventeen point oh"));
+            Assert.IsFalse(RpcCommunicator.CheckPythonPackageVersionIsSupported("0.17.0.dev0"));
+            Assert.IsFalse(RpcCommunicator.CheckPythonPackageVersionIsSupported("oh point seventeen point oh"));
         }
     }
 }
