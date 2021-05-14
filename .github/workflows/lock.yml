@@ -20,4 +20,3 @@ jobs:
             any recent activity after it was closed. Please open a new issue for
             related bugs.
           issue-lock-reason: 'resolved'
-          process-only: 'issues'
