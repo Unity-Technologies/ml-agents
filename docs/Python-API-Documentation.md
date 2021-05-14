@@ -29,6 +29,7 @@
     * [UNSPECIFIED](#mlagents_envs.base_env.DimensionProperty.UNSPECIFIED)
     * [NONE](#mlagents_envs.base_env.DimensionProperty.NONE)
     * [TRANSLATIONAL\_EQUIVARIANCE](#mlagents_envs.base_env.DimensionProperty.TRANSLATIONAL_EQUIVARIANCE)
+    * [VARIABLE\_SIZE](#mlagents_envs.base_env.DimensionProperty.VARIABLE_SIZE)
   * [ObservationType](#mlagents_envs.base_env.ObservationType)
   * [ObservationSpec](#mlagents_envs.base_env.ObservationSpec)
   * [BehaviorSpec](#mlagents_envs.base_env.BehaviorSpec)
@@ -486,21 +487,26 @@ Creates an ActionSpec that is homogenously discrete
 class DimensionProperty(IntFlag)
 ```
 
-No properties specified.
+The dimension property of a dimension of an observation.
 
 <a name="mlagents_envs.base_env.DimensionProperty.UNSPECIFIED"></a>
 #### UNSPECIFIED
 
-No Property of the observation in that dimension. Observation can be processed with
-Fully connected networks.
+No properties specified.
 
 <a name="mlagents_envs.base_env.DimensionProperty.NONE"></a>
 #### NONE
 
-Means it is suitable to do a convolution in this dimension.
+No Property of the observation in that dimension. Observation can be processed with
+Fully connected networks.
 
 <a name="mlagents_envs.base_env.DimensionProperty.TRANSLATIONAL_EQUIVARIANCE"></a>
 #### TRANSLATIONAL\_EQUIVARIANCE
+
+Means it is suitable to do a convolution in this dimension.
+
+<a name="mlagents_envs.base_env.DimensionProperty.VARIABLE_SIZE"></a>
+#### VARIABLE\_SIZE
 
 Means that there can be a variable number of observations in this dimension.
 The observations are unordered.
