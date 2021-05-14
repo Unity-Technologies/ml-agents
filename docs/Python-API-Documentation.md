@@ -31,6 +31,8 @@
     * [TRANSLATIONAL\_EQUIVARIANCE](#mlagents_envs.base_env.DimensionProperty.TRANSLATIONAL_EQUIVARIANCE)
     * [VARIABLE\_SIZE](#mlagents_envs.base_env.DimensionProperty.VARIABLE_SIZE)
   * [ObservationType](#mlagents_envs.base_env.ObservationType)
+    * [DEFAULT](#mlagents_envs.base_env.ObservationType.DEFAULT)
+    * [GOAL\_SIGNAL](#mlagents_envs.base_env.ObservationType.GOAL_SIGNAL)
   * [ObservationSpec](#mlagents_envs.base_env.ObservationSpec)
   * [BehaviorSpec](#mlagents_envs.base_env.BehaviorSpec)
   * [BaseEnv](#mlagents_envs.base_env.BaseEnv)
@@ -520,6 +522,16 @@ class ObservationType(Enum)
 
 An Enum which defines the type of information carried in the observation
 of the agent.
+
+<a name="mlagents_envs.base_env.ObservationType.DEFAULT"></a>
+#### DEFAULT
+
+Observation information is generic.
+
+<a name="mlagents_envs.base_env.ObservationType.GOAL_SIGNAL"></a>
+#### GOAL\_SIGNAL
+
+Observation contains goal information for current task
 
 <a name="mlagents_envs.base_env.ObservationSpec"></a>
 ## ObservationSpec Objects

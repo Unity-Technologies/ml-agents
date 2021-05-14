@@ -481,7 +481,6 @@ class ObservationType(Enum):
     of the agent.
     """
 
-
     DEFAULT = 0
     """
     Observation information is generic.
@@ -491,6 +490,7 @@ class ObservationType(Enum):
     """
     Observation contains goal information for current task
     """
+
 
 class ObservationSpec(NamedTuple):
     """
