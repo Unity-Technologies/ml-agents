@@ -18,6 +18,9 @@ from mlagents.trainers.settings import TrainerSettings, SACSettings
 from contextlib import ExitStack
 from mlagents.trainers.trajectory import ObsUtil
 
+
+from mlagents.trainers.torch.distributions import GaussianDistribution
+
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
 logger = get_logger(__name__)
@@ -30,11 +33,12 @@ from mlagents_envs.base_env import BehaviorSpec
 
 class DiverseNetwork(torch.nn.Module):
     EPSILON = 1e-10
-    STRENGTH = 0.1
+    STRENGTH = 1.0
 
     def __init__(self, specs: BehaviorSpec, settings) -> None:
         super().__init__()
         self._use_actions = True
+        self._use_continuous = True
         state_encoder_settings = settings
         if state_encoder_settings.memory is not None:
             state_encoder_settings.memory = None
@@ -64,16 +68,19 @@ class DiverseNetwork(torch.nn.Module):
             )
         else:
             self._encoder = NetworkBody(new_spec, state_encoder_settings)
-        self._last_layer = torch.nn.Linear(
-            state_encoder_settings.hidden_units, self.diverse_size
-        )
+        if self._use_continuous:
+            self._last_layer = GaussianDistribution(state_encoder_settings.hidden_units, self.diverse_size)
+        else:
+            self._last_layer = torch.nn.Linear(
+                state_encoder_settings.hidden_units, self.diverse_size
+            )
         self._diverse_index = -1
         self._max_index = len(specs.observation_specs)
         for i, spec in enumerate(specs.observation_specs):
             if spec.observation_type == ObservationType.GOAL_SIGNAL:
                 self._diverse_index = i
 
-    def predict(self, obs_input, action_input, detach_action=False) -> torch.Tensor:
+    def _predict(self, obs_input, action_input, detach_action=False) -> torch.Tensor:
         # Convert to tensors
         tensor_obs = [
             obs
@@ -90,8 +97,10 @@ class DiverseNetwork(torch.nn.Module):
             hidden, _ = self._encoder.forward(tensor_obs)
 
         # add a VAE (like in VAIL ?)
-
-        prediction = torch.softmax(self._last_layer(hidden), dim=1)
+        if self._use_continuous:
+            prediction = self._last_layer(hidden)
+        else:
+            prediction = torch.softmax(self._last_layer(hidden), dim=1)
         return prediction
 
     def copy_normalization(self, thing):
@@ -99,8 +108,11 @@ class DiverseNetwork(torch.nn.Module):
 
     def rewards(self, obs_input, action_input, detach_action=False) -> torch.Tensor:
         truth = obs_input[self._diverse_index]
-        prediction = self.predict(obs_input, action_input, detach_action)
-        rewards = torch.log(torch.sum((prediction * truth), dim=1) + self.EPSILON)
+        prediction = self._predict(obs_input, action_input, detach_action)
+        if self._use_continuous:
+            rewards = torch.sum(prediction.log_prob(truth), dim=1)
+        else:
+            rewards = torch.log(torch.sum((prediction * truth), dim=1) + self.EPSILON)
         return rewards
 
     def loss(self, obs_input, action_input, masks, detach_action=True) -> torch.Tensor:
@@ -401,7 +413,7 @@ class TorchSACOptimizer(TorchOptimizer):
                 with torch.no_grad():
                     v_backup = (
                         min_policy_qs[name]
-                        - torch.sum(_cont_ent_coef * log_probs.continuous_tensor, dim=1)
+                        - _cont_ent_coef * torch.sum(log_probs.continuous_tensor, dim=1)
                         + self._mede_network.STRENGTH
                         * self._mede_network.rewards(obs, act)
                     )
@@ -410,6 +422,7 @@ class TorchSACOptimizer(TorchOptimizer):
                 )
                 value_losses.append(value_loss)
         else:
+            print("MEDE not being added to V")
             disc_log_probs = log_probs.all_discrete_tensor
             branched_per_action_ent = ModelUtils.break_into_branches(
                 disc_log_probs * disc_log_probs.exp(),
@@ -485,9 +498,8 @@ class TorchSACOptimizer(TorchOptimizer):
             all_mean_q1 = mean_q1
         if self._action_spec.continuous_size > 0:
             cont_log_probs = log_probs.continuous_tensor
-            batch_policy_loss += torch.mean(
-                _cont_ent_coef * cont_log_probs - all_mean_q1.unsqueeze(1), dim=1
-            ) - self._mede_network.STRENGTH * self._mede_network.rewards(obs, act)
+            #batch_policy_loss += torch.mean(
+            batch_policy_loss += _cont_ent_coef * torch.sum(cont_log_probs, dim=1) - all_mean_q1 - self._mede_network.STRENGTH * self._mede_network.rewards(obs, act)
         policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
 
         return policy_loss
@@ -526,9 +538,12 @@ class TorchSACOptimizer(TorchOptimizer):
         if self._action_spec.continuous_size > 0:
             with torch.no_grad():
                 cont_log_probs = log_probs.continuous_tensor
-                target_current_diff = torch.sum(
-                    cont_log_probs + self.target_entropy.continuous, dim=1
-                )
+                #target_current_diff = torch.sum(
+                #    cont_log_probs + self.target_entropy.continuous, dim=1
+                #)
+
+                target_current_diff = torch.sum(cont_log_probs, dim=1) + self.target_entropy.continuous
+
             # We update all the _cont_ent_coef as one block
             entropy_loss += -1 * ModelUtils.masked_mean(
                 _cont_ent_coef * target_current_diff, loss_masks
@@ -721,6 +736,8 @@ class TorchSACOptimizer(TorchOptimizer):
         mede_loss.backward()
         self._mede_optimizer.step()
 
+        with torch.no_grad():
+            mede_rewards = torch.mean(self._mede_network.rewards(current_obs, sampled_actions)).item()
         # Update target network
         ModelUtils.soft_update(self._critic, self.target_network, self.tau)
         update_stats = {
@@ -736,6 +753,7 @@ class TorchSACOptimizer(TorchOptimizer):
             ).item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/MEDE Loss": mede_loss.item(),
+            "Policy/MEDE Rewards": mede_rewards,
         }
 
         return update_stats

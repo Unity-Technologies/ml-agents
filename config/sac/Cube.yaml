@@ -1,5 +1,5 @@
 behaviors:
-  Crawler:
+  CubeDiv:
     trainer_type: sac
     hyperparameters:
       learning_rate: 0.0003
@@ -13,15 +13,15 @@ behaviors:
       init_entcoef: 1.0
       reward_signal_steps_per_update: 20.0
     network_settings:
-      normalize: true
+      normalize: false
       hidden_units: 512
-      num_layers: 3
+      num_layers: 2
       vis_encode_type: simple
       goal_conditioning_type: none
     reward_signals:
       extrinsic:
-        gamma: 0.995
-        strength: 1.0
+        gamma: 0.99
+        strength: 10.0
     keep_checkpoints: 5
     max_steps: 5000000
     time_horizon: 1000

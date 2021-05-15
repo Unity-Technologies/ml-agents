@@ -85,7 +85,12 @@ public class CrawlerAgent : Agent
         m_JdController.SetupBodyPart(leg2Lower);
         m_JdController.SetupBodyPart(leg3Upper);
         m_JdController.SetupBodyPart(leg3Lower);
+        GetComponent<VectorSensorComponent>().CreateSensors();
+        m_DiversitySettingSensor = GetComponent<VectorSensorComponent>();
     }
+
+    VectorSensorComponent m_DiversitySettingSensor;
+    public int m_DiversitySetting = 0;
 
     /// <summary>
     /// Spawns a target prefab at pos
@@ -114,6 +119,8 @@ public class CrawlerAgent : Agent
 
         //Set our goal walking speed
         TargetWalkingSpeed = Random.Range(0.1f, m_maxWalkingSpeed);
+
+        m_DiversitySetting = Random.Range(0, 8);
     }
 
     /// <summary>
@@ -135,6 +142,9 @@ public class CrawlerAgent : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
+        m_DiversitySettingSensor.GetSensor().Reset();
+        m_DiversitySettingSensor.GetSensor().AddOneHotObservation(m_DiversitySetting, 8);
+
         var cubeForward = m_OrientationCube.transform.forward;
 
         //velocity we want to match
@@ -230,7 +240,7 @@ public class CrawlerAgent : Agent
         //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
         var lookAtTargetReward = (Vector3.Dot(cubeForward, body.forward) + 1) * .5F;
 
-        AddReward(matchSpeedReward * lookAtTargetReward);
+        AddReward(2f + matchSpeedReward * lookAtTargetReward);
     }
 
     /// <summary>
