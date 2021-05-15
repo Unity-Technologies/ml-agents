@@ -38,7 +38,7 @@ class DiverseNetwork(torch.nn.Module):
     def __init__(self, specs: BehaviorSpec, settings) -> None:
         super().__init__()
         self._use_actions = True
-        self._use_continuous = True
+        self._use_continuous = False
         state_encoder_settings = settings
         if state_encoder_settings.memory is not None:
             state_encoder_settings.memory = None
