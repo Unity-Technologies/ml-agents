@@ -531,7 +531,7 @@ Observation information is generic.
 <a name="mlagents_envs.base_env.ObservationType.GOAL_SIGNAL"></a>
 #### GOAL\_SIGNAL
 
-Observation contains goal information for current task
+Observation contains goal information for current task.
 
 <a name="mlagents_envs.base_env.ObservationSpec"></a>
 ## ObservationSpec Objects
