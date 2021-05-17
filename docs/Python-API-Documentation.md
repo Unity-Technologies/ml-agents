@@ -1,9 +1,5 @@
 # Table of Contents
 
-* [mlagents\_envs.env\_utils](#mlagents_envs.env_utils)
-  * [get\_platform](#mlagents_envs.env_utils.get_platform)
-  * [validate\_environment\_path](#mlagents_envs.env_utils.validate_environment_path)
-  * [launch\_executable](#mlagents_envs.env_utils.launch_executable)
 * [mlagents\_envs.base\_env](#mlagents_envs.base_env)
   * [DecisionStep](#mlagents_envs.base_env.DecisionStep)
   * [DecisionSteps](#mlagents_envs.base_env.DecisionSteps)
@@ -40,12 +36,6 @@
     * [set\_actions](#mlagents_envs.base_env.BaseEnv.set_actions)
     * [set\_action\_for\_agent](#mlagents_envs.base_env.BaseEnv.set_action_for_agent)
     * [get\_steps](#mlagents_envs.base_env.BaseEnv.get_steps)
-* [mlagents\_envs.communicator](#mlagents_envs.communicator)
-  * [Communicator](#mlagents_envs.communicator.Communicator)
-    * [\_\_init\_\_](#mlagents_envs.communicator.Communicator.__init__)
-    * [initialize](#mlagents_envs.communicator.Communicator.initialize)
-    * [exchange](#mlagents_envs.communicator.Communicator.exchange)
-    * [close](#mlagents_envs.communicator.Communicator.close)
 * [mlagents\_envs.environment](#mlagents_envs.environment)
   * [UnityEnvironment](#mlagents_envs.environment.UnityEnvironment)
     * [\_\_init\_\_](#mlagents_envs.environment.UnityEnvironment.__init__)
@@ -57,26 +47,6 @@
     * [register\_from\_yaml](#mlagents_envs.registry.unity_env_registry.UnityEnvRegistry.register_from_yaml)
     * [clear](#mlagents_envs.registry.unity_env_registry.UnityEnvRegistry.clear)
     * [\_\_getitem\_\_](#mlagents_envs.registry.unity_env_registry.UnityEnvRegistry.__getitem__)
-* [mlagents\_envs.registry.binary\_utils](#mlagents_envs.registry.binary_utils)
-  * [get\_local\_binary\_path](#mlagents_envs.registry.binary_utils.get_local_binary_path)
-  * [get\_local\_binary\_path\_if\_exists](#mlagents_envs.registry.binary_utils.get_local_binary_path_if_exists)
-  * [get\_tmp\_dir](#mlagents_envs.registry.binary_utils.get_tmp_dir)
-  * [download\_and\_extract\_zip](#mlagents_envs.registry.binary_utils.download_and_extract_zip)
-  * [print\_progress](#mlagents_envs.registry.binary_utils.print_progress)
-  * [load\_remote\_manifest](#mlagents_envs.registry.binary_utils.load_remote_manifest)
-  * [load\_local\_manifest](#mlagents_envs.registry.binary_utils.load_local_manifest)
-  * [ZipFileWithProgress](#mlagents_envs.registry.binary_utils.ZipFileWithProgress)
-* [mlagents\_envs.registry.remote\_registry\_entry](#mlagents_envs.registry.remote_registry_entry)
-  * [RemoteRegistryEntry](#mlagents_envs.registry.remote_registry_entry.RemoteRegistryEntry)
-    * [\_\_init\_\_](#mlagents_envs.registry.remote_registry_entry.RemoteRegistryEntry.__init__)
-    * [make](#mlagents_envs.registry.remote_registry_entry.RemoteRegistryEntry.make)
-* [mlagents\_envs.registry.base\_registry\_entry](#mlagents_envs.registry.base_registry_entry)
-  * [BaseRegistryEntry](#mlagents_envs.registry.base_registry_entry.BaseRegistryEntry)
-    * [\_\_init\_\_](#mlagents_envs.registry.base_registry_entry.BaseRegistryEntry.__init__)
-    * [identifier](#mlagents_envs.registry.base_registry_entry.BaseRegistryEntry.identifier)
-    * [expected\_reward](#mlagents_envs.registry.base_registry_entry.BaseRegistryEntry.expected_reward)
-    * [description](#mlagents_envs.registry.base_registry_entry.BaseRegistryEntry.description)
-    * [make](#mlagents_envs.registry.base_registry_entry.BaseRegistryEntry.make)
 * [mlagents\_envs.side\_channel](#mlagents_envs.side_channel)
 * [mlagents\_envs.side\_channel.raw\_bytes\_channel](#mlagents_envs.side_channel.raw_bytes_channel)
   * [RawBytesChannel](#mlagents_envs.side_channel.raw_bytes_channel.RawBytesChannel)
@@ -132,46 +102,6 @@
     * [queue\_message\_to\_send](#mlagents_envs.side_channel.side_channel.SideChannel.queue_message_to_send)
     * [on\_message\_received](#mlagents_envs.side_channel.side_channel.SideChannel.on_message_received)
     * [channel\_id](#mlagents_envs.side_channel.side_channel.SideChannel.channel_id)
-
-<a name="mlagents_envs.env_utils"></a>
-# mlagents\_envs.env\_utils
-
-<a name="mlagents_envs.env_utils.get_platform"></a>
-#### get\_platform
-
-```python
-get_platform()
-```
-
-returns the platform of the operating system : linux, darwin or win32
-
-<a name="mlagents_envs.env_utils.validate_environment_path"></a>
-#### validate\_environment\_path
-
-```python
-validate_environment_path(env_path: str) -> Optional[str]
-```
-
-Strip out executable extensions of the env_path
-
-**Arguments**:
-
-- `env_path`: The path to the executable
-
-<a name="mlagents_envs.env_utils.launch_executable"></a>
-#### launch\_executable
-
-```python
-launch_executable(file_name: str, args: List[str]) -> subprocess.Popen
-```
-
-Launches a Unity executable and returns the process handle for it.
-
-**Arguments**:
-
-- `file_name`: the name of the executable
-- `args`: List of string that will be passed as command line arguments
-when launching the executable.
 
 <a name="mlagents_envs.base_env"></a>
 # mlagents\_envs.base\_env
@@ -661,73 +591,6 @@ of the specified behavior. These Agents need an action this step.
 rewards, agent ids and interrupted flags of the agents that had their
 episode terminated last step.
 
-<a name="mlagents_envs.communicator"></a>
-# mlagents\_envs.communicator
-
-<a name="mlagents_envs.communicator.Communicator"></a>
-## Communicator Objects
-
-```python
-class Communicator()
-```
-
-<a name="mlagents_envs.communicator.Communicator.__init__"></a>
-#### \_\_init\_\_
-
-```python
- | __init__(worker_id=0, base_port=5005)
-```
-
-Python side of the communication. Must be used in pair with the right Unity Communicator equivalent.
-
-:int worker_id: Offset from base_port. Used for training multiple environments simultaneously.
-:int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
-
-<a name="mlagents_envs.communicator.Communicator.initialize"></a>
-#### initialize
-
-```python
- | initialize(inputs: UnityInputProto, poll_callback: Optional[PollCallback] = None) -> UnityOutputProto
-```
-
-Used to exchange initialization parameters between Python and the Environment
-
-**Arguments**:
-
-- `inputs`: The initialization input that will be sent to the environment.
-- `poll_callback`: Optional callback to be used while polling the connection.
-
-**Returns**:
-
-UnityOutput: The initialization output sent by Unity
-
-<a name="mlagents_envs.communicator.Communicator.exchange"></a>
-#### exchange
-
-```python
- | exchange(inputs: UnityInputProto, poll_callback: Optional[PollCallback] = None) -> Optional[UnityOutputProto]
-```
-
-Used to send an input and receive an output from the Environment
-
-**Arguments**:
-
-- `inputs`: The UnityInput that needs to be sent the Environment
-- `poll_callback`: Optional callback to be used while polling the connection.
-
-**Returns**:
-
-The UnityOutputs generated by the Environment
-
-<a name="mlagents_envs.communicator.Communicator.close"></a>
-#### close
-
-```python
- | close()
-```
-
-Sends a shutdown signal to the unity environment, and closes the connection.
-
 <a name="mlagents_envs.environment"></a>
 # mlagents\_envs.environment
 
@@ -875,227 +738,6 @@ can then be used to make a Unity Environment.
 **Returns**:
 
 The associated BaseRegistryEntry
-
-<a name="mlagents_envs.registry.binary_utils"></a>
-# mlagents\_envs.registry.binary\_utils
-
-<a name="mlagents_envs.registry.binary_utils.get_local_binary_path"></a>
-#### get\_local\_binary\_path
-
-```python
-get_local_binary_path(name: str, url: str) -> str
-```
-
-Returns the path to the executable previously downloaded with the name argument. If
-None is found, the executable at the url argument will be downloaded and stored
-under name for future uses.
-
-**Arguments**:
-
-- `name`: The name that will be given to the folder containing the extracted data
-- `url`: The URL of the zip file
-
-<a name="mlagents_envs.registry.binary_utils.get_local_binary_path_if_exists"></a>
-#### get\_local\_binary\_path\_if\_exists
-
-```python
-get_local_binary_path_if_exists(name: str, url: str) -> Optional[str]
-```
-
-Recursively searches for a Unity executable in the extracted files folders. This is
-platform dependent : It will only return a Unity executable compatible with the
-computer's OS. If no executable is found, None will be returned.
-
-**Arguments**:
-
-- `name`: The name/identifier of the executable
-- `url`: The url the executable was downloaded from (for verification)
-
-<a name="mlagents_envs.registry.binary_utils.get_tmp_dir"></a>
-#### get\_tmp\_dir
-
-```python
-get_tmp_dir() -> Tuple[str, str]
-```
-
-Returns the path to the folder containing the downloaded zip files and the extracted
-binaries. If these folders do not exist, they will be created.
-:retrun: Tuple containing path to : (zip folder, extracted files folder)
-
-<a name="mlagents_envs.registry.binary_utils.download_and_extract_zip"></a>
-#### download\_and\_extract\_zip
-
-```python
-download_and_extract_zip(url: str, name: str) -> None
-```
-
-Downloads a zip file under a URL, extracts its contents into a folder with the name
-argument and gives chmod 755 to all the files it contains. Files are downloaded and
-extracted into special folders in the temp folder of the machine.
-
-**Arguments**:
-
-- `url`: The URL of the zip file
-- `name`: The name that will be given to the folder containing the extracted data
-
-<a name="mlagents_envs.registry.binary_utils.print_progress"></a>
-#### print\_progress
-
-```python
-print_progress(prefix: str, percent: float) -> None
-```
-
-Displays a single progress bar in the terminal with value percent.
-
-**Arguments**:
-
-- `prefix`: The string that will precede the progress bar.
-- `percent`: The percent progression of the bar (min is 0, max is 100)
-
-<a name="mlagents_envs.registry.binary_utils.load_remote_manifest"></a>
-#### load\_remote\_manifest
-
-```python
-load_remote_manifest(url: str) -> Dict[str, Any]
-```
-
-Converts a remote yaml file into a Python dictionary
-
-<a name="mlagents_envs.registry.binary_utils.load_local_manifest"></a>
-#### load\_local\_manifest
-
-```python
-load_local_manifest(path: str) -> Dict[str, Any]
-```
-
-Converts a local yaml file into a Python dictionary
-
-<a name="mlagents_envs.registry.binary_utils.ZipFileWithProgress"></a>
-## ZipFileWithProgress Objects
-
-```python
-class ZipFileWithProgress(ZipFile)
-```
-
-This is a helper class inheriting from ZipFile that allows to display a progress
-bar while the files are being extracted.
-
-<a name="mlagents_envs.registry.remote_registry_entry"></a>
-# mlagents\_envs.registry.remote\_registry\_entry
-
-<a name="mlagents_envs.registry.remote_registry_entry.RemoteRegistryEntry"></a>
-## RemoteRegistryEntry Objects
-
-```python
-class RemoteRegistryEntry(BaseRegistryEntry)
-```
-
-<a name="mlagents_envs.registry.remote_registry_entry.RemoteRegistryEntry.__init__"></a>
-#### \_\_init\_\_
-
-```python
- | __init__(identifier: str, expected_reward: Optional[float], description: Optional[str], linux_url: Optional[str], darwin_url: Optional[str], win_url: Optional[str], additional_args: Optional[List[str]] = None)
-```
-
-A RemoteRegistryEntry is an implementation of BaseRegistryEntry that uses a
-Unity executable downloaded from the internet to launch a UnityEnvironment.
-__Note__: The url provided must be a link to a `.zip` file containing a single
-compressed folder with the executable inside. There can only be one executable
-in the folder and it must be at the root of the folder.
-
-**Arguments**:
-
-- `identifier`: The name of the Unity Environment.
-- `expected_reward`: The cumulative reward that an Agent must receive
-for the task to be considered solved.
-- `description`: A description of the Unity Environment. Contains human
-readable information about potential special arguments that the make method can
-take as well as information regarding the observation, reward, actions,
-behaviors and number of agents in the Environment.
-- `linux_url`: The url of the Unity executable for the Linux platform
-- `darwin_url`: The url of the Unity executable for the OSX platform
-- `win_url`: The url of the Unity executable for the Windows platform
-
-<a name="mlagents_envs.registry.remote_registry_entry.RemoteRegistryEntry.make"></a>
-#### make
-
-```python
- | make(**kwargs: Any) -> BaseEnv
-```
-
-Returns the UnityEnvironment that corresponds to the Unity executable found at
-the provided url. The arguments passed to this method will be passed to the
-constructor of the UnityEnvironment (except for the file_name argument)
-
-<a name="mlagents_envs.registry.base_registry_entry"></a>
-# mlagents\_envs.registry.base\_registry\_entry
-
-<a name="mlagents_envs.registry.base_registry_entry.BaseRegistryEntry"></a>
-## BaseRegistryEntry Objects
-
-```python
-class BaseRegistryEntry()
-```
-
-<a name="mlagents_envs.registry.base_registry_entry.BaseRegistryEntry.__init__"></a>
-#### \_\_init\_\_
-
-```python
- | __init__(identifier: str, expected_reward: Optional[float], description: Optional[str])
-```
-
-BaseRegistryEntry allows launching a Unity Environment with its make method.
-
-**Arguments**:
-
-- `identifier`: The name of the Unity Environment.
-- `expected_reward`: The cumulative reward that an Agent must receive
-for the task to be considered solved.
-- `description`: A description of the Unity Environment. Contains human
-readable information about potential special arguments that the make method can
-take as well as information regarding the observation, reward, actions,
-behaviors and number of agents in the Environment.
-
-<a name="mlagents_envs.registry.base_registry_entry.BaseRegistryEntry.identifier"></a>
-#### identifier
-
-```python
- | @property
- | identifier() -> str
-```
-
-The unique identifier of the entry
-
-<a name="mlagents_envs.registry.base_registry_entry.BaseRegistryEntry.expected_reward"></a>
-#### expected\_reward
-
-```python
- | @property
- | expected_reward() -> Optional[float]
-```
-
-The cumulative reward that an Agent must receive for the task to be considered
-solved.
-
-<a name="mlagents_envs.registry.base_registry_entry.BaseRegistryEntry.description"></a>
-#### description
-
-```python
- | @property
- | description() -> Optional[str]
-```
-
-A description of the Unity Environment the entry can make.
-
-<a name="mlagents_envs.registry.base_registry_entry.BaseRegistryEntry.make"></a>
-#### make
-
-```python
- | @abstractmethod
- | make(**kwargs: Any) -> BaseEnv
-```
-
-This method creates a Unity BaseEnv (usually a UnityEnvironment).
 
 <a name="mlagents_envs.side_channel"></a>
 # mlagents\_envs.side\_channel

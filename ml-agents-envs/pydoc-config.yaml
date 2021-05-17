@@ -4,15 +4,10 @@ modules:
     - name: mlagents_envs
       file_name: Python-API-Documentation.md
       submodules:
-        - env_utils
         - base_env
-        - communicator
         - environment
         - registry
         - registry.unity_env_registry
-        - registry.binary_utils
-        - registry.remote_registry_entry
-        - registry.base_registry_entry
         - side_channel
         - side_channel.raw_bytes_channel
         - side_channel.outgoing_message
