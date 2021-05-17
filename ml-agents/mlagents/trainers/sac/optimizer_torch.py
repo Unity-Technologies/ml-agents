@@ -426,8 +426,8 @@ class TorchSACOptimizer(TorchOptimizer):
         if self._action_spec.continuous_size > 0:
             with torch.no_grad():
                 cont_log_probs = log_probs.continuous_tensor
-                target_current_diff = torch.sum(
-                    cont_log_probs + self.target_entropy.continuous, dim=1
+                target_current_diff = (
+                    torch.sum(cont_log_probs, dim=1) + self.target_entropy.continuous
                 )
             # We update all the _cont_ent_coef as one block
             entropy_loss += -1 * ModelUtils.masked_mean(
