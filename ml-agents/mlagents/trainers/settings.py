@@ -178,7 +178,7 @@ class RewardSignalType(Enum):
     GAIL: str = "gail"
     CURIOSITY: str = "curiosity"
     RND: str = "rnd"
-    DIVERSE:str = "diverse"
+    DIVERSE: str = "diverse"
 
     def to_settings(self) -> type:
         _mapping = {
@@ -246,6 +246,7 @@ class CuriositySettings(RewardSignalSettings):
 class RNDSettings(RewardSignalSettings):
     learning_rate: float = 1e-4
     encoding_size: Optional[int] = None
+
 
 @attr.s(auto_attribs=True)
 class DiverseSettings(RewardSignalSettings):

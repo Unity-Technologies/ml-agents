@@ -29,14 +29,15 @@ from mlagents_envs.base_env import BehaviorSpec
 
 from mlagents.trainers.torch.layers import linear_layer, Initialization
 
+
 class DiverseNetworkVariational(torch.nn.Module):
     EPSILON = 1e-10
-    STRENGTH = 1.0
+    STRENGTH =  1.0
 
     # gradient_penalty_weight = 10.0
     z_size = 128
     alpha = 0.0005
-    mutual_information = 100#0.5
+    mutual_information = 10000  # 0.5
     EPSILON = 1e-7
     initial_beta = 0.0
 
@@ -44,7 +45,16 @@ class DiverseNetworkVariational(torch.nn.Module):
         super().__init__()
         self._use_actions = True
         sigma_start = 0.5
-        print("VARIATIONAL : Settings : strength:", self.STRENGTH, " use_actions:", self._use_actions, " mutual_information : ", self.mutual_information, "Sigma_Start : ", sigma_start)
+        print(
+            "VARIATIONAL : Settings : strength:",
+            self.STRENGTH,
+            " use_actions:",
+            self._use_actions,
+            " mutual_information : ",
+            self.mutual_information,
+            "Sigma_Start : ",
+            sigma_start,
+        )
         # state_encoder_settings = settings
         state_encoder_settings = NetworkSettings(normalize=True, num_layers=1)
         if state_encoder_settings.memory is not None:
@@ -77,8 +87,9 @@ class DiverseNetworkVariational(torch.nn.Module):
             self._encoder = NetworkBody(new_spec, state_encoder_settings)
 
         self._z_sigma = torch.nn.Parameter(
-                sigma_start * torch.ones((self.z_size), dtype=torch.float), requires_grad=True
-            )
+            sigma_start * torch.ones((self.z_size), dtype=torch.float),
+            requires_grad=True,
+        )
         # self._z_mu_layer = linear_layer(
         #     state_encoder_settings.hidden_units,
         #     self.z_size,
@@ -89,17 +100,16 @@ class DiverseNetworkVariational(torch.nn.Module):
             torch.tensor(self.initial_beta, dtype=torch.float), requires_grad=False
         )
 
-        self._last_layer = torch.nn.Linear(
-            self.z_size, self.diverse_size
-        )
+        self._last_layer = torch.nn.Linear(self.z_size, self.diverse_size)
         self._diverse_index = -1
         self._max_index = len(specs.observation_specs)
         for i, spec in enumerate(specs.observation_specs):
             if spec.observation_type == ObservationType.GOAL_SIGNAL:
                 self._diverse_index = i
 
-
-    def predict(self, obs_input, action_input, detach_action=False, var_noise=True) -> torch.Tensor:
+    def predict(
+        self, obs_input, action_input, detach_action=False, var_noise=True
+    ) -> torch.Tensor:
         # Convert to tensors
         tensor_obs = [
             obs
@@ -107,7 +117,9 @@ class DiverseNetworkVariational(torch.nn.Module):
             if spec.observation_type != ObservationType.GOAL_SIGNAL
         ]
         if self._use_actions:
-            action = self._action_flattener.forward(action_input).reshape(-1, self._action_flattener.flattened_size)
+            action = self._action_flattener.forward(action_input).reshape(
+                -1, self._action_flattener.flattened_size
+            )
             if detach_action:
                 action = action.detach()
             hidden, _ = self._encoder.forward(tensor_obs, action)
@@ -116,7 +128,7 @@ class DiverseNetworkVariational(torch.nn.Module):
 
         # add a VAE (like in VAIL ?)
         # z_mu = self._z_mu_layer(hidden)
-        z_mu = hidden#self._z_mu_layer(hidden)
+        z_mu = hidden  # self._z_mu_layer(hidden)
         hidden = torch.normal(z_mu, self._z_sigma * var_noise)
 
         prediction = torch.softmax(self._last_layer(hidden), dim=1)
@@ -125,29 +137,34 @@ class DiverseNetworkVariational(torch.nn.Module):
     def copy_normalization(self, thing):
         self._encoder.processors[0].copy_normalization(thing.processors[1])
 
-    def rewards(self, obs_input, action_input, detach_action=False, var_noise=True) -> torch.Tensor:
+    def rewards(
+        self, obs_input, action_input, detach_action=False, var_noise=True
+    ) -> torch.Tensor:
         truth = obs_input[self._diverse_index]
         prediction, _ = self.predict(obs_input, action_input, detach_action, var_noise)
-        rewards = torch.log(torch.sum((prediction * truth), dim=1) + self.EPSILON)
+        rewards = torch.log(
+            torch.sum((prediction * truth), dim=1) + self.EPSILON
+        )# - np.log(1 / self.diverse_size)  # Center around 0
         return rewards
 
-    def loss(self, obs_input, action_input, masks, detach_action=True, var_noise=True) -> torch.Tensor:
+    def loss(
+        self, obs_input, action_input, masks, detach_action=True, var_noise=True
+    ) -> torch.Tensor:
         # print( ">>> ",obs_input[self._diverse_index][0],self.predict(obs_input, action_input, detach_action)[0], self.predict([x*0 for x in obs_input], action_input, detach_action * 0)[0] )
-        base_loss = - ModelUtils.masked_mean(
-            self.rewards(obs_input, action_input, detach_action, var_noise) , masks
+        base_loss = -ModelUtils.masked_mean(
+            self.rewards(obs_input, action_input, detach_action, var_noise), masks
         )
 
         _, mu = self.predict(obs_input, action_input, detach_action, var_noise)
         kl_loss = ModelUtils.masked_mean(
-                -torch.sum(
-                    1
-                    + (self._z_sigma ** 2).log()
-                    - 0.5 * mu ** 2
-                    # - 0.5 * mu_expert ** 2
-                    - (self._z_sigma ** 2),
-                    dim=1,
-                ), masks
-            )
+            -torch.sum(
+                1 + (self._z_sigma ** 2).log() - 0.5 * mu ** 2
+                # - 0.5 * mu_expert ** 2
+                - (self._z_sigma ** 2),
+                dim=1,
+            ),
+            masks,
+        )
         vail_loss = self._beta * (kl_loss - self.mutual_information)
         with torch.no_grad():
             self._beta.data = torch.max(
@@ -214,7 +231,9 @@ class DiverseNetwork(torch.nn.Module):
             if spec.observation_type != ObservationType.GOAL_SIGNAL
         ]
         if self._use_actions:
-            action = self._action_flattener.forward(action_input).reshape(-1, self._action_flattener.flattened_size)
+            action = self._action_flattener.forward(action_input).reshape(
+                -1, self._action_flattener.flattened_size
+            )
             if detach_action:
                 action = action.detach()
             hidden, _ = self._encoder.forward(tensor_obs, action)
@@ -229,7 +248,9 @@ class DiverseNetwork(torch.nn.Module):
     def copy_normalization(self, thing):
         self._encoder.processors[0].copy_normalization(thing.processors[1])
 
-    def rewards(self, obs_input, action_input, detach_action=False, var_noise=False) -> torch.Tensor:
+    def rewards(
+        self, obs_input, action_input, detach_action=False, var_noise=False
+    ) -> torch.Tensor:
         truth = obs_input[self._diverse_index]
         prediction = self.predict(obs_input, action_input, detach_action)
         rewards = torch.log(torch.sum((prediction * truth), dim=1) + self.EPSILON)
@@ -237,8 +258,8 @@ class DiverseNetwork(torch.nn.Module):
 
     def loss(self, obs_input, action_input, masks, detach_action=True) -> torch.Tensor:
         # print( ">>> ",obs_input[self._diverse_index][0],self.predict(obs_input, action_input, detach_action)[0], self.predict([x*0 for x in obs_input], action_input, detach_action * 0)[0] )
-        return - ModelUtils.masked_mean(
-            self.rewards(obs_input, action_input, detach_action) , masks
+        return -ModelUtils.masked_mean(
+            self.rewards(obs_input, action_input, detach_action), masks
         )
 
 
@@ -535,7 +556,7 @@ class TorchSACOptimizer(TorchOptimizer):
                 with torch.no_grad():
                     v_backup = (
                         min_policy_qs[name]
-                        - torch.sum(_cont_ent_coef * log_probs.continuous_tensor, dim=1)
+                        - _cont_ent_coef * torch.sum( log_probs.continuous_tensor, dim=1)
                         + self._mede_network.STRENGTH
                         * self._mede_network.rewards(obs, act, var_noise=False)
                     )
@@ -558,9 +579,12 @@ class TorchSACOptimizer(TorchOptimizer):
             )
             for name in values.keys():
                 with torch.no_grad():
-                    v_backup = min_policy_qs[name] - torch.mean(
-                        branched_ent_bonus, axis=0
-                    ) + self._mede_network.STRENGTH * self._mede_network.rewards(obs, act)
+                    v_backup = (
+                        min_policy_qs[name]
+                        - torch.mean(branched_ent_bonus, axis=0)
+                        + self._mede_network.STRENGTH
+                        * self._mede_network.rewards(obs, act)
+                    )
                     print("The discrete case is much more complicated than that")
                     # Add continuous entropy bonus to minimum Q
                     if self._action_spec.continuous_size > 0:
@@ -620,10 +644,10 @@ class TorchSACOptimizer(TorchOptimizer):
             all_mean_q1 = mean_q1
         if self._action_spec.continuous_size > 0:
             cont_log_probs = log_probs.continuous_tensor
-            batch_policy_loss += torch.mean(
-                _cont_ent_coef * cont_log_probs - all_mean_q1.unsqueeze(1), dim=1
-            )
-        batch_policy_loss += - self._mede_network.STRENGTH * self._mede_network.rewards(obs, act, var_noise=False)
+            batch_policy_loss += _cont_ent_coef * torch.sum(cont_log_probs, dim=1) - all_mean_q1.unsqueeze(1)
+        batch_policy_loss += -self._mede_network.STRENGTH * self._mede_network.rewards(
+            obs, act, var_noise=False
+        )
         policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
 
         return policy_loss
@@ -662,8 +686,10 @@ class TorchSACOptimizer(TorchOptimizer):
         if self._action_spec.continuous_size > 0:
             with torch.no_grad():
                 cont_log_probs = log_probs.continuous_tensor
-                target_current_diff = torch.sum(
-                    cont_log_probs, dim=1) + 10 * self.target_entropy.continuous
+                target_current_diff = (
+                    torch.sum(cont_log_probs, dim=1)
+                    + self.target_entropy.continuous
+                )
                 # print(self.target_entropy.continuous, cont_log_probs, torch.sum(
                 #     cont_log_probs, dim=1) + self.target_entropy.continuous)
             # We update all the _cont_ent_coef as one block
@@ -847,13 +873,14 @@ class TorchSACOptimizer(TorchOptimizer):
         total_value_loss.backward()
         self.value_optimizer.step()
 
-
         ModelUtils.update_learning_rate(self.entropy_optimizer, decay_lr)
         self.entropy_optimizer.zero_grad()
         entropy_loss.backward()
         self.entropy_optimizer.step()
 
-        mede_loss, base_loss, kl_loss, vail_loss, beta = self._mede_network.loss(current_obs, sampled_actions, masks)
+        mede_loss, base_loss, kl_loss, vail_loss, beta = self._mede_network.loss(
+            current_obs, sampled_actions, masks
+        )
         # mede_loss = self._mede_network.loss(current_obs, sampled_actions, masks)
         ModelUtils.update_learning_rate(self._mede_optimizer, decay_lr)
         self._mede_optimizer.zero_grad()
