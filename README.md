@@ -102,6 +102,8 @@ on how to implement and use the ML-Agents Toolkit.
 
 We have also published a series of blog posts that are relevant for ML-Agents:
 
+- (May 5, 2021)
+  [ML-Agents v2.0 release: Now supports training complex cooperative behaviors](https://blogs.unity3d.com/2021/05/05/ml-agents-v2-0-release-now-supports-training-complex-cooperative-behaviors/)
 - (December 28, 2020)
   [Happy holidays from the Unity ML-Agents team!](https://blogs.unity3d.com/2020/12/28/happy-holidays-from-the-unity-ml-agents-team/)
 - (November 20, 2020)
