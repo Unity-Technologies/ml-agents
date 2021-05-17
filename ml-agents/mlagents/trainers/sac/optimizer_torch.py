@@ -385,9 +385,9 @@ class TorchSACOptimizer(TorchOptimizer):
             all_mean_q1 = mean_q1
         if self._action_spec.continuous_size > 0:
             cont_log_probs = log_probs.continuous_tensor
-            batch_policy_loss += torch.mean(
-                _cont_ent_coef * cont_log_probs - all_mean_q1.unsqueeze(1), dim=1
-            )
+            batch_policy_loss += _cont_ent_coef * torch.sum(
+                cont_log_probs, dim=1
+            ) - all_mean_q1.unsqueeze(1)
         policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
 
         return policy_loss
