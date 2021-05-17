@@ -725,10 +725,10 @@ class TorchSACOptimizer(TorchOptimizer):
         total_value_loss.backward()
         self.value_optimizer.step()
 
-        ModelUtils.update_learning_rate(self.entropy_optimizer, decay_lr)
-        self.entropy_optimizer.zero_grad()
-        entropy_loss.backward()
-        self.entropy_optimizer.step()
+        #ModelUtils.update_learning_rate(self.entropy_optimizer, decay_lr)
+        #self.entropy_optimizer.zero_grad()
+        #entropy_loss.backward()
+        #self.entropy_optimizer.step()
 
         mede_loss = self._mede_network.loss(current_obs, sampled_actions, masks)
         ModelUtils.update_learning_rate(self._mede_optimizer, decay_lr)
