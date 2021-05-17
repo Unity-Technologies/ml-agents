@@ -488,7 +488,7 @@ class ObservationType(Enum):
 
     GOAL_SIGNAL = 1
     """
-    Observation contains goal information for current task
+    Observation contains goal information for current task.
     """
 
 
