@@ -32,7 +32,7 @@ from mlagents.trainers.torch.layers import linear_layer, Initialization
 
 class DiverseNetworkVariational(torch.nn.Module):
     EPSILON = 1e-10
-    STRENGTH =  1.0
+    STRENGTH =  0.1#1.0
 
     # gradient_penalty_weight = 10.0
     z_size = 128
