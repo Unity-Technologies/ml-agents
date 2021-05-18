@@ -25,7 +25,10 @@
     * [UNSPECIFIED](#mlagents_envs.base_env.DimensionProperty.UNSPECIFIED)
     * [NONE](#mlagents_envs.base_env.DimensionProperty.NONE)
     * [TRANSLATIONAL\_EQUIVARIANCE](#mlagents_envs.base_env.DimensionProperty.TRANSLATIONAL_EQUIVARIANCE)
+    * [VARIABLE\_SIZE](#mlagents_envs.base_env.DimensionProperty.VARIABLE_SIZE)
   * [ObservationType](#mlagents_envs.base_env.ObservationType)
+    * [DEFAULT](#mlagents_envs.base_env.ObservationType.DEFAULT)
+    * [GOAL\_SIGNAL](#mlagents_envs.base_env.ObservationType.GOAL_SIGNAL)
   * [ObservationSpec](#mlagents_envs.base_env.ObservationSpec)
   * [BehaviorSpec](#mlagents_envs.base_env.BehaviorSpec)
   * [BaseEnv](#mlagents_envs.base_env.BaseEnv)
@@ -416,21 +419,26 @@ Creates an ActionSpec that is homogenously discrete
 class DimensionProperty(IntFlag)
 ```
 
-No properties specified.
+The dimension property of a dimension of an observation.
 
 <a name="mlagents_envs.base_env.DimensionProperty.UNSPECIFIED"></a>
 #### UNSPECIFIED
 
-No Property of the observation in that dimension. Observation can be processed with
-Fully connected networks.
+No properties specified.
 
 <a name="mlagents_envs.base_env.DimensionProperty.NONE"></a>
 #### NONE
 
-Means it is suitable to do a convolution in this dimension.
+No Property of the observation in that dimension. Observation can be processed with
+Fully connected networks.
 
 <a name="mlagents_envs.base_env.DimensionProperty.TRANSLATIONAL_EQUIVARIANCE"></a>
 #### TRANSLATIONAL\_EQUIVARIANCE
+
+Means it is suitable to do a convolution in this dimension.
+
+<a name="mlagents_envs.base_env.DimensionProperty.VARIABLE_SIZE"></a>
+#### VARIABLE\_SIZE
 
 Means that there can be a variable number of observations in this dimension.
 The observations are unordered.
@@ -444,6 +452,16 @@ class ObservationType(Enum)
 
 An Enum which defines the type of information carried in the observation
 of the agent.
+
+<a name="mlagents_envs.base_env.ObservationType.DEFAULT"></a>
+#### DEFAULT
+
+Observation information is generic.
+
+<a name="mlagents_envs.base_env.ObservationType.GOAL_SIGNAL"></a>
+#### GOAL\_SIGNAL
+
+Observation contains goal information for current task.
 
 <a name="mlagents_envs.base_env.ObservationSpec"></a>
 ## ObservationSpec Objects
