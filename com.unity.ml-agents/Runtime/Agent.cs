@@ -562,14 +562,12 @@ namespace Unity.MLAgents
             m_Info.done = true;
             m_Info.maxStepReached = doneReason == DoneReason.MaxStepReached;
             m_Info.groupId = m_GroupId;
-            if (collectObservationsSensor != null)
+            UpdateSensors();
+            // Make sure the latest observations are being passed to training.
+            collectObservationsSensor.Reset();
+            using (m_CollectObservationsChecker.Start())
             {
-                // Make sure the latest observations are being passed to training.
-                collectObservationsSensor.Reset();
-                using (m_CollectObservationsChecker.Start())
-                {
-                    CollectObservations(collectObservationsSensor);
-                }
+                CollectObservations(collectObservationsSensor);
             }
             // Request the last decision with no callbacks
             // We request a decision so Python knows the Agent is done immediately
