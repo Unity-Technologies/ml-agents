@@ -21,6 +21,7 @@ namespace Unity.MLAgents.Editor
                 EditorGUILayout.PropertyField(so.FindProperty("m_SensorName"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_ObservationSize"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_ObservationType"), true);
+                EditorGUILayout.PropertyField(so.FindProperty("m_ObservationStacks"), true);
             }
             EditorGUI.EndDisabledGroup();
 
