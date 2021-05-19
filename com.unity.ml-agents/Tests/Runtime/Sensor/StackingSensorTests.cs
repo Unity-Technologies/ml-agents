@@ -59,10 +59,17 @@ namespace Unity.MLAgents.Tests
                 agent1.RequestDecision();
                 aca.EnvironmentStep();
             }
-
-            policy.OnRequestDecision = () => SensorTestHelper.CompareObservation(sensor, new[] { 18f, 19f, 21f });
+            SensorTestHelper.CompareObservation(sensor, new[] { 18f, 19f, 20f });
+            policy.OnRequestDecision = () => SensorTestHelper.CompareObservation(sensor, new[] { 19f, 20f, 21f });
             agent1.EndEpisode();
+            policy.OnRequestDecision = () => { };
             SensorTestHelper.CompareObservation(sensor, new[] { 0f, 0f, 0f });
+            for (int i = 0; i < 20; i++)
+            {
+                agent1.RequestDecision();
+                aca.EnvironmentStep();
+                SensorTestHelper.CompareObservation(sensor, new[] { Math.Max(0, i - 1f), i, i + 1 });
+            }
         }
 
         [Test]
