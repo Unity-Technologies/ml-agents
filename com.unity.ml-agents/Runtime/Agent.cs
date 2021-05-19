@@ -564,7 +564,6 @@ namespace Unity.MLAgents
             m_Info.groupId = m_GroupId;
             UpdateSensors();
             // Make sure the latest observations are being passed to training.
-            collectObservationsSensor.Reset();
             using (m_CollectObservationsChecker.Start())
             {
                 CollectObservations(collectObservationsSensor);
