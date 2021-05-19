@@ -46,6 +46,21 @@ namespace Unity.MLAgents.Sensors
             set { m_ObservationType = value; }
         }
 
+        [HideInInspector, SerializeField]
+        [Range(1, 50)]
+        [Tooltip("Number of camera frames that will be stacked before being fed to the neural network.")]
+        int m_ObservationStacks = 1;
+
+        /// <summary>
+        /// Whether to stack previous observations. Using 1 means no previous observations.
+        /// Note that changing this after the sensor is created has no effect.
+        /// </summary>
+        public int ObservationStacks
+        {
+            get { return m_ObservationStacks; }
+            set { m_ObservationStacks = value; }
+        }
+
         /// <summary>
         /// Creates a VectorSensor.
         /// </summary>
@@ -53,6 +68,10 @@ namespace Unity.MLAgents.Sensors
         public override ISensor[] CreateSensors()
         {
             m_Sensor = new VectorSensor(m_ObservationSize, m_SensorName, m_ObservationType);
+            if (ObservationStacks != 1)
+            {
+                return new ISensor[] { new StackingSensor(m_Sensor, ObservationStacks) };
+            }
             return new ISensor[] { m_Sensor };
         }
 
