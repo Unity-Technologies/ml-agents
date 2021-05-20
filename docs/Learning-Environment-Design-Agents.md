@@ -612,7 +612,8 @@ The `BufferSensorComponent` Editor inspector has two arguments:
  the `BufferSensor` will be able to collect.
 
 To add an entity's observations to a `BufferSensorComponent`, you need
-to call `BufferSensorComponent.AppendObservation()`
+to call `BufferSensorComponent.AppendObservation()` in the
+Agent.CollectObservations() method
 with a float array of size `Observation Size` as argument.
 
 __Note__: Currently, the observations put into the `BufferSensor` are
@@ -621,7 +622,8 @@ between -1 and 1.
 
 #### Variable Length Observation Summary & Best Practices
  - Attach `BufferSensorComponent` to use.
- - Call `BufferSensorComponent.AppendObservation()` to add the observations
+ - Call `BufferSensorComponent.AppendObservation()` in the
+ Agent.CollectObservations() methodto add the observations
  of an entity to the `BufferSensor`.
  - Normalize the entities observations before feeding them into the `BufferSensor`.
 
