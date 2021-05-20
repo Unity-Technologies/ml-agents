@@ -199,13 +199,9 @@ class TorchSACOptimizer(TorchOptimizer):
             1e-10,
             self.trainer_settings.max_steps,
         )
-        self.policy_optimizer = torch.optim.Adam(
-            policy_params, lr=hyperparameters.learning_rate
-        )
-        self.value_optimizer = torch.optim.Adam(
-            value_params, lr=hyperparameters.learning_rate
-        )
-        self.entropy_optimizer = torch.optim.Adam(
+        self.policy_optimizer = torch.optim.Adam(policy_params)
+        self.value_optimizer = torch.optim.Adam(value_params)
+        self.entropy_optimizer = torch.optim.SGD(
             self._log_ent_coef.parameters(), lr=hyperparameters.learning_rate
         )
         self._move_to_device(default_device())
@@ -601,7 +597,6 @@ class TorchSACOptimizer(TorchOptimizer):
         total_value_loss.backward()
         self.value_optimizer.step()
 
-        ModelUtils.update_learning_rate(self.entropy_optimizer, decay_lr)
         self.entropy_optimizer.zero_grad()
         entropy_loss.backward()
         self.entropy_optimizer.step()
