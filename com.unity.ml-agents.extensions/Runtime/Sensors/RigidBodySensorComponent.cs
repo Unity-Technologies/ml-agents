@@ -91,6 +91,19 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             GetPoseExtractor().SetPoseEnabled(index, enabled);
         }
+
+        internal bool IsTrivial()
+        {
+            var joints = RootBody.GetComponentsInChildren<Joint>();
+            if (joints.Length == 0)
+            {
+                if (ReferenceEquals(VirtualRoot, null) || ReferenceEquals(VirtualRoot, RootBody.gameObject))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
 }
