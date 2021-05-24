@@ -41,7 +41,7 @@ namespace Unity.MLAgents.Integrations.Match3
         public static bool operator <=(BoardSize lhs, BoardSize rhs)
         {
             return lhs.Rows <= rhs.Rows && lhs.Columns <= rhs.Columns && lhs.NumCellTypes <= rhs.NumCellTypes &&
-                   lhs.NumSpecialTypes <= rhs.NumSpecialTypes;
+                lhs.NumSpecialTypes <= rhs.NumSpecialTypes;
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Unity.MLAgents.Integrations.Match3
         public static bool operator >=(BoardSize lhs, BoardSize rhs)
         {
             return lhs.Rows >= rhs.Rows && lhs.Columns >= rhs.Columns && lhs.NumCellTypes >= rhs.NumCellTypes &&
-                   lhs.NumSpecialTypes >= rhs.NumSpecialTypes;
+                lhs.NumSpecialTypes >= rhs.NumSpecialTypes;
         }
 
         /// <summary>
@@ -81,8 +81,8 @@ namespace Unity.MLAgents.Integrations.Match3
 
         /// <summary>
         /// Return the current size of the board. The values must less than or equal to the values returned from
-        /// GetMaxBoardSize().
-        /// By default, this will return GetMaxBoardSize(); if your board doesn't change size, you don't need to
+        /// <see cref="GetMaxBoardSize"/>.
+        /// By default, this will return <see cref="GetMaxBoardSize"/>; if your board doesn't change size, you don't need to
         /// override it.
         /// </summary>
         /// <returns></returns>
@@ -93,7 +93,7 @@ namespace Unity.MLAgents.Integrations.Match3
 
         /// <summary>
         /// Returns the "color" of the piece at the given row and column.
-        /// This should be between 0 and NumCellTypes-1 (inclusive).
+        /// This should be between 0 and BoardSize.NumCellTypes-1 (inclusive).
         /// The actual order of the values doesn't matter.
         /// </summary>
         /// <param name="row"></param>
@@ -103,7 +103,7 @@ namespace Unity.MLAgents.Integrations.Match3
 
         /// <summary>
         /// Returns the special type of the piece at the given row and column.
-        /// This should be between 0 and NumSpecialTypes (inclusive).
+        /// This should be between 0 and BoardSize.NumSpecialTypes (inclusive).
         /// The actual order of the values doesn't matter.
         /// </summary>
         /// <param name="row"></param>
@@ -113,23 +113,23 @@ namespace Unity.MLAgents.Integrations.Match3
 
         /// <summary>
         /// Check whether the particular Move is valid for the game.
-        /// The actual results will depend on the rules of the game, but we provide SimpleIsMoveValid()
+        /// The actual results will depend on the rules of the game, but we provide <see cref="SimpleIsMoveValid(Move)"/>
         /// that handles basic match3 rules with no special or immovable pieces.
         /// </summary>
         /// <remarks>
-        /// Moves that would go outside of GetCurrentBoardSize() are filtered out before they are
+        /// Moves that would go outside of <see cref="GetCurrentBoardSize"/> are filtered out before they are
         /// passed to IsMoveValid().
         /// </remarks>
-        /// <param name="m"></param>
+        /// <param name="m">The move to check.</param>
         /// <returns></returns>
         public abstract bool IsMoveValid(Move m);
 
         /// <summary>
-        /// Instruct the game to make the given Move. Returns true if the move was made.
+        /// Instruct the game to make the given <see cref="Move"/>. Returns true if the move was made.
         /// Note that during training, a move that was marked as invalid may occasionally still be
         /// requested. If this happens, it is safe to do nothing and request another move.
         /// </summary>
-        /// <param name="m"></param>
+        /// <param name="m">The move to carry out.</param>
         /// <returns></returns>
         public abstract bool MakeMove(Move m);
 
@@ -149,7 +149,7 @@ namespace Unity.MLAgents.Integrations.Match3
         public Action OnNoValidMovesAction;
 
         /// <summary>
-        /// Iterate through all Moves on the board.
+        /// Iterate through all moves on the board.
         /// </summary>
         /// <returns></returns>
         public IEnumerable<Move> AllMoves()
@@ -169,7 +169,7 @@ namespace Unity.MLAgents.Integrations.Match3
         }
 
         /// <summary>
-        /// Iterate through all valid Moves on the board.
+        /// Iterate through all valid moves on the board.
         /// </summary>
         /// <returns></returns>
         public IEnumerable<Move> ValidMoves()
@@ -189,9 +189,9 @@ namespace Unity.MLAgents.Integrations.Match3
         }
 
         /// <summary>
-        /// Returns true if swapped the cells specified by the move would result in
+        /// Returns true if swapping the cells specified by the move would result in
         /// 3 or more cells of the same type in a row. This assumes that all pieces are allowed
-        /// to be moved; to add extra logic, incorporate it into you IsMoveValid() method.
+        /// to be moved; to add extra logic, incorporate it into your <see cref="IsMoveValid"/> method.
         /// </summary>
         /// <param name="move"></param>
         /// <returns></returns>
@@ -226,7 +226,7 @@ namespace Unity.MLAgents.Integrations.Match3
 
         /// <summary>
         /// Check if one of the cells that is swapped during a move matches 3 or more.
-        /// Since these checks are similar for each cell, we consider the Move as two "half moves".
+        /// Since these checks are similar for each cell, we consider the move as two "half moves".
         /// </summary>
         /// <param name="newRow"></param>
         /// <param name="newCol"></param>
@@ -291,7 +291,7 @@ namespace Unity.MLAgents.Integrations.Match3
         }
 
         /// <summary>
-        /// Make sure that the current BoardSize isn't larger than the original value of GetMaxBoardSize().
+        /// Make sure that the current BoardSize isn't larger than the original value of <see cref="GetMaxBoardSize"/>.
         /// If it is, log a warning.
         /// </summary>
         /// <param name="originalMaxBoardSize"></param>

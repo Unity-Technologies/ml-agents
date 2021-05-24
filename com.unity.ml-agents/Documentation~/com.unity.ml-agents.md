@@ -3,7 +3,7 @@
 The _ML-Agents_ package contains the primary C# SDK for the [Unity ML-Agents
 Toolkit].
 
-The package allows you to convert any Unity scene to into a learning environment
+The package allows you to convert any Unity scene into a learning environment
 and train character behaviors using a variety of machine learning algorithms.
 Additionally, it allows you to embed these trained behaviors back into Unity
 scenes to control your characters. More specifically, the package provides the
@@ -12,7 +12,7 @@ following core functionalities:
 - Define Agents: entities, or characters, whose behavior will be learned. Agents
   are entities that generate observations (through sensors), take actions, and
   receive rewards from the environment.
-- Define Behaviors: entities that specifiy how an agent should act. Multiple
+- Define Behaviors: entities that specify how an agent should act. Multiple
   agents can share the same Behavior and a scene may have multiple Behaviors.
 - Record demonstrations of an agent within the Editor. You can use
   demonstrations to help train a behavior for that agent.
@@ -55,7 +55,7 @@ To install the companion Python package to enable training behaviors, follow the
 [installation instructions] on our [GitHub repository].
 
 ### Advanced Installation
-With the changes to Unity Package Manager in 2021, experimental packages will not show up in package list and have to be installed manually. There are two recommended ways to install the package manually:
+With the changes to Unity Package Manager in 2021, experimental packages will not show up in the package list and have to be installed manually. There are two recommended ways to install the package manually:
 
 #### Github via Package Manager
 

@@ -50,7 +50,7 @@ namespace Unity.MLAgents.Integrations.Match3
                 return Array.Empty<ISensor>();
             }
             var cellSensor = Match3Sensor.CellTypeSensor(board, m_ObservationType, m_SensorName + " (cells)");
-            // This can be null if numSpecialTypes is 0
+            // This can be null if BoardSize.NumSpecialTypes is 0
             var specialSensor = Match3Sensor.SpecialTypeSensor(board, m_ObservationType, m_SensorName + " (special)");
             m_Sensors = specialSensor != null
                 ? new ISensor[] { cellSensor, specialSensor }
