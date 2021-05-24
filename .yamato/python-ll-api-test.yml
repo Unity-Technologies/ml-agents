@@ -26,7 +26,7 @@ test_linux_ll_api_{{ editor.version }}:
     {% if editor.extra_test == "llapi" %}
     expression: |
       (pull_request.target eq "main" OR
-      pull_request.target match "2.0-verified.*") AND
+      pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
       pull_request.changes.any match "Project/**" OR
