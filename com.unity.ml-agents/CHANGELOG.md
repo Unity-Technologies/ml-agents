@@ -10,6 +10,7 @@ and this project adheres to
 ### Major Changes
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Fixed NullReferenceException when adding Behavior Parameters with no Agent. (#5382)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Added a fully connected visual encoder for environments with very small image inputs. (#5351)
 ### Bug Fixes
