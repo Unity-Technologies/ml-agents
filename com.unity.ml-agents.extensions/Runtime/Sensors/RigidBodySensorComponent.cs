@@ -94,6 +94,11 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         internal bool IsTrivial()
         {
+            if (ReferenceEquals(RootBody, null))
+            {
+                // It *is* trivial, but this will happen when the sensor is being set up, so don't warn then.
+                return false;
+            }
             var joints = RootBody.GetComponentsInChildren<Joint>();
             if (joints.Length == 0)
             {
