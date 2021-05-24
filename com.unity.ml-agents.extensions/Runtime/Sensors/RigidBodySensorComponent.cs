@@ -91,6 +91,24 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             GetPoseExtractor().SetPoseEnabled(index, enabled);
         }
+
+        internal bool IsTrivial()
+        {
+            if (ReferenceEquals(RootBody, null))
+            {
+                // It *is* trivial, but this will happen when the sensor is being set up, so don't warn then.
+                return false;
+            }
+            var joints = RootBody.GetComponentsInChildren<Joint>();
+            if (joints.Length == 0)
+            {
+                if (ReferenceEquals(VirtualRoot, null) || ReferenceEquals(VirtualRoot, RootBody.gameObject))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
 }

@@ -15,6 +15,7 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Added a fully connected visual encoder for environments with very small image inputs. (#5351)
 ### Bug Fixes
+- RigidBodySensorComponent now displays a warning if it's used in a way that won't generate useful observations. (#5387)
 
 
 ## [2.0.0-exp.1] - 2021-04-22
