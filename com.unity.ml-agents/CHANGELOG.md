@@ -10,6 +10,7 @@ and this project adheres to
 ### Major Changes
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- update Barracuda to 2.0.0-pre.3.
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Added a fully connected visual encoder for environments with very small image inputs. (#5351)
 ### Bug Fixes
@@ -18,7 +19,6 @@ and this project adheres to
 ## [2.0.0-exp.1] - 2021-04-22
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- update Barracuda to 2.0.0-pre.3.
 - The minimum supported Unity version was updated to 2019.4. (#5166)
 - Several breaking interface changes were made. See the
 [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_17_docs/docs/Migrating.md) for more

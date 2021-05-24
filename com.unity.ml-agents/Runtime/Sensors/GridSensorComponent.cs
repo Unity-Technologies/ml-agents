@@ -18,7 +18,7 @@ namespace Unity.MLAgents.Sensors
         [HideInInspector, SerializeField]
         protected internal string m_SensorName = "GridSensor";
         /// <summary>
-        /// Name of the generated GridSensor object.
+        /// Name of the generated <see cref="GridSensor"/> object.
         /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
         /// </summary>
         public string SensorName
@@ -221,7 +221,6 @@ namespace Unity.MLAgents.Sensors
             }
 
             // Only one sensor needs to reference the boxOverlapChecker, so that it gets updated exactly once
-
             m_Sensors[0].m_GridPerception = m_GridPerception;
             foreach (var sensor in m_Sensors)
             {
