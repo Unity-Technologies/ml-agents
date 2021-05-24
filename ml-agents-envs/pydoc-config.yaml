@@ -1,0 +1,20 @@
+# config to specify which modules will be used to render api docs
+folder: docs
+modules:
+    - name: mlagents_envs
+      file_name: Python-API-Documentation.md
+      submodules:
+        - base_env
+        - environment
+        - registry
+        - registry.unity_env_registry
+        - side_channel
+        - side_channel.raw_bytes_channel
+        - side_channel.outgoing_message
+        - side_channel.engine_configuration_channel
+        - side_channel.side_channel_manager
+        - side_channel.stats_side_channel
+        - side_channel.incoming_message
+        - side_channel.float_properties_channel
+        - side_channel.environment_parameters_channel
+        - side_channel.side_channel

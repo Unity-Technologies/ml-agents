@@ -6,7 +6,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.0.0-pre.3] - 2021-04-22
+## [Unreleased]
+### Major Changes
+### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- Added a fully connected visual encoder for environments with very small image inputs. (#5351)
+### Bug Fixes
+
+
+## [2.0.0-exp.1] - 2021-04-22
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - update Barracuda to 2.0.0-pre.3.

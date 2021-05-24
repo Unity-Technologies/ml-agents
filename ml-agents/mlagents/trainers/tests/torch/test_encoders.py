@@ -5,6 +5,8 @@ import pytest
 from mlagents.trainers.torch.encoders import (
     VectorInput,
     Normalizer,
+    SmallVisualEncoder,
+    FullyConnectedVisualEncoder,
     SimpleVisualEncoder,
     ResNetVisualEncoder,
     NatureVisualEncoder,
@@ -73,7 +75,14 @@ def test_vector_encoder(mock_normalizer):
 
 @pytest.mark.parametrize("image_size", [(36, 36, 3), (84, 84, 4), (256, 256, 5)])
 @pytest.mark.parametrize(
-    "vis_class", [SimpleVisualEncoder, ResNetVisualEncoder, NatureVisualEncoder]
+    "vis_class",
+    [
+        SimpleVisualEncoder,
+        ResNetVisualEncoder,
+        NatureVisualEncoder,
+        SmallVisualEncoder,
+        FullyConnectedVisualEncoder,
+    ],
 )
 def test_visual_encoder(vis_class, image_size):
     num_outputs = 128
@@ -82,3 +91,35 @@ def test_visual_encoder(vis_class, image_size):
     sample_input = torch.ones((1, image_size[0], image_size[1], image_size[2]))
     encoding = enc(sample_input)
     assert encoding.shape == (1, num_outputs)
+
+
+@pytest.mark.parametrize(
+    "vis_class, size",
+    [
+        (SimpleVisualEncoder, 36),
+        (ResNetVisualEncoder, 36),
+        (NatureVisualEncoder, 36),
+        (SmallVisualEncoder, 10),
+        (FullyConnectedVisualEncoder, 36),
+    ],
+)
+@pytest.mark.check_environment_trains
+def test_visual_encoder_trains(vis_class, size):
+    torch.manual_seed(0)
+    image_size = (size, size, 1)
+    batch = 100
+
+    inputs = torch.cat(
+        [torch.zeros((batch,) + image_size), torch.ones((batch,) + image_size)], dim=0
+    )
+    target = torch.cat([torch.zeros((batch,)), torch.ones((batch,))], dim=0)
+    enc = vis_class(image_size[0], image_size[1], image_size[2], 1)
+    optimizer = torch.optim.Adam(enc.parameters(), lr=0.001)
+
+    for _ in range(15):
+        prediction = enc(inputs)[:, 0]
+        loss = torch.mean((target - prediction) ** 2)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+    assert loss.item() < 0.05

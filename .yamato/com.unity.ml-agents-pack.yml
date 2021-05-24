@@ -2,7 +2,7 @@ pack:
   name: Pack
   agent:
     type: Unity::VM
-    image: package-ci/ubuntu:v1.3.1-719011
+    image: package-ci/ubuntu:stable
     flavor: b1.small
   commands:
     - |

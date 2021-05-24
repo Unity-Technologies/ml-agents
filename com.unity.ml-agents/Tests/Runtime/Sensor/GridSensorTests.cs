@@ -175,9 +175,9 @@ namespace Unity.MLAgents.Tests
             string[] tags = { k_Tag1, k_Tag2 };
             gridSensorComponent.SetComponentParameters(tags, useOneHotTag: true, useGridSensorBase: true, useTestingGridSensor: true);
             var gridSensors = gridSensorComponent.CreateSensors();
-            Assert.IsNotNull(((GridSensorBase)gridSensors[0]).m_BoxOverlapChecker);
-            Assert.IsNull(((GridSensorBase)gridSensors[1]).m_BoxOverlapChecker);
-            Assert.IsNull(((GridSensorBase)gridSensors[2]).m_BoxOverlapChecker);
+            Assert.IsNotNull(((GridSensorBase)gridSensors[0]).m_GridPerception);
+            Assert.IsNull(((GridSensorBase)gridSensors[1]).m_GridPerception);
+            Assert.IsNull(((GridSensorBase)gridSensors[2]).m_GridPerception);
         }
 
         [Test]

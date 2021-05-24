@@ -1,5 +1,5 @@
 """
-Python Environment API for the ML-Agents toolkit
+Python Environment API for the ML-Agents Toolkit
 The aim of this API is to expose Agents evolving in a simulation
 to perform reinforcement learning on.
 This API supports multi-agent scenarios and groups similar Agents (same
@@ -449,24 +449,30 @@ class ActionSpec(NamedTuple):
 
 class DimensionProperty(IntFlag):
     """
-    No properties specified.
+    The dimension property of a dimension of an observation.
     """
 
     UNSPECIFIED = 0
     """
+    No properties specified.
+    """
+
+    NONE = 1
+    """
     No Property of the observation in that dimension. Observation can be processed with
     Fully connected networks.
     """
-    NONE = 1
+
+    TRANSLATIONAL_EQUIVARIANCE = 2
     """
     Means it is suitable to do a convolution in this dimension.
     """
-    TRANSLATIONAL_EQUIVARIANCE = 2
+
+    VARIABLE_SIZE = 4
     """
     Means that there can be a variable number of observations in this dimension.
     The observations are unordered.
     """
-    VARIABLE_SIZE = 4
 
 
 class ObservationType(Enum):
@@ -475,10 +481,15 @@ class ObservationType(Enum):
     of the agent.
     """
 
-    # Observation information is generic.
     DEFAULT = 0
-    # Observation contains goal information for current task.
+    """
+    Observation information is generic.
+    """
+
     GOAL_SIGNAL = 1
+    """
+    Observation contains goal information for current task.
+    """
 
 
 class ObservationSpec(NamedTuple):

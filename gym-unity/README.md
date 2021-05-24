@@ -44,9 +44,14 @@ env = UnityToGymWrapper(unity_env, uint8_visual, flatten_branched, allow_multipl
   Discrete. Otherwise, it will be converted into a MultiDiscrete. Defaults to
   `False`.
 
-- `allow_multiple_obs` will return a list of observations. The first elements contain the visual observations and the
-  last element contains the array of vector observations. If False the environment returns a single array (containing
-  a single visual observations, if present, otherwise the vector observation). Defaults to `False`.
+- `allow_multiple_obs` will return a list of observations. The first elements
+  contain the visual observations and the last element contains the array of
+  vector observations. If False the environment returns a single array (containing
+  a single visual observations, if present, otherwise the vector observation).
+  Defaults to `False`.
+
+- `action_space_seed` is the optional seed for action sampling. If non-None, will
+  be used to set the random seed on created gym.Space instances.
 
 The returned environment `env` will function as a gym.
 
@@ -86,10 +91,12 @@ pip install git+git://github.com/openai/baselines
 ```
 
 Next, create a file called `train_unity.py`. Then create an `/envs/` directory
-and build the GridWorld environment to that directory. For more information on
+and build the environment to that directory. For more information on
 building Unity environments, see
-[here](../docs/Learning-Environment-Executable.md). Add the following code to
-the `train_unity.py` file:
+[here](../docs/Learning-Environment-Executable.md). Note that because of
+limitations of the DQN baseline, the environment must have a single visual
+observation, a single discrete action and a single Agent in the scene.
+Add the following code to the `train_unity.py` file:
 
 ```python
 import gym
@@ -101,12 +108,12 @@ from mlagents_envs.environment import UnityEnvironment
 from gym_unity.envs import UnityToGymWrapper
 
 def main():
-    unity_env = UnityEnvironment("./envs/GridWorld")
-    env = UnityToGymWrapper(unity_env, 0, uint8_visual=True)
+    unity_env = UnityEnvironment(<path-to-environment>)
+    env = UnityToGymWrapper(unity_env, uint8_visual=True)
     logger.configure('./logs') # Change to log in a different directory
     act = deepq.learn(
         env,
-        "cnn", # conv_only is also a good choice for GridWorld
+        "cnn", # For visual inputs
         lr=2.5e-4,
         total_timesteps=1000000,
         buffer_size=50000,
@@ -174,8 +181,8 @@ def make_unity_env(env_directory, num_env, visual, start_index=0):
     """
     def make_env(rank, use_visual=True): # pylint: disable=C0111
         def _thunk():
-            unity_env = UnityEnvironment(env_directory)
-            env = UnityToGymWrapper(unity_env, rank, uint8_visual=True)
+            unity_env = UnityEnvironment(env_directory, base_port=5000 + rank)
+            env = UnityToGymWrapper(unity_env, uint8_visual=True)
             env = Monitor(env, logger.get_dir() and os.path.join(logger.get_dir(), str(rank)))
             return env
         return _thunk
@@ -186,7 +193,7 @@ def make_unity_env(env_directory, num_env, visual, start_index=0):
         return DummyVecEnv([make_env(rank, use_visual=False)])
 
 def main():
-    env = make_unity_env('./envs/GridWorld', 4, True)
+    env = make_unity_env(<path-to-environment>, 4, True)
     ppo2.learn(
         network="mlp",
         env=env,
@@ -237,12 +244,12 @@ method with the following code.
 ```python
     game_version = 'v0' if sticky_actions else 'v4'
     full_game_name = '{}NoFrameskip-{}'.format(game_name, game_version)
-    unity_env = UnityEnvironment('./envs/GridWorld')
+    unity_env = UnityEnvironment(<path-to-environment>)
     env = UnityToGymWrapper(unity_env, uint8_visual=True)
     return env
 ```
 
-`./envs/GridWorld` is the path to your built Unity executable. For more
+`<path-to-environment>` is the path to your built Unity executable. For more
 information on building Unity environments, see
 [here](../docs/Learning-Environment-Executable.md), and note the Limitations
 section below.
@@ -255,8 +262,7 @@ rather than on the Python side.
 
 Since Dopamine is designed around variants of DQN, it is only compatible with
 discrete action spaces, and specifically the Discrete Gym space. For
-environments that use branched discrete action spaces (e.g.
-[VisualBanana](../docs/Learning-Environment-Examples.md)), you can enable the
+environments that use branched discrete action spaces, you can enable the
 `flatten_branched` parameter in `UnityToGymWrapper`, which treats each
 combination of branched actions as separate actions.
 
@@ -271,7 +277,7 @@ to the observation dimensions or number of channels.
 The hyperparameters provided by Dopamine are tailored to the Atari games, and
 you will likely need to adjust them for ML-Agents environments. Here is a sample
 `dopamine/agents/rainbow/configs/rainbow.gin` file that is known to work with
-GridWorld.
+a simple GridWorld.
 
 ```python
 import dopamine.agents.rainbow.rainbow_agent
@@ -347,11 +353,3 @@ certain features (e.g. dueling-Q) that are not enabled in Dopamine DQN.
 
 ![Dopamine on GridWorld](images/dopamine_gridworld_plot.png)
 
-### Example: VisualBanana
-
-As an example of using the `flatten_branched` option, we also used the Rainbow
-algorithm to train on the VisualBanana environment, and provide the results
-below. The same hyperparameters were used as in the GridWorld case, except that
-`replay_history` and `epsilon_decay` were increased to 100000.
-
-![Dopamine on VisualBanana](images/dopamine_visualbanana_plot.png)
