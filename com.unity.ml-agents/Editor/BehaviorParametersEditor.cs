@@ -36,6 +36,16 @@ namespace Unity.MLAgents.Editor
             so.Update();
             bool needPolicyUpdate; // Whether the name, model, inference device, or BehaviorType changed.
 
+            var behaviorParameters = (BehaviorParameters)target;
+            var agent = behaviorParameters.gameObject.GetComponent<Agent>();
+            if (agent == null)
+            {
+                EditorGUILayout.HelpBox(
+                    "No Agent is associated with this Behavior Parameters. Attach an Agent to " +
+                    "this GameObject to configure your Agent with these behavior parameters.",
+                    MessageType.Warning);
+            }
+
             // Drawing the Behavior Parameters
             EditorGUI.indentLevel++;
             EditorGUI.BeginChangeCheck(); // global
@@ -106,6 +116,10 @@ namespace Unity.MLAgents.Editor
             // Grab the sensor components, since we need them to determine the observation sizes.
             // TODO make these methods of BehaviorParameters
             var agent = behaviorParameters.gameObject.GetComponent<Agent>();
+            if (agent == null)
+            {
+                return;
+            }
             agent.sensors = new List<ISensor>();
             agent.InitializeSensors();
             var sensors = agent.sensors.ToArray();
