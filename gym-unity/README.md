@@ -67,7 +67,8 @@ The returned environment `env` will function as a gym.
   be accessed from the `info` provided by `env.step(action)`.
 - Stacked vector observations are not supported.
 - Environment registration for use with `gym.make()` is currently not supported.
-- Display rendering is not supported. Calling `env.render()` might not work as expected in display.
+- Calling env.render() will not render a new frame of the environment. It will
+  return the latest visual observation if using visual observations.
 
 ## Running OpenAI Baselines Algorithms
 
