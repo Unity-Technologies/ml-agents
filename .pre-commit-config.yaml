@@ -127,6 +127,7 @@ repos:
         entry: utils/validate_release_links.py
     -   id: generate-markdown-docs
         name: generate markdown docs
-        language: script
-        entry: utils/generate_markdown_docs.py --package_dirs ml-agents-envs
+        language: python
+        entry: ./utils/generate_markdown_docs.py --package_dirs ml-agents-envs
         pass_filenames: false
+        additional_dependencies: [pyyaml, pydoc-markdown==3.10.1]

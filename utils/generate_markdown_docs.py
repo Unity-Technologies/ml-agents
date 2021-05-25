@@ -69,8 +69,7 @@ if __name__ == "__main__":
     parser.add_argument("--package_dirs", nargs="+")
     args = parser.parse_args()
 
-    ok = False
-    return_code = 0
+    ok = True
     for package_dir in args.package_dirs:
         config_path = os.path.join(os.getcwd(), package_dir, "pydoc-config.yaml")
         print(config_path)
@@ -96,8 +95,6 @@ if __name__ == "__main__":
                     subprocess.check_call(subprocess_args, stdout=output_file)
                 remove_trailing_whitespace(output_file_name)
                 new_hash = hash_file(output_file_name)
-                ok = old_hash == new_hash
+                ok &= old_hash == new_hash
 
-        return_code = 0 if ok else 1
-
-    sys.exit(return_code)
+    sys.exit(0 if ok else 1)
