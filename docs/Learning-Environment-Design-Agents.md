@@ -429,7 +429,7 @@ have a unique name so that they can be sorted deterministically (the name must
 be unique for that Agent, but multiple Agents can have a Sensor Component with
 the same name).
 
-Visual observations also supports stacking, bu specifying `Observation Stacks`
+Visual observations also support stacking, by specifying `Observation Stacks`
 to a value greater than 1. The visual observations from the last `stackSize-1`
 steps will be stacked on the last dimension (channel dimension).
 
