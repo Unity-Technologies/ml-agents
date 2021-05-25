@@ -370,9 +370,6 @@ The steps for enabling stacking depends on how you generate observations:
   Generally, this should happen in the `CreateSensor()` method of your
   `SensorComponent`.
 
-Note that stacking currently only supports for vector observations; stacking
-for visual observations is not supported.
-
 #### Vector Observation Summary & Best Practices
 
 - Vector Observations should include all variables relevant for allowing the
@@ -431,6 +428,10 @@ not they are grayscale). Additionally, each Sensor Component on an Agent must
 have a unique name so that they can be sorted deterministically (the name must
 be unique for that Agent, but multiple Agents can have a Sensor Component with
 the same name).
+
+Visual observations also supports stacking, bu specifying `Observation Stacks`
+to a value greater than 1. The visual observations from the last `stackSize-1`
+steps will be stacked on the last dimension (channel dimension).
 
 When using `RenderTexture` visual observations, a handy feature for debugging is
 adding a `Canvas`, then adding a `Raw Image` with it's texture set to the
