@@ -1,8 +1,14 @@
 test_editors:
+  - version: 2018.4
+    # 2018.4 doesn't support code-coverage
+    coverageOptions:
+    minCoveragePct: 0
+    # We want some scene tests to run in the DevProject, but packages there only support 2019+
+    testProject: Project
   - version: 2019.3
     coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
     minCoveragePct: 72
-    testProject: Project
+    testProject: DevProject
   - version: 2020.1
     coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
     minCoveragePct: 72
