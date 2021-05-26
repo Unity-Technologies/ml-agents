@@ -74,7 +74,7 @@ setup(
         # cattrs 1.1.0 dropped support for python 3.6, but 1.0.0 doesn't work for python 3.9
         # Since there's no version that supports both, we have to draw the line somwehere.
         "cattrs<1.1.0; python_version<'3.8'",
-        "cattrs>=1.1.0; python_version>='3.8'",
+        "cattrs>=1.1.0,<1.7; python_version>='3.8'",
         "attrs>=19.3.0",
         'pypiwin32==223;platform_system=="Windows"',
         "importlib_metadata; python_version<'3.8'",
