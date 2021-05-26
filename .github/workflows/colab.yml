@@ -13,8 +13,6 @@ on:
 jobs:
   pytest:
     runs-on: ubuntu-latest
-    env:
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
