@@ -15,6 +15,7 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Added a fully connected visual encoder for environments with very small image inputs. (#5351)
 ### Bug Fixes
+- The calculation of the target entropy of SAC with continuous actions was incorrect and has been fixed. (#5372)
 - RigidBodySensorComponent now displays a warning if it's used in a way that won't generate useful observations. (#5387)
 
 
