@@ -16,6 +16,7 @@ and this project adheres to
 - Added a fully connected visual encoder for environments with very small image inputs. (#5351)
 ### Bug Fixes
 - RigidBodySensorComponent now displays a warning if it's used in a way that won't generate useful observations. (#5387)
+- Update the documentation with a note saying that `GridSensor` does not work in 2D environments. (#5396)
 
 
 ## [2.0.0-exp.1] - 2021-04-22
