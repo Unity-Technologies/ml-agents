@@ -570,6 +570,9 @@ See the doc on
 [extending grid Sensors](https://github.com/Unity-Technologies/ml-agents/blob/release_17/com.unity.ml-agents.extensions/Documentation~/CustomGridSensors.md)
 for more details on custom grid sensors.
 
+__Note__: The `GridSensor` only works in 3D environments and will not behave
+properly in 2D environments.
+
 #### Grid Observation Summary & Best Practices
 
 - Attach `GridSensorComponent` to use.
@@ -577,6 +580,7 @@ for more details on custom grid sensors.
   can be best captured in 2D representations.
 - Use as small grid size and as few tags as necessary to solve the problem in order to improve
   learning stability and agent performance.
+- Do not use `GridSensor` in a 2D game.
 
 ### Variable Length Observations
 
