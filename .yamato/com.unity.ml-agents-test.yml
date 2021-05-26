@@ -7,7 +7,7 @@ test_editors:
     coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
     minCoveragePct: 72
     testProject: DevProject
-  - version: 2020.2
+  - version: 2020.3
     coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
     minCoveragePct: 72
     testProject: DevProject
