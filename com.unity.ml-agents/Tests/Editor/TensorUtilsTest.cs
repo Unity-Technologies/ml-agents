@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Inference.Utils;
 using Unity.Barracuda;
@@ -24,7 +25,14 @@ namespace Unity.MLAgents.Tests
                 var packageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(Tensor).Assembly);
                 Assert.AreEqual("com.unity.barracuda", packageInfo.name);
                 var barracuda8DSupport = new Version(1, 1, 0);
-                var strippedBarracudaVersion = packageInfo.version.Replace("-preview", "");
+
+                var versionMatch = Regex.Match(packageInfo.version, @"[0-9]+\.[0-9]+\.[0-9]");
+                if (!versionMatch.Success)
+                {
+                    // Couldn't parse barracuda version
+                    return;
+                }
+                var strippedBarracudaVersion = versionMatch.Value;
                 var version = new Version(strippedBarracudaVersion);
                 if (version <= barracuda8DSupport)
                 {
