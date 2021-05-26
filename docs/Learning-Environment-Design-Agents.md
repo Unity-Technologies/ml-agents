@@ -430,7 +430,7 @@ be unique for that Agent, but multiple Agents can have a Sensor Component with
 the same name).
 
 Visual observations also support stacking, by specifying `Observation Stacks`
-to a value greater than 1. The visual observations from the last `stackSize-1`
+to a value greater than 1. The visual observations from the last `stackSize`
 steps will be stacked on the last dimension (channel dimension).
 
 When using `RenderTexture` visual observations, a handy feature for debugging is
