@@ -1,0 +1,38 @@
+name: colab
+
+on:
+  pull_request:
+    paths:  # This action will only run if the PR modifies a file in one of these directories
+    - 'ml-agents-envs/**'
+    - 'gym-unity/**'
+    - 'colab/**'
+    - '.github/workflows/colab.yml'
+  push:
+    branches: [main]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    env:
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8.x
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools
+        python -m pip install --progress-bar=off jupyter
+    - name: Run nbconvert
+      run: jupyter nbconvert --to notebook --execute --ExecutePreprocessor.kernel_name=python3 --output output.ipynb colab/Colab_UnityEnvironment_1_Run.ipynb
+    - name: Upload pytest test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: artifacts
+        path: |
+          output.ipynb
+      # Use always() to always run this step to publish test results when there are test failures
+      if: ${{ always() }}
