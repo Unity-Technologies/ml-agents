@@ -13,12 +13,7 @@ test_editors:
     coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
     minCoveragePct: 72
     testProject: DevProject
-  - version: 2020.2
-    coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
-    minCoveragePct: 72
-    testProject: DevProject
-trunk_editor:
-  - version: trunk
+  - version: 2020.3
     coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
     minCoveragePct: 72
     testProject: DevProject
@@ -46,11 +41,6 @@ all_package_tests:
     {% endfor %}
   {% endfor %}
 
-  {% for editor in trunk_editor %}
-    {% for platform in test_platforms %}
-  - .yamato/com.unity.ml-agents-test.yml#test_{{ platform.name }}_{{ editor.version }}
-    {% endfor %}
-  {% endfor %}
   triggers:
     cancel_old_ci: true
     recurring:
@@ -87,32 +77,3 @@ test_{{ platform.name }}_{{ editor.version }}:
     {% endif %}
   {% endfor %}
 {% endfor %}
-
-{% for editor in trunk_editor %}
-  {% for platform in test_platforms %}
-test_{{ platform.name }}_trunk:
-  name : com.unity.ml-agents test {{ editor.version }} on {{ platform.name }}
-  agent:
-    type: {{ platform.type }}
-    image: {{ platform.image }}
-    flavor: {{ platform.flavor}}
-  commands:
-    - python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
-    - unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
-    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    {% if platform.name == "win" %}
-    - upm-ci package test -u "C:\build\output\Unity-Technologies\ml-agents\.Editor" --package-path com.unity.ml-agents {{ editor.coverageOptions }}
-    {% else %}
-    - upm-ci project test -u {{ editor.version }} --project-path {{ editor.testProject }} {{ editor.coverageOptions }} --extra-utr-arg "reruncount=2"
-    {% endif %}
-    - python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ editor.minCoveragePct }}
-  artifacts:
-    logs:
-      paths:
-        - "upm-ci~/test-results/**/*"
-  dependencies:
-    - .yamato/com.unity.ml-agents-pack.yml#pack
-  triggers:
-    cancel_old_ci: true
-    {% endfor %}
-  {% endfor %}
