@@ -125,6 +125,7 @@ repos:
         name: validate release links
         language: script
         entry: utils/validate_release_links.py
+        require_serial: true
     -   id: generate-markdown-docs
         name: generate markdown docs
         language: python
