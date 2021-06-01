@@ -49,12 +49,12 @@ jobs:
         python -m pip install --progress-bar=off -e ./ml-agents
         python -m pip install --progress-bar=off -r colab_requirements.txt
     - name: Execute notebook
-      run: jupyter nbconvert --to notebook --execute --log-level=INFO --ExecutePreprocessor.kernel_name=python3 --output ${{ matrix.notebook_path }}-output.ipynb ${{ matrix.notebook_path }}
+      run: jupyter nbconvert --to notebook --execute --log-level=INFO --ExecutePreprocessor.kernel_name=python3 --output output.ipynb ${{ matrix.notebook_path }}
     - name: Upload colab results
       uses: actions/upload-artifact@v2
       with:
         name: artifacts
         path: |
-          ${{ matrix.notebook_path }}-output.ipynb
+          output.ipynb
       # Use always() to always run this step to publish execution results when there are failures
       if: ${{ always() }}
