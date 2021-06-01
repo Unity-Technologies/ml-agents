@@ -15,6 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
         COLAB_ALWAYS_INSTALL_XVFB: 1
+        QLEARNING_NUM_TRAINING_STEPS: 10
+        QLEARNING_NUM_NEW_EXP: 100
+        QLEARNING_BUFFER_SIZE: 100
+    strategy:
+      matrix:
+        notebook_path: [colab/Colab_UnityEnvironment_1_Run.ipynb, colab/Colab_UnityEnvironment_2_Train.ipynb, colab/Colab_UnityEnvironment_3_SideChannel.ipynb]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -38,16 +44,17 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
+        # Install the local checkouts of ml-agents. This will prevent the colab notebooks from installing a released version.
         python -m pip install --progress-bar=off -e ./ml-agents-envs
         python -m pip install --progress-bar=off -e ./ml-agents
         python -m pip install --progress-bar=off -r colab_requirements.txt
-    - name: Run nbconvert
-      run: jupyter nbconvert --to notebook --execute --log-level=INFO --ExecutePreprocessor.kernel_name=python3 --output output.ipynb colab/Colab_UnityEnvironment_1_Run.ipynb
+    - name: Execute notebook
+      run: jupyter nbconvert --to notebook --execute --log-level=INFO --ExecutePreprocessor.kernel_name=python3 --output ${{ matrix.notebook_path }}-output.ipynb ${{ matrix.notebook_path }}
     - name: Upload colab results
       uses: actions/upload-artifact@v2
       with:
         name: artifacts
         path: |
-          output.ipynb
-      # Use always() to always run this step to publish test results when there are test failures
+          ${{ matrix.notebook_path }}-output.ipynb
+      # Use always() to always run this step to publish execution results when there are failures
       if: ${{ always() }}
