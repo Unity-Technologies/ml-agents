@@ -175,7 +175,7 @@ def print_progress(prefix: str, percent: float) -> None:
     bar_progress = min(int(percent / 100 * BAR_LEN), BAR_LEN)
     bar = "|" + "\u2588" * bar_progress + " " * (BAR_LEN - bar_progress) + "|"
     str_percent = "%3.0f%%" % percent
-    print(f"{prefix} : {bar} {str_percent} \r", end="", flush=True)
+    #print(f"{prefix} : {bar} {str_percent} \r", end="", flush=True)
 
 
 def load_remote_manifest(url: str) -> Dict[str, Any]:
