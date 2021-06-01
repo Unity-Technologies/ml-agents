@@ -11,7 +11,7 @@ on:
     branches: [main]
 
 jobs:
-  pytest:
+  colab:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -25,7 +25,7 @@ jobs:
         python -m pip install --upgrade setuptools
         python -m pip install --progress-bar=off jupyter
     - name: Run nbconvert
-      run: jupyter nbconvert --to notebook --execute --ExecutePreprocessor.kernel_name=python3 --output output.ipynb colab/Colab_UnityEnvironment_1_Run.ipynb
+      run: jupyter nbconvert --to notebook --execute --log-level=DEBUG --ExecutePreprocessor.kernel_name=python3 --output output.ipynb colab/Colab_UnityEnvironment_1_Run.ipynb
     - name: Upload pytest test results
       uses: actions/upload-artifact@v2
       with:
