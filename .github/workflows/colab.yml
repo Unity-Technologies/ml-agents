@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
         COLAB_ALWAYS_INSTALL_XVFB: 1
-        QLEARNING_NUM_TRAINING_STEPS: 10
-        QLEARNING_NUM_NEW_EXP: 100
-        QLEARNING_BUFFER_SIZE: 100
+        QLEARNING_NUM_TRAINING_STEPS: 5
+        QLEARNING_NUM_NEW_EXP: 64
+        QLEARNING_BUFFER_SIZE: 64
     strategy:
       matrix:
         notebook_path: [Colab_UnityEnvironment_1_Run.ipynb, Colab_UnityEnvironment_2_Train.ipynb, Colab_UnityEnvironment_3_SideChannel.ipynb]
@@ -55,6 +55,6 @@ jobs:
       with:
         name: artifacts
         path: |
-          output-${{ matrix.notebook_path }}
+          colab/output-${{ matrix.notebook_path }}
       # Use always() to always run this step to publish execution results when there are failures
       if: ${{ always() }}
