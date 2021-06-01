@@ -13,6 +13,8 @@ on:
 jobs:
   colab:
     runs-on: ubuntu-latest
+    env:
+        COLAB_ALWAYS_INSTALL_XVFB: 1
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -22,6 +24,16 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.x'
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        # This path is specific to Ubuntu
+        path: ~/.cache/pip
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'gym-unity/setup.py', 'colab_requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -30,8 +42,8 @@ jobs:
         python -m pip install --progress-bar=off -e ./ml-agents
         python -m pip install --progress-bar=off -r colab_requirements.txt
     - name: Run nbconvert
-      run: jupyter nbconvert --to notebook --execute --log-level=DEBUG --ExecutePreprocessor.kernel_name=python3 --output output.ipynb colab/Colab_UnityEnvironment_1_Run.ipynb
-    - name: Upload pytest test results
+      run: jupyter nbconvert --to notebook --execute --log-level=INFO --ExecutePreprocessor.kernel_name=python3 --output output.ipynb colab/Colab_UnityEnvironment_1_Run.ipynb
+    - name: Upload colab results
       uses: actions/upload-artifact@v2
       with:
         name: artifacts
