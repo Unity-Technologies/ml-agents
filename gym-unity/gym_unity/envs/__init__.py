@@ -278,6 +278,10 @@ class UnityToGymWrapper(gym.Env):
         return result
 
     def render(self, mode="rgb_array"):
+        """
+        Return the latest visual observations.
+        Note that it will not render a new frame of the environment.
+        """
         return self.visual_obs
 
     def close(self) -> None:

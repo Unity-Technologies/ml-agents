@@ -13,7 +13,7 @@ RELEASE_PATTERN = re.compile(r"release_[0-9]+(_docs)*")
 # It matches "mlagents" and "mlagents_envs", accessible as group "package"
 # and optionally matches the version, e.g. "==1.2.3"
 PIP_INSTALL_PATTERN = re.compile(
-    r"(python -m )?pip3* install (?P<package>mlagents(_envs)?)(==[0-9]+\.[0-9]+\.[0-9]+(\.dev[0-9]+)?)?"
+    r"(python -m )?pip3* install (?P<quiet>-q )?(?P<package>mlagents(_envs)?)(==[0-9]+\.[0-9]+\.[0-9]+(\.dev[0-9]+)?)?"
 )
 TRAINER_INIT_FILE = "ml-agents/mlagents/trainers/__init__.py"
 
@@ -64,7 +64,7 @@ def test_pip_pattern():
     # Just some sanity check that the regex works as expected.
     for s, expected in [
         ("pip install mlagents", True),
-        ("pip3 install mlagents", True),
+        ("pip3 install -q mlagents", True),
         ("python -m pip install mlagents", True),
         ("python -m pip install mlagents==1.2.3", True),
         ("python -m pip install mlagents_envs==1.2.3", True),
@@ -85,7 +85,10 @@ def update_pip_install_line(line, package_verion):
     match = PIP_INSTALL_PATTERN.search(line)
     if match is not None:  # if there is a pip install line
         package_name = match.group("package")
-        replacement_version = f"python -m pip install {package_name}=={package_verion}"
+        quiet_option = match.group("quiet")
+        replacement_version = (
+            f"python -m pip install {quiet_option}{package_name}=={package_verion}"
+        )
         updated = PIP_INSTALL_PATTERN.sub(replacement_version, line)
         return updated
     else:  # Don't do anything
@@ -205,7 +208,7 @@ def check_all_files(
     :param release_allow_pattern:
     """
     bad_lines = []
-    file_types = {".py", ".md", ".cs"}
+    file_types = {".py", ".md", ".cs", ".ipynb"}
     for file_name in git_ls_files():
         if "localized" in file_name or os.path.splitext(file_name)[1] not in file_types:
             continue
@@ -230,7 +233,7 @@ def main():
     print(f"Python package version: {package_version}")
     release_allow_pattern = re.compile(f"{release_tag}(_docs)?")
     pip_allow_pattern = re.compile(
-        f"python -m pip install mlagents(_envs)?=={package_version}"
+        fr"python -m pip install (-q )?mlagents(_envs)?=={package_version}"
     )
     bad_lines = check_all_files(
         release_allow_pattern, release_tag, pip_allow_pattern, package_version
