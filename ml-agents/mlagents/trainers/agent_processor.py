@@ -15,6 +15,7 @@ from mlagents_envs.side_channel.stats_side_channel import (
     StatsAggregationMethod,
     EnvironmentStats,
 )
+from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.trajectory import AgentStatus, Trajectory, AgentExperience
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo, ActionInfoOutputs
@@ -438,8 +439,14 @@ class AgentManager(AgentProcessor):
                     self._stats_reporter.add_stat(stat_name, val, agg_type)
                 elif agg_type == StatsAggregationMethod.SUM:
                     self._stats_reporter.add_stat(stat_name, val, agg_type)
+                elif agg_type == StatsAggregationMethod.HISTOGRAM:
+                    self._stats_reporter.add_stat(stat_name, val, agg_type)
                 elif agg_type == StatsAggregationMethod.MOST_RECENT:
                     # In order to prevent conflicts between multiple environments,
                     # only stats from the first environment are recorded.
                     if worker_id == 0:
                         self._stats_reporter.set_stat(stat_name, val)
+                else:
+                    raise UnityTrainerException(
+                        f"Unknown StatsAggregationMethod encountered. {agg_type}"
+                    )
