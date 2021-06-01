@@ -19,6 +19,7 @@ and this project adheres to
 - The calculation of the target entropy of SAC with continuous actions was incorrect and has been fixed. (#5372)
 - RigidBodySensorComponent now displays a warning if it's used in a way that won't generate useful observations. (#5387)
 - Update the documentation with a note saying that `GridSensor` does not work in 2D environments. (#5396)
+- Fixed an issue where the histogram stats would not be reported correctly in TensorBoard. (#5410)
 
 
 ## [2.0.0-exp.1] - 2021-04-22
