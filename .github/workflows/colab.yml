@@ -19,6 +19,9 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8.x
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.x'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
