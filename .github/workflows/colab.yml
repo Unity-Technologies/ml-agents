@@ -28,7 +28,7 @@ jobs:
         python -m pip install --upgrade setuptools
         python -m pip install --progress-bar=off -e ./ml-agents-envs
         python -m pip install --progress-bar=off -e ./ml-agents
-        python -m pip install --progress-bar=off jupyter
+        python -m pip install --progress-bar=off -r colab_requirements.txt
     - name: Run nbconvert
       run: jupyter nbconvert --to notebook --execute --log-level=DEBUG --ExecutePreprocessor.kernel_name=python3 --output output.ipynb colab/Colab_UnityEnvironment_1_Run.ipynb
     - name: Upload pytest test results
