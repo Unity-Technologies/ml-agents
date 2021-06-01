@@ -14,6 +14,7 @@ and this project adheres to
 - Fixed NullReferenceException when adding Behavior Parameters with no Agent. (#5382)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Added a fully connected visual encoder for environments with very small image inputs. (#5351)
+- Colab notebooks illustrating the use of the Python API are now part of the repository. (#5399)
 ### Bug Fixes
 - The calculation of the target entropy of SAC with continuous actions was incorrect and has been fixed. (#5372)
 - RigidBodySensorComponent now displays a warning if it's used in a way that won't generate useful observations. (#5387)
