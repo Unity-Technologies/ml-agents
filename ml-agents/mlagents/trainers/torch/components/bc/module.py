@@ -38,7 +38,7 @@ class BCModule:
             learning_rate_schedule, self.current_lr, 1e-10, self._anneal_steps
         )
         params = self.policy.actor.parameters()
-        self.optimizer = torch.optim.Adam(params, lr=self.current_lr)
+        self.optimizer = torch.optim.Adam(params)
         _, self.demonstration_buffer = demo_to_buffer(
             settings.demo_path, policy.sequence_length, policy.behavior_spec
         )
