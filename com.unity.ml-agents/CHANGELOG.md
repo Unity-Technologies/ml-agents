@@ -8,6 +8,17 @@ and this project adheres to
 
 ## [Unreleased]
 ### Major Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+### Bug Fixes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+
+## [2.1.0-exp.1] - 2021-06-09
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - update Barracuda to 2.0.0-pre.3. (#5385)
@@ -16,9 +27,11 @@ and this project adheres to
 - Added a fully connected visual encoder for environments with very small image inputs. (#5351)
 - Colab notebooks illustrating the use of the Python API are now part of the repository. (#5399)
 ### Bug Fixes
-- The calculation of the target entropy of SAC with continuous actions was incorrect and has been fixed. (#5372)
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - RigidBodySensorComponent now displays a warning if it's used in a way that won't generate useful observations. (#5387)
 - Update the documentation with a note saying that `GridSensor` does not work in 2D environments. (#5396)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- The calculation of the target entropy of SAC with continuous actions was incorrect and has been fixed. (#5372)
 - Fixed an issue where the histogram stats would not be reported correctly in TensorBoard. (#5410)
 
 
