@@ -151,7 +151,7 @@ config files in this directory when running `mlagents-learn`. Make sure you are
 connected to the Internet and then type in the Anaconda Prompt:
 
 ```console
-python -m pip install Nonemlagents==0.27.0
+python -m pip install mlagents==0.27.0
 ```
 
 This will complete the installation of all the required Python packages to run
@@ -162,7 +162,7 @@ pip will get stuck when trying to read the cache of the package. If you see
 this, you can try:
 
 ```console
-python -m pip install Nonemlagents==0.27.0 --no-cache-dir
+python -m pip install mlagents==0.27.0 --no-cache-dir
 ```
 
 This `--no-cache-dir` tells the pip to disable the cache.
