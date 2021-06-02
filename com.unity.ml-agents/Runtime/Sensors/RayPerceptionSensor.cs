@@ -241,7 +241,6 @@ namespace Unity.MLAgents.Sensors
     public class RayPerceptionSensor : ISensor, IBuiltInSensor
     {
         float[] m_Observations;
-        float[] m_SingleRayObservations;
         ObservationSpec m_ObservationSpec;
         string m_Name;
 
@@ -308,20 +307,19 @@ namespace Unity.MLAgents.Sensors
             return RayPerceptionInput.Angles.Count;
         }
 
-        void SetNumObservations(int observationsSize, int numRays)
+        void SetNumObservations(int observationsSizePerRay, int numRays)
         {
-            m_ObservationSpec = ObservationSpec.Vector(observationsSize * numRays);
-            m_Observations = new float[observationsSize * numRays];
-            m_SingleRayObservations = new float[observationsSize];
+            m_ObservationSpec = ObservationSpec.Vector(observationsSizePerRay * numRays);
+            m_Observations = new float[observationsSizePerRay * numRays];
         }
 
         internal void SetRayPerceptionInput(RayPerceptionInput rayInput)
         {
             // Note that change the number of rays or tags doesn't directly call this,
             // but changing them and then changing another field will.
-            var oldObservationSize = GetObservationSizePerRay();
+            var oldObservationSize = GetObservationSizePerRay() * GetNumberOfRays();
             m_RayPerceptionInput = rayInput;
-            if (GetObservationSizePerRay() != oldObservationSize)
+            if (GetObservationSizePerRay() * GetNumberOfRays() != oldObservationSize)
             {
                 Debug.Log(
                     "Changing the number of tags or rays at runtime is not " +
@@ -354,20 +352,18 @@ namespace Unity.MLAgents.Sensors
         {
             using (TimerStack.Instance.Scoped("RayPerceptionSensor.Perceive"))
             {
-                Array.Clear(m_Observations, 0, m_Observations.Length);
-                var numRays = m_RayPerceptionInput.Angles.Count;
                 var rayObservartionSize = GetObservationSizePerRay();
+                var bufferOffset = 0;
 
                 // For each ray, write the information to the observation buffer
-                for (var rayIndex = 0; rayIndex < numRays; rayIndex++)
+                for (var rayIndex = 0; rayIndex < GetNumberOfRays(); rayIndex++)
                 {
-                    Array.Clear(m_SingleRayObservations, 0, rayObservartionSize);
-                    RayOutputToArray(m_RayPerceptionOutput.RayOutputs[rayIndex], rayIndex, m_SingleRayObservations);
-                    Array.Copy(m_SingleRayObservations, 0, m_Observations, rayObservartionSize * rayIndex, rayObservartionSize);
-                }
+                    Array.Clear(m_Observations, 0, rayObservartionSize);
+                    RayOutputToArray(m_RayPerceptionOutput.RayOutputs[rayIndex], rayIndex, m_Observations);
 
-                // Finally, add the observations to the ObservationWriter
-                writer.AddList(m_Observations);
+                    writer.AddList(m_Observations, bufferOffset);
+                    bufferOffset += rayObservartionSize;
+                }
             }
             return m_Observations.Length;
         }
