@@ -295,7 +295,7 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         public virtual int GetObservationSizePerRay()
         {
-            return RayPerceptionInput.DetectableTags.Count + 2;
+            return (RayPerceptionInput.DetectableTags?.Count ?? 0) + 2;
         }
 
         /// <summary>
@@ -304,7 +304,7 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         public int GetNumberOfRays()
         {
-            return RayPerceptionInput.Angles.Count;
+            return RayPerceptionInput.Angles?.Count ?? 0;
         }
 
         void SetNumObservations(int observationsSizePerRay, int numRays)
