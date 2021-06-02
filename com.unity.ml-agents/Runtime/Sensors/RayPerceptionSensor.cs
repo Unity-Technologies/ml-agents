@@ -73,9 +73,10 @@ namespace Unity.MLAgents.Sensors
         public int LayerMask;
 
         /// <summary>
-        /// Returns the expected number of floats in the output.
+        /// (Deprecated) Returns the expected number of floats in the output.
         /// </summary>
         /// <returns></returns>
+        [Obsolete("RayPerceptionInput.OutputSize() has been deprecated, please use RayPerceptionSensor.OutputSize instead.")]
         public int OutputSize()
         {
             return ((DetectableTags?.Count ?? 0) + 2) * (Angles?.Count ?? 0);
@@ -201,7 +202,7 @@ namespace Unity.MLAgents.Sensors
             public float ScaledCastRadius;
 
             /// <summary>
-            /// Writes the ray output information to a subset of the float array.  Each element in the rayAngles array
+            /// (Deprecated) Writes the ray output information to a subset of the float array.  Each element in the rayAngles array
             /// determines a sublist of data to the observation. The sublist contains the observation data for a single cast.
             /// The list is composed of the following:
             /// 1. A one-hot encoding for detectable tags. For example, if DetectableTags.Length = n, the
@@ -215,6 +216,7 @@ namespace Unity.MLAgents.Sensors
             /// <param name="numDetectableTags"></param>
             /// <param name="rayIndex"></param>
             /// <param name="buffer">Output buffer. The size must be equal to (numDetectableTags+2) * RayOutputs.Length</param>
+            [Obsolete("RayPerceptionOutput.ToFloatArray() has been deprecated, please use RayPerceptionSensor.RayOutputToArray() instead.")]
             public void ToFloatArray(int numDetectableTags, int rayIndex, float[] buffer)
             {
                 var bufferOffset = (numDetectableTags + 2) * rayIndex;
