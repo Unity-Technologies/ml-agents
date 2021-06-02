@@ -301,7 +301,7 @@ namespace Unity.MLAgents
                 // This try-catch is because DontDestroyOnLoad cannot be used in Editor Tests
                 GameObject.DontDestroyOnLoad(m_StepperObject);
             }
-            catch {}
+            catch { }
         }
 
         /// <summary>
@@ -482,13 +482,13 @@ namespace Unity.MLAgents
 
         void ResetActions()
         {
-            DecideAction = () => {};
-            DestroyAction = () => {};
-            AgentPreStep = i => {};
-            AgentSendState = () => {};
-            AgentAct = () => {};
-            AgentForceReset = () => {};
-            OnEnvironmentReset = () => {};
+            DecideAction = () => { };
+            DestroyAction = () => { };
+            AgentPreStep = i => { };
+            AgentSendState = () => { };
+            AgentAct = () => { };
+            AgentForceReset = () => { };
+            OnEnvironmentReset = () => { };
         }
 
         static void OnQuitCommandReceived()
