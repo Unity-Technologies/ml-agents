@@ -310,7 +310,7 @@ namespace Unity.MLAgents.Sensors
         void SetNumObservations(int observationsSizePerRay, int numRays)
         {
             m_ObservationSpec = ObservationSpec.Vector(observationsSizePerRay * numRays);
-            m_Observations = new float[observationsSizePerRay * numRays];
+            m_Observations = new float[observationsSizePerRay];
         }
 
         internal void SetRayPerceptionInput(RayPerceptionInput rayInput)
@@ -350,10 +350,10 @@ namespace Unity.MLAgents.Sensors
         /// <returns></returns>
         public int Write(ObservationWriter writer)
         {
+            var numWritten = 0;
             using (TimerStack.Instance.Scoped("RayPerceptionSensor.Perceive"))
             {
                 var rayObservartionSize = GetObservationSizePerRay();
-                var bufferOffset = 0;
 
                 // For each ray, write the information to the observation buffer
                 for (var rayIndex = 0; rayIndex < GetNumberOfRays(); rayIndex++)
@@ -361,11 +361,11 @@ namespace Unity.MLAgents.Sensors
                     Array.Clear(m_Observations, 0, rayObservartionSize);
                     RayOutputToArray(m_RayPerceptionOutput.RayOutputs[rayIndex], rayIndex, m_Observations);
 
-                    writer.AddList(m_Observations, bufferOffset);
-                    bufferOffset += rayObservartionSize;
+                    writer.AddList(m_Observations, numWritten);
+                    numWritten += rayObservartionSize;
                 }
             }
-            return m_Observations.Length;
+            return numWritten;
         }
 
         /// <inheritdoc/>
