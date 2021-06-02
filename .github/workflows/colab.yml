@@ -1,0 +1,60 @@
+name: colab
+
+on:
+  pull_request:
+    paths:  # This action will only run if the PR modifies a file in one of these directories
+    - 'ml-agents-envs/**'
+    - 'gym-unity/**'
+    - 'colab/**'
+    - '.github/workflows/colab.yml'
+  push:
+    branches: [main]
+
+jobs:
+  colab:
+    runs-on: ubuntu-latest
+    env:
+        COLAB_ALWAYS_INSTALL_XVFB: 1
+        QLEARNING_NUM_TRAINING_STEPS: 5
+        QLEARNING_NUM_NEW_EXP: 64
+        QLEARNING_BUFFER_SIZE: 64
+    strategy:
+      matrix:
+        notebook_path: [Colab_UnityEnvironment_1_Run.ipynb, Colab_UnityEnvironment_2_Train.ipynb, Colab_UnityEnvironment_3_SideChannel.ipynb]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8.x
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.x'
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        # This path is specific to Ubuntu
+        path: ~/.cache/pip
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'gym-unity/setup.py', 'colab_requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools
+        # Install the local checkouts of ml-agents. This will prevent the colab notebooks from installing a released version.
+        python -m pip install --progress-bar=off -e ./ml-agents-envs
+        python -m pip install --progress-bar=off -e ./ml-agents
+        python -m pip install --progress-bar=off -r colab_requirements.txt
+    - name: Execute notebook
+      run: jupyter nbconvert --to notebook --execute --log-level=INFO --ExecutePreprocessor.kernel_name=python3 --output output-${{ matrix.notebook_path }} colab/${{ matrix.notebook_path }}
+    - name: Upload colab results
+      uses: actions/upload-artifact@v2
+      with:
+        name: artifacts
+        path: |
+          colab/output-${{ matrix.notebook_path }}
+      # Use always() to always run this step to publish execution results when there are failures
+      if: ${{ always() }}
