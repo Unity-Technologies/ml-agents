@@ -300,7 +300,6 @@ namespace Unity.MLAgents.Sensors
 
         /// <summary>
         /// The number of rays in the sensor.
-        /// Override this method for custom observations.
         /// </summary>
         public int GetNumberOfRays()
         {
