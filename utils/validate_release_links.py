@@ -85,7 +85,7 @@ def update_pip_install_line(line, package_verion):
     match = PIP_INSTALL_PATTERN.search(line)
     if match is not None:  # if there is a pip install line
         package_name = match.group("package")
-        quiet_option = match.group("quiet")
+        quiet_option = match.group("quiet") or ""
         replacement_version = (
             f"python -m pip install {quiet_option}{package_name}=={package_verion}"
         )
