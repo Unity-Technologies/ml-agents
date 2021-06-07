@@ -3,7 +3,6 @@ import cloudpickle
 import enum
 import time
 
-from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.exception import (
     UnityCommunicationException,
     UnityTimeOutException,
@@ -118,9 +117,9 @@ def worker(
     run_options: RunOptions,
     log_level: int = logging_util.INFO,
 ) -> None:
-    env_factory: Callable[
-        [int, List[SideChannel]], UnityEnvironment
-    ] = cloudpickle.loads(pickled_env_factory)
+    env_factory: Callable[[int, List[SideChannel]], BaseEnv] = cloudpickle.loads(
+        pickled_env_factory
+    )
     env_parameters = EnvironmentParametersChannel()
 
     engine_config = EngineConfig(
@@ -138,7 +137,7 @@ def worker(
     training_analytics_channel: Optional[TrainingAnalyticsSideChannel] = None
     if worker_id == 0:
         training_analytics_channel = TrainingAnalyticsSideChannel()
-    env: UnityEnvironment = None
+    env: BaseEnv = None
     # Set log level. On some platforms, the logger isn't common with the
     # main process, so we need to set it again.
     logging_util.set_log_level(log_level)

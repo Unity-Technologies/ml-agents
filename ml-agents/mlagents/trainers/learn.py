@@ -169,7 +169,7 @@ def create_environment_factory(
 ) -> Callable[[int, List[SideChannel]], BaseEnv]:
     def create_unity_environment(
         worker_id: int, side_channels: List[SideChannel]
-    ) -> UnityEnvironment:
+    ) -> BaseEnv:
         # Make sure that each environment gets a different seed
         env_seed = seed + worker_id
         return UnityEnvironment(
