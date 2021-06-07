@@ -50,7 +50,16 @@ public class AgentSoccer : Agent
 
     public override void Initialize()
     {
-        m_Existential = 1f / MaxStep;
+        SoccerEnvController envController = GetComponentInParent<SoccerEnvController>();
+        if (envController != null)
+        {
+            m_Existential = 1f / envController.MaxEnvironmentSteps;
+        }
+        else
+        {
+            m_Existential = 1f / MaxStep;
+        }
+
         m_BehaviorParameters = gameObject.GetComponent<BehaviorParameters>();
         if (m_BehaviorParameters.TeamId == (int)Team.Blue)
         {
