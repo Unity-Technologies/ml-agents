@@ -321,6 +321,7 @@ MonoBehaviour:
   m_RewardType: 2
   goal: {fileID: 5497951568357209023}
   epsilon: 0.25
+  stepvalue: 40
 --- !u!114 &1306725529891448089
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -794,7 +795,7 @@ SphereCollider:
   m_GameObject: {fileID: 5497951568357209023}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}

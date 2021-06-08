@@ -46,7 +46,7 @@ public class Ball3DAgentArea : MonoBehaviour
         {
             Ball3DMultiAgent agent = actor.GetComponent<Ball3DMultiAgent>();
             agent.m_RewardType = rewardType;
-            agent.MaxStep = maxStep;
+            agent.setMaxStep(maxStep);
         }
     }
     public void AreaReset()
@@ -105,6 +105,7 @@ public class Ball3DAgentArea : MonoBehaviour
         if (changed)
         {
             AreaReset();
+            update_agents();
         }
     }
 }

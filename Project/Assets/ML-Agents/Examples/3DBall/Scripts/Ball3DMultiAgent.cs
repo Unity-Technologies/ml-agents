@@ -20,7 +20,7 @@ public class Ball3DMultiAgent : Agent
     public GameObject goal;
     [Tooltip("Specifies the radius of the goal region")]
     public float epsilon=0.25f;
-    
+    public int stepvalue=5000;
     public override void Initialize()
     {
         m_BallRb = ball.GetComponent<Rigidbody>();
@@ -38,6 +38,11 @@ public class Ball3DMultiAgent : Agent
             sensor.AddObservation(m_BallRb.velocity);
         }
     }
+
+    // public void FixedUpdate()
+    // {
+    //     MaxStep = stepvalue;
+    // }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
@@ -89,6 +94,7 @@ public class Ball3DMultiAgent : Agent
             + gameObject.transform.position;
         //Reset the parameters when the Agent is reset.
         SetResetParameters();
+        MaxStep = stepvalue;
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -132,11 +138,17 @@ public class Ball3DMultiAgent : Agent
         float maxdist = 3.54f;  // assumes max distance is 2.5 - -2.5 in each dim. This is an upper bound. 
         float dist = Vector3.Distance(ball, goal);
         //distance between our actual velocity and goal velocity
-        dist = Mathf.Clamp(epsilon - dist, 0, maxdist);
+        dist = Mathf.Clamp(dist, 0, maxdist);
 
         //return the value on a declining sigmoid shaped curve that decays from 1 to 0
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
         return Mathf.Pow(1 - Mathf.Pow(dist / maxdist, 2), 2);
+    }
+
+    public void setMaxStep(int value)
+    {
+        stepvalue = value;
+        MaxStep = value;
     }
 
 }

@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8706416217891658080}
   - component: {fileID: 3027918195473112231}
-  - component: {fileID: 2318041762275472194}
   m_Layer: 0
   m_Name: 3DBallAgentArea
   m_TagString: Untagged
@@ -47,37 +46,7 @@ MonoBehaviour:
   actorObjs: []
   prefab: {fileID: 1321468028730240, guid: c5e235d7c7cba4e5393f3e6b4c6bfe44, type: 3}
   numberOfParallel: 18
-  maxStep: 100
+  maxStep: 10
   rewardType: 0
   agentSpacing: 10
   numPerRow: 6
---- !u!114 &2318041762275472194
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8706416217891658087}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_BrainParameters:
-    VectorObservationSize: 1
-    NumStackedVectorObservations: 1
-    m_ActionSpec:
-      m_NumContinuousActions: 0
-      BranchSizes: 01000000
-    VectorActionSize: 01000000
-    VectorActionDescriptions: []
-    VectorActionSpaceType: 0
-    hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
-  m_InferenceDevice: 0
-  m_BehaviorType: 0
-  m_BehaviorName: My Behavior
-  TeamId: 0
-  m_UseChildSensors: 1
-  m_UseChildActuators: 1
-  m_ObservableAttributeHandling: 0
