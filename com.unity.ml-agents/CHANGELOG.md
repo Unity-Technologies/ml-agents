@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Major Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+### Bug Fixes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ## [2.1.0-exp.1] - 2021-06-09
 ### Minor Changes
