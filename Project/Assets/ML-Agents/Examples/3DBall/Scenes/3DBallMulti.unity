@@ -234,7 +234,22 @@ PrefabInstance:
     - target: {fileID: 3027918195473112231, guid: 7f24aa5e0e9d54a9b8bb72772633cee7,
         type: 3}
       propertyPath: maxStep
-      value: 20
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 3027918195473112231, guid: 7f24aa5e0e9d54a9b8bb72772633cee7,
+        type: 3}
+      propertyPath: rewardType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3027918195473112231, guid: 7f24aa5e0e9d54a9b8bb72772633cee7,
+        type: 3}
+      propertyPath: numberOfParallel
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3027918195473112231, guid: 7f24aa5e0e9d54a9b8bb72772633cee7,
+        type: 3}
+      propertyPath: decisionFrequency
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8706416217891658080, guid: 7f24aa5e0e9d54a9b8bb72772633cee7,
         type: 3}

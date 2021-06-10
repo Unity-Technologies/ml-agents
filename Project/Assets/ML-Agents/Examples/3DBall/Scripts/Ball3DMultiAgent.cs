@@ -15,12 +15,18 @@ public class Ball3DMultiAgent : Agent
     Rigidbody m_BallRb;
     EnvironmentParameters m_ResetParams;
     [Tooltip("Specifies which reward function to use. ")]
-    public Ball3DRewardType m_RewardType;
+    public Ball3DRewardType m_RewardType = Ball3DRewardType.Time;
 
     public GameObject goal;
     [Tooltip("Specifies the radius of the goal region")]
     public float epsilon=0.25f;
     public int stepvalue=5000;
+    StatsRecorder statsRecorder;
+    int stepsInGoal = -1;
+    int timestep = 0;
+
+    float maxdist = 3.54f;  // assumes max distance is 2.5 - -2.5 in each dim. This is an upper bound. 
+
     public override void Initialize()
     {
         m_BallRb = ball.GetComponent<Rigidbody>();
@@ -39,11 +45,6 @@ public class Ball3DMultiAgent : Agent
         }
     }
 
-    // public void FixedUpdate()
-    // {
-    //     MaxStep = stepvalue;
-    // }
-
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
         var actionZ = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[0], -1f, 1f);
@@ -60,6 +61,9 @@ public class Ball3DMultiAgent : Agent
         {
             gameObject.transform.Rotate(new Vector3(1, 0, 0), actionX);
         }
+        bool fell = ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
+            Mathf.Abs(ball.transform.position.x - gameObject.transform.position.x) > 3f ||
+            Mathf.Abs(ball.transform.position.z - gameObject.transform.position.z) > 3f);
         float reward = 0.0f;
         if (m_RewardType == Ball3DRewardType.Time)
         {
@@ -67,21 +71,28 @@ public class Ball3DMultiAgent : Agent
         } 
         else if(m_RewardType == Ball3DRewardType.Distance)
         {
-            reward = DistanceReward(ball.transform.position, goal.transform.position);
+            reward = DistanceReward(ball.transform.position, goal.transform.position, fell);
         } 
         else if(m_RewardType == Ball3DRewardType.Power)
         {
             reward = PowerReward(ball.transform.position, goal.transform.position);
         }
-        SetReward(reward);
-        if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
-            Mathf.Abs(ball.transform.position.x - gameObject.transform.position.x) > 3f ||
-            Mathf.Abs(ball.transform.position.z - gameObject.transform.position.z) > 3f)
+        AddReward(reward);
+        float dist = Vector3.Distance(ball.transform.position, goal.transform.position);
+        if (dist <= epsilon)
+        {
+            stepsInGoal++;
+        }
+        
+        if (fell)
         {
             EndEpisode();
         }
     }
-
+    void FixedUpdate()
+    {
+        timestep++;
+    }
     public override void OnEpisodeBegin()
     {
         gameObject.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
@@ -94,7 +105,16 @@ public class Ball3DMultiAgent : Agent
             + gameObject.transform.position;
         //Reset the parameters when the Agent is reset.
         SetResetParameters();
+        
+        
+        if (stepsInGoal >= 0)
+        {
+            var statsRecorder = Academy.Instance.StatsRecorder;
+            statsRecorder.Add("Environment/EvalMetric", (float)stepsInGoal / (float)MaxStep);
+        }
         MaxStep = stepvalue;
+        stepsInGoal = 0;
+        timestep = 0;
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -127,15 +147,19 @@ public class Ball3DMultiAgent : Agent
         return 0.0f;
     }
 
-    float DistanceReward(Vector3 ball, Vector3 goal)
+    float DistanceReward(Vector3 ball, Vector3 goal, bool fell)
     {
         float dist = Vector3.Distance(ball, goal);
-        return -dist;
+        float reward = -dist;
+        if (fell)
+        {
+            reward += -maxdist*(MaxStep - timestep);
+        }
+        return reward;
     }
 
     float PowerReward(Vector3 ball, Vector3 goal)
     {
-        float maxdist = 3.54f;  // assumes max distance is 2.5 - -2.5 in each dim. This is an upper bound. 
         float dist = Vector3.Distance(ball, goal);
         //distance between our actual velocity and goal velocity
         dist = Mathf.Clamp(dist, 0, maxdist);

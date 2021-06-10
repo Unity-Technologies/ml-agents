@@ -26,7 +26,7 @@ behaviors:
 
 environment_parameters:
   maxStep: 1000
-  rewardType: 2
+  rewardType: 1
   numParallel: 18
   decisionFreq: 5
   

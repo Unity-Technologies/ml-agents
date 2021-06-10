@@ -17,18 +17,26 @@ public class Ball3DAgentArea : MonoBehaviour
     [Tooltip("Number of maximum steps the agent can take in the environment. ")]
     public int maxStep = 100;
     [Tooltip("Specifies which reward function to use. For all environments")]
-    public Ball3DRewardType rewardType;
+    public Ball3DRewardType rewardType = Ball3DRewardType.Time;
     public float agentSpacing = 7.5f; 
 
     public int numPerRow = 6;
+
+    public int decisionFrequency = 5;
     
     EnvironmentParameters m_ResetParams;
     
+    public void Awake()
+    {
+        Academy.Instance.OnEnvironmentReset += UpdateEnvs;
+    }
+
     public void Start()
     {
         m_ResetParams = Academy.Instance.EnvironmentParameters;
         actorObjs = new List<GameObject>();
         AreaReset();
+        update_agents();
     }
 
 
@@ -44,9 +52,11 @@ public class Ball3DAgentArea : MonoBehaviour
     {
         foreach (var actor in actorObjs)
         {
-            Ball3DMultiAgent agent = actor.GetComponent<Ball3DMultiAgent>();
+            Ball3DMultiAgent agent = actor.GetComponentInChildren<Ball3DMultiAgent>();    
             agent.m_RewardType = rewardType;
-            agent.setMaxStep(maxStep);
+            agent.setMaxStep(maxStep * decisionFrequency);
+            DecisionRequester dr = agent.GetComponent<DecisionRequester>();
+            dr.DecisionPeriod = decisionFrequency;
         }
     }
     public void AreaReset()
@@ -67,11 +77,12 @@ public class Ball3DAgentArea : MonoBehaviour
             }
         }
     }
-    public void FixedUpdate()
+    public void UpdateEnvs()
     {
         int N = (int)m_ResetParams.GetWithDefault("numParallel", numberOfParallel);
         int newStep = (int)m_ResetParams.GetWithDefault("maxStep", maxStep);
         int rtype = (int)m_ResetParams.GetWithDefault("rewardType", -1);
+        int df = (int)m_ResetParams.GetWithDefault("decisionFreq", decisionFrequency);
         Ball3DRewardType rt = rewardType;
         bool changed = false;
         if (N != numberOfParallel)
@@ -83,6 +94,11 @@ public class Ball3DAgentArea : MonoBehaviour
         {
             changed = true;
             maxStep = newStep;
+        }
+        if (df != decisionFrequency)
+        {
+            changed = true;
+            decisionFrequency = df;
         }
         if (rtype == 0)
         {
@@ -105,7 +121,7 @@ public class Ball3DAgentArea : MonoBehaviour
         if (changed)
         {
             AreaReset();
-            update_agents();
         }
+        update_agents();
     }
 }
