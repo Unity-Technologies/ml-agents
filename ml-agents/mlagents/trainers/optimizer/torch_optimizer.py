@@ -1,5 +1,6 @@
 from typing import Dict, Optional, Tuple, List
 from mlagents.torch_utils import torch
+from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 import numpy as np
 from collections import defaultdict
 
@@ -8,7 +9,7 @@ from mlagents.trainers.trajectory import ObsUtil
 from mlagents.trainers.torch.components.bc.module import BCModule
 from mlagents.trainers.torch.components.reward_providers import create_reward_provider
 
-from mlagents.trainers.policy.torch_policy import TorchPolicy
+from mlagents.trainers.policy.torch_policy import EPSILON, TorchPolicy
 from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.settings import (
     TrainerSettings,
@@ -22,6 +23,7 @@ class TorchOptimizer(Optimizer):
     def __init__(self, policy: TorchPolicy, trainer_settings: TrainerSettings):
         super().__init__()
         self.policy = policy
+        self.prior_policies: List[TorchPolicy] = []
         self.trainer_settings = trainer_settings
         self.update_dict: Dict[str, torch.Tensor] = {}
         self.value_heads: Dict[str, torch.Tensor] = {}
@@ -60,6 +62,38 @@ class TorchOptimizer(Optimizer):
             self.reward_signals[reward_signal.value] = create_reward_provider(
                 reward_signal, self.policy.behavior_spec, settings
             )
+
+    def compute_prior_kl(
+        self,
+        policy_log_probs: ActionLogProbs,
+        obs: List[torch.Tensor],
+        act_masks: torch.Tensor,
+        actions: torch.Tensor,
+        memories: List[torch.Tensor],
+    ) -> torch.Tensor:
+        # Create mixture distribution
+        beta = 1.0 / float(len(self.prior_policies))
+        weighted_probs = []
+        for prior_policy in self.prior_policies:
+            log_probs, entropy = prior_policy.evaluate_actions(
+                obs,
+                masks=act_masks,
+                actions=actions,
+                memories=memories,
+                seq_len=self.policy.sequence_length,
+            )
+            weighted_probs.append(beta * log_probs.flatten().exp())
+        mixture_probs = torch.sum(torch.stack(weighted_probs), dim=0)
+        mixture_log_probs = (mixture_probs + EPSILON).log()
+
+        # Return KL
+        return torch.mean(
+            torch.sum(
+                torch.exp(policy_log_probs.flatten())
+                * (policy_log_probs.flatten() - mixture_log_probs.flatten()),
+                dim=-1,
+            )
+        )
 
     def _evaluate_by_sequence(
         self, tensor_obs: List[torch.Tensor], initial_memory: torch.Tensor

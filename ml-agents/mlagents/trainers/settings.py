@@ -637,6 +637,7 @@ class TrainerSettings(ExportableSettings):
         factory=lambda: {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
     )
     init_path: Optional[str] = None
+    priors: List[str] = attr.ib(factory=list)
     keep_checkpoints: int = 5
     checkpoint_interval: int = 500000
     max_steps: int = 500000

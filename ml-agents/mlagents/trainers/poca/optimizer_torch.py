@@ -319,10 +319,17 @@ class TorchPOCAOptimizer(TorchOptimizer):
             loss_masks,
             decay_eps,
         )
+
+        # Compute prior loss
+        prior_weight = 0.1
+        kl_loss = prior_weight * self.compute_prior_kl(
+            log_probs, current_obs, act_masks, actions, memories
+        )
         loss = (
             policy_loss
             + 0.5 * (value_loss + 0.5 * baseline_loss)
             - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
+            + kl_loss
         )
 
         # Set optimizer learning rate
