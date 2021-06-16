@@ -90,7 +90,7 @@ class TorchOptimizer(Optimizer):
         return torch.mean(
             torch.sum(
                 torch.exp(policy_log_probs.flatten())
-                * (policy_log_probs.flatten() - mixture_log_probs.flatten()),
+                * (policy_log_probs.flatten() - mixture_log_probs),
                 dim=-1,
             )
         )
