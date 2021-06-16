@@ -43,6 +43,16 @@ public class WallJumpAgent : Agent
     Vector3 m_JumpTargetPos;
     Vector3 m_JumpStartingPos;
 
+    public enum TaskType
+    {
+        Normal,
+        BigWallOnly,
+        PushBlock,
+        JumpOnBlock,
+    }
+
+    public TaskType taskType = TaskType.Normal;
+
     string m_NoWallBehaviorName = "SmallWallJump";
     string m_SmallWallBehaviorName = "SmallWallJump";
     string m_BigWallBehaviorName = "BigWallJump";
@@ -53,6 +63,10 @@ public class WallJumpAgent : Agent
     {
         m_WallJumpSettings = FindObjectOfType<WallJumpSettings>();
         m_Configuration = Random.Range(0, 5);
+        if (taskType != TaskType.Normal)
+        {
+            m_Configuration = 2;
+        }
 
         m_AgentRb = GetComponent<Rigidbody>();
         m_ShortBlockRb = shortBlock.GetComponent<Rigidbody>();
@@ -136,6 +150,20 @@ public class WallJumpAgent : Agent
         }
     }
 
+    private bool isOnBlock()
+    {
+        RaycastHit hit;
+        Physics.Raycast(transform.position + new Vector3(0, -0.05f, 0), -Vector3.up, out hit,
+            1f);
+
+        if (hit.collider != null && hit.collider.CompareTag("block") && hit.normal.y > 0.95f)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     /// <summary>
     /// Moves  a rigidbody towards a position smoothly.
     /// </summary>
@@ -193,11 +221,26 @@ public class WallJumpAgent : Agent
         m_GroundRenderer.material = m_GroundMaterial;
     }
 
+    public void AgentWon()
+    {
+        AddReward(1f);
+        EndEpisode();
+        StartCoroutine(
+            GoalScoredSwapGroundMaterial(m_WallJumpSettings.goalScoredMaterial, 2f));
+    }
+
     public void MoveAgent(ActionSegment<int> act)
     {
         AddReward(-0.0005f);
         var smallGrounded = DoGroundCheck(true);
         var largeGrounded = DoGroundCheck(false);
+        if (taskType == TaskType.JumpOnBlock)
+        {
+            if (isOnBlock())
+            {
+                AgentWon();
+            }
+        }
 
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
@@ -288,10 +331,7 @@ public class WallJumpAgent : Agent
     {
         if (col.gameObject.CompareTag("goal") && DoGroundCheck(true))
         {
-            SetReward(1f);
-            EndEpisode();
-            StartCoroutine(
-                GoalScoredSwapGroundMaterial(m_WallJumpSettings.goalScoredMaterial, 2));
+            AgentWon();
         }
     }
 
@@ -309,6 +349,10 @@ public class WallJumpAgent : Agent
         transform.localPosition = new Vector3(
             18 * (Random.value - 0.5f), 1, -12);
         m_Configuration = Random.Range(0, 5);
+        if (taskType != TaskType.Normal)
+        {
+            m_Configuration = 2;
+        }
         m_AgentRb.velocity = default(Vector3);
     }
 
