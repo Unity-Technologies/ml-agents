@@ -75,7 +75,7 @@ class TorchOptimizer(Optimizer):
         beta = 1.0 / float(len(self.prior_policies))
         weighted_probs = []
         for prior_policy in self.prior_policies:
-            log_probs, entropy = prior_policy.evaluate_actions(
+            log_probs, _ = prior_policy.evaluate_actions(
                 obs,
                 masks=act_masks,
                 actions=actions,
