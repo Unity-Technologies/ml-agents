@@ -83,14 +83,15 @@ class TorchOptimizer(Optimizer):
                 seq_len=self.policy.sequence_length,
             )
             weighted_probs.append(beta * log_probs.flatten().exp())
-        mixture_probs = torch.sum(torch.stack(weighted_probs), dim=0)
+        mixture_probs = torch.sum(torch.stack(weighted_probs), dim=0, keepdim=True)
         mixture_log_probs = (mixture_probs + EPSILON).log()
 
         # Return KL
+        flattened_policy_log_probs = policy_log_probs.flatten()
         return torch.mean(
             torch.sum(
-                torch.exp(policy_log_probs.flatten())
-                * (policy_log_probs.flatten() - mixture_log_probs),
+                torch.exp(flattened_policy_log_probs)
+                * (flattened_policy_log_probs - mixture_log_probs),
                 dim=-1,
             )
         )
