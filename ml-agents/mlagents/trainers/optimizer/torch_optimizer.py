@@ -1,6 +1,5 @@
 from typing import Dict, Optional, Tuple, List
 from mlagents.torch_utils import torch
-from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 import numpy as np
 from collections import defaultdict
 
@@ -65,7 +64,7 @@ class TorchOptimizer(Optimizer):
 
     def compute_prior_kl(
         self,
-        policy_log_probs: ActionLogProbs,
+        flattened_policy_log_probs: torch.Tensor,
         obs: List[torch.Tensor],
         act_masks: torch.Tensor,
         actions: torch.Tensor,
@@ -90,7 +89,8 @@ class TorchOptimizer(Optimizer):
         # Return KL
         return torch.mean(
             torch.sum(
-                torch.exp(policy_log_probs) * (policy_log_probs - mixture_log_probs),
+                torch.exp(flattened_policy_log_probs)
+                * (flattened_policy_log_probs - mixture_log_probs),
                 dim=-1,
             )
         )
