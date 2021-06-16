@@ -142,6 +142,8 @@ class HyperparamSettings:
     buffer_size: int = 10240
     learning_rate: float = 3.0e-4
     learning_rate_schedule: ScheduleType = ScheduleType.CONSTANT
+    priors: List[str] = attr.ib(factory=list)
+    prior_loss_weight: float = 0.1
 
 
 @attr.s(auto_attribs=True)
@@ -637,7 +639,6 @@ class TrainerSettings(ExportableSettings):
         factory=lambda: {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
     )
     init_path: Optional[str] = None
-    priors: List[str] = attr.ib(factory=list)
     keep_checkpoints: int = 5
     checkpoint_interval: int = 500000
     max_steps: int = 500000

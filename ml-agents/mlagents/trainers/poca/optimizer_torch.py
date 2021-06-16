@@ -321,8 +321,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
         )
 
         # Compute prior loss
-        prior_weight = 0.1
-        kl_loss = prior_weight * self.compute_prior_kl(
+        kl_loss = self.hyperparameters.prior_loss_weight * self.compute_prior_kl(
             log_probs, current_obs, act_masks, actions, memories
         )
         loss = (

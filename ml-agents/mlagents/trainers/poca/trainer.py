@@ -290,7 +290,7 @@ class POCATrainer(RLTrainer):
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
         # Create prior policies, save them somewhere
-        for checkpoint_name in self.trainer_settings.priors:
+        for checkpoint_name in self.hyperparameters.priors:
             _model_loader = TorchModelSaver(
                 self.trainer_settings, checkpoint_name, True
             )
