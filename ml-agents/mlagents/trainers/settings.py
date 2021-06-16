@@ -798,6 +798,7 @@ class EngineSettings:
 @attr.s(auto_attribs=True)
 class TorchSettings:
     device: Optional[str] = parser.get_default("torch_device")
+    num_threads: int = parser.get_default("torch_num_threads")
 
 
 @attr.s(auto_attribs=True)

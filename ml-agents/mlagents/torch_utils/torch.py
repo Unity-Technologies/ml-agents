@@ -2,7 +2,8 @@ import os
 
 from distutils.version import LooseVersion
 import pkg_resources
-from mlagents.torch_utils import cpu_utils
+
+# from mlagents.torch_utils import cpu_utils
 from mlagents.trainers.settings import TorchSettings
 from mlagents_envs.logging_util import get_logger
 
@@ -34,14 +35,16 @@ assert_torch_installed()
 import torch  # noqa I201
 
 
-torch.set_num_threads(cpu_utils.get_num_threads_to_use())
+# torch.set_num_threads(cpu_utils.get_num_threads_to_use())
 os.environ["KMP_BLOCKTIME"] = "0"
 
 
 _device = torch.device("cpu")
 
 
-def set_torch_config(torch_settings: TorchSettings) -> None:
+def set_torch_config(
+    torch_settings: TorchSettings, set_torch_threads: bool = True
+) -> None:
     global _device
 
     if torch_settings.device is None:
@@ -57,9 +60,13 @@ def set_torch_config(torch_settings: TorchSettings) -> None:
         torch.set_default_tensor_type(torch.FloatTensor)
     logger.debug(f"default Torch device: {_device}")
 
+    if set_torch_threads:
+        torch.set_num_threads(torch_settings.num_threads)
+    logger.debug(f"Torch num_threads: {torch.get_num_threads()}")
+
 
 # Initialize to default settings
-set_torch_config(TorchSettings(device=None))
+set_torch_config(TorchSettings(device=None), set_torch_threads=False)
 
 nn = torch.nn
 
