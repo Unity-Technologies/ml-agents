@@ -88,11 +88,9 @@ class TorchOptimizer(Optimizer):
         mixture_log_probs = (mixture_probs + EPSILON).log()
 
         # Return KL
-        flattened_policy_log_probs = policy_log_probs.flatten()
         return torch.mean(
             torch.sum(
-                torch.exp(flattened_policy_log_probs)
-                * (flattened_policy_log_probs - mixture_log_probs),
+                torch.exp(policy_log_probs) * (policy_log_probs - mixture_log_probs),
                 dim=-1,
             )
         )
