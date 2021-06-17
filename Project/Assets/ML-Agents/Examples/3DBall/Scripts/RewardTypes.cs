@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public enum Ball3DRewardType 
+public enum RewardType 
 {
     Time, 
     Distance,

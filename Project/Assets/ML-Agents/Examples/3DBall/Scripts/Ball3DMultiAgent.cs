@@ -15,12 +15,12 @@ public class Ball3DMultiAgent : Agent
     Rigidbody m_BallRb;
     EnvironmentParameters m_ResetParams;
     [Tooltip("Specifies which reward function to use. ")]
-    public Ball3DRewardType m_RewardType = Ball3DRewardType.Time;
+    public RewardType m_RewardType = RewardType.Time;
 
     public GameObject goal;
     [Tooltip("Specifies the radius of the goal region")]
     public float epsilon=0.25f;
-    public int stepvalue=5000;
+    int stepvalue=5000;
     StatsRecorder statsRecorder;
     int stepsInGoal = -1;
     int timestep = 0;
@@ -65,15 +65,15 @@ public class Ball3DMultiAgent : Agent
             Mathf.Abs(ball.transform.position.x - gameObject.transform.position.x) > 3f ||
             Mathf.Abs(ball.transform.position.z - gameObject.transform.position.z) > 3f);
         float reward = 0.0f;
-        if (m_RewardType == Ball3DRewardType.Time)
+        if (m_RewardType == RewardType.Time)
         {
             reward = TimeReward(ball.transform.position, goal.transform.position);
         } 
-        else if(m_RewardType == Ball3DRewardType.Distance)
+        else if(m_RewardType == RewardType.Distance)
         {
             reward = DistanceReward(ball.transform.position, goal.transform.position, fell);
         } 
-        else if(m_RewardType == Ball3DRewardType.Power)
+        else if(m_RewardType == RewardType.Power)
         {
             reward = PowerReward(ball.transform.position, goal.transform.position);
         }

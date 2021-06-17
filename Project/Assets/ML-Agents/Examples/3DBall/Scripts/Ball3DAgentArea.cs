@@ -17,7 +17,7 @@ public class Ball3DAgentArea : MonoBehaviour
     [Tooltip("Number of maximum steps the agent can take in the environment. ")]
     public int maxStep = 100;
     [Tooltip("Specifies which reward function to use. For all environments")]
-    public Ball3DRewardType rewardType = Ball3DRewardType.Time;
+    public RewardType rewardType = RewardType.Time;
     public float agentSpacing = 7.5f; 
 
     public int numPerRow = 6;
@@ -83,7 +83,7 @@ public class Ball3DAgentArea : MonoBehaviour
         int newStep = (int)m_ResetParams.GetWithDefault("maxStep", maxStep);
         int rtype = (int)m_ResetParams.GetWithDefault("rewardType", -1);
         int df = (int)m_ResetParams.GetWithDefault("decisionFreq", decisionFrequency);
-        Ball3DRewardType rt = rewardType;
+        RewardType rt = rewardType;
         bool changed = false;
         if (N != numberOfParallel)
         {
@@ -102,15 +102,15 @@ public class Ball3DAgentArea : MonoBehaviour
         }
         if (rtype == 0)
         {
-            rt = Ball3DRewardType.Time;
+            rt = RewardType.Time;
         } 
         else if (rtype == 1)
         {
-            rt = Ball3DRewardType.Distance;
+            rt = RewardType.Distance;
         }
         else if (rtype == 2)
         {
-            rt = Ball3DRewardType.Power;
+            rt = RewardType.Power;
         }
 
         if (rt != rewardType)
