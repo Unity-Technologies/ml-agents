@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8706416217891658080}
-  - component: {fileID: 3027918195473112231}
+  - component: {fileID: 8491200049586032722}
   m_Layer: 0
   m_Name: 3DBallAgentArea
   m_TagString: Untagged
@@ -31,7 +31,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3027918195473112231
+--- !u!114 &8491200049586032722
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -40,13 +40,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 8706416217891658087}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3562b98ac771b4757b27379b333b9007, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c0bbd56b9a644d61814dff00b16c802, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   actorObjs: []
   prefab: {fileID: 1321468028730240, guid: c5e235d7c7cba4e5393f3e6b4c6bfe44, type: 3}
   numberOfParallel: 18
-  maxStep: 10
+  maxStep: 30
   rewardType: 0
   agentSpacing: 10
   numPerRow: 6
+  expandOnY: 1
+  decisionFrequency: 5

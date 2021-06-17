@@ -5,7 +5,7 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Random = UnityEngine.Random;
 
-public class Ball3DMultiAgent : Agent
+public class Ball3DMultiAgent : ParameterizedAgent
 {
     [Header("Specific to Ball3D")]
     public GameObject ball;
@@ -14,13 +14,10 @@ public class Ball3DMultiAgent : Agent
     public bool useVecObs;
     Rigidbody m_BallRb;
     EnvironmentParameters m_ResetParams;
-    [Tooltip("Specifies which reward function to use. ")]
-    public RewardType m_RewardType = RewardType.Time;
-
+    
     public GameObject goal;
     [Tooltip("Specifies the radius of the goal region")]
     public float epsilon=0.25f;
-    int stepvalue=5000;
     StatsRecorder statsRecorder;
     int stepsInGoal = -1;
     int timestep = 0;
@@ -168,11 +165,4 @@ public class Ball3DMultiAgent : Agent
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
         return Mathf.Pow(1 - Mathf.Pow(dist / maxdist, 2), 2);
     }
-
-    public void setMaxStep(int value)
-    {
-        stepvalue = value;
-        MaxStep = value;
-    }
-
 }
