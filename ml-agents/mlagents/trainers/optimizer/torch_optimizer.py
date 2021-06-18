@@ -88,7 +88,11 @@ class TorchOptimizer(Optimizer):
 
         # Return KL
         return torch.mean(
-            torch.sum(flattened_policy_log_probs - mixture_log_probs, dim=-1)
+            torch.sum(
+                torch.exp(flattened_policy_log_probs)
+                * (flattened_policy_log_probs - mixture_log_probs),
+                dim=-1,
+            )
         )
 
     def _evaluate_by_sequence(
