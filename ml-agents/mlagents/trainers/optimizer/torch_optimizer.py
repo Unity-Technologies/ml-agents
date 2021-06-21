@@ -48,6 +48,9 @@ class TorchOptimizer(Optimizer):
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
         pass
 
+    def get_trainable_parameters(self):
+        return None
+
     def create_reward_signals(
         self, reward_signal_configs: Dict[RewardSignalType, RewardSignalSettings]
     ) -> None:

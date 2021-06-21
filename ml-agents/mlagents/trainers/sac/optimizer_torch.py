@@ -17,6 +17,7 @@ from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.settings import TrainerSettings, SACSettings
 from contextlib import ExitStack
 from mlagents.trainers.trajectory import ObsUtil
+from mlagents.trainers.training_status import GlobalTrainingStatus, StatusType
 
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
@@ -210,9 +211,23 @@ class TorchSACOptimizer(TorchOptimizer):
         )
         self._move_to_device(default_device())
 
+        GlobalTrainingStatus.set_parameter_state(
+            StatusType.STATS_NETWORK.value,
+            StatusType.HYPERPARAM_COUNT,
+            len(self.get_trainable_parameters()),
+        )
+
     @property
     def critic(self):
         return self._critic
+
+    def get_trainable_parameters(self):
+        return (
+            list(self.policy.actor.parameters())
+            + list(self.q_network.parameters())
+            + list(self._critic.parameters())
+            + list(self._log_ent_coef.parameters())
+        )
 
     def _move_to_device(self, device: torch.device) -> None:
         self._log_ent_coef.to(device)

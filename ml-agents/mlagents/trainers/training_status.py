@@ -21,6 +21,8 @@ class StatusType(Enum):
     CHECKPOINTS = "checkpoints"
     FINAL_CHECKPOINT = "final_checkpoint"
     ELO = "elo"
+    STATS_NETWORK = "network_summaries"
+    HYPERPARAM_COUNT = "hyperparameters_count"
 
 
 @attr.s(auto_attribs=True)

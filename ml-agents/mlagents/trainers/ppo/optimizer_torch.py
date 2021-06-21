@@ -12,6 +12,7 @@ from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.trajectory import ObsUtil
+from mlagents.trainers.training_status import GlobalTrainingStatus, StatusType
 
 
 class TorchPPOOptimizer(TorchOptimizer):
@@ -72,9 +73,18 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         self.stream_names = list(self.reward_signals.keys())
 
+        GlobalTrainingStatus.set_parameter_state(
+            StatusType.STATS_NETWORK.value,
+            StatusType.HYPERPARAM_COUNT,
+            len(self.get_trainable_parameters()),
+        )
+
     @property
     def critic(self):
         return self._critic
+
+    def get_trainable_parameters(self):
+        return list(self.policy.actor.parameters()) + list(self._critic.parameters())
 
     @timed
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
