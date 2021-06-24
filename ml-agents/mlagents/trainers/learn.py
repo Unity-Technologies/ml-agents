@@ -30,6 +30,7 @@ from mlagents_envs.timers import (
 )
 from mlagents_envs import logging_util
 from mlagents.plugins.stats_writer import register_stats_writer_plugins
+from mlagents_envs.particles_env import ParticlesEnvironment
 
 logger = logging_util.get_logger(__name__)
 
@@ -172,6 +173,8 @@ def create_environment_factory(
     ) -> UnityEnvironment:
         # Make sure that each environment gets a different seed
         env_seed = seed + worker_id
+        if "simple_spread" in env_path:
+            return ParticlesEnvironment()
         return UnityEnvironment(
             file_name=env_path,
             worker_id=worker_id,

@@ -55,6 +55,8 @@ def _make_env(scenario_name, benchmark=False):
 
 
 class ParticlesEnvironment(BaseEnv):
+    MAX_STEP = 25
+
     def __init__(self, name: str = "simple_spread"):
         self._obs: Optional[List[np.array]] = None
         self._rew: Optional[List[int]] = None
@@ -80,7 +82,7 @@ class ParticlesEnvironment(BaseEnv):
             self._obs, self._rew, self._done, _ = self._env.step([0] * self._env.n)
         else:
             self._obs, self._rew, self._done, _ = self._env.step(self._actions)
-        if self.count % 100 == 0:
+        if self.count % self.MAX_STEP == 0:
             self.reset()
             self._done = [True] * self._env.n
         self.count += 1
@@ -179,7 +181,7 @@ class ParticlesEnvironment(BaseEnv):
         terminal_group_id = np.array([0 for i in range(self._env.n) if self._done[i]])
         # TODO : Figureout the type of interruption
         terminal_interruption = np.array(
-            [True for i in range(self._env.n) if self._done[i]]
+            [False for i in range(self._env.n) if self._done[i]]
         )
         terminal_steps = TerminalSteps(
             [terminal_obs],
