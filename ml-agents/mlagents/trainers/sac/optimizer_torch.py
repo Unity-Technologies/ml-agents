@@ -44,6 +44,7 @@ class DiverseNetworkVariational(torch.nn.Module):
     def __init__(self, specs: BehaviorSpec, settings) -> None:
         super().__init__()
         self._use_actions = True
+        self._use_dropout = True
         sigma_start = 0.5
         print(
             "VARIATIONAL : Settings : strength:",
@@ -78,6 +79,8 @@ class DiverseNetworkVariational(torch.nn.Module):
         self._all_obs_specs = specs.observation_specs
 
         self.diverse_size = diverse_spec.shape[0]
+
+        self._dropout = torch.nn.Dropout(.8)
 
         if self._use_actions:
             self._encoder = NetworkBody(
@@ -116,12 +119,16 @@ class DiverseNetworkVariational(torch.nn.Module):
             for obs, spec in zip(obs_input, self._all_obs_specs)
             if spec.observation_type != ObservationType.GOAL_SIGNAL
         ]
+        if self._use_dropout:
+            tensor_obs = [self._dropout(obs) for obs in tensor_obs]
         if self._use_actions:
             action = self._action_flattener.forward(action_input).reshape(
                 -1, self._action_flattener.flattened_size
             )
             if detach_action:
                 action = action.detach()
+            if self._use_dropout:
+                action = self._dropout(action)
             hidden, _ = self._encoder.forward(tensor_obs, action)
         else:
             hidden, _ = self._encoder.forward(tensor_obs)
