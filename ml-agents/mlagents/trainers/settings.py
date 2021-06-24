@@ -162,6 +162,7 @@ class SACSettings(HyperparamSettings):
     save_replay_buffer: bool = False
     init_entcoef: float = 1.0
     reward_signal_steps_per_update: float = attr.ib()
+    mede_dropout: float = 0
 
     @reward_signal_steps_per_update.default
     def _reward_signal_steps_per_update_default(self):

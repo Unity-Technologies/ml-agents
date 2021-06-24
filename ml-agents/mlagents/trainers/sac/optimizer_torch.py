@@ -41,10 +41,9 @@ class DiverseNetworkVariational(torch.nn.Module):
     EPSILON = 1e-7
     initial_beta = 0.0
 
-    def __init__(self, specs: BehaviorSpec, settings) -> None:
+    def __init__(self, specs: BehaviorSpec, settings, mede_dropout) -> None:
         super().__init__()
         self._use_actions = True
-        self._use_dropout = True
         sigma_start = 0.5
         print(
             "VARIATIONAL : Settings : strength:",
@@ -80,7 +79,8 @@ class DiverseNetworkVariational(torch.nn.Module):
 
         self.diverse_size = diverse_spec.shape[0]
 
-        self._dropout = torch.nn.Dropout(.8)
+        self._dropout = torch.nn.Dropout(mede_dropout) if mede_dropout > 0 else None
+        print("DROPOUT", mede_dropout, self._dropout is None)
 
         if self._use_actions:
             self._encoder = NetworkBody(
@@ -119,7 +119,7 @@ class DiverseNetworkVariational(torch.nn.Module):
             for obs, spec in zip(obs_input, self._all_obs_specs)
             if spec.observation_type != ObservationType.GOAL_SIGNAL
         ]
-        if self._use_dropout:
+        if self._dropout is not None:
             tensor_obs = [self._dropout(obs) for obs in tensor_obs]
         if self._use_actions:
             action = self._action_flattener.forward(action_input).reshape(
@@ -127,7 +127,7 @@ class DiverseNetworkVariational(torch.nn.Module):
             )
             if detach_action:
                 action = action.detach()
-            if self._use_dropout:
+            if self._dropout is not None:
                 action = self._dropout(action)
             hidden, _ = self._encoder.forward(tensor_obs, action)
         else:
@@ -435,7 +435,9 @@ class TorchSACOptimizer(TorchOptimizer):
 
         # self._mede_network = DiverseNetwork(
         self._mede_network = DiverseNetworkVariational(
-            self.policy.behavior_spec, self.policy.network_settings
+            self.policy.behavior_spec, 
+            self.policy.network_settings, 
+            hyperparameters.mede_dropout
         )
         self._mede_optimizer = torch.optim.Adam(
             list(self._mede_network.parameters()), lr=hyperparameters.learning_rate
