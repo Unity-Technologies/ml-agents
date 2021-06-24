@@ -7,7 +7,7 @@ using Unity.MLAgents.Sensors;
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class WormAgentDiverse : Agent
 {
-    const float m_MinWalkingSpeed = 1; //The min walking speed to obtain reward
+    const float m_minWalkingSpeed = 1; //The min walking speed to obtain reward
 
     [Header("Target Prefabs")] public Transform TargetPrefab; //Target prefab to use in Dynamic envs
     private Transform m_Target; //Target the agent will walk towards during training.
@@ -187,7 +187,7 @@ public class WormAgentDiverse : Agent
         var velocityProjection = Vector3.Project(actualVelocity, velocityGoal);
         var direction = Vector3.Angle(velocityProjection, velocityGoal) == 0 ? 1 : -1;
         var speed = velocityProjection.magnitude * direction;
-        return speed > m_MinWalkingSpeed ? 0.1f : 0;
+        return speed > m_minWalkingSpeed ? 0.1f : 0;
     }
 
     /// <summary>

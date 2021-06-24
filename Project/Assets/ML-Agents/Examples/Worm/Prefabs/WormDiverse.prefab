@@ -971,7 +971,7 @@ MonoBehaviour:
   m_Model: {fileID: 5022602860645237092, guid: 304413179b3364e498487db09987bdfe, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
-  m_BehaviorName: Worm
+  m_BehaviorName: WormDiverse
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -1031,7 +1031,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38b7cc1f5819445aa85e9a9b054552dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SensorName: DiversitySetting
+  m_SensorName: DiverseSettings
   m_ObservationSize: 3
   m_ObservationType: 0
 --- !u!114 &8894285808828145927

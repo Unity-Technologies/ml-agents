@@ -307,7 +307,7 @@ MonoBehaviour:
   m_Model: {fileID: 5022602860645237092, guid: a043eafd232b84def8999a7288cc791b, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
-  m_BehaviorName: WalkerDynamic
+  m_BehaviorName: WalkerDiverse
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -367,8 +367,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38b7cc1f5819445aa85e9a9b054552dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SensorName: DiversitySetting
-  m_ObservationSize: 8
+  m_SensorName: DiverseSettings
+  m_ObservationSize: 3
   m_ObservationType: 1
 --- !u!114 &-3183538934632480005
 MonoBehaviour:
