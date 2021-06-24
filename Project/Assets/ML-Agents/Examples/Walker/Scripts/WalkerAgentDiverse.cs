@@ -7,26 +7,10 @@ using Unity.MLAgents.Sensors;
 using BodyPart = Unity.MLAgentsExamples.BodyPart;
 using Random = UnityEngine.Random;
 
-public class WalkerAgent : Agent
+public class WalkerAgentDiverse : Agent
 {
-    [Header("Walk Speed")]
-    [Range(0.1f, 10)]
-    [SerializeField]
-    //The walking speed to try and achieve
-    private float m_TargetWalkingSpeed = 10;
 
-    public float MTargetWalkingSpeed // property
-    {
-        get { return m_TargetWalkingSpeed; }
-        set { m_TargetWalkingSpeed = Mathf.Clamp(value, .1f, m_maxWalkingSpeed); }
-    }
-
-    const float m_maxWalkingSpeed = 10; //The max walking speed
-
-    //Should the agent sample a new goal velocity each episode?
-    //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin()
-    //If false, the goal velocity will be walkingSpeed
-    public bool randomizeWalkSpeedEachEpisode;
+    const float m_minWalkingSpeed = 1; //The min walking speed to recieve reward
 
     //The direction an agent will walk during training.
     private Vector3 m_WorldDirToWalk = Vector3.right;
@@ -86,7 +70,13 @@ public class WalkerAgent : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
+        GetComponent<VectorSensorComponent>().CreateSensors();
+        m_DiversitySettingSensor = GetComponent<VectorSensorComponent>();
     }
+
+    VectorSensorComponent m_DiversitySettingSensor;
+    public int m_DiversitySetting = 0;
+    public int m_NumDiversityBehaviors = 3;
 
     /// <summary>
     /// Loop over body parts and reset them to initial conditions.
@@ -104,11 +94,9 @@ public class WalkerAgent : Agent
 
         UpdateOrientationObjects();
 
-        //Set our goal walking speed
-        MTargetWalkingSpeed =
-            randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : MTargetWalkingSpeed;
-
         SetResetParameters();
+
+        m_DiversitySetting = Random.Range(0, m_NumDiversityBehaviors);
     }
 
     /// <summary>
@@ -139,10 +127,13 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
+        m_DiversitySettingSensor.GetSensor().Reset();
+        m_DiversitySettingSensor.GetSensor().AddOneHotObservation(m_DiversitySetting, m_NumDiversityBehaviors);
+
         var cubeForward = m_OrientationCube.transform.forward;
 
         //velocity we want to match
-        var velGoal = cubeForward * MTargetWalkingSpeed;
+        var velGoal = cubeForward;
         //ragdoll's avg vel
         var avgVel = GetAvgVelocity();
 
@@ -222,10 +213,7 @@ public class WalkerAgent : Agent
 
         var cubeForward = m_OrientationCube.transform.forward;
 
-        // Set reward for this step according to mixture of the following elements.
-        // a. Match target speed
-        //This reward will approach 1 if it matches perfectly and approach zero as it deviates
-        var matchSpeedReward = GetMatchingVelocityReward(cubeForward * MTargetWalkingSpeed, GetAvgVelocity());
+        var matchSpeedReward = GetMatchingVelocityReward(cubeForward, GetAvgVelocity());
 
         //Check for NaNs
         if (float.IsNaN(matchSpeedReward))
@@ -234,25 +222,11 @@ public class WalkerAgent : Agent
                 "NaN in moveTowardsTargetReward.\n" +
                 $" cubeForward: {cubeForward}\n" +
                 $" hips.velocity: {m_JdController.bodyPartsDict[hips].rb.velocity}\n" +
-                $" maximumWalkingSpeed: {m_maxWalkingSpeed}"
+                $" minWalkingSpeed: {m_minWalkingSpeed}"
             );
         }
 
-        // b. Rotation alignment with target direction.
-        //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
-        var lookAtTargetReward = (Vector3.Dot(cubeForward, head.forward) + 1) * .5F;
-
-        //Check for NaNs
-        if (float.IsNaN(lookAtTargetReward))
-        {
-            throw new ArgumentException(
-                "NaN in lookAtTargetReward.\n" +
-                $" cubeForward: {cubeForward}\n" +
-                $" head.forward: {head.forward}"
-            );
-        }
-
-        AddReward(matchSpeedReward * lookAtTargetReward);
+        AddReward(matchSpeedReward);
     }
 
     //Returns the average velocity of all of the body parts
@@ -274,15 +248,13 @@ public class WalkerAgent : Agent
         return avgVel;
     }
 
-    //normalized value of the difference in avg speed vs goal walking speed.
+    /// Positive one if moving towards goal.
     public float GetMatchingVelocityReward(Vector3 velocityGoal, Vector3 actualVelocity)
     {
-        //distance between our actual velocity and goal velocity
-        var velDeltaMagnitude = Mathf.Clamp(Vector3.Distance(actualVelocity, velocityGoal), 0, MTargetWalkingSpeed);
-
-        //return the value on a declining sigmoid shaped curve that decays from 1 to 0
-        //This reward will approach 1 if it matches perfectly and approach zero as it deviates
-        return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / MTargetWalkingSpeed, 2), 2);
+        var velocityProjection = Vector3.Project(actualVelocity, velocityGoal);
+        var direction = Vector3.Angle(velocityProjection, velocityGoal) == 0 ? 1 : -1;
+        var speed = velocityProjection.magnitude * direction;
+        return speed > m_minWalkingSpeed ? 0.1f : 0;
     }
 
     /// <summary>
@@ -291,6 +263,7 @@ public class WalkerAgent : Agent
     public void TouchedTarget()
     {
         AddReward(1f);
+        m_DiversitySetting = Random.Range(0, m_NumDiversityBehaviors);
     }
 
     public void SetTorsoMass()

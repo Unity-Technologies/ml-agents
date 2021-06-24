@@ -257,7 +257,6 @@ GameObject:
   - component: {fileID: 895268871377934303}
   - component: {fileID: 895268871377934302}
   - component: {fileID: 895268871377934301}
-  - component: {fileID: 5678764055635236588}
   m_Layer: 0
   m_Name: WalkerRagdoll
   m_TagString: Untagged
@@ -347,7 +346,6 @@ MonoBehaviour:
   armR: {fileID: 7933235355057813930}
   forearmR: {fileID: 7933235353195701980}
   handR: {fileID: 7933235354616748502}
-  m_DiversitySetting: 0
 --- !u!114 &895268871377934303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -391,21 +389,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugCommandLineOverride: 
---- !u!114 &5678764055635236588
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 895268871377934275}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38b7cc1f5819445aa85e9a9b054552dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: DiversitySetting
-  m_ObservationSize: 8
-  m_ObservationType: 1
 --- !u!1 &895268871382313704
 GameObject:
   m_ObjectHideFlags: 0
