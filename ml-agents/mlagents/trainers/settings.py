@@ -612,12 +612,14 @@ class TrainerType(Enum):
     PPO: str = "ppo"
     SAC: str = "sac"
     POCA: str = "poca"
+    COMA: str = "coma"
 
     def to_settings(self) -> type:
         _mapping = {
             TrainerType.PPO: PPOSettings,
             TrainerType.SAC: SACSettings,
             TrainerType.POCA: POCASettings,
+            TrainerType.COMA: POCASettings,
         }
         return _mapping[self]
 
