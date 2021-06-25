@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer, AgentBufferKey
@@ -21,6 +21,7 @@ def create_mock_steps(
     action_spec: ActionSpec,
     done: bool = False,
     grouped: bool = False,
+    agent_ids: Optional[List[int]] = None,
 ) -> Tuple[DecisionSteps, TerminalSteps]:
     """
     Creates a mock Tuple[DecisionSteps, TerminalSteps] with observations.
@@ -43,7 +44,10 @@ def create_mock_steps(
 
     reward = np.array(num_agents * [1.0], dtype=np.float32)
     interrupted = np.array(num_agents * [False], dtype=np.bool)
-    agent_id = np.arange(num_agents, dtype=np.int32)
+    if agent_ids is not None:
+        agent_id = np.array(agent_ids, dtype=np.int32)
+    else:
+        agent_id = np.arange(num_agents, dtype=np.int32)
     _gid = 1 if grouped else 0
     group_id = np.array(num_agents * [_gid], dtype=np.int32)
     group_reward = np.array(num_agents * [0.0], dtype=np.float32)
