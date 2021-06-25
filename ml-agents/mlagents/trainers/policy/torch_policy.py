@@ -41,7 +41,9 @@ class TorchPolicy(Policy):
         :param tanh_squash: Whether to use a tanh function on the continuous output,
         or a clipped output.
         """
-        super().__init__(seed, behavior_spec, trainer_settings, tanh_squash, condition_sigma_on_obs)
+        super().__init__(
+            seed, behavior_spec, trainer_settings, tanh_squash, condition_sigma_on_obs
+        )
         self.global_step = (
             GlobalSteps()
         )  # could be much simpler if TorchPolicy is nn.Module
