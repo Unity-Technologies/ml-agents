@@ -80,10 +80,11 @@ class ParticlesEnvironment(BaseEnv):
             self._obs, self._rew, self._done, _ = self._env.step([0] * self._env.n)
         else:
             self._obs, self._rew, self._done, _ = self._env.step(self._actions)
-        if self.count % 100 == 0:
+        if self.count % 25 == 0:
             self.reset()
             self._done = [True] * self._env.n
         self.count += 1
+        self._env.render()
 
     def reset(self) -> None:
         self._rew = [0] * self._env.n
@@ -141,14 +142,14 @@ class ParticlesEnvironment(BaseEnv):
         decision_id = np.array([i for i in range(self._env.n) if not self._done[i]])
         decision_group_reward = np.array(
             [
-                sum(self._rew) * reward_scale
+                sum(self._rew) * 0
                 for i in range(self._env.n)
                 if not self._done[i]
             ],
             dtype=np.float32,
         )
         decision_group_id = np.array(
-            [0 for i in range(self._env.n) if not self._done[i]]
+            [1 for i in range(self._env.n) if not self._done[i]]
         )
         decision_step = DecisionSteps(
             [decision_obs],
@@ -176,10 +177,10 @@ class ParticlesEnvironment(BaseEnv):
             ],
             dtype=np.float32,
         )
-        terminal_group_id = np.array([0 for i in range(self._env.n) if self._done[i]])
+        terminal_group_id = np.array([1 for i in range(self._env.n) if self._done[i]])
         # TODO : Figureout the type of interruption
         terminal_interruption = np.array(
-            [True for i in range(self._env.n) if self._done[i]]
+            [False for i in range(self._env.n) if self._done[i]]
         )
         terminal_steps = TerminalSteps(
             [terminal_obs],

@@ -17,6 +17,7 @@ from mlagents.trainers.directory_utils import validate_existing_directories
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.cli_utils import parser
 from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.particles_env import ParticlesEnvironment
 from mlagents.trainers.settings import RunOptions
 
 from mlagents.trainers.training_status import GlobalTrainingStatus
@@ -171,17 +172,18 @@ def create_environment_factory(
         worker_id: int, side_channels: List[SideChannel]
     ) -> UnityEnvironment:
         # Make sure that each environment gets a different seed
-        env_seed = seed + worker_id
-        return UnityEnvironment(
-            file_name=env_path,
-            worker_id=worker_id,
-            seed=env_seed,
-            no_graphics=no_graphics,
-            base_port=start_port,
-            additional_args=env_args,
-            side_channels=side_channels,
-            log_folder=log_folder,
-        )
+        # env_seed = seed + worker_id
+        # return UnityEnvironment(
+        #     file_name=env_path,
+        #     worker_id=worker_id,
+        #     seed=env_seed,
+        #     no_graphics=no_graphics,
+        #     base_port=start_port,
+        #     additional_args=env_args,
+        #     side_channels=side_channels,
+        #     log_folder=log_folder,
+        # )
+        return ParticlesEnvironment()
 
     return create_unity_environment
 
