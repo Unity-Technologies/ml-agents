@@ -16,6 +16,8 @@ and this project adheres to
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Fixed a bug in multi-agent cooperative training where agents might not receive all of the states of
+terminated teammates. (#5441)
 
 ## [2.1.0-exp.1] - 2021-06-09
 ### Minor Changes

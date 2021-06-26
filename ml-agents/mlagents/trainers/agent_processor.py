@@ -122,8 +122,6 @@ class AgentProcessor:
             self._process_step(
                 terminal_step, worker_id, terminal_steps.agent_id_to_index[local_id]
             )
-            # Clear the last seen group obs when agents die.
-            self._clear_group_status_and_obs(global_id)
 
         # Iterate over all the decision steps, first gather all the group obs
         # and then create the trajectories. _add_to_group_status
@@ -135,6 +133,12 @@ class AgentProcessor:
             self._process_step(
                 ongoing_step, worker_id, decision_steps.agent_id_to_index[local_id]
             )
+        # Clear the last seen group obs when agents die, but only after all of the group
+        # statuses were added to the trajectory.
+        for terminal_step in terminal_steps.values():
+            local_id = terminal_step.agent_id
+            global_id = get_global_agent_id(worker_id, local_id)
+            self._clear_group_status_and_obs(global_id)
 
         for _gid in action_global_agent_ids:
             # If the ID doesn't have a last step result, the agent just reset,

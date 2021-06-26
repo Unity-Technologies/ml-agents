@@ -137,32 +137,54 @@ def test_group_statuses():
         )
 
     # Make terminal steps for some dead agents
-    mock_decision_steps_2, mock_terminal_steps_2 = mb.create_mock_steps(
+    _, mock_terminal_steps_2 = mb.create_mock_steps(
         num_agents=2,
         observation_specs=create_observation_specs_with_shapes([(8,)]),
         action_spec=ActionSpec.create_continuous(2),
         done=True,
         grouped=True,
+        agent_ids=[2, 3],
+    )
+    # Make decision steps continue for other agents
+    mock_decision_steps_2, _ = mb.create_mock_steps(
+        num_agents=2,
+        observation_specs=create_observation_specs_with_shapes([(8,)]),
+        action_spec=ActionSpec.create_continuous(2),
+        done=False,
+        grouped=True,
+        agent_ids=[0, 1],
     )
 
     processor.add_experiences(
         mock_decision_steps_2, mock_terminal_steps_2, 0, fake_action_info
     )
-    fake_action_info = _create_action_info(4, mock_decision_steps.agent_id)
+    # Continue to add for remaining live agents
+    fake_action_info = _create_action_info(4, mock_decision_steps_2.agent_id)
     for _ in range(3):
         processor.add_experiences(
-            mock_decision_steps, mock_terminal_steps, 0, fake_action_info
+            mock_decision_steps_2, mock_terminal_steps, 0, fake_action_info
         )
 
     # Assert that four trajectories have been added to the Trainer
     assert len(tqueue.put.call_args_list) == 4
-    # Last trajectory should be the longest
-    trajectory = tqueue.put.call_args_list[0][0][-1]
 
-    # Make sure trajectory has the right Groupmate Experiences
+    # Get the first trajectory, which should have been agent 2 (one of the killed agents)
+    trajectory = tqueue.put.call_args_list[0][0][-1]
+    assert len(trajectory.steps) == 3
+    # Make sure trajectory has the right Groupmate Experiences.
+    # All three steps should contain all agents
+    for step in trajectory.steps:
+        assert len(step.group_status) == 3
+
+    # Last trajectory should be the longest. It should be that of agent 1, one of the surviving agents.
+    trajectory = tqueue.put.call_args_list[-1][0][-1]
+    assert len(trajectory.steps) == 5
+
+    # Make sure trajectory has the right Groupmate Experiences.
+    # THe first 3 steps should contain all of the obs (that 3rd step is also the terminal step of 2 of the agents)
     for step in trajectory.steps[0:3]:
         assert len(step.group_status) == 3
-    # After 2 agents has died
+    # After 2 agents has died, there should only be 1 group status.
     for step in trajectory.steps[3:]:
         assert len(step.group_status) == 1
 
