@@ -173,7 +173,7 @@ def create_environment_factory(
     ) -> UnityEnvironment:
         # Make sure that each environment gets a different seed
         env_seed = seed + worker_id
-        if "simple_spread" in env_path:
+        if env_path is not None and "simple_spread" in env_path:
             return ParticlesEnvironment()
         return UnityEnvironment(
             file_name=env_path,

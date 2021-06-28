@@ -78,6 +78,7 @@ class ParticlesEnvironment(BaseEnv):
         self.count = 0
 
     def step(self) -> None:
+        # self._env.render()
         if self._actions is None:
             self._obs, self._rew, self._done, _ = self._env.step([0] * self._env.n)
         else:
@@ -128,13 +129,14 @@ class ParticlesEnvironment(BaseEnv):
         self, behavior_name: BehaviorName
     ) -> Tuple[DecisionSteps, TerminalSteps]:
         reward_scale = 0.1
+        individual_reward_scale = 1.0
         decision_obs = np.array(
             [self._obs[i] for i in range(self._env.n) if not self._done[i]],
             dtype=np.float32,
         )
         decision_reward = np.array(
             [
-                self._rew[i] * reward_scale
+                self._rew[i] * reward_scale * individual_reward_scale
                 for i in range(self._env.n)
                 if not self._done[i]
             ],
@@ -150,7 +152,7 @@ class ParticlesEnvironment(BaseEnv):
             dtype=np.float32,
         )
         decision_group_id = np.array(
-            [0 for i in range(self._env.n) if not self._done[i]]
+            [42 for i in range(self._env.n) if not self._done[i]]
         )
         decision_step = DecisionSteps(
             [decision_obs],
@@ -166,7 +168,7 @@ class ParticlesEnvironment(BaseEnv):
             dtype=np.float32,
         )
         terminal_reward = np.array(
-            [self._rew[i] * reward_scale for i in range(self._env.n) if self._done[i]],
+            [self._rew[i] * individual_reward_scale * reward_scale for i in range(self._env.n) if self._done[i]],
             dtype=np.float32,
         )
         terminal_id = np.array([i for i in range(self._env.n) if self._done[i]])
@@ -178,7 +180,7 @@ class ParticlesEnvironment(BaseEnv):
             ],
             dtype=np.float32,
         )
-        terminal_group_id = np.array([0 for i in range(self._env.n) if self._done[i]])
+        terminal_group_id = np.array([42 for i in range(self._env.n) if self._done[i]])
         # TODO : Figureout the type of interruption
         terminal_interruption = np.array(
             [False for i in range(self._env.n) if self._done[i]]
