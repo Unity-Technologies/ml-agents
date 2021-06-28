@@ -123,7 +123,6 @@ class DiverseNetworkVariational(torch.nn.Module):
             for obs, spec in zip(obs_input, self._all_obs_specs)
             if spec.observation_type != ObservationType.GOAL_SIGNAL
         ]
-        tensor_obs[0][163:] = 0
         if self._use_actions:
             action = self._action_flattener.forward(action_input).reshape(
                 -1, self._action_flattener.flattened_size
@@ -136,8 +135,6 @@ class DiverseNetworkVariational(torch.nn.Module):
             elif self._dropout is not None:
                 tensor_obs = [self._dropout(obs) for obs in tensor_obs]
                 action = self._dropout(action)
-            action[18:24] = 0
-            action[35:] = 0
             hidden, _ = self._encoder.forward(tensor_obs, action)
         else:
 
