@@ -180,14 +180,14 @@ class DiverseNetworkVariational(torch.nn.Module):
         for i, (obs, drop) in enumerate(zip(observations, self.observations_sal_drop)):
             if batch is not None:
                 drop = torch.cat(batch * [drop.unsqueeze(0)])
-            observations[i] = (torch.rand(obs.shape) > drop) * obs
+            observations[i] = (torch.rand(obs.shape) > drop) * obs + .001
 
         if action is not None:
             if batch is not None:
                 drop = torch.cat(batch * [self.cont_actions_sal_drop.unsqueeze(0)])
             else:
                 drop = self.cont_actions_sal_drop
-            action = (torch.rand(action.shape) > drop) * action
+            action = (torch.rand(action.shape) > drop) * action + .001
 
         return observations, action
 
@@ -496,10 +496,10 @@ class TorchSACOptimizer(TorchOptimizer):
             lr=hyperparameters.learning_rate, 
             weight_decay=hyperparameters.mede_weight_decay
         )
+        self.mede_saliency_dropout = hyperparameters.mede_saliency_dropout
         self.sal_observations = [torch.zeros(spec.shape) for spec in self.policy.behavior_spec.observation_specs]
         self.sal_cont_actions = torch.zeros(self.policy.behavior_spec.action_spec.continuous_size)
-        self.sal_count = 0
-        self.sal_weight = 0.99
+        self.sal_weight = 0.01
 
         logger.debug("value_vars")
         for param in value_params:
@@ -650,9 +650,8 @@ class TorchSACOptimizer(TorchOptimizer):
                         min_policy_qs[name]
                         - torch.mean(branched_ent_bonus, axis=0)
                         + self._mede_network.STRENGTH
-                        * self._mede_network.rewards(obs, act)
+                        * self._mede_network.rewards(obs, act, var_noise=False)
                     )
-                    print("The discrete case is much more complicated than that")
                     # Add continuous entropy bonus to minimum Q
                     if self._action_spec.continuous_size > 0:
                         v_backup += torch.sum(
@@ -798,8 +797,10 @@ class TorchSACOptimizer(TorchOptimizer):
             p.requires_grad = False
         for inp in inputs:
             inp.requires_grad = True
+            inp.grad.data.zero_()
         actions = actions.detach()
         actions.requires_grad = True
+        actions.grad.data.zero_()
 
         q_out, _ = self.q_network(
             inputs,
@@ -815,16 +816,13 @@ class TorchSACOptimizer(TorchOptimizer):
         for i, (obs, sal) in enumerate(zip(inputs, self.sal_observations)):
             grad = torch.mean(obs.grad.data.abs(), dim=0)
             assert grad.shape == sal.shape
-            self.sal_observations[i] = grad + self.sal_weight * sal
+            self.sal_observations[i] = self.sal_weight * grad + (1 - self.sal_weight) * sal
 
         grad = torch.mean(actions.grad.data.abs(), dim=0)
         assert grad.shape == self.sal_cont_actions.shape
-        self.sal_cont_actions = grad + self.sal_weight * self.sal_cont_actions
+        self.sal_cont_actions = self.sal_weight * grad + (1 - self.sal_weight) * self.sal_cont_actions
 
-        self.sal_count = 1 + self.sal_weight * self.sal_count
-
-        self._mede_network.update_saliency([x / self.sal_count for x in self.sal_observations], 
-                                            self.sal_cont_actions / self.sal_count)
+        self._mede_network.update_saliency([x for x in self.sal_observations], self.sal_cont_actions)
 
         for p in self.q_network.parameters():
             p.requires_grad = True
@@ -1000,12 +998,13 @@ class TorchSACOptimizer(TorchOptimizer):
         mede_loss.backward()
         self._mede_optimizer.step()
 
-        self._update_saliency(
-            current_obs,
-            cont_sampled_actions,
-            memories=q_memories,
-            sequence_length=self.policy.sequence_length
-        )
+        if self.mede_saliency_dropout > 0:
+            self._update_saliency(
+                current_obs,
+                cont_sampled_actions,
+                memories=q_memories,
+                sequence_length=self.policy.sequence_length
+            )
 
         # Update target network
         ModelUtils.soft_update(self._critic, self.target_network, self.tau)
