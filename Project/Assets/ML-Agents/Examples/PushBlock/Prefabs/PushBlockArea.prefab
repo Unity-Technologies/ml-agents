@@ -387,7 +387,6 @@ GameObject:
   - component: {fileID: 114451319691753174}
   - component: {fileID: 8964598783836598940}
   - component: {fileID: 4081319787948195948}
-  - component: {fileID: 3604832710400578108}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -480,7 +479,6 @@ MonoBehaviour:
   goal: {fileID: 1441513772919942}
   block: {fileID: 1831337770648600}
   goalDetect: {fileID: 0}
-  useVectorObs: 1
 --- !u!65 &65880096262939968
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -579,21 +577,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugCommandLineOverride: 
---- !u!114 &3604832710400578108
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1489716781518988}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38b7cc1f5819445aa85e9a9b054552dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: VectorSensor
-  m_ObservationSize: 8
-  m_ObservationType: 1
 --- !u!1 &1500989011945850
 GameObject:
   m_ObjectHideFlags: 0

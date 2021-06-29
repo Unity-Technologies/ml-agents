@@ -39,8 +39,6 @@ public class PushAgentBasic : Agent
     [HideInInspector]
     public GoalDetect goalDetect;
 
-    public bool useVectorObs;
-
     Rigidbody m_BlockRb;  //cached on initialization
     Rigidbody m_AgentRb;  //cached on initialization
     Material m_GroundMaterial; //cached on Awake()
@@ -76,12 +74,7 @@ public class PushAgentBasic : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
-        GetComponent<VectorSensorComponent>().CreateSensors();
-        m_DiversitySettingSensor = GetComponent<VectorSensorComponent>();
     }
-
-    VectorSensorComponent m_DiversitySettingSensor;
-    public int m_DiversitySetting = 0;
 
 
     /// <summary>
@@ -89,8 +82,6 @@ public class PushAgentBasic : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
-        m_DiversitySettingSensor.GetSensor().Reset();
-        m_DiversitySettingSensor.GetSensor().AddOneHotObservation(m_DiversitySetting, 8);
     }
 
     /// <summary>
@@ -242,7 +233,6 @@ public class PushAgentBasic : Agent
         m_AgentRb.angularVelocity = Vector3.zero;
 
         SetResetParameters();
-        m_DiversitySetting = Random.Range(0, 8);
     }
 
     public void SetGroundMaterialFriction()
