@@ -35,6 +35,9 @@ public class DungeonEscapeEnvController : MonoBehaviour
         public bool IsDead;
     }
 
+    EnvironmentParameters m_ResetParams;
+    float m_Absorbing;
+
     /// <summary>
     /// Max Academy steps before this platform resets
     /// </summary>
@@ -74,6 +77,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
     {
 
         // Get the ground's bounds
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
         areaBounds = ground.GetComponent<Collider>().bounds;
         // Get the ground renderer so we can change the material when a goal is scored
         m_GroundRenderer = ground.GetComponent<Renderer>();
@@ -130,7 +134,16 @@ public class DungeonEscapeEnvController : MonoBehaviour
         }
         else
         {
-            agent.gameObject.SetActive(false);
+            if (m_Absorbing == 0.0f)
+            {
+                agent.gameObject.SetActive(false);
+            }
+            else
+            {
+                Vector3 pos = new Vector3(Random.Range(200f, 2000f), Random.Range(-1000f, 1000f), Random.Range(-1000f, 1000f));
+                var rot = Quaternion.Euler(Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f));
+                agent.transform.SetPositionAndRotation(pos, rot);
+            }
         }
     }
 
@@ -149,7 +162,17 @@ public class DungeonEscapeEnvController : MonoBehaviour
     {
         baddieCol.gameObject.SetActive(false);
         m_NumberOfRemainingPlayers--;
-        agent.gameObject.SetActive(false);
+        if (m_Absorbing == 0.0f)
+        {
+            agent.gameObject.SetActive(false);
+        }
+        else
+        {
+            Vector3 pos = new Vector3(Random.Range(200f, 2000f), Random.Range(-1000f, 1000f), Random.Range(-1000f, 1000f));
+            var rot = Quaternion.Euler(Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f));
+            agent.transform.SetPositionAndRotation(pos, rot);
+        }
+
         print($"{baddieCol.gameObject.name} ate {agent.transform.name}");
 
         //Spawn Tombstone
@@ -211,6 +234,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
     void ResetScene()
     {
 
+        m_Absorbing = m_ResetParams.GetWithDefault("absorbing_state", 0.0f);
         //Reset counter
         m_ResetTimer = 0;
 
