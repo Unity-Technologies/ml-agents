@@ -157,7 +157,6 @@ class EntityEmbedding(torch.nn.Module):
             self.entity_size,
             1,
             self.embedding_size,
-            kernel_init=Initialization.Normal,
             kernel_gain=(0.125 / self.embedding_size) ** 0.5,
         )
 
