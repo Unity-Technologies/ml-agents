@@ -66,7 +66,6 @@ class DiverseNetworkVariational(torch.nn.Module):
             logger.warning(
                 "memory was specified in network_settings but is not supported. It is being ignored."
             )
-        self._action_flattener = ActionFlattener(specs.action_spec)
         new_spec = [
             spec
             for spec in specs.observation_specs
@@ -85,10 +84,13 @@ class DiverseNetworkVariational(torch.nn.Module):
 
         self._dropout = torch.nn.Dropout(dropout) if dropout > 0 else None
         self._encoder_dropout = torch.nn.Dropout(encoder_dropout) if encoder_dropout > 0 else None
+        
+        self.disc_sizes = specs.action_spec.discrete_branches
+        self.cont_size = specs.action_spec.continuous_size
 
-        if self._use_actions:
+        if self._use_actions and self.cont_size > 0:
             self._encoder = NetworkBody(
-                new_spec, state_encoder_settings, self._action_flattener.flattened_size
+                new_spec, state_encoder_settings, self.cont_size
             )
         else:
             self._encoder = NetworkBody(new_spec, state_encoder_settings)
@@ -107,7 +109,10 @@ class DiverseNetworkVariational(torch.nn.Module):
             torch.tensor(self.initial_beta, dtype=torch.float), requires_grad=False
         )
 
-        self._last_layer = torch.nn.Linear(self.z_size, self.diverse_size)
+        if self._use_actions and len(self.disc_sizes) > 0:
+            self._last_layer = torch.nn.Linear(self.z_size, self.diverse_size * sum(self.disc_sizes))
+        else:
+            self._last_layer = torch.nn.Linear(self.z_size, self.diverse_size)
         self._diverse_index = -1
         self._max_index = len(specs.observation_specs)
         for i, spec in enumerate(specs.observation_specs):
@@ -123,10 +128,8 @@ class DiverseNetworkVariational(torch.nn.Module):
             for obs, spec in zip(obs_input, self._all_obs_specs)
             if spec.observation_type != ObservationType.GOAL_SIGNAL
         ]
-        if self._use_actions:
-            action = self._action_flattener.forward(action_input).reshape(
-                -1, self._action_flattener.flattened_size
-            )
+        if self._use_actions and self.cont_size > 0:
+            action = action_input.continuous_tensor
             if detach_action:
                 action = action.detach()
 
@@ -153,7 +156,14 @@ class DiverseNetworkVariational(torch.nn.Module):
         z_mu = hidden  # self._z_mu_layer(hidden)
         hidden = torch.normal(z_mu, self._z_sigma * var_noise)
 
-        prediction = torch.softmax(self._last_layer(hidden), dim=1)
+        final_out = self._last_layer(hidden)
+        if self._use_actions and len(self.disc_sizes) > 0:
+            branches = []
+            for i in range(0, sum(self.disc_sizes)*self.diverse_size, self.diverse_size):
+                branches.append(torch.nn.functional.softmax(final_out[:, i:i+self.diverse_size], dim=1))
+            prediction = torch.cat(branches, dim=1)
+        else:
+            prediction = torch.softmax(final_out, dim=1)
         return prediction, z_mu
 
     def update_saliency(self, sal_observations, sal_cont_actions):
@@ -195,21 +205,42 @@ class DiverseNetworkVariational(torch.nn.Module):
         self._encoder.processors[0].copy_normalization(thing.processors[1])
 
     def rewards(
-        self, obs_input, action_input, detach_action=False, var_noise=True
+        self, obs_input, action_input, logprobs, detach_action=False, var_noise=True
     ) -> torch.Tensor:
+
         truth = obs_input[self._diverse_index]
         prediction, _ = self.predict(obs_input, action_input, detach_action, var_noise)
-        rewards = torch.log(
-            torch.sum((prediction * truth), dim=1) + self.EPSILON
-        )# - np.log(1 / self.diverse_size)  # Center around 0
+        
+        if self._use_actions and len(self.disc_sizes) > 0:
+            disc_logprobs = logprobs.all_discrete_tensor
+            if detach_action:
+                disc_logprobs = disc_logprobs.detach()
+
+            action_rewards = []
+            for i in range(0, sum(self.disc_sizes)*self.diverse_size, self.diverse_size):
+                action_rewards.append(torch.log(
+                    torch.sum(prediction[:, i:i+self.diverse_size] * truth, dim=1, keepdim=True) + self.EPSILON
+                ))
+
+            all_rewards = torch.cat(action_rewards, dim=1)
+            branched_rewards = ModelUtils.break_into_branches(all_rewards * disc_logprobs.exp(), self.disc_sizes)
+            rewards = torch.mean(torch.stack([torch.sum(branch, dim=1) \
+                                              for branch in branched_rewards]), dim=0)
+
+        else:
+            rewards = torch.log(
+                torch.sum((prediction * truth), dim=1) + self.EPSILON
+            )# - np.log(1 / self.diverse_size)  # Center around 0
+
         return rewards
 
     def loss(
-        self, obs_input, action_input, masks, detach_action=True, var_noise=True
+        self, obs_input, action_input, logprobs, masks, detach_action=True, var_noise=True
     ) -> torch.Tensor:
+
         # print( ">>> ",obs_input[self._diverse_index][0],self.predict(obs_input, action_input, detach_action)[0], self.predict([x*0 for x in obs_input], action_input, detach_action * 0)[0] )
         base_loss = -ModelUtils.masked_mean(
-            self.rewards(obs_input, action_input, detach_action, var_noise), masks
+            self.rewards(obs_input, action_input, logprobs, detach_action, var_noise), masks
         )
 
         _, mu = self.predict(obs_input, action_input, detach_action, var_noise)
@@ -231,93 +262,6 @@ class DiverseNetworkVariational(torch.nn.Module):
         total_loss = base_loss + vail_loss
 
         return total_loss, base_loss, kl_loss, vail_loss, self._beta
-
-
-class DiverseNetwork(torch.nn.Module):
-    EPSILON = 1e-10
-    STRENGTH = 1.0
-
-    def __init__(self, specs: BehaviorSpec, settings) -> None:
-        super().__init__()
-        self._use_actions = True
-        print("Settings : strength:", self.STRENGTH, " use_actions:", self._use_actions)
-        # state_encoder_settings = settings
-        state_encoder_settings = NetworkSettings(True)
-        if state_encoder_settings.memory is not None:
-            state_encoder_settings.memory = None
-            logger.warning(
-                "memory was specified in network_settings but is not supported. It is being ignored."
-            )
-        self._action_flattener = ActionFlattener(specs.action_spec)
-        new_spec = [
-            spec
-            for spec in specs.observation_specs
-            if spec.observation_type != ObservationType.GOAL_SIGNAL
-        ]
-        diverse_spec = [
-            spec
-            for spec in specs.observation_specs
-            if spec.observation_type == ObservationType.GOAL_SIGNAL
-        ][0]
-
-        print(" > ", new_spec, "\n\n\n", " >> ", diverse_spec)
-        self._all_obs_specs = specs.observation_specs
-
-        self.diverse_size = diverse_spec.shape[0]
-
-        if self._use_actions:
-            self._encoder = NetworkBody(
-                new_spec, state_encoder_settings, self._action_flattener.flattened_size
-            )
-        else:
-            self._encoder = NetworkBody(new_spec, state_encoder_settings)
-        self._last_layer = torch.nn.Linear(
-            state_encoder_settings.hidden_units, self.diverse_size
-        )
-        self._diverse_index = -1
-        self._max_index = len(specs.observation_specs)
-        for i, spec in enumerate(specs.observation_specs):
-            if spec.observation_type == ObservationType.GOAL_SIGNAL:
-                self._diverse_index = i
-
-    def predict(self, obs_input, action_input, detach_action=False) -> torch.Tensor:
-        # Convert to tensors
-        tensor_obs = [
-            obs
-            for obs, spec in zip(obs_input, self._all_obs_specs)
-            if spec.observation_type != ObservationType.GOAL_SIGNAL
-        ]
-        if self._use_actions:
-            action = self._action_flattener.forward(action_input).reshape(
-                -1, self._action_flattener.flattened_size
-            )
-            if detach_action:
-                action = action.detach()
-            hidden, _ = self._encoder.forward(tensor_obs, action)
-        else:
-            hidden, _ = self._encoder.forward(tensor_obs)
-
-        # add a VAE (like in VAIL ?)
-
-        prediction = torch.softmax(self._last_layer(hidden), dim=1)
-        return prediction
-
-    def copy_normalization(self, thing):
-        self._encoder.processors[0].copy_normalization(thing.processors[1])
-
-    def rewards(
-        self, obs_input, action_input, detach_action=False, var_noise=False
-    ) -> torch.Tensor:
-        truth = obs_input[self._diverse_index]
-        prediction = self.predict(obs_input, action_input, detach_action)
-        rewards = torch.log(torch.sum((prediction * truth), dim=1) + self.EPSILON)
-        return rewards
-
-    def loss(self, obs_input, action_input, masks, detach_action=True) -> torch.Tensor:
-        # print( ">>> ",obs_input[self._diverse_index][0],self.predict(obs_input, action_input, detach_action)[0], self.predict([x*0 for x in obs_input], action_input, detach_action * 0)[0] )
-        return -ModelUtils.masked_mean(
-            self.rewards(obs_input, action_input, detach_action), masks
-        )
 
 
 class TorchSACOptimizer(TorchOptimizer):
@@ -577,7 +521,7 @@ class TorchSACOptimizer(TorchOptimizer):
         q2p_out: Dict[str, torch.Tensor],
         loss_masks: torch.Tensor,
         obs,
-        act,
+        sampled_actions,
     ) -> torch.Tensor:
         min_policy_qs = {}
         with torch.no_grad():
@@ -625,7 +569,7 @@ class TorchSACOptimizer(TorchOptimizer):
                         min_policy_qs[name]
                         - _cont_ent_coef * torch.sum( log_probs.continuous_tensor, dim=1)
                         + self._mede_network.STRENGTH
-                        * self._mede_network.rewards(obs, act, var_noise=False)
+                        * self._mede_network.rewards(obs, sampled_actions, log_probs, var_noise=False)
                     )
                 value_loss = 0.5 * ModelUtils.masked_mean(
                     torch.nn.functional.mse_loss(values[name], v_backup), loss_masks
@@ -650,7 +594,7 @@ class TorchSACOptimizer(TorchOptimizer):
                         min_policy_qs[name]
                         - torch.mean(branched_ent_bonus, axis=0)
                         + self._mede_network.STRENGTH
-                        * self._mede_network.rewards(obs, act, var_noise=False)
+                        * self._mede_network.rewards(obs, sampled_actions, log_probs, var_noise=False).unsqueeze(-1)
                     )
                     # Add continuous entropy bonus to minimum Q
                     if self._action_spec.continuous_size > 0:
@@ -675,7 +619,7 @@ class TorchSACOptimizer(TorchOptimizer):
         q1p_outs: Dict[str, torch.Tensor],
         loss_masks: torch.Tensor,
         obs,
-        act,
+        sampled_actions,
     ) -> torch.Tensor:
         _cont_ent_coef, _disc_ent_coef = (
             self._log_ent_coef.continuous,
@@ -710,9 +654,9 @@ class TorchSACOptimizer(TorchOptimizer):
             all_mean_q1 = mean_q1
         if self._action_spec.continuous_size > 0:
             cont_log_probs = log_probs.continuous_tensor
-            batch_policy_loss += _cont_ent_coef * torch.sum(cont_log_probs, dim=1) - all_mean_q1.unsqueeze(1)
+            batch_policy_loss += _cont_ent_coef * torch.sum(cont_log_probs, dim=1) - all_mean_q1
         batch_policy_loss += -self._mede_network.STRENGTH * self._mede_network.rewards(
-            obs, act, var_noise=False
+            obs, sampled_actions, log_probs, var_noise=False
         )
         policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
 
@@ -990,9 +934,8 @@ class TorchSACOptimizer(TorchOptimizer):
         self.entropy_optimizer.step()
 
         mede_loss, base_loss, kl_loss, vail_loss, beta = self._mede_network.loss(
-            current_obs, sampled_actions, masks
+            current_obs, sampled_actions, log_probs, masks
         )
-        # mede_loss = self._mede_network.loss(current_obs, sampled_actions, masks)
         ModelUtils.update_learning_rate(self._mede_optimizer, decay_lr)
         self._mede_optimizer.zero_grad()
         mede_loss.backward()
