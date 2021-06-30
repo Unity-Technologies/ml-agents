@@ -26,7 +26,6 @@ class Policy:
         behavior_spec: BehaviorSpec,
         trainer_settings: TrainerSettings,
         tanh_squash: bool = False,
-        reparameterize: bool = False,
         condition_sigma_on_obs: bool = True,
     ):
         self.behavior_spec = behavior_spec
@@ -46,7 +45,6 @@ class Policy:
 
         self.vis_encode_type = self.network_settings.vis_encode_type
         self.tanh_squash = tanh_squash
-        self.reparameterize = reparameterize
         self.condition_sigma_on_obs = condition_sigma_on_obs
 
         self.m_size = 0

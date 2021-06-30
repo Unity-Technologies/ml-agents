@@ -39,7 +39,7 @@ def create_sac_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
         if use_rnn
         else None
     )
-    policy = TorchPolicy(0, mock_brain, trainer_settings, "test", False)
+    policy = TorchPolicy(0, mock_brain, trainer_settings)
     optimizer = TorchSACOptimizer(policy, trainer_settings)
     return optimizer
 

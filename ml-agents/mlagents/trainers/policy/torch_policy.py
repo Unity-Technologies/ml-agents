@@ -27,7 +27,6 @@ class TorchPolicy(Policy):
         behavior_spec: BehaviorSpec,
         trainer_settings: TrainerSettings,
         tanh_squash: bool = False,
-        reparameterize: bool = False,
         separate_critic: bool = True,
         condition_sigma_on_obs: bool = True,
     ):
@@ -41,16 +40,9 @@ class TorchPolicy(Policy):
         :param load: Whether a pre-trained model will be loaded or a new one created.
         :param tanh_squash: Whether to use a tanh function on the continuous output,
         or a clipped output.
-        :param reparameterize: Whether we are using the resampling trick to update the policy
-        in continuous output.
         """
         super().__init__(
-            seed,
-            behavior_spec,
-            trainer_settings,
-            tanh_squash,
-            reparameterize,
-            condition_sigma_on_obs,
+            seed, behavior_spec, trainer_settings, tanh_squash, condition_sigma_on_obs
         )
         self.global_step = (
             GlobalSteps()
