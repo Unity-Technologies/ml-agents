@@ -190,14 +190,14 @@ class DiverseNetworkVariational(torch.nn.Module):
         for i, (obs, drop) in enumerate(zip(observations, self.observations_sal_drop)):
             if batch is not None:
                 drop = torch.cat(batch * [drop.unsqueeze(0)])
-            observations[i] = (torch.rand(obs.shape) > drop) * obs + .001
+            observations[i] = (torch.rand(obs.shape) > drop) * obs + .0001
 
         if action is not None:
             if batch is not None:
                 drop = torch.cat(batch * [self.cont_actions_sal_drop.unsqueeze(0)])
             else:
                 drop = self.cont_actions_sal_drop
-            action = (torch.rand(action.shape) > drop) * action + .001
+            action = (torch.rand(action.shape) > drop) * action + .0001
 
         return observations, action
 
@@ -741,10 +741,13 @@ class TorchSACOptimizer(TorchOptimizer):
             p.requires_grad = False
         for inp in inputs:
             inp.requires_grad = True
-            inp.grad.data.zero_()
-        actions = actions.detach()
-        actions.requires_grad = True
-        actions.grad.data.zero_()
+            if inp.grad is not None:
+                inp.grad.data.zero_()
+        if self._action_spec.continuous_size > 0:
+            actions = actions.detach()
+            actions.requires_grad = True
+            if actions.grad is not None:
+                actions.grad.data.zero_()
 
         q_out, _ = self.q_network(
             inputs,
@@ -762,9 +765,10 @@ class TorchSACOptimizer(TorchOptimizer):
             assert grad.shape == sal.shape
             self.sal_observations[i] = self.sal_weight * grad + (1 - self.sal_weight) * sal
 
-        grad = torch.mean(actions.grad.data.abs(), dim=0)
-        assert grad.shape == self.sal_cont_actions.shape
-        self.sal_cont_actions = self.sal_weight * grad + (1 - self.sal_weight) * self.sal_cont_actions
+        if self._action_spec.continuous_size > 0:
+            grad = torch.mean(actions.grad.data.abs(), dim=0)
+            assert grad.shape == self.sal_cont_actions.shape
+            self.sal_cont_actions = self.sal_weight * grad + (1 - self.sal_weight) * self.sal_cont_actions
 
         self._mede_network.update_saliency([x for x in self.sal_observations], self.sal_cont_actions)
 
@@ -772,7 +776,8 @@ class TorchSACOptimizer(TorchOptimizer):
             p.requires_grad = True
         for inp in inputs:
             inp.requires_grad = False
-        actions.requires_grad = False
+        if self._action_spec.continuous_size > 0:
+            actions.requires_grad = False
         self.q_network.zero_grad()
 
     @timed
