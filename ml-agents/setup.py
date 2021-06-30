@@ -78,6 +78,7 @@ setup(
         "attrs>=19.3.0",
         'pypiwin32==223;platform_system=="Windows"',
         "importlib_metadata; python_version<'3.8'",
+        "psutil",
     ],
     python_requires=">=3.6.1",
     entry_points={

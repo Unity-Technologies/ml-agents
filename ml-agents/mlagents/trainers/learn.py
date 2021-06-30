@@ -30,6 +30,7 @@ from mlagents_envs.timers import (
 )
 from mlagents_envs import logging_util
 from mlagents.plugins.stats_writer import register_stats_writer_plugins
+from mlagents.utils_tracker import UtilsTracker
 
 logger = logging_util.get_logger(__name__)
 
@@ -120,6 +121,11 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             run_seed,
         )
 
+        utils_tracker = UtilsTracker(
+            [worker.process.pid for worker in env_manager.env_workers],
+            checkpoint_settings.write_path,
+        )
+
     # Begin training
     try:
         tc.start_learning(env_manager)
@@ -128,6 +134,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         write_run_options(checkpoint_settings.write_path, options)
         write_timing_tree(run_logs_dir)
         write_training_status(run_logs_dir)
+        utils_tracker.shutdown()
 
 
 def write_run_options(output_dir: str, run_options: RunOptions) -> None:
