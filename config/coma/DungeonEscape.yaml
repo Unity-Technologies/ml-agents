@@ -21,7 +21,7 @@ behaviors:
         strength: 1.0
     keep_checkpoints: 5
     max_steps: 20000000
-    time_horizon: 64
+    time_horizon: 3000
     summary_freq: 60000
 environment_parameters:
   absorbing_state:
