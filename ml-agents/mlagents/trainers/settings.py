@@ -142,6 +142,8 @@ class HyperparamSettings:
     buffer_size: int = 10240
     learning_rate: float = 3.0e-4
     learning_rate_schedule: ScheduleType = ScheduleType.CONSTANT
+    priors: List[str] = attr.ib(factory=list)
+    prior_loss_weight: float = 0.1
 
 
 @attr.s(auto_attribs=True)

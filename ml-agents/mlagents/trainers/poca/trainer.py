@@ -17,6 +17,7 @@ from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
+from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
 from mlagents.trainers.settings import TrainerSettings, POCASettings
 
 logger = get_logger(__name__)
@@ -287,6 +288,17 @@ class POCATrainer(RLTrainer):
         self.optimizer = self.create_poca_optimizer()
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
+
+        # Create prior policies, save them somewhere
+        for checkpoint_name in self.hyperparameters.priors:
+            _model_loader = TorchModelSaver(
+                self.trainer_settings, checkpoint_name, True
+            )
+            prior_policy = self.create_torch_policy(
+                parsed_behavior_id, self.policy.behavior_spec
+            )
+            _model_loader.initialize_or_load(prior_policy)
+            self.optimizer.prior_policies.append(prior_policy)
 
         self.model_saver.register(self.policy)
         self.model_saver.register(self.optimizer)

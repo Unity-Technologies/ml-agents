@@ -319,10 +319,19 @@ class TorchPOCAOptimizer(TorchOptimizer):
             loss_masks,
             decay_eps,
         )
+
+        # Compute prior loss
+        if self.prior_policies:
+            kl_loss = self.hyperparameters.prior_loss_weight * self.compute_prior_kl(
+                log_probs, current_obs, act_masks, actions, memories
+            )
+        else:
+            kl_loss = 0
         loss = (
             policy_loss
             + 0.5 * (value_loss + 0.5 * baseline_loss)
             - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
+            + kl_loss
         )
 
         # Set optimizer learning rate
@@ -341,6 +350,8 @@ class TorchPOCAOptimizer(TorchOptimizer):
             "Policy/Epsilon": decay_eps,
             "Policy/Beta": decay_bet,
         }
+        if self.prior_policies:
+            update_stats.update({"Losses/Prior Loss": kl_loss.item()})
 
         for reward_provider in self.reward_signals.values():
             update_stats.update(reward_provider.update(batch))
