@@ -32,7 +32,6 @@ from mlagents.trainers.torch.layers import linear_layer, Initialization
 
 class DiverseNetworkVariational(torch.nn.Module):
     EPSILON = 1e-10
-    STRENGTH =  0.1#1.0
 
     # gradient_penalty_weight = 10.0
     z_size = 128
@@ -41,17 +40,20 @@ class DiverseNetworkVariational(torch.nn.Module):
     EPSILON = 1e-7
     initial_beta = 0.0
 
-    def __init__(self, specs: BehaviorSpec, settings, dropout, encoder_dropout, max_saliency_dropout) -> None:
+    def __init__(self, specs: BehaviorSpec, settings, params) -> None:
         super().__init__()
-        self._use_actions = True
-        self._max_saliency_dropout = max_saliency_dropout
+        self._use_actions = params.mede_use_actions
+        self._max_saliency_dropout = params.mede_saliency_dropout
+        self.strength = params.mede_strength
+        self.policy_loss = params.mede_for_policy_loss
+        self.drop_actions = params.mede_drop_actions
         self.observations_sal_drop = [torch.zeros(s.shape) for s in specs.observation_specs \
                                       if s.observation_type != ObservationType.GOAL_SIGNAL]
         self.cont_actions_sal_drop = torch.zeros(specs.action_spec.continuous_size)
         sigma_start = 0.5
         print(
             "VARIATIONAL : Settings : strength:",
-            self.STRENGTH,
+            self.strength,
             " use_actions:",
             self._use_actions,
             " mutual_information : ",
@@ -82,8 +84,8 @@ class DiverseNetworkVariational(torch.nn.Module):
 
         self.diverse_size = diverse_spec.shape[0]
 
-        self._dropout = torch.nn.Dropout(dropout) if dropout > 0 else None
-        self._encoder_dropout = torch.nn.Dropout(encoder_dropout) if encoder_dropout > 0 else None
+        self._dropout = torch.nn.Dropout(params.mede_dropout) if params.mede_dropout > 0 else None
+        self._encoder_dropout = torch.nn.Dropout(params.mede_encoder_dropout) if params.mede_encoder_dropout > 0 else None
         
         self.disc_sizes = specs.action_spec.discrete_branches
         self.cont_size = specs.action_spec.continuous_size
@@ -137,7 +139,8 @@ class DiverseNetworkVariational(torch.nn.Module):
                 tensor_obs, action = self._saliency_dropout(tensor_obs, action)
             elif self._dropout is not None:
                 tensor_obs = [self._dropout(obs) for obs in tensor_obs]
-                action = self._dropout(action)
+                if self.drop_actions:
+                    action = self._dropout(action)
             hidden, _ = self._encoder.forward(tensor_obs, action)
         else:
 
@@ -160,7 +163,7 @@ class DiverseNetworkVariational(torch.nn.Module):
         if self._use_actions and len(self.disc_sizes) > 0:
             branches = []
             for i in range(0, sum(self.disc_sizes)*self.diverse_size, self.diverse_size):
-                branches.append(torch.nn.functional.softmax(final_out[:, i:i+self.diverse_size], dim=1))
+                branches.append(torch.softmax(final_out[:, i:i+self.diverse_size], dim=1))
             prediction = torch.cat(branches, dim=1)
         else:
             prediction = torch.softmax(final_out, dim=1)
@@ -192,7 +195,7 @@ class DiverseNetworkVariational(torch.nn.Module):
                 drop = torch.cat(batch * [drop.unsqueeze(0)])
             observations[i] = (torch.rand(obs.shape) > drop) * obs + .0001
 
-        if action is not None:
+        if action is not None and self.drop_actions:
             if batch is not None:
                 drop = torch.cat(batch * [self.cont_actions_sal_drop.unsqueeze(0)])
             else:
@@ -212,9 +215,13 @@ class DiverseNetworkVariational(torch.nn.Module):
         prediction, _ = self.predict(obs_input, action_input, detach_action, var_noise)
         
         if self._use_actions and len(self.disc_sizes) > 0:
-            disc_logprobs = logprobs.all_discrete_tensor
+            
+            disc_probs = logprobs.all_discrete_tensor.exp()
+            if self._dropout is not None and self.drop_actions:
+                disc_probs = self._dropout(disc_probs)
+
             if detach_action:
-                disc_logprobs = disc_logprobs.detach()
+                disc_probs = disc_probs.detach()
 
             action_rewards = []
             for i in range(0, sum(self.disc_sizes)*self.diverse_size, self.diverse_size):
@@ -223,9 +230,8 @@ class DiverseNetworkVariational(torch.nn.Module):
                 ))
 
             all_rewards = torch.cat(action_rewards, dim=1)
-            branched_rewards = ModelUtils.break_into_branches(all_rewards * disc_logprobs.exp(), self.disc_sizes)
-            rewards = torch.mean(torch.stack([torch.sum(branch, dim=1) \
-                                              for branch in branched_rewards]), dim=0)
+            branched_rewards = ModelUtils.break_into_branches(all_rewards * disc_probs, self.disc_sizes)
+            rewards = torch.mean(torch.stack([torch.sum(branch, dim=1) for branch in branched_rewards]), dim=0)
 
         else:
             rewards = torch.log(
@@ -431,9 +437,7 @@ class TorchSACOptimizer(TorchOptimizer):
         self._mede_network = DiverseNetworkVariational(
             self.policy.behavior_spec, 
             self.policy.network_settings, 
-            hyperparameters.mede_dropout,
-            hyperparameters.mede_encoder_dropout,
-            hyperparameters.mede_saliency_dropout
+            hyperparameters
         )
         self._mede_optimizer = torch.optim.Adam(
             list(self._mede_network.parameters()), 
@@ -568,7 +572,7 @@ class TorchSACOptimizer(TorchOptimizer):
                     v_backup = (
                         min_policy_qs[name]
                         - _cont_ent_coef * torch.sum( log_probs.continuous_tensor, dim=1)
-                        + self._mede_network.STRENGTH
+                        + self._mede_network.strength
                         * self._mede_network.rewards(obs, sampled_actions, log_probs, var_noise=False)
                     )
                 value_loss = 0.5 * ModelUtils.masked_mean(
@@ -593,7 +597,7 @@ class TorchSACOptimizer(TorchOptimizer):
                     v_backup = (
                         min_policy_qs[name]
                         - torch.mean(branched_ent_bonus, axis=0)
-                        + self._mede_network.STRENGTH
+                        + self._mede_network.strength
                         * self._mede_network.rewards(obs, sampled_actions, log_probs, var_noise=False).unsqueeze(-1)
                     )
                     # Add continuous entropy bonus to minimum Q
@@ -655,9 +659,10 @@ class TorchSACOptimizer(TorchOptimizer):
         if self._action_spec.continuous_size > 0:
             cont_log_probs = log_probs.continuous_tensor
             batch_policy_loss += _cont_ent_coef * torch.sum(cont_log_probs, dim=1) - all_mean_q1
-        batch_policy_loss += -self._mede_network.STRENGTH * self._mede_network.rewards(
-            obs, sampled_actions, log_probs, var_noise=False
-        )
+        if self._mede_network.policy_loss:
+            batch_policy_loss += -self._mede_network.strength * self._mede_network.rewards(
+                obs, sampled_actions, log_probs, var_noise=False
+            )
         policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
 
         return policy_loss
@@ -922,6 +927,10 @@ class TorchSACOptimizer(TorchOptimizer):
         else:
             total_value_loss += value_loss
 
+        mede_loss, base_loss, kl_loss, vail_loss, beta = self._mede_network.loss(
+            current_obs, sampled_actions, log_probs, masks
+        )
+
         decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
         ModelUtils.update_learning_rate(self.policy_optimizer, decay_lr)
         self.policy_optimizer.zero_grad()
@@ -938,9 +947,6 @@ class TorchSACOptimizer(TorchOptimizer):
         entropy_loss.backward()
         self.entropy_optimizer.step()
 
-        mede_loss, base_loss, kl_loss, vail_loss, beta = self._mede_network.loss(
-            current_obs, sampled_actions, log_probs, masks
-        )
         ModelUtils.update_learning_rate(self._mede_optimizer, decay_lr)
         self._mede_optimizer.zero_grad()
         mede_loss.backward()
