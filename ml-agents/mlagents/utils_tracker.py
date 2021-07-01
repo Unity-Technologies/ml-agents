@@ -14,12 +14,13 @@ class UtilsTracker:
         self.proc = None
         self.conn = None
         self.pids = [os.getpid()] + worker_pids
-        self._create_track_process(self.pids, save_path)
+        self.output_path = os.path.join(save_path, "utils_summaries.pkl")
+        self._create_track_process(self.pids)
 
-    def _create_track_process(self, pids, save_path):
+    def _create_track_process(self, pids):
         parent_conn, child_conn = Pipe()
         self.conn = parent_conn
-        self.proc = Process(target=_track, args=(pids, child_conn, save_path))
+        self.proc = Process(target=_track, args=(pids, child_conn, self.output_path))
         self.proc.start()
 
     def shutdown(self):
@@ -30,7 +31,7 @@ class UtilsTracker:
             pass
 
 
-def _track(pids, parent_conn, save_path):
+def _track(pids, parent_conn, output_path):
     buffers = {pid: [] for pid in pids}
     util_procs = [psutil.Process(pid) for pid in pids]
     try:
@@ -52,6 +53,6 @@ def _track(pids, parent_conn, save_path):
     except Exception as e:
         logger.debug(f"util tracker error: {e}")
     finally:
-        with open(os.path.join(save_path, "utils_summaries.pkl"), "wb") as f:
+        with open(output_path, "wb") as f:
             pickle.dump(buffers, f)
         parent_conn.close()

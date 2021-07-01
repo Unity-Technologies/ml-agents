@@ -5,6 +5,7 @@ import yaml
 import os
 import numpy as np
 import json
+import pickle
 
 from typing import Callable, Optional, List
 
@@ -14,7 +15,7 @@ from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.trainer import TrainerFactory
 from mlagents.trainers.directory_utils import validate_existing_directories
-from mlagents.trainers.stats import StatsReporter
+from mlagents.trainers.stats import StatsReporter, TensorboardWriter
 from mlagents.trainers.cli_utils import parser
 from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.settings import RunOptions
@@ -82,8 +83,11 @@ def run_training(run_seed: int, options: RunOptions) -> None:
 
         # Configure Tensorboard Writers and StatsReporter
         stats_writers = register_stats_writer_plugins(options)
+        tb_writer = None
         for sw in stats_writers:
             StatsReporter.add_writer(sw)
+            if isinstance(sw, TensorboardWriter):
+                tb_writer = sw
 
         if env_settings.env_path is None:
             port = None
@@ -135,6 +139,27 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         write_timing_tree(run_logs_dir)
         write_training_status(run_logs_dir)
         utils_tracker.shutdown()
+        write_sys_stats_to_tb(utils_tracker.output_path, tb_writer)
+
+
+def write_sys_stats_to_tb(utils_output, tb_writer):
+    utils_stats = pickle.load(open(utils_output, "rb"))
+    for pid, stats in utils_stats.items():
+        for data in stats:
+            for sw in tb_writer.summary_writers.values():
+                sw.add_scalars(
+                    "System Stats/CPU Percent",
+                    {str(pid): data["cpu_percent"]},
+                    walltime=data["timestamp"],
+                )
+                sw.add_scalars(
+                    "System Stats/Memory Percent",
+                    {str(pid): data["memory_percent"]},
+                    walltime=data["timestamp"],
+                )
+                # sw.add_scalar(
+                #     f"System Stats/CPU percent/{pid}", data["cpu_percent"], walltime=data["timestamp"]
+                # )
 
 
 def write_run_options(output_dir: str, run_options: RunOptions) -> None:
