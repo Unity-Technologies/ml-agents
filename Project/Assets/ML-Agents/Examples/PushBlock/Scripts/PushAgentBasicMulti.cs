@@ -115,6 +115,8 @@ public class PushAgentBasicMulti : ParameterizedAgent
 
         // By marking an agent as done AgentReset() will be called automatically.
         EndEpisode();
+        var statsRecorder = Academy.Instance.StatsRecorder;
+        statsRecorder.Add("Environment/EvalMetric", (float)timestep / (float)MaxStep);
 
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
@@ -191,6 +193,12 @@ public class PushAgentBasicMulti : ParameterizedAgent
             reward = PowerReward(block.transform.position, goal.transform.position);
         }
         AddReward(reward);
+
+        if (timestep == MaxStep)
+        {
+            var statsRecorder = Academy.Instance.StatsRecorder;
+            statsRecorder.Add("Environment/EvalMetric", (float)timestep / (float)MaxStep);
+        }
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -261,11 +269,11 @@ public class PushAgentBasicMulti : ParameterizedAgent
         SetResetParameters();
 
 
-        if (timestep >= 0)
-        {
-            var statsRecorder = Academy.Instance.StatsRecorder;
-            statsRecorder.Add("Environment/EvalMetric", (float)timestep / (float)MaxStep);
-        }
+        // if (timestep >= 0)
+        // {
+        //     var statsRecorder = Academy.Instance.StatsRecorder;
+        //     statsRecorder.Add("Environment/EvalMetric", (float)timestep / (float)MaxStep);
+        // // }
         MaxStep = stepvalue;
         timestep = 0;
     }

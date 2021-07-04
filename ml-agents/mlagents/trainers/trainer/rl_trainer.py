@@ -26,7 +26,7 @@ from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManagerQueue
-from mlagents.trainers.trajectory import Trajectory
+from mlagents.trainers.trajectory import AgentExperience, Trajectory
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.stats import StatsPropertyType
 from mlagents.trainers.model_saver.model_saver import BaseModelSaver
@@ -60,6 +60,11 @@ class RLTrainer(Trainer):
             self.trainer_settings, self.artifact_path, self.load
         )
         self._has_warned_group_rewards = False
+        self.use_episode_stats = True
+        self.returns: List[float] = []
+        self.eplens: list[int] = []
+        self.metrics: list[float] = []
+        self.metidx = 0
 
     def end_episode(self) -> None:
         """
@@ -233,9 +238,25 @@ class RLTrainer(Trainer):
         Takes a trajectory and processes it, putting it into the update buffer.
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
+        self.returns.append(sum(s.reward for s in trajectory.steps))
+        self.eplens.append(len(trajectory.steps))
+        
+        mets = self.stats_reporter.stats_dict[self.stats_reporter.category]["Environment/EvalMetric"]
+
+        if len(mets) > 0:
+            self.metrics.append(mets[self.metidx])
+            self.metidx += 1
+        # print(len(self.returns), len(self.eplens), len(self.metrics), len(mets))
+        # print("eps: {0:d}, steps: {1:d}, ret: {2:.3f}, mets:{3:.3f}".format(
+            # len(self.returns), sum(self.eplens), self.returns[-1], self.metrics[-1]))
         self._maybe_write_summary(self.get_step + len(trajectory.steps))
         self._maybe_save_model(self.get_step + len(trajectory.steps))
-        self._increment_step(len(trajectory.steps), trajectory.behavior_id)
+        
+
+        if self.use_episode_stats:
+            self._increment_step(1, trajectory.behavior_id)
+        else:
+            self._increment_step(len(trajectory.steps), trajectory.behavior_id)
 
     def _maybe_write_summary(self, step_after_process: int) -> None:
         """
@@ -246,6 +267,11 @@ class RLTrainer(Trainer):
         if self._next_summary_step == 0:  # Don't write out the first one
             self._next_summary_step = self._get_next_interval_step(self.summary_freq)
         if step_after_process >= self._next_summary_step and self.get_step != 0:
+            # metric stat is about to be cleared. add everything to the buffer if it isn't already added
+            mets = self.stats_reporter.stats_dict[self.stats_reporter.category]["Environment/EvalMetric"]
+            if len(mets) > 0:
+                self.metrics.extend(mets[self.metidx:])
+            self.metidx = 0
             self._write_summary(self._next_summary_step)
 
     def _append_to_update_buffer(self, agentbuffer_trajectory: AgentBuffer) -> None:
@@ -316,3 +342,4 @@ class RLTrainer(Trainer):
                         for q in self.policy_queues:
                             # Get policies that correspond to the policy queue in question
                             q.put(self.get_policy(q.behavior_id))
+

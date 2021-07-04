@@ -80,7 +80,11 @@ public class Ball3DMultiAgent : ParameterizedAgent
         {
             stepsInGoal++;
         }
-        
+        if ((timestep == MaxStep) || fell)
+        {
+            var statsRecorder = Academy.Instance.StatsRecorder;
+            statsRecorder.Add("Environment/EvalMetric", (float)stepsInGoal / (float)MaxStep);
+        }
         if (fell)
         {
             EndEpisode();
@@ -104,11 +108,11 @@ public class Ball3DMultiAgent : ParameterizedAgent
         SetResetParameters();
         
         
-        if (stepsInGoal >= 0)
-        {
-            var statsRecorder = Academy.Instance.StatsRecorder;
-            statsRecorder.Add("Environment/EvalMetric", (float)stepsInGoal / (float)MaxStep);
-        }
+        // if (stepsInGoal >= 0)
+        // {
+        //     var statsRecorder = Academy.Instance.StatsRecorder;
+        //     statsRecorder.Add("Environment/EvalMetric", (float)stepsInGoal / (float)MaxStep);
+        // }
         MaxStep = stepvalue;
         stepsInGoal = 0;
         timestep = 0;

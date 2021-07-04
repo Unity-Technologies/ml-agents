@@ -432,6 +432,7 @@ class AgentManager(AgentProcessor):
         :param worker_id:
         :return:
         """
+        
         for stat_name, value_list in env_stats.items():
             for val, agg_type in value_list:
                 if agg_type == StatsAggregationMethod.AVERAGE:

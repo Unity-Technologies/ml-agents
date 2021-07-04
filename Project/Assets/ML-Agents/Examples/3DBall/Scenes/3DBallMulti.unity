@@ -251,6 +251,16 @@ PrefabInstance:
       propertyPath: decisionFrequency
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 8491200049586032722, guid: 7f24aa5e0e9d54a9b8bb72772633cee7,
+        type: 3}
+      propertyPath: maxStep
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 8491200049586032722, guid: 7f24aa5e0e9d54a9b8bb72772633cee7,
+        type: 3}
+      propertyPath: numberOfParallel
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 8706416217891658080, guid: 7f24aa5e0e9d54a9b8bb72772633cee7,
         type: 3}
       propertyPath: m_RootOrder

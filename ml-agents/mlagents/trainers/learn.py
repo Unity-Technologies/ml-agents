@@ -129,6 +129,8 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         write_timing_tree(run_logs_dir)
         write_training_status(run_logs_dir)
 
+    return tc
+
 
 def write_run_options(output_dir: str, run_options: RunOptions) -> None:
     run_options_path = os.path.join(output_dir, "configuration.yaml")
