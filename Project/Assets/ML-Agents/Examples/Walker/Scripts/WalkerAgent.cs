@@ -9,6 +9,16 @@ using Random = UnityEngine.Random;
 
 public class WalkerAgent : Agent
 {
+    [Header("Virtual Root")]
+    //Transform that defines our forward orientation
+    //If the hips are already pointing forward you can use the hips
+    //otherwise this will act as an override for model space
+    public Transform VirtualRoot;
+
+    [Header("Arm Strength Multiplier")]
+    [Range(0, 2)]
+    public float armStrengthMultiplier = .2f;
+
     [Header("Walk Speed")]
     [Range(0.1f, 10)]
     [SerializeField]
@@ -52,16 +62,17 @@ public class WalkerAgent : Agent
 
     //This will be used as a stabilized model space reference point for observations
     //Because ragdolls can move erratically during training, using a stabilized reference transform improves learning
-    OrientationCubeController m_OrientationCube;
+    // OrientationCubeController m_OrientationCube;
 
     //The indicator graphic gameobject that points towards the target
     DirectionIndicator m_DirectionIndicator;
     JointDriveController m_JdController;
     EnvironmentParameters m_ResetParams;
+    public Vector3 bodyVelocityLastFrame;
 
     public override void Initialize()
     {
-        m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
+        // m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
         m_DirectionIndicator = GetComponentInChildren<DirectionIndicator>();
 
         //Setup each body part
@@ -102,7 +113,7 @@ public class WalkerAgent : Agent
         //Random start rotation to help generalize
         hips.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
 
-        UpdateOrientationObjects();
+        // UpdateOrientationObjects();
 
         //Set our goal walking speed
         MTargetWalkingSpeed =
@@ -121,15 +132,16 @@ public class WalkerAgent : Agent
 
         //Get velocities in the context of our orientation cube's space
         //Note: You can get these velocities in world space as well but it may not train as well.
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.velocity));
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
+        // sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.velocity));
+        // sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
+        sensor.AddObservation(VirtualRoot.InverseTransformDirection(bp.rb.angularVelocity));
 
         //Get position relative to hips in the context of our orientation cube's space
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));
+        // sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));
 
         if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR)
         {
-            sensor.AddObservation(bp.rb.transform.localRotation);
+            // sensor.AddObservation(bp.rb.transform.localRotation);
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
@@ -139,31 +151,62 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
-        var cubeForward = m_OrientationCube.transform.forward;
+        // var cubeForward = m_OrientationCube.transform.forward;
+
+        // //velocity we want to match
+        // var velGoal = cubeForward * MTargetWalkingSpeed;
+        //ragdoll's avg vel
+        // var avgVel = GetAvgVelocity();
+
+        var currentBodyVel = m_JdController.bodyPartsDict[hips].rb.velocity;
+        var bodyAccel = (currentBodyVel - bodyVelocityLastFrame) / Time.fixedDeltaTime;
+        sensor.AddObservation(VirtualRoot.InverseTransformDirection(bodyAccel));
+        bodyVelocityLastFrame = currentBodyVel;
+
+
+        var targetDir = target.position - VirtualRoot.position;
 
         //velocity we want to match
-        var velGoal = cubeForward * MTargetWalkingSpeed;
+        var velGoal = targetDir * MTargetWalkingSpeed;
+        // var velGoal = cubeForward * MTargetWalkingSpeed;
         //ragdoll's avg vel
         var avgVel = GetAvgVelocity();
 
         //current ragdoll velocity. normalized
         sensor.AddObservation(Vector3.Distance(velGoal, avgVel));
         //avg body vel relative to cube
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
+        sensor.AddObservation(VirtualRoot.InverseTransformDirection(avgVel));
         //vel goal relative to cube
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
+        sensor.AddObservation(VirtualRoot.InverseTransformDirection(velGoal));
 
-        //rotation deltas
-        sensor.AddObservation(Quaternion.FromToRotation(hips.forward, cubeForward));
-        sensor.AddObservation(Quaternion.FromToRotation(head.forward, cubeForward));
+        // var bodyForward = -body.up;
+        // //rotation deltas
+        // sensor.AddObservation(Quaternion.FromToRotation(bodyForward, cubeForward));
+        // sensor.AddObservation(Quaternion.FromToRotation(bodyForward, cubeForward));
 
         //Position of target position relative to cube
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.transform.position));
+        sensor.AddObservation(VirtualRoot.InverseTransformPoint(target.transform.position));
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
             CollectObservationBodyPart(bodyPart, sensor);
         }
+        // //avg body vel relative to cube
+        // sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
+        // //vel goal relative to cube
+        // sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
+
+        // //rotation deltas
+        // sensor.AddObservation(Quaternion.FromToRotation(hips.forward, cubeForward));
+        // sensor.AddObservation(Quaternion.FromToRotation(head.forward, cubeForward));
+
+        // //Position of target position relative to cube
+        // sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.transform.position));
+
+        // foreach (var bodyPart in m_JdController.bodyPartsList)
+        // {
+        //     CollectObservationBodyPart(bodyPart, sensor);
+        // }
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
@@ -199,58 +242,30 @@ public class WalkerAgent : Agent
         bpDict[thighR].SetJointStrength(continuousActions[++i]);
         bpDict[shinR].SetJointStrength(continuousActions[++i]);
         bpDict[footR].SetJointStrength(continuousActions[++i]);
-        bpDict[armL].SetJointStrength(continuousActions[++i]);
-        bpDict[forearmL].SetJointStrength(continuousActions[++i]);
-        bpDict[armR].SetJointStrength(continuousActions[++i]);
-        bpDict[forearmR].SetJointStrength(continuousActions[++i]);
+        bpDict[armL].SetJointStrength(continuousActions[++i] - armStrengthMultiplier);
+        bpDict[forearmL].SetJointStrength(continuousActions[++i] - armStrengthMultiplier);
+        bpDict[armR].SetJointStrength(continuousActions[++i] - armStrengthMultiplier);
+        bpDict[forearmR].SetJointStrength(continuousActions[++i] - armStrengthMultiplier);
+        // bpDict[armL].SetJointStrength(continuousActions[++i]);
+        // bpDict[forearmL].SetJointStrength(continuousActions[++i]);
+        // bpDict[armR].SetJointStrength(continuousActions[++i]);
+        // bpDict[forearmR].SetJointStrength(continuousActions[++i]);
+
+        GiveRewards();
     }
 
-    //Update OrientationCube and DirectionIndicator
-    void UpdateOrientationObjects()
+    void GiveRewards()
     {
-        m_WorldDirToWalk = target.position - hips.position;
-        m_OrientationCube.UpdateOrientation(hips, target);
-        if (m_DirectionIndicator)
-        {
-            m_DirectionIndicator.MatchOrientation(m_OrientationCube.transform);
-        }
-    }
-
-    void FixedUpdate()
-    {
-        UpdateOrientationObjects();
-
-        var cubeForward = m_OrientationCube.transform.forward;
+        var targetDir = target.position - VirtualRoot.position;
 
         // Set reward for this step according to mixture of the following elements.
         // a. Match target speed
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
-        var matchSpeedReward = GetMatchingVelocityReward(cubeForward * MTargetWalkingSpeed, GetAvgVelocity());
-
-        //Check for NaNs
-        if (float.IsNaN(matchSpeedReward))
-        {
-            throw new ArgumentException(
-                "NaN in moveTowardsTargetReward.\n" +
-                $" cubeForward: {cubeForward}\n" +
-                $" hips.velocity: {m_JdController.bodyPartsDict[hips].rb.velocity}\n" +
-                $" maximumWalkingSpeed: {m_maxWalkingSpeed}"
-            );
-        }
+        var matchSpeedReward = GetMatchingVelocityReward(targetDir.normalized * MTargetWalkingSpeed, GetAvgVelocity());
 
         // b. Rotation alignment with target direction.
         //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
-        var lookAtTargetReward = (Vector3.Dot(cubeForward, head.forward) + 1) * .5F;
-
-        //Check for NaNs
-        if (float.IsNaN(lookAtTargetReward))
-        {
-            throw new ArgumentException(
-                "NaN in lookAtTargetReward.\n" +
-                $" cubeForward: {cubeForward}\n" +
-                $" head.forward: {head.forward}"
-            );
-        }
+        var lookAtTargetReward = (Vector3.Dot(targetDir.normalized, hips.forward) + 1) * .5F;
 
         AddReward(matchSpeedReward * lookAtTargetReward);
     }
@@ -302,6 +317,6 @@ public class WalkerAgent : Agent
 
     public void SetResetParameters()
     {
-        SetTorsoMass();
+        // SetTorsoMass();
     }
 }

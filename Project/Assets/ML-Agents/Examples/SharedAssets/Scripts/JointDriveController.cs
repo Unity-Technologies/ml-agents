@@ -29,7 +29,8 @@ namespace Unity.MLAgentsExamples
         [Space(10)]
         public Vector3 currentEularJointRotation;
 
-        [HideInInspector] public float currentStrength;
+        public float maxJointForce;
+        public float currentStrength;
         public float currentXNormalizedRot;
         public float currentYNormalizedRot;
         public float currentZNormalizedRot;
@@ -87,8 +88,10 @@ namespace Unity.MLAgentsExamples
         }
 
         public void SetJointStrength(float strength)
+        // public void SetJointStrength(float strength, float maxStrength)
         {
             var rawVal = (strength + 1f) * 0.5f * thisJdController.maxJointForceLimit;
+            // var rawVal = (strength + 1f) * 0.5f * maxStrength;
             var jd = new JointDrive
             {
                 positionSpring = thisJdController.maxJointSpring,
@@ -112,7 +115,7 @@ namespace Unity.MLAgentsExamples
 
         [HideInInspector] public Dictionary<Transform, BodyPart> bodyPartsDict = new Dictionary<Transform, BodyPart>();
 
-        [HideInInspector] public List<BodyPart> bodyPartsList = new List<BodyPart>();
+        public List<BodyPart> bodyPartsList = new List<BodyPart>();
         const float k_MaxAngularVelocity = 50.0f;
 
         /// <summary>
