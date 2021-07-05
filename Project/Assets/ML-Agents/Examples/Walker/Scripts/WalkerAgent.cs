@@ -60,6 +60,12 @@ public class WalkerAgent : Agent
     public Transform forearmR;
     public Transform handR;
 
+    [Header("Ray Sensors")]
+    public RayPerceptionSensorComponent3D rays1; //Target the agent will walk towards during training.
+    public RayPerceptionSensorComponent3D rays2; //Target the agent will walk towards during training.
+    public RayPerceptionSensorComponent3D rays3; //Target the agent will walk towards during training.
+    public RayPerceptionSensorComponent3D rays4; //Target the agent will walk towards during training.
+    
     //This will be used as a stabilized model space reference point for observations
     //Because ragdolls can move erratically during training, using a stabilized reference transform improves learning
     // OrientationCubeController m_OrientationCube;
@@ -141,7 +147,7 @@ public class WalkerAgent : Agent
 
         if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR)
         {
-            // sensor.AddObservation(bp.rb.transform.localRotation);
+            sensor.AddObservation(bp.rb.transform.localRotation);
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
