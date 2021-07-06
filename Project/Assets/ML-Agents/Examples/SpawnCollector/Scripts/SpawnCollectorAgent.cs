@@ -16,9 +16,9 @@ public class SpawnCollectorAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddOneHotObservation(m_Area.GetNumAgents(), 6);
+        // sensor.AddOneHotObservation(m_Area.GetNumAgents(), 6);
         sensor.AddObservation(1.0f * m_Area.GetNumFoodLeft() / 40f);
-        sensor.AddObservation(1.0f * m_Area.GetTimeLeft());
+        // sensor.AddObservation(1.0f * m_Area.GetTimeLeft());
         sensor.AddObservation(transform.InverseTransformDirection(m_AgentRb.velocity));
     }
 
@@ -32,8 +32,9 @@ public class SpawnCollectorAgent : Agent
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
 
-        var action = act[0];
-        switch (action)
+        var actionForward = act[0];
+        var actionRotate = act[1];
+        switch (actionForward)
         {
             case 1:
                 dirToGo = transform.forward * 1f;
@@ -41,10 +42,13 @@ public class SpawnCollectorAgent : Agent
             case 2:
                 dirToGo = transform.forward * -1f;
                 break;
-            case 3:
+        }
+        switch (actionRotate)
+        {
+            case 1:
                 rotateDir = transform.up * 1f;
                 break;
-            case 4:
+            case 2:
                 rotateDir = transform.up * -1f;
                 break;
         }
@@ -63,17 +67,17 @@ public class SpawnCollectorAgent : Agent
         var discreteActionsOut = actionsOut.DiscreteActions;
         if (Input.GetKey(KeyCode.D))
         {
-            discreteActionsOut[0] = 3;
+            discreteActionsOut[1] = 1;
         }
-        else if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(KeyCode.W))
         {
             discreteActionsOut[0] = 1;
         }
-        else if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.A))
         {
-            discreteActionsOut[0] = 4;
+            discreteActionsOut[1] = 2;
         }
-        else if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(KeyCode.S))
         {
             discreteActionsOut[0] = 2;
         }

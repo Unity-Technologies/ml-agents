@@ -1,5 +1,6 @@
 using UnityEngine;
 using Random = UnityEngine.Random;
+using Unity.MLAgents;
 
 public class SpawnButton : MonoBehaviour
 {
@@ -26,7 +27,7 @@ public class SpawnButton : MonoBehaviour
         myButton.GetComponent<Renderer>().material = offMaterial;
         if (Random.Range(0f, 1f) > 0.9f)
         {
-            Activate();
+            Activate(null);
         }
     }
 
@@ -34,22 +35,31 @@ public class SpawnButton : MonoBehaviour
     {
         if (other.gameObject.CompareTag("agent") && m_State == false)
         {
-            Activate();
+            Activate(other.gameObject);
         }
     }
 
-    void Activate()
+    void Activate(GameObject pressingAgent)
     {
         myButton.GetComponent<Renderer>().material = onMaterial;
         m_State = true;
         tag = "switchOn";
-        SpawnAgent();
+        SpawnAgent(pressingAgent);
     }
 
-    void SpawnAgent()
+    void SpawnAgent(GameObject pressingAgent)
     {
-        var agent = GameObject.Instantiate(AgentPrefab, gameObject.transform.position + new Vector3(2, 0, 0), default(Quaternion), Area.transform);
-        Area.AddReward(0f);
-        Area.RegisterAgent(agent);
+        // if (pressingAgent != null)
+        // {
+        //     Area.UnregisterAgent(pressingAgent);
+        //     Destroy(pressingAgent);
+        //     var agent1 = GameObject.Instantiate(AgentPrefab, gameObject.transform.position + new Vector3(2 , 0, 0), default(Quaternion), Area.transform);
+        //     // Area.AddReward(0f);
+        //     Area.RegisterAgent(agent1);
+        // }
+
+        var agent2 = GameObject.Instantiate(AgentPrefab, gameObject.transform.position + new Vector3(3, 0, 0), default(Quaternion), Area.transform);
+        // Area.AddReward(0f);
+        Area.RegisterAgent(agent2);
     }
 }

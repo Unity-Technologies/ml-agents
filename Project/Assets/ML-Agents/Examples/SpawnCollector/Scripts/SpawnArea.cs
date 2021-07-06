@@ -61,9 +61,14 @@ public class SpawnArea : MonoBehaviour
         m_AgentGroup.RegisterAgent(agent.GetComponent<SpawnCollectorAgent>());
     }
 
+        public void UnregisterAgent(GameObject agent)
+    {
+        m_AgentGroup.UnregisterAgent(agent.GetComponent<SpawnCollectorAgent>());
+    }
+
     public void FoodEaten()
     {
-        m_AgentGroup.AddGroupReward(0.1f);
+        m_AgentGroup.AddGroupReward(0.01f);
         m_NumFoodEaten += 1;
         if (m_NumFoodEaten == Foods.Count)
         {
@@ -83,10 +88,10 @@ public class SpawnArea : MonoBehaviour
         return 1.0f * m_ResetTimer / MaxEnvironmentSteps;
     }
 
-    public void AddReward(float value)
-    {
-        m_AgentGroup.AddGroupReward(value);
-    }
+    // public void AddReward(float value)
+    // {
+    //     m_AgentGroup.AddGroupReward(value);
+    // }
 
     void FixedUpdate()
     {
@@ -94,12 +99,12 @@ public class SpawnArea : MonoBehaviour
         if (m_ResetTimer >= MaxEnvironmentSteps && MaxEnvironmentSteps > 0)
         {
             // m_AgentGroup.AddGroupReward(-1f);
-            m_AgentGroup.EndGroupEpisode();
+            m_AgentGroup.GroupEpisodeInterrupted();
             ResetScene();
         }
 
         //Hurry Up Penalty
-        m_AgentGroup.AddGroupReward(-3f / MaxEnvironmentSteps);
+        m_AgentGroup.AddGroupReward(-0.5f / MaxEnvironmentSteps);
     }
 
     public int GetNumAgents()
