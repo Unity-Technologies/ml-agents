@@ -162,6 +162,7 @@ class SACSettings(HyperparamSettings):
     save_replay_buffer: bool = False
     init_entcoef: float = 1.0
     reward_signal_steps_per_update: float = attr.ib()
+    mede: bool = False
     mede_dropout: float = 0
     mede_encoder_dropout: float = 0
     mede_weight_decay: float = 0

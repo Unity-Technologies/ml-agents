@@ -44,24 +44,12 @@ class DiverseNetworkVariational(torch.nn.Module):
         super().__init__()
         self._use_actions = params.mede_use_actions
         self._max_saliency_dropout = params.mede_saliency_dropout
-        self.strength = params.mede_strength
-        self.policy_loss = params.mede_for_policy_loss
         self.drop_actions = params.mede_drop_actions
         self.observations_sal_drop = [torch.zeros(s.shape) for s in specs.observation_specs \
                                       if s.observation_type != ObservationType.GOAL_SIGNAL]
         self.cont_actions_sal_drop = torch.zeros(specs.action_spec.continuous_size)
         sigma_start = 0.5
-        print(
-            "VARIATIONAL : Settings : strength:",
-            self.strength,
-            " use_actions:",
-            self._use_actions,
-            " mutual_information : ",
-            self.mutual_information,
-            "Sigma_Start : ",
-            sigma_start,
-        )
-        # state_encoder_settings = settings
+
         state_encoder_settings = NetworkSettings(normalize=True, num_layers=1)
         if state_encoder_settings.memory is not None:
             state_encoder_settings.memory = None
@@ -433,18 +421,21 @@ class TorchSACOptimizer(TorchOptimizer):
             self._critic.parameters()
         )
 
-        # self._mede_network = DiverseNetwork(
+        # MEDE
+        self.use_mede = hyperparameters.mede
         self._mede_network = DiverseNetworkVariational(
             self.policy.behavior_spec, 
             self.policy.network_settings, 
             hyperparameters
-        )
+        ) if self.use_mede else None
         self._mede_optimizer = torch.optim.Adam(
             list(self._mede_network.parameters()), 
             lr=hyperparameters.learning_rate, 
             weight_decay=hyperparameters.mede_weight_decay
-        )
+        ) if self.use_mede else None
         self.mede_saliency_dropout = hyperparameters.mede_saliency_dropout
+        self.mede_strength = hyperparameters.mede_strength
+        self.mede_policy_loss = hyperparameters.mede_for_policy_loss
         self.sal_observations = [torch.zeros(spec.shape) for spec in self.policy.behavior_spec.observation_specs]
         self.sal_cont_actions = torch.zeros(self.policy.behavior_spec.action_spec.continuous_size)
         self.sal_weight = 0.01
@@ -524,8 +515,7 @@ class TorchSACOptimizer(TorchOptimizer):
         q1p_out: Dict[str, torch.Tensor],
         q2p_out: Dict[str, torch.Tensor],
         loss_masks: torch.Tensor,
-        obs,
-        sampled_actions,
+        mede_rewards: torch.Tensor
     ) -> torch.Tensor:
         min_policy_qs = {}
         with torch.no_grad():
@@ -569,12 +559,10 @@ class TorchSACOptimizer(TorchOptimizer):
         if self._action_spec.discrete_size <= 0:
             for name in values.keys():
                 with torch.no_grad():
-                    v_backup = (
-                        min_policy_qs[name]
-                        - _cont_ent_coef * torch.sum( log_probs.continuous_tensor, dim=1)
-                        + self._mede_network.strength
-                        * self._mede_network.rewards(obs, sampled_actions, log_probs, var_noise=False)
+                    v_backup = min_policy_qs[name] - _cont_ent_coef * torch.sum( 
+                        log_probs.continuous_tensor, dim=1
                     )
+                    v_backup += self.mede_strength * mede_rewards
                 value_loss = 0.5 * ModelUtils.masked_mean(
                     torch.nn.functional.mse_loss(values[name], v_backup), loss_masks
                 )
@@ -594,12 +582,10 @@ class TorchSACOptimizer(TorchOptimizer):
             )
             for name in values.keys():
                 with torch.no_grad():
-                    v_backup = (
-                        min_policy_qs[name]
-                        - torch.mean(branched_ent_bonus, axis=0)
-                        + self._mede_network.strength
-                        * self._mede_network.rewards(obs, sampled_actions, log_probs, var_noise=False).unsqueeze(-1)
+                    v_backup = min_policy_qs[name] - torch.mean(
+                        branched_ent_bonus, axis=0
                     )
+                    v_backup += self.mede_strength * mede_rewards.unsqueeze(-1)
                     # Add continuous entropy bonus to minimum Q
                     if self._action_spec.continuous_size > 0:
                         v_backup += torch.sum(
@@ -622,8 +608,7 @@ class TorchSACOptimizer(TorchOptimizer):
         log_probs: ActionLogProbs,
         q1p_outs: Dict[str, torch.Tensor],
         loss_masks: torch.Tensor,
-        obs,
-        sampled_actions,
+        mede_rewards: torch.Tensor
     ) -> torch.Tensor:
         _cont_ent_coef, _disc_ent_coef = (
             self._log_ent_coef.continuous,
@@ -659,10 +644,8 @@ class TorchSACOptimizer(TorchOptimizer):
         if self._action_spec.continuous_size > 0:
             cont_log_probs = log_probs.continuous_tensor
             batch_policy_loss += _cont_ent_coef * torch.sum(cont_log_probs, dim=1) - all_mean_q1
-        if self._mede_network.policy_loss:
-            batch_policy_loss += -self._mede_network.strength * self._mede_network.rewards(
-                obs, sampled_actions, log_probs, var_noise=False
-            )
+        if self.mede_policy_loss:
+            batch_policy_loss += -self.mede_strength * mede_rewards
         policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
 
         return policy_loss
@@ -848,7 +831,6 @@ class TorchSACOptimizer(TorchOptimizer):
         self.target_network.network_body.copy_normalization(
             self.policy.actor.network_body
         )
-        self._mede_network.copy_normalization(self.policy.actor.network_body)
         self._critic.network_body.copy_normalization(self.policy.actor.network_body)
         sampled_actions, log_probs, _, _, = self.policy.actor.get_action_and_stats(
             current_obs,
@@ -904,6 +886,13 @@ class TorchSACOptimizer(TorchOptimizer):
         masks = ModelUtils.list_to_tensor(batch[BufferKey.MASKS], dtype=torch.bool)
         dones = ModelUtils.list_to_tensor(batch[BufferKey.DONE])
 
+        mede_value_rewards, mede_policy_rewards = torch.zeros(1), torch.zeros(1)
+        if self.use_mede:
+            self._mede_network.copy_normalization(self.policy.actor.network_body)
+            mede_policy_rewards = self._mede_network.rewards(current_obs, sampled_actions, log_probs, var_noise=False)
+            with torch.no_grad():
+                mede_value_rewards = self._mede_network.rewards(current_obs, sampled_actions, log_probs, var_noise=False)
+
         q1_loss, q2_loss = self.sac_q_loss(
             q1_stream, q2_stream, target_values, dones, rewards, masks
         )
@@ -913,11 +902,10 @@ class TorchSACOptimizer(TorchOptimizer):
             q1p_out,
             q2p_out,
             masks,
-            current_obs,
-            sampled_actions,
+            mede_value_rewards
         )
         policy_loss = self.sac_policy_loss(
-            log_probs, q1p_out, masks, current_obs, sampled_actions
+            log_probs, q1p_out, masks, mede_policy_rewards
         )
         entropy_loss = self.sac_entropy_loss(log_probs, masks)
 
@@ -926,10 +914,6 @@ class TorchSACOptimizer(TorchOptimizer):
             policy_loss += value_loss
         else:
             total_value_loss += value_loss
-
-        mede_loss, base_loss, kl_loss, vail_loss, beta = self._mede_network.loss(
-            current_obs, sampled_actions, log_probs, masks
-        )
 
         decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
         ModelUtils.update_learning_rate(self.policy_optimizer, decay_lr)
@@ -947,19 +931,6 @@ class TorchSACOptimizer(TorchOptimizer):
         entropy_loss.backward()
         self.entropy_optimizer.step()
 
-        ModelUtils.update_learning_rate(self._mede_optimizer, decay_lr)
-        self._mede_optimizer.zero_grad()
-        mede_loss.backward()
-        self._mede_optimizer.step()
-
-        if self.mede_saliency_dropout > 0:
-            self._update_saliency(
-                current_obs,
-                cont_sampled_actions,
-                memories=q_memories,
-                sequence_length=self.policy.sequence_length
-            )
-
         # Update target network
         ModelUtils.soft_update(self._critic, self.target_network, self.tau)
         update_stats = {
@@ -975,12 +946,33 @@ class TorchSACOptimizer(TorchOptimizer):
             ).item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/Entropy Loss": entropy_loss.item(),
-            "Policy/MEDE Loss": mede_loss.item(),
-            "Policy/MEDE Base": base_loss.item(),
-            "Policy/MEDE Variational": vail_loss.item(),
-            "Policy/MEDE KL": kl_loss.item(),
-            "Policy/MEDE beta": beta.item(),
         }
+
+        if self.use_mede:
+            mede_loss, base_loss, kl_loss, vail_loss, beta = self._mede_network.loss(
+                current_obs, sampled_actions, log_probs, masks
+            )
+            
+            ModelUtils.update_learning_rate(self._mede_optimizer, decay_lr)
+            self._mede_optimizer.zero_grad()
+            mede_loss.backward()
+            self._mede_optimizer.step()
+
+            if self.mede_saliency_dropout > 0:
+                self._update_saliency(
+                    current_obs,
+                    cont_sampled_actions,
+                    memories=q_memories,
+                    sequence_length=self.policy.sequence_length
+                )
+
+            update_stats.update({
+                "Policy/MEDE Loss": mede_loss.item(),
+                "Policy/MEDE Base": base_loss.item(),
+                "Policy/MEDE Variational": vail_loss.item(),
+                "Policy/MEDE KL": kl_loss.item(),
+                "Policy/MEDE beta": beta.item(),
+            })
 
         return update_stats
 
@@ -1000,9 +992,12 @@ class TorchSACOptimizer(TorchOptimizer):
             "Optimizer:policy_optimizer": self.policy_optimizer,
             "Optimizer:value_optimizer": self.value_optimizer,
             "Optimizer:entropy_optimizer": self.entropy_optimizer,
-            "Optimizer:mede_optimizer": self._mede_optimizer,
-            "Optimizer:mede_network": self._mede_network,
         }
+        if self.use_mede:
+            modules.update({
+                "Optimizer:mede_optimizer": self._mede_optimizer,
+                "Optimizer:mede_network": self._mede_network,
+            })
         for reward_provider in self.reward_signals.values():
             modules.update(reward_provider.get_modules())
         return modules
