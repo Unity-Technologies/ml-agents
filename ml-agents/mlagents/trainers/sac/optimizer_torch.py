@@ -31,31 +31,29 @@ from mlagents.trainers.torch.layers import linear_layer, Initialization
 
 
 class DiverseNetworkVariational(torch.nn.Module):
-    EPSILON = 1e-10
-
-    # gradient_penalty_weight = 10.0
-    z_size = 128
     alpha = 0.0005
-    mutual_information = 10000  # 0.5
     EPSILON = 1e-7
-    initial_beta = 0.0
 
-    def __init__(self, specs: BehaviorSpec, settings, params) -> None:
+    def __init__(self, specs: BehaviorSpec, params) -> None:
         super().__init__()
         self._use_actions = params.mede_use_actions
         self._max_saliency_dropout = params.mede_saliency_dropout
         self.drop_actions = params.mede_drop_actions
+        self.centered_reward = params.mede_centered
+        self.mutual_information = params.mede_mutual_information
         self.observations_sal_drop = [torch.zeros(s.shape) for s in specs.observation_specs \
                                       if s.observation_type != ObservationType.GOAL_SIGNAL]
         self.cont_actions_sal_drop = torch.zeros(specs.action_spec.continuous_size)
         sigma_start = 0.5
+        beta_start = 0.0
 
-        state_encoder_settings = NetworkSettings(normalize=True, num_layers=1)
-        if state_encoder_settings.memory is not None:
-            state_encoder_settings.memory = None
+        encoder_settings = NetworkSettings(normalize=True, num_layers=1)
+        if encoder_settings.memory is not None:
+            encoder_settings.memory = None
             logger.warning(
                 "memory was specified in network_settings but is not supported. It is being ignored."
             )
+
         new_spec = [
             spec
             for spec in specs.observation_specs
@@ -66,10 +64,7 @@ class DiverseNetworkVariational(torch.nn.Module):
             for spec in specs.observation_specs
             if spec.observation_type == ObservationType.GOAL_SIGNAL
         ][0]
-
-        print(" > ", new_spec, "\n\n\n", " >> ", diverse_spec)
         self._all_obs_specs = specs.observation_specs
-
         self.diverse_size = diverse_spec.shape[0]
 
         self._dropout = torch.nn.Dropout(params.mede_dropout) if params.mede_dropout > 0 else None
@@ -80,29 +75,26 @@ class DiverseNetworkVariational(torch.nn.Module):
 
         if self._use_actions and self.cont_size > 0:
             self._encoder = NetworkBody(
-                new_spec, state_encoder_settings, self.cont_size
+                new_spec, encoder_settings, self.cont_size
             )
         else:
-            self._encoder = NetworkBody(new_spec, state_encoder_settings)
+            self._encoder = NetworkBody(new_spec, encoder_settings)
 
         self._z_sigma = torch.nn.Parameter(
-            sigma_start * torch.ones((self.z_size), dtype=torch.float),
+            sigma_start * torch.ones((encoder_settings.hidden_units), dtype=torch.float),
             requires_grad=True,
-        )
-        # self._z_mu_layer = linear_layer(
-        #     state_encoder_settings.hidden_units,
-        #     self.z_size,
-        #     kernel_init=Initialization.KaimingHeNormal,
-        #     kernel_gain=0.1,
-        # )
+        ) if params.mede_noise else None
         self._beta = torch.nn.Parameter(
-            torch.tensor(self.initial_beta, dtype=torch.float), requires_grad=False
-        )
+            torch.tensor(beta_start, dtype=torch.float), requires_grad=False
+        ) if params.mede_noise else None
 
         if self._use_actions and len(self.disc_sizes) > 0:
-            self._last_layer = torch.nn.Linear(self.z_size, self.diverse_size * sum(self.disc_sizes))
+            self._last_layer = torch.nn.Linear(
+                encoder_settings.hidden_units, self.diverse_size * sum(self.disc_sizes)
+            )
         else:
-            self._last_layer = torch.nn.Linear(self.z_size, self.diverse_size)
+            self._last_layer = torch.nn.Linear(encoder_settings.hidden_units, self.diverse_size)
+
         self._diverse_index = -1
         self._max_index = len(specs.observation_specs)
         for i, spec in enumerate(specs.observation_specs):
@@ -142,10 +134,9 @@ class DiverseNetworkVariational(torch.nn.Module):
         if self._encoder_dropout is not None:
             hidden = self._encoder_dropout(hidden)
 
-        # add a VAE (like in VAIL ?)
-        # z_mu = self._z_mu_layer(hidden)
-        z_mu = hidden  # self._z_mu_layer(hidden)
-        hidden = torch.normal(z_mu, self._z_sigma * var_noise)
+        z_mu = hidden
+        if self._z_sigma is not None and var_noise:
+            hidden = torch.normal(z_mu, self._z_sigma)
 
         final_out = self._last_layer(hidden)
         if self._use_actions and len(self.disc_sizes) > 0:
@@ -224,7 +215,10 @@ class DiverseNetworkVariational(torch.nn.Module):
         else:
             rewards = torch.log(
                 torch.sum((prediction * truth), dim=1) + self.EPSILON
-            )# - np.log(1 / self.diverse_size)  # Center around 0
+            )
+
+        if self.centered_reward:
+            rewards -= np.log(1 / self.diverse_size)
 
         return rewards
 
@@ -232,30 +226,31 @@ class DiverseNetworkVariational(torch.nn.Module):
         self, obs_input, action_input, logprobs, masks, detach_action=True, var_noise=True
     ) -> torch.Tensor:
 
-        # print( ">>> ",obs_input[self._diverse_index][0],self.predict(obs_input, action_input, detach_action)[0], self.predict([x*0 for x in obs_input], action_input, detach_action * 0)[0] )
         base_loss = -ModelUtils.masked_mean(
             self.rewards(obs_input, action_input, logprobs, detach_action, var_noise), masks
         )
 
-        _, mu = self.predict(obs_input, action_input, detach_action, var_noise)
-        kl_loss = ModelUtils.masked_mean(
-            -torch.sum(
-                1 + (self._z_sigma ** 2).log() - 0.5 * mu ** 2
-                # - 0.5 * mu_expert ** 2
-                - (self._z_sigma ** 2),
-                dim=1,
-            ),
-            masks,
-        )
-        vail_loss = self._beta * (kl_loss - self.mutual_information)
-        with torch.no_grad():
-            self._beta.data = torch.max(
-                self._beta + self.alpha * (kl_loss - self.mutual_information),
-                torch.tensor(0.0),
+        if self._z_sigma is None:
+            return base_loss, base_loss, 0, 0, 0
+        else:
+            _, mu = self.predict(obs_input, action_input, detach_action, var_noise)
+            kl_loss = ModelUtils.masked_mean(
+                -torch.sum(
+                    1 + (self._z_sigma ** 2).log() - 0.5 * mu ** 2
+                    - (self._z_sigma ** 2),
+                    dim=1,
+                ),
+                masks,
             )
-        total_loss = base_loss + vail_loss
+            vail_loss = self._beta * (kl_loss - self.mutual_information)
+            with torch.no_grad():
+                self._beta.data = torch.max(
+                    self._beta + self.alpha * (kl_loss - self.mutual_information),
+                    torch.tensor(0.0),
+                )
+            total_loss = base_loss + vail_loss
 
-        return total_loss, base_loss, kl_loss, vail_loss, self._beta
+            return total_loss, base_loss, kl_loss, vail_loss, self._beta
 
 
 class TorchSACOptimizer(TorchOptimizer):
@@ -425,7 +420,6 @@ class TorchSACOptimizer(TorchOptimizer):
         self.use_mede = hyperparameters.mede
         self._mede_network = DiverseNetworkVariational(
             self.policy.behavior_spec, 
-            self.policy.network_settings, 
             hyperparameters
         ) if self.use_mede else None
         self._mede_optimizer = torch.optim.Adam(

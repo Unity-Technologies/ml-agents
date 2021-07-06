@@ -168,9 +168,12 @@ class SACSettings(HyperparamSettings):
     mede_weight_decay: float = 0
     mede_saliency_dropout: float = 0
     mede_strength: float = 0.1
+    mede_mutual_information: float = float("inf")
     mede_for_policy_loss: bool = True
     mede_use_actions: bool = True
     mede_drop_actions: bool = True
+    mede_noise: bool = True
+    mede_centered: bool = False
 
     @reward_signal_steps_per_update.default
     def _reward_signal_steps_per_update_default(self):
