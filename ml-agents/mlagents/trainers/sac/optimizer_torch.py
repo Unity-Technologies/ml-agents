@@ -559,8 +559,8 @@ class TorchSACOptimizer(TorchOptimizer):
         if self._action_spec.discrete_size <= 0:
             for name in values.keys():
                 with torch.no_grad():
-                    v_backup = min_policy_qs[name] - _cont_ent_coef * torch.sum( 
-                        log_probs.continuous_tensor, dim=1
+                    v_backup = min_policy_qs[name] - torch.sum(
+                        _cont_ent_coef * log_probs.continuous_tensor, dim=1
                     )
                     v_backup += self.mede_strength * mede_rewards
                 value_loss = 0.5 * ModelUtils.masked_mean(
@@ -643,7 +643,9 @@ class TorchSACOptimizer(TorchOptimizer):
             all_mean_q1 = mean_q1
         if self._action_spec.continuous_size > 0:
             cont_log_probs = log_probs.continuous_tensor
-            batch_policy_loss += _cont_ent_coef * torch.sum(cont_log_probs, dim=1) - all_mean_q1
+            batch_policy_loss += torch.mean(
+                _cont_ent_coef * cont_log_probs - all_mean_q1.unsqueeze(1), dim=1
+            )
         if self.mede_policy_loss:
             batch_policy_loss += -self.mede_strength * mede_rewards
         policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
@@ -684,12 +686,9 @@ class TorchSACOptimizer(TorchOptimizer):
         if self._action_spec.continuous_size > 0:
             with torch.no_grad():
                 cont_log_probs = log_probs.continuous_tensor
-                target_current_diff = (
-                    torch.sum(cont_log_probs, dim=1)
-                    + self.target_entropy.continuous
+                target_current_diff = torch.sum(
+                    cont_log_probs + self.target_entropy.continuous, dim=1
                 )
-                # print(self.target_entropy.continuous, cont_log_probs, torch.sum(
-                #     cont_log_probs, dim=1) + self.target_entropy.continuous)
             # We update all the _cont_ent_coef as one block
             entropy_loss += -1 * ModelUtils.masked_mean(
                 _cont_ent_coef * target_current_diff, loss_masks
@@ -889,24 +888,21 @@ class TorchSACOptimizer(TorchOptimizer):
         mede_value_rewards, mede_policy_rewards = torch.zeros(1), torch.zeros(1)
         if self.use_mede:
             self._mede_network.copy_normalization(self.policy.actor.network_body)
-            mede_policy_rewards = self._mede_network.rewards(current_obs, sampled_actions, log_probs, var_noise=False)
+            mede_policy_rewards = self._mede_network.rewards(
+                current_obs, sampled_actions, log_probs, var_noise=False
+            )
             with torch.no_grad():
-                mede_value_rewards = self._mede_network.rewards(current_obs, sampled_actions, log_probs, var_noise=False)
+                mede_value_rewards = self._mede_network.rewards(
+                    current_obs, sampled_actions, log_probs, var_noise=False
+                )
 
         q1_loss, q2_loss = self.sac_q_loss(
             q1_stream, q2_stream, target_values, dones, rewards, masks
         )
         value_loss = self.sac_value_loss(
-            log_probs,
-            value_estimates,
-            q1p_out,
-            q2p_out,
-            masks,
-            mede_value_rewards
+            log_probs, value_estimates, q1p_out, q2p_out, masks, mede_value_rewards
         )
-        policy_loss = self.sac_policy_loss(
-            log_probs, q1p_out, masks, mede_policy_rewards
-        )
+        policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks, mede_policy_rewards)
         entropy_loss = self.sac_entropy_loss(log_probs, masks)
 
         total_value_loss = q1_loss + q2_loss
