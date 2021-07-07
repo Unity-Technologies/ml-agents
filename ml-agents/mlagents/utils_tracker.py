@@ -32,9 +32,9 @@ class UtilsTracker:
 
 
 def _track(pids, parent_conn, output_path):
-    buffers = {"sys": [], "process": {str(pid): [] for pid in pids}}
     util_procs = [psutil.Process(pid) for pid in pids]
     process_names = ["main"] + list(range(len(util_procs) - 1))
+    buffers = {"sys": [], "process": {name: [] for name in process_names}}
     try:
         buffers["meta"] = {
             "cpu_count_logical": psutil.cpu_count(),
@@ -53,7 +53,7 @@ def _track(pids, parent_conn, output_path):
                 }
                 buffers["sys"].append(data)
             except Exception as e:
-                print(e)
+                print("system stats error: ", e)
             # per-process stats
             for p, name in zip(util_procs, process_names):
                 try:
@@ -64,7 +64,7 @@ def _track(pids, parent_conn, output_path):
 
                     buffers["process"][name].append(data)
                 except Exception as e:
-                    print(e)
+                    print("process stats error: ", e)
             time.sleep(0.5)
     except KeyboardInterrupt:
         logger.debug("util tracker interrupted")

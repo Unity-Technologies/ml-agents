@@ -168,6 +168,12 @@ def _create_parser() -> argparse.ArgumentParser:
         help="Whether to enable debug-level logging for some parts of the code",
     )
     argparser.add_argument(
+        "--track-utils",
+        default=False,
+        action=DetectDefaultStoreTrue,
+        help="Whether to enable debug-level logging for some parts of the code",
+    )
+    argparser.add_argument(
         "--env-args",
         default=None,
         nargs=argparse.REMAINDER,

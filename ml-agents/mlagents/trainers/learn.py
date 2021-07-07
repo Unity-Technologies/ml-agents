@@ -125,10 +125,11 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             run_seed,
         )
 
-        utils_tracker = UtilsTracker(
-            [worker.process.pid for worker in env_manager.env_workers],
-            checkpoint_settings.write_path,
-        )
+        if options.track_utils:
+            utils_tracker = UtilsTracker(
+                [worker.process.pid for worker in env_manager.env_workers],
+                checkpoint_settings.write_path,
+            )
 
     # Begin training
     try:
@@ -138,8 +139,9 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         write_run_options(checkpoint_settings.write_path, options)
         write_timing_tree(run_logs_dir)
         write_training_status(run_logs_dir)
-        utils_tracker.shutdown()
-        write_sys_stats_to_tb(utils_tracker.output_path, tb_writer)
+        if options.track_utils:
+            utils_tracker.shutdown()
+            write_sys_stats_to_tb(utils_tracker.output_path, tb_writer)
 
 
 def write_sys_stats_to_tb(utils_output, tb_writer):
