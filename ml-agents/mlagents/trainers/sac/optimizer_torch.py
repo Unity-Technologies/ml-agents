@@ -229,10 +229,10 @@ class DiverseNetworkVariational(torch.nn.Module):
         base_loss = -ModelUtils.masked_mean(
             self.rewards(obs_input, action_input, logprobs, detach_action, var_noise), masks
         )
+        total_loss = base_loss
 
-        if self._z_sigma is None:
-            return base_loss, base_loss, None, None, None
-        else:
+        kl_loss, vail_loss = None, None
+        if self._z_sigma is not None:
             _, mu = self.predict(obs_input, action_input, detach_action, var_noise)
             kl_loss = ModelUtils.masked_mean(
                 -torch.sum(
@@ -242,15 +242,16 @@ class DiverseNetworkVariational(torch.nn.Module):
                 ),
                 masks,
             )
-            vail_loss = self._beta * (kl_loss - self.mutual_information)
-            with torch.no_grad():
-                self._beta.data = torch.max(
-                    self._beta + self.alpha * (kl_loss - self.mutual_information),
-                    torch.tensor(0.0),
-                )
-            total_loss = base_loss + vail_loss
+            if self.mutual_information < float("inf"):
+                vail_loss = self._beta * (kl_loss - self.mutual_information)
+                with torch.no_grad():
+                    self._beta.data = torch.max(
+                        self._beta + self.alpha * (kl_loss - self.mutual_information),
+                        torch.tensor(0.0),
+                    )
+                total_loss = base_loss + vail_loss
 
-            return total_loss, base_loss, kl_loss, vail_loss, self._beta
+        return total_loss, base_loss, kl_loss, vail_loss, self._beta
 
 
 class TorchSACOptimizer(TorchOptimizer):
@@ -961,7 +962,7 @@ class TorchSACOptimizer(TorchOptimizer):
                 "Policy/MEDE Base": base_loss.item(),
                 "Policy/MEDE Variational": vail_loss.item() if vail_loss is not None else 0,
                 "Policy/MEDE KL": kl_loss.item() if kl_loss is not None else 0,
-                "Policy/MEDE beta": beta.item() if beta is not None else 0,
+                "Policy/MEDE beta": beta.item(),
             })
 
         return update_stats
