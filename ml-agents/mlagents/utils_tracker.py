@@ -32,19 +32,37 @@ class UtilsTracker:
 
 
 def _track(pids, parent_conn, output_path):
-    buffers = {pid: [] for pid in pids}
+    buffers = {"sys": [], "process": {str(pid): [] for pid in pids}}
     util_procs = [psutil.Process(pid) for pid in pids]
+    process_names = ["main"] + list(range(len(util_procs) - 1))
     try:
+        buffers["meta"] = {
+            "cpu_count_logical": psutil.cpu_count(),
+            "cpu_count": psutil.cpu_count(logical=True),
+        }
         while True:
             if parent_conn.poll(0) is True and parent_conn.recv() == "TERMINATE":
                 break
-            for pid, p in zip(pids, util_procs):
+            # system-wise stats
+            try:
+                data = {
+                    "cpu_percent": psutil.cpu_percent(),
+                    "cpu_percent_percpu": psutil.cpu_percent(percpu=True),
+                    "memory": psutil.virtual_memory(),
+                    "timestamp": time.time(),
+                }
+                buffers["sys"].append(data)
+            except Exception as e:
+                print(e)
+            # per-process stats
+            for p, name in zip(util_procs, process_names):
                 try:
                     data = p.as_dict(
                         attrs=["cpu_percent", "cpu_times", "memory_percent"]
                     )
                     data["timestamp"] = time.time()
-                    buffers[pid].append(data)
+
+                    buffers["process"][name].append(data)
                 except Exception as e:
                     print(e)
             time.sleep(0.5)

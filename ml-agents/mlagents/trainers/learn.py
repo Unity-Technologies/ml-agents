@@ -144,7 +144,19 @@ def run_training(run_seed: int, options: RunOptions) -> None:
 
 def write_sys_stats_to_tb(utils_output, tb_writer):
     utils_stats = pickle.load(open(utils_output, "rb"))
-    for pid, stats in utils_stats.items():
+    # for data in utils_stats["sys"]:
+    #     for sw in tb_writer.summary_writers.values():
+    #         sw.add_scalars(
+    #             "System Stats/CPU Percent",
+    #             {"sys": data["cpu_percent"]},
+    #             walltime=data["timestamp"],
+    #         )
+    #         sw.add_scalars(
+    #             "System Stats/Memory Percent",
+    #             {"sys": data["memory"].percent},
+    #             walltime=data["timestamp"],
+    #         )
+    for pid, stats in utils_stats["process"].items():
         for data in stats:
             for sw in tb_writer.summary_writers.values():
                 sw.add_scalars(
@@ -157,9 +169,6 @@ def write_sys_stats_to_tb(utils_output, tb_writer):
                     {str(pid): data["memory_percent"]},
                     walltime=data["timestamp"],
                 )
-                # sw.add_scalar(
-                #     f"System Stats/CPU percent/{pid}", data["cpu_percent"], walltime=data["timestamp"]
-                # )
 
 
 def write_run_options(output_dir: str, run_options: RunOptions) -> None:
