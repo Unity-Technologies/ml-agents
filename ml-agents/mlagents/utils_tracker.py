@@ -39,6 +39,7 @@ def _track(pids, parent_conn, output_path):
         buffers["meta"] = {
             "cpu_count_logical": psutil.cpu_count(),
             "cpu_count": psutil.cpu_count(logical=True),
+            "memory": psutil.virtual_memory().total,
         }
         while True:
             if parent_conn.poll(0) is True and parent_conn.recv() == "TERMINATE":
@@ -58,7 +59,12 @@ def _track(pids, parent_conn, output_path):
             for p, name in zip(util_procs, process_names):
                 try:
                     data = p.as_dict(
-                        attrs=["cpu_percent", "cpu_times", "memory_percent"]
+                        attrs=[
+                            "cpu_percent",
+                            "cpu_times",
+                            "memory_info",
+                            "memory_percent",
+                        ]
                     )
                     data["timestamp"] = time.time()
 
