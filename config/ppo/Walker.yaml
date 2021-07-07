@@ -2,8 +2,8 @@ behaviors:
   Walker:
     trainer_type: ppo
     hyperparameters:
-      batch_size: 2048
-      buffer_size: 20480
+      batch_size: 640 #2048
+      buffer_size: 6400 #20480
       learning_rate: 0.0003
       beta: 0.005
       epsilon: 0.2
@@ -38,8 +38,17 @@ behaviors:
           hidden_units: 256
         learning_rate: 0.0003
     keep_checkpoints: 5
+    threaded: true
     max_steps: 50000000
     time_horizon: 1000
-    summary_freq: 30000
+    summary_freq: 128 #30000
 # env_settings:
 #   num_envs: 3
+engine_settings:
+  width: 84
+  height: 84
+  quality_level: 5
+  time_scale: 20
+  target_frame_rate: 1000 #-1
+  capture_frame_rate: 0
+  no_graphics: true

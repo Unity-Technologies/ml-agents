@@ -60,12 +60,23 @@ public class WalkerAgent : Agent
     public Transform forearmR;
     public Transform handR;
 
-    [Header("Ray Sensors")]
+    [Header("ACTUATED RAY SENSOR")]
+    //Actuated RayS
+    public bool UseVectorObs = true;
+    public bool UseActuatedRaycastSensor = false;
+    // public List<RayPerceptionSensorComponent3D> RaySensorsList = new List<RayPerceptionSensorComponent3D>();
     public RayPerceptionSensorComponent3D rays1; //Target the agent will walk towards during training.
     public RayPerceptionSensorComponent3D rays2; //Target the agent will walk towards during training.
     public RayPerceptionSensorComponent3D rays3; //Target the agent will walk towards during training.
     public RayPerceptionSensorComponent3D rays4; //Target the agent will walk towards during training.
-    
+
+    public Vector2 MinMaxRayAngles = new Vector2(25, 120);
+    public Vector2 MinMaxSpherecastRadius = new Vector2(.25f, 1);
+    public float CurrentRayAngleLerp = .5f;
+    public float CurrentSpherecastRadiusLerp = .5f;
+
+    [Header("Ray Sensors")]
+
     //This will be used as a stabilized model space reference point for observations
     //Because ragdolls can move erratically during training, using a stabilized reference transform improves learning
     // OrientationCubeController m_OrientationCube;
@@ -157,6 +168,8 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
+        // print("colobsv");
+
         // var cubeForward = m_OrientationCube.transform.forward;
 
         // //velocity we want to match
@@ -196,6 +209,12 @@ public class WalkerAgent : Agent
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
             CollectObservationBodyPart(bodyPart, sensor);
+        }
+
+        if (UseActuatedRaycastSensor)
+        {
+            sensor.AddObservation(CurrentRayAngleLerp);
+            sensor.AddObservation(CurrentSpherecastRadiusLerp);
         }
         // //avg body vel relative to cube
         // sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
@@ -257,7 +276,55 @@ public class WalkerAgent : Agent
         // bpDict[armR].SetJointStrength(continuousActions[++i]);
         // bpDict[forearmR].SetJointStrength(continuousActions[++i]);
 
+        // ACTUATED SENSOR STUFF
+        if (UseActuatedRaycastSensor)
+        {
+            CurrentRayAngleLerp = (continuousActions[++i] + 1)/2;
+            CurrentSpherecastRadiusLerp = (continuousActions[++i] + 1)/2;
+            UpdateRayAngles(rays1);
+            UpdateRayAngles(rays2);
+            UpdateRayAngles(rays3);
+            UpdateRayAngles(rays4);
+        }
         GiveRewards();
+    }
+
+    // private void Update()
+    // {
+    //     print("update");
+    // }
+    private int fuStep = 0;
+    private void FixedUpdate()
+    {
+        if (fuStep % (127 * 5) == 0)
+        {
+            // UpdateTimer();
+            // fuStep =
+            var timeSinceLast = Time.realtimeSinceStartup - lastTime;
+            print(timeSinceLast/(float)(127 * 5));
+            lastTime = Time.realtimeSinceStartup;
+        }
+
+        fuStep += 1;
+        // timer +=
+        // print("fu");
+    }
+
+    // private float timer = 0;
+    private float lastTime = 0;
+    // private int decisionStep = 0;
+
+    // void UpdateTimer()
+    // {
+    //     var timeDeltaSinceLast = Time.
+    //     if(Time.realtimeSinceStartup)
+    //
+    // }
+
+    void UpdateRayAngles(RayPerceptionSensorComponent3D raySensor)
+    {
+        raySensor.MaxRayDegrees = Mathf.Lerp(MinMaxRayAngles.x, MinMaxRayAngles.y, CurrentRayAngleLerp);
+        raySensor.SphereCastRadius = Mathf.Lerp(MinMaxSpherecastRadius.x, MinMaxSpherecastRadius.y, CurrentSpherecastRadiusLerp);
     }
 
     void GiveRewards()
