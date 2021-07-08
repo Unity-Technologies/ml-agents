@@ -312,6 +312,7 @@ class MultiAgentNetworkBody(torch.nn.Module):
             self.lstm = LSTM(self.h_size, self.m_size)
         else:
             self.lstm = None  # type: ignore
+        self._current_max_agents = torch.nn.Parameter(torch.as_tensor(1), requires_grad=False)
 
     @property
     def memory_size(self) -> int:
@@ -354,12 +355,10 @@ class MultiAgentNetworkBody(torch.nn.Module):
             obs_with_no_nans.append(no_nan_obs)
         return obs_with_no_nans
 
-    def count(self,
+    def agent_count(self,
         obs_only: List[List[torch.Tensor]],
         obs: List[List[torch.Tensor]],
-        actions: List[AgentAction],
-        memories: Optional[torch.Tensor] = None,
-        sequence_length: int = 1):
+        actions: List[AgentAction]):
         self_attn_masks = []
         if obs:
             self_attn_masks.append(self._get_masks_from_nans(obs))
@@ -367,8 +366,11 @@ class MultiAgentNetworkBody(torch.nn.Module):
             self_attn_masks.append(self._get_masks_from_nans(obs_only))
 
         flipped_masks = 1 - torch.cat(self_attn_masks, dim=1)
-        num_agents = torch.sum(flipped_masks, dim=1)
-        return num_agents
+        num_agents = torch.sum(flipped_masks, dim=1, keepdim=True)
+        if torch.max(num_agents).item() > self._current_max_agents:
+            self._current_max_agents = torch.nn.Parameter(torch.as_tensor(torch.max(num_agents).item()), requires_grad=False)
+
+        return num_agents * 2.0 / self._current_max_agents - 1
 
     def forward(
         self,
