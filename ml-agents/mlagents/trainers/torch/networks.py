@@ -354,6 +354,22 @@ class MultiAgentNetworkBody(torch.nn.Module):
             obs_with_no_nans.append(no_nan_obs)
         return obs_with_no_nans
 
+    def count(self,
+        obs_only: List[List[torch.Tensor]],
+        obs: List[List[torch.Tensor]],
+        actions: List[AgentAction],
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1):
+        self_attn_masks = []
+        if obs:
+            self_attn_masks.append(self._get_masks_from_nans(obs))
+        if obs_only:
+            self_attn_masks.append(self._get_masks_from_nans(obs_only))
+
+        flipped_masks = 1 - torch.cat(self_attn_masks, dim=1)
+        num_agents = torch.sum(flipped_masks, dim=1)
+        return num_agents
+
     def forward(
         self,
         obs_only: List[List[torch.Tensor]],

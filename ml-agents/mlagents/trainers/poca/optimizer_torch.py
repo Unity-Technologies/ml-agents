@@ -60,7 +60,8 @@ class TorchPOCAOptimizer(TorchOptimizer):
             else:
                 encoding_size = network_settings.hidden_units
 
-            self.value_heads = ValueHeads(stream_names, encoding_size, 1)
+            self.value_heads = ValueHeads(stream_names, encoding_size + 1, 1)
+            # self.count_layer = torch.nn.Linear(encoding_size, 1)
 
         @property
         def memory_size(self) -> int:
@@ -95,6 +96,15 @@ class TorchPOCAOptimizer(TorchOptimizer):
                 memories=memories,
                 sequence_length=sequence_length,
             )
+
+            num_agents = 0.5 * self.network_body.count(obs_only=[obs_without_actions],
+                obs=obs,
+                actions=actions,
+                memories=memories,
+                sequence_length=sequence_length) - 1
+            num_agents = num_agents.reshape((-1, 1))
+            encoding = torch.cat([encoding, num_agents], dim=1)
+
             value_outputs, critic_mem_out = self.forward(
                 encoding, memories, sequence_length
             )
@@ -121,10 +131,22 @@ class TorchPOCAOptimizer(TorchOptimizer):
                 memories=memories,
                 sequence_length=sequence_length,
             )
+
+            num_agents = 0.5 * self.network_body.count(obs_only=obs,
+                obs=[],
+                actions=[],
+                memories=memories,
+                sequence_length=sequence_length) - 1
+            num_agents = num_agents.reshape((-1, 1))
+            encoding = torch.cat([encoding, num_agents], dim = 1)
+
             value_outputs, critic_mem_out = self.forward(
                 encoding, memories, sequence_length
             )
             return value_outputs, critic_mem_out
+
+
+
 
         def forward(
             self,
@@ -319,10 +341,23 @@ class TorchPOCAOptimizer(TorchOptimizer):
             loss_masks,
             decay_eps,
         )
+
+        # counting_loss = 1.0 * self._critic.count_loss(obs_only=all_obs,
+        # obs=[],
+        # actions = [],
+        #     memories=value_memories,
+        #     sequence_length=self.policy.sequence_length,) + \
+        #         0.5 * self._critic.count_loss([current_obs],
+        #         obs=groupmate_obs_and_actions[0],
+        #         actions=groupmate_obs_and_actions[1],
+        #         memories=value_memories,
+        #         sequence_length=self.policy.sequence_length,)
+
         loss = (
             policy_loss
             + 0.5 * (value_loss + 0.5 * baseline_loss)
             - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
+            # + 0.5 * counting_loss
         )
 
         # Set optimizer learning rate
@@ -337,6 +372,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
             "Losses/Policy Loss": torch.abs(policy_loss).item(),
             "Losses/Value Loss": value_loss.item(),
             "Losses/Baseline Loss": baseline_loss.item(),
+            # "Losses/Counting Loss":counting_loss.item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/Epsilon": decay_eps,
             "Policy/Beta": decay_bet,
