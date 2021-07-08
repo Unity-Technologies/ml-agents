@@ -102,7 +102,7 @@ class DiverseNetworkVariational(torch.nn.Module):
                 self._diverse_index = i
 
     def predict(
-        self, obs_input, action_input, detach_action=False, var_noise=True
+        self, obs_input, action, detach_action=False, var_noise=True
     ) -> torch.Tensor:
         # Convert to tensors
         tensor_obs = [
@@ -111,7 +111,6 @@ class DiverseNetworkVariational(torch.nn.Module):
             if spec.observation_type != ObservationType.GOAL_SIGNAL
         ]
         if self._use_actions and self.cont_size > 0:
-            action = action_input.continuous_tensor
             if detach_action:
                 action = action.detach()
 
@@ -187,15 +186,15 @@ class DiverseNetworkVariational(torch.nn.Module):
         self._encoder.processors[0].copy_normalization(thing.processors[1])
 
     def rewards(
-        self, obs_input, action_input, logprobs, detach_action=False, var_noise=True
+        self, obs_input, cont_act, disc_act, detach_action=False, var_noise=True
     ) -> torch.Tensor:
 
         truth = obs_input[self._diverse_index]
-        prediction, _ = self.predict(obs_input, action_input, detach_action, var_noise)
+        prediction, _ = self.predict(obs_input, cont_act, detach_action, var_noise)
         
         if self._use_actions and len(self.disc_sizes) > 0:
             
-            disc_probs = logprobs.all_discrete_tensor.exp()
+            disc_probs = disc_act.exp()
             if self._dropout is not None and self.drop_actions:
                 disc_probs = self._dropout(disc_probs)
 
@@ -223,17 +222,17 @@ class DiverseNetworkVariational(torch.nn.Module):
         return rewards
 
     def loss(
-        self, obs_input, action_input, logprobs, masks, detach_action=True, var_noise=True
+        self, obs_input, cont_act, disc_act, masks, detach_action=True, var_noise=True
     ) -> torch.Tensor:
 
         base_loss = -ModelUtils.masked_mean(
-            self.rewards(obs_input, action_input, logprobs, detach_action, var_noise), masks
+            self.rewards(obs_input, cont_act, disc_act, detach_action, var_noise), masks
         )
         total_loss = base_loss
 
         kl_loss, vail_loss = None, None
         if self._z_sigma is not None:
-            _, mu = self.predict(obs_input, action_input, detach_action, var_noise)
+            _, mu = self.predict(obs_input, cont_act, detach_action, var_noise)
             kl_loss = ModelUtils.masked_mean(
                 -torch.sum(
                     1 + (self._z_sigma ** 2).log() - 0.5 * mu ** 2
@@ -251,7 +250,94 @@ class DiverseNetworkVariational(torch.nn.Module):
                     )
                 total_loss = base_loss + vail_loss
 
-        return total_loss, base_loss, kl_loss, vail_loss, self._beta
+        stats = {
+            "Losses/MEDE Loss": total_loss.item(),
+            "Losses/MEDE Base": base_loss.item() / self.diverse_size,
+            "Policy/MEDE Variational": vail_loss.item() if vail_loss is not None else 0,
+            "Policy/MEDE KL": kl_loss.item() if kl_loss is not None else 0,
+            "Policy/MEDE beta": self._beta.item(),
+        }
+        return total_loss, stats
+
+    def get_stats(self, obs_input, cont_act, disc_act, masks):
+        for p in self.parameters():
+            p.requires_grad = False
+        for inp in obs_input:
+            inp.requires_grad = True
+        if self.cont_size > 0:
+            cont_act = cont_act.detach()
+            cont_act.requires_grad = True
+        if len(self.disc_sizes) > 0:
+            disc_act = disc_act.detach()
+            disc_act.requires_grad = True
+
+        rewards = self.rewards(obs_input, cont_act, disc_act, detach_action=False, var_noise=False)
+        ModelUtils.masked_mean(rewards, masks).backward()
+
+        all_obs_grad = []
+        for obs, spec in zip(obs_input, self._all_obs_specs):
+            if spec.observation_type != ObservationType.GOAL_SIGNAL:
+                all_obs_grad.append(obs.grad.data.abs())
+        obs_grad = torch.cat(all_obs_grad, dim=1)
+
+        all_act_grad = []
+        if self.cont_size > 0:
+            all_act_grad.append(cont_act)
+        if len(self.disc_sizes) > 0:
+            all_act_grad.append(disc_act)
+        act_grad = torch.cat(all_act_grad, dim=1)
+        
+        max_state = torch.max(torch.mean(obs_grad), dim=0)[0]
+        min_state = torch.min(torch.mean(obs_grad), dim=0)[0]
+        mean_state = torch.mean(obs_grad)
+        var_state = torch.var(torch.mean(obs_grad), dim=0)
+
+        max_act = torch.max(torch.mean(act_grad), dim=0)[0]
+        min_act = torch.min(torch.mean(act_grad), dim=0)[0]
+        mean_act = torch.mean(act_grad)
+        var_act = torch.var(torch.mean(act_grad), dim=0)
+
+        for p in self.parameters():
+            p.requires_grad = True
+        for inp in obs_input:
+            inp.requires_grad = False
+        if self.cont_size > 0:
+            cont_act.requires_grad = False
+        if len(self.disc_sizes) > 0:
+            disc_act.requires_grad = False
+
+        pred, _ = self.predict(obs_input, cont_act, detach_action=True, var_noise=False)
+        truth = obs_input[self._diverse_index]
+
+        if self._use_actions and len(self.disc_sizes) > 0:
+            all_accuracy = []
+            for i in range(0, sum(self.disc_sizes)*self.diverse_size, self.diverse_size):
+                all_accuracy.append(
+                    torch.argmax(pred[:, i:i+self.diverse_size], dim=1, keepdim=True) == \
+                    torch.argmax(truth, dim=1, keepdim=True)
+                )
+            branched_accuracy = ModelUtils.break_into_branches(
+                torch.cat(all_accuracy, dim=1) * disc_act.exp(), self.disc_sizes
+            )
+            accuracy = torch.mean(torch.stack([torch.sum(branch, dim=1) for branch in branched_accuracy]), dim=0)
+
+        else:
+            accuracy = torch.argmax(pred, dim=1) == torch.argmax(truth, dim=1)
+
+        accuracy = ModelUtils.masked_mean(accuracy, masks)
+
+        stats = {
+            "Policy/MEDE accuracy": accuracy.item(),
+            "Policy/MEDE max state contributor": max_state.item(),
+            "Policy/MEDE max action contributor": max_act.item(),
+            "Policy/MEDE min state contributor": min_state.item(),
+            "Policy/MEDE min action contributor": min_act.item(),
+            "Policy/MEDE state contributor variance": var_state.item(),
+            "Policy/MEDE action contributor variance": var_act.item(),
+            "Policy/MEDE state contributor mean": mean_state.item(),
+            "Policy/MEDE action contributor mean": mean_act.item(),
+        }
+        return stats
 
 
 class TorchSACOptimizer(TorchOptimizer):
@@ -883,12 +969,13 @@ class TorchSACOptimizer(TorchOptimizer):
         mede_value_rewards, mede_policy_rewards = torch.zeros(1), torch.zeros(1)
         if self.use_mede:
             self._mede_network.copy_normalization(self.policy.actor.network_body)
+            disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
             mede_policy_rewards = self._mede_network.rewards(
-                current_obs, sampled_actions, log_probs, var_noise=False
+                current_obs, sampled_actions.continuous_tensor, disc_act, var_noise=False
             )
             with torch.no_grad():
                 mede_value_rewards = self._mede_network.rewards(
-                    current_obs, sampled_actions, log_probs, var_noise=False
+                    current_obs, sampled_actions.continuous_tensor, disc_act, var_noise=False
                 )
 
         q1_loss, q2_loss = self.sac_q_loss(
@@ -940,8 +1027,9 @@ class TorchSACOptimizer(TorchOptimizer):
         }
 
         if self.use_mede:
-            mede_loss, base_loss, kl_loss, vail_loss, beta = self._mede_network.loss(
-                current_obs, sampled_actions, log_probs, masks
+            disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
+            mede_loss, mede_stats = self._mede_network.loss(
+                current_obs, sampled_actions.continuous_tensor, disc_act, masks
             )
             
             ModelUtils.update_learning_rate(self._mede_optimizer, decay_lr)
@@ -957,13 +1045,10 @@ class TorchSACOptimizer(TorchOptimizer):
                     sequence_length=self.policy.sequence_length
                 )
 
-            update_stats.update({
-                "Policy/MEDE Loss": mede_loss.item(),
-                "Policy/MEDE Base": base_loss.item(),
-                "Policy/MEDE Variational": vail_loss.item() if vail_loss is not None else 0,
-                "Policy/MEDE KL": kl_loss.item() if kl_loss is not None else 0,
-                "Policy/MEDE beta": beta.item(),
-            })
+            update_stats.update(mede_stats)
+            update_stats.update(
+                self._mede_network.get_stats(current_obs, sampled_actions.continuous_tensor, disc_act, masks)
+            )
 
         return update_stats
 
