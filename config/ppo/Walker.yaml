@@ -2,8 +2,10 @@ behaviors:
   Walker:
     trainer_type: ppo
     hyperparameters:
-      batch_size: 640 #2048
-      buffer_size: 6400 #20480
+      # batch_size: 1280 #640 #2048
+      # buffer_size: 12800 #6400 #20480
+      batch_size: 3840 #1280 #640 #2048 #128 per agent == ~8.5 sec irl
+      buffer_size: 38400 #12800 #6400 #20480
       learning_rate: 0.0003
       beta: 0.005
       epsilon: 0.2
@@ -45,10 +47,10 @@ behaviors:
 # env_settings:
 #   num_envs: 3
 engine_settings:
-  width: 84
-  height: 84
-  quality_level: 5
-  time_scale: 20
-  target_frame_rate: 1000 #-1
-  capture_frame_rate: 0
-  no_graphics: true
+#   width: 84
+#   height: 84
+#   quality_level: 5
+  time_scale: 6
+#   target_frame_rate: 1000 #-1
+#   capture_frame_rate: 0
+#   no_graphics: true
