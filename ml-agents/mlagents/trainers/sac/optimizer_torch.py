@@ -191,7 +191,7 @@ class DiverseNetworkVariational(torch.nn.Module):
 
         truth = obs_input[self._diverse_index]
         prediction, _ = self.predict(obs_input, cont_act, detach_action, var_noise)
-        
+
         if self._use_actions and len(self.disc_sizes) > 0:
             
             disc_probs = disc_act.exp()
@@ -202,32 +202,40 @@ class DiverseNetworkVariational(torch.nn.Module):
                 disc_probs = disc_probs.detach()
 
             action_rewards = []
-            for i in range(0, sum(self.disc_sizes)*self.diverse_size, self.diverse_size):
+            action_accuracy = []
+            for i in range(0, sum(self.disc_sizes)*self.diverse_size, self.diverse_size):  # Get the reward for each discrete action
                 action_rewards.append(torch.log(
                     torch.sum(prediction[:, i:i+self.diverse_size] * truth, dim=1, keepdim=True) + self.EPSILON
                 ))
+                action_accuracy.append(
+                    torch.argmax(prediction[:, i:i+self.diverse_size], dim=1, keepdim=True) == \
+                    torch.argmax(truth, dim=1, keepdim=True)
+                )
 
             all_rewards = torch.cat(action_rewards, dim=1)
             branched_rewards = ModelUtils.break_into_branches(all_rewards * disc_probs, self.disc_sizes)
             rewards = torch.mean(torch.stack([torch.sum(branch, dim=1) for branch in branched_rewards]), dim=0)
 
+            all_accuracy = torch.cat(action_accuracy, dim=1)
+            branched_accuracy = ModelUtils.break_into_branches(all_accuracy * disc_act.exp(), self.disc_sizes)
+            accuracy = torch.mean(torch.stack([torch.sum(branch, dim=1) for branch in branched_accuracy]), dim=0)
+
         else:
-            rewards = torch.log(
-                torch.sum((prediction * truth), dim=1) + self.EPSILON
-            )
+            rewards = torch.log(torch.sum((prediction * truth), dim=1) + self.EPSILON)
+            accuracy = torch.argmax(prediction, dim=1) == torch.argmax(truth, dim=1)
 
         if self.centered_reward:
             rewards -= np.log(1 / self.diverse_size)
 
-        return rewards
+        return rewards, accuracy
 
     def loss(
         self, obs_input, cont_act, disc_act, masks, detach_action=True, var_noise=True
     ) -> torch.Tensor:
 
-        base_loss = -ModelUtils.masked_mean(
-            self.rewards(obs_input, cont_act, disc_act, detach_action, var_noise), masks
-        )
+        rewards, acc = self.rewards(obs_input, cont_act, disc_act, detach_action, var_noise)
+        base_loss = -ModelUtils.masked_mean(rewards, masks)
+        accuracy = ModelUtils.masked_mean(acc, masks)
         total_loss = base_loss
 
         kl_loss, vail_loss = None, None
@@ -253,6 +261,7 @@ class DiverseNetworkVariational(torch.nn.Module):
         stats = {
             "Losses/MEDE Loss": total_loss.item(),
             "Losses/MEDE Base": base_loss.item() / self.diverse_size,
+            "Policy/MEDE Accuracy": accuracy.item(),
             "Policy/MEDE Variational": vail_loss.item() if vail_loss is not None else 0,
             "Policy/MEDE KL": kl_loss.item() if kl_loss is not None else 0,
             "Policy/MEDE beta": self._beta.item() if self._beta is not None else 0,
@@ -271,7 +280,7 @@ class DiverseNetworkVariational(torch.nn.Module):
             disc_act = disc_act.detach()
             disc_act.requires_grad = True
 
-        rewards = self.rewards(obs_input, cont_act, disc_act, detach_action=False, var_noise=False)
+        rewards, _ = self.rewards(obs_input, cont_act, disc_act, detach_action=False, var_noise=False)
         ModelUtils.masked_mean(rewards, masks).backward()
 
         all_obs_grad = []
@@ -306,28 +315,7 @@ class DiverseNetworkVariational(torch.nn.Module):
         if len(self.disc_sizes) > 0:
             disc_act.requires_grad = False
 
-        pred, _ = self.predict(obs_input, cont_act, detach_action=True, var_noise=False)
-        truth = obs_input[self._diverse_index]
-
-        if self._use_actions and len(self.disc_sizes) > 0:
-            all_accuracy = []
-            for i in range(0, sum(self.disc_sizes)*self.diverse_size, self.diverse_size):
-                all_accuracy.append(
-                    torch.argmax(pred[:, i:i+self.diverse_size], dim=1, keepdim=True) == \
-                    torch.argmax(truth, dim=1, keepdim=True)
-                )
-            branched_accuracy = ModelUtils.break_into_branches(
-                torch.cat(all_accuracy, dim=1) * disc_act.exp(), self.disc_sizes
-            )
-            accuracy = torch.mean(torch.stack([torch.sum(branch, dim=1) for branch in branched_accuracy]), dim=0)
-
-        else:
-            accuracy = torch.argmax(pred, dim=1) == torch.argmax(truth, dim=1)
-
-        accuracy = ModelUtils.masked_mean(accuracy, masks)
-
         stats = {
-            "Policy/MEDE accuracy": accuracy.item(),
             "Policy/MEDE max state contributor": max_state.item(),
             "Policy/MEDE max action contributor": max_act.item(),
             "Policy/MEDE min state contributor": min_state.item(),
@@ -970,11 +958,11 @@ class TorchSACOptimizer(TorchOptimizer):
         if self.use_mede:
             self._mede_network.copy_normalization(self.policy.actor.network_body)
             disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
-            mede_policy_rewards = self._mede_network.rewards(
+            mede_policy_rewards, _ = self._mede_network.rewards(
                 current_obs, sampled_actions.continuous_tensor, disc_act, var_noise=False
             )
             with torch.no_grad():
-                mede_value_rewards = self._mede_network.rewards(
+                mede_value_rewards, _ = self._mede_network.rewards(
                     current_obs, sampled_actions.continuous_tensor, disc_act, var_noise=False
                 )
 
@@ -1046,9 +1034,6 @@ class TorchSACOptimizer(TorchOptimizer):
                 )
 
             update_stats.update(mede_stats)
-            update_stats.update(
-                self._mede_network.get_stats(current_obs, sampled_actions.continuous_tensor, disc_act, masks)
-            )
 
         return update_stats
 
