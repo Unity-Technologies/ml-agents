@@ -96,9 +96,9 @@ class TorchPOCAOptimizer(TorchOptimizer):
                 sequence_length=sequence_length,
             )
 
-            num_agents = self.network_body.agent_count(obs_only=[obs_without_actions],
-                obs=obs,
-                actions=actions)
+            num_agents = self.network_body.agent_count(
+                obs_only=[obs_without_actions], obs=obs, actions=actions
+            )
             encoding = torch.cat([encoding, num_agents], dim=1)
 
             value_outputs, critic_mem_out = self.forward(
@@ -128,10 +128,8 @@ class TorchPOCAOptimizer(TorchOptimizer):
                 sequence_length=sequence_length,
             )
 
-            num_agents = self.network_body.agent_count(obs_only=obs,
-                obs=[],
-                actions=[])
-            encoding = torch.cat([encoding, num_agents], dim = 1)
+            num_agents = self.network_body.agent_count(obs_only=obs, obs=[], actions=[])
+            encoding = torch.cat([encoding, num_agents], dim=1)
 
             value_outputs, critic_mem_out = self.forward(
                 encoding, memories, sequence_length
