@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - agent
+  - iWall
+  - wall
+  - pit
+  - frozenAgent
+  - ball
+  - blueGoal
+  - blueAgent
+  - goal
+  - ground
+  - block
+  - switchOff
+  - pyramid
+  - switchOn
+  - stone
+  - target
+  - badFood
+  - food
+  - walkableSurface
+  - symbol_X
+  - symbol_O
+  - symbol_X_Goal
+  - symbol_O_Goal
+  - purpleAgent
+  - purpleGoal
+  - projectile
+  - dodgeBall
+  - dodgeBallPickup
+  - dodgeBallActive
+  - blueAgentFront
+  - blueFlag
+  - purpleFlag
+  - purpleAgentFront
+  - bush
+  - purpleBase
+  - blueBase
+  - menuController
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - invisible
+  - shield
+  - projectile
+  - agent
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0

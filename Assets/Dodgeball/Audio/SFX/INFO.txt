@@ -1,0 +1,574 @@
+
+This is The Essential Retro Video Game Sound Effects Collection [512 sounds]
+
+
+Hi, I'm Juhani Junkala, the author of this collection. I'm a classically trained composer, producer and a sound designer with over 20 years of experience.
+
+These sound effects have been released under CC0 creative commons license. You can do anything you want with these sounds.
+
+All the sounds are at 44100hz 16bit mono .wav format and at -6db volume level. Change the individual volume of the sounds manually if necessary.
+
+If the filename has a "loop" in it then the sound loops seamlessly.
+
+Check out my game music portfolio: https://www.youtube.com/watch?v=dbACpSy9FWY
+
+If you need music or sound effects for your game, contact me: juhani.junkala@musician.org
+
+
+Here is an inventory of all the sounds in this directory:
+
+\Death Screams\Alien\sfx_deathscream_alien1.wav
+\Death Screams\Alien\sfx_deathscream_alien2.wav
+\Death Screams\Alien\sfx_deathscream_alien3.wav
+\Death Screams\Alien\sfx_deathscream_alien4.wav
+\Death Screams\Alien\sfx_deathscream_alien5.wav
+\Death Screams\Alien\sfx_deathscream_alien6.wav
+
+\Death Screams\Android\sfx_deathscream_android1.wav
+\Death Screams\Android\sfx_deathscream_android2.wav
+\Death Screams\Android\sfx_deathscream_android3.wav
+\Death Screams\Android\sfx_deathscream_android4.wav
+\Death Screams\Android\sfx_deathscream_android5.wav
+\Death Screams\Android\sfx_deathscream_android6.wav
+\Death Screams\Android\sfx_deathscream_android7.wav
+\Death Screams\Android\sfx_deathscream_android8.wav
+
+\Death Screams\Human\sfx_deathscream_human1.wav
+\Death Screams\Human\sfx_deathscream_human10.wav
+\Death Screams\Human\sfx_deathscream_human11.wav
+\Death Screams\Human\sfx_deathscream_human12.wav
+\Death Screams\Human\sfx_deathscream_human13.wav
+\Death Screams\Human\sfx_deathscream_human14.wav
+\Death Screams\Human\sfx_deathscream_human2.wav
+\Death Screams\Human\sfx_deathscream_human3.wav
+\Death Screams\Human\sfx_deathscream_human4.wav
+\Death Screams\Human\sfx_deathscream_human5.wav
+\Death Screams\Human\sfx_deathscream_human6.wav
+\Death Screams\Human\sfx_deathscream_human7.wav
+\Death Screams\Human\sfx_deathscream_human8.wav
+\Death Screams\Human\sfx_deathscream_human9.wav
+
+\Death Screams\Robot\sfx_deathscream_robot1.wav
+\Death Screams\Robot\sfx_deathscream_robot2.wav
+\Death Screams\Robot\sfx_deathscream_robot3.wav
+\Death Screams\Robot\sfx_deathscream_robot4.wav
+
+\Explosions\Clusters\sfx_exp_cluster1.wav
+\Explosions\Clusters\sfx_exp_cluster10.wav
+\Explosions\Clusters\sfx_exp_cluster11.wav
+\Explosions\Clusters\sfx_exp_cluster2.wav
+\Explosions\Clusters\sfx_exp_cluster3.wav
+\Explosions\Clusters\sfx_exp_cluster4.wav
+\Explosions\Clusters\sfx_exp_cluster5.wav
+\Explosions\Clusters\sfx_exp_cluster6.wav
+\Explosions\Clusters\sfx_exp_cluster7.wav
+\Explosions\Clusters\sfx_exp_cluster8.wav
+\Explosions\Clusters\sfx_exp_cluster9.wav
+
+\Explosions\Double\sfx_exp_double1.wav
+\Explosions\Double\sfx_exp_double2.wav
+\Explosions\Double\sfx_exp_double3.wav
+
+\Explosions\Long\sfx_exp_long1.wav
+\Explosions\Long\sfx_exp_long2.wav
+\Explosions\Long\sfx_exp_long3.wav
+\Explosions\Long\sfx_exp_long4.wav
+\Explosions\Long\sfx_exp_long5.wav
+\Explosions\Long\sfx_exp_long6.wav
+
+\Explosions\Medium Length\sfx_exp_medium1.wav
+\Explosions\Medium Length\sfx_exp_medium10.wav
+\Explosions\Medium Length\sfx_exp_medium11.wav
+\Explosions\Medium Length\sfx_exp_medium12.wav
+\Explosions\Medium Length\sfx_exp_medium13.wav
+\Explosions\Medium Length\sfx_exp_medium2.wav
+\Explosions\Medium Length\sfx_exp_medium3.wav
+\Explosions\Medium Length\sfx_exp_medium4.wav
+\Explosions\Medium Length\sfx_exp_medium5.wav
+\Explosions\Medium Length\sfx_exp_medium6.wav
+\Explosions\Medium Length\sfx_exp_medium7.wav
+\Explosions\Medium Length\sfx_exp_medium8.wav
+\Explosions\Medium Length\sfx_exp_medium9.wav
+
+\Explosions\Odd\sfx_exp_odd1.wav
+\Explosions\Odd\sfx_exp_odd2.wav
+\Explosions\Odd\sfx_exp_odd3.wav
+\Explosions\Odd\sfx_exp_odd4.wav
+\Explosions\Odd\sfx_exp_odd5.wav
+\Explosions\Odd\sfx_exp_odd6.wav
+\Explosions\Odd\sfx_exp_odd7.wav
+
+\Explosions\Short\sfx_exp_short_hard1.wav
+\Explosions\Short\sfx_exp_short_hard10.wav
+\Explosions\Short\sfx_exp_short_hard11.wav
+\Explosions\Short\sfx_exp_short_hard12.wav
+\Explosions\Short\sfx_exp_short_hard13.wav
+\Explosions\Short\sfx_exp_short_hard14.wav
+\Explosions\Short\sfx_exp_short_hard15.wav
+\Explosions\Short\sfx_exp_short_hard16.wav
+\Explosions\Short\sfx_exp_short_hard17.wav
+\Explosions\Short\sfx_exp_short_hard2.wav
+\Explosions\Short\sfx_exp_short_hard3.wav
+\Explosions\Short\sfx_exp_short_hard4.wav
+\Explosions\Short\sfx_exp_short_hard5.wav
+\Explosions\Short\sfx_exp_short_hard6.wav
+\Explosions\Short\sfx_exp_short_hard7.wav
+\Explosions\Short\sfx_exp_short_hard8.wav
+\Explosions\Short\sfx_exp_short_hard9.wav
+\Explosions\Short\sfx_exp_short_soft1.wav
+\Explosions\Short\sfx_exp_short_soft10.wav
+\Explosions\Short\sfx_exp_short_soft11.wav
+\Explosions\Short\sfx_exp_short_soft12.wav
+\Explosions\Short\sfx_exp_short_soft2.wav
+\Explosions\Short\sfx_exp_short_soft3.wav
+\Explosions\Short\sfx_exp_short_soft4.wav
+\Explosions\Short\sfx_exp_short_soft5.wav
+\Explosions\Short\sfx_exp_short_soft6.wav
+\Explosions\Short\sfx_exp_short_soft7.wav
+\Explosions\Short\sfx_exp_short_soft8.wav
+\Explosions\Short\sfx_exp_short_soft9.wav
+
+\Explosions\Shortest\sfx_exp_shortest_hard1.wav
+\Explosions\Shortest\sfx_exp_shortest_hard10.wav
+\Explosions\Shortest\sfx_exp_shortest_hard2.wav
+\Explosions\Shortest\sfx_exp_shortest_hard3.wav
+\Explosions\Shortest\sfx_exp_shortest_hard4.wav
+\Explosions\Shortest\sfx_exp_shortest_hard5.wav
+\Explosions\Shortest\sfx_exp_shortest_hard6.wav
+\Explosions\Shortest\sfx_exp_shortest_hard7.wav
+\Explosions\Shortest\sfx_exp_shortest_hard8.wav
+\Explosions\Shortest\sfx_exp_shortest_hard9.wav
+\Explosions\Shortest\sfx_exp_shortest_soft1.wav
+\Explosions\Shortest\sfx_exp_shortest_soft2.wav
+\Explosions\Shortest\sfx_exp_shortest_soft3.wav
+\Explosions\Shortest\sfx_exp_shortest_soft4.wav
+\Explosions\Shortest\sfx_exp_shortest_soft5.wav
+\Explosions\Shortest\sfx_exp_shortest_soft6.wav
+\Explosions\Shortest\sfx_exp_shortest_soft7.wav
+\Explosions\Shortest\sfx_exp_shortest_soft8.wav
+\Explosions\Shortest\sfx_exp_shortest_soft9.wav
+
+\Explosions\Various\sfx_exp_various1.wav
+\Explosions\Various\sfx_exp_various2.wav
+\Explosions\Various\sfx_exp_various3.wav
+\Explosions\Various\sfx_exp_various4.wav
+\Explosions\Various\sfx_exp_various5.wav
+\Explosions\Various\sfx_exp_various6.wav
+\Explosions\Various\sfx_exp_various7.wav
+
+\General Sounds\Alarms\Alarms\sfx_alarm_loop1.wav
+\General Sounds\Alarms\Alarms\sfx_alarm_loop2.wav
+\General Sounds\Alarms\Alarms\sfx_alarm_loop3.wav
+\General Sounds\Alarms\Alarms\sfx_alarm_loop4.wav
+\General Sounds\Alarms\Alarms\sfx_alarm_loop5.wav
+\General Sounds\Alarms\Alarms\sfx_alarm_loop6.wav
+\General Sounds\Alarms\Alarms\sfx_alarm_loop7.wav
+\General Sounds\Alarms\Alarms\sfx_alarm_loop8.wav
+
+\General Sounds\Alarms\Low health Alarms\sfx_lowhealth_alarmloop1.wav
+\General Sounds\Alarms\Low health Alarms\sfx_lowhealth_alarmloop2.wav
+\General Sounds\Alarms\Low health Alarms\sfx_lowhealth_alarmloop3.wav
+\General Sounds\Alarms\Low health Alarms\sfx_lowhealth_alarmloop4.wav
+\General Sounds\Alarms\Low health Alarms\sfx_lowhealth_alarmloop5.wav
+\General Sounds\Alarms\Low health Alarms\sfx_lowhealth_alarmloop6.wav
+\General Sounds\Alarms\Low health Alarms\sfx_lowhealth_alarmloop7.wav
+
+\General Sounds\Buttons\sfx_sounds_button1.wav
+\General Sounds\Buttons\sfx_sounds_button10.wav
+\General Sounds\Buttons\sfx_sounds_button11.wav
+\General Sounds\Buttons\sfx_sounds_button12.wav
+\General Sounds\Buttons\sfx_sounds_button13.wav
+\General Sounds\Buttons\sfx_sounds_button14.wav
+\General Sounds\Buttons\sfx_sounds_button2.wav
+\General Sounds\Buttons\sfx_sounds_button3.wav
+\General Sounds\Buttons\sfx_sounds_button4.wav
+\General Sounds\Buttons\sfx_sounds_button5.wav
+\General Sounds\Buttons\sfx_sounds_button6.wav
+\General Sounds\Buttons\sfx_sounds_button7.wav
+\General Sounds\Buttons\sfx_sounds_button8.wav
+\General Sounds\Buttons\sfx_sounds_button9.wav
+
+\General Sounds\Coins\sfx_coin_cluster1.wav
+\General Sounds\Coins\sfx_coin_cluster2.wav
+\General Sounds\Coins\sfx_coin_cluster3.wav
+\General Sounds\Coins\sfx_coin_cluster4.wav
+\General Sounds\Coins\sfx_coin_cluster5.wav
+\General Sounds\Coins\sfx_coin_cluster6.wav
+\General Sounds\Coins\sfx_coin_cluster7.wav
+\General Sounds\Coins\sfx_coin_cluster8.wav
+\General Sounds\Coins\sfx_coin_cluster9.wav
+\General Sounds\Coins\sfx_coin_double1.wav
+\General Sounds\Coins\sfx_coin_double2.wav
+\General Sounds\Coins\sfx_coin_double3.wav
+\General Sounds\Coins\sfx_coin_double4.wav
+\General Sounds\Coins\sfx_coin_double5.wav
+\General Sounds\Coins\sfx_coin_double6.wav
+\General Sounds\Coins\sfx_coin_double7.wav
+\General Sounds\Coins\sfx_coin_single1.wav
+\General Sounds\Coins\sfx_coin_single2.wav
+\General Sounds\Coins\sfx_coin_single3.wav
+\General Sounds\Coins\sfx_coin_single4.wav
+\General Sounds\Coins\sfx_coin_single5.wav
+\General Sounds\Coins\sfx_coin_single6.wav
+
+\General Sounds\Fanfares\sfx_sounds_fanfare1.wav
+\General Sounds\Fanfares\sfx_sounds_fanfare2.wav
+\General Sounds\Fanfares\sfx_sounds_fanfare3.wav
+
+\General Sounds\High Pitched Sounds\sfx_sounds_high1.wav
+\General Sounds\High Pitched Sounds\sfx_sounds_high2.wav
+\General Sounds\High Pitched Sounds\sfx_sounds_high3.wav
+\General Sounds\High Pitched Sounds\sfx_sounds_high4.wav
+\General Sounds\High Pitched Sounds\sfx_sounds_high5.wav
+\General Sounds\High Pitched Sounds\sfx_sounds_high6.wav
+\General Sounds\High Pitched Sounds\sfx_sounds_high7.wav
+
+\General Sounds\Impacts\sfx_sounds_impact1.wav
+\General Sounds\Impacts\sfx_sounds_impact10.wav
+\General Sounds\Impacts\sfx_sounds_impact11.wav
+\General Sounds\Impacts\sfx_sounds_impact12.wav
+\General Sounds\Impacts\sfx_sounds_impact13.wav
+\General Sounds\Impacts\sfx_sounds_impact14.wav
+\General Sounds\Impacts\sfx_sounds_impact15.wav
+\General Sounds\Impacts\sfx_sounds_impact2.wav
+\General Sounds\Impacts\sfx_sounds_impact3.wav
+\General Sounds\Impacts\sfx_sounds_impact4.wav
+\General Sounds\Impacts\sfx_sounds_impact5.wav
+\General Sounds\Impacts\sfx_sounds_impact6.wav
+\General Sounds\Impacts\sfx_sounds_impact7.wav
+\General Sounds\Impacts\sfx_sounds_impact8.wav
+\General Sounds\Impacts\sfx_sounds_impact9.wav
+
+\General Sounds\Interactions\sfx_sounds_interaction1.wav
+\General Sounds\Interactions\sfx_sounds_interaction10.wav
+\General Sounds\Interactions\sfx_sounds_interaction11.wav
+\General Sounds\Interactions\sfx_sounds_interaction12.wav
+\General Sounds\Interactions\sfx_sounds_interaction13.wav
+\General Sounds\Interactions\sfx_sounds_interaction14.wav
+\General Sounds\Interactions\sfx_sounds_interaction15.wav
+\General Sounds\Interactions\sfx_sounds_interaction16.wav
+\General Sounds\Interactions\sfx_sounds_interaction17.wav
+\General Sounds\Interactions\sfx_sounds_interaction18.wav
+\General Sounds\Interactions\sfx_sounds_interaction19.wav
+\General Sounds\Interactions\sfx_sounds_interaction2.wav
+\General Sounds\Interactions\sfx_sounds_interaction20.wav
+\General Sounds\Interactions\sfx_sounds_interaction21.wav
+\General Sounds\Interactions\sfx_sounds_interaction22.wav
+\General Sounds\Interactions\sfx_sounds_interaction23.wav
+\General Sounds\Interactions\sfx_sounds_interaction24.wav
+\General Sounds\Interactions\sfx_sounds_interaction25.wav
+\General Sounds\Interactions\sfx_sounds_interaction26.wav
+\General Sounds\Interactions\sfx_sounds_interaction3.wav
+\General Sounds\Interactions\sfx_sounds_interaction4.wav
+\General Sounds\Interactions\sfx_sounds_interaction5.wav
+\General Sounds\Interactions\sfx_sounds_interaction6.wav
+\General Sounds\Interactions\sfx_sounds_interaction7.wav
+\General Sounds\Interactions\sfx_sounds_interaction8.wav
+\General Sounds\Interactions\sfx_sounds_interaction9.wav
+
+\General Sounds\Menu Sounds\sfx_menu_move1.wav
+\General Sounds\Menu Sounds\sfx_menu_move2.wav
+\General Sounds\Menu Sounds\sfx_menu_move3.wav
+\General Sounds\Menu Sounds\sfx_menu_move4.wav
+\General Sounds\Menu Sounds\sfx_menu_move5.wav
+\General Sounds\Menu Sounds\sfx_menu_select1.wav
+\General Sounds\Menu Sounds\sfx_menu_select2.wav
+\General Sounds\Menu Sounds\sfx_menu_select3.wav
+\General Sounds\Menu Sounds\sfx_menu_select4.wav
+\General Sounds\Menu Sounds\sfx_menu_select5.wav
+
+\General Sounds\Negative Sounds\sfx_sounds_damage1.wav
+\General Sounds\Negative Sounds\sfx_sounds_damage2.wav
+\General Sounds\Negative Sounds\sfx_sounds_damage3.wav
+\General Sounds\Negative Sounds\sfx_sounds_error1.wav
+\General Sounds\Negative Sounds\sfx_sounds_error10.wav
+\General Sounds\Negative Sounds\sfx_sounds_error11.wav
+\General Sounds\Negative Sounds\sfx_sounds_error12.wav
+\General Sounds\Negative Sounds\sfx_sounds_error13.wav
+\General Sounds\Negative Sounds\sfx_sounds_error14.wav
+\General Sounds\Negative Sounds\sfx_sounds_error15.wav
+\General Sounds\Negative Sounds\sfx_sounds_error2.wav
+\General Sounds\Negative Sounds\sfx_sounds_error3.wav
+\General Sounds\Negative Sounds\sfx_sounds_error4.wav
+\General Sounds\Negative Sounds\sfx_sounds_error5.wav
+\General Sounds\Negative Sounds\sfx_sounds_error6.wav
+\General Sounds\Negative Sounds\sfx_sounds_error7.wav
+\General Sounds\Negative Sounds\sfx_sounds_error8.wav
+\General Sounds\Negative Sounds\sfx_sounds_error9.wav
+\General Sounds\Negative Sounds\sfx_sounds_negative1.wav
+\General Sounds\Negative Sounds\sfx_sounds_negative2.wav
+
+\General Sounds\Neutral Sounds\sfx_sound_neutral1.wav
+\General Sounds\Neutral Sounds\sfx_sound_neutral10.wav
+\General Sounds\Neutral Sounds\sfx_sound_neutral11.wav
+\General Sounds\Neutral Sounds\sfx_sound_neutral2.wav
+\General Sounds\Neutral Sounds\sfx_sound_neutral3.wav
+\General Sounds\Neutral Sounds\sfx_sound_neutral4.wav
+\General Sounds\Neutral Sounds\sfx_sound_neutral5.wav
+\General Sounds\Neutral Sounds\sfx_sound_neutral6.wav
+\General Sounds\Neutral Sounds\sfx_sound_neutral7.wav
+\General Sounds\Neutral Sounds\sfx_sound_neutral8.wav
+\General Sounds\Neutral Sounds\sfx_sound_neutral9.wav
+
+\General Sounds\Pause Sounds\sfx_sounds_pause1_in.wav
+\General Sounds\Pause Sounds\sfx_sounds_pause1_out.wav
+\General Sounds\Pause Sounds\sfx_sounds_pause2_in.wav
+\General Sounds\Pause Sounds\sfx_sounds_pause2_out.wav
+\General Sounds\Pause Sounds\sfx_sounds_pause3_in.wav
+\General Sounds\Pause Sounds\sfx_sounds_pause3_out.wav
+\General Sounds\Pause Sounds\sfx_sounds_pause4_in.wav
+\General Sounds\Pause Sounds\sfx_sounds_pause4_out.wav
+\General Sounds\Pause Sounds\sfx_sounds_pause5_in.wav
+\General Sounds\Pause Sounds\sfx_sounds_pause5_out.wav
+\General Sounds\Pause Sounds\sfx_sounds_pause6_in.wav
+\General Sounds\Pause Sounds\sfx_sounds_pause6_out.wav
+\General Sounds\Pause Sounds\sfx_sounds_pause7_in.wav
+\General Sounds\Pause Sounds\sfx_sounds_pause7_out.wav
+
+\General Sounds\Positive Sounds\sfx_sounds_powerup1.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup10.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup11.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup12.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup13.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup14.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup15.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup16.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup17.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup18.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup2.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup3.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup4.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup5.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup6.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup7.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup8.wav
+\General Sounds\Positive Sounds\sfx_sounds_powerup9.wav
+
+\General Sounds\Simple Bleeps\sfx_sounds_Blip1.wav
+\General Sounds\Simple Bleeps\sfx_sounds_Blip10.wav
+\General Sounds\Simple Bleeps\sfx_sounds_Blip11.wav
+\General Sounds\Simple Bleeps\sfx_sounds_Blip2.wav
+\General Sounds\Simple Bleeps\sfx_sounds_Blip3.wav
+\General Sounds\Simple Bleeps\sfx_sounds_Blip4.wav
+\General Sounds\Simple Bleeps\sfx_sounds_Blip5.wav
+\General Sounds\Simple Bleeps\sfx_sounds_Blip6.wav
+\General Sounds\Simple Bleeps\sfx_sounds_Blip7.wav
+\General Sounds\Simple Bleeps\sfx_sounds_Blip8.wav
+\General Sounds\Simple Bleeps\sfx_sounds_Blip9.wav
+
+\General Sounds\Simple Damage Sounds\sfx_damage_hit1.wav
+\General Sounds\Simple Damage Sounds\sfx_damage_hit10.wav
+\General Sounds\Simple Damage Sounds\sfx_damage_hit2.wav
+\General Sounds\Simple Damage Sounds\sfx_damage_hit3.wav
+\General Sounds\Simple Damage Sounds\sfx_damage_hit4.wav
+\General Sounds\Simple Damage Sounds\sfx_damage_hit5.wav
+\General Sounds\Simple Damage Sounds\sfx_damage_hit6.wav
+\General Sounds\Simple Damage Sounds\sfx_damage_hit7.wav
+\General Sounds\Simple Damage Sounds\sfx_damage_hit8.wav
+\General Sounds\Simple Damage Sounds\sfx_damage_hit9.wav
+
+\General Sounds\Weird Sounds\sfx_sound_bling.wav
+\General Sounds\Weird Sounds\sfx_sound_depressurizing.wav
+\General Sounds\Weird Sounds\sfx_sound_mechanicalnoise1.wav
+\General Sounds\Weird Sounds\sfx_sound_mechanicalnoise2.wav
+\General Sounds\Weird Sounds\sfx_sound_mechanicalnoise3.wav
+\General Sounds\Weird Sounds\sfx_sound_mechanicalnoise4.wav
+\General Sounds\Weird Sounds\sfx_sound_mechanicalnoise5.wav
+\General Sounds\Weird Sounds\sfx_sound_mechanicalnoise6.wav
+\General Sounds\Weird Sounds\sfx_sound_nagger1.wav
+\General Sounds\Weird Sounds\sfx_sound_nagger2.wav
+\General Sounds\Weird Sounds\sfx_sound_noise.wav
+\General Sounds\Weird Sounds\sfx_sound_poweron.wav
+\General Sounds\Weird Sounds\sfx_sound_refereewhistle.wav
+\General Sounds\Weird Sounds\sfx_sound_shutdown1.wav
+\General Sounds\Weird Sounds\sfx_sound_shutdown2.wav
+\General Sounds\Weird Sounds\sfx_sound_vaporizing.wav
+
+\Movement\Climbing Ladder\sfx_movement_ladder1a.wav
+\Movement\Climbing Ladder\sfx_movement_ladder1b.wav
+\Movement\Climbing Ladder\sfx_movement_ladder1loop.wav
+\Movement\Climbing Ladder\sfx_movement_ladder2a.wav
+\Movement\Climbing Ladder\sfx_movement_ladder2b.wav
+\Movement\Climbing Ladder\sfx_movement_ladder2loop.wav
+\Movement\Climbing Ladder\sfx_movement_ladder3a.wav
+\Movement\Climbing Ladder\sfx_movement_ladder3b.wav
+\Movement\Climbing Ladder\sfx_movement_ladder3loop.wav
+\Movement\Climbing Ladder\sfx_movement_ladder4a.wav
+\Movement\Climbing Ladder\sfx_movement_ladder4b.wav
+\Movement\Climbing Ladder\sfx_movement_ladder4loop.wav
+\Movement\Climbing Ladder\sfx_movement_ladder5a.wav
+\Movement\Climbing Ladder\sfx_movement_ladder5b.wav
+\Movement\Climbing Ladder\sfx_movement_ladder5loop.wav
+\Movement\Climbing Ladder\sfx_movement_ladder6a.wav
+\Movement\Climbing Ladder\sfx_movement_ladder6b.wav
+\Movement\Climbing Ladder\sfx_movement_ladder6loop.wav
+
+\Movement\Climbing Stairs\sfx_movement_stairs1a.wav
+\Movement\Climbing Stairs\sfx_movement_stairs1b.wav
+\Movement\Climbing Stairs\sfx_movement_stairs1loop.wav
+\Movement\Climbing Stairs\sfx_movement_stairs2a.wav
+\Movement\Climbing Stairs\sfx_movement_stairs2b.wav
+\Movement\Climbing Stairs\sfx_movement_stairs2loop.wav
+\Movement\Climbing Stairs\sfx_movement_stairs3a.wav
+\Movement\Climbing Stairs\sfx_movement_stairs3b.wav
+\Movement\Climbing Stairs\sfx_movement_stairs3loop.wav
+\Movement\Climbing Stairs\sfx_movement_stairs4a.wav
+\Movement\Climbing Stairs\sfx_movement_stairs4b.wav
+\Movement\Climbing Stairs\sfx_movement_stairs4loop.wav
+\Movement\Climbing Stairs\sfx_movement_stairs5a.wav
+\Movement\Climbing Stairs\sfx_movement_stairs5b.wav
+\Movement\Climbing Stairs\sfx_movement_stairs5loop.wav
+\Movement\Climbing Stairs\sfx_movement_stairs6a.wav
+\Movement\Climbing Stairs\sfx_movement_stairs6b.wav
+\Movement\Climbing Stairs\sfx_movement_stairs6loop.wav
+
+\Movement\Falling Sounds\sfx_sounds_falling1.wav
+\Movement\Falling Sounds\sfx_sounds_falling10.wav
+\Movement\Falling Sounds\sfx_sounds_falling11.wav
+\Movement\Falling Sounds\sfx_sounds_falling12.wav
+\Movement\Falling Sounds\sfx_sounds_falling2.wav
+\Movement\Falling Sounds\sfx_sounds_falling3.wav
+\Movement\Falling Sounds\sfx_sounds_falling4.wav
+\Movement\Falling Sounds\sfx_sounds_falling5.wav
+\Movement\Falling Sounds\sfx_sounds_falling6.wav
+\Movement\Falling Sounds\sfx_sounds_falling7.wav
+\Movement\Falling Sounds\sfx_sounds_falling8.wav
+\Movement\Falling Sounds\sfx_sounds_falling9.wav
+
+\Movement\Footsteps\sfx_movement_footsteps1a.wav
+\Movement\Footsteps\sfx_movement_footsteps1b.wav
+\Movement\Footsteps\sfx_movement_footsteps5.wav
+\Movement\Footsteps\sfx_movement_footstepsloop3_fast.wav
+\Movement\Footsteps\sfx_movement_footstepsloop3_slow.wav
+\Movement\Footsteps\sfx_movement_footstepsloop4_fast.wav
+\Movement\Footsteps\sfx_movement_footstepsloop4_slow.wav
+
+\Movement\Jumping and Landing\sfx_movement_jump1.wav
+\Movement\Jumping and Landing\sfx_movement_jump10.wav
+\Movement\Jumping and Landing\sfx_movement_jump10_landing.wav
+\Movement\Jumping and Landing\sfx_movement_jump11.wav
+\Movement\Jumping and Landing\sfx_movement_jump11_landing.wav
+\Movement\Jumping and Landing\sfx_movement_jump12.wav
+\Movement\Jumping and Landing\sfx_movement_jump12_landing.wav
+\Movement\Jumping and Landing\sfx_movement_jump13.wav
+\Movement\Jumping and Landing\sfx_movement_jump13_landing.wav
+\Movement\Jumping and Landing\sfx_movement_jump14.wav
+\Movement\Jumping and Landing\sfx_movement_jump14_landing.wav
+\Movement\Jumping and Landing\sfx_movement_jump15.wav
+\Movement\Jumping and Landing\sfx_movement_jump15_landing.wav
+\Movement\Jumping and Landing\sfx_movement_jump16.wav
+\Movement\Jumping and Landing\sfx_movement_jump16_landing.wav
+\Movement\Jumping and Landing\sfx_movement_jump17.wav
+\Movement\Jumping and Landing\sfx_movement_jump17_landing.wav
+\Movement\Jumping and Landing\sfx_movement_jump18.wav
+\Movement\Jumping and Landing\sfx_movement_jump18_landing.wav
+\Movement\Jumping and Landing\sfx_movement_jump19.wav
+\Movement\Jumping and Landing\sfx_movement_jump19_landing.wav
+\Movement\Jumping and Landing\sfx_movement_jump2.wav
+\Movement\Jumping and Landing\sfx_movement_jump20.wav
+\Movement\Jumping and Landing\sfx_movement_jump3.wav
+\Movement\Jumping and Landing\sfx_movement_jump4.wav
+\Movement\Jumping and Landing\sfx_movement_jump5.wav
+\Movement\Jumping and Landing\sfx_movement_jump6.wav
+\Movement\Jumping and Landing\sfx_movement_jump7.wav
+\Movement\Jumping and Landing\sfx_movement_jump8.wav
+\Movement\Jumping and Landing\sfx_movement_jump9.wav
+\Movement\Jumping and Landing\sfx_movement_jump9_landing.wav
+
+\Movement\Opening Doors\sfx_movement_dooropen1.wav
+\Movement\Opening Doors\sfx_movement_dooropen2.wav
+\Movement\Opening Doors\sfx_movement_dooropen3.wav
+\Movement\Opening Doors\sfx_movement_dooropen4.wav
+
+\Movement\Portals and Transitions\sfx_movement_portal1.wav
+\Movement\Portals and Transitions\sfx_movement_portal2.wav
+\Movement\Portals and Transitions\sfx_movement_portal3.wav
+\Movement\Portals and Transitions\sfx_movement_portal4.wav
+\Movement\Portals and Transitions\sfx_movement_portal5.wav
+\Movement\Portals and Transitions\sfx_movement_portal6.wav
+
+\Movement\Vehicles\sfx_vehicle_breaks.wav
+\Movement\Vehicles\sfx_vehicle_carloop1.wav
+\Movement\Vehicles\sfx_vehicle_carloop2.wav
+\Movement\Vehicles\sfx_vehicle_engineloop.wav
+\Movement\Vehicles\sfx_vehicle_helicopterloop1.wav
+\Movement\Vehicles\sfx_vehicle_helicopterloop2.wav
+\Movement\Vehicles\sfx_vehicle_helicopterloop3.wav
+\Movement\Vehicles\sfx_vehicle_helicopterloop4.wav
+\Movement\Vehicles\sfx_vehicle_plainloop.wav
+
+\Weapons\Cannon\sfx_wpn_cannon1.wav
+\Weapons\Cannon\sfx_wpn_cannon2.wav
+\Weapons\Cannon\sfx_wpn_cannon3.wav
+\Weapons\Cannon\sfx_wpn_cannon4.wav
+\Weapons\Cannon\sfx_wpn_cannon5.wav
+\Weapons\Cannon\sfx_wpn_cannon6.wav
+
+\Weapons\Grenade Whistles\sfx_wpn_grenadewhistle1.wav
+\Weapons\Grenade Whistles\sfx_wpn_grenadewhistle2.wav
+\Weapons\Grenade Whistles\sfx_wpn_missilelaunch.wav
+
+\Weapons\Lasers\sfx_wpn_laser 10.wav
+\Weapons\Lasers\sfx_wpn_laser1.wav
+\Weapons\Lasers\sfx_wpn_laser10.wav
+\Weapons\Lasers\sfx_wpn_laser11.wav
+\Weapons\Lasers\sfx_wpn_laser12.wav
+\Weapons\Lasers\sfx_wpn_laser2.wav
+\Weapons\Lasers\sfx_wpn_laser3.wav
+\Weapons\Lasers\sfx_wpn_laser4.wav
+\Weapons\Lasers\sfx_wpn_laser5.wav
+\Weapons\Lasers\sfx_wpn_laser6.wav
+\Weapons\Lasers\sfx_wpn_laser7.wav
+\Weapons\Lasers\sfx_wpn_laser8.wav
+\Weapons\Lasers\sfx_wpn_laser9.wav
+
+\Weapons\Machinegun\sfx_wpn_machinegun_loop1.wav
+\Weapons\Machinegun\sfx_wpn_machinegun_loop2.wav
+\Weapons\Machinegun\sfx_wpn_machinegun_loop3.wav
+\Weapons\Machinegun\sfx_wpn_machinegun_loop4.wav
+\Weapons\Machinegun\sfx_wpn_machinegun_loop5.wav
+\Weapons\Machinegun\sfx_wpn_machinegun_loop6.wav
+\Weapons\Machinegun\sfx_wpn_machinegun_loop7.wav
+\Weapons\Machinegun\sfx_wpn_machinegun_loop8.wav
+\Weapons\Machinegun\sfx_wpn_machinegun_loop9.wav
+
+\Weapons\Melee\sfx_wpn_dagger.wav
+\Weapons\Melee\sfx_wpn_punch1.wav
+\Weapons\Melee\sfx_wpn_punch2.wav
+\Weapons\Melee\sfx_wpn_punch3.wav
+\Weapons\Melee\sfx_wpn_punch4.wav
+\Weapons\Melee\sfx_wpn_sword1.wav
+\Weapons\Melee\sfx_wpn_sword2.wav
+\Weapons\Melee\sfx_wpn_sword3.wav
+
+\Weapons\Out of Ammo\sfx_wpn_noammo1.wav
+\Weapons\Out of Ammo\sfx_wpn_noammo2.wav
+\Weapons\Out of Ammo\sfx_wpn_noammo3.wav
+\Weapons\Out of Ammo\sfx_wpn_reload.wav
+
+\Weapons\Shotgun\sfx_weapon_shotgun1.wav
+\Weapons\Shotgun\sfx_weapon_shotgun2.wav
+\Weapons\Shotgun\sfx_weapon_shotgun3.wav
+
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot1.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot10.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot11.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot12.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot13.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot14.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot15.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot16.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot17.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot18.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot19.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot2.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot20.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot21.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot22.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot3.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot4.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot5.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot6.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot7.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot8.wav
+\Weapons\Single Shot Sounds\sfx_weapon_singleshot9.wav

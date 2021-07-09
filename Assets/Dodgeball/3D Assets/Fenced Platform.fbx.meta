@@ -1,0 +1,321 @@
+fileFormatVersion: 2
+guid: 39bfec153e12f4840a90a1c6a2b28f48
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: ARMATURE BUSH.019
+    100002: ARMATURE BUSH.021
+    100004: Base
+    100006: Base 1
+    100008: Bush Moveable.005
+    100010: Bush Moveable.006
+    100012: Circle.001
+    100014: Circle.102
+    100016: Circle.103
+    100018: Circle.104
+    100020: Circle.105
+    100022: Circle.106
+    100024: Circle.107
+    100026: Circle.108
+    100028: Circle.109
+    100030: cloud1
+    100032: cloud2
+    100034: cloud3
+    100036: //RootNode
+    100038: Cube.003
+    100040: Cylinder.001
+    100042: Cylinder.002
+    100044: FENCE Tall BROWN.001
+    100046: FENCE Tall BROWN.004
+    100048: FENCE Tall BROWN.005
+    100050: grass patch 3.002
+    100052: grass patch 4.004
+    100054: grass patch 4.005
+    100056: large bush.014
+    100058: large bush.015
+    100060: large bush.016
+    100062: large bush.017
+    100064: large bush.018
+    100066: large bush.019
+    100068: large bush.020
+    100070: skinny tall tree.018
+    100072: skinny tall tree.020
+    100074: skinny tall tree.021
+    100076: skinny tall tree.022
+    100078: skinny tall tree.023
+    100080: tall grass.017
+    100082: tall grass.018
+    100084: tall grass.019
+    100086: top
+    100088: top 1
+    100090: treehouse.012
+    100092: treehouse.013
+    100094: walk stone 1.002
+    100096: walk stone 1.003
+    100098: walk stone 1.004
+    100100: walk stone 3.002
+    400000: ARMATURE BUSH.019
+    400002: ARMATURE BUSH.021
+    400004: Base
+    400006: Base 1
+    400008: Bush Moveable.005
+    400010: Bush Moveable.006
+    400012: Circle.001
+    400014: Circle.102
+    400016: Circle.103
+    400018: Circle.104
+    400020: Circle.105
+    400022: Circle.106
+    400024: Circle.107
+    400026: Circle.108
+    400028: Circle.109
+    400030: cloud1
+    400032: cloud2
+    400034: cloud3
+    400036: //RootNode
+    400038: Cube.003
+    400040: Cylinder.001
+    400042: Cylinder.002
+    400044: FENCE Tall BROWN.001
+    400046: FENCE Tall BROWN.004
+    400048: FENCE Tall BROWN.005
+    400050: grass patch 3.002
+    400052: grass patch 4.004
+    400054: grass patch 4.005
+    400056: large bush.014
+    400058: large bush.015
+    400060: large bush.016
+    400062: large bush.017
+    400064: large bush.018
+    400066: large bush.019
+    400068: large bush.020
+    400070: skinny tall tree.018
+    400072: skinny tall tree.020
+    400074: skinny tall tree.021
+    400076: skinny tall tree.022
+    400078: skinny tall tree.023
+    400080: tall grass.017
+    400082: tall grass.018
+    400084: tall grass.019
+    400086: top
+    400088: top 1
+    400090: treehouse.012
+    400092: treehouse.013
+    400094: walk stone 1.002
+    400096: walk stone 1.003
+    400098: walk stone 1.004
+    400100: walk stone 3.002
+    2100000: swatch
+    2300000: Circle.001
+    2300002: Circle.102
+    2300004: Circle.103
+    2300006: Circle.104
+    2300008: Circle.105
+    2300010: Circle.106
+    2300012: Circle.107
+    2300014: Circle.108
+    2300016: Circle.109
+    2300018: cloud1
+    2300020: cloud2
+    2300022: cloud3
+    2300024: Cube.003
+    2300026: Cylinder.001
+    2300028: Cylinder.002
+    2300030: FENCE Tall BROWN.001
+    2300032: FENCE Tall BROWN.004
+    2300034: FENCE Tall BROWN.005
+    2300036: grass patch 3.002
+    2300038: grass patch 4.004
+    2300040: grass patch 4.005
+    2300042: large bush.014
+    2300044: large bush.015
+    2300046: large bush.016
+    2300048: large bush.017
+    2300050: large bush.018
+    2300052: large bush.019
+    2300054: large bush.020
+    2300056: skinny tall tree.018
+    2300058: skinny tall tree.020
+    2300060: skinny tall tree.021
+    2300062: skinny tall tree.022
+    2300064: skinny tall tree.023
+    2300066: tall grass.017
+    2300068: tall grass.018
+    2300070: tall grass.019
+    2300072: treehouse.012
+    2300074: treehouse.013
+    2300076: walk stone 1.002
+    2300078: walk stone 1.003
+    2300080: walk stone 1.004
+    2300082: walk stone 3.002
+    3300000: Circle.001
+    3300002: Circle.102
+    3300004: Circle.103
+    3300006: Circle.104
+    3300008: Circle.105
+    3300010: Circle.106
+    3300012: Circle.107
+    3300014: Circle.108
+    3300016: Circle.109
+    3300018: cloud1
+    3300020: cloud2
+    3300022: cloud3
+    3300024: Cube.003
+    3300026: Cylinder.001
+    3300028: Cylinder.002
+    3300030: FENCE Tall BROWN.001
+    3300032: FENCE Tall BROWN.004
+    3300034: FENCE Tall BROWN.005
+    3300036: grass patch 3.002
+    3300038: grass patch 4.004
+    3300040: grass patch 4.005
+    3300042: large bush.014
+    3300044: large bush.015
+    3300046: large bush.016
+    3300048: large bush.017
+    3300050: large bush.018
+    3300052: large bush.019
+    3300054: large bush.020
+    3300056: skinny tall tree.018
+    3300058: skinny tall tree.020
+    3300060: skinny tall tree.021
+    3300062: skinny tall tree.022
+    3300064: skinny tall tree.023
+    3300066: tall grass.017
+    3300068: tall grass.018
+    3300070: tall grass.019
+    3300072: treehouse.012
+    3300074: treehouse.013
+    3300076: walk stone 1.002
+    3300078: walk stone 1.003
+    3300080: walk stone 1.004
+    3300082: walk stone 3.002
+    4300000: cloud2
+    4300002: cloud1
+    4300004: cloud3
+    4300006: Bush Moveable.006
+    4300008: Circle.109
+    4300010: Circle.108
+    4300012: Circle.107
+    4300014: Circle.106
+    4300016: Circle.105
+    4300018: Circle.104
+    4300020: Circle.103
+    4300022: Circle.102
+    4300024: treehouse.013
+    4300026: Bush Moveable.005
+    4300028: skinny tall tree.023
+    4300030: skinny tall tree.022
+    4300032: skinny tall tree.021
+    4300034: skinny tall tree.020
+    4300036: large bush.020
+    4300038: large bush.014
+    4300040: walk stone 1.004
+    4300042: grass patch 4.004
+    4300044: large bush.019
+    4300046: large bush.018
+    4300048: Cylinder.002
+    4300050: tall grass.019
+    4300052: walk stone 1.003
+    4300054: large bush.017
+    4300056: large bush.016
+    4300058: large bush.015
+    4300060: skinny tall tree.018
+    4300062: FENCE Tall BROWN.004
+    4300064: FENCE Tall BROWN.001
+    4300066: FENCE Tall BROWN.005
+    4300068: Cube.003
+    4300070: grass patch 4.005
+    4300072: grass patch 3.002
+    4300074: walk stone 3.002
+    4300076: walk stone 1.002
+    4300078: tall grass.018
+    4300080: tall grass.017
+    4300082: Cylinder.001
+    4300084: treehouse.012
+    4300086: Circle.001
+    9500000: //RootNode
+    13700000: Bush Moveable.005
+    13700002: Bush Moveable.006
+    2186277476908879412: ImportLogs
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
