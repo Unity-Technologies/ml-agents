@@ -14,12 +14,16 @@ behaviors:
       reward_signal_steps_per_update: 30.0
       mede: True
       mede_dropout: 0
-      mede_encoder_dropout: 0
+      mede_encoder_dropout: 0.2
       mede_weight_decay: 0
       mede_saliency_dropout: 0
-      mede_strength: 1.0
+      mede_strength: 0.1
+      mede_mutual_information: .inf
       mede_for_policy_loss: True
       mede_use_actions: True
+      mede_drop_actions: True
+      mede_noise: True
+      mede_centered: False
     network_settings:
       normalize: true
       hidden_units: 256
@@ -31,6 +35,6 @@ behaviors:
         gamma: 0.995
         strength: 0.1
     keep_checkpoints: 5
-    max_steps: 150000000
+    max_steps: 15000000
     time_horizon: 1000
     summary_freq: 30000
