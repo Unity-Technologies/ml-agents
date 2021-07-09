@@ -142,6 +142,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         if options.track_utils:
             utils_tracker.shutdown()
             write_sys_stats_to_tb(utils_tracker.output_path, tb_writer)
+            logger.info("Exported system utility stats to tensorboard.")
 
 
 def write_sys_stats_to_tb(utils_output, tb_writer):

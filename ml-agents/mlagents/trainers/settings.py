@@ -816,7 +816,7 @@ class RunOptions(ExportableSettings):
     # These are options that are relevant to the run itself, and not the engine or environment.
     # They will be left here.
     debug: bool = parser.get_default("debug")
-    track_utils: bool = parser.get_default("track-utils")
+    track_utils: bool = parser.get_default("track_utils")
 
     # Convert to settings while making sure all fields are valid
     cattr.register_structure_hook(EnvironmentSettings, strict_to_cls)
