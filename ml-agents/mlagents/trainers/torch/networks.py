@@ -362,7 +362,7 @@ class MultiAgentNetworkBody(torch.nn.Module):
         obs_only: List[List[torch.Tensor]],
         obs: List[List[torch.Tensor]],
         actions: List[AgentAction],
-    ):
+    ) -> torch.Tensor:
         self_attn_masks = []
         if obs:
             self_attn_masks.append(self._get_masks_from_nans(obs))
