@@ -287,15 +287,15 @@ class DiverseNetworkVariational(torch.nn.Module):
             all_act_grad.append(disc_act)
         act_grad = torch.cat(all_act_grad, dim=1)
         
-        max_state = torch.max(torch.mean(obs_grad), dim=0)[0]
-        min_state = torch.min(torch.mean(obs_grad), dim=0)[0]
+        max_state = torch.max(torch.mean(obs_grad, dim=0))
+        min_state = torch.min(torch.mean(obs_grad, dim=0))
         mean_state = torch.mean(obs_grad)
-        var_state = torch.var(torch.mean(obs_grad), dim=0)
+        var_state = torch.var(torch.mean(obs_grad, dim=0))
 
-        max_act = torch.max(torch.mean(act_grad), dim=0)[0]
-        min_act = torch.min(torch.mean(act_grad), dim=0)[0]
+        max_act = torch.max(torch.mean(act_grad, dim=0))
+        min_act = torch.min(torch.mean(act_grad, dim=0))
         mean_act = torch.mean(act_grad)
-        var_act = torch.var(torch.mean(act_grad), dim=0)
+        var_act = torch.var(torch.mean(act_grad, dim=0))
 
         for p in self.parameters():
             p.requires_grad = True
