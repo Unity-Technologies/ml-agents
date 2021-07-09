@@ -5,7 +5,6 @@ import yaml
 import os
 import numpy as np
 import json
-import pickle
 
 from typing import Callable, Optional, List
 
@@ -32,6 +31,7 @@ from mlagents_envs.timers import (
 from mlagents_envs import logging_util
 from mlagents.plugins.stats_writer import register_stats_writer_plugins
 from mlagents.utils_tracker import UtilsTracker
+from mlagents.trainers.tensorboard_helper import write_sys_stats_to_tb
 
 logger = logging_util.get_logger(__name__)
 
@@ -141,37 +141,8 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         write_training_status(run_logs_dir)
         if options.track_utils:
             utils_tracker.shutdown()
-            write_sys_stats_to_tb(utils_tracker.output_path, tb_writer)
+            write_sys_stats_to_tb(utils_tracker.output_dir, tb_writer)
             logger.info("Exported system utility stats to tensorboard.")
-
-
-def write_sys_stats_to_tb(utils_output, tb_writer):
-    utils_stats = pickle.load(open(utils_output, "rb"))
-    for data in utils_stats["sys"]:
-        for sw in tb_writer.summary_writers.values():
-            sw.add_scalar(
-                "System Stats/System CPU Percent",
-                data["cpu_percent"],
-                walltime=data["timestamp"],
-            )
-            sw.add_scalar(
-                "System Stats/System Memory Percent",
-                data["memory"].percent,
-                walltime=data["timestamp"],
-            )
-    for pid, stats in utils_stats["process"].items():
-        for data in stats:
-            for sw in tb_writer.summary_writers.values():
-                sw.add_scalars(
-                    "System Stats/CPU Percent",
-                    {str(pid): data["cpu_percent"]},
-                    walltime=data["timestamp"],
-                )
-                sw.add_scalars(
-                    "System Stats/Memory Percent",
-                    {str(pid): data["memory_percent"]},
-                    walltime=data["timestamp"],
-                )
 
 
 def write_run_options(output_dir: str, run_options: RunOptions) -> None:
