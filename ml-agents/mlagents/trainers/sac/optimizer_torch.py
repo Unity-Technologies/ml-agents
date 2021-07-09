@@ -255,7 +255,7 @@ class DiverseNetworkVariational(torch.nn.Module):
             "Losses/MEDE Base": base_loss.item() / self.diverse_size,
             "Policy/MEDE Variational": vail_loss.item() if vail_loss is not None else 0,
             "Policy/MEDE KL": kl_loss.item() if kl_loss is not None else 0,
-            "Policy/MEDE beta": self._beta.item(),
+            "Policy/MEDE beta": self._beta.item() if self._beta is not None else 0,
         }
         return total_loss, stats
 
