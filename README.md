@@ -12,9 +12,12 @@ This environment is intended to be used with the new features announced in [ML-A
 
 To open this repository, you will need to install the [Unity editor version 2020.2.6 or later](https://unity3d.com/get-unity/download).
 
-Clone this repository, and open the root folder in Unity. Then, navigate to `Assets/Dodgeball/Scenes/TitleScreen.unity`, open it, and hit the play button.
+Clone the `dodgeball-env` branch of this repository by running:
+```
+git clone --single-branch --branch dodgeball-env https://github.com/Unity-Technologies/ml-agents.git
+```
 
-You can also build this scene (along with the `Elimination.unity` and `CaptureTheFlag.unity` scenes into a game build and play from there.
+Open the root folder in Unity. Then, navigate to `Assets/Dodgeball/Scenes/TitleScreen.unity`, open it, and hit the play button to play against pretrained agents. You can also build this scene (along with the `Elimination.unity` and `CaptureTheFlag.unity` scenes into a game build and play from there.
 ## Scenes
 
 In `Assets/Dodgeball/Scenes/`, in addition to the title screen, six scenes are provided. They are:
