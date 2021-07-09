@@ -28,6 +28,7 @@ In `Assets/Dodgeball/Scenes/`, in addition to the title screen, six scenes are p
 Where `X` is either Elimination or CaptureTheFlag, which corresponds to the two game modes.
 
 The `X.unity` scenes are the playable scenes for human play against agent opponents. The `X_Training.unity` scenes are intended for training - more information on that below. Finally, the `XVideoCapture.unity` are scenes that let you watch a match between agents - they were used to record the videos below.
+
 ### Elimination
 
 In the elimination scenes, four players face off against another team of four. Balls are dropped throughout the stage, and players must pick up balls and throw them at opponents. If a player is hit twice by an opponent, they are "out", and sent to the penalty podium in the top-center of the stage.
@@ -49,9 +50,7 @@ You will need to use either the `CaptureTheFlag_Training.unity` or `Elimination_
 
 A configuration YAML (`DodgeBall.yaml`) for ML-Agents is provided. You can uncomment and increase the number of environments (`num_envs`) depending on your computer's capabilities.
 
-After tens of millions of steps (this will take many, many hours!) your agents will start to improve. As with any self-play run, you should observe your [ELO increase over time](https://github.com/Unity-Technologies/ml-agents/blob/release_18_docs/docs/Using-Tensorboard.md#self-play).
-
-[embed training videos from blog post here]
+After tens of millions of steps (this will take many, many hours!) your agents will start to improve. As with any self-play run, you should observe your [ELO increase over time](https://github.com/Unity-Technologies/ml-agents/blob/release_18_docs/docs/Using-Tensorboard.md#self-play). Check out these videos ([Elimination](https://www.youtube.com/watch?v=Q9cIYfGA1GQ), [Capture the Flag](https://www.youtube.com/watch?v=SyxVayp01S4)) for an example of what kind of behaviors to expect at different stages of training.
 
 ### Environment Parameters
 
@@ -73,11 +72,12 @@ To produce the results in the blog post, we used the default environment as it i
 ## Extending DodgeBall
 
 We'd love to hear how you're using DodgeBall - if you've customized the environment in an interesting way definitely let us know by emailing mlagents@unity3d.com.
+
 ## Reporting Issues
 
 This environment is intended to provide an example of using ML-Agents in a cooperative/competitive game-like scenario, and it is not intended to be a finished game. While we will do our best to keep it updated, support of later versions of ML-Agents or additional content is not guaranteed.
 
-If you do run into any issues or bugs with DodgeBall, please file an Issue on Github.
+If you do run into any issues or bugs with DodgeBall, please file an [Issue](https://github.com/Unity-Technologies/ml-agents/issues) on Github.
 
 ## License
 
