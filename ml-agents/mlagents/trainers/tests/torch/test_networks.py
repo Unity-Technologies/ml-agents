@@ -128,7 +128,6 @@ def test_multinetworkbody_vector(with_actions):
             )
         else:
             encoded, _ = networkbody(obs_only=sample_obs, obs=[], actions=[])
-        assert encoded.shape == (1, network_settings.hidden_units)
         # Try to force output to 1
         loss = torch.nn.functional.mse_loss(encoded, torch.ones(encoded.shape))
         optimizer.zero_grad()
@@ -225,8 +224,6 @@ def test_multinetworkbody_visual(with_actions):
             )
         else:
             encoded, _ = networkbody(obs_only=sample_obs, obs=[], actions=[])
-
-        assert encoded.shape == (1, network_settings.hidden_units)
         # Try to force output to 1
         loss = torch.nn.functional.mse_loss(encoded, torch.ones(encoded.shape))
         optimizer.zero_grad()

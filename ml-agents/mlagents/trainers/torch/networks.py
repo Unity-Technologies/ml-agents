@@ -357,27 +357,6 @@ class MultiAgentNetworkBody(torch.nn.Module):
             obs_with_no_nans.append(no_nan_obs)
         return obs_with_no_nans
 
-    def agent_count(
-        self,
-        obs_only: List[List[torch.Tensor]],
-        obs: List[List[torch.Tensor]],
-        actions: List[AgentAction],
-    ) -> torch.Tensor:
-        self_attn_masks = []
-        if obs:
-            self_attn_masks.append(self._get_masks_from_nans(obs))
-        if obs_only:
-            self_attn_masks.append(self._get_masks_from_nans(obs_only))
-
-        flipped_masks = 1 - torch.cat(self_attn_masks, dim=1)
-        num_agents = torch.sum(flipped_masks, dim=1, keepdim=True)
-        if torch.max(num_agents).item() > self._current_max_agents:
-            self._current_max_agents = torch.nn.Parameter(
-                torch.as_tensor(torch.max(num_agents).item()), requires_grad=False
-            )
-
-        return num_agents * 2.0 / self._current_max_agents - 1
-
     def forward(
         self,
         obs_only: List[List[torch.Tensor]],
@@ -428,12 +407,22 @@ class MultiAgentNetworkBody(torch.nn.Module):
         encoded_entity = torch.cat(self_attn_inputs, dim=1)
         encoded_state = self.self_attn(encoded_entity, self_attn_masks)
 
+        flipped_masks = 1 - torch.cat(self_attn_masks, dim=1)
+        num_agents = torch.sum(flipped_masks, dim=1, keepdim=True)
+        if torch.max(num_agents).item() > self._current_max_agents:
+            self._current_max_agents = torch.nn.Parameter(
+                torch.as_tensor(torch.max(num_agents).item()), requires_grad=False
+            )
+
+        num_agents = num_agents * 2.0 / self._current_max_agents - 1
+
         encoding = self.linear_encoder(encoded_state)
         if self.use_lstm:
             # Resize to (batch, sequence length, encoding size)
             encoding = encoding.reshape([-1, sequence_length, self.h_size])
             encoding, memories = self.lstm(encoding, memories)
             encoding = encoding.reshape([-1, self.m_size // 2])
+        encoding = torch.cat([encoding, num_agents], dim=1)
         return encoding, memories
 
 
