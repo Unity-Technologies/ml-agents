@@ -301,7 +301,7 @@ public class WalkerAgent : Agent
             // UpdateTimer();
             // fuStep =
             var timeSinceLast = Time.realtimeSinceStartup - lastTime;
-            print(timeSinceLast/(float)(127 * 5));
+            // print(timeSinceLast/(float)(127 * 5));
             lastTime = Time.realtimeSinceStartup;
         }
 

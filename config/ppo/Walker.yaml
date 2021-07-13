@@ -7,31 +7,26 @@ behaviors:
       batch_size: 3840 #1280 #640 #2048 #128 per agent == ~8.5 sec irl
       buffer_size: 38400 #12800 #6400 #20480
       learning_rate: 0.0003
-      beta: 0.005
+      beta: 0.003 #0.005
       epsilon: 0.2
       lambd: 0.95
       num_epoch: 3
-      learning_rate_schedule: linear
+      learning_rate_schedule: constant #linear
     network_settings:
       normalize: true
       hidden_units: 512
       num_layers: 3
       vis_encode_type: simple
+    behavioral_cloning:
+      demo_path: Project/Assets/Demonstrations/Walker10kStrengt.demo
+      strength: 1
+      steps: 800000
+      # batch_size: 512
+      # num_epoch: 3
+      samples_per_update: 0
     reward_signals:
-      # extrinsic:
-      #   gamma: 0.995
-      #   strength: 1.0
-      # extrinsic:
-      #   gamma: 0.99
-      #   strength: 1.0
-      # curiosity:
-      #   gamma: 0.99
-      #   strength: 0.02
-      #   network_settings:
-      #     hidden_units: 256
-      #   learning_rate: 0.0003
       extrinsic:
-        gamma: 0.99
+        gamma: 0.99 #0.995
         strength: 1.0
       curiosity:
         gamma: 0.99
@@ -43,14 +38,14 @@ behaviors:
     threaded: true
     max_steps: 50000000
     time_horizon: 1000
-    summary_freq: 128 #30000
-# env_settings:
-#   num_envs: 3
-engine_settings:
+    summary_freq: 10000 #30000
+env_settings:
+  num_envs: 3
+# engine_settings:
 #   width: 84
 #   height: 84
 #   quality_level: 5
-  time_scale: 6
+  # time_scale: 6
 #   target_frame_rate: 1000 #-1
 #   capture_frame_rate: 0
 #   no_graphics: true
