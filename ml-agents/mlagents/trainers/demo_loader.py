@@ -256,15 +256,20 @@ def write_demo(demo_path, meta_data_proto, brain_param_proto, agent_info_protos)
 
 class DemoManager:
     def __init__(
-        self, path: str, sequence_length: int = 1, expected_bspec: BehaviorSpec = None
+        self,
+        path: str,
+        sequence_length: int = 1,
+        expected_bspec: BehaviorSpec = None,
+        demo_buffer_size: int = 1000000,
     ) -> None:
         self.path = path
         self._seq_len = sequence_length
-        self.loaded_files: Set[str] = set()
+        self._loaded_files: Set[str] = set()
         _, self._demo_buffer, file_paths = demo_to_buffer(
             path, sequence_length, expected_bspec
         )
-        self.loaded_files.update(file_paths)
+        self._loaded_files.update(file_paths)
+        self._max_demo_buffer_size = demo_buffer_size
         if len(file_paths) == 0:
             self._demo_buffer = AgentBuffer()
             logger.warn(f"No demos found in {path}. Continuing to look for new files.")
@@ -275,16 +280,20 @@ class DemoManager:
 
     def refresh(self) -> int:
         bspec, loaded_demos, loaded_paths = load_demonstration(
-            self.path, self.loaded_files
+            self.path, self._loaded_files
         )
         if loaded_paths:
             new_demos = make_demo_buffer(loaded_demos, bspec, self._seq_len)
             new_demos.resequence_and_append(self._demo_buffer)
-            self.loaded_files.update(loaded_paths)
+            self._loaded_files.update(loaded_paths)
             num_exp = new_demos.num_experiences
             logger.info(
                 f"Loaded {num_exp} new experiences from {len(loaded_paths)} files."
             )
+            if self._demo_buffer.num_experiences > self._max_demo_buffer_size:
+                self._demo_buffer.truncate(
+                    int(self._max_demo_buffer_size * 0.8), self._seq_len
+                )
             return num_exp
         else:
             return 0
