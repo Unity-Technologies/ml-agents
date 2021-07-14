@@ -281,6 +281,10 @@ class DemoManager:
             new_demos = make_demo_buffer(loaded_demos, bspec, self._seq_len)
             new_demos.resequence_and_append(self._demo_buffer)
             self.loaded_files.update(loaded_paths)
-            return new_demos.num_experiences
+            num_exp = new_demos.num_experiences
+            logger.info(
+                f"Loaded {num_exp} new experiences from {len(loaded_paths)} files."
+            )
+            return num_exp
         else:
             return 0
