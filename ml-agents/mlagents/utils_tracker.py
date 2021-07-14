@@ -1,4 +1,5 @@
 import os
+import sys
 import psutil
 import time
 
@@ -7,6 +8,24 @@ from multiprocessing import Process, Pipe
 from mlagents_envs import logging_util
 
 logger = logging_util.get_logger(__name__)
+
+
+PROC_ATTRS_LIST_MACOS = [
+    "cpu_percent",
+    "cpu_times",
+    "num_threads",
+    "memory_info",
+    "memory_percent",
+]
+
+PROC_ATTRS_LIST_LINUX = [
+    "cpu_percent",
+    "cpu_times",
+    "cpu_num",
+    "num_threads",
+    "memory_info",
+    "memory_percent",
+]
 
 
 class UtilsTracker:
@@ -36,6 +55,9 @@ def _track(pids, parent_conn, output_dir):
     process_names = ["main"] + [f"worker_{i}" for i in range(len(util_procs) - 1)]
     db_meta = TinyDB(os.path.join(output_dir, "sys_utils_meta.json"))
     db = TinyDB(os.path.join(output_dir, "sys_utils.json"))
+    get_process_stats = (
+        get_process_stats_mac if sys.platform == "darwin" else get_process_stats_linux
+    )
     try:
         db_meta.insert(
             {
@@ -93,17 +115,28 @@ def get_sys_stats():
     return stats
 
 
-def get_process_stats(p):
-    data = p.as_dict(
-        attrs=[
-            "cpu_percent",
-            "cpu_times",
-            "cpu_num",
-            "num_threads",
-            "memory_info",
-            "memory_percent",
-        ]
-    )
+def get_process_stats_mac(p):
+    data = p.as_dict(attrs=PROC_ATTRS_LIST_MACOS)
+    stats = {}
+    stats["cpu_percent"] = data["cpu_percent"]
+    cpu = data["cpu_times"]
+    stats["cpu_times"] = {
+        "user": cpu.user,
+        "system": cpu.system,
+        "children_user": cpu.children_user,
+        "children_system": cpu.children_system,
+    }
+
+    stats["num_threads"] = data["num_threads"]
+    stats["memory_percent"] = data["memory_percent"]
+    mem = data["memory_info"]
+    stats["memory_info"] = {"rss": mem.rss, "vms": mem.vms}
+    stats["timestamp"] = time.time()
+    return stats
+
+
+def get_process_stats_linux(p):
+    data = p.as_dict(attrs=PROC_ATTRS_LIST_LINUX)
     stats = {}
     stats["cpu_percent"] = data["cpu_percent"]
     stats["cpu_num"] = data["cpu_num"]
