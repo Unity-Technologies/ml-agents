@@ -17,13 +17,11 @@ behaviors:
       hidden_units: 512
       num_layers: 3
       vis_encode_type: simple
-    behavioral_cloning:
-      demo_path: Project/Assets/Demonstrations/Walker10kStrengt.demo
-      strength: 1
-      steps: 800000
-      # batch_size: 512
-      # num_epoch: 3
-      samples_per_update: 0
+    # behavioral_cloning:
+    #   demo_path: Project/Assets/Demonstrations/Walker10kStrengt.demo
+    #   strength: 1
+    #   steps: 800000
+    #   samples_per_update: 0
     reward_signals:
       extrinsic:
         gamma: 0.99 #0.995
@@ -41,6 +39,9 @@ behaviors:
     summary_freq: 10000 #30000
 env_settings:
   num_envs: 3
+environment_parameters:
+  #less than .5 is false, greater than .5 is true
+  terrain_enabled : .7
 # engine_settings:
 #   width: 84
 #   height: 84

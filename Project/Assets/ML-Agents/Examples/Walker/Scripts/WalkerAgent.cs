@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -64,11 +64,15 @@ public class WalkerAgent : Agent
     //Actuated RayS
     public bool UseVectorObs = true;
     public bool UseActuatedRaycastSensor = false;
-    // public List<RayPerceptionSensorComponent3D> RaySensorsList = new List<RayPerceptionSensorComponent3D>();
-    public RayPerceptionSensorComponent3D rays1; //Target the agent will walk towards during training.
-    public RayPerceptionSensorComponent3D rays2; //Target the agent will walk towards during training.
-    public RayPerceptionSensorComponent3D rays3; //Target the agent will walk towards during training.
-    public RayPerceptionSensorComponent3D rays4; //Target the agent will walk towards during training.
+    public List<RayPerceptionSensorComponent3D> RaySensorsList = new List<RayPerceptionSensorComponent3D>();
+    // public RayPerceptionSensorComponent3D rays1; //Target the agent will walk towards during training.
+    // public RayPerceptionSensorComponent3D rays2; //Target the agent will walk towards during training.
+    // public RayPerceptionSensorComponent3D rays3; //Target the agent will walk towards during training.
+    // public RayPerceptionSensorComponent3D rays4; //Target the agent will walk towards during training.
+    // public RayPerceptionSensorComponent3D rays5; //Target the agent will walk towards during training.
+    // public RayPerceptionSensorComponent3D rays6; //Target the agent will walk towards during training.
+    // public RayPerceptionSensorComponent3D rays7; //Target the agent will walk towards during training.
+    // public RayPerceptionSensorComponent3D rays8; //Target the agent will walk towards during training.
 
     public Vector2 MinMaxRayAngles = new Vector2(25, 120);
     public Vector2 MinMaxSpherecastRadius = new Vector2(.25f, 1);
@@ -87,6 +91,8 @@ public class WalkerAgent : Agent
     EnvironmentParameters m_ResetParams;
     public Vector3 bodyVelocityLastFrame;
 
+    public bool TerrainEnabled = false;
+    public GameObject TerrainGameObject;
     public override void Initialize()
     {
         // m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
@@ -139,6 +145,11 @@ public class WalkerAgent : Agent
         SetResetParameters();
     }
 
+    void EnableTerrain(bool isEnabled)
+    {
+        TerrainGameObject.SetActive(isEnabled);
+    }
+
     /// <summary>
     /// Add relevant information on each body part to observations.
     /// </summary>
@@ -151,9 +162,11 @@ public class WalkerAgent : Agent
         //Note: You can get these velocities in world space as well but it may not train as well.
         // sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.velocity));
         // sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
+        sensor.AddObservation(VirtualRoot.InverseTransformDirection(bp.rb.velocity));
         sensor.AddObservation(VirtualRoot.InverseTransformDirection(bp.rb.angularVelocity));
 
         //Get position relative to hips in the context of our orientation cube's space
+        sensor.AddObservation(VirtualRoot.InverseTransformDirection(bp.rb.position));
         // sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));
 
         if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR)
@@ -177,16 +190,17 @@ public class WalkerAgent : Agent
         //ragdoll's avg vel
         // var avgVel = GetAvgVelocity();
 
+        //ACCELERATION REL TO VIRTUAL ROOT
         var currentBodyVel = m_JdController.bodyPartsDict[hips].rb.velocity;
         var bodyAccel = (currentBodyVel - bodyVelocityLastFrame) / Time.fixedDeltaTime;
         sensor.AddObservation(VirtualRoot.InverseTransformDirection(bodyAccel));
         bodyVelocityLastFrame = currentBodyVel;
 
 
-        var targetDir = target.position - VirtualRoot.position;
 
         //velocity we want to match
-        var velGoal = targetDir * MTargetWalkingSpeed;
+        var targetDir = target.position - VirtualRoot.position;
+        var velGoal = targetDir.normalized * MTargetWalkingSpeed;
         // var velGoal = cubeForward * MTargetWalkingSpeed;
         //ragdoll's avg vel
         var avgVel = GetAvgVelocity();
@@ -199,6 +213,10 @@ public class WalkerAgent : Agent
         sensor.AddObservation(VirtualRoot.InverseTransformDirection(velGoal));
 
         // var bodyForward = -body.up;
+        //rotation deltas
+        sensor.AddObservation(Quaternion.FromToRotation(hips.forward, targetDir.normalized));
+        // sensor.AddObservation(Quaternion.FromToRotation(head.forward, targetDir.normalized));
+
         // //rotation deltas
         // sensor.AddObservation(Quaternion.FromToRotation(bodyForward, cubeForward));
         // sensor.AddObservation(Quaternion.FromToRotation(bodyForward, cubeForward));
@@ -267,24 +285,32 @@ public class WalkerAgent : Agent
         bpDict[thighR].SetJointStrength(continuousActions[++i]);
         bpDict[shinR].SetJointStrength(continuousActions[++i]);
         bpDict[footR].SetJointStrength(continuousActions[++i]);
-        bpDict[armL].SetJointStrength(continuousActions[++i] - armStrengthMultiplier);
-        bpDict[forearmL].SetJointStrength(continuousActions[++i] - armStrengthMultiplier);
-        bpDict[armR].SetJointStrength(continuousActions[++i] - armStrengthMultiplier);
-        bpDict[forearmR].SetJointStrength(continuousActions[++i] - armStrengthMultiplier);
-        // bpDict[armL].SetJointStrength(continuousActions[++i]);
-        // bpDict[forearmL].SetJointStrength(continuousActions[++i]);
-        // bpDict[armR].SetJointStrength(continuousActions[++i]);
-        // bpDict[forearmR].SetJointStrength(continuousActions[++i]);
+        // bpDict[armL].SetJointStrength(continuousActions[++i] - armStrengthMultiplier);
+        // bpDict[forearmL].SetJointStrength(continuousActions[++i] - armStrengthMultiplier);
+        // bpDict[armR].SetJointStrength(continuousActions[++i] - armStrengthMultiplier);
+        // bpDict[forearmR].SetJointStrength(continuousActions[++i] - armStrengthMultiplier);
+        bpDict[armL].SetJointStrength(continuousActions[++i]);
+        bpDict[forearmL].SetJointStrength(continuousActions[++i]);
+        bpDict[armR].SetJointStrength(continuousActions[++i]);
+        bpDict[forearmR].SetJointStrength(continuousActions[++i]);
 
         // ACTUATED SENSOR STUFF
         if (UseActuatedRaycastSensor)
         {
             CurrentRayAngleLerp = (continuousActions[++i] + 1)/2;
             CurrentSpherecastRadiusLerp = (continuousActions[++i] + 1)/2;
-            UpdateRayAngles(rays1);
-            UpdateRayAngles(rays2);
-            UpdateRayAngles(rays3);
-            UpdateRayAngles(rays4);
+            foreach (var item in RaySensorsList)
+            {
+                UpdateRayAngles(item);
+            }
+            // UpdateRayAngles(rays1);
+            // UpdateRayAngles(rays2);
+            // UpdateRayAngles(rays3);
+            // UpdateRayAngles(rays4);
+            // UpdateRayAngles(rays5);
+            // UpdateRayAngles(rays6);
+            // UpdateRayAngles(rays7);
+            // UpdateRayAngles(rays8);
         }
         GiveRewards();
     }
@@ -391,5 +417,8 @@ public class WalkerAgent : Agent
     public void SetResetParameters()
     {
         // SetTorsoMass();
+        //less than .5 is false, greater than is true
+        // TerrainEnabled = m_ResetParams.GetWithDefault("terrain_enabled", .7f) > .5f;
+        TerrainGameObject.SetActive(TerrainEnabled);
     }
 }
