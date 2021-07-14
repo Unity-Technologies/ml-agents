@@ -79,6 +79,7 @@ setup(
         'pypiwin32==223;platform_system=="Windows"',
         "importlib_metadata; python_version<'3.8'",
         "psutil",
+        "tinydb",
     ],
     python_requires=">=3.6.1",
     entry_points={
