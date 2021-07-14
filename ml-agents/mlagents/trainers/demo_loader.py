@@ -1,5 +1,5 @@
 import os
-from typing import List, Tuple
+from typing import List, Set, Tuple
 import numpy as np
 from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
@@ -13,12 +13,15 @@ from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
     DemonstrationMetaProto,
 )
 from mlagents_envs.timers import timed, hierarchical_timer
+from mlagents_envs import logging_util
 from google.protobuf.internal.decoder import _DecodeVarint32  # type: ignore
 from google.protobuf.internal.encoder import _EncodeVarint  # type: ignore
 
 
 INITIAL_POS = 33
 SUPPORTED_DEMONSTRATION_VERSIONS = frozenset([0, 1])
+
+logger = logging_util.get_logger(__name__)
 
 
 @timed
@@ -104,14 +107,16 @@ def make_demo_buffer(
 @timed
 def demo_to_buffer(
     file_path: str, sequence_length: int, expected_behavior_spec: BehaviorSpec = None
-) -> Tuple[BehaviorSpec, AgentBuffer]:
+) -> Tuple[BehaviorSpec, AgentBuffer, List[str]]:
     """
     Loads demonstration file and uses it to fill training buffer.
     :param file_path: Location of demonstration file (.demo).
     :param sequence_length: Length of trajectories to fill buffer.
     :return:
     """
-    behavior_spec, info_action_pair, _ = load_demonstration(file_path)
+    behavior_spec, info_action_pair, file_paths = load_demonstration(file_path)
+    if len(file_paths) == 0:
+        return None, AgentBuffer(), file_paths
     demo_buffer = make_demo_buffer(info_action_pair, behavior_spec, sequence_length)
     if expected_behavior_spec:
         # check action dimensions in demonstration match
@@ -140,7 +145,7 @@ def demo_to_buffer(
                         f"The shape {demo_obs} for observation {i} in demonstration \
                         do not match the policy's {policy_obs}."
                     )
-    return behavior_spec, demo_buffer
+    return behavior_spec, demo_buffer, file_paths
 
 
 def get_demo_files(path: str) -> List[str]:
@@ -162,7 +167,7 @@ def get_demo_files(path: str) -> List[str]:
             if name.endswith(".demo")
         ]
         if not paths:
-            raise ValueError("There are no '.demo' files in the provided directory.")
+            logger.debug("There are no '.demo' files in the provided directory.")
         return paths
     else:
         raise FileNotFoundError(
@@ -172,8 +177,8 @@ def get_demo_files(path: str) -> List[str]:
 
 @timed
 def load_demonstration(
-    file_path: str,
-) -> Tuple[BehaviorSpec, List[AgentInfoActionPairProto], int]:
+    file_path: str, exclusions: set = None
+) -> Tuple[BehaviorSpec, List[AgentInfoActionPairProto], List[str]]:
     """
     Loads and parses a demonstration file.
     :param file_path: Location of demonstration file (.demo).
@@ -181,7 +186,9 @@ def load_demonstration(
     """
 
     # First 32 bytes of file dedicated to meta-data.
-    file_paths = get_demo_files(file_path)
+    file_paths = set(get_demo_files(file_path))
+    if exclusions is not None:
+        file_paths = file_paths - exclusions
     behavior_spec = None
     brain_param_proto = None
     info_action_pairs = []
@@ -201,7 +208,8 @@ def load_demonstration(
                         not in SUPPORTED_DEMONSTRATION_VERSIONS
                     ):
                         raise RuntimeError(
-                            f"Can't load Demonstration data from an unsupported version ({meta_data_proto.api_version})"
+                            f"Can't load Demonstration data from an unsupported version \
+                                ({meta_data_proto.api_version})"
                         )
                     total_expected += meta_data_proto.number_steps
                     pos = INITIAL_POS
@@ -221,11 +229,11 @@ def load_demonstration(
                         break
                     pos += next_pos
                 obs_decoded += 1
-    if not behavior_spec:
+    if not behavior_spec and total_expected > 0:
         raise RuntimeError(
             f"No BrainParameters found in demonstration file at {file_path}."
         )
-    return behavior_spec, info_action_pairs, total_expected
+    return behavior_spec, info_action_pairs, list(file_paths)
 
 
 def write_delimited(f, message):
@@ -244,3 +252,35 @@ def write_demo(demo_path, meta_data_proto, brain_param_proto, agent_info_protos)
 
         for agent in agent_info_protos:
             write_delimited(f, agent)
+
+
+class DemoManager:
+    def __init__(
+        self, path: str, sequence_length: int = 1, expected_bspec: BehaviorSpec = None
+    ) -> None:
+        self.path = path
+        self._seq_len = sequence_length
+        self.loaded_files: Set[str] = set()
+        _, self._demo_buffer, file_paths = demo_to_buffer(
+            path, sequence_length, expected_bspec
+        )
+        self.loaded_files.update(file_paths)
+        if len(file_paths) == 0:
+            self._demo_buffer = AgentBuffer()
+            logger.warn(f"No demos found in {path}. Continuing to look for new files.")
+
+    @property
+    def demo_buffer(self) -> AgentBuffer:
+        return self._demo_buffer
+
+    def refresh(self) -> int:
+        bspec, loaded_demos, loaded_paths = load_demonstration(
+            self.path, self.loaded_files
+        )
+        if loaded_paths:
+            new_demos = make_demo_buffer(loaded_demos, bspec, self._seq_len)
+            new_demos.resequence_and_append(self._demo_buffer)
+            self.loaded_files.update(loaded_paths)
+            return new_demos.num_experiences
+        else:
+            return 0
