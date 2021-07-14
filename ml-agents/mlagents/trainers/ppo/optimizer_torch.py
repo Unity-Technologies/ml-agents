@@ -76,15 +76,18 @@ class TorchPPOOptimizer(TorchOptimizer):
         GlobalTrainingStatus.set_parameter_state(
             StatusType.STATS_NETWORK.value,
             StatusType.HYPERPARAM_COUNT,
-            len(self.get_trainable_parameters()),
+            self.get_trainable_parameters_count(),
         )
 
     @property
     def critic(self):
         return self._critic
 
-    def get_trainable_parameters(self):
-        return list(self.policy.actor.parameters()) + list(self._critic.parameters())
+    def get_trainable_parameters_count(self):
+        return self._param_count(self.policy.actor) + self._param_count(self._critic)
+
+    def _param_count(self, torch_module):
+        return sum(p.numel() for p in torch_module.parameters())
 
     @timed
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:

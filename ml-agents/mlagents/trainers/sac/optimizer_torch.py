@@ -214,20 +214,23 @@ class TorchSACOptimizer(TorchOptimizer):
         GlobalTrainingStatus.set_parameter_state(
             StatusType.STATS_NETWORK.value,
             StatusType.HYPERPARAM_COUNT,
-            len(self.get_trainable_parameters()),
+            self.get_trainable_parameters_count(),
         )
 
     @property
     def critic(self):
         return self._critic
 
-    def get_trainable_parameters(self):
+    def get_trainable_parameters_count(self):
         return (
-            list(self.policy.actor.parameters())
-            + list(self.q_network.parameters())
-            + list(self._critic.parameters())
-            + list(self._log_ent_coef.parameters())
+            self._param_count(self.policy.actor)
+            + self._param_count(self._critic)
+            + self._param_count(self.q_network)
+            + self._param_count(self._log_ent_coef)
         )
+
+    def _param_count(self, torch_module):
+        return sum(p.numel() for p in torch_module.parameters())
 
     def _move_to_device(self, device: torch.device) -> None:
         self._log_ent_coef.to(device)
