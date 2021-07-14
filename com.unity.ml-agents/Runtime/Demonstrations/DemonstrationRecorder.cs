@@ -65,6 +65,8 @@ namespace Unity.MLAgents.Demonstrations
         const string k_DefaultDirectoryName = "Demonstrations";
         IFileSystem m_FileSystem;
 
+        private string currentfilePath;
+
         Agent m_Agent;
 
         void OnEnable()
@@ -81,8 +83,14 @@ namespace Unity.MLAgents.Demonstrations
 
             LazyInitialize();
 
-            // Quit when num steps to record is reached
+            // Write new file when num steps is reached
             if (NumStepsToRecord > 0 && m_DemoWriter.NumSteps >= NumStepsToRecord)
+            {
+                Close();
+            }
+
+            // Quit when num steps to record is reached
+            if (false && NumStepsToRecord > 0 && m_DemoWriter.NumSteps >= NumStepsToRecord)
             {
                 Application.Quit(0);
 #if UNITY_EDITOR
@@ -120,7 +128,12 @@ namespace Unity.MLAgents.Demonstrations
 
             DemonstrationName = SanitizeName(DemonstrationName, MaxNameLength);
             var filePath = MakeDemonstrationFilePath(m_FileSystem, DemonstrationDirectory, DemonstrationName);
-            var stream = m_FileSystem.File.Create(filePath);
+            currentfilePath = filePath + ".tmp";
+            if (m_FileSystem.File.Exists(filePath))
+            {
+                m_FileSystem.File.Delete(filePath);
+            }
+            var stream = m_FileSystem.File.Create(currentfilePath);
             m_DemoWriter = new DemonstrationWriter(stream);
 
             AddDemonstrationWriterToAgent(m_DemoWriter);
@@ -188,6 +201,12 @@ namespace Unity.MLAgents.Demonstrations
 
                 m_DemoWriter.Close();
                 m_DemoWriter = null;
+                int fileExtPos = currentfilePath.LastIndexOf(".tmp");
+                if (fileExtPos >= 0)
+                {
+                    var newFilePath = currentfilePath.Substring(0, fileExtPos);
+                    m_FileSystem.File.Move(currentfilePath, newFilePath);
+                }
             }
         }
 
