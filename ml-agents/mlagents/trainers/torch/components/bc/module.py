@@ -10,6 +10,9 @@ from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.trajectory import ObsUtil
 from mlagents.trainers.buffer import AgentBuffer
+from mlagents_envs import logging_util
+
+logger = logging_util.get_logger(__name__)
 
 
 class BCModule:
@@ -64,13 +67,16 @@ class BCModule:
         :param max_batches: The maximum number of batches to use per update.
         :return: The loss of the update.
         """
-        # Don't continue training if the learning rate has reached 0, to reduce training time.
-        self._demo_manager.refresh()
+        num_new = self._demo_manager.refresh()
+        if num_new > 0:
+            # This is printed here so it is module-specific.
+            logger.info(f"Loaded {num_new} new demo samples for Behavior Cloning.")
 
         # Check if we have no demos at all.
         if len(self._demo_manager.demo_buffer.keys()) == 0:
             return {}
 
+        # Don't continue training if the learning rate has reached 0, to reduce training time.
         decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
         if self.current_lr <= 1e-10:  # Unlike in TF, this never actually reaches 0.
             return {"Losses/Pretraining Loss": 0}

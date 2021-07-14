@@ -46,7 +46,10 @@ class GAILRewardProvider(BaseRewardProvider):
             )
 
     def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
-        self._demo_manager.refresh()
+        num_new = self._demo_manager.refresh()
+        if num_new > 0:
+            # This is printed here so it is module-specific.
+            logger.info(f"Loaded {num_new} demo samples for GAIL.")
 
         # Check if we have no demos at all.
         if len(self._demo_manager.demo_buffer.keys()) == 0:
