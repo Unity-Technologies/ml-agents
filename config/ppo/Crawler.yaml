@@ -23,5 +23,10 @@ behaviors:
     max_steps: 500000
     time_horizon: 1000
     summary_freq: 30000
+    threaded: false
 environment_parameters:
   num_area: 10
+env_settings:
+  num_envs: 1
+torch_settings:
+  num_threads: 5
