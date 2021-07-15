@@ -413,7 +413,8 @@ class MultiAgentNetworkBody(torch.nn.Module):
             self._current_max_agents = torch.nn.Parameter(
                 torch.as_tensor(torch.max(num_agents).item()), requires_grad=False
             )
-
+        
+        # num_agents will be -1 for a single agent and +1 when the current maximum is reached
         num_agents = num_agents * 2.0 / self._current_max_agents - 1
 
         encoding = self.linear_encoder(encoded_state)
