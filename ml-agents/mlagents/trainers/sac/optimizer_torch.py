@@ -260,12 +260,23 @@ class DiverseNetworkVariational(torch.nn.Module):
 
         stats = {
             "Losses/MEDE Loss": total_loss.item(),
-            "Losses/MEDE Base": base_loss.item() / self.diverse_size,
-            "Policy/MEDE Accuracy": accuracy.item(),
-            "Policy/MEDE Variational": vail_loss.item() if vail_loss is not None else 0,
-            "Policy/MEDE KL": kl_loss.item() if kl_loss is not None else 0,
-            "Policy/MEDE beta": self._beta.item() if self._beta is not None else 0,
+            "MEDE/Reward": -base_loss.item(),
+            "MEDE/Accuracy": accuracy.item(),
+            "MEDE/Variational": vail_loss.item() if vail_loss is not None else 0,
+            "MEDE/KL": kl_loss.item() if kl_loss is not None else 0,
+            "MEDE/beta": self._beta.item() if self._beta is not None else 0,
         }
+
+        truth = torch.argmax(obs_input[self._diverse_index], dim=1)
+        counts = torch.bincount(truth, minlength=self.diverse_size)
+        for i in range(self.diverse_size):
+            r = torch.sum(torch.where(truth == i, rewards, torch.zeros_like(rewards))) / counts[i]
+            a = torch.sum(torch.where(truth == i, acc, torch.zeros_like(acc))) / counts[i]
+            stats.update({
+                "MEDE/Reward {}".format(i): r.item(),
+                "MEDE/Accuracy {}".format(i): a.item()
+            })
+        
         return total_loss, stats
 
     def get_stats(self, obs_input, cont_act, disc_act, masks):
