@@ -6,7 +6,7 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 
-public class LazerAgentDiverse : Agent
+public class LaserAgentDiverse : Agent
 {
 
     public GameObject goal;
@@ -39,6 +39,8 @@ public class LazerAgentDiverse : Agent
         transform.localPosition = new Vector3(-4.65f, 0.225f, startZ);
         transform.localEulerAngles = new Vector3(0f, startRot, 0f);
         transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
+        m_AgentRb.velocity = Vector3.zero;
+        m_AgentRb.angularVelocity = Vector3.zero;
         initJump = false;
         finishJump = false;
         initCrouch = false;
