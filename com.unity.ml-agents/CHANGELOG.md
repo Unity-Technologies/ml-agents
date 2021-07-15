@@ -18,6 +18,7 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed a bug in multi-agent cooperative training where agents might not receive all of the states of
 terminated teammates. (#5441)
+- Fixed a bug when using LSTM and SAC where the buffer might contain non-integer numbers of sequences. (#5456)
 
 ## [2.1.0-exp.1] - 2021-06-09
 ### Minor Changes
