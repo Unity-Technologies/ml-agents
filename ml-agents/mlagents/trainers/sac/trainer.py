@@ -12,6 +12,8 @@ from mlagents.trainers.policy.checkpoint_manager import ModelCheckpoint
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
 from mlagents_envs.base_env import BehaviorSpec
+from mlagents_envs.base_env import ObservationType
+from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
@@ -181,6 +183,20 @@ class SACTrainer(RLTrainer):
         self._append_to_update_buffer(agent_buffer_trajectory)
 
         if trajectory.done_reached:
+
+            if self.hyperparameters.mede:
+                diversity_setting = np.argmax([
+                    obs
+                    for obs, spec in zip(trajectory.steps[0].obs, 
+                                         self.policy.behavior_spec.observation_specs)
+                    if spec.observation_type == ObservationType.GOAL_SIGNAL
+                ][0])
+                self.stats_reporter.add_stat(
+                    "Environment/Behavior {} Reward".format(diversity_setting),
+                    self.collected_rewards["environment"].get(agent_id, 0),
+                    aggregation=StatsAggregationMethod.HISTOGRAM,
+                )
+
             self._update_end_episode_stats(agent_id, self.optimizer)
 
     def _is_ready_update(self) -> bool:
