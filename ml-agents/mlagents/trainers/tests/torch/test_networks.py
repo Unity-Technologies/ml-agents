@@ -128,7 +128,6 @@ def test_multinetworkbody_vector(with_actions):
             )
         else:
             encoded, _ = networkbody(obs_only=sample_obs, obs=[], actions=[])
-        assert encoded.shape == (1, network_settings.hidden_units)
         # Try to force output to 1
         loss = torch.nn.functional.mse_loss(encoded, torch.ones(encoded.shape))
         optimizer.zero_grad()
@@ -225,8 +224,6 @@ def test_multinetworkbody_visual(with_actions):
             )
         else:
             encoded, _ = networkbody(obs_only=sample_obs, obs=[], actions=[])
-
-        assert encoded.shape == (1, network_settings.hidden_units)
         # Try to force output to 1
         loss = torch.nn.functional.mse_loss(encoded, torch.ones(encoded.shape))
         optimizer.zero_grad()
@@ -326,3 +323,35 @@ def test_actor_critic(lstm, shared):
 
     if mem_out is not None:
         assert mem_out.shape == memories.shape
+
+
+@pytest.mark.parametrize("with_actions", [True, False], ids=["actions", "no_actions"])
+def test_multinetworkbody_num_agents(with_actions):
+    torch.manual_seed(0)
+    act_size = 2
+    obs_size = 4
+    network_settings = NetworkSettings()
+    obs_shapes = [(obs_size,)]
+    action_spec = ActionSpec(act_size, tuple(act_size for _ in range(act_size)))
+    networkbody = MultiAgentNetworkBody(
+        create_observation_specs_with_shapes(obs_shapes), network_settings, action_spec
+    )
+    sample_obs = [[0.1 * torch.ones((1, obs_size))]]
+    # simulate baseline in POCA
+    sample_act = [
+        AgentAction(
+            0.1 * torch.ones((1, 2)), [0.1 * torch.ones(1) for _ in range(act_size)]
+        )
+    ]
+    for n_agent, max_so_far in [(1, 1), (5, 5), (4, 5), (10, 10), (5, 10), (1, 10)]:
+        if with_actions:
+            encoded, _ = networkbody(
+                obs_only=sample_obs * (n_agent - 1), obs=sample_obs, actions=sample_act
+            )
+        else:
+            encoded, _ = networkbody(obs_only=sample_obs * n_agent, obs=[], actions=[])
+        # look at the last value of the hidden units (the number of agents)
+        target = (n_agent * 1.0 / max_so_far) * 2 - 1
+        assert abs(encoded[0, -1].item() - target) < 1e-6
+        assert encoded[0, -1].item() <= 1
+        assert encoded[0, -1].item() >= -1
