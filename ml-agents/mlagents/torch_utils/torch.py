@@ -2,8 +2,7 @@ import os
 
 from distutils.version import LooseVersion
 import pkg_resources
-
-# from mlagents.torch_utils import cpu_utils
+from mlagents.torch_utils import cpu_utils
 from mlagents.trainers.settings import TorchSettings
 from mlagents_envs.logging_util import get_logger
 
@@ -58,11 +57,16 @@ def set_torch_config(
         torch.set_default_tensor_type(torch.cuda.FloatTensor)
     else:
         torch.set_default_tensor_type(torch.FloatTensor)
-    logger.debug(f"default Torch device: {_device}")
+    logger.info(f"default Torch device: {_device}")
 
     if set_torch_threads:
-        torch.set_num_threads(torch_settings.num_threads)
-    logger.debug(f"Torch num_threads: {torch.get_num_threads()}")
+        print(torch_settings.num_threads)
+        if torch_settings.num_threads > 0:
+            torch.set_num_threads(torch_settings.num_threads)
+            logger.info(f"set Torch num_threads: {torch.get_num_threads()}")
+        else:
+            torch.set_num_threads(cpu_utils.get_num_threads_to_use())
+            logger.info(f"default Torch num_threads: {torch.get_num_threads()}")
 
 
 # Initialize to default settings
