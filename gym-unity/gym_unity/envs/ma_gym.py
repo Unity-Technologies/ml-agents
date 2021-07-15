@@ -158,7 +158,7 @@ class MultiAgentGymWrapper(gym.Env):
         if self._agent_index < len(decision_batch):
 
             # the index is within the decsion steps
-            obs = [batch_obs[self._agent_index] for batch_obs in decision_batch.obs]
+            obs = tuple([batch_obs[self._agent_index] for batch_obs in decision_batch.obs])
             reward = decision_batch.reward[self._agent_index]
             done = False
 
@@ -182,7 +182,7 @@ class MultiAgentGymWrapper(gym.Env):
         if self._agent_index < len(decision_batch) + len(termination_batch):
             # The index is within the terminal steps
             index = self._agent_index - len(decision_batch)
-            obs = [batch_obs[index] for batch_obs in termination_batch.obs]
+            obs = tuple([batch_obs[index] for batch_obs in termination_batch.obs])
             reward = termination_batch.reward[index]
             done = True
             self._last = AgentStatus(
