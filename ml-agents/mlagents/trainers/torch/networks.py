@@ -431,8 +431,10 @@ class MultiAgentNetworkBody(torch.nn.Module):
                 ]
                 encoded_group_obs += [encoded_group_obs[0] * 0] * (self._max_agents - len(encoded_group_obs) - 1)
                 encoded_group_obs = torch.cat(encoded_group_obs, dim=1)
+                encoded_group_obs = torch.nan_to_num(encoded_group_obs)
                 flattened_group_actions += [flattened_group_actions[0] * 0] * (self._max_agents - len(flattened_group_actions) - 1)
                 flattened_group_actions = torch.cat(flattened_group_actions, dim=1)
+                flattened_group_actions = torch.nan_to_num(flattened_group_actions)
                 # this should always have just one element
                 encoded_obs = self.observation_encoder(obs_only[0])
                 baseline_inp = torch.cat(
@@ -444,6 +446,7 @@ class MultiAgentNetworkBody(torch.nn.Module):
                 # do the padding
                 encoded_obs += [encoded_obs[0] * 0] * (self._max_agents - len(encoded_obs))
                 encoded_obs = torch.cat(encoded_obs, dim=1)
+                encoded_obs = torch.nan_to_num(encoded_obs)
                 encoded_state = self.all_obs_encoder(encoded_obs)
                 # calculate value
         encoding = self.linear_encoder(encoded_state)
