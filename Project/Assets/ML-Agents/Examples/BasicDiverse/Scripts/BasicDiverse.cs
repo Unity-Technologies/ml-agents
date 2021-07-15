@@ -13,7 +13,7 @@ public class BasicDiverse : Agent
     public GameObject goal2;
     public GameObject goal3;
     public GameObject goal4;
-    Rigidbody m_AgentRb;
+    protected Rigidbody m_AgentRb;
 
     VectorSensorComponent m_DiversitySettingSensor;
     public int m_DiversitySetting = 0;
@@ -31,6 +31,8 @@ public class BasicDiverse : Agent
     public override void OnEpisodeBegin()
     {
         transform.localPosition = new Vector3(0, 0.225f, 0);
+        m_AgentRb.velocity = Vector3.zero;
+        m_AgentRb.angularVelocity = Vector3.zero;
 
         m_DiversitySetting = Random.Range(0, m_NumDiversityBehaviors);
     }
@@ -52,27 +54,54 @@ public class BasicDiverse : Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        var action = actionBuffers.DiscreteActions[0];
+        int forwardAction = actionBuffers.DiscreteActions[0];
+        int sideAction = actionBuffers.DiscreteActions[1];
 
-        var dirToGo = Vector3.zero;
-        switch (action)
+        Vector3 dirToGo = Vector3.zero;
+        switch (forwardAction)
         {
             case 1:
-                dirToGo = transform.forward * 1f;
+                dirToGo += transform.forward;
                 break;
             case 2:
-                dirToGo = transform.forward * -1f;
+                dirToGo -= transform.forward;
                 break;
-            case 3:
-                dirToGo = transform.right * 1f;
+        }
+        switch (sideAction)
+        {
+            case 1:
+                dirToGo += transform.right;
                 break;
-            case 4:
-                dirToGo = transform.right * -1f;
+            case 2:
+                dirToGo -= transform.right;
                 break;
         }
 
+        dirToGo = Vector3.Normalize(dirToGo);
         m_AgentRb.AddForce(dirToGo * m_AgentSpeed, ForceMode.VelocityChange);
         AddReward(-1f / MaxStep);
+    }
+
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        var discreteActionsOut = actionsOut.DiscreteActions;
+
+        if (Input.GetKey(KeyCode.W))
+        {
+            discreteActionsOut[0] = 1;
+        }
+        else if (Input.GetKey(KeyCode.S))
+        {
+            discreteActionsOut[0] = 2;
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            discreteActionsOut[1] = 1;
+        }
+        else if (Input.GetKey(KeyCode.A))
+        {
+            discreteActionsOut[1] = 2;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
