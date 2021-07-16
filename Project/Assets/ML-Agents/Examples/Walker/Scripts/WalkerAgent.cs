@@ -186,18 +186,27 @@ public class WalkerAgent : Agent
         }
     }
 
-    // public Vector3 GetTargetDir()
+    public Vector3 TargetDirProjectedOnGround
+    {
+        get
+        {
+            var dir = target.position - VirtualRoot.position;
+            dir = Vector3.ProjectOnPlane(dir, Vector3.up);
+            dir.Normalize();
+            // Debug.DrawRay(VirtualRoot.position, dir, Color.cyan);
+            return dir;
+        }
+    }
+
+    // public Vector3 targetDir
     // {
     //     get
     //     {
-    //         var targetDir = target.position - VirtualRoot.position;
-    //         targetDir.y = 0;
-    //         Debug.DrawRay(VirtualRoot.position, targetDir, Color.cyan);
-    //         return targetDir;
-    //     }
-    //     set
-    //     {
-    //
+    //         var dir = target.position - VirtualRoot.position;
+    //         dir = Vector3.ProjectOnPlane(dir, Vector3.up);
+    //         dir.Normalize();
+    //         Debug.DrawRay(VirtualRoot.position, dir, Color.cyan);
+    //         return dir;
     //     }
     // }
 
@@ -220,14 +229,17 @@ public class WalkerAgent : Agent
         var bodyAccel = (currentBodyVel - bodyVelocityLastFrame) / Time.fixedDeltaTime;
         sensor.AddObservation(VirtualRoot.InverseTransformDirection(bodyAccel));
         bodyVelocityLastFrame = currentBodyVel;
-        Debug.DrawRay(Vector3.zero, VirtualRoot.InverseTransformDirection(bodyAccel), Color.yellow, .1f);
+        // Debug.DrawRay(Vector3.zero, VirtualRoot.InverseTransformDirection(bodyAccel), Color.yellow, .1f);
 
 
 
         //velocity we want to match
-        var targetDir = target.position - VirtualRoot.position;
-        var velGoal = targetDir.normalized * MTargetWalkingSpeed;
-        Debug.DrawRay(Vector3.zero, Vector3.ProjectOnPlane(velGoal, Vector3.up), Color.magenta, .02f);
+        // var targetDir = target.position - VirtualRoot.position;
+        // var velGoal = targetDir.normalized * MTargetWalkingSpeed;
+        var targetDirProjectedOnGround = TargetDirProjectedOnGround;
+        var velGoal = targetDirProjectedOnGround * MTargetWalkingSpeed;
+        // Debug.DrawRay(Vector3.zero, Vector3.ProjectOnPlane(velGoal, Vector3.up), Color.magenta, .02f);
+        Debug.DrawRay(Vector3.zero, velGoal, Color.magenta, .02f);
 
         // var velGoal = cubeForward * MTargetWalkingSpeed;
         //ragdoll's avg vel
@@ -242,9 +254,10 @@ public class WalkerAgent : Agent
 
         // var bodyForward = -body.up;
         //rotation deltas
-        sensor.AddObservation(Quaternion.FromToRotation(hips.forward, targetDir.normalized));
+        // sensor.AddObservation(Quaternion.FromToRotation(hips.forward, targetDirNormalizedProjected));
+        sensor.AddObservation(Quaternion.FromToRotation(forwardDirProjectedOnGround, targetDirProjectedOnGround));
         // sensor.AddObservation(Quaternion.FromToRotation(head.forward, targetDir.normalized));
-
+        sensor.AddObservation(Vector3.Dot(targetDirProjectedOnGround, forwardDirProjectedOnGround));
         // //rotation deltas
         // sensor.AddObservation(Quaternion.FromToRotation(bodyForward, cubeForward));
         // sensor.AddObservation(Quaternion.FromToRotation(bodyForward, cubeForward));
@@ -381,19 +394,50 @@ public class WalkerAgent : Agent
         raySensor.SphereCastRadius = Mathf.Lerp(MinMaxSpherecastRadius.x, MinMaxSpherecastRadius.y, CurrentSpherecastRadiusLerp);
     }
 
+    // void GiveRewards()
+    // {
+    //     var targetDir = target.position - VirtualRoot.position;
+    //     // targetDir.y = VirtualRoot.position.y;
+    //
+    //     // Set reward for this step according to mixture of the following elements.
+    //     // a. Match target speed
+    //     //This reward will approach 1 if it matches perfectly and approach zero as it deviates
+    //     var matchSpeedReward = GetMatchingVelocityReward(targetDir.normalized * MTargetWalkingSpeed, GetAvgVelocity());
+    //
+    //     // b. Rotation alignment with target direction.
+    //     //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
+    //     var lookAtTargetReward = (Vector3.Dot(targetDir.normalized, hips.forward) + 1) * .5F;
+    //
+    //     AddReward(matchSpeedReward * lookAtTargetReward);
+    // }
+
+    public Vector3 forwardDirProjectedOnGround
+    {
+        get
+        {
+            var dir = Vector3.ProjectOnPlane(hips.forward, Vector3.up);
+            dir.Normalize();
+            Debug.DrawRay(Vector3.zero, dir, Color.blue, .1f);
+
+            return dir;
+        }
+    }
+
     void GiveRewards()
     {
-        var targetDir = target.position - VirtualRoot.position;
+        var targetDirProjectedOnGround = TargetDirProjectedOnGround;
         // targetDir.y = VirtualRoot.position.y;
 
         // Set reward for this step according to mixture of the following elements.
         // a. Match target speed
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
-        var matchSpeedReward = GetMatchingVelocityReward(targetDir.normalized * MTargetWalkingSpeed, GetAvgVelocity());
+        var matchSpeedReward = GetMatchingVelocityReward(targetDirProjectedOnGround * MTargetWalkingSpeed, GetAvgVelocity());
 
         // b. Rotation alignment with target direction.
         //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
-        var lookAtTargetReward = (Vector3.Dot(targetDir.normalized, hips.forward) + 1) * .5F;
+        // var lookAtTargetReward = (Vector3.Dot(targetDir, hips.forward) + 1) * .5F;
+        var lookAtTargetReward = (Vector3.Dot(targetDirProjectedOnGround, forwardDirProjectedOnGround) + 1) * .5F;
+        // Debug.DrawRay(Vector3.zero, lookAtTargetReward, Color.green, .02f);
 
         AddReward(matchSpeedReward * lookAtTargetReward);
     }
@@ -415,7 +459,7 @@ public class WalkerAgent : Agent
 
         var avgVel = velSum / numOfRb;
         Debug.DrawRay(Vector3.zero, Vector3.ProjectOnPlane(avgVel, Vector3.up), Color.green, .02f);
-        return avgVel;
+        return Vector3.ProjectOnPlane(avgVel, Vector3.up);
     }
 
     //normalized value of the difference in avg speed vs goal walking speed.
@@ -466,7 +510,7 @@ public class WalkerAgent : Agent
         // SetTorsoMass();
 
 
-        transformToAttachRingSensorTo = ringSensorAttachToHips ? hips : head;
+        transformToAttachRingSensorTo = ringSensorAttachToHips ? hips : chest;
         ringSensorOrientation.UseWorldUpForRotation = forceWorldUpRotationOnRingSensor;
         ringSensorOrientation.AttachedToTransform = transformToAttachRingSensorTo;
         TerrainGameObject.SetActive(TerrainEnabled);

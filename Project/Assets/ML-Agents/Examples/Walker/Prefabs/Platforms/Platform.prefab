@@ -3755,7 +3755,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &416783073
 Transform:
   m_ObjectHideFlags: 0
@@ -11138,13 +11138,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1063421703}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3223649cbe62f441aaceb9921d6c8182, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numberOfSides: 4
+  numberOfSides: 6
   polygonRadius: 1
+  rayPosList: []
 --- !u!1 &1066218130
 GameObject:
   m_ObjectHideFlags: 0
@@ -15252,7 +15253,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 244
+    VectorObservationSize: 245
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 41
@@ -15261,7 +15262,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: ae9d3b7c9c92e4b0692ad859f7faad63, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 6422d1d7a5d404b44998bc5d5090557b, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Walker
@@ -15330,8 +15331,8 @@ MonoBehaviour:
   CurrentRayAngleLerp: 0.5
   CurrentSpherecastRadiusLerp: 0.5
   bodyVelocityLastFrame: {x: 0, y: 0, z: 0}
-  UseResetParams: 0
-  TerrainEnabled: 0
+  UseResetParams: 1
+  TerrainEnabled: 1
   ringSensorAttachToHips: 1
   forceWorldUpRotationOnRingSensor: 1
   TerrainGameObject: {fileID: 2147461407}
@@ -24230,7 +24231,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 259758007661613039}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -24272,7 +24273,6 @@ GameObject:
   m_Component:
   - component: {fileID: 259758009025069976}
   - component: {fileID: 259758009025069977}
-  - component: {fileID: 1856807054948394811}
   m_Layer: 0
   m_Name: RingSensor
   m_TagString: Untagged
@@ -24309,20 +24309,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AttachedToTransform: {fileID: 1063421704}
   UseWorldUpForRotation: 1
---- !u!114 &1856807054948394811
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 259758009025069975}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3223649cbe62f441aaceb9921d6c8182, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  numberOfSides: 4
-  polygonRadius: 1
 --- !u!1 &259758009136951300
 GameObject:
   m_ObjectHideFlags: 0
@@ -24338,7 +24324,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &259758009136951301
 Transform:
   m_ObjectHideFlags: 0
@@ -35586,7 +35572,7 @@ PrefabInstance:
     - target: {fileID: 6907740118844148851, guid: f0d7741d9e06247f6843b921a206b978,
         type: 3}
       propertyPath: m_Name
-      value: Platform
+      value: PlatformDynamicTarget
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0d7741d9e06247f6843b921a206b978, type: 3}

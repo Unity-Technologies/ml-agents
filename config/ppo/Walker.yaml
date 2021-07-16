@@ -4,14 +4,18 @@ behaviors:
     hyperparameters:
       # batch_size: 1280 #640 #2048
       # buffer_size: 12800 #6400 #20480
-      batch_size: 3840 #1280 #640 #2048 #128 per agent == ~8.5 sec irl
-      buffer_size: 38400 #12800 #6400 #20480
+      batch_size: 6400 #1280 #640 #2048 #128 per agent == ~8.5 sec irl
+      buffer_size: 64000 #12800 #6400 #20480
+      # batch_size: 3840 #1280 #640 #2048 #128 per agent == ~8.5 sec irl
+      # buffer_size: 38400 #12800 #6400 #20480
       learning_rate: 0.0003
-      beta: 0.003 #0.005
+      beta: 0.005
+      # beta: 0.003 #0.005
       epsilon: 0.2
       lambd: 0.95
       num_epoch: 3
-      learning_rate_schedule: constant #linear
+      learning_rate_schedule: linear
+      # learning_rate_schedule: constant #linear
     network_settings:
       normalize: true
       hidden_units: 512
@@ -24,21 +28,22 @@ behaviors:
     #   samples_per_update: 0
     reward_signals:
       extrinsic:
-        gamma: 0.99 #0.995
+        gamma: 0.995
+        # gamma: 0.99 #0.995
         strength: 1.0
-      curiosity:
-        gamma: 0.99
-        strength: 0.02
-        network_settings:
-          hidden_units: 256
-        learning_rate: 0.0003
+      # curiosity:
+      #   gamma: 0.99
+      #   strength: 0.02
+      #   network_settings:
+      #     hidden_units: 256
+      #   learning_rate: 0.0003
     keep_checkpoints: 5
     threaded: true
     max_steps: 50000000
     time_horizon: 1000
     summary_freq: 10000 #30000
 env_settings:
-  num_envs: 3
+  num_envs: 5
 
 # engine_settings:
 #   width: 84
@@ -58,23 +63,23 @@ env_settings:
 #   #less than .5 use attached transform rot otherwise use world up
 #   ring_sensor_use_world_up_rot : .7
 
-# # use terrain, head, use world up
+# use terrain, chest, use world up
+environment_parameters:
+  #less than .5 is false, greater than .5 is true
+  terrain_enabled : .7
+  #less than .5 attach to hips otherwise attach to chest
+  ring_sensor_use_hips_or_head : .7
+  #less than .5 use attached transform rot otherwise use world up
+  ring_sensor_use_world_up_rot : .7
+
+# # use terrain, hips, use transform rot
 # environment_parameters:
 #   #less than .5 is false, greater than .5 is true
 #   terrain_enabled : .7
 #   #less than .5 attach to hips otherwise attach to head
-#   ring_sensor_use_hips_or_head : .7
+#   ring_sensor_use_hips_or_head : .2
 #   #less than .5 use attached transform rot otherwise use world up
-#   ring_sensor_use_world_up_rot : .7
-
-# use terrain, hips, use transform rot
-environment_parameters:
-  #less than .5 is false, greater than .5 is true
-  terrain_enabled : .7
-  #less than .5 attach to hips otherwise attach to head
-  ring_sensor_use_hips_or_head : .2
-  #less than .5 use attached transform rot otherwise use world up
-  ring_sensor_use_world_up_rot : .2
+#   ring_sensor_use_world_up_rot : .2
 
 # # use terrain, head, use world up
 # environment_parameters:
