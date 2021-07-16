@@ -91,8 +91,15 @@ public class WalkerAgent : Agent
     EnvironmentParameters m_ResetParams;
     public Vector3 bodyVelocityLastFrame;
 
+    [Header("RESET PARAMS")]
+    public bool UseResetParams = true;
     public bool TerrainEnabled = false;
+    public bool ringSensorAttachToHips;
+    public bool forceWorldUpRotationOnRingSensor;
     public GameObject TerrainGameObject;
+    public SetLocalUpToWorldUp ringSensorOrientation;
+    public Transform transformToAttachRingSensorTo;
+
     public override void Initialize()
     {
         // m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
@@ -166,7 +173,10 @@ public class WalkerAgent : Agent
         sensor.AddObservation(VirtualRoot.InverseTransformDirection(bp.rb.angularVelocity));
 
         //Get position relative to hips in the context of our orientation cube's space
-        sensor.AddObservation(VirtualRoot.InverseTransformDirection(bp.rb.position));
+        // sensor.AddObservation(VirtualRoot.InverseTransformDirection(bp.rb.position));
+        // Debug.DrawRay(Vector3.zero, VirtualRoot.InverseTransformPoint(bp.rb.position), Color.red, .1f);
+
+        sensor.AddObservation(VirtualRoot.InverseTransformPoint(bp.rb.position));
         // sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));
 
         if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR)
@@ -175,6 +185,21 @@ public class WalkerAgent : Agent
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
+
+    // public Vector3 GetTargetDir()
+    // {
+    //     get
+    //     {
+    //         var targetDir = target.position - VirtualRoot.position;
+    //         targetDir.y = 0;
+    //         Debug.DrawRay(VirtualRoot.position, targetDir, Color.cyan);
+    //         return targetDir;
+    //     }
+    //     set
+    //     {
+    //
+    //     }
+    // }
 
     /// <summary>
     /// Loop over body parts to add them to observation.
@@ -195,12 +220,15 @@ public class WalkerAgent : Agent
         var bodyAccel = (currentBodyVel - bodyVelocityLastFrame) / Time.fixedDeltaTime;
         sensor.AddObservation(VirtualRoot.InverseTransformDirection(bodyAccel));
         bodyVelocityLastFrame = currentBodyVel;
+        Debug.DrawRay(Vector3.zero, VirtualRoot.InverseTransformDirection(bodyAccel), Color.yellow, .1f);
 
 
 
         //velocity we want to match
         var targetDir = target.position - VirtualRoot.position;
         var velGoal = targetDir.normalized * MTargetWalkingSpeed;
+        Debug.DrawRay(Vector3.zero, Vector3.ProjectOnPlane(velGoal, Vector3.up), Color.magenta, .02f);
+
         // var velGoal = cubeForward * MTargetWalkingSpeed;
         //ragdoll's avg vel
         var avgVel = GetAvgVelocity();
@@ -356,6 +384,7 @@ public class WalkerAgent : Agent
     void GiveRewards()
     {
         var targetDir = target.position - VirtualRoot.position;
+        // targetDir.y = VirtualRoot.position.y;
 
         // Set reward for this step according to mixture of the following elements.
         // a. Match target speed
@@ -385,6 +414,7 @@ public class WalkerAgent : Agent
         }
 
         var avgVel = velSum / numOfRb;
+        Debug.DrawRay(Vector3.zero, Vector3.ProjectOnPlane(avgVel, Vector3.up), Color.green, .02f);
         return avgVel;
     }
 
@@ -414,11 +444,31 @@ public class WalkerAgent : Agent
         m_JdController.bodyPartsDict[hips].rb.mass = m_ResetParams.GetWithDefault("hip_mass", 8);
     }
 
+
+    public bool RingSensorHighResolution = true;
     public void SetResetParameters()
     {
+        if (UseResetParams)
+        {
+            //less than .5 attach to hips otherwise attach to head
+            ringSensorAttachToHips = m_ResetParams.GetWithDefault("ring_sensor_use_hips_or_head", .2f) < .5f;
+            //less than .5 use attached transform rot otherwise use world up
+            forceWorldUpRotationOnRingSensor = m_ResetParams.GetWithDefault("ring_sensor_use_world_up_rot", .7f) > .5f;
+            //less than .5 is false, greater than is true
+            TerrainEnabled = m_ResetParams.GetWithDefault("terrain_enabled", .7f) > .5f;
+            // //less than .5 is false, greater than is true
+            // UseActuatedRaycastSensor = m_ResetParams.GetWithDefault("use_actuated_sensors", .7f) > .5f;
+            // //less than .5 is false, greater than is true
+            // RingSensorHighResolution = m_ResetParams.GetWithDefault("ring_sensor_high_resolution", .7f) > .5f;
+        }
+
+
         // SetTorsoMass();
-        //less than .5 is false, greater than is true
-        // TerrainEnabled = m_ResetParams.GetWithDefault("terrain_enabled", .7f) > .5f;
+
+
+        transformToAttachRingSensorTo = ringSensorAttachToHips ? hips : head;
+        ringSensorOrientation.UseWorldUpForRotation = forceWorldUpRotationOnRingSensor;
+        ringSensorOrientation.AttachedToTransform = transformToAttachRingSensorTo;
         TerrainGameObject.SetActive(TerrainEnabled);
     }
 }

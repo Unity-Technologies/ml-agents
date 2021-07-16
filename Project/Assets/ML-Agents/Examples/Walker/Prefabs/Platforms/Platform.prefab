@@ -201,7 +201,7 @@ Transform:
   m_LocalScale: {x: 1.2840918, y: 0.39110318, z: 0.7331325}
   m_Children: []
   m_Father: {fileID: 1063421704}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &25691770
 MeshFilter:
@@ -284,7 +284,7 @@ Transform:
   - {fileID: 1764039471}
   - {fileID: 390172438}
   m_Father: {fileID: 1063421704}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &30498667
 Rigidbody:
@@ -2417,8 +2417,14 @@ MonoBehaviour:
   CurrentRayAngleLerp: 0.5
   CurrentSpherecastRadiusLerp: 0.5
   bodyVelocityLastFrame: {x: 0, y: 0, z: 0}
+  UseResetParams: 1
   TerrainEnabled: 0
+  ringSensorAttachToHips: 0
+  forceWorldUpRotationOnRingSensor: 0
   TerrainGameObject: {fileID: 0}
+  ringSensorOrientation: {fileID: 0}
+  transformToAttachRingSensorTo: {fileID: 0}
+  RingSensorHighResolution: 1
 --- !u!114 &256448136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3764,7 +3770,7 @@ Transform:
   - {fileID: 1070953380}
   - {fileID: 166373155}
   m_Father: {fileID: 1365772897}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &416783076
 MeshFilter:
@@ -7152,7 +7158,7 @@ Transform:
   - {fileID: 954243050}
   - {fileID: 2116661576}
   m_Father: {fileID: 1063421704}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: -90, y: 90, z: 0}
 --- !u!54 &699488274
 Rigidbody:
@@ -11052,6 +11058,7 @@ GameObject:
   - component: {fileID: 1063421707}
   - component: {fileID: 1063421705}
   - component: {fileID: 1063421706}
+  - component: {fileID: 7643008831877693128}
   m_Layer: 0
   m_Name: hips
   m_TagString: agent
@@ -11070,13 +11077,12 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 259758009025069976}
   - {fileID: 25691768}
   - {fileID: 1190131073}
   - {fileID: 699488273}
   - {fileID: 30498666}
   m_Father: {fileID: 1365772897}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &1063421707
 CapsuleCollider:
@@ -11125,6 +11131,20 @@ MonoBehaviour:
   penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
+--- !u!114 &7643008831877693128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1063421703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3223649cbe62f441aaceb9921d6c8182, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numberOfSides: 4
+  polygonRadius: 1
 --- !u!1 &1066218130
 GameObject:
   m_ObjectHideFlags: 0
@@ -12423,7 +12443,7 @@ Transform:
   - {fileID: 588969378}
   - {fileID: 950942519}
   m_Father: {fileID: 1063421704}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: -90, y: 90, z: 0}
 --- !u!54 &1190131074
 Rigidbody:
@@ -15212,6 +15232,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 4.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 259758009025069976}
   - {fileID: 1063421704}
   - {fileID: 416783073}
   - {fileID: 459844258819902941}
@@ -15240,7 +15261,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 463de865c04d84994af475b980722828, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: ae9d3b7c9c92e4b0692ad859f7faad63, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Walker
@@ -15309,8 +15330,14 @@ MonoBehaviour:
   CurrentRayAngleLerp: 0.5
   CurrentSpherecastRadiusLerp: 0.5
   bodyVelocityLastFrame: {x: 0, y: 0, z: 0}
+  UseResetParams: 0
   TerrainEnabled: 0
+  ringSensorAttachToHips: 1
+  forceWorldUpRotationOnRingSensor: 1
   TerrainGameObject: {fileID: 2147461407}
+  ringSensorOrientation: {fileID: 259758009025069977}
+  transformToAttachRingSensorTo: {fileID: 0}
+  RingSensorHighResolution: 1
 --- !u!114 &1365772900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20817,8 +20844,14 @@ MonoBehaviour:
   CurrentRayAngleLerp: 0.5
   CurrentSpherecastRadiusLerp: 0.5
   bodyVelocityLastFrame: {x: 0, y: 0, z: 0}
+  UseResetParams: 1
   TerrainEnabled: 0
+  ringSensorAttachToHips: 0
+  forceWorldUpRotationOnRingSensor: 0
   TerrainGameObject: {fileID: 0}
+  ringSensorOrientation: {fileID: 0}
+  transformToAttachRingSensorTo: {fileID: 0}
+  RingSensorHighResolution: 1
 --- !u!114 &1808585460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21841,8 +21874,14 @@ MonoBehaviour:
   CurrentRayAngleLerp: 0.5
   CurrentSpherecastRadiusLerp: 0.5
   bodyVelocityLastFrame: {x: 0, y: 0, z: 0}
+  UseResetParams: 1
   TerrainEnabled: 0
+  ringSensorAttachToHips: 0
+  forceWorldUpRotationOnRingSensor: 0
   TerrainGameObject: {fileID: 0}
+  ringSensorOrientation: {fileID: 0}
+  transformToAttachRingSensorTo: {fileID: 0}
+  RingSensorHighResolution: 1
 --- !u!114 &1898202123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24233,6 +24272,7 @@ GameObject:
   m_Component:
   - component: {fileID: 259758009025069976}
   - component: {fileID: 259758009025069977}
+  - component: {fileID: 1856807054948394811}
   m_Layer: 0
   m_Name: RingSensor
   m_TagString: Untagged
@@ -24252,7 +24292,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 259758007661613040}
-  m_Father: {fileID: 1063421704}
+  m_Father: {fileID: 1365772897}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &259758009025069977
@@ -24268,6 +24308,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AttachedToTransform: {fileID: 1063421704}
+  UseWorldUpForRotation: 1
+--- !u!114 &1856807054948394811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 259758009025069975}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3223649cbe62f441aaceb9921d6c8182, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numberOfSides: 4
+  polygonRadius: 1
 --- !u!1 &259758009136951300
 GameObject:
   m_ObjectHideFlags: 0
@@ -25345,8 +25400,14 @@ MonoBehaviour:
   CurrentRayAngleLerp: 0.5
   CurrentSpherecastRadiusLerp: 0.5
   bodyVelocityLastFrame: {x: 0, y: 0, z: 0}
+  UseResetParams: 1
   TerrainEnabled: 0
+  ringSensorAttachToHips: 0
+  forceWorldUpRotationOnRingSensor: 0
   TerrainGameObject: {fileID: 0}
+  ringSensorOrientation: {fileID: 0}
+  transformToAttachRingSensorTo: {fileID: 0}
+  RingSensorHighResolution: 1
 --- !u!114 &561456911780448875
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27004,8 +27065,14 @@ MonoBehaviour:
   CurrentRayAngleLerp: 0.5
   CurrentSpherecastRadiusLerp: 0.5
   bodyVelocityLastFrame: {x: 0, y: 0, z: 0}
+  UseResetParams: 1
   TerrainEnabled: 0
+  ringSensorAttachToHips: 0
+  forceWorldUpRotationOnRingSensor: 0
   TerrainGameObject: {fileID: 0}
+  ringSensorOrientation: {fileID: 0}
+  transformToAttachRingSensorTo: {fileID: 0}
+  RingSensorHighResolution: 1
 --- !u!114 &7600732837591195078
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35519,7 +35586,7 @@ PrefabInstance:
     - target: {fileID: 6907740118844148851, guid: f0d7741d9e06247f6843b921a206b978,
         type: 3}
       propertyPath: m_Name
-      value: PlatformDynamicTarget
+      value: Platform
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0d7741d9e06247f6843b921a206b978, type: 3}
@@ -35629,7 +35696,7 @@ PrefabInstance:
     - target: {fileID: 2591864627249999504, guid: 72f745913c5a34df5aaadd5c1f0024cb,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2591864627249999504, guid: 72f745913c5a34df5aaadd5c1f0024cb,
         type: 3}

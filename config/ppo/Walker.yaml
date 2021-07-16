@@ -39,9 +39,7 @@ behaviors:
     summary_freq: 10000 #30000
 env_settings:
   num_envs: 3
-environment_parameters:
-  #less than .5 is false, greater than .5 is true
-  terrain_enabled : .7
+
 # engine_settings:
 #   width: 84
 #   height: 84
@@ -50,3 +48,39 @@ environment_parameters:
 #   target_frame_rate: 1000 #-1
 #   capture_frame_rate: 0
 #   no_graphics: true
+
+# # use terrain, hips, use world up
+# environment_parameters:
+#   #less than .5 is false, greater than .5 is true
+#   terrain_enabled : .7
+#   #less than .5 attach to hips otherwise attach to head
+#   ring_sensor_use_hips_or_head : .2
+#   #less than .5 use attached transform rot otherwise use world up
+#   ring_sensor_use_world_up_rot : .7
+
+# # use terrain, head, use world up
+# environment_parameters:
+#   #less than .5 is false, greater than .5 is true
+#   terrain_enabled : .7
+#   #less than .5 attach to hips otherwise attach to head
+#   ring_sensor_use_hips_or_head : .7
+#   #less than .5 use attached transform rot otherwise use world up
+#   ring_sensor_use_world_up_rot : .7
+
+# use terrain, hips, use transform rot
+environment_parameters:
+  #less than .5 is false, greater than .5 is true
+  terrain_enabled : .7
+  #less than .5 attach to hips otherwise attach to head
+  ring_sensor_use_hips_or_head : .2
+  #less than .5 use attached transform rot otherwise use world up
+  ring_sensor_use_world_up_rot : .2
+
+# # use terrain, head, use world up
+# environment_parameters:
+#   #less than .5 is false, greater than .5 is true
+#   terrain_enabled : .7
+#   #less than .5 attach to hips otherwise attach to head
+#   ring_sensor_use_hips_or_head : .7
+#   #less than .5 use attached transform rot otherwise use world up
+#   ring_sensor_use_world_up_rot : .2

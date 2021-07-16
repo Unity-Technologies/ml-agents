@@ -8,6 +8,8 @@ namespace Unity.MLAgentsExamples
     public class SetLocalUpToWorldUp : MonoBehaviour
     {
         public Transform AttachedToTransform;//the transform we want to match rotation for
+
+        public bool UseWorldUpForRotation = true;
         // //Update position and Rotation
         // public void UpdateOrientation(Transform rootBP, Transform target)
         // {
@@ -25,7 +27,7 @@ namespace Unity.MLAgentsExamples
         void FixedUpdate()
         {
             var dirVector = AttachedToTransform.forward;
-            dirVector.y = 0; //flatten dir on the y. this will only work on level, uneven surfaces
+            dirVector.y = UseWorldUpForRotation ? 0 : dirVector.y; //flatten dir on the y. this will only work on level, uneven surfaces
             var lookRot = Quaternion.LookRotation(dirVector); //get our look rot to the target
 
             //UPDATE ORIENTATION CUBE POS & ROT
