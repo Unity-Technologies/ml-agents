@@ -1802,6 +1802,7 @@ MonoBehaviour:
   m_DiversitySetting: 0
   m_NumDiversityBehaviors: 4
   m_AgentSpeed: 1
+  m_DenseReward: 0
 --- !u!1 &523751227787557688
 GameObject:
   m_ObjectHideFlags: 0

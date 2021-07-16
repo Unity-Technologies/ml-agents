@@ -43,7 +43,14 @@ public class BasicDiverseRotate : BasicDiverse
 
         transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
         m_AgentRb.AddForce(dirToGo * m_AgentSpeed, ForceMode.VelocityChange);
+
         AddReward(-1f / MaxStep);
+        if (m_DenseReward) 
+        {
+            float dist = GetClosestDist();
+            AddReward((lastDist - dist) / initDist);
+            lastDist = dist;
+        }
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

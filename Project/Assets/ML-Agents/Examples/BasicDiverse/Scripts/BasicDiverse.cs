@@ -19,6 +19,10 @@ public class BasicDiverse : Agent
     public int m_DiversitySetting = 0;
     public int m_NumDiversityBehaviors = 4;
     public float m_AgentSpeed = 1;
+    public bool m_DenseReward = false;
+
+    protected float lastDist;
+    protected float initDist;
 
     public override void Initialize()
     {
@@ -35,6 +39,8 @@ public class BasicDiverse : Agent
         m_AgentRb.angularVelocity = Vector3.zero;
 
         m_DiversitySetting = Random.Range(0, m_NumDiversityBehaviors);
+        lastDist = GetClosestDist();
+        initDist = GetClosestDist();
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -45,11 +51,11 @@ public class BasicDiverse : Agent
         sensor.AddObservation(Vector3.Project(goal1.transform.position - transform.position, 
                                               goal1.transform.forward).magnitude);
         sensor.AddObservation(Vector3.Project(goal2.transform.position - transform.position, 
-                                              goal2.transform.forward).magnitude);
+                                              goal2.transform.right).magnitude);
         sensor.AddObservation(Vector3.Project(goal3.transform.position - transform.position, 
                                               goal3.transform.forward).magnitude);
         sensor.AddObservation(Vector3.Project(goal4.transform.position - transform.position, 
-                                              goal4.transform.forward).magnitude);
+                                              goal4.transform.right).magnitude);
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
@@ -79,7 +85,14 @@ public class BasicDiverse : Agent
 
         dirToGo = Vector3.Normalize(dirToGo);
         m_AgentRb.AddForce(dirToGo * m_AgentSpeed, ForceMode.VelocityChange);
+
         AddReward(-1f / MaxStep);
+        if (m_DenseReward) 
+        {
+            float dist = GetClosestDist();
+            AddReward((lastDist - dist) / initDist);
+            lastDist = dist;
+        }
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -114,5 +127,28 @@ public class BasicDiverse : Agent
             AddReward(1f);
             EndEpisode();
         }
+    }
+
+    protected float GetClosestDist()
+    {
+        float dist1 = Vector3.Project(goal1.transform.position - transform.position, goal1.transform.forward).magnitude;
+        float dist2 = Vector3.Project(goal1.transform.position - transform.position, goal1.transform.forward).magnitude;
+        float dist3 = Vector3.Project(goal1.transform.position - transform.position, goal1.transform.forward).magnitude;
+        float dist4 = Vector3.Project(goal1.transform.position - transform.position, goal1.transform.forward).magnitude;
+
+        float leastDist = dist1;
+        if (dist2 < leastDist)
+        {
+            leastDist = dist2;
+        }
+        if (dist3 < leastDist)
+        {
+            leastDist = dist3;
+        }
+        if (dist4 < leastDist)
+        {
+            leastDist = dist4;
+        }
+        return leastDist;
     }
 }
