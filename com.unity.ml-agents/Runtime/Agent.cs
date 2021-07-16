@@ -1348,6 +1348,39 @@ namespace Unity.MLAgents
             }
         }
 
+        public void Update()
+        {
+            CheckForRecord();
+        }
+
+        void CheckForRecord()
+        {
+            var allDemoRecorders = GetComponents<DemonstrationRecorder>();
+            if (Input.GetKeyDown(KeyCode.R) && allDemoRecorders.Length > 0)
+            {
+                if (m_PolicyFactory.BehaviorType != BehaviorType.HeuristicOnly)
+                {
+                    foreach (var demoRec in allDemoRecorders)
+                    {
+                        demoRec.Record = true;
+                    }
+                    m_PolicyFactory.BehaviorType = BehaviorType.HeuristicOnly;
+                    Debug.Log("Manual control, starting recording...");
+                }
+                else
+                {
+                    foreach (var demoRec in allDemoRecorders)
+                    {
+                        demoRec.Record = false;
+                        demoRec.Close();
+                    }
+                    m_PolicyFactory.BehaviorType = BehaviorType.Default;
+                    Debug.Log("Stopping recording.");
+                }
+            }
+        }
+
+
         void DecideAction()
         {
             if (m_ActuatorManager.StoredActions.ContinuousActions.Array == null)
