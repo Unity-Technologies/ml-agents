@@ -421,6 +421,11 @@ class TorchSACOptimizer(TorchOptimizer):
             self.discrete = discrete
             self.continuous = continuous
 
+    class DivCoef(nn.Module):
+        def __init__(self, log_coef):
+            super().__init__()
+            self.log_coef = log_coef
+
     def __init__(self, policy: TorchPolicy, trainer_params: TrainerSettings):
         super().__init__(policy, trainer_params)
         reward_signal_configs = trainer_params.reward_signals
@@ -508,17 +513,16 @@ class TorchSACOptimizer(TorchOptimizer):
             self.policy.behavior_spec, 
             hyperparameters
         ) if self.use_mede else None
-        self._mede_optimizer = torch.optim.Adam(
-            list(self._mede_network.parameters()), 
-            lr=hyperparameters.learning_rate, 
-            weight_decay=hyperparameters.mede_weight_decay
-        ) if self.use_mede else None
+
         self.mede_saliency_dropout = hyperparameters.mede_saliency_dropout
-        self.mede_strength = hyperparameters.mede_strength
         self.mede_policy_loss = hyperparameters.mede_for_policy_loss
         self.sal_observations = [torch.zeros(spec.shape) for spec in self.policy.behavior_spec.observation_specs]
         self.sal_cont_actions = torch.zeros(self.policy.behavior_spec.action_spec.continuous_size)
         self.sal_weight = 0.01
+        self.target_diversity = hyperparameters.mede_target_divcoef
+        self._diversity_coef = TorchSACOptimizer.DivCoef(torch.nn.Parameter(
+            torch.log(torch.as_tensor([hyperparameters.mede_init_divcoef])), requires_grad=True
+        ))
 
         logger.debug("value_vars")
         for param in value_params:
@@ -542,6 +546,15 @@ class TorchSACOptimizer(TorchOptimizer):
         self.entropy_optimizer = torch.optim.Adam(
             self._log_ent_coef.parameters(), lr=hyperparameters.learning_rate
         )
+        self.mede_optimizer = torch.optim.Adam(
+            list(self._mede_network.parameters()), 
+            lr=hyperparameters.learning_rate, 
+            weight_decay=hyperparameters.mede_weight_decay
+        ) if self.use_mede else None
+        self.divcoef_optimizer = torch.optim.Adam(
+            self._diversity_coef.parameters(),
+            lr=hyperparameters.learning_rate, 
+        ) if self.use_mede else None
         self._move_to_device(default_device())
 
     @property
@@ -642,7 +655,7 @@ class TorchSACOptimizer(TorchOptimizer):
                     v_backup = min_policy_qs[name] - torch.sum(
                         _cont_ent_coef * log_probs.continuous_tensor, dim=1
                     )
-                    v_backup += self.mede_strength * mede_rewards
+                    v_backup += self._diversity_coef.log_coef.exp() * mede_rewards
                 value_loss = 0.5 * ModelUtils.masked_mean(
                     torch.nn.functional.mse_loss(values[name], v_backup), loss_masks
                 )
@@ -665,7 +678,7 @@ class TorchSACOptimizer(TorchOptimizer):
                     v_backup = min_policy_qs[name] - torch.mean(
                         branched_ent_bonus, axis=0
                     )
-                    v_backup += self.mede_strength * mede_rewards.unsqueeze(-1)
+                    v_backup += self._diversity_coef.log_coef.exp() * mede_rewards.unsqueeze(-1)
                     # Add continuous entropy bonus to minimum Q
                     if self._action_spec.continuous_size > 0:
                         v_backup += torch.sum(
@@ -727,7 +740,7 @@ class TorchSACOptimizer(TorchOptimizer):
                 _cont_ent_coef * cont_log_probs - all_mean_q1.unsqueeze(1), dim=1
             )
         if self.mede_policy_loss:
-            batch_policy_loss += -self.mede_strength * mede_rewards
+            batch_policy_loss += -self._diversity_coef.log_coef.exp() * mede_rewards
         policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
 
         return policy_loss
@@ -775,6 +788,16 @@ class TorchSACOptimizer(TorchOptimizer):
             )
 
         return entropy_loss
+
+    def sac_divcoef_loss(
+        self, mede_rewards: torch.Tensor, masks: torch.Tensor
+    ) -> torch.Tensor:
+        with torch.no_grad():
+            mede_loss = -ModelUtils.masked_mean(mede_rewards, masks)
+            target_diff = mede_loss - self.target_diversity
+
+        divcoef_loss = -1 * (self._diversity_coef.log_coef.exp() * target_diff)
+        return divcoef_loss
 
     def _condense_q_streams(
         self, q_output: Dict[str, torch.Tensor], discrete_actions: torch.Tensor
@@ -1030,11 +1053,17 @@ class TorchSACOptimizer(TorchOptimizer):
             mede_loss, mede_stats = self._mede_network.loss(
                 current_obs, sampled_actions.continuous_tensor, disc_act, masks
             )
+            divcoef_loss = self.sac_divcoef_loss(mede_value_rewards, masks)
             
-            ModelUtils.update_learning_rate(self._mede_optimizer, decay_lr)
-            self._mede_optimizer.zero_grad()
+            ModelUtils.update_learning_rate(self.mede_optimizer, decay_lr)
+            self.mede_optimizer.zero_grad()
             mede_loss.backward()
-            self._mede_optimizer.step()
+            self.mede_optimizer.step()
+            
+            ModelUtils.update_learning_rate(self.divcoef_optimizer, decay_lr)
+            self.divcoef_optimizer.zero_grad()
+            divcoef_loss.backward()
+            self.divcoef_optimizer.step()
 
             if self.mede_saliency_dropout > 0:
                 self._update_saliency(
@@ -1045,6 +1074,10 @@ class TorchSACOptimizer(TorchOptimizer):
                 )
 
             update_stats.update(mede_stats)
+            update_stats.update({
+                "MEDE/Diversity Coefficient": self._diversity_coef.log_coef.exp().item(),
+                "MEDE/Diversity Coefficient Loss": divcoef_loss.item()
+            })
 
         return update_stats
 
@@ -1067,7 +1100,7 @@ class TorchSACOptimizer(TorchOptimizer):
         }
         if self.use_mede:
             modules.update({
-                "Optimizer:mede_optimizer": self._mede_optimizer,
+                "Optimizer:mede_optimizer": self.mede_optimizer,
                 "Optimizer:mede_network": self._mede_network,
             })
         for reward_provider in self.reward_signals.values():

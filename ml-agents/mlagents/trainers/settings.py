@@ -167,7 +167,8 @@ class SACSettings(HyperparamSettings):
     mede_encoder_dropout: float = 0
     mede_weight_decay: float = 0
     mede_saliency_dropout: float = 0
-    mede_strength: float = 0.1
+    mede_init_divcoef: float = 0.0001
+    mede_target_divcoef: float = 0.2
     mede_mutual_information: float = float("inf")
     mede_for_policy_loss: bool = True
     mede_use_actions: bool = True
