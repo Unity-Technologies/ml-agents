@@ -436,6 +436,26 @@ public class WalkerAgent : Agent
         }
     }
 
+    Vector3 GetLookAtReward()
+    {
+        var targetDirProjectedOnGround = TargetDirProjectedOnGround;
+        var targetVelVector = TargetDirProjectedOnGround * MTargetWalkingSpeed;
+        var headForwardRelVel = Vector3.Dot(m_JdController.bodyPartsDict[head].rb.velocity, head.forward);
+        var chestForwardRelVel = Vector3.Dot(m_JdController.bodyPartsDict[chest].rb.velocity, chest.forward);
+        var spineForwardRelVel = Vector3.Dot(m_JdController.bodyPartsDict[spine].rb.velocity, spine.forward);
+        var hipsForwardRelVel = Vector3.Dot(m_JdController.bodyPartsDict[hips].rb.velocity, hips.forward);
+
+        var headRw = Vector3.ProjectOnPlane(head.forward, Vector3.up).normalized;
+        var chestRw = Vector3.ProjectOnPlane(chest.forward, Vector3.up).normalized;
+        var spineRw = Vector3.ProjectOnPlane(spine.forward, Vector3.up).normalized;
+        var hipsRw = Vector3.ProjectOnPlane(hips.forward, Vector3.up).normalized;
+        sensor.AddObservation(Vector3.Dot(AgentRb.velocity, AgentRb.transform.forward));
+        sensor.AddObservation(Vector3.Dot(AgentRb.velocity, AgentRb.transform.right));
+        dir.Normalize();
+        // Debug.DrawRay(Vector3.zero, dir, Color.blue, .1f);
+        return dir;
+    }
+
     void GiveRewards()
     {
         var targetDirProjectedOnGround = TargetDirProjectedOnGround;
@@ -449,10 +469,11 @@ public class WalkerAgent : Agent
         // b. Rotation alignment with target direction.
         //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
         // var lookAtTargetReward = (Vector3.Dot(targetDir, hips.forward) + 1) * .5F;
-        var lookAtTargetReward = (Vector3.Dot(targetDirProjectedOnGround, forwardDirProjectedOnGround) + 1) * .5F;
+        // var lookAtTargetReward = (Vector3.Dot(targetDirProjectedOnGround, forwardDirProjectedOnGround) + 1) * .5F;
         // Debug.DrawRay(Vector3.zero, lookAtTargetReward, Color.green, .02f);
 
         AddReward(matchSpeedReward * lookAtTargetReward);
+        var  = (Vector3.Dot(targetDirProjectedOnGround, forwardDirProjectedOnGround) + 1) * .5F;
     }
 
     //Returns the average velocity of all of the body parts
