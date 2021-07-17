@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 using Unity.MLAgentsExamples;
 using Unity.MLAgents.Sensors;
 using BodyPart = Unity.MLAgentsExamples.BodyPart;
@@ -102,6 +103,18 @@ public class WalkerAgent : Agent
 
     public override void Initialize()
     {
+        var behaviorParams = GetComponent<BehaviorParameters>();
+        if (UseActuatedRaycastSensor)
+        {
+            behaviorParams.BrainParameters.VectorObservationSize = 245;
+            behaviorParams.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(41);
+        }
+        else
+        {
+            behaviorParams.BrainParameters.VectorObservationSize = 243;
+            behaviorParams.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(39);
+        }
+
         // m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
         m_DirectionIndicator = GetComponentInChildren<DirectionIndicator>();
 
