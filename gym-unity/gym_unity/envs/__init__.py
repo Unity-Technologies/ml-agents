@@ -10,5 +10,5 @@ def gym_entry_point(env_name, **kwargs):
 
     return create
 
-
-register(id="3DBall-v0", entry_point=gym_entry_point("3DBall"))
+for key in default_registry:
+    register(id=key + "-v0", entry_point=gym_entry_point(key))
