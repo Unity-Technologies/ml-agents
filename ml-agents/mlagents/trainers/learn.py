@@ -183,7 +183,7 @@ def create_environment_factory(
         #     side_channels=side_channels,
         #     log_folder=log_folder,
         # )
-        return ParticlesEnvironment()
+        return ParticlesEnvironment(worker_id=worker_id)
 
     return create_unity_environment
 

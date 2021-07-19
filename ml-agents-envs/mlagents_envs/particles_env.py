@@ -1,3 +1,4 @@
+from mlagents.trainers.subprocess_env_manager import worker
 import numpy as np
 from typing import List, Tuple, Optional, Mapping as MappingType
 from mlagents_envs.base_env import (
@@ -55,7 +56,7 @@ def _make_env(scenario_name, benchmark=False):
 
 
 class ParticlesEnvironment(BaseEnv):
-    def __init__(self, name: str = "simple_spread"):
+    def __init__(self, name: str = "simple_spread", worker_id=0):
         self._obs: Optional[List[np.array]] = None
         self._rew: Optional[List[int]] = None
         self._done: Optional[List[bool]] = None
@@ -63,6 +64,7 @@ class ParticlesEnvironment(BaseEnv):
         self._name = name
         self._env = _make_env(name)
         self._env.discrete_action_input = True
+        self._worker_id = worker_id
 
         # :(
         self.academy_capabilities = UnityRLCapabilitiesProto()
@@ -84,7 +86,7 @@ class ParticlesEnvironment(BaseEnv):
         if self.count >= 25:
             self._done = [True] * self._env.n
         self.count += 1
-        if self.episode_count % 100 == 0:
+        if self.episode_count % 100 == 0 and self._worker_id == 0:
             self._env.render(mode="agent")
 
     def reset(self) -> None:
@@ -176,7 +178,7 @@ class ParticlesEnvironment(BaseEnv):
             dtype=np.float32,
         )
         terminal_reward = np.array(
-            [self._rew[i] * reward_scale for i in range(self._env.n) if self._done[i]],
+            [self._rew[i] * 0 for i in range(self._env.n) if self._done[i]],
             dtype=np.float32,
         )
         terminal_id = np.array([i for i in range(self._env.n) if self._done[i]])
