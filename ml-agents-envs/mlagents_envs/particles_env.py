@@ -81,8 +81,7 @@ class ParticlesEnvironment(BaseEnv):
             self._obs, self._rew, self._done, _ = self._env.step([0] * self._env.n)
         else:
             self._obs, self._rew, self._done, _ = self._env.step(self._actions)
-        if self.count % 25 == 0:
-            self.reset()
+        if self.count >= 25:
             self._done = [True] * self._env.n
         self.count += 1
         if self.episode_count % 100 == 0:
@@ -94,6 +93,7 @@ class ParticlesEnvironment(BaseEnv):
         self._actions = [0] * self._env.n
         self._obs = self._env.reset()
         self.episode_count += 1
+        self.count = 0
 
     def close(self) -> None:
         self._env.close()
@@ -129,6 +129,15 @@ class ParticlesEnvironment(BaseEnv):
     def get_steps(
         self, behavior_name: BehaviorName
     ) -> Tuple[DecisionSteps, TerminalSteps]:
+        terminal_steps = self.get_terminal_steps()
+        if any(self._done):
+            # if any is done, reset the environment and
+            # get the next steps
+            self.reset()
+        decision_steps = self.get_decision_steps()
+        return decision_steps, terminal_steps
+
+    def get_decision_steps(self) -> DecisionSteps:
         reward_scale = 1
         decision_obs = np.array(
             [self._obs[i] for i in range(self._env.n) if not self._done[i]],
@@ -158,7 +167,10 @@ class ParticlesEnvironment(BaseEnv):
             decision_group_id,
             decision_group_reward,
         )
+        return decision_step
 
+    def get_terminal_steps(self) -> TerminalSteps:
+        reward_scale = 1.0
         terminal_obs = np.array(
             [self._obs[i] for i in range(self._env.n) if self._done[i]],
             dtype=np.float32,
@@ -190,4 +202,4 @@ class ParticlesEnvironment(BaseEnv):
             terminal_group_reward,
         )
 
-        return decision_step, terminal_steps
+        return terminal_steps
