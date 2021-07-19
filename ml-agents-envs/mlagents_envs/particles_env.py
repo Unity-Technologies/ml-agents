@@ -136,7 +136,7 @@ class ParticlesEnvironment(BaseEnv):
         )
         decision_reward = np.array(
             [
-                self._rew[i] * reward_scale
+                self._rew[i] * 0
                 for i in range(self._env.n)
                 if not self._done[i]
             ],
@@ -144,7 +144,7 @@ class ParticlesEnvironment(BaseEnv):
         )
         decision_id = np.array([i for i in range(self._env.n) if not self._done[i]])
         decision_group_reward = np.array(
-            [sum(self._rew) * 0 for i in range(self._env.n) if not self._done[i]],
+            [self._rew[0] * reward_scale for i in range(self._env.n) if not self._done[i]],
             dtype=np.float32,
         )
         decision_group_id = np.array(
@@ -170,7 +170,7 @@ class ParticlesEnvironment(BaseEnv):
         terminal_id = np.array([i for i in range(self._env.n) if self._done[i]])
         terminal_group_reward = np.array(
             [
-                sum(self._rew) * reward_scale
+                self._rew[0] * reward_scale
                 for i in range(self._env.n)
                 if self._done[i]
             ],
