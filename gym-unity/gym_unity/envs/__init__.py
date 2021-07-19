@@ -11,4 +11,8 @@ def gym_entry_point(env_name, **kwargs):
     return create
 
 for key in default_registry:
-    register(id=key + "-v0", entry_point=gym_entry_point(key))
+    registry_key = key + "-v0"
+    try:
+        register(id=registry_key, entry_point=gym_entry_point(key))
+    except:
+        pass
