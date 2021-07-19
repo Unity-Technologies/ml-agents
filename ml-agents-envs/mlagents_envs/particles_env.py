@@ -74,6 +74,7 @@ class ParticlesEnvironment(BaseEnv):
         self.academy_capabilities.variableLengthObservation = True
         self.academy_capabilities.multiAgentGroups = True
         self.count = 0
+        self.episode_count = 0
 
     def step(self) -> None:
         if self._actions is None:
@@ -84,13 +85,15 @@ class ParticlesEnvironment(BaseEnv):
             self.reset()
             self._done = [True] * self._env.n
         self.count += 1
-        self._env.render()
+        if self.episode_count % 100:
+            self._env.render()
 
     def reset(self) -> None:
         self._rew = [0] * self._env.n
         self._done = [False] * self._env.n
         self._actions = [0] * self._env.n
         self._obs = self._env.reset()
+        self.episode_count += 1
 
     def close(self) -> None:
         self._env.close()
@@ -126,7 +129,7 @@ class ParticlesEnvironment(BaseEnv):
     def get_steps(
         self, behavior_name: BehaviorName
     ) -> Tuple[DecisionSteps, TerminalSteps]:
-        reward_scale = 0.1
+        reward_scale = 1
         decision_obs = np.array(
             [self._obs[i] for i in range(self._env.n) if not self._done[i]],
             dtype=np.float32,
@@ -141,11 +144,7 @@ class ParticlesEnvironment(BaseEnv):
         )
         decision_id = np.array([i for i in range(self._env.n) if not self._done[i]])
         decision_group_reward = np.array(
-            [
-                sum(self._rew) * 0
-                for i in range(self._env.n)
-                if not self._done[i]
-            ],
+            [sum(self._rew) * 0 for i in range(self._env.n) if not self._done[i]],
             dtype=np.float32,
         )
         decision_group_id = np.array(
