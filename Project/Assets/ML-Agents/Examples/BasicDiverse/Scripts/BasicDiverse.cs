@@ -1,5 +1,6 @@
 ﻿//Put this script on your blue cube.
 
+using System;
 using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
@@ -23,6 +24,8 @@ public class BasicDiverse : Agent
 
     protected float lastDist;
     protected float initDist;
+    private float[] settingWeights;
+    private float weightsAlpha = 0.01f;
 
     public override void Initialize()
     {
@@ -30,6 +33,12 @@ public class BasicDiverse : Agent
 
         m_DiversitySettingSensor = GetComponent<VectorSensorComponent>();
         m_DiversitySettingSensor.CreateSensors();
+
+        settingWeights = new float[m_NumDiversityBehaviors];
+        for (int i = 0; i < m_NumDiversityBehaviors; i++)
+        {
+            settingWeights[i] = 1f / m_NumDiversityBehaviors;
+        }
     }
 
     public override void OnEpisodeBegin()
@@ -38,7 +47,7 @@ public class BasicDiverse : Agent
         m_AgentRb.velocity = Vector3.zero;
         m_AgentRb.angularVelocity = Vector3.zero;
 
-        m_DiversitySetting = Random.Range(0, m_NumDiversityBehaviors);
+        m_DiversitySetting = SampleSetting();
         lastDist = GetClosestDist();
         initDist = GetClosestDist();
     }
@@ -60,39 +69,9 @@ public class BasicDiverse : Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        int forwardAction = actionBuffers.DiscreteActions[0];
-        int sideAction = actionBuffers.DiscreteActions[1];
-
-        Vector3 dirToGo = Vector3.zero;
-        switch (forwardAction)
-        {
-            case 1:
-                dirToGo += transform.forward;
-                break;
-            case 2:
-                dirToGo -= transform.forward;
-                break;
-        }
-        switch (sideAction)
-        {
-            case 1:
-                dirToGo += transform.right;
-                break;
-            case 2:
-                dirToGo -= transform.right;
-                break;
-        }
-
-        dirToGo = Vector3.Normalize(dirToGo);
-        m_AgentRb.AddForce(dirToGo * m_AgentSpeed, ForceMode.VelocityChange);
-
-        AddReward(-1f / MaxStep);
-        if (m_DenseReward) 
-        {
-            float dist = GetClosestDist();
-            AddReward((lastDist - dist) / initDist);
-            lastDist = dist;
-        }
+        Move(actionBuffers);
+        SetStepReward();
+        SetSettingWeights();
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -129,6 +108,35 @@ public class BasicDiverse : Agent
         }
     }
 
+    protected virtual void Move(ActionBuffers actionBuffers)
+    {
+        int forwardAction = actionBuffers.DiscreteActions[0];
+        int sideAction = actionBuffers.DiscreteActions[1];
+
+        Vector3 dirToGo = Vector3.zero;
+        switch (forwardAction)
+        {
+            case 1:
+                dirToGo += transform.forward;
+                break;
+            case 2:
+                dirToGo -= transform.forward;
+                break;
+        }
+        switch (sideAction)
+        {
+            case 1:
+                dirToGo += transform.right;
+                break;
+            case 2:
+                dirToGo -= transform.right;
+                break;
+        }
+
+        dirToGo = Vector3.Normalize(dirToGo);
+        m_AgentRb.AddForce(dirToGo * m_AgentSpeed, ForceMode.VelocityChange);
+    }
+
     protected float GetClosestDist()
     {
         float dist1 = Vector3.Project(goal1.transform.position - transform.position, goal1.transform.forward).magnitude;
@@ -150,5 +158,53 @@ public class BasicDiverse : Agent
             leastDist = dist4;
         }
         return leastDist;
+    }
+
+    protected void SetStepReward()
+    {
+        AddReward(-1f / MaxStep);
+        if (m_DenseReward) 
+        {
+            float dist = GetClosestDist();
+            AddReward((lastDist - dist) / initDist);
+            lastDist = dist;
+        }
+    }
+
+    protected void SetSettingWeights()
+    {
+        for (int i = 0; i < m_NumDiversityBehaviors; i++)
+        {
+            float modifier = m_DiversitySetting == i ? -weightsAlpha : weightsAlpha / (m_NumDiversityBehaviors - 1);
+            settingWeights[i] = settingWeights[i] + modifier;
+        }
+    }
+
+    protected int SampleSetting()
+    {
+        double den = 0;
+        foreach (float weight in settingWeights)
+        {
+            den += Math.Exp(weight);
+        }
+
+        double[] probs = new double[m_NumDiversityBehaviors];
+        for (int i = 0; i < m_NumDiversityBehaviors; i++)
+        {
+            probs[i] = Math.Exp(settingWeights[i]) / den;
+        }
+
+        double r = UnityEngine.Random.Range(0f, 1f);
+        double total = 0;
+        for (int i = 0; i < m_NumDiversityBehaviors; i++)
+        {
+            total += probs[i];
+            if (r < total)
+            {
+                return i;
+            }
+        }
+        Debug.Log("Shouldn't reach here: " + r.ToString());
+        return m_NumDiversityBehaviors - 1;
     }
 }

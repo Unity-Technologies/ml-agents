@@ -22,7 +22,25 @@ public class BasicDiverseRotate : BasicDiverse
         sensor.AddObservation(transform.localEulerAngles.y / 360f);
     }
 
-    public override void OnActionReceived(ActionBuffers actionBuffers)
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        var discreteActionsOut = actionsOut.DiscreteActions;
+
+        if (Input.GetKey(KeyCode.W))
+        {
+            discreteActionsOut[0] = 1;
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            discreteActionsOut[0] = 2;
+        }
+        else if (Input.GetKey(KeyCode.A))
+        {
+            discreteActionsOut[0] = 3;
+        }
+    }
+
+    protected override void Move(ActionBuffers actionBuffers)
     {
         int action = actionBuffers.DiscreteActions[0];
 
@@ -43,31 +61,5 @@ public class BasicDiverseRotate : BasicDiverse
 
         transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
         m_AgentRb.AddForce(dirToGo * m_AgentSpeed, ForceMode.VelocityChange);
-
-        AddReward(-1f / MaxStep);
-        if (m_DenseReward) 
-        {
-            float dist = GetClosestDist();
-            AddReward((lastDist - dist) / initDist);
-            lastDist = dist;
-        }
-    }
-
-    public override void Heuristic(in ActionBuffers actionsOut)
-    {
-        var discreteActionsOut = actionsOut.DiscreteActions;
-
-        if (Input.GetKey(KeyCode.W))
-        {
-            discreteActionsOut[0] = 1;
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            discreteActionsOut[0] = 2;
-        }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            discreteActionsOut[0] = 3;
-        }
     }
 }
