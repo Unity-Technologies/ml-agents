@@ -85,8 +85,8 @@ class ParticlesEnvironment(BaseEnv):
             self.reset()
             self._done = [True] * self._env.n
         self.count += 1
-        if self.episode_count % 100:
-            self._env.render()
+        if self.episode_count % 100 == 0:
+            self._env.render(mode="agent")
 
     def reset(self) -> None:
         self._rew = [0] * self._env.n
