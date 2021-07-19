@@ -126,7 +126,7 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
         image: {{ platform.image }}
         flavor: {{ platform.flavor}}
     commands:
-        - python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
+        - python -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
         - unity-downloader-cli -u trunk -c editor --wait --fast
         - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
         - upm-ci project test -u {{ editor.version }} --project-path {{ editor.testProject }} --package-filter {{ package.name }} --extra-create-project-arg="-upmNoDefaultPackages" --extra-utr-arg "reruncount=2"
