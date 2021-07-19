@@ -554,7 +554,7 @@ class TorchSACOptimizer(TorchOptimizer):
         ) if self.use_mede else None
         self.divcoef_optimizer = torch.optim.Adam(
             self._diversity_coef.parameters(),
-            lr=hyperparameters.learning_rate, 
+            lr=hyperparameters.mede_divcoef_lr, 
         ) if self.use_mede else None
         self._move_to_device(default_device())
 
@@ -1064,7 +1064,6 @@ class TorchSACOptimizer(TorchOptimizer):
             
             if self._adaptive_divcoef:
                 divcoef_loss = self.sac_divcoef_loss(mede_value_rewards, masks)
-                ModelUtils.update_learning_rate(self.divcoef_optimizer, decay_lr)
                 self.divcoef_optimizer.zero_grad()
                 divcoef_loss.backward()
                 self.divcoef_optimizer.step()
