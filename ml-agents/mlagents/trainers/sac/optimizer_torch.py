@@ -523,6 +523,7 @@ class TorchSACOptimizer(TorchOptimizer):
         self._diversity_coef = TorchSACOptimizer.DivCoef(torch.nn.Parameter(
             torch.log(torch.as_tensor([hyperparameters.mede_init_divcoef])), requires_grad=True
         ))
+        self._adaptive_divcoef = hyperparameters.mede_adaptive_divcoef
 
         logger.debug("value_vars")
         for param in value_params:
@@ -1053,17 +1054,24 @@ class TorchSACOptimizer(TorchOptimizer):
             mede_loss, mede_stats = self._mede_network.loss(
                 current_obs, sampled_actions.continuous_tensor, disc_act, masks
             )
-            divcoef_loss = self.sac_divcoef_loss(mede_value_rewards, masks)
             
             ModelUtils.update_learning_rate(self.mede_optimizer, decay_lr)
             self.mede_optimizer.zero_grad()
             mede_loss.backward()
             self.mede_optimizer.step()
+
+            update_stats.update(mede_stats)
             
-            ModelUtils.update_learning_rate(self.divcoef_optimizer, decay_lr)
-            self.divcoef_optimizer.zero_grad()
-            divcoef_loss.backward()
-            self.divcoef_optimizer.step()
+            if self._adaptive_divcoef:
+                divcoef_loss = self.sac_divcoef_loss(mede_value_rewards, masks)
+                ModelUtils.update_learning_rate(self.divcoef_optimizer, decay_lr)
+                self.divcoef_optimizer.zero_grad()
+                divcoef_loss.backward()
+                self.divcoef_optimizer.step()
+                update_stats.update({
+                    "MEDE/Diversity Coefficient": self._diversity_coef.log_coef.exp().item(),
+                    "MEDE/Diversity Coefficient Loss": divcoef_loss.item()
+                })
 
             if self.mede_saliency_dropout > 0:
                 self._update_saliency(
@@ -1072,12 +1080,6 @@ class TorchSACOptimizer(TorchOptimizer):
                     memories=q_memories,
                     sequence_length=self.policy.sequence_length
                 )
-
-            update_stats.update(mede_stats)
-            update_stats.update({
-                "MEDE/Diversity Coefficient": self._diversity_coef.log_coef.exp().item(),
-                "MEDE/Diversity Coefficient Loss": divcoef_loss.item()
-            })
 
         return update_stats
 
