@@ -155,33 +155,9 @@ class MultiAgentGymWrapper(gym.Env):
 
         self._agent_index += 1
 
-        if self._agent_index < len(decision_batch):
-
-            # the index is within the decsion steps
-            obs = tuple([batch_obs[self._agent_index] for batch_obs in decision_batch.obs])
-            reward = decision_batch.reward[self._agent_index]
-            done = False
-
-            self._last = AgentStatus(
-                list(self._env.behavior_specs.keys())[self._behavior_index],
-                decision_batch.agent_id[self._agent_index],
-                decision_batch.group_id[self._agent_index],
-                decision_batch.group_reward[self._agent_index],
-                [mask[self._agent_index] for mask in decision_batch.action_mask]
-                if decision_batch.action_mask is not None
-                else None,
-                False,
-                obs,
-                reward,
-                done,
-                True,
-            )
-
-            return obs, reward, done, None
-
-        if self._agent_index < len(decision_batch) + len(termination_batch):
+        if self._agent_index < len(termination_batch):
             # The index is within the terminal steps
-            index = self._agent_index - len(decision_batch)
+            index = self._agent_index
             obs = tuple([batch_obs[index] for batch_obs in termination_batch.obs])
             reward = termination_batch.reward[index]
             done = True
@@ -197,8 +173,31 @@ class MultiAgentGymWrapper(gym.Env):
                 done,
                 False,
             )
-
             return obs, reward, done, None
+
+        if self._agent_index < len(decision_batch) + len(termination_batch):
+            index = self._agent_index - len(termination_batch)
+            # the index is within the decsion steps
+            obs = tuple([batch_obs[index] for batch_obs in decision_batch.obs])
+            reward = decision_batch.reward[index]
+            done = False
+
+            self._last = AgentStatus(
+                list(self._env.behavior_specs.keys())[self._behavior_index],
+                decision_batch.agent_id[index],
+                decision_batch.group_id[index],
+                decision_batch.group_reward[index],
+                [mask[index] for mask in decision_batch.action_mask]
+                if decision_batch.action_mask is not None
+                else None,
+                False,
+                obs,
+                reward,
+                done,
+                True,
+            )
+            return obs, reward, done, None
+
         # The index is too high, time to set the action for the agents we have
         if self._current_action is not None:
             self._env.set_actions(self._current_behavior_name(), self._current_action)
