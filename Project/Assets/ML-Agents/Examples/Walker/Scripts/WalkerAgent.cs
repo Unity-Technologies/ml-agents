@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -101,19 +102,10 @@ public class WalkerAgent : Agent
     public SetLocalUpToWorldUp ringSensorOrientation;
     public Transform transformToAttachRingSensorTo;
 
+    public Vector3 m_relativeDirToFace; //the local dir the char will use to "face" eg walk forward/back/sideways
+    // public Vector3 m_facingDirNormalized; //the local dir the char will use to "face" eg walk forward/back/sideways
     public override void Initialize()
     {
-        var behaviorParams = GetComponent<BehaviorParameters>();
-        if (UseActuatedRaycastSensor)
-        {
-            behaviorParams.BrainParameters.VectorObservationSize = 245;
-            behaviorParams.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(41);
-        }
-        else
-        {
-            behaviorParams.BrainParameters.VectorObservationSize = 243;
-            behaviorParams.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(39);
-        }
 
         // m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
         m_DirectionIndicator = GetComponentInChildren<DirectionIndicator>();
@@ -140,6 +132,8 @@ public class WalkerAgent : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
+
+
     }
 
     /// <summary>
@@ -162,6 +156,10 @@ public class WalkerAgent : Agent
         MTargetWalkingSpeed =
             randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : MTargetWalkingSpeed;
 
+
+        var rndDir = Random.insideUnitCircle;
+        m_relativeDirToFace = new Vector3(rndDir.x, 0, rndDir.y).normalized;
+        // m_facingDirNormalizedMag = m_facingDirNormalized.magnitude;
         SetResetParameters();
     }
 
@@ -306,6 +304,7 @@ public class WalkerAgent : Agent
         // }
     }
 
+    public List<float> strengthActions = new List<float>();
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
@@ -329,6 +328,7 @@ public class WalkerAgent : Agent
         bpDict[forearmR].SetJointTargetRotation(continuousActions[++i], 0, 0);
         bpDict[head].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
 
+        strengthActions = continuousActions.Array.ToList();
         //update joint strength settings
         bpDict[chest].SetJointStrength(continuousActions[++i]);
         bpDict[spine].SetJointStrength(continuousActions[++i]);
@@ -386,6 +386,9 @@ public class WalkerAgent : Agent
         }
 
         fuStep += 1;
+        // Debug.DrawRay(ringSensorOrientation.transform.TransformPoint(m_facingDirNormalized), Vector3.up, Color.red, .5f);
+
+        Debug.DrawRay(ringSensorOrientation.transform.position, ringSensorOrientation.transform.TransformDirection(m_relativeDirToFace), Color.red, .1f);
         // timer +=
         // print("fu");
     }
@@ -424,16 +427,41 @@ public class WalkerAgent : Agent
     //     AddReward(matchSpeedReward * lookAtTargetReward);
     // }
 
+    public Vector3 facingDirVelocity;
+    public float facingDirVelocityDot;
     public Vector3 forwardDirProjectedOnGround
     {
         get
         {
+            // var dir = ringSensorOrientation.transform.TransformDirection(m_relativeDirToFace);
+            // facingDirVelocityDot = Vector3.Dot(GetAvgVelocity(), dir);
+            // // facingDirVelocity = Mathf.Clamp(facingDirVelocityDot * dir, 0, MTargetWalkingSpeed);
+            // var matchingVelDot = Vector3.Dot(TargetDirProjectedOnGround * MTargetWalkingSpeed, dir);
+            // print(facingDirVelocityDot);
+
+
             var dir = Vector3.ProjectOnPlane(hips.forward, Vector3.up);
             dir.Normalize();
+
             Debug.DrawRay(Vector3.zero, dir, Color.blue, .1f);
 
             return dir;
         }
+    }
+
+    public bool UseEnergyConservationReward;
+    public float energyReward;
+    //reward based on energy use. the less energy used, the higher the reward
+    float GetEnergyConservationReward()
+    {
+        float totalStrengthUsed = 0;
+        foreach (var item in m_JdController.bodyPartsDict)
+        {
+            totalStrengthUsed += item.Value.currentStrength;
+        }
+
+        var totalEnergyUsedNormalized = totalStrengthUsed / (m_JdController.bodyPartsDict.Count * m_JdController.maxJointForceLimit);
+        return Mathf.Clamp(1 - totalEnergyUsedNormalized, .5f, 1);
     }
 
     void GiveRewards()
@@ -451,8 +479,15 @@ public class WalkerAgent : Agent
         // var lookAtTargetReward = (Vector3.Dot(targetDir, hips.forward) + 1) * .5F;
         var lookAtTargetReward = (Vector3.Dot(targetDirProjectedOnGround, forwardDirProjectedOnGround) + 1) * .5F;
         // Debug.DrawRay(Vector3.zero, lookAtTargetReward, Color.green, .02f);
-
-        AddReward(matchSpeedReward * lookAtTargetReward);
+        energyReward = GetEnergyConservationReward();
+        // print(energyReward);
+        var reward = matchSpeedReward * lookAtTargetReward;
+        if (UseEnergyConservationReward)
+        {
+            reward *= energyReward;
+        }
+        // AddReward(matchSpeedReward * lookAtTargetReward);
+        AddReward(reward);
     }
 
     //Returns the average velocity of all of the body parts
@@ -503,6 +538,7 @@ public class WalkerAgent : Agent
 
 
     public bool RingSensorHighResolution = true;
+    public float MaxJointForceSpringToUse = 10000;
     public void SetResetParameters()
     {
         if (UseResetParams)
@@ -513,8 +549,10 @@ public class WalkerAgent : Agent
             forceWorldUpRotationOnRingSensor = m_ResetParams.GetWithDefault("ring_sensor_use_world_up_rot", .7f) > .5f;
             //less than .5 is false, greater than is true
             TerrainEnabled = m_ResetParams.GetWithDefault("terrain_enabled", .7f) > .5f;
+            UseEnergyConservationReward = m_ResetParams.GetWithDefault("use_energy_conservation_reward", .7f) > .5f;
             // //less than .5 is false, greater than is true
-            // UseActuatedRaycastSensor = m_ResetParams.GetWithDefault("use_actuated_sensors", .7f) > .5f;
+            UseActuatedRaycastSensor = m_ResetParams.GetWithDefault("use_actuated_sensors", .7f) > .5f;
+            MaxJointForceSpringToUse = m_ResetParams.GetWithDefault("max_joint_force_spring", 10000f);
             // //less than .5 is false, greater than is true
             // RingSensorHighResolution = m_ResetParams.GetWithDefault("ring_sensor_high_resolution", .7f) > .5f;
         }
@@ -522,10 +560,21 @@ public class WalkerAgent : Agent
 
         // SetTorsoMass();
 
-
+        m_JdController.maxJointForceLimit = MaxJointForceSpringToUse;
         transformToAttachRingSensorTo = ringSensorAttachToHips ? hips : chest;
         ringSensorOrientation.UseWorldUpForRotation = forceWorldUpRotationOnRingSensor;
         ringSensorOrientation.AttachedToTransform = transformToAttachRingSensorTo;
         TerrainGameObject.SetActive(TerrainEnabled);
+        var behaviorParams = GetComponent<BehaviorParameters>();
+        if (UseActuatedRaycastSensor)
+        {
+            behaviorParams.BrainParameters.VectorObservationSize = 245;
+            behaviorParams.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(41);
+        }
+        else
+        {
+            behaviorParams.BrainParameters.VectorObservationSize = 243;
+            behaviorParams.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(39);
+        }
     }
 }
