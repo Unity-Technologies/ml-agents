@@ -85,6 +85,7 @@ def _create_parser() -> argparse.ArgumentParser:
         "--resume",
         default=False,
         dest="resume",
+        metavar="checkpoint_name",
         action=DetectDefaultStoreTrue,
         help="Whether to resume training from a checkpoint. Specify a --run-id to use this option. "
         "If set, the training code loads an already trained model to initialize the neural network "
@@ -118,6 +119,12 @@ def _create_parser() -> argparse.ArgumentParser:
         "This can be used, for instance, to fine-tune an existing model on a new environment. "
         "Note that the previously saved models must have the same behavior parameters as your "
         "current environment.",
+        action=DetectDefault,
+    )
+    argparser.add_argument(
+        "--checkpoint-name",
+        default="checkpoint.pt",
+        help="Specify a checkpoint to resume or initialize training from.",#TODO
         action=DetectDefault,
     )
     argparser.add_argument(
