@@ -42,7 +42,7 @@ public class DisplayVariable : MonoBehaviour
                     foreach (FieldInfo fieldInfo in fields) {
                         //Debug.Log("Obj: " + subComponent.name + ", Field: " + fieldInfo.Name);
                         if (fieldInfo.Name.Equals (variableName)) {
-                            valueAsString = fieldInfo.GetValue (subComponent).ToString ();
+                            valueAsString = VarToString(fieldInfo.GetValue(subComponent));
                             foundIt = true;
                             break;
                         }
@@ -56,7 +56,7 @@ public class DisplayVariable : MonoBehaviour
                         foreach (PropertyInfo propertyInfo in properties) {
                             //Debug.Log ("Obj: " + subComponent.name + ", Property: " + propertyInfo.Name);
                             if (propertyInfo.Name.Equals (variableName)) {
-                                valueAsString = propertyInfo .GetValue (subComponent, null).ToString ();
+                                valueAsString = VarToString(propertyInfo.GetValue(subComponent, null));
                                 foundIt = true;
                                 break;
                             }
@@ -70,6 +70,23 @@ public class DisplayVariable : MonoBehaviour
                 /** set the text */
                 myText.text = variableName+" = "+valueAsString;
             }
+        }
+    }
+
+    private string VarToString(object obj)
+    {
+        if (obj is float[])
+        {
+            string str = "";
+            foreach (float x in (float[])obj)
+            {
+                str += x.ToString() + " ";
+            }
+            return str;
+        }
+        else
+        {
+            return obj.ToString();
         }
     }
 }

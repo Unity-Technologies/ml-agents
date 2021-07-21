@@ -1654,8 +1654,8 @@ GameObject:
   - component: {fileID: 523751227755665990}
   - component: {fileID: 523751227755665991}
   - component: {fileID: 523751227755665992}
-  - component: {fileID: 523751227755665993}
   - component: {fileID: 639393783103554462}
+  - component: {fileID: 8540333609148405447}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -1764,21 +1764,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugCommandLineOverride: 
---- !u!114 &523751227755665993
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 523751227755665996}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38b7cc1f5819445aa85e9a9b054552dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: Vector Sensor
-  m_ObservationSize: 4
-  m_ObservationType: 1
 --- !u!114 &639393783103554462
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1799,10 +1784,27 @@ MonoBehaviour:
   goal2: {fileID: 523751227025666298}
   goal3: {fileID: 523751225944279694}
   goal4: {fileID: 523751226748016516}
-  m_DiversitySetting: 0
-  m_NumDiversityBehaviors: 4
   m_AgentSpeed: 1
   m_DenseReward: 0
+--- !u!114 &8540333609148405447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 523751227755665996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9502529ed42c4056a6a769f594f1d94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SensorName: DiversitySampler
+  ContinuousSampling: 0
+  BalancedSampling: 1
+  DisableSampling: 0
+  DiversitySize: 4
+  DiscreteSetting: 0
+  ContinuousSetting: []
 --- !u!1 &523751227787557688
 GameObject:
   m_ObjectHideFlags: 0

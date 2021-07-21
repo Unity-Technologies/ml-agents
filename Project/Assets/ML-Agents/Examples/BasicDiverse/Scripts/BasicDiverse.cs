@@ -1,7 +1,4 @@
-﻿//Put this script on your blue cube.
-
-using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -16,29 +13,15 @@ public class BasicDiverse : Agent
     public GameObject goal4;
     protected Rigidbody m_AgentRb;
 
-    VectorSensorComponent m_DiversitySettingSensor;
-    public int m_DiversitySetting = 0;
-    public int m_NumDiversityBehaviors = 4;
     public float m_AgentSpeed = 1;
     public bool m_DenseReward = false;
 
     protected float lastDist;
     protected float initDist;
-    private float[] settingWeights;
-    private float weightsAlpha = 0.01f;
 
     public override void Initialize()
     {
         m_AgentRb = GetComponent<Rigidbody>();
-
-        m_DiversitySettingSensor = GetComponent<VectorSensorComponent>();
-        m_DiversitySettingSensor.CreateSensors();
-
-        settingWeights = new float[m_NumDiversityBehaviors];
-        for (int i = 0; i < m_NumDiversityBehaviors; i++)
-        {
-            settingWeights[i] = 1f / m_NumDiversityBehaviors;
-        }
     }
 
     public override void OnEpisodeBegin()
@@ -47,16 +30,12 @@ public class BasicDiverse : Agent
         m_AgentRb.velocity = Vector3.zero;
         m_AgentRb.angularVelocity = Vector3.zero;
 
-        m_DiversitySetting = SampleSetting();
         lastDist = GetClosestDist();
         initDist = GetClosestDist();
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        m_DiversitySettingSensor.GetSensor().Reset();
-        m_DiversitySettingSensor.GetSensor().AddOneHotObservation(m_DiversitySetting, m_NumDiversityBehaviors);
-
         sensor.AddObservation(Vector3.Project(goal1.transform.position - transform.position, 
                                               goal1.transform.forward).magnitude);
         sensor.AddObservation(Vector3.Project(goal2.transform.position - transform.position, 
@@ -71,7 +50,6 @@ public class BasicDiverse : Agent
     {
         Move(actionBuffers);
         SetStepReward();
-        SetSettingWeights();
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -169,42 +147,5 @@ public class BasicDiverse : Agent
             AddReward((lastDist - dist) / initDist);
             lastDist = dist;
         }
-    }
-
-    protected void SetSettingWeights()
-    {
-        for (int i = 0; i < m_NumDiversityBehaviors; i++)
-        {
-            float modifier = m_DiversitySetting == i ? -weightsAlpha : weightsAlpha / (m_NumDiversityBehaviors - 1);
-            settingWeights[i] = settingWeights[i] + modifier;
-        }
-    }
-
-    protected int SampleSetting()
-    {
-        double den = 0;
-        foreach (float weight in settingWeights)
-        {
-            den += Math.Exp(weight);
-        }
-
-        double[] probs = new double[m_NumDiversityBehaviors];
-        for (int i = 0; i < m_NumDiversityBehaviors; i++)
-        {
-            probs[i] = Math.Exp(settingWeights[i]) / den;
-        }
-
-        double r = UnityEngine.Random.Range(0f, 1f);
-        double total = 0;
-        for (int i = 0; i < m_NumDiversityBehaviors; i++)
-        {
-            total += probs[i];
-            if (r < total)
-            {
-                return i;
-            }
-        }
-        Debug.Log("Shouldn't reach here: " + r.ToString());
-        return m_NumDiversityBehaviors - 1;
     }
 }

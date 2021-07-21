@@ -62,14 +62,7 @@ public class CrawlerAgentDiverse : Agent
         m_JdController.SetupBodyPart(leg2Lower);
         m_JdController.SetupBodyPart(leg3Upper);
         m_JdController.SetupBodyPart(leg3Lower);
-
-        GetComponent<VectorSensorComponent>().CreateSensors();
-        m_DiversitySettingSensor = GetComponent<VectorSensorComponent>();
     }
-
-    VectorSensorComponent m_DiversitySettingSensor;
-    public int m_DiversitySetting = 0;
-    public int m_NumDiversityBehaviors = 3;
 
     /// <summary>
     /// Spawns a target prefab at pos
@@ -95,8 +88,6 @@ public class CrawlerAgentDiverse : Agent
         body.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
 
         UpdateOrientationObjects();
-
-        m_DiversitySetting = Random.Range(0, m_NumDiversityBehaviors);
     }
 
     /// <summary>
@@ -117,10 +108,7 @@ public class CrawlerAgentDiverse : Agent
     /// Loop over body parts to add them to observation.
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
-    {
-        m_DiversitySettingSensor.GetSensor().Reset();
-        m_DiversitySettingSensor.GetSensor().AddOneHotObservation(m_DiversitySetting, m_NumDiversityBehaviors);
-        
+    {        
         var cubeForward = m_OrientationCube.transform.forward;
 
         //velocity we want to match
@@ -266,6 +254,5 @@ public class CrawlerAgentDiverse : Agent
     public void TouchedTarget()
     {
         AddReward(1f);
-        m_DiversitySetting = Random.Range(0, m_NumDiversityBehaviors);
     }
 }

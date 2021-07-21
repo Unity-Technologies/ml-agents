@@ -415,8 +415,8 @@ GameObject:
   - component: {fileID: 5494003231600241401}
   - component: {fileID: 5494003231600241395}
   - component: {fileID: 6172154977725943827}
+  - component: {fileID: 3990383348348506945}
   - component: {fileID: 5494003231600241405}
-  - component: {fileID: 5494003231600241407}
   - component: {fileID: 2264531571346784509}
   - component: {fileID: 1535169429233611627}
   - component: {fileID: 6579835685963734564}
@@ -497,6 +497,25 @@ MonoBehaviour:
   m_DiversitySetting: 0
   m_NumDiversityBehaviors: 6
   m_AgentSpeed: 0.5
+--- !u!114 &3990383348348506945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5494003231600241400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9502529ed42c4056a6a769f594f1d94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SensorName: DiversitySampler
+  ContinuousSampling: 0
+  BalancedSampling: 1
+  DisableSampling: 0
+  DiversitySize: 6
+  DiscreteSetting: 0
+  ContinuousSetting: []
 --- !u!114 &5494003231600241405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -511,21 +530,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
---- !u!114 &5494003231600241407
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5494003231600241400}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38b7cc1f5819445aa85e9a9b054552dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: Vector Sensor
-  m_ObservationSize: 6
-  m_ObservationType: 1
 --- !u!114 &2264531571346784509
 MonoBehaviour:
   m_ObjectHideFlags: 0

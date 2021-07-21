@@ -12,9 +12,6 @@ public class LaserAgentDiverse : Agent
     public GameObject goal;
     Rigidbody m_AgentRb;
 
-    VectorSensorComponent m_DiversitySettingSensor;
-    public int m_DiversitySetting = 0;
-    public int m_NumDiversityBehaviors = 4;
     public float m_AgentSpeed = 0.5f;
 
     private bool initCrouch = false;
@@ -27,9 +24,6 @@ public class LaserAgentDiverse : Agent
     public override void Initialize()
     {
         m_AgentRb = GetComponent<Rigidbody>();
-
-        m_DiversitySettingSensor = GetComponent<VectorSensorComponent>();
-        m_DiversitySettingSensor.CreateSensors();
     }
 
     public override void OnEpisodeBegin()
@@ -48,15 +42,10 @@ public class LaserAgentDiverse : Agent
 
         initDist = GetDistToGoal();
         lastDist = initDist;
-
-        m_DiversitySetting = Random.Range(0, m_NumDiversityBehaviors);
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        m_DiversitySettingSensor.GetSensor().Reset();
-        m_DiversitySettingSensor.GetSensor().AddOneHotObservation(m_DiversitySetting, m_NumDiversityBehaviors);
-
         float centeredAngle = transform.localEulerAngles.y < 270 ? 
                               transform.localEulerAngles.y : 
                               transform.localEulerAngles.y - 360f;

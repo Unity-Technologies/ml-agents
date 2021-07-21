@@ -9,7 +9,6 @@ using Random = UnityEngine.Random;
 
 public class WalkerAgentDiverse : Agent
 {
-
     const float m_minWalkingSpeed = 1; //The min walking speed to recieve reward
 
     //The direction an agent will walk during training.
@@ -70,13 +69,7 @@ public class WalkerAgentDiverse : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
-        GetComponent<VectorSensorComponent>().CreateSensors();
-        m_DiversitySettingSensor = GetComponent<VectorSensorComponent>();
     }
-
-    VectorSensorComponent m_DiversitySettingSensor;
-    public int m_DiversitySetting = 0;
-    public int m_NumDiversityBehaviors = 3;
 
     /// <summary>
     /// Loop over body parts and reset them to initial conditions.
@@ -95,8 +88,6 @@ public class WalkerAgentDiverse : Agent
         UpdateOrientationObjects();
 
         SetResetParameters();
-
-        m_DiversitySetting = Random.Range(0, m_NumDiversityBehaviors);
     }
 
     /// <summary>
@@ -127,9 +118,6 @@ public class WalkerAgentDiverse : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
-        m_DiversitySettingSensor.GetSensor().Reset();
-        m_DiversitySettingSensor.GetSensor().AddOneHotObservation(m_DiversitySetting, m_NumDiversityBehaviors);
-
         var cubeForward = m_OrientationCube.transform.forward;
 
         //velocity we want to match
@@ -263,7 +251,6 @@ public class WalkerAgentDiverse : Agent
     public void TouchedTarget()
     {
         AddReward(1f);
-        m_DiversitySetting = Random.Range(0, m_NumDiversityBehaviors);
     }
 
     public void SetTorsoMass()

@@ -920,8 +920,8 @@ GameObject:
   - component: {fileID: 7430253518223459947}
   - component: {fileID: 7430253518223459946}
   - component: {fileID: 7430253518223459945}
-  - component: {fileID: 5621334376774724361}
   - component: {fileID: 8894285808828145927}
+  - component: {fileID: 7487782068727150487}
   m_Layer: 0
   m_Name: WormDiverse
   m_TagString: Untagged
@@ -968,7 +968,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 304413179b3364e498487db09987bdfe, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: WormDiverse
@@ -1019,21 +1019,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugCommandLineOverride: 
---- !u!114 &5621334376774724361
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7430253518223459950}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38b7cc1f5819445aa85e9a9b054552dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: DiverseSettings
-  m_ObservationSize: 3
-  m_ObservationType: 0
 --- !u!114 &8894285808828145927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1056,8 +1041,25 @@ MonoBehaviour:
   bodySegment1: {fileID: 7430253518698367209}
   bodySegment2: {fileID: 7430253518623948737}
   bodySegment3: {fileID: 7430253517665647541}
-  m_DiversitySetting: 0
-  m_NumDiversityBehaviors: 3
+--- !u!114 &7487782068727150487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7430253518223459950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9502529ed42c4056a6a769f594f1d94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SensorName: DiversitySampler
+  ContinuousSampling: 0
+  BalancedSampling: 1
+  DisableSampling: 0
+  DiversitySize: 3
+  DiscreteSetting: 0
+  ContinuousSetting: []
 --- !u!1 &7430253518344216409
 GameObject:
   m_ObjectHideFlags: 0

@@ -43,14 +43,7 @@ public class WormAgentDiverse : Agent
         m_JdController.SetupBodyPart(bodySegment1);
         m_JdController.SetupBodyPart(bodySegment2);
         m_JdController.SetupBodyPart(bodySegment3);
-
-        GetComponent<VectorSensorComponent>().CreateSensors();
-        m_DiversitySettingSensor = GetComponent<VectorSensorComponent>();
     }
-
-    VectorSensorComponent m_DiversitySettingSensor;
-    public int m_DiversitySetting = 0;
-    public int m_NumDiversityBehaviors = 3;
 
     /// <summary>
     /// Spawns a target prefab at pos
@@ -76,8 +69,6 @@ public class WormAgentDiverse : Agent
         bodySegment0.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
 
         UpdateOrientationObjects();
-
-        m_DiversitySetting = Random.Range(0, m_NumDiversityBehaviors);
     }
 
     /// <summary>
@@ -108,9 +99,6 @@ public class WormAgentDiverse : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        m_DiversitySettingSensor.GetSensor().Reset();
-        m_DiversitySettingSensor.GetSensor().AddOneHotObservation(m_DiversitySetting, m_NumDiversityBehaviors);
-
         RaycastHit hit;
         float maxDist = 10;
         if (Physics.Raycast(bodySegment0.position, Vector3.down, out hit, maxDist))
@@ -142,7 +130,6 @@ public class WormAgentDiverse : Agent
     public void TouchedTarget()
     {
         AddReward(1f);
-        m_DiversitySetting = Random.Range(0, m_NumDiversityBehaviors);
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
