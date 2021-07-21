@@ -143,7 +143,7 @@ class DiverseNetworkVariational(torch.nn.Module):
         elif not self.continuous:
             prediction = torch.softmax(final_out, dim=1)
         else:
-            prediction = final_out
+            prediction = torch.clamp(final_out, -1, 1)
         return prediction, z_mu
 
     def update_saliency(self, sal_observations, sal_cont_actions):
@@ -186,7 +186,7 @@ class DiverseNetworkVariational(torch.nn.Module):
 
     def _get_log_probs(self, pred, truth):
         if self.continuous:
-            return torch.log(
+            temp = torch.log(
                 torch.prod(
                     torch.exp(
                         -0.5 * (truth - pred) ** 2 / 0.1
@@ -194,6 +194,10 @@ class DiverseNetworkVariational(torch.nn.Module):
                     dim=1
                 )
             )
+
+            if torch.isinf(temp).any() or torch.isnan(temp).any():
+                print(pred, truth, temp)
+            return temp
         else:
             return torch.log(
                 torch.sum(
@@ -245,7 +249,6 @@ class DiverseNetworkVariational(torch.nn.Module):
 
         if self.centered_reward:
             rewards -= np.log(1 / self.diverse_size)
-
         return rewards, accuracy
 
     def loss(
@@ -954,12 +957,16 @@ class TorchSACOptimizer(TorchOptimizer):
             self.policy.actor.network_body
         )
         self._critic.network_body.copy_normalization(self.policy.actor.network_body)
-        sampled_actions, log_probs, _, _, = self.policy.actor.get_action_and_stats(
-            current_obs,
-            masks=act_masks,
-            memories=memories,
-            sequence_length=self.policy.sequence_length,
-        )
+        try:
+            sampled_actions, log_probs, _, _, = self.policy.actor.get_action_and_stats(
+                current_obs,
+                masks=act_masks,
+                memories=memories,
+                sequence_length=self.policy.sequence_length,
+            )
+        except Exception as e:
+            print(current_obs)
+            raise(e)
         value_estimates, _ = self._critic.critic_pass(
             current_obs, value_memories, sequence_length=self.policy.sequence_length
         )
