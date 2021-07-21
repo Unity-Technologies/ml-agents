@@ -41,6 +41,7 @@ class DiverseNetworkVariational(torch.nn.Module):
         self.drop_actions = params.mede_drop_actions
         self.centered_reward = params.mede_centered
         self.mutual_information = params.mede_mutual_information
+        self.continuous = params.mede_continuous
         self.observations_sal_drop = [torch.zeros(s.shape) for s in specs.observation_specs \
                                       if s.observation_type != ObservationType.GOAL_SIGNAL]
         self.cont_actions_sal_drop = torch.zeros(specs.action_spec.continuous_size)
@@ -88,12 +89,8 @@ class DiverseNetworkVariational(torch.nn.Module):
             torch.tensor(beta_start, dtype=torch.float), requires_grad=False
         ) if params.mede_noise else None
 
-        if self._use_actions and len(self.disc_sizes) > 0:
-            self._last_layer = torch.nn.Linear(
-                encoder_settings.hidden_units, self.diverse_size * sum(self.disc_sizes)
-            )
-        else:
-            self._last_layer = torch.nn.Linear(encoder_settings.hidden_units, self.diverse_size)
+        disc_mod = sum(self.disc_sizes) if self._use_actions and len(self.disc_sizes) > 0 else 1
+        self._last_layer = torch.nn.Linear(encoder_settings.hidden_units, self.diverse_size * disc_mod)
 
         self._diverse_index = -1
         self._max_index = len(specs.observation_specs)
@@ -138,13 +135,15 @@ class DiverseNetworkVariational(torch.nn.Module):
             hidden = torch.normal(z_mu, self._z_sigma)
 
         final_out = self._last_layer(hidden)
-        if self._use_actions and len(self.disc_sizes) > 0:
+        if self._use_actions and len(self.disc_sizes) > 0 and not self.continuous:
             branches = []
             for i in range(0, sum(self.disc_sizes)*self.diverse_size, self.diverse_size):
                 branches.append(torch.softmax(final_out[:, i:i+self.diverse_size], dim=1))
             prediction = torch.cat(branches, dim=1)
-        else:
+        elif not self.continuous:
             prediction = torch.softmax(final_out, dim=1)
+        else:
+            prediction = final_out
         return prediction, z_mu
 
     def update_saliency(self, sal_observations, sal_cont_actions):
@@ -185,6 +184,23 @@ class DiverseNetworkVariational(torch.nn.Module):
     def copy_normalization(self, thing):
         self._encoder.processors[0].copy_normalization(thing.processors[1])
 
+    def _get_log_probs(self, pred, truth):
+        if self.continuous:
+            return torch.log(
+                torch.prod(
+                    torch.exp(
+                        -0.5 * (truth - pred) ** 2 / 0.1
+                    ) / np.sqrt(2 * np.pi * 0.1), 
+                    dim=1
+                )
+            )
+        else:
+            return torch.log(
+                torch.sum(
+                    pred * truth, dim=1
+                ) + self.EPSILON
+            )
+
     def rewards(
         self, obs_input, cont_act, disc_act, detach_action=False, var_noise=True
     ) -> torch.Tensor:
@@ -204,25 +220,28 @@ class DiverseNetworkVariational(torch.nn.Module):
             action_rewards = []
             action_accuracy = []
             for i in range(0, sum(self.disc_sizes)*self.diverse_size, self.diverse_size):  # Get the reward for each discrete action
-                action_rewards.append(torch.log(
-                    torch.sum(prediction[:, i:i+self.diverse_size] * truth, dim=1, keepdim=True) + self.EPSILON
-                ))
-                action_accuracy.append(
-                    torch.argmax(prediction[:, i:i+self.diverse_size], dim=1, keepdim=True) == \
-                    torch.argmax(truth, dim=1, keepdim=True)
-                )
+                action_rewards.append(self._get_log_probs(prediction[:, i:i+self.diverse_size], truth).unsqueeze(1))
+                if not self.continuous:
+                    action_accuracy.append(
+                        torch.argmax(prediction[:, i:i+self.diverse_size], dim=1, keepdim=True) == \
+                        torch.argmax(truth, dim=1, keepdim=True)
+                    )
 
             all_rewards = torch.cat(action_rewards, dim=1)
             branched_rewards = ModelUtils.break_into_branches(all_rewards * disc_probs, self.disc_sizes)
             rewards = torch.mean(torch.stack([torch.sum(branch, dim=1) for branch in branched_rewards]), dim=0)
 
-            all_accuracy = torch.cat(action_accuracy, dim=1)
-            branched_accuracy = ModelUtils.break_into_branches(all_accuracy * disc_act.exp(), self.disc_sizes)
-            accuracy = torch.mean(torch.stack([torch.sum(branch, dim=1) for branch in branched_accuracy]), dim=0)
+            accuracy = torch.zeros_like(rewards)
+            if not self.continuous:
+                all_accuracy = torch.cat(action_accuracy, dim=1)
+                branched_accuracy = ModelUtils.break_into_branches(all_accuracy * disc_act.exp(), self.disc_sizes)
+                accuracy = torch.mean(torch.stack([torch.sum(branch, dim=1) for branch in branched_accuracy]), dim=0)
 
         else:
-            rewards = torch.log(torch.sum((prediction * truth), dim=1) + self.EPSILON)
-            accuracy = torch.argmax(prediction, dim=1) == torch.argmax(truth, dim=1)
+            rewards = self._get_log_probs(prediction, truth)
+            accuracy = torch.zeros_like(rewards)
+            if not self.continuous:
+                accuracy = torch.argmax(prediction, dim=1) == torch.argmax(truth, dim=1)
 
         if self.centered_reward:
             rewards -= np.log(1 / self.diverse_size)

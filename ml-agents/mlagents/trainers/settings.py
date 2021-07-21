@@ -177,6 +177,7 @@ class SACSettings(HyperparamSettings):
     mede_drop_actions: bool = True
     mede_noise: bool = True
     mede_centered: bool = False
+    mede_continuous: bool = True
 
     @reward_signal_steps_per_update.default
     def _reward_signal_steps_per_update_default(self):
