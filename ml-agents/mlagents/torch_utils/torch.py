@@ -60,9 +60,8 @@ def set_torch_config(
     logger.info(f"default Torch device: {_device}")
 
     if set_torch_threads:
-        print(torch_settings.num_threads)
-        if torch_settings.num_threads > 0:
-            torch.set_num_threads(torch_settings.num_threads)
+        if torch_settings.torch_num_threads > 0:
+            torch.set_num_threads(torch_settings.torch_num_threads)
             logger.info(f"set Torch num_threads: {torch.get_num_threads()}")
         else:
             torch.set_num_threads(cpu_utils.get_num_threads_to_use())
