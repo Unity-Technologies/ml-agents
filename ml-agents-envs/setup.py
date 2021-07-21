@@ -53,6 +53,7 @@ setup(
         "Pillow>=4.2.1",
         "protobuf>=3.6",
         "pyyaml>=3.1.0",
+        "gym==0.10.5",
         "multiagent @ git+https://github.com/openai/multiagent-particle-envs.git",
     ],
     python_requires=">=3.6.1",
