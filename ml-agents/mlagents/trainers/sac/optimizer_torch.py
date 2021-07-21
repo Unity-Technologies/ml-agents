@@ -186,7 +186,7 @@ class DiverseNetworkVariational(torch.nn.Module):
 
     def _get_log_probs(self, pred, truth):
         if self.continuous:
-            temp = torch.log(
+            return torch.log(
                 torch.prod(
                     torch.exp(
                         -0.5 * (truth - pred) ** 2 / 0.1
@@ -194,10 +194,6 @@ class DiverseNetworkVariational(torch.nn.Module):
                     dim=1
                 )
             )
-
-            if torch.isinf(temp).any() or torch.isnan(temp).any():
-                print(pred, truth, temp)
-            return temp
         else:
             return torch.log(
                 torch.sum(
@@ -249,6 +245,7 @@ class DiverseNetworkVariational(torch.nn.Module):
 
         if self.centered_reward:
             rewards -= np.log(1 / self.diverse_size)
+
         return rewards, accuracy
 
     def loss(
@@ -957,16 +954,12 @@ class TorchSACOptimizer(TorchOptimizer):
             self.policy.actor.network_body
         )
         self._critic.network_body.copy_normalization(self.policy.actor.network_body)
-        try:
-            sampled_actions, log_probs, _, _, = self.policy.actor.get_action_and_stats(
-                current_obs,
-                masks=act_masks,
-                memories=memories,
-                sequence_length=self.policy.sequence_length,
-            )
-        except Exception as e:
-            print(current_obs)
-            raise(e)
+        sampled_actions, log_probs, _, _, = self.policy.actor.get_action_and_stats(
+            current_obs,
+            masks=act_masks,
+            memories=memories,
+            sequence_length=self.policy.sequence_length,
+        )
         value_estimates, _ = self._critic.critic_pass(
             current_obs, value_memories, sequence_length=self.policy.sequence_length
         )
