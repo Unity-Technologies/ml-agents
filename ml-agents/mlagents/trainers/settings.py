@@ -172,6 +172,7 @@ class SACSettings(HyperparamSettings):
     mede_divcoef_lr: float = 0.0001
     mede_mutual_information: float = float("inf")
     mede_adaptive_divcoef: bool = True
+    mede_learn_variance: bool = True
     mede_for_policy_loss: bool = True
     mede_use_actions: bool = True
     mede_drop_actions: bool = True

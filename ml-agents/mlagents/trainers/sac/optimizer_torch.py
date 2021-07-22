@@ -42,6 +42,7 @@ class DiverseNetworkVariational(torch.nn.Module):
         self.centered_reward = params.mede_centered
         self.mutual_information = params.mede_mutual_information
         self.continuous = params.mede_continuous
+        self.learn_variance = params.mede_learn_variance
         self.observations_sal_drop = [torch.zeros(s.shape) for s in specs.observation_specs \
                                       if s.observation_type != ObservationType.GOAL_SIGNAL]
         self.cont_actions_sal_drop = torch.zeros(specs.action_spec.continuous_size)
@@ -89,8 +90,9 @@ class DiverseNetworkVariational(torch.nn.Module):
             torch.tensor(beta_start, dtype=torch.float), requires_grad=False
         ) if params.mede_noise else None
 
-        disc_mod = sum(self.disc_sizes) if self._use_actions and len(self.disc_sizes) > 0 else 1
-        self._last_layer = torch.nn.Linear(encoder_settings.hidden_units, self.diverse_size * disc_mod)
+        final_size = self.diverse_size * 2 if self.learn_variance and self.continuous else self.diverse_size
+        disc_actions = sum(self.disc_sizes) if self._use_actions and len(self.disc_sizes) > 0 else 1
+        self._last_layer = torch.nn.Linear(encoder_settings.hidden_units, final_size * disc_actions)
 
         self._diverse_index = -1
         self._max_index = len(specs.observation_specs)
@@ -134,16 +136,8 @@ class DiverseNetworkVariational(torch.nn.Module):
         if self._z_sigma is not None and var_noise:
             hidden = torch.normal(z_mu, self._z_sigma)
 
-        final_out = self._last_layer(hidden)
-        if self._use_actions and len(self.disc_sizes) > 0 and not self.continuous:
-            branches = []
-            for i in range(0, sum(self.disc_sizes)*self.diverse_size, self.diverse_size):
-                branches.append(torch.softmax(final_out[:, i:i+self.diverse_size], dim=1))
-            prediction = torch.cat(branches, dim=1)
-        elif not self.continuous:
-            prediction = torch.softmax(final_out, dim=1)
-        else:
-            prediction = torch.clamp(final_out, -1, 1)
+        prediction = self._last_layer(hidden)
+
         return prediction, z_mu
 
     def update_saliency(self, sal_observations, sal_cont_actions):
@@ -186,18 +180,27 @@ class DiverseNetworkVariational(torch.nn.Module):
 
     def _get_log_probs(self, pred, truth):
         if self.continuous:
+            if self.learn_variance:
+                variance_start = int(pred.shape[1] / 2)
+                mean = torch.clamp(pred[:, :variance_start], -1, 1)
+                variance = torch.clamp(pred[:, variance_start:], 1e-4, 1e-1)
+            else:
+                mean = torch.clamp(pred, -1, 1)
+                variance = torch.full_like(pred, 1e-2)
+
             return torch.log(
                 torch.prod(
                     torch.exp(
-                        -0.5 * (truth - pred) ** 2 / 0.1
-                    ) / np.sqrt(2 * np.pi * 0.1), 
+                        -0.5 * (truth - mean) ** 2 / variance
+                    ) / torch.sqrt(2 * np.pi * variance), 
                     dim=1
-                )
+                ) + self.EPSILON
             )
         else:
+            probs = torch.softmax(pred, dim=1)
             return torch.log(
                 torch.sum(
-                    pred * truth, dim=1
+                    probs * truth, dim=1
                 ) + self.EPSILON
             )
 
