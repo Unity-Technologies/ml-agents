@@ -27,7 +27,7 @@ class TrainerFactory:
         param_manager: EnvironmentParameterManager,
         init_path: str = None,
         multi_gpu: bool = False,
-        checkpoint_to_load: str = None,
+        checkpoint_name: str = "checkpoint.pt",
     ):
         """
         The TrainerFactory generates the Trainers based on the configuration passed as
@@ -45,7 +45,7 @@ class TrainerFactory:
         the EnvironmentParameters must change.
         :param init_path: Path from which to load model.
         :param multi_gpu: If True, multi-gpu will be used. (currently not available)
-        :param checkpoint_to_load: TODO
+        :param checkpoint_name: Name of checkpoint file to load model, in model_path/init_path.
         """
         self.trainer_config = trainer_config
         self.output_path = output_path
@@ -55,7 +55,7 @@ class TrainerFactory:
         self.seed = seed
         self.param_manager = param_manager
         self.multi_gpu = multi_gpu
-        self.checkpoint_to_load = checkpoint_to_load
+        self.checkpoint_name = checkpoint_name
         self.ghost_controller = GhostController()
 
     def generate(self, behavior_name: str) -> Trainer:
@@ -71,7 +71,7 @@ class TrainerFactory:
             self.param_manager,
             self.init_path,
             self.multi_gpu,
-            self.checkpoint_to_load,
+            self.checkpoint_name,
         )
 
     @staticmethod
@@ -86,7 +86,7 @@ class TrainerFactory:
         param_manager: EnvironmentParameterManager,
         init_path: str = None,
         multi_gpu: bool = False,
-        checkpoint_to_load: str = None,
+        checkpoint_name: str = "checkpoint.pt",
     ) -> Trainer:
         """
         Initializes a trainer given a provided trainer configuration and brain parameters, as well as
@@ -102,13 +102,14 @@ class TrainerFactory:
         :param seed: The random seed to use
         :param param_manager: EnvironmentParameterManager, used to determine a reward buffer length for PPOTrainer
         :param init_path: Path from which to load model, if different from model_path.
+        :param multi_gpu: If True, multi-gpu will be used. (currently not available)
+        :param checkpoint_name: Name of checkpoint file to load model, in model_path/init_path.
         :return:
         """
         trainer_artifact_path = os.path.join(output_path, brain_name)
         if init_path is not None:
             trainer_settings.init_path = os.path.join(init_path, brain_name)
-        if checkpoint_to_load is not None:
-            trainer_settings.checkpoint_to_load = checkpoint_to_load
+        trainer_settings.checkpoint_name = checkpoint_name
 
         min_lesson_length = param_manager.get_minimum_reward_buffer_size(brain_name)
 

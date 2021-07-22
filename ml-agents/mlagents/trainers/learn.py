@@ -109,7 +109,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             param_manager=env_parameter_manager,
             init_path=checkpoint_settings.maybe_init_path,
             multi_gpu=False,
-            checkpoint_to_load=checkpoint_settings.checkpoint_name,
+            checkpoint_name=checkpoint_settings.checkpoint_name,
         )
         # Create controller and begin training.
         tc = TrainerController(

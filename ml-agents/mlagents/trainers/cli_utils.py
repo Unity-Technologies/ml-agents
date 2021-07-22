@@ -85,7 +85,6 @@ def _create_parser() -> argparse.ArgumentParser:
         "--resume",
         default=False,
         dest="resume",
-        metavar="checkpoint_name",
         action=DetectDefaultStoreTrue,
         help="Whether to resume training from a checkpoint. Specify a --run-id to use this option. "
         "If set, the training code loads an already trained model to initialize the neural network "

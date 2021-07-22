@@ -637,7 +637,7 @@ class TrainerSettings(ExportableSettings):
         factory=lambda: {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
     )
     init_path: Optional[str] = None
-    checkpoint_to_load: Optional[str] = None
+    checkpoint_name: Optional[str] = None
     keep_checkpoints: int = 5
     checkpoint_interval: int = 500000
     max_steps: int = 500000
@@ -753,7 +753,7 @@ class CheckpointSettings:
     train_model: bool = parser.get_default("train_model")
     inference: bool = parser.get_default("inference")
     results_dir: str = parser.get_default("results_dir")
-    checkpoint_name: str = parser.get_default("checkpoint_name")
+    checkpoint_name: str = attr.ib(default=parser.get_default("checkpoint_name"))
 
     @property
     def write_path(self) -> str:
@@ -766,6 +766,11 @@ class CheckpointSettings:
             if self.initialize_from is not None
             else None
         )
+
+    @checkpoint_name.validator
+    def _validate_checkpoint_name(self, attribute, value):
+        if not value.endswith(".pt"):
+            raise ValueError("Checkpoint_name must be a .pt file extension.")
 
     @property
     def run_logs_dir(self) -> str:
