@@ -194,5 +194,5 @@ graphics display in the Unity executable. There are two ways to achieve this:
 
 If you want to train with graphics (for example, using camera and visual observations), you'll
 need to set up display rendering support (e.g. xvfb) on you server machine. In our
-[Colab Notebook Tutorials](README.md#python-tutorial-with-google-colab), the Setup section has
+[Colab Notebook Tutorials](Readme.md#python-tutorial-with-google-colab), the Setup section has
 examples of setting up xvfb on servers.
