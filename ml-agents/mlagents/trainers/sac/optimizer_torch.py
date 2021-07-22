@@ -43,6 +43,7 @@ class DiverseNetworkVariational(torch.nn.Module):
         self.mutual_information = params.mede_mutual_information
         self.continuous = params.mede_continuous
         self.learn_variance = params.mede_learn_variance
+        self.stats = {}
         self.observations_sal_drop = [torch.zeros(s.shape) for s in specs.observation_specs \
                                       if s.observation_type != ObservationType.GOAL_SIGNAL]
         self.cont_actions_sal_drop = torch.zeros(specs.action_spec.continuous_size)
@@ -178,7 +179,7 @@ class DiverseNetworkVariational(torch.nn.Module):
     def copy_normalization(self, thing):
         self._encoder.processors[0].copy_normalization(thing.processors[1])
 
-    def _get_log_probs(self, pred, truth):
+    def _get_log_probs(self, pred, truth, masks=None):
         if self.continuous:
             if self.learn_variance:
                 variance_start = int(pred.shape[1] / 2)
@@ -187,6 +188,12 @@ class DiverseNetworkVariational(torch.nn.Module):
             else:
                 mean = torch.clamp(pred, -1, 1)
                 variance = torch.full_like(pred, 1e-2)
+
+            if masks is not None:
+                self.stats.update({
+                    "MEDE/Predicted Mean Variance": torch.mean(torch.var(mean, dim=0)).item(),
+                    "MEDE/Predicted Variance Mean": torch.mean(variance).item()
+                })
 
             return torch.log(
                 torch.prod(
@@ -205,7 +212,7 @@ class DiverseNetworkVariational(torch.nn.Module):
             )
 
     def rewards(
-        self, obs_input, cont_act, disc_act, detach_action=False, var_noise=True
+        self, obs_input, cont_act, disc_act, detach_action=False, var_noise=True, masks=None
     ) -> torch.Tensor:
 
         truth = obs_input[self._diverse_index]
@@ -223,7 +230,9 @@ class DiverseNetworkVariational(torch.nn.Module):
             action_rewards = []
             action_accuracy = []
             for i in range(0, sum(self.disc_sizes)*self.diverse_size, self.diverse_size):  # Get the reward for each discrete action
-                action_rewards.append(self._get_log_probs(prediction[:, i:i+self.diverse_size], truth).unsqueeze(1))
+                action_rewards.append(
+                    self._get_log_probs(prediction[:, i:i+self.diverse_size], truth, masks).unsqueeze(1)
+                )
                 if not self.continuous:
                     action_accuracy.append(
                         torch.argmax(prediction[:, i:i+self.diverse_size], dim=1, keepdim=True) == \
@@ -241,7 +250,7 @@ class DiverseNetworkVariational(torch.nn.Module):
                 accuracy = torch.mean(torch.stack([torch.sum(branch, dim=1) for branch in branched_accuracy]), dim=0)
 
         else:
-            rewards = self._get_log_probs(prediction, truth)
+            rewards = self._get_log_probs(prediction, truth, masks)
             accuracy = torch.zeros_like(rewards)
             if not self.continuous:
                 accuracy = torch.argmax(prediction, dim=1) == torch.argmax(truth, dim=1)
@@ -249,15 +258,27 @@ class DiverseNetworkVariational(torch.nn.Module):
         if self.centered_reward:
             rewards -= np.log(1 / self.diverse_size)
 
-        return rewards, accuracy
+        # Log accuracy stats
+        if masks is not None:
+            self.stats.update({
+                "MEDE/Accuracy": ModelUtils.masked_mean(accuracy, masks).item(),
+            })
+            truth = torch.argmax(obs_input[self._diverse_index], dim=1)
+            counts = torch.bincount(truth, minlength=self.diverse_size)
+            for i in range(self.diverse_size):
+                a = torch.sum(torch.where(truth == i, accuracy, torch.zeros_like(accuracy))) / counts[i]
+                self.stats.update({
+                    "MEDE/Accuracy {}".format(i): a.item()
+                })
+
+        return rewards
 
     def loss(
         self, obs_input, cont_act, disc_act, masks, detach_action=True, var_noise=True
     ) -> torch.Tensor:
 
-        rewards, acc = self.rewards(obs_input, cont_act, disc_act, detach_action, var_noise)
+        rewards = self.rewards(obs_input, cont_act, disc_act, detach_action, var_noise, masks)
         base_loss = -ModelUtils.masked_mean(rewards, masks)
-        accuracy = ModelUtils.masked_mean(acc, masks)
         total_loss = base_loss
 
         kl_loss, vail_loss = None, None
@@ -280,26 +301,23 @@ class DiverseNetworkVariational(torch.nn.Module):
                     )
                 total_loss = base_loss + vail_loss
 
-        stats = {
+        self.stats.update({
             "Losses/MEDE Loss": total_loss.item(),
             "MEDE/Reward": -base_loss.item(),
-            "MEDE/Accuracy": accuracy.item(),
             "MEDE/Variational": vail_loss.item() if vail_loss is not None else 0,
             "MEDE/KL": kl_loss.item() if kl_loss is not None else 0,
             "MEDE/beta": self._beta.item() if self._beta is not None else 0,
-        }
+        })
 
         truth = torch.argmax(obs_input[self._diverse_index], dim=1)
         counts = torch.bincount(truth, minlength=self.diverse_size)
         for i in range(self.diverse_size):
             r = torch.sum(torch.where(truth == i, rewards, torch.zeros_like(rewards))) / counts[i]
-            a = torch.sum(torch.where(truth == i, acc, torch.zeros_like(acc))) / counts[i]
-            stats.update({
+            self.stats.update({
                 "MEDE/Reward {}".format(i): r.item(),
-                "MEDE/Accuracy {}".format(i): a.item()
             })
         
-        return total_loss, stats
+        return total_loss, self.stats
 
     def get_stats(self, obs_input, cont_act, disc_act, masks):
         for p in self.parameters():
@@ -313,7 +331,7 @@ class DiverseNetworkVariational(torch.nn.Module):
             disc_act = disc_act.detach()
             disc_act.requires_grad = True
 
-        rewards, _ = self.rewards(obs_input, cont_act, disc_act, detach_action=False, var_noise=False)
+        rewards = self.rewards(obs_input, cont_act, disc_act, detach_action=False, var_noise=False)
         ModelUtils.masked_mean(rewards, masks).backward()
 
         all_obs_grad = []
@@ -1015,11 +1033,11 @@ class TorchSACOptimizer(TorchOptimizer):
         if self.use_mede:
             self._mede_network.copy_normalization(self.policy.actor.network_body)
             disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
-            mede_policy_rewards, _ = self._mede_network.rewards(
+            mede_policy_rewards = self._mede_network.rewards(
                 current_obs, sampled_actions.continuous_tensor, disc_act, var_noise=False
             )
             with torch.no_grad():
-                mede_value_rewards, _ = self._mede_network.rewards(
+                mede_value_rewards = self._mede_network.rewards(
                     current_obs, sampled_actions.continuous_tensor, disc_act, var_noise=False
                 )
 
