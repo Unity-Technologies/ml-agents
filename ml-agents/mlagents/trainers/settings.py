@@ -637,6 +637,7 @@ class TrainerSettings(ExportableSettings):
         factory=lambda: {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
     )
     init_path: Optional[str] = None
+    checkpoint_to_load: Optional[str] = None
     keep_checkpoints: int = 5
     checkpoint_interval: int = 500000
     max_steps: int = 500000
@@ -752,6 +753,7 @@ class CheckpointSettings:
     train_model: bool = parser.get_default("train_model")
     inference: bool = parser.get_default("inference")
     results_dir: str = parser.get_default("results_dir")
+    checkpoint_name: str = parser.get_default("checkpoint_name")
 
     @property
     def write_path(self) -> str:
@@ -892,6 +894,7 @@ class RunOptions(ExportableSettings):
         if isinstance(final_runoptions.behaviors, TrainerSettings.DefaultTrainerDict):
             # configure whether or not we should require all behavior names to be found in the config YAML
             final_runoptions.behaviors.set_config_specified(_require_all_behaviors)
+        print(final_runoptions.checkpoint_settings.checkpoint_name)#TODO
         return final_runoptions
 
     @staticmethod

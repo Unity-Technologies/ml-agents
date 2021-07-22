@@ -99,7 +99,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         env_parameter_manager = EnvironmentParameterManager(
             options.environment_parameters, run_seed, restore=checkpoint_settings.resume
         )
-
+        print(f"learner: check_load:{checkpoint_settings.checkpoint_name}")
         trainer_factory = TrainerFactory(
             trainer_config=options.behaviors,
             output_path=checkpoint_settings.write_path,
@@ -109,6 +109,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             param_manager=env_parameter_manager,
             init_path=checkpoint_settings.maybe_init_path,
             multi_gpu=False,
+            checkpoint_to_load=checkpoint_settings.checkpoint_name,
         )
         # Create controller and begin training.
         tc = TrainerController(
