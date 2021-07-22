@@ -388,7 +388,7 @@ public class WalkerAgent : Agent
         fuStep += 1;
         // Debug.DrawRay(ringSensorOrientation.transform.TransformPoint(m_facingDirNormalized), Vector3.up, Color.red, .5f);
 
-        Debug.DrawRay(ringSensorOrientation.transform.position, ringSensorOrientation.transform.TransformDirection(m_relativeDirToFace), Color.red, .1f);
+        // Debug.DrawRay(ringSensorOrientation.transform.position, ringSensorOrientation.transform.TransformDirection(m_relativeDirToFace), Color.red, .1f);
         // timer +=
         // print("fu");
     }

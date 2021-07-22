@@ -54,44 +54,17 @@ env_settings:
 #   capture_frame_rate: 0
 #   no_graphics: true
 
-# # use terrain, hips, use world up
-# environment_parameters:
-#   #less than .5 is false, greater than .5 is true
-#   terrain_enabled : .7
-#   #less than .5 attach to hips otherwise attach to head
-#   ring_sensor_use_hips_or_head : .2
-#   #less than .5 use attached transform rot otherwise use world up
-#   ring_sensor_use_world_up_rot : .7
-
 # use terrain, chest, use world up, use actuated sensors
 environment_parameters:
   #less than .5 is false, greater than .5 is true
   terrain_enabled : .7
   #less than .5 attach to hips otherwise attach to chest
-  ring_sensor_use_hips_or_head : .7
+  ring_sensor_use_hips_or_head : .2
   #less than .5 use attached transform rot otherwise use world up
   ring_sensor_use_world_up_rot : .7
   #less than .5 don't use actuated rays otherwise do
-  use_actuated_sensors : .2
+  use_actuated_sensors : .7
   #max force joints can use. default is 10k
   max_joint_force_spring: 10000
   #if > .5 use an energy conservation reward
   use_energy_conservation_reward : .7
-
-# # use terrain, hips, use transform rot
-# environment_parameters:
-#   #less than .5 is false, greater than .5 is true
-#   terrain_enabled : .7
-#   #less than .5 attach to hips otherwise attach to head
-#   ring_sensor_use_hips_or_head : .2
-#   #less than .5 use attached transform rot otherwise use world up
-#   ring_sensor_use_world_up_rot : .2
-
-# # use terrain, head, use world up
-# environment_parameters:
-#   #less than .5 is false, greater than .5 is true
-#   terrain_enabled : .7
-#   #less than .5 attach to hips otherwise attach to head
-#   ring_sensor_use_hips_or_head : .7
-#   #less than .5 use attached transform rot otherwise use world up
-#   ring_sensor_use_world_up_rot : .2

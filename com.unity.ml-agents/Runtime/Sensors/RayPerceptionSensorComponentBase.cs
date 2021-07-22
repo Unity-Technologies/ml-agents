@@ -314,7 +314,7 @@ namespace Unity.MLAgents.Sensors
             {
                 var hitRadius = Mathf.Max(rayOutput.ScaledCastRadius, .05f);
                 Gizmos.DrawWireSphere(startPositionWorld + rayDirection, hitRadius);
-                // Debug.DrawRay(startPositionWorld + rayDirection, Vector3.up * .25f, Color.red, 1);
+                Debug.DrawRay(startPositionWorld + rayDirection, Vector3.up * .25f, Color.black , .2f);
             }
         }
     }
