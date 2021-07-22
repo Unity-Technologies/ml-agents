@@ -112,7 +112,9 @@ class RpcCommunicator(Communicator):
             "The Unity environment took too long to respond. Make sure that :\n"
             "\t The environment does not need user interaction to launch\n"
             '\t The Agents\' Behavior Parameters > Behavior Type is set to "Default"\n'
-            "\t The environment and the Python interface have compatible versions."
+            "\t The environment and the Python interface have compatible versions.\n"
+            "\t If you're running on a headless server without graphics support, turn off display "
+            "by either passing --no-graphics option or build your Unity executable as server build."
         )
 
     def initialize(
