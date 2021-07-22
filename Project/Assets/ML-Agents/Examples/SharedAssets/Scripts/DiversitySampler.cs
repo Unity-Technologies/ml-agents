@@ -64,7 +64,7 @@ public class DiversitySampler : ISensor
     int m_DiversitySize;
     bool m_ContinuousSampling;
     bool m_BalancedSampling;
-    bool m_DisableSampling;
+    bool m_DisableSampling = false;
     ObservationSpec m_ObservationSpec;
     float[] m_SamplingWeights;
     float[] m_DiversitySetting;
