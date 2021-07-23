@@ -91,9 +91,9 @@ class DiverseNetworkVariational(torch.nn.Module):
             torch.tensor(beta_start, dtype=torch.float), requires_grad=False
         ) if params.mede_noise else None
 
-        final_size = self.diverse_size * 2 if self.learn_variance and self.continuous else self.diverse_size
+        self._out_size = self.diverse_size * 2 if self.learn_variance and self.continuous else self.diverse_size
         disc_actions = sum(self.disc_sizes) if self._use_actions and len(self.disc_sizes) > 0 else 1
-        self._last_layer = torch.nn.Linear(encoder_settings.hidden_units, final_size * disc_actions)
+        self._last_layer = torch.nn.Linear(encoder_settings.hidden_units, self._out_size * disc_actions)
 
         self._diverse_index = -1
         self._max_index = len(specs.observation_specs)
@@ -184,7 +184,7 @@ class DiverseNetworkVariational(torch.nn.Module):
             if self.learn_variance:
                 variance_start = int(pred.shape[1] / 2)
                 mean = torch.clamp(pred[:, :variance_start], -1, 1)
-                variance = torch.clamp(pred[:, variance_start:], 1e-4, 1e-1)
+                variance = torch.clamp(pred[:, variance_start:], 1e-6, 10)
             else:
                 mean = torch.clamp(pred, -1, 1)
                 variance = torch.full_like(pred, 1e-2)
@@ -229,13 +229,13 @@ class DiverseNetworkVariational(torch.nn.Module):
 
             action_rewards = []
             action_accuracy = []
-            for i in range(0, sum(self.disc_sizes)*self.diverse_size, self.diverse_size):  # Get the reward for each discrete action
+            for i in range(0, sum(self.disc_sizes)*self._out_size, self._out_size):  # Get the reward for each discrete action
                 action_rewards.append(
-                    self._get_log_probs(prediction[:, i:i+self.diverse_size], truth, masks).unsqueeze(1)
+                    self._get_log_probs(prediction[:, i:i+self._out_size], truth, masks).unsqueeze(1)
                 )
                 if not self.continuous:
                     action_accuracy.append(
-                        torch.argmax(prediction[:, i:i+self.diverse_size], dim=1, keepdim=True) == \
+                        torch.argmax(prediction[:, i:i+self._out_size], dim=1, keepdim=True) == \
                         torch.argmax(truth, dim=1, keepdim=True)
                     )
 
@@ -462,9 +462,9 @@ class TorchSACOptimizer(TorchOptimizer):
             self.continuous = continuous
 
     class DivCoef(nn.Module):
-        def __init__(self, log_coef):
+        def __init__(self, coef):
             super().__init__()
-            self.log_coef = log_coef
+            self.coef = coef
 
     def __init__(self, policy: TorchPolicy, trainer_params: TrainerSettings):
         super().__init__(policy, trainer_params)
@@ -560,10 +560,12 @@ class TorchSACOptimizer(TorchOptimizer):
         self.sal_cont_actions = torch.zeros(self.policy.behavior_spec.action_spec.continuous_size)
         self.sal_weight = 0.01
         self.target_diversity = hyperparameters.mede_target_divcoef
-        self._diversity_coef = TorchSACOptimizer.DivCoef(torch.nn.Parameter(
-            torch.log(torch.as_tensor([hyperparameters.mede_init_divcoef])), requires_grad=True
-        ))
         self._adaptive_divcoef = hyperparameters.mede_adaptive_divcoef
+        self._scheduled_divcoef = hyperparameters.mede_scheduled_divcoef
+        self._divcoef_lr = hyperparameters.mede_divcoef_lr
+        self._diversity_coef = TorchSACOptimizer.DivCoef(torch.nn.Parameter(
+            torch.as_tensor([hyperparameters.mede_init_divcoef]), requires_grad=self._adaptive_divcoef
+        ))
 
         logger.debug("value_vars")
         for param in value_params:
@@ -696,7 +698,7 @@ class TorchSACOptimizer(TorchOptimizer):
                     v_backup = min_policy_qs[name] - torch.sum(
                         _cont_ent_coef * log_probs.continuous_tensor, dim=1
                     )
-                    v_backup += self._diversity_coef.log_coef.exp() * mede_rewards
+                    v_backup += self._diversity_coef.coef * mede_rewards
                 value_loss = 0.5 * ModelUtils.masked_mean(
                     torch.nn.functional.mse_loss(values[name], v_backup), loss_masks
                 )
@@ -719,7 +721,7 @@ class TorchSACOptimizer(TorchOptimizer):
                     v_backup = min_policy_qs[name] - torch.mean(
                         branched_ent_bonus, axis=0
                     )
-                    v_backup += self._diversity_coef.log_coef.exp() * mede_rewards.unsqueeze(-1)
+                    v_backup += self._diversity_coef.coef * mede_rewards.unsqueeze(-1)
                     # Add continuous entropy bonus to minimum Q
                     if self._action_spec.continuous_size > 0:
                         v_backup += torch.sum(
@@ -781,7 +783,7 @@ class TorchSACOptimizer(TorchOptimizer):
                 _cont_ent_coef * cont_log_probs - all_mean_q1.unsqueeze(1), dim=1
             )
         if self.mede_policy_loss:
-            batch_policy_loss += -self._diversity_coef.log_coef.exp() * mede_rewards
+            batch_policy_loss += -self._diversity_coef.coef * mede_rewards
         policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
 
         return policy_loss
@@ -837,7 +839,7 @@ class TorchSACOptimizer(TorchOptimizer):
             mede_loss = -ModelUtils.masked_mean(mede_rewards, masks)
             target_diff = mede_loss - self.target_diversity
 
-        divcoef_loss = -1 * (self._diversity_coef.log_coef.exp() * target_diff)
+        divcoef_loss = -1 * (self._diversity_coef.coef * target_diff)
         return divcoef_loss
 
     def _condense_q_streams(
@@ -1108,9 +1110,16 @@ class TorchSACOptimizer(TorchOptimizer):
                 divcoef_loss.backward()
                 self.divcoef_optimizer.step()
                 update_stats.update({
-                    "MEDE/Diversity Coefficient": self._diversity_coef.log_coef.exp().item(),
+                    "MEDE/Diversity Coefficient": self._diversity_coef.coef.item(),
                     "MEDE/Diversity Coefficient Loss": divcoef_loss.item()
                 })
+
+            elif self._scheduled_divcoef:
+                self._diversity_coef.coef += self._divcoef_lr
+                update_stats.update({
+                    "MEDE/Diversity Coefficient": self._diversity_coef.coef.item(),
+                })
+
 
             if self.mede_saliency_dropout > 0:
                 self._update_saliency(
