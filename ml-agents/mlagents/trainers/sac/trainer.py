@@ -192,7 +192,7 @@ class SACTrainer(RLTrainer):
                     if spec.observation_type == ObservationType.GOAL_SIGNAL
                 ][0])
                 self.stats_reporter.add_stat(
-                    "Environment/Behavior {} Reward".format(diversity_setting),
+                    "Settings/Environment Reward {}".format(diversity_setting),
                     self.collected_rewards["environment"].get(agent_id, 0),
                     aggregation=StatsAggregationMethod.HISTOGRAM,
                 )
