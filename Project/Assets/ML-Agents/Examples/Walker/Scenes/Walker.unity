@@ -4095,7 +4095,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 228310863, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
       propertyPath: ringSensorAttachToHips
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 228310863, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
       propertyPath: UseActuatedRaycastSensor
@@ -4108,7 +4108,7 @@ PrefabInstance:
     - target: {fileID: 228310864, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 4010d5f42c7324c3b97e9a2795090451,
+      objectReference: {fileID: 5022602860645237092, guid: f27daf57450fb4cbb86abfa251591996,
         type: 3}
     - target: {fileID: 6713178126238440196, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
