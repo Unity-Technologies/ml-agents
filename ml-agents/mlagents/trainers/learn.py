@@ -54,7 +54,6 @@ def run_training(run_seed: int, options: RunOptions) -> None:
     Launches training session.
     :param options: parsed command line arguments
     :param run_seed: Random seed used for training.
-    :param run_options: Command line arguments for training.
     """
     with hierarchical_timer("run_training.setup"):
         torch_utils.set_torch_config(options.torch_settings)
