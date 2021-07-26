@@ -60,6 +60,7 @@ class UnityToGymWrapper(gym.Env):
         self._action_spaces: Dict[str, spaces.Space] = {}
         self._obs_spaces: Dict[str, spaces.Space] = {}
         self._action_sampling_seed = action_space_seed
+        self._side_channel_dict = {type(v).__name__: v for v in self._env._side_channel_manager._side_channels_dict.values()}
 
     def _current_behavior_name(self) -> str:
         names = list(self._env.behavior_specs.keys())
@@ -67,6 +68,9 @@ class UnityToGymWrapper(gym.Env):
             return names[self._behavior_index]
         return None
 
+    def _assert_loaded(self) -> None:
+        if self._env is None:
+            raise Exception("No environment loaded")
 
     @property
     def active(self) -> Optional[AgentStatus]:
@@ -75,10 +79,12 @@ class UnityToGymWrapper(gym.Env):
         and agent ID the observation from a reset call belongs to.
         """
         # TODO : info won't do. Info is supposed to be "extra" information, not needed
+        self._assert_loaded()
         return self._last
 
     @property
     def observation_space(self) -> Optional[spaces.Space]:
+        self._assert_loaded()
         current_behavior = self._current_behavior_name()
         if current_behavior is None:
             return None
@@ -99,6 +105,7 @@ class UnityToGymWrapper(gym.Env):
 
     @property
     def action_space(self) -> Optional[spaces.Space]:
+        self._assert_loaded()
         current_behavior = self._current_behavior_name()
         if current_behavior is None:
             return None
@@ -131,13 +138,22 @@ class UnityToGymWrapper(gym.Env):
         self._action_spaces[current_behavior] = spaces.Tuple(tuple(c_space, d_space))
         return self._action_spaces[current_behavior]
 
+    @property
+    def reward_range(self) -> Tuple[float, float]:
+        self._assert_loaded()
+        return - float("inf"), float("inf")
+
+    @property
+    def side_channel(self) -> Dict[str, Any]:
+        self._assert_loaded()
+        return self._side_channel_dict
 
     def step(
         self, action: Any = None
     ) -> Tuple[List[np.array], float, bool, Dict[str, Any]]:
         # get one agent at a time. In single agent envs, behaves just like Gym. No need for gym wrapper
         # return List[np.array] (observation), float (reward), bool (done), info (dict with group reward, group_id, behavior_name, agent_id, etc...)
-
+        self._assert_loaded()
         # Convert Actions
         if action is not None:
             if not self.action_space.contains(action):
@@ -247,6 +263,7 @@ class UnityToGymWrapper(gym.Env):
         return self.step()
 
     def reset(self) -> List[np.array]:
+        self._assert_loaded()
         self._env.reset()
         self._agent_index = -1
         self._behavior_index = 0
@@ -256,6 +273,8 @@ class UnityToGymWrapper(gym.Env):
         return obs
 
     def close(self) -> None:
+        self._assert_loaded()
         if self._env is not None:
             self._env.close()
+            self._env = None
 
