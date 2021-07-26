@@ -259,5 +259,3 @@ class UnityToGymWrapper(gym.Env):
         if self._env is not None:
             self._env.close()
 
-    def __del__(self):
-        self.close()
