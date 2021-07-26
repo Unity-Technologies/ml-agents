@@ -1115,7 +1115,8 @@ class TorchSACOptimizer(TorchOptimizer):
                 })
 
             elif self._scheduled_divcoef:
-                self._diversity_coef.coef += self._divcoef_lr
+                if self._diversity_coef.coef < self.target_diversity:
+                    self._diversity_coef.coef += self._divcoef_lr
                 update_stats.update({
                     "MEDE/Diversity Coefficient": self._diversity_coef.coef.item(),
                 })
