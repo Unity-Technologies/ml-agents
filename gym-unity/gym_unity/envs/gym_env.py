@@ -50,7 +50,7 @@ class AgentStatus:
 
 class UnityToGymWrapper(gym.Env):
     def __init__(self, env: BaseEnv, action_space_seed: Optional[int] = None):
-        # atexit.register(self.close)
+        atexit.register(self.close)
         self._env = env
         self._agent_index = -1
         self._current_batch: Optional[Tuple[DecisionSteps, TerminalSteps]] = None
@@ -273,8 +273,10 @@ class UnityToGymWrapper(gym.Env):
         return obs
 
     def close(self) -> None:
-        self._assert_loaded()
         if self._env is not None:
             self._env.close()
             self._env = None
+
+    def __del__(self) -> None:
+        self.close()
 
