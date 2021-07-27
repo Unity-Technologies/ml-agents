@@ -7,4 +7,5 @@ enum CommandProto {
         STEP = 0;
         RESET = 1;
         QUIT = 2;
+	IMMEDIATE= 3;
     }
