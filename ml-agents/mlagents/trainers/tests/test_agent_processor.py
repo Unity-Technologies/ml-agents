@@ -184,7 +184,7 @@ def test_group_statuses():
     # THe first 3 steps should contain all of the obs (that 3rd step is also the terminal step of 2 of the agents)
     for step in trajectory.steps[0:3]:
         assert len(step.group_status) == 3
-    # After 2 agents has died, there should only be 1 group status.
+    # After 2 agents has died, there should only be 2 group statuses.
     for step in trajectory.steps[3:]:
         assert len(step.group_status) == 1
 

@@ -264,10 +264,13 @@ class MultiAgentNetworkBody(torch.nn.Module):
         observation_specs: List[ObservationSpec],
         network_settings: NetworkSettings,
         action_spec: ActionSpec,
+        use_attention: bool = True,
+        max_agents: int = 10,
     ):
         super().__init__()
         self.normalize = network_settings.normalize
         self.use_lstm = network_settings.memory is not None
+        self.use_attention = use_attention
         self.h_size = network_settings.hidden_units
         self.m_size = (
             network_settings.memory.memory_size
@@ -285,24 +288,35 @@ class MultiAgentNetworkBody(torch.nn.Module):
 
         # Modules for multi-agent self-attention
         obs_only_ent_size = self.observation_encoder.total_enc_size
-        q_ent_size = (
-            obs_only_ent_size
-            + sum(self.action_spec.discrete_branches)
-            + self.action_spec.continuous_size
+        action_only_size = (
+            sum(self.action_spec.discrete_branches) + self.action_spec.continuous_size
         )
 
-        attention_embeding_size = self.h_size
-        self.obs_encoder = EntityEmbedding(
-            obs_only_ent_size, None, attention_embeding_size
-        )
-        self.obs_action_encoder = EntityEmbedding(
-            q_ent_size, None, attention_embeding_size
-        )
+        q_ent_size = obs_only_ent_size + action_only_size
 
-        self.self_attn = ResidualSelfAttention(attention_embeding_size)
+        if self.use_attention:
+            self.obs_encoder = EntityEmbedding(obs_only_ent_size, None, self.h_size)
+            self.obs_action_encoder = EntityEmbedding(q_ent_size, None, self.h_size)
+
+            self.self_attn = ResidualSelfAttention(self.h_size)
+        else:
+            # this is all state action - the action for the marginalized agent
+            self.baseline_encoder = LinearEncoder(
+                q_ent_size * (max_agents - 1) + obs_only_ent_size,
+                1,
+                self.h_size,
+                kernel_gain=(0.125 / self.h_size) ** 0.5,
+            )
+
+            self.all_obs_encoder = LinearEncoder(
+                obs_only_ent_size * max_agents,
+                1,
+                self.h_size,
+                kernel_gain=(0.125 / self.h_size) ** 0.5,
+            )
 
         self.linear_encoder = LinearEncoder(
-            attention_embeding_size,
+            self.h_size,
             network_settings.num_layers,
             self.h_size,
             kernel_gain=(0.125 / self.h_size) ** 0.5,
@@ -312,6 +326,7 @@ class MultiAgentNetworkBody(torch.nn.Module):
             self.lstm = LSTM(self.h_size, self.m_size)
         else:
             self.lstm = None  # type: ignore
+        self._max_agents = max_agents
 
     @property
     def memory_size(self) -> int:
@@ -376,34 +391,64 @@ class MultiAgentNetworkBody(torch.nn.Module):
         self_attn_masks = []
         self_attn_inputs = []
         concat_f_inp = []
-        if obs:
-            obs_attn_mask = self._get_masks_from_nans(obs)
-            obs = self._copy_and_remove_nans_from_obs(obs, obs_attn_mask)
-            for inputs, action in zip(obs, actions):
-                encoded = self.observation_encoder(inputs)
-                cat_encodes = [
-                    encoded,
-                    action.to_flat(self.action_spec.discrete_branches),
+        if self.use_attention:
+            if obs:
+                obs_attn_mask = self._get_masks_from_nans(obs)
+                obs = self._copy_and_remove_nans_from_obs(obs, obs_attn_mask)
+                for inputs, action in zip(obs, actions):
+                    encoded = self.observation_encoder(inputs)
+                    cat_encodes = [
+                        encoded,
+                        action.to_flat(self.action_spec.discrete_branches),
+                    ]
+                    concat_f_inp.append(torch.cat(cat_encodes, dim=1))
+                f_inp = torch.stack(concat_f_inp, dim=1)
+                self_attn_masks.append(obs_attn_mask)
+                self_attn_inputs.append(self.obs_action_encoder(None, f_inp))
+
+            concat_encoded_obs = []
+            if obs_only:
+                obs_only_attn_mask = self._get_masks_from_nans(obs_only)
+                obs_only = self._copy_and_remove_nans_from_obs(
+                    obs_only, obs_only_attn_mask
+                )
+                for inputs in obs_only:
+                    encoded = self.observation_encoder(inputs)
+                    concat_encoded_obs.append(encoded)
+                g_inp = torch.stack(concat_encoded_obs, dim=1)
+                self_attn_masks.append(obs_only_attn_mask)
+                self_attn_inputs.append(self.obs_encoder(None, g_inp))
+
+            encoded_entity = torch.cat(self_attn_inputs, dim=1)
+            encoded_state = self.self_attn(encoded_entity, self_attn_masks)
+        else:
+            if actions:
+                # calculate baseline
+                encoded_group_obs = [self.observation_encoder(inputs) for inputs in obs]
+                flattened_group_actions = [
+                    action.to_flat(self.action_spec.discrete_branches)
+                    for action in actions
                 ]
-                concat_f_inp.append(torch.cat(cat_encodes, dim=1))
-            f_inp = torch.stack(concat_f_inp, dim=1)
-            self_attn_masks.append(obs_attn_mask)
-            self_attn_inputs.append(self.obs_action_encoder(None, f_inp))
-
-        concat_encoded_obs = []
-        if obs_only:
-            obs_only_attn_mask = self._get_masks_from_nans(obs_only)
-            obs_only = self._copy_and_remove_nans_from_obs(obs_only, obs_only_attn_mask)
-            for inputs in obs_only:
-                encoded = self.observation_encoder(inputs)
-                concat_encoded_obs.append(encoded)
-            g_inp = torch.stack(concat_encoded_obs, dim=1)
-            self_attn_masks.append(obs_only_attn_mask)
-            self_attn_inputs.append(self.obs_encoder(None, g_inp))
-
-        encoded_entity = torch.cat(self_attn_inputs, dim=1)
-        encoded_state = self.self_attn(encoded_entity, self_attn_masks)
-
+                encoded_group_obs += [encoded_group_obs[0] * 0] * (self._max_agents - len(encoded_group_obs) - 1)
+                encoded_group_obs = torch.cat(encoded_group_obs, dim=1)
+                encoded_group_obs = torch.nan_to_num(encoded_group_obs)
+                flattened_group_actions += [flattened_group_actions[0] * 0] * (self._max_agents - len(flattened_group_actions) - 1)
+                flattened_group_actions = torch.cat(flattened_group_actions, dim=1)
+                flattened_group_actions = torch.nan_to_num(flattened_group_actions)
+                # this should always have just one element
+                encoded_obs = self.observation_encoder(obs_only[0])
+                baseline_inp = torch.cat(
+                    [encoded_obs, encoded_group_obs, flattened_group_actions], dim=1
+                )
+                encoded_state = self.baseline_encoder(baseline_inp)
+            else:
+                encoded_obs = [self.observation_encoder(inputs) for inputs in obs_only]
+                # do the padding
+                encoded_obs += [encoded_obs[0] * 0] * (self._max_agents - len(encoded_obs))
+                encoded_obs = torch.cat(encoded_obs, dim=1)
+                encoded_obs = torch.nan_to_num(encoded_obs)
+                encoded_state = self.all_obs_encoder(encoded_obs)
+                # calculate value
         encoding = self.linear_encoder(encoded_state)
         if self.use_lstm:
             # Resize to (batch, sequence length, encoding size)

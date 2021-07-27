@@ -8,6 +8,7 @@ from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.poca.trainer import POCATrainer
+from mlagents.trainers.coma.trainer import COMATrainer
 from mlagents.trainers.ghost.trainer import GhostTrainer
 from mlagents.trainers.ghost.controller import GhostController
 from mlagents.trainers.settings import TrainerSettings, TrainerType
@@ -128,6 +129,17 @@ class TrainerFactory:
                 seed,
                 trainer_artifact_path,
             )
+        elif trainer_type == TrainerType.COMA:
+            trainer = COMATrainer(
+                brain_name,
+                min_lesson_length,
+                trainer_settings,
+                train_model,
+                load_model,
+                seed,
+                trainer_artifact_path,
+            )
+
         elif trainer_type == TrainerType.SAC:
             trainer = SACTrainer(
                 brain_name,
