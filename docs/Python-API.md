@@ -86,9 +86,7 @@ to read more about how you can interact with the Unity environment from Python.
   trainers utilize the same random seed.
 - `side_channels` provides a way to exchange data with the Unity simulation that
   is not related to the reinforcement learning loop. For example: configurations
-  or properties. More on them in the
-  [Modifying the environment from Python](Python-API.md#modifying-the-environment-from-python)
-  section.
+  or properties. More on them in the [Side Channels](Custom-SideChannels.md) doc.
 
 If you want to directly interact with the Editor, you need to use
 `file_name=None`, then press the **Play** button in the Editor when the message
