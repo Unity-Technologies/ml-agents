@@ -7,6 +7,7 @@ import glob
 import yaml
 import hashlib
 
+from pathlib import Path
 from zipfile import ZipFile
 from sys import platform
 from typing import Tuple, Optional, Dict, Any
@@ -94,18 +95,19 @@ def get_tmp_dir() -> Tuple[str, str]:
     binaries. If these folders do not exist, they will be created.
     :retrun: Tuple containing path to : (zip folder, extracted files folder)
     """
+    TEMPDIR = Path("/tmp" if platform == "darwin" else tempfile.gettempdir())
     MLAGENTS = "ml-agents-binaries"
     TMP_FOLDER_NAME = "tmp"
     BINARY_FOLDER_NAME = "binaries"
-    mla_directory = os.path.join(tempfile.gettempdir(), MLAGENTS)
+    mla_directory = os.path.join(TEMPDIR, MLAGENTS)
     if not os.path.exists(mla_directory):
         os.makedirs(mla_directory)
         os.chmod(mla_directory, 16877)
-    zip_directory = os.path.join(tempfile.gettempdir(), MLAGENTS, TMP_FOLDER_NAME)
+    zip_directory = os.path.join(TEMPDIR, MLAGENTS, TMP_FOLDER_NAME)
     if not os.path.exists(zip_directory):
         os.makedirs(zip_directory)
         os.chmod(zip_directory, 16877)
-    bin_directory = os.path.join(tempfile.gettempdir(), MLAGENTS, BINARY_FOLDER_NAME)
+    bin_directory = os.path.join(TEMPDIR, MLAGENTS, BINARY_FOLDER_NAME)
     if not os.path.exists(bin_directory):
         os.makedirs(bin_directory)
         os.chmod(bin_directory, 16877)
