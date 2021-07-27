@@ -70,7 +70,7 @@ class UnityToGymWrapper(gym.Env):
         return None
 
     def _assert_loaded(self) -> None:
-        if self._env is None or self._current_behavior_name() is None:
+        if self._env is None:
             raise error.Error("No environment loaded")
 
     @property

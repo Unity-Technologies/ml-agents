@@ -4,9 +4,9 @@ import gym
 import gym_unity  # noqa
 
 
-@pytest.mark.parametrize("env_name", ["3DBall-v0", "WallJump-v0", "GridWorld-v0"])
+@pytest.mark.parametrize("env_name", ["3DBall-v0", "WallJump-v0", "PushBlock-v0"])
 def test_env(env_name):
-    env = gym.make(env_name)
+    env = gym.make(env_name, no_graphics=True, base_port=6000)
     obs = env.reset()
     assert env.observation_space.contains(obs)
     for _ in range(10):
@@ -21,13 +21,12 @@ def test_env(env_name):
     assert isinstance(env.observation_space, gym.spaces.Space)
     env.close()
 
-    env = gym.make(env_name, action_space_seed=42)
+    env = gym.make(env_name, no_graphics=True, action_space_seed=42)
     env.reset()
     rng_1 = env.action_space._np_random
     env.close()
-    env.action_space
 
-    env = gym.make(env_name, action_space_seed=42)
+    env = gym.make(env_name, no_graphics=True, action_space_seed=42)
     env.reset()
     rng_2 = env.action_space._np_random
     env.close()
