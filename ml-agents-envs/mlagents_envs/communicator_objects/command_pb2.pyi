@@ -34,6 +34,8 @@ class CommandProto(builtin___int):
     STEP = typing___cast('CommandProto', 0)
     RESET = typing___cast('CommandProto', 1)
     QUIT = typing___cast('CommandProto', 2)
+    IMMEDIATE = typing___cast('CommandProto', 3)
 STEP = typing___cast('CommandProto', 0)
 RESET = typing___cast('CommandProto', 1)
 QUIT = typing___cast('CommandProto', 2)
+IMMEDIATE = typing___cast('CommandProto', 3)

@@ -25,9 +25,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjBtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2NvbW1hbmQu",
-            "cHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzKi0KDENvbW1hbmRQcm90bxII",
-            "CgRTVEVQEAASCQoFUkVTRVQQARIICgRRVUlUEAJCJaoCIlVuaXR5Lk1MQWdl",
-            "bnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
+            "cHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzKjwKDENvbW1hbmRQcm90bxII",
+            "CgRTVEVQEAASCQoFUkVTRVQQARIICgRRVUlUEAISDQoJSU1NRURJQVRFEANC",
+            "JaoCIlVuaXR5Lk1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3Rv",
+            "Mw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Unity.MLAgents.CommunicatorObjects.CommandProto), }, null));
@@ -40,6 +41,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     [pbr::OriginalName("STEP")] Step = 0,
     [pbr::OriginalName("RESET")] Reset = 1,
     [pbr::OriginalName("QUIT")] Quit = 2,
+    [pbr::OriginalName("IMMEDIATE")] Immediate = 3,
   }
 
   #endregion

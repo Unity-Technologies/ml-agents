@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/command.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n0mlagents_envs/communicator_objects/command.proto\x12\x14\x63ommunicator_objects*-\n\x0c\x43ommandProto\x12\x08\n\x04STEP\x10\x00\x12\t\n\x05RESET\x10\x01\x12\x08\n\x04QUIT\x10\x02\x42%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n0mlagents_envs/communicator_objects/command.proto\x12\x14\x63ommunicator_objects*<\n\x0c\x43ommandProto\x12\x08\n\x04STEP\x10\x00\x12\t\n\x05RESET\x10\x01\x12\x08\n\x04QUIT\x10\x02\x12\r\n\tIMMEDIATE\x10\x03\x42%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 _COMMANDPROTO = _descriptor.EnumDescriptor(
@@ -41,11 +41,15 @@ _COMMANDPROTO = _descriptor.EnumDescriptor(
       name='QUIT', index=2, number=2,
       options=None,
       type=None),
+    _descriptor.EnumValueDescriptor(
+      name='IMMEDIATE', index=3, number=3,
+      options=None,
+      type=None),
   ],
   containing_type=None,
   options=None,
   serialized_start=74,
-  serialized_end=119,
+  serialized_end=134,
 )
 _sym_db.RegisterEnumDescriptor(_COMMANDPROTO)
 
@@ -53,6 +57,7 @@ CommandProto = enum_type_wrapper.EnumTypeWrapper(_COMMANDPROTO)
 STEP = 0
 RESET = 1
 QUIT = 2
+IMMEDIATE = 3
 
 
 DESCRIPTOR.enum_types_by_name['CommandProto'] = _COMMANDPROTO
