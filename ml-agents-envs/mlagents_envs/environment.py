@@ -477,11 +477,11 @@ class UnityEnvironment(BaseEnv):
 
     def _process_immediate_message(self, msg: bytearray) -> UnityOutputProto:
         message_output = self._communicator.exchange(
-	     self._generate_immediate_message_input(msg)
-	 )
+            self._generate_immediate_message_input(msg)
+        )
         self._side_channel_manager.process_side_channel_message(
-	     message_output.rl_output.side_channel
-	 )
+            message_output.rl_output.side_channel
+        )
         return message_output
 
     def _send_academy_parameters(
