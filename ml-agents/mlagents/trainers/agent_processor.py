@@ -54,6 +54,7 @@ class AgentProcessor:
         :param max_trajectory_length: Maximum length of a trajectory before it is added to the trainer.
         :param stats_category: The category under which to write the stats. Usually, this comes from the Trainer.
         """
+
         self._experience_buffers: Dict[
             GlobalAgentId, List[AgentExperience]
         ] = defaultdict(list)
@@ -179,10 +180,17 @@ class AgentProcessor:
                     continuous=stored_actions.continuous[idx],
                     discrete=stored_actions.discrete[idx],
                 )
+                stored_action_probs = stored_take_action_outputs["log_probs"]
+                log_probs_tuple = LogProbsTuple(
+                    continuous=stored_action_probs.continuous[idx],
+                    discrete=stored_action_probs.discrete[idx],
+                )
+
                 group_status = AgentStatus(
                     obs=stored_decision_step.obs,
                     reward=step.reward,
                     action=action_tuple,
+                    action_probs=log_probs_tuple,
                     done=isinstance(step, TerminalStep),
                 )
                 self._group_status[global_group_id][global_agent_id] = group_status
@@ -267,11 +275,27 @@ class AgentProcessor:
                 self._episode_steps[global_agent_id] += 1
 
             # Add a trajectory segment to the buffer if terminal or the length has reached the time horizon
+
+            all_done = all(_mate_status.done for _, _mate_status in self._group_status[global_group_id].items()) and terminated
+            #if all_done:
+            #    print("detected finished for", global_group_id)
+            #    for _agent_id in self._current_group_obs[global_group_id]:
+            #        print("Finished,", _agent_id)
+            #    if len(self._experience_buffers[global_agent_id]) > 1:
+            #        print("Will add", global_agent_id, "length" , len(self._experience_buffers[global_agent_id]))
+            #    else:
+            #        print("cleared", global_agent_id)
+            #elif terminated:
+            #    print(global_agent_id, "died")
+
             if (
                 len(self._experience_buffers[global_agent_id])
                 >= self._max_trajectory_length
-                or terminated
+                or (all_done and len(self._experience_buffers[global_agent_id]) > 1) #second condition makes sure the same trajectory 
+                                                                                     #doesnt get added multiple times for many finished agents
+                #or terminated
             ):
+            #    print("adding", global_agent_id)
                 next_obs = step.obs
                 next_group_obs = []
                 for _id, _obs in self._current_group_obs[global_group_id].items():
@@ -287,7 +311,9 @@ class AgentProcessor:
                 )
                 for traj_queue in self._trajectory_queues:
                     traj_queue.put(trajectory)
-                self._experience_buffers[global_agent_id] = []
+                #self._experience_buffers[global_agent_id] = []
+                for _agent_id in self._current_group_obs[global_group_id]:
+                    self._experience_buffers[_agent_id] = []
             if terminated:
                 # Record episode length.
                 self._stats_reporter.add_stat(

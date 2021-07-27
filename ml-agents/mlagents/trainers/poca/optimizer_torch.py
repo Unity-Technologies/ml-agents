@@ -35,6 +35,43 @@ from mlagents_envs.logging_util import get_logger
 
 logger = get_logger(__name__)
 
+def _get_mask_from_nans(obs_tensors: List[torch.Tensor]) -> torch.Tensor:
+    """
+    Get attention masks by grabbing an arbitrary obs across all the agents
+    Since these are raw obs, the padded values are still NaN
+    """
+    only_first_obs = obs_tensors[0]
+    # Just get the first element in each obs regardless of its dimension. This will speed up
+    # searching for NaNs.
+    #only_first_obs_flat = torch.stack(
+    #    [_obs.flatten(start_dim=1)[:, 0] for _obs in only_first_obs], dim=1
+    #)
+    # Get the mask from NaNs
+    #print(obs_tensors)
+    #print(only_first_obs)
+    baseline_mask = only_first_obs[:, 0].isnan().float()
+    #if torch.sum(baseline_mask) > 0:
+    #    print(obs_tensors)
+    #print(baseline_mask)
+    return baseline_mask
+
+def _copy_and_remove_nan_from_obs(
+    all_obs: List[torch.Tensor], baseline_mask: torch.Tensor
+) -> List[List[torch.Tensor]]:
+    """
+    Helper function to remove NaNs from observations using an attention mask.
+    """
+    #obs_with_no_nans = []
+    #for i_agent, single_agent_obs in enumerate(all_obs):
+    no_nan_obs = []
+    for obs in all_obs:
+        new_obs = obs.clone()
+        new_obs[baseline_mask.bool(), ::] = 0.0  # Remove NaNs fast
+        no_nan_obs.append(new_obs)
+    #print(no_nan_obs)
+    return no_nan_obs
+
+
 
 class TorchPOCAOptimizer(TorchOptimizer):
     class POCAValueNetwork(torch.nn.Module, Critic):
@@ -72,6 +109,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
         def baseline(
             self,
             obs_without_actions: List[torch.Tensor],
+            action: AgentAction,
             obs_with_actions: Tuple[List[List[torch.Tensor]], List[AgentAction]],
             memories: Optional[torch.Tensor] = None,
             sequence_length: int = 1,
@@ -87,6 +125,8 @@ class TorchPOCAOptimizer(TorchOptimizer):
 
             :return: A Tuple of Dict of reward stream to tensor and critic memories.
             """
+            # critic mem may be broken
+            all_baseline_permutations = []
             (obs, actions) = obs_with_actions
             encoding, memories = self.network_body(
                 obs_only=[obs_without_actions],
@@ -98,7 +138,28 @@ class TorchPOCAOptimizer(TorchOptimizer):
             value_outputs, critic_mem_out = self.forward(
                 encoding, memories, sequence_length
             )
-            return value_outputs, critic_mem_out
+            all_baseline_permutations.append(value_outputs)
+            baseline_masks = []
+            for i in range(len(obs)):
+                new_obs_without_action = obs[i]
+                baseline_mask = _get_mask_from_nans(new_obs_without_action)
+                new_obs_without_action = _copy_and_remove_nan_from_obs(new_obs_without_action, baseline_mask)
+                baseline_masks.append(baseline_mask)
+                new_obs = [obs_without_actions] + obs[:i] + obs[i + 1:]
+                new_actions = [action] + actions[:i] + actions[i + 1:]
+                encoding, memories = self.network_body(
+                    obs_only=[new_obs_without_action],
+                    obs=new_obs,
+                    actions=new_actions,
+                    memories=memories,
+                    sequence_length=sequence_length,
+                )
+                value_outputs, critic_mem_out = self.forward(
+                    encoding, memories, sequence_length
+                )
+                all_baseline_permutations.append(value_outputs)
+            return all_baseline_permutations, critic_mem_out, baseline_masks
+            #return value_outputs, critic_mem_out
 
         def critic_pass(
             self,
@@ -232,7 +293,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
         decay_bet = self.decay_beta.get_value(self.policy.get_current_step())
         returns = {}
         old_values = {}
-        old_baseline_values = {}
+        old_baseline_values = []
         for name in self.reward_signals:
             old_values[name] = ModelUtils.list_to_tensor(
                 batch[RewardSignalUtil.value_estimates_key(name)]
@@ -240,9 +301,13 @@ class TorchPOCAOptimizer(TorchOptimizer):
             returns[name] = ModelUtils.list_to_tensor(
                 batch[RewardSignalUtil.returns_key(name)]
             )
-            old_baseline_values[name] = ModelUtils.list_to_tensor(
-                batch[RewardSignalUtil.baseline_estimates_key(name)]
-            )
+        #    for old_baseline_estimate in zip(*batch[RewardSignalUtil.baseline_estimates_key(name)]):
+        #        old_baseline_estimates = {}
+        #        old_baseline_estimates[name] = ModelUtils.list_to_tensor(
+        #            list(old_baseline_estimate)
+        #        )
+        #        old_baseline_values.append(old_baseline_estimates)
+
 
         n_obs = len(self.policy.behavior_spec.observation_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
@@ -282,13 +347,6 @@ class TorchPOCAOptimizer(TorchOptimizer):
             value_memories = torch.stack(value_memories).unsqueeze(0)
             baseline_memories = torch.stack(baseline_memories).unsqueeze(0)
 
-        log_probs, entropy = self.policy.evaluate_actions(
-            current_obs,
-            masks=act_masks,
-            actions=actions,
-            memories=memories,
-            seq_len=self.policy.sequence_length,
-        )
         all_obs = [current_obs] + groupmate_obs
         values, _ = self.critic.critic_pass(
             all_obs,
@@ -296,29 +354,86 @@ class TorchPOCAOptimizer(TorchOptimizer):
             sequence_length=self.policy.sequence_length,
         )
         groupmate_obs_and_actions = (groupmate_obs, groupmate_actions)
-        baselines, _ = self.critic.baseline(
+        baselines, _, baseline_masks= self.critic.baseline(
             current_obs,
+            actions,
             groupmate_obs_and_actions,
             memories=baseline_memories,
             sequence_length=self.policy.sequence_length,
         )
-        old_log_probs = ActionLogProbs.from_buffer(batch).flatten()
+        log_probs, entropy = self.policy.evaluate_actions(
+            current_obs,
+            masks=act_masks,
+            actions=actions,
+            memories=memories,
+            seq_len=self.policy.sequence_length,
+        )
+
+        #old_log_probs = ActionLogProbs.from_buffer(batch).flatten()
         log_probs = log_probs.flatten()
+        with torch.no_grad():
+            old_log_probs = torch.clone(log_probs)
         loss_masks = ModelUtils.list_to_tensor(batch[BufferKey.MASKS], dtype=torch.bool)
 
-        baseline_loss = ModelUtils.trust_region_value_loss(
-            baselines, old_baseline_values, returns, decay_eps, loss_masks
-        )
+        advantages = [] 
+
+        # This will break with more than one reward provider
+        with torch.no_grad():
+            for name in values:
+                lambd_return = batch[RewardSignalUtil.returns_key(name)]
+                for baseline in baselines:
+                    old_baseline_estimates = {}
+                    old_baseline_estimates[name] = torch.clone(baseline[name])
+                    advantage = ModelUtils.list_to_tensor(lambd_return) - old_baseline_estimates[name] 
+                    advantage = (advantage - advantage.mean()) / (advantage.std() + 1e-10)
+                    normalized_adv.append(advantage)
+
+                old_baseline_values.append(old_baseline_estimates)
+
+        #assert len(baselines) == len(old_baseline_values)
+        baseline_loss = 0
+        for i, (baseline, old_baseline) in enumerate(zip(baselines, old_baseline_values)):
+            if i == 0:
+                baseline_mask = loss_masks 
+            else:
+                baseline_mask = baseline_masks[i-1]
+            baseline_loss += ModelUtils.trust_region_value_loss(
+                baseline, old_baseline, returns, decay_eps, baseline_mask
+            )
         value_loss = ModelUtils.trust_region_value_loss(
             values, old_values, returns, decay_eps, loss_masks
         )
+        #advantages = list(zip(*batch[BufferKey.ADVANTAGES]))
         policy_loss = ModelUtils.trust_region_policy_loss(
-            ModelUtils.list_to_tensor(batch[BufferKey.ADVANTAGES]),
+            ModelUtils.list_to_tensor(advantages[0]),
             log_probs,
             old_log_probs,
             loss_masks,
             decay_eps,
         )
+        assert len(groupmate_obs) == len(groupmate_actions)
+        assert len(baseline_masks) == len(groupmate_actions)
+        assert len(advantages[1:]) == len(groupmate_actions)
+        for _mate_obs, _mate_action, baseline_mask, adv in zip(groupmate_obs, groupmate_actions, baseline_masks, advantages[1:]):  
+            log_probs, _mate_entropy = self.policy.evaluate_actions(
+                _mate_obs,
+                masks=act_masks,
+                actions=_mate_action,
+                memories=memories,
+                seq_len=self.policy.sequence_length,
+            )
+            log_probs = log_probs.flatten()
+            with torch.no_grad():
+                old_log_probs = torch.clone(log_probs)
+            policy_loss += ModelUtils.trust_region_policy_loss(
+                ModelUtils.list_to_tensor(adv),
+                log_probs,
+                old_log_probs,
+                baseline_mask,
+                decay_eps,
+            )
+            entropy += _mate_entropy
+
         loss = (
             policy_loss
             + 0.5 * (value_loss + 0.5 * baseline_loss)
@@ -431,7 +546,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
                 all_values[signal_name].append(_val)
 
             groupmate_obs_and_actions = (groupmate_seq_obs, groupmate_seq_act)
-            baselines, _baseline_mem = self.critic.baseline(
+            baselines, _baseline_mem, baseline_masks = self.critic.baseline(
                 self_seq_obs[0],
                 groupmate_obs_and_actions,
                 _baseline_mem,
@@ -476,7 +591,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
             for signal_name, _val in last_values.items():
                 all_values[signal_name].append(_val)
             groupmate_obs_and_actions = (groupmate_seq_obs, groupmate_seq_act)
-            last_baseline, _baseline_mem = self.critic.baseline(
+            last_baseline, _baseline_mem, baseline_masks= self.critic.baseline(
                 self_seq_obs[0],
                 groupmate_obs_and_actions,
                 _baseline_mem,
@@ -566,6 +681,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
             for _groupmate_obs in groupmate_obs
         ]
 
+        actions = AgentAction.from_buffer(batch)
         groupmate_actions = AgentAction.group_from_buffer(batch)
 
         next_obs = [ModelUtils.list_to_tensor(obs) for obs in next_obs]
@@ -625,8 +741,9 @@ class TorchPOCAOptimizer(TorchOptimizer):
                     all_obs, _init_value_mem, sequence_length=batch.num_experiences
                 )
                 groupmate_obs_and_actions = (groupmate_obs, groupmate_actions)
-                baseline_estimates, next_baseline_mem = self.critic.baseline(
+                baseline_estimates, next_baseline_mem, baseline_masks = self.critic.baseline(
                     current_obs,
+                    actions,
                     groupmate_obs_and_actions,
                     _init_baseline_mem,
                     sequence_length=batch.num_experiences,
@@ -645,8 +762,10 @@ class TorchPOCAOptimizer(TorchOptimizer):
             all_next_obs, next_value_mem, sequence_length=1
         )
 
-        for name, estimate in baseline_estimates.items():
-            baseline_estimates[name] = ModelUtils.to_numpy(estimate)
+        # broken, just the first entry baseline
+        for baseline_estimate in baseline_estimates:
+            for name, estimate in baseline_estimate.items():
+                baseline_estimate[name] = ModelUtils.to_numpy(estimate)
 
         for name, estimate in value_estimates.items():
             value_estimates[name] = ModelUtils.to_numpy(estimate)
@@ -666,4 +785,5 @@ class TorchPOCAOptimizer(TorchOptimizer):
             next_value_estimates,
             all_next_value_mem,
             all_next_baseline_mem,
+            baseline_masks,
         )

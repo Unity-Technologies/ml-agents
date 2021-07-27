@@ -81,6 +81,7 @@ class POCATrainer(RLTrainer):
             value_next,
             value_memories,
             baseline_memories,
+            baseline_masks,
         ) = self.optimizer.get_trajectory_and_baseline_value_estimates(
             agent_buffer_trajectory,
             trajectory.next_obs,
@@ -98,12 +99,18 @@ class POCATrainer(RLTrainer):
             agent_buffer_trajectory[RewardSignalUtil.value_estimates_key(name)].extend(
                 v
             )
+            # gather baseline estimate by name
+            baseline_estimates_name = []
+            for estimate in baseline_estimates:
+                baseline_estimates_name.append(estimate[name])
             agent_buffer_trajectory[
                 RewardSignalUtil.baseline_estimates_key(name)
-            ].extend(baseline_estimates[name])
+            ].extend(list(zip(*baseline_estimates_name)))
+            #].extend(baseline_estimates[name])
+            #broken, just getting first estimate
             self._stats_reporter.add_stat(
                 f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Baseline Estimate",
-                np.mean(baseline_estimates[name]),
+                np.mean(baseline_estimates[0][name]),
             )
             self._stats_reporter.add_stat(
                 f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value Estimate",
@@ -150,21 +157,22 @@ class POCATrainer(RLTrainer):
                 value_next=value_next[name],
             )
 
-            local_advantage = np.array(lambd_returns) - np.array(baseline_estimate)
+            local_advantages = []
+            for b_estimate in zip(*baseline_estimate):
+                local_advantage = np.array(lambd_returns) - np.array(b_estimate)
+                local_advantages.append(local_advantage)
 
             agent_buffer_trajectory[RewardSignalUtil.returns_key(name)].set(
                 lambd_returns
             )
-            agent_buffer_trajectory[RewardSignalUtil.advantage_key(name)].set(
-                local_advantage
-            )
-            tmp_advantages.append(local_advantage)
+            #agent_buffer_trajectory[RewardSignalUtil.advantage_key(name)].set(
+            #    local_advantages
+            #)
+            tmp_advantages.append(local_advantages)
 
         # Get global advantages
-        global_advantages = list(
-            np.mean(np.array(tmp_advantages, dtype=np.float32), axis=0)
-        )
-        agent_buffer_trajectory[BufferKey.ADVANTAGES].set(global_advantages)
+        global_advantages = np.mean(np.array(tmp_advantages, dtype=np.float32), axis=0)
+        agent_buffer_trajectory[BufferKey.ADVANTAGES].set(list(map(lambda x: list(x), list(zip(*global_advantages)))))
 
         self._append_to_update_buffer(agent_buffer_trajectory)
 
@@ -213,12 +221,20 @@ class POCATrainer(RLTrainer):
             int(self.hyperparameters.batch_size / self.policy.sequence_length), 1
         )
 
-        advantages = np.array(
-            self.update_buffer[BufferKey.ADVANTAGES].get_batch(), dtype=np.float32
-        )
-        self.update_buffer[BufferKey.ADVANTAGES].set(
-            (advantages - advantages.mean()) / (advantages.std() + 1e-10)
-        )
+        #advantages = np.array(
+        #    self.update_buffer[BufferKey.ADVANTAGES].get_batch(), dtype=np.float32
+        #)
+        advantages = self.update_buffer[BufferKey.ADVANTAGES].get_batch()
+        normalized_adv = []
+        for advantage in zip(*advantages):
+            advantage = np.array(advantage, dtype=np.float32)
+            advantage = (advantage - advantage.mean()) / (advantage.std() + 1e-10)
+            normalized_adv.append(advantage)
+
+        #self.update_buffer[BufferKey.ADVANTAGES].set(
+        #    (advantages - advantages.mean()) / (advantages.std() + 1e-10)
+        #)
+        self.update_buffer[BufferKey.ADVANTAGES].set(list(zip(*normalized_adv)))
         num_epoch = self.hyperparameters.num_epoch
         batch_update_stats = defaultdict(list)
         for _ in range(num_epoch):

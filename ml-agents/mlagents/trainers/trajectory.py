@@ -20,6 +20,7 @@ class AgentStatus(NamedTuple):
     obs: List[np.ndarray]
     reward: float
     action: ActionTuple
+    action_probs: LogProbsTuple
     done: bool
 
 
