@@ -31,7 +31,7 @@ from mlagents_envs.exception import (
     UnityCommunicatorStoppedException,
 )
 
-from mlagents_envs.communicator_objects.command_pb2 import STEP, RESET
+from mlagents_envs.communicator_objects.command_pb2 import STEP, RESET, IMMEDIATE
 from mlagents_envs.rpc_utils import behavior_spec_from_proto, steps_from_proto
 
 from mlagents_envs.communicator_objects.unity_rl_input_pb2 import UnityRLInputProto
@@ -468,7 +468,15 @@ class UnityEnvironment(BaseEnv):
             self._side_channel_manager.generate_side_channel_messages()
         )
         return self._wrap_unity_input(rl_in)
-
+    def _generate_immediate_message_input(self, msg) -> UnityInputProto:
+        rl_in = UnityRLInputProto()
+        rl_in.command = IMMEDIATE
+        rl_in.side_channel = bytes(msg)
+        return self._wrap_unity_input(rl_in)
+    def _process_immediate_message(self, msg) -> UnityOutputProto:
+        message_output = self._communicator.exchange(self._generate_immediate_message_input(msg))
+        self._side_channel_manager.process_side_channel_message(message_output.rl_output.side_channel)
+        return message_output
     def _send_academy_parameters(
         self, init_parameters: UnityRLInitializationInputProto
     ) -> UnityOutputProto:
