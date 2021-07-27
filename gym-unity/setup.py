@@ -4,10 +4,10 @@ import os
 import sys
 from setuptools import setup, find_packages
 from setuptools.command.install import install
-import gym_unity
+from gym_unity import __version__, __release_tag__
 
-VERSION = gym_unity.__version__
-EXPECTED_TAG = gym_unity.__release_tag__
+VERSION = __version__
+EXPECTED_TAG = __release_tag__
 
 
 class VerifyVersionCommand(install):

@@ -1,15 +1,13 @@
 import numpy as np
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple
 
 import atexit
-import itertools
 import gym
 from gym import error, spaces
 from urllib.parse import urlparse, parse_qs
 
 from mlagents_envs.base_env import ActionTuple, BaseEnv
 from mlagents_envs.base_env import DecisionSteps, TerminalSteps
-from mlagents_envs.base_env import BaseEnv
 
 
 def _parse_behavior(full_behavior):
@@ -60,17 +58,20 @@ class UnityToGymWrapper(gym.Env):
         self._action_spaces: Dict[str, spaces.Space] = {}
         self._obs_spaces: Dict[str, spaces.Space] = {}
         self._action_sampling_seed = action_space_seed
-        self._side_channel_dict = {type(v).__name__: v for v in self._env._side_channel_manager._side_channels_dict.values()}
+        self._side_channel_dict = {
+            type(v).__name__: v
+            for v in self._env._side_channel_manager._side_channels_dict.values()
+        }
 
-    def _current_behavior_name(self) -> str:
+    def _current_behavior_name(self) -> Optional[str]:
         names = list(self._env.behavior_specs.keys())
         if len(names) > self._behavior_index:
             return names[self._behavior_index]
         return None
 
     def _assert_loaded(self) -> None:
-        if self._env is None:
-            raise Exception("No environment loaded")
+        if self._env is None or self._current_behavior_name() is None:
+            raise error.Error("No environment loaded")
 
     @property
     def active(self) -> Optional[AgentStatus]:
@@ -92,10 +93,8 @@ class UnityToGymWrapper(gym.Env):
             return self._obs_spaces[current_behavior]
         obs_spec = self._env.behavior_specs[current_behavior].observation_specs
         obs_spaces = tuple(
-            [
-                spaces.Box(-np.inf, np.inf, shape=spec.shape, dtype=np.float32)
-                for spec in obs_spec
-            ]
+            spaces.Box(-np.inf, np.inf, shape=spec.shape, dtype=np.float32)
+            for spec in obs_spec
         )
         if len(obs_spaces) == 1:
             self._obs_spaces[current_behavior] = obs_spaces[0]
@@ -113,7 +112,7 @@ class UnityToGymWrapper(gym.Env):
             return self._action_spaces[current_behavior]
         act_spec = self._env.behavior_specs[current_behavior].action_spec
         if act_spec.continuous_size == 0 and len(act_spec.discrete_branches) == 0:
-            raise Exception("No actions found")
+            raise error.Error("No actions found")
         if act_spec.discrete_size == 1:
             d_space = spaces.Discrete(act_spec.discrete_branches[0])
             if self._action_sampling_seed is not None:
@@ -135,13 +134,13 @@ class UnityToGymWrapper(gym.Env):
             if len(act_spec.discrete_branches) == 0:
                 self._action_spaces[current_behavior] = c_space
                 return self._action_spaces[current_behavior]
-        self._action_spaces[current_behavior] = spaces.Tuple(tuple(c_space, d_space))
+        self._action_spaces[current_behavior] = spaces.Tuple((c_space, d_space))
         return self._action_spaces[current_behavior]
 
     @property
     def reward_range(self) -> Tuple[float, float]:
         self._assert_loaded()
-        return - float("inf"), float("inf")
+        return -float("inf"), float("inf")
 
     @property
     def side_channel(self) -> Dict[str, Any]:
@@ -150,14 +149,12 @@ class UnityToGymWrapper(gym.Env):
 
     def step(
         self, action: Any = None
-    ) -> Tuple[List[np.array], float, bool, Dict[str, Any]]:
-        # get one agent at a time. In single agent envs, behaves just like Gym. No need for gym wrapper
-        # return List[np.array] (observation), float (reward), bool (done), info (dict with group reward, group_id, behavior_name, agent_id, etc...)
+    ) -> Tuple[List[np.array], float, bool, Optional[Dict[str, Any]]]:
         self._assert_loaded()
         # Convert Actions
         if action is not None:
-            if not self.action_space.contains(action):
-                raise Exception(
+            if not self.action_space.contains(action):  # type: ignore
+                raise error.Error(
                     f"Invalid action, got {action} but was expecting action from {self.action_space}"
                 )
             if isinstance(self.action_space, spaces.Tuple):
@@ -170,7 +167,7 @@ class UnityToGymWrapper(gym.Env):
                 action = ActionTuple(action, None)
 
         if self._current_batch is None:
-            raise Exception(
+            raise error.Error(
                 "You must reset the environment before you can perform a step"
             )
 
@@ -279,4 +276,3 @@ class UnityToGymWrapper(gym.Env):
 
     def __del__(self) -> None:
         self.close()
-

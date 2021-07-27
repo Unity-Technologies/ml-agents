@@ -1,7 +1,7 @@
 import pytest
 
 import gym
-import gym_unity
+import gym_unity  # noqa
 
 
 @pytest.mark.parametrize("env_name", ["3DBall-v0", "WallJump-v0", "GridWorld-v0"])
@@ -32,6 +32,3 @@ def test_env(env_name):
     rng_2 = env.action_space._np_random
     env.close()
     assert rng_1.randint(10000000000000) == rng_2.randint(10000000000000)
-
-
-

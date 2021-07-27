@@ -4,4 +4,4 @@ __version__ = "0.28.0.dev0"
 # Git tag that will be checked to determine whether to trigger upload to pypi
 __release_tag__ = None
 
-import gym_unity.envs
+import gym_unity.envs  # noqa
