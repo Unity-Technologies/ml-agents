@@ -52,8 +52,8 @@ def parse_command_line(argv: Optional[List[str]] = None) -> RunOptions:
 def run_training(run_seed: int, options: RunOptions) -> None:
     """
     Launches training session.
-    :param options: parsed command line arguments
     :param run_seed: Random seed used for training.
+    :param options: parsed command line arguments
     """
     with hierarchical_timer("run_training.setup"):
         torch_utils.set_torch_config(options.torch_settings)
