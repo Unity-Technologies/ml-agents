@@ -289,6 +289,7 @@ class POCATrainer(RLTrainer):
             for stat, val in update_stats.items():
                 self._stats_reporter.add_stat(stat, val)
         self._clear_update_buffer()
+        self.value_update_buffer.reset_agent()
         return True
 
     def end_episode(self) -> None:

@@ -10,7 +10,7 @@ import numpy as np
 from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.base_env import BehaviorSpec
-from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
+from mlagents.trainers.buffer import BufferKey, RewardSignalUtil, AgentBuffer
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.policy.torch_policy import TorchPolicy
@@ -59,6 +59,8 @@ class COMATrainer(RLTrainer):
         self.seed = seed
         self.policy: TorchPolicy = None  # type: ignore
         self.collected_group_rewards: Dict[str, int] = defaultdict(lambda: 0)
+        self.value_update_buffer: AgentBuffer = AgentBuffer()
+        self.ongoing_trajectories = []
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
@@ -90,7 +92,22 @@ class COMATrainer(RLTrainer):
             and not trajectory.interrupted,
         )
 
+        value_buffer_trajectory = None
+        if trajectory.all_group_dones_reached and trajectory.done_reached and not trajectory.interrupted:
+            if agent_id in self.ongoing_trajectories:
+                self.ongoing_trajectories.remove(agent_id)
+                #print(agent_id, "removed")
+            #first encounter of fully finished trajectory
+            else:
+                #print(agent_id, "finished")
+                value_buffer_trajectory = trajectory.to_agentbuffer()
+                for _id in trajectory.all_agent_ids:
+                    if _id != agent_id:
+                        self.ongoing_trajectories.append(_id)
+                #print(self.ongoing_trajectories, "removing")
         if value_memories is not None and baseline_memories is not None:
+            if value_buffer_trajectory:
+                value_buffer_trajectory[BufferKey.CRITIC_MEMORY].set(value_memories)
             agent_buffer_trajectory[BufferKey.CRITIC_MEMORY].set(value_memories)
             agent_buffer_trajectory[BufferKey.BASELINE_MEMORY].set(baseline_memories)
 
@@ -98,6 +115,12 @@ class COMATrainer(RLTrainer):
             agent_buffer_trajectory[RewardSignalUtil.value_estimates_key(name)].extend(
                 v
             )
+            if value_buffer_trajectory:
+                #print("adding to value")
+                value_buffer_trajectory[RewardSignalUtil.value_estimates_key(name)].extend(
+                    v
+                )
+
             agent_buffer_trajectory[
                 RewardSignalUtil.baseline_estimates_key(name)
             ].extend(baseline_estimates[name])
@@ -155,6 +178,11 @@ class COMATrainer(RLTrainer):
             agent_buffer_trajectory[RewardSignalUtil.returns_key(name)].set(
                 lambd_returns
             )
+            if value_buffer_trajectory:
+                value_buffer_trajectory[RewardSignalUtil.returns_key(name)].set(
+                    lambd_returns
+                )
+
             agent_buffer_trajectory[RewardSignalUtil.advantage_key(name)].set(
                 local_advantage
             )
@@ -167,6 +195,14 @@ class COMATrainer(RLTrainer):
         agent_buffer_trajectory[BufferKey.ADVANTAGES].set(global_advantages)
 
         self._append_to_update_buffer(agent_buffer_trajectory)
+        if value_buffer_trajectory:
+            seq_len = (
+                self.trainer_settings.network_settings.memory.sequence_length
+                if self.trainer_settings.network_settings.memory is not None
+                else 1
+            )
+            value_buffer_trajectory.resequence_and_append(self.value_update_buffer, training_length=seq_len)
+
 
         # If this was a terminal trajectory, append stats and reset reward collection
         if trajectory.done_reached:
@@ -235,11 +271,27 @@ class COMATrainer(RLTrainer):
         for stat, stat_list in batch_update_stats.items():
             self._stats_reporter.add_stat(stat, np.mean(stat_list))
 
+        for _ in range(num_epoch):
+            self.value_update_buffer.shuffle(sequence_length=self.policy.sequence_length)
+            buffer = self.value_update_buffer
+            max_num_batch = self.value_update_buffer.num_experiences // batch_size
+            for i in range(0, max_num_batch * batch_size, batch_size):
+                update_stats = self.optimizer.value_update(
+                    buffer.make_mini_batch(i, i + batch_size), n_sequences
+                )
+                for stat_name, value in update_stats.items():
+                    batch_update_stats[stat_name].append(value)
+
+        for stat, stat_list in batch_update_stats.items():
+            self._stats_reporter.add_stat(stat, np.mean(stat_list))
+
+
         if self.optimizer.bc_module:
             update_stats = self.optimizer.bc_module.update()
             for stat, val in update_stats.items():
                 self._stats_reporter.add_stat(stat, val)
         self._clear_update_buffer()
+        self.value_update_buffer.reset_agent()
         return True
 
     def end_episode(self) -> None:

@@ -509,7 +509,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
                 all_values[signal_name].append(_val)
 
             groupmate_obs_and_actions = (groupmate_seq_obs, groupmate_seq_act)
-            baselines, _baseline_mem = self.critic.baseline(
+            baselines, _baseline_mem = self._critic_baseline.baseline(
                 self_seq_obs[0],
                 groupmate_obs_and_actions,
                 _baseline_mem,
