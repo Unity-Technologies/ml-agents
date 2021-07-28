@@ -93,18 +93,17 @@ class COMATrainer(RLTrainer):
         )
 
         value_buffer_trajectory = None
-        #if (trajectory.all_group_dones_reached and trajectory.done_reached) or trajectory.interrupted:
-        if agent_id in self.ongoing_trajectories:
-            self.ongoing_trajectories.remove(agent_id)
-            #print(agent_id, "removed")
-        #first encounter of fully finished trajectory
-        else:
-            #print(agent_id, "finished")
-            value_buffer_trajectory = trajectory.to_agentbuffer()
-            for _id in trajectory.all_agent_ids:
-                if _id != agent_id:
-                    self.ongoing_trajectories.append(_id)
-            #print(self.ongoing_trajectories, "removing")
+        if (trajectory.all_group_dones_reached and trajectory.done_reached) or not trajectory.done_reached:
+            if agent_id in self.ongoing_trajectories:
+                self.ongoing_trajectories.remove(agent_id)
+            # first encounter of fully finished trajectory
+            else:
+                # print(agent_id, "finished")
+                value_buffer_trajectory = trajectory.to_agentbuffer()
+                for _id in trajectory.all_agent_ids:
+                    if _id != agent_id:
+                        self.ongoing_trajectories.append(_id)
+                # print(self.ongoing_trajectories, "removing")
         if value_memories is not None and baseline_memories is not None:
             if value_buffer_trajectory:
                 value_buffer_trajectory[BufferKey.CRITIC_MEMORY].set(value_memories)
@@ -116,10 +115,10 @@ class COMATrainer(RLTrainer):
                 v
             )
             if value_buffer_trajectory:
-                #print("adding to value")
-                value_buffer_trajectory[RewardSignalUtil.value_estimates_key(name)].extend(
-                    v
-                )
+                # print("adding to value")
+                value_buffer_trajectory[
+                    RewardSignalUtil.value_estimates_key(name)
+                ].extend(v)
 
             agent_buffer_trajectory[
                 RewardSignalUtil.baseline_estimates_key(name)
@@ -201,8 +200,9 @@ class COMATrainer(RLTrainer):
                 if self.trainer_settings.network_settings.memory is not None
                 else 1
             )
-            value_buffer_trajectory.resequence_and_append(self.value_update_buffer, training_length=seq_len)
-
+            value_buffer_trajectory.resequence_and_append(
+                self.value_update_buffer, training_length=seq_len
+            )
 
         # If this was a terminal trajectory, append stats and reset reward collection
         if trajectory.done_reached:
@@ -271,20 +271,23 @@ class COMATrainer(RLTrainer):
         for stat, stat_list in batch_update_stats.items():
             self._stats_reporter.add_stat(stat, np.mean(stat_list))
 
+        value_buffer_length = self.value_update_buffer.num_experiences
+        value_batch_size = int((value_buffer_length / buffer_length) * batch_size)
         for _ in range(num_epoch):
-            self.value_update_buffer.shuffle(sequence_length=self.policy.sequence_length)
+            self.value_update_buffer.shuffle(
+                sequence_length=self.policy.sequence_length
+            )
             buffer = self.value_update_buffer
-            max_num_batch = self.value_update_buffer.num_experiences // batch_size
-            for i in range(0, max_num_batch * batch_size, batch_size):
+            max_num_batch = value_buffer_length // value_batch_size
+            for i in range(0, max_num_batch * value_batch_size, value_batch_size):
                 update_stats = self.optimizer.value_update(
-                    buffer.make_mini_batch(i, i + batch_size), n_sequences
+                    buffer.make_mini_batch(i, i + value_batch_size), n_sequences
                 )
                 for stat_name, value in update_stats.items():
                     batch_update_stats[stat_name].append(value)
 
         for stat, stat_list in batch_update_stats.items():
             self._stats_reporter.add_stat(stat, np.mean(stat_list))
-
 
         if self.optimizer.bc_module:
             update_stats = self.optimizer.bc_module.update()
