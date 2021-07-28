@@ -61,7 +61,7 @@ public class SpawnArea : MonoBehaviour
         m_AgentGroup.RegisterAgent(agent.GetComponent<SpawnCollectorAgent>());
     }
 
-        public void UnregisterAgent(GameObject agent)
+    public void UnregisterAgent(GameObject agent)
     {
         m_AgentGroup.UnregisterAgent(agent.GetComponent<SpawnCollectorAgent>());
     }
@@ -100,6 +100,11 @@ public class SpawnArea : MonoBehaviour
         {
             // m_AgentGroup.AddGroupReward(-1f);
             m_AgentGroup.GroupEpisodeInterrupted();
+            ResetScene();
+        }
+
+        if(m_AgentGroup.GetRegisteredAgents().Count == 0){
+            m_AgentGroup.EndGroupEpisode();
             ResetScene();
         }
 

@@ -11,6 +11,8 @@ public class SpawnButton : MonoBehaviour
     public SpawnArea Area;
     bool m_State;
 
+    int m_ResetTimer;
+
 
 
     public bool GetState()
@@ -31,6 +33,17 @@ public class SpawnButton : MonoBehaviour
         }
     }
 
+    void FixedUpdate(){
+        if (m_State)
+        {
+            m_ResetTimer -= 1;
+            if (m_ResetTimer < 0)
+            {
+                ResetSwitch();
+            }
+        }
+    }
+
     void OnCollisionEnter(Collision other)
     {
         if (other.gameObject.CompareTag("agent") && m_State == false)
@@ -45,6 +58,7 @@ public class SpawnButton : MonoBehaviour
         m_State = true;
         tag = "switchOn";
         SpawnAgent(pressingAgent);
+        m_ResetTimer = 250;
     }
 
     void SpawnAgent(GameObject pressingAgent)
