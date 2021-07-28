@@ -21,6 +21,25 @@ def _parse_behavior(full_behavior):
 
 
 class AgentStatus:
+    """
+    Some information about an Agent.
+     - behavior: The name of the behavior the agent has
+     - team: The team of the agent. (useful for self play). Agents in different teams
+     face each other.
+     - group: The cooperative group the agent belongs to.
+     - group_reward: The reward the group the agent belongs to received since the last
+     action of the agent
+     - action_mask: For discrete and multi-discrete action spaces only. A True mask
+     means that an action is not available.
+     - interrupted: If True and the agent is done, it means that the agent entered
+     the done state not because of its behavior but because of a task independent
+     event.
+     - current_obs: The current observation of the agent.
+     - reward : The reward the agent received since the last action
+     - done: Whether the agent's task has ended
+     - needs_action: if True, the agent needs an action to proceed.
+    """
+
     def __init__(
         self,
         behavior,
@@ -48,6 +67,18 @@ class AgentStatus:
 
 class UnityToGymWrapper(gym.Env):
     def __init__(self, env: BaseEnv, action_space_seed: Optional[int] = None):
+        """
+        A multi-agent gym wrapper for Unity environments. Note that in the single
+        agent case, the environment is equivalent to a typical single agent gym
+        environment. When there is more than one agent in the environment, use the
+        `env.active` property to access information about the active agent.
+        Note that when calling step, the active agent will change, you will need
+        to keep track of the action that was performed by each agent since the
+        observation received from a call to step will not necessarily be from the
+        agent that just received the action.
+        :param env: The UnityEnvironment that is being wrapped.
+        :param action_space_seed: The seed for the action spaces of the agents.
+        """
         atexit.register(self.close)
         self._env = env
         self._agent_index = -1
@@ -85,6 +116,9 @@ class UnityToGymWrapper(gym.Env):
 
     @property
     def observation_space(self) -> Optional[spaces.Space]:
+        """
+        The observation space of the active agent.
+        """
         self._assert_loaded()
         current_behavior = self._current_behavior_name()
         if current_behavior is None:
@@ -104,6 +138,9 @@ class UnityToGymWrapper(gym.Env):
 
     @property
     def action_space(self) -> Optional[spaces.Space]:
+        """
+        The action space of the active agent.
+        """
         self._assert_loaded()
         current_behavior = self._current_behavior_name()
         if current_behavior is None:
@@ -139,17 +176,30 @@ class UnityToGymWrapper(gym.Env):
 
     @property
     def reward_range(self) -> Tuple[float, float]:
+        """
+        The reward range of the active agent.
+        """
         self._assert_loaded()
         return -float("inf"), float("inf")
 
     @property
     def side_channel(self) -> Dict[str, Any]:
+        """
+        The side channels of the environment. You can access the side channels
+        of an environment with `env.side_channel[<name-of-channel>]`.
+        """
         self._assert_loaded()
         return self._side_channel_dict
 
     def step(
         self, action: Any = None
     ) -> Tuple[List[np.array], float, bool, Optional[Dict[str, Any]]]:
+        """
+        Sets the action of the active agent and get the observation, reward, done
+        and info of the next agent.
+        :param action: The action for the active agent
+        :returns: Observation, reward, done and info for the next agent.
+        """
         self._assert_loaded()
         # Convert Actions
         if action is not None:
@@ -260,6 +310,10 @@ class UnityToGymWrapper(gym.Env):
         return self.step()
 
     def reset(self) -> List[np.array]:
+        """
+        Resets the environment.
+        :return: The observation of a first agent
+        """
         self._assert_loaded()
         self._env.reset()
         self._agent_index = -1
@@ -270,6 +324,9 @@ class UnityToGymWrapper(gym.Env):
         return obs
 
     def close(self) -> None:
+        """
+        Close the environment.
+        """
         if self._env is not None:
             self._env.close()
             self._env = None
