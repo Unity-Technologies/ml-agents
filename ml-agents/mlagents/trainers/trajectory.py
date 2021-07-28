@@ -141,6 +141,7 @@ class Trajectory(NamedTuple):
     next_group_obs: List[List[np.ndarray]]
     agent_id: str
     behavior_id: str
+    all_agent_ids: List[str]
 
     def to_agentbuffer(self) -> AgentBuffer:
         """
