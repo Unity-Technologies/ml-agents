@@ -93,18 +93,18 @@ class POCATrainer(RLTrainer):
         )
 
         value_buffer_trajectory = None
-        if trajectory.all_group_dones_reached and trajectory.done_reached and not trajectory.interrupted:
-            if agent_id in self.ongoing_trajectories:
-                self.ongoing_trajectories.remove(agent_id)
-                #print(agent_id, "removed")
-            #first encounter of fully finished trajectory
-            else:
-                #print(agent_id, "finished")
-                value_buffer_trajectory = trajectory.to_agentbuffer()
-                for _id in trajectory.all_agent_ids:
-                    if _id != agent_id:
-                        self.ongoing_trajectories.append(_id)
-                #print(self.ongoing_trajectories, "removing")
+        #if (trajectory.all_group_dones_reached and trajectory.done_reached) or trajectory.interrupted:
+        if agent_id in self.ongoing_trajectories:
+            self.ongoing_trajectories.remove(agent_id)
+            #print(agent_id, "removed")
+        #first encounter of fully finished trajectory
+        else:
+            #print(agent_id, "finished")
+            value_buffer_trajectory = trajectory.to_agentbuffer()
+            for _id in trajectory.all_agent_ids:
+                if _id != agent_id:
+                    self.ongoing_trajectories.append(_id)
+            #print(self.ongoing_trajectories, "removing")
         if value_memories is not None and baseline_memories is not None:
             if value_buffer_trajectory:
                 value_buffer_trajectory[BufferKey.CRITIC_MEMORY].set(value_memories)
