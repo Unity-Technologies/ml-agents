@@ -74,6 +74,7 @@ public class SpawnArea : MonoBehaviour
         {
             m_AgentGroup.AddGroupReward(1f);
             m_AgentGroup.EndGroupEpisode();
+            Academy.Instance.StatsRecorder.Add("FoodEaten", m_NumFoodEaten);
             ResetScene();
         }
     }
@@ -85,7 +86,7 @@ public class SpawnArea : MonoBehaviour
 
     public float GetTimeLeft()
     {
-        return 1.0f * m_ResetTimer / MaxEnvironmentSteps;
+        return 1.0f * m_ResetTimer / Academy.Instance.EnvironmentParameters.GetWithDefault("area_steps", MaxEnvironmentSteps);
     }
 
     // public void AddReward(float value)
@@ -96,20 +97,25 @@ public class SpawnArea : MonoBehaviour
     void FixedUpdate()
     {
         m_ResetTimer += 1;
-        if (m_ResetTimer >= MaxEnvironmentSteps && MaxEnvironmentSteps > 0)
+        if (m_ResetTimer >= Academy.Instance.EnvironmentParameters.GetWithDefault("area_steps", MaxEnvironmentSteps) && Academy.Instance.EnvironmentParameters.GetWithDefault("area_steps", MaxEnvironmentSteps) > 0)
         {
             // m_AgentGroup.AddGroupReward(-1f);
             m_AgentGroup.GroupEpisodeInterrupted();
+            Academy.Instance.StatsRecorder.Add("FoodEaten", m_NumFoodEaten);
             ResetScene();
+            return;
         }
 
-        if(m_AgentGroup.GetRegisteredAgents().Count == 0){
+        if (m_AgentGroup.GetRegisteredAgents().Count == 0)
+        {
             m_AgentGroup.EndGroupEpisode();
+            Academy.Instance.StatsRecorder.Add("FoodEaten", m_NumFoodEaten);
             ResetScene();
+            return;
         }
 
         //Hurry Up Penalty
-        m_AgentGroup.AddGroupReward(-0.5f / MaxEnvironmentSteps);
+        m_AgentGroup.AddGroupReward(-0.5f / Academy.Instance.EnvironmentParameters.GetWithDefault("area_steps", MaxEnvironmentSteps));
     }
 
     public int GetNumAgents()
