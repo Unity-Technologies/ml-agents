@@ -161,8 +161,17 @@ class TorchCOMAOptimizer(TorchOptimizer):
         )
         # Move to GPU if needed
         self._critic.to(default_device())
+        self._critic_baseline = TorchCOMAOptimizer.COMAValueNetwork(
+            reward_signal_names,
+            policy.behavior_spec.observation_specs,
+            network_settings=trainer_settings.network_settings,
+            action_spec=policy.behavior_spec.action_spec,
+        )
+        # Move to GPU if needed
+        self._critic_baseline.to(default_device())
 
-        params = list(self.policy.actor.parameters()) + list(self.critic.parameters())
+
+        params = list(self.policy.actor.parameters()) + list(self._critic_baseline.parameters())
         self.hyperparameters: POCASettings = cast(
             POCASettings, trainer_settings.hyperparameters
         )
@@ -188,6 +197,10 @@ class TorchCOMAOptimizer(TorchOptimizer):
         self.optimizer = torch.optim.Adam(
             params, lr=self.trainer_settings.hyperparameters.learning_rate
         )
+        self.value_optimizer = torch.optim.Adam(
+            list(self.critic.parameters()), lr=self.trainer_settings.hyperparameters.learning_rate
+        )
+
         self.stats_name_to_update_name = {
             "Losses/Value Loss": "value_loss",
             "Losses/Policy Loss": "policy_loss",
@@ -221,6 +234,65 @@ class TorchCOMAOptimizer(TorchOptimizer):
     @property
     def critic(self):
         return self._critic
+
+    @timed
+    def value_update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
+        """
+        Performs update on model.
+        :param batch: Batch of experiences.
+        :param num_sequences: Number of sequences to process.
+        :return: Results of update.
+        """
+        # Get decayed parameters
+        decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
+        decay_eps = self.decay_epsilon.get_value(self.policy.get_current_step())
+       # decay_bet = self.decay_beta.get_value(self.policy.get_current_step())
+        returns = {}
+        old_values = {}
+        for name in self.reward_signals:
+            old_values[name] = ModelUtils.list_to_tensor(
+                batch[RewardSignalUtil.value_estimates_key(name)]
+            )
+            returns[name] = ModelUtils.list_to_tensor(
+                batch[RewardSignalUtil.returns_key(name)]
+            )
+        n_obs = len(self.policy.behavior_spec.observation_specs)
+        current_obs = ObsUtil.from_buffer(batch, n_obs)
+        # Convert to tensors
+        current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
+        groupmate_obs = GroupObsUtil.from_buffer(batch, n_obs)
+        groupmate_obs = [
+            [ModelUtils.list_to_tensor(obs) for obs in _groupmate_obs]
+            for _groupmate_obs in groupmate_obs
+        ]
+        value_memories = [
+            ModelUtils.list_to_tensor(batch[BufferKey.CRITIC_MEMORY][i])
+            for i in range(
+                0, len(batch[BufferKey.CRITIC_MEMORY]), self.policy.sequence_length
+            )
+        ]
+
+        loss_masks = ModelUtils.list_to_tensor(batch[BufferKey.MASKS], dtype=torch.bool)
+        all_obs = [current_obs] + groupmate_obs
+        values, _ = self.critic.critic_pass(
+            all_obs,
+            memories=value_memories,
+            sequence_length=self.policy.sequence_length,
+        )
+        value_loss = ModelUtils.trust_region_value_loss(
+            values, old_values, returns, decay_eps, loss_masks
+        )
+
+        ModelUtils.update_learning_rate(self.optimizer, decay_lr)
+        self.value_optimizer.zero_grad()
+        value_loss.backward()
+        self.value_optimizer.step()
+
+        update_stats = {
+            "Losses/Value Loss": value_loss.item(),
+        }
+
+        return update_stats
 
     @timed
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
@@ -294,13 +366,13 @@ class TorchCOMAOptimizer(TorchOptimizer):
             seq_len=self.policy.sequence_length,
         )
         all_obs = [current_obs] + groupmate_obs
-        values, _ = self.critic.critic_pass(
-            all_obs,
-            memories=value_memories,
-            sequence_length=self.policy.sequence_length,
-        )
+        #values, _ = self.critic.critic_pass(
+        #    all_obs,
+        #    memories=value_memories,
+        #    sequence_length=self.policy.sequence_length,
+        #)
         groupmate_obs_and_actions = (groupmate_obs, groupmate_actions)
-        baselines, _ = self.critic.baseline(
+        baselines, _ = self._critic_baseline.baseline(
             current_obs,
             groupmate_obs_and_actions,
             memories=baseline_memories,
@@ -313,9 +385,9 @@ class TorchCOMAOptimizer(TorchOptimizer):
         baseline_loss = ModelUtils.trust_region_value_loss(
             baselines, old_baseline_values, returns, decay_eps, loss_masks
         )
-        value_loss = ModelUtils.trust_region_value_loss(
-            values, old_values, returns, decay_eps, loss_masks
-        )
+        #value_loss = ModelUtils.trust_region_value_loss(
+        #    values, old_values, returns, decay_eps, loss_masks
+        #)
         policy_loss = ModelUtils.trust_region_policy_loss(
             ModelUtils.list_to_tensor(batch[BufferKey.ADVANTAGES]),
             log_probs,
@@ -325,7 +397,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
         )
         loss = (
             policy_loss
-            + 0.5 * (value_loss + 0.5 * baseline_loss)
+            + 0.5 * baseline_loss
             - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
         )
 
@@ -339,7 +411,6 @@ class TorchCOMAOptimizer(TorchOptimizer):
             # NOTE: abs() is not technically correct, but matches the behavior in TensorFlow.
             # TODO: After PyTorch is default, change to something more correct.
             "Losses/Policy Loss": torch.abs(policy_loss).item(),
-            "Losses/Value Loss": value_loss.item(),
             "Losses/Baseline Loss": baseline_loss.item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/Epsilon": decay_eps,
@@ -435,7 +506,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
                 all_values[signal_name].append(_val)
 
             groupmate_obs_and_actions = (groupmate_seq_obs, groupmate_seq_act)
-            baselines, _baseline_mem = self.critic.baseline(
+            baselines, _baseline_mem = self._critic_baseline.baseline(
                 self_seq_obs[0],
                 groupmate_obs_and_actions,
                 _baseline_mem,
@@ -480,7 +551,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
             for signal_name, _val in last_values.items():
                 all_values[signal_name].append(_val)
             groupmate_obs_and_actions = (groupmate_seq_obs, groupmate_seq_act)
-            last_baseline, _baseline_mem = self.critic.baseline(
+            last_baseline, _baseline_mem = self._critic_baseline.baseline(
                 self_seq_obs[0],
                 groupmate_obs_and_actions,
                 _baseline_mem,
@@ -629,7 +700,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
                     all_obs, _init_value_mem, sequence_length=batch.num_experiences
                 )
                 groupmate_obs_and_actions = (groupmate_obs, groupmate_actions)
-                baseline_estimates, next_baseline_mem = self.critic.baseline(
+                baseline_estimates, next_baseline_mem = self._critic_baseline.baseline(
                     current_obs,
                     groupmate_obs_and_actions,
                     _init_baseline_mem,

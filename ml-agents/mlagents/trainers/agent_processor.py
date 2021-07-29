@@ -284,6 +284,7 @@ class AgentProcessor:
                     next_obs=next_obs,
                     next_group_obs=next_group_obs,
                     behavior_id=self._behavior_id,
+                    all_agent_ids=list(self._current_group_obs[global_group_id].keys()),
                 )
                 for traj_queue in self._trajectory_queues:
                     traj_queue.put(trajectory)
