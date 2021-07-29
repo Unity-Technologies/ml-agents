@@ -562,7 +562,8 @@ class TorchSACOptimizer(TorchOptimizer):
         self.target_diversity = hyperparameters.mede_target_divcoef
         self._adaptive_divcoef = hyperparameters.mede_adaptive_divcoef
         self._scheduled_divcoef = hyperparameters.mede_scheduled_divcoef
-        self._divcoef_lr = hyperparameters.mede_divcoef_lr
+        self._delta_divcoef = (hyperparameters.mede_target_divcoef - hyperparameters.mede_init_divcoef) * \
+                            hyperparameters.steps_per_update / trainer_params.max_steps
         self._diversity_coef = TorchSACOptimizer.DivCoef(torch.nn.Parameter(
             torch.as_tensor([hyperparameters.mede_init_divcoef]), requires_grad=self._adaptive_divcoef
         ))
@@ -1116,7 +1117,7 @@ class TorchSACOptimizer(TorchOptimizer):
 
             elif self._scheduled_divcoef:
                 if self._diversity_coef.coef < self.target_diversity:
-                    self._diversity_coef.coef += self._divcoef_lr
+                    self._diversity_coef.coef += self._delta_divcoef
                 update_stats.update({
                     "MEDE/Diversity Coefficient": self._diversity_coef.coef.item(),
                 })
