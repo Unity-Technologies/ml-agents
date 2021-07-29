@@ -90,7 +90,10 @@ def test_var_len_obs_and_goal_poca(num_vis, num_vector, num_var_len, conditionin
         POCA_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4
     )
     config = attr.evolve(
-        POCA_TORCH_CONFIG, hyperparameters=new_hyperparams, network_settings=new_network
+        POCA_TORCH_CONFIG,
+        hyperparameters=new_hyperparams,
+        network_settings=new_network,
+        max_steps=5000,
     )
     check_environment_trains(env, {BRAIN_NAME: config})
 
