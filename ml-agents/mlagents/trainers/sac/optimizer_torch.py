@@ -33,7 +33,7 @@ from mlagents.trainers.torch.layers import linear_layer, Initialization
 
 class DiverseNetworkVariational(torch.nn.Module):
     alpha = 0.0005
-    MIN_VAR = 0.01
+    MIN_STDDEV = 0.1
     EPSILON = 1e-7
 
     def __init__(self, specs: BehaviorSpec, params) -> None:
@@ -192,25 +192,25 @@ class DiverseNetworkVariational(torch.nn.Module):
         if self.continuous:
             if self.learn_variance and self._variance is None:
                 mean = torch.tanh(pred[:, :int(pred.shape[1] / 2)])
-                variance = torch.clamp(pred[:, int(pred.shape[1] / 2):], self.MIN_VAR, 5)
+                std = torch.clamp(torch.exp(pred[:, int(pred.shape[1] / 2):]), self.MIN_STDDEV, 5)
             elif self.learn_variance:
                 mean = torch.tanh(pred)
-                variance = torch.ones_like(mean) * torch.clamp(self._variance, self.MIN_VAR, 5)
+                std = torch.ones_like(mean) * torch.clamp(torch.exp(self._variance), self.MIN_STDDEV, 5)
             else:
                 mean = torch.tanh(pred)
-                variance = torch.full_like(pred, 0.1)
+                std = torch.full_like(pred, 0.1)
 
             if masks is not None:
                 self.stats.update({
                     "MEDE/Predicted Mean Variance": torch.mean(torch.var(mean, dim=0)).item(),
-                    "MEDE/Predicted Variance Mean": torch.mean(variance).item()
+                    "MEDE/Predicted Variance Mean": torch.mean(std ** 2).item()
                 })
 
-            dist = GaussianDistInstance(mean, torch.sqrt(variance))
+            dist = GaussianDistInstance(mean, std)
             max_logprob = GaussianDistInstance(
-                torch.tensor(0), torch.sqrt(torch.tensor(self.MIN_VAR))
+                torch.tensor(0), torch.tensor(self.MIN_STDDEV)
             ).log_prob(torch.tensor(0))
-            return dist.log_prob(truth).squeeze(1) - max_logprob
+            return torch.prod(dist.log_prob(truth), dim=1) - max_logprob
 
         else:
             probs = torch.softmax(pred, dim=1)
