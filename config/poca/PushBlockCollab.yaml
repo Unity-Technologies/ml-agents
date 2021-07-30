@@ -22,4 +22,7 @@ behaviors:
     keep_checkpoints: 5
     max_steps: 15000000
     time_horizon: 64
-    summary_freq: 60000
+    summary_freq: 10000
+env_settings:
+  seed: 5
+  num_envs: 3
