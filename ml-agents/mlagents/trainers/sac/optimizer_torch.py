@@ -10,6 +10,7 @@ from mlagents.trainers.torch.networks import ValueNetwork
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch.distributions import GaussianDistInstance
 from mlagents.trainers.buffer import AgentBuffer, BufferKey, RewardSignalUtil
 from mlagents_envs.timers import timed
 from mlagents_envs.base_env import ActionSpec, ObservationSpec
@@ -32,6 +33,7 @@ from mlagents.trainers.torch.layers import linear_layer, Initialization
 
 class DiverseNetworkVariational(torch.nn.Module):
     alpha = 0.0005
+    MIN_VAR = 0.01
     EPSILON = 1e-7
 
     def __init__(self, specs: BehaviorSpec, params) -> None:
@@ -49,6 +51,7 @@ class DiverseNetworkVariational(torch.nn.Module):
         self.cont_actions_sal_drop = torch.zeros(specs.action_spec.continuous_size)
         sigma_start = 0.5
         beta_start = 0.0
+        variance_start = 1.0
 
         encoder_settings = NetworkSettings(normalize=True, num_layers=1)
         if encoder_settings.memory is not None:
@@ -90,8 +93,14 @@ class DiverseNetworkVariational(torch.nn.Module):
         self._beta = torch.nn.Parameter(
             torch.tensor(beta_start, dtype=torch.float), requires_grad=False
         ) if params.mede_noise else None
+        self._variance = torch.nn.Parameter(
+            torch.tensor(variance_start, dtype=torch.float), requires_grad=True
+        ) if self.learn_variance and self.continuous and params.mede_variance_param else None
 
-        self._out_size = self.diverse_size * 2 if self.learn_variance and self.continuous else self.diverse_size
+        self._out_size = self.diverse_size * 2 if self.learn_variance and \
+                                                  self.continuous and \
+                                                  not params.mede_variance_param \
+                                               else self.diverse_size
         disc_actions = sum(self.disc_sizes) if self._use_actions and len(self.disc_sizes) > 0 else 1
         self._last_layer = torch.nn.Linear(encoder_settings.hidden_units, self._out_size * disc_actions)
 
@@ -181,13 +190,15 @@ class DiverseNetworkVariational(torch.nn.Module):
 
     def _get_log_probs(self, pred, truth, masks=None):
         if self.continuous:
-            if self.learn_variance:
-                variance_start = int(pred.shape[1] / 2)
-                mean = torch.tanh(pred[:, :variance_start])
-                variance = torch.exp(pred[:, variance_start:])
+            if self.learn_variance and self._variance is None:
+                mean = torch.tanh(pred[:, :int(pred.shape[1] / 2)])
+                variance = torch.clamp(pred[:, int(pred.shape[1] / 2):], self.MIN_VAR, 5)
+            elif self.learn_variance:
+                mean = torch.tanh(pred)
+                variance = torch.ones_like(mean) * torch.clamp(self._variance, self.MIN_VAR, 5)
             else:
                 mean = torch.tanh(pred)
-                variance = torch.full_like(pred, 1e-2)
+                variance = torch.full_like(pred, 0.1)
 
             if masks is not None:
                 self.stats.update({
@@ -195,14 +206,12 @@ class DiverseNetworkVariational(torch.nn.Module):
                     "MEDE/Predicted Variance Mean": torch.mean(variance).item()
                 })
 
-            return torch.log(
-                torch.prod(
-                    torch.exp(
-                        -0.5 * (truth - mean) ** 2 / variance
-                    ) / torch.sqrt(2 * np.pi * variance), 
-                    dim=1
-                ) + self.EPSILON
-            )
+            dist = GaussianDistInstance(mean, torch.sqrt(variance))
+            max_logprob = GaussianDistInstance(
+                torch.tensor(0), torch.sqrt(torch.tensor(self.MIN_VAR))
+            ).log_prob(torch.tensor(0))
+            return dist.log_prob(truth).squeeze(1) - max_logprob
+
         else:
             probs = torch.softmax(pred, dim=1)
             return torch.log(

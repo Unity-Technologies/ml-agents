@@ -174,6 +174,7 @@ class SACSettings(HyperparamSettings):
     mede_scheduled_divcoef: bool = False
     mede_adaptive_divcoef: bool = True
     mede_learn_variance: bool = True
+    mede_variance_param: bool = False
     mede_for_policy_loss: bool = True
     mede_use_actions: bool = True
     mede_drop_actions: bool = True
