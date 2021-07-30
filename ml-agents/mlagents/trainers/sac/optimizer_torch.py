@@ -184,7 +184,7 @@ class DiverseNetworkVariational(torch.nn.Module):
             if self.learn_variance:
                 variance_start = int(pred.shape[1] / 2)
                 mean = torch.tanh(pred[:, :variance_start])
-                variance = torch.clamp(pred[:, variance_start:], 1e-6, 10)
+                variance = torch.exp(pred[:, variance_start:])
             else:
                 mean = torch.tanh(pred)
                 variance = torch.full_like(pred, 1e-2)
