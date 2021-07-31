@@ -248,6 +248,10 @@ class TensorboardWriter(StatsWriter):
                 )
             self.summary_writers[category].flush()
 
+    def write_image(self, category, key, data):
+        self._maybe_create_summary_writer(category)
+        self.summary_writers[category].add_image(key, data)
+
     def _maybe_create_summary_writer(self, category: str) -> None:
         if category not in self.summary_writers:
             filewriter_dir = "{basedir}/{category}".format(
@@ -357,6 +361,29 @@ class StatsReporter:
                 writer.on_add_stat(
                     self.category, key, value, StatsAggregationMethod.MOST_RECENT
                 )
+
+    def set_hist(self, key: str, value: float) -> None:
+        """
+        Sets a stat value to a hist. 
+
+        :param key: The type of statistic, e.g. Environment/Reward.
+        :param value: the values of the hist.
+        """
+        with StatsReporter.lock:
+            StatsReporter.stats_dict[self.category][key] = value
+            StatsReporter.stats_aggregation[self.category][
+                key
+            ] = StatsAggregationMethod.HISTOGRAM
+            for writer in StatsReporter.writers:
+                writer.on_add_stat(
+                    self.category, key, value, StatsAggregationMethod.HISTOGRAM
+                )
+
+    def write_image(self, key, data):
+        with StatsReporter.lock:
+            for writer in StatsReporter.writers:
+                if isinstance(writer, TensorboardWriter):
+                    writer.write_image(self.category, key, data)
 
     def write_stats(self, step: int) -> None:
         """

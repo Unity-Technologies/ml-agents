@@ -207,10 +207,12 @@ class DiverseNetworkVariational(torch.nn.Module):
                 })
 
             dist = GaussianDistInstance(mean, std)
-            max_logprob = GaussianDistInstance(
-                torch.tensor(0), torch.tensor(self.MIN_STDDEV)
-            ).log_prob(torch.tensor(0))
-            return torch.prod(dist.log_prob(truth), dim=1) - max_logprob
+            max_logprob = torch.sum(
+                GaussianDistInstance(
+                    torch.zeros(self.diverse_size), torch.ones(self.diverse_size) * self.MIN_STDDEV
+                ).log_prob(torch.zeros(self.diverse_size))
+            )
+            return torch.sum(dist.log_prob(truth), dim=1) - max_logprob
 
         else:
             probs = torch.softmax(pred, dim=1)
