@@ -84,6 +84,7 @@ class SACTrainer(RLTrainer):
 
         self.behavior_reward_hist = dict()
         self.behavior_reward_map = None
+        self.log_steps = trainer_settings.summary_freq
 
     def _checkpoint(self) -> ModelCheckpoint:
         """
@@ -202,19 +203,21 @@ class SACTrainer(RLTrainer):
                         self.behavior_reward_map = np.zeros((20,) * len(diversity_vector))
                     idx = tuple((diversity_vector * 10 + 10).astype(int))
                     self.behavior_reward_map[idx] = self.behavior_reward_map[idx] * .99 + reward * .01
-                    if len(self.behavior_reward_map.shape) == 2:
+                    if len(self.behavior_reward_map.shape) == 2 and self._step % self.log_steps == 0:
                         self._stats_reporter.write_image(
                             "Settings/Reward Map", 
-                            np.expand_dims(self.behavior_reward_map, 0) / np.amax(self.behavior_reward_map)
-                            )
+                            np.expand_dims(self.behavior_reward_map, 0) / np.amax(self.behavior_reward_map), 
+                            self._step
+                        )
 
                     for dim, val in enumerate(diversity_vector):
                         if dim not in self.behavior_reward_hist:
                             self.behavior_reward_hist[dim] = [0] * 200
                         bn = int(val * 100 + 100)
                         self.behavior_reward_hist[dim][bn] = self.behavior_reward_hist[dim][bn] * .99 + reward * .01
-                        hist = [bn / 100 - 1 for bn, r in enumerate(self.behavior_reward_hist[dim]) for _ in range(int(r * 100))]
-                        self._stats_reporter.set_hist("Settings/Environment Reward {}".format(dim), hist)
+                        if self._step % self.log_steps == 0:
+                            hist = [bn / 100 - 1 for bn, r in enumerate(self.behavior_reward_hist[dim]) for _ in range(int(r * 100))]
+                            self._stats_reporter.write_hist("Settings/Environment Reward {}".format(dim), hist, self._step)
 
                 else:
 
