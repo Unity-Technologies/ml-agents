@@ -1,0 +1,17 @@
+name = "MLAgentsEnvs"
+uuid = "fb30a463-1d3c-4222-8187-90d704c5639e"
+authors = ["Scott Jordan"]
+version = "0.1.0"
+
+[deps]
+Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
+PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
+
+[compat]
+julia = ">=1.6"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
