@@ -57,7 +57,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
                 network_settings,
                 action_spec,
                 use_attention=False,
-                max_agents=4,
+                max_agents=400,
             )
             if network_settings.memory is not None:
                 encoding_size = network_settings.memory.memory_size // 2
