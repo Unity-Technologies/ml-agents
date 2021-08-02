@@ -288,9 +288,11 @@ class MultiAgentNetworkBody(torch.nn.Module):
 
         # Modules for multi-agent self-attention
         obs_only_ent_size = self.observation_encoder.total_enc_size
+        self.obs_only_ent_size = obs_only_ent_size
         action_only_size = (
             sum(self.action_spec.discrete_branches) + self.action_spec.continuous_size
         )
+        self.action_only_size = action_only_size
 
         q_ent_size = obs_only_ent_size + action_only_size
 
@@ -432,9 +434,11 @@ class MultiAgentNetworkBody(torch.nn.Module):
                 encoded_group_obs += [encoded_group_obs[0] * 0] * (self._max_agents - len(encoded_group_obs) - 1)
                 encoded_group_obs = torch.cat(encoded_group_obs, dim=1)
                 encoded_group_obs = torch.nan_to_num(encoded_group_obs)
+                encoded_group_obs = encoded_group_obs[:, :(self.obs_only_ent_size * self._max_agents)]
                 flattened_group_actions += [flattened_group_actions[0] * 0] * (self._max_agents - len(flattened_group_actions) - 1)
                 flattened_group_actions = torch.cat(flattened_group_actions, dim=1)
                 flattened_group_actions = torch.nan_to_num(flattened_group_actions)
+                flattened_group_actions = flattened_group_actions[:, :(self.action_only_size * self._max_agents)]
                 # this should always have just one element
                 encoded_obs = self.observation_encoder(obs_only[0])
                 baseline_inp = torch.cat(
