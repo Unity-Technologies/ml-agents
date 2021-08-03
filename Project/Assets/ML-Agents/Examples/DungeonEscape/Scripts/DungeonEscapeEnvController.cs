@@ -180,6 +180,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
             {
                 foundNewSpawnLocation = true;
             }
+            foundNewSpawnLocation = true;
         }
         return randomSpawnPos;
     }
