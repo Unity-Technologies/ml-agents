@@ -1,5 +1,5 @@
 behaviors:
-  FoodCollector:
+  GridFoodCollector:
     trainer_type: sac
     hyperparameters:
       learning_rate: 0.0003
