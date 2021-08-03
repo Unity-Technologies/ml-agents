@@ -200,27 +200,37 @@ class DiverseNetworkVariational(torch.nn.Module):
                 mean = torch.tanh(pred)
                 std = torch.full_like(pred, 0.1)
 
-            if masks is not None:
-                self.stats.update({
-                    "MEDE/Predicted Mean Variance": torch.mean(torch.var(mean, dim=0)).item(),
-                    "MEDE/Predicted Variance Mean": torch.mean(std ** 2).item()
-                })
-
             dist = GaussianDistInstance(mean, std)
             max_logprob = torch.sum(
                 GaussianDistInstance(
                     torch.zeros(self.diverse_size), torch.ones(self.diverse_size) * self.MIN_STDDEV
                 ).log_prob(torch.zeros(self.diverse_size))
             )
-            return torch.sum(dist.log_prob(truth), dim=1) - max_logprob
+            log_probs = torch.sum(dist.log_prob(truth), dim=1)
+
+            if masks is not None:
+                self.stats.update({
+                    "MEDE/Variance of Mean": torch.mean(torch.var(mean, dim=0)).item(),
+                    "MEDE/Mean of Variance": torch.mean(std ** 2).item(),
+                    "MEDE/LogProb": torch.mean(log_probs).item()
+                })
+
+            return log_probs - max_logprob
 
         else:
             probs = torch.softmax(pred, dim=1)
-            return torch.log(
+            log_probs = torch.log(
                 torch.sum(
                     probs * truth, dim=1
                 ) + self.EPSILON
             )
+
+            if masks is not None:
+                self.stats.update({
+                    "MEDE/LogProb": torch.mean(log_probs).item()
+                })
+
+            return log_probs
 
     def rewards(
         self, obs_input, cont_act, disc_act, detach_action=False, var_noise=True, masks=None

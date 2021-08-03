@@ -2,7 +2,7 @@
 # Contains an implementation of SAC as described in https://arxiv.org/abs/1801.01290
 # and implemented in https://github.com/hill-a/stable-baselines
 
-from collections import defaultdict
+from collections import defaultdict, deque
 from typing import Dict, cast
 import os
 
@@ -26,6 +26,48 @@ from mlagents.trainers.settings import TrainerSettings, SACSettings
 logger = get_logger(__name__)
 
 BUFFER_TRUNCATE_PERCENT = 0.8
+
+
+class BehaviorMetrics:
+    CONT_BINS = 20
+    WINDOW_SIZE = 10
+
+    def __init__(self, size, cont):
+        self.cont = cont
+        self.shape = (self.CONT_BINS,) * size if cont else (size,)
+        num_metrics = self.CONT_BINS ** size if cont else size
+        self._rewards = [deque([], self.WINDOW_SIZE) for _ in range(num_metrics)]
+
+    def _behavior_to_idx(self, behavior):
+        if self.cont:
+            bins = list((behavior * self.CONT_BINS / 2 + self.CONT_BINS / 2).astype(int))
+            idx = 0
+            exp = 0
+            while len(bins) > 0:
+                idx += bins.pop() * self.CONT_BINS ** exp
+                exp += 1
+        else:
+            idx = np.argmax(behavior)
+        return idx
+
+    def add_reward(self, reward, behavior):
+        self._rewards[self._behavior_to_idx(behavior)].append(reward)
+
+    def get_avg_reward_array(self):
+        avg = np.array([np.mean(x) if len(x) > 0 else 0 for x in self._rewards])
+        return np.reshape(avg, self.shape)
+
+    def get_avg_reward(self, behavior):
+        return np.mean(self._rewards[self._behavior_to_idx(behavior)])
+
+    def get_last_reward(self, behavior):
+        return self._rewards[self._behavior_to_idx(behavior)][-1]
+
+    def is_full(self):
+        return all(len(x) == self.WINDOW_SIZE for x in self._rewards)
+
+    def percent_full(self):
+        return sum(len(x) for x in self._rewards) / (np.prod(self.shape) * self.WINDOW_SIZE)
 
 
 class SACTrainer(RLTrainer):
@@ -83,8 +125,9 @@ class SACTrainer(RLTrainer):
         self.checkpoint_replay_buffer = self.hyperparameters.save_replay_buffer
 
         self.behavior_reward_hist = dict()
-        self.behavior_reward_map = None
+        self.behavior_metrics = None
         self.log_steps = trainer_settings.summary_freq
+        self.log_count = 0
 
     def _checkpoint(self) -> ModelCheckpoint:
         """
@@ -196,47 +239,61 @@ class SACTrainer(RLTrainer):
                     if spec.observation_type == ObservationType.GOAL_SIGNAL
                 ][0]
                 reward = self.collected_rewards["environment"].get(agent_id, 0)
-
-                if self.hyperparameters.mede_continuous:
-
-                    if self.behavior_reward_map is None:
-                        self.behavior_reward_map = np.zeros((20,) * len(diversity_vector))
-                    idx = tuple((diversity_vector * 10 + 10).astype(int))
-                    self.behavior_reward_map[idx] = self.behavior_reward_map[idx] * .99 + reward * .01
-                    if len(self.behavior_reward_map.shape) == 2 and self._step % self.log_steps == 0:
-                        self._stats_reporter.write_image(
-                            "Settings/Reward Map", 
-                            np.expand_dims(self.behavior_reward_map, 0) / np.amax(self.behavior_reward_map), 
-                            self._step
-                        )
-
-                    for dim, val in enumerate(diversity_vector):
-                        if dim not in self.behavior_reward_hist:
-                            self.behavior_reward_hist[dim] = [0] * 200
-                        bn = int(val * 100 + 100)
-                        self.behavior_reward_hist[dim][bn] = self.behavior_reward_hist[dim][bn] * .99 + reward * .01
-                        if self._step % self.log_steps == 0:
-                            hist = [bn / 100 - 1 for bn, r in enumerate(self.behavior_reward_hist[dim]) for _ in range(int(r * 100))]
-                            self._stats_reporter.write_hist("Settings/Environment Reward {}".format(dim), hist, self._step)
-
-                else:
-
-                    diversity_setting = np.argmax(diversity_vector)
-                    self._stats_reporter.add_stat(
-                        "Settings/Environment Reward {}".format(diversity_setting),
-                        reward
-                    )
-
-                    if self.behavior_reward_map is None:
-                        self.behavior_reward_map = np.zeros(len(diversity_vector))
-                    self.behavior_reward_map[diversity_setting] = self.behavior_reward_map[diversity_setting] * .99 + reward * .01
-                
-                self._stats_reporter.add_stat(
-                    "Settings/Max Environment Reward",
-                    np.amax(self.behavior_reward_map)
-                )
+                self._update_mede_stats(diversity_vector, reward)
 
             self._update_end_episode_stats(agent_id, self.optimizer)
+
+    def _update_mede_stats(self, diversity_vector, reward):
+        if self.behavior_metrics is None:
+            self.behavior_metrics = BehaviorMetrics(diversity_vector.shape[0], self.hyperparameters.mede_continuous)
+
+        self.behavior_metrics.add_reward(reward, diversity_vector)
+
+        reward_bins = self.behavior_metrics.get_avg_reward_array()
+        self._stats_reporter.add_stat(
+            "Settings/Max Environment Reward",
+            np.amax(reward_bins)
+        )
+
+        if not self.hyperparameters.mede_continuous:
+            diversity_setting = np.argmax(diversity_vector)
+            self._stats_reporter.add_stat(
+                "Settings/Environment Reward {}".format(diversity_setting),
+                reward
+            )
+
+        if self._step > self.log_steps * self.log_count:
+            self.log_count += 1
+
+            if self.hyperparameters.mede_continuous:
+                for dim in range(len(reward_bins.shape)):
+                    mean_dims = list(range(len(reward_bins.shape)))
+                    mean_dims.remove(dim)
+                    hist = [
+                        bn / self.behavior_metrics.CONT_BINS - 1 
+                        for bn, r in enumerate(np.mean(reward_bins, axis=tuple(mean_dims))) for _ in range(int(r * 100))
+                    ]
+                    if len(hist) > 0:
+                        self._stats_reporter.write_hist(
+                            "Settings/Environment Reward {}".format(dim), 
+                            hist, 
+                            self._step
+                        )
+                if len(self.behavior_metrics.shape) == 2:
+                    self._stats_reporter.write_image(
+                        "Settings/Reward Map", 
+                        np.expand_dims(reward_bins, 0) / np.amax(reward_bins), 
+                        self._step
+                    )
+
+            with open(os.path.join(self.artifact_path, "reward_bins.npy"), "wb") as f:
+                np.save(f, reward_bins)
+            if not self.is_training:
+                print("Inference progress: {}".format(self.behavior_metrics.percent_full()))
+                with open(os.path.join(self.artifact_path, "reward_bins_{}.npy".format(self._step)), "wb") as f:
+                    np.save(f, reward_bins)
+                if self.behavior_metrics.is_full():
+                    exit()
 
     def _is_ready_update(self) -> bool:
         """
