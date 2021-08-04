@@ -6,17 +6,25 @@ public class SimpleNPC : MonoBehaviour
     public Transform target;
 
     private Rigidbody rb;
+    public bool KeyCarrier = false;
 
+    private DungeonEscapeEnvController m_GameController;
     public float walkSpeed = 1;
     // public ForceMode walkForceMode;
     private Vector3 dirToGo;
 
     // private Vector3 m_StartingPos;
     // Start is called before the first frame update
-    void Awake()
+
+    public void Initialize()
     {
         rb = GetComponent<Rigidbody>();
-        // m_StartingPos = transform.position;
+        m_GameController = GetComponentInParent<DungeonEscapeEnvController>();
+    }
+    void Awake()
+    {
+        Initialize();
+            // m_StartingPos = transform.position;
     }
 
     // Update is called once per frame
@@ -24,9 +32,31 @@ public class SimpleNPC : MonoBehaviour
     {
     }
 
+
+    void OnCollisionEnter(Collision col)
+    {
+        if (KeyCarrier){
+
+            if (col.transform.CompareTag("portal"))
+            {
+                m_GameController.BaddieTouchedBlock();
+            }
+        }
+    }
+
     void FixedUpdate()
     {
-        dirToGo = target.position - transform.position;
+        Vector3 goToward;
+        if (!KeyCarrier)
+        {
+            goToward = m_GameController.GetNearestAgent(transform.position);
+        }
+        else
+        {
+            goToward = target.position;
+        }
+        
+        dirToGo = goToward - transform.position;
         dirToGo.y = 0;
         rb.rotation = Quaternion.LookRotation(dirToGo);
         // rb.AddForce(dirToGo.normalized * walkSpeed * Time.fixedDeltaTime, walkForceMode);
