@@ -222,6 +222,7 @@ MonoBehaviour:
   - key
   - lock
   - portal
+  - keyDragon
   m_RaysPerDirection: 7
   m_MaxRayDegrees: 60
   m_SphereCastRadius: 0.5
@@ -719,6 +720,7 @@ Transform:
   - {fileID: 2436825414900162128}
   - {fileID: 6860412223676067345}
   - {fileID: 6368173101304807141}
+  - {fileID: 4609064288517219327}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -1063,6 +1065,70 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!1 &6032895043539332067
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4609064288517219327}
+  - component: {fileID: 7643438069650797503}
+  m_Layer: 0
+  m_Name: Backward
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4609064288517219327
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6032895043539332067}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4830954159424380931}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &7643438069650797503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6032895043539332067}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: BackRayPerceptionSensor
+  m_DetectableTags:
+  - wall
+  - agent
+  - dragon
+  - key
+  - lock
+  - portal
+  - keyDragon
+  m_RaysPerDirection: 4
+  m_MaxRayDegrees: 40
+  m_SphereCastRadius: 0.5
+  m_RayLength: 40
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_ObservationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0
+  m_EndVerticalOffset: 0
 --- !u!1001 &2776982836279613095
 PrefabInstance:
   m_ObjectHideFlags: 0
