@@ -11,6 +11,8 @@ from zipfile import ZipFile
 from sys import platform
 from typing import Tuple, Optional, Dict, Any
 
+from mlagents_envs.env_utils import validate_environment_path
+
 from mlagents_envs.logging_util import get_logger
 
 logger = get_logger(__name__)
@@ -84,6 +86,10 @@ def get_local_binary_path_if_exists(name: str, url: str) -> Optional[str]:
         for c in candidates:
             # Unity sometimes produces another .exe file that we must filter out
             if "UnityCrashHandler64" not in c:
+                # If the file is not valid, return None and delete faulty directory
+                if validate_environment_path(c) is None:
+                    shutil.rmtree(c)
+                    return None
                 return c
         return None
 
