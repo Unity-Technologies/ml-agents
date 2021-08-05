@@ -36,4 +36,4 @@ environment_parameters:
   button_steps: 100
 env_settings:
   num_envs: 3
-
+  seed: 1
