@@ -20,6 +20,7 @@ public class SpawnArea : MonoBehaviour
     public List<SpawnButton> Buttons;
     HashSet<SpawnCollectorFood> Foods = new HashSet<SpawnCollectorFood>();
     int m_NumFoodEaten;
+    private float m_CumulativeGroupReward;
 
     void Start()
     {
@@ -53,6 +54,7 @@ public class SpawnArea : MonoBehaviour
         }
         m_NumFoodEaten = 0;
         m_ResetTimer = 0;
+        m_CumulativeGroupReward = 0.0f;
     }
 
     public void RegisterAgent(GameObject agent)
@@ -69,11 +71,14 @@ public class SpawnArea : MonoBehaviour
     public void FoodEaten()
     {
         m_AgentGroup.AddGroupReward(0.01f);
+        m_CumulativeGroupReward += 0.01f;
         m_NumFoodEaten += 1;
         if (m_NumFoodEaten == Foods.Count)
         {
             m_AgentGroup.AddGroupReward(1f);
+            m_CumulativeGroupReward += 1f;
             m_AgentGroup.EndGroupEpisode();
+            Academy.Instance.StatsRecorder.Add("Environment/Actual Group Reward", m_CumulativeGroupReward);
             Academy.Instance.StatsRecorder.Add("FoodEaten", m_NumFoodEaten);
             ResetScene();
         }
@@ -101,6 +106,7 @@ public class SpawnArea : MonoBehaviour
         {
             // m_AgentGroup.AddGroupReward(-1f);
             m_AgentGroup.GroupEpisodeInterrupted();
+            Academy.Instance.StatsRecorder.Add("Environment/Actual Group Reward", m_CumulativeGroupReward);
             Academy.Instance.StatsRecorder.Add("FoodEaten", m_NumFoodEaten);
             ResetScene();
             return;
@@ -109,13 +115,16 @@ public class SpawnArea : MonoBehaviour
         if (m_AgentGroup.GetRegisteredAgents().Count == 0)
         {
             m_AgentGroup.EndGroupEpisode();
+            Academy.Instance.StatsRecorder.Add("Environment/Actual Group Reward", m_CumulativeGroupReward);
             Academy.Instance.StatsRecorder.Add("FoodEaten", m_NumFoodEaten);
             ResetScene();
             return;
         }
 
         //Hurry Up Penalty
-        m_AgentGroup.AddGroupReward(-0.5f / Academy.Instance.EnvironmentParameters.GetWithDefault("area_steps", MaxEnvironmentSteps));
+        var penalty = -0.5f / Academy.Instance.EnvironmentParameters.GetWithDefault("area_steps", MaxEnvironmentSteps);
+        m_AgentGroup.AddGroupReward(penalty);
+        m_CumulativeGroupReward += penalty;
     }
 
     public int GetNumAgents()
