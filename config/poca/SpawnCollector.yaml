@@ -27,6 +27,11 @@ behaviors:
       #     num_layers: 3
       #   learning_rate: 0.0001
     keep_checkpoints: 5
-    max_steps: 15000000
+    max_steps: 40000000
     time_horizon: 64
     summary_freq: 60000
+environment_parameters:
+  area_steps: 20000
+  agent_steps: 1500
+  button_steps: 100
+

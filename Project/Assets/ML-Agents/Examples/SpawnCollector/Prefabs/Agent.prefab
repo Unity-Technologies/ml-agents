@@ -146,7 +146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 4
+    VectorObservationSize: 5
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -155,7 +155,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: e1d1aed2584e14680a31d7b2de6390ff, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 1bdeebf183be74d3d97495f97eae3ae4, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: SpawnCollector
@@ -250,6 +250,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
+  Lifetime: 1500
 --- !u!1 &5973471482644522115
 GameObject:
   m_ObjectHideFlags: 0

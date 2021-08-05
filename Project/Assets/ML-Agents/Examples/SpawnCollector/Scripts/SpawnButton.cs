@@ -11,6 +11,10 @@ public class SpawnButton : MonoBehaviour
     public SpawnArea Area;
     bool m_State;
 
+    int m_ResetTimer;
+
+    public int TimerToReset;
+
 
 
     public bool GetState()
@@ -25,9 +29,21 @@ public class SpawnButton : MonoBehaviour
         tag = "switchOff";
         transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         myButton.GetComponent<Renderer>().material = offMaterial;
-        if (Random.Range(0f, 1f) > 0.9f)
+        if (Random.Range(0f, 1f) < Academy.Instance.EnvironmentParameters.GetWithDefault("button_on_prob", 0f))
         {
             Activate(null);
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if (m_State)
+        {
+            m_ResetTimer -= 1;
+            if (m_ResetTimer < 0)
+            {
+                ResetSwitch();
+            }
         }
     }
 
@@ -45,6 +61,7 @@ public class SpawnButton : MonoBehaviour
         m_State = true;
         tag = "switchOn";
         SpawnAgent(pressingAgent);
+        m_ResetTimer = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("button_steps", TimerToReset);
     }
 
     void SpawnAgent(GameObject pressingAgent)

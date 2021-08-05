@@ -9,8 +9,13 @@ public class SpawnCollectorAgent : Agent
 {
     SpawnArea m_Area;
     Rigidbody m_AgentRb;
+
+    public int Lifetime = 400;
+    int m_Lifetime;
+
     public override void Initialize()
     {
+        m_Lifetime = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("agent_steps", Lifetime);
         m_AgentRb = GetComponent<Rigidbody>();
     }
 
@@ -20,11 +25,23 @@ public class SpawnCollectorAgent : Agent
         sensor.AddObservation(1.0f * m_Area.GetNumFoodLeft() / 40f);
         // sensor.AddObservation(1.0f * m_Area.GetTimeLeft());
         sensor.AddObservation(transform.InverseTransformDirection(m_AgentRb.velocity));
+
+        sensor.AddObservation(2.0f * m_Lifetime / Academy.Instance.EnvironmentParameters.GetWithDefault("agent_steps", Lifetime) - 1f);
     }
 
     public void SetArea(SpawnArea area)
     {
         m_Area = area;
+    }
+
+    void FixedUpdate()
+    {
+        m_Lifetime -= 1;
+        if (m_Lifetime < 0)
+        {
+            m_Area.UnregisterAgent(this.gameObject);
+            Destroy(this.gameObject);
+        }
     }
 
     public void MoveAgent(ActionSegment<int> act)
