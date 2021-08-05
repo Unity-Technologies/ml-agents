@@ -10,6 +10,7 @@ behaviors:
       lambd: 0.95
       num_epoch: 3
       learning_rate_schedule: constant
+      max_num_agents: 5
     network_settings:
       normalize: false
       hidden_units: 256
@@ -23,7 +24,6 @@ behaviors:
     max_steps: 20000000
     time_horizon: 64
     summary_freq: 60000
-    max_num_agents: 5
 env_settings:
   seed: 1
   num_envs: 3
