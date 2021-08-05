@@ -32,6 +32,7 @@ from mlagents.trainers.torch.layers import linear_layer, Initialization
 
 
 class DiverseNetworkVariational(torch.nn.Module):
+    alpha = 0.0005
     MIN_STDDEV = 0.1
     EPSILON = 1e-7
 
@@ -43,12 +44,14 @@ class DiverseNetworkVariational(torch.nn.Module):
             learn_stddev: bool = True, 
             noise: bool = True, 
             stddev_param: bool = False,
-            dropout: float = 0.2
+            dropout: float = 0.2,
+            name: str = "MEDE"
         ) -> None:
         super().__init__()
         self._use_actions = use_actions
         self._continuous = continuous
         self._learn_stddev = learn_stddev
+        self._name = name
         self.stats = {}
         sigma_start = 0.5
         stddev_start = 1.0
@@ -158,9 +161,10 @@ class DiverseNetworkVariational(torch.nn.Module):
 
             if masks is not None:
                 self.stats.update({
-                    "MEDE/Variance of Mean": torch.mean(torch.var(mean, dim=0)).item(),
-                    "MEDE/Mean of Variance": torch.mean(std ** 2).item(),
-                    "MEDE/LogProb": torch.mean(log_probs).item()
+                    self._name + "/Variance of Mean": torch.mean(torch.var(mean, dim=0)).item(),
+                    self._name + "/Mean of StdDev": torch.mean(std).item(),
+                    self._name + "/Mean of Variance": torch.mean(std ** 2).item(),
+                    self._name + "/LogProb": ModelUtils.masked_mean(log_probs, masks).item()
                 })
 
             return log_probs - max_logprob
@@ -175,7 +179,7 @@ class DiverseNetworkVariational(torch.nn.Module):
 
             if masks is not None:
                 self.stats.update({
-                    "MEDE/LogProb": torch.mean(log_probs).item()
+                    self._name + "/LogProb": ModelUtils.masked_mean(log_probs, masks).item()
                 })
 
             return log_probs
@@ -224,7 +228,7 @@ class DiverseNetworkVariational(torch.nn.Module):
         # Log accuracy stats
         if masks is not None:
             self.stats.update({
-                "MEDE/Accuracy": ModelUtils.masked_mean(accuracy, masks).item(),
+                self._name + "/Accuracy": ModelUtils.masked_mean(accuracy, masks).item(),
             })
             truth = torch.argmax(obs_input[self._diverse_index], dim=1)
             counts = torch.bincount(truth, minlength=self.diverse_size)
@@ -246,7 +250,7 @@ class DiverseNetworkVariational(torch.nn.Module):
 
         self.stats.update({
             "Losses/MEDE Loss": total_loss.item(),
-            "MEDE/Reward": -base_loss.item(),
+            self._name + "/Reward": -base_loss.item(),
         })
 
         truth = torch.argmax(obs_input[self._diverse_index], dim=1)
@@ -428,8 +432,17 @@ class TorchSACOptimizer(TorchOptimizer):
             self._critic.parameters()
         )
 
-        # MEDE
-        self._use_mede = hyperparameters.mede
+        # Diversity
+        if hyperparameters.mede:
+            self._use_mede = True
+            self._use_diayn = False
+        elif hyperparameters.diayn:
+            self._use_mede = False
+            self._use_diayn = True
+        else:
+            self._use_mede = False
+            self._use_diayn = False
+
         self._mede_network = DiverseNetworkVariational(
             self.policy.behavior_spec, 
             hyperparameters.mede_use_actions,
@@ -438,7 +451,17 @@ class TorchSACOptimizer(TorchOptimizer):
             hyperparameters.mede_noise,
             hyperparameters.mede_stddev_param,
             hyperparameters.mede_dropout
-        ) if self._use_mede else None
+        ) if self._use_mede or self._use_diayn else None
+        self._diayn_network = DiverseNetworkVariational(
+            self.policy.behavior_spec, 
+            False,
+            hyperparameters.mede_continuous,
+            hyperparameters.mede_learn_stddev,
+            hyperparameters.mede_noise,
+            hyperparameters.mede_stddev_param,
+            hyperparameters.mede_dropout,
+            "DIAYN"
+        ) if self._use_mede or self._use_diayn else None
 
         self._mede_policy_loss = hyperparameters.mede_for_policy_loss
         self._target_diversity = hyperparameters.mede_target_divcoef
@@ -474,11 +497,15 @@ class TorchSACOptimizer(TorchOptimizer):
         self.mede_optimizer = torch.optim.Adam(
             list(self._mede_network.parameters()), 
             lr=hyperparameters.learning_rate, 
-        ) if self._use_mede else None
+        ) if self._use_mede or self._use_diayn else None
+        self.diayn_optimizer = torch.optim.Adam(
+            list(self._diayn_network.parameters()), 
+            lr=hyperparameters.learning_rate, 
+        ) if self._use_mede or self._use_diayn else None
         self.divcoef_optimizer = torch.optim.Adam(
             self._diversity_coef.parameters(),
             lr=hyperparameters.mede_divcoef_lr, 
-        ) if self._use_mede else None
+        ) if self._use_mede or self._use_diayn else None
         self._move_to_device(default_device())
 
     @property
@@ -499,6 +526,7 @@ class TorchSACOptimizer(TorchOptimizer):
         dones: torch.Tensor,
         rewards: Dict[str, torch.Tensor],
         loss_masks: torch.Tensor,
+        diayn_rewards: torch.Tensor
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         q1_losses = []
         q2_losses = []
@@ -507,7 +535,8 @@ class TorchSACOptimizer(TorchOptimizer):
             q1_stream = q1_out[name].squeeze()
             q2_stream = q2_out[name].squeeze()
             with torch.no_grad():
-                q_backup = rewards[name] + (
+                q_backup = rewards[name] + \
+                    self._diversity_coef.coef * diayn_rewards + (
                     (1.0 - self.use_dones_in_backup[name] * dones)
                     * self.gammas[i]
                     * target_values[name]
@@ -862,7 +891,7 @@ class TorchSACOptimizer(TorchOptimizer):
         masks = ModelUtils.list_to_tensor(batch[BufferKey.MASKS], dtype=torch.bool)
         dones = ModelUtils.list_to_tensor(batch[BufferKey.DONE])
 
-        mede_value_rewards, mede_policy_rewards = torch.zeros(1), torch.zeros(1)
+        mede_value_rewards, mede_policy_rewards, diayn_rewards = torch.zeros(1), torch.zeros(1), torch.zeros(1)
         if self._use_mede:
             self._mede_network.copy_normalization(self.policy.actor.network_body)
             disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
@@ -873,9 +902,16 @@ class TorchSACOptimizer(TorchOptimizer):
                 mede_value_rewards = self._mede_network.rewards(
                     current_obs, sampled_actions.continuous_tensor, disc_act, var_noise=False
                 )
+        elif self._use_diayn:
+            self._diayn_network.copy_normalization(self.policy.actor.network_body)
+            disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
+            with torch.no_grad():
+                diayn_rewards = self._diayn_network.rewards(
+                    current_obs, sampled_actions.continuous_tensor, disc_act, var_noise=False
+                )
 
         q1_loss, q2_loss = self.sac_q_loss(
-            q1_stream, q2_stream, target_values, dones, rewards, masks
+            q1_stream, q2_stream, target_values, dones, rewards, masks, diayn_rewards
         )
         value_loss = self.sac_value_loss(
             log_probs, value_estimates, q1p_out, q2p_out, masks, mede_value_rewards
@@ -922,9 +958,13 @@ class TorchSACOptimizer(TorchOptimizer):
             "Policy/Entropy Loss": entropy_loss.item(),
         }
 
-        if self._use_mede:
+        if self._use_mede or self._use_diayn:
             disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
+
             mede_loss, mede_stats = self._mede_network.loss(
+                current_obs, sampled_actions.continuous_tensor, disc_act, masks
+            )
+            diayn_loss, diayn_stats = self._diayn_network.loss(
                 current_obs, sampled_actions.continuous_tensor, disc_act, masks
             )
             
@@ -932,8 +972,14 @@ class TorchSACOptimizer(TorchOptimizer):
             self.mede_optimizer.zero_grad()
             mede_loss.backward()
             self.mede_optimizer.step()
+            
+            ModelUtils.update_learning_rate(self.mede_optimizer, decay_lr)
+            self.diayn_optimizer.zero_grad()
+            diayn_loss.backward()
+            self.diayn_optimizer.step()
 
             update_stats.update(mede_stats)
+            update_stats.update(diayn_stats)
             
             if self._adaptive_divcoef:
                 divcoef_loss = self.sac_divcoef_loss(mede_value_rewards, masks)
@@ -941,15 +987,15 @@ class TorchSACOptimizer(TorchOptimizer):
                 divcoef_loss.backward()
                 self.divcoef_optimizer.step()
                 update_stats.update({
-                    "MEDE/Diversity Coefficient": self._diversity_coef.coef.item(),
-                    "MEDE/Diversity Coefficient Loss": divcoef_loss.item()
+                    "Policy/Diversity Coefficient": self._diversity_coef.coef.item(),
+                    "Policy/Diversity Coefficient Loss": divcoef_loss.item()
                 })
 
             elif self._scheduled_divcoef:
                 if self._diversity_coef.coef < self._target_diversity:
                     self._diversity_coef.coef += self._delta_divcoef
                 update_stats.update({
-                    "MEDE/Diversity Coefficient": self._diversity_coef.coef.item(),
+                    "Policy/Diversity Coefficient": self._diversity_coef.coef.item(),
                 })
 
         return update_stats

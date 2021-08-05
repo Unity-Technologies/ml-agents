@@ -163,13 +163,14 @@ class SACSettings(HyperparamSettings):
     init_entcoef: float = 1.0
     reward_signal_steps_per_update: float = attr.ib()
     mede: bool = False
-    mede_continuous: bool = True
+    diayn: bool = False
+    mede_continuous: bool = False
     mede_init_divcoef: float = 0.01
     mede_target_divcoef: float = 0.2
     mede_divcoef_lr: float = 0.0001
     mede_dropout: float = 0
-    mede_scheduled_divcoef: bool = False
-    mede_adaptive_divcoef: bool = True
+    mede_scheduled_divcoef: bool = True
+    mede_adaptive_divcoef: bool = False
     mede_learn_stddev: bool = True
     mede_stddev_param: bool = False
     mede_for_policy_loss: bool = True
