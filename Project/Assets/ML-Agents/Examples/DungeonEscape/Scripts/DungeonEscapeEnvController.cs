@@ -73,9 +73,10 @@ public class DungeonEscapeEnvController : MonoBehaviour
     public GameObject Key;
     //public GameObject Tombstone;
     private SimpleMultiAgentGroup m_AgentGroup;
-    private StatsRecorder m_StatsRecorder = Academy.Instance.StatsRecorder;
+    private StatsRecorder m_StatsRecorder;
     void Start()
     {
+        m_StatsRecorder = Academy.Instance.StatsRecorder;
 
         // Get the ground's bounds
         m_ResetParams = Academy.Instance.EnvironmentParameters;
@@ -128,7 +129,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
     private void SendEndStats(bool success, float reward)
     {
         m_StatsRecorder.Add("Environment/Actual Group Reward", reward);
-        var successVal = success ? 1.0 : 0.0;
+        var successVal = success ? 1.0f : 0.0f;
         m_StatsRecorder.Add("Environment/Success rate", successVal);
     }
 
