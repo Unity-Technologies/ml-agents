@@ -32,26 +32,26 @@ from mlagents.trainers.torch.layers import linear_layer, Initialization
 
 
 class DiverseNetworkVariational(torch.nn.Module):
-    alpha = 0.0005
     MIN_STDDEV = 0.1
     EPSILON = 1e-7
 
-    def __init__(self, specs: BehaviorSpec, params) -> None:
+    def __init__(
+            self, 
+            specs: BehaviorSpec, 
+            use_actions: bool = True, 
+            continuous: bool = False, 
+            learn_stddev: bool = True, 
+            noise: bool = True, 
+            stddev_param: bool = False,
+            dropout: float = 0.2
+        ) -> None:
         super().__init__()
-        self._use_actions = params.mede_use_actions
-        self._max_saliency_dropout = params.mede_saliency_dropout
-        self.drop_actions = params.mede_drop_actions
-        self.centered_reward = params.mede_centered
-        self.mutual_information = params.mede_mutual_information
-        self.continuous = params.mede_continuous
-        self.learn_variance = params.mede_learn_variance
+        self._use_actions = use_actions
+        self._continuous = continuous
+        self._learn_stddev = learn_stddev
         self.stats = {}
-        self.observations_sal_drop = [torch.zeros(s.shape) for s in specs.observation_specs \
-                                      if s.observation_type != ObservationType.GOAL_SIGNAL]
-        self.cont_actions_sal_drop = torch.zeros(specs.action_spec.continuous_size)
         sigma_start = 0.5
-        beta_start = 0.0
-        variance_start = 1.0
+        stddev_start = 1.0
 
         encoder_settings = NetworkSettings(normalize=True, num_layers=1)
         if encoder_settings.memory is not None:
@@ -73,8 +73,7 @@ class DiverseNetworkVariational(torch.nn.Module):
         self._all_obs_specs = specs.observation_specs
         self.diverse_size = diverse_spec.shape[0]
 
-        self._dropout = torch.nn.Dropout(params.mede_dropout) if params.mede_dropout > 0 else None
-        self._encoder_dropout = torch.nn.Dropout(params.mede_encoder_dropout) if params.mede_encoder_dropout > 0 else None
+        self._dropout = torch.nn.Dropout(dropout) if dropout > 0 else None
         
         self.disc_sizes = specs.action_spec.discrete_branches
         self.cont_size = specs.action_spec.continuous_size
@@ -89,17 +88,14 @@ class DiverseNetworkVariational(torch.nn.Module):
         self._z_sigma = torch.nn.Parameter(
             sigma_start * torch.ones((encoder_settings.hidden_units), dtype=torch.float),
             requires_grad=True,
-        ) if params.mede_noise else None
-        self._beta = torch.nn.Parameter(
-            torch.tensor(beta_start, dtype=torch.float), requires_grad=False
-        ) if params.mede_noise else None
-        self._variance = torch.nn.Parameter(
-            torch.tensor(variance_start, dtype=torch.float), requires_grad=True
-        ) if self.learn_variance and self.continuous and params.mede_variance_param else None
+        ) if noise else None
+        self._stddev = torch.nn.Parameter(
+            torch.tensor(stddev_start, dtype=torch.float), requires_grad=True
+        ) if self._learn_stddev and self._continuous and stddev_param else None
 
-        self._out_size = self.diverse_size * 2 if self.learn_variance and \
-                                                  self.continuous and \
-                                                  not params.mede_variance_param \
+        self._out_size = self.diverse_size * 2 if self._learn_stddev and \
+                                                  self._continuous and \
+                                                  not stddev_param \
                                                else self.diverse_size
         disc_actions = sum(self.disc_sizes) if self._use_actions and len(self.disc_sizes) > 0 else 1
         self._last_layer = torch.nn.Linear(encoder_settings.hidden_units, self._out_size * disc_actions)
@@ -122,25 +118,12 @@ class DiverseNetworkVariational(torch.nn.Module):
         if self._use_actions and self.cont_size > 0:
             if detach_action:
                 action = action.detach()
-
-            if self._max_saliency_dropout > 0:
-                tensor_obs, action = self._saliency_dropout(tensor_obs, action)
-            elif self._dropout is not None:
-                tensor_obs = [self._dropout(obs) for obs in tensor_obs]
-                if self.drop_actions:
-                    action = self._dropout(action)
             hidden, _ = self._encoder.forward(tensor_obs, action)
         else:
-
-            if self._max_saliency_dropout > 0:
-                tensor_obs, _ = self._saliency_dropout(tensor_obs)
-            elif self._dropout is not None:
-                tensor_obs = [self._dropout(obs) for obs in tensor_obs]
-
             hidden, _ = self._encoder.forward(tensor_obs)
 
-        if self._encoder_dropout is not None:
-            hidden = self._encoder_dropout(hidden)
+        if self._dropout is not None:
+            hidden = self._dropout(hidden)
 
         z_mu = hidden
         if self._z_sigma is not None and var_noise:
@@ -150,52 +133,17 @@ class DiverseNetworkVariational(torch.nn.Module):
 
         return prediction, z_mu
 
-    def update_saliency(self, sal_observations, sal_cont_actions):
-        sal_observations = [x for i, x in enumerate(sal_observations) if i != self._diverse_index]
-
-        for i, sal in enumerate(sal_observations):
-            if torch.any(sal):
-                drop = sal - torch.min(sal)
-                drop = 1 - drop / torch.max(drop)
-                drop *= self._max_saliency_dropout
-                self.observations_sal_drop[i] = drop
-
-        if torch.any(sal_cont_actions):
-            self.cont_actions_sal_drop = sal_cont_actions - torch.min(sal_cont_actions)
-            self.cont_actions_sal_drop = 1 - self.cont_actions_sal_drop / torch.max(self.cont_actions_sal_drop)
-            self.cont_actions_sal_drop *= self._max_saliency_dropout
-
-    def _saliency_dropout(self, observations, action=None):
-        if len(observations[0].shape) == len(self.observations_sal_drop[0].shape) + 1:
-            batch = observations[0].shape[0]
-        else:
-            batch = None
-
-        for i, (obs, drop) in enumerate(zip(observations, self.observations_sal_drop)):
-            if batch is not None:
-                drop = torch.cat(batch * [drop.unsqueeze(0)])
-            observations[i] = (torch.rand(obs.shape) > drop) * obs + .0001
-
-        if action is not None and self.drop_actions:
-            if batch is not None:
-                drop = torch.cat(batch * [self.cont_actions_sal_drop.unsqueeze(0)])
-            else:
-                drop = self.cont_actions_sal_drop
-            action = (torch.rand(action.shape) > drop) * action + .0001
-
-        return observations, action
-
     def copy_normalization(self, thing):
         self._encoder.processors[0].copy_normalization(thing.processors[1])
 
     def _get_log_probs(self, pred, truth, masks=None):
-        if self.continuous:
-            if self.learn_variance and self._variance is None:
+        if self._continuous:
+            if self._learn_stddev and self._stddev is None:
                 mean = torch.tanh(pred[:, :int(pred.shape[1] / 2)])
                 std = torch.clamp(torch.exp(pred[:, int(pred.shape[1] / 2):]), self.MIN_STDDEV, 5)
-            elif self.learn_variance:
+            elif self._learn_stddev:
                 mean = torch.tanh(pred)
-                std = torch.ones_like(mean) * torch.clamp(torch.exp(self._variance), self.MIN_STDDEV, 5)
+                std = torch.ones_like(mean) * torch.clamp(torch.exp(self._stddev), self.MIN_STDDEV, 5)
             else:
                 mean = torch.tanh(pred)
                 std = torch.full_like(pred, 0.1)
@@ -242,9 +190,6 @@ class DiverseNetworkVariational(torch.nn.Module):
         if self._use_actions and len(self.disc_sizes) > 0:
             
             disc_probs = disc_act.exp()
-            if self._dropout is not None and self.drop_actions:
-                disc_probs = self._dropout(disc_probs)
-
             if detach_action:
                 disc_probs = disc_probs.detach()
 
@@ -254,7 +199,7 @@ class DiverseNetworkVariational(torch.nn.Module):
                 action_rewards.append(
                     self._get_log_probs(prediction[:, i:i+self._out_size], truth, masks).unsqueeze(1)
                 )
-                if not self.continuous:
+                if not self._continuous:
                     action_accuracy.append(
                         torch.argmax(prediction[:, i:i+self._out_size], dim=1, keepdim=True) == \
                         torch.argmax(truth, dim=1, keepdim=True)
@@ -265,7 +210,7 @@ class DiverseNetworkVariational(torch.nn.Module):
             rewards = torch.mean(torch.stack([torch.sum(branch, dim=1) for branch in branched_rewards]), dim=0)
 
             accuracy = torch.zeros_like(rewards)
-            if not self.continuous:
+            if not self._continuous:
                 all_accuracy = torch.cat(action_accuracy, dim=1)
                 branched_accuracy = ModelUtils.break_into_branches(all_accuracy * disc_act.exp(), self.disc_sizes)
                 accuracy = torch.mean(torch.stack([torch.sum(branch, dim=1) for branch in branched_accuracy]), dim=0)
@@ -273,11 +218,8 @@ class DiverseNetworkVariational(torch.nn.Module):
         else:
             rewards = self._get_log_probs(prediction, truth, masks)
             accuracy = torch.zeros_like(rewards)
-            if not self.continuous:
+            if not self._continuous:
                 accuracy = torch.argmax(prediction, dim=1) == torch.argmax(truth, dim=1)
-
-        if self.centered_reward:
-            rewards -= np.log(1 / self.diverse_size)
 
         # Log accuracy stats
         if masks is not None:
@@ -302,32 +244,9 @@ class DiverseNetworkVariational(torch.nn.Module):
         base_loss = -ModelUtils.masked_mean(rewards, masks)
         total_loss = base_loss
 
-        kl_loss, vail_loss = None, None
-        if self._z_sigma is not None:
-            _, mu = self.predict(obs_input, cont_act, detach_action, var_noise)
-            kl_loss = ModelUtils.masked_mean(
-                -torch.sum(
-                    1 + (self._z_sigma ** 2).log() - 0.5 * mu ** 2
-                    - (self._z_sigma ** 2),
-                    dim=1,
-                ),
-                masks,
-            )
-            if self.mutual_information < float("inf"):
-                vail_loss = self._beta * (kl_loss - self.mutual_information)
-                with torch.no_grad():
-                    self._beta.data = torch.max(
-                        self._beta + self.alpha * (kl_loss - self.mutual_information),
-                        torch.tensor(0.0),
-                    )
-                total_loss = base_loss + vail_loss
-
         self.stats.update({
             "Losses/MEDE Loss": total_loss.item(),
             "MEDE/Reward": -base_loss.item(),
-            "MEDE/Variational": vail_loss.item() if vail_loss is not None else 0,
-            "MEDE/KL": kl_loss.item() if kl_loss is not None else 0,
-            "MEDE/beta": self._beta.item() if self._beta is not None else 0,
         })
 
         truth = torch.argmax(obs_input[self._diverse_index], dim=1)
@@ -339,65 +258,6 @@ class DiverseNetworkVariational(torch.nn.Module):
             })
         
         return total_loss, self.stats
-
-    def get_stats(self, obs_input, cont_act, disc_act, masks):
-        for p in self.parameters():
-            p.requires_grad = False
-        for inp in obs_input:
-            inp.requires_grad = True
-        if self.cont_size > 0:
-            cont_act = cont_act.detach()
-            cont_act.requires_grad = True
-        if len(self.disc_sizes) > 0:
-            disc_act = disc_act.detach()
-            disc_act.requires_grad = True
-
-        rewards = self.rewards(obs_input, cont_act, disc_act, detach_action=False, var_noise=False)
-        ModelUtils.masked_mean(rewards, masks).backward()
-
-        all_obs_grad = []
-        for obs, spec in zip(obs_input, self._all_obs_specs):
-            if spec.observation_type != ObservationType.GOAL_SIGNAL:
-                all_obs_grad.append(obs.grad.data.abs())
-        obs_grad = torch.cat(all_obs_grad, dim=1)
-
-        all_act_grad = []
-        if self.cont_size > 0:
-            all_act_grad.append(cont_act)
-        if len(self.disc_sizes) > 0:
-            all_act_grad.append(disc_act)
-        act_grad = torch.cat(all_act_grad, dim=1)
-        
-        max_state = torch.max(torch.mean(obs_grad, dim=0))
-        min_state = torch.min(torch.mean(obs_grad, dim=0))
-        mean_state = torch.mean(obs_grad)
-        var_state = torch.var(torch.mean(obs_grad, dim=0))
-
-        max_act = torch.max(torch.mean(act_grad, dim=0))
-        min_act = torch.min(torch.mean(act_grad, dim=0))
-        mean_act = torch.mean(act_grad)
-        var_act = torch.var(torch.mean(act_grad, dim=0))
-
-        for p in self.parameters():
-            p.requires_grad = True
-        for inp in obs_input:
-            inp.requires_grad = False
-        if self.cont_size > 0:
-            cont_act.requires_grad = False
-        if len(self.disc_sizes) > 0:
-            disc_act.requires_grad = False
-
-        stats = {
-            "Policy/MEDE max state contributor": max_state.item(),
-            "Policy/MEDE max action contributor": max_act.item(),
-            "Policy/MEDE min state contributor": min_state.item(),
-            "Policy/MEDE min action contributor": min_act.item(),
-            "Policy/MEDE state contributor variance": var_state.item(),
-            "Policy/MEDE action contributor variance": var_act.item(),
-            "Policy/MEDE state contributor mean": mean_state.item(),
-            "Policy/MEDE action contributor mean": mean_act.item(),
-        }
-        return stats
 
 
 class TorchSACOptimizer(TorchOptimizer):
@@ -569,22 +429,22 @@ class TorchSACOptimizer(TorchOptimizer):
         )
 
         # MEDE
-        self.use_mede = hyperparameters.mede
+        self._use_mede = hyperparameters.mede
         self._mede_network = DiverseNetworkVariational(
             self.policy.behavior_spec, 
-            hyperparameters
-        ) if self.use_mede else None
+            hyperparameters.mede_use_actions,
+            hyperparameters.mede_continuous,
+            hyperparameters.mede_learn_stddev,
+            hyperparameters.mede_noise,
+            hyperparameters.mede_stddev_param,
+            hyperparameters.mede_dropout
+        ) if self._use_mede else None
 
-        self.mede_saliency_dropout = hyperparameters.mede_saliency_dropout
-        self.mede_policy_loss = hyperparameters.mede_for_policy_loss
-        self.sal_observations = [torch.zeros(spec.shape) for spec in self.policy.behavior_spec.observation_specs]
-        self.sal_cont_actions = torch.zeros(self.policy.behavior_spec.action_spec.continuous_size)
-        self.sal_weight = 0.01
-        self.target_diversity = hyperparameters.mede_target_divcoef
+        self._mede_policy_loss = hyperparameters.mede_for_policy_loss
+        self._target_diversity = hyperparameters.mede_target_divcoef
         self._adaptive_divcoef = hyperparameters.mede_adaptive_divcoef
         self._scheduled_divcoef = hyperparameters.mede_scheduled_divcoef
-        self._delta_divcoef = (hyperparameters.mede_target_divcoef - hyperparameters.mede_init_divcoef) * \
-                            hyperparameters.steps_per_update / trainer_params.max_steps
+        self._delta_divcoef = hyperparameters.mede_divcoef_lr
         self._diversity_coef = TorchSACOptimizer.DivCoef(torch.nn.Parameter(
             torch.as_tensor([hyperparameters.mede_init_divcoef]), requires_grad=self._adaptive_divcoef
         ))
@@ -614,12 +474,11 @@ class TorchSACOptimizer(TorchOptimizer):
         self.mede_optimizer = torch.optim.Adam(
             list(self._mede_network.parameters()), 
             lr=hyperparameters.learning_rate, 
-            weight_decay=hyperparameters.mede_weight_decay
-        ) if self.use_mede else None
+        ) if self._use_mede else None
         self.divcoef_optimizer = torch.optim.Adam(
             self._diversity_coef.parameters(),
             lr=hyperparameters.mede_divcoef_lr, 
-        ) if self.use_mede else None
+        ) if self._use_mede else None
         self._move_to_device(default_device())
 
     @property
@@ -804,7 +663,7 @@ class TorchSACOptimizer(TorchOptimizer):
             batch_policy_loss += torch.mean(
                 _cont_ent_coef * cont_log_probs - all_mean_q1.unsqueeze(1), dim=1
             )
-        if self.mede_policy_loss:
+        if self._mede_policy_loss:
             batch_policy_loss += -self._diversity_coef.coef * mede_rewards
         policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
 
@@ -859,7 +718,7 @@ class TorchSACOptimizer(TorchOptimizer):
     ) -> torch.Tensor:
         with torch.no_grad():
             mede_loss = -ModelUtils.masked_mean(mede_rewards, masks)
-            target_diff = mede_loss - self.target_diversity
+            target_diff = mede_loss - self._target_diversity
 
         divcoef_loss = -1 * (self._diversity_coef.coef * target_diff)
         return divcoef_loss
@@ -884,56 +743,6 @@ class TorchSACOptimizer(TorchOptimizer):
 
             condensed_q_output[key] = torch.mean(only_action_qs, dim=0)
         return condensed_q_output
-
-    def _update_saliency(
-        self,
-        inputs: List[torch.Tensor],
-        actions: Optional[torch.Tensor] = None,
-        memories: Optional[torch.Tensor] = None,
-        sequence_length: int = 1
-    ):
-        for p in self.q_network.parameters():
-            p.requires_grad = False
-        for inp in inputs:
-            inp.requires_grad = True
-            if inp.grad is not None:
-                inp.grad.data.zero_()
-        if self._action_spec.continuous_size > 0:
-            actions = actions.detach()
-            actions.requires_grad = True
-            if actions.grad is not None:
-                actions.grad.data.zero_()
-
-        q_out, _ = self.q_network(
-            inputs,
-            actions,
-            memories=memories,
-            sequence_length=sequence_length,
-            q2_grad=False
-        )
-
-        q = torch.mean(torch.stack([x for x in q_out.values()]))
-        q.backward()
-        
-        for i, (obs, sal) in enumerate(zip(inputs, self.sal_observations)):
-            grad = torch.mean(obs.grad.data.abs(), dim=0)
-            assert grad.shape == sal.shape
-            self.sal_observations[i] = self.sal_weight * grad + (1 - self.sal_weight) * sal
-
-        if self._action_spec.continuous_size > 0:
-            grad = torch.mean(actions.grad.data.abs(), dim=0)
-            assert grad.shape == self.sal_cont_actions.shape
-            self.sal_cont_actions = self.sal_weight * grad + (1 - self.sal_weight) * self.sal_cont_actions
-
-        self._mede_network.update_saliency([x for x in self.sal_observations], self.sal_cont_actions)
-
-        for p in self.q_network.parameters():
-            p.requires_grad = True
-        for inp in inputs:
-            inp.requires_grad = False
-        if self._action_spec.continuous_size > 0:
-            actions.requires_grad = False
-        self.q_network.zero_grad()
 
     @timed
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
@@ -1054,7 +863,7 @@ class TorchSACOptimizer(TorchOptimizer):
         dones = ModelUtils.list_to_tensor(batch[BufferKey.DONE])
 
         mede_value_rewards, mede_policy_rewards = torch.zeros(1), torch.zeros(1)
-        if self.use_mede:
+        if self._use_mede:
             self._mede_network.copy_normalization(self.policy.actor.network_body)
             disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
             mede_policy_rewards = self._mede_network.rewards(
@@ -1113,7 +922,7 @@ class TorchSACOptimizer(TorchOptimizer):
             "Policy/Entropy Loss": entropy_loss.item(),
         }
 
-        if self.use_mede:
+        if self._use_mede:
             disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
             mede_loss, mede_stats = self._mede_network.loss(
                 current_obs, sampled_actions.continuous_tensor, disc_act, masks
@@ -1137,20 +946,11 @@ class TorchSACOptimizer(TorchOptimizer):
                 })
 
             elif self._scheduled_divcoef:
-                if self._diversity_coef.coef < self.target_diversity:
+                if self._diversity_coef.coef < self._target_diversity:
                     self._diversity_coef.coef += self._delta_divcoef
                 update_stats.update({
                     "MEDE/Diversity Coefficient": self._diversity_coef.coef.item(),
                 })
-
-
-            if self.mede_saliency_dropout > 0:
-                self._update_saliency(
-                    current_obs,
-                    cont_sampled_actions,
-                    memories=q_memories,
-                    sequence_length=self.policy.sequence_length
-                )
 
         return update_stats
 
@@ -1171,7 +971,7 @@ class TorchSACOptimizer(TorchOptimizer):
             "Optimizer:value_optimizer": self.value_optimizer,
             "Optimizer:entropy_optimizer": self.entropy_optimizer,
         }
-        if self.use_mede:
+        if self._use_mede:
             modules.update({
                 "Optimizer:mede_optimizer": self.mede_optimizer,
                 "Optimizer:mede_network": self._mede_network,

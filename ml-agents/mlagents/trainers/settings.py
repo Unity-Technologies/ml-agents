@@ -163,24 +163,18 @@ class SACSettings(HyperparamSettings):
     init_entcoef: float = 1.0
     reward_signal_steps_per_update: float = attr.ib()
     mede: bool = False
-    mede_dropout: float = 0
-    mede_encoder_dropout: float = 0
-    mede_weight_decay: float = 0
-    mede_saliency_dropout: float = 0
+    mede_continuous: bool = True
     mede_init_divcoef: float = 0.01
     mede_target_divcoef: float = 0.2
     mede_divcoef_lr: float = 0.0001
-    mede_mutual_information: float = float("inf")
+    mede_dropout: float = 0
     mede_scheduled_divcoef: bool = False
     mede_adaptive_divcoef: bool = True
-    mede_learn_variance: bool = True
-    mede_variance_param: bool = False
+    mede_learn_stddev: bool = True
+    mede_stddev_param: bool = False
     mede_for_policy_loss: bool = True
     mede_use_actions: bool = True
-    mede_drop_actions: bool = True
     mede_noise: bool = True
-    mede_centered: bool = False
-    mede_continuous: bool = True
 
     @reward_signal_steps_per_update.default
     def _reward_signal_steps_per_update_default(self):
