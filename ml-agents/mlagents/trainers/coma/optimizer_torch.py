@@ -50,6 +50,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
             observation_specs: List[ObservationSpec],
             network_settings: NetworkSettings,
             action_spec: ActionSpec,
+            max_agents: int,
         ):
             torch.nn.Module.__init__(self)
             self.network_body = MultiAgentNetworkBody(
@@ -57,7 +58,7 @@ class TorchCOMAOptimizer(TorchOptimizer):
                 network_settings,
                 action_spec,
                 use_attention=False,
-                max_agents=5,
+                max_agents=max_agents,
             )
             if network_settings.memory is not None:
                 encoding_size = network_settings.memory.memory_size // 2
@@ -152,12 +153,16 @@ class TorchCOMAOptimizer(TorchOptimizer):
         super().__init__(policy, trainer_settings)
         reward_signal_configs = trainer_settings.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
+        self.hyperparameters: POCASettings = cast(
+            POCASettings, trainer_settings.hyperparameters
+        )
 
         self._critic = TorchCOMAOptimizer.COMAValueNetwork(
             reward_signal_names,
             policy.behavior_spec.observation_specs,
             network_settings=trainer_settings.network_settings,
             action_spec=policy.behavior_spec.action_spec,
+            max_agents=self.hyperparameters.max_num_agents,
         )
         # Move to GPU if needed
         self._critic.to(default_device())
@@ -166,15 +171,13 @@ class TorchCOMAOptimizer(TorchOptimizer):
             policy.behavior_spec.observation_specs,
             network_settings=trainer_settings.network_settings,
             action_spec=policy.behavior_spec.action_spec,
+            max_agents=self.hyperparameters.max_num_agents,
         )
         # Move to GPU if needed
         self._critic_baseline.to(default_device())
 
 
         params = list(self.policy.actor.parameters()) + list(self._critic_baseline.parameters())
-        self.hyperparameters: POCASettings = cast(
-            POCASettings, trainer_settings.hyperparameters
-        )
         self.decay_learning_rate = ModelUtils.DecayedValue(
             self.hyperparameters.learning_rate_schedule,
             self.hyperparameters.learning_rate,

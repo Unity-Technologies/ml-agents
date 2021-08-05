@@ -152,6 +152,13 @@ class PPOSettings(HyperparamSettings):
     num_epoch: int = 3
     learning_rate_schedule: ScheduleType = ScheduleType.LINEAR
 
+# POCA uses the same hyperparameters as PPO
+#POCASettings = PPOSettings
+
+@attr.s(auto_attribs=True)
+class POCASettings(PPOSettings):
+    max_num_agents: int = 0 # for coma
+
 
 @attr.s(auto_attribs=True)
 class SACSettings(HyperparamSettings):
@@ -169,8 +176,6 @@ class SACSettings(HyperparamSettings):
         return self.steps_per_update
 
 
-# POCA uses the same hyperparameters as PPO
-POCASettings = PPOSettings
 
 
 # INTRINSIC REWARD SIGNALS #############################################################
