@@ -73,6 +73,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
     public GameObject Key;
     //public GameObject Tombstone;
     private SimpleMultiAgentGroup m_AgentGroup;
+    private StatsRecorder m_StatsRecorder = Academy.Instance.StatsRecorder;
     void Start()
     {
 
@@ -124,12 +125,20 @@ public class DungeonEscapeEnvController : MonoBehaviour
         }
     }
 
+    private void SendEndStats(bool success, float reward)
+    {
+        m_StatsRecorder.Add("Environment/Actual Group Reward", reward);
+        var successVal = success ? 1.0 : 0.0;
+        m_StatsRecorder.Add("Environment/Success rate", successVal);
+    }
+
     public void TouchedHazard(PushAgentEscape agent)
     {
         m_NumberOfRemainingPlayers--;
         if (m_NumberOfRemainingPlayers == 0 || agent.IHaveAKey)
         {
             m_AgentGroup.EndGroupEpisode();
+            SendEndStats(false, 0.0f);
             ResetScene();
         }
         else
@@ -154,6 +163,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
 
         print("Unlocked Door");
         m_AgentGroup.EndGroupEpisode();
+        SendEndStats(true, 1.0f);
 
         ResetScene();
     }
@@ -191,6 +201,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
         if (m_NumberOfRemainingPlayers == 0 || agent.IHaveAKey)
         {
             m_AgentGroup.EndGroupEpisode();
+            SendEndStats(false, 0.0f);
             ResetScene();
         }
         else
@@ -250,6 +261,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
 
         // Swap ground material for a bit to indicate we scored.
         //StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.failMaterial, 0.5f));
+        SendEndStats(false, 0.0f);
         ResetScene();
     }
 
