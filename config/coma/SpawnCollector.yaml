@@ -1,6 +1,6 @@
 behaviors:
   SpawnCollector:
-    trainer_type: poca
+    trainer_type: coma
     hyperparameters:
       batch_size: 1024
       buffer_size: 10240
