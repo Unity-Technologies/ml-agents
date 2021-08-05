@@ -35,6 +35,9 @@ public class DungeonEscapeEnvController : MonoBehaviour
         public bool IsDead;
     }
 
+    EnvironmentParameters m_ResetParams;
+    float m_Absorbing;
+
     /// <summary>
     /// Max Academy steps before this platform resets
     /// </summary>
@@ -68,12 +71,13 @@ public class DungeonEscapeEnvController : MonoBehaviour
 
     private int m_NumberOfRemainingPlayers;
     public GameObject Key;
-    public GameObject Tombstone;
+    //public GameObject Tombstone;
     private SimpleMultiAgentGroup m_AgentGroup;
     void Start()
     {
 
         // Get the ground's bounds
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
         areaBounds = ground.GetComponent<Collider>().bounds;
         // Get the ground renderer so we can change the material when a goal is scored
         m_GroundRenderer = ground.GetComponent<Renderer>();
@@ -130,7 +134,16 @@ public class DungeonEscapeEnvController : MonoBehaviour
         }
         else
         {
-            agent.gameObject.SetActive(false);
+            if (m_Absorbing == 0.0f)
+            {
+                agent.gameObject.SetActive(false);
+            }
+            else
+            {
+                Vector3 pos = new Vector3(Random.Range(200f, 2000f), Random.Range(-1000f, 1000f), Random.Range(-1000f, 1000f));
+                var rot = Quaternion.Euler(Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f));
+                agent.transform.SetPositionAndRotation(pos, rot);
+            }
         }
     }
 
@@ -145,20 +158,57 @@ public class DungeonEscapeEnvController : MonoBehaviour
         ResetScene();
     }
 
+    public Vector3 GetNearestAgent(Vector3 baddiePosition)
+    {
+        Vector3 nearest = Vector3.zero;
+        float min_dist = 50000;
+        foreach (var item in AgentsList)
+        {
+            if (item.Agent.gameObject.activeSelf)
+            {
+                var dist = Vector3.Distance(baddiePosition, item.Agent.transform.position);
+                if (dist < min_dist)
+                {
+                    nearest = item.Agent.transform.position;
+                    min_dist = dist;
+                }
+            }
+        }
+        return nearest;
+    }
+
     public void KilledByBaddie(PushAgentEscape agent, Collision baddieCol)
     {
-        baddieCol.gameObject.SetActive(false);
+        var baddie = baddieCol.gameObject.GetComponent<SimpleNPC>();
+        if (baddie.KeyCarrier)
+        {
+            baddieCol.gameObject.SetActive(false);
+            Key.transform.SetPositionAndRotation(baddieCol.collider.transform.position, baddieCol.collider.transform.rotation);
+            Key.SetActive(true);
+        }
+
         m_NumberOfRemainingPlayers--;
-        agent.gameObject.SetActive(false);
+        if (m_NumberOfRemainingPlayers == 0 || agent.IHaveAKey)
+        {
+            m_AgentGroup.EndGroupEpisode();
+            ResetScene();
+        }
+        else
+        {
+            if (m_Absorbing == 0.0f)
+            {
+                agent.gameObject.SetActive(false);
+            }
+            else
+            {
+                Vector3 pos = new Vector3(Random.Range(200f, 2000f), Random.Range(-1000f, 1000f), Random.Range(-1000f, 1000f));
+                var rot = Quaternion.Euler(Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f));
+                agent.transform.SetPositionAndRotation(pos, rot);
+            }
+        }
+
         print($"{baddieCol.gameObject.name} ate {agent.transform.name}");
 
-        //Spawn Tombstone
-        Tombstone.transform.SetPositionAndRotation(agent.transform.position, agent.transform.rotation);
-        Tombstone.SetActive(true);
-
-        //Spawn the Key Pickup
-        Key.transform.SetPositionAndRotation(baddieCol.collider.transform.position, baddieCol.collider.transform.rotation);
-        Key.SetActive(true);
     }
 
     /// <summary>
@@ -199,7 +249,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
         m_AgentGroup.EndGroupEpisode();
 
         // Swap ground material for a bit to indicate we scored.
-        StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.failMaterial, 0.5f));
+        //StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.failMaterial, 0.5f));
         ResetScene();
     }
 
@@ -211,6 +261,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
     void ResetScene()
     {
 
+        m_Absorbing = m_ResetParams.GetWithDefault("absorbing_state", 0.0f);
         //Reset counter
         m_ResetTimer = 0;
 
@@ -225,6 +276,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
         //Reset Agents
         foreach (var item in AgentsList)
         {
+            Debug.Log(item.Agent);
             var pos = UseRandomAgentPosition ? GetRandomSpawnPos() : item.StartingPos;
             var rot = UseRandomAgentRotation ? GetRandomRot() : item.StartingRot;
 
@@ -238,21 +290,24 @@ public class DungeonEscapeEnvController : MonoBehaviour
         }
 
         //Reset Key
-        Key.SetActive(false);
+        // Key.SetActive(false);
 
         //Reset Tombstone
-        Tombstone.SetActive(false);
+        //Tombstone.SetActive(false);
 
         //End Episode
         foreach (var item in DragonsList)
         {
-            if (!item.Agent)
-            {
-                return;
-            }
-            item.Agent.transform.SetPositionAndRotation(item.StartingPos, item.StartingRot);
-            item.Agent.SetRandomWalkSpeed();
+            //var pos = item.StartingPos;
+            //var pos = UseRandomAgentPosition ? GetRandomSpawnPos() : item.StartingPos;
+            // var rot = UseRandomAgentRotation ? GetRandomRot() : item.StartingRot;
+
+            //item.Agent.transform.SetPositionAndRotation(pos, rot);
+
             item.Agent.gameObject.SetActive(true);
+            item.T.SetPositionAndRotation(item.StartingPos, item.StartingRot);
+            item.Agent.Initialize();
         }
+        Debug.Log("DONEINIT");
     }
 }

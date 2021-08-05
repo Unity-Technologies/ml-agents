@@ -88,7 +88,7 @@ public class PushAgentEscape : Agent
                 m_GameController.UnlockDoor();
             }
         }
-        if (col.transform.CompareTag("dragon"))
+        if (col.transform.CompareTag("dragon") || col.transform.CompareTag("keyDragon"))
         {
             m_GameController.KilledByBaddie(this, col);
             MyKey.SetActive(false);
