@@ -23,6 +23,7 @@ behaviors:
     max_steps: 20000000
     time_horizon: 64
     summary_freq: 60000
+    max_num_agents: 5
 env_settings:
   seed: 1
   num_envs: 3
