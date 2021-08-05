@@ -61,7 +61,7 @@ public class SpawnArea : MonoBehaviour
         m_AgentGroup.RegisterAgent(agent.GetComponent<SpawnCollectorAgent>());
     }
 
-        public void UnregisterAgent(GameObject agent)
+    public void UnregisterAgent(GameObject agent)
     {
         m_AgentGroup.UnregisterAgent(agent.GetComponent<SpawnCollectorAgent>());
     }

@@ -24,7 +24,7 @@ public class SimpleNPC : MonoBehaviour
     void Awake()
     {
         Initialize();
-            // m_StartingPos = transform.position;
+        // m_StartingPos = transform.position;
     }
 
     // Update is called once per frame
@@ -35,7 +35,8 @@ public class SimpleNPC : MonoBehaviour
 
     void OnCollisionEnter(Collision col)
     {
-        if (KeyCarrier){
+        if (KeyCarrier)
+        {
 
             if (col.transform.CompareTag("portal"))
             {
@@ -55,7 +56,7 @@ public class SimpleNPC : MonoBehaviour
         {
             goToward = target.position;
         }
-        
+
         dirToGo = goToward - transform.position;
         dirToGo.y = 0;
         rb.rotation = Quaternion.LookRotation(dirToGo);

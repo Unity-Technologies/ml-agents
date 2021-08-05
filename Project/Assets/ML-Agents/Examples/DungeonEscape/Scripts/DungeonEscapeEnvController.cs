@@ -166,15 +166,15 @@ public class DungeonEscapeEnvController : MonoBehaviour
         {
             if (item.Agent.gameObject.activeSelf)
             {
-                var dist = Vector3.Distance(baddiePosition, item.Agent.transform.position); 
+                var dist = Vector3.Distance(baddiePosition, item.Agent.transform.position);
                 if (dist < min_dist)
                 {
                     nearest = item.Agent.transform.position;
                     min_dist = dist;
                 }
-             }
-         }
-         return nearest;
+            }
+        }
+        return nearest;
     }
 
     public void KilledByBaddie(PushAgentEscape agent, Collision baddieCol)
@@ -290,7 +290,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
         }
 
         //Reset Key
-       // Key.SetActive(false);
+        // Key.SetActive(false);
 
         //Reset Tombstone
         //Tombstone.SetActive(false);
@@ -300,7 +300,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
         {
             //var pos = item.StartingPos;
             //var pos = UseRandomAgentPosition ? GetRandomSpawnPos() : item.StartingPos;
-           // var rot = UseRandomAgentRotation ? GetRandomRot() : item.StartingRot;
+            // var rot = UseRandomAgentRotation ? GetRandomRot() : item.StartingRot;
 
             //item.Agent.transform.SetPositionAndRotation(pos, rot);
 
