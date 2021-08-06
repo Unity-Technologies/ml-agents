@@ -769,6 +769,24 @@ class CheckpointSettings:
     def run_logs_dir(self) -> str:
         return os.path.join(self.write_path, "run_logs")
 
+    def priorotize_cli(self) -> None:
+        """priorotize explicit command line arguments over conflicting yaml options """
+        if (
+            "resume" in DetectDefault.non_default_args
+            and self.initialize_from is not None
+        ):
+            logger.warning(
+                f"both 'resume' and 'initialize_from={self.initialize_from}' are set!"
+                f" current run will be resumed ignoring initialization."
+            )
+            self.initialize_from = parser.get_default("initialize_from")
+        if "initialize_from" in DetectDefault.non_default_args and self.resume is True:
+            logger.warning(
+                f"both 'resume' and 'initialize_from={self.initialize_from}' are set!"
+                f"{self.run_id} is initialized_from {self.initialize_from} and resume will be ignored."
+            )
+            self.resume = parser.get_default("resume")
+
 
 @attr.s(auto_attribs=True)
 class EnvironmentSettings:
@@ -886,8 +904,8 @@ class RunOptions(ExportableSettings):
                     configured_dict["torch_settings"][key] = val
                 else:  # Base options
                     configured_dict[key] = val
-
         final_runoptions = RunOptions.from_dict(configured_dict)
+        final_runoptions.checkpoint_settings.priorotize_cli()
         # Need check to bypass type checking but keep structure on dict working
         if isinstance(final_runoptions.behaviors, TrainerSettings.DefaultTrainerDict):
             # configure whether or not we should require all behavior names to be found in the config YAML
