@@ -231,7 +231,7 @@ class SACTrainer(RLTrainer):
 
         if trajectory.done_reached:
 
-            if self.hyperparameters.mede:
+            if self.hyperparameters.mede or self.hyperparameters.diayn:
                 diversity_vector = [
                     obs
                     for obs, spec in zip(trajectory.steps[0].obs, 
