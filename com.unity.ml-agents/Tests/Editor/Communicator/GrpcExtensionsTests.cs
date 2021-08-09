@@ -167,6 +167,9 @@ namespace Unity.MLAgents.Tests
                 return 0;
             }
 
+            public void SendAbsorbing() { }
+            public void ResetAbsorbing() { }
+
             public byte[] GetCompressedObservation()
             {
                 return new byte[] { 13, 37 };

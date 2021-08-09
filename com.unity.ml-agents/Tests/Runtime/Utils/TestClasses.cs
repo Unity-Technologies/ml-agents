@@ -127,6 +127,9 @@ namespace Unity.MLAgents.Utils.Tests
             sensorName = n;
         }
 
+        public void SendAbsorbing() { }
+        public void ResetAbsorbing() { }
+
         public ObservationSpec GetObservationSpec()
         {
             return ObservationSpec.Vector(0);

@@ -83,6 +83,18 @@ namespace Unity.MLAgents.Sensors
         void Update();
 
         /// <summary>
+        /// Send absorbing states from now on
+        /// </summary>
+        void SendAbsorbing();
+
+        /// <summary>
+        /// Send regular states from now on
+        /// </summary>
+        void ResetAbsorbing();
+
+
+
+        /// <summary>
         /// Resets the internal state of the sensor. This is called at the end of an Agent's episode.
         /// Most implementations can leave this empty.
         /// </summary>

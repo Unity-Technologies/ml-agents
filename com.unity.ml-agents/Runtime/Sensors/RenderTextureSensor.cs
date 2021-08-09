@@ -59,6 +59,9 @@ namespace Unity.MLAgents.Sensors
             return m_ObservationSpec;
         }
 
+        public void SendAbsorbing() { }
+        public void ResetAbsorbing() { }
+
         /// <inheritdoc/>
         public byte[] GetCompressedObservation()
         {

@@ -81,6 +81,10 @@ namespace Unity.MLAgents.Sensors
             ResetPerceptionBuffer();
         }
 
+        public void SendAbsorbing() { }
+        public void ResetAbsorbing() { }
+       
+
         /// <summary>
         /// The compression type used by the sensor.
         /// </summary>

@@ -47,6 +47,9 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_ObservationSpec = ObservationSpec.Vector(numTransformObservations + numJointExtractorObservations);
         }
 
+        public void SendAbsorbing() { }
+        public void ResetAbsorbing() { }
+
 #if UNITY_2020_1_OR_NEWER
         public PhysicsBodySensor(ArticulationBody rootBody, PhysicsSensorSettings settings, string sensorName = null)
         {

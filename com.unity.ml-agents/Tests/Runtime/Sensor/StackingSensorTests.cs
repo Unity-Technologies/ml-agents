@@ -131,6 +131,9 @@ namespace Unity.MLAgents.Tests
                 return ObservationSpec;
             }
 
+            public void SendAbsorbing() { }
+            public void ResetAbsorbing() { }
+
             public int Write(ObservationWriter writer)
             {
                 for (var h = 0; h < ObservationSpec.Shape[0]; h++)

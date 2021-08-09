@@ -60,6 +60,9 @@ namespace Unity.MLAgents.Sensors
             m_Texture = new Texture2D(width, height, TextureFormat.RGB24, false);
         }
 
+        public void SendAbsorbing() { }
+        public void ResetAbsorbing() { }
+       
         /// <summary>
         /// Accessor for the name of the sensor.
         /// </summary>

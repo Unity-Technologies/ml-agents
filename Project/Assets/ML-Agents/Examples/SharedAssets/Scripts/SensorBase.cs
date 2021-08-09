@@ -20,6 +20,9 @@ namespace Unity.MLAgentsExamples
         /// <inheritdoc/>
         public abstract string GetName();
 
+        public void SendAbsorbing() { }
+        public void ResetAbsorbing() { }
+
         /// <summary>
         /// Default implementation of Write interface. This creates a temporary array,
         /// calls WriteObservation, and then writes the results to the ObservationWriter.

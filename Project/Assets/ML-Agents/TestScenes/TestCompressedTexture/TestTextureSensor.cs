@@ -41,6 +41,9 @@ public class TestTextureSensor : ISensor
         return m_ObservationSpec;
     }
 
+    public void SendAbsorbing() { }
+    public void ResetAbsorbing() { }
+
     /// <inheritdoc/>
     public byte[] GetCompressedObservation()
     {

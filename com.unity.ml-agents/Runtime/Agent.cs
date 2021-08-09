@@ -1106,6 +1106,23 @@ namespace Unity.MLAgents
             }
         }
 
+        public void SetToAbsorbing()
+        {
+            foreach (var sensor in sensors)
+            {
+                sensor.SendAbsorbing();
+            }
+        }
+
+        public void ResetAbsorbing()
+        {
+            foreach (var sensor in sensors)
+            {
+                sensor.ResetAbsorbing();
+            }
+        }
+
+
         void UpdateSensors()
         {
             foreach (var sensor in sensors)

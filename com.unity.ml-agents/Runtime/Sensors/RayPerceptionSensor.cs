@@ -241,6 +241,7 @@ namespace Unity.MLAgents.Sensors
         float[] m_Observations;
         ObservationSpec m_ObservationSpec;
         string m_Name;
+        bool m_Absorbing;
 
         RayPerceptionInput m_RayPerceptionInput;
         RayPerceptionOutput m_RayPerceptionOutput;
@@ -278,6 +279,17 @@ namespace Unity.MLAgents.Sensors
         {
             get { return m_RayPerceptionOutput; }
         }
+
+        public void SendAbsorbing()
+        {
+            m_Absorbing = true;
+        }
+
+        public void ResetAbsorbing()
+        {
+            m_Absorbing = false;
+        }
+
 
         void SetNumObservations(int numObservations)
         {
@@ -339,10 +351,13 @@ namespace Unity.MLAgents.Sensors
                 m_RayPerceptionOutput.RayOutputs = new RayPerceptionOutput.RayOutput[numRays];
             }
 
-            // For each ray, do the casting and save the results.
-            for (var rayIndex = 0; rayIndex < numRays; rayIndex++)
+            if (!m_Absorbing)
             {
-                m_RayPerceptionOutput.RayOutputs[rayIndex] = PerceiveSingleRay(m_RayPerceptionInput, rayIndex);
+                // For each ray, do the casting and save the results.
+                for (var rayIndex = 0; rayIndex < numRays; rayIndex++)
+                {
+                    m_RayPerceptionOutput.RayOutputs[rayIndex] = PerceiveSingleRay(m_RayPerceptionInput, rayIndex);
+                }
             }
         }
 

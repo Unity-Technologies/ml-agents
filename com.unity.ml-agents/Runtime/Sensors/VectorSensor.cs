@@ -37,7 +37,9 @@ namespace Unity.MLAgents.Sensors
             m_ObservationSpec = ObservationSpec.Vector(observationSize, observationType);
         }
 
-        /// <inheritdoc/>
+        public void SendAbsorbing() { }
+        public void ResetAbsorbing() { }
+       
         public int Write(ObservationWriter writer)
         {
             var expectedObservations = m_ObservationSpec.Shape[0];

@@ -37,6 +37,9 @@ namespace Unity.MLAgents.Tests
             m_Name = name;
         }
 
+        public void SendAbsorbing() { }
+        public void ResetAbsorbing() { }
+
         public ObservationSpec GetObservationSpec()
         {
             return ObservationSpec.Visual(m_Height, m_Width, m_Channels);

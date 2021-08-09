@@ -31,6 +31,9 @@ namespace Unity.MLAgents.Sensors
             m_ObservationSpec = ObservationSpec.VariableLength(m_MaxNumObs, m_ObsSize);
         }
 
+        public void SendAbsorbing() { }
+        public void ResetAbsorbing() { }
+
         /// <inheritdoc/>
         public ObservationSpec GetObservationSpec()
         {

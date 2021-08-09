@@ -95,6 +95,9 @@ namespace Unity.MLAgents.Sensors
             }
         }
 
+        public void SendAbsorbing() { }
+        public void ResetAbsorbing() { }
+       
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {

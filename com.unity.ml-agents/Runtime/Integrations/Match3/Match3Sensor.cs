@@ -115,6 +115,10 @@ namespace Unity.MLAgents.Integrations.Match3
             return new Match3Sensor(board, board.GetSpecialType, specialSize, obsType, name);
         }
 
+        public void SendAbsorbing() { }
+        public void ResetAbsorbing() { }
+       
+
         /// <inheritdoc/>
         public ObservationSpec GetObservationSpec()
         {

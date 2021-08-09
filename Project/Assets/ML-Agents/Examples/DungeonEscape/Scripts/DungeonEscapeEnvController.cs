@@ -150,9 +150,10 @@ public class DungeonEscapeEnvController : MonoBehaviour
             }
             else
             {
-                Vector3 pos = new Vector3(Random.Range(200f, 2000f), Random.Range(-1000f, 1000f), Random.Range(-1000f, 1000f));
-                var rot = Quaternion.Euler(Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f));
-                agent.transform.SetPositionAndRotation(pos, rot);
+                agent.SetToAbsorbing();
+                //Vector3 pos = new Vector3(Random.Range(200f, 2000f), Random.Range(-1000f, 1000f), Random.Range(-1000f, 1000f));
+                //var rot = Quaternion.Euler(Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f));
+                //agent.transform.SetPositionAndRotation(pos, rot);
             }
         }
     }
@@ -213,9 +214,10 @@ public class DungeonEscapeEnvController : MonoBehaviour
             }
             else
             {
-                Vector3 pos = new Vector3(Random.Range(200f, 2000f), Random.Range(-1000f, 1000f), Random.Range(-1000f, 1000f));
-                var rot = Quaternion.Euler(Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f));
-                agent.transform.SetPositionAndRotation(pos, rot);
+                agent.SetToAbsorbing();
+                //Vector3 pos = new Vector3(Random.Range(200f, 2000f), Random.Range(-1000f, 1000f), Random.Range(-1000f, 1000f));
+                //var rot = Quaternion.Euler(Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f));
+                //agent.transform.SetPositionAndRotation(pos, rot);
             }
         }
 
@@ -289,7 +291,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
         //Reset Agents
         foreach (var item in AgentsList)
         {
-            Debug.Log(item.Agent);
+            
             var pos = UseRandomAgentPosition ? GetRandomSpawnPos() : item.StartingPos;
             var rot = UseRandomAgentRotation ? GetRandomRot() : item.StartingRot;
 
@@ -299,6 +301,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
             item.Agent.MyKey.SetActive(false);
             item.Agent.IHaveAKey = false;
             item.Agent.gameObject.SetActive(true);
+            item.Agent.ResetAbsorbing();
             m_AgentGroup.RegisterAgent(item.Agent);
         }
 

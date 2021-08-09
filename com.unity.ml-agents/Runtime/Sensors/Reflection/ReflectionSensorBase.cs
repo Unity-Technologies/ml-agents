@@ -71,6 +71,10 @@ namespace Unity.MLAgents.Sensors.Reflection
         /// This should be used by implementations in their WriteReflectedField() method.
         /// </summary>
         /// <returns></returns>
+
+        public void SendAbsorbing() { }
+        public void ResetAbsorbing() { }
+       
         protected object GetReflectedValue()
         {
             return m_FieldInfo != null ?
