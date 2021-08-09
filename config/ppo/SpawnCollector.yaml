@@ -1,6 +1,6 @@
 behaviors:
   SpawnCollector:
-    trainer_type: poca
+    trainer_type: ppo
     hyperparameters:
       batch_size: 1024
       buffer_size: 10240
@@ -37,3 +37,4 @@ environment_parameters:
 env_settings:
   num_envs: 3
   seed: 1
+
