@@ -59,7 +59,7 @@ public class SpawnCollectorAgent : Agent
             }
             else
             {
-                Vector3 pos = new Vector3(Random.Range(200f, 2000f), Random.Range(-1000f, 1000f), Random.Range(-1000f, 1000f));
+                Vector3 pos = new Vector3(Random.Range(200f, 2000f), Random.Range(-2000f, -1000f), Random.Range(-1000f, 1000f));
                 var rot = Quaternion.Euler(Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f));
                 transform.SetPositionAndRotation(pos, rot);
                 Dead = true;
