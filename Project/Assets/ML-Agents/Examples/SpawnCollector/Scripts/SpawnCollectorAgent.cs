@@ -52,7 +52,7 @@ public class SpawnCollectorAgent : Agent
         m_Lifetime -= 1;
         if (m_Lifetime < 0)
         {
-            if ((int)Academy.Instance.EnvironmentParameters.GetWithDefault("absorbing_state", 1f) == 0f)
+            if ((int)Academy.Instance.EnvironmentParameters.GetWithDefault("absorbing_state", 0f) == 0f)
             {
                 m_Area.UnregisterAgent(this.gameObject, true);
                 Destroy(this.gameObject);
