@@ -769,23 +769,35 @@ class CheckpointSettings:
     def run_logs_dir(self) -> str:
         return os.path.join(self.write_path, "run_logs")
 
-    def priorotize_cli(self) -> None:
-        """priorotize explicit command line arguments over conflicting yaml options """
-        if (
-            "resume" in DetectDefault.non_default_args
-            and self.initialize_from is not None
-        ):
-            logger.warning(
-                f"both 'resume' and 'initialize_from={self.initialize_from}' are set!"
-                f" current run will be resumed ignoring initialization."
-            )
-            self.initialize_from = parser.get_default("initialize_from")
-        if "initialize_from" in DetectDefault.non_default_args and self.resume is True:
+    def fix_resume_init(self) -> None:
+        """priorotize explicit command line resume/init over conflicting yaml options.
+        if both resume/init are set at one place use resume"""
+        _non_default_args = DetectDefault.non_default_args
+        if "resume" in _non_default_args:
+            if (
+                "initialize_from" in _non_default_args
+                or self.initialize_from is not None
+            ):
+                logger.warning(
+                    f"both 'resume' and 'initialize_from={self.initialize_from}' are set!"
+                    f" current run will be resumed ignoring initialization."
+                )
+                # go with resume and ignore init
+                self.initialize_from = parser.get_default("initialize_from")
+        elif "initialize_from" in _non_default_args and self.resume is True:
             logger.warning(
                 f"both 'resume' and 'initialize_from={self.initialize_from}' are set!"
                 f"{self.run_id} is initialized_from {self.initialize_from} and resume will be ignored."
             )
+            # go with initialize from and ignore resume
             self.resume = parser.get_default("resume")
+        elif self.resume is True and self.initialize_from is not None:
+            logger.warning(
+                f"both 'resume' and 'initialize_from={self.initialize_from}' are set in yaml file!"
+                f" current run will be resumed ignoring initialization."
+            )
+            # go with resume and ignore init
+            self.initialize_from = parser.get_default("initialize_from")
 
 
 @attr.s(auto_attribs=True)
@@ -904,8 +916,9 @@ class RunOptions(ExportableSettings):
                     configured_dict["torch_settings"][key] = val
                 else:  # Base options
                     configured_dict[key] = val
+
         final_runoptions = RunOptions.from_dict(configured_dict)
-        final_runoptions.checkpoint_settings.priorotize_cli()
+        final_runoptions.checkpoint_settings.fix_resume_init()
         # Need check to bypass type checking but keep structure on dict working
         if isinstance(final_runoptions.behaviors, TrainerSettings.DefaultTrainerDict):
             # configure whether or not we should require all behavior names to be found in the config YAML
