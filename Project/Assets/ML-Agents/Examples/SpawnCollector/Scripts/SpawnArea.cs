@@ -21,6 +21,7 @@ public class SpawnArea : MonoBehaviour
     HashSet<SpawnCollectorFood> Foods = new HashSet<SpawnCollectorFood>();
     int m_NumFoodEaten;
     private float m_CumulativeGroupReward;
+    int NUMAGENT;
 
     void Start()
     {
@@ -44,6 +45,7 @@ public class SpawnArea : MonoBehaviour
         }
         var firstAgent = Instantiate(AgentPrefab, AgentSpawnPosition.transform.position, default(Quaternion), gameObject.transform);
         RegisterAgent(firstAgent);
+        NUMAGENT = 1;
         foreach (SpawnButton s in Buttons)
         {
             s.ResetSwitch();
@@ -59,13 +61,18 @@ public class SpawnArea : MonoBehaviour
 
     public void RegisterAgent(GameObject agent)
     {
+        NUMAGENT += 1;
         agent.GetComponent<SpawnCollectorAgent>().SetArea(this);
         m_AgentGroup.RegisterAgent(agent.GetComponent<SpawnCollectorAgent>());
     }
 
-    public void UnregisterAgent(GameObject agent)
+    public void UnregisterAgent(GameObject agent, bool removeFromGroup)
     {
-        m_AgentGroup.UnregisterAgent(agent.GetComponent<SpawnCollectorAgent>());
+        NUMAGENT -= 1;
+        if (removeFromGroup)
+        {
+            m_AgentGroup.UnregisterAgent(agent.GetComponent<SpawnCollectorAgent>());
+        }
     }
 
     public void FoodEaten()
@@ -112,7 +119,7 @@ public class SpawnArea : MonoBehaviour
             return;
         }
 
-        if (m_AgentGroup.GetRegisteredAgents().Count == 0)
+        if (NUMAGENT == 0)
         {
             m_AgentGroup.EndGroupEpisode();
             Academy.Instance.StatsRecorder.Add("Environment/Actual Group Reward", m_CumulativeGroupReward);
