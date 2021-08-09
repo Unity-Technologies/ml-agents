@@ -10,6 +10,8 @@ public class SpawnCollectorAgent : Agent
     SpawnArea m_Area;
     Rigidbody m_AgentRb;
 
+    public bool Dead;
+
     public int Lifetime = 400;
     int m_Lifetime;
 
@@ -17,16 +19,27 @@ public class SpawnCollectorAgent : Agent
     {
         m_Lifetime = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("agent_steps", Lifetime);
         m_AgentRb = GetComponent<Rigidbody>();
+        Dead = false;
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        // sensor.AddOneHotObservation(m_Area.GetNumAgents(), 6);
-        sensor.AddObservation(1.0f * m_Area.GetNumFoodLeft() / 40f);
-        // sensor.AddObservation(1.0f * m_Area.GetTimeLeft());
-        sensor.AddObservation(transform.InverseTransformDirection(m_AgentRb.velocity));
+        if (!Dead)
+        {
+            // sensor.AddOneHotObservation(m_Area.GetNumAgents(), 6);
+            sensor.AddObservation(1.0f * m_Area.GetNumFoodLeft() / 40f);
+            // sensor.AddObservation(1.0f * m_Area.GetTimeLeft());
+            sensor.AddObservation(transform.InverseTransformDirection(m_AgentRb.velocity));
 
-        sensor.AddObservation(2.0f * m_Lifetime / Academy.Instance.EnvironmentParameters.GetWithDefault("agent_steps", Lifetime) - 1f);
+            sensor.AddObservation(2.0f * m_Lifetime / Academy.Instance.EnvironmentParameters.GetWithDefault("agent_steps", Lifetime) - 1f);
+        }
+        else
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                sensor.AddObservation(0f);
+            }
+        }
     }
 
     public void SetArea(SpawnArea area)
@@ -39,8 +52,20 @@ public class SpawnCollectorAgent : Agent
         m_Lifetime -= 1;
         if (m_Lifetime < 0)
         {
-            m_Area.UnregisterAgent(this.gameObject);
-            Destroy(this.gameObject);
+            if ((int)Academy.Instance.EnvironmentParameters.GetWithDefault("absorbing_state", 0f) == 0f)
+            {
+                m_Area.UnregisterAgent(this.gameObject, true);
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                Vector3 pos = new Vector3(Random.Range(200f, 2000f), Random.Range(-2000f, -1000f), Random.Range(-1000f, 1000f));
+                var rot = Quaternion.Euler(Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f), Random.Range(0.0f, 360.0f));
+                transform.SetPositionAndRotation(pos, rot);
+                Dead = true;
+                m_Lifetime = System.Int32.MaxValue;
+                m_Area.UnregisterAgent(this.gameObject, false);
+            }
         }
     }
 
