@@ -782,21 +782,18 @@ class CheckpointSettings:
                     f"both 'resume' and 'initialize_from={self.initialize_from}' are set!"
                     f" current run will be resumed ignoring initialization."
                 )
-                # go with resume and ignore init
                 self.initialize_from = parser.get_default("initialize_from")
         elif "initialize_from" in _non_default_args and self.resume is True:
             logger.warning(
                 f"both 'resume' and 'initialize_from={self.initialize_from}' are set!"
                 f"{self.run_id} is initialized_from {self.initialize_from} and resume will be ignored."
             )
-            # go with initialize from and ignore resume
             self.resume = parser.get_default("resume")
         elif self.resume is True and self.initialize_from is not None:
             logger.warning(
                 f"both 'resume' and 'initialize_from={self.initialize_from}' are set in yaml file!"
                 f" current run will be resumed ignoring initialization."
             )
-            # go with resume and ignore init
             self.initialize_from = parser.get_default("initialize_from")
 
 
