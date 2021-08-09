@@ -136,6 +136,6 @@ public class SpawnArea : MonoBehaviour
 
     public int GetNumAgents()
     {
-        return m_AgentGroup.GetRegisteredAgents().Count;
+        return NUMAGENT;
     }
 }
