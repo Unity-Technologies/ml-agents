@@ -160,9 +160,8 @@ def test_commandline_args(mock_file):
     # ignore init if resume set
     full_args.append("--resume")
     opt = parse_command_line(full_args)
-    assert opt.checkpoint_settings.initialize_from is None # ignore init if resume set
+    assert opt.checkpoint_settings.initialize_from is None  # ignore init if resume set
     assert opt.checkpoint_settings.resume is True
-
 
 
 @patch("builtins.open", new_callable=mock_open, read_data=MOCK_PARAMETER_YAML)
