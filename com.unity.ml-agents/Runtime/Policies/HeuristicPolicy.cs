@@ -138,5 +138,15 @@ namespace Unity.MLAgents.Policies
                 }
             }
         }
+
+        public void ClearObservations()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PutImmediateObservations(AgentInfo info, List<ISensor> sensors)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

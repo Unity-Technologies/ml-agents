@@ -1048,7 +1048,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// Sends the Agent info to the linked Brain.
         /// </summary>
-        void SendInfoToBrain()
+        public void SendInfoToBrain(bool immediateMessage = false)
         {
             if (!m_Initialized)
             {
@@ -1093,7 +1093,10 @@ namespace Unity.MLAgents
 
             using (TimerStack.Instance.Scoped("RequestDecision"))
             {
-                m_Brain.RequestDecision(m_Info, sensors);
+                if (immediateMessage)
+                    m_Brain.PutImmediateObservations(m_Info, sensors);
+                else
+                    m_Brain.RequestDecision(m_Info, sensors);
             }
 
             // If we have any DemonstrationWriters, write the AgentInfo and sensors to them.
@@ -1104,6 +1107,11 @@ namespace Unity.MLAgents
                     demoWriter.Record(m_Info, sensors);
                 }
             }
+        }
+
+        public void ClearObservations()
+        {
+            m_Brain.ClearObservations();
         }
 
         void UpdateSensors()

@@ -204,6 +204,7 @@ namespace Unity.MLAgents
                 brainKey,
                 new UnityRLOutputProto.Types.ListAgentInfoProto()
             );
+            m_CurrentUnityRlOutput.AgentInfos.Add("immediate", new UnityRLOutputProto.Types.ListAgentInfoProto());
 
             CacheActionSpec(brainKey, actionSpec);
         }
@@ -352,6 +353,11 @@ namespace Unity.MLAgents
             {
                 m_LastActionsReceived[behaviorName].Remove(info.episodeId);
             }
+        }
+
+        public void ClearObservations(string behaviorName)
+        {
+            m_CurrentUnityRlOutput.AgentInfos[behaviorName].Value.Clear();
         }
 
         /// <summary>

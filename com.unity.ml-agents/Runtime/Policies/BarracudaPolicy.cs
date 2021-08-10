@@ -128,8 +128,19 @@ namespace Unity.MLAgents.Policies
             return ref m_LastActionBuffer;
         }
 
+
         public void Dispose()
         {
+        }
+
+        public void ClearObservations()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void PutImmediateObservations(AgentInfo info, List<ISensor> sensors)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

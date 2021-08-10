@@ -46,6 +46,14 @@ namespace Unity.MLAgents.Policies
             m_Communicator?.PutObservations(m_FullyQualifiedBehaviorName, info, sensors);
         }
 
+        public void PutImmediateObservations(AgentInfo info, List<ISensor> sensors)
+        {
+            m_AgentId = info.episodeId;
+            info.done = true;
+            m_Communicator.ClearObservations("immediate");
+            m_Communicator?.PutObservations("immediate", info, sensors);
+        }
+
         [Conditional("MLA_UNITY_ANALYTICS_MODULE")]
         void SendAnalytics(IList<ISensor> sensors)
         {
@@ -68,6 +76,11 @@ namespace Unity.MLAgents.Policies
             var actions = m_Communicator?.GetActions(m_FullyQualifiedBehaviorName, m_AgentId);
             m_LastActionBuffer = actions == null ? ActionBuffers.Empty : (ActionBuffers)actions;
             return ref m_LastActionBuffer;
+        }
+
+        public void ClearObservations()
+        {
+            m_Communicator.ClearObservations(m_FullyQualifiedBehaviorName);
         }
 
         public void Dispose()

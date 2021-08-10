@@ -28,5 +28,7 @@ namespace Unity.MLAgents.Policies
         /// of the Agents at this point the latest.
         /// </summary>
         ref readonly ActionBuffers DecideAction();
+        void ClearObservations();
+        void PutImmediateObservations(AgentInfo info, List<ISensor> sensors);
     }
 }
