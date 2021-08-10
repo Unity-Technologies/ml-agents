@@ -475,7 +475,7 @@ class UnityEnvironment(BaseEnv):
         rl_in.side_channel = bytes(msg)
         return self._wrap_unity_input(rl_in)
 
-    def _process_immediate_message(self, msg: bytearray) -> UnityOutputProto:
+    def process_immediate_message(self, msg: bytearray) -> UnityOutputProto:
         message_output = self._communicator.exchange(
             self._generate_immediate_message_input(msg)
         )

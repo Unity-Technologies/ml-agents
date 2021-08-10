@@ -364,69 +364,6 @@ namespace Unity.MLAgents
         /// Helper method that sends the current UnityRLOutput, receives the next UnityInput and
         /// Applies the appropriate AgentAction to the agents.
         /// </summary>
-        /*
-        void SendBatchedMessageHelper()
-        {
-            var message = new UnityOutputProto
-            {
-                RlOutput = m_CurrentUnityRlOutput,
-            };
-            var tempUnityRlInitializationOutput = GetTempUnityRlInitializationOutput();
-            if (tempUnityRlInitializationOutput != null)
-            {
-                message.RlInitializationOutput = tempUnityRlInitializationOutput;
-            }
-
-            byte[] messageAggregated = SideChannelManager.GetSideChannelMessage();
-            message.RlOutput.SideChannel = ByteString.CopyFrom(messageAggregated);
-
-            var input = Exchange(message);
-            UpdateSentActionSpec(tempUnityRlInitializationOutput);
-
-            foreach (var k in m_CurrentUnityRlOutput.AgentInfos.Keys)
-            {
-                m_CurrentUnityRlOutput.AgentInfos[k].Value.Clear();
-            }
-
-            var rlInput = input?.RlInput;
-
-            if (rlInput?.AgentActions == null)
-            {
-                return;
-            }
-
-            UpdateEnvironmentWithInput(rlInput);
-
-            foreach (var brainName in rlInput.AgentActions.Keys)
-            {
-                if (!m_OrderedAgentsRequestingDecisions[brainName].Any())
-                {
-                    continue;
-                }
-
-                if (!rlInput.AgentActions[brainName].Value.Any())
-                {
-                    continue;
-                }
-
-                var agentActions = rlInput.AgentActions[brainName].ToAgentActionList();
-                var numAgents = m_OrderedAgentsRequestingDecisions[brainName].Count;
-                for (var i = 0; i < numAgents; i++)
-                {
-                    var agentAction = agentActions[i];
-                    var agentId = m_OrderedAgentsRequestingDecisions[brainName][i];
-                    if (m_LastActionsReceived[brainName].ContainsKey(agentId))
-                    {
-                        m_LastActionsReceived[brainName][agentId] = agentAction;
-                    }
-                }
-            }
-            foreach (var brainName in m_OrderedAgentsRequestingDecisions.Keys)
-            {
-                m_OrderedAgentsRequestingDecisions[brainName].Clear();
-            }
-        }
-        */
         void SendBatchedMessageHelper()
         {
             var message = new UnityOutputProto
@@ -441,7 +378,7 @@ namespace Unity.MLAgents
 
             UnityInputProto input;
             UnityRLInputProto rlInput;
-            
+
             do
             {
                 byte[] messageAggregated = SideChannelManager.GetSideChannelMessage();
@@ -453,7 +390,7 @@ namespace Unity.MLAgents
                 UpdateEnvironmentWithInput(rlInput);
             }
             while (rlInput?.Command == CommandProto.Immediate);
-            
+
 
             UpdateSentActionSpec(tempUnityRlInitializationOutput);
 
