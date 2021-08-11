@@ -769,31 +769,29 @@ class CheckpointSettings:
     def run_logs_dir(self) -> str:
         return os.path.join(self.write_path, "run_logs")
 
-    def fix_resume_init(self) -> None:
-        """priorotize explicit command line resume/init over conflicting yaml options.
+    def prioritize_resume_init(self) -> None:
+        """Prioritize explicit command line resume/init over conflicting yaml options.
         if both resume/init are set at one place use resume"""
         _non_default_args = DetectDefault.non_default_args
         if "resume" in _non_default_args:
-            if (
-                "initialize_from" in _non_default_args
-                or self.initialize_from is not None
-            ):
+            if self.initialize_from is not None:
                 logger.warning(
-                    f"both 'resume' and 'initialize_from={self.initialize_from}' are set!"
-                    f" current run will be resumed ignoring initialization."
+                    f"Both 'resume' and 'initialize_from={self.initialize_from}' are set!"
+                    f" Current run will be resumed ignoring initialization."
                 )
                 self.initialize_from = parser.get_default("initialize_from")
         elif "initialize_from" in _non_default_args:
-            if self.resume is True:
+            if self.resume:
                 logger.warning(
-                    f"both 'resume' and 'initialize_from={self.initialize_from}' are set!"
-                    f"{self.run_id} is initialized_from {self.initialize_from} and resume will be ignored."
+                    f"Both 'resume' and 'initialize_from={self.initialize_from}' are set!"
+                    f" {self.run_id} is initialized_from {self.initialize_from} and resume will be ignored."
                 )
                 self.resume = parser.get_default("resume")
-        elif self.resume is True and self.initialize_from is not None:
+        elif self.resume and self.initialize_from is not None:
+            #no cli args but both are set in yaml file
             logger.warning(
-                f"both 'resume' and 'initialize_from={self.initialize_from}' are set in yaml file!"
-                f" current run will be resumed ignoring initialization."
+                f"Both 'resume' and 'initialize_from={self.initialize_from}' are set in yaml file!"
+                f" Current run will be resumed ignoring initialization."
             )
             self.initialize_from = parser.get_default("initialize_from")
 
@@ -916,7 +914,7 @@ class RunOptions(ExportableSettings):
                     configured_dict[key] = val
 
         final_runoptions = RunOptions.from_dict(configured_dict)
-        final_runoptions.checkpoint_settings.fix_resume_init()
+        final_runoptions.checkpoint_settings.prioritize_resume_init()
         # Need check to bypass type checking but keep structure on dict working
         if isinstance(final_runoptions.behaviors, TrainerSettings.DefaultTrainerDict):
             # configure whether or not we should require all behavior names to be found in the config YAML
