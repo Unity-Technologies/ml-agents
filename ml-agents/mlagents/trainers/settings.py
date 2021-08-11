@@ -788,7 +788,7 @@ class CheckpointSettings:
                 )
                 self.resume = parser.get_default("resume")
         elif self.resume and self.initialize_from is not None:
-            #no cli args but both are set in yaml file
+            # no cli args but both are set in yaml file
             logger.warning(
                 f"Both 'resume' and 'initialize_from={self.initialize_from}' are set in yaml file!"
                 f" Current run will be resumed ignoring initialization."
