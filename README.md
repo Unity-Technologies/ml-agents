@@ -178,7 +178,7 @@ package by replying to
 Your opinion matters a great deal to us. Only by hearing your thoughts on the
 Unity ML-Agents Toolkit can we continue to improve and grow. Please take a few
 minutes to
-[let us know about it](https://github.com/Unity-Technologies/ml-agents/issues/1454).
+[let us know about it](https://unitysoftware.co1.qualtrics.com/jfe/form/SV_55pQKCZ578t0kbc).
 
 For any other questions or feedback, connect directly with the ML-Agents team at
 ml-agents@unity3d.com.
