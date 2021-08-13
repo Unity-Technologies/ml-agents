@@ -22,7 +22,8 @@ public class BatonPassAgent : Agent
         Dead = false;
     }
 
-    public void SetLife(int remaining){
+    public void SetLife(int remaining)
+    {
         m_Lifetime = remaining;
     }
 
