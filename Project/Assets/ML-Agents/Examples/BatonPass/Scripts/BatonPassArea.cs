@@ -45,7 +45,9 @@ public class BatonPassArea : MonoBehaviour
 
         Button.ResetSwitch();
 
-        Food.gameObject.SetActive(false);
+        Button.SetActivated();
+
+        Food.gameObject.SetActive(true);
         m_ResetTimer = 0;
         m_CumulativeGroupReward = 0.0f;
         m_NumFoodEaten = 0;

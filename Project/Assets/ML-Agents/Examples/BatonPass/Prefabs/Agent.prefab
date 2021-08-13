@@ -212,7 +212,7 @@ MonoBehaviour:
   m_RaysPerDirection: 6
   m_MaxRayDegrees: 70
   m_SphereCastRadius: 0.5
-  m_RayLength: 100
+  m_RayLength: 70
   m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
@@ -251,7 +251,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   Dead: 0
-  Lifetime: 500
+  Lifetime: 1500
 --- !u!1 &5973471482644522115
 GameObject:
   m_ObjectHideFlags: 0

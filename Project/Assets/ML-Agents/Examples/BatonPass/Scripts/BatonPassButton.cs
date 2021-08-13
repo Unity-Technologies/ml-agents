@@ -40,11 +40,15 @@ public class BatonPassButton : MonoBehaviour
         }
     }
 
-    void Activate(GameObject pressingAgent)
-    {
+    public void SetActivated(){
         myButton.GetComponent<Renderer>().material = onMaterial;
         m_State = true;
         tag = "switchOn";
+    }
+
+    void Activate(GameObject pressingAgent)
+    {
+        SetActivated();
         SpawnAgent(pressingAgent);
         pressingAgent.GetComponent<BatonPassAgent>().SetLife(50);
         Food.gameObject.SetActive(true);
