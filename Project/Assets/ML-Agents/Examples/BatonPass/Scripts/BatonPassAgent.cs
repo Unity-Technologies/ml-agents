@@ -30,7 +30,6 @@ public class BatonPassAgent : Agent
     {
         if (!Dead)
         {
-            sensor.AddObservation(1.0f * 20 / 40f);
             // sensor.AddObservation(1.0f * m_Area.GetTimeLeft());
             sensor.AddObservation(transform.InverseTransformDirection(m_AgentRb.velocity));
 
