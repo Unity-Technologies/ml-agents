@@ -118,6 +118,7 @@ class NetworkSettings:
 
     normalize: bool = False
     hidden_units: int = 128
+    max_num_agents: int = 4
     num_layers: int = 2
     vis_encode_type: EncoderType = EncoderType.SIMPLE
     memory: Optional[MemorySettings] = None
