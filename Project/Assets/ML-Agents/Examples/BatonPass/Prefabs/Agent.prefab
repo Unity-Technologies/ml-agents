@@ -155,7 +155,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: 26b3c8d89edb943dc83947b835d30d61, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: BatonPass
@@ -251,7 +251,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   Dead: 0
-  Lifetime: 1500
+  Lifetime: 500
 --- !u!1 &5973471482644522115
 GameObject:
   m_ObjectHideFlags: 0

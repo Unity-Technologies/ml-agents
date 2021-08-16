@@ -75,11 +75,12 @@ public class BatonPassArea : MonoBehaviour
         m_AgentGroup.AddGroupReward(1f);
         m_CumulativeGroupReward += 1f;
         m_NumFoodEaten += 1;
-        if (m_NumFoodEaten >= MaxFood)
+        float max_food = Academy.Instance.EnvironmentParameters.GetWithDefault("max_food", MaxFood);
+        if (m_NumFoodEaten >= max_food)
         {
             m_AgentGroup.GroupEpisodeInterrupted();
             Academy.Instance.StatsRecorder.Add("Environment/Actual Group Reward", m_CumulativeGroupReward);
-            Academy.Instance.StatsRecorder.Add("FoodEaten", m_NumFoodEaten);
+            Academy.Instance.StatsRecorder.Add("FoodEaten", m_NumFoodEaten / max_food);
             ResetScene();
         }
     }
@@ -91,13 +92,14 @@ public class BatonPassArea : MonoBehaviour
 
     void FixedUpdate()
     {
+        float max_food = Academy.Instance.EnvironmentParameters.GetWithDefault("max_food", MaxFood);
         m_ResetTimer += 1;
         if (m_ResetTimer >= Academy.Instance.EnvironmentParameters.GetWithDefault("area_steps", MaxEnvironmentSteps) && Academy.Instance.EnvironmentParameters.GetWithDefault("area_steps", MaxEnvironmentSteps) > 0)
         {
             // m_AgentGroup.AddGroupReward(-1f);
             m_AgentGroup.GroupEpisodeInterrupted();
             Academy.Instance.StatsRecorder.Add("Environment/Actual Group Reward", m_CumulativeGroupReward);
-            Academy.Instance.StatsRecorder.Add("FoodEaten", m_NumFoodEaten);
+            Academy.Instance.StatsRecorder.Add("FoodEaten", m_NumFoodEaten / max_food);
             ResetScene();
             return;
         }
@@ -106,7 +108,7 @@ public class BatonPassArea : MonoBehaviour
         {
             m_AgentGroup.EndGroupEpisode();
             Academy.Instance.StatsRecorder.Add("Environment/Actual Group Reward", m_CumulativeGroupReward);
-            Academy.Instance.StatsRecorder.Add("FoodEaten", m_NumFoodEaten);
+            Academy.Instance.StatsRecorder.Add("FoodEaten", m_NumFoodEaten / max_food);
             ResetScene();
             return;
         }
