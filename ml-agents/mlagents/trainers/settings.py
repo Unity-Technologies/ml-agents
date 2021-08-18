@@ -733,7 +733,7 @@ class TrainerSettings(ExportableSettings):
                     f"Please add an entry in the configuration file for {key}, or set default_settings."
                 )
             else:
-                logger.warn(
+                logger.warning(
                     f"Behavior name {key} does not match any behaviors specified "
                     f"in the trainer configuration file. A default configuration will be used."
                 )

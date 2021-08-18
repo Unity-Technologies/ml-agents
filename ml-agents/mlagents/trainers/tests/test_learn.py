@@ -157,7 +157,7 @@ def test_commandline_args(mock_file):
     assert opt.checkpoint_settings.inference is True
     assert opt.checkpoint_settings.resume is False
 
-    # ignore init if resume set
+    # ignore init if resume is set
     full_args.append("--resume")
     opt = parse_command_line(full_args)
     assert opt.checkpoint_settings.initialize_from is None  # ignore init if resume set
