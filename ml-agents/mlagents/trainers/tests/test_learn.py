@@ -133,7 +133,6 @@ def test_commandline_args(mock_file):
     full_args = [
         "mytrainerpath",
         "--env=./myenvfile",
-        "--resume",
         "--inference",
         "--run-id=myawesomerun",
         "--seed=7890",
@@ -156,6 +155,12 @@ def test_commandline_args(mock_file):
     assert opt.engine_settings.no_graphics is True
     assert opt.debug is True
     assert opt.checkpoint_settings.inference is True
+    assert opt.checkpoint_settings.resume is False
+
+    # ignore init if resume is set
+    full_args.append("--resume")
+    opt = parse_command_line(full_args)
+    assert opt.checkpoint_settings.initialize_from is None  # ignore init if resume set
     assert opt.checkpoint_settings.resume is True
 
 

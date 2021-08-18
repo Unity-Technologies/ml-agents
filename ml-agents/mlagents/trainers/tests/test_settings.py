@@ -481,6 +481,10 @@ def test_exportable_settings(use_defaults):
     # Check that the two exports are the same
     assert dict_export == second_export
 
+    # check if cehckpoint_settings priorotizes resume over initialize from
+    run_options2.checkpoint_settings.prioritize_resume_init()
+    assert run_options2.checkpoint_settings.initialize_from is None
+
 
 def test_environment_settings():
     # default args
