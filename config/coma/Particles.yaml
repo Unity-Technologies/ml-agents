@@ -2,8 +2,8 @@ behaviors:
   simple_spread:
     trainer_type: coma
     hyperparameters:
-      batch_size: 2048
-      buffer_size: 20480
+      batch_size: 512
+      buffer_size: 5120
       learning_rate: 0.0003
       beta: 0.01
       epsilon: 0.2
