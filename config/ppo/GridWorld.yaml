@@ -14,7 +14,7 @@ behaviors:
       normalize: false
       hidden_units: 128
       num_layers: 1
-      vis_encode_type: fully_connected
+      vis_encode_type: simple
     reward_signals:
       extrinsic:
         gamma: 0.9

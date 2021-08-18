@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44971168, g: 0.4997775, b: 0.57563686, a: 1}
+  m_IndirectSpecularColor: {r: 0.4497121, g: 0.49977785, b: 0.57563704, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -129,16 +129,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_TargetWalkingSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: randomizeWalkSpeedEachEpisode
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1076680649171575083, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -264,11 +254,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlatformDynamicTarget (4)
       objectReference: {fileID: 0}
-    - target: {fileID: 6713178126238440196, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6718791046026642300, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_RootOrder
@@ -324,11 +309,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7819659174506835736, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_Model
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
 --- !u!1001 &193531851
@@ -379,16 +359,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_TargetWalkingSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: randomizeWalkSpeedEachEpisode
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1076680649171575083, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -514,11 +484,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlatformDynamicTarget (2)
       objectReference: {fileID: 0}
-    - target: {fileID: 6713178126238440196, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6718791046026642300, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_RootOrder
@@ -574,11 +539,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7819659174506835736, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_Model
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
 --- !u!1001 &476292838
@@ -588,16 +548,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_TargetWalkingSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: randomizeWalkSpeedEachEpisode
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1076680649171575083, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -723,11 +673,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlatformDynamicTarget (6)
       objectReference: {fileID: 0}
-    - target: {fileID: 6713178126238440196, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6718791046026642300, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_RootOrder
@@ -782,11 +727,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7819659174506835736, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_Model
-      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
@@ -863,16 +803,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_TargetWalkingSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: randomizeWalkSpeedEachEpisode
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1076680649171575083, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -998,11 +928,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlatformDynamicTarget (9)
       objectReference: {fileID: 0}
-    - target: {fileID: 6713178126238440196, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6718791046026642300, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_RootOrder
@@ -1058,11 +983,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7819659174506835736, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_Model
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
 --- !u!1001 &1062792380
@@ -1072,16 +992,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_TargetWalkingSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: randomizeWalkSpeedEachEpisode
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1076680649171575083, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -1207,11 +1117,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlatformDynamicTarget (8)
       objectReference: {fileID: 0}
-    - target: {fileID: 6713178126238440196, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6718791046026642300, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_RootOrder
@@ -1267,11 +1172,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7819659174506835736, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_Model
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
 --- !u!1001 &1071024415
@@ -1281,16 +1181,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_TargetWalkingSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: randomizeWalkSpeedEachEpisode
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1076680649171575083, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -1416,11 +1306,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlatformDynamicTarget (3)
       objectReference: {fileID: 0}
-    - target: {fileID: 6713178126238440196, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6718791046026642300, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_RootOrder
@@ -1476,11 +1361,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7819659174506835736, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_Model
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
 --- !u!1001 &1237883783
@@ -1490,25 +1370,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_TargetWalkingSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: randomizeWalkSpeedEachEpisode
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6713178126238440196, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_Name
       value: PlatformDynamicTarget (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 6713178126238440196, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6718791046026642300, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
@@ -1564,11 +1429,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7819659174506835736, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_Model
-      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
@@ -1677,16 +1537,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_TargetWalkingSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: randomizeWalkSpeedEachEpisode
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1076680649171575083, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -1812,11 +1662,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlatformDynamicTarget (5)
       objectReference: {fileID: 0}
-    - target: {fileID: 6713178126238440196, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6718791046026642300, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_RootOrder
@@ -1871,11 +1716,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7819659174506835736, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_Model
-      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
@@ -2053,16 +1893,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_TargetWalkingSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: randomizeWalkSpeedEachEpisode
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1076680649171575083, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -2188,11 +2018,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlatformDynamicTarget (7)
       objectReference: {fileID: 0}
-    - target: {fileID: 6713178126238440196, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6718791046026642300, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_RootOrder
@@ -2248,11 +2073,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7819659174506835736, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_Model
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
 --- !u!1001 &2709362470382547191
@@ -2262,16 +2082,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_TargetWalkingSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 443215535079112744, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: randomizeWalkSpeedEachEpisode
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6713178126238440196, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_Name
@@ -2331,11 +2141,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7819659174506835736, guid: 84359146bf7af47e58c229d877e801d7,
-        type: 3}
-      propertyPath: m_Model
-      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84359146bf7af47e58c229d877e801d7, type: 3}

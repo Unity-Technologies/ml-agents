@@ -15,17 +15,11 @@ public class PyramidAgent : Agent
     public GameObject areaSwitch;
     public bool useVectorObs;
 
-
-    VectorSensorComponent m_DiversitySettingSensor;
-    public int m_DiversitySetting = 0;
-
     public override void Initialize()
     {
         m_AgentRb = GetComponent<Rigidbody>();
         m_MyArea = area.GetComponent<PyramidArea>();
         m_SwitchLogic = areaSwitch.GetComponent<PyramidSwitch>();
-                GetComponent<VectorSensorComponent>().CreateSensors();
-        m_DiversitySettingSensor = GetComponent<VectorSensorComponent>();
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -35,9 +29,6 @@ public class PyramidAgent : Agent
             sensor.AddObservation(m_SwitchLogic.GetState());
             sensor.AddObservation(transform.InverseTransformDirection(m_AgentRb.velocity));
         }
-
-        m_DiversitySettingSensor.GetSensor().Reset();
-        m_DiversitySettingSensor.GetSensor().AddOneHotObservation(m_DiversitySetting, 8);
     }
 
     public void MoveAgent(ActionSegment<int> act)
@@ -111,8 +102,6 @@ public class PyramidAgent : Agent
         m_MyArea.CreateStonePyramid(1, items[6]);
         m_MyArea.CreateStonePyramid(1, items[7]);
         m_MyArea.CreateStonePyramid(1, items[8]);
-
-        m_DiversitySetting = Random.Range(0, 8);
     }
 
     void OnCollisionEnter(Collision collision)

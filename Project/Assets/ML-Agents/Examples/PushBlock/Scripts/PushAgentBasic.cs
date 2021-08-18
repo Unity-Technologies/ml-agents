@@ -4,7 +4,6 @@ using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Sensors;
 
 public class PushAgentBasic : Agent
 {
@@ -38,6 +37,8 @@ public class PushAgentBasic : Agent
     /// </summary>
     [HideInInspector]
     public GoalDetect goalDetect;
+
+    public bool useVectorObs;
 
     Rigidbody m_BlockRb;  //cached on initialization
     Rigidbody m_AgentRb;  //cached on initialization
@@ -74,14 +75,6 @@ public class PushAgentBasic : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
-    }
-
-
-    /// <summary>
-    /// Loop over body parts to add them to observation.
-    /// </summary>
-    public override void CollectObservations(VectorSensor sensor)
-    {
     }
 
     /// <summary>
