@@ -128,6 +128,8 @@ class SACTrainer(RLTrainer):
         self.behavior_metrics = None
         self.log_steps = trainer_settings.summary_freq
         self.log_count = 0
+        self.mede_reward = []
+        self.diayn_reward = []
 
     def _checkpoint(self) -> ModelCheckpoint:
         """
@@ -381,6 +383,15 @@ class SACTrainer(RLTrainer):
                     )
 
                 update_stats = self.optimizer.update(sampled_minibatch, n_sequences)
+
+                # TODO remove: For evaluation scipt
+                # self.mede_reward.append(update_stats["MEDE/Reward"])
+                # self.diayn_reward.append(update_stats["DIAYN/Reward"])
+                # if len(self.mede_reward) > 99:
+                #     with open("eval_results.txt", "a") as f:
+                #         f.write("{},{}\n".format(np.mean(self.mede_reward), np.mean(self.diayn_reward)))
+                #     exit()
+
                 for stat_name, value in update_stats.items():
                     batch_update_stats[stat_name].append(value)
 
