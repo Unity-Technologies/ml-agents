@@ -1,5 +1,5 @@
 behaviors:
-  WormDiverse:
+  CrawlerDiverse:
     trainer_type: sac
     hyperparameters:
       learning_rate: 0.0003
@@ -12,7 +12,7 @@ behaviors:
       save_replay_buffer: false
       init_entcoef: 1.0
       reward_signal_steps_per_update: 20.0
-      mede: True
+      diayn: True
       mede_continuous: False
       mede_init_divcoef: 1.0
       mede_target_divcoef: 1.0
@@ -30,3 +30,5 @@ behaviors:
     max_steps: 5000000
     time_horizon: 1000
     summary_freq: 30000
+env_settings:
+  seed: 2

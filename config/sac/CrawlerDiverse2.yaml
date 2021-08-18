@@ -1,5 +1,5 @@
 behaviors:
-  WormDiverse:
+  CrawlerDiverse:
     trainer_type: sac
     hyperparameters:
       learning_rate: 0.0003
@@ -30,3 +30,5 @@ behaviors:
     max_steps: 5000000
     time_horizon: 1000
     summary_freq: 30000
+env_settings:
+  seed: 2

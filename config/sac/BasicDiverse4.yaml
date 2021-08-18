@@ -14,22 +14,9 @@ behaviors:
       reward_signal_steps_per_update: 10.0
       mede: True
       mede_continuous: False
-      mede_learn_variance: True
-      mede_dropout: 0
-      mede_encoder_dropout: 0.2
-      mede_weight_decay: 0
-      mede_saliency_dropout: 0
       mede_init_divcoef: 0.01
-      mede_target_divcoef: 0.2
-      mede_divcoef_lr: 0.00001
-      mede_mutual_information: .inf
-      mede_scheduled_divcoef: True
-      mede_adaptive_divcoef: False
-      mede_for_policy_loss: True
-      mede_use_actions: True
-      mede_drop_actions: True
-      mede_noise: True
-      mede_centered: False
+      mede_target_divcoef: 0.05
+      mede_divcoef_lr: 0.000001
     network_settings:
       normalize: false
       hidden_units: 32
@@ -45,3 +32,5 @@ behaviors:
     time_horizon: 64
     summary_freq: 10000
     checkpoint_interval: 100000
+env_settings:
+  seed: 4
