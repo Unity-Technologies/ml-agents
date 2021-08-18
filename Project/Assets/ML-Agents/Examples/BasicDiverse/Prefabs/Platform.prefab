@@ -1802,7 +1802,7 @@ MonoBehaviour:
   ContinuousSampling: 0
   BalancedSampling: 1
   DisableSampling: 0
-  DiversitySize: 4
+  DiversitySize: 2
   DiscreteSetting: 0
   ContinuousSetting: []
 --- !u!1 &523751227787557688

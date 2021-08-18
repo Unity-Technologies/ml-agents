@@ -6,6 +6,8 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 
+using System.IO;
+
 public class LaserAgentDiverse : Agent
 {
 
@@ -20,10 +22,17 @@ public class LaserAgentDiverse : Agent
     private bool finishJump = false;
     private float lastDist = 0;
     private float initDist = 0;
+    private int timestep = 0;
+    private float cumReward = 0;
 
     public override void Initialize()
     {
         m_AgentRb = GetComponent<Rigidbody>();
+
+        using (StreamWriter file = new StreamWriter("LaserMaze.txt"))
+        {
+            file.WriteLine("timestep,behavior,x,z,rotation,crouch,jump,reward");
+        }
     }
 
     public override void OnEpisodeBegin()
@@ -42,6 +51,9 @@ public class LaserAgentDiverse : Agent
 
         initDist = GetDistToGoal();
         lastDist = initDist;
+        timestep = 0;
+        cumReward = 0f;
+        GetComponent<DiversitySamplerComponent>().DiscreteSetting = Random.Range(0, GetComponent<DiversitySamplerComponent>().DiversitySize);
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -54,6 +66,21 @@ public class LaserAgentDiverse : Agent
         sensor.AddObservation(transform.localScale.y * 4);
         sensor.AddObservation(initCrouch ? 1 : finishCrouch ? -1 : 0);
         sensor.AddObservation(initJump ? 1 : finishJump ? -1 : 0);
+        
+        string line = "";
+        line += timestep.ToString() + ",";
+        line += GetComponent<DiversitySamplerComponent>().DiscreteSetting.ToString() + ",";
+        line += transform.localPosition.x.ToString() + ",";
+        line += transform.localPosition.z.ToString() + ",";
+        line += transform.localEulerAngles.y.ToString() + ",";
+        line += (initCrouch || finishCrouch).ToString() + ",";
+        line += (initJump || finishJump).ToString() + ",";
+        line += cumReward.ToString();
+        using (StreamWriter file = new StreamWriter("LaserMaze.txt", append: true))
+        {
+            file.WriteLine(line);
+        }
+        timestep += 1;
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
@@ -102,6 +129,7 @@ public class LaserAgentDiverse : Agent
         float dist = GetDistToGoal();
         AddReward((lastDist - dist) / initDist);
         AddReward(-1f / MaxStep);
+        cumReward += -1f / MaxStep + (lastDist - dist) / initDist;
         lastDist = dist;
     }
 

@@ -169,6 +169,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlatformWormDiverse (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 7516351800607109742, guid: 05654ec97a27249ad8d8fffba1e80f07,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7519741477752072726, guid: 05654ec97a27249ad8d8fffba1e80f07,
         type: 3}
       propertyPath: m_RootOrder
@@ -247,6 +252,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PlatformWormDiverse (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7516351800607109742, guid: 05654ec97a27249ad8d8fffba1e80f07,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7519741477752072726, guid: 05654ec97a27249ad8d8fffba1e80f07,
         type: 3}
@@ -579,6 +589,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlatformWormDiverse (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 7516351800607109742, guid: 05654ec97a27249ad8d8fffba1e80f07,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7519741477752072726, guid: 05654ec97a27249ad8d8fffba1e80f07,
         type: 3}
       propertyPath: m_RootOrder
@@ -683,6 +698,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlatformWormDiverse (9)
       objectReference: {fileID: 0}
+    - target: {fileID: 7516351800607109742, guid: 05654ec97a27249ad8d8fffba1e80f07,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7519741477752072726, guid: 05654ec97a27249ad8d8fffba1e80f07,
         type: 3}
       propertyPath: m_RootOrder
@@ -764,6 +784,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlatformWormDiverse (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 7516351800607109742, guid: 05654ec97a27249ad8d8fffba1e80f07,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7519741477752072726, guid: 05654ec97a27249ad8d8fffba1e80f07,
         type: 3}
       propertyPath: m_RootOrder
@@ -843,6 +868,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlatformWormDiverse (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 7516351800607109742, guid: 05654ec97a27249ad8d8fffba1e80f07,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7519741477752072726, guid: 05654ec97a27249ad8d8fffba1e80f07,
         type: 3}
       propertyPath: m_RootOrder
@@ -907,12 +937,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 572528852192653816, guid: 05654ec97a27249ad8d8fffba1e80f07,
-        type: 3}
-      propertyPath: m_Model
-      value: 
-      objectReference: {fileID: 5022602860645237092, guid: 516c7f6fbd99646f8867189c283f7dcc,
-        type: 3}
     - target: {fileID: 7516351800607109742, guid: 05654ec97a27249ad8d8fffba1e80f07,
         type: 3}
       propertyPath: m_Name
@@ -1168,6 +1192,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlatformWormDiverse (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 7516351800607109742, guid: 05654ec97a27249ad8d8fffba1e80f07,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7519741477752072726, guid: 05654ec97a27249ad8d8fffba1e80f07,
         type: 3}
       propertyPath: m_RootOrder
@@ -1349,6 +1378,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PlatformWormDiverse (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7516351800607109742, guid: 05654ec97a27249ad8d8fffba1e80f07,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7519741477752072726, guid: 05654ec97a27249ad8d8fffba1e80f07,
         type: 3}
@@ -1534,6 +1568,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PlatformWormDiverse (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7516351800607109742, guid: 05654ec97a27249ad8d8fffba1e80f07,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7519741477752072726, guid: 05654ec97a27249ad8d8fffba1e80f07,
         type: 3}

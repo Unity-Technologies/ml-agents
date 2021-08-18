@@ -4,6 +4,8 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgentsExamples;
 using Unity.MLAgents.Sensors;
 
+using System.IO;
+
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class WormAgentDiverse : Agent
 {
@@ -43,6 +45,11 @@ public class WormAgentDiverse : Agent
         m_JdController.SetupBodyPart(bodySegment1);
         m_JdController.SetupBodyPart(bodySegment2);
         m_JdController.SetupBodyPart(bodySegment3);
+
+        using (StreamWriter file = new StreamWriter("Worm.txt"))
+        {
+            file.WriteLine("behavior,seg0_xpos,seg0_ypos,seg0_zpos,seg0_xrot,seg0_yrot,seg0_zrot,seg1_xpos,seg1_ypos,seg1_zpos,seg1_xrot,seg1_yrot,seg1_zrot,seg2_xpos,seg2_ypos,seg2_zpos,seg2_xrot,seg2_yrot,seg2_zrot,seg3_xpos,seg3_ypos,seg3_zpos,seg3_xrot,seg3_yrot,seg3_zrot");
+        }
     }
 
     /// <summary>
@@ -74,7 +81,7 @@ public class WormAgentDiverse : Agent
     /// <summary>
     /// Add relevant information on each body part to observations.
     /// </summary>
-    public void CollectObservationBodyPart(BodyPart bp, VectorSensor sensor)
+    public string CollectObservationBodyPart(BodyPart bp, VectorSensor sensor, string line)
     {
         //GROUND CHECK
         sensor.AddObservation(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
@@ -91,10 +98,25 @@ public class WormAgentDiverse : Agent
             sensor.AddObservation(
                 m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - bodySegment0.position));
             sensor.AddObservation(bp.rb.transform.localRotation);
+            line += m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - bodySegment0.position).x.ToString() + ",";
+            line += m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - bodySegment0.position).y.ToString() + ",";
+            line += m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - bodySegment0.position).z.ToString() + ",";
+            line += bp.rb.transform.localRotation.eulerAngles.x.ToString() + ",";
+            line += bp.rb.transform.localRotation.eulerAngles.y.ToString() + ",";
+            line += bp.rb.transform.localRotation.eulerAngles.z.ToString() + ",";
+        }
+        else
+        {
+            line += "0,0,0,";
+            line += bp.rb.transform.localRotation.eulerAngles.x.ToString() + ",";
+            line += bp.rb.transform.localRotation.eulerAngles.y.ToString() + ",";
+            line += bp.rb.transform.localRotation.eulerAngles.z.ToString() + ",";
         }
 
         if (bp.joint)
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
+
+        return line;
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -118,9 +140,15 @@ public class WormAgentDiverse : Agent
         //Add pos of target relative to orientation cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(m_Target.transform.position));
 
+        string line = "";
+        line += GetComponent<DiversitySamplerComponent>().DiscreteSetting.ToString() + ",";
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
-            CollectObservationBodyPart(bodyPart, sensor);
+            line = CollectObservationBodyPart(bodyPart, sensor, line);
+        }
+        using (StreamWriter file = new StreamWriter("Worm.txt", append: true))
+        {
+            file.WriteLine(line);
         }
     }
 

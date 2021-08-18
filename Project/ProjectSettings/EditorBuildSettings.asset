@@ -4,5 +4,26 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Worm/Scenes/WormDiverse.unity
+    guid: cedab974e1b724ad4a317810fefcd771
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Walker/Scenes/WalkerDiverse.unity
+    guid: eb2b5fa2cee3945c8ac9e3ddbe955b0c
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Crawler/Scenes/CrawlerDiverse.unity
+    guid: 81387d28912e44b4c9d20d374e9edaa2
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/PushBlock/Scenes/PushBlockDiverse.unity
+    guid: f78861ce5ec724b53b5c0177aa48f721
+  - enabled: 1
+    path: Assets/ML-Agents/Examples/LaserMaze/Scenes/LaserMazeDiverse.unity
+    guid: c13a0082884c04e03a7703e132f1bb57
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/BasicDiverse/Scenes/BasicDiverse.unity
+    guid: 91dcdc1f75d814647a42891e4e9f88d7
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/BasicDiverse/Scenes/BasicDiverseRotate.unity
+    guid: c672218329a4c495ea019189a917d45f
   m_configObjects: {}

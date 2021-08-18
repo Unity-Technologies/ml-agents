@@ -10,8 +10,7 @@ public class BasicDiverseRotate : BasicDiverse
     {
         base.OnEpisodeBegin();
 
-        float startRot = Random.Range(0f, 360f);
-        transform.localEulerAngles = new Vector3(0f, startRot, 0f);
+        transform.localEulerAngles = new Vector3(0f, 180f, 0f);
     }
 
     public override void CollectObservations(VectorSensor sensor)

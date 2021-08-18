@@ -30,6 +30,11 @@ TagManager:
   - purpleAgent
   - purpleGoal
   - tile
+  - blockLarge
+  - blockSmall
+  - blockVeryLarge
+  - deadly
+  - indicator
   layers:
   - Default
   - TransparentFX

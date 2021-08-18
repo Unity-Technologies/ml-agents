@@ -1277,12 +1277,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlatformDiverse
       objectReference: {fileID: 0}
-    - target: {fileID: 9150713008293461097, guid: e2c19870733094c72b722a0b37a2b07f,
-        type: 3}
-      propertyPath: m_Model
-      value: 
-      objectReference: {fileID: 5022602860645237092, guid: fffbe411490a7400685858ca182a4886,
-        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e2c19870733094c72b722a0b37a2b07f, type: 3}
 --- !u!4 &1436150909 stripped

@@ -494,8 +494,6 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 1000
   goal: {fileID: 5494003231839169823}
-  m_DiversitySetting: 0
-  m_NumDiversityBehaviors: 6
   m_AgentSpeed: 0.5
 --- !u!114 &3990383348348506945
 MonoBehaviour:
@@ -510,10 +508,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SensorName: DiversitySampler
-  ContinuousSampling: 0
+  ContinuousSampling: 1
   BalancedSampling: 1
   DisableSampling: 0
-  DiversitySize: 6
+  DiversitySize: 3
   DiscreteSetting: 0
   ContinuousSetting: []
 --- !u!114 &5494003231600241405
@@ -657,7 +655,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SensorName: RayPerceptionSensorUp
-  m_DetectableTags: []
+  m_DetectableTags:
+  - deadly
   m_RaysPerDirection: 0
   m_MaxRayDegrees: 0
   m_SphereCastRadius: 0.08

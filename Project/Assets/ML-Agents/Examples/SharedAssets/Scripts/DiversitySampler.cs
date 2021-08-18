@@ -160,6 +160,7 @@ public class DiversitySampler : ISensor
             {
                 float modifier = i == DiscreteSetting ? -0.01f : 0.01f / (m_DiversitySize - 1);
                 m_SamplingWeights[i] = m_SamplingWeights[i] + modifier;
+                // m_SamplingWeights[i] = 0.999f * m_SamplingWeights[i] + 0.001f * (i == DiscreteSetting ? 0f : 1f);
             }
         }
     }
