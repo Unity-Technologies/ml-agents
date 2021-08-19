@@ -733,7 +733,7 @@ class TrainerSettings(ExportableSettings):
                     f"Please add an entry in the configuration file for {key}, or set default_settings."
                 )
             else:
-                logger.warn(
+                logger.warning(
                     f"Behavior name {key} does not match any behaviors specified "
                     f"in the trainer configuration file. A default configuration will be used."
                 )
@@ -769,6 +769,32 @@ class CheckpointSettings:
     def run_logs_dir(self) -> str:
         return os.path.join(self.write_path, "run_logs")
 
+    def prioritize_resume_init(self) -> None:
+        """Prioritize explicit command line resume/init over conflicting yaml options.
+        if both resume/init are set at one place use resume"""
+        _non_default_args = DetectDefault.non_default_args
+        if "resume" in _non_default_args:
+            if self.initialize_from is not None:
+                logger.warning(
+                    f"Both 'resume' and 'initialize_from={self.initialize_from}' are set!"
+                    f" Current run will be resumed ignoring initialization."
+                )
+                self.initialize_from = parser.get_default("initialize_from")
+        elif "initialize_from" in _non_default_args:
+            if self.resume:
+                logger.warning(
+                    f"Both 'resume' and 'initialize_from={self.initialize_from}' are set!"
+                    f" {self.run_id} is initialized_from {self.initialize_from} and resume will be ignored."
+                )
+                self.resume = parser.get_default("resume")
+        elif self.resume and self.initialize_from is not None:
+            # no cli args but both are set in yaml file
+            logger.warning(
+                f"Both 'resume' and 'initialize_from={self.initialize_from}' are set in yaml file!"
+                f" Current run will be resumed ignoring initialization."
+            )
+            self.initialize_from = parser.get_default("initialize_from")
+
 
 @attr.s(auto_attribs=True)
 class EnvironmentSettings:
@@ -797,7 +823,7 @@ class EngineSettings:
 
 @attr.s(auto_attribs=True)
 class TorchSettings:
-    device: Optional[str] = parser.get_default("torch_device")
+    device: Optional[str] = parser.get_default("device")
 
 
 @attr.s(auto_attribs=True)
@@ -888,6 +914,7 @@ class RunOptions(ExportableSettings):
                     configured_dict[key] = val
 
         final_runoptions = RunOptions.from_dict(configured_dict)
+        final_runoptions.checkpoint_settings.prioritize_resume_init()
         # Need check to bypass type checking but keep structure on dict working
         if isinstance(final_runoptions.behaviors, TrainerSettings.DefaultTrainerDict):
             # configure whether or not we should require all behavior names to be found in the config YAML

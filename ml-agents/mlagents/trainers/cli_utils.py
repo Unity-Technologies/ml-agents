@@ -257,7 +257,7 @@ def _create_parser() -> argparse.ArgumentParser:
     torch_conf.add_argument(
         "--torch-device",
         default=None,
-        dest="torch_device",
+        dest="device",
         action=DetectDefault,
         help='Settings for the default torch.device used in training, for example, "cpu", "cuda", or "cuda:0"',
     )

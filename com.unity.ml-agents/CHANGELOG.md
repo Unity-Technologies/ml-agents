@@ -19,7 +19,8 @@ and this project adheres to
 - Fixed a bug in multi-agent cooperative training where agents might not receive all of the states of
 terminated teammates. (#5441)
 - Fixed a bug when using LSTM and SAC where the buffer might contain non-integer numbers of sequences. (#5456)
-
+- Fixed wrong attribute name in argparser for torch device option (#5433)(#5467)
+- Fixed conflicting CLI and yaml options regarding resume & initialize_from (#5495)
 ## [2.1.0-exp.1] - 2021-06-09
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
