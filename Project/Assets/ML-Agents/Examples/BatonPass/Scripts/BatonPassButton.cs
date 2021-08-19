@@ -36,7 +36,12 @@ public class BatonPassButton : MonoBehaviour
     {
         if (other.gameObject.CompareTag("agent") && m_State == false)
         {
-            Activate(other.gameObject);
+            var agent = other.gameObject.GetComponent<BatonPassAgent>();
+            if (agent.CanPress)
+            {
+                Activate(other.gameObject);
+                agent.CanPress = false;
+            }
         }
     }
 
@@ -50,7 +55,7 @@ public class BatonPassButton : MonoBehaviour
     {
         SetActivated();
         SpawnAgent(pressingAgent);
-        pressingAgent.GetComponent<BatonPassAgent>().SetLife(50);
+        // pressingAgent.GetComponent<BatonPassAgent>().SetLife(50);
         Food.gameObject.SetActive(true);
     }
 

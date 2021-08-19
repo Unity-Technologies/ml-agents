@@ -85,10 +85,10 @@ public class BatonPassArea : MonoBehaviour
         }
     }
 
-    // public void AddReward(float value)
-    // {
-    //     m_AgentGroup.AddGroupReward(value);
-    // }
+    public void AddReward(float value)
+    {
+        m_AgentGroup.AddGroupReward(value);
+    }
 
     void FixedUpdate()
     {
@@ -113,10 +113,29 @@ public class BatonPassArea : MonoBehaviour
             return;
         }
 
+        // Hurry Up Penalty
+        var time_penalty = - Academy.Instance.EnvironmentParameters.GetWithDefault("time_penalty", 0.5f) / Academy.Instance.EnvironmentParameters.GetWithDefault("area_steps", MaxEnvironmentSteps);
+        m_AgentGroup.AddGroupReward(time_penalty);
+        m_CumulativeGroupReward += time_penalty;
+
         //Hurry Up Penalty
-        // var penalty = -0.5f / Academy.Instance.EnvironmentParameters.GetWithDefault("area_steps", MaxEnvironmentSteps);
-        // m_AgentGroup.AddGroupReward(penalty);
-        // m_CumulativeGroupReward += penalty;
+        var penalty = - Academy.Instance.EnvironmentParameters.GetWithDefault("penalty", 1f) * NUMAGENT / Academy.Instance.EnvironmentParameters.GetWithDefault("area_steps", MaxEnvironmentSteps);
+        m_AgentGroup.AddGroupReward(penalty);
+        m_CumulativeGroupReward += penalty;
+
+        bool is_solvable = false;
+        foreach(Agent agent in m_AgentGroup.GetRegisteredAgents())
+        {
+            var bpagent = agent.GetComponent<BatonPassAgent>();
+            is_solvable = is_solvable || bpagent.CanEat || bpagent.CanPress;
+        }
+        if (!is_solvable)
+        {
+            m_AgentGroup.EndGroupEpisode();
+            Academy.Instance.StatsRecorder.Add("Environment/Actual Group Reward", m_CumulativeGroupReward);
+            Academy.Instance.StatsRecorder.Add("FoodEaten", m_NumFoodEaten / max_food);
+            ResetScene();
+        }
     }
 
     public int GetNumAgents()

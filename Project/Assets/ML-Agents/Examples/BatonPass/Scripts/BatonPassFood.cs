@@ -11,8 +11,13 @@ public class BatonPassFood : MonoBehaviour
     {
         if (other.gameObject.CompareTag("agent"))
         {
-            this.gameObject.SetActive(false);
-            Area.FoodEaten();
+            var agent = other.gameObject.GetComponent<BatonPassAgent>();
+            if (agent.CanEat)
+            {
+                this.gameObject.SetActive(false);
+                Area.FoodEaten();
+                agent.CanEat = false;
+            }
 
         }
     }

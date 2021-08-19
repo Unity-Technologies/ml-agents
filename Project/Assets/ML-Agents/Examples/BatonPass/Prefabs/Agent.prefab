@@ -111,7 +111,7 @@ Transform:
   m_GameObject: {fileID: 5973471482558773618}
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
   m_LocalPosition: {x: -0.3, y: 1.12, z: -30.03}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
   - {fileID: 5973471482644522114}
   m_Father: {fileID: 0}
@@ -125,8 +125,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5973471482558773618}
   serializedVersion: 2
-  m_Mass: 25
-  m_Drag: 2
+  m_Mass: 10
+  m_Drag: 4
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -146,7 +146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 4
+    VectorObservationSize: 5
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -155,7 +155,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 26b3c8d89edb943dc83947b835d30d61, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 53ccd916d62cd476e90e094336107759, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: BatonPass
@@ -209,6 +209,7 @@ MonoBehaviour:
   - food
   - switchOff
   - switchOn
+  - goal
   m_RaysPerDirection: 6
   m_MaxRayDegrees: 70
   m_SphereCastRadius: 0.5
@@ -251,7 +252,9 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   Dead: 0
-  Lifetime: 500
+  CanEat: 0
+  CanPress: 0
+  Lifetime: 0
 --- !u!1 &5973471482644522115
 GameObject:
   m_ObjectHideFlags: 0

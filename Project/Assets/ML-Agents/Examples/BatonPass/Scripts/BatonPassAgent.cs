@@ -12,6 +12,9 @@ public class BatonPassAgent : Agent
 
     public bool Dead;
 
+    public bool CanEat;
+    public bool CanPress;
+
     public int Lifetime = 400;
     int m_Lifetime;
 
@@ -20,6 +23,8 @@ public class BatonPassAgent : Agent
         m_Lifetime = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("agent_steps", Lifetime);
         m_AgentRb = GetComponent<Rigidbody>();
         Dead = false;
+        CanEat = true;
+        CanPress = true;
     }
 
     public void SetLife(int remaining)
@@ -34,11 +39,13 @@ public class BatonPassAgent : Agent
             // sensor.AddObservation(1.0f * m_Area.GetTimeLeft());
             sensor.AddObservation(transform.InverseTransformDirection(m_AgentRb.velocity));
 
-            sensor.AddObservation(2.0f * m_Lifetime / Academy.Instance.EnvironmentParameters.GetWithDefault("agent_steps", Lifetime) - 1f);
+            // sensor.AddObservation(2.0f * m_Lifetime / Academy.Instance.EnvironmentParameters.GetWithDefault("agent_steps", Lifetime) - 1f);
+            sensor.AddObservation(CanEat);
+            sensor.AddObservation(CanPress);
         }
         else
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 5; i++)
             {
                 sensor.AddObservation(0f);
             }
@@ -50,11 +57,7 @@ public class BatonPassAgent : Agent
         m_Area = area;
     }
 
-    void FixedUpdate()
-    {
-        m_Lifetime -= 1;
-        if (m_Lifetime < 0)
-        {
+    public void Kill(){
             if ((int)Academy.Instance.EnvironmentParameters.GetWithDefault("absorbing_state", 0f) == 0f)
             {
                 m_Area.UnregisterAgent(this.gameObject, true);
@@ -69,6 +72,14 @@ public class BatonPassAgent : Agent
                 m_Lifetime = System.Int32.MaxValue;
                 m_Area.UnregisterAgent(this.gameObject, false);
             }
+    }
+
+    void FixedUpdate()
+    {
+        m_Lifetime -= 1;
+        if (m_Lifetime < 0 && (int)Academy.Instance.EnvironmentParameters.GetWithDefault("agent_steps", Lifetime) !=0)
+        {
+            Kill();
         }
     }
 
@@ -98,8 +109,8 @@ public class BatonPassAgent : Agent
                 break;
         }
         transform.Rotate(rotateDir, Time.deltaTime * 200f);
-        m_AgentRb.velocity = dirToGo * 10;
-        // m_AgentRb.AddForce(dirToGo * 2f, ForceMode.VelocityChange);
+        // m_AgentRb.velocity = dirToGo * 10;
+        m_AgentRb.AddForce(dirToGo * 3f, ForceMode.VelocityChange);
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
