@@ -176,6 +176,8 @@ class SACSettings(HyperparamSettings):
     mede_for_policy_loss: bool = True
     mede_use_actions: bool = True
     mede_noise: bool = True
+    mede_centered_reward: bool = False
+    mede_both_discriminators: bool = True
 
     @reward_signal_steps_per_update.default
     def _reward_signal_steps_per_update_default(self):

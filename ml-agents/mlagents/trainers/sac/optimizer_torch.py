@@ -44,6 +44,7 @@ class DiverseNetworkVariational(torch.nn.Module):
             learn_stddev: bool = True, 
             noise: bool = True, 
             stddev_param: bool = False,
+            centered_reward: bool = False,
             dropout: float = 0.2,
             name: str = "MEDE"
         ) -> None:
@@ -51,6 +52,7 @@ class DiverseNetworkVariational(torch.nn.Module):
         self._use_actions = use_actions
         self._continuous = continuous
         self._learn_stddev = learn_stddev
+        self._centered_reward = centered_reward
         self._name = name
         self.stats = {}
         sigma_start = 0.5
@@ -237,6 +239,9 @@ class DiverseNetworkVariational(torch.nn.Module):
                 self.stats.update({
                     "Settings/MEDE Accuracy {}".format(i): a.item()
                 })
+
+        if self._centered_reward:
+            rewards -= np.log(1 / self.diverse_size)
 
         return rewards
 
@@ -450,8 +455,9 @@ class TorchSACOptimizer(TorchOptimizer):
             hyperparameters.mede_learn_stddev,
             hyperparameters.mede_noise,
             hyperparameters.mede_stddev_param,
+            hyperparameters.mede_centered_reward,
             hyperparameters.mede_dropout
-        ) if self._use_mede or self._use_diayn else None
+        ) if self._use_mede or (self._use_diayn and hyperparameters.mede_both_discriminators) else None
         self._diayn_network = DiverseNetworkVariational(
             self.policy.behavior_spec, 
             False,
@@ -459,9 +465,10 @@ class TorchSACOptimizer(TorchOptimizer):
             hyperparameters.mede_learn_stddev,
             hyperparameters.mede_noise,
             hyperparameters.mede_stddev_param,
+            hyperparameters.mede_centered_reward,
             hyperparameters.mede_dropout,
             "DIAYN"
-        ) if self._use_mede or self._use_diayn else None
+        ) if self._use_diayn or (self._use_mede and hyperparameters.mede_both_discriminators) else None
 
         self._mede_policy_loss = hyperparameters.mede_for_policy_loss
         self._target_diversity = hyperparameters.mede_target_divcoef
@@ -497,11 +504,11 @@ class TorchSACOptimizer(TorchOptimizer):
         self.mede_optimizer = torch.optim.Adam(
             list(self._mede_network.parameters()), 
             lr=hyperparameters.learning_rate, 
-        ) if self._use_mede or self._use_diayn else None
+        ) if self._use_mede or (self._use_diayn and hyperparameters.mede_both_discriminators) else None
         self.diayn_optimizer = torch.optim.Adam(
             list(self._diayn_network.parameters()), 
             lr=hyperparameters.learning_rate, 
-        ) if self._use_mede or self._use_diayn else None
+        ) if self._use_diayn or (self._use_mede and hyperparameters.mede_both_discriminators) else None
         self.divcoef_optimizer = torch.optim.Adam(
             self._diversity_coef.parameters(),
             lr=hyperparameters.mede_divcoef_lr, 
@@ -961,25 +968,29 @@ class TorchSACOptimizer(TorchOptimizer):
         if self._use_mede or self._use_diayn:
             disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
 
-            mede_loss, mede_stats = self._mede_network.loss(
-                current_obs, sampled_actions.continuous_tensor, disc_act, masks
-            )
-            diayn_loss, diayn_stats = self._diayn_network.loss(
-                current_obs, sampled_actions.continuous_tensor, disc_act, masks
-            )
-            
-            ModelUtils.update_learning_rate(self.mede_optimizer, decay_lr)
-            self.mede_optimizer.zero_grad()
-            mede_loss.backward()
-            self.mede_optimizer.step()
-            
-            ModelUtils.update_learning_rate(self.mede_optimizer, decay_lr)
-            self.diayn_optimizer.zero_grad()
-            diayn_loss.backward()
-            self.diayn_optimizer.step()
+            if self._mede_network is not None:
+                mede_loss, mede_stats = self._mede_network.loss(
+                    current_obs, sampled_actions.continuous_tensor, disc_act, masks
+                )
 
-            update_stats.update(mede_stats)
-            update_stats.update(diayn_stats)
+                ModelUtils.update_learning_rate(self.mede_optimizer, decay_lr)
+                self.mede_optimizer.zero_grad()
+                mede_loss.backward()
+                self.mede_optimizer.step()
+
+                update_stats.update(mede_stats)
+
+            if self._diayn_network is not None:
+                diayn_loss, diayn_stats = self._diayn_network.loss(
+                    current_obs, sampled_actions.continuous_tensor, disc_act, masks
+                )
+
+                ModelUtils.update_learning_rate(self.mede_optimizer, decay_lr)
+                self.diayn_optimizer.zero_grad()
+                diayn_loss.backward()
+                self.diayn_optimizer.step()
+            
+                update_stats.update(diayn_stats)
             
             if self._adaptive_divcoef:
                 divcoef_loss = self.sac_divcoef_loss(mede_value_rewards, masks)
