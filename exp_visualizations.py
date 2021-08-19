@@ -227,7 +227,98 @@ def plot_probs(path):
         plt.savefig("/Users/kolby.nottingham/Documents/{}_probs.pdf".format(env))
 
 
+def grid_visualization(config, weights):
+    import torch
+    import yaml
+    from yaml import Loader
+    from mlagents.trainers.policy.torch_policy import TorchPolicy
+    from mlagents_envs.base_env import BehaviorSpec
+    from mlagents_envs.base_env import ObservationSpec, ActionSpec
+    from mlagents.trainers.settings import RunOptions
+
+    state2pos = {
+        0: (0, 0),
+        1: (1, 0),
+        2: (1, 1),
+        3: (0, 1),
+    }
+    state_action = {
+        (0, 1):(.2, 0),
+        (0, 2):(.2, .2),
+        (0, 3):(0, .2),
+        (1, 0):(-.2, 0),
+        (1, 2):(0, .2),
+        (1, 3):(-.2, .2),
+        (2, 0):(-.2, -.2),
+        (2, 1):(0, -.2),
+        (2, 3):(-.2, 0),
+        (3, 0):(0, -.2),
+        (3, 1):(.2, -.2),
+        (3, 2):(.2, 0),
+    }
+    
+    spec = BehaviorSpec(
+        [
+            ObservationSpec((4,), (0,), 0, ""), 
+            ObservationSpec((10,), (0,), 1, "")
+        ], 
+        ActionSpec(0, (4,))
+    )
+    settings = RunOptions.from_dict(yaml.load(open(config), Loader=Loader)).behaviors["GridDiverse"]
+    policy = TorchPolicy(0, spec, settings)
+
+    policy.load_weights(torch.load(weights)["Policy"])
+    
+    fig, axs = plt.subplots(2, 5, figsize=(10, 5))
+    axs = axs.flatten()
+
+    for b in range(10):
+        for s in range(4):
+            masks = torch.ones((1, 4))            
+            obs = [torch.zeros((1, 10)), torch.zeros((1, 4))]
+            obs[0][0, b] = 1
+            obs[1][0, s] = 1
+
+            _, logprobs, _, _ = policy.sample_actions(obs, masks)
+            a = torch.argmax(logprobs.all_discrete_list[0]).item()
+
+            if s != a:
+                axs[b].add_patch(patches.Arrow(
+                    state2pos[s][0], state2pos[s][1], 
+                    state_action[(s, a)][0], state_action[(s, a)][1],
+                    width=.2,
+                    fill=True, 
+                    color="r"
+                ))
+            else:
+                axs[b].add_patch(patches.Circle(
+                    (state2pos[s][0], state2pos[s][1]),
+                    .1,
+                    fill=True,
+                    color="r"
+                ))
+
+            axs[b].tick_params(left=False,
+                                bottom=False,
+                                labelleft=False,
+                                labelbottom=False)
+            axs[b].set_xlim(-.5, 1.5)
+            axs[b].set_ylim(-.5, 1.5)
+
+    fig.tight_layout()
+    plt.savefig("/Users/kolby.nottingham/Documents/grid_{}.pdf".format("diayn" if "diayn" in weights else "mede"))
+
+
 if __name__ == "__main__":
+    grid_visualization(
+        "/Users/kolby.nottingham/ml-agents/config/sac/GridDiverse.yaml", 
+        "/Users/kolby.nottingham/ml-agents/results/grid-disc10-8-16/GridDiverse/GridDiverse-200512.pt", 
+    )
+    grid_visualization(
+        "/Users/kolby.nottingham/ml-agents/config/sac/GridDiverse_diayn.yaml", 
+        "/Users/kolby.nottingham/ml-agents/results/grid-diayn10-8-16/GridDiverse/GridDiverse-200512.pt", 
+    )
+
     # plot_probs("/Users/kolby.nottingham/ml-agents/eval_results.txt")
 
     # plot_lasermaze("/Users/kolby.nottingham/ml-agents/Project/LaserMaze.txt")
