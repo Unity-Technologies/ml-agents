@@ -18,6 +18,7 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed a bug in multi-agent cooperative training where agents might not receive all of the states of
 terminated teammates. (#5441)
+- Fixed wrong attribute name in argparser for torch device option (#5433)(#5467)
 
 ## [2.1.0-exp.1] - 2021-06-09
 ### Minor Changes
