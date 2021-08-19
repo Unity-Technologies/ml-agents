@@ -1,6 +1,7 @@
 from typing import Any
 import numpy as np
 import pytest
+from unittest import mock
 from unittest.mock import patch
 from mlagents.torch_utils import torch
 import os
@@ -74,16 +75,19 @@ def test_factory(behavior_spec: BehaviorSpec) -> None:
 )
 @pytest.mark.parametrize("use_actions", [False, True])
 @patch(
-    "mlagents.trainers.torch.components.reward_providers.gail_reward_provider.demo_to_buffer"
+    "mlagents.trainers.torch.components.reward_providers.gail_reward_provider.DemoManager"
 )
 def test_reward_decreases(
-    demo_to_buffer: Any, use_actions: bool, behavior_spec: BehaviorSpec, seed: int
+    mock_demo_manager_fn: Any, use_actions: bool, behavior_spec: BehaviorSpec, seed: int
 ) -> None:
     np.random.seed(seed)
     torch.manual_seed(seed)
     buffer_expert = create_agent_buffer(behavior_spec, 1000)
     buffer_policy = create_agent_buffer(behavior_spec, 1000)
-    demo_to_buffer.return_value = None, buffer_expert
+    mock_demo_manager = mock.Mock()
+    mock_demo_manager.demo_buffer = buffer_expert
+    mock_demo_manager.refresh.return_value = 0
+    mock_demo_manager_fn.return_value = mock_demo_manager
     gail_settings = GAILSettings(
         demo_path="", learning_rate=0.005, use_vail=False, use_actions=use_actions
     )
@@ -129,16 +133,19 @@ def test_reward_decreases(
 )
 @pytest.mark.parametrize("use_actions", [False, True])
 @patch(
-    "mlagents.trainers.torch.components.reward_providers.gail_reward_provider.demo_to_buffer"
+    "mlagents.trainers.torch.components.reward_providers.gail_reward_provider.DemoManager"
 )
 def test_reward_decreases_vail(
-    demo_to_buffer: Any, use_actions: bool, behavior_spec: BehaviorSpec, seed: int
+    mock_demo_manager_fn: Any, use_actions: bool, behavior_spec: BehaviorSpec, seed: int
 ) -> None:
     np.random.seed(seed)
     torch.manual_seed(seed)
     buffer_expert = create_agent_buffer(behavior_spec, 1000)
     buffer_policy = create_agent_buffer(behavior_spec, 1000)
-    demo_to_buffer.return_value = None, buffer_expert
+    mock_demo_manager = mock.Mock()
+    mock_demo_manager.demo_buffer = buffer_expert
+    mock_demo_manager.refresh.return_value = 0
+    mock_demo_manager_fn.return_value = mock_demo_manager
     gail_settings = GAILSettings(
         demo_path="", learning_rate=0.005, use_vail=True, use_actions=use_actions
     )
