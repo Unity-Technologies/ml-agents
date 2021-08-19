@@ -1,5 +1,6 @@
 import io
 import os
+import shutil
 from unittest import mock
 import numpy as np
 import pytest
@@ -13,6 +14,7 @@ from mlagents.trainers.tests.mock_brain import (
     setup_test_behavior_specs,
 )
 from mlagents.trainers.demo_loader import (
+    DemoManager,
     load_demonstration,
     demo_to_buffer,
     get_demo_files,
@@ -26,13 +28,12 @@ BEHAVIOR_SPEC = create_mock_3dball_behavior_specs()
 
 def test_load_demo():
     path_prefix = os.path.dirname(os.path.abspath(__file__))
-    behavior_spec, pair_infos, total_expected = load_demonstration(
-        path_prefix + "/test.demo"
-    )
+    behavior_spec, pair_infos, _ = load_demonstration(path_prefix + "/test.demo")
     assert np.sum(behavior_spec.observation_specs[0].shape) == 8
-    assert len(pair_infos) == total_expected
+    total_expected = 2144
+    assert len(pair_infos[0]) == total_expected
 
-    _, demo_buffer = demo_to_buffer(path_prefix + "/test.demo", 1, BEHAVIOR_SPEC)
+    _, demo_buffer, _ = demo_to_buffer(path_prefix + "/test.demo", 1, BEHAVIOR_SPEC)
     assert (
         len(demo_buffer[BufferKey.CONTINUOUS_ACTION]) == total_expected - 1
         or len(demo_buffer[BufferKey.DISCRETE_ACTION]) == total_expected - 1
@@ -41,16 +42,21 @@ def test_load_demo():
 
 def test_load_demo_dir():
     path_prefix = os.path.dirname(os.path.abspath(__file__))
-    behavior_spec, pair_infos, total_expected = load_demonstration(
-        path_prefix + "/test_demo_dir"
-    )
+    behavior_spec, pair_infos, _ = load_demonstration(path_prefix + "/test_demo_dir")
     assert np.sum(behavior_spec.observation_specs[0].shape) == 8
-    assert len(pair_infos) == total_expected
+    total_expected_per_file = 25
+    for pair_infos_per_file in pair_infos:
+        assert len(pair_infos_per_file) == total_expected_per_file
+    assert len(pair_infos) == 3
 
-    _, demo_buffer = demo_to_buffer(path_prefix + "/test_demo_dir", 1, BEHAVIOR_SPEC)
-    assert (
-        len(demo_buffer[BufferKey.CONTINUOUS_ACTION]) == total_expected - 1
-        or len(demo_buffer[BufferKey.DISCRETE_ACTION]) == total_expected - 1
+    _, demo_buffer, _ = demo_to_buffer(path_prefix + "/test_demo_dir", 1, BEHAVIOR_SPEC)
+    # Each file should produce num_infos - 1 samples in the buffer.
+    assert len(demo_buffer[BufferKey.CONTINUOUS_ACTION]) == (
+        total_expected_per_file - 1
+    ) * len(pair_infos) or len(demo_buffer[BufferKey.DISCRETE_ACTION]) == (
+        total_expected_per_file - 1
+    ) * len(
+        pair_infos
     )
 
 
@@ -94,18 +100,12 @@ def test_edge_cases():
     with pytest.raises(FileNotFoundError):
         get_demo_files(os.path.join(path_prefix, "nonexistent_directory"))
     with tempfile.TemporaryDirectory() as tmpdirname:
-        # empty directory
-        with pytest.raises(ValueError):
-            get_demo_files(tmpdirname)
         # invalid file
         invalid_fname = os.path.join(tmpdirname, "mydemo.notademo")
         with open(invalid_fname, "w") as f:
             f.write("I'm not a demo")
         with pytest.raises(ValueError):
             get_demo_files(invalid_fname)
-        # invalid directory
-        with pytest.raises(ValueError):
-            get_demo_files(tmpdirname)
         # valid file
         valid_fname = os.path.join(tmpdirname, "mydemo.demo")
         with open(valid_fname, "w") as f:
@@ -130,3 +130,29 @@ def test_unsupported_version_raises_error(mock_get_demo_files):
     with mock.patch("builtins.open", m):
         with pytest.raises(RuntimeError):
             load_demonstration("foo")
+
+
+def test_demo_manager():
+    path_prefix = os.path.dirname(os.path.abspath(__file__))
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        # Initialize with empty dir
+        demo_man = DemoManager(tmpdirname)
+        assert demo_man.demo_buffer.num_experiences == 0
+        # Add a demo file
+        shutil.copy2(
+            path_prefix + "/test_demo_dir/test4.demo",
+            os.path.join(tmpdirname, "test4.demo"),
+        )
+        demo_man.refresh()
+        assert demo_man.demo_buffer.num_experiences == 24
+        # Add another demo file
+        shutil.copy2(
+            path_prefix + "/test_demo_dir/test5.demo",
+            os.path.join(tmpdirname, "test5.demo"),
+        )
+        demo_man.refresh()
+        assert demo_man.demo_buffer.num_experiences == 48
+
+        # Try initializing a new demo manager with a full dir
+        demo_man = DemoManager(tmpdirname)
+        assert demo_man.demo_buffer.num_experiences == 48

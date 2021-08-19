@@ -26,78 +26,82 @@ logger = logging_util.get_logger(__name__)
 
 @timed
 def make_demo_buffer(
-    pair_infos: List[AgentInfoActionPairProto],
+    all_pair_infos: List[List[AgentInfoActionPairProto]],
     behavior_spec: BehaviorSpec,
     sequence_length: int,
 ) -> AgentBuffer:
     # Create and populate buffer using experiences
     demo_raw_buffer = AgentBuffer()
     demo_processed_buffer = AgentBuffer()
-    for idx, current_pair_info in enumerate(pair_infos):
-        if idx > len(pair_infos) - 2:
-            break
-        next_pair_info = pair_infos[idx + 1]
-        current_decision_step, current_terminal_step = steps_from_proto(
-            [current_pair_info.agent_info], behavior_spec
-        )
-        next_decision_step, next_terminal_step = steps_from_proto(
-            [next_pair_info.agent_info], behavior_spec
-        )
-        previous_action = (
-            np.array(
-                pair_infos[idx].action_info.vector_actions_deprecated, dtype=np.float32
+    for pair_infos in all_pair_infos:
+        for idx, current_pair_info in enumerate(pair_infos):
+            if idx > len(pair_infos) - 2:
+                break
+            next_pair_info = pair_infos[idx + 1]
+            current_decision_step, current_terminal_step = steps_from_proto(
+                [current_pair_info.agent_info], behavior_spec
             )
-            * 0
-        )
-        if idx > 0:
-            previous_action = np.array(
-                pair_infos[idx - 1].action_info.vector_actions_deprecated,
-                dtype=np.float32,
+            next_decision_step, next_terminal_step = steps_from_proto(
+                [next_pair_info.agent_info], behavior_spec
             )
-
-        next_done = len(next_terminal_step) == 1
-        next_reward = 0
-        if len(next_terminal_step) == 1:
-            next_reward = next_terminal_step.reward[0]
-        else:
-            next_reward = next_decision_step.reward[0]
-        current_obs = None
-        if len(current_terminal_step) == 1:
-            current_obs = list(current_terminal_step.values())[0].obs
-        else:
-            current_obs = list(current_decision_step.values())[0].obs
-
-        demo_raw_buffer[BufferKey.DONE].append(next_done)
-        demo_raw_buffer[BufferKey.ENVIRONMENT_REWARDS].append(next_reward)
-        for i, obs in enumerate(current_obs):
-            demo_raw_buffer[ObsUtil.get_name_at(i)].append(obs)
-        if (
-            len(current_pair_info.action_info.continuous_actions) == 0
-            and len(current_pair_info.action_info.discrete_actions) == 0
-        ):
-            if behavior_spec.action_spec.continuous_size > 0:
-                demo_raw_buffer[BufferKey.CONTINUOUS_ACTION].append(
-                    current_pair_info.action_info.vector_actions_deprecated
+            previous_action = (
+                np.array(
+                    pair_infos[idx].action_info.vector_actions_deprecated,
+                    dtype=np.float32,
                 )
+                * 0
+            )
+            if idx > 0:
+                previous_action = np.array(
+                    pair_infos[idx - 1].action_info.vector_actions_deprecated,
+                    dtype=np.float32,
+                )
+
+            next_done = len(next_terminal_step) == 1
+            next_reward = 0
+            if len(next_terminal_step) == 1:
+                next_reward = next_terminal_step.reward[0]
             else:
-                demo_raw_buffer[BufferKey.DISCRETE_ACTION].append(
-                    current_pair_info.action_info.vector_actions_deprecated
+                next_reward = next_decision_step.reward[0]
+            current_obs = None
+            if len(current_terminal_step) == 1:
+                current_obs = list(current_terminal_step.values())[0].obs
+            else:
+                current_obs = list(current_decision_step.values())[0].obs
+
+            demo_raw_buffer[BufferKey.DONE].append(next_done)
+            demo_raw_buffer[BufferKey.ENVIRONMENT_REWARDS].append(next_reward)
+            for i, obs in enumerate(current_obs):
+                demo_raw_buffer[ObsUtil.get_name_at(i)].append(obs)
+            if (
+                len(current_pair_info.action_info.continuous_actions) == 0
+                and len(current_pair_info.action_info.discrete_actions) == 0
+            ):
+                if behavior_spec.action_spec.continuous_size > 0:
+                    demo_raw_buffer[BufferKey.CONTINUOUS_ACTION].append(
+                        current_pair_info.action_info.vector_actions_deprecated
+                    )
+                else:
+                    demo_raw_buffer[BufferKey.DISCRETE_ACTION].append(
+                        current_pair_info.action_info.vector_actions_deprecated
+                    )
+            else:
+                if behavior_spec.action_spec.continuous_size > 0:
+                    demo_raw_buffer[BufferKey.CONTINUOUS_ACTION].append(
+                        current_pair_info.action_info.continuous_actions
+                    )
+                if behavior_spec.action_spec.discrete_size > 0:
+                    demo_raw_buffer[BufferKey.DISCRETE_ACTION].append(
+                        current_pair_info.action_info.discrete_actions
+                    )
+            demo_raw_buffer[BufferKey.PREV_ACTION].append(previous_action)
+            if next_done:
+                demo_raw_buffer.resequence_and_append(
+                    demo_processed_buffer,
+                    batch_size=None,
+                    training_length=sequence_length,
                 )
-        else:
-            if behavior_spec.action_spec.continuous_size > 0:
-                demo_raw_buffer[BufferKey.CONTINUOUS_ACTION].append(
-                    current_pair_info.action_info.continuous_actions
-                )
-            if behavior_spec.action_spec.discrete_size > 0:
-                demo_raw_buffer[BufferKey.DISCRETE_ACTION].append(
-                    current_pair_info.action_info.discrete_actions
-                )
-        demo_raw_buffer[BufferKey.PREV_ACTION].append(previous_action)
-        if next_done:
-            demo_raw_buffer.resequence_and_append(
-                demo_processed_buffer, batch_size=None, training_length=sequence_length
-            )
-            demo_raw_buffer.reset_agent()
+                demo_raw_buffer.reset_agent()
     demo_raw_buffer.resequence_and_append(
         demo_processed_buffer, batch_size=None, training_length=sequence_length
     )
@@ -114,10 +118,10 @@ def demo_to_buffer(
     :param sequence_length: Length of trajectories to fill buffer.
     :return:
     """
-    behavior_spec, info_action_pair, file_paths = load_demonstration(file_path)
+    behavior_spec, info_action_pairs, file_paths = load_demonstration(file_path)
     if len(file_paths) == 0:
         return None, AgentBuffer(), file_paths
-    demo_buffer = make_demo_buffer(info_action_pair, behavior_spec, sequence_length)
+    demo_buffer = make_demo_buffer(info_action_pairs, behavior_spec, sequence_length)
     if expected_behavior_spec:
         # check action dimensions in demonstration match
         if behavior_spec.action_spec != expected_behavior_spec.action_spec:
@@ -191,10 +195,13 @@ def load_demonstration(
         file_paths = file_paths - exclusions
     behavior_spec = None
     brain_param_proto = None
-    info_action_pairs = []
     total_expected = 0
+    # We divide it up in files so that we don't accidentally merge them
+    info_action_pairs: List[List[AgentInfoActionPairProto]] = []
     for _file_path in file_paths:
         with open(_file_path, "rb") as fp:
+            expected_in_file = 0
+            _info_pairs_per_file = []
             with hierarchical_timer("read_file"):
                 data = fp.read()
             next_pos, pos, obs_decoded = 0, 0, 0
@@ -211,7 +218,7 @@ def load_demonstration(
                             f"Can't load Demonstration data from an unsupported version \
                                 ({meta_data_proto.api_version})"
                         )
-                    total_expected += meta_data_proto.number_steps
+                    expected_in_file += meta_data_proto.number_steps
                     pos = INITIAL_POS
                 if obs_decoded == 1:
                     brain_param_proto = BrainParametersProto()
@@ -224,11 +231,13 @@ def load_demonstration(
                         behavior_spec = behavior_spec_from_proto(
                             brain_param_proto, agent_info_action.agent_info
                         )
-                    info_action_pairs.append(agent_info_action)
-                    if len(info_action_pairs) == total_expected:
+                    _info_pairs_per_file.append(agent_info_action)
+                    if len(_info_pairs_per_file) == expected_in_file:
                         break
                     pos += next_pos
                 obs_decoded += 1
+        info_action_pairs.append(_info_pairs_per_file)
+        total_expected += expected_in_file
     if not behavior_spec and total_expected > 0:
         raise RuntimeError(
             f"No BrainParameters found in demonstration file at {file_path}."
@@ -284,7 +293,9 @@ class DemoManager:
         )
         if loaded_paths:
             new_demos = make_demo_buffer(loaded_demos, bspec, self._seq_len)
-            new_demos.resequence_and_append(self._demo_buffer)
+            new_demos.resequence_and_append(
+                self._demo_buffer, training_length=self._seq_len
+            )
             self._loaded_files.update(loaded_paths)
             num_new_exp = new_demos.num_experiences
             if self._demo_buffer.num_experiences > self._max_demo_buffer_size:
