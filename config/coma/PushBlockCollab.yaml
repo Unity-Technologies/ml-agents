@@ -1,6 +1,6 @@
 behaviors:
   PushBlockCollab:
-    trainer_type: poca
+    trainer_type: coma
     hyperparameters:
       batch_size: 1024
       buffer_size: 10240
@@ -10,6 +10,7 @@ behaviors:
       lambd: 0.95
       num_epoch: 3
       learning_rate_schedule: constant
+      max_num_agents: 3
     network_settings:
       normalize: false
       hidden_units: 256
