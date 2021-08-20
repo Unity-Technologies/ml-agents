@@ -391,6 +391,8 @@ class MultiAgentNetworkBody(torch.nn.Module):
         self_attn_masks = []
         self_attn_inputs = []
         concat_f_inp = []
+        obs_only = [[torch.nan_to_num(o, 0.0) for o in obs] for obs in obs_only]
+        obs = [[torch.nan_to_num(o, 0.0) for o in obs] for obs in obs]
         if self.use_attention:
             if obs:
                 obs_attn_mask = self._get_masks_from_nans(obs)
@@ -431,6 +433,7 @@ class MultiAgentNetworkBody(torch.nn.Module):
                     action.to_flat(self.action_spec.discrete_branches)
                     for action in actions
                 ]
+                flattened_group_actions = [torch.nan_to_num(o, 0.0) for o in flattened_group_actions]
                 flattened_group_actions += [flattened_group_actions[0] * 0] * (self.max_agents - len(flattened_group_actions) - 1)
                 flattened_group_actions = torch.cat(flattened_group_actions, dim=1)
                 # this should always have just one element

@@ -108,8 +108,7 @@ class GroupObsUtil:
         separated_obs: List[np.array] = []
         for i in range(num_obs):
             separated_obs.append(
-                # batch[GroupObsUtil.get_name_at(i)].padded_to_batch(pad_value=np.nan)
-                batch[GroupObsUtil.get_name_at(i)].padded_to_batch(pad_value=0)
+                batch[GroupObsUtil.get_name_at(i)].padded_to_batch(pad_value=np.nan)
             )
         # separated_obs contains a List(num_obs) of Lists(num_agents), we want to flip
         # that and get a List(num_agents) of Lists(num_obs)
@@ -125,8 +124,7 @@ class GroupObsUtil:
         for i in range(num_obs):
             separated_obs.append(
                 batch[GroupObsUtil.get_name_at_next(i)].padded_to_batch(
-                    # pad_value=np.nan
-                    pad_value=0
+                    pad_value=np.nan
                 )
             )
         # separated_obs contains a List(num_obs) of Lists(num_agents), we want to flip
