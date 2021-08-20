@@ -391,8 +391,6 @@ class MultiAgentNetworkBody(torch.nn.Module):
         self_attn_masks = []
         self_attn_inputs = []
         concat_f_inp = []
-        obs_only = [[torch.nan_to_num(o, 0.0) for o in obs] for obs in obs_only]
-        obs = [[torch.nan_to_num(o, 0.0) for o in obs] for obs in obs]
         if self.use_attention:
             if obs:
                 obs_attn_mask = self._get_masks_from_nans(obs)
@@ -424,6 +422,8 @@ class MultiAgentNetworkBody(torch.nn.Module):
             encoded_entity = torch.cat(self_attn_inputs, dim=1)
             encoded_state = self.self_attn(encoded_entity, self_attn_masks)
         else:
+            obs_only = [[torch.nan_to_num(o, 0.0) for o in obs] for obs in obs_only]
+            obs = [[torch.nan_to_num(o, 0.0) for o in obs] for obs in obs]
             if actions:
                 # calculate baseline
                 encoded_group_obs = [self.observation_encoder(inputs) for inputs in obs]
