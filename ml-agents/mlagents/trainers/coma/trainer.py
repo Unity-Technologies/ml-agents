@@ -273,18 +273,19 @@ class COMATrainer(RLTrainer):
 
         value_buffer_length = self.value_update_buffer.num_experiences
         value_batch_size = int((value_buffer_length / buffer_length) * batch_size)
-        for _ in range(num_epoch):
-            self.value_update_buffer.shuffle(
-                sequence_length=self.policy.sequence_length
-            )
-            buffer = self.value_update_buffer
-            max_num_batch = value_buffer_length // value_batch_size
-            for i in range(0, max_num_batch * value_batch_size, value_batch_size):
-                update_stats = self.optimizer.value_update(
-                    buffer.make_mini_batch(i, i + value_batch_size), n_sequences
+        if value_batch_size != 0:
+            for _ in range(num_epoch):
+                self.value_update_buffer.shuffle(
+                    sequence_length=self.policy.sequence_length
                 )
-                for stat_name, value in update_stats.items():
-                    batch_update_stats[stat_name].append(value)
+                buffer = self.value_update_buffer
+                max_num_batch = value_buffer_length // value_batch_size
+                for i in range(0, max_num_batch * value_batch_size, value_batch_size):
+                    update_stats = self.optimizer.value_update(
+                        buffer.make_mini_batch(i, i + value_batch_size), n_sequences
+                    )
+                    for stat_name, value in update_stats.items():
+                        batch_update_stats[stat_name].append(value)
 
         for stat, stat_list in batch_update_stats.items():
             self._stats_reporter.add_stat(stat, np.mean(stat_list))
