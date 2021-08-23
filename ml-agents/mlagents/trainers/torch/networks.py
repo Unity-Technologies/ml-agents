@@ -326,6 +326,7 @@ class MultiAgentNetworkBody(torch.nn.Module):
             self.lstm = LSTM(self.h_size, self.m_size)
         else:
             self.lstm = None  # type: ignore
+        self.max_agents = max_agents
 
     @property
     def memory_size(self) -> int:
@@ -421,14 +422,19 @@ class MultiAgentNetworkBody(torch.nn.Module):
             encoded_entity = torch.cat(self_attn_inputs, dim=1)
             encoded_state = self.self_attn(encoded_entity, self_attn_masks)
         else:
+            obs_only = [[torch.nan_to_num(o, 0.0) for o in obs] for obs in obs_only]
+            obs = [[torch.nan_to_num(o, 0.0) for o in obs] for obs in obs]
             if actions:
                 # calculate baseline
                 encoded_group_obs = [self.observation_encoder(inputs) for inputs in obs]
+                encoded_group_obs += [encoded_group_obs[0] * 0] * (self.max_agents - len(encoded_group_obs) - 1)
                 encoded_group_obs = torch.cat(encoded_group_obs, dim=1)
                 flattened_group_actions = [
                     action.to_flat(self.action_spec.discrete_branches)
                     for action in actions
                 ]
+                flattened_group_actions = [torch.nan_to_num(o, 0.0) for o in flattened_group_actions]
+                flattened_group_actions += [flattened_group_actions[0] * 0] * (self.max_agents - len(flattened_group_actions) - 1)
                 flattened_group_actions = torch.cat(flattened_group_actions, dim=1)
                 # this should always have just one element
                 encoded_obs = self.observation_encoder(obs_only[0])
@@ -438,6 +444,7 @@ class MultiAgentNetworkBody(torch.nn.Module):
                 encoded_state = self.baseline_encoder(baseline_inp)
             else:
                 encoded_obs = [self.observation_encoder(inputs) for inputs in obs_only]
+                encoded_obs += [encoded_obs[0] * 0] * (self.max_agents - len(encoded_obs))
                 encoded_obs = torch.cat(encoded_obs, dim=1)
                 encoded_state = self.all_obs_encoder(encoded_obs)
                 # calculate value
