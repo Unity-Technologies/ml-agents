@@ -116,6 +116,38 @@ def test_step(mock_communicator, mock_launcher):
     assert 0 in decision_steps
     assert 2 in terminal_steps
 
+@mock.patch("mlagents_envs.env_utils.launch_executable")
+@mock.patch("mlagents_envs.environment.UnityEnvironment._get_communicator")
+def test_process_immediate_message(mock_communicator, mock_launcher):
+    mock_communicator.return_value = MockCommunicator(
+        discrete_action=False, visual_inputs=0
+    )
+    env = UnityEnvironment(" ")
+    spec = env.behavior_specs["RealFakeBrain"]
+    env.step()
+    decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
+    n_agents = len(decision_steps)
+    env.set_actions("RealFakeBrain", spec.action_spec.empty_action(n_agents))
+    env.step()
+    with pytest.raises(UnityActionException):
+        env.set_actions("RealFakeBrain", spec.action_spec.empty_action(n_agents - 1))
+    decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
+    n_agents = len(decision_steps)
+    _empty_act = spec.action_spec.empty_action(n_agents)
+    next_action = ActionTuple(_empty_act.continuous - 1, _empty_act.discrete - 1)
+    env.set_actions("RealFakeBrain", next_action)
+    env.step()
+
+    env.close()
+    assert isinstance(decision_steps, DecisionSteps)
+    assert isinstance(terminal_steps, TerminalSteps)
+    assert len(spec.observation_specs) == len(decision_steps.obs)
+    assert len(spec.observation_specs) == len(terminal_steps.obs)
+    for spec, obs in zip(spec.observation_specs, decision_steps.obs):
+        assert (n_agents,) + spec.shape == obs.shape
+    assert 0 in decision_steps
+    assert 2 in terminal_steps
+
 
 @mock.patch("mlagents_envs.env_utils.launch_executable")
 @mock.patch("mlagents_envs.environment.UnityEnvironment._get_communicator")
