@@ -477,8 +477,7 @@ class UnityEnvironment(BaseEnv):
 
     def process_immediate_message(self, msg: bytearray) -> UnityOutputProto:
         """
-        Process a message (or query) immediately and send its result
-        without waiting for step() or reset() to execute.
+        Process a message (or query) immediately and send its result without waiting for step() or reset() to execute.
 
         :bytearray msg: The query sent to the environment.
         :return: The response from the environment.
