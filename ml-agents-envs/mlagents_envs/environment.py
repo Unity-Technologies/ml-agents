@@ -476,6 +476,14 @@ class UnityEnvironment(BaseEnv):
         return self._wrap_unity_input(rl_in)
 
     def process_immediate_message(self, msg: bytearray) -> UnityOutputProto:
+        """
+        Process a message (or query) immediately and send its result
+        without waiting for step() or reset() to execute.
+
+        :param msg: The query sent to the environment.
+        :return: The response from the environment.
+
+        """
         message_output = self._communicator.exchange(
             self._generate_immediate_message_input(msg)
         )
