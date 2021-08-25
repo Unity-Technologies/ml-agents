@@ -479,7 +479,7 @@ class UnityEnvironment(BaseEnv):
         """
         Process a message (or query) immediately and send its result without waiting for step() or reset() to execute.
 
-        :bytearray msg: The query sent to the environment.
+        :param msg: The query sent to the environment.
         :return: The response from the environment.
         """
         message_output = self._communicator.exchange(
