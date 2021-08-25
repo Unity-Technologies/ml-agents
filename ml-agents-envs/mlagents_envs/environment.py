@@ -481,7 +481,6 @@ class UnityEnvironment(BaseEnv):
 
         :bytearray msg: The query sent to the environment.
         :return: The response from the environment.
-
         """
         message_output = self._communicator.exchange(
             self._generate_immediate_message_input(msg)
