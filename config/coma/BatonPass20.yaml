@@ -22,7 +22,7 @@ behaviors:
         gamma: 0.99
         strength: 1.0
     keep_checkpoints: 1
-    max_steps: 20000000
+    max_steps: 15000000
     time_horizon: 640000
     summary_freq: 200000
     checkpoint_interval: 50000000
@@ -34,6 +34,6 @@ environment_parameters:
   max_food: 20
   penalty: 2.5
   exit_reward: 0
-  time_penalty: 5
+  time_penalty: 0
   collision_penalty: 0
   # area_steps: 30000
