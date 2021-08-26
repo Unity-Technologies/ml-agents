@@ -1,0 +1,39 @@
+behaviors:
+  BatonPass:
+    trainer_type: coma
+    hyperparameters:
+      max_num_agents: 22
+      batch_size: 1024
+      buffer_size: 10240
+      learning_rate: 0.0003
+      beta: 0.01
+      epsilon: 0.2
+      lambd: 0.95
+      num_epoch: 3
+      learning_rate_schedule: constant
+    network_settings:
+      # max_num_agents: 22
+      normalize: false
+      hidden_units: 256
+      num_layers: 2
+      vis_encode_type: simple
+    reward_signals:
+      extrinsic:
+        gamma: 0.99
+        strength: 1.0
+    keep_checkpoints: 1
+    max_steps: 15000000
+    time_horizon: 640000
+    summary_freq: 200000
+    checkpoint_interval: 50000000
+env_settings:
+  # seed: 1
+  num_envs: 1
+environment_parameters:
+  absorbing_state: 1
+  max_food: 20
+  penalty: 2.5
+  exit_reward: 0
+  time_penalty: 0
+  collision_penalty: 0
+  # area_steps: 30000
