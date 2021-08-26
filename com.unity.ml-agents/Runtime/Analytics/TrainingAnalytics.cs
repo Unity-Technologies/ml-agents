@@ -213,7 +213,7 @@ namespace Unity.MLAgents.Analytics
 
             // Hash the behavior name so that there's no concern about PII or "secret" data being leaked.
             tbiEvent.TrainingSessionGuid = s_TrainingSessionGuid.ToString();
-            tbiEvent.BehaviorName = AnalyticsUtils.Hash(tbiEvent.BehaviorName);
+            tbiEvent.BehaviorName = AnalyticsUtils.Hash(k_VendorKey, tbiEvent.BehaviorName);
 
             // Note - to debug, use JsonUtility.ToJson on the event.
             // Debug.Log(
