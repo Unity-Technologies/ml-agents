@@ -21,8 +21,8 @@ behaviors:
         strength: 1.0
     keep_checkpoints: 5
     max_steps: 20000000
-    time_horizon: 64
+    time_horizon: 10000000
     summary_freq: 60000
 env_settings:
   seed: 1
-  num_envs: 3
+  num_envs: 1
