@@ -211,10 +211,14 @@ namespace Unity.MLAgents.Analytics
                 return;
             }
 
-            // Hash the behavior name so that there's no concern about PII or "secret" data being leaked.
             tbiEvent.TrainingSessionGuid = s_TrainingSessionGuid.ToString();
-            tbiEvent.BehaviorName = AnalyticsUtils.Hash(k_VendorKey, tbiEvent.BehaviorName);
 
+            if(tbiEvent.Config.Length == 0 || tbiEvent.BehaviorName.Length != 64) {
+              // Hash the behavior name if the message version is from an older version of ml-agents that doesn't do trainer-side hashing.
+              // We'll also, for extra safety, verify that the BehaviorName is the size of the expected SHA256 hash.
+              // Context: The config field was added at the same time as trainer side hashing, so messages including it should already be hashed.
+              tbiEvent.BehaviorName = AnalyticsUtils.Hash(k_VendorKey, tbiEvent.BehaviorName);
+            }
             // Note - to debug, use JsonUtility.ToJson on the event.
             // Debug.Log(
             //     $"Would send event {k_TrainingBehaviorInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
@@ -236,7 +240,7 @@ namespace Unity.MLAgents.Analytics
             var remotePolicyEvent = new RemotePolicyInitializedEvent();
 
             // Hash the behavior name so that there's no concern about PII or "secret" data being leaked.
-            remotePolicyEvent.BehaviorName = AnalyticsUtils.Hash(behaviorName);
+            remotePolicyEvent.BehaviorName = AnalyticsUtils.Hash(k_VendorKey, behaviorName);
 
             remotePolicyEvent.TrainingSessionGuid = s_TrainingSessionGuid.ToString();
             remotePolicyEvent.ActionSpec = EventActionSpec.FromActionSpec(actionSpec);
