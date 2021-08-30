@@ -38,12 +38,11 @@ class TrainingAnalyticsSideChannel(DefaultTrainingAnalyticsSideChannel):
         super().__init__()
         self.run_options: Optional[RunOptions] = None
 
-    @staticmethod
-    def __hash(key: str, data: str) -> str:
+    @classmethod
+    def __hash(cls, data: str) -> str:
         res = hmac.new(
-            key.encode("utf-8"), data.encode("utf-8"), hashlib.sha256
+            cls.__vendorKey.encode("utf-8"), data.encode("utf-8"), hashlib.sha256
         ).hexdigest()
-        print(res)
         return res
 
     def on_message_received(self, msg: IncomingMessage) -> None:
@@ -52,36 +51,31 @@ class TrainingAnalyticsSideChannel(DefaultTrainingAnalyticsSideChannel):
             "this should not have happened."
         )
 
-    @staticmethod
-    def __sanitize_run_options(config: RunOptions) -> Dict[str, Any]:
+    @classmethod
+    def __sanitize_run_options(cls, config: RunOptions) -> Dict[str, Any]:
         res = copy.deepcopy(config.as_dict())
-
-        def hash(value: str) -> str:
-            return TrainingAnalyticsSideChannel.__hash(
-                TrainingAnalyticsSideChannel.__vendorKey, value
-            )
 
         # Filter potentially PII behavior names
         if "behaviors" in res and res["behaviors"]:
-            res["behaviors"] = {hash(k): v for (k, v) in res["behaviors"].items()}
+            res["behaviors"] = {cls.__hash(k): v for (k, v) in res["behaviors"].items()}
             for (k, v) in res["behaviors"].items():
                 if "init_path" in v and v["init_path"] is not None:
-                    hashed_path = hash(v["init_path"])
+                    hashed_path = cls.__hash(v["init_path"])
                     res["behaviors"][k]["init_path"] = hashed_path
 
         # Filter potentially PII curriculum and behavior names from Checkpoint Settings
         if "environment_parameters" in res and res["environment_parameters"]:
             res["environment_parameters"] = {
-                hash(k): v for (k, v) in res["environment_parameters"].items()
+                cls.__hash(k): v for (k, v) in res["environment_parameters"].items()
             }
             for (curriculumName, curriculum) in res["environment_parameters"].items():
                 updated_lessons = []
                 for lesson in curriculum["curriculum"]:
                     new_lesson = copy.deepcopy(lesson)
                     if lesson.has_keys("name"):
-                        new_lesson["name"] = hash(lesson["name"])
+                        new_lesson["name"] = cls.__hash(lesson["name"])
                     if lesson.has_keys("completion_criteria"):
-                        new_lesson["completion_criteria"]["behavior"] = hash(
+                        new_lesson["completion_criteria"]["behavior"] = cls.__hash(
                             new_lesson["completion_criteria"]["behavior"]
                         )
                     updated_lessons.append(new_lesson)
@@ -95,7 +89,7 @@ class TrainingAnalyticsSideChannel(DefaultTrainingAnalyticsSideChannel):
                 "initialize_from" in res["checkpoint_settings"]
                 and res["checkpoint_settings"]["initialize_from"] is not None
             ):
-                res["checkpoint_settings"]["initialize_from"] = hash(
+                res["checkpoint_settings"]["initialize_from"] = cls.__hash(
                     res["checkpoint_settings"]["initialize_from"]
                 )
             if (
@@ -128,8 +122,6 @@ class TrainingAnalyticsSideChannel(DefaultTrainingAnalyticsSideChannel):
             run_options=json.dumps(sanitized_run_options),
         )
 
-        print(msg)
-
         any_message = Any()
         any_message.Pack(msg)
 
@@ -137,22 +129,18 @@ class TrainingAnalyticsSideChannel(DefaultTrainingAnalyticsSideChannel):
         env_init_msg.set_raw_bytes(any_message.SerializeToString())
         super().queue_message_to_send(env_init_msg)
 
-    @staticmethod
-    def __sanitize_trainer_settings(config: TrainerSettings) -> Dict[str, Any]:
+    @classmethod
+    def __sanitize_trainer_settings(cls, config: TrainerSettings) -> Dict[str, Any]:
         config_dict = copy.deepcopy(config.as_dict())
         if "init_path" in config_dict and config_dict["init_path"] is not None:
-            hashed_path = TrainingAnalyticsSideChannel.__hash(
-                TrainingAnalyticsSideChannel.__vendorKey, config_dict["init_path"]
-            )
+            hashed_path = cls.__hash(config_dict["init_path"])
             config_dict["init_path"] = hashed_path
         return config_dict
 
     def training_started(self, behavior_name: str, config: TrainerSettings) -> None:
-        raw_config = TrainingAnalyticsSideChannel.__sanitize_trainer_settings(config)
+        raw_config = self.__sanitize_trainer_settings(config)
         msg = TrainingBehaviorInitialized(
-            behavior_name=TrainingAnalyticsSideChannel.__hash(
-                self.__vendorKey, behavior_name
-            ),
+            behavior_name=self.__hash(behavior_name),
             trainer_type=config.trainer_type.value,
             extrinsic_reward_enabled=(
                 RewardSignalType.EXTRINSIC in config.reward_signals
