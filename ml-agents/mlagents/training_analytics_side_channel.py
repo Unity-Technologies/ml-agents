@@ -1,13 +1,11 @@
 import sys
 from typing import Optional
-import uuid
 import mlagents_envs
 import mlagents.trainers
 from mlagents import torch_utils
 from mlagents.trainers.settings import RewardSignalType
 from mlagents_envs.exception import UnityCommunicationException
 from mlagents_envs.side_channel import (
-    SideChannel,
     IncomingMessage,
     OutgoingMessage,
     DefaultTrainingAnalyticsSideChannel,
@@ -32,6 +30,12 @@ class TrainingAnalyticsSideChannel(DefaultTrainingAnalyticsSideChannel):
         # Use the same uuid as the parent side channel
         super().__init__()
         self.run_options: Optional[RunOptions] = None
+
+    def on_message_received(self, msg: IncomingMessage) -> None:
+        raise UnityCommunicationException(
+            "The TrainingAnalyticsSideChannel received a message from Unity, "
+            "this should not have happened."
+        )
 
     def environment_initialized(self, run_options: RunOptions) -> None:
         self.run_options = run_options

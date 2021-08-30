@@ -10,7 +10,9 @@ import mlagents_envs
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.side_channel.side_channel import SideChannel
-from mlagents_envs.side_channel import DefaultTrainingAnalyticsSideChannel
+from mlagents_envs.side_channel.default_training_analytics_side_channel import (
+    DefaultTrainingAnalyticsSideChannel,
+)
 from mlagents_envs.side_channel.side_channel_manager import SideChannelManager
 from mlagents_envs import env_utils
 
