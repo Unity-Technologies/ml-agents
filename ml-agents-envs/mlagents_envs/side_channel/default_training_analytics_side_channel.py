@@ -40,7 +40,6 @@ class DefaultTrainingAnalyticsSideChannel(SideChannel):
             num_envs=0,
             num_environment_parameters=0,
         )
-
         any_message = Any()
         any_message.Pack(msg)
 
