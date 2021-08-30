@@ -7,13 +7,13 @@ test_mac_backcompat_2019.4:
   name: Test Mac Backcompat Training {{ editor_version }}
   agent:
     type: Unity::VM::osx
-    image: desktop/unity-macos-10.15-xcode-12.2:stable
+    image: ml-agents/ml-agents-bokken-mac:0.1.5-853758
     flavor: b1.small
   variables:
     UNITY_VERSION: {{ editor_version }}
   commands:
     - |
-      python3 -m venv venv && source venv/bin/activate
+      python -m venv venv && source venv/bin/activate
       python -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
       unity-downloader-cli -u {{ editor_version }} -c editor --wait --fast
@@ -23,7 +23,7 @@ test_mac_backcompat_2019.4:
       python -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=mac
       python -u -m ml-agents.tests.yamato.training_int_tests --csharp {{ csharp_backcompat_version }}
     - |
-      python3 -m venv venv_old && source venv_old/bin/activate
+      python -m venv venv_old && source venv_old/bin/activate
       python -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python -u -m ml-agents.tests.yamato.training_int_tests --python 0.24.0
   triggers:
