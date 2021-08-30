@@ -25,7 +25,7 @@ test_mac_backcompat_2019.4:
     - |
       python3 -m venv venv_old && source venv_old/bin/activate
       python -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
-      python -u -m ml-agents.tests.yamato.training_int_tests --python 0.16.0
+      python -u -m ml-agents.tests.yamato.training_int_tests --python 0.24.0
   triggers:
     cancel_old_ci: true
     recurring:
