@@ -25,12 +25,12 @@ behaviors:
     summary_freq: 200000
     checkpoint_interval: 50000000
 env_settings:
-  # seed: 1
+  seed: 1
   num_envs: 1
 environment_parameters:
   max_food: 20
   penalty: 2.5
   exit_reward: 0
-  time_penalty: 
+  time_penalty:
   collision_penalty: 0.001
   # area_steps: 30000
