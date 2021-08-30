@@ -7,7 +7,7 @@ test_mac_backcompat_2019.4:
   name: Test Mac Backcompat Training {{ editor_version }}
   agent:
     type: Unity::VM::osx
-    image: ml-agents/ml-agents-bokken-mac:0.1.4-492264
+    image: desktop/unity-macos-10.15-xcode-12.2:stable
     flavor: b1.small
   variables:
     UNITY_VERSION: {{ editor_version }}
