@@ -1,4 +1,6 @@
 using System;
+using System.Text;
+using System.Security.Cryptography;
 using UnityEngine;
 
 namespace Unity.MLAgents.Analytics
@@ -13,7 +15,7 @@ namespace Unity.MLAgents.Analytics
         /// <returns>A byte array to be hex encoded.</returns>
         private static string ToHexString(byte[] array)
         {
-            System.Text.StringBuilder hex = new System.Text.StringBuilder(array.Length * 2);
+            StringBuilder hex = new StringBuilder(array.Length * 2);
             foreach (byte b in array)
             {
                 hex.AppendFormat("{0:x2}", b);
@@ -31,8 +33,8 @@ namespace Unity.MLAgents.Analytics
         public static string Hash(string key, string value)
         {
             string hash;
-            System.Text.UTF8Encoding encoder = new System.Text.UTF8Encoding();
-            using (System.Security.Cryptography.HMACSHA256 hmac = new System.Security.Cryptography.HMACSHA256(encoder.GetBytes(key)))
+            UTF8Encoding encoder = new UTF8Encoding();
+            using (HMACSHA256 hmac = new HMACSHA256(encoder.GetBytes(key)))
             {
                 Byte[] hmBytes = hmac.ComputeHash(encoder.GetBytes(value));
                 hash = ToHexString(hmBytes);
