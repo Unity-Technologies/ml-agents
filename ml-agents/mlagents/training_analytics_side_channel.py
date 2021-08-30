@@ -123,8 +123,6 @@ class TrainingAnalyticsSideChannel(DefaultTrainingAnalyticsSideChannel):
             run_options=json.dumps(sanitized_run_options),
         )
 
-        print(msg)
-
         any_message = Any()
         any_message.Pack(msg)
 
