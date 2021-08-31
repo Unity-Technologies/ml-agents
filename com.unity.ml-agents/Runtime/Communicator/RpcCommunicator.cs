@@ -141,7 +141,7 @@ namespace Unity.MLAgents
                     Debug.Log($"Unexpected exception when trying to initialize communication: {ex}");
                 }
                 initParametersOut = new UnityRLInitParameters();
-                m_Channel.ShutdownAsync();
+                NotifyQuitAndShutDownChannel();
                 return false;
             }
 
@@ -245,7 +245,7 @@ namespace Unity.MLAgents
             {
                 m_Channel.ShutdownAsync().Wait();
             }
-            catch (InvalidOperationException)
+            catch (Exception)
             {
                 // do nothing
             }
