@@ -5,7 +5,6 @@ import shutil
 import sys
 import subprocess
 import time
-from typing import Any
 
 from .yamato_utils import (
     find_executables,
@@ -14,7 +13,6 @@ from .yamato_utils import (
     run_standalone_build,
     init_venv,
     override_config_file,
-    override_legacy_config_file,
     checkout_csharp_version,
     undo_git_checkout,
 )
@@ -26,7 +24,7 @@ def run_training(python_version: str, csharp_version: str) -> bool:
     print(
         f"Running training with python={python_version or latest} and c#={csharp_version or latest}"
     )
-    output_dir = "models" if python_version else "results"
+    output_dir = "results"
     onnx_file_expected = f"./{output_dir}/{run_id}/3DBall.onnx"
 
     if os.path.exists(onnx_file_expected):
@@ -70,17 +68,11 @@ def run_training(python_version: str, csharp_version: str) -> bool:
     # Copy the default training config but override the max_steps parameter,
     # and reduce the batch_size and buffer_size enough to ensure an update step happens.
     yaml_out = "override.yaml"
-    if python_version:
-        overrides: Any = {"max_steps": 100, "batch_size": 10, "buffer_size": 10}
-        override_legacy_config_file(
-            python_version, "config/trainer_config.yaml", yaml_out, **overrides
-        )
-    else:
-        overrides = {
-            "hyperparameters": {"batch_size": 10, "buffer_size": 10},
-            "max_steps": 100,
-        }
-        override_config_file("config/ppo/3DBall.yaml", yaml_out, overrides)
+    overrides = {
+        "hyperparameters": {"batch_size": 10, "buffer_size": 10},
+        "max_steps": 100,
+    }
+    override_config_file("config/ppo/3DBall.yaml", yaml_out, overrides)
 
     log_output_path = f"{get_base_output_path()}/training.log"
     env_path = os.path.join(get_base_output_path(), standalone_player_path)
