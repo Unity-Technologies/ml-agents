@@ -241,7 +241,14 @@ namespace Unity.MLAgents
         void NotifyQuitAndShutDownChannel()
         {
             QuitCommandReceived?.Invoke();
-            m_Channel.ShutdownAsync().Wait();
+            try
+            {
+                m_Channel.ShutdownAsync().Wait();
+            }
+            catch (InvalidOperationException)
+            {
+                // do nothing
+            }
         }
 
 #endregion
