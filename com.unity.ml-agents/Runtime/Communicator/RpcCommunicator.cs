@@ -141,7 +141,7 @@ namespace Unity.MLAgents
                     Debug.Log($"Unexpected exception when trying to initialize communication: {ex}");
                 }
                 initParametersOut = new UnityRLInitParameters();
-                m_Channel.ShutdownAsync().Wait();
+                m_Channel.ShutdownAsync();
                 return false;
             }
 
