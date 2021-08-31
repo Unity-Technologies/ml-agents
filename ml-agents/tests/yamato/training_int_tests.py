@@ -24,7 +24,7 @@ def run_training(python_version: str, csharp_version: str) -> bool:
     print(
         f"Running training with python={python_version or latest} and c#={csharp_version or latest}"
     )
-    output_dir = "models" if python_version else "results"
+    output_dir = "results"
     onnx_file_expected = f"./{output_dir}/{run_id}/3DBall.onnx"
 
     if os.path.exists(onnx_file_expected):
