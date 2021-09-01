@@ -262,7 +262,8 @@ class ResidualSelfAttention(torch.nn.Module):
 
     def forward(self, inp: torch.Tensor, key_masks: List[torch.Tensor]) -> torch.Tensor:
         # Gather the maximum number of entities information
-        mask = torch.cat(key_masks, dim=1)
+        #mask = torch.cat(key_masks, dim=1)
+        mask = key_masks
 
         inp = self.embedding_norm(inp)
         # Feed to self attention
