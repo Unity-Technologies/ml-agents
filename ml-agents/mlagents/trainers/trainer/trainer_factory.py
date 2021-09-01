@@ -27,6 +27,7 @@ class TrainerFactory:
         param_manager: EnvironmentParameterManager,
         init_path: str = None,
         multi_gpu: bool = False,
+        checkpoint_list: Dict[str, str] = None,
     ):
         """
         The TrainerFactory generates the Trainers based on the configuration passed as
@@ -53,6 +54,7 @@ class TrainerFactory:
         self.seed = seed
         self.param_manager = param_manager
         self.multi_gpu = multi_gpu
+        self.checkpoint_list = checkpoint_list
         self.ghost_controller = GhostController()
 
     def generate(self, behavior_name: str) -> Trainer:
@@ -68,6 +70,7 @@ class TrainerFactory:
             self.param_manager,
             self.init_path,
             self.multi_gpu,
+            self.checkpoint_list,
         )
 
     @staticmethod
@@ -82,6 +85,7 @@ class TrainerFactory:
         param_manager: EnvironmentParameterManager,
         init_path: str = None,
         multi_gpu: bool = False,
+        checkpoint_list: Dict[str, str] = None,
     ) -> Trainer:
         """
         Initializes a trainer given a provided trainer configuration and brain parameters, as well as
@@ -107,6 +111,11 @@ class TrainerFactory:
 
         trainer: Trainer = None  # type: ignore  # will be set to one of these, or raise
         trainer_type = trainer_settings.trainer_type
+
+        if checkpoint_list is not None:
+            if checkpoint_list.get(brain_name) is not None:
+                trainer_settings.checkpoint_name = checkpoint_list[brain_name]
+            # todo: if checkpoint_list is empty we fall back to defualt
 
         if trainer_type == TrainerType.PPO:
             trainer = PPOTrainer(

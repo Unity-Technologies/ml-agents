@@ -25,6 +25,8 @@ class TorchModelSaver(BaseModelSaver):
         super().__init__()
         self.model_path = model_path
         self.initialize_path = trainer_settings.init_path
+        self.checkpoint_name = trainer_settings.checkpoint_name
+        print("TMS:", self.initialize_path)
         self._keep_checkpoints = trainer_settings.keep_checkpoints
         self.load = load
 
@@ -83,7 +85,8 @@ class TorchModelSaver(BaseModelSaver):
         policy: Optional[TorchPolicy] = None,
         reset_global_steps: bool = False,
     ) -> None:
-        model_path = os.path.join(load_path, "checkpoint.pt")
+        model_path = os.path.join(load_path, self.checkpoint_name)
+        print("loading: ", model_path)
         saved_state_dict = torch.load(model_path)
         if policy is None:
             modules = self.modules

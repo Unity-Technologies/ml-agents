@@ -637,6 +637,7 @@ class TrainerSettings(ExportableSettings):
         factory=lambda: {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
     )
     init_path: Optional[str] = None
+    checkpoint_name: str = "checkpoint.pt"
     keep_checkpoints: int = 5
     checkpoint_interval: int = 500000
     max_steps: int = 500000
@@ -752,6 +753,7 @@ class CheckpointSettings:
     train_model: bool = parser.get_default("train_model")
     inference: bool = parser.get_default("inference")
     results_dir: str = parser.get_default("results_dir")
+    checkpoint_list: Optional[Dict[str, str]] = None
 
     @property
     def write_path(self) -> str:
