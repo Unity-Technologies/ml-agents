@@ -152,7 +152,7 @@ class LinearEncoder(torch.nn.Module):
                 kernel_gain=kernel_gain,
             )
         ]
-        self.layers.append(Swish())
+        self.layers.append(torch.nn.ReLU())#Swish())
         for _ in range(num_layers - 1):
             self.layers.append(
                 linear_layer(
@@ -162,7 +162,7 @@ class LinearEncoder(torch.nn.Module):
                     kernel_gain=kernel_gain,
                 )
             )
-            self.layers.append(Swish())
+            self.layers.append(torch.nn.ReLU())#Swish())
         self.seq_layers = torch.nn.Sequential(*self.layers)
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
