@@ -84,9 +84,10 @@ repos:
     exclude: ".*localized.*"
 
 - repo: https://github.com/dotnet/format
-  rev: "7e343070a0355c86f72bdee226b5e19ffcbac931"  # TODO - update to a tagged version when one that includes the hook is ready.
+  rev: v5.1.225507
   hooks:
   - id: dotnet-format
+    entry: dotnet-format whitespace
     args: [--folder, --include]
 
 # "Local" hooks, see https://pre-commit.com/#repository-local-hooks
