@@ -26,8 +26,6 @@ _colors =["b", "r", "g", "y"]
 # compute the average
 # run with 1, 2 and at most 2 absorbing state
 
-BATCH_SIZE = 500
-EPOCHS = 2001
 seeds = 20
 
 absorbing_states = [0]#, 1, -1, .4, 10]
@@ -87,7 +85,6 @@ def generate_batch(batch, max_num_abs, abs_state, sample = False, atten=False):
 
 _c = sns.color_palette("twilight_shifted_r")
 for absorbing_state in absorbing_states:
-    print("abs: ", absorbing_state)
 
     f = plt.figure(1, figsize=(5, 3), dpi=300)
     
@@ -96,12 +93,8 @@ for absorbing_state in absorbing_states:
     x = 2
     sns.set_style("white")
     sns.set_style("ticks", {'font.family':'serif', 'font.serif':'Times New Roman', 'lines.linewidth': 8})
-    if absorbing_state == 10:
-        attention = True
-        plt.title("Computation of Average with Attention", fontsize=font_size)
-    else:
-        attention = False
-        plt.title("Computation of Average with Absorbing State " + str(absorbing_state), fontsize=font_size)
+    plt.title("Calculating the Average of Floats", fontsize=font_size)
+    #plt.title("Computation of Average with Absorbing State " + str(absorbing_state), fontsize=font_size)
 
     if LOG:
       plt.ylabel("Log Mean Squared Error", fontsize=font_size)
@@ -116,70 +109,38 @@ for absorbing_state in absorbing_states:
     # _c = ["blue", "orange", "green", "m", "red", "black","c", "yellow"]
     # _c= ['#1f77b4', '#ff7f0e',  '#d62728', '#9467bd','black', '#2ca02c', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
     #_c = sns.color_palette("colorblind")
-    if attention:
-        _title = "atten_abs_state"
-    else:
-        _title = "fixed_abs_state_" + str(absorbing_state)
-    for num_absorb, color, sample in zip([0,2,4,6, 8], _c[:5], [False, False, False, False, False]):
-      dfs = []
-      print("  num_abs: ", num_absorb)
-
-      for seed in range(seeds):
-        print("    seed: ", seed)
+    #if attention:
+    #    _title = "atten_abs_state"
+    #else:
+    #    _title = "abs_state_" + str(absorbing_state)
+    #for num_absorb, color, sample in zip([0,2,4,6, 8], _c[:5], [False, True, True, True, True]):
+    print(len(_c))
+    for num_absorb, color, sample, attention in zip([0,2, 4, 6, 8], _c[:5], [False, False, False, False, False], [False,  False, False, False, False]):
         if attention:
-            encoder = AttenNetwork()
+            _title = "atten_abs_state"
         else:
-            encoder = Network()
-    
-        optimizer = torch.optim.Adam(
-                list(encoder.parameters()),
-                lr=0.001,
-            )
-    
-    
+            _title = "fixed_abs_state_" + str(absorbing_state)
+
+        dfs = []
+        print("  num_abs: ", num_absorb)
+
         if attention:
           if not sample:
-            condition_name = "0 missing values"
+            condition_name = "10 inputs (Attention)"
           else:
-            condition_name = "0 to " + str(num_absorb) + " missing values"
+            condition_name = str(10 - num_absorb) + "-10 inputs (Attention)" 
         elif not sample:
-          condition_name = str(num_absorb) + " absorbing states"
+          if num_absorb == 0:
+            condition_name = str(10 - num_absorb) + " inputs (FC)"
+          else:
+            condition_name = str(10 - num_absorb) + " inputs (FC, Absorbing)"
         else:
-          condition_name = "0 to " +str(num_absorb) + " absorbing states"
-    
-        values = []
-        for e in range(EPOCHS):
-          data, mask, targ = generate_batch(BATCH_SIZE, num_absorb, absorbing_state, sample, atten=attention)
-          data = torch.from_numpy(data)
-          targ = torch.from_numpy(targ)
-          mask = torch.from_numpy(mask)
-          pred = encoder(data, mask)
-    
-          loss = torch.mean((targ - pred) ** 2)
-          if e >= 0:
-            if LOG:
-              values.append(loss.log().item())
-            else:
-              values.append(loss.item())
-          optimizer.zero_grad()
-          loss.backward()
-          optimizer.step()
-    
-        df = pd.DataFrame({"step":range(len(values)), "values":values})
-        dfs.append(df)
+          condition_name = str(10 - num_absorb) + "-10 inputs  (FC, Absorbing)" 
         # sns.tsplot(data=df["values"] , color=color, condition=condition_name, ci=95, time=df.index.values)
-      values_per_seed = {"step":range(EPOCHS)}
-      for _s, _df in enumerate(dfs):
-          values_per_seed["seed"+str(_s)] = _df["values"]
-        
-      pd.DataFrame(values_per_seed).to_csv("abs_plot_csvs/" + _title + str(num_absorb) +  ".csv")
-      sns.tsplot(data=[d["values"] for d in dfs], color=color, condition=condition_name, ci=95, time=dfs[0].index.values)
+        values_per_seed = pd.read_csv("abs_plot_csvs/" + _title + str(num_absorb) + ".csv")
+        sns.tsplot(data=[values_per_seed["seed" + str(_s)] for _s in range(seeds)], color=color, condition=condition_name, ci=95)#, time=values_per_seed["step"])
     
     plt.legend(handlelength=2, fontsize=font_size, labelspacing=0.25, borderpad=0.25, markerscale=0.75, frameon=False)
-    if attention:
-        _title = "atten_abs_state"
-    else:
-        _title = "abs_state_" + str(absorbing_state)
-    plt.savefig("abs_state_plots/" + _title + ".png", dpi=300, bbox_inches='tight')
+    plt.savefig("abs_state_plots/" + "fixed_.png", dpi=300, bbox_inches='tight')
     f.clear()
     plt.close(f)
