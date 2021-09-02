@@ -38,6 +38,8 @@ class DefaultTrainingAnalyticsSideChannel(SideChannel):
             python_version=f"{vi[0]}.{vi[1]}.{vi[2]}",
             mlagents_version="Custom",
             mlagents_envs_version=mlagents_envs.__version__,
+            torch_version="Unknown",
+            torch_device_type="Unknown",
         )
         any_message = Any()
         any_message.Pack(msg)
