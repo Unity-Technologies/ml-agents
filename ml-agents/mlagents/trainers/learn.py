@@ -17,7 +17,7 @@ from mlagents.trainers.directory_utils import validate_existing_directories
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.cli_utils import parser
 from mlagents_envs.environment import UnityEnvironment
-from mlagents.trainers.settings import RunOptions, TrainerSettings
+from mlagents.trainers.settings import RunOptions
 
 from mlagents.trainers.training_status import GlobalTrainingStatus
 from mlagents_envs.base_env import BaseEnv
@@ -49,6 +49,7 @@ def parse_command_line(argv: Optional[List[str]] = None) -> RunOptions:
     args = parser.parse_args(argv)
     return RunOptions.from_argparse(args)
 
+
 def _Get_checkpoint_name(bn, checkpoint_list):
     if checkpoint_list and checkpoint_list.get(bn):
         return checkpoint_list[bn]
@@ -58,9 +59,10 @@ def _Get_checkpoint_name(bn, checkpoint_list):
 
 def _Validate_init_full_path(init_file):
     if not (os.path.isfile(init_file) and init_file.endswith(".pt")):
-        logger.warning(f"could not initialize from {init_file}. file does not exists or is not a .pt")
-    #     return False
-    # return True
+        raise UnityTrainerException(
+            f"could not initialize from {init_file}. file does not exists or is not a `.pt` file"
+        )
+
 
 def run_training(run_seed: int, options: RunOptions) -> None:
     """
@@ -98,8 +100,14 @@ def run_training(run_seed: int, options: RunOptions) -> None:
                 if ts.init_path is not None:
                     _Validate_init_full_path(ts.init_path)
                 else:
-                    ts.init_path = os.path.join(init_path, behavior_name, _Get_checkpoint_name(behavior_name, checkpoint_settings.init_checkpoint_list))
-                    #validate existance, warning or error
+                    ts.init_path = os.path.join(
+                        init_path,
+                        behavior_name,
+                        _Get_checkpoint_name(
+                            behavior_name, checkpoint_settings.init_checkpoint_list
+                        ),
+                    )
+                    # validate existance, warning or error
                     _Validate_init_full_path(ts.init_path)
                 print(ts.init_path)
 
