@@ -192,8 +192,8 @@ class UnityEnvironment(BaseEnv):
         default_training_side_channel: Optional[
             DefaultTrainingAnalyticsSideChannel
         ] = None
-        if "TrainingAnalyticsSideChannel" not in [
-            x.__class__.__name__ for x in side_channels
+        if DefaultTrainingAnalyticsSideChannel.CHANNEL_ID not in [
+            _.channel_id for _ in side_channels
         ]:
             default_training_side_channel = DefaultTrainingAnalyticsSideChannel()
             side_channels.append(default_training_side_channel)
@@ -258,6 +258,7 @@ class UnityEnvironment(BaseEnv):
         self._update_behavior_specs(aca_output)
         self.academy_capabilities = aca_params.capabilities
         if default_training_side_channel is not None:
+            print("in gym test")
             default_training_side_channel.environment_initialized()
 
     @staticmethod

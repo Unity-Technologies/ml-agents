@@ -14,12 +14,13 @@ class DefaultTrainingAnalyticsSideChannel(SideChannel):
     """
     Side channel that sends information about the training to the Unity environment so it can be logged.
     """
-
+    CHANNEL_ID = uuid.UUID("b664a4a9-d86f-5a5f-95cb-e8353a7e8356")
     def __init__(self) -> None:
         # >>> uuid.uuid5(uuid.NAMESPACE_URL, "com.unity.ml-agents/TrainingAnalyticsSideChannel")
         # UUID('b664a4a9-d86f-5a5f-95cb-e8353a7e8356')
         # We purposefully use the SAME side channel as the TrainingAnalyticsSideChannel
-        super().__init__(uuid.UUID("b664a4a9-d86f-5a5f-95cb-e8353a7e8356"))
+
+        super().__init__(DefaultTrainingAnalyticsSideChannel.CHANNEL_ID)
 
     def on_message_received(self, msg: IncomingMessage) -> None:
         raise UnityCommunicationException(
@@ -35,10 +36,6 @@ class DefaultTrainingAnalyticsSideChannel(SideChannel):
             python_version=f"{vi[0]}.{vi[1]}.{vi[2]}",
             mlagents_version="Custom",
             mlagents_envs_version=mlagents_envs.__version__,
-            torch_version="Unknown",
-            torch_device_type="Unknown",
-            num_envs=0,
-            num_environment_parameters=0,
         )
         any_message = Any()
         any_message.Pack(msg)
