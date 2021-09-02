@@ -753,7 +753,7 @@ class CheckpointSettings:
     train_model: bool = parser.get_default("train_model")
     inference: bool = parser.get_default("inference")
     results_dir: str = parser.get_default("results_dir")
-    checkpoint_list: Optional[Dict[str, str]] = None
+    init_checkpoint_list: Optional[Dict[str, str]] = None
 
     @property
     def write_path(self) -> str:

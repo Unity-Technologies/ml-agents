@@ -91,14 +91,14 @@ def run_training(run_seed: int, options: RunOptions) -> None:
                 os.path.join(run_logs_dir, "training_status.json")
             )
 
-        if checkpoint_settings.maybe_init_path is not None:
+        elif checkpoint_settings.maybe_init_path is not None:
             # if it's a initialization case
             init_path = checkpoint_settings.maybe_init_path
             for behavior_name, ts in options.behaviors.items():
                 if ts.init_path is not None:
                     _Validate_init_full_path(ts.init_path)
                 else:
-                    ts.init_path = os.path.join(init_path, behavior_name, _Get_checkpoint_name(behavior_name, checkpoint_settings.checkpoint_list))
+                    ts.init_path = os.path.join(init_path, behavior_name, _Get_checkpoint_name(behavior_name, checkpoint_settings.init_checkpoint_list))
                     #validate existance, warning or error
                     _Validate_init_full_path(ts.init_path)
                 print(ts.init_path)
@@ -133,7 +133,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             param_manager=env_parameter_manager,
             init_path=checkpoint_settings.maybe_init_path,
             multi_gpu=False,
-            checkpoint_list=checkpoint_settings.checkpoint_list,
+            checkpoint_list=checkpoint_settings.init_checkpoint_list,
         )
         # Create controller and begin training.
         tc = TrainerController(
