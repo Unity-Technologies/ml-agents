@@ -14,7 +14,9 @@ class DefaultTrainingAnalyticsSideChannel(SideChannel):
     """
     Side channel that sends information about the training to the Unity environment so it can be logged.
     """
+
     CHANNEL_ID = uuid.UUID("b664a4a9-d86f-5a5f-95cb-e8353a7e8356")
+
     def __init__(self) -> None:
         # >>> uuid.uuid5(uuid.NAMESPACE_URL, "com.unity.ml-agents/TrainingAnalyticsSideChannel")
         # UUID('b664a4a9-d86f-5a5f-95cb-e8353a7e8356')

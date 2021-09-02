@@ -258,7 +258,6 @@ class UnityEnvironment(BaseEnv):
         self._update_behavior_specs(aca_output)
         self.academy_capabilities = aca_params.capabilities
         if default_training_side_channel is not None:
-            print("in gym test")
             default_training_side_channel.environment_initialized()
 
     @staticmethod
