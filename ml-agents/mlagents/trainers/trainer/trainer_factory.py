@@ -104,18 +104,18 @@ class TrainerFactory:
         :return:
         """
         trainer_artifact_path = os.path.join(output_path, brain_name)
-        if init_path is not None:
-            trainer_settings.init_path = os.path.join(init_path, brain_name)
+        # if init_path is not None:
+        #     trainer_settings.init_path = os.path.join(init_path, brain_name)
 
         min_lesson_length = param_manager.get_minimum_reward_buffer_size(brain_name)
 
         trainer: Trainer = None  # type: ignore  # will be set to one of these, or raise
         trainer_type = trainer_settings.trainer_type
 
-        if checkpoint_list is not None:
-            if checkpoint_list.get(brain_name) is not None:
-                trainer_settings.checkpoint_name = checkpoint_list[brain_name]
-            # todo: if checkpoint_list is empty we fall back to defualt
+        # if checkpoint_list is not None:
+        #     if checkpoint_list.get(brain_name) is not None:
+        #         trainer_settings.checkpoint_name = checkpoint_list[brain_name]
+        #     # todo: if checkpoint_list is empty we fall back to defualt
 
         if trainer_type == TrainerType.PPO:
             trainer = PPOTrainer(

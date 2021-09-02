@@ -77,7 +77,7 @@ class TorchModelSaver(BaseModelSaver):
             )
         elif self.load:
             logger.info(f"Resuming from {self.model_path}.")
-            self._load_model(self.model_path, policy, reset_global_steps=reset_steps)
+            self._load_model(os.path.join(self.model_path, "checkpoint.pt"), policy, reset_global_steps=reset_steps)
 
     def _load_model(
         self,
@@ -85,7 +85,8 @@ class TorchModelSaver(BaseModelSaver):
         policy: Optional[TorchPolicy] = None,
         reset_global_steps: bool = False,
     ) -> None:
-        model_path = os.path.join(load_path, self.checkpoint_name)
+        # model_path = os.path.join(load_path, self.checkpoint_name)
+        model_path = load_path
         print("loading: ", model_path)
         saved_state_dict = torch.load(model_path)
         if policy is None:
