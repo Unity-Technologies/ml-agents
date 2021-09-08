@@ -59,7 +59,7 @@ def _get_checkpoint_name(
         return "checkpoint.pt"
 
 
-def _Validate_init_full_path(init_file: str) -> None:
+def _validate_init_full_path(init_file: str) -> None:
     """ Validate initialization path """
     if not (os.path.isfile(init_file) and init_file.endswith(".pt")):
         raise UnityTrainerException(
