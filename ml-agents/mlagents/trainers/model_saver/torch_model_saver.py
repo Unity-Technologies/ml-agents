@@ -88,10 +88,8 @@ class TorchModelSaver(BaseModelSaver):
         policy: Optional[TorchPolicy] = None,
         reset_global_steps: bool = False,
     ) -> None:
-        # model_path = os.path.join(load_path, self.checkpoint_name)
-        model_path = load_path
-        print("loading: ", model_path)
-        saved_state_dict = torch.load(model_path)
+        print("loading: ", load_path)
+        saved_state_dict = torch.load(load_path)
         if policy is None:
             modules = self.modules
             policy = self.policy

@@ -94,7 +94,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             GlobalTrainingStatus.load_state(
                 os.path.join(run_logs_dir, "training_status.json")
             )
-        # In case of initialization
+        # In case of initialization, set init_path for all behaviors
         elif checkpoint_settings.maybe_init_path is not None:
             for behavior_name, ts in options.behaviors.items():
                 if ts.init_path is None:
@@ -107,7 +107,6 @@ def run_training(run_seed: int, options: RunOptions) -> None:
                     )
                 # validate existance, warning or error
                 _Validate_init_full_path(ts.init_path)
-                print(ts.init_path)
 
         # Configure Tensorboard Writers and StatsReporter
         stats_writers = register_stats_writer_plugins(options)
