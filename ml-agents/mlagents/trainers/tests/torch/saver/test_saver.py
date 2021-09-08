@@ -62,7 +62,7 @@ def test_load_save_policy(tmp_path):
     assert policy2.get_current_step() == 2000
 
     # Try initialize from path 1
-    trainer_params.init_path = path1
+    trainer_params.init_path = os.path.join(path1, "checkpoint.pt")
     model_saver3 = TorchModelSaver(trainer_params, path2)
     policy3 = create_policy_mock(trainer_params)
     model_saver3.register(policy3)
