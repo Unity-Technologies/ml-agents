@@ -50,7 +50,7 @@ def parse_command_line(argv: Optional[List[str]] = None) -> RunOptions:
     return RunOptions.from_argparse(args)
 
 
-def _Get_checkpoint_name(
+def _get_checkpoint_name(
     behavior_name: str, checkpoint_list: Optional[Dict[str, str]]
 ) -> str:
     if checkpoint_list and checkpoint_list.get(behavior_name):
