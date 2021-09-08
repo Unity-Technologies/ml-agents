@@ -60,6 +60,7 @@ def _Get_checkpoint_name(
 
 
 def _Validate_init_full_path(init_file: str) -> None:
+    """ Validate initialization path """
     if not (os.path.isfile(init_file) and init_file.endswith(".pt")):
         raise UnityTrainerException(
             f"Could not initialize from {init_file}. file does not exists or is not a `.pt` file"
@@ -105,7 +106,6 @@ def run_training(run_seed: int, options: RunOptions) -> None:
                             behavior_name, checkpoint_settings.init_checkpoints_list
                         ),
                     )
-                # validate existance, warning or error
                 _Validate_init_full_path(ts.init_path)
 
         # Configure Tensorboard Writers and StatsReporter
@@ -138,7 +138,6 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             param_manager=env_parameter_manager,
             init_path=checkpoint_settings.maybe_init_path,
             multi_gpu=False,
-            checkpoint_list=checkpoint_settings.init_checkpoints_list,
         )
         # Create controller and begin training.
         tc = TrainerController(
