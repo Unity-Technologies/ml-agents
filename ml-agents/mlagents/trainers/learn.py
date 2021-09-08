@@ -23,6 +23,7 @@ from mlagents.trainers.training_status import GlobalTrainingStatus
 from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents.trainers.model_saver.torch_model_saver import DEFAULT_CHECKPOINT_NAME
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.timers import (
     hierarchical_timer,
@@ -51,16 +52,26 @@ def parse_command_line(argv: Optional[List[str]] = None) -> RunOptions:
 
 
 def _get_checkpoint_name(
-    behavior_name: str, checkpoint_list: Optional[Dict[str, str]]
+    behavior_name: str, checkpoint_dict: Optional[Dict[str, str]]
 ) -> str:
-    if checkpoint_list and checkpoint_list.get(behavior_name):
-        return checkpoint_list[behavior_name]
+    """
+    Retrieve the checkpoint file mapped to this behavior, use most recent by default
+    :param behavior_name: Name of the behavior to load checkpoint for
+    :param checkpoint_dict: mapping from behavior_name to checkpoint_file_name.pt
+    :return:
+    """
+    if checkpoint_dict and checkpoint_dict.get(behavior_name):
+        return checkpoint_dict[behavior_name]
     else:
-        return "checkpoint.pt"
+        return DEFAULT_CHECKPOINT_NAME
 
 
 def _validate_init_full_path(init_file: str) -> None:
-    """ Validate initialization path """
+    """
+    Validate initialization path
+    :param init_file: full path to initialization checkpoint file
+    :return:
+    """
     if not (os.path.isfile(init_file) and init_file.endswith(".pt")):
         raise UnityTrainerException(
             f"Could not initialize from {init_file}. file does not exists or is not a `.pt` file"
@@ -102,11 +113,11 @@ def run_training(run_seed: int, options: RunOptions) -> None:
                     ts.init_path = os.path.join(
                         checkpoint_settings.maybe_init_path,
                         behavior_name,
-                        _Get_checkpoint_name(
+                        _get_checkpoint_name(
                             behavior_name, checkpoint_settings.init_checkpoints_list
                         ),
                     )
-                _Validate_init_full_path(ts.init_path)
+                _validate_init_full_path(ts.init_path)
 
         # Configure Tensorboard Writers and StatsReporter
         stats_writers = register_stats_writer_plugins(options)
