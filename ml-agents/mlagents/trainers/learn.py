@@ -6,7 +6,7 @@ import os
 import numpy as np
 import json
 
-from typing import Callable, Optional, List
+from typing import Callable, Optional, List, Dict
 
 import mlagents.trainers
 import mlagents_envs
@@ -50,17 +50,19 @@ def parse_command_line(argv: Optional[List[str]] = None) -> RunOptions:
     return RunOptions.from_argparse(args)
 
 
-def _Get_checkpoint_name(bn, checkpoint_list):
-    if checkpoint_list and checkpoint_list.get(bn):
-        return checkpoint_list[bn]
+def _Get_checkpoint_name(
+    behavior_name: str, checkpoint_list: Optional[Dict[str, str]]
+) -> str:
+    if checkpoint_list and checkpoint_list.get(behavior_name):
+        return checkpoint_list[behavior_name]
     else:
         return "checkpoint.pt"
 
 
-def _Validate_init_full_path(init_file):
+def _Validate_init_full_path(init_file: str) -> None:
     if not (os.path.isfile(init_file) and init_file.endswith(".pt")):
         raise UnityTrainerException(
-            f"could not initialize from {init_file}. file does not exists or is not a `.pt` file"
+            f"Could not initialize from {init_file}. file does not exists or is not a `.pt` file"
         )
 
 
@@ -87,28 +89,24 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         )
         # Make run logs directory
         os.makedirs(run_logs_dir, exist_ok=True)
-        # Load any needed states
+        # Load any needed states in case of resume
         if checkpoint_settings.resume:
             GlobalTrainingStatus.load_state(
                 os.path.join(run_logs_dir, "training_status.json")
             )
-
+        # In case of initialization
         elif checkpoint_settings.maybe_init_path is not None:
-            # if it's a initialization case
-            init_path = checkpoint_settings.maybe_init_path
             for behavior_name, ts in options.behaviors.items():
-                if ts.init_path is not None:
-                    _Validate_init_full_path(ts.init_path)
-                else:
+                if ts.init_path is None:
                     ts.init_path = os.path.join(
-                        init_path,
+                        checkpoint_settings.maybe_init_path,
                         behavior_name,
                         _Get_checkpoint_name(
-                            behavior_name, checkpoint_settings.init_checkpoint_list
+                            behavior_name, checkpoint_settings.init_checkpoints_list
                         ),
                     )
-                    # validate existance, warning or error
-                    _Validate_init_full_path(ts.init_path)
+                # validate existance, warning or error
+                _Validate_init_full_path(ts.init_path)
                 print(ts.init_path)
 
         # Configure Tensorboard Writers and StatsReporter
@@ -141,7 +139,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             param_manager=env_parameter_manager,
             init_path=checkpoint_settings.maybe_init_path,
             multi_gpu=False,
-            checkpoint_list=checkpoint_settings.init_checkpoint_list,
+            checkpoint_list=checkpoint_settings.init_checkpoints_list,
         )
         # Create controller and begin training.
         tc = TrainerController(
