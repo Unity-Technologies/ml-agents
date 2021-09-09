@@ -91,6 +91,8 @@ class EncoderType(Enum):
 class ScheduleType(Enum):
     CONSTANT = "constant"
     LINEAR = "linear"
+    # TODO add support for lesson based scheduling
+    # LESSON = "lesson"
 
 
 class ConditioningType(Enum):
@@ -142,6 +144,8 @@ class HyperparamSettings:
     buffer_size: int = 10240
     learning_rate: float = 3.0e-4
     learning_rate_schedule: ScheduleType = ScheduleType.CONSTANT
+    beta_schedule: ScheduleType = ScheduleType.CONSTANT
+    epsilon_schedule: ScheduleType = ScheduleType.CONSTANT
 
 
 @attr.s(auto_attribs=True)
@@ -151,6 +155,7 @@ class PPOSettings(HyperparamSettings):
     lambd: float = 0.95
     num_epoch: int = 3
     learning_rate_schedule: ScheduleType = ScheduleType.LINEAR
+    epsilon_schedule = ScheduleType = ScheduleType.CONSTANT
 
 
 @attr.s(auto_attribs=True)
