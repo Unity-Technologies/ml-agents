@@ -6,14 +6,17 @@ import os
 import numpy as np
 import json
 
-from typing import Callable, Optional, List, Dict
+from typing import Callable, Optional, List
 
 import mlagents.trainers
 import mlagents_envs
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.trainer import TrainerFactory
-from mlagents.trainers.directory_utils import validate_existing_directories
+from mlagents.trainers.directory_utils import (
+    validate_existing_directories,
+    setup_init_path,
+)
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.cli_utils import parser
 from mlagents_envs.environment import UnityEnvironment
@@ -22,8 +25,6 @@ from mlagents.trainers.settings import RunOptions
 from mlagents.trainers.training_status import GlobalTrainingStatus
 from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
-from mlagents.trainers.exception import UnityTrainerException
-from mlagents.trainers.model_saver.torch_model_saver import DEFAULT_CHECKPOINT_NAME
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.timers import (
     hierarchical_timer,
@@ -49,33 +50,6 @@ def get_version_string() -> str:
 def parse_command_line(argv: Optional[List[str]] = None) -> RunOptions:
     args = parser.parse_args(argv)
     return RunOptions.from_argparse(args)
-
-
-def _get_checkpoint_name(
-    behavior_name: str, checkpoint_dict: Optional[Dict[str, str]]
-) -> str:
-    """
-    Retrieve the checkpoint file mapped to this behavior, use most recent by default
-    :param behavior_name: Name of the behavior to load checkpoint for
-    :param checkpoint_dict: mapping from behavior_name to checkpoint_file_name.pt
-    :return:
-    """
-    if checkpoint_dict and checkpoint_dict.get(behavior_name):
-        return checkpoint_dict[behavior_name]
-    else:
-        return DEFAULT_CHECKPOINT_NAME
-
-
-def _validate_init_full_path(init_file: str) -> None:
-    """
-    Validate initialization path
-    :param init_file: full path to initialization checkpoint file
-    :return:
-    """
-    if not (os.path.isfile(init_file) and init_file.endswith(".pt")):
-        raise UnityTrainerException(
-            f"Could not initialize from {init_file}. file does not exists or is not a `.pt` file"
-        )
 
 
 def run_training(run_seed: int, options: RunOptions) -> None:
@@ -106,19 +80,9 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             GlobalTrainingStatus.load_state(
                 os.path.join(run_logs_dir, "training_status.json")
             )
-        # In case of initialization, set init_path for all behaviors
+        # In case of initialization, set full init_path for all behaviors
         elif checkpoint_settings.maybe_init_path is not None:
-            for behavior_name, ts in options.behaviors.items():
-                if ts.init_path is None:
-                    chp_init_name = DEFAULT_CHECKPOINT_NAME
-                else:
-                    chp_init_name = ts.init_path
-                ts.init_path = os.path.join(
-                    checkpoint_settings.maybe_init_path,
-                    behavior_name,
-                    chp_init_name
-                )
-                _validate_init_full_path(ts.init_path)
+            setup_init_path(options.behaviors, checkpoint_settings.maybe_init_path)
 
         # Configure Tensorboard Writers and StatsReporter
         stats_writers = register_stats_writer_plugins(options)
