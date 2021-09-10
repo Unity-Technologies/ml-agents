@@ -2,7 +2,7 @@ import os
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.model_saver.torch_model_saver import DEFAULT_CHECKPOINT_NAME
-
+from typing import Dict
 
 def validate_existing_directories(
     output_path: str, resume: bool, force: bool, init_path: str = None
@@ -46,7 +46,7 @@ def validate_existing_directories(
 
 
 def setup_init_path(
-    behaviors: TrainerSettings.DefaultTrainerDict, init_dir: str
+    behaviors: Dict[str, str], init_dir: str
 ) -> None:
     """
     For each behavior, setup full init_path to checkpoint file to initialize policy from
