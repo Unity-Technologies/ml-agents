@@ -110,13 +110,14 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         elif checkpoint_settings.maybe_init_path is not None:
             for behavior_name, ts in options.behaviors.items():
                 if ts.init_path is None:
-                    ts.init_path = os.path.join(
-                        checkpoint_settings.maybe_init_path,
-                        behavior_name,
-                        _get_checkpoint_name(
-                            behavior_name, checkpoint_settings.init_checkpoints_list
-                        ),
-                    )
+                    chp_init_name = DEFAULT_CHECKPOINT_NAME
+                else:
+                    chp_init_name = ts.init_path
+                ts.init_path = os.path.join(
+                    checkpoint_settings.maybe_init_path,
+                    behavior_name,
+                    chp_init_name
+                )
                 _validate_init_full_path(ts.init_path)
 
         # Configure Tensorboard Writers and StatsReporter
