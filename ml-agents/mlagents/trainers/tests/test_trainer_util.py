@@ -11,7 +11,10 @@ from mlagents.trainers.exception import TrainerConfigError, UnityTrainerExceptio
 from mlagents.trainers.settings import RunOptions
 from mlagents.trainers.tests.dummy_config import ppo_dummy_config
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
-from mlagents.trainers.directory_utils import validate_existing_directories, setup_init_path
+from mlagents.trainers.directory_utils import (
+    validate_existing_directories,
+    setup_init_path,
+)
 
 
 @pytest.fixture
@@ -139,6 +142,7 @@ def test_existing_directories(tmp_path):
     # Should pass since the directory exists now.
     validate_existing_directories(output_path, False, True, init_path)
 
+
 @pytest.mark.parametrize("dir_exists", [True, False])
 def test_setup_init_path(tmpdir, dir_exists):
     """
@@ -151,14 +155,16 @@ def test_setup_init_path(tmpdir, dir_exists):
             init_path: BigWallJump-6540981.pt #full path
             trainer_type: ppo
         MediumWallJump:
-            init_path: {0}/results/test_run_id/MediumWallJump/checkpoint.pt
+            init_path: {}/results/test_run_id/MediumWallJump/checkpoint.pt
             trainer_type: ppo
         SmallWallJump:
             trainer_type: ppo
     checkpoint_settings:
         run_id: test_run_id
         initialize_from: test_run_id
-    """.format(tmpdir)
+    """.format(
+        tmpdir
+    )
     run_options = RunOptions.from_dict(yaml.safe_load(test_yaml))
     if dir_exists:
         init_path = tmpdir.mkdir("results").mkdir("test_run_id")
@@ -169,11 +175,13 @@ def test_setup_init_path(tmpdir, dir_exists):
         small = init_path.mkdir("SmallWallJump").join("checkpoint.pt")
         small.write("content")
 
-        setup_init_path(run_options.behaviors, init_path )
+        setup_init_path(run_options.behaviors, init_path)
         assert run_options.behaviors["BigWallJump"].init_path == big
         assert run_options.behaviors["MediumWallJump"].init_path == med
         assert run_options.behaviors["SmallWallJump"].init_path == small
     else:
         # don't make dirs and fail
         with pytest.raises(UnityTrainerException):
-            setup_init_path(run_options.behaviors, run_options.checkpoint_settings.maybe_init_path)
+            setup_init_path(
+                run_options.behaviors, run_options.checkpoint_settings.maybe_init_path
+            )
