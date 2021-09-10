@@ -3,10 +3,8 @@ import numpy as np
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse, parse_qs
 
-from gym import error, spaces
-
 from mlagents_envs.base_env import ActionTuple, BaseEnv
-
+from gym import error, spaces
 from pettingzoo import AECEnv
 
 
@@ -31,7 +29,6 @@ class UnityToPettingZooWrapper(AECEnv):
         self._assert_loaded()
 
         self._agent_index = 0
-        self._behavior_index = 0
         self._seed = seed
         self._side_channel_dict = {
             type(v).__name__: v
@@ -46,15 +43,11 @@ class UnityToPettingZooWrapper(AECEnv):
         self._infos: Dict[str, Dict] = {}  # agent_id: info
         self._action_spaces: Dict[str, spaces.Space] = {}  # behavior_name: action_space
         self._obs_spaces: Dict[str, spaces.Space] = {}  # behavior_name: obs_space
-        self._current_action: Optional[ActionTuple] = None
+        self._current_action: Dict[str, ActionTuple] = {}  # behavior_name: ActionTuple
 
     def _assert_loaded(self) -> None:
         if self._env is None:
             raise error.Error("No environment loaded")
-
-    def _current_behavior_name(self) -> str:
-        names = list(self._env.behavior_specs.keys())
-        return names[self._behavior_index]
 
     def _behavior2agentid(self, behavior_name: str, index: int) -> str:
         return f"{behavior_name}?agentid={index}"
@@ -80,8 +73,8 @@ class UnityToPettingZooWrapper(AECEnv):
                 else:
                     self._obs_spaces[behavior_name] = spaces.Tuple(obs_spaces)
         return {
-            agent: self._obs_spaces[self._current_behavior_name()]
-            for agent in self._agents
+            agent_id: self._obs_spaces[self._agentid2behavior(agent_id)]
+            for agent_id in self._agents
         }
 
     @property
@@ -133,8 +126,8 @@ class UnityToPettingZooWrapper(AECEnv):
                         continue
                 self._action_spaces[behavior_name] = spaces.Tuple((c_space, d_space))
         return {
-            agent: self._action_spaces[self._current_behavior_name()]
-            for agent in self._agents
+            agent_id: self._action_spaces[self._agentid2behavior(agent_id)]
+            for agent_id in self._agents
         }
 
     @property
@@ -156,7 +149,7 @@ class UnityToPettingZooWrapper(AECEnv):
         self._assert_loaded()
         return self._side_channel_dict
 
-    def step(self, action: Any = None) -> None:
+    def step(self, action: Any) -> None:
         """
         Sets the action of the active agent and get the observation, reward, done
         and info of the next agent.
@@ -167,113 +160,101 @@ class UnityToPettingZooWrapper(AECEnv):
             raise error.Error(
                 "You must reset the environment before you can perform a step"
             )
+        assert action is not None
 
         # Convert actions
-        if action is not None:
-            if type(action) != np.ndarray:
-                action = np.array(action)
-            if not self.action_space.contains(action):  # type: ignore
-                raise error.Error(
-                    f"Invalid action, got {action} but was expecting action from {self.action_space}"
-                )
-            if isinstance(self.action_space, spaces.Tuple):
-                action = ActionTuple(action[0], action[1])
-            elif isinstance(self.action_space, spaces.MultiDiscrete):
-                action = ActionTuple(None, action)
-            elif isinstance(self.action_space, spaces.Discrete):
-                action = ActionTuple(None, np.array(action).reshape(1, 1))
-            else:
-                action = ActionTuple(action, None)
+        if type(action) != np.ndarray:
+            action = np.array(action)
+        if not self.action_space.contains(action):  # type: ignore
+            raise error.Error(
+                f"Invalid action, got {action} but was expecting action from {self.action_space}"
+            )
+        if isinstance(self.action_space, spaces.Tuple):
+            action = ActionTuple(action[0], action[1])
+        elif isinstance(self.action_space, spaces.MultiDiscrete):
+            action = ActionTuple(None, action)
+        elif isinstance(self.action_space, spaces.Discrete):
+            action = ActionTuple(None, np.array(action).reshape(1, 1))
+        else:
+            action = ActionTuple(action, None)
 
         # Set action
-        if action is not None and self._current_action is not None:
-            if (
-                self._agent_index >= 0
-                and not self._dones[self._agents[self._agent_index]]
-            ):
-                if action.continuous is not None:
-                    self._current_action.continuous[
-                        self._agent_index
-                    ] = action.continuous[0]
-                if action.discrete is not None:
-                    self._current_action.discrete[self._agent_index] = action.discrete[
-                        0
-                    ]
-            else:
-                # A useless action was passed (the last.agent was done)
-                pass
+        current_agent = self._agents[self._agent_index]
+        current_behavior = self._agentid2behavior(current_agent)
+        if not self._dones[current_agent]:
+            if action.continuous is not None:
+                self._current_action[current_behavior].continuous[
+                    self._agent_index
+                ] = action.continuous[0]
+            if action.discrete is not None:
+                self._current_action[current_behavior].discrete[
+                    self._agent_index
+                ] = action.discrete[0]
 
         self._agent_index += 1
+        # reset reward
         for k in self._rewards.keys():
             self._rewards[k] = 0
 
         if self._agent_index >= len(self._agents):
             # The index is too high, time to set the action for the agents we have
-            if self._current_action is not None:
-                self._env.set_actions(
-                    self._current_behavior_name(), self._current_action
+            for behavior_name, actions in self._current_action.items():
+                self._env.set_actions(behavior_name, actions)
+            self._env.step()
+
+            self._reset_states()
+            for behavior_name in self._env.behavior_specs.keys():
+                current_batch = self._env.get_steps(behavior_name)
+                self._current_action[behavior_name] = self._create_empty_actions(
+                    behavior_name, len(current_batch[0])
                 )
-            self._behavior_index += 1
-            if self._behavior_index >= len(self._env.behavior_specs):
-                self._env.step()
-                self._behavior_index = 0
-            current_batch = self._env.get_steps(self._current_behavior_name())
-            self._reset_current_action(len(current_batch[0]))
-            unwrap = self._unwrap_batch_steps(
-                current_batch, self._current_behavior_name()
-            )
-            self._agents, self._obs, self._dones, self._rewards, self._cumm_rewards, self._infos = (
-                unwrap
-            )
+                agents, obs, dones, rewards, cumm_rewards, infos = self._unwrap_batch_steps(
+                    current_batch, behavior_name
+                )
+                self._agents += agents
+                self._obs.update(obs)
+                self._dones.update(dones)
+                self._rewards.update(rewards)
+                self._cumm_rewards.update(cumm_rewards)
+                self._infos.update(infos)
             self._agent_index = 0
 
     def _unwrap_batch_steps(self, batch_steps, behavior_name):
         decision_batch, termination_batch = batch_steps
-        agents = [
+        decision_id = [
+            self._behavior2agentid(behavior_name, i) for i in decision_batch.keys()
+        ]
+        termination_id = [
             self._behavior2agentid(behavior_name, i) for i in termination_batch.keys()
-        ] + [self._behavior2agentid(behavior_name, i) for i in decision_batch.keys()]
+        ]
+        agents = decision_id + termination_id
         obs = {
-            self._behavior2agentid(behavior_name, i): [
-                batch_obs[i] for batch_obs in termination_batch.obs
-            ]
-            for i in termination_batch.keys()
+            agentid: [batch_obs[i] for batch_obs in termination_batch.obs]
+            for i, agentid in enumerate(termination_id)
         }
         obs.update(
             {
-                self._behavior2agentid(behavior_name, i): [
-                    batch_obs[i] for batch_obs in decision_batch.obs
-                ]
-                for i in decision_batch.keys()
+                agentid: [batch_obs[i] for batch_obs in decision_batch.obs]
+                for i, agentid in enumerate(decision_id)
             }
         )
         obs = {k: v if len(v) > 1 else v[0] for k, v in obs.items()}
-        dones = {
-            self._behavior2agentid(behavior_name, i): True
-            for i in termination_batch.keys()
-        }
-        dones.update(
-            {
-                self._behavior2agentid(behavior_name, i): False
-                for i in decision_batch.keys()
-            }
-        )
+        dones = {agentid: True for agentid in termination_id}
+        dones.update({agentid: False for agentid in decision_id})
         rewards = {
-            self._behavior2agentid(behavior_name, i): termination_batch.reward[i]
-            for i in termination_batch.keys()
+            agentid: termination_batch.reward[i]
+            for i, agentid in enumerate(termination_id)
         }
         rewards.update(
-            {
-                self._behavior2agentid(behavior_name, i): decision_batch.reward[i]
-                for i in decision_batch.keys()
-            }
+            {agentid: decision_batch.reward[i] for i, agentid in enumerate(decision_id)}
         )
         cumm_rewards = {k: v for k, v in rewards.items()}
-        infos = {x: {} for x in agents}
+        infos = {x: {} for x in agents}  # TODO
         return agents, obs, dones, rewards, cumm_rewards, infos
 
-    def _reset_current_action(self, num_agents):
-        a_spec = self._env.behavior_specs[self._current_behavior_name()].action_spec
-        self._current_action = ActionTuple(
+    def _create_empty_actions(self, behavior_name, num_agents):
+        a_spec = self._env.behavior_specs[behavior_name].action_spec
+        return ActionTuple(
             np.zeros((num_agents, a_spec.continuous_size), dtype=np.float32),
             np.zeros((num_agents, len(a_spec.discrete_branches)), dtype=np.int32),
         )
@@ -284,18 +265,30 @@ class UnityToPettingZooWrapper(AECEnv):
         """
         self._assert_loaded()
         self._agent_index = 0
-        self._behavior_index = 0
+        self._reset_states()
         self._env.reset()
-        current_batch = self._env.get_steps(self._current_behavior_name())
-        self._agents, self._obs, _, _, _, _ = self._unwrap_batch_steps(
-            current_batch, self._current_behavior_name()
-        )
+        for behavior_name in self._env.behavior_specs.keys():
+            current_batch = self._env.get_steps(behavior_name)
+            self._current_action[behavior_name] = self._create_empty_actions(
+                behavior_name, len(current_batch[0])
+            )
+            agents, obs, _, _, _, infos = self._unwrap_batch_steps(
+                current_batch, behavior_name
+            )
+            self._agents += agents
+            self._obs.update(obs)
+            self._infos.update(infos)
         self._dones = {agent: False for agent in self._agents}
         self._rewards = {agent: 0 for agent in self._agents}
         self._cumm_rewards = {agent: 0 for agent in self._agents}
-        self._infos = {agent: {} for agent in self._agents}
-        self._reset_current_action(len(current_batch[0]))  # len of decision steps
-        self.step()
+
+    def _reset_states(self):
+        self._agents = []
+        self._obs = {}
+        self._dones = {}
+        self._rewards = {}
+        self._cumm_rewards = {}
+        self._infos = {}
 
     def seed(self, seed=None):
         """
@@ -315,11 +308,10 @@ class UnityToPettingZooWrapper(AECEnv):
         """
         pass
 
-    def observe(self, agent):
+    def observe(self, agent_id):
         """
         Returns the observation an agent currently can make. `last()` calls this function.
         """
-        agent_id = self._behavior2agentid(self._current_behavior_name(), agent)
         return (
             self._obs[agent_id],
             self._cumm_rewards[agent_id],
@@ -331,7 +323,7 @@ class UnityToPettingZooWrapper(AECEnv):
         """
         returns observation, cumulative reward, done, info for the current agent (specified by self.agent_selection)
         """
-        obs, reward, done, info = self.observe(self._agent_index)
+        obs, reward, done, info = self.observe(self._agents[self._agent_index])
         return obs if observe else None, reward, done, info
 
     @property
