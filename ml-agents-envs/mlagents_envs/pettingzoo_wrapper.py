@@ -1,6 +1,6 @@
 import atexit
 import numpy as np
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Tuple, Optional
 from urllib.parse import urlparse, parse_qs
 
 from mlagents_envs.base_env import ActionTuple, BaseEnv
@@ -52,8 +52,8 @@ class UnityToPettingZooWrapper(AECEnv):
     def _behavior2agentid(self, behavior_name: str, index: int) -> str:
         return f"{behavior_name}?agentid={index}"
 
-    def _agentid2behavior(self, agentid: str) -> str:
-        return agentid.split("?agentid=")[0]
+    def _agentid2behavior(self, agentid: str) -> Tuple[str, int]:
+        return agentid.split("?agentid=")[0], int(agentid.split("?agentid=")[1])
 
     @property
     def observation_spaces(self) -> Dict[str, spaces.Space]:
@@ -73,7 +73,7 @@ class UnityToPettingZooWrapper(AECEnv):
                 else:
                     self._obs_spaces[behavior_name] = spaces.Tuple(obs_spaces)
         return {
-            agent_id: self._obs_spaces[self._agentid2behavior(agent_id)]
+            agent_id: self._obs_spaces[self._agentid2behavior(agent_id)[0]]
             for agent_id in self._agents
         }
 
@@ -84,7 +84,7 @@ class UnityToPettingZooWrapper(AECEnv):
         """
         self._assert_loaded()
         agent_id = self._agents[self._agent_index]
-        behavior_name = self._agentid2behavior(agent_id)
+        behavior_name = self._agentid2behavior(agent_id)[0]
         return self._obs_spaces[behavior_name]
 
     @property
@@ -126,7 +126,7 @@ class UnityToPettingZooWrapper(AECEnv):
                         continue
                 self._action_spaces[behavior_name] = spaces.Tuple((c_space, d_space))
         return {
-            agent_id: self._action_spaces[self._agentid2behavior(agent_id)]
+            agent_id: self._action_spaces[self._agentid2behavior(agent_id)[0]]
             for agent_id in self._agents
         }
 
@@ -137,7 +137,7 @@ class UnityToPettingZooWrapper(AECEnv):
         """
         self._assert_loaded()
         agent_id = self._agents[self._agent_index]
-        behavior_name = self._agentid2behavior(agent_id)
+        behavior_name = self._agentid2behavior(agent_id)[0]
         return self._action_spaces[behavior_name]
 
     @property
@@ -180,19 +180,19 @@ class UnityToPettingZooWrapper(AECEnv):
 
         # Set action
         current_agent = self._agents[self._agent_index]
-        current_behavior = self._agentid2behavior(current_agent)
+        current_behavior, current_index = self._agentid2behavior(current_agent)
         if not self._dones[current_agent]:
             if action.continuous is not None:
                 self._current_action[current_behavior].continuous[
-                    self._agent_index
+                    current_index
                 ] = action.continuous[0]
             if action.discrete is not None:
                 self._current_action[current_behavior].discrete[
-                    self._agent_index
+                    current_index
                 ] = action.discrete[0]
 
         self._agent_index += 1
-        # reset reward
+        # Reset reward
         for k in self._rewards.keys():
             self._rewards[k] = 0
 
@@ -222,10 +222,11 @@ class UnityToPettingZooWrapper(AECEnv):
     def _unwrap_batch_steps(self, batch_steps, behavior_name):
         decision_batch, termination_batch = batch_steps
         decision_id = [
-            self._behavior2agentid(behavior_name, i) for i in decision_batch.keys()
+            self._behavior2agentid(behavior_name, i) for i in range(len(decision_batch))
         ]
         termination_id = [
-            self._behavior2agentid(behavior_name, i) for i in termination_batch.keys()
+            self._behavior2agentid(behavior_name, i)
+            for i in range(len(termination_batch))
         ]
         agents = decision_id + termination_id
         obs = {
@@ -367,6 +368,6 @@ if __name__ == "__main__":
     from pettingzoo.test import api_test
     from mlagents_envs.registry import default_registry
 
-    unity_env = default_registry["3DBall"].make()
+    unity_env = default_registry["StrikersVsGoalie"].make()
     env = UnityToPettingZooWrapper(unity_env)
     api_test(env, num_cycles=10, verbose_progress=False)
