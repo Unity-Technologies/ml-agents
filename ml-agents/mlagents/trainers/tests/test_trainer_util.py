@@ -155,7 +155,7 @@ def test_setup_init_path(tmpdir, dir_exists):
             init_path: BigWallJump-6540981.pt #full path
             trainer_type: ppo
         MediumWallJump:
-            init_path: {}/results/test_run_id/MediumWallJump/checkpoint.pt
+            init_path: {}/test_setup_init_path_results/test_run_id/MediumWallJump/checkpoint.pt
             trainer_type: ppo
         SmallWallJump:
             trainer_type: ppo
@@ -167,7 +167,7 @@ def test_setup_init_path(tmpdir, dir_exists):
     )
     run_options = RunOptions.from_dict(yaml.safe_load(test_yaml))
     if dir_exists:
-        init_path = tmpdir.mkdir("results").mkdir("test_run_id")
+        init_path = tmpdir.mkdir("test_setup_init_path_results").mkdir("test_run_id")
         big = init_path.mkdir("BigWallJump").join("BigWallJump-6540981.pt")
         big.write("content")
         med = init_path.mkdir("MediumWallJump").join("checkpoint.pt")
