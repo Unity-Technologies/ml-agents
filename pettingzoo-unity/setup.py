@@ -4,10 +4,10 @@ import os
 import sys
 from setuptools import setup, find_packages
 from setuptools.command.install import install
-import pettingzoo_unity
+from pettingzoo_unity import __version__, __release_tag__
 
-VERSION = pettingzoo_unity.__version__
-EXPECTED_TAG = pettingzoo_unity.__release_tag__
+VERSION = __version__
+EXPECTED_TAG = __release_tag__
 
 
 class VerifyVersionCommand(install):
