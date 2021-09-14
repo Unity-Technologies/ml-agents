@@ -12,6 +12,7 @@ from mlagents.trainers.torch.model_serialization import ModelSerializer
 
 
 logger = get_logger(__name__)
+DEFAULT_CHECKPOINT_NAME = "checkpoint.pt"
 
 
 class TorchModelSaver(BaseModelSaver):
@@ -55,7 +56,7 @@ class TorchModelSaver(BaseModelSaver):
         pytorch_ckpt_path = f"{checkpoint_path}.pt"
         export_ckpt_path = f"{checkpoint_path}.onnx"
         torch.save(state_dict, f"{checkpoint_path}.pt")
-        torch.save(state_dict, os.path.join(self.model_path, "checkpoint.pt"))
+        torch.save(state_dict, os.path.join(self.model_path, DEFAULT_CHECKPOINT_NAME))
         self.export(checkpoint_path, behavior_name)
         return export_ckpt_path, [pytorch_ckpt_path]
 
@@ -75,7 +76,11 @@ class TorchModelSaver(BaseModelSaver):
             )
         elif self.load:
             logger.info(f"Resuming from {self.model_path}.")
-            self._load_model(self.model_path, policy, reset_global_steps=reset_steps)
+            self._load_model(
+                os.path.join(self.model_path, DEFAULT_CHECKPOINT_NAME),
+                policy,
+                reset_global_steps=reset_steps,
+            )
 
     def _load_model(
         self,
@@ -83,8 +88,7 @@ class TorchModelSaver(BaseModelSaver):
         policy: Optional[TorchPolicy] = None,
         reset_global_steps: bool = False,
     ) -> None:
-        model_path = os.path.join(load_path, "checkpoint.pt")
-        saved_state_dict = torch.load(model_path)
+        saved_state_dict = torch.load(load_path)
         if policy is None:
             modules = self.modules
             policy = self.policy

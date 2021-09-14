@@ -66,7 +66,6 @@ class TrainerFactory:
             self.ghost_controller,
             self.seed,
             self.param_manager,
-            self.init_path,
             self.multi_gpu,
         )
 
@@ -80,7 +79,6 @@ class TrainerFactory:
         ghost_controller: GhostController,
         seed: int,
         param_manager: EnvironmentParameterManager,
-        init_path: str = None,
         multi_gpu: bool = False,
     ) -> Trainer:
         """
@@ -96,12 +94,9 @@ class TrainerFactory:
         :param ghost_controller: The object that coordinates ghost trainers
         :param seed: The random seed to use
         :param param_manager: EnvironmentParameterManager, used to determine a reward buffer length for PPOTrainer
-        :param init_path: Path from which to load model, if different from model_path.
         :return:
         """
         trainer_artifact_path = os.path.join(output_path, brain_name)
-        if init_path is not None:
-            trainer_settings.init_path = os.path.join(init_path, brain_name)
 
         min_lesson_length = param_manager.get_minimum_reward_buffer_size(brain_name)
 

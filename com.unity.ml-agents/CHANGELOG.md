@@ -12,6 +12,7 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Added the capacity to initialize behaviors from any checkpoint and not just the latest one (#5525)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
