@@ -4,4 +4,7 @@ __version__ = "0.28.0.dev0"
 # Git tag that will be checked to determine whether to trigger upload to pypi
 __release_tag__ = None
 
-from .pettingzoo_wrapper import UnityToPettingZooWrapper  # noqa
+try:
+    from .pettingzoo_wrapper import UnityToPettingZooWrapper  # noqa
+except ImportError:
+    pass
