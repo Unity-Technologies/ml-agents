@@ -13,7 +13,10 @@ import mlagents_envs
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.trainer import TrainerFactory
-from mlagents.trainers.directory_utils import validate_existing_directories
+from mlagents.trainers.directory_utils import (
+    validate_existing_directories,
+    setup_init_path,
+)
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.cli_utils import parser
 from mlagents_envs.environment import UnityEnvironment
@@ -72,11 +75,14 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         )
         # Make run logs directory
         os.makedirs(run_logs_dir, exist_ok=True)
-        # Load any needed states
+        # Load any needed states in case of resume
         if checkpoint_settings.resume:
             GlobalTrainingStatus.load_state(
                 os.path.join(run_logs_dir, "training_status.json")
             )
+        # In case of initialization, set full init_path for all behaviors
+        elif checkpoint_settings.maybe_init_path is not None:
+            setup_init_path(options.behaviors, checkpoint_settings.maybe_init_path)
 
         # Configure Tensorboard Writers and StatsReporter
         stats_writers = register_stats_writer_plugins(options)
