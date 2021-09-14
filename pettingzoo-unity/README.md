@@ -16,7 +16,7 @@ which is a multi-agents environment with multiple different behavior names.
 
 ## API interface
 
-This wrapper is fully compatible with PettingZoo API. Please check out
+This wrapper is compatible with PettingZoo API. Please check out
 [PettingZoo API page](https://www.pettingzoo.ml/api) for more details.
 Here's an example of interacting with wrapped environment:
 
@@ -31,8 +31,7 @@ for agent in env.agent_iter():
 ```
 
 ## Notes
-
-- The wrapper is fully compatible with PettingZoo API interface but works in a little bit
+- The wrapper is compatible with PettingZoo API interface but works in a little bit
   different way under the hood. Instead of stepping the environment in every `env.step(action)`,
   our environment will store the action, and will only perform environment stepping when all the
   agents requesting for actions in the current step have been assigned an action. This is for
@@ -43,4 +42,5 @@ for agent in env.agent_iter():
   would only see those reward when an actual environment step is performed. It's recommended that
   you follow the API definition for training (access rewards from `env.last()` instead of
   `env.reward`) and the underlying mechanism shouldn't affect training results.
+- Advanced features in PettingZoo like Parallel API is not guaranteed to work with this wrapper.
 
