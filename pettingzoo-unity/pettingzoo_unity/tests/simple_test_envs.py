@@ -202,7 +202,7 @@ class SimpleEnvironment(BaseEnv):
         self.positions[name] = [0.0 for _ in range(self.total_action_size)]
         self.step_count[name] = 0
         self.rewards[name] = 0
-        self.agent_id[name] = self.agent_id[name]  # for pettingzoo test
+        self.agent_id[name] = self.agent_id[name] + 1
 
     def _make_batched_step(
         self, name: str, done: bool, reward: float, group_reward: float
@@ -375,7 +375,6 @@ class MultiAgentEnvironment(BaseEnv):
                 env.action[behavior_name] = _act
 
     def get_steps(self, behavior_name):
-        print(f"get_steps: {self.all_done}")
         # This gets the individual DecisionSteps and TerminalSteps
         # from the envs and merges them into a batch to be sent
         # to the AgentProcessor.
