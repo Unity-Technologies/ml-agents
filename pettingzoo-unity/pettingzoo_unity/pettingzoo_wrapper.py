@@ -264,7 +264,18 @@ class UnityToPettingZooWrapper(AECEnv):
             {agentid: decision_batch.reward[i] for i, agentid in enumerate(decision_id)}
         )
         cumm_rewards = {k: v for k, v in rewards.items()}
-        infos = {x: {} for x in agents}  # TODO
+        infos = {}
+        for i, agentid in enumerate(decision_id):
+            infos[agentid] = {}
+            infos[agentid]["behavior_name"] = behavior_name
+            infos[agentid]["group_id"] = decision_batch.group_id[i]
+            infos[agentid]["group_reward"] = decision_batch.group_reward[i]
+        for i, agentid in enumerate(termination_id):
+            infos[agentid] = {}
+            infos[agentid]["behavior_name"] = behavior_name
+            infos[agentid]["group_id"] = termination_batch.group_id[i]
+            infos[agentid]["group_reward"] = termination_batch.group_reward[i]
+            infos[agentid]["interrupted"] = termination_batch.interrupted[i]
         id_map = {agent_id: i for i, agent_id in enumerate(decision_id)}
         return agents, obs, dones, rewards, cumm_rewards, infos, id_map
 
@@ -339,7 +350,7 @@ class UnityToPettingZooWrapper(AECEnv):
             self._obs[agent_id],
             self._cumm_rewards[agent_id],
             self._dones[agent_id],
-            {},
+            self._infos[agent_id],
         )
 
     def last(self, observe=True):
