@@ -4,10 +4,10 @@ import os
 import sys
 from setuptools import setup, find_packages
 from setuptools.command.install import install
-import gym_unity
+from gym_unity import __version__, __release_tag__
 
-VERSION = gym_unity.__version__
-EXPECTED_TAG = gym_unity.__release_tag__
+VERSION = __version__
+EXPECTED_TAG = __release_tag__
 
 
 class VerifyVersionCommand(install):
@@ -38,6 +38,6 @@ setup(
     author_email="ML-Agents@unity3d.com",
     url="https://github.com/Unity-Technologies/ml-agents",
     packages=find_packages(),
-    install_requires=["gym", f"mlagents_envs=={VERSION}"],
+    install_requires=["gym>=0.11.0", f"mlagents_envs=={VERSION}", "certifi"],
     cmdclass={"verify": VerifyVersionCommand},
 )

@@ -31,42 +31,34 @@ from the root of the project repository use:
 ```python
 from gym_unity.envs import UnityToGymWrapper
 
-env = UnityToGymWrapper(unity_env, uint8_visual, flatten_branched, allow_multiple_obs)
+env = UnityToGymWrapper(unity_env)
 ```
 
 - `unity_env` refers to the Unity environment to be wrapped.
 
-- `uint8_visual` refers to whether to output visual observations as `uint8`
-  values (0-255). Many common Gym environments (e.g. Atari) do this. By default
-  they will be floats (0.0-1.0). Defaults to `False`.
-
-- `flatten_branched` will flatten a branched discrete action space into a Gym
-  Discrete. Otherwise, it will be converted into a MultiDiscrete. Defaults to
-  `False`.
-
-- `allow_multiple_obs` will return a list of observations. The first elements
-  contain the visual observations and the last element contains the array of
-  vector observations. If False the environment returns a single array (containing
-  a single visual observations, if present, otherwise the vector observation).
-  Defaults to `False`.
-
 - `action_space_seed` is the optional seed for action sampling. If non-None, will
   be used to set the random seed on created gym.Space instances.
 
-The returned environment `env` will function as a gym.
+The returned environment `env` will function as a multi-agent gym.
+
+Alternatively, you can get one of the environments from the Unity registry with the following code :
+
+```
+import gym
+import gym_unity
+
+env = gym.make("GridWorld-v0")
+...
+env.close()
+
+```
+
+> **:warning: IMPORTANT**
+> Note that a Unity environment can have **ANY** number of different agents all requesting decisions at different and irregular times. When calling `env.step()` the next observation returned can be for a completely different agent than the one the action was for.
+To know which agent is currently in need of a decision, you can access the current agent identifier by calling `env.active.agent`. Calling `env.step()` will not necessarily move the simulation forward: `env.step()` will set the action for the `env.active.agent`. When all agents that needed an action received one, the simulation will move forward.
 
 ## Limitations
 
-- It is only possible to use an environment with a **single** Agent.
-- By default, the first visual observation is provided as the `observation`, if
-  present. Otherwise, vector observations are provided. You can receive all
-  visual and vector observations by using the `allow_multiple_obs=True` option in
-  the gym parameters. If set to `True`, you will receive a list of `observation`
-  instead of only one.
-- The `TerminalSteps` or `DecisionSteps` output from the environment can still
-  be accessed from the `info` provided by `env.step(action)`.
-- Stacked vector observations are not supported.
-- Environment registration for use with `gym.make()` is currently not supported.
 - Calling env.render() will not render a new frame of the environment. It will
   return the latest visual observation if using visual observations.
 
@@ -79,6 +71,8 @@ Using the provided Gym wrapper, it is possible to train ML-Agents environments
 using these algorithms. This requires the creation of custom training scripts to
 launch each algorithm. In most cases these scripts can be created by making
 slight modifications to the ones provided for Atari and Mujoco environments.
+
+Note that Baselines assumes that there is a single agent in the environment. Baselines will not work on environments where the number of agents is not strictly one.
 
 These examples were tested with baselines version 0.1.6.
 
@@ -273,6 +267,8 @@ visual observations with greyscale enabled, and that the dimensions of the
 visual observations is 84 by 84 (matches the parameter found in `dqn_agent.py`
 and `rainbow_agent.py`). Dopamine's agents currently do not automatically adapt
 to the observation dimensions or number of channels.
+
+Dopamine only works for single agent environments. You will need to create an environment with a single agent for Dopamine to work.
 
 ### Hyperparameters
 
