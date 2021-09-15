@@ -247,12 +247,25 @@ class UnityToPettingZooWrapper(AECEnv):
             agentid: [batch_obs[i] for batch_obs in termination_batch.obs]
             for i, agentid in enumerate(termination_id)
         }
-        obs.update(
-            {
-                agentid: [batch_obs[i] for batch_obs in decision_batch.obs]
-                for i, agentid in enumerate(decision_id)
-            }
-        )
+        if decision_batch.action_mask is not None:
+            obs.update(
+                {
+                    agentid: {
+                        "observation": [
+                            batch_obs[i] for batch_obs in decision_batch.obs
+                        ],
+                        "action_mask": decision_batch.action_mask[i],
+                    }
+                    for i, agentid in enumerate(decision_id)
+                }
+            )
+        else:
+            obs.update(
+                {
+                    agentid: [batch_obs[i] for batch_obs in decision_batch.obs]
+                    for i, agentid in enumerate(decision_id)
+                }
+            )
         obs = {k: v if len(v) > 1 else v[0] for k, v in obs.items()}
         dones = {agentid: True for agentid in termination_id}
         dones.update({agentid: False for agentid in decision_id})
