@@ -84,6 +84,11 @@ def generate_batch(batch, max_num_abs, abs_state, sample = False, atten=False):
   return inputs, masks, target 
 
 _c = sns.color_palette("twilight_shifted_r")
+#j_c = sns.color_palette("viridis")
+print(len(_c))
+_c1 = sns.color_palette("colorblind")
+_c[3] = 'k'
+_c = 2*_c[:4] #_c[:4] + _c1[:4]
 for absorbing_state in absorbing_states:
 
     f = plt.figure(1, figsize=(5, 3), dpi=300)
@@ -94,10 +99,13 @@ for absorbing_state in absorbing_states:
     sns.set_style("white")
     sns.set_style("ticks", {'font.family':'serif', 'font.serif':'Times New Roman', 'lines.linewidth': 8})
     plt.title("Calculating the Average of Floats", fontsize=font_size)
+    plt.xticks(fontsize=font_size)
+    plt.yticks([-4 * i for i in range(4)], fontsize=font_size)
+    plt.ylim((-12.5,0))
     #plt.title("Computation of Average with Absorbing State " + str(absorbing_state), fontsize=font_size)
 
     if LOG:
-      plt.ylabel("Log Mean Squared Error", fontsize=font_size)
+      plt.ylabel("Log Mean Squared Error", fontsize=font_size, labelpad=-4)
     else:
       plt.ylabel("Mean Squared Error", fontsize=font_size)
     plt.xlabel("Epochs", fontsize=font_size)
@@ -108,18 +116,17 @@ for absorbing_state in absorbing_states:
     # _c =  ["blue", "green", "yellow", "m", "c", "orange", "red", "black"]
     # _c = ["blue", "orange", "green", "m", "red", "black","c", "yellow"]
     # _c= ['#1f77b4', '#ff7f0e',  '#d62728', '#9467bd','black', '#2ca02c', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-    #_c = sns.color_palette("colorblind")
     #if attention:
     #    _title = "atten_abs_state"
     #else:
     #    _title = "abs_state_" + str(absorbing_state)
     #for num_absorb, color, sample in zip([0,2,4,6, 8], _c[:5], [False, True, True, True, True]):
-    print(len(_c))
-    for num_absorb, color, sample, attention in zip([0,2, 4, 6, 8], _c[:5], [False, False, False, False, False], [False,  False, False, False, False]):
+
+    for num_absorb, color, sample, attention in zip([2, 4, 6, 8, 2, 4, 6, 8], _c, [True, True, True, True, True, True, True, True], [False,  False, False, False, True, True, True, True]):
         if attention:
             _title = "atten_abs_state"
         else:
-            _title = "fixed_abs_state_" + str(absorbing_state)
+            _title = "abs_state_" + str(absorbing_state)
 
         dfs = []
         print("  num_abs: ", num_absorb)
@@ -138,9 +145,12 @@ for absorbing_state in absorbing_states:
           condition_name = str(10 - num_absorb) + "-10 inputs  (FC, Absorbing)" 
         # sns.tsplot(data=df["values"] , color=color, condition=condition_name, ci=95, time=df.index.values)
         values_per_seed = pd.read_csv("abs_plot_csvs/" + _title + str(num_absorb) + ".csv")
-        sns.tsplot(data=[values_per_seed["seed" + str(_s)] for _s in range(seeds)], color=color, condition=condition_name, ci=95)#, time=values_per_seed["step"])
+        if attention:
+            sns.tsplot(data=[values_per_seed["seed" + str(_s)] for _s in range(seeds)], color=color, condition=condition_name, ci=95, linestyle='dashdot')#, time=values_per_seed["step"])
+        else:
+            sns.tsplot(data=[values_per_seed["seed" + str(_s)] for _s in range(seeds)], color=color, condition=condition_name, ci=95)#, time=values_per_seed["step"])
     
-    plt.legend(handlelength=2, fontsize=font_size, labelspacing=0.25, borderpad=0.25, markerscale=0.75, frameon=False)
-    plt.savefig("abs_state_plots/" + "fixed_.png", dpi=300, bbox_inches='tight')
+    plt.legend(handlelength=2, fontsize=9, labelspacing=0.1, borderpad=0.25, markerscale=0.75, frameon=False)
+    plt.savefig("abs_state_plots/" + "all_vary.png", dpi=300, bbox_inches='tight')
     f.clear()
     plt.close(f)
