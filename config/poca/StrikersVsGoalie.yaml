@@ -10,6 +10,8 @@ behaviors:
       lambd: 0.95
       num_epoch: 3
       learning_rate_schedule: constant
+      beta_schedule: constant
+      epsilon_schedule: constant
     network_settings:
       normalize: false
       hidden_units: 512
@@ -41,6 +43,8 @@ behaviors:
       lambd: 0.95
       num_epoch: 3
       learning_rate_schedule: constant
+      beta_schedule: constant
+      epsilon_schedule: constant
     network_settings:
       normalize: false
       hidden_units: 512
