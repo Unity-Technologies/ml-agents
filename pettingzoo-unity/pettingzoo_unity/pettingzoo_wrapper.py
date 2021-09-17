@@ -1,6 +1,6 @@
 import atexit
 import numpy as np
-from typing import Any, Dict, List, Set, Optional
+from typing import Any, Dict, Tuple, List, Set, Optional
 from urllib.parse import urlparse, parse_qs
 
 from mlagents_envs.base_env import ActionTuple, BaseEnv
@@ -172,7 +172,9 @@ class UnityToPettingZooWrapper(AECEnv):
 
         # Convert actions
         if action is not None:
-            if type(action) != np.ndarray:
+            if isinstance(action, Tuple):
+                action = tuple(np.array(a) for a in action)
+            else:
                 action = np.array(action)
             if not self.action_space.contains(action):  # type: ignore
                 raise error.Error(
