@@ -242,7 +242,7 @@ class SimpleEnvironment(BaseEnv):
             terminal_step = TerminalSteps(
                 m_vector_obs,
                 m_reward,
-                np.array([False], dtype=np.bool),
+                np.array([False], dtype=bool),
                 m_agent_id,
                 m_group_id,
                 m_group_reward,
