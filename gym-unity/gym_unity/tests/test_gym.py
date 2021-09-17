@@ -248,7 +248,7 @@ def create_mock_vector_steps(specs, num_agents=1, number_visual_observations=0):
     :BehaviorSpecs specs: The BehaviorSpecs for this mock
     :int num_agents: Number of "agents" to imitate in your BatchedStepResult values.
     """
-    obs = [np.array([num_agents * [1, 2, 3]]).reshape(num_agents, 3)]
+    obs = [np.array([num_agents * [1, 2, 3]], dtype=np.float32).reshape(num_agents, 3)]
     if number_visual_observations:
         obs += [
             np.zeros(shape=(num_agents, 8, 8, 3), dtype=np.float32)
