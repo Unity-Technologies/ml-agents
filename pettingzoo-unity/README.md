@@ -43,4 +43,7 @@ for agent in env.agent_iter():
   you follow the API definition for training (access rewards from `env.last()` instead of
   `env.reward`) and the underlying mechanism shouldn't affect training results.
 - Advanced features in PettingZoo like Parallel API is not guaranteed to work with this wrapper.
+- The environments will automatically reset when it's done, so `env.agent_iter(max_step)` will
+  keep going on until the specified max step is reached (default: `2**63`). There is no need to
+  call `env.reset()` except for the very beginning of instantiating an environment.
 
