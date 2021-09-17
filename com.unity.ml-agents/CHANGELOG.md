@@ -14,6 +14,7 @@ and this project adheres to
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - Added the capacity to initialize behaviors from any checkpoint and not just the latest one (#5525)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Set gym version in gym-unity to gym release 0.20.0
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
@@ -21,6 +22,7 @@ and this project adheres to
 terminated teammates. (#5441)
 - Fixed wrong attribute name in argparser for torch device option (#5433)(#5467)
 - Fixed conflicting CLI and yaml options regarding resume & initialize_from (#5495)
+- Fixed failing tests for gym-unity due to gym 0.20.0 release
 ## [2.1.0-exp.1] - 2021-06-09
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
