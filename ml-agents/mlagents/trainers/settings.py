@@ -153,8 +153,8 @@ class PPOSettings(HyperparamSettings):
     lambd: float = 0.95
     num_epoch: int = 3
     learning_rate_schedule: ScheduleType = ScheduleType.LINEAR
-    beta_schedule = ScheduleType = ScheduleType.LINEAR
-    epsilon_schedule = ScheduleType = ScheduleType.LINEAR
+    beta_schedule: ScheduleType = ScheduleType.LINEAR
+    epsilon_schedule: ScheduleType = ScheduleType.LINEAR
 
 
 @attr.s(auto_attribs=True)
