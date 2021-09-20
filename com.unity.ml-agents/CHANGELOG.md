@@ -41,6 +41,7 @@ terminated teammates. (#5441)
 episode. (#5375)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Added support for having `beta`, `epsilon`, and `learning rate` on separate schedules (affects only PPO and POCA). (#5538)
 - The calculation of the target entropy of SAC with continuous actions was incorrect and has been fixed. (#5372)
 - Fixed an issue where the histogram stats would not be reported correctly in TensorBoard. (#5410)
 - Fixed error when importing models which use the ResNet encoder. (#5358)
