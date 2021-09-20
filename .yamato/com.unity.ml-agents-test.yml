@@ -61,9 +61,8 @@ all_package_tests:
         {% endfor %}
     triggers:
         cancel_old_ci: true
-        recurring:
-            - branch: main
-              frequency: daily
+        expression: |
+          pull_request.target eq "main"
 
   {% for package in packages %}
   {% for editor in test_editors %}
