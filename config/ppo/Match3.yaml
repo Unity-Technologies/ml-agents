@@ -9,8 +9,6 @@ default_settings:
     lambd: 0.99
     num_epoch: 3
     learning_rate_schedule: constant
-    beta_schedule: constant
-    epsilon_schedule: constant
   network_settings:
     normalize: true
     hidden_units: 256

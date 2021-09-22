@@ -10,8 +10,6 @@ behaviors:
       lambd: 0.95
       num_epoch: 3
       learning_rate_schedule: linear
-      beta_schedule: linear
-      epsilon_schedule: linear
     network_settings:
       normalize: true
       hidden_units: 128
