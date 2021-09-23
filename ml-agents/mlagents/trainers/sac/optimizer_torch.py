@@ -132,7 +132,7 @@ class DiverseNetworkVariational(torch.nn.Module):
 
         z_mu = hidden
         if self._z_sigma is not None and var_noise:
-            hidden = torch.normal(z_mu, self._z_sigma)
+            hidden = z_mu + torch.normal(0, self._z_sigma)
 
         prediction = self._last_layer(hidden)
 

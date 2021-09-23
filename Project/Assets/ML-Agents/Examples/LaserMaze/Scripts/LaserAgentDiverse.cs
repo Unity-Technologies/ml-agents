@@ -219,7 +219,7 @@ public class LaserAgentDiverse : Agent
     {
         if (other.gameObject == goal)
         {
-            // AddReward(1f);
+            AddReward(1f);
             EndEpisode();
         }
         else if (other.tag == "deadly") 
