@@ -320,6 +320,11 @@ namespace Unity.MLAgents
         /// </summary>
         internal VectorSensor collectObservationsSensor;
 
+        /// <summary>
+        /// StackingSensor which is written to by AddVectorObs
+        /// </summary>
+        internal StackingSensor stackedCollectObservationsSensor;
+
         private RecursionChecker m_CollectObservationsChecker = new RecursionChecker("CollectObservations");
         private RecursionChecker m_OnEpisodeBeginChecker = new RecursionChecker("OnEpisodeBegin");
 
@@ -981,9 +986,9 @@ namespace Unity.MLAgents
                 collectObservationsSensor = new VectorSensor(param.VectorObservationSize);
                 if (param.NumStackedVectorObservations > 1)
                 {
-                    var stackingSensor = new StackingSensor(
+                    stackedCollectObservationsSensor = new StackingSensor(
                         collectObservationsSensor, param.NumStackedVectorObservations);
-                    sensors.Add(stackingSensor);
+                    sensors.Add(stackedCollectObservationsSensor);
                 }
                 else
                 {
@@ -1177,6 +1182,17 @@ namespace Unity.MLAgents
         public ReadOnlyCollection<float> GetObservations()
         {
             return collectObservationsSensor.GetObservations();
+        }
+
+        /// <summary>
+        /// Returns a read-only view of the stacked observations that were generated in
+        /// <see cref="CollectObservations(VectorSensor)"/>. This is mainly useful inside of a
+        /// <see cref="Heuristic(in ActionBuffers)"/> method to avoid recomputing the observations.
+        /// </summary>
+        /// <returns>A read-only view of the stacked observations list.</returns>
+        public ReadOnlyCollection<ReadOnlyCollection<float>> GetStackedObservations()
+        {
+            return stackedCollectObservationsSensor.GetStackedObservations();
         }
 
         /// <summary>
