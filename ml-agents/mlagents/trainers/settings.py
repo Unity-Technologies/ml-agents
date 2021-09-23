@@ -44,6 +44,16 @@ def check_and_structure(key: str, value: Any, class_type: type) -> Any:
     return cattr.structure(value, attr_fields_dict[key].type)
 
 
+def check_hyperparam_schedules(val: Dict, trainer_type: type) -> Dict:
+    # Check if beta and epsilon are set. If not, set to match learning rate schedule.
+    if trainer_type is TrainerType.PPO or trainer_type is TrainerType.POCA:
+        if "beta_schedule" not in val.keys():
+            val["beta_schedule"] = val["learning_rate_schedule"]
+        if "epsilon_schedule" not in val.keys():
+            val["epsilon_schedule"] = val["learning_rate_schedule"]
+    return val
+
+
 def strict_to_cls(d: Mapping, t: type) -> Any:
     if not isinstance(d, Mapping):
         raise TrainerConfigError(f"Unsupported config {d} for {t.__name__}.")
@@ -704,6 +714,9 @@ class TrainerSettings(ExportableSettings):
                         "Hyperparameters were specified but no trainer_type was given."
                     )
                 else:
+                    d_copy[key] = check_hyperparam_schedules(
+                        val, d_copy["trainer_type"]
+                    )
                     d_copy[key] = strict_to_cls(
                         d_copy[key], TrainerType(d_copy["trainer_type"]).to_settings()
                     )
