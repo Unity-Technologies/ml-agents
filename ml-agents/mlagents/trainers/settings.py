@@ -47,9 +47,12 @@ def check_and_structure(key: str, value: Any, class_type: type) -> Any:
 def check_hyperparam_schedules(val: Dict, trainer_type: type) -> Dict:
     # Check if beta and epsilon are set. If not, set to match learning rate schedule.
     if trainer_type is TrainerType.PPO or trainer_type is TrainerType.POCA:
-        if "beta_schedule" not in val.keys():
+        if "beta_schedule" not in val.keys() and "learning_rate_schedule" in val.keys():
             val["beta_schedule"] = val["learning_rate_schedule"]
-        if "epsilon_schedule" not in val.keys():
+        if (
+            "epsilon_schedule" not in val.keys()
+            and "learning_rate_schedule" in val.keys()
+        ):
             val["epsilon_schedule"] = val["learning_rate_schedule"]
     return val
 
