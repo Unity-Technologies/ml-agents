@@ -58,24 +58,22 @@ class UnityToPettingZooWrapper(AECEnv):
     def _agentid2behavior(self, agentid: str) -> str:
         return agentid.split("?agentid=")[0]
 
-    @property
-    def observation_spaces(self) -> Dict[str, spaces.Space]:
-        """
-        Return the observation spaces of all the agents.
-        """
-        self._update_observation_spaces()
-        return {
-            agent_id: self._obs_spaces[self._agentid2behavior(agent_id)]
-            for agent_id in self._possible_agents
-        }
+    # @property
+    # def observation_spaces(self) -> Dict[str, spaces.Space]:
+    #     """
+    #     Return the observation spaces of all the agents.
+    #     """
+    #     self._update_observation_spaces()
+    #     return {
+    #         agent_id: self._obs_spaces[self._agentid2behavior(agent_id)]
+    #         for agent_id in self._possible_agents
+    #     }
 
-    @property
-    def observation_space(self) -> Optional[spaces.Space]:
+    def observation_space(self, agent_id) -> spaces.Space:
         """
         The observation space of the current agent.
         """
         self._update_observation_spaces()
-        agent_id = self._agents[self._agent_index]
         behavior_name = self._agentid2behavior(agent_id)
         return self._obs_spaces[behavior_name]
 
@@ -93,24 +91,22 @@ class UnityToPettingZooWrapper(AECEnv):
                 else:
                     self._obs_spaces[behavior_name] = spaces.Tuple(obs_spaces)
 
-    @property
-    def action_spaces(self) -> Dict[str, spaces.Space]:
-        """
-        Return the action spaces of all the agents.
-        """
-        self._update_action_spaces()
-        return {
-            agent_id: self._action_spaces[self._agentid2behavior(agent_id)]
-            for agent_id in self._possible_agents
-        }
+    # @property
+    # def action_spaces(self) -> Dict[str, spaces.Space]:
+    #     """
+    #     Return the action spaces of all the agents.
+    #     """
+    #     self._update_action_spaces()
+    #     return {
+    #         agent_id: self._action_spaces[self._agentid2behavior(agent_id)]
+    #         for agent_id in self._possible_agents
+    #     }
 
-    @property
-    def action_space(self) -> Optional[spaces.Space]:
+    def action_space(self, agent_id) -> spaces.Space:
         """
         The action space of the current agent.
         """
         self._update_action_spaces()
-        agent_id = self._agents[self._agent_index]
         behavior_name = self._agentid2behavior(agent_id)
         return self._action_spaces[behavior_name]
 
@@ -170,27 +166,29 @@ class UnityToPettingZooWrapper(AECEnv):
                 "You must reset the environment before you can perform a step"
             )
 
+        current_agent = self._agents[self._agent_index]
+
         # Convert actions
         if action is not None:
             if isinstance(action, Tuple):
                 action = tuple(np.array(a) for a in action)
             else:
                 action = np.array(action)
-            if not self.action_space.contains(action):  # type: ignore
+            current_action_space = self.action_space(current_agent)
+            if not current_action_space.contains(action):  # type: ignore
                 raise error.Error(
-                    f"Invalid action, got {action} but was expecting action from {self.action_space}"
+                    f"Invalid action, got {action} but was expecting action from {current_action_space}"
                 )
-            if isinstance(self.action_space, spaces.Tuple):
+            if isinstance(current_action_space, spaces.Tuple):
                 action = ActionTuple(action[0], action[1])
-            elif isinstance(self.action_space, spaces.MultiDiscrete):
+            elif isinstance(current_action_space, spaces.MultiDiscrete):
                 action = ActionTuple(None, action)
-            elif isinstance(self.action_space, spaces.Discrete):
+            elif isinstance(current_action_space, spaces.Discrete):
                 action = ActionTuple(None, np.array(action).reshape(1, 1))
             else:
                 action = ActionTuple(action, None)
 
         # Set action
-        current_agent = self._agents[self._agent_index]
         if not self._dones[current_agent]:
             current_behavior = self._agentid2behavior(current_agent)
             current_index = self._agent_id_to_index[current_agent]
@@ -400,10 +398,6 @@ class UnityToPettingZooWrapper(AECEnv):
     @property
     def agent_selection(self):
         return self._agents[self._agent_index]
-
-    @property
-    def possible_agents(self):
-        return list(self._possible_agents)
 
     def close(self) -> None:
         """

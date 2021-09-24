@@ -1,8 +1,5 @@
 """
 Copied from ml-agents/mlagents/trainers/tests/simple_test_envs.py
-
-Modified the env so that it doesn't automatically reset and respawn agent in order to pass
-pettingzoo api tests, since current PZ api test doesn't allow spawning new agents.
 """
 
 import random
@@ -219,30 +216,29 @@ class SimpleEnvironment(BaseEnv):
         terminal_step = TerminalSteps.empty(self.behavior_spec)
         if done:
             self.final_rewards[name].append(self.rewards[name])
-            # self._reset_agent(name)
-            # new_vector_obs = self._make_obs(self.goal[name])
-            # (
-            #     new_reward,
-            #     new_done,
-            #     new_agent_id,
-            #     new_action_mask,
-            #     new_group_id,
-            #     new_group_reward,
-            # ) = self._construct_reset_step(name)
+            self._reset_agent(name)
+            new_vector_obs = self._make_obs(self.goal[name])
+            (
+                new_reward,
+                new_done,
+                new_agent_id,
+                new_action_mask,
+                new_group_id,
+                new_group_reward,
+            ) = self._construct_reset_step(name)
 
-            # decision_step = DecisionSteps(
-            #     new_vector_obs,
-            #     new_reward,
-            #     new_agent_id,
-            #     new_action_mask,
-            #     new_group_id,
-            #     new_group_reward,
-            # )
-            decision_step = DecisionSteps([], [], [], [], [], [])
+            decision_step = DecisionSteps(
+                new_vector_obs,
+                new_reward,
+                new_agent_id,
+                new_action_mask,
+                new_group_id,
+                new_group_reward,
+            )
             terminal_step = TerminalSteps(
                 m_vector_obs,
                 m_reward,
-                np.array([False], dtype=bool),
+                np.array([False], dtype=np.bool),
                 m_agent_id,
                 m_group_id,
                 m_group_reward,
@@ -446,8 +442,6 @@ class MultiAgentEnvironment(BaseEnv):
             ter_group_id,
             ter_group_reward,
         )
-        if self.all_done:
-            decision_step = DecisionSteps([], [], [], [], [], [])
         return (decision_step, terminal_step)
 
     def step(self) -> None:
@@ -470,7 +464,7 @@ class MultiAgentEnvironment(BaseEnv):
                             name, done, 0.0, reward
                         )
                         self.final_rewards[name].append(reward)
-                        # self.reset()
+                        self.reset()
                     elif done:
                         # This agent has finished but others are still running.
                         # This gives a reward of the time penalty if this agent
@@ -491,16 +485,6 @@ class MultiAgentEnvironment(BaseEnv):
             for i in range(self.num_agents):
                 name_and_num = name + str(i)
                 self.dones[name_and_num] = False
-
-        self.dones = {}
-        self.just_died = set()
-        self.final_rewards = {}
-        for name in self.names:
-            self.final_rewards[name] = []
-            for i in range(self.num_agents):
-                name_and_num = name + str(i)
-                self.dones[name_and_num] = False
-                self.envs[name_and_num].reset()
 
     @property
     def reset_parameters(self) -> Dict[str, str]:
