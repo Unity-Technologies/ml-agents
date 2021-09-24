@@ -197,6 +197,7 @@ class DiverseNetworkVariational(torch.nn.Module):
             
             disc_probs = disc_act.exp()
             if detach_action:
+                disc_act = disc_act.detach()
                 disc_probs = disc_probs.detach()
 
             action_rewards = []
@@ -212,7 +213,7 @@ class DiverseNetworkVariational(torch.nn.Module):
                     )
 
             all_rewards = torch.cat(action_rewards, dim=1)
-            branched_rewards = ModelUtils.break_into_branches(all_rewards + disc_probs, self.disc_sizes)
+            branched_rewards = ModelUtils.break_into_branches(all_rewards + disc_act, self.disc_sizes)
             rewards = torch.sum(torch.stack([torch.sum(branch, dim=1) for branch in branched_rewards]), dim=0)
 
             accuracy = torch.zeros_like(rewards)
