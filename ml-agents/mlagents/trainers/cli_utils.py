@@ -161,6 +161,15 @@ def _create_parser() -> argparse.ArgumentParser:
         "from when training",
         action=DetectDefault,
     )
+
+    argparser.add_argument(
+        "--num_areas",
+        default=1,
+        type=int,
+        help="The number of parallel training areas in each Unity environment instance.",
+        action=DetectDefault,
+    )
+
     argparser.add_argument(
         "--debug",
         default=False,

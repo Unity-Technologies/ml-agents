@@ -7,7 +7,7 @@ namespace Unity.MLAgents.Areas
     public class TrainingAreaReplicator : MonoBehaviour
     {
         public GameObject baseArea;
-        public int numAreas = 1;
+        public int numAreas = 0;
         public float separation = 0f;
         public int3 gridSize = new int3(1, 1, 1);
 
@@ -21,8 +21,10 @@ namespace Unity.MLAgents.Areas
 
         void AddEnvironments()
         {
-            var envParameters = Academy.Instance.EnvironmentParameters;
-            int numAreas = (int)envParameters.GetWithDefault("num_areas", this.numAreas);
+            // check if running inference, if so, use the num areas set through the component,
+            // otherwise, pull it from the academy
+            if (Academy.Instance.Communicator != null)
+                numAreas = Academy.Instance.NumAreas;
 
             if (numAreas > gridSize.x * gridSize.y * gridSize.z)
             {

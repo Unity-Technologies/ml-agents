@@ -40,6 +40,11 @@ namespace Unity.MLAgents
         public int seed;
 
         /// <summary>
+        /// A random number generator (RNG) seed sent from the python process to Unity.
+        /// </summary>
+        public int numAreas;
+
+        /// <summary>
         /// The library version of the python process.
         /// </summary>
         public string pythonLibraryVersion;

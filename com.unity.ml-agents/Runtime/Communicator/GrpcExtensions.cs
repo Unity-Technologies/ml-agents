@@ -298,6 +298,7 @@ namespace Unity.MLAgents
             return new UnityRLInitParameters
             {
                 seed = inputProto.Seed,
+                numAreas = inputProto.NumAreas,
                 pythonLibraryVersion = inputProto.PackageVersion,
                 pythonCommunicationVersion = inputProto.CommunicationVersion,
                 TrainerCapabilities = inputProto.Capabilities.ToRLCapabilities()

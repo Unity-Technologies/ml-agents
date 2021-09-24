@@ -147,6 +147,7 @@ class UnityEnvironment(BaseEnv):
         worker_id: int = 0,
         base_port: Optional[int] = None,
         seed: int = 0,
+        num_areas: int = 1,
         no_graphics: bool = False,
         timeout_wait: int = 60,
         additional_args: Optional[List[str]] = None,
@@ -218,6 +219,7 @@ class UnityEnvironment(BaseEnv):
             communication_version=self.API_VERSION,
             package_version=mlagents_envs.__version__,
             capabilities=UnityEnvironment._get_capabilities_proto(),
+            num_areas=num_areas,
         )
         try:
             aca_output = self._send_academy_parameters(rl_init_parameters_in)
