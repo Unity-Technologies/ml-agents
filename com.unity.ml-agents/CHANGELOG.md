@@ -9,6 +9,8 @@ and this project adheres to
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 - Upgrade to 2.0.1
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- Added minimal analytics collection to LL-API (#5511)
 
 ## [2.0.0] - 2021-09-01
 ### Minor Changes
