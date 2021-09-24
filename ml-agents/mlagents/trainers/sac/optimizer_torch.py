@@ -130,13 +130,13 @@ class DiverseNetworkVariational(torch.nn.Module):
         if self._dropout is not None:
             hidden = self._dropout(hidden)
 
-        z_mu = hidden
-        if self._z_sigma is not None and var_noise:
-            hidden = z_mu + torch.randn_like(z_mu) * self._z_sigma
+        #z_mu = hidden
+        #if self._z_sigma is not None and var_noise:
+        #    hidden = z_mu + torch.randn_like(z_mu) * self._z_sigma
 
         prediction = self._last_layer(hidden)
 
-        return prediction, z_mu
+        return prediction, hidden
 
     def copy_normalization(self, thing):
         self._encoder.processors[0].copy_normalization(thing.processors[1])
@@ -197,6 +197,7 @@ class DiverseNetworkVariational(torch.nn.Module):
             
             disc_probs = disc_act.exp()
             if detach_action:
+                disc_act = disc_act.detach()
                 disc_probs = disc_probs.detach()
 
             action_rewards = []
@@ -212,8 +213,8 @@ class DiverseNetworkVariational(torch.nn.Module):
                     )
 
             all_rewards = torch.cat(action_rewards, dim=1)
-            branched_rewards = ModelUtils.break_into_branches(all_rewards * disc_probs, self.disc_sizes)
-            rewards = torch.mean(torch.stack([torch.sum(branch, dim=1) for branch in branched_rewards]), dim=0)
+            branched_rewards = ModelUtils.break_into_branches(all_rewards + disc_act, self.disc_sizes)
+            rewards = torch.sum(torch.stack([torch.sum(branch, dim=1) for branch in branched_rewards]), dim=0)
 
             accuracy = torch.zeros_like(rewards)
             if not self._continuous:
@@ -234,11 +235,11 @@ class DiverseNetworkVariational(torch.nn.Module):
             })
             truth = torch.argmax(obs_input[self._diverse_index], dim=1)
             counts = torch.bincount(truth, minlength=self.diverse_size)
-            for i in range(self.diverse_size):
-                a = torch.sum(torch.where(truth == i, accuracy, torch.zeros_like(accuracy))) / counts[i]
-                self.stats.update({
-                    "Settings/MEDE Accuracy {}".format(i): a.item()
-                })
+            #for i in range(self.diverse_size):
+            #    a = torch.sum(torch.where(truth == i, accuracy, torch.zeros_like(accuracy))) / counts[i]
+            #    self.stats.update({
+            #        "Settings/MEDE Accuracy {}".format(i): a.item()
+            #    })
 
         if self._centered_reward:
             rewards -= np.log(1 / self.diverse_size)
