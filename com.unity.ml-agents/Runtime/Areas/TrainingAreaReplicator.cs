@@ -7,35 +7,44 @@ namespace Unity.MLAgents.Areas
     public class TrainingAreaReplicator : MonoBehaviour
     {
         public GameObject baseArea;
-        public int numAreas = 0;
-        public float separation = 0f;
-        public int3 gridSize = new int3(1, 1, 1);
+        public int numAreas = 1;
+        public float separation = 10f;
 
+        int3 m_GridSize = new int3(1, 1, 1);
         int m_areaCount = 0;
 
         public void Awake()
         {
+            ComputeGridSize();
             AddEnvironments();
-            // Academy.Instance.OnEnvironmentReset += AddEnvironments;
         }
 
-        void AddEnvironments()
+        void ComputeGridSize()
         {
             // check if running inference, if so, use the num areas set through the component,
             // otherwise, pull it from the academy
             if (Academy.Instance.Communicator != null)
                 numAreas = Academy.Instance.NumAreas;
 
-            if (numAreas > gridSize.x * gridSize.y * gridSize.z)
+            var rootNumAreas = Mathf.Pow(numAreas, 1.0f / 3.0f);
+            m_GridSize.x = Mathf.CeilToInt(rootNumAreas);
+            m_GridSize.y = Mathf.CeilToInt(rootNumAreas);
+            var zSize = numAreas - m_GridSize.x * m_GridSize.y;
+            m_GridSize.z = zSize == 0 ? 1 : zSize;
+        }
+
+        void AddEnvironments()
+        {
+            if (numAreas > m_GridSize.x * m_GridSize.y * m_GridSize.z)
             {
                 throw new UnityAgentsException("The number of training areas that you have specified exceeds the size of the grid.");
             }
 
-            for (int z = 0; z < gridSize.z; z++)
+            for (int z = 0; z < m_GridSize.z; z++)
             {
-                for (int j = 0; j < gridSize.y; j++)
+                for (int j = 0; j < m_GridSize.y; j++)
                 {
-                    for (int i = 0; i < gridSize.x; i++)
+                    for (int i = 0; i < m_GridSize.x; i++)
                     {
                         if (m_areaCount == 0)
                         {
@@ -47,15 +56,9 @@ namespace Unity.MLAgents.Areas
                             var area = Instantiate(baseArea, new Vector3(i * separation, j * separation, z * separation), Quaternion.identity);
                             // StartAllObjects(area);
                         }
-
                     }
                 }
             }
-
-            /*for (int i = 0; i < numAreas - 1; i++)
-            {
-                Instantiate(baseArea, new Vector3(0, 0, (i + 1) * separation), Quaternion.identity);
-            }*/
         }
 
         void StartAllObjects(GameObject area)
