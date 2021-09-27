@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -39,21 +39,32 @@ public class BasicDiverseRotate : BasicDiverse
 
     protected override void Move(ActionBuffers actionBuffers)
     {
-        int action = actionBuffers.DiscreteActions[0];
+
 
         Vector3 dirToGo = Vector3.zero;
         Vector3 rotateDir = Vector3.zero;
-        switch (action)
+        if (ContinuousActions)
         {
-            case 1:
-                dirToGo += transform.forward;
-                break;
-            case 2:
-                rotateDir += transform.up;
-                break;
-            case 3:
-                rotateDir -= transform.up;
-                break;
+            float forwardAction = actionBuffers.ContinuousActions[0];
+            float rotateAction = actionBuffers.ContinuousActions[1];
+            dirToGo += transform.forward * forwardAction;
+            rotateDir += transform.up * rotateAction;
+        }
+        else
+        {
+            int action = actionBuffers.DiscreteActions[0];
+            switch (action)
+            {
+                case 1:
+                    dirToGo += transform.forward;
+                    break;
+                case 2:
+                    rotateDir += transform.up;
+                    break;
+                case 3:
+                    rotateDir -= transform.up;
+                    break;
+            }
         }
 
         transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
