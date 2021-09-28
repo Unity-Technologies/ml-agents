@@ -1,5 +1,5 @@
 from unittest import mock
-from unittest.mock import Mock, MagicMock
+from unittest.mock import Mock, MagicMock, call, ANY
 import unittest
 import pytest
 from queue import Empty as EmptyQueue
@@ -14,7 +14,10 @@ from mlagents.trainers.subprocess_env_manager import (
 from mlagents.trainers.env_manager import EnvironmentStep
 from mlagents_envs.base_env import BaseEnv
 from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
-from mlagents_envs.exception import UnityEnvironmentException
+from mlagents_envs.exception import (
+    UnityEnvironmentException,
+    UnityCommunicationException,
+)
 from mlagents.trainers.tests.simple_test_envs import (
     SimpleEnvironment,
     UnexpectedExceptionEnvironment,
@@ -152,6 +155,64 @@ class SubprocessEnvManagerTest(unittest.TestCase):
             manager.env_workers[0].previous_step,
             manager.env_workers[1].previous_step,
         ]
+
+    @mock.patch(
+        "mlagents.trainers.subprocess_env_manager.SubprocessEnvManager.create_worker"
+    )
+    def test_crashed_env_restarts(self, mock_create_worker):
+        crashing_worker = MockEnvWorker(
+            0, EnvironmentResponse(EnvironmentCommand.RESET, 0, 0)
+        )
+        restarting_worker = MockEnvWorker(
+            0, EnvironmentResponse(EnvironmentCommand.RESET, 0, 0)
+        )
+        healthy_worker = MockEnvWorker(
+            1, EnvironmentResponse(EnvironmentCommand.RESET, 1, 1)
+        )
+        mock_create_worker.side_effect = [
+            crashing_worker,
+            healthy_worker,
+            restarting_worker,
+        ]
+        manager = SubprocessEnvManager(mock_env_factory, RunOptions(), 2)
+        manager.step_queue = Mock()
+        manager.step_queue.get_nowait.side_effect = [
+            EnvironmentResponse(
+                EnvironmentCommand.ENV_EXITED,
+                0,
+                UnityCommunicationException("Test msg"),
+            ),
+            EnvironmentResponse(EnvironmentCommand.CLOSED, 0, None),
+            EnvironmentResponse(EnvironmentCommand.STEP, 1, StepResponse(0, None, {})),
+            EmptyQueue(),
+            EnvironmentResponse(EnvironmentCommand.STEP, 0, StepResponse(1, None, {})),
+            EnvironmentResponse(EnvironmentCommand.STEP, 1, StepResponse(2, None, {})),
+            EmptyQueue(),
+        ]
+        step_mock = Mock()
+        last_steps = [Mock(), Mock(), Mock()]
+        assert crashing_worker is manager.env_workers[0]
+        assert healthy_worker is manager.env_workers[1]
+        crashing_worker.previous_step = last_steps[0]
+        crashing_worker.waiting = True
+        healthy_worker.previous_step = last_steps[1]
+        healthy_worker.waiting = True
+        manager._take_step = Mock(return_value=step_mock)
+        manager._step()
+        healthy_worker.send.assert_has_calls(
+            [
+                call(EnvironmentCommand.ENVIRONMENT_PARAMETERS, ANY),
+                call(EnvironmentCommand.RESET, ANY),
+                call(EnvironmentCommand.STEP, ANY),
+            ]
+        )
+        restarting_worker.send.assert_has_calls(
+            [
+                call(EnvironmentCommand.ENVIRONMENT_PARAMETERS, ANY),
+                call(EnvironmentCommand.RESET, ANY),
+                call(EnvironmentCommand.STEP, ANY),
+            ]
+        )
 
     @mock.patch("mlagents.trainers.subprocess_env_manager.SubprocessEnvManager._step")
     @mock.patch(

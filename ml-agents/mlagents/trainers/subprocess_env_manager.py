@@ -346,7 +346,8 @@ class SubprocessEnvManager(EnvManager):
             except EmptyQueueException:
                 pass
         if deadline < datetime.datetime.now():
-            raise TimeoutError("Workers stuck in waiting state")
+            still_waiting = {w.worker_id for w in self.env_workers if w.waiting}
+            raise TimeoutError(f"Workers {still_waiting} stuck in waiting state")
         return all_failures
 
     def _assert_worker_can_restart(self, worker_id: int, exception: Exception) -> None:
