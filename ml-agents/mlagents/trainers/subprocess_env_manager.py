@@ -44,8 +44,6 @@ from mlagents_envs.side_channel.side_channel import SideChannel
 
 logger = logging_util.get_logger(__name__)
 WORKER_SHUTDOWN_TIMEOUT_S = 10
-MAX_ENV_RESTARTS_PER_WINDOW = 1
-ENV_RESTARTS_WINDOW_SIZE = datetime.timedelta(minutes=1)
 
 
 class EnvironmentCommand(enum.Enum):
@@ -261,6 +259,7 @@ class SubprocessEnvManager(EnvManager):
         self.recent_restart_timestamps: List[List[datetime.datetime]] = [
             [] for _ in range(n_env)
         ]
+        self.restart_counts: List[int] = [0] * n_env
         for worker_idx in range(n_env):
             self.env_workers.append(
                 self.create_worker(
@@ -318,6 +317,7 @@ class SubprocessEnvManager(EnvManager):
             self._assert_worker_can_restart(worker_id, ex)
             logger.warning(f"Restarting worker[{worker_id}] after '{ex}'")
             self.recent_restart_timestamps[worker_id].append(datetime.datetime.now())
+            self.restart_counts[worker_id] += 1
             self.env_workers[worker_id] = self.create_worker(
                 worker_id, self.step_queue, self.env_factory, self.run_options
             )
@@ -365,16 +365,27 @@ class SubprocessEnvManager(EnvManager):
             if self._worker_has_restart_quota(worker_id):
                 return
             else:
-                raise UnityCommunicationException(
-                    f"Worker {worker_id} restarted too frequently"
+                logger.error(
+                    f"Worker {worker_id} exceeded the allowed number of restarts."
                 )
+                raise exception
         raise exception
 
     def _worker_has_restart_quota(self, worker_id: int) -> bool:
         self._drop_old_restart_timestamps(worker_id)
-        return (
-            len(self.recent_restart_timestamps[worker_id]) < MAX_ENV_RESTARTS_PER_WINDOW
+        max_lifetime_restarts = self.run_options.env_settings.max_lifetime_restarts
+        max_limit_check = (
+            max_lifetime_restarts == -1
+            or self.restart_counts[worker_id] < max_lifetime_restarts
         )
+
+        rate_limit_n = self.run_options.env_settings.restarts_rate_limit_n
+        rate_limit_check = (
+            rate_limit_n == -1
+            or len(self.recent_restart_timestamps[worker_id]) < rate_limit_n
+        )
+
+        return rate_limit_check and max_limit_check
 
     def _drop_old_restart_timestamps(self, worker_id: int) -> None:
         """
@@ -382,7 +393,9 @@ class SubprocessEnvManager(EnvManager):
         """
 
         def _filter(t: datetime.datetime) -> bool:
-            return t > datetime.datetime.now() - ENV_RESTARTS_WINDOW_SIZE
+            return t > datetime.datetime.now() - datetime.timedelta(
+                seconds=self.run_options.env_settings.restarts_rate_limit_period_s
+            )
 
         self.recent_restart_timestamps[worker_id] = list(
             filter(_filter, self.recent_restart_timestamps[worker_id])
