@@ -12,10 +12,19 @@ namespace Unity.MLAgents.Areas
 
         int3 m_GridSize = new int3(1, 1, 1);
         int m_areaCount = 0;
+        string m_TrainingAreaName;
+
+        public int3 GridSize => m_GridSize;
+        public string TrainingAreaName => m_TrainingAreaName;
 
         public void Awake()
         {
             ComputeGridSize();
+            m_TrainingAreaName = baseArea.name;
+        }
+
+        public void OnEnable()
+        {
             AddEnvironments();
         }
 
@@ -27,8 +36,8 @@ namespace Unity.MLAgents.Areas
                 numAreas = Academy.Instance.NumAreas;
 
             var rootNumAreas = Mathf.Pow(numAreas, 1.0f / 3.0f);
-            m_GridSize.x = Mathf.CeilToInt(rootNumAreas);
-            m_GridSize.y = Mathf.CeilToInt(rootNumAreas);
+            m_GridSize.x = Mathf.RoundToInt(rootNumAreas);
+            m_GridSize.y = Mathf.RoundToInt(rootNumAreas);
             var zSize = numAreas - m_GridSize.x * m_GridSize.y;
             m_GridSize.z = zSize == 0 ? 1 : zSize;
         }
@@ -54,16 +63,11 @@ namespace Unity.MLAgents.Areas
                         {
                             m_areaCount++;
                             var area = Instantiate(baseArea, new Vector3(i * separation, j * separation, z * separation), Quaternion.identity);
-                            // StartAllObjects(area);
+                            area.name = m_TrainingAreaName;
                         }
                     }
                 }
             }
-        }
-
-        void StartAllObjects(GameObject area)
-        {
-            throw new NotImplementedException();
         }
     }
 }
