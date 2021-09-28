@@ -15,6 +15,11 @@ and this project adheres to
 - Added the capacity to initialize behaviors from any checkpoint and not just the latest one (#5525)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Set gym version in gym-unity to gym release 0.20.0
+- Changed default behavior to restart crashed Unity environments rather than exiting.
+  - Rate & lifetime limits on this are configurable via 3 new yaml options
+    1. env_params.max_lifetime_restarts (--max-lifetime-restarts) [default=10]
+    2. env_params.restarts_rate_limit_n (--restarts-rate-limit-n) [default=1]
+    3. env_params.restarts_rate_limit_period_s (--restarts-rate-limit-period-s) [default=60]
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
