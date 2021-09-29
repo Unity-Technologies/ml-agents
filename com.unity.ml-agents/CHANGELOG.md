@@ -33,6 +33,7 @@ terminated teammates. (#5441)
 - Fixed conflicting CLI and yaml options regarding resume & initialize_from (#5495)
 - Fixed failing tests for gym-unity due to gym 0.20.0 release (#5540)
 - Fixed a bug in VAIL where the variational bottleneck was not properly passing gradients (#5546)
+- Added minimal analytics collection to LL-API (#5511)
 
 ## [2.1.0-exp.1] - 2021-06-09
 ### Minor Changes

@@ -10,6 +10,7 @@ import mlagents_envs
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.side_channel.side_channel import SideChannel
+from mlagents_envs.side_channel import DefaultTrainingAnalyticsSideChannel
 from mlagents_envs.side_channel.side_channel_manager import SideChannelManager
 from mlagents_envs import env_utils
 
@@ -186,6 +187,16 @@ class UnityEnvironment(BaseEnv):
         self._timeout_wait: int = timeout_wait
         self._communicator = self._get_communicator(worker_id, base_port, timeout_wait)
         self._worker_id = worker_id
+        if side_channels is None:
+            side_channels = []
+        default_training_side_channel: Optional[
+            DefaultTrainingAnalyticsSideChannel
+        ] = None
+        if DefaultTrainingAnalyticsSideChannel.CHANNEL_ID not in [
+            _.channel_id for _ in side_channels
+        ]:
+            default_training_side_channel = DefaultTrainingAnalyticsSideChannel()
+            side_channels.append(default_training_side_channel)
         self._side_channel_manager = SideChannelManager(side_channels)
         self._log_folder = log_folder
         self.academy_capabilities: UnityRLCapabilitiesProto = None  # type: ignore
@@ -246,6 +257,8 @@ class UnityEnvironment(BaseEnv):
         self._is_first_message = True
         self._update_behavior_specs(aca_output)
         self.academy_capabilities = aca_params.capabilities
+        if default_training_side_channel is not None:
+            default_training_side_channel.environment_initialized()
 
     @staticmethod
     def _get_communicator(worker_id, base_port, timeout_wait):
