@@ -4,7 +4,6 @@ import hmac
 import hashlib
 import sys
 from typing import Optional, Dict
-import uuid
 import mlagents_envs
 import mlagents.trainers
 from mlagents import torch_utils
