@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -15,6 +15,9 @@ public class BasicDiverse : Agent
 
     public float m_AgentSpeed = 1;
     public bool m_DenseReward = false;
+
+
+    public bool ContinuousActions;
 
     protected float lastDist;
     protected float initDist;
@@ -36,13 +39,13 @@ public class BasicDiverse : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(Vector3.Project(goal1.transform.position - transform.position, 
+        sensor.AddObservation(Vector3.Project(goal1.transform.position - transform.position,
                                               goal1.transform.forward).magnitude);
-        sensor.AddObservation(Vector3.Project(goal2.transform.position - transform.position, 
+        sensor.AddObservation(Vector3.Project(goal2.transform.position - transform.position,
                                               goal2.transform.right).magnitude);
-        sensor.AddObservation(Vector3.Project(goal3.transform.position - transform.position, 
+        sensor.AddObservation(Vector3.Project(goal3.transform.position - transform.position,
                                               goal3.transform.forward).magnitude);
-        sensor.AddObservation(Vector3.Project(goal4.transform.position - transform.position, 
+        sensor.AddObservation(Vector3.Project(goal4.transform.position - transform.position,
                                               goal4.transform.right).magnitude);
     }
 
@@ -88,31 +91,41 @@ public class BasicDiverse : Agent
 
     protected virtual void Move(ActionBuffers actionBuffers)
     {
-        int forwardAction = actionBuffers.DiscreteActions[0];
-        int sideAction = actionBuffers.DiscreteActions[1];
-
         Vector3 dirToGo = Vector3.zero;
-        switch (forwardAction)
+        if (ContinuousActions)
         {
-            case 1:
-                dirToGo += transform.forward;
-                break;
-            case 2:
-                dirToGo -= transform.forward;
-                break;
-        }
-        switch (sideAction)
-        {
-            case 1:
-                dirToGo += transform.right;
-                break;
-            case 2:
-                dirToGo -= transform.right;
-                break;
-        }
+            float forwardAction = actionBuffers.ContinuousActions[0];
+            float sideAction = actionBuffers.ContinuousActions[1];
 
+            dirToGo += transform.forward * forwardAction;
+            dirToGo += transform.right * sideAction;
+        }
+        else
+        {
+            int forwardAction = actionBuffers.DiscreteActions[0];
+            int sideAction = actionBuffers.DiscreteActions[1];
+            switch (forwardAction)
+            {
+                case 1:
+                    dirToGo += transform.forward;
+                    break;
+                case 2:
+                    dirToGo -= transform.forward;
+                    break;
+            }
+            switch (sideAction)
+            {
+                case 1:
+                    dirToGo += transform.right;
+                    break;
+                case 2:
+                    dirToGo -= transform.right;
+                    break;
+            }
+        }
         dirToGo = Vector3.Normalize(dirToGo);
         m_AgentRb.AddForce(dirToGo * m_AgentSpeed, ForceMode.VelocityChange);
+
     }
 
     protected float GetClosestDist()
@@ -141,7 +154,7 @@ public class BasicDiverse : Agent
     protected void SetStepReward()
     {
         AddReward(-1f / MaxStep);
-        if (m_DenseReward) 
+        if (m_DenseReward)
         {
             float dist = GetClosestDist();
             AddReward((lastDist - dist) / initDist);
