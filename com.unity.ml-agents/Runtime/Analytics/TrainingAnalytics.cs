@@ -192,8 +192,21 @@ namespace Unity.MLAgents.Analytics
             return fullyQualifiedBehaviorName.Substring(0, lastQuestionIndex);
         }
 
+        internal static TrainingBehaviorInitializedEvent SanitizeTrainingBehaviorInitializedEvent(TrainingBehaviorInitializedEvent tbiEvent)
+        {
+            // Hash the behavior name if the message version is from an older version of ml-agents that doesn't do trainer-side hashing.
+            // We'll also, for extra safety, verify that the BehaviorName is the size of the expected SHA256 hash.
+            // Context: The config field was added at the same time as trainer side hashing, so messages including it should already be hashed.
+            if (tbiEvent.Config.Length == 0 || tbiEvent.BehaviorName.Length != 64)
+            {
+                tbiEvent.BehaviorName = AnalyticsUtils.Hash(k_VendorKey, tbiEvent.BehaviorName);
+            }
+
+            return tbiEvent;
+        }
+
         [Conditional("MLA_UNITY_ANALYTICS_MODULE")]
-        public static void TrainingBehaviorInitialized(TrainingBehaviorInitializedEvent tbiEvent)
+        public static void TrainingBehaviorInitialized(TrainingBehaviorInitializedEvent rawTbiEvent)
         {
 #if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
             if (!IsAnalyticsEnabled())
@@ -202,6 +215,7 @@ namespace Unity.MLAgents.Analytics
             if (!EnableAnalytics())
                 return;
 
+            var tbiEvent = SanitizeTrainingBehaviorInitializedEvent(rawTbiEvent);
             var behaviorName = tbiEvent.BehaviorName;
             var added = s_SentTrainingBehaviorInitialized.Add(behaviorName);
 
@@ -213,12 +227,6 @@ namespace Unity.MLAgents.Analytics
 
             tbiEvent.TrainingSessionGuid = s_TrainingSessionGuid.ToString();
 
-            if(tbiEvent.Config.Length == 0 || tbiEvent.BehaviorName.Length != 64) {
-              // Hash the behavior name if the message version is from an older version of ml-agents that doesn't do trainer-side hashing.
-              // We'll also, for extra safety, verify that the BehaviorName is the size of the expected SHA256 hash.
-              // Context: The config field was added at the same time as trainer side hashing, so messages including it should already be hashed.
-              tbiEvent.BehaviorName = AnalyticsUtils.Hash(k_VendorKey, tbiEvent.BehaviorName);
-            }
             // Note - to debug, use JsonUtility.ToJson on the event.
             // Debug.Log(
             //     $"Would send event {k_TrainingBehaviorInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
