@@ -44,7 +44,21 @@ def check_and_structure(key: str, value: Any, class_type: type) -> Any:
     return cattr.structure(value, attr_fields_dict[key].type)
 
 
-def check_hyperparam_schedules(val: Dict, trainer_type: type) -> Dict:
+class TrainerType(Enum):
+    PPO: str = "ppo"
+    SAC: str = "sac"
+    POCA: str = "poca"
+
+    def to_settings(self) -> type:
+        _mapping = {
+            TrainerType.PPO: PPOSettings,
+            TrainerType.SAC: SACSettings,
+            TrainerType.POCA: POCASettings,
+        }
+        return _mapping[self]
+
+
+def check_hyperparam_schedules(val: Dict, trainer_type: TrainerType) -> Dict:
     # Check if beta and epsilon are set. If not, set to match learning rate schedule.
     if trainer_type is TrainerType.PPO or trainer_type is TrainerType.POCA:
         if "beta_schedule" not in val.keys() and "learning_rate_schedule" in val.keys():
@@ -623,20 +637,6 @@ class SelfPlaySettings:
     window: int = 10
     play_against_latest_model_ratio: float = 0.5
     initial_elo: float = 1200.0
-
-
-class TrainerType(Enum):
-    PPO: str = "ppo"
-    SAC: str = "sac"
-    POCA: str = "poca"
-
-    def to_settings(self) -> type:
-        _mapping = {
-            TrainerType.PPO: PPOSettings,
-            TrainerType.SAC: SACSettings,
-            TrainerType.POCA: POCASettings,
-        }
-        return _mapping[self]
 
 
 @attr.s(auto_attribs=True)
