@@ -255,7 +255,7 @@ class DiverseNetworkVariational(torch.nn.Module):
         total_loss = base_loss
 
         self.stats.update({
-            "Losses/MEDE Loss": total_loss.item(),
+            f"Losses/{self._name} Loss": total_loss.item(),
             self._name + "/Reward": -base_loss.item(),
         })
 
@@ -264,7 +264,7 @@ class DiverseNetworkVariational(torch.nn.Module):
         for i in range(self.diverse_size):
             r = torch.sum(torch.where(truth == i, rewards, torch.zeros_like(rewards))) / counts[i]
             self.stats.update({
-                "Settings/MEDE Reward {}".format(i): r.item(),
+                f"Settings/{self._name} Reward {}".format(i): r.item(),
             })
         
         return total_loss, self.stats
@@ -740,9 +740,7 @@ class TorchSACOptimizer(TorchOptimizer):
         if self._action_spec.continuous_size > 0:
             with torch.no_grad():
                 cont_log_probs = log_probs.continuous_tensor
-                target_current_diff = torch.sum(
-                    cont_log_probs + self.target_entropy.continuous, dim=1
-                )
+                target_current_diff = torch.sum(cont_log_probs,dim=1) + self.target_entropy.continuous
             # We update all the _cont_ent_coef as one block
             entropy_loss += -1 * ModelUtils.masked_mean(
                 _cont_ent_coef * target_current_diff, loss_masks
