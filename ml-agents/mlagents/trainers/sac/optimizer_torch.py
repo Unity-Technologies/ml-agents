@@ -139,7 +139,11 @@ class DiverseNetworkVariational(torch.nn.Module):
         return prediction, hidden
 
     def copy_normalization(self, thing):
-        self._encoder.processors[0].copy_normalization(thing.processors[1])
+        j = 0
+        for i, spec in enumerate(self._all_obs_specs):
+            if spec.observation_type != ObservationType.GOAL_SIGNAL:
+                self._encoder.processors[j].copy_normalization(thing.processors[i])
+                j+=1
 
     def _get_log_probs(self, pred, truth, masks=None):
         if self._continuous:
