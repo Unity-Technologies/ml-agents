@@ -264,7 +264,7 @@ class DiverseNetworkVariational(torch.nn.Module):
         for i in range(self.diverse_size):
             r = torch.sum(torch.where(truth == i, rewards, torch.zeros_like(rewards))) / counts[i]
             self.stats.update({
-                f"Settings/{self._name} Reward {}".format(i): r.item(),
+                f"Settings/{self._name} Reward".format(i): r.item(),
             })
         
         return total_loss, self.stats
