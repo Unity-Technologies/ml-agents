@@ -22,7 +22,7 @@ and this project adheres to
 - Set gym version in gym-unity to gym release 0.20.0
 - Added support for having `beta`, `epsilon`, and `learning rate` on separate schedules (affects only PPO and POCA). (#5538)
 
-- Changed default behavior to restart crashed Unity environments rather than exiting.
+- Changed default behavior to restart crashed Unity environments rather than exiting. (#5553)
   - Rate & lifetime limits on this are configurable via 3 new yaml options
     1. env_params.max_lifetime_restarts (--max-lifetime-restarts) [default=10]
     2. env_params.restarts_rate_limit_n (--restarts-rate-limit-n) [default=1]
