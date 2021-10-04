@@ -22,7 +22,10 @@ public class DiversitySamplerComponent : SensorComponent
     /// <returns></returns>
     public override ISensor[] CreateSensors()
     {
-        m_Sensor = new DiversitySampler(SensorName, DiversitySize, ContinuousSampling, BalancedSampling);
+        if (m_Sensor == null)
+        {
+            m_Sensor = new DiversitySampler(SensorName, DiversitySize, ContinuousSampling, BalancedSampling);
+        }
         OnValidate();
 
         return new ISensor[] { m_Sensor };
