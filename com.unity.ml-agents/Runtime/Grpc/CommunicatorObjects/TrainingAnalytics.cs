@@ -25,28 +25,29 @@ namespace Unity.MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjttbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3RyYWluaW5n",
-            "X2FuYWx5dGljcy5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMi2QEKHlRy",
+            "X2FuYWx5dGljcy5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMi7gEKHlRy",
             "YWluaW5nRW52aXJvbm1lbnRJbml0aWFsaXplZBIYChBtbGFnZW50c192ZXJz",
             "aW9uGAEgASgJEh0KFW1sYWdlbnRzX2VudnNfdmVyc2lvbhgCIAEoCRIWCg5w",
             "eXRob25fdmVyc2lvbhgDIAEoCRIVCg10b3JjaF92ZXJzaW9uGAQgASgJEhkK",
             "EXRvcmNoX2RldmljZV90eXBlGAUgASgJEhAKCG51bV9lbnZzGAYgASgFEiIK",
-            "Gm51bV9lbnZpcm9ubWVudF9wYXJhbWV0ZXJzGAcgASgFIq0DChtUcmFpbmlu",
-            "Z0JlaGF2aW9ySW5pdGlhbGl6ZWQSFQoNYmVoYXZpb3JfbmFtZRgBIAEoCRIU",
-            "Cgx0cmFpbmVyX3R5cGUYAiABKAkSIAoYZXh0cmluc2ljX3Jld2FyZF9lbmFi",
-            "bGVkGAMgASgIEhsKE2dhaWxfcmV3YXJkX2VuYWJsZWQYBCABKAgSIAoYY3Vy",
-            "aW9zaXR5X3Jld2FyZF9lbmFibGVkGAUgASgIEhoKEnJuZF9yZXdhcmRfZW5h",
-            "YmxlZBgGIAEoCBIiChpiZWhhdmlvcmFsX2Nsb25pbmdfZW5hYmxlZBgHIAEo",
-            "CBIZChFyZWN1cnJlbnRfZW5hYmxlZBgIIAEoCBIWCg52aXN1YWxfZW5jb2Rl",
-            "chgJIAEoCRIaChJudW1fbmV0d29ya19sYXllcnMYCiABKAUSIAoYbnVtX25l",
-            "dHdvcmtfaGlkZGVuX3VuaXRzGAsgASgFEhgKEHRyYWluZXJfdGhyZWFkZWQY",
-            "DCABKAgSGQoRc2VsZl9wbGF5X2VuYWJsZWQYDSABKAgSGgoSY3VycmljdWx1",
-            "bV9lbmFibGVkGA4gASgIQiWqAiJVbml0eS5NTEFnZW50cy5Db21tdW5pY2F0",
-            "b3JPYmplY3RzYgZwcm90bzM="));
+            "Gm51bV9lbnZpcm9ubWVudF9wYXJhbWV0ZXJzGAcgASgFEhMKC3J1bl9vcHRp",
+            "b25zGAggASgJIr0DChtUcmFpbmluZ0JlaGF2aW9ySW5pdGlhbGl6ZWQSFQoN",
+            "YmVoYXZpb3JfbmFtZRgBIAEoCRIUCgx0cmFpbmVyX3R5cGUYAiABKAkSIAoY",
+            "ZXh0cmluc2ljX3Jld2FyZF9lbmFibGVkGAMgASgIEhsKE2dhaWxfcmV3YXJk",
+            "X2VuYWJsZWQYBCABKAgSIAoYY3VyaW9zaXR5X3Jld2FyZF9lbmFibGVkGAUg",
+            "ASgIEhoKEnJuZF9yZXdhcmRfZW5hYmxlZBgGIAEoCBIiChpiZWhhdmlvcmFs",
+            "X2Nsb25pbmdfZW5hYmxlZBgHIAEoCBIZChFyZWN1cnJlbnRfZW5hYmxlZBgI",
+            "IAEoCBIWCg52aXN1YWxfZW5jb2RlchgJIAEoCRIaChJudW1fbmV0d29ya19s",
+            "YXllcnMYCiABKAUSIAoYbnVtX25ldHdvcmtfaGlkZGVuX3VuaXRzGAsgASgF",
+            "EhgKEHRyYWluZXJfdGhyZWFkZWQYDCABKAgSGQoRc2VsZl9wbGF5X2VuYWJs",
+            "ZWQYDSABKAgSGgoSY3VycmljdWx1bV9lbmFibGVkGA4gASgIEg4KBmNvbmZp",
+            "ZxgPIAEoCUIlqgIiVW5pdHkuTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0",
+            "c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.TrainingEnvironmentInitialized), global::Unity.MLAgents.CommunicatorObjects.TrainingEnvironmentInitialized.Parser, new[]{ "MlagentsVersion", "MlagentsEnvsVersion", "PythonVersion", "TorchVersion", "TorchDeviceType", "NumEnvs", "NumEnvironmentParameters" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.TrainingBehaviorInitialized), global::Unity.MLAgents.CommunicatorObjects.TrainingBehaviorInitialized.Parser, new[]{ "BehaviorName", "TrainerType", "ExtrinsicRewardEnabled", "GailRewardEnabled", "CuriosityRewardEnabled", "RndRewardEnabled", "BehavioralCloningEnabled", "RecurrentEnabled", "VisualEncoder", "NumNetworkLayers", "NumNetworkHiddenUnits", "TrainerThreaded", "SelfPlayEnabled", "CurriculumEnabled" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.TrainingEnvironmentInitialized), global::Unity.MLAgents.CommunicatorObjects.TrainingEnvironmentInitialized.Parser, new[]{ "MlagentsVersion", "MlagentsEnvsVersion", "PythonVersion", "TorchVersion", "TorchDeviceType", "NumEnvs", "NumEnvironmentParameters", "RunOptions" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.TrainingBehaviorInitialized), global::Unity.MLAgents.CommunicatorObjects.TrainingBehaviorInitialized.Parser, new[]{ "BehaviorName", "TrainerType", "ExtrinsicRewardEnabled", "GailRewardEnabled", "CuriosityRewardEnabled", "RndRewardEnabled", "BehavioralCloningEnabled", "RecurrentEnabled", "VisualEncoder", "NumNetworkLayers", "NumNetworkHiddenUnits", "TrainerThreaded", "SelfPlayEnabled", "CurriculumEnabled", "Config" }, null, null, null)
           }));
     }
     #endregion
@@ -85,6 +86,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       torchDeviceType_ = other.torchDeviceType_;
       numEnvs_ = other.numEnvs_;
       numEnvironmentParameters_ = other.numEnvironmentParameters_;
+      runOptions_ = other.runOptions_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -170,6 +172,17 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "run_options" field.</summary>
+    public const int RunOptionsFieldNumber = 8;
+    private string runOptions_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string RunOptions {
+      get { return runOptions_; }
+      set {
+        runOptions_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as TrainingEnvironmentInitialized);
@@ -190,6 +203,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (TorchDeviceType != other.TorchDeviceType) return false;
       if (NumEnvs != other.NumEnvs) return false;
       if (NumEnvironmentParameters != other.NumEnvironmentParameters) return false;
+      if (RunOptions != other.RunOptions) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -203,6 +217,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (TorchDeviceType.Length != 0) hash ^= TorchDeviceType.GetHashCode();
       if (NumEnvs != 0) hash ^= NumEnvs.GetHashCode();
       if (NumEnvironmentParameters != 0) hash ^= NumEnvironmentParameters.GetHashCode();
+      if (RunOptions.Length != 0) hash ^= RunOptions.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -244,6 +259,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
         output.WriteRawTag(56);
         output.WriteInt32(NumEnvironmentParameters);
       }
+      if (RunOptions.Length != 0) {
+        output.WriteRawTag(66);
+        output.WriteString(RunOptions);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -272,6 +291,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
       if (NumEnvironmentParameters != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(NumEnvironmentParameters);
+      }
+      if (RunOptions.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(RunOptions);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -304,6 +326,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
       if (other.NumEnvironmentParameters != 0) {
         NumEnvironmentParameters = other.NumEnvironmentParameters;
+      }
+      if (other.RunOptions.Length != 0) {
+        RunOptions = other.RunOptions;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -342,6 +367,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
           }
           case 56: {
             NumEnvironmentParameters = input.ReadInt32();
+            break;
+          }
+          case 66: {
+            RunOptions = input.ReadString();
             break;
           }
         }
@@ -389,6 +418,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       trainerThreaded_ = other.trainerThreaded_;
       selfPlayEnabled_ = other.selfPlayEnabled_;
       curriculumEnabled_ = other.curriculumEnabled_;
+      config_ = other.config_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -551,6 +581,17 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "config" field.</summary>
+    public const int ConfigFieldNumber = 15;
+    private string config_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Config {
+      get { return config_; }
+      set {
+        config_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as TrainingBehaviorInitialized);
@@ -578,6 +619,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (TrainerThreaded != other.TrainerThreaded) return false;
       if (SelfPlayEnabled != other.SelfPlayEnabled) return false;
       if (CurriculumEnabled != other.CurriculumEnabled) return false;
+      if (Config != other.Config) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -598,6 +640,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (TrainerThreaded != false) hash ^= TrainerThreaded.GetHashCode();
       if (SelfPlayEnabled != false) hash ^= SelfPlayEnabled.GetHashCode();
       if (CurriculumEnabled != false) hash ^= CurriculumEnabled.GetHashCode();
+      if (Config.Length != 0) hash ^= Config.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -667,6 +710,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
         output.WriteRawTag(112);
         output.WriteBool(CurriculumEnabled);
       }
+      if (Config.Length != 0) {
+        output.WriteRawTag(122);
+        output.WriteString(Config);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -716,6 +763,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
       if (CurriculumEnabled != false) {
         size += 1 + 1;
+      }
+      if (Config.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Config);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -769,6 +819,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
       if (other.CurriculumEnabled != false) {
         CurriculumEnabled = other.CurriculumEnabled;
+      }
+      if (other.Config.Length != 0) {
+        Config = other.Config;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -835,6 +888,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
           }
           case 112: {
             CurriculumEnabled = input.ReadBool();
+            break;
+          }
+          case 122: {
+            Config = input.ReadString();
             break;
           }
         }
