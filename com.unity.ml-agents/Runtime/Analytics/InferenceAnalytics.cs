@@ -156,7 +156,7 @@ namespace Unity.MLAgents.Analytics
             var inferenceEvent = new InferenceEvent();
 
             // Hash the behavior name so that there's no concern about PII or "secret" data being leaked.
-            inferenceEvent.BehaviorName = AnalyticsUtils.Hash(behaviorName);
+            inferenceEvent.BehaviorName = AnalyticsUtils.Hash(k_VendorKey, behaviorName);
 
             inferenceEvent.BarracudaModelSource = barracudaModel.IrSource;
             inferenceEvent.BarracudaModelVersion = barracudaModel.IrVersion;

@@ -11,6 +11,7 @@ message TrainingEnvironmentInitialized {
     string torch_device_type = 5;
     int32 num_envs = 6;
     int32 num_environment_parameters = 7;
+    string run_options = 8;
 }
 
 message TrainingBehaviorInitialized {
@@ -28,4 +29,5 @@ message TrainingBehaviorInitialized {
     bool trainer_threaded = 12;
     bool self_play_enabled = 13;
     bool curriculum_enabled = 14;
+    string config = 15;
 }
