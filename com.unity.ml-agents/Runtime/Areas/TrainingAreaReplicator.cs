@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Areas
 {
+    /// <summary>
+    /// The Training Ares Replicator allows for a training area object group to be replicated dynamically during runtime.
+    /// </summary>
     public class TrainingAreaReplicator : MonoBehaviour
     {
         public GameObject baseArea;
@@ -19,15 +22,21 @@ namespace Unity.MLAgents.Areas
 
         public void Awake()
         {
+            // Computes the Grid Size on Awake
             ComputeGridSize();
+            // Sets the TrainingArea name to the name of the base area.
             m_TrainingAreaName = baseArea.name;
         }
 
         public void OnEnable()
         {
+            // Adds the training are replicas during OnEnable to ensure they are added before the Academy begins its work.
             AddEnvironments();
         }
 
+        /// <summary>
+        /// Computes the Grid Size for replicating the training area.
+        /// </summary>
         void ComputeGridSize()
         {
             // check if running inference, if so, use the num areas set through the component,
@@ -42,6 +51,10 @@ namespace Unity.MLAgents.Areas
             m_GridSize.z = zSize == 0 ? 1 : zSize;
         }
 
+        /// <summary>
+        /// Adds replicas of the training area to the scene.
+        /// </summary>
+        /// <exception cref="UnityAgentsException"></exception>
         void AddEnvironments()
         {
             if (numAreas > m_GridSize.x * m_GridSize.y * m_GridSize.z)

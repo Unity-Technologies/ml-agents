@@ -473,6 +473,14 @@ RollerBall environment:
 1. You can now instantiate copies of the TrainingArea prefab. Drag them into
    your scene, positioning them so that they do not overlap.
 
+Alternatively, you can use the `TrainingAreaReplicator` to replicate training areas. Use the following steps:
+
+1. Create a new empyt Game Object in the scene.
+2. Click on the new object and add a TrainingAreaReplicator component to the empty Game Object through the inspector.
+3. Drag the training area to `Base Area` in the Training Area Replicator.
+4. Specify the number of areas to replicate and the separation between areas.
+5. Hit play and the areas will be replicated automatically!
+
 ## Optional: Training Using Concurrent Unity Instances
 Another level of parallelization comes by training using
 [concurrent Unity instances](ML-Agents-Overview.md#additional-features).
