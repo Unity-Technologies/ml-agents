@@ -152,7 +152,7 @@ class DiscriminatorNetwork(torch.nn.Module):
         z_mu: Optional[torch.Tensor] = None
         if self._settings.use_vail:
             z_mu = self._z_mu_layer(hidden)
-            hidden = torch.normal(z_mu, self._z_sigma * use_vail_noise)
+            hidden = z_mu + torch.randn_like(z_mu) * self._z_sigma * use_vail_noise
         estimate = self._estimator(hidden)
         return estimate, z_mu
 
@@ -251,7 +251,7 @@ class DiscriminatorNetwork(torch.nn.Module):
         if self._settings.use_vail:
             use_vail_noise = True
             z_mu = self._z_mu_layer(hidden)
-            hidden = torch.normal(z_mu, self._z_sigma * use_vail_noise)
+            hidden = z_mu + torch.randn_like(z_mu) * self._z_sigma * use_vail_noise
         estimate = self._estimator(hidden).squeeze(1).sum()
         gradient = torch.autograd.grad(estimate, encoder_input, create_graph=True)[0]
         # Norm's gradient could be NaN at 0. Use our own safe_norm

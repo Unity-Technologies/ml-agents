@@ -27,6 +27,8 @@ PPO_CONFIG = f"""
         lambd: 0.95
         learning_rate: 3.0e-4
         learning_rate_schedule: linear
+        beta_schedule: constant
+        epsilon_schedule: linear
         max_steps: 5.0e5
         memory_size: 256
         normalize: false

@@ -269,7 +269,9 @@ behaviors:
       # PPO-specific hyperparameters
       # Replaces the "PPO-specific hyperparameters" section above
       beta: 5.0e-3
+      beta_schedule: constant
       epsilon: 0.2
+      epsilon_schedule: linear
       lambd: 0.95
       num_epoch: 3
 
