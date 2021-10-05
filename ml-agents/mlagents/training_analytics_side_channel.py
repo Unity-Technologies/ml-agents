@@ -1,12 +1,15 @@
 import sys
 from typing import Optional
-import uuid
 import mlagents_envs
 import mlagents.trainers
 from mlagents import torch_utils
 from mlagents.trainers.settings import RewardSignalType
 from mlagents_envs.exception import UnityCommunicationException
-from mlagents_envs.side_channel import SideChannel, IncomingMessage, OutgoingMessage
+from mlagents_envs.side_channel import (
+    IncomingMessage,
+    OutgoingMessage,
+    DefaultTrainingAnalyticsSideChannel,
+)
 from mlagents_envs.communicator_objects.training_analytics_pb2 import (
     TrainingEnvironmentInitialized,
     TrainingBehaviorInitialized,
@@ -16,7 +19,7 @@ from google.protobuf.any_pb2 import Any
 from mlagents.trainers.settings import TrainerSettings, RunOptions
 
 
-class TrainingAnalyticsSideChannel(SideChannel):
+class TrainingAnalyticsSideChannel(DefaultTrainingAnalyticsSideChannel):
     """
     Side channel that sends information about the training to the Unity environment so it can be logged.
     """
@@ -24,13 +27,14 @@ class TrainingAnalyticsSideChannel(SideChannel):
     def __init__(self) -> None:
         # >>> uuid.uuid5(uuid.NAMESPACE_URL, "com.unity.ml-agents/TrainingAnalyticsSideChannel")
         # UUID('b664a4a9-d86f-5a5f-95cb-e8353a7e8356')
-        super().__init__(uuid.UUID("b664a4a9-d86f-5a5f-95cb-e8353a7e8356"))
+        # Use the same uuid as the parent side channel
+        super().__init__()
         self.run_options: Optional[RunOptions] = None
 
     def on_message_received(self, msg: IncomingMessage) -> None:
         raise UnityCommunicationException(
             "The TrainingAnalyticsSideChannel received a message from Unity, "
-            + "this should not have happened."
+            "this should not have happened."
         )
 
     def environment_initialized(self, run_options: RunOptions) -> None:

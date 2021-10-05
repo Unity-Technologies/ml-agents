@@ -24,6 +24,7 @@ from mlagents.trainers.settings import (
     TrainerType,
     deep_update_dict,
     strict_to_cls,
+    ScheduleType,
 )
 from mlagents.trainers.exception import TrainerConfigError
 
@@ -158,6 +159,26 @@ def test_trainersettings_structure():
     with pytest.raises(TrainerConfigError):
         trainersettings_dict = {"hyperparameters": {"batch_size": 1024}}
         TrainerSettings.structure(trainersettings_dict, TrainerSettings)
+
+
+def test_trainersettingsschedules_structure():
+    """
+    Test structuring method for Trainer Settings Schedule
+    """
+    trainersettings_dict = {
+        "trainer_type": "ppo",
+        "hyperparameters": {
+            "learning_rate_schedule": "linear",
+            "beta_schedule": "constant",
+        },
+    }
+    trainer_settings = TrainerSettings.structure(trainersettings_dict, TrainerSettings)
+    assert isinstance(trainer_settings.hyperparameters, PPOSettings)
+    assert (
+        trainer_settings.hyperparameters.learning_rate_schedule == ScheduleType.LINEAR
+    )
+    assert trainer_settings.hyperparameters.beta_schedule == ScheduleType.CONSTANT
+    assert trainer_settings.hyperparameters.epsilon_schedule == ScheduleType.LINEAR
 
 
 def test_reward_signal_structure():
