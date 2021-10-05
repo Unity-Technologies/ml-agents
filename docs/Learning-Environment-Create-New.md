@@ -264,7 +264,7 @@ The RollerAgent applies the values from the `actions.ContinuousActions[]` array 
 component `rBody`, using `Rigidbody.AddForce()`:
 
 ```csharp
-public override void OnActionReceived(ActionBuffers actions) 
+public override void OnActionReceived(ActionBuffers actionBuffers) 
 {
     var continuousActions = actions.ContinuousActions;
     Vector3 controlSignal = Vector3.zero;
@@ -319,9 +319,10 @@ public float forceMultiplier = 10;
 public override void OnActionReceived(ActionBuffers actionBuffers)
 {
     // Actions, size = 2
+    var continuousActions = actions.ContinuousActions;
     Vector3 controlSignal = Vector3.zero;
-    controlSignal.x = actionBuffers.ContinuousActions[0];
-    controlSignal.z = actionBuffers.ContinuousActions[1];
+    controlSignal.x = continuousActions[0];
+    controlSignal.z = continuousActions[1];
     rBody.AddForce(controlSignal * forceMultiplier);
 
     // Rewards
