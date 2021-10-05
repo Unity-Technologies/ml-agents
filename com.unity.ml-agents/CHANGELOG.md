@@ -20,6 +20,7 @@ and this project adheres to
 terminated teammates. (#5441)
 - Fixed wrong attribute name in argparser for torch device option (#5433)(#5467)
 - Fixed conflicting CLI and yaml options regarding resume & initialize_from (#5495)
+- Added minimal analytics collection to LL-API (#5511)
 ## [2.1.0-exp.1] - 2021-06-09
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
