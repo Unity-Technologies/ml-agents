@@ -1,6 +1,6 @@
 # Unity ML-Agents PettingZoo Wrapper [Experimental]
 
-With the increasing interests in multi-agent training with a gym-like API, we provide a
+With the increasing interest in multi-agent training with a gym-like API, we provide a
 PettingZoo Wrapper around the [Petting Zoo API](https://www.pettingzoo.ml/). Our wrapper
 provides interfaces on top of our `UnityEnvironment` class, which is the default way of
 interfacing with a Unity environment via Python.
