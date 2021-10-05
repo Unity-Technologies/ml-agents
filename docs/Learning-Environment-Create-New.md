@@ -260,14 +260,18 @@ the first determines the force applied along the x-axis; and the
 second determines the force applied along the z-axis. (If we allowed the Agent
 to move in three dimensions, then we would need a third action.)
 
-The RollerAgent applies the values from the `action[]` array to its Rigidbody
+The RollerAgent applies the values from the `actions.ContinuousActions[]` array to its Rigidbody
 component `rBody`, using `Rigidbody.AddForce()`:
 
 ```csharp
-Vector3 controlSignal = Vector3.zero;
-controlSignal.x = action[0];
-controlSignal.z = action[1];
-rBody.AddForce(controlSignal * forceMultiplier);
+public override void OnActionReceived(ActionBuffers actions) 
+{
+    var continuousActions = actions.ContinuousActions;
+    Vector3 controlSignal = Vector3.zero;
+    controlSignal.x = continuousActions[0];
+    controlSignal.z = continuousActions[1];
+    rBody.AddForce(controlSignal * forceMultiplier);
+}
 ```
 
 #### Rewards
