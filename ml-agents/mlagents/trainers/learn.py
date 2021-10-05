@@ -56,6 +56,7 @@ def run_training(run_seed: int, num_areas: int, options: RunOptions) -> None:
     """
     Launches training session.
     :param run_seed: Random seed used for training.
+    :param num_areas: Number of training areas to instantiate
     :param options: parsed command line arguments
     """
     with hierarchical_timer("run_training.setup"):

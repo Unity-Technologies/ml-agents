@@ -37,6 +37,7 @@ MOCK_PARAMETER_YAML = """
     env_settings:
         env_path: "./oldenvfile"
         num_envs: 4
+        num_areas: 4
         base_port: 4001
         seed: 9870
     checkpoint_settings:
@@ -73,7 +74,7 @@ def test_run_training(
         with patch.object(TrainerController, "__init__", mock_init):
             with patch.object(TrainerController, "start_learning", MagicMock()):
                 options = basic_options()
-                learn.run_training(0, options)
+                learn.run_training(0, 1, options)
                 mock_init.assert_called_once_with(
                     trainer_factory_mock.return_value,
                     os.path.join("results", "ppo"),
@@ -103,6 +104,7 @@ def test_bad_env_path():
             env_path="/foo/bar",
             no_graphics=True,
             seed=-1,
+            num_areas=1,
             start_port=8000,
             env_args=None,
             log_folder="results/log_folder",

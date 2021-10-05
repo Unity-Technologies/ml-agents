@@ -163,7 +163,7 @@ def _create_parser() -> argparse.ArgumentParser:
     )
 
     argparser.add_argument(
-        "--num_areas",
+        "--num-areas",
         default=1,
         type=int,
         help="The number of parallel training areas in each Unity environment instance.",
