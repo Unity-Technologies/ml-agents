@@ -70,6 +70,7 @@ namespace Unity.MLAgents.Areas
                     {
                         if (m_areaCount == 0)
                         {
+                            // Skip this first area since it already exists.
                             m_areaCount = 1;
                         }
                         else if (m_areaCount < numAreas)

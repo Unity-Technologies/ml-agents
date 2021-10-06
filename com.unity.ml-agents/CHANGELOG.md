@@ -10,7 +10,7 @@ and this project adheres to
 ### Major Changes
 
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- Added a new feature to replicate training areas dynamically during runtime. ()
+- Added a new feature to replicate training areas dynamically during runtime. (#5568)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
