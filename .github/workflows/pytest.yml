@@ -55,6 +55,7 @@ jobs:
         python -m pip install --progress-bar=off -e ./ml-agents -c ${{ matrix.pip_constraints }}
         python -m pip install --progress-bar=off -r test_requirements.txt -c ${{ matrix.pip_constraints }}
         python -m pip install --progress-bar=off -e ./gym-unity -c ${{ matrix.pip_constraints }}
+        python -m pip install --progress-bar=off -e ./pettingzoo-unity -c ${{ matrix.pip_constraints }}
         python -m pip install --progress-bar=off -e ./ml-agents-plugin-examples -c ${{ matrix.pip_constraints }}
     - name: Save python dependencies
       run: |
