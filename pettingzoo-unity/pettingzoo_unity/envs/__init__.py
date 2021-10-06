@@ -42,7 +42,7 @@ class petting_zoo_env:
 
 
 for env_id in default_registry:
-    env_id = env_id.replace("3DBall", "ThreeDBall")
+    env_id = env_id.replace("3", "Three")
     if not env_id.isidentifier():
         logger.warning(
             f"Environment id {env_id} can not be registered since it is"
