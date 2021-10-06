@@ -52,7 +52,7 @@ def parse_command_line(argv: Optional[List[str]] = None) -> RunOptions:
     return RunOptions.from_argparse(args)
 
 
-def run_training(run_seed: int, num_areas: int, options: RunOptions) -> None:
+def run_training(run_seed: int, options: RunOptions, num_areas: int) -> None:
     """
     Launches training session.
     :param run_seed: Random seed used for training.
@@ -253,7 +253,7 @@ def run_cli(options: RunOptions) -> None:
     if options.env_settings.seed == -1:
         run_seed = np.random.randint(0, 10000)
         logger.debug(f"run_seed set to {run_seed}")
-    run_training(run_seed, num_areas, options)
+    run_training(run_seed, options, num_areas)
 
 
 def main():

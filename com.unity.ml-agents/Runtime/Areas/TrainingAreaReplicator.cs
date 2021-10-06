@@ -45,9 +45,9 @@ namespace Unity.MLAgents.Areas
                 numAreas = Academy.Instance.NumAreas;
 
             var rootNumAreas = Mathf.Pow(numAreas, 1.0f / 3.0f);
-            m_GridSize.x = Mathf.RoundToInt(rootNumAreas);
-            m_GridSize.y = Mathf.RoundToInt(rootNumAreas);
-            var zSize = numAreas - m_GridSize.x * m_GridSize.y;
+            m_GridSize.x = Mathf.CeilToInt(rootNumAreas);
+            m_GridSize.y = Mathf.CeilToInt(rootNumAreas);
+            var zSize = Mathf.CeilToInt((float)numAreas / (m_GridSize.x * m_GridSize.y));
             m_GridSize.z = zSize == 0 ? 1 : zSize;
         }
 
@@ -64,9 +64,9 @@ namespace Unity.MLAgents.Areas
 
             for (int z = 0; z < m_GridSize.z; z++)
             {
-                for (int j = 0; j < m_GridSize.y; j++)
+                for (int y = 0; y < m_GridSize.y; y++)
                 {
-                    for (int i = 0; i < m_GridSize.x; i++)
+                    for (int x = 0; x < m_GridSize.x; x++)
                     {
                         if (m_areaCount == 0)
                         {
@@ -75,7 +75,7 @@ namespace Unity.MLAgents.Areas
                         else if (m_areaCount < numAreas)
                         {
                             m_areaCount++;
-                            var area = Instantiate(baseArea, new Vector3(i * separation, j * separation, z * separation), Quaternion.identity);
+                            var area = Instantiate(baseArea, new Vector3(x * separation, y * separation, z * separation), Quaternion.identity);
                             area.name = m_TrainingAreaName;
                         }
                     }

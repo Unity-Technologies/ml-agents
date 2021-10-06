@@ -148,12 +148,12 @@ class UnityEnvironment(BaseEnv):
         worker_id: int = 0,
         base_port: Optional[int] = None,
         seed: int = 0,
-        num_areas: int = 1,
         no_graphics: bool = False,
         timeout_wait: int = 60,
         additional_args: Optional[List[str]] = None,
         side_channels: Optional[List[SideChannel]] = None,
         log_folder: Optional[str] = None,
+        num_areas: int = 1,
     ):
         """
         Starts a new unity environment and establishes a connection with the environment.

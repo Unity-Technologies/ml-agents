@@ -40,7 +40,7 @@ namespace Unity.MLAgents
         public int seed;
 
         /// <summary>
-        /// A random number generator (RNG) seed sent from the python process to Unity.
+        /// The number of areas to replicate if Training Area Replication is used in the scene.
         /// </summary>
         public int numAreas;
 

@@ -74,7 +74,7 @@ def test_run_training(
         with patch.object(TrainerController, "__init__", mock_init):
             with patch.object(TrainerController, "start_learning", MagicMock()):
                 options = basic_options()
-                learn.run_training(0, 1, options)
+                learn.run_training(0, options, 1)
                 mock_init.assert_called_once_with(
                     trainer_factory_mock.return_value,
                     os.path.join("results", "ppo"),
