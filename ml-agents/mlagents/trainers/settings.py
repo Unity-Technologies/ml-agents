@@ -823,6 +823,11 @@ class EnvironmentSettings:
     base_port: int = parser.get_default("base_port")
     num_envs: int = attr.ib(default=parser.get_default("num_envs"))
     seed: int = parser.get_default("seed")
+    max_lifetime_restarts: int = parser.get_default("max_lifetime_restarts")
+    restarts_rate_limit_n: int = parser.get_default("restarts_rate_limit_n")
+    restarts_rate_limit_period_s: int = parser.get_default(
+        "restarts_rate_limit_period_s"
+    )
 
     @num_envs.validator
     def validate_num_envs(self, attribute, value):
