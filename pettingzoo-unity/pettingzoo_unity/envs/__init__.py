@@ -15,11 +15,17 @@ logger = logging_util.get_logger(__name__)
 logging_util.set_log_level(logging_util.WARNING)
 
 
-class petting_zoo_env:
-    def __init__(self, env_id):
+class PettingZooEnv:
+    def __init__(self, env_id: str) -> None:
         self.env_id = env_id
 
-    def env(self, seed: Optional[int] = None, **kwargs):
+    def env(self, seed: Optional[int] = None, **kwargs) -> UnityToPettingZooWrapper:
+        """
+        Creates the environment with env_id from unity's default_registry and wraps it in a UnityToPettingZooWrapper
+        :param seed: The seed for the action spaces of the agents.
+        :param kwargs: Any argument accepted by `UnityEnvironment`class except file_name
+        """
+        # If not side_channels specified, add the followings
         if "side_channels" not in kwargs:
             kwargs["side_channels"] = [
                 EngineConfigurationChannel(),
@@ -27,6 +33,7 @@ class petting_zoo_env:
                 StatsSideChannel(),
             ]
         _env = None
+        # If no base port argument is provided, try ports starting at 6000 until one is free
         if "base_port" not in kwargs:
             port = 6000
             while _env is None:
@@ -41,12 +48,13 @@ class petting_zoo_env:
         return UnityToPettingZooWrapper(_env, seed)
 
 
-for env_id in default_registry:
-    env_id = env_id.replace("3", "Three")
-    if not env_id.isidentifier():
+# Register each environment in default_registry as a PettingZooEnv
+for key in default_registry:
+    key = key.replace("3", "Three")
+    if not key.isidentifier():
         logger.warning(
-            f"Environment id {env_id} can not be registered since it is"
+            f"Environment id {key} can not be registered since it is"
             f"not a valid identifier name."
         )
         continue
-    locals()[env_id] = petting_zoo_env(env_id)
+    locals()[key] = PettingZooEnv(key)
