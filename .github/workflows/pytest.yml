@@ -62,7 +62,11 @@ jobs:
         pip freeze > pip_versions-${{ matrix.python-version }}.txt
         cat pip_versions-${{ matrix.python-version }}.txt
     - name: Run pytest
-      run: pytest --cov=ml-agents ml-agents --cov=ml-agents-envs ml-agents-envs --cov=gym-unity gym-unity --cov=pettingzoo-unity --cov-report=html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings -v
+      run: |
+          pytest --cov=ml-agents ml-agents --cov-report=html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings -v
+          pytest --cov=ml-agents-envs ml-agents-envs --cov-append --cov-report=html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings -v
+          pytest --cov=gym-unity gym-unity --cov-append --cov-report=html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings -v
+          pytest --cov=pettingzoo-unity pettingzoo-unity  --cov-append--cov-report=html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings -v
     - name: Upload pytest test results
       uses: actions/upload-artifact@v2
       with:
