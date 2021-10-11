@@ -20,7 +20,7 @@ behaviors:
     network_settings:
       normalize: true
       hidden_units: 512
-      num_layers: 3
+      num_layers: 2
       vis_encode_type: simple
       goal_conditioning_type: none
     reward_signals:
@@ -30,4 +30,4 @@ behaviors:
     keep_checkpoints: 5
     max_steps: 5000000
     time_horizon: 1000
-    summary_freq: 30000
+    summary_freq: 10000

@@ -2813,12 +2813,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 32
+    VectorObservationSize: 24
     NumStackedVectorObservations: 1
     m_ActionSpec:
-      m_NumContinuousActions: 20
+      m_NumContinuousActions: 12
       BranchSizes: 
-    VectorActionSize: 14000000
+    VectorActionSize: 0c000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
@@ -2944,10 +2944,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SensorName: DiversitySampler
-  ContinuousSampling: 1
-  BalancedSampling: 1
+  ContinuousSampling: 0
+  BalancedSampling: 0
   DisableSampling: 0
-  DiversitySize: 3
+  DiversitySize: 4
   DiscreteSetting: 0
   ContinuousSetting: []
 --- !u!1 &4845971001730692034
