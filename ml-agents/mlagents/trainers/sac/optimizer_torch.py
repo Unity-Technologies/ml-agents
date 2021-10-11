@@ -946,10 +946,10 @@ class TorchSACOptimizer(TorchOptimizer):
         total_value_loss.backward()
         self.value_optimizer.step()
 
-        ModelUtils.update_learning_rate(self.entropy_optimizer, decay_lr)
-        self.entropy_optimizer.zero_grad()
-        entropy_loss.backward()
-        self.entropy_optimizer.step()
+        #ModelUtils.update_learning_rate(self.entropy_optimizer, decay_lr)
+        #self.entropy_optimizer.zero_grad()
+        #entropy_loss.backward()
+        #self.entropy_optimizer.step()
 
         # Update target network
         ModelUtils.soft_update(self._critic, self.target_network, self.tau)
