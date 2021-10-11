@@ -46,10 +46,10 @@ public class WormAgentDiverse : Agent
         m_JdController.SetupBodyPart(bodySegment2);
         m_JdController.SetupBodyPart(bodySegment3);
 
-        using (StreamWriter file = new StreamWriter("Worm.txt"))
-        {
-            file.WriteLine("behavior,seg0_xpos,seg0_ypos,seg0_zpos,seg0_xrot,seg0_yrot,seg0_zrot,seg1_xpos,seg1_ypos,seg1_zpos,seg1_xrot,seg1_yrot,seg1_zrot,seg2_xpos,seg2_ypos,seg2_zpos,seg2_xrot,seg2_yrot,seg2_zrot,seg3_xpos,seg3_ypos,seg3_zpos,seg3_xrot,seg3_yrot,seg3_zrot");
-        }
+        //using (StreamWriter file = new StreamWriter("Worm.txt"))
+        //{
+        //    file.WriteLine("behavior,seg0_xpos,seg0_ypos,seg0_zpos,seg0_xrot,seg0_yrot,seg0_zrot,seg1_xpos,seg1_ypos,seg1_zpos,seg1_xrot,seg1_yrot,seg1_zrot,seg2_xpos,seg2_ypos,seg2_zpos,seg2_xrot,seg2_yrot,seg2_zrot,seg3_xpos,seg3_ypos,seg3_zpos,seg3_xrot,seg3_yrot,seg3_zrot");
+        //}
     }
 
     /// <summary>
@@ -146,10 +146,10 @@ public class WormAgentDiverse : Agent
         {
             line = CollectObservationBodyPart(bodyPart, sensor, line);
         }
-        using (StreamWriter file = new StreamWriter("Worm.txt", append: true))
-        {
-            file.WriteLine(line);
-        }
+    //    using (StreamWriter file = new StreamWriter("Worm.txt", append: true))
+    //    {
+    //        file.WriteLine(line);
+    //    }
     }
 
     /// <summary>
