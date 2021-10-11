@@ -98,10 +98,10 @@ public class CrawlerAgentDiverse : Agent
         //GROUND CHECK
         sensor.AddObservation(bp.groundContact.touchingGround); // Is this bp touching the ground
 
-        if (bp.rb.transform != body)
-        {
-            sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
-        }
+        //if (bp.rb.transform != body)
+        //{
+        //    sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
+        //}
     }
 
     /// <summary>
@@ -161,14 +161,14 @@ public class CrawlerAgentDiverse : Agent
         bpDict[leg3Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
 
         // Update joint strength
-        bpDict[leg0Upper].SetJointStrength(continuousActions[++i]);
-        bpDict[leg1Upper].SetJointStrength(continuousActions[++i]);
-        bpDict[leg2Upper].SetJointStrength(continuousActions[++i]);
-        bpDict[leg3Upper].SetJointStrength(continuousActions[++i]);
-        bpDict[leg0Lower].SetJointStrength(continuousActions[++i]);
-        bpDict[leg1Lower].SetJointStrength(continuousActions[++i]);
-        bpDict[leg2Lower].SetJointStrength(continuousActions[++i]);
-        bpDict[leg3Lower].SetJointStrength(continuousActions[++i]);
+        //bpDict[leg0Upper].SetJointStrength(continuousActions[++i]);
+        //bpDict[leg1Upper].SetJointStrength(continuousActions[++i]);
+        //bpDict[leg2Upper].SetJointStrength(continuousActions[++i]);
+        //bpDict[leg3Upper].SetJointStrength(continuousActions[++i]);
+        //bpDict[leg0Lower].SetJointStrength(continuousActions[++i]);
+        //bpDict[leg1Lower].SetJointStrength(continuousActions[++i]);
+        //bpDict[leg2Lower].SetJointStrength(continuousActions[++i]);
+        //bpDict[leg3Lower].SetJointStrength(continuousActions[++i]);
     }
 
     void FixedUpdate()
