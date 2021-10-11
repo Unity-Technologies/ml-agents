@@ -113,8 +113,8 @@ public class WormAgentDiverse : Agent
             line += bp.rb.transform.localRotation.eulerAngles.z.ToString() + ",";
         }
 
-        if (bp.joint)
-            sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
+        // if (bp.joint)
+        //     sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
 
         return line;
     }
@@ -172,10 +172,10 @@ public class WormAgentDiverse : Agent
         bpDict[bodySegment1].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
         bpDict[bodySegment2].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
 
-        // Update joint strength
-        bpDict[bodySegment0].SetJointStrength(continuousActions[++i]);
-        bpDict[bodySegment1].SetJointStrength(continuousActions[++i]);
-        bpDict[bodySegment2].SetJointStrength(continuousActions[++i]);
+        // // Update joint strength
+        // bpDict[bodySegment0].SetJointStrength(continuousActions[++i]);
+        // bpDict[bodySegment1].SetJointStrength(continuousActions[++i]);
+        // bpDict[bodySegment2].SetJointStrength(continuousActions[++i]);
 
         //Reset if Worm fell through floor;
         if (bodySegment0.position.y < m_StartingPos.y - 2)
