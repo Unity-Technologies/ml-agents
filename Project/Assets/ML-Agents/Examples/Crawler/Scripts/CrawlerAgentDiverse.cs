@@ -10,6 +10,17 @@ public class CrawlerAgentDiverse : Agent
 {
     const float m_minWalkingSpeed = 1; //The min walking speed to obtain reward
 
+    private float m_TargetWalkingSpeed = m_maxWalkingSpeed;
+
+    const float m_maxWalkingSpeed = 15; //The max walking speed
+
+    public float TargetWalkingSpeed
+    {
+        get { return m_TargetWalkingSpeed; }
+        set { m_TargetWalkingSpeed = Mathf.Clamp(value, .1f, m_maxWalkingSpeed); }
+    }
+
+
     //The direction an agent will walk during training.
     [Header("Target To Walk Towards")]
     public Transform TargetPrefab; //Target prefab to use in Dynamic envs
@@ -88,6 +99,7 @@ public class CrawlerAgentDiverse : Agent
         body.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
 
         UpdateOrientationObjects();
+        TargetWalkingSpeed = m_maxWalkingSpeed; //Random.Range(0.1f, m_maxWalkingSpeed);
     }
 
     /// <summary>
@@ -198,7 +210,7 @@ public class CrawlerAgentDiverse : Agent
         // Set reward for this step according to mixture of the following elements.
         // a. Match target speed
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
-        var matchSpeedReward = GetMatchingVelocityReward(cubeForward, GetAvgVelocity());
+        var matchSpeedReward = GetMatchingVelocityReward(cubeForward * TargetWalkingSpeed, GetAvgVelocity());
 
         AddReward(matchSpeedReward);
     }
@@ -242,10 +254,16 @@ public class CrawlerAgentDiverse : Agent
     /// </summary>
     public float GetMatchingVelocityReward(Vector3 velocityGoal, Vector3 actualVelocity)
     {
-        var velocityProjection = Vector3.Project(actualVelocity, velocityGoal);
-        var direction = Vector3.Angle(velocityProjection, velocityGoal) == 0 ? 1 : -1;
-        var speed = velocityProjection.magnitude * direction;
-        return speed > m_minWalkingSpeed ? 0.1f : 0;
+        //var velocityProjection = Vector3.Project(actualVelocity, velocityGoal);
+        //var direction = Vector3.Angle(velocityProjection, velocityGoal) == 0 ? 1 : -1;
+        //var speed = velocityProjection.magnitude * direction;
+        //return speed > m_minWalkingSpeed ? 0.1f : 0;
+        var velDeltaMagnitude = Mathf.Clamp(Vector3.Distance(actualVelocity, velocityGoal), 0, TargetWalkingSpeed);
+
+        //return the value on a declining sigmoid shaped curve that decays from 1 to 0
+        //This reward will approach 1 if it matches perfectly and approach zero as it deviates
+        return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / TargetWalkingSpeed, 2), 2);
+
     }
 
     /// <summary>
