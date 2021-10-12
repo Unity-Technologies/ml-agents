@@ -10,7 +10,10 @@ from typing import Dict, List, Optional, Any, Tuple
 import mlagents_envs
 
 from mlagents_envs.logging_util import get_logger
-from mlagents_envs.side_channel.side_channel import SideChannel, IncomingMessage
+from mlagents_envs.side_channel.side_channel import SideChannel
+from mlagents_envs.side_channel import DefaultTrainingAnalyticsSideChannel
+from mlagents_envs.side_channel.side_channel_manager import SideChannelManager
+from mlagents_envs import env_utils
 
 from mlagents_envs.base_env import (
     BaseEnv,
@@ -171,20 +174,23 @@ class UnityEnvironment(BaseEnv):
         # If true, this means the environment was successfully loaded
         self._loaded = False
         # The process that is started. If None, no process was started
-        self.proc1 = None
-        self.timeout_wait: int = timeout_wait
-        self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
-        self.worker_id = worker_id
-        self.side_channels: Dict[uuid.UUID, SideChannel] = {}
-        if side_channels is not None:
-            for _sc in side_channels:
-                if _sc.channel_id in self.side_channels:
-                    raise UnityEnvironmentException(
-                        "There cannot be two side channels with the same channel id {}.".format(
-                            _sc.channel_id
-                        )
-                    )
-                self.side_channels[_sc.channel_id] = _sc
+        self._process: Optional[subprocess.Popen] = None
+        self._timeout_wait: int = timeout_wait
+        self._communicator = self._get_communicator(worker_id, base_port, timeout_wait)
+        self._worker_id = worker_id
+        if side_channels is None:
+            side_channels = []
+        default_training_side_channel: Optional[
+            DefaultTrainingAnalyticsSideChannel
+        ] = None
+        if DefaultTrainingAnalyticsSideChannel.CHANNEL_ID not in [
+            _.channel_id for _ in side_channels
+        ]:
+            default_training_side_channel = DefaultTrainingAnalyticsSideChannel()
+            side_channels.append(default_training_side_channel)
+        self._side_channel_manager = SideChannelManager(side_channels)
+        self._log_folder = log_folder
+        self.academy_capabilities: UnityRLCapabilitiesProto = None  # type: ignore
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -235,6 +241,9 @@ class UnityEnvironment(BaseEnv):
         self._env_actions: Dict[str, np.ndarray] = {}
         self._is_first_message = True
         self._update_behavior_specs(aca_output)
+        self.academy_capabilities = aca_params.capabilities
+        if default_training_side_channel is not None:
+            default_training_side_channel.environment_initialized()
 
     @staticmethod
     def get_communicator(worker_id, base_port, timeout_wait):
