@@ -968,50 +968,122 @@ class TorchSACOptimizer(TorchOptimizer):
             "Policy/Entropy Loss": entropy_loss.item(),
         }
 
-        if self._use_mede or self._use_diayn:
-            disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
+        #if self._use_mede or self._use_diayn:
+        #    disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
 
-            if self._mede_network is not None:
-                mede_loss, mede_stats = self._mede_network.loss(
-                    current_obs, sampled_actions.continuous_tensor, disc_act, masks
-                )
+        #    if self._mede_network is not None:
+        #        mede_loss, mede_stats = self._mede_network.loss(
+        #            current_obs, sampled_actions.continuous_tensor, disc_act, masks
+        #        )
 
-                ModelUtils.update_learning_rate(self.mede_optimizer, decay_lr)
-                self.mede_optimizer.zero_grad()
-                mede_loss.backward()
-                self.mede_optimizer.step()
+        #        ModelUtils.update_learning_rate(self.mede_optimizer, decay_lr)
+        #        self.mede_optimizer.zero_grad()
+        #        mede_loss.backward()
+        #        self.mede_optimizer.step()
 
-                update_stats.update(mede_stats)
+        #        update_stats.update(mede_stats)
 
-            if self._diayn_network is not None:
-                diayn_loss, diayn_stats = self._diayn_network.loss(
-                    current_obs, sampled_actions.continuous_tensor, disc_act, masks
-                )
+        #    if self._diayn_network is not None:
+        #        diayn_loss, diayn_stats = self._diayn_network.loss(
+        #            current_obs, sampled_actions.continuous_tensor, disc_act, masks
+        #        )
 
-                ModelUtils.update_learning_rate(self.mede_optimizer, decay_lr)
-                self.diayn_optimizer.zero_grad()
-                diayn_loss.backward()
-                self.diayn_optimizer.step()
-            
-                update_stats.update(diayn_stats)
-            
-            if self._adaptive_divcoef:
-                divcoef_loss = self.sac_divcoef_loss(mede_value_rewards, masks)
-                self.divcoef_optimizer.zero_grad()
-                divcoef_loss.backward()
-                self.divcoef_optimizer.step()
-                update_stats.update({
-                    "Policy/Diversity Coefficient": self._diversity_coef.coef.item(),
-                    "Policy/Diversity Coefficient Loss": divcoef_loss.item()
-                })
+        #        ModelUtils.update_learning_rate(self.mede_optimizer, decay_lr)
+        #        self.diayn_optimizer.zero_grad()
+        #        diayn_loss.backward()
+        #        self.diayn_optimizer.step()
+        #    
+        #        update_stats.update(diayn_stats)
+        #    
+        #    if self._adaptive_divcoef:
+        #        divcoef_loss = self.sac_divcoef_loss(mede_value_rewards, masks)
+        #        self.divcoef_optimizer.zero_grad()
+        #        divcoef_loss.backward()
+        #        self.divcoef_optimizer.step()
+        #        update_stats.update({
+        #            "Policy/Diversity Coefficient": self._diversity_coef.coef.item(),
+        #            "Policy/Diversity Coefficient Loss": divcoef_loss.item()
+        #        })
 
-            elif self._scheduled_divcoef:
-                if self._diversity_coef.coef < self._target_diversity:
-                    self._diversity_coef.coef += self._delta_divcoef
-                update_stats.update({
-                    "Policy/Diversity Coefficient": self._diversity_coef.coef.item(),
-                })
+        #    elif self._scheduled_divcoef:
+        #        if self._diversity_coef.coef < self._target_diversity:
+        #            self._diversity_coef.coef += self._delta_divcoef
+        #        update_stats.update({
+        #            "Policy/Diversity Coefficient": self._diversity_coef.coef.item(),
+        #        })
 
+        return update_stats
+
+    def update_disc(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
+        disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
+        update_stats = {}
+
+        n_obs = len(self.policy.behavior_spec.observation_specs)
+        current_obs = ObsUtil.from_buffer(batch, n_obs)
+        # Convert to tensors
+        current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
+        act_masks = ModelUtils.list_to_tensor(batch[BufferKey.ACTION_MASK])
+
+        masks = ModelUtils.list_to_tensor(batch[BufferKey.MASKS], dtype=torch.bool)
+        memories_list = [
+            ModelUtils.list_to_tensor(batch[BufferKey.MEMORY][i])
+            for i in range(0, len(batch[BufferKey.MEMORY]), self.policy.sequence_length)
+        ]
+        # LSTM shouldn't have sequence length <1, but stop it from going out of the index if true.
+
+        if len(memories_list) > 0:
+            memories = torch.stack(memories_list).unsqueeze(0)
+        else:
+            memories = None
+
+        sampled_actions, log_probs, _, _, = self.policy.actor.get_action_and_stats(
+            current_obs,
+            masks=act_masks,
+            memories=memories,
+            sequence_length=self.policy.sequence_length,
+        )
+
+        decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
+        if self._mede_network is not None:
+            mede_loss, mede_stats = self._mede_network.loss(
+                current_obs, sampled_actions.continuous_tensor, disc_act, masks
+            )
+
+            ModelUtils.update_learning_rate(self.mede_optimizer, decay_lr)
+            self.mede_optimizer.zero_grad()
+            mede_loss.backward()
+            self.mede_optimizer.step()
+
+            update_stats.update(mede_stats)
+
+        if self._diayn_network is not None:
+            diayn_loss, diayn_stats = self._diayn_network.loss(
+                current_obs, sampled_actions.continuous_tensor, disc_act, masks
+            )
+
+            ModelUtils.update_learning_rate(self.mede_optimizer, decay_lr)
+            self.diayn_optimizer.zero_grad()
+            diayn_loss.backward()
+            self.diayn_optimizer.step()
+        
+            update_stats.update(diayn_stats)
+        
+        if self._adaptive_divcoef:
+            divcoef_loss = self.sac_divcoef_loss(mede_value_rewards, masks)
+            self.divcoef_optimizer.zero_grad()
+            divcoef_loss.backward()
+            self.divcoef_optimizer.step()
+            update_stats.update({
+                "Policy/Diversity Coefficient": self._diversity_coef.coef.item(),
+                "Policy/Diversity Coefficient Loss": divcoef_loss.item()
+            })
+
+        elif self._scheduled_divcoef:
+            if self._diversity_coef.coef < self._target_diversity:
+                self._diversity_coef.coef += self._delta_divcoef
+            update_stats.update({
+                "Policy/Diversity Coefficient": self._diversity_coef.coef.item(),
+            })
         return update_stats
 
     def update_reward_signals(

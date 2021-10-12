@@ -14,7 +14,7 @@ from mlagents_envs.timers import timed
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents_envs.base_env import ObservationType
 from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
-from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
+from mlagents.trainers.buffer import AgentBuffer, BufferKey, RewardSignalUtil
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
@@ -122,6 +122,7 @@ class SACTrainer(RLTrainer):
             self.hyperparameters.reward_signal_steps_per_update
         )
 
+        self.disc_buffer: AgentBuffer = AgentBuffer()
         self.checkpoint_replay_buffer = self.hyperparameters.save_replay_buffer
 
         self.behavior_reward_hist = dict()
@@ -230,7 +231,10 @@ class SACTrainer(RLTrainer):
             agent_buffer_trajectory[BufferKey.DONE][-1] = False
 
         self._append_to_update_buffer(agent_buffer_trajectory)
-
+        #TODO: LSTM will break?
+        agent_buffer_trajectory.resequence_and_append(
+                self.disc_buffer, training_length=1
+            )   
         if trajectory.done_reached:
 
             if self.hyperparameters.mede or self.hyperparameters.diayn:
@@ -383,6 +387,12 @@ class SACTrainer(RLTrainer):
                     )
 
                 update_stats = self.optimizer.update(sampled_minibatch, n_sequences)
+                disc_minibatch = self.disc_buffer.sample_mini_batch(
+                    self.hyperparameters.batch_size,
+                    sequence_length=self.policy.sequence_length,
+                )
+                update_stats_disc = self.optimizer.update_disc(disc_minibatch, n_sequences)
+                update_stats.update(update_stats_disc)
 
                 # TODO remove: For evaluation scipt
                 # self.mede_reward.append(update_stats["MEDE/Reward"])
@@ -411,6 +421,10 @@ class SACTrainer(RLTrainer):
         if self.update_buffer.num_experiences > self.hyperparameters.buffer_size:
             self.update_buffer.truncate(
                 int(self.hyperparameters.buffer_size * BUFFER_TRUNCATE_PERCENT)
+            )
+        if self.disc_buffer.num_experiences > 50000:
+            self.disc_buffer.truncate(
+                int(50000 * BUFFER_TRUNCATE_PERCENT)
             )
         return has_updated
 
