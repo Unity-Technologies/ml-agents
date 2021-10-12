@@ -12,7 +12,6 @@ from mlagents_envs.side_channel.stats_side_channel import StatsSideChannel
 from mlagents_envs import logging_util
 
 logger = logging_util.get_logger(__name__)
-logging_util.set_log_level(logging_util.WARNING)
 
 
 class PettingZooEnv:

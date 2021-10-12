@@ -19,7 +19,6 @@ class UnityGymException(error.Error):
 
 
 logger = logging_util.get_logger(__name__)
-logging_util.set_log_level(logging_util.INFO)
 
 GymStepResult = Tuple[np.ndarray, float, bool, Dict]
 
