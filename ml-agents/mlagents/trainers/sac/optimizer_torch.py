@@ -31,6 +31,11 @@ from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.torch.layers import linear_layer, Initialization
 
 
+from sklearn.manifold import TSNE
+from matplotlib import pyplot as plt
+import seaborn as sns
+import sys
+np.set_printoptions(threshold=sys.maxsize)
 class DiverseNetworkVariational(torch.nn.Module):
     alpha = 0.0005
     MIN_STDDEV = 0.1
@@ -856,6 +861,37 @@ class TorchSACOptimizer(TorchOptimizer):
         value_estimates, _ = self._critic.critic_pass(
             current_obs, value_memories, sequence_length=self.policy.sequence_length
         )
+
+        x = ModelUtils.to_numpy(sampled_actions.continuous_tensor)
+
+        #tsne = TSNE()
+        #z = tsne.fit_transform(x)
+        #y = [
+        #    obs
+        #    for obs, spec in zip(current_obs, self._mede_network._all_obs_specs)
+        #    if spec.observation_type == ObservationType.GOAL_SIGNAL
+        #]
+        #y = np.argmax(ModelUtils.to_numpy(torch.cat(y)), axis=1)
+        #obs_x = [
+        #    obs
+        #    for obs, spec in zip(current_obs, self._mede_network._all_obs_specs)
+        #    if spec.observation_type != ObservationType.GOAL_SIGNAL
+        #]
+        #obs_x = ModelUtils.to_numpy(torch.cat(obs_x, dim=1))
+        #
+        #obs_x = tsne.fit_transform(obs_x)
+
+        #plt.figure(figsize=(16,7))
+
+        #ax1 = plt.subplot(1,2,1)
+        #sns.scatterplot(x=z[:,0], y=z[:,1], hue=y, ax=ax1)
+
+
+        #ax2= plt.subplot(1,2,2)
+        #sns.scatterplot(x=obs_x[:,0], y=obs_x[:,1], hue=y, ax=ax2)
+
+        #plt.savefig("tsne.png")
+        #plt.close()
 
         cont_sampled_actions = sampled_actions.continuous_tensor
         cont_actions = actions.continuous_tensor
