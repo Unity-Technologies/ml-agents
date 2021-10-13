@@ -109,6 +109,8 @@ public class CrawlerAgentDiverse : Agent
     {
         //GROUND CHECK
         sensor.AddObservation(bp.groundContact.touchingGround); // Is this bp touching the ground
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.velocity));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
 
         //if (bp.rb.transform != body)
         //{
