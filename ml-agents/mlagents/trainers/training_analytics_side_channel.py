@@ -74,9 +74,12 @@ class TrainingAnalyticsSideChannel(DefaultTrainingAnalyticsSideChannel):
                 updated_lessons = []
                 for lesson in curriculum["curriculum"]:
                     new_lesson = copy.deepcopy(lesson)
-                    if lesson.has_keys("name"):
+                    if "name" in lesson:
                         new_lesson["name"] = cls._hash(lesson["name"])
-                    if lesson.has_keys("completion_criteria"):
+                    if (
+                        "completion_criteria" in lesson
+                        and lesson["completion_criteria"] is not None
+                    ):
                         new_lesson["completion_criteria"]["behavior"] = cls._hash(
                             new_lesson["completion_criteria"]["behavior"]
                         )
