@@ -416,6 +416,7 @@ def test_exportable_settings(use_defaults):
             - test_env_args2
         base_port: 12345
         num_envs: 8
+        num_areas: 8
         seed: 12345
     engine_settings:
         width: 12345
@@ -513,6 +514,9 @@ def test_environment_settings():
 
     # 1 env is OK if no env_path
     EnvironmentSettings(num_envs=1)
+
+    # 2 areas are OK
+    EnvironmentSettings(num_areas=2)
 
     # multiple envs is OK if env_path is set
     EnvironmentSettings(num_envs=42, env_path="/foo/bar.exe")

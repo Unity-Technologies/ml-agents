@@ -822,6 +822,7 @@ class EnvironmentSettings:
     env_args: Optional[List[str]] = parser.get_default("env_args")
     base_port: int = parser.get_default("base_port")
     num_envs: int = attr.ib(default=parser.get_default("num_envs"))
+    num_areas: int = attr.ib(default=parser.get_default("num_areas"))
     seed: int = parser.get_default("seed")
     max_lifetime_restarts: int = parser.get_default("max_lifetime_restarts")
     restarts_rate_limit_n: int = parser.get_default("restarts_rate_limit_n")
@@ -833,6 +834,11 @@ class EnvironmentSettings:
     def validate_num_envs(self, attribute, value):
         if value > 1 and self.env_path is None:
             raise ValueError("num_envs must be 1 if env_path is not set.")
+
+    @num_areas.validator
+    def validate_num_area(self, attribute, value):
+        if value <= 0:
+            raise ValueError("num_areas must be set to a positive number >= 1.")
 
 
 @attr.s(auto_attribs=True)
