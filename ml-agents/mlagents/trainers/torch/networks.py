@@ -567,6 +567,9 @@ class SimpleActor(nn.Module, Actor):
         tanh_squash: bool = False,
     ):
         super().__init__()
+
+        self.obs_specs = observation_specs
+
         self.action_spec = action_spec
         self.version_number = torch.nn.Parameter(
             torch.Tensor([self.MODEL_EXPORT_VERSION]), requires_grad=False
@@ -599,11 +602,26 @@ class SimpleActor(nn.Module, Actor):
         )
 
         self.action_model = ActionModel(
+            self.get_n_modes(),
             self.encoding_size,
             action_spec,
             conditional_sigma=conditional_sigma,
             tanh_squash=tanh_squash,
         )
+
+    def get_mode_index(self):
+        for i, obs_spec in enumerate(self.obs_specs):
+            if obs_spec.observation_type == ObservationType.GOAL_SIGNAL:
+                return i
+        return -1
+
+    def get_n_modes(self):
+        index = self.get_mode_index()
+        return self.obs_specs[index].shape[0]
+
+    def get_mode_oh(self, inputs):
+        index = self.get_mode_index()
+        return inputs[index]
 
     @property
     def memory_size(self) -> int:
@@ -623,7 +641,8 @@ class SimpleActor(nn.Module, Actor):
         encoding, memories = self.network_body(
             inputs, memories=memories, sequence_length=sequence_length
         )
-        action, log_probs, entropies = self.action_model(encoding, masks)
+        mode_oh = self.get_mode_oh(inputs)
+        action, log_probs, entropies = self.action_model(encoding, mode_oh, masks)
         return action, log_probs, entropies, memories
 
     def get_stats(
@@ -637,7 +656,10 @@ class SimpleActor(nn.Module, Actor):
         encoding, actor_mem_outs = self.network_body(
             inputs, memories=memories, sequence_length=sequence_length
         )
-        log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
+        mode_oh = self.get_mode_oh(inputs)
+        log_probs, entropies = self.action_model.evaluate(
+            encoding, mode_oh, masks, actions
+        )
 
         return log_probs, entropies
 
@@ -656,12 +678,12 @@ class SimpleActor(nn.Module, Actor):
         encoding, memories_out = self.network_body(
             inputs, memories=memories, sequence_length=1
         )
-
+        mode_oh = self.get_mode_oh(inputs)
         (
             cont_action_out,
             disc_action_out,
             action_out_deprecated,
-        ) = self.action_model.get_action_out(encoding, masks)
+        ) = self.action_model.get_action_out(encoding, mode_oh, masks)
         export_out = [self.version_number, self.memory_size_vector]
         if self.action_spec.continuous_size > 0:
             export_out += [cont_action_out, self.continuous_act_size_vector]

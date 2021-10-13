@@ -50,10 +50,21 @@ class DiscreteDistInstance(DistInstance):
 
 
 class GaussianDistInstance(DistInstance):
-    def __init__(self, mean, std):
+    def __init__(self, mean, std, mode_oh):
         super().__init__()
-        self.mean = mean
-        self.std = std
+
+        n_modes = mode_oh.shape[1]
+        n_action = mean.shape[1] // n_modes
+
+        mode_mean = (
+            mean.reshape(-1, n_action, n_modes) * mode_oh.reshape(-1, 1, n_modes)
+        ).sum(dim=2, keepdim=False)
+        mode_std = (
+            std.reshape(-1, n_action, n_modes) * mode_oh.reshape(-1, 1, n_modes)
+        ).sum(dim=2, keepdim=False)
+
+        self.mean = mode_mean
+        self.std = mode_std
 
     def sample(self):
         sample = self.mean + torch.randn_like(self.mean) * self.std
@@ -84,8 +95,8 @@ class GaussianDistInstance(DistInstance):
 
 
 class TanhGaussianDistInstance(GaussianDistInstance):
-    def __init__(self, mean, std):
-        super().__init__(mean, std)
+    def __init__(self, mean, std, mode_oh):
+        super().__init__(mean, std, mode_oh)
         self.transform = torch.distributions.transforms.TanhTransform(cache_size=1)
 
     def sample(self):
@@ -139,6 +150,7 @@ class CategoricalDistInstance(DiscreteDistInstance):
 class GaussianDistribution(nn.Module):
     def __init__(
         self,
+        n_modes: int,
         hidden_size: int,
         num_outputs: int,
         conditional_sigma: bool = False,
@@ -148,7 +160,7 @@ class GaussianDistribution(nn.Module):
         self.conditional_sigma = conditional_sigma
         self.mu = linear_layer(
             hidden_size,
-            num_outputs,
+            num_outputs * n_modes,
             kernel_init=Initialization.KaimingHeNormal,
             kernel_gain=0.2,
             bias_init=Initialization.Zero,
@@ -157,17 +169,17 @@ class GaussianDistribution(nn.Module):
         if conditional_sigma:
             self.log_sigma = linear_layer(
                 hidden_size,
-                num_outputs,
+                num_outputs * n_modes,
                 kernel_init=Initialization.KaimingHeNormal,
                 kernel_gain=0.2,
                 bias_init=Initialization.Zero,
             )
         else:
             self.log_sigma = nn.Parameter(
-                torch.zeros(1, num_outputs, requires_grad=True)
+                torch.zeros(1, num_outputs * n_modes, requires_grad=True)
             )
 
-    def forward(self, inputs: torch.Tensor) -> List[DistInstance]:
+    def forward(self, inputs: torch.Tensor, mode_oh) -> List[DistInstance]:
         mu = self.mu(inputs)
         if self.conditional_sigma:
             log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)
@@ -178,10 +190,11 @@ class GaussianDistribution(nn.Module):
             # use this to replace torch.expand() becuase it is not supported in
             # the verified version of Barracuda (1.0.X).
             log_sigma = mu * 0 + self.log_sigma
+
         if self.tanh_squash:
-            return TanhGaussianDistInstance(mu, torch.exp(log_sigma))
+            return TanhGaussianDistInstance(mu, torch.exp(log_sigma), mode_oh)
         else:
-            return GaussianDistInstance(mu, torch.exp(log_sigma))
+            return GaussianDistInstance(mu, torch.exp(log_sigma), mode_oh)
 
 
 class MultiCategoricalDistribution(nn.Module):
