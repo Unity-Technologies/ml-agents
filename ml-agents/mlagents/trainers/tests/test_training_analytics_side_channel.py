@@ -35,4 +35,14 @@ environment_parameters:
 
 def test_sanitize_run_options():
     run_options = RunOptions.from_dict(yaml.safe_load(test_curriculum_config_yaml))
-    TrainingAnalyticsSideChannel._sanitize_run_options(run_options)
+    sanitized = TrainingAnalyticsSideChannel._sanitize_run_options(run_options)
+    assert "param_1" not in sanitized["environment_parameters"]
+    assert "fake_behavior" not in sanitized["environment_parameters"]
+    assert (
+        TrainingAnalyticsSideChannel._hash("param_1")
+        in sanitized["environment_parameters"]
+    )
+    level1 = TrainingAnalyticsSideChannel._hash("param_1")
+    assert sanitized["environment_parameters"][level1]["curriculum"][0][
+        "completion_criteria"
+    ]["behavior"] == TrainingAnalyticsSideChannel._hash("fake_behavior")
