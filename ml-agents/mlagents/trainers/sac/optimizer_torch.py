@@ -31,9 +31,11 @@ from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.torch.layers import linear_layer, Initialization
 
 
-from sklearn.manifold import TSNE
-from matplotlib import pyplot as plt
-import seaborn as sns
+# from sklearn.manifold import TSNE
+# from matplotlib import pyplot as plt
+# import seaborn as sns
+
+
 import sys
 np.set_printoptions(threshold=sys.maxsize)
 class DiverseNetworkVariational(torch.nn.Module):
@@ -42,12 +44,12 @@ class DiverseNetworkVariational(torch.nn.Module):
     EPSILON = 1e-7
 
     def __init__(
-            self, 
-            specs: BehaviorSpec, 
-            use_actions: bool = True, 
-            continuous: bool = False, 
-            learn_stddev: bool = True, 
-            noise: bool = True, 
+            self,
+            specs: BehaviorSpec,
+            use_actions: bool = True,
+            continuous: bool = False,
+            learn_stddev: bool = True,
+            noise: bool = True,
             stddev_param: bool = False,
             centered_reward: bool = False,
             dropout: float = 0.2,
@@ -84,7 +86,7 @@ class DiverseNetworkVariational(torch.nn.Module):
         self.diverse_size = diverse_spec.shape[0]
 
         self._dropout = torch.nn.Dropout(dropout) if dropout > 0 else None
-        
+
         self.disc_sizes = specs.action_spec.discrete_branches
         self.cont_size = specs.action_spec.continuous_size
 
@@ -203,7 +205,7 @@ class DiverseNetworkVariational(torch.nn.Module):
         prediction, _ = self.predict(obs_input, cont_act, detach_action, var_noise)
 
         if self._use_actions and len(self.disc_sizes) > 0:
-            
+
             disc_probs = disc_act.exp()
             if detach_action:
                 disc_act = disc_act.detach()
@@ -275,7 +277,7 @@ class DiverseNetworkVariational(torch.nn.Module):
             self.stats.update({
                 f"Settings/{self._name} Reward".format(i): r.item(),
             })
-        
+
         return total_loss, self.stats
 
 
@@ -459,7 +461,7 @@ class TorchSACOptimizer(TorchOptimizer):
             self._use_diayn = False
 
         self._mede_network = DiverseNetworkVariational(
-            self.policy.behavior_spec, 
+            self.policy.behavior_spec,
             hyperparameters.mede_use_actions,
             hyperparameters.mede_continuous,
             hyperparameters.mede_learn_stddev,
@@ -469,7 +471,7 @@ class TorchSACOptimizer(TorchOptimizer):
             hyperparameters.mede_dropout
         ) if self._use_mede or (self._use_diayn and hyperparameters.mede_both_discriminators) else None
         self._diayn_network = DiverseNetworkVariational(
-            self.policy.behavior_spec, 
+            self.policy.behavior_spec,
             False,
             hyperparameters.mede_continuous,
             hyperparameters.mede_learn_stddev,
@@ -512,16 +514,16 @@ class TorchSACOptimizer(TorchOptimizer):
             self._log_ent_coef.parameters(), lr=hyperparameters.learning_rate
         )
         self.mede_optimizer = torch.optim.Adam(
-            list(self._mede_network.parameters()), 
-            lr=hyperparameters.learning_rate, 
+            list(self._mede_network.parameters()),
+            lr=hyperparameters.learning_rate,
         ) if self._use_mede or (self._use_diayn and hyperparameters.mede_both_discriminators) else None
         self.diayn_optimizer = torch.optim.Adam(
-            list(self._diayn_network.parameters()), 
-            lr=hyperparameters.learning_rate, 
+            list(self._diayn_network.parameters()),
+            lr=hyperparameters.learning_rate,
         ) if self._use_diayn or (self._use_mede and hyperparameters.mede_both_discriminators) else None
         self.divcoef_optimizer = torch.optim.Adam(
             self._diversity_coef.parameters(),
-            lr=hyperparameters.mede_divcoef_lr, 
+            lr=hyperparameters.mede_divcoef_lr,
         ) if self._use_mede or self._use_diayn else None
         self._move_to_device(default_device())
 
@@ -1028,9 +1030,9 @@ class TorchSACOptimizer(TorchOptimizer):
         #        self.diayn_optimizer.zero_grad()
         #        diayn_loss.backward()
         #        self.diayn_optimizer.step()
-        #    
+        #
         #        update_stats.update(diayn_stats)
-        #    
+        #
         #    if self._adaptive_divcoef:
         #        divcoef_loss = self.sac_divcoef_loss(mede_value_rewards, masks)
         #        self.divcoef_optimizer.zero_grad()
@@ -1101,9 +1103,9 @@ class TorchSACOptimizer(TorchOptimizer):
             self.diayn_optimizer.zero_grad()
             diayn_loss.backward()
             self.diayn_optimizer.step()
-        
+
             update_stats.update(diayn_stats)
-        
+
         if self._adaptive_divcoef:
             divcoef_loss = self.sac_divcoef_loss(mede_value_rewards, masks)
             self.divcoef_optimizer.zero_grad()
