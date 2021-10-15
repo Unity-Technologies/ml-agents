@@ -1190,7 +1190,7 @@ namespace Unity.MLAgents
         /// <see cref="Heuristic(in ActionBuffers)"/> method to avoid recomputing the observations.
         /// </summary>
         /// <returns>A read-only view of the stacked observations list.</returns>
-        public ReadOnlyCollection<ReadOnlyCollection<float>> GetStackedObservations()
+        public ReadOnlyCollection<float> GetStackedObservations()
         {
             return stackedCollectObservationsSensor.GetStackedObservations();
         }

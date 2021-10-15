@@ -36,6 +36,11 @@ namespace Unity.MLAgents.Sensors
         /// Buffer of previous observations
         /// </summary>
         float[][] m_StackedObservations;
+        //[
+        //[1,2]
+        //[3,4]
+        //[5,6]
+        //]
 
         byte[][] m_StackedCompressedObservations;
 
@@ -286,15 +291,15 @@ namespace Unity.MLAgents.Sensors
         /// Returns a read-only view of the observations that added.
         /// </summary>
         /// <returns>A read-only view of the observations list.</returns>
-        internal ReadOnlyCollection<ReadOnlyCollection<float>> GetStackedObservations()
+        internal ReadOnlyCollection<float> GetStackedObservations()
         {
-            List<ReadOnlyCollection<float>> layer = new List<ReadOnlyCollection<float>>();
-            foreach (float[] l in m_StackedObservations)
+            List<float> observations = new List<float>();
+            for (var i = 0; i < m_NumStackedObservations; i++)
             {
-                layer.Add(l.ToList().AsReadOnly());
+                var obsIndex = (m_CurrentIndex + 1 + i) % m_NumStackedObservations;
+                observations.AddRange(m_StackedObservations[obsIndex].ToList());
             }
-
-            return layer.AsReadOnly();
+            return observations.AsReadOnly();
         }
     }
 }
