@@ -307,6 +307,10 @@ class UnityToPettingZooWrapper(AECEnv):
             np.zeros((num_agents, len(a_spec.discrete_branches)), dtype=np.int32),
         )
 
+    @property
+    def _cumulative_rewards(self):
+        return self._cumm_rewards
+
     def reset(self):
         """
         Resets the environment.
@@ -399,6 +403,9 @@ class UnityToPettingZooWrapper(AECEnv):
 
     @property
     def agent_selection(self):
+        if not self._live_agents:
+            # If we had an agent finish then return that agent even though it isn't alive.
+            return self._agents[0]
         return self._agents[self._agent_index]
 
     @property
