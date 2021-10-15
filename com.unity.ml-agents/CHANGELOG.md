@@ -28,7 +28,7 @@ and this project adheres to
     2. env_params.restarts_rate_limit_n (--restarts-rate-limit-n) [default=1]
     3. env_params.restarts_rate_limit_period_s (--restarts-rate-limit-period-s) [default=60]
 ### Bug Fixes
-- Fixed the bug where curriculum learning would crash because the of the incorrect run_options parsing.
+- Fixed the bug where curriculum learning would crash because of the incorrect run_options parsing. (#5586)
 
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 
