@@ -6,5 +6,6 @@ __release_tag__ = None
 
 try:
     from .pettingzoo_wrapper import UnityToPettingZooWrapper  # noqa
+    import pettingzoo_unity.envs  # noqa
 except ImportError:
     pass
