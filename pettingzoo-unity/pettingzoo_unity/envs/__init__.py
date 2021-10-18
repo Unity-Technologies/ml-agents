@@ -49,11 +49,13 @@ class PettingZooEnv:
 
 # Register each environment in default_registry as a PettingZooEnv
 for key in default_registry:
-    key = key.replace("3", "Three")
-    if not key.isidentifier():
+    env_name = key
+    if key[0].isdigit():
+        env_name = key.replace("3", "Three")
+    if not env_name.isidentifier():
         logger.warning(
-            f"Environment id {key} can not be registered since it is"
+            f"Environment id {env_name} can not be registered since it is"
             f"not a valid identifier name."
         )
         continue
-    locals()[key] = PettingZooEnv(key)
+    locals()[env_name] = PettingZooEnv(key)
