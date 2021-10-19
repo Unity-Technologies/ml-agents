@@ -288,9 +288,9 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
-        /// Returns a read-only view of the observations that added.
+        /// Returns the stacked observations as a read-only collection.
         /// </summary>
-        /// <returns>A read-only view of the observations list.</returns>
+        /// <returns>The stacked observations as a read-only collection.</returns>
         internal ReadOnlyCollection<float> GetStackedObservations()
         {
             List<float> observations = new List<float>();
