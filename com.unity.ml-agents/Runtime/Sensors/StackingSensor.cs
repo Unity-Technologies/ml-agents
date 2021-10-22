@@ -36,11 +36,6 @@ namespace Unity.MLAgents.Sensors
         /// Buffer of previous observations
         /// </summary>
         float[][] m_StackedObservations;
-        //[
-        //[1,2]
-        //[3,4]
-        //[5,6]
-        //]
 
         byte[][] m_StackedCompressedObservations;
 
