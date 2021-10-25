@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 using Unity.Barracuda;
@@ -278,6 +280,21 @@ namespace Unity.MLAgents.Sensors
         {
             IBuiltInSensor wrappedBuiltInSensor = m_WrappedSensor as IBuiltInSensor;
             return wrappedBuiltInSensor?.GetBuiltInSensorType() ?? BuiltInSensorType.Unknown;
+        }
+
+        /// <summary>
+        /// Returns the stacked observations as a read-only collection.
+        /// </summary>
+        /// <returns>The stacked observations as a read-only collection.</returns>
+        internal ReadOnlyCollection<float> GetStackedObservations()
+        {
+            List<float> observations = new List<float>();
+            for (var i = 0; i < m_NumStackedObservations; i++)
+            {
+                var obsIndex = (m_CurrentIndex + 1 + i) % m_NumStackedObservations;
+                observations.AddRange(m_StackedObservations[obsIndex].ToList());
+            }
+            return observations.AsReadOnly();
         }
     }
 }

@@ -18,7 +18,7 @@ and this project adheres to
 
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - Added the capacity to initialize behaviors from any checkpoint and not just the latest one (#5525)
-
+- Added the ability to get a read-only view of the stacked observations (#5523)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Set gym version in gym-unity to gym release 0.20.0
 - Added support for having `beta`, `epsilon`, and `learning rate` on separate schedules (affects only PPO and POCA). (#5538)
@@ -31,6 +31,7 @@ and this project adheres to
 
 ### Bug Fixes
 - Fixed a bug where the critics were not being normalized during training. (#5595)
+- Fixed the bug where curriculum learning would crash because of the incorrect run_options parsing. (#5586)
 
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 
