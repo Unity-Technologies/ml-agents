@@ -92,6 +92,13 @@ def _create_parser() -> argparse.ArgumentParser:
         "behavior names as the current agents in your scene.",
     )
     argparser.add_argument(
+        "--deterministic",
+        default=False,
+        dest="deterministic",
+        action=DetectDefaultStoreTrue,
+        help="Whether to use the deterministic samples from the data.",
+    )
+    argparser.add_argument(
         "--force",
         default=False,
         dest="force",
