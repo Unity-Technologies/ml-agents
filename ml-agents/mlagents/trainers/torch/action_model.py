@@ -32,6 +32,7 @@ class ActionModel(nn.Module):
         action_spec: ActionSpec,
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
+        deterministic: bool = False,
     ):
         """
         A torch module that represents the action space of a policy. The ActionModel may contain
@@ -66,6 +67,7 @@ class ActionModel(nn.Module):
         # During training, clipping is done in TorchPolicy, but we need to clip before ONNX
         # export as well.
         self._clip_action_on_export = not tanh_squash
+        self.deterministic = deterministic
 
     def _sample_action(self, dists: DistInstances) -> AgentAction:
         """
