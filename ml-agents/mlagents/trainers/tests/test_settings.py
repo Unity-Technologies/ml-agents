@@ -389,6 +389,7 @@ def test_exportable_settings(use_defaults):
                 init_entcoef: 0.5
                 reward_signal_steps_per_update: 10.0
             network_settings:
+                deterministic: true
                 normalize: false
                 hidden_units: 256
                 num_layers: 3
@@ -541,6 +542,7 @@ def test_default_settings():
     test1_settings = run_options.behaviors["test1"]
     assert test1_settings.max_steps == 2
     assert test1_settings.network_settings.hidden_units == 2000
+    assert not test1_settings.network_settings.deterministic
     assert test1_settings.network_settings.num_layers == 1000
     # Change the overridden fields back, and check if the rest are equal.
     test1_settings.max_steps = 1

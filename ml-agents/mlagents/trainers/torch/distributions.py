@@ -17,6 +17,13 @@ class DistInstance(nn.Module, abc.ABC):
         pass
 
     @abc.abstractmethod
+    def deterministic_sample(self) -> torch.Tensor:
+        """
+        Return the most probable sample from this distribution.
+        """
+        pass
+
+    @abc.abstractmethod
     def log_prob(self, value: torch.Tensor) -> torch.Tensor:
         """
         Returns the log probabilities of a particular value.
@@ -58,6 +65,9 @@ class GaussianDistInstance(DistInstance):
     def sample(self):
         sample = self.mean + torch.randn_like(self.mean) * self.std
         return sample
+
+    def deterministic_sample(self):
+        return self.mean
 
     def log_prob(self, value):
         var = self.std ** 2
@@ -112,6 +122,9 @@ class CategoricalDistInstance(DiscreteDistInstance):
 
     def sample(self):
         return torch.multinomial(self.probs, 1)
+
+    def deterministic_sample(self):
+        return torch.argmax(self.probs).reshape((1, 1))
 
     def pdf(self, value):
         # This function is equivalent to torch.diag(self.probs.T[value.flatten().long()]),
