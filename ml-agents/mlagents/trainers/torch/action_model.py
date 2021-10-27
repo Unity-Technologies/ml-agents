@@ -75,15 +75,23 @@ class ActionModel(nn.Module):
         :params dists: The DistInstances tuple
         :return: An AgentAction corresponding to the actions sampled from the DistInstances
         """
+
         continuous_action: Optional[torch.Tensor] = None
         discrete_action: Optional[List[torch.Tensor]] = None
         # This checks None because mypy complains otherwise
         if dists.continuous is not None:
-            continuous_action = dists.continuous.sample()
+            if self.deterministic:
+                continuous_action = dists.continuous.deterministic_sample()
+            else:
+                continuous_action = dists.continuous.sample()
         if dists.discrete is not None:
             discrete_action = []
-            for discrete_dist in dists.discrete:
-                discrete_action.append(discrete_dist.sample())
+            if self.deterministic:
+                for discrete_dist in dists.discrete:
+                    discrete_action.append(discrete_dist.deterministic_sample())
+            else:
+                for discrete_dist in dists.discrete:
+                    discrete_action.append(discrete_dist.sample())
         return AgentAction(continuous_action, discrete_action)
 
     def _get_dists(self, inputs: torch.Tensor, masks: torch.Tensor) -> DistInstances:
