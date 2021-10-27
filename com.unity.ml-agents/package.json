@@ -5,7 +5,7 @@
   "unity": "2019.4",
   "description": "Use state-of-the-art machine learning to create intelligent character behaviors in any Unity environment (games, robotics, film, etc.).",
   "dependencies": {
-    "com.unity.barracuda": "2.0.0-pre.3",
+    "com.unity.barracuda": "2.3.1-preview",
     "com.unity.modules.imageconversion": "1.0.0",
     "com.unity.modules.jsonserialize": "1.0.0"
   }
