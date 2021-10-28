@@ -169,6 +169,5 @@ class ModelSerializer:
                 input_names=self.input_names,
                 output_names=self.output_names,
                 dynamic_axes=self.dynamic_axes,
-                verbose=True,  # TODO: remove
             )
         logger.info(f"Exported {onnx_output_path}")

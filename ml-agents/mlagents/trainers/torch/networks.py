@@ -571,9 +571,6 @@ class Actor(abc.ABC):
 
 class SimpleActor(nn.Module, Actor):
     MODEL_EXPORT_VERSION = 3  # Corresponds to ModelApiVersion.MLAgents2_0
-    is_stochastic_action_sampling = (
-        True
-    )  # TODO: this should be a user input both for training and inference
 
     def __init__(
         self,
@@ -585,7 +582,6 @@ class SimpleActor(nn.Module, Actor):
     ):
         super().__init__()
         self.action_spec = action_spec
-        # self.is_continuous_int_deprecated = is_stochastic_action_sampling # TODO:
         self.version_number = torch.nn.Parameter(
             torch.Tensor([self.MODEL_EXPORT_VERSION]), requires_grad=False
         )

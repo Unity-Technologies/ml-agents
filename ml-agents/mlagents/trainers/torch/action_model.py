@@ -9,9 +9,6 @@ from mlagents.trainers.torch.distributions import (
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents_envs.base_env import ActionSpec
-from mlagents_envs import logging_util
-
-logger = logging_util.get_logger(__name__)
 
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
@@ -175,20 +172,15 @@ class ActionModel(nn.Module):
                 action_out_deprecated = continuous_out
                 deter_continuous_out = torch.clamp(deter_continuous_out, -3, 3) / 3
         if self.action_spec.discrete_size > 0 and dists.discrete is not None:
-            logger.info(
-                f"dist: {[discrete_dist.probs for discrete_dist in dists.discrete]}"
-            )  # TODO: remove
             discrete_out_list = [
                 discrete_dist.exported_model_output()
                 for discrete_dist in dists.discrete
             ]
-            logger.info(f"discretelist {discrete_out_list}")  # TODO: remove
             discrete_out = torch.cat(discrete_out_list, dim=1)
             action_out_deprecated = torch.cat(discrete_out_list, dim=1)
             deter_discrete_out_list = [
                 discrete_dist.deterministic_sample() for discrete_dist in dists.discrete
             ]
-            logger.info(f"deterlist {deter_discrete_out_list}")  # TODO: remove
             deter_discrete_out = torch.cat(deter_discrete_out_list, dim=1)
 
         # deprecated action field does not support hybrid action
