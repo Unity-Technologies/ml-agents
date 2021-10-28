@@ -124,7 +124,7 @@ class CategoricalDistInstance(DiscreteDistInstance):
         return torch.multinomial(self.probs, 1)
 
     def deterministic_sample(self):
-        return torch.argmax(self.probs).reshape((1, 1))
+        return torch.argmax(self.probs, dim=1, keepdim=True)
 
     def pdf(self, value):
         # This function is equivalent to torch.diag(self.probs.T[value.flatten().long()]),
