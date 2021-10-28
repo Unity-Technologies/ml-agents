@@ -92,7 +92,7 @@ https://github.com/Unity-Technologies/ml-agents.
 ## Additional Resources
 
 We have a Unity Learn course,
-[ML-Agents: Hummingsbird](https://learn.unity.com/course/ml-agents-hummingbirds),
+[ML-Agents: Hummingbirds](https://learn.unity.com/course/ml-agents-hummingbirds),
 that provides a gentle introduction to Unity and the ML-Agents Toolkit.
 
 We've also partnered with
