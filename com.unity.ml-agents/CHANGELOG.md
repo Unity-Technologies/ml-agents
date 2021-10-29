@@ -30,7 +30,7 @@ and this project adheres to
     3. env_params.restarts_rate_limit_period_s (--restarts-rate-limit-period-s) [default=60]
 
 - Added a new `--deterministic` flag to make sure that actions are selected in a predictable deterministic manner. Same can
-be achieved by setting a `deterministic: true` in the `network_settings` of the run options configuration.
+be achieved by adding `deterministic: true` under `network_settings` of the run options configuration.
 ### Bug Fixes
 - Fixed the bug where curriculum learning would crash because of the incorrect run_options parsing. (#5586)
 
