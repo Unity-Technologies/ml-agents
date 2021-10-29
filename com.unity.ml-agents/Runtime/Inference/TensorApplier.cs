@@ -44,12 +44,15 @@ namespace Unity.MLAgents.Inference
         /// <param name="allocator"> Tensor allocator</param>
         /// <param name="memories">Dictionary of AgentInfo.id to memory used to pass to the inference model.</param>
         /// <param name="barracudaModel"></param>
+        /// <param name="stochasticInference"> Inference only: set to true if the action selection from model should be
+        /// stochastic.</param>
         public TensorApplier(
             ActionSpec actionSpec,
             int seed,
             ITensorAllocator allocator,
             Dictionary<int, List<float>> memories,
-            object barracudaModel = null)
+            object barracudaModel = null,
+            bool stochasticInference = true)
         {
             // If model is null, no inference to run and exception is thrown before reaching here.
             if (barracudaModel == null)
@@ -64,13 +67,13 @@ namespace Unity.MLAgents.Inference
             }
             if (actionSpec.NumContinuousActions > 0)
             {
-                var tensorName = model.ContinuousOutputName();
+                var tensorName = model.ContinuousOutputName(stochasticInference);
                 m_Dict[tensorName] = new ContinuousActionOutputApplier(actionSpec);
             }
             var modelVersion = model.GetVersion();
             if (actionSpec.NumDiscreteActions > 0)
             {
-                var tensorName = model.DiscreteOutputName();
+                var tensorName = model.DiscreteOutputName(stochasticInference);
                 if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents1_0)
                 {
                     m_Dict[tensorName] = new LegacyDiscreteActionOutputApplier(actionSpec, seed, allocator);

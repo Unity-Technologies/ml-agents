@@ -122,6 +122,7 @@ namespace Unity.MLAgents.Policies
             set { m_InferenceDevice = value; UpdateAgentPolicy(); }
         }
 
+
         [HideInInspector, SerializeField]
         BehaviorType m_BehaviorType;
 
@@ -177,6 +178,20 @@ namespace Unity.MLAgents.Policies
             set { m_UseChildSensors = value; }
         }
 
+        [HideInInspector]
+        [SerializeField]
+        [Tooltip("Set action selection to stochastic, Use only in inference mode")]
+        private bool m_stochasticInference = false;
+
+        /// <summary>
+        /// Whether to select actions stochastically during inference from the provided neural network.
+        /// </summary>
+        public bool StochasticInference
+        {
+            get { return m_stochasticInference; }
+            set { m_stochasticInference = value; }
+        }
+
         /// <summary>
         /// Whether or not to use all the actuator components attached to child GameObjects of the agent.
         /// Note that changing this after the Agent has been initialized will not have any effect.
@@ -228,7 +243,7 @@ namespace Unity.MLAgents.Policies
                                 "Either assign a model, or change to a different Behavior Type."
                             );
                         }
-                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName);
+                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_stochasticInference);
                     }
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
@@ -237,7 +252,7 @@ namespace Unity.MLAgents.Policies
                     }
                     if (m_Model != null)
                     {
-                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName);
+                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_stochasticInference);
                     }
                     else
                     {

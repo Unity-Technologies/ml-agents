@@ -616,14 +616,16 @@ namespace Unity.MLAgents
         /// <param name="inferenceDevice">
         /// The inference device (CPU or GPU) the ModelRunner will use.
         /// </param>
+        /// <param name="stochasticInference"> Inference only: set to true if the action selection from model should be
+        /// stochastic. </param>
         /// <returns> The ModelRunner compatible with the input settings.</returns>
         internal ModelRunner GetOrCreateModelRunner(
-            NNModel model, ActionSpec actionSpec, InferenceDevice inferenceDevice)
+            NNModel model, ActionSpec actionSpec, InferenceDevice inferenceDevice, bool stochasticInference = true)
         {
             var modelRunner = m_ModelRunners.Find(x => x.HasModel(model, inferenceDevice));
             if (modelRunner == null)
             {
-                modelRunner = new ModelRunner(model, actionSpec, inferenceDevice, m_InferenceSeed);
+                modelRunner = new ModelRunner(model, actionSpec, inferenceDevice, m_InferenceSeed, stochasticInference);
                 m_ModelRunners.Add(modelRunner);
                 m_InferenceSeed++;
             }

@@ -44,11 +44,14 @@ namespace Unity.MLAgents.Inference
         /// <param name="allocator"> Tensor allocator.</param>
         /// <param name="memories">Dictionary of AgentInfo.id to memory for use in the inference model.</param>
         /// <param name="barracudaModel"></param>
+        /// <param name="stochasticInference"> Inference only: set to true if the action selection from model should be
+        /// stochastic. </param>
         public TensorGenerator(
             int seed,
             ITensorAllocator allocator,
             Dictionary<int, List<float>> memories,
-            object barracudaModel = null)
+            object barracudaModel = null,
+            bool stochasticInference = true)
         {
             // If model is null, no inference to run and exception is thrown before reaching here.
             if (barracudaModel == null)
@@ -76,13 +79,13 @@ namespace Unity.MLAgents.Inference
 
 
             // Generators for Outputs
-            if (model.HasContinuousOutputs())
+            if (model.HasContinuousOutputs(stochasticInference))
             {
-                m_Dict[model.ContinuousOutputName()] = new BiDimensionalOutputGenerator(allocator);
+                m_Dict[model.ContinuousOutputName(stochasticInference)] = new BiDimensionalOutputGenerator(allocator);
             }
-            if (model.HasDiscreteOutputs())
+            if (model.HasDiscreteOutputs(stochasticInference))
             {
-                m_Dict[model.DiscreteOutputName()] = new BiDimensionalOutputGenerator(allocator);
+                m_Dict[model.DiscreteOutputName(stochasticInference)] = new BiDimensionalOutputGenerator(allocator);
             }
             m_Dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator(allocator);
             m_Dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator(allocator);

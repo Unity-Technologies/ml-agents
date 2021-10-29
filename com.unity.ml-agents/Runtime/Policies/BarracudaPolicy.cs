@@ -34,6 +34,7 @@ namespace Unity.MLAgents.Policies
         CPU = 3,
     }
 
+
     /// <summary>
     /// The Barracuda Policy uses a Barracuda Model to make decisions at
     /// every step. It uses a ModelRunner that is shared across all
@@ -45,6 +46,11 @@ namespace Unity.MLAgents.Policies
         ActionBuffers m_LastActionBuffer;
 
         int m_AgentId;
+        /// <summary>
+        /// TODO
+        /// </summary>
+        bool m_StochasticInference;
+
 
         /// <summary>
         /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their Sensors.
@@ -73,19 +79,23 @@ namespace Unity.MLAgents.Policies
         /// <param name="model">The Neural Network to use.</param>
         /// <param name="inferenceDevice">Which device Barracuda will run on.</param>
         /// <param name="behaviorName">The name of the behavior.</param>
+        /// <param name="stochasticInference"> Inference only: set to true if the action selection from model should be
+        /// stochastic. </param>
         public BarracudaPolicy(
             ActionSpec actionSpec,
             IList<IActuator> actuators,
             NNModel model,
             InferenceDevice inferenceDevice,
-            string behaviorName
+            string behaviorName,
+            bool stochasticInference = true
         )
         {
-            var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, actionSpec, inferenceDevice);
+            var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, actionSpec, inferenceDevice, stochasticInference);
             m_ModelRunner = modelRunner;
             m_BehaviorName = behaviorName;
             m_ActionSpec = actionSpec;
             m_Actuators = actuators;
+            m_StochasticInference = stochasticInference;
         }
 
         /// <inheritdoc />
