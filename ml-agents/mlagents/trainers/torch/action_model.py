@@ -67,7 +67,7 @@ class ActionModel(nn.Module):
         # During training, clipping is done in TorchPolicy, but we need to clip before ONNX
         # export as well.
         self._clip_action_on_export = not tanh_squash
-        self.deterministic = deterministic
+        self._deterministic = deterministic
 
     def _sample_action(self, dists: DistInstances) -> AgentAction:
         """
@@ -80,13 +80,13 @@ class ActionModel(nn.Module):
         discrete_action: Optional[List[torch.Tensor]] = None
         # This checks None because mypy complains otherwise
         if dists.continuous is not None:
-            if self.deterministic:
+            if self._deterministic:
                 continuous_action = dists.continuous.deterministic_sample()
             else:
                 continuous_action = dists.continuous.sample()
         if dists.discrete is not None:
             discrete_action = []
-            if self.deterministic:
+            if self._deterministic:
                 for discrete_dist in dists.discrete:
                     discrete_action.append(discrete_dist.deterministic_sample())
             else:
