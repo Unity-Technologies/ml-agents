@@ -44,6 +44,7 @@ class ActionModel(nn.Module):
         :params action_spec: The ActionSpec defining the action space dimensions and distributions.
         :params conditional_sigma: Whether or not the std of a Gaussian is conditioned on state.
         :params tanh_squash: Whether to squash the output of a Gaussian with the tanh function.
+        :params deterministic: Whether to select actions deterministically in policy.
         """
         super().__init__()
         self.encoding_size = hidden_size
@@ -79,6 +80,7 @@ class ActionModel(nn.Module):
         continuous_action: Optional[torch.Tensor] = None
         discrete_action: Optional[List[torch.Tensor]] = None
         # This checks None because mypy complains otherwise
+        print(self._deterministic)
         if dists.continuous is not None:
             if self._deterministic:
                 continuous_action = dists.continuous.deterministic_sample()
