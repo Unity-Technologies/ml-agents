@@ -956,7 +956,7 @@ class RunOptions(ExportableSettings):
 
         _non_default_args = DetectDefault.non_default_args
 
-        # Prioritize the deterministic mode form the cli for deterministic actions.
+        # Prioritize the deterministic mode from the cli for deterministic actions.
         if "deterministic" in _non_default_args:
             for behaviour in final_runoptions.behaviors.keys():
                 final_runoptions.behaviors[
