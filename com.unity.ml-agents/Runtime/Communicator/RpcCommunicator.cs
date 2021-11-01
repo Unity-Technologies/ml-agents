@@ -140,6 +140,7 @@ namespace Unity.MLAgents
                     Debug.Log($"Unexpected exception when trying to initialize communication: {ex}");
                 }
                 initParametersOut = new UnityRLInitParameters();
+                NotifyQuitAndShutDownChannel();
                 return false;
             }
 
@@ -232,6 +233,19 @@ namespace Unity.MLAgents
                 QuitCommandReceived?.Invoke();
             }
             return result.UnityInput;
+        }
+
+        void NotifyQuitAndShutDownChannel()
+        {
+            QuitCommandReceived?.Invoke();
+            try
+            {
+                m_Channel.ShutdownAsync().Wait();
+            }
+            catch (Exception)
+            {
+                // do nothing
+            }
         }
 
 #endregion
