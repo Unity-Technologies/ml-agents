@@ -95,12 +95,12 @@ def test_sac_trainer_update_normalization(sac_config):
         seed=seed,
         param_manager=EnvironmentParameterManager(),
     )
-    ppo_trainer = trainer_factory.generate(brain_name)
+    sac_trainer = trainer_factory.generate(brain_name)
     parsed_behavior_id0 = BehaviorIdentifiers.from_name_behavior_id(behavior_id_team0)
-    policy = ppo_trainer.create_policy(parsed_behavior_id0, mock_specs)
-    ppo_trainer.add_policy(parsed_behavior_id0, policy)
+    policy = sac_trainer.create_policy(parsed_behavior_id0, mock_specs)
+    sac_trainer.add_policy(parsed_behavior_id0, policy)
     trajectory_queue0 = AgentManagerQueue(behavior_id_team0)
-    ppo_trainer.subscribe_trajectory_queue(trajectory_queue0)
+    sac_trainer.subscribe_trajectory_queue(trajectory_queue0)
     time_horizon = 15
     trajectory = make_fake_trajectory(
         length=time_horizon,
@@ -115,7 +115,7 @@ def test_sac_trainer_update_normalization(sac_config):
     ) as optimizer_update_normalization_mock, patch(
         "mlagents.trainers.policy.torch_policy.TorchPolicy.update_normalization"
     ) as policy_update_normalization_mock:
-        ppo_trainer.advance()
+        sac_trainer.advance()
         optimizer_update_normalization_mock.assert_called_once()
         policy_update_normalization_mock.assert_called_once()
 
