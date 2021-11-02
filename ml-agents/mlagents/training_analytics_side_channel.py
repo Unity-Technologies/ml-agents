@@ -34,7 +34,7 @@ class TrainingAnalyticsSideChannel(DefaultTrainingAnalyticsSideChannel):
     def on_message_received(self, msg: IncomingMessage) -> None:
         raise UnityCommunicationException(
             "The TrainingAnalyticsSideChannel received a message from Unity, "
-            "this should not have happened."
+            + "this should not have happened."
         )
 
     def environment_initialized(self, run_options: RunOptions) -> None:
