@@ -162,15 +162,20 @@ class ActionModel(nn.Module):
         """
         dists = self._get_dists(inputs, masks)
         continuous_out, discrete_out, action_out_deprecated = None, None, None
-        deter_continuous_out, deter_discrete_out = None, None  # deterministic actions
+        deterministic_continuous_out, deterministic_discrete_out = (
+            None,
+            None,
+        )  # deterministic actions
         if self.action_spec.continuous_size > 0 and dists.continuous is not None:
             continuous_out = dists.continuous.exported_model_output()
             action_out_deprecated = continuous_out
-            deter_continuous_out = dists.continuous.deterministic_sample()
+            deterministic_continuous_out = dists.continuous.deterministic_sample()
             if self._clip_action_on_export:
                 continuous_out = torch.clamp(continuous_out, -3, 3) / 3
                 action_out_deprecated = continuous_out
-                deter_continuous_out = torch.clamp(deter_continuous_out, -3, 3) / 3
+                deterministic_continuous_out = (
+                    torch.clamp(deterministic_continuous_out, -3, 3) / 3
+                )
         if self.action_spec.discrete_size > 0 and dists.discrete is not None:
             discrete_out_list = [
                 discrete_dist.exported_model_output()
@@ -178,10 +183,12 @@ class ActionModel(nn.Module):
             ]
             discrete_out = torch.cat(discrete_out_list, dim=1)
             action_out_deprecated = torch.cat(discrete_out_list, dim=1)
-            deter_discrete_out_list = [
+            deterministic_discrete_out_list = [
                 discrete_dist.deterministic_sample() for discrete_dist in dists.discrete
             ]
-            deter_discrete_out = torch.cat(deter_discrete_out_list, dim=1)
+            deterministic_discrete_out = torch.cat(
+                deterministic_discrete_out_list, dim=1
+            )
 
         # deprecated action field does not support hybrid action
         if self.action_spec.continuous_size > 0 and self.action_spec.discrete_size > 0:
@@ -190,8 +197,8 @@ class ActionModel(nn.Module):
             continuous_out,
             discrete_out,
             action_out_deprecated,
-            deter_continuous_out,
-            deter_discrete_out,
+            deterministic_continuous_out,
+            deterministic_discrete_out,
         )
 
     def forward(
