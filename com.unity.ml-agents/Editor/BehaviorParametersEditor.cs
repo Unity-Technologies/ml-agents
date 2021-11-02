@@ -25,6 +25,7 @@ namespace Unity.MLAgents.Editor
         const string k_BrainParametersName = "m_BrainParameters";
         const string k_ModelName = "m_Model";
         const string k_InferenceDeviceName = "m_InferenceDevice";
+        const string k_StochasticInference = "m_stochasticInference";
         const string k_BehaviorTypeName = "m_BehaviorType";
         const string k_TeamIdName = "TeamId";
         const string k_UseChildSensorsName = "m_UseChildSensors";
@@ -68,6 +69,7 @@ namespace Unity.MLAgents.Editor
                 EditorGUILayout.PropertyField(so.FindProperty(k_ModelName), true);
                 EditorGUI.indentLevel++;
                 EditorGUILayout.PropertyField(so.FindProperty(k_InferenceDeviceName), true);
+                EditorGUILayout.PropertyField(so.FindProperty(k_StochasticInference), true);
                 EditorGUI.indentLevel--;
             }
             needPolicyUpdate = needPolicyUpdate || EditorGUI.EndChangeCheck();
@@ -156,7 +158,7 @@ namespace Unity.MLAgents.Editor
             {
                 var failedChecks = Inference.BarracudaModelParamLoader.CheckModel(
                     barracudaModel, brainParameters, sensors, actuatorComponents,
-                    observableAttributeSensorTotalSize, behaviorParameters.BehaviorType
+                    observableAttributeSensorTotalSize, behaviorParameters.BehaviorType, behaviorParameters.StochasticInference
                 );
                 foreach (var check in failedChecks)
                 {

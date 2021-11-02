@@ -402,7 +402,7 @@ namespace Unity.MLAgents.Inference
             {
                 if (model.outputs.Contains(TensorNames.ContinuousActionOutput))
                 {
-                    if(model.GetTensorByName(TensorNames.ContinuousActionOutputShape) == null)
+                    if (model.GetTensorByName(TensorNames.ContinuousActionOutputShape) == null)
                     {
                         failedModelChecks.Add(
                             FailedCheck.Warning("The model uses continuous action but does not contain Continuous Action Output Shape Node.")
@@ -423,7 +423,7 @@ namespace Unity.MLAgents.Inference
 
                 if (model.outputs.Contains(TensorNames.DiscreteActionOutput))
                 {
-                    if (model.GetTensorByName(TensorNames.DiscreteActionOutputShape) == null )
+                    if (model.GetTensorByName(TensorNames.DiscreteActionOutputShape) == null)
                     {
                         failedModelChecks.Add(
                             FailedCheck.Warning("The model uses discrete action but does not contain Discrete Action Output Shape Node.")
