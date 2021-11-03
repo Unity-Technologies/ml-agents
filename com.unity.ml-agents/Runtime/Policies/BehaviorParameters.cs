@@ -122,7 +122,6 @@ namespace Unity.MLAgents.Policies
             set { m_InferenceDevice = value; UpdateAgentPolicy(); }
         }
 
-
         [HideInInspector, SerializeField]
         BehaviorType m_BehaviorType;
 
@@ -180,16 +179,16 @@ namespace Unity.MLAgents.Policies
 
         [HideInInspector]
         [SerializeField]
-        [Tooltip("Set action selection to stochastic, Use only in inference mode")]
-        private bool m_stochasticInference = false;
+        [Tooltip("Set action selection to deterministic, Use only in inference mode")]
+        private bool m_DeterministicInference = false;
 
         /// <summary>
-        /// Whether to select actions stochastically during inference from the provided neural network.
+        /// Whether to select actions deterministically during inference from the provided neural network.
         /// </summary>
-        public bool StochasticInference
+        public bool DeterministicInference
         {
-            get { return m_stochasticInference; }
-            set { m_stochasticInference = value; }
+            get { return m_DeterministicInference; }
+            set { m_DeterministicInference = value; }
         }
 
         /// <summary>
@@ -243,7 +242,7 @@ namespace Unity.MLAgents.Policies
                                 "Either assign a model, or change to a different Behavior Type."
                             );
                         }
-                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_stochasticInference);
+                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_DeterministicInference);
                     }
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
@@ -252,7 +251,7 @@ namespace Unity.MLAgents.Policies
                     }
                     if (m_Model != null)
                     {
-                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_stochasticInference);
+                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_DeterministicInference);
                     }
                     else
                     {

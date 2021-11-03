@@ -44,14 +44,14 @@ namespace Unity.MLAgents.Inference
         /// <param name="allocator"> Tensor allocator.</param>
         /// <param name="memories">Dictionary of AgentInfo.id to memory for use in the inference model.</param>
         /// <param name="barracudaModel"></param>
-        /// <param name="stochasticInference"> Inference only: set to true if the action selection from model should be
-        /// stochastic. </param>
+        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
+        /// deterministic. </param>
         public TensorGenerator(
             int seed,
             ITensorAllocator allocator,
             Dictionary<int, List<float>> memories,
             object barracudaModel = null,
-            bool stochasticInference = true)
+            bool deterministicInference = false)
         {
             // If model is null, no inference to run and exception is thrown before reaching here.
             if (barracudaModel == null)
@@ -79,13 +79,13 @@ namespace Unity.MLAgents.Inference
 
 
             // Generators for Outputs
-            if (model.HasContinuousOutputs(stochasticInference))
+            if (model.HasContinuousOutputs(deterministicInference))
             {
-                m_Dict[model.ContinuousOutputName(stochasticInference)] = new BiDimensionalOutputGenerator(allocator);
+                m_Dict[model.ContinuousOutputName(deterministicInference)] = new BiDimensionalOutputGenerator(allocator);
             }
-            if (model.HasDiscreteOutputs(stochasticInference))
+            if (model.HasDiscreteOutputs(deterministicInference))
             {
-                m_Dict[model.DiscreteOutputName(stochasticInference)] = new BiDimensionalOutputGenerator(allocator);
+                m_Dict[model.DiscreteOutputName(deterministicInference)] = new BiDimensionalOutputGenerator(allocator);
             }
             m_Dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator(allocator);
             m_Dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator(allocator);

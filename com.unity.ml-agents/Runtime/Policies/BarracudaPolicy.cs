@@ -34,7 +34,6 @@ namespace Unity.MLAgents.Policies
         CPU = 3,
     }
 
-
     /// <summary>
     /// The Barracuda Policy uses a Barracuda Model to make decisions at
     /// every step. It uses a ModelRunner that is shared across all
@@ -47,10 +46,10 @@ namespace Unity.MLAgents.Policies
 
         int m_AgentId;
         /// <summary>
-        /// TODO
+        /// Inference only: set to true if the action selection from model should be
+        /// deterministic.
         /// </summary>
-        bool m_StochasticInference;
-
+        bool m_DeterministicInference;
 
         /// <summary>
         /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their Sensors.
@@ -79,23 +78,23 @@ namespace Unity.MLAgents.Policies
         /// <param name="model">The Neural Network to use.</param>
         /// <param name="inferenceDevice">Which device Barracuda will run on.</param>
         /// <param name="behaviorName">The name of the behavior.</param>
-        /// <param name="stochasticInference"> Inference only: set to true if the action selection from model should be
-        /// stochastic. </param>
+        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
+        /// deterministic. </param>
         public BarracudaPolicy(
             ActionSpec actionSpec,
             IList<IActuator> actuators,
             NNModel model,
             InferenceDevice inferenceDevice,
             string behaviorName,
-            bool stochasticInference = true
+            bool deterministicInference = false
         )
         {
-            var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, actionSpec, inferenceDevice, stochasticInference);
+            var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, actionSpec, inferenceDevice, deterministicInference);
             m_ModelRunner = modelRunner;
             m_BehaviorName = behaviorName;
             m_ActionSpec = actionSpec;
             m_Actuators = actuators;
-            m_StochasticInference = stochasticInference;
+            m_DeterministicInference = deterministicInference;
         }
 
         /// <inheritdoc />

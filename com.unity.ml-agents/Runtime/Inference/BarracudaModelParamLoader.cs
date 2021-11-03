@@ -122,8 +122,8 @@ namespace Unity.MLAgents.Inference
         /// <param name="actuatorComponents">Attached actuator components</param>
         /// <param name="observableAttributeTotalSize">Sum of the sizes of all ObservableAttributes.</param>
         /// <param name="behaviorType">BehaviorType or the Agent to check.</param>
-        /// <param name="stochasticInference"> Inference only: set to true if the action selection from model should be
-        /// stochastic. </param>
+        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
+        /// deterministic. </param>
         /// <returns>A IEnumerable of the checks that failed</returns>
         public static IEnumerable<FailedCheck> CheckModel(
             Model model,
@@ -132,7 +132,7 @@ namespace Unity.MLAgents.Inference
             ActuatorComponent[] actuatorComponents,
             int observableAttributeTotalSize = 0,
             BehaviorType behaviorType = BehaviorType.Default,
-            bool stochasticInference = true
+            bool deterministicInference = false
             )
         {
             List<FailedCheck> failedModelChecks = new List<FailedCheck>();
@@ -151,7 +151,7 @@ namespace Unity.MLAgents.Inference
                 return failedModelChecks;
             }
 
-            var hasExpectedTensors = model.CheckExpectedTensors(failedModelChecks, stochasticInference);
+            var hasExpectedTensors = model.CheckExpectedTensors(failedModelChecks, deterministicInference);
             if (!hasExpectedTensors)
             {
                 return failedModelChecks;
@@ -198,7 +198,7 @@ namespace Unity.MLAgents.Inference
             );
 
             failedModelChecks.AddRange(
-                CheckOutputTensorPresence(model, memorySize, stochasticInference)
+                CheckOutputTensorPresence(model, memorySize, deterministicInference)
             );
             return failedModelChecks;
         }
@@ -379,18 +379,19 @@ namespace Unity.MLAgents.Inference
         /// The Barracuda engine model for loading static parameters
         /// </param>
         /// <param name="memory">The memory size that the model is expecting/</param>
-        /// <param name="stochasticInference"> Inference only: set to true if the action selection from model should be
-        /// stochastic. </param>
+        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
+        /// deterministic. </param>
         /// <returns>
         /// A IEnumerable of the checks that failed
         /// </returns>
-        static IEnumerable<FailedCheck> CheckOutputTensorPresence(Model model, int memory, bool stochasticInference = true)
+        static IEnumerable<FailedCheck> CheckOutputTensorPresence(Model model, int memory, bool deterministicInference = false)
         {
             var failedModelChecks = new List<FailedCheck>();
+
             // If there is no Recurrent Output but the model is Recurrent.
             if (memory > 0)
             {
-                var allOutputs = model.GetOutputNames(stochasticInference).ToList();
+                var allOutputs = model.GetOutputNames(deterministicInference).ToList();
                 if (!allOutputs.Any(x => x == TensorNames.RecurrentOutput))
                 {
                     failedModelChecks.Add(
@@ -399,7 +400,6 @@ namespace Unity.MLAgents.Inference
                 }
 
             }
-
             return failedModelChecks;
         }
 

@@ -4,7 +4,6 @@ using UnityEngine.Profiling;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
-using UnityEngine;
 
 namespace Unity.MLAgents.Inference
 {
@@ -29,7 +28,7 @@ namespace Unity.MLAgents.Inference
         InferenceDevice m_InferenceDevice;
         IWorker m_Engine;
         bool m_Verbose = false;
-        bool m_stochasticInference;
+        bool m_DeterministicInference;
         string[] m_OutputNames;
         IReadOnlyList<TensorProxy> m_InferenceInputs;
         List<TensorProxy> m_InferenceOutputs;
@@ -50,8 +49,8 @@ namespace Unity.MLAgents.Inference
         /// option for most of ML Agents models. </param>
         /// <param name="seed"> The seed that will be used to initialize the RandomNormal
         /// and Multinomial objects used when running inference.</param>
-        /// <param name="stochasticInference"> Inference only: set to true if the action selection from model should be
-        /// stochastic. </param>
+        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
+        /// deterministic. </param>
         /// <exception cref="UnityAgentsException">Throws an error when the model is null
         /// </exception>
         public ModelRunner(
@@ -59,13 +58,13 @@ namespace Unity.MLAgents.Inference
             ActionSpec actionSpec,
             InferenceDevice inferenceDevice,
             int seed = 0,
-            bool stochasticInference = true)
+            bool deterministicInference = false)
         {
             Model barracudaModel;
             m_Model = model;
             m_ModelName = model.name;
             m_InferenceDevice = inferenceDevice;
-            m_stochasticInference = stochasticInference;
+            m_DeterministicInference = deterministicInference;
             m_TensorAllocator = new TensorCachingAllocator();
             if (model != null)
             {
@@ -114,13 +113,12 @@ namespace Unity.MLAgents.Inference
             }
 
             m_InferenceInputs = barracudaModel.GetInputTensors();
-            m_OutputNames = barracudaModel.GetOutputNames(m_stochasticInference);
-            Debug.Log("output actions:" + m_OutputNames[0]);
+            m_OutputNames = barracudaModel.GetOutputNames(m_DeterministicInference);
 
             m_TensorGenerator = new TensorGenerator(
-                seed, m_TensorAllocator, m_Memories, barracudaModel, m_stochasticInference);
+                seed, m_TensorAllocator, m_Memories, barracudaModel, m_DeterministicInference);
             m_TensorApplier = new TensorApplier(
-                actionSpec, seed, m_TensorAllocator, m_Memories, barracudaModel, m_stochasticInference);
+                actionSpec, seed, m_TensorAllocator, m_Memories, barracudaModel, m_DeterministicInference);
             m_InputsByName = new Dictionary<string, Tensor>();
             m_InferenceOutputs = new List<TensorProxy>();
         }

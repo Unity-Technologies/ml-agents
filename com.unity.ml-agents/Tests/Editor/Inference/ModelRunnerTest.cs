@@ -7,9 +7,7 @@ using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.Assertions.Comparers;
 
 namespace Unity.MLAgents.Tests
 {
@@ -43,8 +41,8 @@ namespace Unity.MLAgents.Tests
         const string k_continuousNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action_deprecated_v1_0.nn";
         const string k_discreteNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_recurr_deprecated_v1_0.nn";
         // models with deterministic action tensors
-        private const string k_deter_discreteNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/deterDiscrete1obs3action_v2_0.onnx";
-        private const string k_deter_continuousNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/deterContinuous2vis8vec2action_v2_0.onnx";
+        private const string k_deterministic_discreteNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/deterDiscrete1obs3action_v2_0.onnx";
+        private const string k_deterministic_continuousNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/deterContinuous2vis8vec2action_v2_0.onnx";
 
         NNModel hybridONNXModelV2;
         NNModel continuousONNXModel;
@@ -52,8 +50,8 @@ namespace Unity.MLAgents.Tests
         NNModel hybridONNXModel;
         NNModel continuousNNModel;
         NNModel discreteNNModel;
-        NNModel deterDiscreteNNModel;
-        NNModel deterContinuousNNModel;
+        NNModel deterministicDiscreteNNModel;
+        NNModel deterministicContinuousNNModel;
         Test3DSensorComponent sensor_21_20_3;
         Test3DSensorComponent sensor_20_22_3;
 
@@ -83,8 +81,8 @@ namespace Unity.MLAgents.Tests
             hybridONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_hybridONNXPath, typeof(NNModel));
             continuousNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuousNNPath, typeof(NNModel));
             discreteNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_discreteNNPath, typeof(NNModel));
-            deterDiscreteNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_deter_discreteNNPath, typeof(NNModel));
-            deterContinuousNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_deter_continuousNNPath, typeof(NNModel));
+            deterministicDiscreteNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_deterministic_discreteNNPath, typeof(NNModel));
+            deterministicContinuousNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_deterministic_continuousNNPath, typeof(NNModel));
             var go = new GameObject("SensorA");
             sensor_21_20_3 = go.AddComponent<Test3DSensorComponent>();
             sensor_21_20_3.Sensor = new Test3DSensor("SensorA", 21, 20, 3);
@@ -101,8 +99,8 @@ namespace Unity.MLAgents.Tests
             Assert.IsNotNull(continuousNNModel);
             Assert.IsNotNull(discreteNNModel);
             Assert.IsNotNull(hybridONNXModelV2);
-            Assert.IsNotNull(deterDiscreteNNModel);
-            Assert.IsNotNull(deterContinuousNNModel);
+            Assert.IsNotNull(deterministicDiscreteNNModel);
+            Assert.IsNotNull(deterministicContinuousNNModel);
         }
 
         [Test]
@@ -133,12 +131,12 @@ namespace Unity.MLAgents.Tests
             modelRunner.Dispose();
 
             // V2.0 Model that has serialized deterministic action tensors, discrete
-            modelRunner = new ModelRunner(deterDiscreteNNModel, new ActionSpec(0, new[] { 7 }), inferenceDevice);
+            modelRunner = new ModelRunner(deterministicDiscreteNNModel, new ActionSpec(0, new[] { 7 }), inferenceDevice);
             modelRunner.Dispose();
             // V2.0 Model that has serialized deterministic action tensors, continuous
-            modelRunner = new ModelRunner(deterContinuousNNModel,
+            modelRunner = new ModelRunner(deterministicContinuousNNModel,
                 GetContinuous2vis8vec2actionActionSpec(), inferenceDevice,
-                stochasticInference: false);
+                deterministicInference: true);
             modelRunner.Dispose();
         }
 
@@ -185,7 +183,7 @@ namespace Unity.MLAgents.Tests
         public void TestRunModel_deterministic()
         {
             var actionSpec = GetContinuous2vis8vec2actionActionSpec();
-            var modelRunner = new ModelRunner(deterContinuousNNModel, actionSpec, InferenceDevice.Burst);
+            var modelRunner = new ModelRunner(deterministicContinuousNNModel, actionSpec, InferenceDevice.Burst);
             var sensor_8 = new Sensors.VectorSensor(8, "VectorSensor8");
             var info1 = new AgentInfo();
             var obs = new[]
@@ -206,18 +204,18 @@ namespace Unity.MLAgents.Tests
             Assert.IsFalse(Enumerable.SequenceEqual(stochAction1, stochAction2, new FloatThresholdComparer(0.001f)));
 
 
-            var deterModelRunner = new ModelRunner(deterContinuousNNModel, actionSpec, InferenceDevice.Burst,
-                stochasticInference: false);
+            var deterministicModelRunner = new ModelRunner(deterministicContinuousNNModel, actionSpec, InferenceDevice.Burst,
+                deterministicInference: true);
             info1.episodeId = 1;
-            deterModelRunner.PutObservations(info1, obs);
-            deterModelRunner.DecideBatch();
-            var deterAction1 = (float[])deterModelRunner.GetAction(1).ContinuousActions.Array.Clone();
+            deterministicModelRunner.PutObservations(info1, obs);
+            deterministicModelRunner.DecideBatch();
+            var deterministicAction1 = (float[])deterministicModelRunner.GetAction(1).ContinuousActions.Array.Clone();
 
-            deterModelRunner.PutObservations(info1, obs);
-            deterModelRunner.DecideBatch();
-            var deterAction2 = (float[])deterModelRunner.GetAction(1).ContinuousActions.Array.Clone();
+            deterministicModelRunner.PutObservations(info1, obs);
+            deterministicModelRunner.DecideBatch();
+            var deterministicAction2 = (float[])deterministicModelRunner.GetAction(1).ContinuousActions.Array.Clone();
             // Deterministic action selection should output same action everytime
-            Assert.IsTrue(Enumerable.SequenceEqual(deterAction1, deterAction2, new FloatThresholdComparer(0.001f)));
+            Assert.IsTrue(Enumerable.SequenceEqual(deterministicAction1, deterministicAction2, new FloatThresholdComparer(0.001f)));
             modelRunner.Dispose();
         }
     }
