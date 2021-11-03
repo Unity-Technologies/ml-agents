@@ -310,7 +310,7 @@ namespace Unity.MLAgents.Inference
             }
             else
             {
-                return deterministicInference ?  TensorNames.DeterministicDiscreteActionOutput : TensorNames.DiscreteActionOutput;
+                return deterministicInference ? TensorNames.DeterministicDiscreteActionOutput : TensorNames.DiscreteActionOutput;
             }
         }
 
