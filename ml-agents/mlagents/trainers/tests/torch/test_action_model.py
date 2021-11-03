@@ -54,6 +54,9 @@ def test_deterministic_sample_action():
     agent_action3 = action_model._sample_action(dists)
     assert torch.equal(agent_action1.continuous_tensor, agent_action2.continuous_tensor)
     assert torch.equal(agent_action1.continuous_tensor, agent_action3.continuous_tensor)
+    assert torch.equal(agent_action1.discrete_tensor, agent_action2.discrete_tensor)
+    assert torch.equal(agent_action1.discrete_tensor, agent_action3.discrete_tensor)
+
     action_model, masks = create_action_model(inp_size, act_size, deterministic=False)
     sample_inp = torch.ones((1, inp_size))
     dists = action_model._get_dists(sample_inp, masks=masks)
@@ -66,6 +69,8 @@ def test_deterministic_sample_action():
     assert not torch.equal(
         agent_action1.continuous_tensor, agent_action3.continuous_tensor
     )
+    assert not torch.equal(agent_action1.discrete_tensor, agent_action2.discrete_tensor)
+    assert not torch.equal(agent_action1.discrete_tensor, agent_action3.discrete_tensor)
 
 
 def test_get_probs_and_entropy():
