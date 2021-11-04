@@ -2,7 +2,7 @@
 #define MLA_SUPPORTED_TRAINING_PLATFORM
 #endif
 
-# if MLA_SUPPORTED_TRAINING_PLATFORM
+#if MLA_SUPPORTED_TRAINING_PLATFORM
 using Grpc.Core;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -50,6 +50,7 @@ namespace Unity.MLAgents
 
         /// The Unity to External client.
         UnityToExternalProto.UnityToExternalProtoClient m_Client;
+        Channel m_Channel;
 
         /// <summary>
         /// Initializes a new instance of the RPCCommunicator class.
@@ -140,6 +141,7 @@ namespace Unity.MLAgents
                     Debug.Log($"Unexpected exception when trying to initialize communication: {ex}");
                 }
                 initParametersOut = new UnityRLInitParameters();
+                NotifyQuitAndShutDownChannel();
                 return false;
             }
 
@@ -181,6 +183,8 @@ namespace Unity.MLAgents
 
             UpdateEnvironmentWithInput(input.RlInput);
             initParametersOut = initializationInput.RlInitializationInput.ToUnityRLInitParameters();
+            // Be sure to shut down the grpc channel when the application is quitting.
+            Application.quitting += NotifyQuitAndShutDownChannel;
             return true;
 #else
             initParametersOut = new UnityRLInitParameters();
@@ -217,9 +221,9 @@ namespace Unity.MLAgents
         UnityInputProto Initialize(int port, UnityOutputProto unityOutput, out UnityInputProto unityInput)
         {
             m_IsOpen = true;
-            var channel = new Channel($"localhost:{port}", ChannelCredentials.Insecure);
+            m_Channel = new Channel($"localhost:{port}", ChannelCredentials.Insecure);
 
-            m_Client = new UnityToExternalProto.UnityToExternalProtoClient(channel);
+            m_Client = new UnityToExternalProto.UnityToExternalProtoClient(m_Channel);
             var result = m_Client.Exchange(WrapMessage(unityOutput, 200));
             var inputMessage = m_Client.Exchange(WrapMessage(null, 200));
             unityInput = inputMessage.UnityInput;
@@ -229,9 +233,22 @@ namespace Unity.MLAgents
             if (result.Header.Status != 200 || inputMessage.Header.Status != 200)
             {
                 m_IsOpen = false;
-                QuitCommandReceived?.Invoke();
+                NotifyQuitAndShutDownChannel();
             }
             return result.UnityInput;
+        }
+
+        void NotifyQuitAndShutDownChannel()
+        {
+            QuitCommandReceived?.Invoke();
+            try
+            {
+                m_Channel.ShutdownAsync().Wait();
+            }
+            catch (Exception)
+            {
+                // do nothing
+            }
         }
 
 #endregion
@@ -269,7 +286,7 @@ namespace Unity.MLAgents
             {
                 case CommandProto.Quit:
                     {
-                        QuitCommandReceived?.Invoke();
+                        NotifyQuitAndShutDownChannel();
                         return;
                     }
                 case CommandProto.Reset:
@@ -456,7 +473,7 @@ namespace Unity.MLAgents
                 // Not sure if the quit command is actually sent when a
                 // non 200 message is received.  Notify that we are indeed
                 // quitting.
-                QuitCommandReceived?.Invoke();
+                NotifyQuitAndShutDownChannel();
                 return message.UnityInput;
             }
             catch (Exception ex)
@@ -488,7 +505,7 @@ namespace Unity.MLAgents
                 }
 
                 m_IsOpen = false;
-                QuitCommandReceived?.Invoke();
+                NotifyQuitAndShutDownChannel();
                 return null;
             }
         }
