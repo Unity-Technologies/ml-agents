@@ -11,6 +11,7 @@ and this project adheres to
 - Upgrade to 2.0.1
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Set gym version in gym-unity to gym release 0.20.0
+- Fixed the bug where curriculum learning would crash because of the incorrect run_options parsing. (#5586)
 - Added minimal analytics collection to LL-API (#5511)
 
 ## [2.0.0] - 2021-09-01
