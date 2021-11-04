@@ -184,7 +184,7 @@ namespace Unity.MLAgents.Inference
             else if (modelApiVersion == (int)ModelApiVersion.MLAgents2_0)
             {
                 failedModelChecks.AddRange(
-                    CheckInputTensorPresence(model, brainParameters, memorySize, sensors)
+                    CheckInputTensorPresence(model, brainParameters, memorySize, sensors, deterministicInference)
                 );
                 failedModelChecks.AddRange(
                     CheckInputTensorShape(model, brainParameters, sensors, observableAttributeTotalSize)
@@ -321,6 +321,8 @@ namespace Unity.MLAgents.Inference
         /// The memory size that the model is expecting.
         /// </param>
         /// <param name="sensors">Array of attached sensor components</param>
+        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
+        /// Deterministic. </param>
         /// <returns>
         /// A IEnumerable of the checks that failed
         /// </returns>
@@ -328,7 +330,8 @@ namespace Unity.MLAgents.Inference
             Model model,
             BrainParameters brainParameters,
             int memory,
-            ISensor[] sensors
+            ISensor[] sensors,
+            bool deterministicInference = false
         )
         {
             var failedModelChecks = new List<FailedCheck>();
@@ -359,7 +362,7 @@ namespace Unity.MLAgents.Inference
             }
 
             // If the model uses discrete control but does not have an input for action masks
-            if (model.HasDiscreteOutputs())
+            if (model.HasDiscreteOutputs(deterministicInference))
             {
                 if (!tensorsNames.Contains(TensorNames.ActionMaskPlaceholder))
                 {

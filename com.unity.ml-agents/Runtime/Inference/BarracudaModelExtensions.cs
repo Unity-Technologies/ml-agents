@@ -124,11 +124,11 @@ namespace Unity.MLAgents.Inference
                 return names.ToArray();
             }
 
-            if (model.HasContinuousOutputs())
+            if (model.HasContinuousOutputs(deterministicInference))
             {
                 names.Add(model.ContinuousOutputName(deterministicInference));
             }
-            if (model.HasDiscreteOutputs())
+            if (model.HasDiscreteOutputs(deterministicInference))
             {
                 names.Add(model.DiscreteOutputName(deterministicInference));
             }
