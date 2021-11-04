@@ -5,6 +5,20 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+## [2.0.1] - 2021-10-13
+### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Upgrade to 2.0.1
+- Update gRPC native lib to universal for arm64 and x86_64. This change should enable ml-agents usage on mac M1 (#5283, #5519)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- Set gym version in gym-unity to gym release 0.20.0(#5540)
+- Harden user PII protection logic and extend TrainingAnalytics to expose detailed configuration parameters. (#5512)
+- Added minimal analytics collection to LL-API (#5511)
+
+### Bug Fixes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Fixed the bug where curriculum learning would crash because of the incorrect run_options parsing. (#5586)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ## [2.0.0] - 2021-09-01
 ### Minor Changes

@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/training_analytics.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n;mlagents_envs/communicator_objects/training_analytics.proto\x12\x14\x63ommunicator_objects\"\xd9\x01\n\x1eTrainingEnvironmentInitialized\x12\x18\n\x10mlagents_version\x18\x01 \x01(\t\x12\x1d\n\x15mlagents_envs_version\x18\x02 \x01(\t\x12\x16\n\x0epython_version\x18\x03 \x01(\t\x12\x15\n\rtorch_version\x18\x04 \x01(\t\x12\x19\n\x11torch_device_type\x18\x05 \x01(\t\x12\x10\n\x08num_envs\x18\x06 \x01(\x05\x12\"\n\x1anum_environment_parameters\x18\x07 \x01(\x05\"\xad\x03\n\x1bTrainingBehaviorInitialized\x12\x15\n\rbehavior_name\x18\x01 \x01(\t\x12\x14\n\x0ctrainer_type\x18\x02 \x01(\t\x12 \n\x18\x65xtrinsic_reward_enabled\x18\x03 \x01(\x08\x12\x1b\n\x13gail_reward_enabled\x18\x04 \x01(\x08\x12 \n\x18\x63uriosity_reward_enabled\x18\x05 \x01(\x08\x12\x1a\n\x12rnd_reward_enabled\x18\x06 \x01(\x08\x12\"\n\x1a\x62\x65havioral_cloning_enabled\x18\x07 \x01(\x08\x12\x19\n\x11recurrent_enabled\x18\x08 \x01(\x08\x12\x16\n\x0evisual_encoder\x18\t \x01(\t\x12\x1a\n\x12num_network_layers\x18\n \x01(\x05\x12 \n\x18num_network_hidden_units\x18\x0b \x01(\x05\x12\x18\n\x10trainer_threaded\x18\x0c \x01(\x08\x12\x19\n\x11self_play_enabled\x18\r \x01(\x08\x12\x1a\n\x12\x63urriculum_enabled\x18\x0e \x01(\x08\x42%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n;mlagents_envs/communicator_objects/training_analytics.proto\x12\x14\x63ommunicator_objects\"\xee\x01\n\x1eTrainingEnvironmentInitialized\x12\x18\n\x10mlagents_version\x18\x01 \x01(\t\x12\x1d\n\x15mlagents_envs_version\x18\x02 \x01(\t\x12\x16\n\x0epython_version\x18\x03 \x01(\t\x12\x15\n\rtorch_version\x18\x04 \x01(\t\x12\x19\n\x11torch_device_type\x18\x05 \x01(\t\x12\x10\n\x08num_envs\x18\x06 \x01(\x05\x12\"\n\x1anum_environment_parameters\x18\x07 \x01(\x05\x12\x13\n\x0brun_options\x18\x08 \x01(\t\"\xbd\x03\n\x1bTrainingBehaviorInitialized\x12\x15\n\rbehavior_name\x18\x01 \x01(\t\x12\x14\n\x0ctrainer_type\x18\x02 \x01(\t\x12 \n\x18\x65xtrinsic_reward_enabled\x18\x03 \x01(\x08\x12\x1b\n\x13gail_reward_enabled\x18\x04 \x01(\x08\x12 \n\x18\x63uriosity_reward_enabled\x18\x05 \x01(\x08\x12\x1a\n\x12rnd_reward_enabled\x18\x06 \x01(\x08\x12\"\n\x1a\x62\x65havioral_cloning_enabled\x18\x07 \x01(\x08\x12\x19\n\x11recurrent_enabled\x18\x08 \x01(\x08\x12\x16\n\x0evisual_encoder\x18\t \x01(\t\x12\x1a\n\x12num_network_layers\x18\n \x01(\x05\x12 \n\x18num_network_hidden_units\x18\x0b \x01(\x05\x12\x18\n\x10trainer_threaded\x18\x0c \x01(\x08\x12\x19\n\x11self_play_enabled\x18\r \x01(\x08\x12\x1a\n\x12\x63urriculum_enabled\x18\x0e \x01(\x08\x12\x0e\n\x06\x63onfig\x18\x0f \x01(\tB%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 
@@ -81,6 +81,13 @@ _TRAININGENVIRONMENTINITIALIZED = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='run_options', full_name='communicator_objects.TrainingEnvironmentInitialized.run_options', index=7,
+      number=8, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -94,7 +101,7 @@ _TRAININGENVIRONMENTINITIALIZED = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=86,
-  serialized_end=303,
+  serialized_end=324,
 )
 
 
@@ -203,6 +210,13 @@ _TRAININGBEHAVIORINITIALIZED = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='config', full_name='communicator_objects.TrainingBehaviorInitialized.config', index=14,
+      number=15, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -215,8 +229,8 @@ _TRAININGBEHAVIORINITIALIZED = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=306,
-  serialized_end=735,
+  serialized_start=327,
+  serialized_end=772,
 )
 
 DESCRIPTOR.message_types_by_name['TrainingEnvironmentInitialized'] = _TRAININGENVIRONMENTINITIALIZED

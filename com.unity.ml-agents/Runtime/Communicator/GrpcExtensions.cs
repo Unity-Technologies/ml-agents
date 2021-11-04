@@ -501,6 +501,7 @@ namespace Unity.MLAgents
                 TorchDeviceType = inputProto.TorchDeviceType,
                 NumEnvironments = inputProto.NumEnvs,
                 NumEnvironmentParameters = inputProto.NumEnvironmentParameters,
+                RunOptions = inputProto.RunOptions,
             };
         }
 
@@ -530,6 +531,7 @@ namespace Unity.MLAgents
                 VisualEncoder = inputProto.VisualEncoder,
                 NumNetworkLayers = inputProto.NumNetworkLayers,
                 NumNetworkHiddenUnits = inputProto.NumNetworkHiddenUnits,
+                Config = inputProto.Config,
             };
         }
 
