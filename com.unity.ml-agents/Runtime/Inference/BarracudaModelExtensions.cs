@@ -412,7 +412,7 @@ namespace Unity.MLAgents.Inference
                         var actionType = deterministicInference ? "deterministic" : "stochastic";
                         var actionName = deterministicInference ? "Deterministic" : "";
                         failedModelChecks.Add(
-                            FailedCheck.Warning($"The model uses {actionType} inference but does not contain {actionName} Continuous Action Output Tensor. Set `Deterministic inference` accordingly.")
+                            FailedCheck.Warning($"The model uses {actionType} inference but does not contain {actionName} Continuous Action Output Tensor. Uncheck `Deterministic inference` flag..")
                         );
                         return false;
                     }
@@ -432,7 +432,7 @@ namespace Unity.MLAgents.Inference
                         var actionType = deterministicInference ? "deterministic" : "stochastic";
                         var actionName = deterministicInference ? "Deterministic" : "";
                         failedModelChecks.Add(
-                            FailedCheck.Warning($"The model uses {actionType} inference but does not contain {actionName} Discrete Action Output Tensor. Set `Deterministic inference` accordingly.")
+                            FailedCheck.Warning($"The model uses {actionType} inference but does not contain {actionName} Discrete Action Output Tensor. Uncheck `Deterministic inference` flag.")
                         );
                         return false;
                     }

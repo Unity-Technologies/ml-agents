@@ -179,7 +179,7 @@ namespace Unity.MLAgents.Policies
 
         [HideInInspector]
         [SerializeField]
-        [Tooltip("Set action selection to deterministic, Use only in inference mode")]
+        [Tooltip("Set action selection to deterministic, Only applies to inference from within unity.")]
         private bool m_DeterministicInference = false;
 
         /// <summary>
