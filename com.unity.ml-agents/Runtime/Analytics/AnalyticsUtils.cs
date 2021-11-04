@@ -1,19 +1,45 @@
 using System;
+using System.Text;
+using System.Security.Cryptography;
 using UnityEngine;
 
 namespace Unity.MLAgents.Analytics
 {
+
     internal static class AnalyticsUtils
     {
         /// <summary>
+        /// Conversion function from byte array to hex string
+        /// </summary>
+        /// <param name="array"></param>
+        /// <returns>A byte array to be hex encoded.</returns>
+        private static string ToHexString(byte[] array)
+        {
+            StringBuilder hex = new StringBuilder(array.Length * 2);
+            foreach (byte b in array)
+            {
+                hex.AppendFormat("{0:x2}", b);
+            }
+            return hex.ToString();
+        }
+
+        /// <summary>
         /// Hash a string to remove PII or secret info before sending to analytics
         /// </summary>
-        /// <param name="s"></param>
-        /// <returns>A string containing the Hash128 of the input string.</returns>
-        public static string Hash(string s)
+        /// <param name="key"></param>
+        /// <returns>A string containing the key to be used for HMAC encoding.</returns>
+        /// <param name="value"></param>
+        /// <returns>A string containing the value to be encoded.</returns>
+        public static string Hash(string key, string value)
         {
-            var behaviorNameHash = Hash128.Compute(s);
-            return behaviorNameHash.ToString();
+            string hash;
+            UTF8Encoding encoder = new UTF8Encoding();
+            using (HMACSHA256 hmac = new HMACSHA256(encoder.GetBytes(key)))
+            {
+                Byte[] hmBytes = hmac.ComputeHash(encoder.GetBytes(value));
+                hash = ToHexString(hmBytes);
+            }
+            return hash;
         }
 
         internal static bool s_SendEditorAnalytics = true;
