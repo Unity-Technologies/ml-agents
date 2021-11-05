@@ -18,6 +18,7 @@ and this project adheres to
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - Fixed the bug where curriculum learning would crash because of the incorrect run_options parsing. (#5586)
+- Fixed tests with input system package upgrade from 1.1.0 to 1.1.1. (#5542)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ## [2.0.0] - 2021-09-01
