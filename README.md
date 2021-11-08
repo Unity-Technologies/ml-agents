@@ -4,7 +4,7 @@
 
 [![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/release_18_docs/docs/)
 
-[![license badge](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
+[![license badge](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE.md)
 
 ([latest release](https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release))
 ([all releases](https://github.com/Unity-Technologies/ml-agents/releases))
@@ -191,4 +191,4 @@ Please refer to "Information that is passively collected by Unity" in the
 
 ## License
 
-[Apache License 2.0](LICENSE)
+[Apache License 2.0](LICENSE.md)
