@@ -2,7 +2,8 @@
     "name": "Unity.ML-Agents",
     "references": [
         "Unity.Barracuda",
-        "Unity.ML-Agents.CommunicatorObjects"
+        "Unity.ML-Agents.CommunicatorObjects",
+        "Unity.Mathematics"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

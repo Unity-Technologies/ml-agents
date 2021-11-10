@@ -183,6 +183,11 @@ namespace Unity.MLAgents
             set { m_InferenceSeed = value; }
         }
 
+        // Number of training areas to instantiate
+        int m_NumAreas;
+
+        public int NumAreas => m_NumAreas;
+
         /// <summary>
         /// Returns the RLCapabilities of the python client that the unity process is connected to.
         /// </summary>
@@ -451,6 +456,7 @@ namespace Unity.MLAgents
                         UnityEngine.Random.InitState(unityRlInitParameters.seed);
                         // We might have inference-only Agents, so set the seed for them too.
                         m_InferenceSeed = unityRlInitParameters.seed;
+                        m_NumAreas = unityRlInitParameters.numAreas;
                         TrainerCapabilities = unityRlInitParameters.TrainerCapabilities;
                         TrainerCapabilities.WarnOnPythonMissingBaseRLCapabilities();
                     }

@@ -44,6 +44,33 @@ def check_and_structure(key: str, value: Any, class_type: type) -> Any:
     return cattr.structure(value, attr_fields_dict[key].type)
 
 
+class TrainerType(Enum):
+    PPO: str = "ppo"
+    SAC: str = "sac"
+    POCA: str = "poca"
+
+    def to_settings(self) -> type:
+        _mapping = {
+            TrainerType.PPO: PPOSettings,
+            TrainerType.SAC: SACSettings,
+            TrainerType.POCA: POCASettings,
+        }
+        return _mapping[self]
+
+
+def check_hyperparam_schedules(val: Dict, trainer_type: TrainerType) -> Dict:
+    # Check if beta and epsilon are set. If not, set to match learning rate schedule.
+    if trainer_type is TrainerType.PPO or trainer_type is TrainerType.POCA:
+        if "beta_schedule" not in val.keys() and "learning_rate_schedule" in val.keys():
+            val["beta_schedule"] = val["learning_rate_schedule"]
+        if (
+            "epsilon_schedule" not in val.keys()
+            and "learning_rate_schedule" in val.keys()
+        ):
+            val["epsilon_schedule"] = val["learning_rate_schedule"]
+    return val
+
+
 def strict_to_cls(d: Mapping, t: type) -> Any:
     if not isinstance(d, Mapping):
         raise TrainerConfigError(f"Unsupported config {d} for {t.__name__}.")
@@ -91,6 +118,8 @@ class EncoderType(Enum):
 class ScheduleType(Enum):
     CONSTANT = "constant"
     LINEAR = "linear"
+    # TODO add support for lesson based scheduling
+    # LESSON = "lesson"
 
 
 class ConditioningType(Enum):
@@ -151,6 +180,8 @@ class PPOSettings(HyperparamSettings):
     lambd: float = 0.95
     num_epoch: int = 3
     learning_rate_schedule: ScheduleType = ScheduleType.LINEAR
+    beta_schedule: ScheduleType = ScheduleType.LINEAR
+    epsilon_schedule: ScheduleType = ScheduleType.LINEAR
 
 
 @attr.s(auto_attribs=True)
@@ -608,20 +639,6 @@ class SelfPlaySettings:
     initial_elo: float = 1200.0
 
 
-class TrainerType(Enum):
-    PPO: str = "ppo"
-    SAC: str = "sac"
-    POCA: str = "poca"
-
-    def to_settings(self) -> type:
-        _mapping = {
-            TrainerType.PPO: PPOSettings,
-            TrainerType.SAC: SACSettings,
-            TrainerType.POCA: POCASettings,
-        }
-        return _mapping[self]
-
-
 @attr.s(auto_attribs=True)
 class TrainerSettings(ExportableSettings):
     default_override: ClassVar[Optional["TrainerSettings"]] = None
@@ -700,6 +717,9 @@ class TrainerSettings(ExportableSettings):
                         "Hyperparameters were specified but no trainer_type was given."
                     )
                 else:
+                    d_copy[key] = check_hyperparam_schedules(
+                        val, d_copy["trainer_type"]
+                    )
                     d_copy[key] = strict_to_cls(
                         d_copy[key], TrainerType(d_copy["trainer_type"]).to_settings()
                     )
@@ -802,12 +822,23 @@ class EnvironmentSettings:
     env_args: Optional[List[str]] = parser.get_default("env_args")
     base_port: int = parser.get_default("base_port")
     num_envs: int = attr.ib(default=parser.get_default("num_envs"))
+    num_areas: int = attr.ib(default=parser.get_default("num_areas"))
     seed: int = parser.get_default("seed")
+    max_lifetime_restarts: int = parser.get_default("max_lifetime_restarts")
+    restarts_rate_limit_n: int = parser.get_default("restarts_rate_limit_n")
+    restarts_rate_limit_period_s: int = parser.get_default(
+        "restarts_rate_limit_period_s"
+    )
 
     @num_envs.validator
     def validate_num_envs(self, attribute, value):
         if value > 1 and self.env_path is None:
             raise ValueError("num_envs must be 1 if env_path is not set.")
+
+    @num_areas.validator
+    def validate_num_area(self, attribute, value):
+        if value <= 0:
+            raise ValueError("num_areas must be set to a positive number >= 1.")
 
 
 @attr.s(auto_attribs=True)

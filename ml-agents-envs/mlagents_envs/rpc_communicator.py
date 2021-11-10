@@ -58,7 +58,10 @@ class RpcCommunicator(Communicator):
 
         try:
             # Establish communication grpc
-            self.server = grpc.server(ThreadPoolExecutor(max_workers=10))
+            self.server = grpc.server(
+                thread_pool=ThreadPoolExecutor(max_workers=10),
+                options=(("grpc.so_reuseport", 1),),
+            )
             self.unity_to_external = UnityToExternalServicerImplementation()
             add_UnityToExternalProtoServicer_to_server(
                 self.unity_to_external, self.server

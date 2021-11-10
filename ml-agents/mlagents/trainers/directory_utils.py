@@ -1,5 +1,7 @@
 import os
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents.trainers.settings import TrainerSettings
+from mlagents.trainers.model_saver.torch_model_saver import DEFAULT_CHECKPOINT_NAME
 
 
 def validate_existing_directories(
@@ -13,6 +15,7 @@ def validate_existing_directories(
     :param summary_path: The summary path to be used.
     :param resume: Whether or not the --resume flag was passed.
     :param force: Whether or not the --force flag was passed.
+    :param init_path: Path to run-id dir to initialize from
     """
 
     output_path_exists = os.path.isdir(output_path)
@@ -40,3 +43,34 @@ def validate_existing_directories(
                     init_path
                 )
             )
+
+
+def setup_init_path(
+    behaviors: TrainerSettings.DefaultTrainerDict, init_dir: str
+) -> None:
+    """
+    For each behavior, setup full init_path to checkpoint file to initialize policy from
+    :param behaviors: mapping from behavior_name to TrainerSettings
+    :param init_dir: Path to run-id dir to initialize from
+    """
+    for behavior_name, ts in behaviors.items():
+        if ts.init_path is None:
+            # set default if None
+            ts.init_path = os.path.join(
+                init_dir, behavior_name, DEFAULT_CHECKPOINT_NAME
+            )
+        elif not os.path.dirname(ts.init_path):
+            # update to full path if just the file name
+            ts.init_path = os.path.join(init_dir, behavior_name, ts.init_path)
+        _validate_init_full_path(ts.init_path)
+
+
+def _validate_init_full_path(init_file: str) -> None:
+    """
+    Validate initialization path to be a .pt file
+    :param init_file: full path to initialization checkpoint file
+    """
+    if not (os.path.isfile(init_file) and init_file.endswith(".pt")):
+        raise UnityTrainerException(
+            f"Could not initialize from {init_file}. file does not exists or is not a `.pt` file"
+        )

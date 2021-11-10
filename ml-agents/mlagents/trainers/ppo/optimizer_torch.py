@@ -50,13 +50,13 @@ class TorchPPOOptimizer(TorchOptimizer):
             self.trainer_settings.max_steps,
         )
         self.decay_epsilon = ModelUtils.DecayedValue(
-            self.hyperparameters.learning_rate_schedule,
+            self.hyperparameters.epsilon_schedule,
             self.hyperparameters.epsilon,
             0.1,
             self.trainer_settings.max_steps,
         )
         self.decay_beta = ModelUtils.DecayedValue(
-            self.hyperparameters.learning_rate_schedule,
+            self.hyperparameters.beta_schedule,
             self.hyperparameters.beta,
             1e-5,
             self.trainer_settings.max_steps,

@@ -10,18 +10,17 @@ only: issues
 # Issue specific configuration
 issues:
   limitPerRun: 5
-  daysUntilStale: 14
+  daysUntilStale: 28
   daysUntilClose: 14
   markComment: >
     This issue has been automatically marked as stale because it has not had activity in the
-    last 14 days. It will be closed in the next 14 days if no further activity occurs.
+    last 28 days. It will be closed in the next 14 days if no further activity occurs.
     Thank you for your contributions.
   closeComment: >
     This issue has been automatically closed because it has not had activity in the
-    last 28 days. If this issue is still valid, please ping a maintainer.
+    last 42 days. If this issue is still valid, please ping a maintainer.
     Thank you for your contributions.
   exemptLabels:
-    - bug
     - request
     - help-wanted
     - announcement

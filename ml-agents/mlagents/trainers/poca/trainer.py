@@ -73,6 +73,7 @@ class POCATrainer(RLTrainer):
         # Update the normalization
         if self.is_training:
             self.policy.update_normalization(agent_buffer_trajectory)
+            self.optimizer.critic.update_normalization(agent_buffer_trajectory)
 
         # Get all value estimates
         (

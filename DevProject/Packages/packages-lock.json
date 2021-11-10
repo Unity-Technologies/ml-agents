@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.unity.barracuda": {
-      "version": "2.0.0-pre.3",
+      "version": "2.3.1-preview",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -55,7 +55,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.unity.barracuda": "2.0.0-pre.3",
+        "com.unity.barracuda": "2.3.1-preview",
         "com.unity.modules.imageconversion": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       }

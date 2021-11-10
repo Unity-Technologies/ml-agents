@@ -37,6 +37,7 @@ MOCK_PARAMETER_YAML = """
     env_settings:
         env_path: "./oldenvfile"
         num_envs: 4
+        num_areas: 4
         base_port: 4001
         seed: 9870
     checkpoint_settings:
@@ -73,7 +74,7 @@ def test_run_training(
         with patch.object(TrainerController, "__init__", mock_init):
             with patch.object(TrainerController, "start_learning", MagicMock()):
                 options = basic_options()
-                learn.run_training(0, options)
+                learn.run_training(0, options, 1)
                 mock_init.assert_called_once_with(
                     trainer_factory_mock.return_value,
                     os.path.join("results", "ppo"),
@@ -103,6 +104,7 @@ def test_bad_env_path():
             env_path="/foo/bar",
             no_graphics=True,
             seed=-1,
+            num_areas=1,
             start_port=8000,
             env_args=None,
             log_folder="results/log_folder",
@@ -126,6 +128,7 @@ def test_commandline_args(mock_file):
     assert opt.env_settings.seed == -1
     assert opt.env_settings.base_port == 5005
     assert opt.env_settings.num_envs == 1
+    assert opt.env_settings.num_areas == 1
     assert opt.engine_settings.no_graphics is False
     assert opt.debug is False
     assert opt.env_settings.env_args is None
@@ -140,6 +143,7 @@ def test_commandline_args(mock_file):
         "--base-port=4004",
         "--initialize-from=testdir",
         "--num-envs=2",
+        "--num-areas=2",
         "--no-graphics",
         "--debug",
     ]
@@ -152,6 +156,7 @@ def test_commandline_args(mock_file):
     assert opt.env_settings.seed == 7890
     assert opt.env_settings.base_port == 4004
     assert opt.env_settings.num_envs == 2
+    assert opt.env_settings.num_areas == 2
     assert opt.engine_settings.no_graphics is True
     assert opt.debug is True
     assert opt.checkpoint_settings.inference is True
@@ -176,6 +181,7 @@ def test_yaml_args(mock_file):
     assert opt.env_settings.seed == 9870
     assert opt.env_settings.base_port == 4001
     assert opt.env_settings.num_envs == 4
+    assert opt.env_settings.num_areas == 4
     assert opt.engine_settings.no_graphics is False
     assert opt.debug is False
     assert opt.env_settings.env_args is None
@@ -190,6 +196,7 @@ def test_yaml_args(mock_file):
         "--train",
         "--base-port=4004",
         "--num-envs=2",
+        "--num-areas=2",
         "--no-graphics",
         "--debug",
         "--results-dir=myresults",
@@ -202,6 +209,7 @@ def test_yaml_args(mock_file):
     assert opt.env_settings.seed == 7890
     assert opt.env_settings.base_port == 4004
     assert opt.env_settings.num_envs == 2
+    assert opt.env_settings.num_areas == 2
     assert opt.engine_settings.no_graphics is True
     assert opt.debug is True
     assert opt.checkpoint_settings.inference is True

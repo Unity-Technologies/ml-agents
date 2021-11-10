@@ -27,16 +27,16 @@ namespace Unity.MLAgents.CommunicatorObjects {
             "CkZtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3VuaXR5X3Js",
             "X2luaXRpYWxpemF0aW9uX2lucHV0LnByb3RvEhRjb21tdW5pY2F0b3Jfb2Jq",
             "ZWN0cxo1bWxhZ2VudHNfZW52cy9jb21tdW5pY2F0b3Jfb2JqZWN0cy9jYXBh",
-            "YmlsaXRpZXMucHJvdG8irQEKH1VuaXR5UkxJbml0aWFsaXphdGlvbklucHV0",
+            "YmlsaXRpZXMucHJvdG8iwAEKH1VuaXR5UkxJbml0aWFsaXphdGlvbklucHV0",
             "UHJvdG8SDAoEc2VlZBgBIAEoBRIdChVjb21tdW5pY2F0aW9uX3ZlcnNpb24Y",
             "AiABKAkSFwoPcGFja2FnZV92ZXJzaW9uGAMgASgJEkQKDGNhcGFiaWxpdGll",
             "cxgEIAEoCzIuLmNvbW11bmljYXRvcl9vYmplY3RzLlVuaXR5UkxDYXBhYmls",
-            "aXRpZXNQcm90b0IlqgIiVW5pdHkuTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2Jq",
-            "ZWN0c2IGcHJvdG8z"));
+            "aXRpZXNQcm90bxIRCgludW1fYXJlYXMYBSABKAVCJaoCIlVuaXR5Lk1MQWdl",
+            "bnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Unity.MLAgents.CommunicatorObjects.CapabilitiesReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLInitializationInputProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLInitializationInputProto.Parser, new[]{ "Seed", "CommunicationVersion", "PackageVersion", "Capabilities" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLInitializationInputProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLInitializationInputProto.Parser, new[]{ "Seed", "CommunicationVersion", "PackageVersion", "Capabilities", "NumAreas" }, null, null, null)
           }));
     }
     #endregion
@@ -75,6 +75,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       communicationVersion_ = other.communicationVersion_;
       packageVersion_ = other.packageVersion_;
       Capabilities = other.capabilities_ != null ? other.Capabilities.Clone() : null;
+      numAreas_ = other.numAreas_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -136,6 +137,20 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "num_areas" field.</summary>
+    public const int NumAreasFieldNumber = 5;
+    private int numAreas_;
+    /// <summary>
+    /// The number of training areas to instantiate
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int NumAreas {
+      get { return numAreas_; }
+      set {
+        numAreas_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as UnityRLInitializationInputProto);
@@ -153,6 +168,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (CommunicationVersion != other.CommunicationVersion) return false;
       if (PackageVersion != other.PackageVersion) return false;
       if (!object.Equals(Capabilities, other.Capabilities)) return false;
+      if (NumAreas != other.NumAreas) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -163,6 +179,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (CommunicationVersion.Length != 0) hash ^= CommunicationVersion.GetHashCode();
       if (PackageVersion.Length != 0) hash ^= PackageVersion.GetHashCode();
       if (capabilities_ != null) hash ^= Capabilities.GetHashCode();
+      if (NumAreas != 0) hash ^= NumAreas.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -192,6 +209,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
         output.WriteRawTag(34);
         output.WriteMessage(Capabilities);
       }
+      if (NumAreas != 0) {
+        output.WriteRawTag(40);
+        output.WriteInt32(NumAreas);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -211,6 +232,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
       if (capabilities_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Capabilities);
+      }
+      if (NumAreas != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(NumAreas);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -237,6 +261,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
           capabilities_ = new global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto();
         }
         Capabilities.MergeFrom(other.Capabilities);
+      }
+      if (other.NumAreas != 0) {
+        NumAreas = other.NumAreas;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -266,6 +293,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
               capabilities_ = new global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto();
             }
             input.ReadMessage(capabilities_);
+            break;
+          }
+          case 40: {
+            NumAreas = input.ReadInt32();
             break;
           }
         }

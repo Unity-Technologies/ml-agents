@@ -156,6 +156,7 @@ namespace Unity.MLAgents.Analytics
         public string TorchDeviceType;
         public int NumEnvironments;
         public int NumEnvironmentParameters;
+        public string RunOptions;
     }
 
     [Flags]
@@ -188,5 +189,6 @@ namespace Unity.MLAgents.Analytics
         public string VisualEncoder;
         public int NumNetworkLayers;
         public int NumNetworkHiddenUnits;
+        public string Config;
     }
 }

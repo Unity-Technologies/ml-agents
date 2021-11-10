@@ -207,6 +207,9 @@ env_settings:
   base_port: 5005
   num_envs: 1
   seed: -1
+  max_lifetime_restarts: 10
+  restarts_rate_limit_n: 1
+  restarts_rate_limit_period_s: 60
 ```
 
 #### Engine settings
@@ -269,7 +272,9 @@ behaviors:
       # PPO-specific hyperparameters
       # Replaces the "PPO-specific hyperparameters" section above
       beta: 5.0e-3
+      beta_schedule: constant
       epsilon: 0.2
+      epsilon_schedule: linear
       lambd: 0.95
       num_epoch: 3
 

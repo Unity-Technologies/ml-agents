@@ -707,7 +707,7 @@ training process learns to control the speed of the Agent through this
 parameter.
 
 The [3DBall example](Learning-Environment-Examples.md#3dball-3d-balance-ball) uses
-continuous actions with four control values.
+continuous actions with two control values.
 
 ![3DBall](images/balance.png)
 

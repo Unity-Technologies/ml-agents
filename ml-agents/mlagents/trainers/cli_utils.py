@@ -161,6 +161,15 @@ def _create_parser() -> argparse.ArgumentParser:
         "from when training",
         action=DetectDefault,
     )
+
+    argparser.add_argument(
+        "--num-areas",
+        default=1,
+        type=int,
+        help="The number of parallel training areas in each Unity environment instance.",
+        action=DetectDefault,
+    )
+
     argparser.add_argument(
         "--debug",
         default=False,
@@ -175,6 +184,26 @@ def _create_parser() -> argparse.ArgumentParser:
         "process these as Unity Command Line Arguments. You should choose different argument names if "
         "you want to create environment-specific arguments. All arguments after this flag will be "
         "passed to the executable.",
+        action=DetectDefault,
+    )
+    argparser.add_argument(
+        "--max-lifetime-restarts",
+        default=10,
+        help="The max number of times a single Unity executable can crash over its lifetime before ml-agents exits. "
+        "Can be set to -1 if no limit is desired.",
+        action=DetectDefault,
+    )
+    argparser.add_argument(
+        "--restarts-rate-limit-n",
+        default=1,
+        help="The maximum number of times a single Unity executable can crash over a period of time (period set in "
+        "restarts-rate-limit-period-s). Can be set to -1 to not use rate limiting with restarts.",
+        action=DetectDefault,
+    )
+    argparser.add_argument(
+        "--restarts-rate-limit-period-s",
+        default=60,
+        help="The period of time --restarts-rate-limit-n applies to.",
         action=DetectDefault,
     )
     argparser.add_argument(
