@@ -1,5 +1,5 @@
 from mlagents_envs.registry import default_registry
-from pettingzoo_unity import UnityToPettingZooWrapper
+
 from typing import Optional
 from mlagents_envs.exception import UnityWorkerInUseException
 from mlagents_envs.side_channel.environment_parameters_channel import (
@@ -11,6 +11,10 @@ from mlagents_envs.side_channel.engine_configuration_channel import (
 from mlagents_envs.side_channel.stats_side_channel import StatsSideChannel
 from mlagents_envs import logging_util
 
+from pettingzoo_unity.envs.unity_base_env import UnityBaseEnv  # noqa
+from pettingzoo_unity.envs.unity_aec_env import UnityAECEnv
+from pettingzoo_unity.envs.unity_parallel_env import UnityParallelEnv  # noqa
+
 logger = logging_util.get_logger(__name__)
 
 
@@ -18,7 +22,7 @@ class PettingZooEnv:
     def __init__(self, env_id: str) -> None:
         self.env_id = env_id
 
-    def env(self, seed: Optional[int] = None, **kwargs) -> UnityToPettingZooWrapper:
+    def env(self, seed: Optional[int] = None, **kwargs) -> UnityAECEnv:
         """
         Creates the environment with env_id from unity's default_registry and wraps it in a UnityToPettingZooWrapper
         :param seed: The seed for the action spaces of the agents.
@@ -44,7 +48,7 @@ class PettingZooEnv:
                     pass
         else:
             _env = default_registry[self.env_id].make(**kwargs)
-        return UnityToPettingZooWrapper(_env, seed)
+        return UnityAECEnv(_env, seed)
 
 
 # Register each environment in default_registry as a PettingZooEnv
