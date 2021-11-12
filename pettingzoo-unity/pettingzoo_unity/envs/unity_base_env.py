@@ -1,11 +1,11 @@
 import atexit
-from typing import Optional, List, Set, Dict, Any
+from typing import Optional, List, Set, Dict, Any, Tuple
 
 import numpy as np
 from gym import error, spaces
 from mlagents_envs.base_env import BaseEnv, ActionTuple
 
-from pettingzoo_unity.envs.env_helpers import _agent_id_to_behavior
+from pettingzoo_unity.envs.env_helpers import _agent_id_to_behavior, _unwrap_batch_steps
 
 
 class UnityBaseEnv:
@@ -14,12 +14,6 @@ class UnityBaseEnv:
     """
 
     def __init__(self, env: BaseEnv, seed: Optional[int] = None):
-        """
-        Initializes a Unity AEC environment wrapper.
-
-        :param env: The UnityEnvironment that is being wrapped.
-        :param seed: The seed for the action spaces of the agents.
-        """
         super().__init__()
         atexit.register(self.close)
         self._env = env
@@ -36,7 +30,7 @@ class UnityBaseEnv:
         self._agents: List[str] = []  # all agent id in current step
         self._possible_agents: Set[str] = set()  # all agents that have ever appear
         self._agent_id_to_index: Dict[str, int] = {}  # agent_id: index in decision step
-        self._obs: Dict[str, np.ndarray] = {}  # agent_id: obs
+        self._observations: Dict[str, np.ndarray] = {}  # agent_id: obs
         self._dones: Dict[str, bool] = {}  # agent_id: done
         self._rewards: Dict[str, float] = {}  # agent_id: reward
         self._cumm_rewards: Dict[str, float] = {}  # agent_id: reward
@@ -141,6 +135,56 @@ class UnityBaseEnv:
                         continue
                 self._action_spaces[behavior_name] = spaces.Tuple((c_space, d_space))
 
+    def _process_action(self, current_agent, action):
+        current_action_space = self.action_space(current_agent)
+        # Convert actions
+        if action is not None:
+            if isinstance(action, Tuple):
+                action = tuple(np.array(a) for a in action)
+            else:
+                action = self._action_to_np(current_action_space, action)
+            if not current_action_space.contains(action):  # type: ignore
+                raise error.Error(
+                    f"Invalid action, got {action} but was expecting action from {self.action_space}"
+                )
+            if isinstance(current_action_space, spaces.Tuple):
+                action = ActionTuple(action[0], action[1])
+            elif isinstance(current_action_space, spaces.MultiDiscrete):
+                action = ActionTuple(None, action)
+            elif isinstance(current_action_space, spaces.Discrete):
+                action = ActionTuple(None, np.array(action).reshape(1, 1))
+            else:
+                action = ActionTuple(action, None)
+
+        if not self._dones[current_agent]:
+            current_behavior = _agent_id_to_behavior(current_agent)
+            current_index = self._agent_id_to_index[current_agent]
+            if action.continuous is not None:
+                self._current_action[current_behavior].continuous[
+                    current_index
+                ] = action.continuous[0]
+            if action.discrete is not None:
+                self._current_action[current_behavior].discrete[
+                    current_index
+                ] = action.discrete[0]
+        else:
+            self._live_agents.remove(current_agent)
+            del self._observations[current_agent]
+            del self._dones[current_agent]
+            del self._rewards[current_agent]
+            del self._cumm_rewards[current_agent]
+            del self._infos[current_agent]
+
+    def _cleanup_agents(self):
+        for current_agent, done in self.dones.items():
+            if done:
+                self._live_agents.remove(current_agent)
+                del self._observations[current_agent]
+                del self._dones[current_agent]
+                del self._rewards[current_agent]
+                del self._cumm_rewards[current_agent]
+                del self._infos[current_agent]
+
     @property
     def side_channel(self) -> Dict[str, Any]:
         """
@@ -151,7 +195,7 @@ class UnityBaseEnv:
         return self._side_channel_dict
 
     @staticmethod
-    def _convert_action(current_action_space, action):
+    def _action_to_np(current_action_space, action):
         return np.array(action, dtype=current_action_space.dtype)
 
     def _create_empty_actions(self, behavior_name, num_agents):
@@ -168,12 +212,40 @@ class UnityBaseEnv:
     def _reset_states(self):
         self._live_agents = []
         self._agents = []
-        self._obs = {}
+        self._observations = {}
         self._dones = {}
         self._rewards = {}
         self._cumm_rewards = {}
         self._infos = {}
         self._agent_id_to_index = {}
+
+    def reset(self):
+        """
+        Resets the environment.
+        """
+        self._assert_loaded()
+        self._agent_index = 0
+        self._reset_states()
+        self._possible_agents = set()
+        self._env.reset()
+        for behavior_name in self._env.behavior_specs.keys():
+            current_batch = self._env.get_steps(behavior_name)
+            self._current_action[behavior_name] = self._create_empty_actions(
+                behavior_name, len(current_batch[0])
+            )
+            agents, obs, _, _, _, infos, id_map = _unwrap_batch_steps(
+                current_batch, behavior_name
+            )
+            self._live_agents += agents
+            self._agents += agents
+            self._observations.update(obs)
+            self._infos.update(infos)
+            self._agent_id_to_index.update(id_map)
+            self._possible_agents.update(agents)
+        self._live_agents.sort()  # unnecessary, only for passing API test
+        self._dones = {agent: False for agent in self._agents}
+        self._rewards = {agent: 0 for agent in self._agents}
+        self._cumm_rewards = {agent: 0 for agent in self._agents}
 
     def seed(self, seed=None):
         """
