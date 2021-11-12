@@ -5,7 +5,8 @@ __version__ = "0.28.0.dev0"
 __release_tag__ = None
 
 try:
-    from .pettingzoo_wrapper import UnityToPettingZooWrapper  # noqa
+    from pettingzoo_unity.envs import UnityAECEnv  # noqa
+    from pettingzoo_unity.envs import UnityParallelEnv  # noqa
     import pettingzoo_unity.envs  # noqa
 except ImportError:
     pass
