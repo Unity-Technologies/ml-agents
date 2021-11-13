@@ -173,6 +173,18 @@ class UnityBaseEnv:
             del self._cumm_rewards[current_agent]
             del self._infos[current_agent]
 
+    def _step(self):
+        for behavior_name, actions in self._current_action.items():
+            self._env.set_actions(behavior_name, actions)
+        self._env.step()
+        self._reset_states()
+        for behavior_name in self._env.behavior_specs.keys():
+            dones, rewards, cumulative_rewards = self._batch_update(behavior_name)
+            self._dones.update(dones)
+            self._rewards.update(rewards)
+            self._cumm_rewards.update(cumulative_rewards)
+        self._agent_index = 0
+
     def _cleanup_agents(self):
         for current_agent, done in self.dones.items():
             if done:
@@ -222,23 +234,27 @@ class UnityBaseEnv:
         self._possible_agents = set()
         self._env.reset()
         for behavior_name in self._env.behavior_specs.keys():
-            current_batch = self._env.get_steps(behavior_name)
-            self._current_action[behavior_name] = self._create_empty_actions(
-                behavior_name, len(current_batch[0])
-            )
-            agents, obs, _, _, _, infos, id_map = _unwrap_batch_steps(
-                current_batch, behavior_name
-            )
-            self._live_agents += agents
-            self._agents += agents
-            self._observations.update(obs)
-            self._infos.update(infos)
-            self._agent_id_to_index.update(id_map)
-            self._possible_agents.update(agents)
+            _, _, _ = self._batch_update(behavior_name)
         self._live_agents.sort()  # unnecessary, only for passing API test
         self._dones = {agent: False for agent in self._agents}
         self._rewards = {agent: 0 for agent in self._agents}
         self._cumm_rewards = {agent: 0 for agent in self._agents}
+
+    def _batch_update(self, behavior_name):
+        current_batch = self._env.get_steps(behavior_name)
+        self._current_action[behavior_name] = self._create_empty_actions(
+            behavior_name, len(current_batch[0])
+        )
+        agents, obs, dones, rewards, cumulative_rewards, infos, id_map = _unwrap_batch_steps(
+            current_batch, behavior_name
+        )
+        self._live_agents += agents
+        self._agents += agents
+        self._observations.update(obs)
+        self._infos.update(infos)
+        self._agent_id_to_index.update(id_map)
+        self._possible_agents.update(agents)
+        return dones, rewards, cumulative_rewards
 
     def seed(self, seed=None):
         """

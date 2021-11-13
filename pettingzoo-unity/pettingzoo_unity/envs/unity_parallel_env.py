@@ -2,8 +2,8 @@ from typing import Optional, Dict, Any
 from gym import error
 from mlagents_envs.base_env import BaseEnv
 from pettingzoo import ParallelEnv
+
 from pettingzoo_unity.envs import UnityBaseEnv
-from pettingzoo_unity.envs.env_helpers import _unwrap_batch_steps
 
 
 class UnityParallelEnv(UnityBaseEnv, ParallelEnv):
@@ -43,30 +43,10 @@ class UnityParallelEnv(UnityBaseEnv, ParallelEnv):
         for k in self._rewards.keys():
             self._rewards[k] = 0
 
-        # step environment
-        for behavior_name, actions in self._current_action.items():
-            self._env.set_actions(behavior_name, actions)
-        self._env.step()
+        # Step environment
+        self._step()
 
-        self._reset_states()
-        for behavior_name in self._env.behavior_specs.keys():
-            current_batch = self._env.get_steps(behavior_name)
-            self._current_action[behavior_name] = self._create_empty_actions(
-                behavior_name, len(current_batch[0])
-            )
-            agents, obs, dones, rewards, cumm_rewards, infos, id_map = _unwrap_batch_steps(
-                current_batch, behavior_name
-            )
-            self._live_agents += agents
-            self._agents += agents
-            self._observations.update(obs)
-            self._dones.update(dones)
-            self._rewards.update(rewards)
-            self._cumm_rewards.update(cumm_rewards)
-            self._infos.update(infos)
-            self._agent_id_to_index.update(id_map)
-            self._possible_agents.update(agents)
-        self._agent_index = 0
+        # Agent cleanup and sorting
         self._cleanup_agents()
         self._live_agents.sort()  # unnecessary, only for passing API test
 
