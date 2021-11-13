@@ -1,22 +1,9 @@
 from typing import Any, Optional
-from urllib.parse import urlparse, parse_qs
-
 from gym import error
 from mlagents_envs.base_env import BaseEnv
 from pettingzoo import AECEnv
-
 from pettingzoo_unity.envs import UnityBaseEnv
 from pettingzoo_unity.envs.env_helpers import _unwrap_batch_steps
-
-
-def _parse_behavior(full_behavior):
-    parsed = urlparse(full_behavior)
-    name = parsed.path
-    ids = parse_qs(parsed.query)
-    team_id: int = 0
-    if "team" in ids:
-        team_id = int(ids["team"][0])
-    return name, team_id
 
 
 class UnityAECEnv(UnityBaseEnv, AECEnv):
