@@ -1,9 +1,7 @@
 from typing import Optional, Dict, Any
-
 from gym import error
 from mlagents_envs.base_env import BaseEnv
 from pettingzoo import ParallelEnv
-
 from pettingzoo_unity.envs import UnityBaseEnv
 from pettingzoo_unity.envs.env_helpers import _unwrap_batch_steps
 
