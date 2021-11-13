@@ -179,11 +179,6 @@ class UnityBaseEnv:
         for current_agent, done in self.dones.items():
             if done:
                 self._live_agents.remove(current_agent)
-                del self._observations[current_agent]
-                del self._dones[current_agent]
-                del self._rewards[current_agent]
-                del self._cumm_rewards[current_agent]
-                del self._infos[current_agent]
 
     @property
     def side_channel(self) -> Dict[str, Any]:
