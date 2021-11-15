@@ -12,7 +12,7 @@ from mlagents_envs.base_env import ActionSpec
 
 
 def create_action_model(inp_size, act_size, deterministic=False):
-    mask = torch.ones([1, act_size * 2])
+    mask = torch.ones([1, act_size ** 2])
     action_spec = ActionSpec(act_size, tuple(act_size for _ in range(act_size)))
     action_model = ActionModel(inp_size, action_spec, deterministic=deterministic)
     return action_model, mask
@@ -45,13 +45,14 @@ def test_sample_action():
 
 def test_deterministic_sample_action():
     inp_size = 4
-    act_size = 2
+    act_size = 8
     action_model, masks = create_action_model(inp_size, act_size, deterministic=True)
     sample_inp = torch.ones((1, inp_size))
     dists = action_model._get_dists(sample_inp, masks=masks)
     agent_action1 = action_model._sample_action(dists)
     agent_action2 = action_model._sample_action(dists)
     agent_action3 = action_model._sample_action(dists)
+
     assert torch.equal(agent_action1.continuous_tensor, agent_action2.continuous_tensor)
     assert torch.equal(agent_action1.continuous_tensor, agent_action3.continuous_tensor)
     assert torch.equal(agent_action1.discrete_tensor, agent_action2.discrete_tensor)
@@ -63,14 +64,26 @@ def test_deterministic_sample_action():
     agent_action1 = action_model._sample_action(dists)
     agent_action2 = action_model._sample_action(dists)
     agent_action3 = action_model._sample_action(dists)
-    assert not torch.equal(
+
+    chance_counter = 0
+
+    if not torch.equal(
         agent_action1.continuous_tensor, agent_action2.continuous_tensor
-    )
-    assert not torch.equal(
+    ):
+        chance_counter += 1
+
+    if not torch.equal(
         agent_action1.continuous_tensor, agent_action3.continuous_tensor
-    )
-    assert not torch.equal(agent_action1.discrete_tensor, agent_action2.discrete_tensor)
-    assert not torch.equal(agent_action1.discrete_tensor, agent_action3.discrete_tensor)
+    ):
+        chance_counter += 1
+
+    assert chance_counter > 1
+    chance_counter = 0
+    if not torch.equal(agent_action1.discrete_tensor, agent_action2.discrete_tensor):
+        chance_counter += 1
+    if not torch.equal(agent_action1.discrete_tensor, agent_action3.discrete_tensor):
+        chance_counter += 1
+    assert chance_counter > 1
 
 
 def test_get_probs_and_entropy():
