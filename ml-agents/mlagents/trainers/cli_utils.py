@@ -96,7 +96,8 @@ def _create_parser() -> argparse.ArgumentParser:
         default=False,
         dest="deterministic",
         action=DetectDefaultStoreTrue,
-        help="Whether to select actions deterministically in policy. `dist.mean` for continuous action space, and `dist.argmax` for deterministic action space ",
+        help="Whether to select actions deterministically in policy. `dist.mean` for continuous action "
+        "space, and `dist.argmax` for deterministic action space ",
     )
     argparser.add_argument(
         "--force",
