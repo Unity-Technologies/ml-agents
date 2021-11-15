@@ -65,6 +65,7 @@ def test_deterministic_sample_action():
     agent_action2 = action_model._sample_action(dists)
     agent_action3 = action_model._sample_action(dists)
 
+
     assert not torch.equal(
         agent_action1.continuous_tensor, agent_action2.continuous_tensor
     )
@@ -73,6 +74,7 @@ def test_deterministic_sample_action():
         agent_action1.continuous_tensor, agent_action3.continuous_tensor
     )
 
+
     chance_counter = 0
     if not torch.equal(agent_action1.discrete_tensor, agent_action2.discrete_tensor):
         chance_counter += 1
@@ -80,6 +82,7 @@ def test_deterministic_sample_action():
         chance_counter += 1
     if not torch.equal(agent_action2.discrete_tensor, agent_action3.discrete_tensor):
         chance_counter += 1
+
     assert chance_counter > 1
 
 
