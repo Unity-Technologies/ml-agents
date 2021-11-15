@@ -180,9 +180,10 @@ namespace Unity.MLAgents.Tests
 
 
         [Test]
-        public void TestRunModel_deterministic()
+        public void TestRunModel_stochastic()
         {
             var actionSpec = GetContinuous2vis8vec2actionActionSpec();
+            // deterministicInference = false by default
             var modelRunner = new ModelRunner(deterministicContinuousNNModel, actionSpec, InferenceDevice.Burst);
             var sensor_8 = new Sensors.VectorSensor(8, "VectorSensor8");
             var info1 = new AgentInfo();
@@ -195,15 +196,28 @@ namespace Unity.MLAgents.Tests
             info1.episodeId = 1;
             modelRunner.PutObservations(info1, obs);
             modelRunner.DecideBatch();
-            var stochAction1 = (float[])modelRunner.GetAction(1).ContinuousActions.Array.Clone();
+            var stochAction1 = (float[]) modelRunner.GetAction(1).ContinuousActions.Array.Clone();
 
             modelRunner.PutObservations(info1, obs);
             modelRunner.DecideBatch();
-            var stochAction2 = (float[])modelRunner.GetAction(1).ContinuousActions.Array.Clone();
+            var stochAction2 = (float[]) modelRunner.GetAction(1).ContinuousActions.Array.Clone();
             // Stochastic action selection should output randomly different action values with same obs
             Assert.IsFalse(Enumerable.SequenceEqual(stochAction1, stochAction2, new FloatThresholdComparer(0.001f)));
-
-
+            modelRunner.Dispose();
+        }
+        [Test]
+        public void TestRunModel_deterministic()
+        {
+            var actionSpec = GetContinuous2vis8vec2actionActionSpec();
+            var modelRunner = new ModelRunner(deterministicContinuousNNModel, actionSpec, InferenceDevice.Burst);
+            var sensor_8 = new Sensors.VectorSensor(8, "VectorSensor8");
+            var info1 = new AgentInfo();
+            var obs = new[]
+            {
+                sensor_8,
+                sensor_21_20_3.CreateSensors()[0],
+                sensor_20_22_3.CreateSensors()[0]
+            }.ToList();
             var deterministicModelRunner = new ModelRunner(deterministicContinuousNNModel, actionSpec, InferenceDevice.Burst,
                 deterministicInference: true);
             info1.episodeId = 1;
