@@ -225,6 +225,7 @@ class MultiCategoricalDistribution(nn.Module):
         # We do -1 * tensor + constant instead of constant - tensor because it seems
         # Barracuda might swap the inputs of a "Sub" operation
         logits = logits * allow_mask - 1e8 * block_mask
+
         return logits
 
     def _split_masks(self, masks: torch.Tensor) -> List[torch.Tensor]:
