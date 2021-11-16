@@ -33,6 +33,7 @@ class ActionModel(nn.Module):
         action_spec: ActionSpec,
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
+        deterministic: bool = False,
     ):
         """
         A torch module that represents the action space of a policy. The ActionModel may contain
@@ -44,6 +45,7 @@ class ActionModel(nn.Module):
         :params action_spec: The ActionSpec defining the action space dimensions and distributions.
         :params conditional_sigma: Whether or not the std of a Gaussian is conditioned on state.
         :params tanh_squash: Whether to squash the output of a Gaussian with the tanh function.
+        :params deterministic: Whether to select actions deterministically in policy.
         """
         super().__init__()
         self.encoding_size = hidden_size
@@ -67,6 +69,7 @@ class ActionModel(nn.Module):
         # During training, clipping is done in TorchPolicy, but we need to clip before ONNX
         # export as well.
         self._clip_action_on_export = not tanh_squash
+        self._deterministic = deterministic
 
     def _sample_action(self, dists: DistInstances) -> AgentAction:
         """
@@ -74,15 +77,24 @@ class ActionModel(nn.Module):
         :params dists: The DistInstances tuple
         :return: An AgentAction corresponding to the actions sampled from the DistInstances
         """
+
         continuous_action: Optional[torch.Tensor] = None
         discrete_action: Optional[List[torch.Tensor]] = None
         # This checks None because mypy complains otherwise
+        print(self._deterministic)
         if dists.continuous is not None:
-            continuous_action = dists.continuous.sample()
+            if self._deterministic:
+                continuous_action = dists.continuous.deterministic_sample()
+            else:
+                continuous_action = dists.continuous.sample()
         if dists.discrete is not None:
             discrete_action = []
-            for discrete_dist in dists.discrete:
-                discrete_action.append(discrete_dist.sample())
+            if self._deterministic:
+                for discrete_dist in dists.discrete:
+                    discrete_action.append(discrete_dist.deterministic_sample())
+            else:
+                for discrete_dist in dists.discrete:
+                    discrete_action.append(discrete_dist.sample())
         return AgentAction(continuous_action, discrete_action)
 
     def _get_dists(self, inputs: torch.Tensor, masks: torch.Tensor) -> DistInstances:

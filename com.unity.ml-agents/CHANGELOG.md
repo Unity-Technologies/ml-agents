@@ -28,6 +28,9 @@ and this project adheres to
     1. env_params.max_lifetime_restarts (--max-lifetime-restarts) [default=10]
     2. env_params.restarts_rate_limit_n (--restarts-rate-limit-n) [default=1]
     3. env_params.restarts_rate_limit_period_s (--restarts-rate-limit-period-s) [default=60]
+
+- Added a new `--deterministic` cli flag to deterministically select the most probable actions in policy. The same thing can
+be achieved by adding `deterministic: true` under `network_settings` of the run options configuration.
 - Extra tensors are now serialized to support deterministic action selection in onnx. (#5597)
 ### Bug Fixes
 - Fixed the bug where curriculum learning would crash because of the incorrect run_options parsing. (#5586)
