@@ -31,6 +31,7 @@ and this project adheres to
 
 - Added a new `--deterministic` cli flag to deterministically select the most probable actions in policy. The same thing can
 be achieved by adding `deterministic: true` under `network_settings` of the run options configuration.
+- Extra tensors are now serialized to support deterministic action selection in onnx. (#5597)
 ### Bug Fixes
 - Fixed the bug where curriculum learning would crash because of the incorrect run_options parsing. (#5586)
 

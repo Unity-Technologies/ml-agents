@@ -120,3 +120,36 @@ def test_get_probs_and_entropy():
 
     for ent, val in zip(entropies[0].tolist(), [1.4189, 0.6191, 0.6191]):
         assert ent == pytest.approx(val, abs=0.01)
+
+
+def test_get_onnx_deterministic_tensors():
+    inp_size = 4
+    act_size = 2
+    action_model, masks = create_action_model(inp_size, act_size)
+    sample_inp = torch.ones((1, inp_size))
+    out_tensors = action_model.get_action_out(sample_inp, masks=masks)
+    (
+        continuous_out,
+        discrete_out,
+        action_out_deprecated,
+        deterministic_continuous_out,
+        deterministic_discrete_out,
+    ) = out_tensors
+    assert continuous_out.shape == (1, 2)
+    assert discrete_out.shape == (1, 2)
+    assert deterministic_discrete_out.shape == (1, 2)
+    assert deterministic_continuous_out.shape == (1, 2)
+
+    # Second sampling from same distribution
+    out_tensors2 = action_model.get_action_out(sample_inp, masks=masks)
+    (
+        continuous_out_2,
+        discrete_out_2,
+        action_out_2_deprecated,
+        deterministic_continuous_out_2,
+        deterministic_discrete_out_2,
+    ) = out_tensors2
+    assert ~torch.all(torch.eq(continuous_out, continuous_out_2))
+    assert torch.all(
+        torch.eq(deterministic_continuous_out, deterministic_continuous_out_2)
+    )
