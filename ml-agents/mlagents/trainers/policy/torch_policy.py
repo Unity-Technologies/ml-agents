@@ -137,10 +137,10 @@ class TorchPolicy(Policy):
         :param seq_len: Sequence length when using RNN.
         :return: Tuple of AgentAction, ActionLogProbs, entropies, and output memories.
         """
-        actions, log_probs, entropies, memories = self.actor.get_action_and_stats(
+        actions, log_probs, entropies, memories, mixture_ws = self.actor.get_action_and_stats(
             obs, masks, memories, seq_len
         )
-        return (actions, log_probs, entropies, memories)
+        return (actions, log_probs, entropies, memories, mixture_ws)
 
     def evaluate_actions(
         self,
@@ -175,7 +175,7 @@ class TorchPolicy(Policy):
 
         run_out = {}
         with torch.no_grad():
-            action, log_probs, entropy, memories = self.sample_actions(
+            action, log_probs, entropy, memories, _ = self.sample_actions(
                 tensor_obs, masks=masks, memories=memories
             )
         action_tuple = action.to_action_tuple()

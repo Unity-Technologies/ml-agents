@@ -26,8 +26,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 523751225779314852}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.15, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.1, z: 3.8}
+  m_LocalPosition: {x: 2.15, y: 0.1, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.1, z: 0.5}
   m_Children: []
   m_Father: {fileID: 523751227254335062}
   m_RootOrder: 4
@@ -186,7 +186,7 @@ Transform:
   m_GameObject: {fileID: 523751225944279694}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.25, z: 2.15}
-  m_LocalScale: {x: 3.8, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 523751227633362940}
   m_RootOrder: 3
@@ -277,8 +277,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 523751225974785350}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -2.15}
-  m_LocalScale: {x: 4.8, y: 0.1, z: 0.5}
+  m_LocalPosition: {x: 0, y: 0.1, z: -2.15}
+  m_LocalScale: {x: 0.5, y: 0.1, z: 0.5}
   m_Children: []
   m_Father: {fileID: 523751227254335062}
   m_RootOrder: 1
@@ -358,7 +358,7 @@ Transform:
   m_GameObject: {fileID: 523751226000144601}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.25, z: -2.15}
-  m_LocalScale: {x: 3.8, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 523751227633362940}
   m_RootOrder: 1
@@ -528,8 +528,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 523751226241457657}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 2.15}
-  m_LocalScale: {x: 4.8, y: 0.1, z: 0.5}
+  m_LocalPosition: {x: 0, y: 0.1, z: 2.15}
+  m_LocalScale: {x: 0.5, y: 0.1, z: 0.5}
   m_Children: []
   m_Father: {fileID: 523751227254335062}
   m_RootOrder: 3
@@ -608,7 +608,7 @@ Transform:
   m_GameObject: {fileID: 523751226483117549}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3.8, y: 0.1, z: 3.8}
+  m_LocalScale: {x: 4.8, y: 0.1, z: 4.8}
   m_Children: []
   m_Father: {fileID: 523751227254335062}
   m_RootOrder: 0
@@ -765,8 +765,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 523751226598427732}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.15, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.1, z: 3.8}
+  m_LocalPosition: {x: -2.15, y: 0.1, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.1, z: 0.5}
   m_Children: []
   m_Father: {fileID: 523751227254335062}
   m_RootOrder: 2
@@ -959,7 +959,7 @@ Transform:
   m_GameObject: {fileID: 523751226748016516}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.15, y: 0.25, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 3.8}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 523751227633362940}
   m_RootOrder: 4
@@ -1136,7 +1136,7 @@ Transform:
   m_GameObject: {fileID: 523751227025666298}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -2.15, y: 0.25, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 3.8}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 523751227633362940}
   m_RootOrder: 2
@@ -1655,7 +1655,6 @@ GameObject:
   - component: {fileID: 523751227755665991}
   - component: {fileID: 523751227755665992}
   - component: {fileID: 523751227755665994}
-  - component: {fileID: 4450874166668661068}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -1670,14 +1669,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 523751227755665996}
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.225, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_Children:
   - {fileID: 523751226776050549}
   m_Father: {fileID: 523751227633362940}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &523751227755665988
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1707,8 +1706,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 4
-    NumStackedVectorObservations: 2
+    VectorObservationSize: 2
+    NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 2
       BranchSizes: 
@@ -1784,28 +1783,9 @@ MonoBehaviour:
   goal2: {fileID: 523751227025666298}
   goal3: {fileID: 523751225944279694}
   goal4: {fileID: 523751226748016516}
-  m_AgentSpeed: 1
-  m_DenseReward: 0
+  m_AgentSpeed: 5
+  m_DenseReward: 1
   ContinuousActions: 1
---- !u!114 &4450874166668661068
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 523751227755665996}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9502529ed42c4056a6a769f594f1d94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SensorName: DiversitySampler
-  ContinuousSampling: 0
-  BalancedSampling: 1
-  DisableSampling: 0
-  DiversitySize: 2
-  DiscreteSetting: 0
-  ContinuousSetting: []
 --- !u!1 &523751227787557688
 GameObject:
   m_ObjectHideFlags: 0

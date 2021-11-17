@@ -620,7 +620,7 @@ class TorchSACOptimizer(TorchOptimizer):
                     v_backup = min_policy_qs[name] - torch.sum(
                         _cont_ent_coef * log_probs.continuous_tensor, dim=1
                     )
-                    v_backup += self._diversity_coef.coef * mede_rewards
+                    #v_backup += self._diversity_coef.coef * mede_rewards
                 value_loss = 0.5 * ModelUtils.masked_mean(
                     torch.nn.functional.mse_loss(values[name], v_backup), loss_masks
                 )
@@ -665,6 +665,7 @@ class TorchSACOptimizer(TorchOptimizer):
         self,
         log_probs: ActionLogProbs,
         q1p_outs: Dict[str, torch.Tensor],
+        vf_outs: Dict[str, torch.Tensor],
         loss_masks: torch.Tensor,
         mede_rewards: torch.Tensor
     ) -> torch.Tensor:
@@ -676,6 +677,7 @@ class TorchSACOptimizer(TorchOptimizer):
         _disc_ent_coef = _disc_ent_coef.exp()
 
         mean_q1 = torch.mean(torch.stack(list(q1p_outs.values())), axis=0)
+        all_mean_vf= torch.mean(torch.stack(list(vf_outs.values())), axis=0)
         batch_policy_loss = 0
         if self._action_spec.discrete_size > 0:
             disc_log_probs = log_probs.all_discrete_tensor
@@ -701,11 +703,16 @@ class TorchSACOptimizer(TorchOptimizer):
             all_mean_q1 = mean_q1
         if self._action_spec.continuous_size > 0:
             cont_log_probs = log_probs.continuous_tensor
-            batch_policy_loss += (
-                _cont_ent_coef * torch.sum(cont_log_probs, dim=1) - all_mean_q1
-            )
-        if self._mede_policy_loss:
-            batch_policy_loss += -self._diversity_coef.coef * mede_rewards
+            log_pi = torch.sum(cont_log_probs, dim=1)
+            with torch.no_grad():
+                targ = _cont_ent_coef * log_pi - all_mean_q1 + all_mean_vf
+            batch_policy_loss += log_pi * targ
+            #batch_policy_loss += (
+            #    _cont_ent_coef * torch.sum(cont_log_probs, dim=1) - all_mean_q1
+            #)
+        #if self._mede_policy_loss:
+        #    print(mede_rewards)
+        #    batch_policy_loss += -self._diversity_coef.coef * mede_rewards
         policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
 
         return policy_loss
@@ -847,7 +854,7 @@ class TorchSACOptimizer(TorchOptimizer):
             self.policy.actor.network_body
         )
         self._critic.network_body.copy_normalization(self.policy.actor.network_body)
-        sampled_actions, log_probs, _, _, = self.policy.actor.get_action_and_stats(
+        sampled_actions, log_probs, _, _, mixture_ws = self.policy.actor.get_action_and_stats(
             current_obs,
             masks=act_masks,
             memories=memories,
@@ -926,7 +933,7 @@ class TorchSACOptimizer(TorchOptimizer):
         value_loss = self.sac_value_loss(
             log_probs, value_estimates, q1p_out, q2p_out, masks, mede_value_rewards
         )
-        policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks, mede_policy_rewards)
+        policy_loss = self.sac_policy_loss(log_probs, q1p_out, value_estimates, masks, mede_policy_rewards)
         entropy_loss = self.sac_entropy_loss(log_probs, masks)
 
         total_value_loss = q1_loss + q2_loss
@@ -966,6 +973,8 @@ class TorchSACOptimizer(TorchOptimizer):
             ).item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/Entropy Loss": entropy_loss.item(),
+            "Policy/Log Probs": torch.mean(torch.sum(log_probs.continuous_tensor, dim=1)).item(),
+            "Policy/Mixture Ws Mean": torch.mean(torch.sum(torch.log(mixture_ws), dim=1)).item(),
         }
 
         if self._use_mede or self._use_diayn:

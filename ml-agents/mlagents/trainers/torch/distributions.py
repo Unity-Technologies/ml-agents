@@ -114,6 +114,83 @@ class TanhGaussianDistInstance(GaussianDistInstance):
             unsquashed, value
         )
 
+class GaussianMixtureDistInstance(DistInstance):
+    def __init__(self, mean, std, logits):
+        super().__init__()
+
+        self.n_modes = 4 #logits.shape[1]
+        self.n_action = 2 #mean.shape[1] // self.n_modes
+        
+        self.probs = torch.softmax(logits, dim=-1)
+        self.mean = mean.reshape(-1, self.n_modes, self.n_action)
+        self.std = std.reshape(-1, self.n_modes, self.n_action)
+
+
+    def sample(self):
+        modes = torch.multinomial(self.probs, 1)
+        mode_oh = torch.nn.functional.one_hot(modes, self.n_modes).float()
+        mode_oh = mode_oh.reshape(-1, 1, self.n_modes)
+        mode_mean = torch.matmul(mode_oh, self.mean).squeeze(1)
+        #mode_mean = torch.matmul(mode_oh, self.mean).reshape(-1, self.n_action)
+        mode_std = torch.matmul(mode_oh, self.std).squeeze(1)
+        #mode_std = torch.matmul(mode_oh, self.std).reshape(-1, self.n_action)
+        with torch.no_grad():
+            sample = mode_mean + torch.randn_like(mode_mean) * mode_std 
+        return sample
+
+    def log_prob(self, value):
+        var = self.std ** 2
+        log_scale = torch.log(self.std + EPSILON)
+        expanded_value = value.repeat(1, self.n_modes).reshape(-1, self.n_modes, self.n_action)
+        log_probs_per_head = (
+            -((expanded_value - self.mean) ** 2) / (2 * var + EPSILON)
+            - log_scale
+            - math.log(math.sqrt(2 * math.pi))
+        )
+        #log_probs_per_head = torch.sum(log_probs_per_head, dim=2)
+        expanded_probs = self.probs.unsqueeze(2).repeat(1, 1, self.n_action)
+        log_expanded_probs = torch.log(expanded_probs)
+        log_probs = torch.logsumexp(log_probs_per_head + log_expanded_probs, dim=1)
+        return log_probs# - torch.logsumexp(log_expanded_probs, dim=1)
+
+    def pdf(self, value):
+        log_prob = self.log_prob(value)
+        return torch.exp(log_prob)
+
+    def entropy(self):
+        return torch.mean(
+            0.5 * torch.log(2 * math.pi * math.e * self.std ** 2 + EPSILON),
+            dim=1,
+            keepdim=True,
+        )  # Use equivalent behavior to TF
+
+    def exported_model_output(self):
+        return self.sample()
+
+    def mixture_w(self):
+        return self.probs
+
+
+class TanhGaussianMixtureDistInstance(GaussianMixtureDistInstance):
+    def __init__(self, mean, std, mode_oh):
+        super().__init__(mean, std, mode_oh)
+        self.transform = torch.distributions.transforms.TanhTransform(cache_size=1)
+
+    def sample(self):
+        unsquashed_sample = super().sample()
+        squashed = self.transform(unsquashed_sample)
+        return squashed
+
+    def _inverse_tanh(self, value):
+        capped_value = torch.clamp(value, -1 + EPSILON, 1 - EPSILON)
+        return 0.5 * torch.log((1 + capped_value) / (1 - capped_value) + EPSILON)
+
+    def log_prob(self, value):
+        unsquashed = self.transform.inv(value)
+        return super().log_prob(unsquashed) - self.transform.log_abs_det_jacobian(
+            unsquashed, value
+        )
+
 
 class CategoricalDistInstance(DiscreteDistInstance):
     def __init__(self, logits):
@@ -196,6 +273,62 @@ class GaussianDistribution(nn.Module):
         else:
             return GaussianDistInstance(mu, torch.exp(log_sigma), mode_oh)
 
+class GaussianMixtureDistribution(nn.Module):
+    def __init__(
+        self,
+        n_modes: int,
+        hidden_size: int,
+        num_outputs: int,
+        conditional_sigma: bool = False,
+        tanh_squash: bool = False,
+    ):
+        super().__init__()
+        self.conditional_sigma = conditional_sigma
+        self.mu = linear_layer(
+            hidden_size,
+            num_outputs * n_modes,
+            kernel_init=Initialization.KaimingHeNormal,
+            kernel_gain=0.2,
+            bias_init=Initialization.Zero,
+        )
+        self.logits = linear_layer(
+                hidden_size,
+                n_modes,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=0.2,
+                bias_init=Initialization.Zero,
+        )
+        self.n_modes = n_modes
+        self.tanh_squash = tanh_squash
+        if conditional_sigma:
+            self.log_sigma = linear_layer(
+                hidden_size,
+                num_outputs * n_modes,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=0.2,
+                bias_init=Initialization.Zero,
+            )
+        else:
+            self.log_sigma = nn.Parameter(
+                torch.zeros(1, num_outputs * n_modes, requires_grad=True)
+            )
+
+    def forward(self, inputs: torch.Tensor, mode_oh) -> List[DistInstance]:
+        mu = self.mu(inputs)
+        logits = self.logits(inputs)
+        if self.conditional_sigma:
+            log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)
+        else:
+            # Expand so that entropy matches batch size. Note that we're using
+            # mu*0 here to get the batch size implicitly since Barracuda 1.2.1
+            # throws error on runtime broadcasting due to unknown reason. We
+            # use this to replace torch.expand() becuase it is not supported in
+            # the verified version of Barracuda (1.0.X).
+            log_sigma = mu * 0 + self.log_sigma
+        if self.tanh_squash:
+            return TanhGaussianMixtureDistInstance(mu, torch.exp(log_sigma), logits)
+        else:
+            return GaussianMixtureDistInstance(mu, torch.exp(log_sigma), logits)
 
 class MultiCategoricalDistribution(nn.Module):
     def __init__(self, hidden_size: int, act_sizes: List[int]):

@@ -642,8 +642,8 @@ class SimpleActor(nn.Module, Actor):
             inputs, memories=memories, sequence_length=sequence_length
         )
         mode_oh = self.get_mode_oh(inputs)
-        action, log_probs, entropies = self.action_model(encoding, mode_oh, masks)
-        return action, log_probs, entropies, memories
+        action, log_probs, entropies, mixture_ws = self.action_model(encoding, mode_oh, masks)
+        return action, log_probs, entropies, memories, mixture_ws
 
     def get_stats(
         self,
