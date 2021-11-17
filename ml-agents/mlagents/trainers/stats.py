@@ -11,6 +11,7 @@ from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
+from torch import from_numpy, Tensor, nn
 from torch.utils.tensorboard import SummaryWriter
 from mlagents.torch_utils.globals import get_rank
 
@@ -33,7 +34,8 @@ def _dict_to_str(param_dict: Dict[str, Any], num_tabs: int) -> str:
             [
                 "\t"
                 + "  " * num_tabs
-                + "{}:\t{}".format(x, _dict_to_str(param_dict[x], num_tabs + 1))
+                + "{}:\t{}".format(x,
+                                   _dict_to_str(param_dict[x], num_tabs + 1))
                 for x in param_dict
             ]
         )
@@ -183,7 +185,8 @@ class ConsoleWriter(StatsWriter):
             log_info.append(f"Mean Reward: {stats_summary.mean:0.3f}")
             if "Environment/Group Cumulative Reward" in values:
                 group_stats_summary = values["Environment/Group Cumulative Reward"]
-                log_info.append(f"Mean Group Reward: {group_stats_summary.mean:0.3f}")
+                log_info.append(
+                    f"Mean Group Reward: {group_stats_summary.mean:0.3f}")
             else:
                 log_info.append(f"Std of Reward: {stats_summary.std:0.3f}")
             log_info.append(is_training)
@@ -230,7 +233,8 @@ class TensorboardWriter(StatsWriter):
         self.summary_writers: Dict[str, SummaryWriter] = {}
         self.base_dir: str = base_dir
         self._clear_past_data = clear_past_data
-        self.hidden_keys: List[str] = hidden_keys if hidden_keys is not None else []
+        self.hidden_keys: List[str] = hidden_keys if hidden_keys is not None else [
+        ]
 
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
@@ -247,6 +251,35 @@ class TensorboardWriter(StatsWriter):
                     f"{key}_hist", np.array(value.full_dist), step
                 )
             self.summary_writers[category].flush()
+
+    def write_images(
+        self, category: str, values, step: int
+    ) -> None:
+        self._maybe_create_summary_writer(category)
+        for key, img in values.items():
+            if key in self.hidden_keys:
+                continue
+            # if "-img" in category:
+            # img = np.array([[[0, 255, 0],
+            #             [255, 0, 255],
+            #             [0, 0, 0]
+            #             ]])
+            # img = np.random.rand(3, 800,800) #* 255
+            # img = from_numpy(img)
+
+            # s = step//1000
+            # for iid in ["all"]+ list(range(32)):
+            # import cv2
+            # img = cv2.imread(
+            #     f"/home/jitesh/Downloads/slack-downloads/test/{step}/all.png")
+            # print('img not exist' if None in img else 'img exists')
+            print(type(img), type(img[0]), step, category)
+            img = from_numpy(img[0])
+            img = img.permute([2,  0, 1])
+            # print(img.shape)
+            # img = nn.functional.normalize(img)
+            # print(img)
+            self.summary_writers[category].add_image(f"{key}", img, step)
 
     def _maybe_create_summary_writer(self, category: str) -> None:
         if category not in self.summary_writers:
@@ -282,13 +315,17 @@ class TensorboardWriter(StatsWriter):
             summary = _dict_to_str(value, 0)
             self._maybe_create_summary_writer(category)
             if summary is not None:
-                self.summary_writers[category].add_text("Hyperparameters", summary)
+                self.summary_writers[category].add_text(
+                    "Hyperparameters", summary)
                 self.summary_writers[category].flush()
 
 
 class StatsReporter:
     writers: List[StatsWriter] = []
-    stats_dict: Dict[str, Dict[str, List]] = defaultdict(lambda: defaultdict(list))
+    stats_dict: Dict[str, Dict[str, List]] = defaultdict(
+        lambda: defaultdict(list))
+    imgs_dict: Dict[str, Dict[str, List]] = defaultdict(
+        lambda: defaultdict(list))
     lock = RLock()
     stats_aggregation: Dict[str, Dict[str, StatsAggregationMethod]] = defaultdict(
         lambda: defaultdict(lambda: StatsAggregationMethod.AVERAGE)
@@ -358,6 +395,17 @@ class StatsReporter:
                     self.category, key, value, StatsAggregationMethod.MOST_RECENT
                 )
 
+    def set_image(self, key: str, img) -> None:
+        """
+        Sets a stat img to a float. This is for imgs that we don't want to average, and just
+        want the latest.
+
+        :param key: The type of statistic, e.g. Environment/Reward.
+        :param img: the img of the statistic.
+        """
+        with StatsReporter.lock:
+            StatsReporter.imgs_dict[self.category][key] = [img]
+
     def write_stats(self, step: int) -> None:
         """
         Write out all stored statistics that fall under the category specified.
@@ -375,6 +423,28 @@ class StatsReporter:
             for writer in StatsReporter.writers:
                 writer.write_stats(self.category, values, step)
             del StatsReporter.stats_dict[self.category]
+
+    def write_images(self, step: int) -> None:
+        """
+        Write out all stored statistics that fall under the category specified.
+        The currently stored values will be averaged, written out as a single value,
+        and the buffer cleared.
+
+        :param step: Training step which to write these stats as.
+        """
+        with StatsReporter.lock:
+            values = {}
+            for key in StatsReporter.imgs_dict[self.category]:
+                # if "-img" not in key:
+                #     continue
+                if len(StatsReporter.imgs_dict[self.category][key]) > 0:
+                    stat_summary = StatsReporter.imgs_dict[self.category][key]
+                    values[key] = stat_summary
+            # for writer in StatsReporter.writers:
+            #     print(writer.__str__())
+            writer = StatsReporter.writers[0]
+            writer.write_images(self.category, values, step)
+            del StatsReporter.imgs_dict[self.category]
 
     def get_stats_summaries(self, key: str) -> StatsSummary:
         """

@@ -4,6 +4,10 @@ from mlagents.trainers.torch.layers import linear_layer, Initialization, Swish
 
 from mlagents.torch_utils import torch, nn
 from mlagents.trainers.torch.model_serialization import exporting_to_onnx
+from torchvision.utils import save_image
+from torchvision import transforms
+import numpy as np
+import cv2
 
 
 class Normalizer(nn.Module):
@@ -180,6 +184,54 @@ class SimpleVisualEncoder(nn.Module):
         if not exporting_to_onnx.is_exporting():
             visual_obs = visual_obs.permute([0, 3, 1, 2])
         hidden = self.conv_layers(visual_obs)
+        #####################
+        # print("hidden", hidden.shape)
+        hidden_shape = hidden.shape
+        n_maps = hidden_shape[1]
+        v_maps = int(np.sqrt(n_maps))
+        h_maps = int(np.ceil(n_maps/v_maps))
+        img_to_save_o = hidden.detach().to("cpu")
+        # mean = torch.mean(img_to_save, 0)
+        #####################
+        import os
+        path = f"/home/jitesh/Downloads/slack-downloads/test"
+        os.makedirs(path, exist_ok=True)
+        i = 0
+        while os.path.exists(f"{path}/{i}"):
+            i+=1
+        path = f"{path}/{i}"
+        os.makedirs(path, exist_ok=True)
+        if i%1000==0:
+            # os.mkdir(path)
+            #####################
+            img_to_save_ = torch.nn.functional.normalize(img_to_save_o)
+            img_to_save_ = (img_to_save_ * 255).to(torch.uint8)
+            img_to_save=img_to_save_[0].numpy()
+            
+            break_flag = False
+            for i in range(v_maps):
+                for j in range(h_maps):
+                    if i*h_maps+j >= n_maps:
+                        break_flag = True
+                        break
+                    if j>0:
+                        im_h = cv2.hconcat([im_h, img_to_save[i*h_maps + j]])
+                    else:
+                        im_h = img_to_save[i*h_maps]
+                if break_flag:
+                    break
+                if i>0:
+                    im_v = cv2.vconcat([im_v, im_h])
+                else:
+                    im_v = im_h
+            cv2.imwrite(f"{path}/all.png", im_v)
+            #####################
+            for i in range(n_maps):
+                img = torch.nn.functional.normalize(img_to_save_o[0][i])
+                img = (img * 255).to(torch.uint8)
+                img = img.unsqueeze(2)
+                cv2.imwrite(f"{path}/{i}.png", img.numpy())
+        #####################    
         hidden = hidden.reshape(-1, self.final_flat)
         return self.dense(hidden)
 

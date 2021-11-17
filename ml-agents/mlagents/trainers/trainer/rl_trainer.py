@@ -225,7 +225,26 @@ class RLTrainer(Trainer):
         Saves training statistics to Tensorboard.
         """
         self.stats_reporter.add_stat("Is Training", float(self.should_still_train))
-        self.stats_reporter.write_stats(int(step))
+        # self.stats_reporter.set_image("test_input", 6)
+        # self.stats_reporter.write_stats(int(step))
+        # import numpy as np
+        # img = np.array([[0, 0, 0],
+        #                 [255, 255, 255],
+        #                 [0, 0, 255]
+        #                 ])
+        
+        import cv2, os
+        img_list = [name for name in os.listdir(f"/home/jitesh/Downloads/slack-downloads/test/{step}") if os.path.isfile(name) and ".png" in name]
+        print(img_list)
+        for img_name in img_list:
+            img_path = f"/home/jitesh/Downloads/slack-downloads/test/{step}/{img_name}"
+            print(img_path)
+            if not os.path.exists(img_path):
+                continue
+            img = cv2.imread(img_path)
+            self.stats_reporter.set_image(f"{img_name.split('.')[0]}-img", img)
+        self.stats_reporter.write_images(int(step))
+        print("Flag")
 
     @abc.abstractmethod
     def _process_trajectory(self, trajectory: Trajectory) -> None:
