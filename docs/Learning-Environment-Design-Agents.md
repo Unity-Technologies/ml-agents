@@ -987,6 +987,9 @@ be called independently of the `Max Step` property.
     training)
   - `Inference Device` - Whether to use CPU or GPU to run the model during
     inference
+  - `Deterministic Inference` - Weather to set action selection to deterministic,
+    Only applies to inference from within unity (with no python process involved) and
+    Release 19 or later.
   - `Behavior Type` - Determines whether the Agent will do training, inference,
     or use its Heuristic() method:
     - `Default` - the Agent will train if they connect to a python trainer,
