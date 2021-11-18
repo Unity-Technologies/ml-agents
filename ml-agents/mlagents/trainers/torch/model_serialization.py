@@ -56,13 +56,10 @@ class TensorNames:
     recurrent_output = "recurrent_out"
     memory_size = "memory_size"
     version_number = "version_number"
-
     continuous_action_output_shape = "continuous_action_output_shape"
     discrete_action_output_shape = "discrete_action_output_shape"
     continuous_action_output = "continuous_actions"
     discrete_action_output = "discrete_actions"
-    deterministic_continuous_action_output = "deterministic_continuous_actions"
-    deterministic_discrete_action_output = "deterministic_discrete_actions"
 
     # Deprecated TensorNames entries for backward compatibility
     is_continuous_control_deprecated = "is_continuous_control"
@@ -125,7 +122,6 @@ class ModelSerializer:
             self.output_names += [
                 TensorNames.continuous_action_output,
                 TensorNames.continuous_action_output_shape,
-                TensorNames.deterministic_continuous_action_output,
             ]
             self.dynamic_axes.update(
                 {TensorNames.continuous_action_output: {0: "batch"}}
@@ -134,7 +130,6 @@ class ModelSerializer:
             self.output_names += [
                 TensorNames.discrete_action_output,
                 TensorNames.discrete_action_output_shape,
-                TensorNames.deterministic_discrete_action_output,
             ]
             self.dynamic_axes.update({TensorNames.discrete_action_output: {0: "batch"}})
 

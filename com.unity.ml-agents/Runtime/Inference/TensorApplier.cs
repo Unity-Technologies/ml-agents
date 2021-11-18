@@ -44,15 +44,12 @@ namespace Unity.MLAgents.Inference
         /// <param name="allocator"> Tensor allocator</param>
         /// <param name="memories">Dictionary of AgentInfo.id to memory used to pass to the inference model.</param>
         /// <param name="barracudaModel"></param>
-        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
-        /// deterministic.</param>
         public TensorApplier(
             ActionSpec actionSpec,
             int seed,
             ITensorAllocator allocator,
             Dictionary<int, List<float>> memories,
-            object barracudaModel = null,
-            bool deterministicInference = false)
+            object barracudaModel = null)
         {
             // If model is null, no inference to run and exception is thrown before reaching here.
             if (barracudaModel == null)
@@ -67,13 +64,13 @@ namespace Unity.MLAgents.Inference
             }
             if (actionSpec.NumContinuousActions > 0)
             {
-                var tensorName = model.ContinuousOutputName(deterministicInference);
+                var tensorName = model.ContinuousOutputName();
                 m_Dict[tensorName] = new ContinuousActionOutputApplier(actionSpec);
             }
             var modelVersion = model.GetVersion();
             if (actionSpec.NumDiscreteActions > 0)
             {
-                var tensorName = model.DiscreteOutputName(deterministicInference);
+                var tensorName = model.DiscreteOutputName();
                 if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents1_0)
                 {
                     m_Dict[tensorName] = new LegacyDiscreteActionOutputApplier(actionSpec, seed, allocator);

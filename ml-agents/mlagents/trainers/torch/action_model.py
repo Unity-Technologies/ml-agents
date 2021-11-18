@@ -10,7 +10,6 @@ from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents_envs.base_env import ActionSpec
 
-
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
 
@@ -33,7 +32,6 @@ class ActionModel(nn.Module):
         action_spec: ActionSpec,
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
-        deterministic: bool = False,
     ):
         """
         A torch module that represents the action space of a policy. The ActionModel may contain
@@ -45,7 +43,6 @@ class ActionModel(nn.Module):
         :params action_spec: The ActionSpec defining the action space dimensions and distributions.
         :params conditional_sigma: Whether or not the std of a Gaussian is conditioned on state.
         :params tanh_squash: Whether to squash the output of a Gaussian with the tanh function.
-        :params deterministic: Whether to select actions deterministically in policy.
         """
         super().__init__()
         self.encoding_size = hidden_size
@@ -69,7 +66,6 @@ class ActionModel(nn.Module):
         # During training, clipping is done in TorchPolicy, but we need to clip before ONNX
         # export as well.
         self._clip_action_on_export = not tanh_squash
-        self._deterministic = deterministic
 
     def _sample_action(self, dists: DistInstances) -> AgentAction:
         """
@@ -77,24 +73,15 @@ class ActionModel(nn.Module):
         :params dists: The DistInstances tuple
         :return: An AgentAction corresponding to the actions sampled from the DistInstances
         """
-
         continuous_action: Optional[torch.Tensor] = None
         discrete_action: Optional[List[torch.Tensor]] = None
         # This checks None because mypy complains otherwise
-        print(self._deterministic)
         if dists.continuous is not None:
-            if self._deterministic:
-                continuous_action = dists.continuous.deterministic_sample()
-            else:
-                continuous_action = dists.continuous.sample()
+            continuous_action = dists.continuous.sample()
         if dists.discrete is not None:
             discrete_action = []
-            if self._deterministic:
-                for discrete_dist in dists.discrete:
-                    discrete_action.append(discrete_dist.deterministic_sample())
-            else:
-                for discrete_dist in dists.discrete:
-                    discrete_action.append(discrete_dist.sample())
+            for discrete_dist in dists.discrete:
+                discrete_action.append(discrete_dist.sample())
         return AgentAction(continuous_action, discrete_action)
 
     def _get_dists(self, inputs: torch.Tensor, masks: torch.Tensor) -> DistInstances:
@@ -174,20 +161,12 @@ class ActionModel(nn.Module):
         """
         dists = self._get_dists(inputs, masks)
         continuous_out, discrete_out, action_out_deprecated = None, None, None
-        deterministic_continuous_out, deterministic_discrete_out = (
-            None,
-            None,
-        )  # deterministic actions
         if self.action_spec.continuous_size > 0 and dists.continuous is not None:
             continuous_out = dists.continuous.exported_model_output()
-            action_out_deprecated = continuous_out
-            deterministic_continuous_out = dists.continuous.deterministic_sample()
+            action_out_deprecated = dists.continuous.exported_model_output()
             if self._clip_action_on_export:
                 continuous_out = torch.clamp(continuous_out, -3, 3) / 3
-                action_out_deprecated = continuous_out
-                deterministic_continuous_out = (
-                    torch.clamp(deterministic_continuous_out, -3, 3) / 3
-                )
+                action_out_deprecated = torch.clamp(action_out_deprecated, -3, 3) / 3
         if self.action_spec.discrete_size > 0 and dists.discrete is not None:
             discrete_out_list = [
                 discrete_dist.exported_model_output()
@@ -195,23 +174,10 @@ class ActionModel(nn.Module):
             ]
             discrete_out = torch.cat(discrete_out_list, dim=1)
             action_out_deprecated = torch.cat(discrete_out_list, dim=1)
-            deterministic_discrete_out_list = [
-                discrete_dist.deterministic_sample() for discrete_dist in dists.discrete
-            ]
-            deterministic_discrete_out = torch.cat(
-                deterministic_discrete_out_list, dim=1
-            )
-
         # deprecated action field does not support hybrid action
         if self.action_spec.continuous_size > 0 and self.action_spec.discrete_size > 0:
             action_out_deprecated = None
-        return (
-            continuous_out,
-            discrete_out,
-            action_out_deprecated,
-            deterministic_continuous_out,
-            deterministic_discrete_out,
-        )
+        return continuous_out, discrete_out, action_out_deprecated
 
     def forward(
         self, inputs: torch.Tensor, masks: torch.Tensor
