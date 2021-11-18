@@ -7,7 +7,7 @@ You can find them at `Edit` > `Project Settings...` > `ML-Agents`. It lists out 
 
 
 ## Create Custom Settings
-In order to to use you own settings for your project, you'll need to create an settings asset.
+In order to to use your own settings for your project, you'll need to create a settings asset.
 
 You can do this by clicking the `Create Settings Asset` buttom or clicking the gear on the top right and select `New Settings Asset...`.
 The asset file can be placed anywhere in the `Asset/` folder in your project.
