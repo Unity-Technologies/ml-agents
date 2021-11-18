@@ -196,11 +196,11 @@ namespace Unity.MLAgents.Tests
             info1.episodeId = 1;
             modelRunner.PutObservations(info1, obs);
             modelRunner.DecideBatch();
-            var stochAction1 = (float[]) modelRunner.GetAction(1).ContinuousActions.Array.Clone();
+            var stochAction1 = (float[])modelRunner.GetAction(1).ContinuousActions.Array.Clone();
 
             modelRunner.PutObservations(info1, obs);
             modelRunner.DecideBatch();
-            var stochAction2 = (float[]) modelRunner.GetAction(1).ContinuousActions.Array.Clone();
+            var stochAction2 = (float[])modelRunner.GetAction(1).ContinuousActions.Array.Clone();
             // Stochastic action selection should output randomly different action values with same obs
             Assert.IsFalse(Enumerable.SequenceEqual(stochAction1, stochAction2, new FloatThresholdComparer(0.001f)));
             modelRunner.Dispose();

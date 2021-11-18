@@ -119,8 +119,9 @@ example.
    **Note** : You can modify multiple game objects in a scene by selecting them
    all at once using the search bar in the Scene Hierarchy.
 1. Set the **Inference Device** to use for this model as `CPU`.
-1. If the model is trained with Release 19 or later, you can select 
-   `Deterministic Inference` to choose actions deterministically from the model. 
+1. If the model is trained with Release 19 or later, you can select
+   `Deterministic Inference` to choose actions deterministically from the model.
+   Works only for inference within unity with no python process involved.
 1. Click the **Play** button in the Unity Editor and you will see the platforms
    balance the balls using the pre-trained model.
 
