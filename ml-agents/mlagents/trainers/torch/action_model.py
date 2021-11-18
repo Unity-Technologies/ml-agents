@@ -81,7 +81,6 @@ class ActionModel(nn.Module):
         continuous_action: Optional[torch.Tensor] = None
         discrete_action: Optional[List[torch.Tensor]] = None
         # This checks None because mypy complains otherwise
-        print(self._deterministic)
         if dists.continuous is not None:
             if self._deterministic:
                 continuous_action = dists.continuous.deterministic_sample()
