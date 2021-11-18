@@ -290,12 +290,12 @@ class SACTrainer(RLTrainer):
 
             with open(os.path.join(self.artifact_path, "reward_bins.npy"), "wb") as f:
                 np.save(f, reward_bins)
-            if not self.is_training:
-                print("Inference progress: {}".format(self.behavior_metrics.percent_full()))
-                with open(os.path.join(self.artifact_path, "reward_bins_{}.npy".format(self._step)), "wb") as f:
-                    np.save(f, reward_bins)
-                if self.behavior_metrics.is_full():
-                    exit()
+            #if not self.is_training:
+            #    print("Inference progress: {}".format(self.behavior_metrics.percent_full()))
+                #with open(os.path.join(self.artifact_path, "reward_bins_{}.npy".format(self._step)), "wb") as f:
+                #    np.save(f, reward_bins)
+                #if self.behavior_metrics.is_full():
+                #    exit()
 
     def _is_ready_update(self) -> bool:
         """

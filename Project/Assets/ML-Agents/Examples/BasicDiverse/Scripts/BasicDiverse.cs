@@ -14,7 +14,7 @@ public class BasicDiverse : Agent
     protected Rigidbody m_AgentRb;
 
     public float m_AgentSpeed = 1;
-    public bool m_DenseReward = false;
+    public bool m_DenseReward = true;
 
 
     public bool ContinuousActions;
@@ -39,41 +39,49 @@ public class BasicDiverse : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(Vector3.Project(goal1.transform.position - transform.position,
-                                              goal1.transform.forward).magnitude);
-        sensor.AddObservation(Vector3.Project(goal2.transform.position - transform.position,
-                                              goal2.transform.right).magnitude);
-        sensor.AddObservation(Vector3.Project(goal3.transform.position - transform.position,
-                                              goal3.transform.forward).magnitude);
-        sensor.AddObservation(Vector3.Project(goal4.transform.position - transform.position,
-                                              goal4.transform.right).magnitude);
+       // sensor.AddObservation(Vector3.Project(goal1.transform.position - transform.position,
+       //                                       goal1.transform.forward).magnitude);
+       // sensor.AddObservation(Vector3.Project(goal2.transform.position - transform.position,
+       //                                       goal2.transform.right).magnitude);
+       // sensor.AddObservation(Vector3.Project(goal3.transform.position - transform.position,
+       //                                       goal3.transform.forward).magnitude);
+       // sensor.AddObservation(Vector3.Project(goal4.transform.position - transform.position,
+       //                                       goal4.transform.right).magnitude);
+       // sensor.AddObservation((goal1.transform.position - transform.position).magnitude);
+       // sensor.AddObservation((goal2.transform.position - transform.position).magnitude);
+       // sensor.AddObservation((goal3.transform.position - transform.position).magnitude);
+       // sensor.AddObservation((goal4.transform.position - transform.position).magnitude);
+        sensor.AddObservation(transform.localPosition.x);
+        sensor.AddObservation(transform.localPosition.z);
+
+        SetStepReward();
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
         Move(actionBuffers);
-        SetStepReward();
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        var discreteActionsOut = actionsOut.DiscreteActions;
+        //var discreteActionsOut = actionsOut.DiscreteActions;
+        var contActionsOut = actionsOut.ContinuousActions;
 
         if (Input.GetKey(KeyCode.W))
         {
-            discreteActionsOut[0] = 1;
+            contActionsOut[0] = 1f;
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            discreteActionsOut[0] = 2;
+            contActionsOut[0] = -1f;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            discreteActionsOut[1] = 1;
+            contActionsOut[1] = 1f;
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            discreteActionsOut[1] = 2;
+            contActionsOut[1] = -1f;
         }
     }
 
@@ -123,17 +131,18 @@ public class BasicDiverse : Agent
                     break;
             }
         }
-        dirToGo = Vector3.Normalize(dirToGo);
-        m_AgentRb.AddForce(dirToGo * m_AgentSpeed, ForceMode.VelocityChange);
+        //dirToGo = Vector3.Normalize(dirToGo);
+        m_AgentRb.AddForce(dirToGo * m_AgentSpeed - m_AgentRb.velocity, ForceMode.VelocityChange);
+        //m_AgentRb.AddForce(dirToGo * m_AgentSpeed, ForceMode.VelocityChange);
 
     }
 
     protected float GetClosestDist()
     {
-        float dist1 = Vector3.Project(goal1.transform.position - transform.position, goal1.transform.forward).magnitude;
-        float dist2 = Vector3.Project(goal1.transform.position - transform.position, goal1.transform.forward).magnitude;
-        float dist3 = Vector3.Project(goal1.transform.position - transform.position, goal1.transform.forward).magnitude;
-        float dist4 = Vector3.Project(goal1.transform.position - transform.position, goal1.transform.forward).magnitude;
+        float dist1 = (goal1.transform.position - transform.position).magnitude;
+        float dist2 = (goal2.transform.position - transform.position).magnitude;
+        float dist3 = (goal3.transform.position - transform.position).magnitude;
+        float dist4 = (goal4.transform.position - transform.position).magnitude;
 
         float leastDist = dist1;
         if (dist2 < leastDist)
@@ -153,12 +162,15 @@ public class BasicDiverse : Agent
 
     protected void SetStepReward()
     {
-        AddReward(-1f / MaxStep);
+        //AddReward(-MaxStep / MaxStep);
+        AddReward(-2.0f);
         if (m_DenseReward)
         {
             float dist = GetClosestDist();
-            AddReward((lastDist - dist) / initDist);
-            lastDist = dist;
+            //AddReward((lastDist - dist) / initDist);
+            //lastDist = dist;
+            //AddReward(.1f * (2.5f - dist));
+            //AddReward(-dist);
         }
     }
 }
