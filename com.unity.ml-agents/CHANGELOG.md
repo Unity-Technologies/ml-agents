@@ -31,9 +31,9 @@ and this project adheres to
     3. env_params.restarts_rate_limit_period_s (--restarts-rate-limit-period-s) [default=60]
 
 
-- Deterministic action selection is now supported during training and inference
+- Deterministic action selection is now supported during training and inference(#5619)
     - Added a new `--deterministic` cli flag to deterministically select the most probable actions in policy. The same thing can
-      be achieved by adding `deterministic: true` under `network_settings` of the run options configuration.(#5619)
+      be achieved by adding `deterministic: true` under `network_settings` of the run options configuration.(#5597)
     - Extra tensors are now serialized to support deterministic action selection in onnx. (#5593)
     - Support inference with deterministic action selection in editor (#5599)
 ### Bug Fixes
