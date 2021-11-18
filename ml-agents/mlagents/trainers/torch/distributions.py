@@ -17,13 +17,6 @@ class DistInstance(nn.Module, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def deterministic_sample(self) -> torch.Tensor:
-        """
-        Return the most probable sample from this distribution.
-        """
-        pass
-
-    @abc.abstractmethod
     def log_prob(self, value: torch.Tensor) -> torch.Tensor:
         """
         Returns the log probabilities of a particular value.
@@ -65,9 +58,6 @@ class GaussianDistInstance(DistInstance):
     def sample(self):
         sample = self.mean + torch.randn_like(self.mean) * self.std
         return sample
-
-    def deterministic_sample(self):
-        return self.mean
 
     def log_prob(self, value):
         var = self.std ** 2
@@ -122,9 +112,6 @@ class CategoricalDistInstance(DiscreteDistInstance):
 
     def sample(self):
         return torch.multinomial(self.probs, 1)
-
-    def deterministic_sample(self):
-        return torch.argmax(self.probs, dim=1, keepdim=True)
 
     def pdf(self, value):
         # This function is equivalent to torch.diag(self.probs.T[value.flatten().long()]),
@@ -225,7 +212,6 @@ class MultiCategoricalDistribution(nn.Module):
         # We do -1 * tensor + constant instead of constant - tensor because it seems
         # Barracuda might swap the inputs of a "Sub" operation
         logits = logits * allow_mask - 1e8 * block_mask
-
         return logits
 
     def _split_masks(self, masks: torch.Tensor) -> List[torch.Tensor]:

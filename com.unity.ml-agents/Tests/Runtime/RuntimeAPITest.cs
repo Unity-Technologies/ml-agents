@@ -70,7 +70,6 @@ namespace Tests
             behaviorParams.BehaviorName = "TestBehavior";
             behaviorParams.TeamId = 42;
             behaviorParams.UseChildSensors = true;
-            behaviorParams.DeterministicInference = false;
             behaviorParams.ObservableAttributeHandling = ObservableAttributeOptions.ExamineAll;
 
 

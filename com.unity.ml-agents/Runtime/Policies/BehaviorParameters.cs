@@ -177,20 +177,6 @@ namespace Unity.MLAgents.Policies
             set { m_UseChildSensors = value; }
         }
 
-        [HideInInspector]
-        [SerializeField]
-        [Tooltip("Set action selection to deterministic, Only applies to inference from within unity.")]
-        private bool m_DeterministicInference = false;
-
-        /// <summary>
-        /// Whether to select actions deterministically during inference from the provided neural network.
-        /// </summary>
-        public bool DeterministicInference
-        {
-            get { return m_DeterministicInference; }
-            set { m_DeterministicInference = value; }
-        }
-
         /// <summary>
         /// Whether or not to use all the actuator components attached to child GameObjects of the agent.
         /// Note that changing this after the Agent has been initialized will not have any effect.
@@ -242,7 +228,7 @@ namespace Unity.MLAgents.Policies
                                 "Either assign a model, or change to a different Behavior Type."
                             );
                         }
-                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_DeterministicInference);
+                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName);
                     }
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
@@ -251,7 +237,7 @@ namespace Unity.MLAgents.Policies
                     }
                     if (m_Model != null)
                     {
-                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_DeterministicInference);
+                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName);
                     }
                     else
                     {

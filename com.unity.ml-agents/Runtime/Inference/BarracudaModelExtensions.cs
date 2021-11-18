@@ -112,10 +112,8 @@ namespace Unity.MLAgents.Inference
         /// <param name="model">
         /// The Barracuda engine model for loading static parameters.
         /// </param>
-        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
-        /// deterministic. </param>
         /// <returns>Array of the output tensor names of the model</returns>
-        public static string[] GetOutputNames(this Model model, bool deterministicInference = false)
+        public static string[] GetOutputNames(this Model model)
         {
             var names = new List<string>();
 
@@ -124,13 +122,13 @@ namespace Unity.MLAgents.Inference
                 return names.ToArray();
             }
 
-            if (model.HasContinuousOutputs(deterministicInference))
+            if (model.HasContinuousOutputs())
             {
-                names.Add(model.ContinuousOutputName(deterministicInference));
+                names.Add(model.ContinuousOutputName());
             }
-            if (model.HasDiscreteOutputs(deterministicInference))
+            if (model.HasDiscreteOutputs())
             {
-                names.Add(model.DiscreteOutputName(deterministicInference));
+                names.Add(model.DiscreteOutputName());
             }
 
             var modelVersion = model.GetVersion();
@@ -151,10 +149,8 @@ namespace Unity.MLAgents.Inference
         /// <param name="model">
         /// The Barracuda engine model for loading static parameters.
         /// </param>
-        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
-        /// deterministic. </param>
         /// <returns>True if the model has continuous action outputs.</returns>
-        public static bool HasContinuousOutputs(this Model model, bool deterministicInference = false)
+        public static bool HasContinuousOutputs(this Model model)
         {
             if (model == null)
                 return false;
@@ -164,13 +160,8 @@ namespace Unity.MLAgents.Inference
             }
             else
             {
-                bool hasStochasticOutput = !deterministicInference &&
-                                           model.outputs.Contains(TensorNames.ContinuousActionOutput);
-                bool hasDeterministicOutput = deterministicInference &&
-                                              model.outputs.Contains(TensorNames.DeterministicContinuousActionOutput);
-
-                return (hasStochasticOutput || hasDeterministicOutput) &&
-                       (int)model.GetTensorByName(TensorNames.ContinuousActionOutputShape)[0] > 0;
+                return model.outputs.Contains(TensorNames.ContinuousActionOutput) &&
+                    (int)model.GetTensorByName(TensorNames.ContinuousActionOutputShape)[0] > 0;
             }
         }
 
@@ -203,10 +194,8 @@ namespace Unity.MLAgents.Inference
         /// <param name="model">
         /// The Barracuda engine model for loading static parameters.
         /// </param>
-        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
-        /// deterministic. </param>
         /// <returns>Tensor name of continuous action output.</returns>
-        public static string ContinuousOutputName(this Model model, bool deterministicInference = false)
+        public static string ContinuousOutputName(this Model model)
         {
             if (model == null)
                 return null;
@@ -216,7 +205,7 @@ namespace Unity.MLAgents.Inference
             }
             else
             {
-                return deterministicInference ? TensorNames.DeterministicContinuousActionOutput : TensorNames.ContinuousActionOutput;
+                return TensorNames.ContinuousActionOutput;
             }
         }
 
@@ -226,10 +215,8 @@ namespace Unity.MLAgents.Inference
         /// <param name="model">
         /// The Barracuda engine model for loading static parameters.
         /// </param>
-        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
-        /// deterministic. </param>
         /// <returns>True if the model has discrete action outputs.</returns>
-        public static bool HasDiscreteOutputs(this Model model, bool deterministicInference = false)
+        public static bool HasDiscreteOutputs(this Model model)
         {
             if (model == null)
                 return false;
@@ -239,12 +226,7 @@ namespace Unity.MLAgents.Inference
             }
             else
             {
-                bool hasStochasticOutput = !deterministicInference &&
-                                           model.outputs.Contains(TensorNames.DiscreteActionOutput);
-                bool hasDeterministicOutput = deterministicInference &&
-                                              model.outputs.Contains(TensorNames.DeterministicDiscreteActionOutput);
-                return (hasStochasticOutput || hasDeterministicOutput) &&
-                       model.DiscreteOutputSize() > 0;
+                return model.outputs.Contains(TensorNames.DiscreteActionOutput) && model.DiscreteOutputSize() > 0;
             }
         }
 
@@ -297,10 +279,8 @@ namespace Unity.MLAgents.Inference
         /// <param name="model">
         /// The Barracuda engine model for loading static parameters.
         /// </param>
-        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
-        /// deterministic. </param>
         /// <returns>Tensor name of discrete action output.</returns>
-        public static string DiscreteOutputName(this Model model, bool deterministicInference = false)
+        public static string DiscreteOutputName(this Model model)
         {
             if (model == null)
                 return null;
@@ -310,7 +290,7 @@ namespace Unity.MLAgents.Inference
             }
             else
             {
-                return deterministicInference ? TensorNames.DeterministicDiscreteActionOutput : TensorNames.DiscreteActionOutput;
+                return TensorNames.DiscreteActionOutput;
             }
         }
 
@@ -336,11 +316,9 @@ namespace Unity.MLAgents.Inference
         /// The Barracuda engine model for loading static parameters.
         /// </param>
         /// <param name="failedModelChecks">Output list of failure messages</param>
-        ///<param name="deterministicInference"> Inference only: set to true if the action selection from model should be
-        /// deterministic. </param>
+        ///
         /// <returns>True if the model contains all the expected tensors.</returns>
-        /// TODO: add checks for deterministic actions
-        public static bool CheckExpectedTensors(this Model model, List<FailedCheck> failedModelChecks, bool deterministicInference = false)
+        public static bool CheckExpectedTensors(this Model model, List<FailedCheck> failedModelChecks)
         {
             // Check the presence of model version
             var modelApiVersionTensor = model.GetTensorByName(TensorNames.VersionNumber);
@@ -365,9 +343,7 @@ namespace Unity.MLAgents.Inference
             // Check the presence of action output tensor
             if (!model.outputs.Contains(TensorNames.ActionOutputDeprecated) &&
                 !model.outputs.Contains(TensorNames.ContinuousActionOutput) &&
-                !model.outputs.Contains(TensorNames.DiscreteActionOutput) &&
-                !model.outputs.Contains(TensorNames.DeterministicContinuousActionOutput) &&
-                !model.outputs.Contains(TensorNames.DeterministicDiscreteActionOutput))
+                !model.outputs.Contains(TensorNames.DiscreteActionOutput))
             {
                 failedModelChecks.Add(
                     FailedCheck.Warning("The model does not contain any Action Output Node.")
@@ -397,51 +373,22 @@ namespace Unity.MLAgents.Inference
             }
             else
             {
-                if (model.outputs.Contains(TensorNames.ContinuousActionOutput))
+                if (model.outputs.Contains(TensorNames.ContinuousActionOutput) &&
+                    model.GetTensorByName(TensorNames.ContinuousActionOutputShape) == null)
                 {
-                    if (model.GetTensorByName(TensorNames.ContinuousActionOutputShape) == null)
-                    {
-                        failedModelChecks.Add(
-                            FailedCheck.Warning("The model uses continuous action but does not contain Continuous Action Output Shape Node.")
+                    failedModelChecks.Add(
+                        FailedCheck.Warning("The model uses continuous action but does not contain Continuous Action Output Shape Node.")
                         );
-                        return false;
-                    }
-
-                    else if (!model.HasContinuousOutputs(deterministicInference))
-                    {
-                        var actionType = deterministicInference ? "deterministic" : "stochastic";
-                        var actionName = deterministicInference ? "Deterministic" : "";
-                        failedModelChecks.Add(
-                            FailedCheck.Warning($"The model uses {actionType} inference but does not contain {actionName} Continuous Action Output Tensor. Uncheck `Deterministic inference` flag..")
-                        );
-                        return false;
-                    }
+                    return false;
                 }
-
-                if (model.outputs.Contains(TensorNames.DiscreteActionOutput))
+                if (model.outputs.Contains(TensorNames.DiscreteActionOutput) &&
+                    model.GetTensorByName(TensorNames.DiscreteActionOutputShape) == null)
                 {
-                    if (model.GetTensorByName(TensorNames.DiscreteActionOutputShape) == null)
-                    {
-                        failedModelChecks.Add(
-                            FailedCheck.Warning("The model uses discrete action but does not contain Discrete Action Output Shape Node.")
+                    failedModelChecks.Add(
+                        FailedCheck.Warning("The model uses discrete action but does not contain Discrete Action Output Shape Node.")
                         );
-                        return false;
-                    }
-                    else if (!model.HasDiscreteOutputs(deterministicInference))
-                    {
-                        var actionType = deterministicInference ? "deterministic" : "stochastic";
-                        var actionName = deterministicInference ? "Deterministic" : "";
-                        failedModelChecks.Add(
-                            FailedCheck.Warning($"The model uses {actionType} inference but does not contain {actionName} Discrete Action Output Tensor. Uncheck `Deterministic inference` flag.")
-                        );
-                        return false;
-                    }
-
+                    return false;
                 }
-
-
-
-
             }
             return true;
         }

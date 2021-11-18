@@ -122,8 +122,6 @@ namespace Unity.MLAgents.Inference
         /// <param name="actuatorComponents">Attached actuator components</param>
         /// <param name="observableAttributeTotalSize">Sum of the sizes of all ObservableAttributes.</param>
         /// <param name="behaviorType">BehaviorType or the Agent to check.</param>
-        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
-        /// deterministic. </param>
         /// <returns>A IEnumerable of the checks that failed</returns>
         public static IEnumerable<FailedCheck> CheckModel(
             Model model,
@@ -131,8 +129,7 @@ namespace Unity.MLAgents.Inference
             ISensor[] sensors,
             ActuatorComponent[] actuatorComponents,
             int observableAttributeTotalSize = 0,
-            BehaviorType behaviorType = BehaviorType.Default,
-            bool deterministicInference = false
+            BehaviorType behaviorType = BehaviorType.Default
             )
         {
             List<FailedCheck> failedModelChecks = new List<FailedCheck>();
@@ -151,7 +148,7 @@ namespace Unity.MLAgents.Inference
                 return failedModelChecks;
             }
 
-            var hasExpectedTensors = model.CheckExpectedTensors(failedModelChecks, deterministicInference);
+            var hasExpectedTensors = model.CheckExpectedTensors(failedModelChecks);
             if (!hasExpectedTensors)
             {
                 return failedModelChecks;
@@ -184,7 +181,7 @@ namespace Unity.MLAgents.Inference
             else if (modelApiVersion == (int)ModelApiVersion.MLAgents2_0)
             {
                 failedModelChecks.AddRange(
-                    CheckInputTensorPresence(model, brainParameters, memorySize, sensors, deterministicInference)
+                    CheckInputTensorPresence(model, brainParameters, memorySize, sensors)
                 );
                 failedModelChecks.AddRange(
                     CheckInputTensorShape(model, brainParameters, sensors, observableAttributeTotalSize)
@@ -198,7 +195,7 @@ namespace Unity.MLAgents.Inference
             );
 
             failedModelChecks.AddRange(
-                CheckOutputTensorPresence(model, memorySize, deterministicInference)
+                CheckOutputTensorPresence(model, memorySize)
             );
             return failedModelChecks;
         }
@@ -321,8 +318,6 @@ namespace Unity.MLAgents.Inference
         /// The memory size that the model is expecting.
         /// </param>
         /// <param name="sensors">Array of attached sensor components</param>
-        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
-        /// Deterministic. </param>
         /// <returns>
         /// A IEnumerable of the checks that failed
         /// </returns>
@@ -330,8 +325,7 @@ namespace Unity.MLAgents.Inference
             Model model,
             BrainParameters brainParameters,
             int memory,
-            ISensor[] sensors,
-            bool deterministicInference = false
+            ISensor[] sensors
         )
         {
             var failedModelChecks = new List<FailedCheck>();
@@ -362,7 +356,7 @@ namespace Unity.MLAgents.Inference
             }
 
             // If the model uses discrete control but does not have an input for action masks
-            if (model.HasDiscreteOutputs(deterministicInference))
+            if (model.HasDiscreteOutputs())
             {
                 if (!tensorsNames.Contains(TensorNames.ActionMaskPlaceholder))
                 {
@@ -382,19 +376,17 @@ namespace Unity.MLAgents.Inference
         /// The Barracuda engine model for loading static parameters
         /// </param>
         /// <param name="memory">The memory size that the model is expecting/</param>
-        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
-        /// deterministic. </param>
         /// <returns>
         /// A IEnumerable of the checks that failed
         /// </returns>
-        static IEnumerable<FailedCheck> CheckOutputTensorPresence(Model model, int memory, bool deterministicInference = false)
+        static IEnumerable<FailedCheck> CheckOutputTensorPresence(Model model, int memory)
         {
             var failedModelChecks = new List<FailedCheck>();
 
             // If there is no Recurrent Output but the model is Recurrent.
             if (memory > 0)
             {
-                var allOutputs = model.GetOutputNames(deterministicInference).ToList();
+                var allOutputs = model.GetOutputNames().ToList();
                 if (!allOutputs.Any(x => x == TensorNames.RecurrentOutput))
                 {
                     failedModelChecks.Add(
