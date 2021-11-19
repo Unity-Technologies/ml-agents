@@ -76,6 +76,7 @@ def test_networkbody_visual():
     vec_obs_size = 4
     obs_size = (84, 84, 3)
     network_settings = NetworkSettings()
+    print(network_settings)
     obs_shapes = [(vec_obs_size,), obs_size]
 
     networkbody = NetworkBody(
@@ -96,6 +97,7 @@ def test_networkbody_visual():
         optimizer.step()
     # In the last step, values should be close to 1
     for _enc in encoded.flatten().tolist():
+        print(_enc)
         assert _enc == pytest.approx(1.0, abs=0.1)
 
 
