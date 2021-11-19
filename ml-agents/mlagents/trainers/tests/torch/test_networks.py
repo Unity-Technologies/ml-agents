@@ -83,8 +83,8 @@ def test_networkbody_visual():
         create_observation_specs_with_shapes(obs_shapes), network_settings
     )
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-3)
-    sample_obs = 0.2 * torch.ones((1, 84, 84, 3))
-    sample_vec_obs = torch.ones((1, vec_obs_size))
+    sample_obs = 0.2 * torch.ones((1, 84, 84, 3), dtype=torch.float32)
+    sample_vec_obs = torch.ones((1, vec_obs_size), dtype=torch.float32)
     obs = [sample_vec_obs] + [sample_obs]
 
     for _ in range(150):
