@@ -13,11 +13,13 @@ pytest_gpu:
       python3 -m pip install --progress-bar=off -r test_requirements.txt --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python3 -m pip install torch==1.7.1+cu101 torchvision==0.8.2+cu101 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python3 -m pytest -m "not check_environment_trains" --junitxml=junit/test-results.xml -p no:warnings
+      python3 -m pip freeze
   triggers:
     cancel_old_ci: true
     expression: |
       (push.branch eq "main" OR
-      push.branch match "release.+") AND
+      push.branch match "release.+" OR
+      push.branch match "fix.+") AND
       push.changes.any match "ml-agents/**" AND
       NOT push.changes.all match "**/*.md"
   artifacts:
