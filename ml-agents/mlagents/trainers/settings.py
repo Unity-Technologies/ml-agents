@@ -144,7 +144,7 @@ class NetworkSettings:
                 raise TrainerConfigError(
                     "When using a recurrent network, memory size must be divisible by 2."
                 )
-
+    seed :int = 0
     normalize: bool = False
     hidden_units: int = 128
     num_layers: int = 2
