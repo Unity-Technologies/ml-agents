@@ -211,10 +211,15 @@ class TrainerController:
         reward_buff = {k: list(t.reward_buffer) for (k, t) in self.trainers.items()}
         curr_step = {k: int(t.get_step) for (k, t) in self.trainers.items()}
         max_step = {k: int(t.get_max_steps) for (k, t) in self.trainers.items()}
+        try:
+            curr_elo = {k: float(t.current_elo) for (k, t) in self.trainers.items()}
+        except AttributeError:
+            curr_elo = None
+
         # Attempt to increment the lessons of the brains who
         # were ready.
         updated, param_must_reset = self.param_manager.update_lessons(
-            curr_step, max_step, reward_buff
+            curr_step, max_step, reward_buff, curr_elo
         )
         if updated:
             for trainer in self.trainers.values():

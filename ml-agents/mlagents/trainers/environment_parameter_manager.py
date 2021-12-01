@@ -137,6 +137,7 @@ class EnvironmentParameterManager:
         trainer_steps: Dict[str, int],
         trainer_max_steps: Dict[str, int],
         trainer_reward_buffer: Dict[str, List[float]],
+        trainer_elo_score: Dict[str, int],
     ) -> Tuple[bool, bool]:
         """
         Given progress metrics, calculates if at least one environment parameter is
@@ -169,6 +170,7 @@ class EnvironmentParameterManager:
                         float(trainer_steps[behavior_to_consider])
                         / float(trainer_max_steps[behavior_to_consider]),
                         trainer_reward_buffer[behavior_to_consider],
+                        trainer_elo_score[behavior_to_consider] if trainer_elo_score else None,
                         self._smoothed_values[param_name],
                     )
                     self._smoothed_values[param_name] = new_smoothing
