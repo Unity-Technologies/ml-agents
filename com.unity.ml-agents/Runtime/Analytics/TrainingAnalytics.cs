@@ -5,7 +5,11 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 #if MLA_UNITY_ANALYTICS_MODULE
+
+#if ENABLE_CLOUD_SERVICES_ANALYTICS
 using UnityEngine.Analytics;
+#endif
+
 #if UNITY_EDITOR
 using UnityEditor.Analytics;
 #endif
@@ -43,7 +47,7 @@ namespace Unity.MLAgents.Analytics
 
         private static bool s_SentEnvironmentInitialized;
 
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
         /// <summary>
         /// Whether or not we've registered this particular event yet
         /// </summary>
@@ -64,7 +68,7 @@ namespace Unity.MLAgents.Analytics
 
         internal static bool EnableAnalytics()
         {
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
             if (s_EventsRegistered)
             {
                 return true;
@@ -106,7 +110,7 @@ namespace Unity.MLAgents.Analytics
 
         public static bool IsAnalyticsEnabled()
         {
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
             return EditorAnalytics.enabled;
 #else
             return false;
@@ -135,7 +139,7 @@ namespace Unity.MLAgents.Analytics
             // Debug.Log(
             //     $"Would send event {k_TrainingEnvironmentInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
             // );
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
                 EditorAnalytics.SendEventWithLimit(k_TrainingEnvironmentInitializedEventName, tbiEvent);
@@ -151,7 +155,7 @@ namespace Unity.MLAgents.Analytics
             IList<IActuator> actuators
         )
         {
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
             if (!IsAnalyticsEnabled())
                 return;
 
@@ -208,7 +212,7 @@ namespace Unity.MLAgents.Analytics
         [Conditional("MLA_UNITY_ANALYTICS_MODULE")]
         public static void TrainingBehaviorInitialized(TrainingBehaviorInitializedEvent rawTbiEvent)
         {
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
             if (!IsAnalyticsEnabled())
                 return;
 
