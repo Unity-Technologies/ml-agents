@@ -953,6 +953,8 @@ class TorchSACOptimizer(TorchOptimizer):
 
         # Update target network
         ModelUtils.soft_update(self._critic, self.target_network, self.tau)
+
+
         update_stats = {
             "Losses/Policy Loss": policy_loss.item(),
             "Losses/Value Loss": value_loss.item(),
@@ -972,9 +974,13 @@ class TorchSACOptimizer(TorchOptimizer):
             disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
 
             if self._mede_network is not None:
+                #mede_loss, mede_stats = self._mede_network.loss(
+                #    current_obs, sampled_actions.continuous_tensor, disc_act, masks
+                #)
                 mede_loss, mede_stats = self._mede_network.loss(
-                    current_obs, sampled_actions.continuous_tensor, disc_act, masks
+                    current_obs, cont_actions, disc_act, masks
                 )
+
 
                 ModelUtils.update_learning_rate(self.mede_optimizer, decay_lr)
                 self.mede_optimizer.zero_grad()

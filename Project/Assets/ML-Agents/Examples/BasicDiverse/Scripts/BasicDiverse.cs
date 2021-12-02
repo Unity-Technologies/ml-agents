@@ -21,7 +21,9 @@ public class BasicDiverse : Agent
 
     protected float lastDist;
     protected float initDist;
+    float initrange;
 
+    //bool m_Finished;
     public override void Initialize()
     {
         m_AgentRb = GetComponent<Rigidbody>();
@@ -29,12 +31,15 @@ public class BasicDiverse : Agent
 
     public override void OnEpisodeBegin()
     {
-        transform.localPosition = new Vector3(0, 0.225f, 0);
+        initrange = .25f;
+        transform.localPosition = new Vector3(Random.Range(-initrange ,initrange), 0.225f, Random.Range(-initrange ,initrange));
+       // transform.localPosition = new Vector3(0f, 0.225f, 0f);
         m_AgentRb.velocity = Vector3.zero;
         m_AgentRb.angularVelocity = Vector3.zero;
 
         lastDist = GetClosestDist();
         initDist = GetClosestDist();
+        //m_Finished = false;
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -51,10 +56,16 @@ public class BasicDiverse : Agent
        // sensor.AddObservation((goal2.transform.position - transform.position).magnitude);
        // sensor.AddObservation((goal3.transform.position - transform.position).magnitude);
        // sensor.AddObservation((goal4.transform.position - transform.position).magnitude);
+        
         sensor.AddObservation(transform.localPosition.x);
         sensor.AddObservation(transform.localPosition.z);
 
         SetStepReward();
+
+        //if (m_Finished)
+        //{
+        //    EndEpisode();
+        //}
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
@@ -92,7 +103,8 @@ public class BasicDiverse : Agent
             other.gameObject == goal3 ||
             other.gameObject == goal4)
         {
-            AddReward(1f);
+            //m_Finished = true;
+            //AddReward(10f);
             EndEpisode();
         }
     }
@@ -107,6 +119,7 @@ public class BasicDiverse : Agent
 
             dirToGo += transform.forward * forwardAction;
             dirToGo += transform.right * sideAction;
+            AddReward(-.2f * (Mathf.Pow(forwardAction, 2) + Mathf.Pow(sideAction, 2)));
         }
         else
         {
@@ -163,14 +176,11 @@ public class BasicDiverse : Agent
     protected void SetStepReward()
     {
         //AddReward(-MaxStep / MaxStep);
-        AddReward(-2.0f);
+        //AddReward(-2.0f);
         if (m_DenseReward)
         {
             float dist = GetClosestDist();
-            //AddReward((lastDist - dist) / initDist);
-            //lastDist = dist;
-            //AddReward(.1f * (2.5f - dist));
-            //AddReward(-dist);
+            AddReward(-dist);
         }
     }
 }

@@ -449,6 +449,7 @@ class ValueNetwork(nn.Module, Critic):
 
         # This is not a typo, we want to call __init__ of nn.Module
         nn.Module.__init__(self)
+        self.obs_specs = observation_specs
         self.network_body = NetworkBody(
             observation_specs, network_settings, encoded_act_size=encoded_act_size
         )
@@ -460,6 +461,20 @@ class ValueNetwork(nn.Module, Critic):
 
     def update_normalization(self, buffer: AgentBuffer) -> None:
         self.network_body.update_normalization(buffer)
+
+    def get_mode_index(self):
+        for i, obs_spec in enumerate(self.obs_specs):
+            if obs_spec.observation_type == ObservationType.GOAL_SIGNAL:
+                return i
+        return -1
+
+    def get_n_modes(self):
+        index = self.get_mode_index()
+        return self.obs_specs[index].shape[0]
+
+    def get_mode_oh(self, inputs):
+        index = self.get_mode_index()
+        return inputs[index]
 
     @property
     def memory_size(self) -> int:
@@ -483,10 +498,12 @@ class ValueNetwork(nn.Module, Critic):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
+
+        mode_oh = self.get_mode_oh(inputs)
         encoding, memories = self.network_body(
             inputs, actions, memories, sequence_length
         )
-        output = self.value_heads(encoding)
+        output = self.value_heads(encoding, mode_oh)
         return output, memories
 
 

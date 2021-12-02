@@ -94,18 +94,19 @@ def extrinsic_dummy_config():
 
 
 def create_observation_specs_with_shapes(
-    shapes: List[Tuple[int, ...]]
+    shapes: List[Tuple[int, ...]], indices_goal = []
 ) -> List[ObservationSpec]:
     obs_specs: List[ObservationSpec] = []
     for i, shape in enumerate(shapes):
         dim_prop = (DimensionProperty.UNSPECIFIED,) * len(shape)
         if len(shape) == 2:
             dim_prop = (DimensionProperty.VARIABLE_SIZE, DimensionProperty.NONE)
+        obs_type = ObservationType.GOAL_SIGNAL if i in indices_goal else ObservationType.DEFAULT
         spec = ObservationSpec(
             name=f"observation {i} with shape {shape}",
             shape=shape,
             dimension_property=dim_prop,
-            observation_type=ObservationType.DEFAULT,
+            observation_type=obs_type,
         )
         obs_specs.append(spec)
     return obs_specs
