@@ -1802,7 +1802,7 @@ MonoBehaviour:
   SensorName: DiversitySampler
   ContinuousSampling: 0
   BalancedSampling: 0
-  DisableSampling: 0
+  DisableSampling: 1
   DiversitySize: 4
   DiscreteSetting: 0
   ContinuousSetting: []
