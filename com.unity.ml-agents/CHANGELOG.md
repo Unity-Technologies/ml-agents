@@ -11,7 +11,7 @@ and this project adheres to
 
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - Added a new feature to replicate training areas dynamically during runtime. (#5568)
-- Update Barracuda to 2.3.1-preview
+- Update Barracuda to 2.3.1-preview (#5591)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
@@ -20,29 +20,27 @@ and this project adheres to
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - Added the capacity to initialize behaviors from any checkpoint and not just the latest one (#5525)
 - Added the ability to get a read-only view of the stacked observations (#5523)
-#### ml-agents / ml-agents-envs / gym-unity (Python)
-- Set gym version in gym-unity to gym release 0.20.0
-- Added support for having `beta`, `epsilon`, and `learning rate` on separate schedules (affects only PPO and POCA). (#5538)
 
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- Set gym version in gym-unity to gym release 0.20.0 (#5540)
+- Added support for having `beta`, `epsilon`, and `learning rate` on separate schedules (affects only PPO and POCA). (#5538)
 - Changed default behavior to restart crashed Unity environments rather than exiting. (#5553)
   - Rate & lifetime limits on this are configurable via 3 new yaml options
     1. env_params.max_lifetime_restarts (--max-lifetime-restarts) [default=10]
     2. env_params.restarts_rate_limit_n (--restarts-rate-limit-n) [default=1]
     3. env_params.restarts_rate_limit_period_s (--restarts-rate-limit-period-s) [default=60]
-
-
 - Deterministic action selection is now supported during training and inference(#5619)
     - Added a new `--deterministic` cli flag to deterministically select the most probable actions in policy. The same thing can
       be achieved by adding `deterministic: true` under `network_settings` of the run options configuration.(#5597)
     - Extra tensors are now serialized to support deterministic action selection in onnx. (#5593)
     - Support inference with deterministic action selection in editor (#5599)
-### Bug Fixes
-- Fixed a bug where the critics were not being normalized during training. (#5595)
-- Fixed the bug where curriculum learning would crash because of the incorrect run_options parsing. (#5586)
 
+### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Fixed a bug where the critics were not being normalized during training. (#5595)
+- Fixed the bug where curriculum learning would crash because of the incorrect run_options parsing. (#5586)
 - Fixed a bug in multi-agent cooperative training where agents might not receive all of the states of
 terminated teammates. (#5441)
 - Fixed wrong attribute name in argparser for torch device option (#5433)(#5467)
