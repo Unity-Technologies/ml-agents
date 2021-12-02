@@ -934,6 +934,8 @@ class TorchSACOptimizer(TorchOptimizer):
             log_probs, value_estimates, q1p_out, q2p_out, masks, mede_value_rewards
         )
         policy_loss = self.sac_policy_loss(log_probs, q1p_out, value_estimates, masks, mede_policy_rewards)
+        #Regularize heads
+        #policy_loss -= torch.sum(torch.log(mixture_ws))
         entropy_loss = self.sac_entropy_loss(log_probs, masks)
 
         total_value_loss = q1_loss + q2_loss

@@ -147,11 +147,14 @@ class GaussianMixtureDistInstance(DistInstance):
             - log_scale
             - math.log(math.sqrt(2 * math.pi))
         )
+        log_probs_per_head = torch.sum(log_probs_per_head, dim=2)
         #log_probs_per_head = torch.sum(log_probs_per_head, dim=2)
-        expanded_probs = self.probs.unsqueeze(2).repeat(1, 1, self.n_action)
-        log_expanded_probs = torch.log(expanded_probs)
-        log_probs = torch.logsumexp(log_probs_per_head + log_expanded_probs, dim=1)
-        return log_probs# - torch.logsumexp(log_expanded_probs, dim=1)
+        #expanded_probs = self.probs.unsqueeze(2).repeat(1, 1, self.n_action)
+        #log_expanded_probs = torch.log(expanded_probs)
+        #log_probs = torch.logsumexp(log_probs_per_head + log_expanded_probs, dim=1) #+ torch.sum(log_expanded_probs, dim=1)
+        log_probs_of_head = torch.log(self.probs)
+        log_probs = torch.logsumexp(log_probs_per_head + log_probs_of_head, dim=1) #+ torch.sum(log_expanded_probs, dim=1)
+        return log_probs.unsqueeze(-1) #+ torch.sum(log_probs_of_head, dim=1, keepdim=True)
 
     def pdf(self, value):
         log_prob = self.log_prob(value)
@@ -187,9 +190,14 @@ class TanhGaussianMixtureDistInstance(GaussianMixtureDistInstance):
 
     def log_prob(self, value):
         unsquashed = self.transform.inv(value)
-        return super().log_prob(unsquashed) - self.transform.log_abs_det_jacobian(
-            unsquashed, value
-        )
+        #tf.reduce_sum(tf.log(1 - tf.tanh(actions) ** 2 + EPS), axis=1)
+        #print(torch.sum(torch.log(1-torch.tanh(unsquashed) ** 2 + EPSILON), dim=1))
+        #print(super().log_prob(unsquashed))
+
+        return super().log_prob(unsquashed) - (torch.sum(torch.log(1-torch.tanh(unsquashed) ** 2 + EPSILON), dim=1)).unsqueeze(-1)
+        #return super().log_prob(unsquashed) - self.transform.log_abs_det_jacobian(
+        #    unsquashed, value
+        #)
 
 
 class CategoricalDistInstance(DiscreteDistInstance):
