@@ -8,6 +8,22 @@ and this project adheres to
 
 ## [Unreleased]
 ### Major Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Bug Fixes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+## [2.2.0-exp.1] - 2021-12-14
+### Major Changes
 
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - Added a new feature to replicate training areas dynamically during runtime. (#5568)
