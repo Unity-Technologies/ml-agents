@@ -3,10 +3,10 @@ from gym import error
 from mlagents_envs.base_env import BaseEnv
 from pettingzoo import ParallelEnv
 
-from pettingzoo_unity.envs import UnityBaseEnv
+from pettingzoo_unity.envs import UnityPettingzooBaseEnv
 
 
-class UnityParallelEnv(UnityBaseEnv, ParallelEnv):
+class UnityParallelEnv(UnityPettingzooBaseEnv, ParallelEnv):
     """
     Unity Parallel (PettingZoo) environment wrapper.
     """

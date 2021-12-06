@@ -6,15 +6,19 @@ from mlagents_envs.base_env import BaseEnv, ActionTuple
 from pettingzoo_unity.envs.env_helpers import _agent_id_to_behavior, _unwrap_batch_steps
 
 
-class UnityBaseEnv:
+class UnityPettingzooBaseEnv: 
     """
     Unity Petting Zoo base environment.
     """
 
-    def __init__(self, env: BaseEnv, seed: Optional[int] = None):
+    def __init__(self, env: BaseEnv, seed: Optional[int] = None, metadata: Optional[dict]=None):
         super().__init__()
         atexit.register(self.close)
         self._env = env
+        # Take a single step so that the brain information will be sent over
+        if not self._env.behavior_specs:
+            self._env.step()
+        self.metadata = metadata
         self._assert_loaded()
 
         self._agent_index = 0
