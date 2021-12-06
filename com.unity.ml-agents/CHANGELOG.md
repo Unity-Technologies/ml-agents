@@ -39,6 +39,7 @@ and this project adheres to
 ### Bug Fixes
 - Fixed a bug where the critics were not being normalized during training. (#5595)
 - Fixed the bug where curriculum learning would crash because of the incorrect run_options parsing. (#5586)
+- Fixed a bug where ml-agents code wouldn't compile on platforms that didn't support analytics (PS4/5, XBoxOne) (#5628)
 
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 
