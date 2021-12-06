@@ -2,10 +2,10 @@ from typing import Any, Optional
 from gym import error
 from mlagents_envs.base_env import BaseEnv
 from pettingzoo import AECEnv
-from pettingzoo_unity.envs import UnityBaseEnv
+from pettingzoo_unity.envs import UnityPettingzooBaseEnv
 
 
-class UnityAECEnv(UnityBaseEnv, AECEnv):
+class UnityAECEnv(UnityPettingzooBaseEnv, AECEnv):
     """
     Unity AEC (PettingZoo) environment wrapper.
     """
