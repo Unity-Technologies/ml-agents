@@ -38,6 +38,7 @@ and this project adheres to
 
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Fixed a bug where ml-agents code wouldn't compile on platforms that didn't support analytics (PS4/5, XBoxOne) (#5628)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed a bug where the critics were not being normalized during training. (#5595)
