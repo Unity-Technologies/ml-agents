@@ -25,7 +25,8 @@ class QNet(torch.nn.Module):
         return self.q1_network(inp, acts)[0]
 
 def load_and_plot():
-    model_path = "results/gmm-uneven1/BasicDiverse/checkpoint.pt"
+    run_id = "gmm-uneven1"
+    model_path = "results/" + run_id + "/BasicDiverse/checkpoint.pt"
     #model_path = "results/mede1/BasicDiverse/checkpoint.pt"
     saved_state_dict = torch.load(model_path)
     obs_shapes = []
@@ -69,7 +70,7 @@ def load_and_plot():
             vals = vals_t["extrinsic"].unsqueeze(-1).reshape(21, 21).detach().cpu().numpy()
             ax.imshow(vals)
             ax.set_title(str(state))
-    plt.savefig("gmm_q_heat.png")
+    plt.savefig(run_id + ".png")
     plt.close()
 
 if __name__ == "__main__":
