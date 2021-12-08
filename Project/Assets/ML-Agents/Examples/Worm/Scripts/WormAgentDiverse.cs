@@ -9,8 +9,9 @@ using System.IO;
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class WormAgentDiverse : Agent
 {
-    const float m_minWalkingSpeed = 1; //The min walking speed to obtain reward
+    //const float m_minWalkingSpeed = 1; //The min walking speed to obtain reward
 
+    const float m_MaxWalkingSpeed = 10; //The max walking speed
     [Header("Target Prefabs")] public Transform TargetPrefab; //Target prefab to use in Dynamic envs
     private Transform m_Target; //Target the agent will walk towards during training.
 
@@ -166,7 +167,14 @@ public class WormAgentDiverse : Agent
         var bpDict = m_JdController.bodyPartsDict;
 
         var i = -1;
+        float actionPenalty = 0;
         var continuousActions = actionBuffers.ContinuousActions;
+        actionPenalty += Mathf.Pow(continuousActions[0], 2);
+        actionPenalty += Mathf.Pow(continuousActions[1], 2);
+        actionPenalty += Mathf.Pow(continuousActions[2], 2);
+        actionPenalty += Mathf.Pow(continuousActions[3], 2);
+        actionPenalty += Mathf.Pow(continuousActions[4], 2);
+        AddReward(-.2f * actionPenalty);
         // Pick a new target joint rotation
         bpDict[bodySegment0].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
         bpDict[bodySegment1].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
@@ -189,21 +197,31 @@ public class WormAgentDiverse : Agent
         UpdateOrientationObjects();
 
         var velReward =
-            GetMatchingVelocityReward(m_OrientationCube.transform.forward,
+            GetMatchingVelocityReward(m_OrientationCube.transform.forward * m_MaxWalkingSpeed,
                 m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
         AddReward(velReward);
     }
 
-    /// <summary>
-    /// Positive one if moving towards goal.
-    /// </summary>
     public float GetMatchingVelocityReward(Vector3 velocityGoal, Vector3 actualVelocity)
     {
-        var velocityProjection = Vector3.Project(actualVelocity, velocityGoal);
-        var direction = Vector3.Angle(velocityProjection, velocityGoal) == 0 ? 1 : -1;
-        var speed = velocityProjection.magnitude * direction;
-        return speed > m_minWalkingSpeed ? 0.1f : 0;
+        //distance between our actual velocity and goal velocity
+        var velDeltaMagnitude = Mathf.Clamp(Vector3.Distance(actualVelocity, velocityGoal), 0, m_MaxWalkingSpeed);
+
+        //return the value on a declining sigmoid shaped curve that decays from 1 to 0
+        //This reward will approach 1 if it matches perfectly and approach zero as it deviates
+        return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / m_MaxWalkingSpeed, 2), 2);
     }
+
+    ///// <summary>
+    ///// Positive one if moving towards goal.
+    ///// </summary>
+    //public float GetMatchingVelocityReward(Vector3 velocityGoal, Vector3 actualVelocity)
+    //{
+    //    var velocityProjection = Vector3.Project(actualVelocity, velocityGoal);
+    //    var direction = Vector3.Angle(velocityProjection, velocityGoal) == 0 ? 1 : -1;
+    //    var speed = velocityProjection.magnitude * direction;
+    //    return speed > m_minWalkingSpeed ? 0.1f : 0;
+    //}
 
     /// <summary>
     /// Update OrientationCube and DirectionIndicator

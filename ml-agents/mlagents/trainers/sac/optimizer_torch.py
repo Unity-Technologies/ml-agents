@@ -968,6 +968,7 @@ class TorchSACOptimizer(TorchOptimizer):
             ).item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/Entropy Loss": entropy_loss.item(),
+            "Policy/Act Log Prob": torch.mean(log_probs.continuous_tensor).item(),
         }
 
         if self._use_mede or self._use_diayn:
