@@ -114,12 +114,13 @@ class TanhGaussianDistInstance(GaussianDistInstance):
             unsquashed, value
         )
 
+LOG_W_MIN = -10 #https://github.com/ben-eysenbach/sac/blob/master/sac/distributions/gmm.py#L10
 class GaussianMixtureDistInstance(DistInstance):
     def __init__(self, mean, std, logits):
         super().__init__()
 
         self.n_modes = 4 #logits.shape[1]
-        self.n_action = 2 #mean.shape[1] // self.n_modes
+        self.n_action = 6 #mean.shape[1] // self.n_modes
         
         self.probs = torch.softmax(logits, dim=-1)
         self.mean = mean.reshape(-1, self.n_modes, self.n_action)
@@ -152,7 +153,8 @@ class GaussianMixtureDistInstance(DistInstance):
         #expanded_probs = self.probs.unsqueeze(2).repeat(1, 1, self.n_action)
         #log_expanded_probs = torch.log(expanded_probs)
         #log_probs = torch.logsumexp(log_probs_per_head + log_expanded_probs, dim=1) #+ torch.sum(log_expanded_probs, dim=1)
-        log_probs_of_head = torch.log(self.probs)
+        log_probs_of_head = torch.log(self.probs + EPSILON)
+        #log_probs_of_head = torch.maximum(self.probs, LOG_W_MIN + self.probs * 0)
         log_probs = torch.logsumexp(log_probs_per_head + log_probs_of_head, dim=1) #+ torch.sum(log_expanded_probs, dim=1)
         return log_probs.unsqueeze(-1) #+ torch.sum(log_probs_of_head, dim=1, keepdim=True)
 
