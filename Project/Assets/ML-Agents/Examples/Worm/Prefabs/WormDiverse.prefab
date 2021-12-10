@@ -967,7 +967,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 901f1fac6b9174c50ba5ef1405b66857, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: cd25b1c617e424f3192cb3e7a9b1f5a3, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: WormDiverse
