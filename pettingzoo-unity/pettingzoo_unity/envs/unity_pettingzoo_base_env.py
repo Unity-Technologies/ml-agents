@@ -6,18 +6,17 @@ from mlagents_envs.base_env import BaseEnv, ActionTuple
 from pettingzoo_unity.envs.env_helpers import _agent_id_to_behavior, _unwrap_batch_steps
 
 
-class UnityPettingzooBaseEnv: 
+class UnityPettingzooBaseEnv:
     """
     Unity Petting Zoo base environment.
     """
 
-    def __init__(self, env: BaseEnv, seed: Optional[int] = None, metadata: Optional[dict]=None):
+    def __init__(
+        self, env: BaseEnv, seed: Optional[int] = None, metadata: Optional[dict] = None
+    ):
         super().__init__()
         atexit.register(self.close)
         self._env = env
-        # Take a single step so that the brain information will be sent over
-        if not self._env.behavior_specs:
-            self._env.step()
         self.metadata = metadata
         self._assert_loaded()
 
@@ -42,6 +41,11 @@ class UnityPettingzooBaseEnv:
             str, spaces.Space
         ] = {}  # behavior_name: obs_space
         self._current_action: Dict[str, ActionTuple] = {}  # behavior_name: ActionTuple
+        # Take a single step so that the brain information will be sent over
+        if not self._env.behavior_specs:
+            self._env.step()
+            for behavior_name in self._env.behavior_specs.keys():
+                _, _, _ = self._batch_update(behavior_name)
         self._update_observation_spaces()
         self._update_action_spaces()
 
@@ -284,7 +288,7 @@ class UnityPettingzooBaseEnv:
 
     @property
     def agents(self):
-        return self._live_agents
+        return sorted(self._live_agents)
 
     @property
     def rewards(self):
@@ -296,7 +300,7 @@ class UnityPettingzooBaseEnv:
 
     @property
     def possible_agents(self):
-        return list(self._possible_agents)
+        return sorted(list(self._possible_agents))
 
     def close(self) -> None:
         """
