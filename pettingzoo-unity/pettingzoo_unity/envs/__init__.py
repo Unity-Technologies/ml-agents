@@ -11,7 +11,9 @@ from mlagents_envs.side_channel.engine_configuration_channel import (
 from mlagents_envs.side_channel.stats_side_channel import StatsSideChannel
 from mlagents_envs import logging_util
 
-from pettingzoo_unity.envs.unity_pettingzoo_base_env import UnityPettingzooBaseEnv  # noqa
+from pettingzoo_unity.envs.unity_pettingzoo_base_env import (
+    UnityPettingzooBaseEnv,
+)  # noqa
 from pettingzoo_unity.envs.unity_aec_env import UnityAECEnv  # noqa
 from pettingzoo_unity.envs.unity_parallel_env import UnityParallelEnv  # noqa
 
