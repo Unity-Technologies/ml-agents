@@ -170,7 +170,7 @@ class GaussianMixtureDistInstance(DistInstance):
         )  # Use equivalent behavior to TF
 
     def exported_model_output(self):
-        return self.sample()
+        return self.sample(), self.mean, self.std, self.probs
 
     def mixture_w(self):
         return self.probs

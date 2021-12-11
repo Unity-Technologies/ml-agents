@@ -121,6 +121,9 @@ class ModelSerializer:
         if self.policy.behavior_spec.action_spec.continuous_size > 0:
             self.output_names += [
                 TensorNames.continuous_action_output,
+                "means",
+                "stds",
+                "ws",
                 TensorNames.continuous_action_output_shape,
             ]
             self.dynamic_axes.update(
