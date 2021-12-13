@@ -98,9 +98,10 @@ class AgentProcessor:
         :param previous_action: The outputs of the Policy's get_action method.
         """
         take_action_outputs = previous_action.outputs
-        if take_action_outputs:
-            for _entropy in take_action_outputs["entropy"]:
-                self._stats_reporter.add_stat("Policy/Entropy", _entropy)
+        # Failing on cloud
+        #if take_action_outputs:
+        #    for _entropy in take_action_outputs["entropy"]:
+        #        self._stats_reporter.add_stat("Policy/Entropy", _entropy)
 
         # Make unique agent_ids that are global across workers
         action_global_agent_ids = [
