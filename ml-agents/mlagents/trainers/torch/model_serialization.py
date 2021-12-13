@@ -189,7 +189,7 @@ class ModelSerializer:
                 opset_version=SerializationSettings.onnx_opset,
                 input_names=self.input_names,
                 output_names=["prior"],
-                dynamic_axes=self.dynamic_axes,
+                dynamic_axes=self.disc_dynamic_axes,
             )
 
         logger.info(f"Exported {onnx_output_path}")
