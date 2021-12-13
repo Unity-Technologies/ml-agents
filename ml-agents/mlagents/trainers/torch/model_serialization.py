@@ -3,6 +3,7 @@ import threading
 from mlagents.torch_utils import torch
 
 from mlagents_envs.logging_util import get_logger
+from mlagents_envs.base_env import ObservationType
 from mlagents.trainers.settings import SerializationSettings
 
 
@@ -106,7 +107,7 @@ class ModelSerializer:
         dummy_memories = torch.zeros(
             batch_dim + seq_len_dim + [self.policy.export_memory_size]
         )
-
+        
         self.dummy_input = (dummy_obs, dummy_masks, dummy_memories)
 
         self.input_names = [TensorNames.get_observation_name(i) for i in range(num_obs)]
@@ -114,13 +115,26 @@ class ModelSerializer:
             TensorNames.action_mask_placeholder,
             TensorNames.recurrent_in_placeholder,
         ]
-
         self.dynamic_axes = {name: {0: "batch"} for name in self.input_names}
+
+        disc_obs_spec = [obs_spec for obs_spec in observation_specs if obs_spec.observation_type != ObservationType.GOAL_SIGNAL]
+        self.dummy_disc_obs = [
+            torch.zeros(
+                batch_dim + list(ModelSerializer._get_onnx_shape(obs_spec.shape))
+            ) 
+            for obs_spec in disc_obs_spec
+        ]
+        self.disc_dummy_input = dummy_obs
+        self.disc_input_names = [TensorNames.get_observation_name(i) for i in range(len(disc_obs_spec))]
+
+        self.disc_dynamic_axes = {name: {0: "batch"} for name in self.disc_input_names}
 
         self.output_names = [TensorNames.version_number, TensorNames.memory_size]
         if self.policy.behavior_spec.action_spec.continuous_size > 0:
             self.output_names += [
                 TensorNames.continuous_action_output,
+                "means",
+                "stds",
                 TensorNames.continuous_action_output_shape,
             ]
             self.dynamic_axes.update(
@@ -165,4 +179,17 @@ class ModelSerializer:
                 output_names=self.output_names,
                 dynamic_axes=self.dynamic_axes,
             )
+        logger.info(f"Exported {onnx_output_path}")
+        onnx_output_path = f"{output_filepath}_Prior.onnx"
+        with exporting_to_onnx():
+            torch.onnx.export(
+                self.policy.prior,
+                self.disc_dummy_input,
+                onnx_output_path,
+                opset_version=SerializationSettings.onnx_opset,
+                input_names=self.input_names,
+                output_names=["prior"],
+                dynamic_axes=self.dynamic_axes,
+            )
+
         logger.info(f"Exported {onnx_output_path}")

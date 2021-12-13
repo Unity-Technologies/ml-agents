@@ -703,7 +703,7 @@ class SimpleActor(nn.Module, Actor):
         ) = self.action_model.get_action_out(encoding, mode_oh, masks)
         export_out = [self.version_number, self.memory_size_vector]
         if self.action_spec.continuous_size > 0:
-            export_out += [cont_action_out, self.continuous_act_size_vector]
+            export_out += [*cont_action_out, self.continuous_act_size_vector]
         if self.action_spec.discrete_size > 0:
             export_out += [disc_action_out, self.discrete_act_size_vector]
         if self.network_body.memory_size > 0:

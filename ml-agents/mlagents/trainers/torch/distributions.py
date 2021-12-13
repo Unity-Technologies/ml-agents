@@ -91,7 +91,7 @@ class GaussianDistInstance(DistInstance):
         )  # Use equivalent behavior to TF
 
     def exported_model_output(self):
-        return self.sample()
+        return self.sample(), self.mean, self.std
 
 
 class TanhGaussianDistInstance(GaussianDistInstance):

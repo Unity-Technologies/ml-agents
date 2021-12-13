@@ -111,6 +111,23 @@ class DiverseNetworkVariational(torch.nn.Module):
             if spec.observation_type == ObservationType.GOAL_SIGNAL:
                 self._diverse_index = i
 
+    # This is purely for export purposes
+    def forward(self, obs_input) -> torch.Tensor:
+        # Convert to tensors
+        tensor_obs = [
+            obs
+            for obs, spec in zip(obs_input, self._all_obs_specs)
+            if spec.observation_type != ObservationType.GOAL_SIGNAL
+        ]
+        hidden, _ = self._encoder.forward(tensor_obs)
+
+        if self._dropout is not None:
+            hidden = self._dropout(hidden)
+
+        prediction = self._last_layer(hidden)
+        prior = torch.softmax(prediction, dim=1)
+        return prior
+
     def predict(
         self, obs_input, action, detach_action=False, var_noise=True
     ) -> torch.Tensor:
@@ -189,7 +206,7 @@ class DiverseNetworkVariational(torch.nn.Module):
                 })
 
             return log_probs
-
+    
     def rewards(
         self, obs_input, cont_act, disc_act, detach_action=False, var_noise=True, masks=None
     ) -> torch.Tensor:
@@ -474,6 +491,8 @@ class TorchSACOptimizer(TorchOptimizer):
             hyperparameters.mede_dropout,
             "DIAYN"
         ) if self._use_diayn or (self._use_mede and hyperparameters.mede_both_discriminators) else None
+
+        self.policy.prior = self._diayn_network
 
         self._mede_policy_loss = hyperparameters.mede_for_policy_loss
         self._target_diversity = hyperparameters.mede_target_divcoef

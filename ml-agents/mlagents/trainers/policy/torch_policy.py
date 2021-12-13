@@ -85,6 +85,7 @@ class TorchPolicy(Policy):
             )
             self.shared_critic = True
 
+        self.prior = None
         # Save the m_size needed for export
         self._export_m_size = self.m_size
         # m_size needed for training is determined by network, not trainer settings
