@@ -108,7 +108,6 @@ class ObservationEncoder(nn.Module):
             if not isinstance(processor, EntityEmbedding):
                 # The input can be encoded without having to process other inputs
                 obs_input = inputs[idx]
-                print(obs_input)
                 processed_obs = processor(obs_input)
                 encodes.append(processed_obs)
             else:
