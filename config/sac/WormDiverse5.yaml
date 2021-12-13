@@ -32,5 +32,5 @@ behaviors:
     time_horizon: 1000
     summary_freq: 10000
 env_settings:
-  seed: 3
+  seed: 5
   num_envs: 3
