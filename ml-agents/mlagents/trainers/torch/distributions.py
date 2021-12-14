@@ -154,8 +154,9 @@ class GaussianMixtureDistInstance(DistInstance):
         #log_expanded_probs = torch.log(expanded_probs)
         #log_probs = torch.logsumexp(log_probs_per_head + log_expanded_probs, dim=1) #+ torch.sum(log_expanded_probs, dim=1)
         log_probs_of_head = torch.log(self.probs + EPSILON)
-        #log_probs_of_head = torch.maximum(self.probs, LOG_W_MIN + self.probs * 0)
+        log_probs_of_head = torch.maximum(log_probs_of_head, LOG_W_MIN + self.probs * 0)
         log_probs = torch.logsumexp(log_probs_per_head + log_probs_of_head, dim=1) #+ torch.sum(log_expanded_probs, dim=1)
+
         return log_probs.unsqueeze(-1) #+ torch.sum(log_probs_of_head, dim=1, keepdim=True)
 
     def pdf(self, value):
