@@ -31,32 +31,19 @@ from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.torch.layers import linear_layer, Initialization
 
 
-class DiverseNetworkVariational(torch.nn.Module):
-    alpha = 0.0005
-    MIN_STDDEV = 0.1
+class Discriminator(torch.nn.Module):
     EPSILON = 1e-7
 
     def __init__(
             self, 
             specs: BehaviorSpec, 
             use_actions: bool = True, 
-            continuous: bool = False, 
-            learn_stddev: bool = True, 
-            noise: bool = True, 
-            stddev_param: bool = False,
-            centered_reward: bool = False,
             dropout: float = 0.2,
             name: str = "MEDE"
         ) -> None:
         super().__init__()
         self._use_actions = use_actions
-        self._continuous = continuous
-        self._learn_stddev = learn_stddev
-        self._centered_reward = centered_reward
         self._name = name
-        self.stats = {}
-        sigma_start = 0.5
-        stddev_start = 1.0
 
         encoder_settings = NetworkSettings(normalize=True, num_layers=1)
         if encoder_settings.memory is not None:
@@ -75,71 +62,33 @@ class DiverseNetworkVariational(torch.nn.Module):
             for spec in specs.observation_specs
             if spec.observation_type == ObservationType.GOAL_SIGNAL
         ][0]
-        self._all_obs_specs = specs.observation_specs
         self.diverse_size = diverse_spec.shape[0]
 
         self._dropout = torch.nn.Dropout(dropout) if dropout > 0 else None
         
-        self.disc_sizes = specs.action_spec.discrete_branches
         self.cont_size = specs.action_spec.continuous_size
 
-        if self._use_actions and self.cont_size > 0:
+        if self._use_actions:
             self._encoder = NetworkBody(
                 new_spec, encoder_settings, self.cont_size
             )
         else:
             self._encoder = NetworkBody(new_spec, encoder_settings)
 
-        self._z_sigma = torch.nn.Parameter(
-            sigma_start * torch.ones((encoder_settings.hidden_units), dtype=torch.float),
-            requires_grad=True,
-        ) if noise else None
-        self._stddev = torch.nn.Parameter(
-            torch.tensor(stddev_start, dtype=torch.float), requires_grad=True
-        ) if self._learn_stddev and self._continuous and stddev_param else None
-
-        self._out_size = self.diverse_size * 2 if self._learn_stddev and \
-                                                  self._continuous and \
-                                                  not stddev_param \
-                                               else self.diverse_size
-        disc_actions = sum(self.disc_sizes) if self._use_actions and len(self.disc_sizes) > 0 else 1
-        self._last_layer = torch.nn.Linear(encoder_settings.hidden_units, self._out_size * disc_actions)
+        self._last_layer = torch.nn.Linear(encoder_settings.hidden_units, self.diverse_size)
 
         self._diverse_index = -1
-        self._max_index = len(specs.observation_specs)
         for i, spec in enumerate(specs.observation_specs):
             if spec.observation_type == ObservationType.GOAL_SIGNAL:
                 self._diverse_index = i
 
     # This is purely for export purposes
-    def forward(self, obs_input) -> torch.Tensor:
+    def forward(self, obs_input, action=None) -> torch.Tensor:
         # Convert to tensors
         tensor_obs = [
-            obs
-            for obs, spec in zip(obs_input, self._all_obs_specs)
-            if spec.observation_type != ObservationType.GOAL_SIGNAL
+            obs for i, obs in enumerate(obs_input) if i != self._diverse_index
         ]
-        hidden, _ = self._encoder.forward(tensor_obs)
-
-        if self._dropout is not None:
-            hidden = self._dropout(hidden)
-
-        prediction = self._last_layer(hidden)
-        prior = torch.softmax(prediction, dim=1)
-        return prior
-
-    def predict(
-        self, obs_input, action, detach_action=False, var_noise=True
-    ) -> torch.Tensor:
-        # Convert to tensors
-        tensor_obs = [
-            obs
-            for obs, spec in zip(obs_input, self._all_obs_specs)
-            if spec.observation_type != ObservationType.GOAL_SIGNAL
-        ]
-        if self._use_actions and self.cont_size > 0:
-            if detach_action:
-                action = action.detach()
+        if self._use_actions:
             hidden, _ = self._encoder.forward(tensor_obs, action)
         else:
             hidden, _ = self._encoder.forward(tensor_obs)
@@ -147,149 +96,28 @@ class DiverseNetworkVariational(torch.nn.Module):
         if self._dropout is not None:
             hidden = self._dropout(hidden)
 
-        #z_mu = hidden
-        #if self._z_sigma is not None and var_noise:
-        #    hidden = z_mu + torch.randn_like(z_mu) * self._z_sigma
-
         prediction = self._last_layer(hidden)
-
-        return prediction, hidden
+        discriminator_output = torch.softmax(prediction, dim=1)
+        return discriminator_output
 
     def copy_normalization(self, thing):
         j = 0
-        for i, spec in enumerate(self._all_obs_specs):
-            if spec.observation_type != ObservationType.GOAL_SIGNAL:
+        for i in range(len(thing.processors)):
+            if i != self._diverse_index:
                 self._encoder.processors[j].copy_normalization(thing.processors[i])
                 j+=1
-
-    def _get_log_probs(self, pred, truth, masks=None):
-        if self._continuous:
-            if self._learn_stddev and self._stddev is None:
-                mean = torch.tanh(pred[:, :int(pred.shape[1] / 2)])
-                std = torch.clamp(torch.exp(pred[:, int(pred.shape[1] / 2):]), self.MIN_STDDEV, 5)
-            elif self._learn_stddev:
-                mean = torch.tanh(pred)
-                std = torch.ones_like(mean) * torch.clamp(torch.exp(self._stddev), self.MIN_STDDEV, 5)
-            else:
-                mean = torch.tanh(pred)
-                std = torch.full_like(pred, 0.1)
-
-            dist = GaussianDistInstance(mean, std)
-            max_logprob = torch.sum(
-                GaussianDistInstance(
-                    torch.zeros(self.diverse_size), torch.ones(self.diverse_size) * self.MIN_STDDEV
-                ).log_prob(torch.zeros(self.diverse_size))
-            )
-            log_probs = torch.sum(dist.log_prob(truth), dim=1)
-
-            if masks is not None:
-                self.stats.update({
-                    self._name + "/Variance of Mean": torch.mean(torch.var(mean, dim=0)).item(),
-                    self._name + "/Mean of StdDev": torch.mean(std).item(),
-                    self._name + "/Mean of Variance": torch.mean(std ** 2).item(),
-                    self._name + "/LogProb": ModelUtils.masked_mean(log_probs, masks).item()
-                })
-
-            return log_probs - max_logprob
-
-        else:
-            probs = torch.softmax(pred, dim=1)
-            log_probs = torch.log(
-                torch.sum(
-                    probs * truth, dim=1
-                ) + self.EPSILON
-            )
-
-            if masks is not None:
-                self.stats.update({
-                    self._name + "/LogProb": ModelUtils.masked_mean(log_probs, masks).item()
-                })
-
-            return log_probs
     
-    def rewards(
-        self, obs_input, cont_act, disc_act, detach_action=False, var_noise=True, masks=None
-    ) -> torch.Tensor:
-
+    def log_probs(self, obs_input, action=None) -> torch.Tensor:
         truth = obs_input[self._diverse_index]
-        prediction, _ = self.predict(obs_input, cont_act, detach_action, var_noise)
-
-        if self._use_actions and len(self.disc_sizes) > 0:
-            
-            disc_probs = disc_act.exp()
-            if detach_action:
-                disc_act = disc_act.detach()
-                disc_probs = disc_probs.detach()
-
-            action_rewards = []
-            action_accuracy = []
-            for i in range(0, sum(self.disc_sizes)*self._out_size, self._out_size):  # Get the reward for each discrete action
-                action_rewards.append(
-                    self._get_log_probs(prediction[:, i:i+self._out_size], truth, masks).unsqueeze(1)
-                )
-                if not self._continuous:
-                    action_accuracy.append(
-                        torch.argmax(prediction[:, i:i+self._out_size], dim=1, keepdim=True) == \
-                        torch.argmax(truth, dim=1, keepdim=True)
-                    )
-
-            all_rewards = torch.cat(action_rewards, dim=1)
-            branched_rewards = ModelUtils.break_into_branches(all_rewards + disc_act, self.disc_sizes)
-            rewards = torch.sum(torch.stack([torch.sum(branch, dim=1) for branch in branched_rewards]), dim=0)
-
-            accuracy = torch.zeros_like(rewards)
-            if not self._continuous:
-                all_accuracy = torch.cat(action_accuracy, dim=1)
-                branched_accuracy = ModelUtils.break_into_branches(all_accuracy * disc_act.exp(), self.disc_sizes)
-                accuracy = torch.mean(torch.stack([torch.sum(branch, dim=1) for branch in branched_accuracy]), dim=0)
-
-        else:
-            rewards = self._get_log_probs(prediction, truth, masks)
-            accuracy = torch.zeros_like(rewards)
-            if not self._continuous:
-                accuracy = torch.argmax(prediction, dim=1) == torch.argmax(truth, dim=1)
-
-        # Log accuracy stats
-        if masks is not None:
-            self.stats.update({
-                self._name + "/Accuracy": ModelUtils.masked_mean(accuracy, masks).item(),
-            })
-            truth = torch.argmax(obs_input[self._diverse_index], dim=1)
-            counts = torch.bincount(truth, minlength=self.diverse_size)
-            #for i in range(self.diverse_size):
-            #    a = torch.sum(torch.where(truth == i, accuracy, torch.zeros_like(accuracy))) / counts[i]
-            #    self.stats.update({
-            #        "Settings/MEDE Accuracy {}".format(i): a.item()
-            #    })
-
-        if self._centered_reward:
-            rewards -= np.log(1 / self.diverse_size)
-
-        return rewards
-
-    def loss(
-        self, obs_input, cont_act, disc_act, masks, detach_action=True, var_noise=True
-    ) -> torch.Tensor:
-
-        rewards = self.rewards(obs_input, cont_act, disc_act, detach_action, var_noise, masks)
-        base_loss = -ModelUtils.masked_mean(rewards, masks)
-        total_loss = base_loss
-
-        self.stats.update({
-            f"Losses/{self._name} Loss": total_loss.item(),
-            self._name + "/Reward": -base_loss.item(),
-        })
-
-        truth = torch.argmax(obs_input[self._diverse_index], dim=1)
-        counts = torch.bincount(truth, minlength=self.diverse_size)
-        for i in range(self.diverse_size):
-            r = torch.sum(torch.where(truth == i, rewards, torch.zeros_like(rewards))) / counts[i]
-            self.stats.update({
-                f"Settings/{self._name} Reward".format(i): r.item(),
-            })
+        prediction = self.forward(obs_input, action)
+        log_probs = torch.log(
+            torch.sum(
+                prediction * truth, dim=1
+            ) + self.EPSILON
+        )
         
-        return total_loss, self.stats
-
+        accuracy = (torch.argmax(prediction, dim=1) == torch.argmax(truth, dim=1)).float()
+        return log_probs, accuracy
 
 class TorchSACOptimizer(TorchOptimizer):
     class PolicyValueNetwork(nn.Module):
@@ -470,38 +298,21 @@ class TorchSACOptimizer(TorchOptimizer):
             self._use_mede = False
             self._use_diayn = False
 
-        self._mede_network = DiverseNetworkVariational(
+        self._mede_network = Discriminator(
             self.policy.behavior_spec, 
-            hyperparameters.mede_use_actions,
-            hyperparameters.mede_continuous,
-            hyperparameters.mede_learn_stddev,
-            hyperparameters.mede_noise,
-            hyperparameters.mede_stddev_param,
-            hyperparameters.mede_centered_reward,
-            hyperparameters.mede_dropout
-        ) if self._use_mede or (self._use_diayn and hyperparameters.mede_both_discriminators) else None
-        self._diayn_network = DiverseNetworkVariational(
+            True,
+            hyperparameters.mede_dropout,
+            "MEDE"
+        )
+
+        self._diayn_network = Discriminator(
             self.policy.behavior_spec, 
             False,
-            hyperparameters.mede_continuous,
-            hyperparameters.mede_learn_stddev,
-            hyperparameters.mede_noise,
-            hyperparameters.mede_stddev_param,
-            hyperparameters.mede_centered_reward,
             hyperparameters.mede_dropout,
             "DIAYN"
-        ) if self._use_diayn or (self._use_mede and hyperparameters.mede_both_discriminators) else None
+        )
 
         self.policy.prior = self._diayn_network
-
-        self._mede_policy_loss = hyperparameters.mede_for_policy_loss
-        self._target_diversity = hyperparameters.mede_target_divcoef
-        self._adaptive_divcoef = hyperparameters.mede_adaptive_divcoef
-        self._scheduled_divcoef = hyperparameters.mede_scheduled_divcoef
-        self._delta_divcoef = hyperparameters.mede_divcoef_lr
-        self._diversity_coef = TorchSACOptimizer.DivCoef(torch.nn.Parameter(
-            torch.as_tensor([hyperparameters.mede_init_divcoef]), requires_grad=self._adaptive_divcoef
-        ))
 
         logger.debug("value_vars")
         for param in value_params:
@@ -528,15 +339,11 @@ class TorchSACOptimizer(TorchOptimizer):
         self.mede_optimizer = torch.optim.Adam(
             list(self._mede_network.parameters()), 
             lr=hyperparameters.learning_rate, 
-        ) if self._use_mede or (self._use_diayn and hyperparameters.mede_both_discriminators) else None
+        )
         self.diayn_optimizer = torch.optim.Adam(
             list(self._diayn_network.parameters()), 
             lr=hyperparameters.learning_rate, 
-        ) if self._use_diayn or (self._use_mede and hyperparameters.mede_both_discriminators) else None
-        self.divcoef_optimizer = torch.optim.Adam(
-            self._diversity_coef.parameters(),
-            lr=hyperparameters.mede_divcoef_lr, 
-        ) if self._use_mede or self._use_diayn else None
+        )
         self._move_to_device(default_device())
 
     @property
@@ -566,12 +373,9 @@ class TorchSACOptimizer(TorchOptimizer):
             q1_stream = q1_out[name].squeeze()
             q2_stream = q2_out[name].squeeze()
             with torch.no_grad():
-                q_backup = rewards[name] + \
-                    self._diversity_coef.coef * diayn_rewards + (
-                    (1.0 - self.use_dones_in_backup[name] * dones)
-                    * self.gammas[i]
-                    * target_values[name]
-                )
+                q_backup = rewards[name] + (1.0 - self.use_dones_in_backup[name] * dones) * self.gammas[i] * target_values[name]
+                if self._use_diayn:
+                    q_backup += diayn_rewards
             _q1_loss = 0.5 * ModelUtils.masked_mean(
                 torch.nn.functional.mse_loss(q_backup, q1_stream), loss_masks
             )
@@ -639,12 +443,14 @@ class TorchSACOptimizer(TorchOptimizer):
                     v_backup = min_policy_qs[name] - torch.sum(
                         _cont_ent_coef * log_probs.continuous_tensor, dim=1
                     )
-                    v_backup += self._diversity_coef.coef * mede_rewards
+                    if self._use_mede:
+                        v_backup += mede_rewards
                 value_loss = 0.5 * ModelUtils.masked_mean(
                     torch.nn.functional.mse_loss(values[name], v_backup), loss_masks
                 )
                 value_losses.append(value_loss)
         else:
+            assert not self._use_mede
             disc_log_probs = log_probs.all_discrete_tensor
             branched_per_action_ent = ModelUtils.break_into_branches(
                 disc_log_probs * disc_log_probs.exp(),
@@ -723,8 +529,8 @@ class TorchSACOptimizer(TorchOptimizer):
             batch_policy_loss += (
                 _cont_ent_coef * torch.sum(cont_log_probs, dim=1) - all_mean_q1
             )
-        if self._mede_policy_loss:
-            batch_policy_loss += -self._diversity_coef.coef * mede_rewards
+        if self._use_mede:
+            batch_policy_loss -= mede_rewards
         policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
 
         return policy_loss
@@ -771,16 +577,7 @@ class TorchSACOptimizer(TorchOptimizer):
 
         return entropy_loss
 
-    def sac_divcoef_loss(
-        self, mede_rewards: torch.Tensor, masks: torch.Tensor
-    ) -> torch.Tensor:
-        with torch.no_grad():
-            mede_loss = -ModelUtils.masked_mean(mede_rewards, masks)
-            target_diff = mede_loss - self._target_diversity
-
-        divcoef_loss = -1 * (self._diversity_coef.coef * target_diff)
-        return divcoef_loss
-
+    
     def _condense_q_streams(
         self, q_output: Dict[str, torch.Tensor], discrete_actions: torch.Tensor
     ) -> Dict[str, torch.Tensor]:
@@ -920,32 +717,19 @@ class TorchSACOptimizer(TorchOptimizer):
         masks = ModelUtils.list_to_tensor(batch[BufferKey.MASKS], dtype=torch.bool)
         dones = ModelUtils.list_to_tensor(batch[BufferKey.DONE])
 
-        mede_value_rewards, mede_policy_rewards, diayn_rewards = torch.zeros(1), torch.zeros(1), torch.zeros(1)
-        if self._use_mede:
-            self._mede_network.copy_normalization(self.policy.actor.network_body)
-            disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
-            mede_policy_rewards = self._mede_network.rewards(
-                current_obs, sampled_actions.continuous_tensor, disc_act, var_noise=False
-            )
-            with torch.no_grad():
-                mede_value_rewards = self._mede_network.rewards(
-                    current_obs, sampled_actions.continuous_tensor, disc_act, var_noise=False
-                )
-        elif self._use_diayn:
-            self._diayn_network.copy_normalization(self.policy.actor.network_body)
-            disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
-            with torch.no_grad():
-                diayn_rewards = self._diayn_network.rewards(
-                    current_obs, sampled_actions.continuous_tensor, disc_act, var_noise=False
-                )
+        self._mede_network.copy_normalization(self.policy.actor.network_body)
+        mede_rewards, _ = self._mede_network.log_probs(current_obs, sampled_actions.continuous_tensor)
+
+        self._diayn_network.copy_normalization(self.policy.actor.network_body)
+        diayn_rewards, _ = self._diayn_network.log_probs(current_obs)
 
         q1_loss, q2_loss = self.sac_q_loss(
             q1_stream, q2_stream, target_values, dones, rewards, masks, diayn_rewards
         )
         value_loss = self.sac_value_loss(
-            log_probs, value_estimates, q1p_out, q2p_out, masks, mede_value_rewards
+            log_probs, value_estimates, q1p_out, q2p_out, masks, mede_rewards
         )
-        policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks, mede_policy_rewards)
+        policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks, mede_rewards)
         entropy_loss = self.sac_entropy_loss(log_probs, masks)
 
         total_value_loss = q1_loss + q2_loss
@@ -991,53 +775,39 @@ class TorchSACOptimizer(TorchOptimizer):
         }
 
         if self._use_mede or self._use_diayn:
-            disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
 
-            if self._mede_network is not None:
-                #mede_loss, mede_stats = self._mede_network.loss(
-                #    current_obs, sampled_actions.continuous_tensor, disc_act, masks
-                #)
-                mede_loss, mede_stats = self._mede_network.loss(
-                    current_obs, cont_actions, disc_act, masks
+                mede_log_probs, mede_accuracy = self._mede_network.log_probs(
+                    current_obs, cont_actions
                 )
-
+                mede_loss = -ModelUtils.masked_mean(mede_log_probs, masks)
 
                 ModelUtils.update_learning_rate(self.mede_optimizer, decay_lr)
                 self.mede_optimizer.zero_grad()
                 mede_loss.backward()
                 self.mede_optimizer.step()
 
-                update_stats.update(mede_stats)
-
-            if self._diayn_network is not None:
-                diayn_loss, diayn_stats = self._diayn_network.loss(
-                    current_obs, sampled_actions.continuous_tensor, disc_act, masks
+                update_stats.update({
+                    "MEDE/Loss": mede_loss.item(),
+                    "MEDE/Log Prob": torch.mean(mede_log_probs).item(),
+                    "MEDE/Accuracy": torch.mean(mede_accuracy).item(),
+                    }
                 )
 
-                ModelUtils.update_learning_rate(self.mede_optimizer, decay_lr)
+                diayn_log_probs, diayn_accuracy = self._diayn_network.log_probs(current_obs)
+                diayn_loss = -ModelUtils.masked_mean(diayn_log_probs, masks)
+
+                ModelUtils.update_learning_rate(self.diayn_optimizer, decay_lr)
                 self.diayn_optimizer.zero_grad()
                 diayn_loss.backward()
                 self.diayn_optimizer.step()
-            
-                update_stats.update(diayn_stats)
-            
-            if self._adaptive_divcoef:
-                divcoef_loss = self.sac_divcoef_loss(mede_value_rewards, masks)
-                self.divcoef_optimizer.zero_grad()
-                divcoef_loss.backward()
-                self.divcoef_optimizer.step()
-                update_stats.update({
-                    "Policy/Diversity Coefficient": self._diversity_coef.coef.item(),
-                    "Policy/Diversity Coefficient Loss": divcoef_loss.item()
-                })
 
-            elif self._scheduled_divcoef:
-                if self._diversity_coef.coef < self._target_diversity:
-                    self._diversity_coef.coef += self._delta_divcoef
                 update_stats.update({
-                    "Policy/Diversity Coefficient": self._diversity_coef.coef.item(),
-                })
-
+                    "DIAYN/Loss": diayn_loss.item(),
+                    "DIAYN/Log Prob": torch.mean(diayn_log_probs).item(),
+                    "DIAYN/Accuracy": torch.mean(diayn_accuracy).item(),
+                    }
+                )
+            
         return update_stats
 
     def update_reward_signals(

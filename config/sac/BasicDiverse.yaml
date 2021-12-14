@@ -14,12 +14,13 @@ behaviors:
       reward_signal_steps_per_update: 10.0
       mede: True
       mede_continuous: False
+      mede_dropout: 0.5
       mede_init_divcoef: 1.0
       mede_target_divcoef: 1.0
       mede_divcoef_lr: 0.000001
     network_settings:
       normalize: True
-      hidden_units: 32
+      hidden_units: 64
       num_layers: 2
       vis_encode_type: simple
       goal_conditioning_type: none

@@ -12,7 +12,7 @@ np.set_printoptions(threshold=10_000)
 OBS_SIZE = 2
 ACT_SIZE = 2
 DIV_SIZE = 4
-HIDDEN_SIZE = 32
+HIDDEN_SIZE = 64
 LAYERS = 2
 
 class QNet(torch.nn.Module):
@@ -25,7 +25,7 @@ class QNet(torch.nn.Module):
         return self.q1_network(inp, acts)[0]
 
 def load_and_plot():
-    run_id = "mede-mmq"
+    run_id = "diayn-clean"
     model_path = "results/"+ run_id + "/BasicDiverse/checkpoint.pt"
     saved_state_dict = torch.load(model_path)
     obs_shapes = []
