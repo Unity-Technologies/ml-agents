@@ -55,6 +55,7 @@ and this project adheres to
 
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Update gRPC native lib to universal for arm64 and x86_64. This change should enable ml-agents usage on mac M1 (#5283, #5519)
 - Fixed a bug where ml-agents code wouldn't compile on platforms that didn't support analytics (PS4/5, XBoxOne) (#5628)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
@@ -66,6 +67,7 @@ terminated teammates. (#5441)
 - Fixed conflicting CLI and yaml options regarding resume & initialize_from (#5495)
 - Fixed failing tests for gym-unity due to gym 0.20.0 release (#5540)
 - Fixed a bug in VAIL where the variational bottleneck was not properly passing gradients (#5546)
+- Harden user PII protection logic and extend TrainingAnalytics to expose detailed configuration parameters. (#5512)
 
 ## [2.1.0-exp.1] - 2021-06-09
 ### Minor Changes
