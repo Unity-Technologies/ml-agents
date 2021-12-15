@@ -114,7 +114,6 @@ class TanhGaussianDistInstance(GaussianDistInstance):
             unsquashed, value
         )
 
-LOG_W_MIN = -10 #https://github.com/ben-eysenbach/sac/blob/master/sac/distributions/gmm.py#L10
 class GaussianMixtureDistInstance(DistInstance):
     def __init__(self, mean, std, logits):
         super().__init__()
@@ -149,15 +148,10 @@ class GaussianMixtureDistInstance(DistInstance):
             - math.log(math.sqrt(2 * math.pi))
         )
         log_probs_per_head = torch.sum(log_probs_per_head, dim=2)
-        #log_probs_per_head = torch.sum(log_probs_per_head, dim=2)
-        #expanded_probs = self.probs.unsqueeze(2).repeat(1, 1, self.n_action)
-        #log_expanded_probs = torch.log(expanded_probs)
-        #log_probs = torch.logsumexp(log_probs_per_head + log_expanded_probs, dim=1) #+ torch.sum(log_expanded_probs, dim=1)
         log_probs_of_head = torch.log(self.probs + EPSILON)
-        log_probs_of_head = torch.maximum(log_probs_of_head, LOG_W_MIN + self.probs * 0)
-        log_probs = torch.logsumexp(log_probs_per_head + log_probs_of_head, dim=1) #+ torch.sum(log_expanded_probs, dim=1)
+        log_probs = torch.logsumexp(log_probs_per_head + log_probs_of_head, dim=1)
 
-        return log_probs.unsqueeze(-1) #+ torch.sum(log_probs_of_head, dim=1, keepdim=True)
+        return log_probs.unsqueeze(-1)
 
     def pdf(self, value):
         log_prob = self.log_prob(value)
@@ -284,6 +278,10 @@ class GaussianDistribution(nn.Module):
         else:
             return GaussianDistInstance(mu, torch.exp(log_sigma), mode_oh)
 
+LOG_W_MIN = -10 #https://github.com/ben-eysenbach/sac/blob/master/sac/distributions/gmm.py#L10
+LOG_SIG_MIN = -5 #https://github.com/ben-eysenbach/sac/blob/master/sac/distributions/gmm.py#L10
+LOG_SIG_MAX = 2 #https://github.com/ben-eysenbach/sac/blob/master/sac/distributions/gmm.py#L10
+
 class GaussianMixtureDistribution(nn.Module):
     def __init__(
         self,
@@ -327,6 +325,7 @@ class GaussianMixtureDistribution(nn.Module):
     def forward(self, inputs: torch.Tensor, mode_oh) -> List[DistInstance]:
         mu = self.mu(inputs)
         logits = self.logits(inputs)
+        logits = torch.maximum(logits, logits * 0 + LOG_W_MIN)
         if self.conditional_sigma:
             log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)
         else:
