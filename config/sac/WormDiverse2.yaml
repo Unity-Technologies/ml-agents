@@ -15,8 +15,6 @@ behaviors:
       mede: True
       mede_dropout: 0.5
       mede_continuous: False
-      mede_init_divcoef: 1.0
-      mede_target_divcoef: 1.0
     network_settings:
       normalize: true
       hidden_units: 512

@@ -165,20 +165,9 @@ class SACSettings(HyperparamSettings):
     mede: bool = False
     diayn: bool = False
     mede_continuous: bool = False
-    mede_init_divcoef: float = 0.01
-    mede_target_divcoef: float = 0.2
-    mede_divcoef_lr: float = 0.0001
     mede_dropout: float = 0
-    mede_scheduled_divcoef: bool = True
-    mede_adaptive_divcoef: bool = False
-    mede_learn_stddev: bool = True
-    mede_stddev_param: bool = False
-    mede_for_policy_loss: bool = True
-    mede_use_actions: bool = True
-    mede_noise: bool = True
-    mede_centered_reward: bool = False
-    mede_both_discriminators: bool = True
-
+    use_mixture: bool = False
+    
     @reward_signal_steps_per_update.default
     def _reward_signal_steps_per_update_default(self):
         return self.steps_per_update

@@ -15,10 +15,11 @@ behaviors:
       mede: True
       mede_dropout: 0.5
       mede_continuous: False
+      use_mixture: True
     network_settings:
       normalize: true
       hidden_units: 512
-      num_layers: 3
+      num_layers: 2
       vis_encode_type: simple
       goal_conditioning_type: none
     reward_signals:
@@ -28,7 +29,4 @@ behaviors:
     keep_checkpoints: 5
     max_steps: 5000000
     time_horizon: 1000
-    summary_freq: 30000
-env_settings:
-  seed: 1
-  num_envs: 3
+    summary_freq: 10000

@@ -313,6 +313,7 @@ class TorchSACOptimizer(TorchOptimizer):
         )
 
         self.policy.prior = self._diayn_network
+        self.policy.run_as_mixture = hyperparameters.use_mixture
 
         logger.debug("value_vars")
         for param in value_params:
@@ -827,10 +828,11 @@ class TorchSACOptimizer(TorchOptimizer):
             "Optimizer:value_optimizer": self.value_optimizer,
             "Optimizer:entropy_optimizer": self.entropy_optimizer,
         }
-        if self._use_mede:
+        if self._use_mede or self._use_diayn:
             modules.update({
                 "Optimizer:mede_optimizer": self.mede_optimizer,
                 "Optimizer:mede_network": self._mede_network,
+                "Optimizer:diayn_network": self._diayn_network,
             })
         for reward_provider in self.reward_signals.values():
             modules.update(reward_provider.get_modules())
