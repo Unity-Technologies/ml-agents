@@ -375,7 +375,7 @@ class TorchSACOptimizer(TorchOptimizer):
             with torch.no_grad():
                 q_backup = rewards[name] + (1.0 - self.use_dones_in_backup[name] * dones) * self.gammas[i] * target_values[name]
                 if self._use_diayn:
-                    q_backup += diayn_rewards
+                    q_backup += (diayn_rewards - np.log(1/4))
             _q1_loss = 0.5 * ModelUtils.masked_mean(
                 torch.nn.functional.mse_loss(q_backup, q1_stream), loss_masks
             )
