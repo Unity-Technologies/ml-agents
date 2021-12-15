@@ -402,9 +402,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SensorName: DiversitySampler
   ContinuousSampling: 0
-  BalancedSampling: 1
-  DisableSampling: 0
-  DiversitySize: 16
+  BalancedSampling: 0
+  DisableSampling: 1
+  DiversitySize: 4
   DiscreteSetting: 0
   ContinuousSetting: []
 --- !u!1 &895268871382313704

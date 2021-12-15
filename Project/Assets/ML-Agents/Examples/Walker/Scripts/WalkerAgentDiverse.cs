@@ -16,6 +16,7 @@ public class WalkerAgentDiverse : Agent
 
     [Header("Target To Walk Towards")] public Transform target; //Target the agent will walk towards during training.
 
+    const float m_maxWalkingSpeed = 10; //The max walking speed
     [Header("Body Parts")] public Transform hips;
     public Transform chest;
     public Transform spine;
@@ -152,6 +153,14 @@ public class WalkerAgentDiverse : Agent
         var i = -1;
 
         var continuousActions = actionBuffers.ContinuousActions;
+        float actionPenalty = 0;
+        for (int j = 0; j < continuousActions.Length; j++)
+        {
+            actionPenalty += Mathf.Pow(continuousActions[j], 2);
+        }
+        float normalizedActionPenalty = Mathf.Pow(1 - Mathf.Pow(actionPenalty / 39.0f, 2), 2);
+        AddReward(-.2f * normalizedActionPenalty);
+
         bpDict[chest].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], continuousActions[++i]);
         bpDict[spine].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], continuousActions[++i]);
 
@@ -201,8 +210,9 @@ public class WalkerAgentDiverse : Agent
 
         var cubeForward = m_OrientationCube.transform.forward;
 
-        var matchSpeedReward = GetMatchingVelocityReward(cubeForward, GetAvgVelocity());
+        var matchSpeedReward = GetMatchingVelocityReward(m_maxWalkingSpeed * cubeForward, GetAvgVelocity());
 
+        var lookAtTargetReward = (Vector3.Dot(cubeForward, head.forward) + 1) * .5F;
         //Check for NaNs
         if (float.IsNaN(matchSpeedReward))
         {
@@ -214,7 +224,8 @@ public class WalkerAgentDiverse : Agent
             );
         }
 
-        AddReward(matchSpeedReward);
+        // survival bonus 
+        AddReward(1f + matchSpeedReward * lookAtTargetReward);
     }
 
     //Returns the average velocity of all of the body parts
@@ -239,10 +250,11 @@ public class WalkerAgentDiverse : Agent
     /// Positive one if moving towards goal.
     public float GetMatchingVelocityReward(Vector3 velocityGoal, Vector3 actualVelocity)
     {
-        var velocityProjection = Vector3.Project(actualVelocity, velocityGoal);
-        var direction = Vector3.Angle(velocityProjection, velocityGoal) == 0 ? 1 : -1;
-        var speed = velocityProjection.magnitude * direction;
-        return speed > m_minWalkingSpeed ? 0.1f : 0;
+        var velDeltaMagnitude = Mathf.Clamp(Vector3.Distance(actualVelocity, velocityGoal), 0, m_maxWalkingSpeed);
+
+        //return the value on a declining sigmoid shaped curve that decays from 1 to 0
+        //This reward will approach 1 if it matches perfectly and approach zero as it deviates
+        return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / m_maxWalkingSpeed, 2), 2);
     }
 
     /// <summary>
