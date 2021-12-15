@@ -325,7 +325,7 @@ class GaussianMixtureDistribution(nn.Module):
     def forward(self, inputs: torch.Tensor, mode_oh) -> List[DistInstance]:
         mu = self.mu(inputs)
         logits = self.logits(inputs)
-        logits = torch.maximum(logits, logits * 0 + LOG_W_MIN)
+        logits = torch.clamp(logits, min=LOG_W_MIN)
         if self.conditional_sigma:
             log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)
         else:
