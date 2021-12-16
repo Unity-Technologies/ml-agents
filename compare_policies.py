@@ -4,11 +4,99 @@ import numpy as np
 import matplotlib.pyplot as plt
 import onnx
 import onnxruntime as ort
+from collections import defaultdict
 np.set_printoptions(threshold=10_000)
 
 OBS_SIZE = 61
 ACT_SIZE = 6
 DIV_SIZE = 4
+
+
+def load_and_plot():
+    envs = [
+        #{"env_name" : "WormDiverse", "gmm_run_id" : "gmm-worm1fix3", "mede_run_id": "mede-worm-outprior"}
+        {"env_name" : "BasicDiverse", "gmm_run_id" : "gmm-q-exp", "mede_run_id": "mede-q-exp"}
+            ]  
+
+    for env in envs:
+        env_name = env["env_name"]
+#        x = np.zeros((1,OBS_SIZE), dtype=np.float32)
+
+        gmm_run_id = env["gmm_run_id"]
+        #gmm_model_path = "results/" + gmm_run_id + "/" + env_name + ".onnx"
+        #gmm_ort_sess = ort.InferenceSession(gmm_model_path)
+        #gmm_outputs = gmm_ort_sess.run(None, {'obs_0': x}) 
+        #for out in gmm_outputs:
+        #    print(out)
+
+        mede_run_id = env["mede_run_id"]
+        mede_model_path = "results/" + mede_run_id + "/" + env_name + ".onnx"
+        prior_model_path = "results/" + mede_run_id + "/" + env_name + "_Prior.onnx"
+        mede_q_model_path = "results/" + mede_run_id + "/" + env_name + "_Q.onnx"
+        sac_q_model_path = "results/" + gmm_run_id + "/" + env_name + "_sac_Q.onnx"
+
+        states = [[0,0],[0,1],[1,1]]
+        #states = [[0,0]]
+#        x = np.array([[0,0]], dtype=np.float32)
+        fig, axs = plt.subplots(DIV_SIZE + 2, len(states))
+        prior_ort_sess = ort.InferenceSession(prior_model_path)
+        mede_ort_sess = ort.InferenceSession(mede_model_path)
+        mede_q_ort_sess = ort.InferenceSession(mede_q_model_path)
+        sac_q_ort_sess = ort.InferenceSession(sac_q_model_path)
+        X, Y = np.mgrid[-1:1:21j, -1:1:21j]
+        actions = (np.vstack((-1 * X.flatten(), Y.flatten())).T).astype(np.float32)
+
+        mems = np.zeros((1, 1, 0), dtype=np.float32)
+        state_to_div_val = defaultdict(list)
+        for i, state in enumerate(states):
+            x = np.array([state], dtype=np.float32)
+            prior_outputs = prior_ort_sess.run(None, {'obs_1': x}) 
+            x_q = np.repeat(x, len(actions), axis=0)
+            sac_q_outputs = sac_q_ort_sess.run(None, {'obs_0': x_q, 'continuous_action': actions, '2': mems}) 
+            sac_q = np.reshape(sac_q_outputs[0], (441, len(x))).T
+            vals = np.reshape(sac_q, (21, 21))
+            if len(states) > 1:
+                axs[0, i].imshow(vals)
+            else:
+                axs[0].imshow(vals)
+
+            for div in range(DIV_SIZE):
+                div_oh = np.zeros((len(x), DIV_SIZE), dtype=np.float32)
+                div_oh[:, div] = 1
+                mede_outputs = mede_ort_sess.run(None, {'obs_0': div_oh, 'obs_1': x}) 
+                #print(mede_outputs)
+                div_oh_q = np.repeat(div_oh, len(actions), axis=0)
+                #print(onnx.load(mede_q_model_path))
+                mede_q = mede_q_ort_sess.run(None, {'obs_0': div_oh_q, 'obs_1': x_q, 'continuous_action': actions, '3': mems})
+                mede_q = np.reshape(mede_q[0], (441, len(x))).T
+                for vals in mede_q:
+                    vals = np.reshape(vals, (21,21))
+                    state_to_div_val[i].append(vals)
+                    if len(states) > 1:
+                        axs[div+1, i].imshow(vals)
+                    else:
+                        axs[div+1].imshow(vals)
+            #aggr = np.sum(state_to_div_val[i], axis=0)
+            #aggr = 0
+            #for prior, val in zip(prior_outputs[0][0], state_to_div_val[i]):
+            #    aggr +=  np.log(prior * np.exp(val))
+            #if len(states) > 1:
+            #    axs[DIV_SIZE + 1, i].imshow(aggr)
+            #else:
+            #    axs[DIV_SIZE + 1].imshow(aggr)
+
+        plt.savefig(env_name + ".png")
+        plt.close()
+
+
+
+if __name__ == "__main__":
+    load_and_plot()
+
+
+
+
+
 
 x = np.array([[ 5.3230e-02,  0.0000e+00,  0.0000e+00,  1.0000e+00,  4.7738e-01,
           8.7804e-02,  5.2101e-01, -4.9973e-02,  8.4755e-01, -4.3201e-03,
@@ -63,59 +151,3 @@ x = np.array([[ 5.3230e-02,  0.0000e+00,  0.0000e+00,  1.0000e+00,  4.7738e-01,
           3.3722e-01,  1.0374e+00,  1.7727e-02,  1.7632e-03,  1.1506e-01,
           9.9320e-01]], dtype=np.float32)
 
-def load_and_plot():
-    envs = [
-        #{"env_name" : "WormDiverse", "gmm_run_id" : "gmm-worm1fix3", "mede_run_id": "mede-worm-outprior"}
-        {"env_name" : "BasicDiverse", "gmm_run_id" : "gmm-q-exp", "mede_run_id": "mede-q-exp"}
-            ]  
-
-    for env in envs:
-        env_name = env["env_name"]
-#        x = np.zeros((1,OBS_SIZE), dtype=np.float32)
-
-        gmm_run_id = env["gmm_run_id"]
-        #gmm_model_path = "results/" + gmm_run_id + "/" + env_name + ".onnx"
-        #gmm_ort_sess = ort.InferenceSession(gmm_model_path)
-        #gmm_outputs = gmm_ort_sess.run(None, {'obs_0': x}) 
-        #for out in gmm_outputs:
-        #    print(out)
-
-        mede_run_id = env["mede_run_id"]
-        mede_model_path = "results/" + mede_run_id + "/" + env_name + ".onnx"
-        prior_model_path = "results/" + mede_run_id + "/" + env_name + "_Prior.onnx"
-        mede_q_model_path = "results/" + mede_run_id + "/" + env_name + "_Q.onnx"
-
-        states = [[0,1],[1,1],[0,0]]
-#        x = np.array([[0,0]], dtype=np.float32)
-        fig, axs = plt.subplots(DIV_SIZE, len(states))
-        prior_ort_sess = ort.InferenceSession(prior_model_path)
-        mede_ort_sess = ort.InferenceSession(mede_model_path)
-        mede_q_ort_sess = ort.InferenceSession(mede_q_model_path)
-        X, Y = np.mgrid[-1:1:21j, -1:1:21j]
-        actions = (np.vstack((-1 * X.flatten(), Y.flatten())).T).astype(np.float32)
-
-        for i, x in enumerate(states):
-            x = np.array([x], dtype=np.float32)
-            prior_outputs = prior_ort_sess.run(None, {'obs_1': x}) 
-            x_q = np.repeat(x, len(actions), axis=0)
-
-            for div in range(DIV_SIZE):
-                div_oh = np.zeros((len(x), DIV_SIZE), dtype=np.float32)
-                div_oh[:, div] = 1
-                mede_outputs = mede_ort_sess.run(None, {'obs_0': div_oh, 'obs_1': x}) 
-                #print(mede_outputs)
-                div_oh_q = np.repeat(div_oh, len(actions), axis=0)
-                mems = np.zeros((1, 1, 0), dtype=np.float32)
-                #print(onnx.load(mede_q_model_path))
-                mede_q = mede_q_ort_sess.run(None, {'obs_0': div_oh_q, 'obs_1': x_q, 'continuous_action': actions, '3': mems})
-                mede_q = np.reshape(mede_q[0], (441, len(x))).T
-                for vals in mede_q:
-                    vals = np.reshape(vals, (21,21))
-                    axs[div, i].imshow(vals)
-        plt.savefig(env_name + ".png")
-        plt.close()
-
-
-
-if __name__ == "__main__":
-    load_and_plot()
