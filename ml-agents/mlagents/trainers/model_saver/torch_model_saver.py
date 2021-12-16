@@ -145,5 +145,10 @@ class TorchModelSaver(BaseModelSaver):
                 destination_path = f"{self.model_path}.onnx"
                 shutil.copyfile(source_path, destination_path)
                 logger.info(f"Copied {source_path} to {destination_path}.")
+                source_path = f"{final_model_name}_sac_Q.onnx"
+                destination_path = f"{self.model_path}_sac_Q.onnx"
+                shutil.copyfile(source_path, destination_path)
+                logger.info(f"Copied {source_path} to {destination_path}.")
+
             except OSError:
                 pass

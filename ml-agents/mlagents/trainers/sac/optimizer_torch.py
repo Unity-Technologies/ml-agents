@@ -402,6 +402,7 @@ class TorchSACOptimizer(TorchOptimizer):
             policy_network_settings,
             self._action_spec,
         )
+        self.policy.q_func = self.q_network.q1_network
 
         self.target_network = ValueNetwork(
             self.stream_names,

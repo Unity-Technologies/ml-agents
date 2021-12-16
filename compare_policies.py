@@ -65,27 +65,55 @@ x = np.array([[ 5.3230e-02,  0.0000e+00,  0.0000e+00,  1.0000e+00,  4.7738e-01,
 
 def load_and_plot():
     envs = [
-        {"env_name" : "WormDiverse", "gmm_run_id" : "gmm-worm1fix3", "mede_run_id": "mede-worm"}
+        #{"env_name" : "WormDiverse", "gmm_run_id" : "gmm-worm1fix3", "mede_run_id": "mede-worm-outprior"}
+        {"env_name" : "BasicDiverse", "gmm_run_id" : "gmm-q-exp", "mede_run_id": "mede-q-exp"}
             ]  
+
     for env in envs:
         env_name = env["env_name"]
 #        x = np.zeros((1,OBS_SIZE), dtype=np.float32)
 
         gmm_run_id = env["gmm_run_id"]
-        gmm_model_path = "results/" + gmm_run_id + "/" + env_name + ".onnx"
-        gmm_ort_sess = ort.InferenceSession(gmm_model_path)
-        gmm_outputs = gmm_ort_sess.run(None, {'obs_0': x}) 
-        for out in gmm_outputs:
-            print(out)
+        #gmm_model_path = "results/" + gmm_run_id + "/" + env_name + ".onnx"
+        #gmm_ort_sess = ort.InferenceSession(gmm_model_path)
+        #gmm_outputs = gmm_ort_sess.run(None, {'obs_0': x}) 
+        #for out in gmm_outputs:
+        #    print(out)
 
         mede_run_id = env["mede_run_id"]
         mede_model_path = "results/" + mede_run_id + "/" + env_name + ".onnx"
+        prior_model_path = "results/" + mede_run_id + "/" + env_name + "_Prior.onnx"
+        mede_q_model_path = "results/" + mede_run_id + "/" + env_name + "_Q.onnx"
+
+        states = [[0,1],[1,1],[0,0]]
+#        x = np.array([[0,0]], dtype=np.float32)
+        fig, axs = plt.subplots(DIV_SIZE, len(states))
+        prior_ort_sess = ort.InferenceSession(prior_model_path)
         mede_ort_sess = ort.InferenceSession(mede_model_path)
-        for div in range(DIV_SIZE):
-            div_oh = np.zeros((len(x), DIV_SIZE), dtype=np.float32)
-            div_oh[:, div] = 1
-            mede_outputs = mede_ort_sess.run(None, {'obs_0': div_oh, 'obs_1': x}) 
-            print(mede_outputs)
+        mede_q_ort_sess = ort.InferenceSession(mede_q_model_path)
+        X, Y = np.mgrid[-1:1:21j, -1:1:21j]
+        actions = (np.vstack((-1 * X.flatten(), Y.flatten())).T).astype(np.float32)
+
+        for i, x in enumerate(states):
+            x = np.array([x], dtype=np.float32)
+            prior_outputs = prior_ort_sess.run(None, {'obs_1': x}) 
+            x_q = np.repeat(x, len(actions), axis=0)
+
+            for div in range(DIV_SIZE):
+                div_oh = np.zeros((len(x), DIV_SIZE), dtype=np.float32)
+                div_oh[:, div] = 1
+                mede_outputs = mede_ort_sess.run(None, {'obs_0': div_oh, 'obs_1': x}) 
+                #print(mede_outputs)
+                div_oh_q = np.repeat(div_oh, len(actions), axis=0)
+                mems = np.zeros((1, 1, 0), dtype=np.float32)
+                #print(onnx.load(mede_q_model_path))
+                mede_q = mede_q_ort_sess.run(None, {'obs_0': div_oh_q, 'obs_1': x_q, 'continuous_action': actions, '3': mems})
+                mede_q = np.reshape(mede_q[0], (441, len(x))).T
+                for vals in mede_q:
+                    vals = np.reshape(vals, (21,21))
+                    axs[div, i].imshow(vals)
+        plt.savefig(env_name + ".png")
+        plt.close()
 
 
 

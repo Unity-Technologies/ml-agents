@@ -119,7 +119,7 @@ class GaussianMixtureDistInstance(DistInstance):
         super().__init__()
 
         self.n_modes = 4 #logits.shape[1]
-        self.n_action = 6 #mean.shape[1] // self.n_modes
+        self.n_action = 2 #mean.shape[1] // self.n_modes
         
         self.probs = torch.softmax(logits, dim=-1)
         self.mean = mean.reshape(-1, self.n_modes, self.n_action)

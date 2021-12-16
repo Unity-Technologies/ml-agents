@@ -31,9 +31,9 @@ public class BasicDiverse : Agent
 
     public override void OnEpisodeBegin()
     {
-        //initrange = .25f;
-        //transform.localPosition = new Vector3(Random.Range(-initrange ,initrange), 0.225f, Random.Range(-initrange ,initrange));
-        transform.localPosition = new Vector3(0f, 0.225f, 0f);
+        initrange = .25f;
+        transform.localPosition = new Vector3(Random.Range(-initrange ,initrange), 0.225f, Random.Range(-initrange ,initrange));
+        //transform.localPosition = new Vector3(0f, 0.225f, 0f);
         m_AgentRb.velocity = Vector3.zero;
         m_AgentRb.angularVelocity = Vector3.zero;
 
