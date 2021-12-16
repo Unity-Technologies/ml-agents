@@ -19,7 +19,7 @@ behaviors:
     network_settings:
       normalize: true
       hidden_units: 512
-      num_layers: 2
+      num_layers: 3
       vis_encode_type: simple
       goal_conditioning_type: none
     reward_signals:
