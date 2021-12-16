@@ -3,6 +3,7 @@ import numpy as np
 from mlagents.torch_utils import torch, default_device
 import copy
 
+
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.behavior_id_utils import get_global_agent_id
 from mlagents.trainers.policy import Policy
@@ -86,6 +87,8 @@ class TorchPolicy(Policy):
             self.shared_critic = True
 
         self.prior = None
+        self.run_as_mixture = None
+
         # Save the m_size needed for export
         self._export_m_size = self.m_size
         # m_size needed for training is determined by network, not trainer settings
@@ -169,6 +172,10 @@ class TorchPolicy(Policy):
         obs = decision_requests.obs
         masks = self._extract_masks(decision_requests)
         tensor_obs = [torch.as_tensor(np_ob) for np_ob in obs]
+        if self.run_as_mixture:
+            p_z_s = self.prior(tensor_obs)
+            z_one_hot = torch.nn.functional.one_hot(torch.multinomial(p_z_s, 1), p_z_s.shape[1]).squeeze(1).float()
+            tensor_obs[0] = z_one_hot
 
         memories = torch.as_tensor(self.retrieve_memories(global_agent_ids)).unsqueeze(
             0
