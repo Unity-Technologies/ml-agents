@@ -118,16 +118,20 @@ class ModelSerializer:
         self.dynamic_axes = {name: {0: "batch"} for name in self.input_names}
 
         disc_obs_spec = [obs_spec for obs_spec in observation_specs if obs_spec.observation_type != ObservationType.GOAL_SIGNAL]
-        self.dummy_disc_obs = [
-            torch.zeros(
-                batch_dim + list(ModelSerializer._get_onnx_shape(obs_spec.shape))
-            ) 
-            for obs_spec in disc_obs_spec
-        ]
         self.disc_dummy_input = dummy_obs
         self.disc_input_names = [TensorNames.get_observation_name(i) for i in range(len(disc_obs_spec))]
 
         self.disc_dynamic_axes = {name: {0: "batch"} for name in self.disc_input_names}
+
+        dummy_actions = torch.zeros(
+            batch_dim + [self.policy.behavior_spec.action_spec.continuous_size]
+        )
+        
+        self.q_dummy_input = (dummy_obs, dummy_actions, dummy_memories)
+        self.q_input_names = [TensorNames.get_observation_name(i) for i in range(num_obs)] + ["continuous_action"]
+
+        self.q_dynamic_axes = {name: {0: "batch"} for name in self.q_input_names}
+
 
         self.output_names = [TensorNames.version_number, TensorNames.memory_size]
         if self.policy.behavior_spec.action_spec.continuous_size > 0:
@@ -190,6 +194,19 @@ class ModelSerializer:
                 input_names=self.input_names,
                 output_names=["prior"],
                 dynamic_axes=self.disc_dynamic_axes,
+            )
+
+        logger.info(f"Exported {onnx_output_path}")
+        onnx_output_path = f"{output_filepath}_Q.onnx"
+        with exporting_to_onnx():
+            torch.onnx.export(
+                self.policy.q_func,
+                self.q_dummy_input,
+                onnx_output_path,
+                opset_version=SerializationSettings.onnx_opset,
+                input_names=self.q_input_names,
+                output_names=["q_val"],
+                dynamic_axes=self.q_dynamic_axes,
             )
 
         logger.info(f"Exported {onnx_output_path}")

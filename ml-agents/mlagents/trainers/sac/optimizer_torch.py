@@ -312,7 +312,9 @@ class TorchSACOptimizer(TorchOptimizer):
             "DIAYN"
         )
 
+        #these are for export/experimental purposes, not needed for training
         self.policy.prior = self._diayn_network
+        self.policy.q_func = self.q_network.q1_network
         self.policy.run_as_mixture = hyperparameters.use_mixture
 
         logger.debug("value_vars")
