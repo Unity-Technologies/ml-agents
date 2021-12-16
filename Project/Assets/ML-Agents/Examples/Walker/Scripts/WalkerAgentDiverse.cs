@@ -153,13 +153,13 @@ public class WalkerAgentDiverse : Agent
         var i = -1;
 
         var continuousActions = actionBuffers.ContinuousActions;
-        float actionPenalty = 0;
-        for (int j = 0; j < continuousActions.Length; j++)
-        {
-            actionPenalty += Mathf.Pow(continuousActions[j], 2);
-        }
-        float normalizedActionPenalty = Mathf.Pow(1 - Mathf.Pow(actionPenalty / 39.0f, 2), 2);
-        AddReward(-.2f * normalizedActionPenalty);
+        //float actionPenalty = 0;
+        //for (int j = 0; j < continuousActions.Length; j++)
+        //{
+        //    actionPenalty += Mathf.Pow(continuousActions[j], 2);
+        //}
+        //float normalizedActionPenalty = Mathf.Pow(1 - Mathf.Pow(actionPenalty / 39.0f, 2), 2);
+        //AddReward(-.2f * normalizedActionPenalty);
 
         bpDict[chest].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], continuousActions[++i]);
         bpDict[spine].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], continuousActions[++i]);
@@ -225,7 +225,7 @@ public class WalkerAgentDiverse : Agent
         }
 
         // survival bonus 
-        AddReward(1f + matchSpeedReward * lookAtTargetReward);
+        AddReward(matchSpeedReward * lookAtTargetReward);
     }
 
     //Returns the average velocity of all of the body parts
