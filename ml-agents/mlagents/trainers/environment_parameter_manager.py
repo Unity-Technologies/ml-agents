@@ -149,6 +149,8 @@ class EnvironmentParameterManager:
         of training steps this behavior's trainer has performed.
         :param trainer_reward_buffer: A dictionary from behavior_name to the list of
         the most recent episode returns for this behavior's trainer.
+        :trainer_elo_score: A Dictionary from behavior_name to the minimum Elo score
+        to be reached.
         :returns: A tuple of two booleans : (True if any lesson has changed, True if
         environment needs to reset)
         """
