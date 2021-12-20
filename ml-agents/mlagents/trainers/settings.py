@@ -525,7 +525,6 @@ class CompletionCriteriaSettings:
         # Is the min number of episodes reached
         if len(reward_buffer) < self.min_lesson_length:
             return False, smoothing
-        #BUG?  Shouldn't we check if the max number of steps has passed if it isn't a PROGRESS measure?
         if self.measure == CompletionCriteriaSettings.MeasureType.PROGRESS:
             if progress > self.threshold:
                 return True, smoothing

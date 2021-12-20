@@ -244,8 +244,8 @@ def test_curriculum_raises_all_completion_criteria_conversion():
         trainer_steps={"fake_behavior": 500},
         trainer_max_steps={"fake_behavior": 1000},
         trainer_reward_buffer={"fake_behavior": [1000] * 101},
-        trainer_elo_score={"fake_behavior": 1200.0},
-    ) == (False, False)
+        trainer_elo_score={"fake_behavior": 1500.0},
+    ) == (False, False)   # No step to advance to
     assert param_manager.get_current_lesson_number() == {"param_1": 3}
 
 test_everything_config_yaml = """
