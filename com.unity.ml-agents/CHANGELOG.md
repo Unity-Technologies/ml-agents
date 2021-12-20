@@ -35,6 +35,7 @@ and this project adheres to
     - Extra tensors are now serialized to support deterministic action selection in onnx. (#5593)
     - Support inference with deterministic action selection in editor (#5599)
 - Added minimal analytics collection to LL-API (#5511)
+- Update Colab notebooks for GridWorld example with DQN illustrating the use of the Python API and how to export to ONNX (#5643)
 
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
