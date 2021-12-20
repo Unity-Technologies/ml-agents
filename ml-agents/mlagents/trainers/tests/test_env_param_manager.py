@@ -182,7 +182,7 @@ environment_parameters:
                 min_lesson_length: 100
                 require_reset: true
             value: 3
-          - name: Lesson3
+          - name: Lesson4
             completion_criteria:
                 measure: reward
                 behavior: fake_behavior
