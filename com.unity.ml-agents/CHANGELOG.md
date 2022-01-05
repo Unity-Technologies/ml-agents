@@ -10,6 +10,29 @@ and this project adheres to
 ### Major Changes
 
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+-
+
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Minor Changes
+
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+-
+
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+-
+
+### Bug Fixes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+-
+
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+-
+
+## [2.2.0] - 2022-02-01
+### Major Changes
+
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - Added a new feature to replicate training areas dynamically during runtime. (#5568)
 - Update Barracuda to 2.3.1-preview (#5591)
 
