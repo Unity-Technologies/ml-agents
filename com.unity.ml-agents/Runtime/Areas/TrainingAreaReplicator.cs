@@ -9,17 +9,39 @@ namespace Unity.MLAgents.Areas
     /// </summary>
     public class TrainingAreaReplicator : MonoBehaviour
     {
+        /// <summary>
+        /// The base training area to be replicated.
+        /// </summary>
         public GameObject baseArea;
+
+        /// <summary>
+        /// The number of training areas to replicate.
+        /// </summary>
         public int numAreas = 1;
+
+        /// <summary>
+        /// The separation between each training area.
+        /// </summary>
         public float separation = 10f;
 
         int3 m_GridSize = new int3(1, 1, 1);
         int m_areaCount = 0;
         string m_TrainingAreaName;
 
+        /// <summary>
+        /// The size of the computed grid to pack the training areas into.
+        /// </summary>
         public int3 GridSize => m_GridSize;
+
+        /// <summary>
+        /// The name of the training area.
+        /// </summary>
         public string TrainingAreaName => m_TrainingAreaName;
 
+        /// <summary>
+        /// Called before the simulation begins to computed the grid size for distributing
+        /// the replicated training areas and set the area name.
+        /// </summary>
         public void Awake()
         {
             // Computes the Grid Size on Awake
@@ -28,6 +50,10 @@ namespace Unity.MLAgents.Areas
             m_TrainingAreaName = baseArea.name;
         }
 
+        /// <summary>
+        /// Called after Awake and before the simulation begins and adds the training areas before
+        /// the Academy begins.
+        /// </summary>
         public void OnEnable()
         {
             // Adds the training are replicas during OnEnable to ensure they are added before the Academy begins its work.
@@ -85,4 +111,3 @@ namespace Unity.MLAgents.Areas
         }
     }
 }
-
