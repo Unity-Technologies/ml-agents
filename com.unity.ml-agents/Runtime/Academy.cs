@@ -183,9 +183,11 @@ namespace Unity.MLAgents
             set { m_InferenceSeed = value; }
         }
 
-        // Number of training areas to instantiate
         int m_NumAreas;
 
+        /// <summary>
+        /// Number of training areas to instantiate.
+        /// </summary>
         public int NumAreas => m_NumAreas;
 
         /// <summary>
