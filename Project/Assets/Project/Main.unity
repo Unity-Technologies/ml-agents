@@ -315,6 +315,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4558743574296983}
   - component: {fileID: 8122248192505760565}
+  - component: {fileID: 1141134393825810}
   m_Layer: 0
   m_Name: SoccerFieldTwos
   m_TagString: Untagged
@@ -322,6 +323,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1141134393825810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1141134393825809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4738727498795af4bb2fcd9ab3e933c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  episode_max_steps: 25000
 --- !u!1 &1383518159097961
 GameObject:
   m_ObjectHideFlags: 0
@@ -1901,6 +1915,11 @@ PrefabInstance:
     - target: {fileID: 7933148789642650212, guid: bda01fa225f819a41a326fe249ce6ebb,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8034876861192971208, guid: bda01fa225f819a41a326fe249ce6ebb,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
