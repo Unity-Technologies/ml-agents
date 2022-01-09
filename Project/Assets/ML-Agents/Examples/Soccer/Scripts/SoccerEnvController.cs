@@ -18,7 +18,7 @@ public class SoccerEnvController : MonoBehaviour
 
 
     /// <summary>
-    /// Max Academy steps before this platform resets
+    /// Max Academy steps before this platform resets.
     /// </summary>
     /// <returns></returns>
     [Tooltip("Max Environment Steps")] public int MaxEnvironmentSteps = 25000;
