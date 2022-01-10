@@ -34,15 +34,6 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
-    "com.unity.ide.visualstudio": {
-      "version": "2.0.12",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.test-framework": "1.1.9"
-      },
-      "url": "https://packages.unity.com"
-    },
     "com.unity.inputsystem": {
       "version": "1.3.0",
       "depth": 0,
