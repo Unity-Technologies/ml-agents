@@ -10,6 +10,7 @@ and this project adheres to
 ### Major Changes
 
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- The minimum supported Unity version was updated to 2020.3. (#)
 - Added a new feature to replicate training areas dynamically during runtime. (#5568)
 - Update Barracuda to 2.3.1-preview (#5591)
 - Update Input System to 1.3.0 (#5661)

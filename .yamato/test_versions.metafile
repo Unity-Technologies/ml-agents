@@ -3,7 +3,7 @@
 # For each "other" test, we only run it against a single version of the
 # editor to reduce the number of yamato jobs
 test_editors:
-  - version: 2019.4
+  - version: 2020.3
     extra_test: gym
   - version: 2020.3
     extra_test: sensor

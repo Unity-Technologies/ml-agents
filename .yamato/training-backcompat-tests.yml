@@ -1,6 +1,6 @@
 
-test_mac_backcompat_2019.4:
-  {% capture editor_version %}2019.4{% endcapture %}
+test_mac_backcompat_2020.3:
+  {% capture editor_version %}2020.3{% endcapture %}
   {% capture csharp_backcompat_version %}1.0.0{% endcapture %}
   # This test has to run on mac because it requires the custom build of tensorflow without AVX
   # Test against 2020.1 because 2020.2 has to run against package version 1.2.0
