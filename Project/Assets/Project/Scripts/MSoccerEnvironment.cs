@@ -13,6 +13,7 @@ namespace Project
         public float forward_speed_scale;
         public float lateral_speed_scale;
         public float kick_power_scale;
+        public float timer_reward;
     }
 
     public class MSoccerEnvironment : MonoBehaviour
@@ -47,6 +48,7 @@ namespace Project
         ///     The step timer of current episode.
         /// </summary>
         public int cur_step { private set; get; }
+        public float cur_step_ratio => cur_step / (float)episode_max_steps;
 
     #endregion
 

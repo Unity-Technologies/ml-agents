@@ -1,6 +1,5 @@
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Sensors;
 using UnityEngine;
 namespace Project
 {
@@ -29,6 +28,7 @@ namespace Project
         {
             Environment = GetComponentInParent<MSoccerEnvironment>();
             Rigidbody = GetComponent<Rigidbody>();
+            Rigidbody.maxAngularVelocity = 500;
             m_position_config = Environment.positions[position_id];
             var transform1 = transform;
             spawn_position = transform1.position;
@@ -51,9 +51,52 @@ namespace Project
             collision.rigidbody.AddForce( direction * force );
 
         }
-        public override void Heuristic(in ActionBuffers actionsOut) { }
-        public override void CollectObservations(VectorSensor sensor) { base.CollectObservations( sensor ); }
-        public override void OnActionReceived(ActionBuffers actions) { base.OnActionReceived( actions ); }
+        public override void Heuristic(in ActionBuffers actionsOut)
+        {
+            var acts = actionsOut.DiscreteActions;
+            //forward
+            if (Input.GetKey( KeyCode.W ))
+            {
+                acts[0] = 1;
+            }
+            if (Input.GetKey( KeyCode.S ))
+            {
+                acts[0] = 2;
+            }
+
+            //rotate
+            if (Input.GetKey( KeyCode.E ))
+            {
+                acts[2] = 1;
+            }
+            if (Input.GetKey( KeyCode.Q ))
+            {
+                acts[2] = 2;
+            }
+
+            //right
+            if (Input.GetKey( KeyCode.D ))
+            {
+                acts[1] = 1;
+            }
+            if (Input.GetKey( KeyCode.A ))
+            {
+                acts[1] = 2;
+            }
+        }
+        // public override void CollectObservations(VectorSensor sensor) { }
+        public override void OnActionReceived(ActionBuffers actionsBuffers)
+        {
+            AddReward( m_position_config.timer_reward *
+                       Environment.cur_step_ratio );
+
+            var acts = actionsBuffers.DiscreteActions;
+
+            Move(
+                b_table[acts[0]] - 1,
+                b_table[acts[1]] - 1,
+                b_table[acts[2]] - 1 );
+        }
         public override void OnEpisodeBegin()
         {
             var pos = spawn_position +
@@ -69,11 +112,21 @@ namespace Project
 
     #region Util
 
+        /// <summary>
+        ///     ori_action_branch_table: old branch number -> new branch number
+        /// </summary>
+        int[] b_table =
+        {
+            2,
+            0,
+            1
+        };
+
         public void Move(int z_axis_move, int x_axis_move, int y_axis_rot)
         {
             var transform1 = transform;
-            var x_vector = m_position_config.lateral_speed_scale * transform1.right * (x_axis_move - 1);
-            var z_vector = m_position_config.forward_speed_scale * transform1.forward * (z_axis_move - 1);
+            var x_vector = m_position_config.lateral_speed_scale * transform1.right * x_axis_move;
+            var z_vector = m_position_config.forward_speed_scale * transform1.forward * z_axis_move;
             var y_vector = transform1.up * (y_axis_rot - 1);
             transform1.Rotate( y_vector, Time.deltaTime * Environment.player_base_angular_speed );
             Rigidbody.AddForce( (x_vector + z_vector) * Environment.player_base_speed, ForceMode.VelocityChange );
