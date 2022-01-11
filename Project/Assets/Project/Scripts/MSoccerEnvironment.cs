@@ -40,6 +40,7 @@ namespace Project
             if (cur_step >= episode_max_steps)
             {
                 EndEpisode( true );
+                InitEpisode();
             }
             cur_step++;
         }
@@ -65,15 +66,6 @@ namespace Project
         {
             cur_step = 0;
             soccer_ball.Init();
-            InitAgents();
-        }
-
-        void InitAgents()
-        {
-            foreach (var agent in agents)
-            {
-                agent.Init();
-            }
         }
 
     #endregion
@@ -92,12 +84,18 @@ namespace Project
             }
         }
 
-        void Goal(int scored_team_id)
+    #region Interface
+
+        public void Goal(int scored_team_id)
         {
             int enemy_team_id = scored_team_id == 0 ? 1 : 0;
             agent_groups[scored_team_id].AddGroupReward( 1 );
             agent_groups[enemy_team_id].AddGroupReward( -1 );
+            EndEpisode( false );
+            InitEpisode();
         }
+
+    #endregion
 
     #endregion
 
