@@ -1,11 +1,28 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.MLAgents;
 using UnityEngine;
 namespace Project
 {
+
+    [Serializable]
+    public struct PositionConfig
+    {
+        public string position_name;
+        public float forward_speed_scale;
+        public float lateral_speed_scale;
+        public float kick_power_scale;
+    }
+
     public class MSoccerEnvironment : MonoBehaviour
     {
+
+    #region Reference
+
+        EnvironmentParameters environmentParameters;
+
+    #endregion
 
     #region Config
 
@@ -13,6 +30,11 @@ namespace Project
         ///     One FixedUpdate -> One step. Reaching max step causes episode reset.
         /// </summary>
         public int episode_max_steps = 25000;
+        public float player_base_speed = 2;
+        public float player_base_angular_speed = 100;
+        public float player_kick_power = 2000;
+        public float player_touch_ball_reward = 0.2f;
+        public List<PositionConfig> positions;
 
     #endregion
 
@@ -53,6 +75,7 @@ namespace Project
 
         void InitEnvironment()
         {
+            environmentParameters = Academy.Instance.EnvironmentParameters;
             agents = GetComponentsInChildren<MSoccerPlayerAgent>().ToList();
             agent_groups = new SimpleMultiAgentGroup[2];
             foreach (var agent in agents)
@@ -66,6 +89,7 @@ namespace Project
         {
             cur_step = 0;
             soccer_ball.Init();
+            player_touch_ball_reward = environmentParameters.GetWithDefault( "ball_touch", player_touch_ball_reward );
         }
 
     #endregion
@@ -82,6 +106,7 @@ namespace Project
                 agent_groups[0].EndGroupEpisode();
                 agent_groups[1].EndGroupEpisode();
             }
+
         }
 
     #region Interface
