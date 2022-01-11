@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 9063294893015526874}
   - component: {fileID: 9072251767336456370}
   - component: {fileID: 8957967836679582454}
-  - component: {fileID: 8946337875668364722}
   - component: {fileID: 9039303086827700992}
+  - component: {fileID: 8052760863505375648}
   m_Layer: 0
   m_Name: Soccer Ball
   m_TagString: ball
@@ -97,22 +97,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 41.61146
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8946337875668364722
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9058929066522778928}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93558b952b37a4b0ebaca3ca6711bcc4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  area: {fileID: 0}
-  envController: {fileID: 0}
-  purpleGoalTag: purpleGoal
-  blueGoalTag: blueGoal
 --- !u!54 &9039303086827700992
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -129,3 +113,16 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 4
   m_CollisionDetection: 1
+--- !u!114 &8052760863505375648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9058929066522778928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e4c0066fefe44b4f8c31758aded8a61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GOAL_TAG: goal

@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 814601092073814208}
   m_Layer: 0
   m_Name: GoalNetBlue
-  m_TagString: blueGoal
+  m_TagString: goal_0
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 65
@@ -350,7 +350,7 @@ GameObject:
   - component: {fileID: 814601092687784276}
   m_Layer: 0
   m_Name: GoalNetPurple
-  m_TagString: purpleGoal
+  m_TagString: goal_1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 65
@@ -1276,7 +1276,7 @@ GameObject:
   - component: {fileID: 814601093539388959}
   m_Layer: 0
   m_Name: GoalNetBlueOuter
-  m_TagString: blueGoal
+  m_TagString: goal_0
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 65
@@ -1357,7 +1357,7 @@ GameObject:
   - component: {fileID: 814601093603057372}
   m_Layer: 0
   m_Name: GoalNetPurpleOuter
-  m_TagString: purpleGoal
+  m_TagString: goal_1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 65
@@ -1439,7 +1439,7 @@ GameObject:
   - component: {fileID: 814601093608623086}
   m_Layer: 0
   m_Name: GoalPurple
-  m_TagString: purpleGoal
+  m_TagString: goal_1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 65
@@ -1659,7 +1659,7 @@ GameObject:
   - component: {fileID: 814601093772779120}
   m_Layer: 0
   m_Name: GoalBlue
-  m_TagString: blueGoal
+  m_TagString: goal_0
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 65

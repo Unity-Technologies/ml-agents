@@ -1,5 +1,6 @@
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 using UnityEngine;
 namespace Project
 {
@@ -8,12 +9,14 @@ namespace Project
     #region Refenrence
 
         MSoccerEnvironment Environment;
+        BehaviorParameters Parameters;
         Rigidbody Rigidbody;
 
     #endregion
 
     #region Config
 
+        [HideInInspector]
         public int team_id;
         public int position_id;
         PositionConfig m_position_config;
@@ -26,7 +29,9 @@ namespace Project
 
         public override void Initialize()
         {
+            Parameters = GetComponent<BehaviorParameters>();
             Environment = GetComponentInParent<MSoccerEnvironment>();
+            team_id = Parameters.TeamId;
             Rigidbody = GetComponent<Rigidbody>();
             Rigidbody.maxAngularVelocity = 500;
             m_position_config = Environment.positions[position_id];
@@ -93,9 +98,9 @@ namespace Project
             var acts = actionsBuffers.DiscreteActions;
 
             Move(
-                b_table[acts[0]] - 1,
-                b_table[acts[1]] - 1,
-                b_table[acts[2]] - 1 );
+                b_table[acts[0]],
+                b_table[acts[1]],
+                b_table[acts[2]] );
         }
         public override void OnEpisodeBegin()
         {
@@ -113,21 +118,21 @@ namespace Project
     #region Util
 
         /// <summary>
-        ///     ori_action_branch_table: old branch number -> new branch number
+        ///     ori_action_branch_table: old branch number -> new action
         /// </summary>
         int[] b_table =
         {
-            2,
             0,
-            1
+            1,
+            -1
         };
 
         public void Move(int z_axis_move, int x_axis_move, int y_axis_rot)
         {
             var transform1 = transform;
-            var x_vector = m_position_config.lateral_speed_scale * transform1.right * x_axis_move;
             var z_vector = m_position_config.forward_speed_scale * transform1.forward * z_axis_move;
-            var y_vector = transform1.up * (y_axis_rot - 1);
+            var x_vector = m_position_config.lateral_speed_scale * transform1.right * x_axis_move;
+            var y_vector = transform1.up * -y_axis_rot;
             transform1.Rotate( y_vector, Time.deltaTime * Environment.player_base_angular_speed );
             Rigidbody.AddForce( (x_vector + z_vector) * Environment.player_base_speed, ForceMode.VelocityChange );
         }

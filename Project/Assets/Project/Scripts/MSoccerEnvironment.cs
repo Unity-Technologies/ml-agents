@@ -80,6 +80,8 @@ namespace Project
             environmentParameters = Academy.Instance.EnvironmentParameters;
             agents = GetComponentsInChildren<MSoccerPlayerAgent>().ToList();
             agent_groups = new SimpleMultiAgentGroup[2];
+            agent_groups[0] = new SimpleMultiAgentGroup();
+            agent_groups[1] = new SimpleMultiAgentGroup();
             foreach (var agent in agents)
             {
                 agent_groups[agent.team_id].RegisterAgent( agent );
