@@ -5,7 +5,7 @@
 test_editors:
   - version: 2020.3
     extra_test: gym
-  - version: 2020.3
-    extra_test: sensor
   - version: 2021.2
+    extra_test: sensor
+  - version: trunk
     extra_test: llapi
