@@ -469,9 +469,9 @@ MonoBehaviour:
     VectorObservationSize: 6
     NumStackedVectorObservations: 2
     m_ActionSpec:
-      m_NumContinuousActions: 0
-      BranchSizes: 03000000030000000300000003000000
-    VectorActionSize: 03000000030000000300000003000000
+      m_NumContinuousActions: 1
+      BranchSizes: 030000000300000003000000
+    VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
@@ -561,6 +561,7 @@ MonoBehaviour:
   MaxStep: 0
   team_id: 0
   position_id: 0
+  freeze: 0
 --- !u!1 &6640134707753426979
 GameObject:
   m_ObjectHideFlags: 0

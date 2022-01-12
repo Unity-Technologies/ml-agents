@@ -31,7 +31,7 @@ namespace Project
 
     #region State
 
-        int m_action_kick_power;
+        float m_action_kick_power;
 
     #endregion
 
@@ -68,7 +68,7 @@ namespace Project
             AddReward( Environment.player_touch_ball_reward );
             var force =
                 m_action_kick_power * Environment.player_kick_power * m_position_config.kick_power_scale *
-                Mathf.Clamp( Vector3.Dot( Rigidbody.velocity, transform.forward ), 0, 10 );
+                Mathf.Clamp( 0.5f * Vector3.Dot( Rigidbody.velocity, transform.forward ), 0, 10 );
             var direction = (collided.transform.position - transform.position).normalized;
             collision.rigidbody.AddForce( direction * force );
 
@@ -119,33 +119,40 @@ namespace Project
                 return;
             }
 
+            //timer reward
             AddReward( m_position_config.timer_reward *
                        Environment.step_ratio );
 
             var position = Environment.ball_transform.position;
             var position1 = transform.position;
-            AddReward( 0.01f * Mathf.Exp( -0.1f *
+
+            //to ball distance reward
+            AddReward( 0.05f * Mathf.Exp( -0.1f *
                                           Vector3.Distance(
                                               position,
                                               position1 ) ) );
+
+            //Controlling ball reward
             AddReward( Vector3.Distance(
                 position,
                 position1 ) < 0.1f ?
-                0.01f / Vector3.Distance( Environment.ball_rigidbody.velocity, Rigidbody.velocity ) : 0 );
+                0.01f / (0.0001f + Vector3.Distance( Environment.ball_rigidbody.velocity, Rigidbody.velocity )) : 0 );
 
+            //Goal gate reward
             AddReward( 0.01f / (1 +
                                 Vector3.Distance(
                                     Environment.goal_transforms[team_id_reverse].position,
                                     position )) );
 
-            var acts = actionsBuffers.DiscreteActions;
+            var acts_discrete = actionsBuffers.DiscreteActions;
+            var acts_continuous = actionsBuffers.DiscreteActions;
 
-            m_action_kick_power = acts[3];
+            m_action_kick_power = acts_continuous[0];
 
             Move(
-                b_table[acts[0]],
-                b_table[acts[1]],
-                b_table[acts[2]] );
+                b_table[acts_discrete[0]],
+                b_table[acts_discrete[1]],
+                b_table[acts_discrete[2]] );
         }
         public override void OnEpisodeBegin()
         {
@@ -190,7 +197,8 @@ namespace Project
         Vector3 Destination;
         public void HigherHeuristic(in ActionBuffers actionsOut)
         {
-            var acts = actionsOut.DiscreteActions;
+            var acts_discrete = actionsOut.DiscreteActions;
+            var acts_continuous = actionsOut.ContinuousActions;
             if (Input.GetMouseButton( 0 ))
             {
                 if (Physics.Raycast( Camera.main.ScreenPointToRay( Input.mousePosition ), out var hitInfo, 1000000f, LayerMask.GetMask( "Ground" ) ))
@@ -205,57 +213,57 @@ namespace Project
             //left?
             if (Vector3.Cross( transform.forward, dir ).y > 0.1f)
             {
-                acts[2] = 2;
+                acts_discrete[2] = 2;
             }
             else if (Vector3.Cross( transform.forward, dir ).y < -0.1f)
             {
-                acts[2] = 1;
+                acts_discrete[2] = 1;
             }
             else
             {
-                acts[2] = 0;
+                acts_discrete[2] = 0;
             }
 
             if (Vector3.Dot( transform.forward, dir ) > 0.9f)
             {
-                acts[0] = 1;
+                acts_discrete[0] = 1;
             }
             else if (Vector3.Dot( transform.forward, dir ) < -1f)
             {
-                acts[0] = 2;
+                acts_discrete[0] = 2;
             }
             else
             {
-                acts[0] = 0;
+                acts_discrete[0] = 0;
             }
 
             if (vector.magnitude < 0.1f)
             {
-                acts[0] = 0;
+                acts_discrete[0] = 0;
             }
 
 
             if (Input.GetKey( KeyCode.A ))
             {
-                acts[1] = 1;
+                acts_discrete[1] = 1;
             }
             else if (Input.GetKey( KeyCode.D ))
             {
-                acts[1] = 2;
+                acts_discrete[1] = 2;
             }
             else
             {
-                acts[1] = 0;
+                acts_discrete[1] = 0;
             }
 
 
             if (Input.GetKey( KeyCode.Space ))
             {
-                acts[3] = 1;
+                acts_continuous[0] = 0.5f;
             }
             else
             {
-                acts[3] = 0;
+                acts_continuous[0] = 0f;
             }
         }
 
