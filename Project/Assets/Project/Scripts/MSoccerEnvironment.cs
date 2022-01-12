@@ -22,6 +22,8 @@ namespace Project
     #region Reference
 
         EnvironmentParameters environmentParameters;
+        public Transform ball_transform;
+        public Transform[] goal_transforms;
 
     #endregion
 
@@ -87,6 +89,10 @@ namespace Project
                 agent_groups[agent.team_id].RegisterAgent( agent );
             }
             soccer_ball = GetComponentInChildren<MSoccerBall>();
+            ball_transform = soccer_ball.transform;
+            goal_transforms = new Transform[2];
+            goal_transforms[0] = transform.Find( "Field" ).Find( "Goal_0" );
+            goal_transforms[1] = transform.Find( "Field" ).Find( "Goal_1" );
         }
 
         void InitEpisode()

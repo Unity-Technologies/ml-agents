@@ -19,6 +19,7 @@ namespace Project
 
         [HideInInspector]
         public int team_id;
+        int team_id_reverse;
         public int position_id;
         PositionConfig m_position_config;
         Vector3 spawn_position;
@@ -39,6 +40,7 @@ namespace Project
             Parameters = GetComponent<BehaviorParameters>();
             Environment = GetComponentInParent<MSoccerEnvironment>();
             team_id = Parameters.TeamId;
+            team_id_reverse = team_id == 0 ? 1 : 0;
             Rigidbody = GetComponent<Rigidbody>();
             Rigidbody.maxAngularVelocity = 500;
             m_position_config = Environment.positions[position_id];
@@ -98,7 +100,7 @@ namespace Project
                 acts[1] = 2;
             }
 
-            if (Input.GetKey(KeyCode.Space))
+            if (Input.GetKey( KeyCode.Space ))
             {
                 acts[3] = 2;
             }
@@ -113,6 +115,17 @@ namespace Project
         {
             AddReward( m_position_config.timer_reward *
                        Environment.cur_step_ratio );
+
+            var position = Environment.ball_transform.position;
+            AddReward( 0.005f / (1 +
+                                 Vector3.Distance(
+                                     position,
+                                     transform.position )) );
+
+            AddReward( 0.005f / (1 +
+                                 Vector3.Distance(
+                                     Environment.goal_transforms[team_id_reverse].position,
+                                     position )) );
 
             var acts = actionsBuffers.DiscreteActions;
 
