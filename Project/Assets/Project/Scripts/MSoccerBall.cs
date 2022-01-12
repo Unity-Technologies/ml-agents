@@ -23,7 +23,7 @@ namespace Project
 
     #region State
 
-        int last_kick_team_id_reverse;
+        // int last_kick_team_id_reverse;
 
     #endregion
 
@@ -57,18 +57,18 @@ namespace Project
             {
                 Environment.Goal( 1 );
             }
-            if (collided.CompareTag( player_tags[0] ))
-            {
-                last_kick_team_id_reverse = 1;
-            }
-            if (collided.CompareTag( player_tags[1] ))
-            {
-                last_kick_team_id_reverse = 0;
-            }
-            if (collided.CompareTag( "wall" ))
-            {
-                Environment.Goal( last_kick_team_id_reverse );
-            }
+            // if (collided.CompareTag( player_tags[0] ))
+            // {
+            //     last_kick_team_id_reverse = 1;
+            // }
+            // if (collided.CompareTag( player_tags[1] ))
+            // {
+            //     last_kick_team_id_reverse = 0;
+            // }
+            // if (collided.CompareTag( "wall" ))
+            // {
+            //     Environment.Goal( last_kick_team_id_reverse );
+            // }
 
 
         }

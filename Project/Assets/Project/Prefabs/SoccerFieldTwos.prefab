@@ -49,10 +49,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4738727498795af4bb2fcd9ab3e933c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ball_transform: {fileID: 0}
+  goal_transforms: []
   episode_max_steps: 25000
   player_base_speed: 2
-  player_base_angular_speed: 100
-  player_kick_power: 2000
+  player_base_angular_speed: 400
+  player_kick_power: 1000
   player_touch_ball_reward: 0.2
   positions:
   - position_name: Striker
@@ -169,6 +171,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6639830420233359531, guid: 112d65f071b1baf46bf02f59feed357f,
         type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6639830420233359531, guid: 112d65f071b1baf46bf02f59feed357f,
+        type: 3}
       propertyPath: m_TagString
       value: agent_1
       objectReference: {fileID: 0}
@@ -256,6 +263,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Striker_1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6639830420233359531, guid: 112d65f071b1baf46bf02f59feed357f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6639830420233359531, guid: 112d65f071b1baf46bf02f59feed357f,
         type: 3}
@@ -431,6 +443,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Striker_0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6639830420233359531, guid: 112d65f071b1baf46bf02f59feed357f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6639830420233359531, guid: 112d65f071b1baf46bf02f59feed357f,
         type: 3}

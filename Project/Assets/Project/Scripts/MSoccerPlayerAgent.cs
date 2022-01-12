@@ -25,6 +25,8 @@ namespace Project
         Vector3 spawn_position;
         Quaternion spawn_rotation;
 
+        public bool freeze = false;
+
     #endregion
 
     #region State
@@ -50,7 +52,11 @@ namespace Project
 
         }
 
-        public override void CollectObservations(VectorSensor sensor) { }
+        public override void CollectObservations(VectorSensor sensor)
+        {
+            sensor.AddObservation( Environment.ball_transform.position - transform.position );
+            sensor.AddObservation( Environment.ball_rigidbody.velocity - Rigidbody.velocity );
+        }
 
         void OnCollisionEnter(Collision collision)
         {
@@ -63,69 +69,74 @@ namespace Project
             var force =
                 m_action_kick_power * Environment.player_kick_power * m_position_config.kick_power_scale *
                 Mathf.Clamp( Vector3.Dot( Rigidbody.velocity, transform.forward ), 0, 10 );
-            var direction = (collision.contacts[0].point - transform.position).normalized;
+            var direction = (collided.transform.position - transform.position).normalized;
             collision.rigidbody.AddForce( direction * force );
 
         }
         public override void Heuristic(in ActionBuffers actionsOut)
         {
-            var acts = actionsOut.DiscreteActions;
-            //forward
-            if (Input.GetKey( KeyCode.W ))
-            {
-                acts[0] = 1;
-            }
-            if (Input.GetKey( KeyCode.S ))
-            {
-                acts[0] = 2;
-            }
+            // var acts = actionsOut.DiscreteActions;
+            // //forward
+            // if (Input.GetKey( KeyCode.W ))
+            // {
+            //     acts[0] = 1;
+            // }
+            // if (Input.GetKey( KeyCode.S ))
+            // {
+            //     acts[0] = 2;
+            // }
+            //
+            // //rotate
+            // if (Input.GetKey( KeyCode.E ))
+            // {
+            //     acts[2] = 1;
+            // }
+            // if (Input.GetKey( KeyCode.Q ))
+            // {
+            //     acts[2] = 2;
+            // }
+            //
+            // //right
+            // if (Input.GetKey( KeyCode.D ))
+            // {
+            //     acts[1] = 1;
+            // }
+            // if (Input.GetKey( KeyCode.A ))
+            // {
+            //     acts[1] = 2;
+            // }
 
-            //rotate
-            if (Input.GetKey( KeyCode.E ))
-            {
-                acts[2] = 1;
-            }
-            if (Input.GetKey( KeyCode.Q ))
-            {
-                acts[2] = 2;
-            }
+            HigherHeuristic( in actionsOut );
 
-            //right
-            if (Input.GetKey( KeyCode.D ))
-            {
-                acts[1] = 1;
-            }
-            if (Input.GetKey( KeyCode.A ))
-            {
-                acts[1] = 2;
-            }
 
-            if (Input.GetKey( KeyCode.Space ))
-            {
-                acts[3] = 2;
-            }
-            else
-            {
-                acts[3] = 1;
-            }
         }
 
         // public override void CollectObservations(VectorSensor sensor) { }
         public override void OnActionReceived(ActionBuffers actionsBuffers)
         {
+            if (freeze)
+            {
+                return;
+            }
+
             AddReward( m_position_config.timer_reward *
-                       Environment.cur_step_ratio );
+                       Environment.step_ratio );
 
             var position = Environment.ball_transform.position;
-            AddReward( 0.005f / (1 +
-                                 Vector3.Distance(
-                                     position,
-                                     transform.position )) );
+            var position1 = transform.position;
+            AddReward( 0.01f * Mathf.Exp( -0.1f *
+                                          Vector3.Distance(
+                                              position,
+                                              position1 ) ) );
+            AddReward( Vector3.Distance(
+                position,
+                position1 ) < 0.1f ?
+                0.01f / Vector3.Distance( Environment.ball_rigidbody.velocity, Rigidbody.velocity ) : 0 );
 
-            AddReward( 0.005f / (1 +
-                                 Vector3.Distance(
-                                     Environment.goal_transforms[team_id_reverse].position,
-                                     position )) );
+            AddReward( 0.01f / (1 +
+                                Vector3.Distance(
+                                    Environment.goal_transforms[team_id_reverse].position,
+                                    position )) );
 
             var acts = actionsBuffers.DiscreteActions;
 
@@ -169,6 +180,83 @@ namespace Project
             var y_vector = transform1.up * -y_axis_rot;
             transform1.Rotate( y_vector, Time.deltaTime * Environment.player_base_angular_speed );
             Rigidbody.AddForce( (x_vector + z_vector) * Environment.player_base_speed, ForceMode.VelocityChange );
+
+            AddReward( -Environment.step_ratio * 2 * Mathf.Exp( -2f / (0.01f + Rigidbody.velocity.magnitude) ) );
+            AddReward( -Environment.step_ratio * 4 * Mathf.Exp( -2f / (0.01f + Rigidbody.angularVelocity.magnitude) ) );
+        }
+
+
+
+        Vector3 Destination;
+        public void HigherHeuristic(in ActionBuffers actionsOut)
+        {
+            var acts = actionsOut.DiscreteActions;
+            if (Input.GetMouseButton( 0 ))
+            {
+                if (Physics.Raycast( Camera.main.ScreenPointToRay( Input.mousePosition ), out var hitInfo, 1000000f, LayerMask.GetMask( "Ground" ) ))
+                {
+                    Destination = hitInfo.point;
+                }
+            }
+
+            Vector3 vector = Destination - transform.position;
+            Vector3 dir = vector.normalized;
+
+            //left?
+            if (Vector3.Cross( transform.forward, dir ).y > 0.1f)
+            {
+                acts[2] = 2;
+            }
+            else if (Vector3.Cross( transform.forward, dir ).y < -0.1f)
+            {
+                acts[2] = 1;
+            }
+            else
+            {
+                acts[2] = 0;
+            }
+
+            if (Vector3.Dot( transform.forward, dir ) > 0.9f)
+            {
+                acts[0] = 1;
+            }
+            else if (Vector3.Dot( transform.forward, dir ) < -1f)
+            {
+                acts[0] = 2;
+            }
+            else
+            {
+                acts[0] = 0;
+            }
+
+            if (vector.magnitude < 0.1f)
+            {
+                acts[0] = 0;
+            }
+
+
+            if (Input.GetKey( KeyCode.A ))
+            {
+                acts[1] = 1;
+            }
+            else if (Input.GetKey( KeyCode.D ))
+            {
+                acts[1] = 2;
+            }
+            else
+            {
+                acts[1] = 0;
+            }
+
+
+            if (Input.GetKey( KeyCode.Space ))
+            {
+                acts[3] = 1;
+            }
+            else
+            {
+                acts[3] = 0;
+            }
         }
 
     #endregion

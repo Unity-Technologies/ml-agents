@@ -23,6 +23,7 @@ namespace Project
 
         EnvironmentParameters environmentParameters;
         public Transform ball_transform;
+        public Rigidbody ball_rigidbody;
         public Transform[] goal_transforms;
 
     #endregion
@@ -50,7 +51,7 @@ namespace Project
         ///     The step timer of current episode.
         /// </summary>
         public int cur_step { private set; get; }
-        public float cur_step_ratio => cur_step / (float)episode_max_steps;
+        public float step_ratio => 1f / episode_max_steps;
 
     #endregion
 
@@ -90,6 +91,7 @@ namespace Project
             }
             soccer_ball = GetComponentInChildren<MSoccerBall>();
             ball_transform = soccer_ball.transform;
+            ball_rigidbody = soccer_ball.GetComponent<Rigidbody>();
             goal_transforms = new Transform[2];
             goal_transforms[0] = transform.Find( "Field" ).Find( "Goal_0" );
             goal_transforms[1] = transform.Find( "Field" ).Find( "Goal_1" );
@@ -124,8 +126,8 @@ namespace Project
         public void Goal(int scored_team_id)
         {
             int enemy_team_id = scored_team_id == 0 ? 1 : 0;
-            agent_groups[scored_team_id].AddGroupReward( 1 );
-            agent_groups[enemy_team_id].AddGroupReward( -1 );
+            agent_groups[scored_team_id].AddGroupReward( 10 * (1 - cur_step * step_ratio) );
+            agent_groups[enemy_team_id].AddGroupReward( -5 );
             EndEpisode( false );
             InitEpisode();
         }

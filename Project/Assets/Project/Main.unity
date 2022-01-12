@@ -190,6 +190,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SoccerFieldTwos (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 044f8fd1eb0b3184d97de505816f0c0f, type: 3}
 --- !u!1001 &222441160
@@ -258,6 +263,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SoccerFieldTwos (11)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 044f8fd1eb0b3184d97de505816f0c0f, type: 3}
@@ -441,6 +451,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SoccerFieldTwos (9)
       objectReference: {fileID: 0}
+    - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 044f8fd1eb0b3184d97de505816f0c0f, type: 3}
 --- !u!1001 &537200654
@@ -509,6 +524,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SoccerFieldTwos (14)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 044f8fd1eb0b3184d97de505816f0c0f, type: 3}
@@ -579,6 +599,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SoccerFieldTwos (10)
       objectReference: {fileID: 0}
+    - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 044f8fd1eb0b3184d97de505816f0c0f, type: 3}
 --- !u!1001 &726938067
@@ -648,6 +673,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SoccerFieldTwos (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 044f8fd1eb0b3184d97de505816f0c0f, type: 3}
 --- !u!1001 &759173382
@@ -716,6 +746,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SoccerFieldTwos (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 044f8fd1eb0b3184d97de505816f0c0f, type: 3}
@@ -795,8 +830,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 820547825}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: -0.49626297, y: 0.50345665, z: -0.49289104, w: -0.50726026}
+  m_LocalPosition: {x: 1.6520715, y: 57.845596, z: 2.3389196}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -869,6 +904,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SoccerFieldTwos (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 044f8fd1eb0b3184d97de505816f0c0f, type: 3}
 --- !u!1001 &1502954521
@@ -937,6 +977,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SoccerFieldTwos (12)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 044f8fd1eb0b3184d97de505816f0c0f, type: 3}
@@ -1007,6 +1052,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SoccerFieldTwos (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 044f8fd1eb0b3184d97de505816f0c0f, type: 3}
 --- !u!1001 &1897655456
@@ -1076,8 +1126,35 @@ PrefabInstance:
       propertyPath: m_Name
       value: SoccerFieldTwos (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 044f8fd1eb0b3184d97de505816f0c0f, type: 3}
+--- !u!1 &1943340780 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4373734098205173631, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+    type: 3}
+  m_PrefabInstance: {fileID: 6960301589392326129}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1943340789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1943340780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2902496c0120472b90269f94a0aec7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Record: 1
+  NumStepsToRecord: 0
+  DemonstrationName: striker_11
+  DemonstrationDirectory: demo
 --- !u!1001 &1971308684
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1144,6 +1221,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SoccerFieldTwos (13)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 044f8fd1eb0b3184d97de505816f0c0f, type: 3}
@@ -1214,6 +1296,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SoccerFieldTwos (15)
       objectReference: {fileID: 0}
+    - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 044f8fd1eb0b3184d97de505816f0c0f, type: 3}
 --- !u!1001 &2010158334
@@ -1282,6 +1369,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SoccerFieldTwos (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 044f8fd1eb0b3184d97de505816f0c0f, type: 3}
@@ -1352,6 +1444,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: SoccerFieldTwos (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6960301589219081829, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_TagString
+      value: ground
+      objectReference: {fileID: 0}
+    - target: {fileID: 6960301589219081848, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6960301589219081849, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 044f8fd1eb0b3184d97de505816f0c0f, type: 3}
 --- !u!1001 &6960301589392326129
@@ -1361,6 +1473,51 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4119425478029331468, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: DecisionPeriod
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4404795176259322200, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_BehaviorType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5007069502405661050, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: freeze
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5007069502405661050, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5007069503481778960, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: freeze
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5007069503481778960, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5007069503994927711, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5007069504052947561, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: freeze
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5007069504052947561, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6955747279366964326, guid: 044f8fd1eb0b3184d97de505816f0c0f,
         type: 3}
       propertyPath: m_RootOrder
