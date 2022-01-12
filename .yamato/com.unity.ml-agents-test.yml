@@ -7,9 +7,6 @@ test_editors:
     - version: 2021.2
       testProject: DevProject
       enableNoDefaultPackages: !!bool true
-    - version: trunk
-      testProject: DevProject
-      enableNoDefaultPackages: !!bool true
 
 trunk_editor:
     - version: trunk
