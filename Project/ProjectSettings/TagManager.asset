@@ -33,6 +33,8 @@ TagManager:
   - plus
   - goal_0
   - goal_1
+  - agent_0
+  - agent_1
   layers:
   - Default
   - TransparentFX

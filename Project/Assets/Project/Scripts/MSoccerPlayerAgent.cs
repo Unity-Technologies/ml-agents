@@ -1,6 +1,7 @@
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
+using Unity.MLAgents.Sensors;
 using UnityEngine;
 namespace Project
 {
@@ -25,6 +26,12 @@ namespace Project
 
     #endregion
 
+    #region State
+
+        int m_action_kick_power;
+
+    #endregion
+
     #region AgentEvent
 
         public override void Initialize()
@@ -41,6 +48,8 @@ namespace Project
 
         }
 
+        public override void CollectObservations(VectorSensor sensor) { }
+
         void OnCollisionEnter(Collision collision)
         {
             var collided = collision.gameObject;
@@ -50,7 +59,7 @@ namespace Project
             }
             AddReward( Environment.player_touch_ball_reward );
             var force =
-                Environment.player_kick_power * m_position_config.kick_power_scale *
+                m_action_kick_power * Environment.player_kick_power * m_position_config.kick_power_scale *
                 Mathf.Clamp( Vector3.Dot( Rigidbody.velocity, transform.forward ), 0, 10 );
             var direction = (collision.contacts[0].point - transform.position).normalized;
             collision.rigidbody.AddForce( direction * force );
@@ -88,7 +97,17 @@ namespace Project
             {
                 acts[1] = 2;
             }
+
+            if (Input.GetKey(KeyCode.Space))
+            {
+                acts[3] = 2;
+            }
+            else
+            {
+                acts[3] = 1;
+            }
         }
+
         // public override void CollectObservations(VectorSensor sensor) { }
         public override void OnActionReceived(ActionBuffers actionsBuffers)
         {
@@ -96,6 +115,8 @@ namespace Project
                        Environment.cur_step_ratio );
 
             var acts = actionsBuffers.DiscreteActions;
+
+            m_action_kick_power = acts[3];
 
             Move(
                 b_table[acts[0]],
