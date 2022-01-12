@@ -23,7 +23,7 @@ namespace Project
 
     #region State
 
-        // int last_kick_team_id_reverse;
+        MSoccerPlayerAgent last_agent;
 
     #endregion
 
@@ -51,20 +51,16 @@ namespace Project
             var collided = collision.gameObject;
             if (collided.CompareTag( goal_tags[0] ))
             {
-                Environment.Goal( 0 );
+                Environment.Goal( 0, last_agent );
             }
             if (collided.CompareTag( goal_tags[1] ))
             {
-                Environment.Goal( 1 );
+                Environment.Goal( 1, last_agent );
             }
-            // if (collided.CompareTag( player_tags[0] ))
-            // {
-            //     last_kick_team_id_reverse = 1;
-            // }
-            // if (collided.CompareTag( player_tags[1] ))
-            // {
-            //     last_kick_team_id_reverse = 0;
-            // }
+            if (collided.CompareTag( player_tags[0] )||collided.CompareTag( player_tags[1] ))
+            {
+                last_agent= collided.GetComponent<MSoccerPlayerAgent>();
+            }
             // if (collided.CompareTag( "wall" ))
             // {
             //     Environment.Goal( last_kick_team_id_reverse );

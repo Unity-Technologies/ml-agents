@@ -126,17 +126,19 @@ namespace Project
             var position = Environment.ball_transform.position;
             var position1 = transform.position;
 
+
+
             //to ball distance reward
-            AddReward( 0.05f * Mathf.Exp( -0.1f *
-                                          Vector3.Distance(
-                                              position,
-                                              position1 ) ) );
+            AddReward( 0.1f * Mathf.Exp( -0.1f *
+                                         Vector3.Distance(
+                                             position,
+                                             position1 ) ) );
 
             //Controlling ball reward
             AddReward( Vector3.Distance(
                 position,
-                position1 ) < 0.1f ?
-                0.01f / (0.0001f + Vector3.Distance( Environment.ball_rigidbody.velocity, Rigidbody.velocity )) : 0 );
+                position1 ) < 0.3f ?
+                0.1f / (0.0001f + Vector3.Distance( Environment.ball_rigidbody.velocity, Rigidbody.velocity )) : 0 );
 
             //Goal gate reward
             AddReward( 0.01f / (1 +
@@ -211,11 +213,11 @@ namespace Project
             Vector3 dir = vector.normalized;
 
             //left?
-            if (Vector3.Cross( transform.forward, dir ).y > 0.1f)
+            if (Vector3.Cross( transform.forward, dir ).y > 0.2f)
             {
                 acts_discrete[2] = 2;
             }
-            else if (Vector3.Cross( transform.forward, dir ).y < -0.1f)
+            else if (Vector3.Cross( transform.forward, dir ).y < -0.2f)
             {
                 acts_discrete[2] = 1;
             }
@@ -224,7 +226,7 @@ namespace Project
                 acts_discrete[2] = 0;
             }
 
-            if (Vector3.Dot( transform.forward, dir ) > 0.9f)
+            if (Vector3.Dot( transform.forward, dir ) > 0.95f)
             {
                 acts_discrete[0] = 1;
             }

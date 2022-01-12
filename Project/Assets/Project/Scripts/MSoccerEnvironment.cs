@@ -123,11 +123,13 @@ namespace Project
 
     #region Interface
 
-        public void Goal(int scored_team_id)
+        public void Goal(int scored_team_id, MSoccerPlayerAgent agent)
         {
             int enemy_team_id = scored_team_id == 0 ? 1 : 0;
-            agent_groups[scored_team_id].AddGroupReward( 10 * (1 - cur_step * step_ratio) );
-            agent_groups[enemy_team_id].AddGroupReward( -5 );
+            float reward = 15 * (1 - cur_step * step_ratio);
+            agent_groups[scored_team_id].AddGroupReward( reward );
+            agent_groups[enemy_team_id].AddGroupReward( -7.5f );
+            agent.AddReward( reward );
             EndEpisode( false );
             InitEpisode();
         }

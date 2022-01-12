@@ -53,9 +53,9 @@ MonoBehaviour:
   ball_rigidbody: {fileID: 0}
   goal_transforms: []
   episode_max_steps: 25000
-  player_base_speed: 1
+  player_base_speed: 1.5
   player_base_angular_speed: 400
-  player_kick_power: 400
+  player_kick_power: 200
   player_touch_ball_reward: 0.2
   positions:
   - position_name: Striker
