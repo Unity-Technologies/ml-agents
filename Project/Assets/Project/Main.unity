@@ -807,6 +807,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4373734098151386202, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4373734098205173631, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4373734098649421641, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4373734099227930160, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4404605247187822192, guid: 044f8fd1eb0b3184d97de505816f0c0f,
         type: 3}
       propertyPath: m_RayLength
@@ -882,12 +902,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6958641002678820078, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
         type: 3}
       propertyPath: m_Name
       value: SoccerFieldTwos (1)
       objectReference: {fileID: 0}
     - target: {fileID: 6959179284476831712, guid: 044f8fd1eb0b3184d97de505816f0c0f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6960301589219081829, guid: 044f8fd1eb0b3184d97de505816f0c0f,
         type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -1194,26 +1224,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4404605247187822192, guid: 044f8fd1eb0b3184d97de505816f0c0f,
-        type: 3}
-      propertyPath: m_RayLength
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 4404605247241612629, guid: 044f8fd1eb0b3184d97de505816f0c0f,
-        type: 3}
-      propertyPath: m_RayLength
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 4404605247685860707, guid: 044f8fd1eb0b3184d97de505816f0c0f,
-        type: 3}
-      propertyPath: m_RayLength
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 4404605248260170778, guid: 044f8fd1eb0b3184d97de505816f0c0f,
-        type: 3}
-      propertyPath: m_RayLength
-      value: 100
-      objectReference: {fileID: 0}
     - target: {fileID: 6955747279366964326, guid: 044f8fd1eb0b3184d97de505816f0c0f,
         type: 3}
       propertyPath: m_RootOrder
