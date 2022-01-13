@@ -54,7 +54,7 @@ MonoBehaviour:
   goal_transforms: []
   episode_max_steps: 25000
   player_base_speed: 1.5
-  player_base_angular_speed: 400
+  player_base_angular_speed: 350
   player_kick_power: 200
   player_touch_ball_reward: 0.2
   positions:
@@ -599,6 +599,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 814601093608623084, guid: 6e356f54065067344a9f60de2f7e1535,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 814601093772779126, guid: 6e356f54065067344a9f60de2f7e1535,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6e356f54065067344a9f60de2f7e1535, type: 3}
