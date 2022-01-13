@@ -38,6 +38,7 @@ namespace Project
         public float player_base_angular_speed = 100;
         public float player_kick_power = 200;
         public float player_touch_ball_reward = 0.2f;
+        public float player_time_reward = 2f;
         public List<PositionConfig> positions;
 
     #endregion

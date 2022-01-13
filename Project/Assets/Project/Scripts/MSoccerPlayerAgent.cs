@@ -119,8 +119,8 @@ namespace Project
                 return;
             }
 
-            //timer reward
-            AddReward( m_position_config.timer_reward *
+            //timer reward/punishment
+            AddReward( m_position_config.timer_reward * Environment.player_time_reward *
                        Environment.step_ratio );
 
             var position = Environment.ball_transform.position;
@@ -129,7 +129,7 @@ namespace Project
 
 
             //to ball distance reward
-            AddReward( 0.1f * Mathf.Exp( -0.1f *
+            AddReward( 0.07f * Mathf.Exp( -0.1f *
                                          Vector3.Distance(
                                              position,
                                              position1 ) ) );
@@ -138,10 +138,10 @@ namespace Project
             AddReward( Vector3.Distance(
                 position,
                 position1 ) < 0.3f ?
-                0.1f / (0.0001f + Vector3.Distance( Environment.ball_rigidbody.velocity, Rigidbody.velocity )) : 0 );
+                0.07f / (0.0001f + Vector3.Distance( Environment.ball_rigidbody.velocity, Rigidbody.velocity )) : 0 );
 
             //Goal gate reward
-            AddReward( 0.01f / (1 +
+            AddReward( 0.1f / (1 +
                                 Vector3.Distance(
                                     Environment.goal_transforms[team_id_reverse].position,
                                     position )) );
