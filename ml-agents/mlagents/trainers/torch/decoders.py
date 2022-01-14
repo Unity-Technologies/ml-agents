@@ -5,7 +5,7 @@ from mlagents.trainers.torch.layers import linear_layer
 
 
 class ValueHeads(nn.Module):
-    def __init__(self, stream_names: List[str], input_size: int, output_size: int = 1, n_modes: int = 4):
+    def __init__(self, stream_names: List[str], input_size: int, output_size: int = 1, n_modes: int = 8):
         super().__init__()
         self.stream_names = stream_names
         _value_heads = {}
