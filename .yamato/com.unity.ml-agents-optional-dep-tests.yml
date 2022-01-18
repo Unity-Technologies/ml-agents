@@ -1,13 +1,13 @@
 optional_deps:
     - name: Analytics
       project: "OptionalDepedencyTests/NoAnalyticsModule"
-      version: 2020.2
+      version: 2020.3
     - name: Physics
       project: OptionalDepedencyTests/NoPhysicsModule
-      version: 2020.2
+      version: 2020.3
     - name: Physics2D
       project: OptionalDepedencyTests/NoPhysics2DModule
-      version: 2020.2
+      version: 2020.3
 ---
 
   {% for optional_dep in optional_deps %}

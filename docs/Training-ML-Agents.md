@@ -2,20 +2,27 @@
 
 **Table of Contents**
 
-- [Training with mlagents-learn](#training-with-mlagents-learn)
-  - [Starting Training](#starting-training)
-    - [Observing Training](#observing-training)
-    - [Stopping and Resuming Training](#stopping-and-resuming-training)
-    - [Loading an Existing Model](#loading-an-existing-model)
-- [Training Configurations](#training-configurations)
-  - [Behavior Configurations](#behavior-configurations)
-  - [Environment Parameters](#environment-parameters)
-    - [Environment Parameter Randomization](#environment-parameter-randomization)
-      - [Supported Sampler Types](#supported-sampler-types)
-      - [Training with Environment Parameter Randomization](#training-with-environment-parameter-randomization)
-    - [Curriculum Learning](#curriculum)
-      - [Training with a Curriculum](#training-with-a-curriculum)
-  - [Training Using Concurrent Unity Instances](#training-using-concurrent-unity-instances)
+- [Training ML-Agents](#training-ml-agents)
+  - [Training with mlagents-learn](#training-with-mlagents-learn)
+    - [Starting Training](#starting-training)
+      - [Observing Training](#observing-training)
+      - [Stopping and Resuming Training](#stopping-and-resuming-training)
+      - [Loading an Existing Model](#loading-an-existing-model)
+  - [Training Configurations](#training-configurations)
+    - [Adding CLI Arguments to the Training Configuration file](#adding-cli-arguments-to-the-training-configuration-file)
+      - [Environment settings](#environment-settings)
+      - [Engine settings](#engine-settings)
+      - [Checkpoint settings](#checkpoint-settings)
+      - [Torch settings:](#torch-settings)
+    - [Behavior Configurations](#behavior-configurations)
+    - [Default Behavior Settings](#default-behavior-settings)
+    - [Environment Parameters](#environment-parameters)
+      - [Environment Parameter Randomization](#environment-parameter-randomization)
+        - [Supported Sampler Types](#supported-sampler-types)
+        - [Training with Environment Parameter Randomization](#training-with-environment-parameter-randomization)
+      - [Curriculum](#curriculum)
+        - [Training with a Curriculum](#training-with-a-curriculum)
+    - [Training Using Concurrent Unity Instances](#training-using-concurrent-unity-instances)
 
 For a broad overview of reinforcement learning, imitation learning and all the
 training scenarios, methods and options within the ML-Agents Toolkit, see
@@ -573,7 +580,7 @@ Each `Lesson` has 3 fields :
 
 | **Setting**         | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | :------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `measure`           | What to measure learning progress, and advancement in lessons by.<br><br> `reward` uses a measure received reward, while `progress` uses the ratio of steps/max_steps.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `measure`           | What to measure learning progress, and advancement in lessons by.<br><br> `reward` uses a measure of received reward, `progress` uses the ratio of steps/max_steps, while `Elo` is available only for self-play situations and uses Elo score as a curriculum completion measure.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | `behavior`        | Specifies which behavior is being tracked. There can be multiple behaviors with different names, each at different points of training. This setting allows the curriculum to track only one of them.                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `threshold`        | Determines at what point in value of `measure` the lesson should be increased.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `min_lesson_length` | The minimum number of episodes that should be completed before the lesson can change. If `measure` is set to `reward`, the average cumulative reward of the last `min_lesson_length` episodes will be used to determine if the lesson should change. Must be nonnegative. <br><br> **Important**: the average reward that is compared to the thresholds is different than the mean reward that is logged to the console. For example, if `min_lesson_length` is `100`, the lesson will increment after the average cumulative reward of the last `100` episodes exceeds the current threshold. The mean reward logged to the console is dictated by the `summary_freq` parameter defined above. |

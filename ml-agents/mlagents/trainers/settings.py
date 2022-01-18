@@ -151,6 +151,7 @@ class NetworkSettings:
     vis_encode_type: EncoderType = EncoderType.SIMPLE
     memory: Optional[MemorySettings] = None
     goal_conditioning_type: ConditioningType = ConditioningType.HYPER
+    deterministic: bool = parser.get_default("deterministic")
 
 
 @attr.s(auto_attribs=True)
@@ -936,9 +937,11 @@ class RunOptions(ExportableSettings):
                         key
                     )
                 )
+
         # Override with CLI args
         # Keep deprecated --load working, TODO: remove
         argparse_args["resume"] = argparse_args["resume"] or argparse_args["load_model"]
+
         for key, val in argparse_args.items():
             if key in DetectDefault.non_default_args:
                 if key in attr.fields_dict(CheckpointSettings):
@@ -958,6 +961,16 @@ class RunOptions(ExportableSettings):
         if isinstance(final_runoptions.behaviors, TrainerSettings.DefaultTrainerDict):
             # configure whether or not we should require all behavior names to be found in the config YAML
             final_runoptions.behaviors.set_config_specified(_require_all_behaviors)
+
+        _non_default_args = DetectDefault.non_default_args
+
+        # Prioritize the deterministic mode from the cli for deterministic actions.
+        if "deterministic" in _non_default_args:
+            for behaviour in final_runoptions.behaviors.keys():
+                final_runoptions.behaviors[
+                    behaviour
+                ].network_settings.deterministic = argparse_args["deterministic"]
+
         return final_runoptions
 
     @staticmethod
