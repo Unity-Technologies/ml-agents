@@ -24,7 +24,7 @@ namespace Unity.MLAgents.Areas
         /// </summary>
         public float separation = 10f;
 
-        int3 m_GridSize = new int3(1, 1, 1);
+        public int3 m_GridSize = new int3(1, 1, 1);
         int m_areaCount = 0;
         string m_TrainingAreaName;
 
