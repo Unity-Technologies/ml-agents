@@ -2,7 +2,7 @@
 
 # Migrating
 ## Migrating the package to version 2.0
-- The official version of Unity ML-Agents supports is now 2019.4 LTS. If you run
+- The official version of Unity ML-Agents supports is now 2020.3 LTS. If you run
   into issues, please consider deleting your project's Library folder and reponening your
   project.
 - If you used any of the APIs that were deprecated before version 2.0, you need to use their replacement. These
@@ -200,7 +200,7 @@ folder
 - The Parameter Randomization feature has been merged with the Curriculum feature. It is now possible to specify a sampler
 in the lesson of a Curriculum. Curriculum has been refactored and is now specified at the level of the parameter, not the
 behavior. More information
-[here](https://github.com/Unity-Technologies/ml-agents/blob/release_18_docs/docs/Training-ML-Agents.md).(#4160)
+[here](https://github.com/Unity-Technologies/ml-agents/blob/release_19_docs/docs/Training-ML-Agents.md).(#4160)
 
 ### Steps to Migrate
 - The configuration format for curriculum and parameter randomization has changed. To upgrade your configuration files,

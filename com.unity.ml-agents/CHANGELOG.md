@@ -8,10 +8,23 @@ and this project adheres to
 
 ## [Unreleased]
 ### Major Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+### Bug Fixes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+## [2.2.1-exp.1] - 2022-01-14
+### Major Changes
 
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- The minimum supported Unity version was updated to 2020.3. (#5673)
 - Added a new feature to replicate training areas dynamically during runtime. (#5568)
 - Update Barracuda to 2.3.1-preview (#5591)
+- Update Input System to 1.3.0 (#5661)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
@@ -35,9 +48,11 @@ and this project adheres to
     - Extra tensors are now serialized to support deterministic action selection in onnx. (#5593)
     - Support inference with deterministic action selection in editor (#5599)
 - Added minimal analytics collection to LL-API (#5511)
+- Update Colab notebooks for GridWorld example with DQN illustrating the use of the Python API and how to export to ONNX (#5643)
 
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Update gRPC native lib to universal for arm64 and x86_64. This change should enable ml-agents usage on mac M1 (#5283, #5519)
 - Fixed a bug where ml-agents code wouldn't compile on platforms that didn't support analytics (PS4/5, XBoxOne) (#5628)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
@@ -49,6 +64,7 @@ terminated teammates. (#5441)
 - Fixed conflicting CLI and yaml options regarding resume & initialize_from (#5495)
 - Fixed failing tests for gym-unity due to gym 0.20.0 release (#5540)
 - Fixed a bug in VAIL where the variational bottleneck was not properly passing gradients (#5546)
+- Harden user PII protection logic and extend TrainingAnalytics to expose detailed configuration parameters. (#5512)
 
 ## [2.1.0-exp.1] - 2021-06-09
 ### Minor Changes

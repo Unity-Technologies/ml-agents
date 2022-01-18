@@ -10,6 +10,7 @@ npm-debug.log
 build.sh.meta
 build.bat.meta
 .idea/
+!Samples/*/*.unitypackage
 
 /[Ll]ibrary/
 /Logs/
@@ -21,8 +22,6 @@ build.bat.meta
 /Assets/Plugins*
 /Assets/Demonstrations*
 /csharp_timers.json
-/Samples/
-/Samples.meta
 
 # Visual Studio 2015 cache directory
 /.vs/

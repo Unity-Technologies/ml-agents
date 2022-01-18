@@ -20,7 +20,7 @@ using Unity.Barracuda;
  * API. For more information on each of these entities, in addition to how to
  * set-up a learning environment and train the behavior of characters in a
  * Unity scene, please browse our documentation pages on GitHub:
- * https://github.com/Unity-Technologies/ml-agents/tree/release_18_docs/docs/
+ * https://github.com/Unity-Technologies/ml-agents/tree/release_19_docs/docs/
  */
 
 namespace Unity.MLAgents
@@ -61,7 +61,7 @@ namespace Unity.MLAgents
     /// fall back to inference or heuristic decisions. (You can also set agents to always use
     /// inference or heuristics.)
     /// </remarks>
-    [HelpURL("https://github.com/Unity-Technologies/ml-agents/tree/release_18_docs/" +
+    [HelpURL("https://github.com/Unity-Technologies/ml-agents/tree/release_19_docs/" +
         "docs/Learning-Environment-Design.md")]
     public class Academy : IDisposable
     {
@@ -107,7 +107,7 @@ namespace Unity.MLAgents
         /// Unity package version of com.unity.ml-agents.
         /// This must match the version string in package.json and is checked in a unit test.
         /// </summary>
-        internal const string k_PackageVersion = "2.1.0-exp.1";
+        internal const string k_PackageVersion = "2.2.1-exp.1";
 
         const int k_EditorTrainingPort = 5004;
 
@@ -183,9 +183,11 @@ namespace Unity.MLAgents
             set { m_InferenceSeed = value; }
         }
 
-        // Number of training areas to instantiate
         int m_NumAreas;
 
+        /// <summary>
+        /// Number of training areas to instantiate.
+        /// </summary>
         public int NumAreas => m_NumAreas;
 
         /// <summary>

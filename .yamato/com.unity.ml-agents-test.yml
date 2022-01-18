@@ -1,11 +1,8 @@
 {% metadata_file .yamato/coverage_tests.metafile %}
 test_editors:
-    - version: 2019.4
+    - version: 2020.3
         # We want some scene tests to run in the DevProject, but packages there only support 2020+
       testProject: Project
-      enableNoDefaultPackages: !!bool true
-    - version: 2020.2
-      testProject: DevProject
       enableNoDefaultPackages: !!bool true
     - version: 2021.2
       testProject: DevProject
