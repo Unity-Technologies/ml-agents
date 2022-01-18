@@ -29,7 +29,6 @@ and this project adheres to
     1. env_params.max_lifetime_restarts (--max-lifetime-restarts) [default=10]
     2. env_params.restarts_rate_limit_n (--restarts-rate-limit-n) [default=1]
     3. env_params.restarts_rate_limit_period_s (--restarts-rate-limit-period-s) [default=60]
--Added support for Elo as a curriculum learning completion criteria. (#5646)
 
 ### Bug Fixes
 - Fixed a bug where the critics were not being normalized during training. (#5595)
