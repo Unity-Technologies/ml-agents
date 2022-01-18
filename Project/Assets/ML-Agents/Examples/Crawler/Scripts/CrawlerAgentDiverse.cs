@@ -12,8 +12,7 @@ public class CrawlerAgentDiverse : Agent
 
     //The direction an agent will walk during training.
     [Header("Target To Walk Towards")]
-    public Transform TargetPrefab; //Target prefab to use in Dynamic envs
-    private Transform m_Target; //Target the agent will walk towards during training.
+    public Transform target; //Target prefab to use in Dynamic envs
 
     [Header("Body Parts")] [Space(10)] public Transform body;
     public Transform leg0Upper;
@@ -46,7 +45,7 @@ public class CrawlerAgentDiverse : Agent
 
     public override void Initialize()
     {
-        SpawnTarget(TargetPrefab, transform.position); //spawn target
+        //SpawnTarget(TargetPrefab, transform.position); //spawn target
 
         m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
         m_DirectionIndicator = GetComponentInChildren<DirectionIndicator>();
@@ -69,10 +68,10 @@ public class CrawlerAgentDiverse : Agent
     /// </summary>
     /// <param name="prefab"></param>
     /// <param name="pos"></param>
-    void SpawnTarget(Transform prefab, Vector3 pos)
-    {
-        m_Target = Instantiate(prefab, pos, Quaternion.identity, transform.parent);
-    }
+    //void SpawnTarget(Transform prefab, Vector3 pos)
+    //{
+    //    target = Instantiate(prefab, pos, Quaternion.identity, transform.parent);
+    //}
 
     /// <summary>
     /// Loop over body parts and reset them to initial conditions.
@@ -85,7 +84,7 @@ public class CrawlerAgentDiverse : Agent
         }
 
         //Random start rotation to help generalize
-        body.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
+        body.rotation = Quaternion.Euler(0, Random.Range(0.0f, 90.0f), 0);
 
         UpdateOrientationObjects();
     }
@@ -126,7 +125,7 @@ public class CrawlerAgentDiverse : Agent
         sensor.AddObservation(Quaternion.FromToRotation(body.forward, cubeForward));
 
         //Add pos of target relative to orientation cube
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(m_Target.transform.position));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.transform.position));
 
         RaycastHit hit;
         float maxRaycastDist = 10;
@@ -208,7 +207,7 @@ public class CrawlerAgentDiverse : Agent
     /// </summary>
     void UpdateOrientationObjects()
     {
-        m_OrientationCube.UpdateOrientation(body, m_Target);
+        m_OrientationCube.UpdateOrientation(body, target);
         if (m_DirectionIndicator)
         {
             m_DirectionIndicator.MatchOrientation(m_OrientationCube.transform);

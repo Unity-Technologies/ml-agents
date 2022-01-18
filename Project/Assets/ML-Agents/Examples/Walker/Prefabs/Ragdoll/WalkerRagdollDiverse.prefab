@@ -295,16 +295,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 243
+    VectorObservationSize: 230
     NumStackedVectorObservations: 1
     m_ActionSpec:
-      m_NumContinuousActions: 39
+      m_NumContinuousActions: 12
       BranchSizes: 
-    VectorActionSize: 27000000
+    VectorActionSize: 0c000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: a043eafd232b84def8999a7288cc791b, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 46251941c817046cdb2083bb445743c9, type: 3}
   m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: WalkerDiverse
@@ -404,7 +404,7 @@ MonoBehaviour:
   ContinuousSampling: 0
   BalancedSampling: 0
   DisableSampling: 1
-  DiversitySize: 4
+  DiversitySize: 8
   DiscreteSetting: 0
   ContinuousSetting: []
 --- !u!1 &895268871382313704
