@@ -160,10 +160,10 @@ class SimpleEnvironment(BaseEnv):
     def _take_action(self, name: str) -> bool:
         deltas = []
         _act = self.action[name]
-        if self.action_spec.continuous_size > 0:
+        if self.action_spec.continuous_size > 0 and not _act:
             for _cont in _act.continuous[0]:
                 deltas.append(_cont)
-        if self.action_spec.discrete_size > 0:
+        if self.action_spec.discrete_size > 0 and not _act:
             for _disc in _act.discrete[0]:
                 deltas.append(1 if _disc else -1)
         for i, _delta in enumerate(deltas):

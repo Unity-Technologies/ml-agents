@@ -40,7 +40,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "gym==0.21.0",
-        "pettingzoo==1.13.1",
+        "pettingzoo==1.14.0",
         "numpy==1.21.2",
         f"mlagents_envs=={VERSION}",
     ],
