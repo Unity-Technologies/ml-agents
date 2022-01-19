@@ -121,6 +121,7 @@ class NetworkSettings:
     vis_encode_type: EncoderType = EncoderType.SIMPLE
     memory: Optional[MemorySettings] = None
     goal_conditioning_type: ConditioningType = ConditioningType.HYPER
+    n_modes: int = 4
 
 
 @attr.s(auto_attribs=True)

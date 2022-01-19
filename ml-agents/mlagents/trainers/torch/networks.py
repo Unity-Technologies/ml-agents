@@ -602,7 +602,7 @@ class SimpleActor(nn.Module, Actor):
         )
 
         self.action_model = ActionModel(
-            self.get_n_modes(),
+            network_settings.n_modes,
             self.encoding_size,
             action_spec,
             conditional_sigma=conditional_sigma,
@@ -642,8 +642,8 @@ class SimpleActor(nn.Module, Actor):
             inputs, memories=memories, sequence_length=sequence_length
         )
         mode_oh = self.get_mode_oh(inputs)
-        action, log_probs, entropies, mixture_ws = self.action_model(encoding, mode_oh, masks)
-        return action, log_probs, entropies, memories, mixture_ws
+        action, log_probs, entropies, gmm_regularizer = self.action_model(encoding, mode_oh, masks)
+        return action, log_probs, entropies, memories, gmm_regularizer
 
     def get_stats(
         self,

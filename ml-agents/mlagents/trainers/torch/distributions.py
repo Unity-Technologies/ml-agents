@@ -115,13 +115,16 @@ class TanhGaussianDistInstance(GaussianDistInstance):
         )
 
 class GaussianMixtureDistInstance(DistInstance):
-    def __init__(self, mean, std, logits, reg=.001):
+    def __init__(self, mean, std, logits, n_modes, num_outputs, reg=.001):
         super().__init__()
 
-        self.n_modes = 4 #logits.shape[1]
-        self.n_action = 2 #mean.shape[1] // self.n_modes
+        self.n_modes = n_modes
+        self.n_action = num_outputs
+
         
         self.probs = torch.softmax(logits, dim=-1)
+        self.reg = reg
+        self.logits = logits
         self.mean = mean.reshape(-1, self.n_modes, self.n_action)
         self.std = std.reshape(-1, self.n_modes, self.n_action)
 
@@ -148,8 +151,10 @@ class GaussianMixtureDistInstance(DistInstance):
             - math.log(math.sqrt(2 * math.pi))
         )
         log_probs_per_head = torch.sum(log_probs_per_head, dim=2)
-        log_probs_of_head = torch.log(self.probs + EPSILON)
-        log_probs = torch.logsumexp(log_probs_per_head + log_probs_of_head, dim=1)
+        #log_probs_of_head = torch.log(self.probs + EPSILON)
+        #log_probs = torch.logsumexp(log_probs_per_head + log_probs_of_head, dim=1)
+        log_probs = torch.logsumexp(log_probs_per_head + self.logits, dim=1) - torch.logsumexp(self.logits, dim=1)
+        #log_probs -= torch.logsumexp(self.logits, dim=1)
 
         return log_probs.unsqueeze(-1)
 
@@ -165,15 +170,15 @@ class GaussianMixtureDistInstance(DistInstance):
         )  # Use equivalent behavior to TF
 
     def exported_model_output(self):
-        return self.sample(), self.mean, self.std, self.probs
+        return self.sample(), self.mean, self.std, torch.softmax(self.logits, dim=-1)
 
-    def mixture_w(self):
-        return self.probs
+    def regularizers(self):
+        return self.reg * 0.5 * (torch.mean(self.mean ** 2) + torch.mean(self.std ** 2)) 
 
 
 class TanhGaussianMixtureDistInstance(GaussianMixtureDistInstance):
-    def __init__(self, mean, std, mode_oh):
-        super().__init__(mean, std, mode_oh)
+    def __init__(self, mean, std, mode_oh, n_modes, num_outputs):
+        super().__init__(mean, std, mode_oh, n_modes, num_outputs)
         self.transform = torch.distributions.transforms.TanhTransform(cache_size=1)
 
     def sample(self):
@@ -292,6 +297,9 @@ class GaussianMixtureDistribution(nn.Module):
         tanh_squash: bool = False,
     ):
         super().__init__()
+        self.n_modes = n_modes
+        self.n_action = num_outputs
+
         self.conditional_sigma = conditional_sigma
         self.mu = linear_layer(
             hidden_size,
@@ -336,9 +344,9 @@ class GaussianMixtureDistribution(nn.Module):
             # the verified version of Barracuda (1.0.X).
             log_sigma = mu * 0 + self.log_sigma
         if self.tanh_squash:
-            return TanhGaussianMixtureDistInstance(mu, torch.exp(log_sigma), logits)
+            return TanhGaussianMixtureDistInstance(mu, torch.exp(log_sigma), logits, self.n_modes, self.n_action)
         else:
-            return GaussianMixtureDistInstance(mu, torch.exp(log_sigma), logits)
+            return GaussianMixtureDistInstance(mu, torch.exp(log_sigma), logits, self.n_modes, self.n_action)
 
 class MultiCategoricalDistribution(nn.Module):
     def __init__(self, hidden_size: int, act_sizes: List[int]):

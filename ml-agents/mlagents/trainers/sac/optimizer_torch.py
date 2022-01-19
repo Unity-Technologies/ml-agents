@@ -855,7 +855,7 @@ class TorchSACOptimizer(TorchOptimizer):
             self.policy.actor.network_body
         )
         self._critic.network_body.copy_normalization(self.policy.actor.network_body)
-        sampled_actions, log_probs, _, _, mixture_ws = self.policy.actor.get_action_and_stats(
+        sampled_actions, log_probs, _, _, gmm_regularizer = self.policy.actor.get_action_and_stats(
             current_obs,
             masks=act_masks,
             memories=memories,
@@ -936,7 +936,7 @@ class TorchSACOptimizer(TorchOptimizer):
         )
         policy_loss = self.sac_policy_loss(log_probs, q1p_out, value_estimates, masks, mede_policy_rewards)
         #Regularize heads
-        #policy_loss -= torch.sum(torch.log(mixture_ws))
+        policy_loss -= gmm_regularizer
         entropy_loss = self.sac_entropy_loss(log_probs, masks)
 
         total_value_loss = q1_loss + q2_loss
@@ -977,7 +977,7 @@ class TorchSACOptimizer(TorchOptimizer):
             "Policy/Learning Rate": decay_lr,
             "Policy/Entropy Loss": entropy_loss.item(),
             "Policy/Log Probs": torch.mean(torch.sum(log_probs.continuous_tensor, dim=1)).item(),
-            "Policy/Mixture Ws Mean": torch.mean(torch.sum(torch.log(mixture_ws), dim=1)).item(),
+            "Policy/Regularization": gmm_regularizer.item(),
         }
 
         if self._use_mede or self._use_diayn:
