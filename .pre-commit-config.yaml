@@ -22,10 +22,6 @@ repos:
         # Exclude protobuf files and don't follow them when imported
         exclude: ".*_pb2.py"
         args: [--ignore-missing-imports, --disallow-incomplete-defs]
-    -   id: mypy
-        name: mypy-gym-unity
-        files: "gym-unity/.*"
-        args: [--ignore-missing-imports, --disallow-incomplete-defs]
 
 -   repo: https://gitlab.com/pycqa/flake8
     rev: 3.8.1

@@ -1,8 +1,5 @@
 from pettingzoo_unity import UnityAECEnv, UnityParallelEnv
-from pettingzoo_unity.tests.simple_test_envs import (
-    SimpleEnvironment,
-    MultiAgentEnvironment,
-)
+from simple_test_envs import SimpleEnvironment, MultiAgentEnvironment
 from pettingzoo.test import api_test, parallel_api_test
 
 NUM_TEST_CYCLES = 100

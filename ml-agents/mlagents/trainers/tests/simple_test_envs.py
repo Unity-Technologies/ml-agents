@@ -13,7 +13,7 @@ from mlagents_envs.base_env import (
     TerminalSteps,
     BehaviorMapping,
 )
-from mlagents_envs.tests.test_rpc_utils import proto_from_steps_and_action
+from tests.test_rpc_utils import proto_from_steps_and_action
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )

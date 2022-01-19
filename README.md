@@ -39,7 +39,7 @@ developer communities.
 - Utilizes the [Unity Inference Engine](docs/Unity-Inference-Engine.md) to
   provide native cross-platform support
 - Unity environment [control from Python](docs/Python-API.md)
-- Wrap Unity learning environments as a [gym](gym-unity/README.md)
+- Wrap Unity learning environments as a [gym](ml-agents-envs/GYM_README.md)
 
 See our [ML-Agents Overview](docs/ML-Agents-Overview.md) page for detailed
 descriptions of all these features.

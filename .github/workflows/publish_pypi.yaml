@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
         matrix:
-            package-path: [ml-agents, ml-agents-envs, gym-unity]
+            package-path: [ml-agents, ml-agents-envs]
 
     steps:
     - uses: actions/checkout@main

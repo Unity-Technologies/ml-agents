@@ -180,7 +180,7 @@ The ML-Agents Toolkit contains five high-level components:
   researchers interact with simulation environments is via a wrapper provided by
   OpenAI called [gym](https://github.com/openai/gym). We provide a gym wrapper
   in a dedicated `gym-unity` Python package and
-  [instructions](../gym-unity/README.md) for using it with existing machine
+  [instructions](../ml-agents-envs/GYM_README.md) for using it with existing machine
   learning algorithms which utilize gym.
 
 <p align="center">
@@ -286,7 +286,7 @@ In the previous mode, the Agents were used for training to generate a PyTorch
 model that the Agents can later use. However, any user of the ML-Agents Toolkit
 can leverage their own algorithms for training. In this case, the behaviors of
 all the Agents in the scene will be controlled within Python. You can even turn
-your environment into a [gym.](../gym-unity/README.md)
+your environment into a [gym.](../ml-agents-envs/GYM_README.md)
 
 We do not currently have a tutorial highlighting this mode, but you can learn
 more about the Python API [here](Python-API.md).

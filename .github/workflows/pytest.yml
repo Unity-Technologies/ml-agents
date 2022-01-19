@@ -5,7 +5,6 @@ on:
     paths:  # This action will only run if the PR modifies a file in one of these directories
     - 'ml-agents/**'
     - 'ml-agents-envs/**'
-    - 'gym-unity/**'
     - 'test_constraints*.txt'
     - 'test_requirements.txt'
     - '.github/workflows/pytest.yml'
@@ -41,7 +40,7 @@ jobs:
         # This path is specific to Ubuntu
         path: ~/.cache/pip
         # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'gym-unity/setup.py', 'test_requirements.txt', matrix.pip_constraints) }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'test_requirements.txt', matrix.pip_constraints) }}
         restore-keys: |
           ${{ runner.os }}-pip-
           ${{ runner.os }}-
@@ -54,15 +53,13 @@ jobs:
         python -m pip install --progress-bar=off -e ./ml-agents-envs -c ${{ matrix.pip_constraints }}
         python -m pip install --progress-bar=off -e ./ml-agents -c ${{ matrix.pip_constraints }}
         python -m pip install --progress-bar=off -r test_requirements.txt -c ${{ matrix.pip_constraints }}
-        python -m pip install --progress-bar=off -e ./gym-unity -c ${{ matrix.pip_constraints }}
-        python -m pip install --progress-bar=off -e ./pettingzoo-unity -c ${{ matrix.pip_constraints }}
         python -m pip install --progress-bar=off -e ./ml-agents-plugin-examples -c ${{ matrix.pip_constraints }}
     - name: Save python dependencies
       run: |
         pip freeze > pip_versions-${{ matrix.python-version }}.txt
         cat pip_versions-${{ matrix.python-version }}.txt
     - name: Run pytest
-      run: pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov=pettingzoo-unity --cov-report=html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings -v
+      run: pytest --cov=ml-agents --cov=ml-agents-envs --cov-report=html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings -v
     - name: Upload pytest test results
       uses: actions/upload-artifact@v2
       with:
