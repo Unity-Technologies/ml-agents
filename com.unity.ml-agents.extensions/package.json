@@ -1,11 +1,11 @@
 {
   "name": "com.unity.ml-agents.extensions",
   "displayName": "ML Agents Extensions",
-  "version": "0.5.0-preview",
-  "unity": "2019.4",
+  "version": "0.6.1-preview",
+  "unity": "2020.3",
   "description": "A source-only package for new features based on ML-Agents",
   "dependencies": {
-    "com.unity.ml-agents": "2.1.0-exp.1",
+    "com.unity.ml-agents": "2.2.1-exp.1",
     "com.unity.modules.physics": "1.0.0"
   }
 }

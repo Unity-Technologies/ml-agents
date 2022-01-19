@@ -26,7 +26,7 @@ The ML-Agents Toolkit contains several components:
 
 Consequently, to install and use the ML-Agents Toolkit you will need to:
 
-- Install Unity (2019.4 or later)
+- Install Unity (2020.3 or later)
 - Install Python (3.6.1 or higher)
 - Clone this repository (Optional)
   - __Note:__ If you do not clone the repository, then you will not be
@@ -38,7 +38,7 @@ Consequently, to install and use the ML-Agents Toolkit you will need to:
 - Install the `com.unity.ml-agents.extensions` Unity package (Optional)
 - Install the `mlagents` Python package
 
-### Install **Unity 2019.4** or Later
+### Install **Unity 2020.3** or Later
 
 [Download](https://unity3d.com/get-unity/download) and install Unity. We
 strongly recommend that you install Unity through the Unity Hub as it will
@@ -64,17 +64,17 @@ of our tutorials / guides assume you have access to our example environments).
 the repository if you would like to explore more examples.
 
 ```sh
-git clone --branch release_18 https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch release_19 https://github.com/Unity-Technologies/ml-agents.git
 ```
 
-The `--branch release_18` option will switch to the tag of the latest stable
+The `--branch release_19` option will switch to the tag of the latest stable
 release. Omitting that will get the `main` branch which is potentially unstable.
 
 #### Advanced: Local Installation for Development
 
 You will need to clone the repository if you plan to modify or extend the
 ML-Agents Toolkit for your purposes. If you plan to contribute those changes
-back, make sure to clone the `main` branch (by omitting `--branch release_18`
+back, make sure to clone the `main` branch (by omitting `--branch release_19`
 from the command above). See our
 [Contributions Guidelines](../com.unity.ml-agents/CONTRIBUTING.md) for more
 information on contributing to the ML-Agents Toolkit.
@@ -155,7 +155,7 @@ To install the `mlagents` Python package, activate your virtual environment and
 run from the command line:
 
 ```sh
-python -m pip install mlagents==0.27.0
+python -m pip install mlagents==0.28.0
 ```
 
 Note that this will install `mlagents` from PyPi, _not_ from the cloned

@@ -45,6 +45,11 @@ namespace Unity.MLAgents.Policies
         ActionBuffers m_LastActionBuffer;
 
         int m_AgentId;
+        /// <summary>
+        /// Inference only: set to true if the action selection from model should be
+        /// deterministic.
+        /// </summary>
+        bool m_DeterministicInference;
 
         /// <summary>
         /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their Sensors.
@@ -73,19 +78,23 @@ namespace Unity.MLAgents.Policies
         /// <param name="model">The Neural Network to use.</param>
         /// <param name="inferenceDevice">Which device Barracuda will run on.</param>
         /// <param name="behaviorName">The name of the behavior.</param>
+        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
+        /// deterministic. </param>
         public BarracudaPolicy(
             ActionSpec actionSpec,
             IList<IActuator> actuators,
             NNModel model,
             InferenceDevice inferenceDevice,
-            string behaviorName
+            string behaviorName,
+            bool deterministicInference = false
         )
         {
-            var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, actionSpec, inferenceDevice);
+            var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, actionSpec, inferenceDevice, deterministicInference);
             m_ModelRunner = modelRunner;
             m_BehaviorName = behaviorName;
             m_ActionSpec = actionSpec;
             m_Actuators = actuators;
+            m_DeterministicInference = deterministicInference;
         }
 
         /// <inheritdoc />

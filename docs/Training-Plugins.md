@@ -3,7 +3,7 @@
 ML-Agents provides support for running your own python implementations of specific interfaces during the training
 process. These interfaces are currently fairly limited, but will be expanded in the future.
 
-** Note ** Plugin interfaces should currently be considered "in beta", and they may change in future releases.
+**Note:** Plugin interfaces should currently be considered "in beta", and they may change in future releases.
 
 ## How to Write Your Own Plugin
 [This video](https://www.youtube.com/watch?v=fY3Y_xPKWNA) explains the basics of how to create a plugin system using

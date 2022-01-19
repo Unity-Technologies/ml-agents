@@ -7,7 +7,7 @@ using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
-#if MLA_UNITY_ANALYTICS_MODULE
+#if MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
 using UnityEngine.Analytics;
 #endif
 
@@ -44,7 +44,7 @@ namespace Unity.MLAgents.Analytics
         const int k_MaxNumberOfElements = 1000;
 
 
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
         /// <summary>
         /// Models that we've already sent events for.
         /// </summary>
@@ -53,7 +53,7 @@ namespace Unity.MLAgents.Analytics
 
         static bool EnableAnalytics()
         {
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
             if (s_EventRegistered)
             {
                 return true;
@@ -106,7 +106,7 @@ namespace Unity.MLAgents.Analytics
             IList<IActuator> actuators
         )
         {
-#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
             // The event shouldn't be able to report if this is disabled but if we know we're not going to report
             // Lets early out and not waste time gathering all the data
             if (!IsAnalyticsEnabled())

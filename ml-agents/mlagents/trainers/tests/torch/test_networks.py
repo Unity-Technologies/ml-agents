@@ -72,7 +72,7 @@ def test_networkbody_lstm():
 
 
 def test_networkbody_visual():
-    torch.manual_seed(0)
+    torch.manual_seed(1)
     vec_obs_size = 4
     obs_size = (84, 84, 3)
     network_settings = NetworkSettings()
@@ -82,11 +82,12 @@ def test_networkbody_visual():
         create_observation_specs_with_shapes(obs_shapes), network_settings
     )
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-3)
-    sample_obs = 0.1 * torch.ones((1, 84, 84, 3))
-    sample_vec_obs = torch.ones((1, vec_obs_size))
+    sample_obs = 0.1 * torch.ones((1, 84, 84, 3), dtype=torch.float32)
+    sample_vec_obs = torch.ones((1, vec_obs_size), dtype=torch.float32)
     obs = [sample_vec_obs] + [sample_obs]
-
-    for _ in range(150):
+    loss = 1
+    step = 0
+    while loss > 1e-6 and step < 1e3:
         encoded, _ = networkbody(obs)
         assert encoded.shape == (1, network_settings.hidden_units)
         # Try to force output to 1
@@ -94,6 +95,7 @@ def test_networkbody_visual():
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+        step += 1
     # In the last step, values should be close to 1
     for _enc in encoded.flatten().tolist():
         assert _enc == pytest.approx(1.0, abs=0.1)
