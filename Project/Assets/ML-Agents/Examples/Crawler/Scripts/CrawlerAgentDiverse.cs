@@ -204,7 +204,9 @@ public class CrawlerAgentDiverse : Agent
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
         var matchSpeedReward = GetMatchingVelocityReward(m_maxWalkingSpeed * cubeForward, GetAvgVelocity());
 
-        AddReward(matchSpeedReward);
+        var lookAtTargetReward = (Vector3.Dot(cubeForward, body.forward) + 1) * .5F;
+
+        AddReward(matchSpeedReward *  lookAtTargetReward);
     }
 
     /// <summary>
