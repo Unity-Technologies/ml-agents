@@ -15,6 +15,7 @@ public class CrawlerAgentDiverse : Agent
     public Transform target; //Target prefab to use in Dynamic envs
 
     [Header("Body Parts")] [Space(10)] public Transform body;
+    const float m_maxWalkingSpeed = 10; //The max walking speed
     public Transform leg0Upper;
     public Transform leg0Lower;
     public Transform leg1Upper;
@@ -97,10 +98,14 @@ public class CrawlerAgentDiverse : Agent
         //GROUND CHECK
         sensor.AddObservation(bp.groundContact.touchingGround); // Is this bp touching the ground
 
-        //if (bp.rb.transform != body)
-        //{
-        //    sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
-        //}
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.velocity));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
+
+        if (bp.rb.transform != body)
+        {
+            sensor.AddObservation(bp.rb.transform.localRotation);
+            sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - body.position));
+        }
     }
 
     /// <summary>
@@ -111,7 +116,7 @@ public class CrawlerAgentDiverse : Agent
         var cubeForward = m_OrientationCube.transform.forward;
 
         //velocity we want to match
-        var velGoal = cubeForward;
+        var velGoal = cubeForward* m_maxWalkingSpeed;
         //ragdoll's avg vel
         var avgVel = GetAvgVelocity();
 
@@ -197,7 +202,7 @@ public class CrawlerAgentDiverse : Agent
         // Set reward for this step according to mixture of the following elements.
         // a. Match target speed
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
-        var matchSpeedReward = GetMatchingVelocityReward(cubeForward, GetAvgVelocity());
+        var matchSpeedReward = GetMatchingVelocityReward(m_maxWalkingSpeed * cubeForward, GetAvgVelocity());
 
         AddReward(matchSpeedReward);
     }
@@ -241,10 +246,11 @@ public class CrawlerAgentDiverse : Agent
     /// </summary>
     public float GetMatchingVelocityReward(Vector3 velocityGoal, Vector3 actualVelocity)
     {
-        var velocityProjection = Vector3.Project(actualVelocity, velocityGoal);
-        var direction = Vector3.Angle(velocityProjection, velocityGoal) == 0 ? 1 : -1;
-        var speed = velocityProjection.magnitude * direction;
-        return speed > m_minWalkingSpeed ? 0.1f : 0;
+        var velDeltaMagnitude = Mathf.Clamp(Vector3.Distance(actualVelocity, velocityGoal), 0, m_maxWalkingSpeed);
+
+        //return the value on a declining sigmoid shaped curve that decays from 1 to 0
+        //This reward will approach 1 if it matches perfectly and approach zero as it deviates
+        return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / m_maxWalkingSpeed, 2), 2);
     }
 
     /// <summary>
