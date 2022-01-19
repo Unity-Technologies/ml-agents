@@ -30,7 +30,7 @@ class UnityParallelEnv(UnityPettingzooBaseEnv, ParallelEnv):
 
     def step(self, actions: Dict[str, Any]):
         self._assert_loaded()
-        if len(self._live_agents) <= 0:
+        if len(self._live_agents) <= 0 and actions:
             raise error.Error(
                 "You must reset the environment before you can perform a step."
             )

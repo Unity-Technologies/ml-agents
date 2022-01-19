@@ -20,7 +20,7 @@ def test_multi_agent_aec():
     api_test(env, num_cycles=NUM_TEST_CYCLES, verbose_progress=False)
 
 
-def test_single_agent_paralle():
+def test_single_agent_parallel():
     unity_env = SimpleEnvironment(["test_single"])
     env = UnityParallelEnv(unity_env)
     parallel_api_test(env, num_cycles=NUM_TEST_CYCLES)
