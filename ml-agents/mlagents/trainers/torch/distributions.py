@@ -115,7 +115,7 @@ class TanhGaussianDistInstance(GaussianDistInstance):
         )
 
 class GaussianMixtureDistInstance(DistInstance):
-    def __init__(self, mean, std, logits):
+    def __init__(self, mean, std, logits, reg=.001):
         super().__init__()
 
         self.n_modes = 4 #logits.shape[1]
