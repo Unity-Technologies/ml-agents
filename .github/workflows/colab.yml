@@ -4,7 +4,6 @@ on:
   pull_request:
     paths:  # This action will only run if the PR modifies a file in one of these directories
     - 'ml-agents-envs/**'
-    - 'gym-unity/**'
     - 'colab/**'
     - '.github/workflows/colab.yml'
   push:
@@ -36,7 +35,7 @@ jobs:
         # This path is specific to Ubuntu
         path: ~/.cache/pip
         # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'gym-unity/setup.py', 'colab_requirements.txt') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'colab_requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
           ${{ runner.os }}-

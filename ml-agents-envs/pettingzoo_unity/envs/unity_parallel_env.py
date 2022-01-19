@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Tuple
 from gym import error
 from mlagents_envs.base_env import BaseEnv
 from pettingzoo import ParallelEnv
@@ -28,7 +28,7 @@ class UnityParallelEnv(UnityPettingzooBaseEnv, ParallelEnv):
 
         return self._observations
 
-    def step(self, actions: Dict[str, Any]):
+    def step(self, actions: Dict[str, Any]) -> Tuple:
         self._assert_loaded()
         if len(self._live_agents) <= 0 and actions:
             raise error.Error(

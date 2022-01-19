@@ -136,13 +136,12 @@ def init_venv(
         # install from pypi
         pip_commands += [
             f"mlagents=={mlagents_python_version}",
-            f"gym-unity=={mlagents_python_version}",
             # TODO build these and publish to internal pypi
             "tf2onnx==1.6.1",
         ]
     else:
         # Local install
-        pip_commands += ["-e ./ml-agents-envs", "-e ./ml-agents", "-e ./gym-unity"]
+        pip_commands += ["-e ./ml-agents-envs", "-e ./ml-agents"]
     if extra_packages:
         pip_commands += extra_packages
 

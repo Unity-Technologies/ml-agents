@@ -57,7 +57,7 @@ class UnityToGymWrapper(gym.Env):
         self.visual_obs = None
 
         # Save the step result from the last time all Agents requested decisions.
-        self._previous_decision_step: DecisionSteps = None
+        self._previous_decision_step: Optional[DecisionSteps] = None
         self._flattener = None
         # Hidden flag used by Atari environments to determine if the game is over
         self.game_over = False

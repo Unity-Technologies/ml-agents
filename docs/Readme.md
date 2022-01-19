@@ -54,7 +54,7 @@
 - [Python API Documentation](Python-API-Documentation.md)
 - [How to use the Python API](Python-API.md)
 - [How to use the Unity Environment Registry](Unity-Environment-Registry.md)
-- [Wrapping Learning Environment as a Gym (+Baselines/Dopamine Integration)](../gym-unity/README.md)
+- [Wrapping Learning Environment as a Gym (+Baselines/Dopamine Integration)](../ml-agents-envs/GYM_README.md)
 
 ## Translations
 

@@ -300,7 +300,7 @@ class UnityPettingzooBaseEnv:
 
     @property
     def possible_agents(self):
-        return sorted(list(self._possible_agents))
+        return sorted(self._possible_agents)
 
     def close(self) -> None:
         """
