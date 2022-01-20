@@ -232,8 +232,7 @@ In our case, the information our Agent collects includes the position of the
 target, the position of the agent itself, and the velocity of the agent. This
 helps the Agent learn to control its speed so it doesn't overshoot the target
 and roll off the platform. In total, the agent observation contains 8 values
-(mind that each Vector3 can be represented as 3 floats) as
-implemented below:
+asimplemented below:
 
 ```csharp
 public override void CollectObservations(VectorSensor sensor)
@@ -261,13 +260,13 @@ the first determines the force applied along the x-axis; and the
 second determines the force applied along the z-axis. (If we allowed the Agent
 to move in three dimensions, then we would need a third action.)
 
-The RollerAgent applies the values from the `continuousActions` array to its Rigidbody
+The RollerAgent applies the values from the `actionBuffers.ContinuousActions[]` array to its Rigidbody
 component `rBody`, using `Rigidbody.AddForce()`:
 
 ```csharp
 public override void OnActionReceived(ActionBuffers actionBuffers) 
 {
-    var continuousActions = actions.ContinuousActions;
+    float[] continuousActions = actionBuffers.ContinuousActions;
     Vector3 controlSignal = Vector3.zero;
     controlSignal.x = continuousActions[0];
     controlSignal.z = continuousActions[1];
@@ -320,7 +319,7 @@ public float forceMultiplier = 10;
 public override void OnActionReceived(ActionBuffers actionBuffers)
 {
     // Actions, size = 2
-    var continuousActions = actions.ContinuousActions;
+    float[] continuousActions = actionBuffers.ContinuousActions;
     Vector3 controlSignal = Vector3.zero;
     controlSignal.x = continuousActions[0];
     controlSignal.z = continuousActions[1];
@@ -440,7 +439,7 @@ behaviors:
 
 Hyperparameters are explained in [the training configuration file documentation](Training-Configuration-File.md)
 
-Make sure the Behaviour name in the `Bahaviour Parameters` component matches the one in the config file
+Make sure the Behaviour name in the `Bahaviour Parameters` component matches the one in the config file.
 
 Since this example creates a very simple training environment with only a few
 inputs and outputs, using small batch and buffer sizes speeds up the training
