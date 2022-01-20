@@ -940,7 +940,7 @@ class TorchSACOptimizer(TorchOptimizer):
         policy_loss = self.sac_policy_loss(log_probs, q1p_out, value_estimates, masks, mede_policy_rewards)
         #Regularize heads
         (gmm_logit, gmm_means, gmm_stds) = stats
-        gmm_regularizer = self.reg * 0.5 * (torch.mean(gmm_means ** 2) + torch.mean(gmm_stds))
+        gmm_regularizer = self.reg * 0.5 * (torch.mean(gmm_means ** 2) + torch.mean(gmm_stds ** 2))
         policy_loss += gmm_regularizer 
         entropy_loss = self.sac_entropy_loss(log_probs, masks)
 
@@ -987,6 +987,7 @@ class TorchSACOptimizer(TorchOptimizer):
             "GMM/Logit Min": torch.mean(torch.min(gmm_logit, dim=1)[0]).item(),
             "GMM/Logit Max": torch.mean(torch.max(gmm_logit, dim=1)[0]).item(),
             "GMM/Logit Std": torch.mean(torch.std(gmm_logit, dim=1)).item(),
+            "GMM/Logit LSE": torch.mean(torch.logsumexp(gmm_logit, dim=1)).item(),
         }
 
         if self._use_mede or self._use_diayn:
