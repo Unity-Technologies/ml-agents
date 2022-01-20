@@ -173,7 +173,7 @@ class GaussianMixtureDistInstance(DistInstance):
         return self.sample(), self.mean, self.std, torch.softmax(self.logits, dim=-1)
 
     def regularizers(self):
-        return self.reg * 0.5 * (torch.mean(self.logits ** 2) + torch.mean(self.mean ** 2) + torch.mean(self.std ** 2)) 
+        return self.reg * 0.5 * (torch.mean(torch.sum(self.logits ** 2, dim=1)) + torch.mean(self.mean ** 2) + torch.mean(self.std ** 2)) 
 
 
 class TanhGaussianMixtureDistInstance(GaussianMixtureDistInstance):
