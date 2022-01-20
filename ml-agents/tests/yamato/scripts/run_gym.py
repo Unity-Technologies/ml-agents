@@ -1,7 +1,7 @@
 import argparse
 
 from mlagents_envs.environment import UnityEnvironment
-from gym_unity.envs import UnityToGymWrapper
+from mlagents_envs.envs import UnityToGymWrapper
 
 
 def test_run_environment(env_name):

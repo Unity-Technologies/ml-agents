@@ -1,26 +1,21 @@
-from mlagents_envs.registry import default_registry
+from typing import Optional, Union, List
 
-from typing import Optional, List, Union
+from mlagents_envs import logging_util
 from mlagents_envs.exception import UnityWorkerInUseException
-from mlagents_envs.side_channel.environment_parameters_channel import (
-    EnvironmentParametersChannel,
-)
+from mlagents_envs.registry import default_registry
 from mlagents_envs.side_channel.engine_configuration_channel import (
     EngineConfigurationChannel,
 )
+from mlagents_envs.side_channel.environment_parameters_channel import (
+    EnvironmentParametersChannel,
+)
 from mlagents_envs.side_channel.stats_side_channel import StatsSideChannel
-from mlagents_envs import logging_util
-
-from pettingzoo_unity.envs.unity_pettingzoo_base_env import (  # noqa
-    UnityPettingzooBaseEnv,  # noqa
-)  # noqa
-from pettingzoo_unity.envs.unity_aec_env import UnityAECEnv  # noqa
-from pettingzoo_unity.envs.unity_parallel_env import UnityParallelEnv  # noqa
+from mlagents_envs.envs.unity_aec_env import UnityAECEnv
 
 logger = logging_util.get_logger(__name__)
 
 
-class PettingZooEnv:
+class PettingZooEnvFactory:
     def __init__(self, env_id: str) -> None:
         self.env_id = env_id
 
@@ -53,17 +48,3 @@ class PettingZooEnv:
         else:
             _env = default_registry[self.env_id].make(**kwargs)
         return UnityAECEnv(_env, seed)
-
-
-# Register each environment in default_registry as a PettingZooEnv
-for key in default_registry:
-    env_name = key
-    if key[0].isdigit():
-        env_name = key.replace("3", "Three")
-    if not env_name.isidentifier():
-        logger.warning(
-            f"Environment id {env_name} can not be registered since it is"
-            f"not a valid identifier name."
-        )
-        continue
-    locals()[env_name] = PettingZooEnv(key)

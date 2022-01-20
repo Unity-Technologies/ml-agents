@@ -1,4 +1,5 @@
-from pettingzoo_unity import UnityAECEnv, UnityParallelEnv
+from mlagents_envs.envs.unity_aec_env import UnityAECEnv
+from mlagents_envs.envs.unity_parallel_env import UnityParallelEnv
 from simple_test_envs import SimpleEnvironment, MultiAgentEnvironment
 from pettingzoo.test import api_test, parallel_api_test
 
