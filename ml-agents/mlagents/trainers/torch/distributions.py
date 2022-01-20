@@ -283,9 +283,9 @@ class GaussianDistribution(nn.Module):
         else:
             return GaussianDistInstance(mu, torch.exp(log_sigma), mode_oh)
 
-LOG_W_MIN = -10 #https://github.com/ben-eysenbach/sac/blob/master/sac/distributions/gmm.py#L10
-LOG_SIG_MIN = -5 #https://github.com/ben-eysenbach/sac/blob/master/sac/distributions/gmm.py#L10
-LOG_SIG_MAX = 2 #https://github.com/ben-eysenbach/sac/blob/master/sac/distributions/gmm.py#L10
+#https://github.com/ben-eysenbach/sac/blob/master/sac/distributions/gmm.py#L10
+LOG_W_MIN = -5 
+LOG_W_MAX = 2 
 
 class GaussianMixtureDistribution(nn.Module):
     def __init__(
@@ -333,7 +333,7 @@ class GaussianMixtureDistribution(nn.Module):
     def forward(self, inputs: torch.Tensor, mode_oh) -> List[DistInstance]:
         mu = self.mu(inputs)
         logits = self.logits(inputs)
-        logits = torch.clamp(logits, min=LOG_W_MIN)
+        logits = torch.clamp(logits, min=LOG_W_MIN, max=LOG_W_MAX)
         if self.conditional_sigma:
             log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)
         else:
