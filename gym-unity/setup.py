@@ -30,14 +30,14 @@ class VerifyVersionCommand(install):
 
 
 setup(
-    name="gym_unity",
-    version=VERSION,
-    description="Unity Machine Learning Agents Gym Interface",
-    license="Apache License 2.0",
-    author="Unity Technologies",
-    author_email="ML-Agents@unity3d.com",
-    url="https://github.com/Unity-Technologies/ml-agents",
-    packages=find_packages(),
-    install_requires=["gym==0.21.0", f"mlagents_envs=={VERSION}"],
-    cmdclass={"verify": VerifyVersionCommand},
+    name             = "gym_unity",
+    version          = VERSION,
+    description      = "Unity Machine Learning Agents Gym Interface",
+    license          = "Apache License 2.0",
+    author           = "Unity Technologies",
+    author_email     = "ML-Agents@unity3d.com",
+    url              = "https://github.com/Unity-Technologies/ml-agents",
+    packages         = find_packages(),
+    install_requires = ["gym==0.21.0", f"mlagents_envs=={VERSION}"],
+    cmdclass         = {"verify": VerifyVersionCommand},
 )
