@@ -411,6 +411,9 @@ class TorchSACOptimizer(TorchOptimizer):
         )
         ModelUtils.soft_update(self._critic, self.target_network, 1.0)
 
+        #GMM regularizer
+        self.reg = .001
+
         # We create one entropy coefficient per action, whether discrete or continuous.
         _disc_log_ent_coef = torch.nn.Parameter(
             torch.log(
@@ -855,7 +858,7 @@ class TorchSACOptimizer(TorchOptimizer):
             self.policy.actor.network_body
         )
         self._critic.network_body.copy_normalization(self.policy.actor.network_body)
-        sampled_actions, log_probs, _, _, gmm_regularizer = self.policy.actor.get_action_and_stats(
+        sampled_actions, log_probs, _, _, stats = self.policy.actor.get_action_and_stats(
             current_obs,
             masks=act_masks,
             memories=memories,
@@ -936,7 +939,9 @@ class TorchSACOptimizer(TorchOptimizer):
         )
         policy_loss = self.sac_policy_loss(log_probs, q1p_out, value_estimates, masks, mede_policy_rewards)
         #Regularize heads
-        policy_loss -= gmm_regularizer
+        (gmm_logit, gmm_means, gmm_stds) = stats
+        gmm_regularizer = self.reg * 0.5 * (torch.mean(gmm_means ** 2) + torch.mean(gmm_stds))
+        policy_loss += gmm_regularizer 
         entropy_loss = self.sac_entropy_loss(log_probs, masks)
 
         total_value_loss = q1_loss + q2_loss
@@ -977,7 +982,11 @@ class TorchSACOptimizer(TorchOptimizer):
             "Policy/Learning Rate": decay_lr,
             "Policy/Entropy Loss": entropy_loss.item(),
             "Policy/Log Probs": torch.mean(torch.sum(log_probs.continuous_tensor, dim=1)).item(),
-            "Policy/Regularization": gmm_regularizer.item(),
+            "GMM/Regularization": gmm_regularizer.item(),
+            "GMM/Logit Mean": torch.mean(torch.mean(gmm_logit, dim=1)).item(),
+            "GMM/Logit Min": torch.mean(torch.min(gmm_logit, dim=1)[0]).item(),
+            "GMM/Logit Max": torch.mean(torch.max(gmm_logit, dim=1)[0]).item(),
+            "GMM/Logit Std": torch.mean(torch.std(gmm_logit, dim=1)).item(),
         }
 
         if self._use_mede or self._use_diayn:

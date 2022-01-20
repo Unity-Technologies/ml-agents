@@ -115,7 +115,7 @@ class TanhGaussianDistInstance(GaussianDistInstance):
         )
 
 class GaussianMixtureDistInstance(DistInstance):
-    def __init__(self, mean, std, logits, n_modes, num_outputs, reg=.001):
+    def __init__(self, mean, std, logits, n_modes, num_outputs, ):
         super().__init__()
 
         self.n_modes = n_modes
@@ -123,7 +123,6 @@ class GaussianMixtureDistInstance(DistInstance):
 
         
         self.probs = torch.softmax(logits, dim=-1)
-        self.reg = reg
         self.logits = logits
         self.mean = mean.reshape(-1, self.n_modes, self.n_action)
         self.std = std.reshape(-1, self.n_modes, self.n_action)
@@ -172,8 +171,9 @@ class GaussianMixtureDistInstance(DistInstance):
     def exported_model_output(self):
         return self.sample(), self.mean, self.std, torch.softmax(self.logits, dim=-1)
 
-    def regularizers(self):
-        return self.reg * 0.5 * (torch.mean(torch.sum(self.logits ** 2, dim=1)) + torch.mean(self.mean ** 2) + torch.mean(self.std ** 2)) 
+    def stats(self):
+        #return self.reg * 0.5 * (torch.mean(self.logits ** 2) + torch.mean(self.mean ** 2) + torch.mean(self.std ** 2)) 
+        return self.logits, self.mean, self.std 
 
 
 class TanhGaussianMixtureDistInstance(GaussianMixtureDistInstance):

@@ -120,10 +120,10 @@ class ActionModel(nn.Module):
         discrete_log_probs: Optional[List[torch.Tensor]] = None
         all_discrete_log_probs: Optional[List[torch.Tensor]] = None
         # This checks None because mypy complains otherwise
-        gmm_regularizer = None
+        stats = None
         if dists.continuous is not None:
             continuous_log_prob = dists.continuous.log_prob(actions.continuous_tensor)
-            gmm_regularizer = dists.continuous.regularizers()
+            stats = dists.continuous.stats()
             entropies_list.append(dists.continuous.entropy())
         if dists.discrete is not None:
             discrete_log_probs = []
@@ -139,7 +139,7 @@ class ActionModel(nn.Module):
             continuous_log_prob, discrete_log_probs, all_discrete_log_probs
         )
         entropies = torch.cat(entropies_list, dim=1)
-        return action_log_probs, entropies, gmm_regularizer
+        return action_log_probs, entropies, stats
 
     def evaluate(
         self, inputs: torch.Tensor, mode_oh, masks: torch.Tensor, actions: AgentAction
@@ -153,7 +153,7 @@ class ActionModel(nn.Module):
         :return: An ActionLogProbs tuple and a torch tensor of the distribution entropies.
         """
         dists = self._get_dists(inputs, mode_oh, masks)
-        log_probs, entropies, gmm_regularizer = self._get_probs_and_entropy(actions, dists)
+        log_probs, entropies, stats = self._get_probs_and_entropy(actions, dists)
         # Use the sum of entropy across actions, not the mean
         entropy_sum = torch.sum(entropies, dim=1)
         return log_probs, entropy_sum
@@ -201,7 +201,7 @@ class ActionModel(nn.Module):
         """
         dists = self._get_dists(inputs, mode_oh, masks)
         actions = self._sample_action(dists)
-        log_probs, entropies, gmm_regularizer = self._get_probs_and_entropy(actions, dists)
+        log_probs, entropies, stats = self._get_probs_and_entropy(actions, dists)
         # Use the sum of entropy across actions, not the mean
         entropy_sum = torch.sum(entropies, dim=1)
-        return (actions, log_probs, entropy_sum, gmm_regularizer)
+        return (actions, log_probs, entropy_sum, stats)
