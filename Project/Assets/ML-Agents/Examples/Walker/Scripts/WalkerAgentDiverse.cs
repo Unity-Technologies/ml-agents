@@ -16,6 +16,7 @@ public class WalkerAgentDiverse : Agent
 
     [Header("Target To Walk Towards")] public Transform target; //Target the agent will walk towards during training.
 
+    const float m_maxWalkingSpeed = 10; //The max walking speed
     [Header("Body Parts")] public Transform hips;
     public Transform chest;
     public Transform spine;
@@ -83,7 +84,7 @@ public class WalkerAgentDiverse : Agent
         }
 
         //Random start rotation to help generalize
-        hips.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
+        hips.rotation = Quaternion.Euler(0, Random.Range(0.0f, 90.0f), 0);
 
         UpdateOrientationObjects();
 
@@ -109,7 +110,7 @@ public class WalkerAgentDiverse : Agent
         if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR)
         {
             sensor.AddObservation(bp.rb.transform.localRotation);
-            sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
+        //    sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
 
@@ -121,7 +122,7 @@ public class WalkerAgentDiverse : Agent
         var cubeForward = m_OrientationCube.transform.forward;
 
         //velocity we want to match
-        var velGoal = cubeForward;
+        var velGoal = cubeForward* m_maxWalkingSpeed;
         //ragdoll's avg vel
         var avgVel = GetAvgVelocity();
 
@@ -149,39 +150,49 @@ public class WalkerAgentDiverse : Agent
 
     {
         var bpDict = m_JdController.bodyPartsDict;
-        var i = -1;
 
         var continuousActions = actionBuffers.ContinuousActions;
-        bpDict[chest].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], continuousActions[++i]);
-        bpDict[spine].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], continuousActions[++i]);
+        // Penalty for arms
+        float actionPenalty = 0;
+        for (int j = continuousActions.Length - 6; j < continuousActions.Length; j++)
+        {
+            actionPenalty += Mathf.Pow(continuousActions[j], 2);
+        }
+        AddReward(-.2f * actionPenalty);
+
+        var i = -1;
+        //bpDict[chest].SetJointTargetRotation(continuousActions[++i], 0, continuousActions[++i]);
+        //bpDict[spine].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], continuousActions[++i]);
 
         bpDict[thighL].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
         bpDict[thighR].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
         bpDict[shinL].SetJointTargetRotation(continuousActions[++i], 0, 0);
         bpDict[shinR].SetJointTargetRotation(continuousActions[++i], 0, 0);
-        bpDict[footR].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], continuousActions[++i]);
-        bpDict[footL].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], continuousActions[++i]);
+        //bpDict[footR].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], continuousActions[++i]);
+        //bpDict[footL].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], continuousActions[++i]);
+
+        //bpDict[head].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
 
         bpDict[armL].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
         bpDict[armR].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
         bpDict[forearmL].SetJointTargetRotation(continuousActions[++i], 0, 0);
         bpDict[forearmR].SetJointTargetRotation(continuousActions[++i], 0, 0);
-        bpDict[head].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+
 
         //update joint strength settings
-        bpDict[chest].SetJointStrength(continuousActions[++i]);
-        bpDict[spine].SetJointStrength(continuousActions[++i]);
-        bpDict[head].SetJointStrength(continuousActions[++i]);
-        bpDict[thighL].SetJointStrength(continuousActions[++i]);
-        bpDict[shinL].SetJointStrength(continuousActions[++i]);
-        bpDict[footL].SetJointStrength(continuousActions[++i]);
-        bpDict[thighR].SetJointStrength(continuousActions[++i]);
-        bpDict[shinR].SetJointStrength(continuousActions[++i]);
-        bpDict[footR].SetJointStrength(continuousActions[++i]);
-        bpDict[armL].SetJointStrength(continuousActions[++i]);
-        bpDict[forearmL].SetJointStrength(continuousActions[++i]);
-        bpDict[armR].SetJointStrength(continuousActions[++i]);
-        bpDict[forearmR].SetJointStrength(continuousActions[++i]);
+        //bpDict[chest].SetJointStrength(continuousActions[++i]);
+        //bpDict[spine].SetJointStrength(continuousActions[++i]);
+        //bpDict[head].SetJointStrength(continuousActions[++i]);
+        //bpDict[thighL].SetJointStrength(continuousActions[++i]);
+        //bpDict[shinL].SetJointStrength(continuousActions[++i]);
+        //bpDict[footL].SetJointStrength(continuousActions[++i]);
+        //bpDict[thighR].SetJointStrength(continuousActions[++i]);
+        //bpDict[shinR].SetJointStrength(continuousActions[++i]);
+        //bpDict[footR].SetJointStrength(continuousActions[++i]);
+        //bpDict[armL].SetJointStrength(continuousActions[++i]);
+        //bpDict[forearmL].SetJointStrength(continuousActions[++i]);
+        //bpDict[armR].SetJointStrength(continuousActions[++i]);
+        //bpDict[forearmR].SetJointStrength(continuousActions[++i]);
     }
 
     //Update OrientationCube and DirectionIndicator
@@ -201,8 +212,9 @@ public class WalkerAgentDiverse : Agent
 
         var cubeForward = m_OrientationCube.transform.forward;
 
-        var matchSpeedReward = GetMatchingVelocityReward(cubeForward, GetAvgVelocity());
+        var matchSpeedReward = GetMatchingVelocityReward(m_maxWalkingSpeed * cubeForward, GetAvgVelocity());
 
+        var lookAtTargetReward = (Vector3.Dot(cubeForward, head.forward) + 1) * .5F;
         //Check for NaNs
         if (float.IsNaN(matchSpeedReward))
         {
@@ -214,7 +226,8 @@ public class WalkerAgentDiverse : Agent
             );
         }
 
-        AddReward(matchSpeedReward);
+        // survival bonus 
+        AddReward(matchSpeedReward * lookAtTargetReward);
     }
 
     //Returns the average velocity of all of the body parts
@@ -239,10 +252,11 @@ public class WalkerAgentDiverse : Agent
     /// Positive one if moving towards goal.
     public float GetMatchingVelocityReward(Vector3 velocityGoal, Vector3 actualVelocity)
     {
-        var velocityProjection = Vector3.Project(actualVelocity, velocityGoal);
-        var direction = Vector3.Angle(velocityProjection, velocityGoal) == 0 ? 1 : -1;
-        var speed = velocityProjection.magnitude * direction;
-        return speed > m_minWalkingSpeed ? 0.1f : 0;
+        var velDeltaMagnitude = Mathf.Clamp(Vector3.Distance(actualVelocity, velocityGoal), 0, m_maxWalkingSpeed);
+
+        //return the value on a declining sigmoid shaped curve that decays from 1 to 0
+        //This reward will approach 1 if it matches perfectly and approach zero as it deviates
+        return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / m_maxWalkingSpeed, 2), 2);
     }
 
     /// <summary>
