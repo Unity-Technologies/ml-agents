@@ -941,7 +941,7 @@ class TorchSACOptimizer(TorchOptimizer):
         #Regularize heads
         (gmm_logit, gmm_means, gmm_stds) = stats
         gmm_regularizer = self.reg * 0.5 * (torch.mean(gmm_means ** 2) + torch.mean(gmm_stds ** 2))
-        policy_loss += gmm_regularizer 
+        #policy_loss += gmm_regularizer 
         entropy_loss = self.sac_entropy_loss(log_probs, masks)
 
         total_value_loss = q1_loss + q2_loss
