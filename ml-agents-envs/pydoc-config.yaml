@@ -1,4 +1,5 @@
 # config to specify which modules will be used to render api docs
+# TODO: add gym_unity and pettingzoo_unity to API doc generation
 folder: docs
 modules:
     - name: mlagents_envs
