@@ -44,7 +44,7 @@ class AgentAction(NamedTuple):
                 _disc_list.append(_disc[start:end])
         return AgentAction(_cont, _disc_list)
 
-    def to_action_tuple(self, clip: bool = False) -> ActionTuple:
+    def to_action_tuple(self, clip: bool = False, tanh: bool = False) -> ActionTuple:
         """
         Returns an ActionTuple
         """
@@ -53,6 +53,8 @@ class AgentAction(NamedTuple):
             _continuous_tensor = self.continuous_tensor
             if clip:
                 _continuous_tensor = torch.clamp(_continuous_tensor, -3, 3) / 3
+            elif tanh:
+                _continuous_tensor = torch.tanh(_continuous_tensor)
             continuous = ModelUtils.to_numpy(_continuous_tensor)
             action_tuple.add_continuous(continuous)
         if self.discrete_list is not None:

@@ -192,14 +192,7 @@ class TanhGaussianMixtureDistInstance(GaussianMixtureDistInstance):
 
     def log_prob(self, value):
         unsquashed = self.transform.inv(value)
-        #tf.reduce_sum(tf.log(1 - tf.tanh(actions) ** 2 + EPS), axis=1)
-        #print(torch.sum(torch.log(1-torch.tanh(unsquashed) ** 2 + EPSILON), dim=1))
-        #print(super().log_prob(unsquashed))
-
         return super().log_prob(unsquashed) - (torch.sum(torch.log(1-torch.tanh(unsquashed) ** 2 + EPSILON), dim=1)).unsqueeze(-1)
-        #return super().log_prob(unsquashed) - self.transform.log_abs_det_jacobian(
-        #    unsquashed, value
-        #)
 
 
 class CategoricalDistInstance(DiscreteDistInstance):
@@ -278,10 +271,11 @@ class GaussianDistribution(nn.Module):
             # the verified version of Barracuda (1.0.X).
             log_sigma = mu * 0 + self.log_sigma
 
-        if self.tanh_squash:
-            return TanhGaussianDistInstance(mu, torch.exp(log_sigma), mode_oh)
-        else:
-            return GaussianDistInstance(mu, torch.exp(log_sigma), mode_oh)
+        return GaussianDistInstance(mu, torch.exp(log_sigma), mode_oh)
+        #if self.tanh_squash:
+        #    return TanhGaussianDistInstance(mu, torch.exp(log_sigma), mode_oh)
+        #else:
+        #    return GaussianDistInstance(mu, torch.exp(log_sigma), mode_oh)
 
 #https://github.com/ben-eysenbach/sac/blob/master/sac/distributions/gmm.py#L10
 LOG_W_MIN = -5 
@@ -343,10 +337,11 @@ class GaussianMixtureDistribution(nn.Module):
             # use this to replace torch.expand() becuase it is not supported in
             # the verified version of Barracuda (1.0.X).
             log_sigma = mu * 0 + self.log_sigma
-        if self.tanh_squash:
-            return TanhGaussianMixtureDistInstance(mu, torch.exp(log_sigma), logits, self.n_modes, self.n_action)
-        else:
-            return GaussianMixtureDistInstance(mu, torch.exp(log_sigma), logits, self.n_modes, self.n_action)
+        return GaussianMixtureDistInstance(mu, torch.exp(log_sigma), logits, self.n_modes, self.n_action)
+        #if self.tanh_squash:
+        #    return TanhGaussianMixtureDistInstance(mu, torch.exp(log_sigma), logits, self.n_modes, self.n_action)
+        #else:
+        #    return GaussianMixtureDistInstance(mu, torch.exp(log_sigma), logits, self.n_modes, self.n_action)
 
 class MultiCategoricalDistribution(nn.Module):
     def __init__(self, hidden_size: int, act_sizes: List[int]):

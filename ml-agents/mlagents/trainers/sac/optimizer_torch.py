@@ -19,7 +19,7 @@ from mlagents.trainers.settings import TrainerSettings, SACSettings
 from contextlib import ExitStack
 from mlagents.trainers.trajectory import ObsUtil
 
-EPSILON = 1e-6  # Small value to avoid divide by zero
+EPSILON = 1e-7  # Small value to avoid divide by zero
 
 logger = get_logger(__name__)
 
@@ -577,7 +577,7 @@ class TorchSACOptimizer(TorchOptimizer):
         q1p_out: Dict[str, torch.Tensor],
         q2p_out: Dict[str, torch.Tensor],
         loss_masks: torch.Tensor,
-        mede_rewards: torch.Tensor
+        squash_correction: torch.Tensor
     ) -> torch.Tensor:
         min_policy_qs = {}
         with torch.no_grad():
@@ -622,7 +622,7 @@ class TorchSACOptimizer(TorchOptimizer):
             for name in values.keys():
                 with torch.no_grad():
                     v_backup = min_policy_qs[name] - torch.sum(
-                        _cont_ent_coef * log_probs.continuous_tensor, dim=1
+                        _cont_ent_coef * (log_probs.continuous_tensor - squash_correction), dim=1
                     )
                     #v_backup += self._diversity_coef.coef * mede_rewards
                 value_loss = 0.5 * ModelUtils.masked_mean(
@@ -630,6 +630,7 @@ class TorchSACOptimizer(TorchOptimizer):
                 )
                 value_losses.append(value_loss)
         else:
+            assert False
             disc_log_probs = log_probs.all_discrete_tensor
             branched_per_action_ent = ModelUtils.break_into_branches(
                 disc_log_probs * disc_log_probs.exp(),
@@ -671,7 +672,7 @@ class TorchSACOptimizer(TorchOptimizer):
         q1p_outs: Dict[str, torch.Tensor],
         vf_outs: Dict[str, torch.Tensor],
         loss_masks: torch.Tensor,
-        mede_rewards: torch.Tensor
+        squash_correction: torch.Tensor
     ) -> torch.Tensor:
         _cont_ent_coef, _disc_ent_coef = (
             self._log_ent_coef.continuous,
@@ -709,7 +710,7 @@ class TorchSACOptimizer(TorchOptimizer):
             cont_log_probs = log_probs.continuous_tensor
             log_pi = torch.sum(cont_log_probs, dim=1)
             with torch.no_grad():
-                targ = _cont_ent_coef * log_pi - all_mean_q1 + all_mean_vf
+                targ = _cont_ent_coef * (log_pi - squash_correction.squeeze(1)) - all_mean_q1 + all_mean_vf
             batch_policy_loss += log_pi * targ
             #batch_policy_loss += (
             #    _cont_ent_coef * torch.sum(cont_log_probs, dim=1) - all_mean_q1
@@ -867,8 +868,9 @@ class TorchSACOptimizer(TorchOptimizer):
         value_estimates, _ = self._critic.critic_pass(
             current_obs, value_memories, sequence_length=self.policy.sequence_length
         )
+        
 
-        cont_sampled_actions = sampled_actions.continuous_tensor
+        cont_sampled_actions = torch.tanh(sampled_actions.continuous_tensor)
         cont_actions = actions.continuous_tensor
         q1p_out, q2p_out = self.q_network(
             current_obs,
@@ -904,40 +906,32 @@ class TorchSACOptimizer(TorchOptimizer):
                 )
             else:
                 next_value_memories = None
-            target_values, _ = self.target_network(
+            next_target_values, _ = self.target_network(
                 next_obs,
                 memories=next_value_memories,
                 sequence_length=self.policy.sequence_length,
             )
+            target_values, _ = self.target_network(
+                current_obs,
+                memories=next_value_memories,
+                sequence_length=self.policy.sequence_length,
+            )
+
         masks = ModelUtils.list_to_tensor(batch[BufferKey.MASKS], dtype=torch.bool)
         dones = ModelUtils.list_to_tensor(batch[BufferKey.DONE])
 
         mede_value_rewards, mede_policy_rewards, diayn_rewards = torch.zeros(1), torch.zeros(1), torch.zeros(1)
-        if self._use_mede:
-            self._mede_network.copy_normalization(self.policy.actor.network_body)
-            disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
-            mede_policy_rewards = self._mede_network.rewards(
-                current_obs, sampled_actions.continuous_tensor, disc_act, var_noise=False
-            )
-            with torch.no_grad():
-                mede_value_rewards = self._mede_network.rewards(
-                    current_obs, sampled_actions.continuous_tensor, disc_act, var_noise=False
-                )
-        elif self._use_diayn:
-            self._diayn_network.copy_normalization(self.policy.actor.network_body)
-            disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None
-            with torch.no_grad():
-                diayn_rewards = self._diayn_network.rewards(
-                    current_obs, sampled_actions.continuous_tensor, disc_act, var_noise=False
-                )
-
+        
         q1_loss, q2_loss = self.sac_q_loss(
-            q1_stream, q2_stream, target_values, dones, rewards, masks, diayn_rewards
+            q1_stream, q2_stream, next_target_values, dones, rewards, masks, diayn_rewards
         )
+
+        squash_correction = torch.sum(torch.log(1 - torch.tanh(sampled_actions.continuous_tensor) ** 2 + EPSILON), dim=1).unsqueeze(-1)
+
         value_loss = self.sac_value_loss(
-            log_probs, value_estimates, q1p_out, q2p_out, masks, mede_value_rewards
+            log_probs, value_estimates, q1p_out, q2p_out, masks, squash_correction
         )
-        policy_loss = self.sac_policy_loss(log_probs, q1p_out, value_estimates, masks, mede_policy_rewards)
+        policy_loss = self.sac_policy_loss(log_probs, q1p_out, value_estimates, masks, squash_correction)
         #Regularize heads
         (gmm_logit, gmm_means, gmm_stds) = stats
         gmm_regularizer = self.reg * 0.5 * (torch.mean(gmm_means ** 2) + torch.mean(gmm_stds ** 2))
@@ -981,14 +975,26 @@ class TorchSACOptimizer(TorchOptimizer):
             ).item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/Entropy Loss": entropy_loss.item(),
-            "Policy/Log Probs": torch.mean(torch.sum(log_probs.continuous_tensor, dim=1)).item(),
-            "GMM/Regularization": gmm_regularizer.item(),
-            "GMM/Logit Mean": torch.mean(torch.mean(gmm_logit, dim=1)).item(),
-            "GMM/Logit Min": torch.mean(torch.min(gmm_logit, dim=1)[0]).item(),
-            "GMM/Logit Max": torch.mean(torch.max(gmm_logit, dim=1)[0]).item(),
-            "GMM/Logit Std": torch.mean(torch.std(gmm_logit, dim=1)).item(),
-            "GMM/Logit LSE": torch.mean(torch.logsumexp(gmm_logit, dim=1)).item(),
+            "Policy/Log Probs": torch.mean(torch.sum(log_probs.continuous_tensor - squash_correction, dim=1)).item(),
+            "Policy/GMM Regularization": gmm_regularizer.item(),
+            "GMM/Mean Action Std": torch.mean(torch.std(gmm_means, dim=1)).item(),
+            #"GMM/Logit Mean": torch.mean(torch.mean(gmm_logit, dim=1)).item(),
+            #"GMM/Logit Min": torch.mean(torch.min(gmm_logit, dim=1)[0]).item(),
+            #"GMM/Logit Max": torch.mean(torch.max(gmm_logit, dim=1)[0]).item(),
+            #"GMM/Logit Std": torch.mean(torch.std(gmm_logit, dim=1)).item(),
+            #"GMM/Logit LSE": torch.mean(torch.logsumexp(gmm_logit, dim=1)).item(),
+            #"GMM/STD Mean": torch.mean(torch.mean(gmm_stds, dim=2)).item(),
+            #"GMM/STD Min": torch.mean(torch.min(gmm_stds, dim=2)[0]).item(),
+            #"GMM/STD Max": torch.mean(torch.max(gmm_stds, dim=2)[0]).item(),
+            #"GMM/STD Std": torch.mean(torch.std(gmm_stds, dim=2)).item(),
         }
+        logit_per_head = torch.mean(torch.softmax(gmm_logit, dim=-1), dim=0).tolist()
+        std_per_head = torch.mean(torch.mean(gmm_stds, dim=2), dim=0).tolist()
+        mean_per_head = torch.mean(torch.mean(gmm_means, dim=2), dim=0).tolist()
+        for i in range(4):
+            update_stats.update({"GMM/Logit Head " + str(i): logit_per_head[i]})
+            update_stats.update({"GMM/Std Head " + str(i): std_per_head[i]})
+            update_stats.update({"GMM/Mean Head " + str(i): mean_per_head[i]})
 
         if self._use_mede or self._use_diayn:
             disc_act = log_probs.all_discrete_tensor if self._action_spec.discrete_size > 0 else None

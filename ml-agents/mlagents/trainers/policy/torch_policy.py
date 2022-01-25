@@ -61,6 +61,7 @@ class TorchPolicy(Policy):
             "Losses/Value Loss": "value_loss",
             "Losses/Policy Loss": "policy_loss",
         }
+        self.tanh_squash = tanh_squash
         if separate_critic:
             self.actor = SimpleActor(
                 observation_specs=self.behavior_spec.observation_specs,
@@ -178,11 +179,11 @@ class TorchPolicy(Policy):
             action, log_probs, entropy, memories, _ = self.sample_actions(
                 tensor_obs, masks=masks, memories=memories
             )
-        action_tuple = action.to_action_tuple()
+        action_tuple = action.to_action_tuple(tanh=self.tanh_squash)
         run_out["action"] = action_tuple
         # This is the clipped action which is not saved to the buffer
         # but is exclusively sent to the environment.
-        env_action_tuple = action.to_action_tuple(clip=self._clip_action)
+        env_action_tuple = action.to_action_tuple(clip=self._clip_action, tanh=self.tanh_squash)
         run_out["env_action"] = env_action_tuple
         run_out["log_probs"] = log_probs.to_log_probs_tuple()
         run_out["entropy"] = ModelUtils.to_numpy(entropy)
