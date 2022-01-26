@@ -54,6 +54,11 @@ public class SoccerEnvController : MonoBehaviour
     private Material m_CenterPitchMat;
     public Material PurpleMat;
     public Material BlueMat;
+    public TMPro.TMP_Text purpleScoreText;
+    public TMPro.TMP_Text blueScoreText;
+    private int purpleScore;
+    private int blueScore;
+
     void Start()
     {
 
@@ -78,6 +83,10 @@ public class SoccerEnvController : MonoBehaviour
                 m_PurpleAgentGroup.RegisterAgent(item.Agent);
             }
         }
+        purpleScore = 0;
+        blueScore = 0;
+        purpleScoreText.text = "0";
+        blueScoreText.text = "0";
         ResetScene();
     }
 
@@ -122,14 +131,18 @@ public class SoccerEnvController : MonoBehaviour
         {
             m_BlueAgentGroup.AddGroupReward(1 - m_ResetTimer / MaxEnvironmentSteps);
             m_PurpleAgentGroup.AddGroupReward(-1);
+            blueScore += 1;
             StartCoroutine(GoalScoredSwapGroundMaterial(BlueMat, 1f));
         }
         else
         {
             m_PurpleAgentGroup.AddGroupReward(1 - m_ResetTimer / MaxEnvironmentSteps);
             m_BlueAgentGroup.AddGroupReward(-1);
+            purpleScore += 1;
             StartCoroutine(GoalScoredSwapGroundMaterial(PurpleMat, 1f));
         }
+        purpleScoreText.text = purpleScore.ToString();
+        blueScoreText.text = blueScore.ToString();
         m_PurpleAgentGroup.EndGroupEpisode();
         m_BlueAgentGroup.EndGroupEpisode();
         ResetScene();
