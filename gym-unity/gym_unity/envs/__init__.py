@@ -1,13 +1,21 @@
 import itertools
+from dataclasses import dataclass
+
 import numpy as np
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, Callable
 
 import gym
-from gym import error, spaces
+from gym import error, spaces, Env
+from stable_baselines3.common.vec_env import VecEnv, SubprocVecEnv
 
 from mlagents_envs.base_env import ActionTuple, BaseEnv
 from mlagents_envs.base_env import DecisionSteps, TerminalSteps
 from mlagents_envs import logging_util
+from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.side_channel.engine_configuration_channel import (
+    EngineConfig,
+    EngineConfigurationChannel,
+)
 
 
 class UnityGymException(error.Error):
@@ -22,6 +30,48 @@ logger = logging_util.get_logger(__name__)
 logging_util.set_log_level(logging_util.INFO)
 
 GymStepResult = Tuple[np.ndarray, float, bool, Dict]
+
+# Default values from CLI (See cli_utils.py)
+DEFAULT_ENGINE_CONFIG = EngineConfig(
+    width=84,
+    height=84,
+    quality_level=4,
+    time_scale=20,
+    target_frame_rate=-1,
+    capture_frame_rate=60,
+)
+
+
+# Some config subset of an actual config.yaml file for MLA.
+@dataclass
+class LimitedConfig:
+    env_path: str
+    num_env: int = 1
+    engine_config: EngineConfig = DEFAULT_ENGINE_CONFIG
+
+
+def make_mla_sb3_env(config: LimitedConfig) -> VecEnv:
+    def create_env(path: str, worker_id: int, seed: int) -> Callable[[], Env]:
+        def _f() -> Env:
+            engine_configuration_channel = EngineConfigurationChannel()
+            engine_configuration_channel.set_configuration(config.engine_config)
+            side_channels = [engine_configuration_channel]
+            return UnityToGymWrapper(
+                UnityEnvironment(
+                    file_name=path,
+                    worker_id=worker_id,
+                    seed=seed,
+                    side_channels=side_channels,
+                ),
+                uint8_visual=True,
+            )
+
+        return _f
+
+    env_facts = [
+        create_env(config.env_path, worker_id=x, seed=x) for x in range(config.num_env)
+    ]
+    return SubprocVecEnv(env_facts)
 
 
 class UnityToGymWrapper(gym.Env):
