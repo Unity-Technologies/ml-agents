@@ -1,4 +1,4 @@
-# Unity ML-Agents PettingZoo Wrapper [Experimental]
+# Unity ML-Agents PettingZoo Wrapper
 
 With the increasing interest in multi-agent training with a gym-like API, we provide a
 PettingZoo Wrapper around the [Petting Zoo API](https://www.pettingzoo.ml/). Our wrapper
