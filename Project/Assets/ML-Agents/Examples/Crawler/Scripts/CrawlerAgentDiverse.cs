@@ -44,6 +44,7 @@ public class CrawlerAgentDiverse : Agent
     public Material groundedMaterial;
     public Material unGroundedMaterial;
 
+    private Vector3 z_direction;
     public override void Initialize()
     {
         //SpawnTarget(TargetPrefab, transform.position); //spawn target
@@ -62,6 +63,7 @@ public class CrawlerAgentDiverse : Agent
         m_JdController.SetupBodyPart(leg2Lower);
         m_JdController.SetupBodyPart(leg3Upper);
         m_JdController.SetupBodyPart(leg3Lower);
+        z_direction = new Vector3(0f, 0f, 1f);
     }
 
     /// <summary>
@@ -113,7 +115,8 @@ public class CrawlerAgentDiverse : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {        
-        var cubeForward = m_OrientationCube.transform.forward;
+        //var cubeForward = m_OrientationCube.transform.forward;
+        var cubeForward = z_direction;
 
         //velocity we want to match
         var velGoal = cubeForward* m_maxWalkingSpeed;
@@ -121,16 +124,17 @@ public class CrawlerAgentDiverse : Agent
         var avgVel = GetAvgVelocity();
 
         //current ragdoll velocity. normalized
-        sensor.AddObservation(Vector3.Distance(velGoal, avgVel));
+        //sensor.AddObservation(Vector3.Distance(velGoal, avgVel));
         //avg body vel relative to cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
         //vel goal relative to cube
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
+        //sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
         //rotation delta
         sensor.AddObservation(Quaternion.FromToRotation(body.forward, cubeForward));
 
         //Add pos of target relative to orientation cube
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.transform.position));
+        //sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.transform.position));
+        //sensor.AddObservation((target.transform.position - m_OrientationCube.transform.position).normalized)
 
         RaycastHit hit;
         float maxRaycastDist = 10;
@@ -197,16 +201,17 @@ public class CrawlerAgentDiverse : Agent
                 : unGroundedMaterial;
         }
 
-        var cubeForward = m_OrientationCube.transform.forward;
+        //var cubeForward = m_OrientationCube.transform.forward;
+        var cubeForward = z_direction;
 
         // Set reward for this step according to mixture of the following elements.
         // a. Match target speed
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
         var matchSpeedReward = GetMatchingVelocityReward(m_maxWalkingSpeed * cubeForward, GetAvgVelocity());
 
-        var lookAtTargetReward = (Vector3.Dot(cubeForward, body.forward) + 1) * .5F;
+        var lookAtTargetReward = (Vector3.Dot(cubeForward, body.forward) + 1) * .5f;
 
-        AddReward(matchSpeedReward *  lookAtTargetReward);
+        AddReward(matchSpeedReward * lookAtTargetReward);
     }
 
     /// <summary>
@@ -252,7 +257,13 @@ public class CrawlerAgentDiverse : Agent
 
         //return the value on a declining sigmoid shaped curve that decays from 1 to 0
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
-        return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / m_maxWalkingSpeed, 2), 2);
+        float rew =  Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / m_maxWalkingSpeed, 2), 2);
+        if (rew > 1)
+        {
+            Debug.Log("broken");
+        }
+        //return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / m_maxWalkingSpeed, 2), 2);
+        return rew;
     }
 
     /// <summary>

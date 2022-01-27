@@ -224,10 +224,12 @@ class SACTrainer(RLTrainer):
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.
         # Set last element to duplicate obs and remove dones.
         if last_step.interrupted:
-            last_step_obs = last_step.obs
-            for i, obs in enumerate(last_step_obs):
-                agent_buffer_trajectory[ObsUtil.get_name_at_next(i)][-1] = obs
-            agent_buffer_trajectory[BufferKey.DONE][-1] = False
+            for _entry in agent_buffer_trajectory:
+                del agent_buffer_trajectory[_entry][-1]
+            #last_step_obs = last_step.obs
+            #for i, obs in enumerate(last_step_obs):
+            #    agent_buffer_trajectory[ObsUtil.get_name_at_next(i)][-1] = obs
+            #agent_buffer_trajectory[BufferKey.DONE][-1] = False
 
         self._append_to_update_buffer(agent_buffer_trajectory)
 

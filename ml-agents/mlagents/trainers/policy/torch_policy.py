@@ -179,7 +179,7 @@ class TorchPolicy(Policy):
             action, log_probs, entropy, memories, _ = self.sample_actions(
                 tensor_obs, masks=masks, memories=memories
             )
-        action_tuple = action.to_action_tuple(tanh=self.tanh_squash)
+        action_tuple = action.to_action_tuple()
         run_out["action"] = action_tuple
         # This is the clipped action which is not saved to the buffer
         # but is exclusively sent to the environment.

@@ -1,5 +1,32 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &171247197645595043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2270141184585723037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: RayPerceptionSensor
+  m_DetectableTags:
+  - wall
+  m_RaysPerDirection: 1
+  m_MaxRayDegrees: 70
+  m_SphereCastRadius: 0.5
+  m_RayLength: 100
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  m_ObservationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0
+  m_EndVerticalOffset: 0
 --- !u!1 &4845970999844939481
 GameObject:
   m_ObjectHideFlags: 0
@@ -2815,7 +2842,6 @@ GameObject:
   - component: {fileID: 4845971001715176660}
   - component: {fileID: 8968436865147081600}
   - component: {fileID: 8900690839723269250}
-  - component: {fileID: 3771457526119240850}
   m_Layer: 0
   m_Name: CrawlerDiverse
   m_TagString: Untagged
@@ -2853,7 +2879,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 126
+    VectorObservationSize: 119
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 12
@@ -2970,25 +2996,6 @@ MonoBehaviour:
   foot3: {fileID: 4845971001308907666}
   groundedMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
   unGroundedMaterial: {fileID: 2100000, guid: eaad04b0e0dec42229c9cb00a981d7ac, type: 2}
---- !u!114 &3771457526119240850
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4845971001715176661}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9502529ed42c4056a6a769f594f1d94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SensorName: DiversitySampler
-  ContinuousSampling: 0
-  BalancedSampling: 0
-  DisableSampling: 0
-  DiversitySize: 8
-  DiscreteSetting: 0
-  ContinuousSetting: []
 --- !u!1 &4845971001730692034
 GameObject:
   m_ObjectHideFlags: 0
@@ -3077,6 +3084,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4845971001715176651}
     m_Modifications:
+    - target: {fileID: 2591864625898824423, guid: 72f745913c5a34df5aaadd5c1f0024cb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2591864627249999504, guid: 72f745913c5a34df5aaadd5c1f0024cb,
         type: 3}
       propertyPath: m_RootOrder

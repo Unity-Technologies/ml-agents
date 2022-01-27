@@ -502,7 +502,7 @@ class TorchSACOptimizer(TorchOptimizer):
             self.trainer_settings.max_steps,
         )
         self.policy_optimizer = torch.optim.Adam(
-            policy_params, lr=hyperparameters.learning_rate
+            policy_params, lr=hyperparameters.learning_rate, weight_decay=1e-5
         )
         self.value_optimizer = torch.optim.Adam(
             value_params, lr=hyperparameters.learning_rate
@@ -621,9 +621,9 @@ class TorchSACOptimizer(TorchOptimizer):
         if self._action_spec.discrete_size <= 0:
             for name in values.keys():
                 with torch.no_grad():
-                    v_backup = min_policy_qs[name] - torch.sum(
-                        _cont_ent_coef * (log_probs.continuous_tensor - squash_correction), dim=1
-                    )
+                    log_pi = torch.sum(log_probs.continuous_tensor, dim=1)
+                    corr_log_pi = log_pi - squash_correction
+                    v_backup = min_policy_qs[name] - _cont_ent_coef * corr_log_pi
                     #v_backup += self._diversity_coef.coef * mede_rewards
                 value_loss = 0.5 * ModelUtils.masked_mean(
                     torch.nn.functional.mse_loss(values[name], v_backup), loss_masks
@@ -709,8 +709,9 @@ class TorchSACOptimizer(TorchOptimizer):
         if self._action_spec.continuous_size > 0:
             cont_log_probs = log_probs.continuous_tensor
             log_pi = torch.sum(cont_log_probs, dim=1)
+            corr_log_pi = log_pi - squash_correction
             with torch.no_grad():
-                targ = _cont_ent_coef * (log_pi - squash_correction.squeeze(1)) - all_mean_q1 + all_mean_vf
+                targ = _cont_ent_coef * corr_log_pi - all_mean_q1 + all_mean_vf
             batch_policy_loss += log_pi * targ
             #batch_policy_loss += (
             #    _cont_ent_coef * torch.sum(cont_log_probs, dim=1) - all_mean_q1
@@ -871,7 +872,8 @@ class TorchSACOptimizer(TorchOptimizer):
         
 
         cont_sampled_actions = torch.tanh(sampled_actions.continuous_tensor)
-        cont_actions = actions.continuous_tensor
+        cont_actions = torch.tanh(actions.continuous_tensor)
+
         q1p_out, q2p_out = self.q_network(
             current_obs,
             cont_sampled_actions,
@@ -926,12 +928,12 @@ class TorchSACOptimizer(TorchOptimizer):
             q1_stream, q2_stream, next_target_values, dones, rewards, masks, diayn_rewards
         )
 
-        squash_correction = torch.sum(torch.log(1 - torch.tanh(sampled_actions.continuous_tensor) ** 2 + EPSILON), dim=1).unsqueeze(-1)
+        squash_correction = torch.sum(torch.log(1 - torch.tanh(sampled_actions.continuous_tensor) ** 2 + EPSILON), dim=1)
 
         value_loss = self.sac_value_loss(
             log_probs, value_estimates, q1p_out, q2p_out, masks, squash_correction
         )
-        policy_loss = self.sac_policy_loss(log_probs, q1p_out, value_estimates, masks, squash_correction)
+        policy_loss = self.sac_policy_loss(log_probs, q1p_out, target_values, masks, squash_correction)
         #Regularize heads
         (gmm_logit, gmm_means, gmm_stds) = stats
         gmm_regularizer = self.reg * 0.5 * (torch.mean(gmm_means ** 2) + torch.mean(gmm_stds ** 2))
@@ -961,22 +963,32 @@ class TorchSACOptimizer(TorchOptimizer):
         #self.entropy_optimizer.step()
 
         # Update target network
+        mean_q1 = torch.mean(torch.stack(list(q1p_out.values())), axis=0)
+        mean_q2 = torch.mean(torch.stack(list(q2p_out.values())), axis=0)
+        all_mean_vf= torch.mean(torch.stack(list(value_estimates.values())), axis=0)
+
         ModelUtils.soft_update(self._critic, self.target_network, self.tau)
         update_stats = {
             "Losses/Policy Loss": policy_loss.item(),
             "Losses/Value Loss": value_loss.item(),
             "Losses/Q1 Loss": q1_loss.item(),
             "Losses/Q2 Loss": q2_loss.item(),
-            "Policy/Discrete Entropy Coeff": torch.mean(
-                torch.exp(self._log_ent_coef.discrete)
-            ).item(),
+            #"Policy/Discrete Entropy Coeff": torch.mean(
+            #    torch.exp(self._log_ent_coef.discrete)
+            #).item(),
             "Policy/Continuous Entropy Coeff": torch.mean(
                 torch.exp(self._log_ent_coef.continuous)
             ).item(),
-            "Policy/Learning Rate": decay_lr,
-            "Policy/Entropy Loss": entropy_loss.item(),
-            "Policy/Log Probs": torch.mean(torch.sum(log_probs.continuous_tensor - squash_correction, dim=1)).item(),
-            "Policy/GMM Regularization": gmm_regularizer.item(),
+            #"Policy/Learning Rate": decay_lr,
+            #"Policy/Entropy Loss": entropy_loss.item(),
+            "Policy/Log Probs": torch.mean(torch.sum(log_probs.continuous_tensor, dim=1)).item(),
+            "Policy/VF": torch.mean(all_mean_vf).item(),
+            "Policy/QF": torch.mean(mean_q1).item(),
+            "Policy/QF DIF": torch.mean(mean_q1 - mean_q2).item(),
+            "Policy/QF-VF": torch.mean(mean_q1-all_mean_vf).item(),
+            "Policy/QF-VF+LP": torch.mean(mean_q1-all_mean_vf - torch.exp(self._log_ent_coef.continuous) * torch.mean(torch.sum(log_probs.continuous_tensor, dim=1) - squash_correction)).item(),
+            "Policy/Corrected Log Probs": torch.mean(torch.sum(log_probs.continuous_tensor, dim=1) - squash_correction).item(),
+            "GMM/Regularization": gmm_regularizer.item(),
             "GMM/Mean Action Std": torch.mean(torch.std(gmm_means, dim=1)).item(),
             #"GMM/Logit Mean": torch.mean(torch.mean(gmm_logit, dim=1)).item(),
             #"GMM/Logit Min": torch.mean(torch.min(gmm_logit, dim=1)[0]).item(),

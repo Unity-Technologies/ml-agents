@@ -35,6 +35,12 @@ TagManager:
   - blockVeryLarge
   - deadly
   - indicator
+  - ex
+  - key
+  - lock
+  - dragon
+  - portal
+  - plus
   layers:
   - Default
   - TransparentFX
@@ -42,7 +48,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - wall
   - 
   - invisible
   - 
