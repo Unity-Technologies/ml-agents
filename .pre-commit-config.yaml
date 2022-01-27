@@ -77,7 +77,7 @@ repos:
   hooks:
   - id: search-and-replace
     types: [markdown]
-    exclude: ".*localized.*"
+    exclude: ".*localized_docs.*"
 
 - repo: https://github.com/dotnet/format
   rev: v5.1.225507
@@ -94,8 +94,8 @@ repos:
         entry: utils/run_markdown_link_check.py
         language: script
         types: [markdown]
-        # Don't check localized files since their target might not be localized.
-        exclude: ".*localized.*"
+        # Don't check localized_docs files since their target might not be localized_docs.
+        exclude: ".*localized_docs.*"
         # Only run manually, e.g. pre-commit run --hook-stage manual markdown-link-check
         stages: [manual]
     -   id: markdown-link-check-full
@@ -103,8 +103,8 @@ repos:
         entry: utils/run_markdown_link_check.py
         language: script
         types: [markdown]
-        # Don't check localized files since their target might not be localized.
-        exclude: ".*localized.*"
+        # Don't check localized_docs files since their target might not be localized_docs.
+        exclude: ".*localized_docs.*"
         # Only run manually, e.g. pre-commit run --hook-stage manual markdown-link-check-full
         stages: [manual]
         args: [--check-remote]

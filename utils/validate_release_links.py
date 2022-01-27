@@ -212,7 +212,10 @@ def check_all_files(
     bad_lines = []
     file_types = {".py", ".md", ".cs", ".ipynb"}
     for file_name in git_ls_files():
-        if "localized" in file_name or os.path.splitext(file_name)[1] not in file_types:
+        if (
+            "localized_docs" in file_name
+            or os.path.splitext(file_name)[1] not in file_types
+        ):
             continue
         bad_lines += check_file(
             file_name,

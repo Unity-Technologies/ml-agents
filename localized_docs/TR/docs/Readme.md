@@ -64,8 +64,8 @@ to one language (Chinese), but we hope to continue translating more pages and to
 other languages. Consequently, we welcome any enhancements and improvements from
 the community.
 
-- [Chinese](localized/zh-CN/)
-- [Korean](localized/KR/)
+- [Chinese](localized_docs/zh-CN/)
+- [Korean](localized_docs/KR/)
 
 ## Deprecated Docs
 
