@@ -1,0 +1,24 @@
+site_name: Unity ML-Agents Toolkit
+pages:
+- Home: index.md
+- Background:
+    - Machine Learning: Background-Machine-Learning.md
+    - PyTorch: Background-PyTorch.md
+    - Unity: Background-Unity.md
+- Interfacing with Unity Builds:
+    - Gym API:
+      - Getting started with the Gym API: Python-Gym-API.md
+      - Gym API Documentation: Python-Gym-API-Documentation.md
+    - Petting Zoo API:
+      - Getting started with the PettingZoo API: Python-PettingZoo-API.md
+      - Petting Zoo Documentation: Python-PettingZoo-API-Documentation.md
+    - Low-level API:
+      - Getting started with the LLAPI: Python-LLAPI.md
+      - LLAPI Documentation: Python-LLAPI-Documentation.md
+- About:
+    - FAQs: FAQ.md
+    - Limitations: Limitations.md
+    - Migrating: Migrating.md
+    - Versioning: Versioning.md
+theme: readthedocs
+extra_css: [extra.css]
