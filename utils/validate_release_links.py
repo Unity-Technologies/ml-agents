@@ -22,7 +22,7 @@ MATCH_ANY = re.compile(r"(?s).*")
 # To allow everything in the file (effectively skipping it), use MATCH_ANY for the value
 ALLOW_LIST = {
     # Previous release table
-    "PZ_README.md": re.compile(
+    "docs/Python-PettingZoo-API.md": re.compile(
         r"\*\*(Verified Package ([0-9]\.?)*|Release [0-9]+)\*\*"
     ),
     "docs/Versioning.md": MATCH_ANY,

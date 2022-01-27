@@ -18,7 +18,7 @@ python -m pip install mlagents_envs==0.28.0
 
 ## Usage & More Information
 
-See the [Python API Guide](../docs/Python-API.md) for more information on how to
+See the [Python API Guide](../docs/Python-LLAPI.md) for more information on how to
 use the API to interact with a Unity environment.
 
 For more information on the ML-Agents Toolkit and how to instrument a Unity

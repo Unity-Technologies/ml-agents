@@ -260,9 +260,9 @@ vector observations to be used simultaneously.
 - The `play_against_current_self_ratio` self-play trainer hyperparameter has
   been renamed to `play_against_latest_model_ratio`
 - Removed the multi-agent gym option from the gym wrapper. For multi-agent
-  scenarios, use the [Low Level Python API](Python-API.md).
+  scenarios, use the [Low Level Python API](Python-LLAPI.md).
 - The low level Python API has changed. You can look at the document
-  [Low Level Python API documentation](Python-API.md) for more information. If
+  [Low Level Python API documentation](Python-LLAPI.md) for more information. If
   you use `mlagents-learn` for training, this should be a transparent change.
 - The obsolete `Agent` methods `GiveModel`, `Done`, `InitializeAgent`,
   `AgentAction` and `AgentReset` have been removed.
@@ -487,7 +487,7 @@ vector observations to be used simultaneously.
 ### Important changes
 
 - The low level Python API has changed. You can look at the document
-  [Low Level Python API documentation](Python-API.md) for more information. This
+  [Low Level Python API documentation](Python-LLAPI.md) for more information. This
   should only affect you if you're writing a custom trainer; if you use
   `mlagents-learn` for training, this should be a transparent change.
   - `reset()` on the Low-Level Python API no longer takes a `train_mode`
@@ -497,7 +497,7 @@ vector observations to be used simultaneously.
     `UnityEnvironment` no longer has a `reset_parameters` field. To modify float
     properties in the environment, you must use a `FloatPropertiesChannel`. For
     more information, refer to the
-    [Low Level Python API documentation](Python-API.md)
+    [Low Level Python API documentation](Python-LLAPI.md)
 - `CustomResetParameters` are now removed.
 - The Academy no longer has a `Training Configuration` nor
   `Inference Configuration` field in the inspector. To modify the configuration

@@ -7,7 +7,7 @@ interfacing with a Unity environment via Python.
 
 ## Installation and Examples
 
-[[Colab] PettingZoo Wrapper Example](https://colab.research.google.com/github/Unity-Technologies/ml-agents/blob/develop-petting-api/pettingzoo-unity/Colab_PettingZoo.ipynb)
+[[Colab] PettingZoo Wrapper Example](https://colab.research.google.com/github/Unity-Technologies/ml-agents/blob/develop-python-api-ga/ml-agents-envs/colabs/Colab_PettingZoo.ipynb)
 
 This colab notebook demonstrates the example usage of the wrapper, including installation,
 basic usages, and an example with our

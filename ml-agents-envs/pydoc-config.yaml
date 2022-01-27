@@ -1,9 +1,19 @@
 # config to specify which modules will be used to render api docs
-# TODO: add gym_unity and pettingzoo_unity to API doc generation
 folder: docs
 modules:
     - name: mlagents_envs
-      file_name: Python-API-Documentation.md
+      file_name: Python-Gym-API-Documentation.md
+      submodules:
+        - envs.unity_gym_env
+    - name: mlagents_envs
+      file_name: Python-PettingZoo-API-Documentation.md
+      submodules:
+          - envs.pettingzoo_env_factory
+          - envs.unity_aec_env
+          - envs.unity_parallel_env
+          - envs.unity_pettingzoo_base_env
+    - name: mlagents_envs
+      file_name: Python-LLAPI-Documentation.md
       submodules:
         - base_env
         - environment

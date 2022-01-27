@@ -62,7 +62,7 @@ can interact with it.
 
 ## Interacting with the Environment
 
-If you want to use the [Python API](Python-API.md) to interact with your
+If you want to use the [Python API](Python-LLAPI.md) to interact with your
 executable, you can pass the name of the executable with the argument
 'file_name' of the `UnityEnvironment`. For instance:
 

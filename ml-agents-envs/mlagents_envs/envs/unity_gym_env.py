@@ -353,7 +353,7 @@ class ActionFlattener:
     def lookup_action(self, action):
         """
         Convert a scalar discrete action into a unique set of branched actions.
-        :param: action: A scalar value representing one of the discrete actions.
-        :return: The List containing the branched actions.
+        :param action: A scalar value representing one of the discrete actions.
+        :returns: The List containing the branched actions.
         """
         return self.action_lookup[action]

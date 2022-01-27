@@ -44,7 +44,9 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
     ],
-    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+    packages=find_packages(
+        exclude=["*.tests", "*.tests.*", "tests.*", "tests", "colabs", "*.ipynb"]
+    ),
     zip_safe=False,
     install_requires=[
         "cloudpickle",

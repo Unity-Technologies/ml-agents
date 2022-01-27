@@ -51,10 +51,10 @@
 ## API Docs
 
 - [API Reference](API-Reference.md)
-- [Python API Documentation](Python-API-Documentation.md)
-- [How to use the Python API](Python-API.md)
+- [Python API Documentation](Python-LLAPI-Documentation.md)
+- [How to use the Python API](Python-LLAPI.md)
 - [How to use the Unity Environment Registry](Unity-Environment-Registry.md)
-- [Wrapping Learning Environment as a Gym (+Baselines/Dopamine Integration)](../ml-agents-envs/GYM_README.md)
+- [Wrapping Learning Environment as a Gym (+Baselines/Dopamine Integration)](Python-Gym-API.md)
 
 ## Translations
 

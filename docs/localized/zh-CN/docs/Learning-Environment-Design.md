@@ -25,7 +25,7 @@ ML-Agents Academy 类按如下方式编排 agent 模拟循环：
 
 要创建训练环境，请扩展 Academy 和 Agent 类以实现上述方法。`Agent.CollectObservations()` 和 `Agent.AgentAction()` 函数必须实现；而其他方法是可选的，即是否需要实现它们取决于您的具体情况。
 
-**注意：**在这里用到的 Python API 也可用于其他目的。例如，借助于该 API，您可以将 Unity 用作您自己的机器学习算法的模拟引擎。请参阅 [Python API](/docs/Python-API.md) 以了解更多信息。
+**注意：**在这里用到的 Python API 也可用于其他目的。例如，借助于该 API，您可以将 Unity 用作您自己的机器学习算法的模拟引擎。请参阅 [Python API](/docs/Python-LLAPI.md) 以了解更多信息。
 
 ## 组织 Unity 场景
 

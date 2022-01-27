@@ -1,6 +1,6 @@
 # Unity Environment Registry [Experimental]
 
-The Unity Environment Registry is a database of pre-built Unity environments that can be easily used without having to install the Unity Editor. It is a great way to get started with our [UnityEnvironment API](Python-API.md).
+The Unity Environment Registry is a database of pre-built Unity environments that can be easily used without having to install the Unity Editor. It is a great way to get started with our [UnityEnvironment API](Python-LLAPI.md).
 
 ## Loading an Environment from the Registry
 
@@ -14,7 +14,7 @@ for name in environment_names:
    print(name)
 ```
 
-The `make()` method on a registry value will return a `UnityEnvironment` ready to be used. All arguments passed to the make method will be passed to the constructor of the `UnityEnvironment` as well. Refer to the documentation on the [Python-API](Python-API.md) for more information about the arguments of the `UnityEnvironment` constructor. For example, the following code will create the environment under the identifier `"my-env"`, reset it, perform a few steps and finally close it:
+The `make()` method on a registry value will return a `UnityEnvironment` ready to be used. All arguments passed to the make method will be passed to the constructor of the `UnityEnvironment` as well. Refer to the documentation on the [Python-API](Python-LLAPI.md) for more information about the arguments of the `UnityEnvironment` constructor. For example, the following code will create the environment under the identifier `"my-env"`, reset it, perform a few steps and finally close it:
 
 ```python
 from mlagents_envs.registry import default_registry

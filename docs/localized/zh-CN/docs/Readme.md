@@ -39,6 +39,6 @@
 
 ## API 文档
  * [API 参考](/docs/API-Reference.md)
- * [如何使用 Python API](/docs/Python-API.md)
+ * [如何使用 Python API](/docs/Python-LLAPI.md)
 
 **注:** 有翻译版的文档会在右上角标注*号。
