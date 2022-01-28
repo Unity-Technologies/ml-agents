@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Using-Docker/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Using Docker For ML-Agents (Deprecated) - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Using Docker For ML-Agents (Deprecated)";
+    var mkdocs_page_input_path = "Using-Docker.md";
+    var mkdocs_page_url = "/ml-agents/Using-Docker/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Using Docker For ML-Agents (Deprecated)</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Using-Docker.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="using-docker-for-ml-agents-deprecated">Using Docker For ML-Agents (Deprecated)</h1>
+<p>:warning: <strong>Note:</strong> We no longer use this guide ourselves and so it may not work
+correctly. We've decided to keep it up just in case it is helpful to you.</p>
+<p>We currently offer a solution for Windows and Mac users who would like to do
+training or inference using Docker. This option may be appealing to those who
+would like to avoid installing Python and TensorFlow themselves. The current
+setup forces both TensorFlow and Unity to <em>only</em> rely on the CPU for
+computations. Consequently, our Docker simulation does not use a GPU and uses
+<a href="https://en.wikipedia.org/wiki/Xvfb"><code>Xvfb</code></a> to do visual rendering. <code>Xvfb</code> is a
+utility that enables <code>ML-Agents</code> (or any other application) to do rendering
+virtually i.e. it does not assume that the machine running <code>ML-Agents</code> has a GPU
+or a display attached to it. This means that rich environments which involve
+agents using camera-based visual observations might be slower.</p>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li><a href="https://www.docker.com">Docker</a></li>
+<li>Unity <em>Linux Build Support</em> Component. Make sure to select the <em>Linux Build
+  Support</em> component when installing Unity.</li>
+</ul>
+<p align="center">
+  <img src="images/unity_linux_build_support.png"
+       alt="Linux Build Support"
+       width="500" border="10" />
+</p>
+
+<h2 id="setup">Setup</h2>
+<ul>
+<li>
+<p><a href="https://unity3d.com/get-unity/download">Download</a> the Unity Installer and add
+  the <em>Linux Build Support</em> Component</p>
+</li>
+<li>
+<p><a href="https://www.docker.com/community-edition#/download">Download</a> and install
+  Docker if you don't have it setup on your machine.</p>
+</li>
+<li>
+<p>Since Docker runs a container in an environment that is isolated from the host
+  machine, a mounted directory in your host machine is used to share data, e.g.
+  the trainer configuration file, Unity executable and
+  TensorFlow graph. For convenience, we created an empty <code>unity-volume</code>
+  directory at the root of the repository for this purpose, but feel free to use
+  any other directory. The remainder of this guide assumes that the
+  <code>unity-volume</code> directory is the one used.</p>
+</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<p>Using Docker for ML-Agents involves three steps: building the Unity environment
+with specific flags, building a Docker container and, finally, running the
+container. If you are not familiar with building a Unity environment for
+ML-Agents, please read through our
+<a href="../Getting-Started/">Getting Started with the 3D Balance Ball Example</a> guide
+first.</p>
+<h3 id="build-the-environment-optional">Build the Environment (Optional)</h3>
+<p><em>If you want to used the Editor to perform training, you can skip this step.</em></p>
+<p>Since Docker typically runs a container sharing a (linux) kernel with the host
+machine, the Unity environment <strong>has</strong> to be built for the <strong>linux platform</strong>.
+When building a Unity environment, please select the following options from the
+the Build Settings window:</p>
+<ul>
+<li>Set the <em>Target Platform</em> to <code>Linux</code></li>
+<li>Set the <em>Architecture</em> to <code>x86_64</code></li>
+</ul>
+<p>Then click <code>Build</code>, pick an environment name (e.g. <code>3DBall</code>) and set the output
+directory to <code>unity-volume</code>. After building, ensure that the file
+<code>&lt;environment-name&gt;.x86_64</code> and subdirectory <code>&lt;environment-name&gt;_Data/</code> are
+created under <code>unity-volume</code>.</p>
+<p><img alt="Build Settings For Docker" src="../images/docker_build_settings.png" /></p>
+<h3 id="build-the-docker-container">Build the Docker Container</h3>
+<p>First, make sure the Docker engine is running on your machine. Then build the
+Docker container by calling the following command at the top-level of the
+repository:</p>
+<pre><code class="language-sh">docker build -t &lt;image-name&gt; .
+</code></pre>
+<p>Replace <code>&lt;image-name&gt;</code> with a name for the Docker image, e.g.
+<code>balance.ball.v0.1</code>.</p>
+<h3 id="run-the-docker-container">Run the Docker Container</h3>
+<p>Run the Docker container by calling the following command at the top-level of
+the repository:</p>
+<pre><code class="language-sh">docker run -it --name &lt;container-name&gt; \
+           --mount type=bind,source=&quot;$(pwd)&quot;/unity-volume,target=/unity-volume \
+           -p 5005:5005 \
+           -p 6006:6006 \
+           &lt;image-name&gt;:latest \
+           &lt;trainer-config-file&gt; \
+           --env=&lt;environment-name&gt; \
+           --train \
+           --run-id=&lt;run-id&gt;
+</code></pre>
+<p>Notes on argument values:</p>
+<ul>
+<li><code>&lt;container-name&gt;</code> is used to identify the container (in case you want to
+  interrupt and terminate it). This is optional and Docker will generate a
+  random name if this is not set. <em>Note that this must be unique for every run
+  of a Docker image.</em></li>
+<li><code>&lt;image-name&gt;</code> references the image name used when building the container.</li>
+<li><code>&lt;environment-name&gt;</code> <strong>(Optional)</strong>: If you are training with a linux
+  executable, this is the name of the executable. If you are training in the
+  Editor, do not pass a <code>&lt;environment-name&gt;</code> argument and press the <strong>Play</strong>
+  button in Unity when the message <em>"Start training by pressing the Play button
+  in the Unity Editor"</em> is displayed on the screen.</li>
+<li><code>source</code>: Reference to the path in your host OS where you will store the Unity
+  executable.</li>
+<li><code>target</code>: Tells Docker to mount the <code>source</code> path as a disk with this name.</li>
+<li><code>trainer-config-file</code>, <code>train</code>, <code>run-id</code>: ML-Agents arguments passed to
+  <code>mlagents-learn</code>. <code>trainer-config-file</code> is the filename of the trainer config
+  file, <code>train</code> trains the algorithm, and <code>run-id</code> is used to tag each
+  experiment with a unique identifier. We recommend placing the trainer-config
+  file inside <code>unity-volume</code> so that the container has access to the file.</li>
+</ul>
+<p>To train with a <code>3DBall</code> environment executable, the command would be:</p>
+<pre><code class="language-sh">docker run -it --name 3DBallContainer.first.trial \
+           --mount type=bind,source=&quot;$(pwd)&quot;/unity-volume,target=/unity-volume \
+           -p 5005:5005 \
+           -p 6006:6006 \
+           balance.ball.v0.1:latest 3DBall \
+           /unity-volume/trainer_config.yaml \
+           --env=/unity-volume/3DBall \
+           --train \
+           --run-id=3dball_first_trial
+</code></pre>
+<p>For more detail on Docker mounts, check out
+<a href="https://docs.docker.com/storage/bind-mounts/">these</a> docs from Docker.</p>
+<p><strong>NOTE</strong> If you are training using docker for environments that use visual
+observations, you may need to increase the default memory that Docker allocates
+for the container. For example, see
+<a href="https://docs.docker.com/docker-for-mac/#advanced">here</a> for instructions for
+Docker for Mac.</p>
+<h3 id="running-tensorboard">Running Tensorboard</h3>
+<p>You can run Tensorboard to monitor your training instance on
+http://localhost:6006:</p>
+<pre><code class="language-sh">docker exec -it &lt;container-name&gt; tensorboard --logdir /unity-volume/results --host 0.0.0.0
+</code></pre>
+<p>With our previous 3DBall example, this command would look like this:</p>
+<pre><code class="language-sh">docker exec -it 3DBallContainer.first.trial tensorboard --logdir /unity-volume/results --host 0.0.0.0
+</code></pre>
+<p>For more details on Tensorboard, check out the documentation about
+<a href="../Using-Tensorboard/">Using Tensorboard</a>.</p>
+<h3 id="stopping-container-and-saving-state">Stopping Container and Saving State</h3>
+<p>If you are satisfied with the training progress, you can stop the Docker
+container while saving state by either using <code>Ctrl+C</code> or <code>⌘+C</code> (Mac) or by using
+the following command:</p>
+<pre><code class="language-sh">docker kill --signal=SIGINT &lt;container-name&gt;
+</code></pre>
+<p><code>&lt;container-name&gt;</code> is the name of the container specified in the earlier
+<code>docker run</code> command. If you didn't specify one, you can find the randomly
+generated identifier by running <code>docker container ls</code>.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

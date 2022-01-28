@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Installation/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Installation - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Installation";
+    var mkdocs_page_input_path = "Installation.md";
+    var mkdocs_page_url = "/ml-agents/Installation/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Installation</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Installation.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="installation">Installation</h1>
+<p>The ML-Agents Toolkit contains several components:</p>
+<ul>
+<li>Unity package (<a href="../com.unity.ml-agents/"><code>com.unity.ml-agents</code></a>) contains the
+  Unity C# SDK that will be integrated into your Unity project.  This package contains
+  a sample to help you get started with ML-Agents.</li>
+<li>Unity package
+  (<a href="../com.unity.ml-agents.extensions/"><code>com.unity.ml-agents.extensions</code></a>)
+  contains experimental C#/Unity components that are not yet ready to be part
+  of the base <code>com.unity.ml-agents</code> package. <code>com.unity.ml-agents.extensions</code>
+  has a direct dependency on <code>com.unity.ml-agents</code>.</li>
+<li>Three Python packages:</li>
+<li><a href="../ml-agents/"><code>mlagents</code></a> contains the machine learning algorithms that
+    enables you to train behaviors in your Unity scene. Most users of ML-Agents
+    will only need to directly install <code>mlagents</code>.</li>
+<li><a href="../ml-agents-envs/"><code>mlagents_envs</code></a> contains a Python API to interact with
+    a Unity scene. It is a foundational layer that facilitates data messaging
+    between Unity scene and the Python machine learning algorithms.
+    Consequently, <code>mlagents</code> depends on <code>mlagents_envs</code>.</li>
+<li><a href="../gym-unity/"><code>gym_unity</code></a> provides a Python-wrapper for your Unity scene
+    that supports the OpenAI Gym interface.</li>
+<li>Unity <a href="../Project/">Project</a> that contains several
+  <a href="../Learning-Environment-Examples/">example environments</a> that highlight the
+  various features of the toolkit to help you get started.</li>
+</ul>
+<p>Consequently, to install and use the ML-Agents Toolkit you will need to:</p>
+<ul>
+<li>Install Unity (2020.3 or later)</li>
+<li>Install Python (3.6.1 or higher)</li>
+<li>Clone this repository (Optional)</li>
+<li><strong>Note:</strong> If you do not clone the repository, then you will not be
+  able to access the example environments and training configurations or the
+  <code>com.unity.ml-agents.extensions</code> package. Additionally, the
+  <a href="../Getting-Started/">Getting Started Guide</a> assumes that you have cloned the
+  repository.</li>
+<li>Install the <code>com.unity.ml-agents</code> Unity package</li>
+<li>Install the <code>com.unity.ml-agents.extensions</code> Unity package (Optional)</li>
+<li>Install the <code>mlagents</code> Python package</li>
+</ul>
+<h3 id="install-unity-20203-or-later">Install <strong>Unity 2020.3</strong> or Later</h3>
+<p><a href="https://unity3d.com/get-unity/download">Download</a> and install Unity. We
+strongly recommend that you install Unity through the Unity Hub as it will
+enable you to manage multiple Unity versions.</p>
+<h3 id="install-python-361-or-higher">Install <strong>Python 3.6.1</strong> or Higher</h3>
+<p>We recommend <a href="https://www.python.org/downloads/">installing</a> Python 3.6 or 3.7.
+If you are using Windows, please install the x86-64 version and not x86.
+If your Python environment doesn't include <code>pip3</code>, see these
+<a href="https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers">instructions</a>
+on installing it.</p>
+<h3 id="clone-the-ml-agents-toolkit-repository-optional">Clone the ML-Agents Toolkit Repository (Optional)</h3>
+<p>Now that you have installed Unity and Python, you can now install the Unity and
+Python packages. You do not need to clone the repository to install those
+packages, but you may choose to clone the repository if you'd like download our
+example environments and training configurations to experiment with them (some
+of our tutorials / guides assume you have access to our example environments).</p>
+<p><strong>NOTE:</strong> There are samples shipped with the Unity Package.  You only need to clone
+the repository if you would like to explore more examples.</p>
+<pre><code class="language-sh">git clone --branch release_19 https://github.com/Unity-Technologies/ml-agents.git
+</code></pre>
+<p>The <code>--branch release_19</code> option will switch to the tag of the latest stable
+release. Omitting that will get the <code>main</code> branch which is potentially unstable.</p>
+<h4 id="advanced-local-installation-for-development">Advanced: Local Installation for Development</h4>
+<p>You will need to clone the repository if you plan to modify or extend the
+ML-Agents Toolkit for your purposes. If you plan to contribute those changes
+back, make sure to clone the <code>main</code> branch (by omitting <code>--branch release_19</code>
+from the command above). See our
+<a href="../com.unity.ml-agents/CONTRIBUTING.md">Contributions Guidelines</a> for more
+information on contributing to the ML-Agents Toolkit.</p>
+<h3 id="install-the-comunityml-agents-unity-package">Install the <code>com.unity.ml-agents</code> Unity package</h3>
+<p>The Unity ML-Agents C# SDK is a Unity Package. You can install the
+<code>com.unity.ml-agents</code> package
+<a href="https://docs.unity3d.com/Manual/upm-ui-install.html">directly from the Package Manager registry</a>.
+Please make sure you enable 'Preview Packages' in the 'Advanced' dropdown in
+order to find the latest Preview release of the package.</p>
+<p><strong>NOTE:</strong> If you do not see the ML-Agents package listed in the Package Manager
+please follow the <a href="#advanced-local-installation-for-development">advanced installation instructions</a> below.</p>
+<h4 id="advanced-local-installation-for-development_1">Advanced: Local Installation for Development</h4>
+<p>You can <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">add the local</a>
+<code>com.unity.ml-agents</code> package (from the repository that you just cloned) to your
+project by:</p>
+<ol>
+<li>navigating to the menu <code>Window</code> -&gt; <code>Package Manager</code>.</li>
+<li>In the package manager window click on the <code>+</code> button on the top left of the packages list).</li>
+<li>Select <code>Add package from disk...</code></li>
+<li>Navigate into the <code>com.unity.ml-agents</code> folder.</li>
+<li>Select the <code>package.json</code> file.</li>
+</ol>
+<p align="center">
+  <img src="images/unity_package_manager_window.png"
+       alt="Unity Package Manager Window"
+       height="300"
+       border="10" />
+  <img src="images/unity_package_json.png"
+     alt="package.json"
+     height="300"
+     border="10" />
+</p>
+
+<p>If you are going to follow the examples from our documentation, you can open the
+<code>Project</code> folder in Unity and start tinkering immediately.</p>
+<h3 id="install-the-comunityml-agentsextensions-unity-package-optional">Install the <code>com.unity.ml-agents.extensions</code> Unity package (Optional)</h3>
+<p>To install the <code>com.unity.ml-agents.extensions</code> package, you need to first
+clone the repo and then complete a local installation similar to what was
+outlined in the previous
+<a href="#advanced-local-installation-for-development-1">Advanced: Local Installation for Development</a>
+section. Complete installation steps can be found in the
+<a href="../com.unity.ml-agents.extensions/Documentation~/com.unity.ml-agents.extensions.md#installation">package documentation</a>.</p>
+<h3 id="install-the-mlagents-python-package">Install the <code>mlagents</code> Python package</h3>
+<p>Installing the <code>mlagents</code> Python package involves installing other Python
+packages that <code>mlagents</code> depends on. So you may run into installation issues if
+your machine has older versions of any of those dependencies already installed.
+Consequently, our supported path for installing <code>mlagents</code> is to leverage Python
+Virtual Environments. Virtual Environments provide a mechanism for isolating the
+dependencies for each project and are supported on Mac / Windows / Linux. We
+offer a dedicated <a href="../Using-Virtual-Environment/">guide on Virtual Environments</a>.</p>
+<h4 id="windows-installing-pytorch">(Windows) Installing PyTorch</h4>
+<p>On Windows, you'll have to install the PyTorch package separately prior to
+installing ML-Agents. Activate your virtual environment and run from the command line:</p>
+<pre><code class="language-sh">pip3 install torch~=1.7.1 -f https://download.pytorch.org/whl/torch_stable.html
+</code></pre>
+<p>Note that on Windows, you may also need Microsoft's
+<a href="https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads">Visual C++ Redistributable</a>
+if you don't have it already. See the <a href="https://pytorch.org/get-started/locally/">PyTorch installation guide</a>
+for more installation options and versions.</p>
+<h4 id="installing-mlagents">Installing <code>mlagents</code></h4>
+<p>To install the <code>mlagents</code> Python package, activate your virtual environment and
+run from the command line:</p>
+<pre><code class="language-sh">python -m pip install mlagents==0.28.0
+</code></pre>
+<p>Note that this will install <code>mlagents</code> from PyPi, <em>not</em> from the cloned
+repository. If you installed this correctly, you should be able to run
+<code>mlagents-learn --help</code>, after which you will see the command
+line parameters you can use with <code>mlagents-learn</code>.</p>
+<p>By installing the <code>mlagents</code> package, the dependencies listed in the
+<a href="../ml-agents/setup.py">setup.py file</a> are also installed. These include
+<a href="../Background-PyTorch/">PyTorch</a> (Requires a CPU w/ AVX support).</p>
+<h4 id="advanced-local-installation-for-development_2">Advanced: Local Installation for Development</h4>
+<p>If you intend to make modifications to <code>mlagents</code> or <code>mlagents_envs</code>, you should
+install the packages from the cloned repository rather than from PyPi. To do
+this, you will need to install <code>mlagents</code> and <code>mlagents_envs</code> separately. From
+the repository's root directory, run:</p>
+<pre><code class="language-sh">pip3 install torch -f https://download.pytorch.org/whl/torch_stable.html
+pip3 install -e ./ml-agents-envs
+pip3 install -e ./ml-agents
+</code></pre>
+<p>Running pip with the <code>-e</code> flag will let you make changes to the Python files
+directly and have those reflected when you run <code>mlagents-learn</code>. It is important
+to install these packages in this order as the <code>mlagents</code> package depends on
+<code>mlagents_envs</code>, and installing it in the other order will download
+<code>mlagents_envs</code> from PyPi.</p>
+<h2 id="next-steps">Next Steps</h2>
+<p>The <a href="../Getting-Started/">Getting Started</a> guide contains several short tutorials
+on setting up the ML-Agents Toolkit within Unity, running a pre-trained model,
+in addition to building and training environments.</p>
+<h2 id="help">Help</h2>
+<p>If you run into any problems regarding ML-Agents, refer to our <a href="../FAQ/">FAQ</a> and
+our <a href="../Limitations/">Limitations</a> pages. If you can't find anything please
+<a href="https://github.com/Unity-Technologies/ml-agents/issues">submit an issue</a> and
+make sure to cite relevant information on OS, Python version, and exact error
+message (whenever possible).</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

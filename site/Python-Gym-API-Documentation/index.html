@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Python-Gym-API-Documentation/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Gym API Documentation - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Gym API Documentation";
+    var mkdocs_page_input_path = "Python-Gym-API-Documentation.md";
+    var mkdocs_page_url = "/ml-agents/Python-Gym-API-Documentation/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="#">Gym API</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="./">Gym API Documentation</a>
+    <ul class="current">
+    </ul>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Interfacing with Unity Builds &raquo;</li>
+        
+      
+        
+          <li>Gym API &raquo;</li>
+        
+      
+    
+    <li>Gym API Documentation</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Python-Gym-API-Documentation.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="table-of-contents">Table of Contents</h1>
+<ul>
+<li><a href="#mlagents_envs.envs.unity_gym_env">mlagents_envs.envs.unity_gym_env</a></li>
+<li><a href="#mlagents_envs.envs.unity_gym_env.UnityGymException">UnityGymException</a></li>
+<li><a href="#mlagents_envs.envs.unity_gym_env.UnityToGymWrapper">UnityToGymWrapper</a><ul>
+<li><a href="#mlagents_envs.envs.unity_gym_env.UnityToGymWrapper.__init__">__init__</a></li>
+<li><a href="#mlagents_envs.envs.unity_gym_env.UnityToGymWrapper.reset">reset</a></li>
+<li><a href="#mlagents_envs.envs.unity_gym_env.UnityToGymWrapper.step">step</a></li>
+<li><a href="#mlagents_envs.envs.unity_gym_env.UnityToGymWrapper.render">render</a></li>
+<li><a href="#mlagents_envs.envs.unity_gym_env.UnityToGymWrapper.close">close</a></li>
+<li><a href="#mlagents_envs.envs.unity_gym_env.UnityToGymWrapper.seed">seed</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.envs.unity_gym_env.ActionFlattener">ActionFlattener</a><ul>
+<li><a href="#mlagents_envs.envs.unity_gym_env.ActionFlattener.__init__">__init__</a></li>
+<li><a href="#mlagents_envs.envs.unity_gym_env.ActionFlattener.lookup_action">lookup_action</a></li>
+</ul>
+</li>
+</ul>
+<p><a name="mlagents_envs.envs.unity_gym_env"></a></p>
+<h1 id="mlagents_envsenvsunity_gym_env">mlagents_envs.envs.unity_gym_env</h1>
+<p><a name="mlagents_envs.envs.unity_gym_env.UnityGymException"></a></p>
+<h2 id="unitygymexception-objects">UnityGymException Objects</h2>
+<pre><code class="language-python">class UnityGymException(error.Error)
+</code></pre>
+<p>Any error related to the gym wrapper of ml-agents.</p>
+<p><a name="mlagents_envs.envs.unity_gym_env.UnityToGymWrapper"></a></p>
+<h2 id="unitytogymwrapper-objects">UnityToGymWrapper Objects</h2>
+<pre><code class="language-python">class UnityToGymWrapper(gym.Env)
+</code></pre>
+<p>Provides Gym wrapper for Unity Learning Environments.</p>
+<p><a name="mlagents_envs.envs.unity_gym_env.UnityToGymWrapper.__init__"></a></p>
+<h4 id="__init__">__init__</h4>
+<pre><code class="language-python"> | __init__(unity_env: BaseEnv, uint8_visual: bool = False, flatten_branched: bool = False, allow_multiple_obs: bool = False, action_space_seed: Optional[int] = None)
+</code></pre>
+<p>Environment initialization</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>unity_env</code>: The Unity BaseEnv to be wrapped in the gym. Will be closed when the UnityToGymWrapper closes.</li>
+<li><code>uint8_visual</code>: Return visual observations as uint8 (0-255) matrices instead of float (0.0-1.0).</li>
+<li><code>flatten_branched</code>: If True, turn branched discrete action spaces into a Discrete space rather than
+    MultiDiscrete.</li>
+<li><code>allow_multiple_obs</code>: If True, return a list of np.ndarrays as observations with the first elements
+    containing the visual observations and the last element containing the array of vector observations.
+    If False, returns a single np.ndarray containing either only a single visual observation or the array of
+    vector observations.</li>
+<li><code>action_space_seed</code>: If non-None, will be used to set the random seed on created gym.Space instances.</li>
+</ul>
+<p><a name="mlagents_envs.envs.unity_gym_env.UnityToGymWrapper.reset"></a></p>
+<h4 id="reset">reset</h4>
+<pre><code class="language-python"> | reset() -&gt; Union[List[np.ndarray], np.ndarray]
+</code></pre>
+<p>Resets the state of the environment and returns an initial observation.
+Returns: observation (object/list): the initial observation of the
+space.</p>
+<p><a name="mlagents_envs.envs.unity_gym_env.UnityToGymWrapper.step"></a></p>
+<h4 id="step">step</h4>
+<pre><code class="language-python"> | step(action: List[Any]) -&gt; GymStepResult
+</code></pre>
+<p>Run one timestep of the environment's dynamics. When end of
+episode is reached, you are responsible for calling <code>reset()</code>
+to reset this environment's state.
+Accepts an action and returns a tuple (observation, reward, done, info).</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>action</code> <em>object/list</em> - an action provided by the environment</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>observation</code> <em>object/list</em> - agent's observation of the current environment
+  reward (float/list) : amount of reward returned after previous action</li>
+<li><code>done</code> <em>boolean/list</em> - whether the episode has ended.</li>
+<li><code>info</code> <em>dict</em> - contains auxiliary diagnostic information.</li>
+</ul>
+<p><a name="mlagents_envs.envs.unity_gym_env.UnityToGymWrapper.render"></a></p>
+<h4 id="render">render</h4>
+<pre><code class="language-python"> | render(mode=&quot;rgb_array&quot;)
+</code></pre>
+<p>Return the latest visual observations.
+Note that it will not render a new frame of the environment.</p>
+<p><a name="mlagents_envs.envs.unity_gym_env.UnityToGymWrapper.close"></a></p>
+<h4 id="close">close</h4>
+<pre><code class="language-python"> | close() -&gt; None
+</code></pre>
+<p>Override _close in your subclass to perform any necessary cleanup.
+Environments will automatically close() themselves when
+garbage collected or when the program exits.</p>
+<p><a name="mlagents_envs.envs.unity_gym_env.UnityToGymWrapper.seed"></a></p>
+<h4 id="seed">seed</h4>
+<pre><code class="language-python"> | seed(seed: Any = None) -&gt; None
+</code></pre>
+<p>Sets the seed for this env's random number generator(s).
+Currently not implemented.</p>
+<p><a name="mlagents_envs.envs.unity_gym_env.ActionFlattener"></a></p>
+<h2 id="actionflattener-objects">ActionFlattener Objects</h2>
+<pre><code class="language-python">class ActionFlattener()
+</code></pre>
+<p>Flattens branched discrete action spaces into single-branch discrete action spaces.</p>
+<p><a name="mlagents_envs.envs.unity_gym_env.ActionFlattener.__init__"></a></p>
+<h4 id="__init___1">__init__</h4>
+<pre><code class="language-python"> | __init__(branched_action_space)
+</code></pre>
+<p>Initialize the flattener.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>branched_action_space</code>: A List containing the sizes of each branch of the action
+space, e.g. [2,3,3] for three branches with size 2, 3, and 3 respectively.</li>
+</ul>
+<p><a name="mlagents_envs.envs.unity_gym_env.ActionFlattener.lookup_action"></a></p>
+<h4 id="lookup_action">lookup_action</h4>
+<pre><code class="language-python"> | lookup_action(action)
+</code></pre>
+<p>Convert a scalar discrete action into a unique set of branched actions.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>action</code>: A scalar value representing one of the discrete actions.</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>The List containing the branched actions.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../Python-PettingZoo-API/" class="btn btn-neutral float-right" title="Getting started with the PettingZoo API">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../Python-Gym-API/" class="btn btn-neutral" title="Getting started with the Gym API"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../Python-Gym-API/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../Python-PettingZoo-API/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

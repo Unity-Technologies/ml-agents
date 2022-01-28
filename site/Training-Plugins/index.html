@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Training-Plugins/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Customizing Training via Plugins - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Customizing Training via Plugins";
+    var mkdocs_page_input_path = "Training-Plugins.md";
+    var mkdocs_page_url = "/ml-agents/Training-Plugins/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Customizing Training via Plugins</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Training-Plugins.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="customizing-training-via-plugins">Customizing Training via Plugins</h1>
+<p>ML-Agents provides support for running your own python implementations of specific interfaces during the training
+process. These interfaces are currently fairly limited, but will be expanded in the future.</p>
+<p><strong>Note:</strong> Plugin interfaces should currently be considered "in beta", and they may change in future releases.</p>
+<h2 id="how-to-write-your-own-plugin">How to Write Your Own Plugin</h2>
+<p><a href="https://www.youtube.com/watch?v=fY3Y_xPKWNA">This video</a> explains the basics of how to create a plugin system using
+setuptools, and is the same approach that ML-Agents' plugin system is based on.</p>
+<p>The <code>ml-agents-plugin-examples</code> directory contains a reference implementation of each plugin interface, so it's a good
+starting point.</p>
+<h3 id="setuppy">setup.py</h3>
+<p>If you don't already have a <code>setup.py</code> file for your python code, you'll need to add one. <code>ml-agents-plugin-examples</code>
+has a <a href="../ml-agents-plugin-examples/setup.py">minimal example</a> of this.</p>
+<p>In the call to <code>setup()</code>, you'll need to add to the <code>entry_points</code> dictionary for each plugin interface that you
+implement. The form of this is <code>{entry point name}={plugin module}:{plugin function}</code>. For example, in
+ <code>ml-agents-plugin-examples</code>:</p>
+<pre><code class="language-python">entry_points={
+    ML_AGENTS_STATS_WRITER: [
+        &quot;example=mlagents_plugin_examples.example_stats_writer:get_example_stats_writer&quot;
+    ]
+}
+</code></pre>
+<ul>
+<li><code>ML_AGENTS_STATS_WRITER</code> (which is a string constant, <code>mlagents.stats_writer</code>) is the name of the plugin interface.
+This must be one of the provided interfaces (<a href="#plugin-interfaces">see below</a>).</li>
+<li><code>example</code> is the plugin implementation name. This can be anything.</li>
+<li><code>mlagents_plugin_examples.example_stats_writer</code> is the plugin module. This points to the module where the
+plugin registration function is defined.</li>
+<li><code>get_example_stats_writer</code> is the plugin registration function. This is called when running <code>mlagents-learn</code>. The
+arguments and expected return type for this are different for each plugin interface.</li>
+</ul>
+<h3 id="local-installation">Local Installation</h3>
+<p>Once you've defined <code>entry_points</code> in your <code>setup.py</code>, you will need to run</p>
+<pre><code>pip install -e [path to your plugin code]
+</code></pre>
+<p>in the same python virtual environment that you have <code>mlagents</code> installed.</p>
+<h2 id="plugin-interfaces">Plugin Interfaces</h2>
+<h3 id="statswriter">StatsWriter</h3>
+<p>The StatsWriter class receives various information from the training process, such as the average Agent reward in
+each summary period. By default, we log this information to the console and write it to
+<a href="../Using-Tensorboard/">TensorBoard</a>.</p>
+<h4 id="interface">Interface</h4>
+<p>The <code>StatsWriter.write_stats()</code> method must be implemented in any derived classes. It takes a "category" parameter,
+which typically is the behavior name of the Agents being trained, and a dictionary of <code>StatSummary</code> values with
+string keys. Additionally, <code>StatsWriter.on_add_stat()</code> may be extended to register a callback handler for each stat
+emission.</p>
+<h4 id="registration">Registration</h4>
+<p>The <code>StatsWriter</code> registration function takes a <code>RunOptions</code> argument and returns a list of <code>StatsWriter</code>s. An
+example implementation is provided in <a href="../ml-agents-plugin-examples/mlagents_plugin_examples/example_stats_writer.py"><code>mlagents_plugin_examples</code></a></p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

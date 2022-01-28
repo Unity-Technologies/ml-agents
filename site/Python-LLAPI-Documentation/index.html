@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Python-LLAPI-Documentation/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>LLAPI Documentation - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "LLAPI Documentation";
+    var mkdocs_page_input_path = "Python-LLAPI-Documentation.md";
+    var mkdocs_page_url = "/ml-agents/Python-LLAPI-Documentation/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="#">Low-level API</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="./">LLAPI Documentation</a>
+    <ul class="current">
+    </ul>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Interfacing with Unity Builds &raquo;</li>
+        
+      
+        
+          <li>Low-level API &raquo;</li>
+        
+      
+    
+    <li>LLAPI Documentation</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Python-LLAPI-Documentation.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="table-of-contents">Table of Contents</h1>
+<ul>
+<li><a href="#mlagents_envs.base_env">mlagents_envs.base_env</a></li>
+<li><a href="#mlagents_envs.base_env.DecisionStep">DecisionStep</a></li>
+<li><a href="#mlagents_envs.base_env.DecisionSteps">DecisionSteps</a><ul>
+<li><a href="#mlagents_envs.base_env.DecisionSteps.agent_id_to_index">agent_id_to_index</a></li>
+<li><a href="#mlagents_envs.base_env.DecisionSteps.__getitem__">__getitem__</a></li>
+<li><a href="#mlagents_envs.base_env.DecisionSteps.empty">empty</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.base_env.TerminalStep">TerminalStep</a></li>
+<li><a href="#mlagents_envs.base_env.TerminalSteps">TerminalSteps</a><ul>
+<li><a href="#mlagents_envs.base_env.TerminalSteps.agent_id_to_index">agent_id_to_index</a></li>
+<li><a href="#mlagents_envs.base_env.TerminalSteps.__getitem__">__getitem__</a></li>
+<li><a href="#mlagents_envs.base_env.TerminalSteps.empty">empty</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.base_env.ActionTuple">ActionTuple</a><ul>
+<li><a href="#mlagents_envs.base_env.ActionTuple.discrete_dtype">discrete_dtype</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.base_env.ActionSpec">ActionSpec</a><ul>
+<li><a href="#mlagents_envs.base_env.ActionSpec.is_discrete">is_discrete</a></li>
+<li><a href="#mlagents_envs.base_env.ActionSpec.is_continuous">is_continuous</a></li>
+<li><a href="#mlagents_envs.base_env.ActionSpec.discrete_size">discrete_size</a></li>
+<li><a href="#mlagents_envs.base_env.ActionSpec.empty_action">empty_action</a></li>
+<li><a href="#mlagents_envs.base_env.ActionSpec.random_action">random_action</a></li>
+<li><a href="#mlagents_envs.base_env.ActionSpec.create_continuous">create_continuous</a></li>
+<li><a href="#mlagents_envs.base_env.ActionSpec.create_discrete">create_discrete</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.base_env.DimensionProperty">DimensionProperty</a><ul>
+<li><a href="#mlagents_envs.base_env.DimensionProperty.UNSPECIFIED">UNSPECIFIED</a></li>
+<li><a href="#mlagents_envs.base_env.DimensionProperty.NONE">NONE</a></li>
+<li><a href="#mlagents_envs.base_env.DimensionProperty.TRANSLATIONAL_EQUIVARIANCE">TRANSLATIONAL_EQUIVARIANCE</a></li>
+<li><a href="#mlagents_envs.base_env.DimensionProperty.VARIABLE_SIZE">VARIABLE_SIZE</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.base_env.ObservationType">ObservationType</a><ul>
+<li><a href="#mlagents_envs.base_env.ObservationType.DEFAULT">DEFAULT</a></li>
+<li><a href="#mlagents_envs.base_env.ObservationType.GOAL_SIGNAL">GOAL_SIGNAL</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.base_env.ObservationSpec">ObservationSpec</a></li>
+<li><a href="#mlagents_envs.base_env.BehaviorSpec">BehaviorSpec</a></li>
+<li><a href="#mlagents_envs.base_env.BaseEnv">BaseEnv</a><ul>
+<li><a href="#mlagents_envs.base_env.BaseEnv.step">step</a></li>
+<li><a href="#mlagents_envs.base_env.BaseEnv.reset">reset</a></li>
+<li><a href="#mlagents_envs.base_env.BaseEnv.close">close</a></li>
+<li><a href="#mlagents_envs.base_env.BaseEnv.behavior_specs">behavior_specs</a></li>
+<li><a href="#mlagents_envs.base_env.BaseEnv.set_actions">set_actions</a></li>
+<li><a href="#mlagents_envs.base_env.BaseEnv.set_action_for_agent">set_action_for_agent</a></li>
+<li><a href="#mlagents_envs.base_env.BaseEnv.get_steps">get_steps</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.environment">mlagents_envs.environment</a></li>
+<li><a href="#mlagents_envs.environment.UnityEnvironment">UnityEnvironment</a><ul>
+<li><a href="#mlagents_envs.environment.UnityEnvironment.__init__">__init__</a></li>
+<li><a href="#mlagents_envs.environment.UnityEnvironment.close">close</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.registry">mlagents_envs.registry</a></li>
+<li><a href="#mlagents_envs.registry.unity_env_registry">mlagents_envs.registry.unity_env_registry</a></li>
+<li><a href="#mlagents_envs.registry.unity_env_registry.UnityEnvRegistry">UnityEnvRegistry</a><ul>
+<li><a href="#mlagents_envs.registry.unity_env_registry.UnityEnvRegistry.register">register</a></li>
+<li><a href="#mlagents_envs.registry.unity_env_registry.UnityEnvRegistry.register_from_yaml">register_from_yaml</a></li>
+<li><a href="#mlagents_envs.registry.unity_env_registry.UnityEnvRegistry.clear">clear</a></li>
+<li><a href="#mlagents_envs.registry.unity_env_registry.UnityEnvRegistry.__getitem__">__getitem__</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.side_channel">mlagents_envs.side_channel</a></li>
+<li><a href="#mlagents_envs.side_channel.raw_bytes_channel">mlagents_envs.side_channel.raw_bytes_channel</a></li>
+<li><a href="#mlagents_envs.side_channel.raw_bytes_channel.RawBytesChannel">RawBytesChannel</a><ul>
+<li><a href="#mlagents_envs.side_channel.raw_bytes_channel.RawBytesChannel.on_message_received">on_message_received</a></li>
+<li><a href="#mlagents_envs.side_channel.raw_bytes_channel.RawBytesChannel.get_and_clear_received_messages">get_and_clear_received_messages</a></li>
+<li><a href="#mlagents_envs.side_channel.raw_bytes_channel.RawBytesChannel.send_raw_data">send_raw_data</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.side_channel.outgoing_message">mlagents_envs.side_channel.outgoing_message</a></li>
+<li><a href="#mlagents_envs.side_channel.outgoing_message.OutgoingMessage">OutgoingMessage</a><ul>
+<li><a href="#mlagents_envs.side_channel.outgoing_message.OutgoingMessage.__init__">__init__</a></li>
+<li><a href="#mlagents_envs.side_channel.outgoing_message.OutgoingMessage.write_bool">write_bool</a></li>
+<li><a href="#mlagents_envs.side_channel.outgoing_message.OutgoingMessage.write_int32">write_int32</a></li>
+<li><a href="#mlagents_envs.side_channel.outgoing_message.OutgoingMessage.write_float32">write_float32</a></li>
+<li><a href="#mlagents_envs.side_channel.outgoing_message.OutgoingMessage.write_float32_list">write_float32_list</a></li>
+<li><a href="#mlagents_envs.side_channel.outgoing_message.OutgoingMessage.write_string">write_string</a></li>
+<li><a href="#mlagents_envs.side_channel.outgoing_message.OutgoingMessage.set_raw_bytes">set_raw_bytes</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.side_channel.engine_configuration_channel">mlagents_envs.side_channel.engine_configuration_channel</a></li>
+<li><a href="#mlagents_envs.side_channel.engine_configuration_channel.EngineConfigurationChannel">EngineConfigurationChannel</a><ul>
+<li><a href="#mlagents_envs.side_channel.engine_configuration_channel.EngineConfigurationChannel.on_message_received">on_message_received</a></li>
+<li><a href="#mlagents_envs.side_channel.engine_configuration_channel.EngineConfigurationChannel.set_configuration_parameters">set_configuration_parameters</a></li>
+<li><a href="#mlagents_envs.side_channel.engine_configuration_channel.EngineConfigurationChannel.set_configuration">set_configuration</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.side_channel.side_channel_manager">mlagents_envs.side_channel.side_channel_manager</a></li>
+<li><a href="#mlagents_envs.side_channel.side_channel_manager.SideChannelManager">SideChannelManager</a><ul>
+<li><a href="#mlagents_envs.side_channel.side_channel_manager.SideChannelManager.process_side_channel_message">process_side_channel_message</a></li>
+<li><a href="#mlagents_envs.side_channel.side_channel_manager.SideChannelManager.generate_side_channel_messages">generate_side_channel_messages</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.side_channel.stats_side_channel">mlagents_envs.side_channel.stats_side_channel</a></li>
+<li><a href="#mlagents_envs.side_channel.stats_side_channel.StatsSideChannel">StatsSideChannel</a><ul>
+<li><a href="#mlagents_envs.side_channel.stats_side_channel.StatsSideChannel.on_message_received">on_message_received</a></li>
+<li><a href="#mlagents_envs.side_channel.stats_side_channel.StatsSideChannel.get_and_reset_stats">get_and_reset_stats</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.side_channel.incoming_message">mlagents_envs.side_channel.incoming_message</a></li>
+<li><a href="#mlagents_envs.side_channel.incoming_message.IncomingMessage">IncomingMessage</a><ul>
+<li><a href="#mlagents_envs.side_channel.incoming_message.IncomingMessage.__init__">__init__</a></li>
+<li><a href="#mlagents_envs.side_channel.incoming_message.IncomingMessage.read_bool">read_bool</a></li>
+<li><a href="#mlagents_envs.side_channel.incoming_message.IncomingMessage.read_int32">read_int32</a></li>
+<li><a href="#mlagents_envs.side_channel.incoming_message.IncomingMessage.read_float32">read_float32</a></li>
+<li><a href="#mlagents_envs.side_channel.incoming_message.IncomingMessage.read_float32_list">read_float32_list</a></li>
+<li><a href="#mlagents_envs.side_channel.incoming_message.IncomingMessage.read_string">read_string</a></li>
+<li><a href="#mlagents_envs.side_channel.incoming_message.IncomingMessage.get_raw_bytes">get_raw_bytes</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.side_channel.float_properties_channel">mlagents_envs.side_channel.float_properties_channel</a></li>
+<li><a href="#mlagents_envs.side_channel.float_properties_channel.FloatPropertiesChannel">FloatPropertiesChannel</a><ul>
+<li><a href="#mlagents_envs.side_channel.float_properties_channel.FloatPropertiesChannel.on_message_received">on_message_received</a></li>
+<li><a href="#mlagents_envs.side_channel.float_properties_channel.FloatPropertiesChannel.set_property">set_property</a></li>
+<li><a href="#mlagents_envs.side_channel.float_properties_channel.FloatPropertiesChannel.get_property">get_property</a></li>
+<li><a href="#mlagents_envs.side_channel.float_properties_channel.FloatPropertiesChannel.list_properties">list_properties</a></li>
+<li><a href="#mlagents_envs.side_channel.float_properties_channel.FloatPropertiesChannel.get_property_dict_copy">get_property_dict_copy</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.side_channel.environment_parameters_channel">mlagents_envs.side_channel.environment_parameters_channel</a></li>
+<li><a href="#mlagents_envs.side_channel.environment_parameters_channel.EnvironmentParametersChannel">EnvironmentParametersChannel</a><ul>
+<li><a href="#mlagents_envs.side_channel.environment_parameters_channel.EnvironmentParametersChannel.set_float_parameter">set_float_parameter</a></li>
+<li><a href="#mlagents_envs.side_channel.environment_parameters_channel.EnvironmentParametersChannel.set_uniform_sampler_parameters">set_uniform_sampler_parameters</a></li>
+<li><a href="#mlagents_envs.side_channel.environment_parameters_channel.EnvironmentParametersChannel.set_gaussian_sampler_parameters">set_gaussian_sampler_parameters</a></li>
+<li><a href="#mlagents_envs.side_channel.environment_parameters_channel.EnvironmentParametersChannel.set_multirangeuniform_sampler_parameters">set_multirangeuniform_sampler_parameters</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.side_channel.side_channel">mlagents_envs.side_channel.side_channel</a></li>
+<li><a href="#mlagents_envs.side_channel.side_channel.SideChannel">SideChannel</a><ul>
+<li><a href="#mlagents_envs.side_channel.side_channel.SideChannel.queue_message_to_send">queue_message_to_send</a></li>
+<li><a href="#mlagents_envs.side_channel.side_channel.SideChannel.on_message_received">on_message_received</a></li>
+<li><a href="#mlagents_envs.side_channel.side_channel.SideChannel.channel_id">channel_id</a></li>
+</ul>
+</li>
+</ul>
+<p><a name="mlagents_envs.base_env"></a></p>
+<h1 id="mlagents_envsbase_env">mlagents_envs.base_env</h1>
+<p>Python Environment API for the ML-Agents Toolkit
+The aim of this API is to expose Agents evolving in a simulation
+to perform reinforcement learning on.
+This API supports multi-agent scenarios and groups similar Agents (same
+observations, actions spaces and behavior) together. These groups of Agents are
+identified by their BehaviorName.
+For performance reasons, the data of each group of agents is processed in a
+batched manner. Agents are identified by a unique AgentId identifier that
+allows tracking of Agents across simulation steps. Note that there is no
+guarantee that the number or order of the Agents in the state will be
+consistent across simulation steps.
+A simulation steps corresponds to moving the simulation forward until at least
+one agent in the simulation sends its observations to Python again. Since
+Agents can request decisions at different frequencies, a simulation step does
+not necessarily correspond to a fixed simulation time increment.</p>
+<p><a name="mlagents_envs.base_env.DecisionStep"></a></p>
+<h2 id="decisionstep-objects">DecisionStep Objects</h2>
+<pre><code class="language-python">class DecisionStep(NamedTuple)
+</code></pre>
+<p>Contains the data a single Agent collected since the last
+simulation step.
+ - obs is a list of numpy arrays observations collected by the agent.
+ - reward is a float. Corresponds to the rewards collected by the agent
+ since the last simulation step.
+ - agent_id is an int and an unique identifier for the corresponding Agent.
+ - action_mask is an optional list of one dimensional array of booleans.
+ Only available when using multi-discrete actions.
+ Each array corresponds to an action branch. Each array contains a mask
+ for each action of the branch. If true, the action is not available for
+ the agent during this simulation step.</p>
+<p><a name="mlagents_envs.base_env.DecisionSteps"></a></p>
+<h2 id="decisionsteps-objects">DecisionSteps Objects</h2>
+<pre><code class="language-python">class DecisionSteps(Mapping)
+</code></pre>
+<p>Contains the data a batch of similar Agents collected since the last
+simulation step. Note that all Agents do not necessarily have new
+information to send at each simulation step. Therefore, the ordering of
+agents and the batch size of the DecisionSteps are not fixed across
+simulation steps.
+ - obs is a list of numpy arrays observations collected by the batch of
+ agent. Each obs has one extra dimension compared to DecisionStep: the
+ first dimension of the array corresponds to the batch size of the batch.
+ - reward is a float vector of length batch size. Corresponds to the
+ rewards collected by each agent since the last simulation step.
+ - agent_id is an int vector of length batch size containing unique
+ identifier for the corresponding Agent. This is used to track Agents
+ across simulation steps.
+ - action_mask is an optional list of two dimensional array of booleans.
+ Only available when using multi-discrete actions.
+ Each array corresponds to an action branch. The first dimension of each
+ array is the batch size and the second contains a mask for each action of
+ the branch. If true, the action is not available for the agent during
+ this simulation step.</p>
+<p><a name="mlagents_envs.base_env.DecisionSteps.agent_id_to_index"></a></p>
+<h4 id="agent_id_to_index">agent_id_to_index</h4>
+<pre><code class="language-python"> | @property
+ | agent_id_to_index() -&gt; Dict[AgentId, int]
+</code></pre>
+<p><strong>Returns</strong>:</p>
+<p>A Dict that maps agent_id to the index of those agents in
+this DecisionSteps.</p>
+<p><a name="mlagents_envs.base_env.DecisionSteps.__getitem__"></a></p>
+<h4 id="__getitem__">__getitem__</h4>
+<pre><code class="language-python"> | __getitem__(agent_id: AgentId) -&gt; DecisionStep
+</code></pre>
+<p>returns the DecisionStep for a specific agent.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>agent_id</code>: The id of the agent</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>The DecisionStep</p>
+<p><a name="mlagents_envs.base_env.DecisionSteps.empty"></a></p>
+<h4 id="empty">empty</h4>
+<pre><code class="language-python"> | @staticmethod
+ | empty(spec: &quot;BehaviorSpec&quot;) -&gt; &quot;DecisionSteps&quot;
+</code></pre>
+<p>Returns an empty DecisionSteps.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>spec</code>: The BehaviorSpec for the DecisionSteps</li>
+</ul>
+<p><a name="mlagents_envs.base_env.TerminalStep"></a></p>
+<h2 id="terminalstep-objects">TerminalStep Objects</h2>
+<pre><code class="language-python">class TerminalStep(NamedTuple)
+</code></pre>
+<p>Contains the data a single Agent collected when its episode ended.
+ - obs is a list of numpy arrays observations collected by the agent.
+ - reward is a float. Corresponds to the rewards collected by the agent
+ since the last simulation step.
+ - interrupted is a bool. Is true if the Agent was interrupted since the last
+ decision step. For example, if the Agent reached the maximum number of steps for
+ the episode.
+ - agent_id is an int and an unique identifier for the corresponding Agent.</p>
+<p><a name="mlagents_envs.base_env.TerminalSteps"></a></p>
+<h2 id="terminalsteps-objects">TerminalSteps Objects</h2>
+<pre><code class="language-python">class TerminalSteps(Mapping)
+</code></pre>
+<p>Contains the data a batch of Agents collected when their episode
+terminated. All Agents present in the TerminalSteps have ended their
+episode.
+ - obs is a list of numpy arrays observations collected by the batch of
+ agent. Each obs has one extra dimension compared to DecisionStep: the
+ first dimension of the array corresponds to the batch size of the batch.
+ - reward is a float vector of length batch size. Corresponds to the
+ rewards collected by each agent since the last simulation step.
+ - interrupted is an array of booleans of length batch size. Is true if the
+ associated Agent was interrupted since the last decision step. For example, if the
+ Agent reached the maximum number of steps for the episode.
+ - agent_id is an int vector of length batch size containing unique
+ identifier for the corresponding Agent. This is used to track Agents
+ across simulation steps.</p>
+<p><a name="mlagents_envs.base_env.TerminalSteps.agent_id_to_index"></a></p>
+<h4 id="agent_id_to_index_1">agent_id_to_index</h4>
+<pre><code class="language-python"> | @property
+ | agent_id_to_index() -&gt; Dict[AgentId, int]
+</code></pre>
+<p><strong>Returns</strong>:</p>
+<p>A Dict that maps agent_id to the index of those agents in
+this TerminalSteps.</p>
+<p><a name="mlagents_envs.base_env.TerminalSteps.__getitem__"></a></p>
+<h4 id="__getitem___1">__getitem__</h4>
+<pre><code class="language-python"> | __getitem__(agent_id: AgentId) -&gt; TerminalStep
+</code></pre>
+<p>returns the TerminalStep for a specific agent.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>agent_id</code>: The id of the agent</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>obs, reward, done, agent_id and optional action mask for a
+specific agent</p>
+<p><a name="mlagents_envs.base_env.TerminalSteps.empty"></a></p>
+<h4 id="empty_1">empty</h4>
+<pre><code class="language-python"> | @staticmethod
+ | empty(spec: &quot;BehaviorSpec&quot;) -&gt; &quot;TerminalSteps&quot;
+</code></pre>
+<p>Returns an empty TerminalSteps.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>spec</code>: The BehaviorSpec for the TerminalSteps</li>
+</ul>
+<p><a name="mlagents_envs.base_env.ActionTuple"></a></p>
+<h2 id="actiontuple-objects">ActionTuple Objects</h2>
+<pre><code class="language-python">class ActionTuple(_ActionTupleBase)
+</code></pre>
+<p>An object whose fields correspond to actions of different types.
+Continuous and discrete actions are numpy arrays of type float32 and
+int32, respectively and are type checked on construction.
+Dimensions are of (n_agents, continuous_size) and (n_agents, discrete_size),
+respectively. Note, this also holds when continuous or discrete size is
+zero.</p>
+<p><a name="mlagents_envs.base_env.ActionTuple.discrete_dtype"></a></p>
+<h4 id="discrete_dtype">discrete_dtype</h4>
+<pre><code class="language-python"> | @property
+ | discrete_dtype() -&gt; np.dtype
+</code></pre>
+<p>The dtype of a discrete action.</p>
+<p><a name="mlagents_envs.base_env.ActionSpec"></a></p>
+<h2 id="actionspec-objects">ActionSpec Objects</h2>
+<pre><code class="language-python">class ActionSpec(NamedTuple)
+</code></pre>
+<p>A NamedTuple containing utility functions and information about the action spaces
+for a group of Agents under the same behavior.
+- num_continuous_actions is an int corresponding to the number of floats which
+constitute the action.
+- discrete_branch_sizes is a Tuple of int where each int corresponds to
+the number of discrete actions available to the agent on an independent action branch.</p>
+<p><a name="mlagents_envs.base_env.ActionSpec.is_discrete"></a></p>
+<h4 id="is_discrete">is_discrete</h4>
+<pre><code class="language-python"> | is_discrete() -&gt; bool
+</code></pre>
+<p>Returns true if this Behavior uses discrete actions</p>
+<p><a name="mlagents_envs.base_env.ActionSpec.is_continuous"></a></p>
+<h4 id="is_continuous">is_continuous</h4>
+<pre><code class="language-python"> | is_continuous() -&gt; bool
+</code></pre>
+<p>Returns true if this Behavior uses continuous actions</p>
+<p><a name="mlagents_envs.base_env.ActionSpec.discrete_size"></a></p>
+<h4 id="discrete_size">discrete_size</h4>
+<pre><code class="language-python"> | @property
+ | discrete_size() -&gt; int
+</code></pre>
+<p>Returns a an int corresponding to the number of discrete branches.</p>
+<p><a name="mlagents_envs.base_env.ActionSpec.empty_action"></a></p>
+<h4 id="empty_action">empty_action</h4>
+<pre><code class="language-python"> | empty_action(n_agents: int) -&gt; ActionTuple
+</code></pre>
+<p>Generates ActionTuple corresponding to an empty action (all zeros)
+for a number of agents.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>n_agents</code>: The number of agents that will have actions generated</li>
+</ul>
+<p><a name="mlagents_envs.base_env.ActionSpec.random_action"></a></p>
+<h4 id="random_action">random_action</h4>
+<pre><code class="language-python"> | random_action(n_agents: int) -&gt; ActionTuple
+</code></pre>
+<p>Generates ActionTuple corresponding to a random action (either discrete
+or continuous) for a number of agents.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>n_agents</code>: The number of agents that will have actions generated</li>
+</ul>
+<p><a name="mlagents_envs.base_env.ActionSpec.create_continuous"></a></p>
+<h4 id="create_continuous">create_continuous</h4>
+<pre><code class="language-python"> | @staticmethod
+ | create_continuous(continuous_size: int) -&gt; &quot;ActionSpec&quot;
+</code></pre>
+<p>Creates an ActionSpec that is homogenously continuous</p>
+<p><a name="mlagents_envs.base_env.ActionSpec.create_discrete"></a></p>
+<h4 id="create_discrete">create_discrete</h4>
+<pre><code class="language-python"> | @staticmethod
+ | create_discrete(discrete_branches: Tuple[int]) -&gt; &quot;ActionSpec&quot;
+</code></pre>
+<p>Creates an ActionSpec that is homogenously discrete</p>
+<p><a name="mlagents_envs.base_env.DimensionProperty"></a></p>
+<h2 id="dimensionproperty-objects">DimensionProperty Objects</h2>
+<pre><code class="language-python">class DimensionProperty(IntFlag)
+</code></pre>
+<p>The dimension property of a dimension of an observation.</p>
+<p><a name="mlagents_envs.base_env.DimensionProperty.UNSPECIFIED"></a></p>
+<h4 id="unspecified">UNSPECIFIED</h4>
+<p>No properties specified.</p>
+<p><a name="mlagents_envs.base_env.DimensionProperty.NONE"></a></p>
+<h4 id="none">NONE</h4>
+<p>No Property of the observation in that dimension. Observation can be processed with
+Fully connected networks.</p>
+<p><a name="mlagents_envs.base_env.DimensionProperty.TRANSLATIONAL_EQUIVARIANCE"></a></p>
+<h4 id="translational_equivariance">TRANSLATIONAL_EQUIVARIANCE</h4>
+<p>Means it is suitable to do a convolution in this dimension.</p>
+<p><a name="mlagents_envs.base_env.DimensionProperty.VARIABLE_SIZE"></a></p>
+<h4 id="variable_size">VARIABLE_SIZE</h4>
+<p>Means that there can be a variable number of observations in this dimension.
+The observations are unordered.</p>
+<p><a name="mlagents_envs.base_env.ObservationType"></a></p>
+<h2 id="observationtype-objects">ObservationType Objects</h2>
+<pre><code class="language-python">class ObservationType(Enum)
+</code></pre>
+<p>An Enum which defines the type of information carried in the observation
+of the agent.</p>
+<p><a name="mlagents_envs.base_env.ObservationType.DEFAULT"></a></p>
+<h4 id="default">DEFAULT</h4>
+<p>Observation information is generic.</p>
+<p><a name="mlagents_envs.base_env.ObservationType.GOAL_SIGNAL"></a></p>
+<h4 id="goal_signal">GOAL_SIGNAL</h4>
+<p>Observation contains goal information for current task.</p>
+<p><a name="mlagents_envs.base_env.ObservationSpec"></a></p>
+<h2 id="observationspec-objects">ObservationSpec Objects</h2>
+<pre><code class="language-python">class ObservationSpec(NamedTuple)
+</code></pre>
+<p>A NamedTuple containing information about the observation of Agents.
+- shape is a Tuple of int : It corresponds to the shape of
+an observation's dimensions.
+- dimension_property is a Tuple of DimensionProperties flag, one flag for each
+dimension.
+- observation_type is an enum of ObservationType.</p>
+<p><a name="mlagents_envs.base_env.BehaviorSpec"></a></p>
+<h2 id="behaviorspec-objects">BehaviorSpec Objects</h2>
+<pre><code class="language-python">class BehaviorSpec(NamedTuple)
+</code></pre>
+<p>A NamedTuple containing information about the observation and action
+spaces for a group of Agents under the same behavior.
+- observation_specs is a List of ObservationSpec NamedTuple containing
+information about the information of the Agent's observations such as their shapes.
+The order of the ObservationSpec is the same as the order of the observations of an
+agent.
+- action_spec is an ActionSpec NamedTuple.</p>
+<p><a name="mlagents_envs.base_env.BaseEnv"></a></p>
+<h2 id="baseenv-objects">BaseEnv Objects</h2>
+<pre><code class="language-python">class BaseEnv(ABC)
+</code></pre>
+<p><a name="mlagents_envs.base_env.BaseEnv.step"></a></p>
+<h4 id="step">step</h4>
+<pre><code class="language-python"> | @abstractmethod
+ | step() -&gt; None
+</code></pre>
+<p>Signals the environment that it must move the simulation forward
+by one step.</p>
+<p><a name="mlagents_envs.base_env.BaseEnv.reset"></a></p>
+<h4 id="reset">reset</h4>
+<pre><code class="language-python"> | @abstractmethod
+ | reset() -&gt; None
+</code></pre>
+<p>Signals the environment that it must reset the simulation.</p>
+<p><a name="mlagents_envs.base_env.BaseEnv.close"></a></p>
+<h4 id="close">close</h4>
+<pre><code class="language-python"> | @abstractmethod
+ | close() -&gt; None
+</code></pre>
+<p>Signals the environment that it must close.</p>
+<p><a name="mlagents_envs.base_env.BaseEnv.behavior_specs"></a></p>
+<h4 id="behavior_specs">behavior_specs</h4>
+<pre><code class="language-python"> | @property
+ | @abstractmethod
+ | behavior_specs() -&gt; MappingType[str, BehaviorSpec]
+</code></pre>
+<p>Returns a Mapping from behavior names to behavior specs.
+Agents grouped under the same behavior name have the same action and
+observation specs, and are expected to behave similarly in the
+environment.
+Note that new keys can be added to this mapping as new policies are instantiated.</p>
+<p><a name="mlagents_envs.base_env.BaseEnv.set_actions"></a></p>
+<h4 id="set_actions">set_actions</h4>
+<pre><code class="language-python"> | @abstractmethod
+ | set_actions(behavior_name: BehaviorName, action: ActionTuple) -&gt; None
+</code></pre>
+<p>Sets the action for all of the agents in the simulation for the next
+step. The Actions must be in the same order as the order received in
+the DecisionSteps.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>behavior_name</code>: The name of the behavior the agents are part of</li>
+<li><code>action</code>: ActionTuple tuple of continuous and/or discrete action.
+Actions are np.arrays with dimensions  (n_agents, continuous_size) and
+(n_agents, discrete_size), respectively.</li>
+</ul>
+<p><a name="mlagents_envs.base_env.BaseEnv.set_action_for_agent"></a></p>
+<h4 id="set_action_for_agent">set_action_for_agent</h4>
+<pre><code class="language-python"> | @abstractmethod
+ | set_action_for_agent(behavior_name: BehaviorName, agent_id: AgentId, action: ActionTuple) -&gt; None
+</code></pre>
+<p>Sets the action for one of the agents in the simulation for the next
+step.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>behavior_name</code>: The name of the behavior the agent is part of</li>
+<li><code>agent_id</code>: The id of the agent the action is set for</li>
+<li><code>action</code>: ActionTuple tuple of continuous and/or discrete action
+Actions are np.arrays with dimensions  (1, continuous_size) and
+(1, discrete_size), respectively. Note, this initial dimensions of 1 is because
+this action is meant for a single agent.</li>
+</ul>
+<p><a name="mlagents_envs.base_env.BaseEnv.get_steps"></a></p>
+<h4 id="get_steps">get_steps</h4>
+<pre><code class="language-python"> | @abstractmethod
+ | get_steps(behavior_name: BehaviorName) -&gt; Tuple[DecisionSteps, TerminalSteps]
+</code></pre>
+<p>Retrieves the steps of the agents that requested a step in the
+simulation.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>behavior_name</code>: The name of the behavior the agents are part of</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>A tuple containing :
+- A DecisionSteps NamedTuple containing the observations,
+the rewards, the agent ids and the action masks for the Agents
+of the specified behavior. These Agents need an action this step.
+- A TerminalSteps NamedTuple containing the observations,
+rewards, agent ids and interrupted flags of the agents that had their
+episode terminated last step.</p>
+<p><a name="mlagents_envs.environment"></a></p>
+<h1 id="mlagents_envsenvironment">mlagents_envs.environment</h1>
+<p><a name="mlagents_envs.environment.UnityEnvironment"></a></p>
+<h2 id="unityenvironment-objects">UnityEnvironment Objects</h2>
+<pre><code class="language-python">class UnityEnvironment(BaseEnv)
+</code></pre>
+<p><a name="mlagents_envs.environment.UnityEnvironment.__init__"></a></p>
+<h4 id="__init__">__init__</h4>
+<pre><code class="language-python"> | __init__(file_name: Optional[str] = None, worker_id: int = 0, base_port: Optional[int] = None, seed: int = 0, no_graphics: bool = False, timeout_wait: int = 60, additional_args: Optional[List[str]] = None, side_channels: Optional[List[SideChannel]] = None, log_folder: Optional[str] = None, num_areas: int = 1)
+</code></pre>
+<p>Starts a new unity environment and establishes a connection with the environment.
+Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
+Ensure that the network where training takes place is secure.</p>
+<p>:string file_name: Name of Unity environment binary.
+:int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
+If no environment is specified (i.e. file_name is None), the DEFAULT_EDITOR_PORT will be used.
+:int worker_id: Offset from base_port. Used for training multiple environments simultaneously.
+:bool no_graphics: Whether to run the Unity simulator in no-graphics mode
+:int timeout_wait: Time (in seconds) to wait for connection from environment.
+:list args: Addition Unity command line arguments
+:list side_channels: Additional side channel for no-rl communication with Unity
+:str log_folder: Optional folder to write the Unity Player log file into.  Requires absolute path.</p>
+<p><a name="mlagents_envs.environment.UnityEnvironment.close"></a></p>
+<h4 id="close_1">close</h4>
+<pre><code class="language-python"> | close()
+</code></pre>
+<p>Sends a shutdown signal to the unity environment, and closes the socket connection.</p>
+<p><a name="mlagents_envs.registry"></a></p>
+<h1 id="mlagents_envsregistry">mlagents_envs.registry</h1>
+<p><a name="mlagents_envs.registry.unity_env_registry"></a></p>
+<h1 id="mlagents_envsregistryunity_env_registry">mlagents_envs.registry.unity_env_registry</h1>
+<p><a name="mlagents_envs.registry.unity_env_registry.UnityEnvRegistry"></a></p>
+<h2 id="unityenvregistry-objects">UnityEnvRegistry Objects</h2>
+<pre><code class="language-python">class UnityEnvRegistry(Mapping)
+</code></pre>
+<h3 id="unityenvregistry">UnityEnvRegistry</h3>
+<p>Provides a library of Unity environments that can be launched without the need
+of downloading the Unity Editor.
+The UnityEnvRegistry implements a Map, to access an entry of the Registry, use:</p>
+<pre><code class="language-python">registry = UnityEnvRegistry()
+entry = registry[&lt;environment_identifyier&gt;]
+</code></pre>
+<p>An entry has the following properties :
+ * <code>identifier</code> : Uniquely identifies this environment
+ * <code>expected_reward</code> : Corresponds to the reward an agent must obtained for the task
+ to be considered completed.
+ * <code>description</code> : A human readable description of the environment.</p>
+<p>To launch a Unity environment from a registry entry, use the <code>make</code> method:</p>
+<pre><code class="language-python">registry = UnityEnvRegistry()
+env = registry[&lt;environment_identifyier&gt;].make()
+</code></pre>
+<p><a name="mlagents_envs.registry.unity_env_registry.UnityEnvRegistry.register"></a></p>
+<h4 id="register">register</h4>
+<pre><code class="language-python"> | register(new_entry: BaseRegistryEntry) -&gt; None
+</code></pre>
+<p>Registers a new BaseRegistryEntry to the registry. The
+BaseRegistryEntry.identifier value will be used as indexing key.
+If two are more environments are registered under the same key, the most
+recentry added will replace the others.</p>
+<p><a name="mlagents_envs.registry.unity_env_registry.UnityEnvRegistry.register_from_yaml"></a></p>
+<h4 id="register_from_yaml">register_from_yaml</h4>
+<pre><code class="language-python"> | register_from_yaml(path_to_yaml: str) -&gt; None
+</code></pre>
+<p>Registers the environments listed in a yaml file (either local or remote). Note
+that the entries are registered lazily: the registration will only happen when
+an environment is accessed.
+The yaml file must have the following format :</p>
+<pre><code class="language-yaml">environments:
+- &lt;identifier of the first environment&gt;:
+    expected_reward: &lt;expected reward of the environment&gt;
+    description: | &lt;a multi line description of the environment&gt;
+      &lt;continued multi line description&gt;
+    linux_url: &lt;The url for the Linux executable zip file&gt;
+    darwin_url: &lt;The url for the OSX executable zip file&gt;
+    win_url: &lt;The url for the Windows executable zip file&gt;
+
+- &lt;identifier of the second environment&gt;:
+    expected_reward: &lt;expected reward of the environment&gt;
+    description: | &lt;a multi line description of the environment&gt;
+      &lt;continued multi line description&gt;
+    linux_url: &lt;The url for the Linux executable zip file&gt;
+    darwin_url: &lt;The url for the OSX executable zip file&gt;
+    win_url: &lt;The url for the Windows executable zip file&gt;
+
+- ...
+</code></pre>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>path_to_yaml</code>: A local path or url to the yaml file</li>
+</ul>
+<p><a name="mlagents_envs.registry.unity_env_registry.UnityEnvRegistry.clear"></a></p>
+<h4 id="clear">clear</h4>
+<pre><code class="language-python"> | clear() -&gt; None
+</code></pre>
+<p>Deletes all entries in the registry.</p>
+<p><a name="mlagents_envs.registry.unity_env_registry.UnityEnvRegistry.__getitem__"></a></p>
+<h4 id="__getitem___2">__getitem__</h4>
+<pre><code class="language-python"> | __getitem__(identifier: str) -&gt; BaseRegistryEntry
+</code></pre>
+<p>Returns the BaseRegistryEntry with the provided identifier. BaseRegistryEntry
+can then be used to make a Unity Environment.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>identifier</code>: The identifier of the BaseRegistryEntry</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>The associated BaseRegistryEntry</p>
+<p><a name="mlagents_envs.side_channel"></a></p>
+<h1 id="mlagents_envsside_channel">mlagents_envs.side_channel</h1>
+<p><a name="mlagents_envs.side_channel.raw_bytes_channel"></a></p>
+<h1 id="mlagents_envsside_channelraw_bytes_channel">mlagents_envs.side_channel.raw_bytes_channel</h1>
+<p><a name="mlagents_envs.side_channel.raw_bytes_channel.RawBytesChannel"></a></p>
+<h2 id="rawbyteschannel-objects">RawBytesChannel Objects</h2>
+<pre><code class="language-python">class RawBytesChannel(SideChannel)
+</code></pre>
+<p>This is an example of what the SideChannel for raw bytes exchange would
+look like. Is meant to be used for general research purpose.</p>
+<p><a name="mlagents_envs.side_channel.raw_bytes_channel.RawBytesChannel.on_message_received"></a></p>
+<h4 id="on_message_received">on_message_received</h4>
+<pre><code class="language-python"> | on_message_received(msg: IncomingMessage) -&gt; None
+</code></pre>
+<p>Is called by the environment to the side channel. Can be called
+multiple times per step if multiple messages are meant for that
+SideChannel.</p>
+<p><a name="mlagents_envs.side_channel.raw_bytes_channel.RawBytesChannel.get_and_clear_received_messages"></a></p>
+<h4 id="get_and_clear_received_messages">get_and_clear_received_messages</h4>
+<pre><code class="language-python"> | get_and_clear_received_messages() -&gt; List[bytes]
+</code></pre>
+<p>returns a list of bytearray received from the environment.</p>
+<p><a name="mlagents_envs.side_channel.raw_bytes_channel.RawBytesChannel.send_raw_data"></a></p>
+<h4 id="send_raw_data">send_raw_data</h4>
+<pre><code class="language-python"> | send_raw_data(data: bytearray) -&gt; None
+</code></pre>
+<p>Queues a message to be sent by the environment at the next call to
+step.</p>
+<p><a name="mlagents_envs.side_channel.outgoing_message"></a></p>
+<h1 id="mlagents_envsside_channeloutgoing_message">mlagents_envs.side_channel.outgoing_message</h1>
+<p><a name="mlagents_envs.side_channel.outgoing_message.OutgoingMessage"></a></p>
+<h2 id="outgoingmessage-objects">OutgoingMessage Objects</h2>
+<pre><code class="language-python">class OutgoingMessage()
+</code></pre>
+<p>Utility class for forming the message that is written to a SideChannel.
+All data is written in little-endian format using the struct module.</p>
+<p><a name="mlagents_envs.side_channel.outgoing_message.OutgoingMessage.__init__"></a></p>
+<h4 id="__init___1">__init__</h4>
+<pre><code class="language-python"> | __init__()
+</code></pre>
+<p>Create an OutgoingMessage with an empty buffer.</p>
+<p><a name="mlagents_envs.side_channel.outgoing_message.OutgoingMessage.write_bool"></a></p>
+<h4 id="write_bool">write_bool</h4>
+<pre><code class="language-python"> | write_bool(b: bool) -&gt; None
+</code></pre>
+<p>Append a boolean value.</p>
+<p><a name="mlagents_envs.side_channel.outgoing_message.OutgoingMessage.write_int32"></a></p>
+<h4 id="write_int32">write_int32</h4>
+<pre><code class="language-python"> | write_int32(i: int) -&gt; None
+</code></pre>
+<p>Append an integer value.</p>
+<p><a name="mlagents_envs.side_channel.outgoing_message.OutgoingMessage.write_float32"></a></p>
+<h4 id="write_float32">write_float32</h4>
+<pre><code class="language-python"> | write_float32(f: float) -&gt; None
+</code></pre>
+<p>Append a float value. It will be truncated to 32-bit precision.</p>
+<p><a name="mlagents_envs.side_channel.outgoing_message.OutgoingMessage.write_float32_list"></a></p>
+<h4 id="write_float32_list">write_float32_list</h4>
+<pre><code class="language-python"> | write_float32_list(float_list: List[float]) -&gt; None
+</code></pre>
+<p>Append a list of float values. They will be truncated to 32-bit precision.</p>
+<p><a name="mlagents_envs.side_channel.outgoing_message.OutgoingMessage.write_string"></a></p>
+<h4 id="write_string">write_string</h4>
+<pre><code class="language-python"> | write_string(s: str) -&gt; None
+</code></pre>
+<p>Append a string value. Internally, it will be encoded to ascii, and the
+encoded length will also be written to the message.</p>
+<p><a name="mlagents_envs.side_channel.outgoing_message.OutgoingMessage.set_raw_bytes"></a></p>
+<h4 id="set_raw_bytes">set_raw_bytes</h4>
+<pre><code class="language-python"> | set_raw_bytes(buffer: bytearray) -&gt; None
+</code></pre>
+<p>Set the internal buffer to a new bytearray. This will overwrite any existing data.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>buffer</code>:</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p><a name="mlagents_envs.side_channel.engine_configuration_channel"></a></p>
+<h1 id="mlagents_envsside_channelengine_configuration_channel">mlagents_envs.side_channel.engine_configuration_channel</h1>
+<p><a name="mlagents_envs.side_channel.engine_configuration_channel.EngineConfigurationChannel"></a></p>
+<h2 id="engineconfigurationchannel-objects">EngineConfigurationChannel Objects</h2>
+<pre><code class="language-python">class EngineConfigurationChannel(SideChannel)
+</code></pre>
+<p>This is the SideChannel for engine configuration exchange. The data in the
+engine configuration is as follows :
+ - int width;
+ - int height;
+ - int qualityLevel;
+ - float timeScale;
+ - int targetFrameRate;
+ - int captureFrameRate;</p>
+<p><a name="mlagents_envs.side_channel.engine_configuration_channel.EngineConfigurationChannel.on_message_received"></a></p>
+<h4 id="on_message_received_1">on_message_received</h4>
+<pre><code class="language-python"> | on_message_received(msg: IncomingMessage) -&gt; None
+</code></pre>
+<p>Is called by the environment to the side channel. Can be called
+multiple times per step if multiple messages are meant for that
+SideChannel.
+Note that Python should never receive an engine configuration from
+Unity</p>
+<p><a name="mlagents_envs.side_channel.engine_configuration_channel.EngineConfigurationChannel.set_configuration_parameters"></a></p>
+<h4 id="set_configuration_parameters">set_configuration_parameters</h4>
+<pre><code class="language-python"> | set_configuration_parameters(width: Optional[int] = None, height: Optional[int] = None, quality_level: Optional[int] = None, time_scale: Optional[float] = None, target_frame_rate: Optional[int] = None, capture_frame_rate: Optional[int] = None) -&gt; None
+</code></pre>
+<p>Sets the engine configuration. Takes as input the configurations of the
+engine.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>width</code>: Defines the width of the display. (Must be set alongside height)</li>
+<li><code>height</code>: Defines the height of the display. (Must be set alongside width)</li>
+<li><code>quality_level</code>: Defines the quality level of the simulation.</li>
+<li><code>time_scale</code>: Defines the multiplier for the deltatime in the
+simulation. If set to a higher value, time will pass faster in the
+simulation but the physics might break.</li>
+<li><code>target_frame_rate</code>: Instructs simulation to try to render at a
+specified frame rate.</li>
+<li><code>capture_frame_rate</code>: Instructs the simulation to consider time between
+updates to always be constant, regardless of the actual frame rate.</li>
+</ul>
+<p><a name="mlagents_envs.side_channel.engine_configuration_channel.EngineConfigurationChannel.set_configuration"></a></p>
+<h4 id="set_configuration">set_configuration</h4>
+<pre><code class="language-python"> | set_configuration(config: EngineConfig) -&gt; None
+</code></pre>
+<p>Sets the engine configuration. Takes as input an EngineConfig.</p>
+<p><a name="mlagents_envs.side_channel.side_channel_manager"></a></p>
+<h1 id="mlagents_envsside_channelside_channel_manager">mlagents_envs.side_channel.side_channel_manager</h1>
+<p><a name="mlagents_envs.side_channel.side_channel_manager.SideChannelManager"></a></p>
+<h2 id="sidechannelmanager-objects">SideChannelManager Objects</h2>
+<pre><code class="language-python">class SideChannelManager()
+</code></pre>
+<p><a name="mlagents_envs.side_channel.side_channel_manager.SideChannelManager.process_side_channel_message"></a></p>
+<h4 id="process_side_channel_message">process_side_channel_message</h4>
+<pre><code class="language-python"> | process_side_channel_message(data: bytes) -&gt; None
+</code></pre>
+<p>Separates the data received from Python into individual messages for each
+registered side channel and calls on_message_received on them.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>data</code>: The packed message sent by Unity</li>
+</ul>
+<p><a name="mlagents_envs.side_channel.side_channel_manager.SideChannelManager.generate_side_channel_messages"></a></p>
+<h4 id="generate_side_channel_messages">generate_side_channel_messages</h4>
+<pre><code class="language-python"> | generate_side_channel_messages() -&gt; bytearray
+</code></pre>
+<p>Gathers the messages that the registered side channels will send to Unity
+and combines them into a single message ready to be sent.</p>
+<p><a name="mlagents_envs.side_channel.stats_side_channel"></a></p>
+<h1 id="mlagents_envsside_channelstats_side_channel">mlagents_envs.side_channel.stats_side_channel</h1>
+<p><a name="mlagents_envs.side_channel.stats_side_channel.StatsSideChannel"></a></p>
+<h2 id="statssidechannel-objects">StatsSideChannel Objects</h2>
+<pre><code class="language-python">class StatsSideChannel(SideChannel)
+</code></pre>
+<p>Side channel that receives (string, float) pairs from the environment, so that they can eventually
+be passed to a StatsReporter.</p>
+<p><a name="mlagents_envs.side_channel.stats_side_channel.StatsSideChannel.on_message_received"></a></p>
+<h4 id="on_message_received_2">on_message_received</h4>
+<pre><code class="language-python"> | on_message_received(msg: IncomingMessage) -&gt; None
+</code></pre>
+<p>Receive the message from the environment, and save it for later retrieval.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>msg</code>:</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p><a name="mlagents_envs.side_channel.stats_side_channel.StatsSideChannel.get_and_reset_stats"></a></p>
+<h4 id="get_and_reset_stats">get_and_reset_stats</h4>
+<pre><code class="language-python"> | get_and_reset_stats() -&gt; EnvironmentStats
+</code></pre>
+<p>Returns the current stats, and resets the internal storage of the stats.</p>
+<p><strong>Returns</strong>:</p>
+<p><a name="mlagents_envs.side_channel.incoming_message"></a></p>
+<h1 id="mlagents_envsside_channelincoming_message">mlagents_envs.side_channel.incoming_message</h1>
+<p><a name="mlagents_envs.side_channel.incoming_message.IncomingMessage"></a></p>
+<h2 id="incomingmessage-objects">IncomingMessage Objects</h2>
+<pre><code class="language-python">class IncomingMessage()
+</code></pre>
+<p>Utility class for reading the message written to a SideChannel.
+Values must be read in the order they were written.</p>
+<p><a name="mlagents_envs.side_channel.incoming_message.IncomingMessage.__init__"></a></p>
+<h4 id="__init___2">__init__</h4>
+<pre><code class="language-python"> | __init__(buffer: bytes, offset: int = 0)
+</code></pre>
+<p>Create a new IncomingMessage from the bytes.</p>
+<p><a name="mlagents_envs.side_channel.incoming_message.IncomingMessage.read_bool"></a></p>
+<h4 id="read_bool">read_bool</h4>
+<pre><code class="language-python"> | read_bool(default_value: bool = False) -&gt; bool
+</code></pre>
+<p>Read a boolean value from the message buffer.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>default_value</code>: Default value to use if the end of the message is reached.</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>The value read from the message, or the default value if the end was reached.</p>
+<p><a name="mlagents_envs.side_channel.incoming_message.IncomingMessage.read_int32"></a></p>
+<h4 id="read_int32">read_int32</h4>
+<pre><code class="language-python"> | read_int32(default_value: int = 0) -&gt; int
+</code></pre>
+<p>Read an integer value from the message buffer.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>default_value</code>: Default value to use if the end of the message is reached.</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>The value read from the message, or the default value if the end was reached.</p>
+<p><a name="mlagents_envs.side_channel.incoming_message.IncomingMessage.read_float32"></a></p>
+<h4 id="read_float32">read_float32</h4>
+<pre><code class="language-python"> | read_float32(default_value: float = 0.0) -&gt; float
+</code></pre>
+<p>Read a float value from the message buffer.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>default_value</code>: Default value to use if the end of the message is reached.</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>The value read from the message, or the default value if the end was reached.</p>
+<p><a name="mlagents_envs.side_channel.incoming_message.IncomingMessage.read_float32_list"></a></p>
+<h4 id="read_float32_list">read_float32_list</h4>
+<pre><code class="language-python"> | read_float32_list(default_value: List[float] = None) -&gt; List[float]
+</code></pre>
+<p>Read a list of float values from the message buffer.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>default_value</code>: Default value to use if the end of the message is reached.</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>The value read from the message, or the default value if the end was reached.</p>
+<p><a name="mlagents_envs.side_channel.incoming_message.IncomingMessage.read_string"></a></p>
+<h4 id="read_string">read_string</h4>
+<pre><code class="language-python"> | read_string(default_value: str = &quot;&quot;) -&gt; str
+</code></pre>
+<p>Read a string value from the message buffer.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>default_value</code>: Default value to use if the end of the message is reached.</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>The value read from the message, or the default value if the end was reached.</p>
+<p><a name="mlagents_envs.side_channel.incoming_message.IncomingMessage.get_raw_bytes"></a></p>
+<h4 id="get_raw_bytes">get_raw_bytes</h4>
+<pre><code class="language-python"> | get_raw_bytes() -&gt; bytes
+</code></pre>
+<p>Get a copy of the internal bytes used by the message.</p>
+<p><a name="mlagents_envs.side_channel.float_properties_channel"></a></p>
+<h1 id="mlagents_envsside_channelfloat_properties_channel">mlagents_envs.side_channel.float_properties_channel</h1>
+<p><a name="mlagents_envs.side_channel.float_properties_channel.FloatPropertiesChannel"></a></p>
+<h2 id="floatpropertieschannel-objects">FloatPropertiesChannel Objects</h2>
+<pre><code class="language-python">class FloatPropertiesChannel(SideChannel)
+</code></pre>
+<p>This is the SideChannel for float properties shared with Unity.
+You can modify the float properties of an environment with the commands
+set_property, get_property and list_properties.</p>
+<p><a name="mlagents_envs.side_channel.float_properties_channel.FloatPropertiesChannel.on_message_received"></a></p>
+<h4 id="on_message_received_3">on_message_received</h4>
+<pre><code class="language-python"> | on_message_received(msg: IncomingMessage) -&gt; None
+</code></pre>
+<p>Is called by the environment to the side channel. Can be called
+multiple times per step if multiple messages are meant for that
+SideChannel.</p>
+<p><a name="mlagents_envs.side_channel.float_properties_channel.FloatPropertiesChannel.set_property"></a></p>
+<h4 id="set_property">set_property</h4>
+<pre><code class="language-python"> | set_property(key: str, value: float) -&gt; None
+</code></pre>
+<p>Sets a property in the Unity Environment.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>key</code>: The string identifier of the property.</li>
+<li><code>value</code>: The float value of the property.</li>
+</ul>
+<p><a name="mlagents_envs.side_channel.float_properties_channel.FloatPropertiesChannel.get_property"></a></p>
+<h4 id="get_property">get_property</h4>
+<pre><code class="language-python"> | get_property(key: str) -&gt; Optional[float]
+</code></pre>
+<p>Gets a property in the Unity Environment. If the property was not
+found, will return None.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>key</code>: The string identifier of the property.</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>The float value of the property or None.</p>
+<p><a name="mlagents_envs.side_channel.float_properties_channel.FloatPropertiesChannel.list_properties"></a></p>
+<h4 id="list_properties">list_properties</h4>
+<pre><code class="language-python"> | list_properties() -&gt; List[str]
+</code></pre>
+<p>Returns a list of all the string identifiers of the properties
+currently present in the Unity Environment.</p>
+<p><a name="mlagents_envs.side_channel.float_properties_channel.FloatPropertiesChannel.get_property_dict_copy"></a></p>
+<h4 id="get_property_dict_copy">get_property_dict_copy</h4>
+<pre><code class="language-python"> | get_property_dict_copy() -&gt; Dict[str, float]
+</code></pre>
+<p>Returns a copy of the float properties.</p>
+<p><strong>Returns</strong>:</p>
+<p><a name="mlagents_envs.side_channel.environment_parameters_channel"></a></p>
+<h1 id="mlagents_envsside_channelenvironment_parameters_channel">mlagents_envs.side_channel.environment_parameters_channel</h1>
+<p><a name="mlagents_envs.side_channel.environment_parameters_channel.EnvironmentParametersChannel"></a></p>
+<h2 id="environmentparameterschannel-objects">EnvironmentParametersChannel Objects</h2>
+<pre><code class="language-python">class EnvironmentParametersChannel(SideChannel)
+</code></pre>
+<p>This is the SideChannel for sending environment parameters to Unity.
+You can send parameters to an environment with the command
+set_float_parameter.</p>
+<p><a name="mlagents_envs.side_channel.environment_parameters_channel.EnvironmentParametersChannel.set_float_parameter"></a></p>
+<h4 id="set_float_parameter">set_float_parameter</h4>
+<pre><code class="language-python"> | set_float_parameter(key: str, value: float) -&gt; None
+</code></pre>
+<p>Sets a float environment parameter in the Unity Environment.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>key</code>: The string identifier of the parameter.</li>
+<li><code>value</code>: The float value of the parameter.</li>
+</ul>
+<p><a name="mlagents_envs.side_channel.environment_parameters_channel.EnvironmentParametersChannel.set_uniform_sampler_parameters"></a></p>
+<h4 id="set_uniform_sampler_parameters">set_uniform_sampler_parameters</h4>
+<pre><code class="language-python"> | set_uniform_sampler_parameters(key: str, min_value: float, max_value: float, seed: int) -&gt; None
+</code></pre>
+<p>Sets a uniform environment parameter sampler.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>key</code>: The string identifier of the parameter.</li>
+<li><code>min_value</code>: The minimum of the sampling distribution.</li>
+<li><code>max_value</code>: The maximum of the sampling distribution.</li>
+<li><code>seed</code>: The random seed to initialize the sampler.</li>
+</ul>
+<p><a name="mlagents_envs.side_channel.environment_parameters_channel.EnvironmentParametersChannel.set_gaussian_sampler_parameters"></a></p>
+<h4 id="set_gaussian_sampler_parameters">set_gaussian_sampler_parameters</h4>
+<pre><code class="language-python"> | set_gaussian_sampler_parameters(key: str, mean: float, st_dev: float, seed: int) -&gt; None
+</code></pre>
+<p>Sets a gaussian environment parameter sampler.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>key</code>: The string identifier of the parameter.</li>
+<li><code>mean</code>: The mean of the sampling distribution.</li>
+<li><code>st_dev</code>: The standard deviation of the sampling distribution.</li>
+<li><code>seed</code>: The random seed to initialize the sampler.</li>
+</ul>
+<p><a name="mlagents_envs.side_channel.environment_parameters_channel.EnvironmentParametersChannel.set_multirangeuniform_sampler_parameters"></a></p>
+<h4 id="set_multirangeuniform_sampler_parameters">set_multirangeuniform_sampler_parameters</h4>
+<pre><code class="language-python"> | set_multirangeuniform_sampler_parameters(key: str, intervals: List[Tuple[float, float]], seed: int) -&gt; None
+</code></pre>
+<p>Sets a multirangeuniform environment parameter sampler.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>key</code>: The string identifier of the parameter.</li>
+<li><code>intervals</code>: The lists of min and max that define each uniform distribution.</li>
+<li><code>seed</code>: The random seed to initialize the sampler.</li>
+</ul>
+<p><a name="mlagents_envs.side_channel.side_channel"></a></p>
+<h1 id="mlagents_envsside_channelside_channel">mlagents_envs.side_channel.side_channel</h1>
+<p><a name="mlagents_envs.side_channel.side_channel.SideChannel"></a></p>
+<h2 id="sidechannel-objects">SideChannel Objects</h2>
+<pre><code class="language-python">class SideChannel(ABC)
+</code></pre>
+<p>The side channel just get access to a bytes buffer that will be shared
+between C# and Python. For example, We will create a specific side channel
+for properties that will be a list of string (fixed size) to float number,
+that can be modified by both C# and Python. All side channels are passed
+to the Env object at construction.</p>
+<p><a name="mlagents_envs.side_channel.side_channel.SideChannel.queue_message_to_send"></a></p>
+<h4 id="queue_message_to_send">queue_message_to_send</h4>
+<pre><code class="language-python"> | queue_message_to_send(msg: OutgoingMessage) -&gt; None
+</code></pre>
+<p>Queues a message to be sent by the environment at the next call to
+step.</p>
+<p><a name="mlagents_envs.side_channel.side_channel.SideChannel.on_message_received"></a></p>
+<h4 id="on_message_received_4">on_message_received</h4>
+<pre><code class="language-python"> | @abstractmethod
+ | on_message_received(msg: IncomingMessage) -&gt; None
+</code></pre>
+<p>Is called by the environment to the side channel. Can be called
+multiple times per step if multiple messages are meant for that
+SideChannel.</p>
+<p><a name="mlagents_envs.side_channel.side_channel.SideChannel.channel_id"></a></p>
+<h4 id="channel_id">channel_id</h4>
+<pre><code class="language-python"> | @property
+ | channel_id() -&gt; uuid.UUID
+</code></pre>
+<p><strong>Returns</strong>:</p>
+<p>The type of side channel used. Will influence how the data is
+processed in the environment.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../FAQ/" class="btn btn-neutral float-right" title="FAQs">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../Python-LLAPI/" class="btn btn-neutral" title="Getting started with the LLAPI"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../Python-LLAPI/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../FAQ/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

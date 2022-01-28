@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Installation-Anaconda-Windows/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Installing ML-Agents Toolkit for Windows (Deprecated) - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Installing ML-Agents Toolkit for Windows (Deprecated)";
+    var mkdocs_page_input_path = "Installation-Anaconda-Windows.md";
+    var mkdocs_page_url = "/ml-agents/Installation-Anaconda-Windows/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Installing ML-Agents Toolkit for Windows (Deprecated)</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Installation-Anaconda-Windows.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="installing-ml-agents-toolkit-for-windows-deprecated">Installing ML-Agents Toolkit for Windows (Deprecated)</h1>
+<p>:warning: <strong>Note:</strong> We no longer use this guide ourselves and so it may not work
+correctly. We've decided to keep it up just in case it is helpful to you.</p>
+<p>The ML-Agents Toolkit supports Windows 10. While it might be possible to run the
+ML-Agents Toolkit using other versions of Windows, it has not been tested on
+other versions. Furthermore, the ML-Agents Toolkit has not been tested on a
+Windows VM such as Bootcamp or Parallels.</p>
+<p>To use the ML-Agents Toolkit, you install Python and the required Python
+packages as outlined below. This guide also covers how set up GPU-based training
+(for advanced users). GPU-based training is not currently required for the
+ML-Agents Toolkit. However, training on a GPU might be required by future
+versions and features.</p>
+<h2 id="step-1-install-python-via-anaconda">Step 1: Install Python via Anaconda</h2>
+<p><a href="https://www.anaconda.com/download/#windows">Download</a> and install Anaconda for
+Windows. By using Anaconda, you can manage separate environments for different
+distributions of Python. Python 3.6.1 or higher is required as we no longer
+support Python 2. In this guide, we are using Python version 3.6 and Anaconda
+version 5.1
+(<a href="https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe">64-bit</a>
+or <a href="https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe">32-bit</a>
+direct links).</p>
+<p align="center">
+  <img src="images/anaconda_install.PNG"
+       alt="Anaconda Install"
+       width="500" border="10" />
+</p>
+
+<p>We recommend the default <em>advanced installation options</em>. However, select the
+options appropriate for your specific situation.</p>
+<p align="center">
+  <img src="images/anaconda_default.PNG" alt="Anaconda Install" width="500" border="10" />
+</p>
+
+<p>After installation, you must open <strong>Anaconda Navigator</strong> to finish the setup.
+From the Windows search bar, type <em>anaconda navigator</em>. You can close Anaconda
+Navigator after it opens.</p>
+<p>If environment variables were not created, you will see error "conda is not
+recognized as internal or external command" when you type <code>conda</code> into the
+command line. To solve this you will need to set the environment variable
+correctly.</p>
+<p>Type <code>environment variables</code> in the search bar (this can be reached by hitting
+the Windows key or the bottom left Windows button). You should see an option
+called <strong>Edit the system environment variables</strong>.</p>
+<p align="center">
+  <img src="images/edit_env_var.png"
+       alt="edit env variables"
+       width="250" border="10" />
+</p>
+
+<p>From here, click the <strong>Environment Variables</strong> button. Double click "Path" under
+<strong>System variable</strong> to edit the "Path" variable, click <strong>New</strong> to add the
+following new paths.</p>
+<pre><code class="language-console">%UserProfile%\Anaconda3\Scripts
+%UserProfile%\Anaconda3\Scripts\conda.exe
+%UserProfile%\Anaconda3
+%UserProfile%\Anaconda3\python.exe
+</code></pre>
+<h2 id="step-2-setup-and-activate-a-new-conda-environment">Step 2: Setup and Activate a New Conda Environment</h2>
+<p>You will create a new <a href="https://conda.io/docs/">Conda environment</a> to be used
+with the ML-Agents Toolkit. This means that all the packages that you install
+are localized to just this environment. It will not affect any other
+installation of Python or other environments. Whenever you want to run
+ML-Agents, you will need activate this Conda environment.</p>
+<p>To create a new Conda environment, open a new Anaconda Prompt (<em>Anaconda Prompt</em>
+in the search bar) and type in the following command:</p>
+<pre><code class="language-sh">conda create -n ml-agents python=3.6
+</code></pre>
+<p>You may be asked to install new packages. Type <code>y</code> and press enter <em>(make sure
+you are connected to the Internet)</em>. You must install these required packages.
+The new Conda environment is called ml-agents and uses Python version 3.6.</p>
+<p align="center">
+  <img src="images/conda_new.PNG" alt="Anaconda Install" width="500" border="10" />
+</p>
+
+<p>To use this environment, you must activate it. <em>(To use this environment In the
+future, you can run the same command)</em>. In the same Anaconda Prompt, type in the
+following command:</p>
+<pre><code class="language-sh">activate ml-agents
+</code></pre>
+<p>You should see <code>(ml-agents)</code> prepended on the last line.</p>
+<p>Next, install <code>tensorflow</code>. Install this package using <code>pip</code> - which is a
+package management system used to install Python packages. Latest versions of
+TensorFlow won't work, so you will need to make sure that you install version
+1.7.1. In the same Anaconda Prompt, type in the following command <em>(make sure
+you are connected to the Internet)</em>:</p>
+<pre><code class="language-sh">pip install tensorflow==1.7.1
+</code></pre>
+<h2 id="step-3-install-required-python-packages">Step 3: Install Required Python Packages</h2>
+<p>The ML-Agents Toolkit depends on a number of Python packages. Use <code>pip</code> to
+install these Python dependencies.</p>
+<p>If you haven't already, clone the ML-Agents Toolkit Github repository to your
+local computer. You can do this using Git
+(<a href="https://git-scm.com/download/win">download here</a>) and running the following
+commands in an Anaconda Prompt <em>(if you open a new prompt, be sure to activate
+the ml-agents Conda environment by typing <code>activate ml-agents</code>)</em>:</p>
+<pre><code class="language-sh">git clone --branch release_19 https://github.com/Unity-Technologies/ml-agents.git
+</code></pre>
+<p>The <code>--branch release_19</code> option will switch to the tag of the latest stable
+release. Omitting that will get the <code>main</code> branch which is potentially
+unstable.</p>
+<p>If you don't want to use Git, you can find download links on the
+<a href="https://github.com/Unity-Technologies/ml-agents/releases">releases page</a>.</p>
+<p>The <code>com.unity.ml-agents</code> subdirectory contains the core code to add to your
+projects. The <code>Project</code> subdirectory contains many
+<a href="../Learning-Environment-Examples/">example environments</a> to help you get
+started.</p>
+<p>The <code>ml-agents</code> subdirectory contains a Python package which provides deep
+reinforcement learning trainers to use with Unity environments.</p>
+<p>The <code>ml-agents-envs</code> subdirectory contains a Python API to interface with Unity,
+which the <code>ml-agents</code> package depends on.</p>
+<p>The <code>gym-unity</code> subdirectory contains a package to interface with OpenAI Gym.</p>
+<p>Keep in mind where the files were downloaded, as you will need the trainer
+config files in this directory when running <code>mlagents-learn</code>. Make sure you are
+connected to the Internet and then type in the Anaconda Prompt:</p>
+<pre><code class="language-console">python -m pip install mlagents==0.28.0
+</code></pre>
+<p>This will complete the installation of all the required Python packages to run
+the ML-Agents Toolkit.</p>
+<p>Sometimes on Windows, when you use pip to install certain Python packages, the
+pip will get stuck when trying to read the cache of the package. If you see
+this, you can try:</p>
+<pre><code class="language-console">python -m pip install mlagents==0.28.0 --no-cache-dir
+</code></pre>
+<p>This <code>--no-cache-dir</code> tells the pip to disable the cache.</p>
+<h3 id="installing-for-development">Installing for Development</h3>
+<p>If you intend to make modifications to <code>ml-agents</code> or <code>ml-agents-envs</code>, you
+should install the packages from the cloned repo rather than from PyPi. To do
+this, you will need to install <code>ml-agents</code> and <code>ml-agents-envs</code> separately.</p>
+<p>In our example, the files are located in <code>C:\Downloads</code>. After you have either
+cloned or downloaded the files, from the Anaconda Prompt, change to the
+ml-agents subdirectory inside the ml-agents directory:</p>
+<pre><code class="language-console">cd C:\Downloads\ml-agents
+</code></pre>
+<p>From the repo's main directory, now run:</p>
+<pre><code class="language-console">cd ml-agents-envs
+pip install -e .
+cd ..
+cd ml-agents
+pip install -e .
+</code></pre>
+<p>Running pip with the <code>-e</code> flag will let you make changes to the Python files
+directly and have those reflected when you run <code>mlagents-learn</code>. It is important
+to install these packages in this order as the <code>mlagents</code> package depends on
+<code>mlagents_envs</code>, and installing it in the other order will download
+<code>mlagents_envs</code> from PyPi.</p>
+<h2 id="optional-step-4-gpu-training-using-the-ml-agents-toolkit">(Optional) Step 4: GPU Training using The ML-Agents Toolkit</h2>
+<p>GPU is not required for the ML-Agents Toolkit and won't speed up the PPO
+algorithm a lot during training(but something in the future will benefit from
+GPU). This is a guide for advanced users who want to train using GPUs.
+Additionally, you will need to check if your GPU is CUDA compatible. Please
+check Nvidia's page <a href="https://developer.nvidia.com/cuda-gpus">here</a>.</p>
+<p>Currently for the ML-Agents Toolkit, only CUDA v9.0 and cuDNN v7.0.5 is
+supported.</p>
+<h3 id="install-nvidia-cuda-toolkit">Install Nvidia CUDA toolkit</h3>
+<p><a href="https://developer.nvidia.com/cuda-toolkit-archive">Download</a> and install the
+CUDA toolkit 9.0 from Nvidia's archive. The toolkit includes GPU-accelerated
+libraries, debugging and optimization tools, a C/C++ (Step Visual Studio 2017)
+compiler and a runtime library and is needed to run the ML-Agents Toolkit. In
+this guide, we are using version
+<a href="https://developer.nvidia.com/compute/cuda/9.0/Prod/network_installers/cuda_9.0.176_win10_network-exe">9.0.176</a>).</p>
+<p>Before installing, please make sure you <strong>close any running instances of Unity
+or Visual Studio</strong>.</p>
+<p>Run the installer and select the Express option. Note the directory where you
+installed the CUDA toolkit. In this guide, we installed in the directory
+<code>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0</code></p>
+<h3 id="install-nvidia-cudnn-library">Install Nvidia cuDNN library</h3>
+<p><a href="https://developer.nvidia.com/cudnn">Download</a> and install the cuDNN library
+from Nvidia. cuDNN is a GPU-accelerated library of primitives for deep neural
+networks. Before you can download, you will need to sign up for free to the
+Nvidia Developer Program.</p>
+<p align="center">
+  <img src="images/cuDNN_membership_required.png"
+       alt="cuDNN membership required"
+       width="500" border="10" />
+</p>
+
+<p>Once you've signed up, go back to the cuDNN
+<a href="https://developer.nvidia.com/cudnn">downloads page</a>. You may or may not be
+asked to fill out a short survey. When you get to the list cuDNN releases,
+<strong>make sure you are downloading the right version for the CUDA toolkit you
+installed in Step 1.</strong> In this guide, we are using version 7.0.5 for CUDA
+toolkit version 9.0
+(<a href="https://developer.nvidia.com/compute/machine-learning/cudnn/secure/v7.0.5/prod/9.0_20171129/cudnn-9.0-windows10-x64-v7">direct link</a>).</p>
+<p>After you have downloaded the cuDNN files, you will need to extract the files
+into the CUDA toolkit directory. In the cuDNN zip file, there are three folders
+called <code>bin</code>, <code>include</code>, and <code>lib</code>.</p>
+<p align="center">
+  <img src="images/cudnn_zip_files.PNG"
+       alt="cuDNN zip files"
+       width="500" border="10" />
+</p>
+
+<p>Copy these three folders into the CUDA toolkit directory. The CUDA toolkit
+directory is located at
+<code>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0</code></p>
+<p align="center">
+  <img src="images/cuda_toolkit_directory.PNG"
+       alt="cuda toolkit directory"
+       width="500" border="10" />
+</p>
+
+<h3 id="set-environment-variables">Set Environment Variables</h3>
+<p>You will need to add one environment variable and two path variables.</p>
+<p>To set the environment variable, type <code>environment variables</code> in the search bar
+(this can be reached by hitting the Windows key or the bottom left Windows
+button). You should see an option called <strong>Edit the system environment
+variables</strong>.</p>
+<p align="center">
+  <img src="images/edit_env_var.png"
+       alt="edit env variables"
+       width="250" border="10" />
+</p>
+
+<p>From here, click the <strong>Environment Variables</strong> button. Click <strong>New</strong> to add a
+new system variable <em>(make sure you do this under <strong>System variables</strong> and not
+User variables</em>.</p>
+<p align="center">
+  <img src="images/new_system_variable.PNG"
+       alt="new system variable"
+       width="500" border="10" />
+</p>
+
+<p>For <strong>Variable Name</strong>, enter <code>CUDA_HOME</code>. For the variable value, put the
+directory location for the CUDA toolkit. In this guide, the directory location
+is <code>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0</code>. Press <strong>OK</strong> once.</p>
+<p align="center">
+  <img src="images/system_variable_name_value.PNG"
+       alt="system variable names and values"
+       width="500" border="10" />
+</p>
+
+<p>To set the two path variables, inside the same <strong>Environment Variables</strong> window
+and under the second box called <strong>System Variables</strong>, find a variable called
+<code>Path</code> and click <strong>Edit</strong>. You will add two directories to the list. For this
+guide, the two entries would look like:</p>
+<pre><code class="language-console">C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\extras\CUPTI\libx64
+</code></pre>
+<p>Make sure to replace the relevant directory location with the one you have
+installed. <em>Please note that case sensitivity matters</em>.</p>
+<p align="center">
+    <img src="images/path_variables.PNG"
+        alt="Path variables"
+        width="500" border="10" />
+</p>
+
+<h3 id="install-tensorflow-gpu">Install TensorFlow GPU</h3>
+<p>Next, install <code>tensorflow-gpu</code> using <code>pip</code>. You'll need version 1.7.1. In an
+Anaconda Prompt with the Conda environment ml-agents activated, type in the
+following command to uninstall TensorFlow for cpu and install TensorFlow for gpu
+<em>(make sure you are connected to the Internet)</em>:</p>
+<pre><code class="language-sh">pip uninstall tensorflow
+pip install tensorflow-gpu==1.7.1
+</code></pre>
+<p>Lastly, you should test to see if everything installed properly and that
+TensorFlow can identify your GPU. In the same Anaconda Prompt, open Python in
+the Prompt by calling:</p>
+<pre><code class="language-sh">python
+</code></pre>
+<p>And then type the following commands:</p>
+<pre><code class="language-python">import tensorflow as tf
+
+sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+</code></pre>
+<p>You should see something similar to:</p>
+<pre><code class="language-console">Found device 0 with properties ...
+</code></pre>
+<h2 id="acknowledgments">Acknowledgments</h2>
+<p>We would like to thank
+<a href="https://unity3d.college/2017/10/25/machine-learning-in-unity3d-setting-up-the-environment-tensorflow-for-agentml-on-windows-10/">Jason Weimann</a>
+and
+<a href="http://blog.nitishmutha.com/tensorflow/2017/01/22/TensorFlow-with-gpu-for-windows.html">Nitish S. Mutha</a>
+for writing the original articles which were used to create this guide.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

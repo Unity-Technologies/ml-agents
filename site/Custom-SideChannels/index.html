@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Custom-SideChannels/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Custom Side Channels - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Custom Side Channels";
+    var mkdocs_page_input_path = "Custom-SideChannels.md";
+    var mkdocs_page_url = "/ml-agents/Custom-SideChannels/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Custom Side Channels</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Custom-SideChannels.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="custom-side-channels">Custom Side Channels</h1>
+<p>You can create your own side channel in C# and Python and use it to communicate
+custom data structures between the two. This can be useful for situations in
+which the data to be sent is too complex or structured for the built-in
+<code>EnvironmentParameters</code>, or is not related to any specific agent, and therefore
+inappropriate as an agent observation.</p>
+<h2 id="overview">Overview</h2>
+<p>In order to use a side channel, it must be implemented as both Unity and Python
+classes.</p>
+<h3 id="unity-side">Unity side</h3>
+<p>The side channel will have to implement the <code>SideChannel</code> abstract class and the
+following method.</p>
+<ul>
+<li><code>OnMessageReceived(IncomingMessage msg)</code> : You must implement this method and
+  read the data from IncomingMessage. The data must be read in the order that it
+  was written.</li>
+</ul>
+<p>The side channel must also assign a <code>ChannelId</code> property in the constructor. The
+<code>ChannelId</code> is a Guid (or UUID in Python) used to uniquely identify a side
+channel. This Guid must be the same on C# and Python. There can only be one side
+channel of a certain id during communication.</p>
+<p>To send data from C# to Python, create an <code>OutgoingMessage</code> instance, add data
+to it, call the <code>base.QueueMessageToSend(msg)</code> method inside the side channel,
+and call the <code>OutgoingMessage.Dispose()</code> method.</p>
+<p>To register a side channel on the Unity side, call
+<code>SideChannelManager.RegisterSideChannel</code> with the side channel as only argument.</p>
+<h3 id="python-side">Python side</h3>
+<p>The side channel will have to implement the <code>SideChannel</code> abstract class. You
+must implement :</p>
+<ul>
+<li><code>on_message_received(self, msg: "IncomingMessage") -&gt; None</code> : You must
+  implement this method and read the data from IncomingMessage. The data must be
+  read in the order that it was written.</li>
+</ul>
+<p>The side channel must also assign a <code>channel_id</code> property in the constructor.
+The <code>channel_id</code> is a UUID (referred in C# as Guid) used to uniquely identify a
+side channel. This number must be the same on C# and Python. There can only be
+one side channel of a certain id during communication.</p>
+<p>To assign the <code>channel_id</code> call the abstract class constructor with the
+appropriate <code>channel_id</code> as follows:</p>
+<pre><code class="language-python">super().__init__(my_channel_id)
+</code></pre>
+<p>To send a byte array from Python to C#, create an <code>OutgoingMessage</code> instance,
+add data to it, and call the <code>super().queue_message_to_send(msg)</code> method inside
+the side channel.</p>
+<p>To register a side channel on the Python side, pass the side channel as argument
+when creating the <code>UnityEnvironment</code> object. One of the arguments of the
+constructor (<code>side_channels</code>) is a list of side channels.</p>
+<h2 id="example-implementation">Example implementation</h2>
+<p>Below is a simple implementation of a side channel that will exchange ASCII
+encoded strings between a Unity environment and Python.</p>
+<h3 id="example-unity-c-code">Example Unity C# code</h3>
+<p>The first step is to create the <code>StringLogSideChannel</code> class within the Unity
+project. Here is an implementation of a <code>StringLogSideChannel</code> that will listen
+for messages from python and print them to the Unity debug log, as well as send
+error messages from Unity to python.</p>
+<pre><code class="language-csharp">using UnityEngine;
+using Unity.MLAgents;
+using Unity.MLAgents.SideChannels;
+using System.Text;
+using System;
+
+public class StringLogSideChannel : SideChannel
+{
+    public StringLogSideChannel()
+    {
+        ChannelId = new Guid(&quot;621f0a70-4f87-11ea-a6bf-784f4387d1f7&quot;);
+    }
+
+    protected override void OnMessageReceived(IncomingMessage msg)
+    {
+        var receivedString = msg.ReadString();
+        Debug.Log(&quot;From Python : &quot; + receivedString);
+    }
+
+    public void SendDebugStatementToPython(string logString, string stackTrace, LogType type)
+    {
+        if (type == LogType.Error)
+        {
+            var stringToSend = type.ToString() + &quot;: &quot; + logString + &quot;\n&quot; + stackTrace;
+            using (var msgOut = new OutgoingMessage())
+            {
+                msgOut.WriteString(stringToSend);
+                QueueMessageToSend(msgOut);
+            }
+        }
+    }
+}
+</code></pre>
+<p>Once we have defined our custom side channel class, we need to ensure that it is
+instantiated and registered. This can typically be done wherever the logic of
+the side channel makes sense to be associated, for example on a MonoBehaviour
+object that might need to access data from the side channel. Here we show a
+simple MonoBehaviour object which instantiates and registers the new side
+channel. If you have not done it already, make sure that the MonoBehaviour which
+registers the side channel is attached to a GameObject which will be live in
+your Unity scene.</p>
+<pre><code class="language-csharp">using UnityEngine;
+using Unity.MLAgents;
+
+
+public class RegisterStringLogSideChannel : MonoBehaviour
+{
+
+    StringLogSideChannel stringChannel;
+    public void Awake()
+    {
+        // We create the Side Channel
+        stringChannel = new StringLogSideChannel();
+
+        // When a Debug.Log message is created, we send it to the stringChannel
+        Application.logMessageReceived += stringChannel.SendDebugStatementToPython;
+
+        // The channel must be registered with the SideChannelManager class
+        SideChannelManager.RegisterSideChannel(stringChannel);
+    }
+
+    public void OnDestroy()
+    {
+        // De-register the Debug.Log callback
+        Application.logMessageReceived -= stringChannel.SendDebugStatementToPython;
+        if (Academy.IsInitialized){
+            SideChannelManager.UnregisterSideChannel(stringChannel);
+        }
+    }
+
+    public void Update()
+    {
+        // Optional : If the space bar is pressed, raise an error !
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.LogError(&quot;This is a fake error. Space bar was pressed in Unity.&quot;);
+        }
+    }
+}
+</code></pre>
+<h3 id="example-python-code">Example Python code</h3>
+<p>Now that we have created the necessary Unity C# classes, we can create their
+Python counterparts.</p>
+<pre><code class="language-python">from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.side_channel.side_channel import (
+    SideChannel,
+    IncomingMessage,
+    OutgoingMessage,
+)
+import numpy as np
+import uuid
+
+
+# Create the StringLogChannel class
+class StringLogChannel(SideChannel):
+
+    def __init__(self) -&gt; None:
+        super().__init__(uuid.UUID(&quot;621f0a70-4f87-11ea-a6bf-784f4387d1f7&quot;))
+
+    def on_message_received(self, msg: IncomingMessage) -&gt; None:
+        &quot;&quot;&quot;
+        Note: We must implement this method of the SideChannel interface to
+        receive messages from Unity
+        &quot;&quot;&quot;
+        # We simply read a string from the message and print it.
+        print(msg.read_string())
+
+    def send_string(self, data: str) -&gt; None:
+        # Add the string to an OutgoingMessage
+        msg = OutgoingMessage()
+        msg.write_string(data)
+        # We call this method to queue the data we want to send
+        super().queue_message_to_send(msg)
+</code></pre>
+<p>We can then instantiate the new side channel, launch a <code>UnityEnvironment</code> with
+that side channel active, and send a series of messages to the Unity environment
+from Python using it.</p>
+<pre><code class="language-python"># Create the channel
+string_log = StringLogChannel()
+
+# We start the communication with the Unity Editor and pass the string_log side channel as input
+env = UnityEnvironment(side_channels=[string_log])
+env.reset()
+string_log.send_string(&quot;The environment was reset&quot;)
+
+group_name = list(env.behavior_specs.keys())[0]  # Get the first group_name
+group_spec = env.behavior_specs[group_name]
+for i in range(1000):
+    decision_steps, terminal_steps = env.get_steps(group_name)
+    # We send data to Unity : A string with the number of Agent at each
+    string_log.send_string(
+        f&quot;Step {i} occurred with {len(decision_steps)} deciding agents and &quot;
+        f&quot;{len(terminal_steps)} terminal agents&quot;
+    )
+    env.step()  # Move the simulation forward
+
+env.close()
+</code></pre>
+<p>Now, if you run this script and press <code>Play</code> the Unity Editor when prompted, the
+console in the Unity Editor will display a message at every Python step.
+Additionally, if you press the Space Bar in the Unity Engine, a message will
+appear in the terminal.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

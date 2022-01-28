@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Python-LLAPI/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Getting started with the LLAPI - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Getting started with the LLAPI";
+    var mkdocs_page_input_path = "Python-LLAPI.md";
+    var mkdocs_page_url = "/ml-agents/Python-LLAPI/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="#">Low-level API</a>
+    <ul class="current">
+                <li class="toctree-l2 current"><a class="reference internal current" href="./">Getting started with the LLAPI</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#mlagents_envs">mlagents_envs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#loading-a-unity-environment">Loading a Unity Environment</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#interacting-with-a-unity-environment">Interacting with a Unity Environment</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#communicating-additional-information-with-the-environment">Communicating additional information with the Environment</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Interfacing with Unity Builds &raquo;</li>
+        
+      
+        
+          <li>Low-level API &raquo;</li>
+        
+      
+    
+    <li>Getting started with the LLAPI</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Python-LLAPI.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="unity-ml-agents-python-low-level-api">Unity ML-Agents Python Low Level API</h1>
+<p>The <code>mlagents</code> Python package contains two components: a low level API which
+allows you to interact directly with a Unity Environment (<code>mlagents_envs</code>) and
+an entry point to train (<code>mlagents-learn</code>) which allows you to train agents in
+Unity Environments using our implementations of reinforcement learning or
+imitation learning. This document describes how to use the <code>mlagents_envs</code> API.
+For information on using <code>mlagents-learn</code>, see <a href="../Training-ML-Agents/">here</a>.
+For Python Low Level API documentation, see <a href="../Python-LLAPI-Documentation/">here</a>.</p>
+<p>The Python Low Level API can be used to interact directly with your Unity
+learning environment. As such, it can serve as the basis for developing and
+evaluating new learning algorithms.</p>
+<h2 id="mlagents_envs">mlagents_envs</h2>
+<p>The ML-Agents Toolkit Low Level API is a Python API for controlling the
+simulation loop of an environment or game built with Unity. This API is used by
+the training algorithms inside the ML-Agent Toolkit, but you can also write your
+own Python programs using this API.</p>
+<p>The key objects in the Python API include:</p>
+<ul>
+<li><strong>UnityEnvironment</strong> — the main interface between the Unity application and
+  your code. Use UnityEnvironment to start and control a simulation or training
+  session.</li>
+<li><strong>BehaviorName</strong> - is a string that identifies a behavior in the simulation.</li>
+<li><strong>AgentId</strong> - is an <code>int</code> that serves as unique identifier for Agents in the
+  simulation.</li>
+<li><strong>DecisionSteps</strong> — contains the data from Agents belonging to the same
+  "Behavior" in the simulation, such as observations and rewards. Only Agents
+  that requested a decision since the last call to <code>env.step()</code> are in the
+  DecisionSteps object.</li>
+<li><strong>TerminalSteps</strong> — contains the data from Agents belonging to the same
+  "Behavior" in the simulation, such as observations and rewards. Only Agents
+  whose episode ended since the last call to <code>env.step()</code> are in the
+  TerminalSteps object.</li>
+<li><strong>BehaviorSpec</strong> — describes the shape of the observation data inside
+  DecisionSteps and TerminalSteps as well as the expected action shapes.</li>
+</ul>
+<p>These classes are all defined in the
+<a href="../ml-agents-envs/mlagents_envs/base_env.py">base_env</a> script.</p>
+<p>An Agent "Behavior" is a group of Agents identified by a <code>BehaviorName</code> that
+share the same observations and action types (described in their
+<code>BehaviorSpec</code>). You can think about Agent Behavior as a group of agents that
+will share the same policy. All Agents with the same behavior have the same goal
+and reward signals.</p>
+<p>To communicate with an Agent in a Unity environment from a Python program, the
+Agent in the simulation must have <code>Behavior Parameters</code> set to communicate. You
+must set the <code>Behavior Type</code> to <code>Default</code> and give it a <code>Behavior Name</code>.</p>
+<p><em>Notice: Currently communication between Unity and Python takes place over an
+open socket without authentication. As such, please make sure that the network
+where training takes place is secure. This will be addressed in a future
+release.</em></p>
+<h2 id="loading-a-unity-environment">Loading a Unity Environment</h2>
+<p>Python-side communication happens through <code>UnityEnvironment</code> which is located in
+<a href="../ml-agents-envs/mlagents_envs/environment.py"><code>environment.py</code></a>. To load a
+Unity environment from a built binary file, put the file in the same directory
+as <code>envs</code>. For example, if the filename of your Unity environment is <code>3DBall</code>,
+in python, run:</p>
+<pre><code class="language-python">from mlagents_envs.environment import UnityEnvironment
+# This is a non-blocking call that only loads the environment.
+env = UnityEnvironment(file_name=&quot;3DBall&quot;, seed=1, side_channels=[])
+# Start interacting with the environment.
+env.reset()
+behavior_names = env.behavior_specs.keys()
+...
+</code></pre>
+<p><strong>NOTE:</strong> Please read <a href="#interacting-with-a-unity-environment">Interacting with a Unity Environment</a>
+to read more about how you can interact with the Unity environment from Python.</p>
+<ul>
+<li><code>file_name</code> is the name of the environment binary (located in the root
+  directory of the python project).</li>
+<li><code>worker_id</code> indicates which port to use for communication with the
+  environment. For use in parallel training regimes such as A3C.</li>
+<li><code>seed</code> indicates the seed to use when generating random numbers during the
+  training process. In environments which are stochastic, setting the seed
+  enables reproducible experimentation by ensuring that the environment and
+  trainers utilize the same random seed.</li>
+<li><code>side_channels</code> provides a way to exchange data with the Unity simulation that
+  is not related to the reinforcement learning loop. For example: configurations
+  or properties. More on them in the <a href="../Custom-SideChannels/">Side Channels</a> doc.</li>
+</ul>
+<p>If you want to directly interact with the Editor, you need to use
+<code>file_name=None</code>, then press the <strong>Play</strong> button in the Editor when the message
+<em>"Start training by pressing the Play button in the Unity Editor"</em> is displayed
+on the screen</p>
+<h3 id="interacting-with-a-unity-environment">Interacting with a Unity Environment</h3>
+<h4 id="the-baseenv-interface">The BaseEnv interface</h4>
+<p>A <code>BaseEnv</code> has the following methods:</p>
+<ul>
+<li><strong>Reset : <code>env.reset()</code></strong> Sends a signal to reset the environment. Returns
+  None.</li>
+<li><strong>Step : <code>env.step()</code></strong> Sends a signal to step the environment. Returns None.
+  Note that a "step" for Python does not correspond to either Unity <code>Update</code> nor
+  <code>FixedUpdate</code>. When <code>step()</code> or <code>reset()</code> is called, the Unity simulation will
+  move forward until an Agent in the simulation needs a input from Python to
+  act.</li>
+<li><strong>Close : <code>env.close()</code></strong> Sends a shutdown signal to the environment and
+  terminates the communication.</li>
+<li><strong>Behavior Specs : <code>env.behavior_specs</code></strong> Returns a Mapping of
+  <code>BehaviorName</code> to <code>BehaviorSpec</code> objects (read only).
+  A <code>BehaviorSpec</code> contains the observation shapes and the
+  <code>ActionSpec</code> (which defines the action shape). Note that
+  the <code>BehaviorSpec</code> for a specific group is fixed throughout the simulation.
+  The number of entries in the Mapping can change over time in the simulation
+  if new Agent behaviors are created in the simulation.</li>
+<li><strong>Get Steps : <code>env.get_steps(behavior_name: str)</code></strong> Returns a tuple
+  <code>DecisionSteps, TerminalSteps</code> corresponding to the behavior_name given as
+  input. The <code>DecisionSteps</code> contains information about the state of the agents
+  <strong>that need an action this step</strong> and have the behavior behavior_name. The
+  <code>TerminalSteps</code> contains information about the state of the agents <strong>whose
+  episode ended</strong> and have the behavior behavior_name. Both <code>DecisionSteps</code> and
+  <code>TerminalSteps</code> contain information such as the observations, the rewards and
+  the agent identifiers. <code>DecisionSteps</code> also contains action masks for the next
+  action while <code>TerminalSteps</code> contains the reason for termination (did the
+  Agent reach its maximum step and was interrupted). The data is in <code>np.array</code>
+  of which the first dimension is always the number of agents note that the
+  number of agents is not guaranteed to remain constant during the simulation
+  and it is not unusual to have either <code>DecisionSteps</code> or <code>TerminalSteps</code>
+  contain no Agents at all.</li>
+<li><strong>Set Actions :<code>env.set_actions(behavior_name: str, action: ActionTuple)</code></strong> Sets
+  the actions for a whole agent group. <code>action</code> is an <code>ActionTuple</code>, which
+  is made up of a 2D <code>np.array</code> of <code>dtype=np.int32</code> for discrete actions, and
+  <code>dtype=np.float32</code> for continuous actions. The first dimension of <code>np.array</code>
+  in the tuple is the number of agents that requested a decision since the
+  last call to <code>env.step()</code>. The second dimension is the number of discrete or
+  continuous actions for the corresponding array.</li>
+<li><strong>Set Action for Agent :
+  <code>env.set_action_for_agent(agent_group: str, agent_id: int, action: ActionTuple)</code></strong>
+  Sets the action for a specific Agent in an agent group. <code>agent_group</code> is the
+  name of the group the Agent belongs to and <code>agent_id</code> is the integer
+  identifier of the Agent. <code>action</code> is an <code>ActionTuple</code> as described above.
+<strong>Note:</strong> If no action is provided for an agent group between two calls to
+<code>env.step()</code> then the default action will be all zeros.</li>
+</ul>
+<h4 id="decisionsteps-and-decisionstep">DecisionSteps and DecisionStep</h4>
+<p><code>DecisionSteps</code> (with <code>s</code>) contains information about a whole batch of Agents
+while <code>DecisionStep</code> (no <code>s</code>) only contains information about a single Agent.</p>
+<p>A <code>DecisionSteps</code> has the following fields :</p>
+<ul>
+<li><code>obs</code> is a list of numpy arrays observations collected by the group of agent.
+  The first dimension of the array corresponds to the batch size of the group
+  (number of agents requesting a decision since the last call to <code>env.step()</code>).</li>
+<li><code>reward</code> is a float vector of length batch size. Corresponds to the rewards
+  collected by each agent since the last simulation step.</li>
+<li><code>agent_id</code> is an int vector of length batch size containing unique identifier
+  for the corresponding Agent. This is used to track Agents across simulation
+  steps.</li>
+<li><code>action_mask</code> is an optional list of two dimensional arrays of booleans which is only
+  available when using multi-discrete actions. Each array corresponds to an
+  action branch. The first dimension of each array is the batch size and the
+  second contains a mask for each action of the branch. If true, the action is
+  not available for the agent during this simulation step.</li>
+</ul>
+<p>It also has the two following methods:</p>
+<ul>
+<li><code>len(DecisionSteps)</code> Returns the number of agents requesting a decision since
+  the last call to <code>env.step()</code>.</li>
+<li><code>DecisionSteps[agent_id]</code> Returns a <code>DecisionStep</code> for the Agent with the
+  <code>agent_id</code> unique identifier.</li>
+</ul>
+<p>A <code>DecisionStep</code> has the following fields:</p>
+<ul>
+<li><code>obs</code> is a list of numpy arrays observations collected by the agent. (Each
+  array has one less dimension than the arrays in <code>DecisionSteps</code>)</li>
+<li><code>reward</code> is a float. Corresponds to the rewards collected by the agent since
+  the last simulation step.</li>
+<li><code>agent_id</code> is an int and an unique identifier for the corresponding Agent.</li>
+<li><code>action_mask</code> is an optional list of one dimensional arrays of booleans which is only
+  available when using multi-discrete actions. Each array corresponds to an
+  action branch. Each array contains a mask for each action of the branch. If
+  true, the action is not available for the agent during this simulation step.</li>
+</ul>
+<h4 id="terminalsteps-and-terminalstep">TerminalSteps and TerminalStep</h4>
+<p>Similarly to <code>DecisionSteps</code> and <code>DecisionStep</code>, <code>TerminalSteps</code> (with <code>s</code>)
+contains information about a whole batch of Agents while <code>TerminalStep</code> (no <code>s</code>)
+only contains information about a single Agent.</p>
+<p>A <code>TerminalSteps</code> has the following fields :</p>
+<ul>
+<li><code>obs</code> is a list of numpy arrays observations collected by the group of agent.
+  The first dimension of the array corresponds to the batch size of the group
+  (number of agents requesting a decision since the last call to <code>env.step()</code>).</li>
+<li><code>reward</code> is a float vector of length batch size. Corresponds to the rewards
+  collected by each agent since the last simulation step.</li>
+<li><code>agent_id</code> is an int vector of length batch size containing unique identifier
+  for the corresponding Agent. This is used to track Agents across simulation
+  steps.</li>
+<li><code>interrupted</code> is an array of booleans of length batch size. Is true if the
+ associated Agent was interrupted since the last decision step. For example,
+ if the Agent reached the maximum number of steps for the episode.</li>
+</ul>
+<p>It also has the two following methods:</p>
+<ul>
+<li><code>len(TerminalSteps)</code> Returns the number of agents requesting a decision since
+  the last call to <code>env.step()</code>.</li>
+<li><code>TerminalSteps[agent_id]</code> Returns a <code>TerminalStep</code> for the Agent with the
+  <code>agent_id</code> unique identifier.</li>
+</ul>
+<p>A <code>TerminalStep</code> has the following fields:</p>
+<ul>
+<li><code>obs</code> is a list of numpy arrays observations collected by the agent. (Each
+  array has one less dimension than the arrays in <code>TerminalSteps</code>)</li>
+<li><code>reward</code> is a float. Corresponds to the rewards collected by the agent since
+  the last simulation step.</li>
+<li><code>agent_id</code> is an int and an unique identifier for the corresponding Agent.</li>
+<li><code>interrupted</code> is a bool. Is true if the Agent was interrupted since the last
+ decision step. For example, if the Agent reached the maximum number of steps for
+ the episode.</li>
+</ul>
+<h4 id="behaviorspec">BehaviorSpec</h4>
+<p>A <code>BehaviorSpec</code> has the following fields :</p>
+<ul>
+<li><code>observation_specs</code> is a List of <code>ObservationSpec</code> objects : Each <code>ObservationSpec</code>
+  corresponds to an observation's properties: <code>shape</code> is a tuple of ints that
+  corresponds to the shape of the observation (without the number of agents dimension).
+  <code>dimension_property</code> is a tuple of flags containing extra information about how the
+  data should be processed in the corresponding dimension. <code>observation_type</code> is an enum
+  corresponding to what type of observation is generating the data (i.e., default, goal,
+  etc). Note that the <code>ObservationSpec</code> have the same ordering as the ordering of observations
+  in the DecisionSteps, DecisionStep, TerminalSteps and TerminalStep.</li>
+<li><code>action_spec</code> is an <code>ActionSpec</code> namedtuple that defines the number and types
+  of actions for the Agent.</li>
+</ul>
+<p>An <code>ActionSpec</code> has the following fields and properties:
+- <code>continuous_size</code> is the number of floats that constitute the continuous actions.
+- <code>discrete_size</code> is the number of branches (the number of independent actions) that
+  constitute the multi-discrete actions.
+- <code>discrete_branches</code> is a Tuple of ints. Each int corresponds to the number of
+  different options for each branch of the action. For example:
+  In a game direction input (no movement, left, right) and
+  jump input (no jump, jump) there will be two branches (direction and jump),
+  the first one with 3 options and the second with 2 options. (<code>discrete_size = 2</code>
+  and <code>discrete_action_branches = (3,2,)</code>)</p>
+<h3 id="communicating-additional-information-with-the-environment">Communicating additional information with the Environment</h3>
+<p>In addition to the means of communicating between Unity and python described
+above, we also provide methods for sharing agent-agnostic information. These
+additional methods are referred to as side channels. ML-Agents includes two
+ready-made side channels, described below. It is also possible to create custom
+side channels to communicate any additional data between a Unity environment and
+Python. Instructions for creating custom side channels can be found
+<a href="../Custom-SideChannels/">here</a>.</p>
+<p>Side channels exist as separate classes which are instantiated, and then passed
+as list to the <code>side_channels</code> argument of the constructor of the
+<code>UnityEnvironment</code> class.</p>
+<pre><code class="language-python">channel = MyChannel()
+
+env = UnityEnvironment(side_channels = [channel])
+</code></pre>
+<p><strong>Note</strong> : A side channel will only send/receive messages when <code>env.step</code> or
+<code>env.reset()</code> is called.</p>
+<h4 id="engineconfigurationchannel">EngineConfigurationChannel</h4>
+<p>The <code>EngineConfiguration</code> side channel allows you to modify the time-scale,
+resolution, and graphics quality of the environment. This can be useful for
+adjusting the environment to perform better during training, or be more
+interpretable during inference.</p>
+<p><code>EngineConfigurationChannel</code> has two methods :</p>
+<ul>
+<li><code>set_configuration_parameters</code> which takes the following arguments:</li>
+<li><code>width</code>: Defines the width of the display. (Must be set alongside height)</li>
+<li><code>height</code>: Defines the height of the display. (Must be set alongside width)</li>
+<li><code>quality_level</code>: Defines the quality level of the simulation.</li>
+<li><code>time_scale</code>: Defines the multiplier for the deltatime in the simulation. If
+    set to a higher value, time will pass faster in the simulation but the
+    physics may perform unpredictably.</li>
+<li><code>target_frame_rate</code>: Instructs simulation to try to render at a specified
+    frame rate.</li>
+<li><code>capture_frame_rate</code> Instructs the simulation to consider time between
+    updates to always be constant, regardless of the actual frame rate.</li>
+<li><code>set_configuration</code> with argument config which is an <code>EngineConfig</code> NamedTuple
+  object.</li>
+</ul>
+<p>For example, the following code would adjust the time-scale of the simulation to
+be 2x realtime.</p>
+<pre><code class="language-python">from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
+
+channel = EngineConfigurationChannel()
+
+env = UnityEnvironment(side_channels=[channel])
+
+channel.set_configuration_parameters(time_scale = 2.0)
+
+i = env.reset()
+...
+</code></pre>
+<h4 id="environmentparameters">EnvironmentParameters</h4>
+<p>The <code>EnvironmentParameters</code> will allow you to get and set pre-defined numerical
+values in the environment. This can be useful for adjusting environment-specific
+settings, or for reading non-agent related information from the environment. You
+can call <code>get_property</code> and <code>set_property</code> on the side channel to read and write
+properties.</p>
+<p><code>EnvironmentParametersChannel</code> has one methods:</p>
+<ul>
+<li><code>set_float_parameter</code> Sets a float parameter in the Unity Environment.</li>
+<li>key: The string identifier of the property.</li>
+<li>value: The float value of the property.</li>
+</ul>
+<pre><code class="language-python">from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.side_channel.environment_parameters_channel import EnvironmentParametersChannel
+
+channel = EnvironmentParametersChannel()
+
+env = UnityEnvironment(side_channels=[channel])
+
+channel.set_float_parameter(&quot;parameter_1&quot;, 2.0)
+
+i = env.reset()
+...
+</code></pre>
+<p>Once a property has been modified in Python, you can access it in C# after the
+next call to <code>step</code> as follows:</p>
+<pre><code class="language-csharp">var envParameters = Academy.Instance.EnvironmentParameters;
+float property1 = envParameters.GetWithDefault(&quot;parameter_1&quot;, 0.0f);
+</code></pre>
+<h4 id="custom-side-channels">Custom side channels</h4>
+<p>For information on how to make custom side channels for sending additional data
+types, see the documentation <a href="../Custom-SideChannels/">here</a>.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../Python-LLAPI-Documentation/" class="btn btn-neutral float-right" title="LLAPI Documentation">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../Python-PettingZoo-API-Documentation/" class="btn btn-neutral" title="Petting Zoo Documentation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../Python-PettingZoo-API-Documentation/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../Python-LLAPI-Documentation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

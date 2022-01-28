@@ -1,6 +1,7 @@
 site_name: Unity ML-Agents Toolkit
 site_url: https://unity-technologies.github.io/ml-agents/
 repo_url: https://github.com/Unity-Technologies/ml-agents
+edit_uri: edit/main/docs/
 site_description: The Unity Machine Learning Agents Toolkit (ML-Agents) is an open-source project that enables games and simulations to serve as environments for training intelligent agents.
 site_author: Unity Technologies
 copyright: com.unity.ml-agents copyright © 2017 Unity Technologies

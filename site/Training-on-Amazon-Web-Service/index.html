@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Training-on-Amazon-Web-Service/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Training on Amazon Web Service - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Training on Amazon Web Service";
+    var mkdocs_page_input_path = "Training-on-Amazon-Web-Service.md";
+    var mkdocs_page_url = "/ml-agents/Training-on-Amazon-Web-Service/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Training on Amazon Web Service</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Training-on-Amazon-Web-Service.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="training-on-amazon-web-service">Training on Amazon Web Service</h1>
+<p>:warning: <strong>Note:</strong> We no longer use this guide ourselves and so it may not work
+correctly. We've decided to keep it up just in case it is helpful to you.</p>
+<p>This page contains instructions for setting up an EC2 instance on Amazon Web
+Service for training ML-Agents environments.</p>
+<h2 id="pre-configured-ami">Pre-configured AMI</h2>
+<p>We've prepared a pre-configured AMI for you with the ID: <code>ami-016ff5559334f8619</code>
+in the <code>us-east-1</code> region. It was created as a modification of
+<a href="https://aws.amazon.com/marketplace/pp/B077GCH38C">Deep Learning AMI (Ubuntu)</a>.
+The AMI has been tested with p2.xlarge instance. Furthermore, if you want to
+train without headless mode, you need to enable X Server.</p>
+<p>After launching your EC2 instance using the ami and ssh into it, run the
+following commands to enable it:</p>
+<pre><code class="language-sh"># Start the X Server, press Enter to come to the command line
+$ sudo /usr/bin/X :0 &amp;
+
+# Check if Xorg process is running
+# You will have a list of processes running on the GPU, Xorg should be in the
+# list, as shown below
+$ nvidia-smi
+
+# Thu Jun 14 20:27:26 2018
+# +-----------------------------------------------------------------------------+
+# | NVIDIA-SMI 390.67                 Driver Version: 390.67                    |
+# |-------------------------------+----------------------+----------------------+
+# | GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+# | Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+# |===============================+======================+======================|
+# |   0  Tesla K80           On   | 00000000:00:1E.0 Off |                    0 |
+# | N/A   35C    P8    31W / 149W |      9MiB / 11441MiB |      0%      Default |
+# +-------------------------------+----------------------+----------------------+
+#
+# +-----------------------------------------------------------------------------+
+# | Processes:                                                       GPU Memory |
+# |  GPU       PID   Type   Process name                             Usage      |
+# |=============================================================================|
+# |    0      2331      G   /usr/lib/xorg/Xorg                             8MiB |
+# +-----------------------------------------------------------------------------+
+
+# Make the ubuntu use X Server for display
+$ export DISPLAY=:0
+</code></pre>
+<h2 id="configuring-your-own-instance">Configuring your own instance</h2>
+<p>You could also choose to configure your own instance. To begin with, you will
+need an EC2 instance which contains the latest Nvidia drivers, CUDA9, and cuDNN.
+In this tutorial we used the
+<a href="https://aws.amazon.com/marketplace/pp/B077GCH38C">Deep Learning AMI (Ubuntu)</a>
+listed under AWS Marketplace with a p2.xlarge instance.</p>
+<h3 id="installing-the-ml-agents-toolkit-on-the-instance">Installing the ML-Agents Toolkit on the instance</h3>
+<p>After launching your EC2 instance using the ami and ssh into it:</p>
+<ol>
+<li>Activate the python3 environment</li>
+</ol>
+<p><code>sh
+   source activate python3</code></p>
+<ol>
+<li>Clone the ML-Agents repo and install the required Python packages</li>
+</ol>
+<p><code>sh
+   git clone --branch release_19 https://github.com/Unity-Technologies/ml-agents.git
+   cd ml-agents/ml-agents/
+   pip3 install -e .</code></p>
+<h3 id="setting-up-x-server-optional">Setting up X Server (optional)</h3>
+<p>X Server setup is only necessary if you want to do training that requires visual
+observation input. <em>Instructions here are adapted from this
+<a href="https://medium.com/towards-data-science/how-to-run-unity-on-amazon-cloud-or-without-monitor-3c10ce022639">Medium post</a>
+on running general Unity applications in the cloud.</em></p>
+<p>Current limitations of the Unity Engine require that a screen be available to
+render to when using visual observations. In order to make this possible when
+training on a remote server, a virtual screen is required. We can do this by
+installing Xorg and creating a virtual screen. Once installed and created, we
+can display the Unity environment in the virtual environment, and train as we
+would on a local machine. Ensure that <code>headless</code> mode is disabled when building
+linux executables which use visual observations.</p>
+<h4 id="install-and-setup-xorg">Install and setup Xorg:</h4>
+<pre><code>```sh
+# Install Xorg
+$ sudo apt-get update
+$ sudo apt-get install -y xserver-xorg mesa-utils
+$ sudo nvidia-xconfig -a --use-display-device=None --virtual=1280x1024
+
+# Get the BusID information
+$ nvidia-xconfig --query-gpu-info
+
+# Add the BusID information to your /etc/X11/xorg.conf file
+$ sudo sed -i 's/    BoardName      "Tesla K80"/    BoardName      "Tesla K80"\n    BusID          "0:30:0"/g' /etc/X11/xorg.conf
+
+# Remove the Section "Files" from the /etc/X11/xorg.conf file
+# And remove two lines that contain Section "Files" and EndSection
+$ sudo vim /etc/X11/xorg.conf
+```
+</code></pre>
+<h4 id="update-and-setup-nvidia-driver">Update and setup Nvidia driver:</h4>
+<pre><code>```sh
+# Download and install the latest Nvidia driver for ubuntu
+# Please refer to http://download.nvidia.com/XFree86/Linux-#x86_64/latest.txt
+$ wget http://download.nvidia.com/XFree86/Linux-x86_64/390.87/NVIDIA-Linux-x86_64-390.87.run
+$ sudo /bin/bash ./NVIDIA-Linux-x86_64-390.87.run --accept-license --no-questions --ui=none
+
+# Disable Nouveau as it will clash with the Nvidia driver
+$ sudo echo 'blacklist nouveau'  | sudo tee -a /etc/modprobe.d/blacklist.conf
+$ sudo echo 'options nouveau modeset=0'  | sudo tee -a /etc/modprobe.d/blacklist.conf
+$ sudo echo options nouveau modeset=0 | sudo tee -a /etc/modprobe.d/nouveau-kms.conf
+$ sudo update-initramfs -u
+```
+</code></pre>
+<h4 id="restart-the-ec2-instance">Restart the EC2 instance:</h4>
+<pre><code>```sh
+sudo reboot now
+```
+</code></pre>
+<h4 id="make-sure-there-are-no-xorg-processes-running">Make sure there are no Xorg processes running:</h4>
+<pre><code class="language-sh"># Kill any possible running Xorg processes
+# Note that you might have to run this command multiple times depending on
+# how Xorg is configured.
+$ sudo killall Xorg
+
+# Check if there is any Xorg process left
+# You will have a list of processes running on the GPU, Xorg should not be in
+# the list, as shown below.
+$ nvidia-smi
+
+# Thu Jun 14 20:21:11 2018
+# +-----------------------------------------------------------------------------+
+# | NVIDIA-SMI 390.67                 Driver Version: 390.67                    |
+# |-------------------------------+----------------------+----------------------+
+# | GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+# | Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+# |===============================+======================+======================|
+# |   0  Tesla K80           On   | 00000000:00:1E.0 Off |                    0 |
+# | N/A   37C    P8    31W / 149W |      0MiB / 11441MiB |      0%      Default |
+# +-------------------------------+----------------------+----------------------+
+#
+# +-----------------------------------------------------------------------------+
+# | Processes:                                                       GPU Memory |
+# |  GPU       PID   Type   Process name                             Usage      |
+# |=============================================================================|
+# |  No running processes found                                                 |
+# +-----------------------------------------------------------------------------+
+
+</code></pre>
+<h4 id="start-x-server-and-make-the-ubuntu-use-x-server-for-display">Start X Server and make the ubuntu use X Server for display:</h4>
+<pre><code>```console
+# Start the X Server, press Enter to come back to the command line
+$ sudo /usr/bin/X :0 &amp;
+
+# Check if Xorg process is running
+# You will have a list of processes running on the GPU, Xorg should be in the list.
+$ nvidia-smi
+
+# Make the ubuntu use X Server for display
+$ export DISPLAY=:0
+```
+</code></pre>
+<h4 id="ensure-the-xorg-is-correctly-configured">Ensure the Xorg is correctly configured:</h4>
+<pre><code>```sh
+# For more information on glxgears, see ftp://www.x.org/pub/X11R6.8.1/doc/glxgears.1.html.
+$ glxgears
+# If Xorg is configured correctly, you should see the following message
+
+# Running synchronized to the vertical refresh.  The framerate should be
+# approximately the same as the monitor refresh rate.
+# 137296 frames in 5.0 seconds = 27459.053 FPS
+# 141674 frames in 5.0 seconds = 28334.779 FPS
+# 141490 frames in 5.0 seconds = 28297.875 FPS
+
+```
+</code></pre>
+<h2 id="training-on-ec2-instance">Training on EC2 instance</h2>
+<ol>
+<li>In the Unity Editor, load a project containing an ML-Agents environment (you
+   can use one of the example environments if you have not created your own).</li>
+<li>Open the Build Settings window (menu: File &gt; Build Settings).</li>
+<li>Select Linux as the Target Platform, and x86_64 as the target architecture
+   (the default x86 currently does not work).</li>
+<li>Check Headless Mode if you have not setup the X Server. (If you do not use
+   Headless Mode, you have to setup the X Server to enable training.)</li>
+<li>Click Build to build the Unity environment executable.</li>
+<li>Upload the executable to your EC2 instance within <code>ml-agents</code> folder.</li>
+<li>Change the permissions of the executable.</li>
+</ol>
+<p><code>sh
+   chmod +x &lt;your_env&gt;.x86_64</code></p>
+<ol>
+<li>(Without Headless Mode) Start X Server and use it for display:</li>
+</ol>
+<p>```sh
+   # Start the X Server, press Enter to come back to the command line
+   $ sudo /usr/bin/X :0 &amp;</p>
+<p># Check if Xorg process is running
+   # You will have a list of processes running on the GPU, Xorg should be in the list.
+   $ nvidia-smi</p>
+<p># Make the ubuntu use X Server for display
+   $ export DISPLAY=:0
+   ```</p>
+<ol>
+<li>Test the instance setup from Python using:</li>
+</ol>
+<p>```python
+   from mlagents_envs.environment import UnityEnvironment</p>
+<p>env = UnityEnvironment(<your_env>)
+   ```</p>
+<p>Where <code>&lt;your_env&gt;</code> corresponds to the path to your environment executable.</p>
+<p>You should receive a message confirming that the environment was loaded
+   successfully.</p>
+<ol>
+<li>
+<p>Train your models</p>
+<p><code>console
+mlagents-learn &lt;trainer-config-file&gt; --env=&lt;your_env&gt; --train</code></p>
+</li>
+</ol>
+<h2 id="faq">FAQ</h2>
+<h3 id="the-_data-folder-hasnt-been-copied-cover">The <Executable_Name>_Data folder hasn't been copied cover</h3>
+<p>If you've built your Linux executable, but forget to copy over the corresponding
+<Executable_Name>_Data folder, you will see error message like the following:</p>
+<pre><code class="language-sh">Set current directory to /home/ubuntu/ml-agents/ml-agents
+Found path: /home/ubuntu/ml-agents/ml-agents/3dball_linux.x86_64
+no boot config - using default values
+
+(Filename:  Line: 403)
+
+There is no data folder
+</code></pre>
+<h3 id="unity-environment-not-responding">Unity Environment not responding</h3>
+<p>If you didn't setup X Server or hasn't launched it properly, or your environment
+somehow crashes, or you haven't <code>chmod +x</code> your Unity Environment, all of these
+will cause connection between Unity and Python to fail. Then you will see
+something like this:</p>
+<pre><code class="language-console">Logging to /home/ubuntu/.config/unity3d/&lt;Some_Path&gt;/Player.log
+Traceback (most recent call last):
+  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
+  File &quot;/home/ubuntu/ml-agents/ml-agents/mlagents_envs/environment.py&quot;, line 63, in __init__
+    aca_params = self.send_academy_parameters(rl_init_parameters_in)
+  File &quot;/home/ubuntu/ml-agents/ml-agents/mlagents_envs/environment.py&quot;, line 489, in send_academy_parameters
+    return self.communicator.initialize(inputs).rl_initialization_output
+  File &quot;/home/ubuntu/ml-agents/ml-agents/mlagents_envs/rpc_communicator.py&quot;, line 60, in initialize
+mlagents_envs.exception.UnityTimeOutException: The Unity environment took too long to respond. Make sure that :
+         The environment does not need user interaction to launch
+         The environment and the Python interface have compatible versions.
+</code></pre>
+<p>It would be also really helpful to check your
+/home/ubuntu/.config/unity3d/<Some_Path>/Player.log to see what happens with
+your Unity environment.</p>
+<h3 id="could-not-launch-x-server">Could not launch X Server</h3>
+<p>When you execute:</p>
+<pre><code class="language-sh">sudo /usr/bin/X :0 &amp;
+</code></pre>
+<p>You might see something like:</p>
+<pre><code class="language-sh">X.Org X Server 1.18.4
+...
+(==) Log file: &quot;/var/log/Xorg.0.log&quot;, Time: Thu Oct 11 21:10:38 2018
+(==) Using config file: &quot;/etc/X11/xorg.conf&quot;
+(==) Using system config directory &quot;/usr/share/X11/xorg.conf.d&quot;
+(EE)
+Fatal server error:
+(EE) no screens found(EE)
+(EE)
+Please consult the X.Org Foundation support
+         at http://wiki.x.org
+ for help.
+(EE) Please also check the log file at &quot;/var/log/Xorg.0.log&quot; for additional information.
+(EE)
+(EE) Server terminated with error (1). Closing log file.
+</code></pre>
+<p>And when you execute:</p>
+<pre><code class="language-sh">nvidia-smi
+</code></pre>
+<p>You might see something like:</p>
+<pre><code class="language-sh">NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+</code></pre>
+<p>This means the NVIDIA's driver needs to be updated. Refer to
+<a href="./#update-and-setup-nvidia-driver">this section</a>
+for more information.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

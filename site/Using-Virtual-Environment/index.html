@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Using-Virtual-Environment/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Using Virtual Environment - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Using Virtual Environment";
+    var mkdocs_page_input_path = "Using-Virtual-Environment.md";
+    var mkdocs_page_url = "/ml-agents/Using-Virtual-Environment/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Using Virtual Environment</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Using-Virtual-Environment.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="using-virtual-environment">Using Virtual Environment</h1>
+<h2 id="what-is-a-virtual-environment">What is a Virtual Environment?</h2>
+<p>A Virtual Environment is a self contained directory tree that contains a Python
+installation for a particular version of Python, plus a number of additional
+packages. To learn more about Virtual Environments see
+<a href="https://docs.python.org/3/library/venv.html">here</a>.</p>
+<h2 id="why-should-i-use-a-virtual-environment">Why should I use a Virtual Environment?</h2>
+<p>A Virtual Environment keeps all dependencies for the Python project separate
+from dependencies of other projects. This has a few advantages:</p>
+<ol>
+<li>It makes dependency management for the project easy.</li>
+<li>It enables using and testing of different library versions by quickly
+   spinning up a new environment and verifying the compatibility of the code
+   with the different version.</li>
+</ol>
+<h2 id="python-version-requirement-required">Python Version Requirement (Required)</h2>
+<p>This guide has been tested with Python 3.6 through Python 3.8. Newer versions might not
+have support for the dependent libraries, so are not recommended.</p>
+<h2 id="installing-pip-required">Installing Pip (Required)</h2>
+<ol>
+<li>Download the <code>get-pip.py</code> file using the command
+   <code>curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py</code></li>
+<li>Run the following <code>python3 get-pip.py</code></li>
+<li>Check pip version using <code>pip3 -V</code></li>
+</ol>
+<p>Note (for Ubuntu users): If the
+<code>ModuleNotFoundError: No module named 'distutils.util'</code> error is encountered,
+then python3-distutils needs to be installed. Install python3-distutils using
+<code>sudo apt-get install python3-distutils</code></p>
+<h2 id="mac-os-x-setup">Mac OS X Setup</h2>
+<ol>
+<li>Create a folder where the virtual environments will reside
+   <code>$ mkdir ~/python-envs</code></li>
+<li>To create a new environment named <code>sample-env</code> execute
+   <code>$ python3 -m venv ~/python-envs/sample-env</code></li>
+<li>To activate the environment execute
+   <code>$ source ~/python-envs/sample-env/bin/activate</code></li>
+<li>Upgrade to the latest pip version using <code>$ pip3 install --upgrade pip</code></li>
+<li>Upgrade to the latest setuptools version using
+   <code>$ pip3 install --upgrade setuptools</code></li>
+<li>To deactivate the environment execute <code>$ deactivate</code> (you can reactivate the
+   environment using the same <code>activate</code> command listed above)</li>
+</ol>
+<h2 id="ubuntu-setup">Ubuntu Setup</h2>
+<ol>
+<li>Install the python3-venv package using <code>$ sudo apt-get install python3-venv</code></li>
+<li>Follow the steps in the Mac OS X installation.</li>
+</ol>
+<h2 id="windows-setup">Windows Setup</h2>
+<ol>
+<li>Create a folder where the virtual environments will reside <code>md python-envs</code></li>
+<li>To create a new environment named <code>sample-env</code> execute
+   <code>python -m venv python-envs\sample-env</code></li>
+<li>To activate the environment execute <code>python-envs\sample-env\Scripts\activate</code></li>
+<li>Upgrade to the latest pip version using <code>pip install --upgrade pip</code></li>
+<li>To deactivate the environment execute <code>deactivate</code> (you can reactivate the
+   environment using the same <code>activate</code> command listed above)</li>
+</ol>
+<p>Note:</p>
+<ul>
+<li>Verify that you are using Python 3.6 or Python 3.7. Launch a command prompt
+  using <code>cmd</code> and execute <code>python --version</code> to verify the version.</li>
+<li>Python3 installation may require admin privileges on Windows.</li>
+<li>This guide is for Windows 10 using a 64-bit architecture only.</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

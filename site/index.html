@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The Unity Machine Learning Agents Toolkit (ML-Agents) is an open-source project that enables games and simulations to serve as environments for training intelligent agents.">
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/">
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Home";
+    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_url = "/ml-agents/";
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href=".">Home</a>
+    <ul class="current">
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Home</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/index.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <p><img src="images/U_MachineLearningAgents_Logo_Black_RGB.png" align="middle" width="3000"/></p>
+<p><a href="https://github.com/Unity-Technologies/ml-agents/tree/release_19_docs/docs/"><img alt="docs badge" src="https://img.shields.io/badge/docs-reference-blue.svg" /></a></p>
+<p><a href="LICENSE.md"><img alt="license badge" src="https://img.shields.io/badge/license-Apache--2.0-green.svg" /></a></p>
+<p>(<a href="https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release">latest release</a>)
+(<a href="https://github.com/Unity-Technologies/ml-agents/releases">all releases</a>)</p>
+<p><strong>The Unity Machine Learning Agents Toolkit</strong> (ML-Agents) is an open-source
+project that enables games and simulations to serve as environments for
+training intelligent agents. We provide implementations (based on PyTorch)
+of state-of-the-art algorithms to enable game developers and hobbyists to easily
+train intelligent agents for 2D, 3D and VR/AR games. Researchers can also use the
+provided simple-to-use Python API to train Agents using reinforcement learning,
+imitation learning, neuroevolution, or any other methods. These trained agents can be
+used for multiple purposes, including controlling NPC behavior (in a variety of
+settings such as multi-agent and adversarial), automated testing of game builds
+and evaluating different game design decisions pre-release. The ML-Agents
+Toolkit is mutually beneficial for both game developers and AI researchers as it
+provides a central platform where advances in AI can be evaluated on Unity’s
+rich environments and then made accessible to the wider research and game
+developer communities.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>18+ <a href="docs/Learning-Environment-Examples.md">example Unity environments</a></li>
+<li>Support for multiple environment configurations and training scenarios</li>
+<li>Flexible Unity SDK that can be integrated into your game or custom Unity scene</li>
+<li>Support for training single-agent, multi-agent cooperative, and multi-agent
+  competitive scenarios via several Deep Reinforcement Learning algorithms (PPO, SAC, MA-POCA, self-play).</li>
+<li>Support for learning from demonstrations through two Imitation Learning algorithms (BC and GAIL).</li>
+<li>Easily definable Curriculum Learning scenarios for complex tasks</li>
+<li>Train robust agents using environment randomization</li>
+<li>Flexible agent control with On Demand Decision Making</li>
+<li>Train using multiple concurrent Unity environment instances</li>
+<li>Utilizes the <a href="docs/Unity-Inference-Engine.md">Unity Inference Engine</a> to
+  provide native cross-platform support</li>
+<li>Unity environment <a href="docs/Python-LLAPI.md">control from Python</a></li>
+<li>Wrap Unity learning environments as a <a href="docs/Python-Gym-API.md">gym</a></li>
+</ul>
+<p>See our <a href="docs/ML-Agents-Overview.md">ML-Agents Overview</a> page for detailed
+descriptions of all these features.</p>
+<h2 id="releases-documentation">Releases &amp; Documentation</h2>
+<p><strong>Our latest, stable release is <code>Release 19</code>. Click
+<a href="https://github.com/Unity-Technologies/ml-agents/tree/release_19_docs/docs/Readme.md">here</a>
+to get started with the latest release of ML-Agents.</strong></p>
+<p>The table below lists all our releases, including our <code>main</code> branch which is
+under active development and may be unstable. A few helpful guidelines:
+- The <a href="docs/Versioning.md">Versioning page</a> overviews how we manage our GitHub
+  releases and the versioning process for each of the ML-Agents components.
+- The <a href="https://github.com/Unity-Technologies/ml-agents/releases">Releases page</a>
+  contains details of the changes between releases.
+- The <a href="docs/Migrating.md">Migration page</a> contains details on how to upgrade
+  from earlier releases of the ML-Agents Toolkit.
+- The <strong>Documentation</strong> links in the table below include installation and usage
+  instructions specific to each release. Remember to always use the
+  documentation that corresponds to the release version you're using.
+- The <code>com.unity.ml-agents</code> package is <a href="https://docs.unity3d.com/2020.1/Documentation/Manual/pack-safe.html">verified</a>
+  for Unity 2020.1 and later. Verified packages releases are numbered 1.0.x.</p>
+<table>
+<thead>
+<tr>
+<th align="center"><strong>Version</strong></th>
+<th align="center"><strong>Release Date</strong></th>
+<th align="center"><strong>Source</strong></th>
+<th align="center"><strong>Documentation</strong></th>
+<th align="center"><strong>Download</strong></th>
+<th align="center"><strong>Python Package</strong></th>
+<th align="center"><strong>Unity Package</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><strong>main (unstable)</strong></td>
+<td align="center">--</td>
+<td align="center"><a href="https://github.com/Unity-Technologies/ml-agents/tree/main">source</a></td>
+<td align="center"><a href="https://github.com/Unity-Technologies/ml-agents/tree/main/docs/Readme.md">docs</a></td>
+<td align="center"><a href="https://github.com/Unity-Technologies/ml-agents/archive/main.zip">download</a></td>
+<td align="center">--</td>
+<td align="center">--</td>
+</tr>
+<tr>
+<td align="center"><strong>Release 19</strong></td>
+<td align="center"><strong>January 14, 2022</strong></td>
+<td align="center"><strong><a href="https://github.com/Unity-Technologies/ml-agents/tree/release_19">source</a></strong></td>
+<td align="center"><strong><a href="https://github.com/Unity-Technologies/ml-agents/tree/release_19_docs/docs/Readme.md">docs</a></strong></td>
+<td align="center"><strong><a href="https://github.com/Unity-Technologies/ml-agents/archive/release_19.zip">download</a></strong></td>
+<td align="center"><strong><a href="https://pypi.org/project/mlagents/0.28.0/">0.28.0</a></strong></td>
+<td align="center"><strong><a href="https://docs.unity3d.com/Packages/com.unity.ml-agents@2.2/manual/index.html">2.2.1</a></strong></td>
+</tr>
+<tr>
+<td align="center"><strong>Verified Package 1.0.8</strong></td>
+<td align="center"><strong>May 26, 2021</strong></td>
+<td align="center"><strong><a href="https://github.com/Unity-Technologies/ml-agents/tree/com.unity.ml-agents_1.0.8">source</a></strong></td>
+<td align="center"><strong><a href="https://github.com/Unity-Technologies/ml-agents/blob/release_2_verified_docs/docs/Readme.md">docs</a></strong></td>
+<td align="center"><strong><a href="https://github.com/Unity-Technologies/ml-agents/archive/com.unity.ml-agents_1.0.8.zip">download</a></strong></td>
+<td align="center"><strong><a href="https://pypi.org/project/mlagents/0.16.1/">0.16.1</a></strong></td>
+<td align="center"><strong><a href="https://docs.unity3d.com/Packages/com.unity.ml-agents@1.0/manual/index.html">1.0.8</a></strong></td>
+</tr>
+</tbody>
+</table>
+<p>If you are a researcher interested in a discussion of Unity as an AI platform,
+see a pre-print of our
+<a href="https://arxiv.org/abs/1809.02627">reference paper on Unity and the ML-Agents Toolkit</a>.</p>
+<p>If you use Unity or the ML-Agents Toolkit to conduct research, we ask that you
+cite the following paper as a reference:</p>
+<p>Juliani, A., Berges, V., Teng, E., Cohen, A., Harper, J., Elion, C., Goy, C.,
+Gao, Y., Henry, H., Mattar, M., Lange, D. (2020). Unity: A General Platform for
+Intelligent Agents. <em>arXiv preprint
+<a href="https://arxiv.org/abs/1809.02627">arXiv:1809.02627</a>.</em>
+https://github.com/Unity-Technologies/ml-agents.</p>
+<h2 id="additional-resources">Additional Resources</h2>
+<p>We have a Unity Learn course,
+<a href="https://learn.unity.com/course/ml-agents-hummingbirds">ML-Agents: Hummingbirds</a>,
+that provides a gentle introduction to Unity and the ML-Agents Toolkit.</p>
+<p>We've also partnered with
+<a href="https://www.youtube.com/c/CodeMonkeyUnity">CodeMonkeyUnity</a> to create a
+<a href="https://www.youtube.com/playlist?list=PLzDRvYVwl53vehwiN_odYJkPBzcqFw110">series of tutorial videos</a>
+on how to implement and use the ML-Agents Toolkit.</p>
+<p>We have also published a series of blog posts that are relevant for ML-Agents:</p>
+<ul>
+<li>(July 12, 2021)
+  <a href="https://blog.unity.com/technology/ml-agents-plays-dodgeball">ML-Agents plays Dodgeball</a></li>
+<li>(May 5, 2021)
+  <a href="https://blogs.unity3d.com/2021/05/05/ml-agents-v2-0-release-now-supports-training-complex-cooperative-behaviors/">ML-Agents v2.0 release: Now supports training complex cooperative behaviors</a></li>
+<li>(December 28, 2020)
+  <a href="https://blogs.unity3d.com/2020/12/28/happy-holidays-from-the-unity-ml-agents-team/">Happy holidays from the Unity ML-Agents team!</a></li>
+<li>(November 20, 2020)
+  <a href="https://blogs.unity3d.com/2020/11/20/how-eidos-montreal-created-grid-sensors-to-improve-observations-for-training-agents/">How Eidos-Montréal created Grid Sensors to improve observations for training agents</a></li>
+<li>(November 11, 2020)
+  <a href="https://blogs.unity3d.com/2020/11/11/2020-aiunity-interns-shoutout/">2020 AI@Unity interns shoutout</a></li>
+<li>(May 12, 2020)
+  <a href="https://blogs.unity3d.com/2020/05/12/announcing-ml-agents-unity-package-v1-0/">Announcing ML-Agents Unity Package v1.0!</a></li>
+<li>(February 28, 2020)
+  <a href="https://blogs.unity3d.com/2020/02/28/training-intelligent-adversaries-using-self-play-with-ml-agents/">Training intelligent adversaries using self-play with ML-Agents</a></li>
+<li>(November 11, 2019)
+  <a href="https://blogs.unity3d.com/2019/11/11/training-your-agents-7-times-faster-with-ml-agents/">Training your agents 7 times faster with ML-Agents</a></li>
+<li>(October 21, 2019)
+  <a href="https://blogs.unity3d.com/2019/10/21/the-aiunity-interns-help-shape-the-world/">The AI@Unity interns help shape the world</a></li>
+<li>(April 15, 2019)
+  <a href="https://blogs.unity3d.com/2019/04/15/unity-ml-agents-toolkit-v0-8-faster-training-on-real-games/">Unity ML-Agents Toolkit v0.8: Faster training on real games</a></li>
+<li>(March 1, 2019)
+  <a href="https://blogs.unity3d.com/2019/03/01/unity-ml-agents-toolkit-v0-7-a-leap-towards-cross-platform-inference/">Unity ML-Agents Toolkit v0.7: A leap towards cross-platform inference</a></li>
+<li>(December 17, 2018)
+  <a href="https://blogs.unity3d.com/2018/12/17/ml-agents-toolkit-v0-6-improved-usability-of-brains-and-imitation-learning/">ML-Agents Toolkit v0.6: Improved usability of Brains and Imitation Learning</a></li>
+<li>(October 2, 2018)
+  <a href="https://blogs.unity3d.com/2018/10/02/puppo-the-corgi-cuteness-overload-with-the-unity-ml-agents-toolkit/">Puppo, The Corgi: Cuteness Overload with the Unity ML-Agents Toolkit</a></li>
+<li>(September 11, 2018)
+  <a href="https://blogs.unity3d.com/2018/09/11/ml-agents-toolkit-v0-5-new-resources-for-ai-researchers-available-now/">ML-Agents Toolkit v0.5, new resources for AI researchers available now</a></li>
+<li>(June 26, 2018)
+  <a href="https://blogs.unity3d.com/2018/06/26/solving-sparse-reward-tasks-with-curiosity/">Solving sparse-reward tasks with Curiosity</a></li>
+<li>(June 19, 2018)
+  <a href="https://blogs.unity3d.com/2018/06/19/unity-ml-agents-toolkit-v0-4-and-udacity-deep-reinforcement-learning-nanodegree/">Unity ML-Agents Toolkit v0.4 and Udacity Deep Reinforcement Learning Nanodegree</a></li>
+<li>(May 24, 2018)
+  <a href="https://blogs.unity3d.com/2018/05/24/imitation-learning-in-unity-the-workflow/">Imitation Learning in Unity: The Workflow</a></li>
+<li>(March 15, 2018)
+  <a href="https://blogs.unity3d.com/2018/03/15/ml-agents-v0-3-beta-released-imitation-learning-feedback-driven-features-and-more/">ML-Agents Toolkit v0.3 Beta released: Imitation Learning, feedback-driven features, and more</a></li>
+<li>(December 11, 2017)
+  <a href="https://blogs.unity3d.com/2017/12/11/using-machine-learning-agents-in-a-real-game-a-beginners-guide/">Using Machine Learning Agents in a real game: a beginner’s guide</a></li>
+<li>(December 8, 2017)
+  <a href="https://blogs.unity3d.com/2017/12/08/introducing-ml-agents-v0-2-curriculum-learning-new-environments-and-more/">Introducing ML-Agents Toolkit v0.2: Curriculum Learning, new environments, and more</a></li>
+<li>(September 19, 2017)
+  <a href="https://blogs.unity3d.com/2017/09/19/introducing-unity-machine-learning-agents/">Introducing: Unity Machine Learning Agents Toolkit</a></li>
+<li>Overviewing reinforcement learning concepts
+  (<a href="https://blogs.unity3d.com/2017/06/26/unity-ai-themed-blog-entries/">multi-armed bandit</a>
+  and
+  <a href="https://blogs.unity3d.com/2017/08/22/unity-ai-reinforcement-learning-with-q-learning/">Q-learning</a>)</li>
+</ul>
+<h3 id="more-from-unity">More from Unity</h3>
+<ul>
+<li><a href="https://github.com/Unity-Technologies/Unity-Robotics-Hub">Unity Robotics</a></li>
+<li><a href="https://unity.com/computer-vision">Unity Computer Vision</a></li>
+<li><a href="https://unity.com/products/game-simulation">Unity Game Simulation</a></li>
+</ul>
+<h2 id="community-and-feedback">Community and Feedback</h2>
+<p>The ML-Agents Toolkit is an open-source project and we encourage and welcome
+contributions. If you wish to contribute, be sure to review our
+<a href="com.unity.ml-agents/CONTRIBUTING.md">contribution guidelines</a> and
+<a href="CODE_OF_CONDUCT.md">code of conduct</a>.</p>
+<p>For problems with the installation and setup of the ML-Agents Toolkit, or
+discussions about how to best setup or train your agents, please create a new
+thread on the
+<a href="https://forum.unity.com/forums/ml-agents.453/">Unity ML-Agents forum</a> and make
+sure to include as much detail as possible. If you run into any other problems
+using the ML-Agents Toolkit or have a specific feature request, please
+<a href="https://github.com/Unity-Technologies/ml-agents/issues">submit a GitHub issue</a>.</p>
+<p>Please tell us which samples you would like to see shipped with the ML-Agents Unity
+package by replying to
+<a href="https://forum.unity.com/threads/feedback-wanted-shipping-sample-s-with-the-ml-agents-package.1073468/">this forum thread</a>.</p>
+<p>Your opinion matters a great deal to us. Only by hearing your thoughts on the
+Unity ML-Agents Toolkit can we continue to improve and grow. Please take a few
+minutes to
+<a href="https://unitysoftware.co1.qualtrics.com/jfe/form/SV_55pQKCZ578t0kbc">let us know about it</a>.</p>
+<p>For any other questions or feedback, connect directly with the ML-Agents team at
+ml-agents@unity3d.com.</p>
+<h2 id="privacy">Privacy</h2>
+<p>In order to improve the developer experience for Unity ML-Agents Toolkit, we have added in-editor analytics.
+Please refer to "Information that is passively collected by Unity" in the
+<a href="https://unity3d.com/legal/privacy-policy">Unity Privacy Policy</a>.</p>
+<h2 id="license">License</h2>
+<p><a href="LICENSE.md">Apache License 2.0</a></p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Background-Machine-Learning/" class="btn btn-neutral float-right" title="Machine Learning">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+      <span><a href="Background-Machine-Learning/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
+    <script src="js/theme.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.2.3
+Build Date UTC : 2022-01-28 12:05:57.493316+00:00
+-->

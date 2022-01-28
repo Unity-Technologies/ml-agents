@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Learning-Environment-Executable/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Using an Environment Executable - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Using an Environment Executable";
+    var mkdocs_page_input_path = "Learning-Environment-Executable.md";
+    var mkdocs_page_url = "/ml-agents/Learning-Environment-Executable/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Using an Environment Executable</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Learning-Environment-Executable.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="using-an-environment-executable">Using an Environment Executable</h1>
+<p>This section will help you create and use built environments rather than the
+Editor to interact with an environment. Using an executable has some advantages
+over using the Editor:</p>
+<ul>
+<li>You can exchange executable with other people without having to share your
+  entire repository.</li>
+<li>You can put your executable on a remote machine for faster training.</li>
+<li>You can use <code>Server Build</code> (<code>Headless</code>) mode for faster training (as long as the executable does not need rendering).</li>
+<li>You can keep using the Unity Editor for other tasks while the agents are
+  training.</li>
+</ul>
+<h2 id="building-the-3dball-environment">Building the 3DBall environment</h2>
+<p>The first step is to open the Unity scene containing the 3D Balance Ball
+environment:</p>
+<ol>
+<li>Launch Unity.</li>
+<li>On the Projects dialog, choose the <strong>Open</strong> option at the top of the window.</li>
+<li>Using the file dialog that opens, locate the <code>Project</code> folder within the
+   ML-Agents project and click <strong>Open</strong>.</li>
+<li>In the <strong>Project</strong> window, navigate to the folder
+   <code>Assets/ML-Agents/Examples/3DBall/Scenes/</code>.</li>
+<li>Double-click the <code>3DBall</code> file to load the scene containing the Balance Ball
+   environment.</li>
+</ol>
+<p><img alt="3DBall Scene" src="../images/mlagents-Open3DBall.png" /></p>
+<p>Next, we want the set up scene to play correctly when the training process
+launches our environment executable. This means:</p>
+<ul>
+<li>The environment application runs in the background.</li>
+<li>No dialogs require interaction.</li>
+<li>
+<p>The correct scene loads automatically.</p>
+</li>
+<li>
+<p>Open Player Settings (menu: <strong>Edit</strong> &gt; <strong>Project Settings</strong> &gt; <strong>Player</strong>).</p>
+</li>
+<li>Under <strong>Resolution and Presentation</strong>:</li>
+<li>Ensure that <strong>Run in Background</strong> is Checked.</li>
+<li>Ensure that <strong>Display Resolution Dialog</strong> is set to Disabled. (Note: this
+    setting may not be available in newer versions of the editor.)</li>
+<li>Open the Build Settings window (menu:<strong>File</strong> &gt; <strong>Build Settings</strong>).</li>
+<li>Choose your target platform.</li>
+<li>(optional) Select “Development Build” to
+     <a href="https://docs.unity3d.com/Manual/LogFiles.html">log debug messages</a>.</li>
+<li>If any scenes are shown in the <strong>Scenes in Build</strong> list, make sure that the
+   3DBall Scene is the only one checked. (If the list is empty, then only the
+   current scene is included in the build).</li>
+<li>Click <strong>Build</strong>:</li>
+<li>In the File dialog, navigate to your ML-Agents directory.</li>
+<li>Assign a file name and click <strong>Save</strong>.</li>
+<li>(For Windows）With Unity 2018.1, it will ask you to select a folder instead
+     of a file name. Create a subfolder within the root directory and select
+     that folder to build. In the following steps you will refer to this
+     subfolder's name as <code>env_name</code>. You cannot create builds in the Assets
+     folder</li>
+</ul>
+<p><img alt="Build Window" src="../images/mlagents-BuildWindow.png" /></p>
+<p>Now that we have a Unity executable containing the simulation environment, we
+can interact with it.</p>
+<h2 id="interacting-with-the-environment">Interacting with the Environment</h2>
+<p>If you want to use the <a href="../Python-LLAPI/">Python API</a> to interact with your
+executable, you can pass the name of the executable with the argument
+'file_name' of the <code>UnityEnvironment</code>. For instance:</p>
+<pre><code class="language-python">from mlagents_envs.environment import UnityEnvironment
+env = UnityEnvironment(file_name=&lt;env_name&gt;)
+</code></pre>
+<h2 id="training-the-environment">Training the Environment</h2>
+<ol>
+<li>Open a command or terminal window.</li>
+<li>Navigate to the folder where you installed the ML-Agents Toolkit. If you
+   followed the default <a href="../Installation/">installation</a>, then navigate to the
+   <code>ml-agents/</code> folder.</li>
+<li>Run
+   <code>mlagents-learn &lt;trainer-config-file&gt; --env=&lt;env_name&gt; --run-id=&lt;run-identifier&gt;</code>
+   Where:</li>
+<li><code>&lt;trainer-config-file&gt;</code> is the file path of the trainer configuration yaml</li>
+<li><code>&lt;env_name&gt;</code> is the name and path to the executable you exported from Unity
+     (without extension)</li>
+<li><code>&lt;run-identifier&gt;</code> is a string used to separate the results of different
+     training runs</li>
+</ol>
+<p>For example, if you are training with a 3DBall executable, and you saved it to
+the directory where you installed the ML-Agents Toolkit, run:</p>
+<pre><code class="language-sh">mlagents-learn config/ppo/3DBall.yaml --env=3DBall --run-id=firstRun
+</code></pre>
+<p>And you should see something like</p>
+<pre><code class="language-console">ml-agents$ mlagents-learn config/ppo/3DBall.yaml --env=3DBall --run-id=first-run
+
+
+                        ▄▄▄▓▓▓▓
+                   ╓▓▓▓▓▓▓█▓▓▓▓▓
+              ,▄▄▄m▀▀▀'  ,▓▓▓▀▓▓▄                           ▓▓▓  ▓▓▌
+            ▄▓▓▓▀'      ▄▓▓▀  ▓▓▓      ▄▄     ▄▄ ,▄▄ ▄▄▄▄   ,▄▄ ▄▓▓▌▄ ▄▄▄    ,▄▄
+          ▄▓▓▓▀        ▄▓▓▀   ▐▓▓▌     ▓▓▌   ▐▓▓ ▐▓▓▓▀▀▀▓▓▌ ▓▓▓ ▀▓▓▌▀ ^▓▓▌  ╒▓▓▌
+        ▄▓▓▓▓▓▄▄▄▄▄▄▄▄▓▓▓      ▓▀      ▓▓▌   ▐▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▌   ▐▓▓▄ ▓▓▌
+        ▀▓▓▓▓▀▀▀▀▀▀▀▀▀▀▓▓▄     ▓▓      ▓▓▌   ▐▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▌    ▐▓▓▐▓▓
+          ^█▓▓▓        ▀▓▓▄   ▐▓▓▌     ▓▓▓▓▄▓▓▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▓▄    ▓▓▓▓`
+            '▀▓▓▓▄      ^▓▓▓  ▓▓▓       └▀▀▀▀ ▀▀ ^▀▀    `▀▀ `▀▀   '▀▀    ▐▓▓▌
+               ▀▀▀▀▓▄▄▄   ▓▓▓▓▓▓,                                      ▓▓▓▓▀
+                   `▀█▓▓▓▓▓▓▓▓▓▌
+                        ¬`▀▀▀█▓
+
+</code></pre>
+<p><strong>Note</strong>: If you're using Anaconda, don't forget to activate the ml-agents
+environment first.</p>
+<p>If <code>mlagents-learn</code> runs correctly and starts training, you should see something
+like this:</p>
+<pre><code class="language-console">CrashReporter: initialized
+Mono path[0] = '/Users/dericp/workspace/ml-agents/3DBall.app/Contents/Resources/Data/Managed'
+Mono config path = '/Users/dericp/workspace/ml-agents/3DBall.app/Contents/MonoBleedingEdge/etc'
+INFO:mlagents_envs:
+'Ball3DAcademy' started successfully!
+Unity Academy name: Ball3DAcademy
+
+INFO:mlagents_envs:Connected new brain:
+Unity brain name: Ball3DLearning
+        Number of Visual Observations (per agent): 0
+        Vector Observation space size (per agent): 8
+        Number of stacked Vector Observation: 1
+INFO:mlagents_envs:Hyperparameters for the PPO Trainer of brain Ball3DLearning:
+        batch_size:          64
+        beta:                0.001
+        buffer_size:         12000
+        epsilon:             0.2
+        gamma:               0.995
+        hidden_units:        128
+        lambd:               0.99
+        learning_rate:       0.0003
+        max_steps:           5.0e4
+        normalize:           True
+        num_epoch:           3
+        num_layers:          2
+        time_horizon:        1000
+        sequence_length:     64
+        summary_freq:        1000
+        use_recurrent:       False
+        memory_size:         256
+        use_curiosity:       False
+        curiosity_strength:  0.01
+        curiosity_enc_size:  128
+        output_path: ./results/first-run-0/Ball3DLearning
+INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 1000. Mean Reward: 1.242. Std of Reward: 0.746. Training.
+INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 2000. Mean Reward: 1.319. Std of Reward: 0.693. Training.
+INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 3000. Mean Reward: 1.804. Std of Reward: 1.056. Training.
+INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 4000. Mean Reward: 2.151. Std of Reward: 1.432. Training.
+INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 5000. Mean Reward: 3.175. Std of Reward: 2.250. Training.
+INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 6000. Mean Reward: 4.898. Std of Reward: 4.019. Training.
+INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 7000. Mean Reward: 6.716. Std of Reward: 5.125. Training.
+INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 8000. Mean Reward: 12.124. Std of Reward: 11.929. Training.
+INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 9000. Mean Reward: 18.151. Std of Reward: 16.871. Training.
+INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 10000. Mean Reward: 27.284. Std of Reward: 28.667. Training.
+</code></pre>
+<p>You can press Ctrl+C to stop the training, and your trained model will be at
+<code>results/&lt;run-identifier&gt;/&lt;behavior_name&gt;.onnx</code>, which corresponds to your model's
+latest checkpoint. (<strong>Note:</strong> There is a known bug on Windows that causes the
+saving of the model to fail when you early terminate the training, it's
+recommended to wait until Step has reached the max_steps parameter you set in
+your config YAML.) You can now embed this trained model into your Agent by
+following the steps below:</p>
+<ol>
+<li>Move your model file into
+   <code>Project/Assets/ML-Agents/Examples/3DBall/TFModels/</code>.</li>
+<li>Open the Unity Editor, and select the <strong>3DBall</strong> scene as described above.</li>
+<li>Select the <strong>3DBall</strong> prefab from the Project window and select <strong>Agent</strong>.</li>
+<li>Drag the <code>&lt;behavior_name&gt;.onnx</code> file from the Project window of the Editor to
+   the <strong>Model</strong> placeholder in the <strong>Ball3DAgent</strong> inspector window.</li>
+<li>Press the <strong>Play</strong> button at the top of the Editor.</li>
+</ol>
+<h2 id="training-on-headless-server">Training on Headless Server</h2>
+<p>To run training on headless server with no graphics rendering support, you need to turn off
+graphics display in the Unity executable. There are two ways to achieve this:
+1. Pass <code>--no-graphics</code> option to mlagents-learn training command. This is equivalent to
+   adding <code>-nographics -batchmode</code> to the Unity executable's commandline.
+2. Build your Unity executable with <strong>Server Build</strong>. You can find this setting in Build Settings
+   in the Unity Editor.</p>
+<p>If you want to train with graphics (for example, using camera and visual observations), you'll
+need to set up display rendering support (e.g. xvfb) on you server machine. In our
+<a href="Readme.md#python-tutorial-with-google-colab">Colab Notebook Tutorials</a>, the Setup section has
+examples of setting up xvfb on servers.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

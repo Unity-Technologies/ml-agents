@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Training-on-Microsoft-Azure/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Training on Microsoft Azure (works with ML-Agents Toolkit v0.3) - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Training on Microsoft Azure (works with ML-Agents Toolkit v0.3)";
+    var mkdocs_page_input_path = "Training-on-Microsoft-Azure.md";
+    var mkdocs_page_url = "/ml-agents/Training-on-Microsoft-Azure/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Training on Microsoft Azure (works with ML-Agents Toolkit v0.3)</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Training-on-Microsoft-Azure.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="training-on-microsoft-azure-works-with-ml-agents-toolkit-v03">Training on Microsoft Azure (works with ML-Agents Toolkit v0.3)</h1>
+<p>:warning: <strong>Note:</strong> We no longer use this guide ourselves and so it may not work
+correctly. We've decided to keep it up just in case it is helpful to you.</p>
+<p>This page contains instructions for setting up training on Microsoft Azure
+through either
+<a href="https://azure.microsoft.com/services/container-instances/">Azure Container Instances</a>
+or Virtual Machines. Non "headless" training has not yet been tested to verify
+support.</p>
+<h2 id="pre-configured-azure-virtual-machine">Pre-Configured Azure Virtual Machine</h2>
+<p>A pre-configured virtual machine image is available in the Azure Marketplace and
+is nearly completely ready for training. You can start by deploying the
+<a href="https://azuremarketplace.microsoft.com/en-us/marketplace/apps/microsoft-dsvm.ubuntu-1804">Data Science Virtual Machine for Linux (Ubuntu)</a>
+into your Azure subscription.</p>
+<p>Note that, if you choose to deploy the image to an
+<a href="https://docs.microsoft.com/azure/virtual-machines/linux/sizes-gpu">N-Series GPU optimized VM</a>,
+training will, by default, run on the GPU. If you choose any other type of VM,
+training will run on the CPU.</p>
+<h2 id="configuring-your-own-instance">Configuring your own Instance</h2>
+<p>Setting up your own instance requires a number of package installations. Please
+view the documentation for doing so <a href="#custom-instances">here</a>.</p>
+<h2 id="installing-ml-agents">Installing ML-Agents</h2>
+<ol>
+<li><a href="https://docs.microsoft.com/en-us/azure/virtual-machines/linux/copy-files-to-linux-vm-using-scp">Move</a>
+   the <code>ml-agents</code> sub-folder of this ml-agents repo to the remote Azure
+   instance, and set it as the working directory.</li>
+<li>Install the required packages:
+   Torch: <code>pip3 install torch==1.7.0 -f https://download.pytorch.org/whl/torch_stable.html</code> and
+   MLAgents: <code>python -m pip install mlagents==0.28.0</code></li>
+</ol>
+<h2 id="testing">Testing</h2>
+<p>To verify that all steps worked correctly:</p>
+<ol>
+<li>In the Unity Editor, load a project containing an ML-Agents environment (you
+   can use one of the example environments if you have not created your own).</li>
+<li>Open the Build Settings window (menu: File &gt; Build Settings).</li>
+<li>Select Linux as the Target Platform, and x86_64 as the target architecture.</li>
+<li>Check Headless Mode.</li>
+<li>Click Build to build the Unity environment executable.</li>
+<li>Upload the resulting files to your Azure instance.</li>
+<li>Test the instance setup from Python using:</li>
+</ol>
+<pre><code class="language-python">from mlagents_envs.environment import UnityEnvironment
+
+env = UnityEnvironment(file_name=&quot;&lt;your_env&gt;&quot;, seed=1, side_channels=[])
+</code></pre>
+<p>Where <code>&lt;your_env&gt;</code> corresponds to the path to your environment executable (i.e. <code>/home/UserName/Build/yourFile</code>).</p>
+<p>You should receive a message confirming that the environment was loaded
+successfully.</p>
+<p><strong>Note:</strong> When running your environment in headless mode, you must append <code>--no-graphics</code> to your mlagents-learn command, as it won't train otherwise.
+You can test this simply by aborting a training and check if it says "Model Saved" or "Aborted", or see if it generated the .onnx in the result folder.</p>
+<h2 id="running-training-on-your-virtual-machine">Running Training on your Virtual Machine</h2>
+<p>To run your training on the VM:</p>
+<ol>
+<li><a href="https://docs.microsoft.com/en-us/azure/virtual-machines/linux/copy-files-to-linux-vm-using-scp">Move</a>
+   your built Unity application to your Virtual Machine.</li>
+<li>Set the directory where the ML-Agents Toolkit was installed to your working
+   directory.</li>
+<li>Run the following command:</li>
+</ol>
+<pre><code class="language-sh">mlagents-learn &lt;trainer_config&gt; --env=&lt;your_app&gt; --run-id=&lt;run_id&gt; --train
+</code></pre>
+<p>Where <code>&lt;your_app&gt;</code> is the path to your app (i.e.
+<code>~/unity-volume/3DBallHeadless</code>) and <code>&lt;run_id&gt;</code> is an identifier you would like
+to identify your training run with.</p>
+<p>If you've selected to run on a N-Series VM with GPU support, you can verify that
+the GPU is being used by running <code>nvidia-smi</code> from the command line.</p>
+<h2 id="monitoring-your-training-run-with-tensorboard">Monitoring your Training Run with TensorBoard</h2>
+<p>Once you have started training, you can
+<a href="../Using-Tensorboard/">use TensorBoard to observe the training</a>.</p>
+<ol>
+<li>
+<p>Start by
+   <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/windows/nsg-quickstart-portal">opening the appropriate port for web traffic to connect to your VM</a>.</p>
+</li>
+<li>
+<p>Note that you don't need to generate a new <code>Network Security Group</code> but
+     instead, go to the <strong>Networking</strong> tab under <strong>Settings</strong> for your VM.</p>
+</li>
+<li>
+<p>As an example, you could use the following settings to open the Port with
+     the following Inbound Rule settings:</p>
+<ul>
+<li>Source: Any</li>
+<li>Source Port Ranges: *</li>
+<li>Destination: Any</li>
+<li>Destination Port Ranges: 6006</li>
+<li>Protocol: Any</li>
+<li>Action: Allow</li>
+<li>Priority: (Leave as default)</li>
+</ul>
+</li>
+<li>
+<p>Unless you started the training as a background process, connect to your VM
+   from another terminal instance.</p>
+</li>
+<li>Run the following command from your terminal
+   <code>tensorboard --logdir results --host 0.0.0.0</code></li>
+<li>You should now be able to open a browser and navigate to
+   <code>&lt;Your_VM_IP_Address&gt;:6060</code> to view the TensorBoard report.</li>
+</ol>
+<h2 id="running-on-azure-container-instances">Running on Azure Container Instances</h2>
+<p><a href="https://azure.microsoft.com/services/container-instances/">Azure Container Instances</a>
+allow you to spin up a container, on demand, that will run your training and
+then be shut down. This ensures you aren't leaving a billable VM running when it
+isn't needed. Using ACI enables you to offload training of your models without
+needing to install Python and TensorFlow on your own computer.</p>
+<h2 id="custom-instances">Custom Instances</h2>
+<p>This page contains instructions for setting up a custom Virtual Machine on
+Microsoft Azure so you can running ML-Agents training in the cloud.</p>
+<ol>
+<li>Start by
+   <a href="https://docs.microsoft.com/azure/virtual-machines/linux/quick-create-portal">deploying an Azure VM</a>
+   with Ubuntu Linux (tests were done with 16.04 LTS). To use GPU support, use a
+   N-Series VM.</li>
+<li>SSH into your VM.</li>
+<li>Start with the following commands to install the Nvidia driver:</li>
+</ol>
+<p>```sh
+   wget http://us.download.nvidia.com/tesla/375.66/nvidia-diag-driver-local-repo-ubuntu1604_375.66-1_amd64.deb</p>
+<p>sudo dpkg -i nvidia-diag-driver-local-repo-ubuntu1604_375.66-1_amd64.deb</p>
+<p>sudo apt-get update</p>
+<p>sudo apt-get install cuda-drivers</p>
+<p>sudo reboot
+   ```</p>
+<ol>
+<li>After a minute you should be able to reconnect to your VM and install the
+   CUDA toolkit:</li>
+</ol>
+<p>```sh
+   wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_8.0.61-1_amd64.deb</p>
+<p>sudo dpkg -i cuda-repo-ubuntu1604_8.0.61-1_amd64.deb</p>
+<p>sudo apt-get update</p>
+<p>sudo apt-get install cuda-8-0
+   ```</p>
+<ol>
+<li>
+<p>You'll next need to download cuDNN from the Nvidia developer site. This
+   requires a registered account.</p>
+</li>
+<li>
+<p>Navigate to <a href="http://developer.nvidia.com">http://developer.nvidia.com</a> and
+   create an account and verify it.</p>
+</li>
+<li>
+<p>Download (to your own computer) cuDNN from
+   <a href="https://developer.nvidia.com/compute/machine-learning/cudnn/secure/v6/prod/8.0_20170307/Ubuntu16_04_x64/libcudnn6_6.0.20-1+cuda8.0_amd64-deb">this url</a>.</p>
+</li>
+<li>
+<p>Copy the deb package to your VM:</p>
+</li>
+</ol>
+<p><code>sh
+   scp libcudnn6_6.0.21-1+cuda8.0_amd64.deb &lt;VMUserName&gt;@&lt;VMIPAddress&gt;:libcudnn6_6.0.21-1+cuda8.0_amd64.deb</code></p>
+<ol>
+<li>SSH back to your VM and execute the following:</li>
+</ol>
+<p>```console
+   sudo dpkg -i libcudnn6_6.0.21-1+cuda8.0_amd64.deb</p>
+<p>export LD_LIBRARY_PATH=/usr/local/cuda/lib64/:/usr/lib/x86_64-linux-gnu/:$LD_LIBRARY_PATH
+   . ~/.profile</p>
+<p>sudo reboot
+   ```</p>
+<ol>
+<li>
+<p>After a minute, you should be able to SSH back into your VM. After doing so,
+    run the following:</p>
+<p><code>sh
+sudo apt install python-pip
+sudo apt install python3-pip</code></p>
+</li>
+<li>
+<p>At this point, you need to install TensorFlow. The version you install
+    should be tied to if you are using GPU to train:</p>
+<p><code>sh
+pip3 install tensorflow-gpu==1.4.0 keras==2.0.6</code></p>
+<p>Or CPU to train:</p>
+<p><code>sh
+pip3 install tensorflow==1.4.0 keras==2.0.6</code></p>
+</li>
+<li>
+<p>You'll then need to install additional dependencies:</p>
+<p><code>sh
+pip3 install pillow
+pip3 install numpy</code></p>
+</li>
+</ol>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

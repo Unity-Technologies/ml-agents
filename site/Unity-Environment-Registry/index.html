@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Unity-Environment-Registry/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Unity Environment Registry [Experimental] - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Unity Environment Registry [Experimental]";
+    var mkdocs_page_input_path = "Unity-Environment-Registry.md";
+    var mkdocs_page_url = "/ml-agents/Unity-Environment-Registry/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Unity Environment Registry [Experimental]</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Unity-Environment-Registry.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="unity-environment-registry-experimental">Unity Environment Registry [Experimental]</h1>
+<p>The Unity Environment Registry is a database of pre-built Unity environments that can be easily used without having to install the Unity Editor. It is a great way to get started with our <a href="../Python-LLAPI/">UnityEnvironment API</a>.</p>
+<h2 id="loading-an-environment-from-the-registry">Loading an Environment from the Registry</h2>
+<p>To get started, you can access the default registry we provide with our <a href="../Learning-Environment-Examples/">Example Environments</a>. The Unity Environment Registry implements a <em>Mapping</em>, therefore, you can access an entry with its identifier with the square brackets <code>[ ]</code>. Use the following code to list all of the environment identifiers present in the default registry:</p>
+<pre><code class="language-python">from mlagents_envs.registry import default_registry
+
+environment_names = list(default_registry.keys())
+for name in environment_names:
+   print(name)
+</code></pre>
+<p>The <code>make()</code> method on a registry value will return a <code>UnityEnvironment</code> ready to be used. All arguments passed to the make method will be passed to the constructor of the <code>UnityEnvironment</code> as well. Refer to the documentation on the <a href="../Python-LLAPI/">Python-API</a> for more information about the arguments of the <code>UnityEnvironment</code> constructor. For example, the following code will create the environment under the identifier <code>"my-env"</code>, reset it, perform a few steps and finally close it:</p>
+<pre><code class="language-python">from mlagents_envs.registry import default_registry
+
+env = default_registry[&quot;my-env&quot;].make()
+env.reset()
+for _ in range(10):
+  env.step()
+env.close()
+</code></pre>
+<h2 id="create-and-share-your-own-registry">Create and share your own registry</h2>
+<p>In order to share the <code>UnityEnvironemnt</code> you created, you must :
+ - <a href="../Learning-Environment-Executable/">Create a Unity executable</a> of your environment for each platform (Linux, OSX and/or Windows)
+ - Place each executable in a <code>zip</code> compressed folder
+ - Upload each zip file online to your preferred hosting platform
+ - Create a <code>yaml</code> file that will contain the description and path to your environment
+ - Upload the <code>yaml</code> file online
+The <code>yaml</code> file must have the following format :</p>
+<pre><code class="language-yaml">environments:
+  - &lt;environment-identifier&gt;:
+     expected_reward: &lt;expected-reward-float&gt;
+     description: &lt;description-of-the-environment&gt;
+     linux_url: &lt;url-to-the-linux-zip-folder&gt;
+     darwin_url: &lt;url-to-the-osx-zip-folder&gt;
+     win_url: &lt;url-to-the-windows-zip-folder&gt;
+     additional_args:
+      - &lt;an-optional-list-of-command-line-arguments-for-the-executable&gt;
+      - ...
+</code></pre>
+<p>Your users can now use your environment with the following code :</p>
+<pre><code class="language-python">from mlagents_envs.registry import UnityEnvRegistry
+
+registry = UnityEnvRegistry()
+registry.register_from_yaml(&quot;url-or-path-to-your-yaml-file&quot;)
+</code></pre>
+<p><strong>Note</strong>: The <code>"url-or-path-to-your-yaml-file"</code> can be either a url or a local path.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

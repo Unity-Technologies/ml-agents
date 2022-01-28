@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Versioning/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Versioning - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Versioning";
+    var mkdocs_page_input_path = "Versioning.md";
+    var mkdocs_page_url = "/ml-agents/Versioning/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Versioning</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#context">Context</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#github-releases">GitHub Releases</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#packages">Packages</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#unity-package">Unity package</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#python-packages">Python Packages</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#communicator">Communicator</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#side-channels">Side Channels</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>About &raquo;</li>
+        
+      
+    
+    <li>Versioning</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Versioning.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="ml-agents-versioning">ML-Agents Versioning</h1>
+<h2 id="context">Context</h2>
+<p>As the ML-Agents project evolves into a more mature product, we want to communicate the process
+we use to version our packages and the data that flows into, through, and out of them clearly.
+Our project now has four packages (1 Unity, 3 Python) along with artifacts that are produced as
+well as consumed.  This document covers the versioning for these packages and artifacts.</p>
+<h2 id="github-releases">GitHub Releases</h2>
+<p>Up until now, all packages were in lockstep in-terms of versioning. As a result, the GitHub releases
+were tagged with the version of all those packages (e.g. v0.15.0, v0.15.1) and labeled accordingly.
+With the decoupling of package versions, we now need to revisit our GitHub release tagging.
+The proposal is that we move towards an integer release numbering for our repo and each such
+release will call out specific version upgrades of each package. For instance, with
+<a href="https://github.com/Unity-Technologies/ml-agents/releases/tag/release_1">the April 30th release</a>,
+we will have:
+- GitHub Release 1 (branch name: <em>release_1_branch</em>)
+  - com.unity.ml-agents release 1.0.0
+  - ml-agents release 0.16.0
+  - ml-agents-envs release 0.16.0
+  - gym-unity release 0.16.0</p>
+<p>Our release cadence will not be affected by these versioning changes.  We will keep having
+monthly releases to fix bugs and release new features.</p>
+<h2 id="packages">Packages</h2>
+<p>All of the software packages, and their generated artifacts will be versioned.  Any automation
+tools will not be versioned.</p>
+<h3 id="unity-package">Unity package</h3>
+<p>Package name: com.unity.ml-agents
+- Versioned following <a href="https://www.semver.org">Semantic Versioning Guidelines</a>
+- This package consumes an artifact of the training process: the <code>.nn</code> file.  These files
+    are integer versioned and currently at version 2. The com.unity.ml-agents package
+    will need to support the version of <code>.nn</code> files which existed at its 1.0.0 release.
+    For example, consider that com.unity.ml-agents is at version 1.0.0 and the NN files
+    are at version 2.  If the NN files change to version 3, the next release of
+    com.unity.ml-agents at version 1.1.0 guarantees it will be able to read both of these
+    formats.  If the NN files were to change to version 4 and com.unity.ml-agents to
+    version 2.0.0, support for NN versions 2 and 3 could be dropped for com.unity.ml-agents
+    version 2.0.0.
+- This package produces one artifact, the <code>.demo</code> files.  These files will have integer
+    versioning. This means their version will increment by 1 at each change.  The
+    com.unity.ml-agents package must be backward compatible with version changes
+    that occur between minor versions.
+- To summarize, the artifacts produced and consumed by com.unity.ml-agents are guaranteed
+    to be supported for 1.x.x versions of com.unity.ml-agents.  We intend to provide stability
+    for our users by moving to a 1.0.0 release of com.unity.ml-agents.</p>
+<h3 id="python-packages">Python Packages</h3>
+<p>Package names: ml-agents / ml-agents-envs / gym-unity
+- The python packages remain in "Beta."  This means that breaking changes to the public
+    API of the python packages can change without having to have a major version bump.
+    Historically, the python and C# packages were in version lockstep.  This is no longer
+    the case.  The python packages will remain in lockstep with each other for now, while the
+    C# package will follow its own versioning as is appropriate.  However, the python package
+    versions may diverge in the future.
+- While the python packages will remain in Beta for now, we acknowledge that the most
+    heavily used portion of our python interface is the <code>mlagents-learn</code> CLI and strive
+    to make this part of our API backward compatible. We are actively working on this and
+    expect to have a stable CLI in the next few weeks.</p>
+<h2 id="communicator">Communicator</h2>
+<p>Packages which communicate: com.unity.ml-agents / ml-agents-envs</p>
+<p>Another entity of the ML-Agents Toolkit that requires versioning is the communication layer
+between C# and Python, which will follow also semantic versioning.  This guarantees a level of
+backward compatibility between different versions of C# and Python packages which communicate.
+Any Communicator version 1.x.x of the Unity package should be compatible with any 1.x.x
+Communicator Version in Python.</p>
+<p>An RLCapabilities struct keeps track of which features exist. This struct is passed from C# to
+Python, and another from Python to C#.  With this feature level granularity, we can notify users
+more specifically about feature limitations based on what's available in both C# and Python.
+These notifications will be logged to the python terminal, or to the Unity Editor Console.</p>
+<h2 id="side-channels">Side Channels</h2>
+<p>The communicator is what manages data transfer between Unity and Python for the core
+training loop. Side Channels are another means of data transfer between Unity and Python.
+Side Channels are not versioned, but have been designed to support backward compatibility
+for what they are. As of today, we provide 4 side channels:
+- FloatProperties: shared float data between Unity - Python (bidirectional)
+- RawBytes: raw data that can be sent Unity - Python (bidirectional)
+- EngineConfig: a set of numeric fields in a pre-defined order sent from Python to Unity
+- Stats: (name, value, agg) messages sent from Unity to Python</p>
+<p>Aside from the specific implementations of side channels we provide (and use ourselves),
+the Side Channel interface is made available for users to create their own custom side
+channels. As such, we guarantee that the built in SideChannel interface between Unity and
+Python is backward compatible in packages that share the same major version.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../Migrating/" class="btn btn-neutral" title="Migrating"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../Migrating/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

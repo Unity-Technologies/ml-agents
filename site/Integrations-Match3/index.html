@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Integrations-Match3/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Match-3 with ML-Agents - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Match-3 with ML-Agents";
+    var mkdocs_page_input_path = "Integrations-Match3.md";
+    var mkdocs_page_url = "/ml-agents/Integrations-Match3/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Match-3 with ML-Agents</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Integrations-Match3.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="match-3-with-ml-agents">Match-3 with ML-Agents</h1>
+<p><img src="images/match3.png" align="center" width="3000"/></p>
+<h2 id="getting-started">Getting started</h2>
+<p>The C# code for Match-3 exists inside of the Unity package (<code>com.unity.ml-agents</code>).
+The good first step would be to take a look at how we have implemented the C# code in the example Match-3 scene (located
+under /Project/Assets/ML-Agents/Examples/match3). Once you have some familiarity, then the next step would be to
+implement the C# code for Match-3 from the extensions package.</p>
+<p>Additionally, see below for additional technical specifications on the C# code for Match-3. Please note the Match-3 game
+isn't human playable as implemented and can be only played via training.</p>
+<h2 id="technical-specifications-for-match-3-with-ml-agents">Technical specifications for Match-3 with ML-Agents</h2>
+<h3 id="abstractboard-class">AbstractBoard class</h3>
+<p>The <code>AbstractBoard</code> is the bridge between ML-Agents and your game. It allows ML-Agents to
+* ask your game what the current and maximum sizes (rows, columns, and potential piece types) of the board are
+* ask your game what the "color" of a cell is
+* ask whether the cell is a "special" piece type or not
+* ask your game whether a move is allowed
+* request that your game make a move</p>
+<p>These are handled by implementing the abstract methods of <code>AbstractBoard</code>.</p>
+<h5 id="public-abstract-boardsize-getmaxboardsize"><code>public abstract BoardSize GetMaxBoardSize()</code></h5>
+<p>Returns the largest <code>BoardSize</code> that the game can use. This is used to determine the sizes of observations and sensors,
+so don't make it larger than necessary.</p>
+<h5 id="public-virtual-boardsize-getcurrentboardsize"><code>public virtual BoardSize GetCurrentBoardSize()</code></h5>
+<p>Returns the current size of the board. Each field on this BoardSize must be less than or equal to the corresponding
+field returned by <code>GetMaxBoardSize()</code>. This method is optional; if your always use the same size board, you don't
+need to override it.</p>
+<p>If the current board size is smaller than the maximum board size, <code>GetCellType()</code> and <code>GetSpecialType()</code> will not be
+called for cells outside the current board size, and <code>IsValidMove</code> won't be called for moves that would go outside of
+the current board size.</p>
+<h5 id="public-abstract-int-getcelltypeint-row-int-col"><code>public abstract int GetCellType(int row, int col)</code></h5>
+<p>Returns the "color" of piece at the given row and column.
+This should be between 0 and BoardSize.NumCellTypes-1 (inclusive).
+The actual order of the values doesn't matter.</p>
+<h5 id="public-abstract-int-getspecialtypeint-row-int-col"><code>public abstract int GetSpecialType(int row, int col)</code></h5>
+<p>Returns the special type of the piece at the given row and column.
+This should be between 0 and BoardSize.NumSpecialTypes (inclusive).
+The actual order of the values doesn't matter.</p>
+<h5 id="public-abstract-bool-ismovevalidmove-m"><code>public abstract bool IsMoveValid(Move m)</code></h5>
+<p>Check whether the particular <code>Move</code> is valid for the game.
+The actual results will depend on the rules of the game, but we provide the <code>SimpleIsMoveValid()</code> method
+that handles basic match3 rules with no special or immovable pieces.</p>
+<h5 id="public-abstract-bool-makemovemove-m"><code>public abstract bool MakeMove(Move m)</code></h5>
+<p>Instruct the game to make the given move. Returns true if the move was made.
+Note that during training, a move that was marked as invalid may occasionally still be
+requested. If this happens, it is safe to do nothing and request another move.</p>
+<h3 id="move-struct"><code>Move</code> struct</h3>
+<p>The Move struct encapsulates a swap of two adjacent cells. You can get the number of potential moves
+for a board of a given size with. <code>Move.NumPotentialMoves(maxBoardSize)</code>. There are two helper
+functions to create a new <code>Move</code>:
+* <code>public static Move FromMoveIndex(int moveIndex, BoardSize maxBoardSize)</code> can be used to
+iterate over all potential moves for the board by looping from 0 to <code>Move.NumPotentialMoves()</code>
+* <code>public static Move FromPositionAndDirection(int row, int col, Direction dir, BoardSize maxBoardSize)</code> creates
+a <code>Move</code> from a row, column, and direction (and board size).</p>
+<h3 id="boardsize-struct"><code>BoardSize</code> struct</h3>
+<p>Describes the "size" of the board, including the number of potential piece types that the board can have.
+This is returned by the AbstractBoard.GetMaxBoardSize() and GetCurrentBoardSize() methods.</p>
+<h4 id="match3sensor-and-match3sensorcomponent-classes"><code>Match3Sensor</code> and <code>Match3SensorComponent</code> classes</h4>
+<p>The <code>Match3Sensor</code> generates observations about the state using the <code>AbstractBoard</code> interface. You can
+choose whether to use vector or "visual" observations; in theory, visual observations should perform
+better because they are 2-dimensional like the board, but we need to experiment more on this.</p>
+<p>A <code>Match3SensorComponent</code> generates <code>Match3Sensor</code>s (the exact number of sensors depends on your configuration)
+at runtime, and should be added to the same GameObject as your <code>Agent</code> implementation. You do not need to write any
+additional code to use them.</p>
+<h4 id="match3actuator-and-match3actuatorcomponent-classes"><code>Match3Actuator</code> and <code>Match3ActuatorComponent</code> classes</h4>
+<p>The <code>Match3Actuator</code> converts actions from training or inference into a <code>Move</code> that is sent to<code>AbstractBoard.MakeMove()</code>
+It also checks <code>AbstractBoard.IsMoveValid</code> for each potential move and uses this to set the action mask for Agent.</p>
+<p>A <code>Match3ActuatorComponent</code> generates a <code>Match3Actuator</code> at runtime, and should be added to the same GameObject
+as your <code>Agent</code> implementation.  You do not need to write any additional code to use them.</p>
+<h3 id="setting-up-match-3-simulation">Setting up Match-3 simulation</h3>
+<ul>
+<li>Implement the <code>AbstractBoard</code> methods to integrate with your game.</li>
+<li>Give the <code>Agent</code> rewards when it does what you want it to (match multiple pieces in a row, clears pieces of a certain
+type, etc).</li>
+<li>Add the <code>Agent</code>, <code>AbstractBoard</code> implementation, <code>Match3SensorComponent</code>, and <code>Match3ActuatorComponent</code> to the same
+<code>GameObject</code>.</li>
+<li>Call <code>Agent.RequestDecision()</code> when you're ready for the <code>Agent</code> to make a move on the next <code>Academy</code> step. During
+the next <code>Academy</code> step, the <code>MakeMove()</code> method on the board will be called.</li>
+</ul>
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="action-space">Action Space</h3>
+<p>The indexing for actions is the same as described in
+<a href="https://www.researchgate.net/publication/328307928_Human-Like_Playtesting_with_Deep_Learning">Human Like Playtesting with Deep Learning</a>
+(for example, Figure 2b). The horizontal moves are enumerated first, then the vertical ones.
+<img src="images/match3-moves.png" align="center"/></p>
+<h2 id="feedback">Feedback</h2>
+<p>If you are a Match-3 developer and are trying to leverage ML-Agents for this scenario,
+<a href="https://forms.gle/TBsB9jc8WshgzViU9">we want to hear from you</a>. Additionally, we are also looking for interested
+Match-3 teams to speak with us for 45 minutes. If you are interested, please indicate that in the
+<a href="https://forms.gle/TBsB9jc8WshgzViU9">form</a>. If selected, we will provide gift cards as a token of appreciation.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

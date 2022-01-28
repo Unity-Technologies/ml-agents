@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Using-Tensorboard/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Using TensorBoard to Observe Training - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Using TensorBoard to Observe Training";
+    var mkdocs_page_input_path = "Using-Tensorboard.md";
+    var mkdocs_page_url = "/ml-agents/Using-Tensorboard/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Using TensorBoard to Observe Training</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Using-Tensorboard.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="using-tensorboard-to-observe-training">Using TensorBoard to Observe Training</h1>
+<p>The ML-Agents Toolkit saves statistics during learning session that you can view
+with a TensorFlow utility named,
+<a href="https://www.tensorflow.org/programmers_guide/summaries_and_tensorboard">TensorBoard</a>.</p>
+<p>The <code>mlagents-learn</code> command saves training statistics to a folder named
+<code>results</code>, organized by the <code>run-id</code> value you assign to a training session.</p>
+<p>In order to observe the training process, either during training or afterward,
+start TensorBoard:</p>
+<ol>
+<li>Open a terminal or console window:</li>
+<li>Navigate to the directory where the ML-Agents Toolkit is installed.</li>
+<li>From the command line run: <code>tensorboard --logdir results --port 6006</code></li>
+<li>Open a browser window and navigate to
+   <a href="http://localhost:6006">localhost:6006</a>.</li>
+</ol>
+<p><strong>Note:</strong> The default port TensorBoard uses is 6006. If there is an existing
+session running on port 6006 a new session can be launched on an open port using
+the --port option.</p>
+<p><strong>Note:</strong> If you don't assign a <code>run-id</code> identifier, <code>mlagents-learn</code> uses the
+default string, "ppo". You can delete the folders under the <code>results</code> directory
+to clear out old statistics.</p>
+<p>On the left side of the TensorBoard window, you can select which of the training
+runs you want to display. You can select multiple run-ids to compare statistics.
+The TensorBoard window also provides options for how to display and smooth
+graphs.</p>
+<h2 id="the-ml-agents-toolkit-training-statistics">The ML-Agents Toolkit training statistics</h2>
+<p>The ML-Agents training program saves the following statistics:</p>
+<p><img alt="Example TensorBoard Run" src="../images/mlagents-TensorBoard.png" /></p>
+<h3 id="environment-statistics">Environment Statistics</h3>
+<ul>
+<li>
+<p><code>Environment/Lesson</code> - Plots the progress from lesson to lesson. Only
+  interesting when performing curriculum training.</p>
+</li>
+<li>
+<p><code>Environment/Cumulative Reward</code> - The mean cumulative episode reward over all
+  agents. Should increase during a successful training session.</p>
+</li>
+<li>
+<p><code>Environment/Episode Length</code> - The mean length of each episode in the
+  environment for all agents.</p>
+</li>
+</ul>
+<h3 id="is-training">Is Training</h3>
+<ul>
+<li><code>Is Training</code> - A boolean indicating if the agent is updating its model.</li>
+</ul>
+<h3 id="policy-statistics">Policy Statistics</h3>
+<ul>
+<li>
+<p><code>Policy/Entropy</code> (PPO; SAC) - How random the decisions of the model are.
+  Should slowly decrease during a successful training process. If it decreases
+  too quickly, the <code>beta</code> hyperparameter should be increased.</p>
+</li>
+<li>
+<p><code>Policy/Learning Rate</code> (PPO; SAC) - How large a step the training algorithm
+  takes as it searches for the optimal policy. Should decrease over time.</p>
+</li>
+<li>
+<p><code>Policy/Entropy Coefficient</code> (SAC) - Determines the relative importance of the
+  entropy term. This value is adjusted automatically so that the agent retains
+  some amount of randomness during training.</p>
+</li>
+<li>
+<p><code>Policy/Extrinsic Reward</code> (PPO; SAC) - This corresponds to the mean cumulative
+  reward received from the environment per-episode.</p>
+</li>
+<li>
+<p><code>Policy/Value Estimate</code> (PPO; SAC) - The mean value estimate for all states
+  visited by the agent. Should increase during a successful training session.</p>
+</li>
+<li>
+<p><code>Policy/Curiosity Reward</code> (PPO/SAC+Curiosity) - This corresponds to the mean
+  cumulative intrinsic reward generated per-episode.</p>
+</li>
+<li>
+<p><code>Policy/Curiosity Value Estimate</code> (PPO/SAC+Curiosity) - The agent's value
+  estimate for the curiosity reward.</p>
+</li>
+<li>
+<p><code>Policy/GAIL Reward</code> (PPO/SAC+GAIL) - This corresponds to the mean cumulative
+  discriminator-based reward generated per-episode.</p>
+</li>
+<li>
+<p><code>Policy/GAIL Value Estimate</code> (PPO/SAC+GAIL) - The agent's value estimate for
+  the GAIL reward.</p>
+</li>
+<li>
+<p><code>Policy/GAIL Policy Estimate</code> (PPO/SAC+GAIL) - The discriminator's estimate
+  for states and actions generated by the policy.</p>
+</li>
+<li>
+<p><code>Policy/GAIL Expert Estimate</code> (PPO/SAC+GAIL) - The discriminator's estimate
+  for states and actions drawn from expert demonstrations.</p>
+</li>
+</ul>
+<h3 id="learning-loss-functions">Learning Loss Functions</h3>
+<ul>
+<li>
+<p><code>Losses/Policy Loss</code> (PPO; SAC) - The mean magnitude of policy loss function.
+  Correlates to how much the policy (process for deciding actions) is changing.
+  The magnitude of this should decrease during a successful training session.</p>
+</li>
+<li>
+<p><code>Losses/Value Loss</code> (PPO; SAC) - The mean loss of the value function update.
+  Correlates to how well the model is able to predict the value of each state.
+  This should increase while the agent is learning, and then decrease once the
+  reward stabilizes.</p>
+</li>
+<li>
+<p><code>Losses/Forward Loss</code> (PPO/SAC+Curiosity) - The mean magnitude of the forward
+  model loss function. Corresponds to how well the model is able to predict the
+  new observation encoding.</p>
+</li>
+<li>
+<p><code>Losses/Inverse Loss</code> (PPO/SAC+Curiosity) - The mean magnitude of the inverse
+  model loss function. Corresponds to how well the model is able to predict the
+  action taken between two observations.</p>
+</li>
+<li>
+<p><code>Losses/Pretraining Loss</code> (BC) - The mean magnitude of the behavioral cloning
+  loss. Corresponds to how well the model imitates the demonstration data.</p>
+</li>
+<li>
+<p><code>Losses/GAIL Loss</code> (GAIL) - The mean magnitude of the GAIL discriminator loss.
+  Corresponds to how well the model imitates the demonstration data.</p>
+</li>
+</ul>
+<h3 id="self-play">Self-Play</h3>
+<ul>
+<li><code>Self-Play/ELO</code> (Self-Play) -
+  <a href="https://en.wikipedia.org/wiki/Elo_rating_system">ELO</a> measures the relative
+  skill level between two players. In a proper training run, the ELO of the
+  agent should steadily increase.</li>
+</ul>
+<h2 id="exporting-data-from-tensorboard">Exporting Data from TensorBoard</h2>
+<p>To export timeseries data in CSV or JSON format, check the "Show data download
+links" in the upper left. This will enable download links below each chart.</p>
+<p><img alt="Example TensorBoard Run" src="../images/TensorBoard-download.png" /></p>
+<h2 id="custom-metrics-from-unity">Custom Metrics from Unity</h2>
+<p>To get custom metrics from a C# environment into TensorBoard, you can use the
+<code>StatsRecorder</code>:</p>
+<pre><code class="language-csharp">var statsRecorder = Academy.Instance.StatsRecorder;
+statsRecorder.Add(&quot;MyMetric&quot;, 1.0);
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

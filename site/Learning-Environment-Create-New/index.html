@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Learning-Environment-Create-New/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Making a New Learning Environment - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Making a New Learning Environment";
+    var mkdocs_page_input_path = "Learning-Environment-Create-New.md";
+    var mkdocs_page_url = "/ml-agents/Learning-Environment-Create-New/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Making a New Learning Environment</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Learning-Environment-Create-New.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="making-a-new-learning-environment">Making a New Learning Environment</h1>
+<p>This tutorial walks through the process of creating a Unity Environment from
+scratch. We recommend first reading the <a href="../Getting-Started/">Getting Started</a>
+guide to understand the concepts presented here first in an already-built
+environment.</p>
+<p><img alt="A simple ML-Agents environment" src="../images/mlagents-NewTutSplash.png" /></p>
+<p>In this example, we will create an agent capable of controlling a ball on a
+platform. We will then train the agent to roll the ball toward the cube while
+avoiding falling off the platform.</p>
+<h2 id="overview">Overview</h2>
+<p>Using the ML-Agents Toolkit in a Unity project involves the following basic
+steps:</p>
+<ol>
+<li>Create an environment for your agents to live in. An environment can range
+   from a simple physical simulation containing a few objects to an entire game
+   or ecosystem.</li>
+<li>Implement your Agent subclasses. An Agent subclass defines the code an Agent
+   uses to observe its environment, to carry out assigned actions, and to
+   calculate the rewards used for reinforcement training. You can also implement
+   optional methods to reset the Agent when it has finished or failed its task.</li>
+<li>Add your Agent subclasses to appropriate GameObjects, typically, the object
+   in the scene that represents the Agent in the simulation.</li>
+</ol>
+<p><strong>Note:</strong> If you are unfamiliar with Unity, refer to
+<a href="https://docs.unity3d.com/Manual/LearningtheInterface.html">Learning the interface</a>
+in the Unity Manual if an Editor task isn't explained sufficiently in this
+tutorial.</p>
+<p>If you haven't already, follow the <a href="../Installation/">installation instructions</a>.</p>
+<h2 id="set-up-the-unity-project">Set Up the Unity Project</h2>
+<p>The first task to accomplish is simply creating a new Unity project and
+importing the ML-Agents assets into it:</p>
+<ol>
+<li>Launch Unity Hub and create a new 3D project named "RollerBall".</li>
+<li><a href="../Installation/#install-the-comunityml-agents-unity-package">Add the ML-Agents Unity package</a>
+   to your project.</li>
+</ol>
+<p>Your Unity <strong>Project</strong> window should contain the following assets:</p>
+<p align="left">
+  <img src="images/roller-ball-projects.png"
+       alt="Project window"
+       width="250" border="10" />
+</p>
+
+<h2 id="create-the-environment">Create the Environment</h2>
+<p>Next, we will create a very simple scene to act as our learning environment. The
+"physical" components of the environment include a Plane to act as the floor for
+the Agent to move around on, a Cube to act as the goal or target for the agent
+to seek, and a Sphere to represent the Agent itself.</p>
+<h3 id="create-the-floor-plane">Create the Floor Plane</h3>
+<ol>
+<li>Right click in Hierarchy window, select 3D Object &gt; Plane.</li>
+<li>Name the GameObject "Floor".</li>
+<li>Select the Floor Plane to view its properties in the Inspector window.</li>
+<li>Set Transform to Position = <code>(0, 0, 0)</code>, Rotation = <code>(0, 0, 0)</code>, Scale =
+   <code>(1, 1, 1)</code>.</li>
+</ol>
+<p align="left">
+  <img src="images/roller-ball-floor.png"
+       alt="The Floor in the Inspector window"
+       width="400" border="10" />
+</p>
+
+<h3 id="add-the-target-cube">Add the Target Cube</h3>
+<ol>
+<li>Right click in Hierarchy window, select 3D Object &gt; Cube.</li>
+<li>Name the GameObject "Target".</li>
+<li>Select the Target Cube to view its properties in the Inspector window.</li>
+<li>Set Transform to Position = <code>(3, 0.5, 3)</code>, Rotation = <code>(0, 0, 0)</code>, Scale =
+   <code>(1, 1, 1)</code>.</li>
+</ol>
+<p align="left">
+  <img src="images/roller-ball-target.png"
+       alt="The Target Cube in the Inspector window"
+       width="400" border="10" />
+</p>
+
+<h3 id="add-the-agent-sphere">Add the Agent Sphere</h3>
+<ol>
+<li>Right click in Hierarchy window, select 3D Object &gt; Sphere.</li>
+<li>Name the GameObject "RollerAgent".</li>
+<li>Select the RollerAgent Sphere to view its properties in the Inspector window.</li>
+<li>Set Transform to Position = <code>(0, 0.5, 0)</code>, Rotation = <code>(0, 0, 0)</code>, Scale =
+   <code>(1, 1, 1)</code>.</li>
+<li>Click <strong>Add Component</strong>.</li>
+<li>Add the <code>Rigidbody</code> component to the Sphere.</li>
+</ol>
+<h3 id="group-into-training-area">Group into Training Area</h3>
+<p>Group the floor, target and agent under a single, empty, GameObject. This will simplify
+some of our subsequent steps.</p>
+<p>To do so:</p>
+<ol>
+<li>Right-click on your Project Hierarchy and create a new empty GameObject. Name
+   it TrainingArea.</li>
+<li>Reset the TrainingArea’s Transform so that it is at <code>(0,0,0)</code> with Rotation
+   <code>(0,0,0)</code> and Scale <code>(1,1,1)</code>.</li>
+<li>Drag the Floor, Target, and RollerAgent GameObjects in the Hierarchy into the
+   TrainingArea GameObject.</li>
+</ol>
+<p align="left">
+  <img src="images/roller-ball-hierarchy.png"
+       alt="The Hierarchy window"
+       width="250" border="10" />
+</p>
+
+<h2 id="implement-an-agent">Implement an Agent</h2>
+<p>To create the Agent Script:</p>
+<ol>
+<li>Select the RollerAgent GameObject to view it in the Inspector window.</li>
+<li>Click <strong>Add Component</strong>.</li>
+<li>Click <strong>New Script</strong> in the list of components (at the bottom).</li>
+<li>Name the script "RollerAgent".</li>
+<li>Click <strong>Create and Add</strong>.</li>
+</ol>
+<p>Then, edit the new <code>RollerAgent</code> script:</p>
+<ol>
+<li>In the Unity Project window, double-click the <code>RollerAgent</code> script to open it
+   in your code editor.</li>
+<li>Import ML-Agent package by adding</li>
+</ol>
+<p><code>csharp
+   using Unity.MLAgents;
+   using Unity.MLAgents.Sensors;
+   using Unity.MLAgents.Actuators;</code>
+   then change the base class from <code>MonoBehaviour</code> to <code>Agent</code>.
+1. Delete <code>Update()</code> since we are not using it, but keep <code>Start()</code>.</p>
+<p>So far, these are the basic steps that you would use to add ML-Agents to any
+Unity project. Next, we will add the logic that will let our Agent learn to roll
+to the cube using reinforcement learning. More specifically, we will need to
+extend three methods from the <code>Agent</code> base class:</p>
+<ul>
+<li><code>OnEpisodeBegin()</code></li>
+<li><code>CollectObservations(VectorSensor sensor)</code></li>
+<li><code>OnActionReceived(ActionBuffers actionBuffers)</code></li>
+</ul>
+<p>We overview each of these in more detail in the dedicated subsections below.</p>
+<h3 id="initialization-and-resetting-the-agent">Initialization and Resetting the Agent</h3>
+<p>The process of training in the ML-Agents Toolkit involves running episodes where
+the Agent (Sphere) attempts to solve the task. Each episode lasts until the
+Agents solves the task (i.e. reaches the cube), fails (rolls off the platform)
+or times out (takes too long to solve or fail at the task). At the start of each
+episode, <code>OnEpisodeBegin()</code> is called to set-up the environment for a
+new episode. Typically the scene is initialized in a random manner to enable the
+agent to learn to solve the task under a variety of conditions.</p>
+<p>In this example, each time the Agent (Sphere) reaches its target (Cube), the
+episode ends and the target (Cube) is moved to a new random location; and if
+the Agent rolls off the platform, it will be put back onto the floor.
+These are all handled in <code>OnEpisodeBegin()</code>.</p>
+<p>To move the target (Cube), we need a reference to its Transform (which stores a
+GameObject's position, orientation and scale in the 3D world). To get this
+reference, add a public field of type <code>Transform</code> to the RollerAgent class.
+Public fields of a component in Unity get displayed in the Inspector window,
+allowing you to choose which GameObject to use as the target in the Unity
+Editor.</p>
+<p>To reset the Agent's velocity (and later to apply force to move the agent) we
+need a reference to the Rigidbody component. A
+<a href="https://docs.unity3d.com/ScriptReference/Rigidbody.html">Rigidbody</a> is Unity's
+primary element for physics simulation. (See
+<a href="https://docs.unity3d.com/Manual/PhysicsSection.html">Physics</a> for full
+documentation of Unity physics.) Since the Rigidbody component is on the same
+GameObject as our Agent script, the best way to get this reference is using
+<code>GameObject.GetComponent&lt;T&gt;()</code>, which we can call in our script's <code>Start()</code>
+method.</p>
+<p>So far, our RollerAgent script looks like:</p>
+<pre><code class="language-csharp">using System.Collections.Generic;
+using UnityEngine;
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
+
+public class RollerAgent : Agent
+{
+    Rigidbody rBody;
+    void Start () {
+        rBody = GetComponent&lt;Rigidbody&gt;();
+    }
+
+    public Transform Target;
+    public override void OnEpisodeBegin()
+    {
+       // If the Agent fell, zero its momentum
+        if (this.transform.localPosition.y &lt; 0)
+        {
+            this.rBody.angularVelocity = Vector3.zero;
+            this.rBody.velocity = Vector3.zero;
+            this.transform.localPosition = new Vector3( 0, 0.5f, 0);
+        }
+
+        // Move the target to a new spot
+        Target.localPosition = new Vector3(Random.value * 8 - 4,
+                                           0.5f,
+                                           Random.value * 8 - 4);
+    }
+}
+</code></pre>
+<p>Next, let's implement the <code>Agent.CollectObservations(VectorSensor sensor)</code>
+method.</p>
+<h3 id="observing-the-environment">Observing the Environment</h3>
+<p>The Agent sends the information we collect to the Brain, which uses it to make a
+decision. When you train the Agent (or use a trained model), the data is fed
+into a neural network as a feature vector. For an Agent to successfully learn a
+task, we need to provide the correct information. A good rule of thumb for
+deciding what information to collect is to consider what you would need to
+calculate an analytical solution to the problem.</p>
+<p>In our case, the information our Agent collects includes the position of the
+target, the position of the agent itself, and the velocity of the agent. This
+helps the Agent learn to control its speed so it doesn't overshoot the target
+and roll off the platform. In total, the agent observation contains 8 values as
+implemented below:</p>
+<pre><code class="language-csharp">public override void CollectObservations(VectorSensor sensor)
+{
+    // Target and Agent positions
+    sensor.AddObservation(Target.localPosition);
+    sensor.AddObservation(this.transform.localPosition);
+
+    // Agent velocity
+    sensor.AddObservation(rBody.velocity.x);
+    sensor.AddObservation(rBody.velocity.z);
+}
+</code></pre>
+<h3 id="taking-actions-and-assigning-rewards">Taking Actions and Assigning Rewards</h3>
+<p>The final part of the Agent code is the <code>Agent.OnActionReceived()</code> method, which
+receives actions and assigns the reward.</p>
+<h4 id="actions">Actions</h4>
+<p>To solve the task of moving towards the target, the Agent (Sphere) needs to be
+able to move in the <code>x</code> and <code>z</code> directions. As such, the agent needs 2 actions:
+the first determines the force applied along the x-axis; and the
+second determines the force applied along the z-axis. (If we allowed the Agent
+to move in three dimensions, then we would need a third action.)</p>
+<p>The RollerAgent applies the values from the <code>action[]</code> array to its Rigidbody
+component <code>rBody</code>, using <code>Rigidbody.AddForce()</code>:</p>
+<pre><code class="language-csharp">Vector3 controlSignal = Vector3.zero;
+controlSignal.x = action[0];
+controlSignal.z = action[1];
+rBody.AddForce(controlSignal * forceMultiplier);
+</code></pre>
+<h4 id="rewards">Rewards</h4>
+<p>Reinforcement learning requires rewards to signal which decisions are good and
+which are bad. The learning algorithm uses the rewards to determine whether it
+is giving the Agent the optimal actions. You want to reward an Agent for
+completing the assigned task. In this case, the Agent is given a reward of 1.0
+for reaching the Target cube.</p>
+<p>Rewards are assigned in <code>OnActionReceived()</code>. The RollerAgent
+calculates the distance to detect when it reaches the target.
+When it does, the code calls <code>Agent.SetReward()</code> to assign a reward
+of 1.0 and marks the agent as finished by calling <code>EndEpisode()</code> on
+the Agent.</p>
+<pre><code class="language-csharp">float distanceToTarget = Vector3.Distance(this.transform.localPosition, Target.localPosition);
+// Reached target
+if (distanceToTarget &lt; 1.42f)
+{
+    SetReward(1.0f);
+    EndEpisode();
+}
+</code></pre>
+<p>Finally, if the Agent falls off the platform, end the episode so that it can
+reset itself:</p>
+<pre><code class="language-csharp">// Fell off platform
+if (this.transform.localPosition.y &lt; 0)
+{
+    EndEpisode();
+}
+</code></pre>
+<h4 id="onactionreceived">OnActionReceived()</h4>
+<p>With the action and reward logic outlined above, the final version of
+<code>OnActionReceived()</code> looks like:</p>
+<pre><code class="language-csharp">public float forceMultiplier = 10;
+public override void OnActionReceived(ActionBuffers actionBuffers)
+{
+    // Actions, size = 2
+    Vector3 controlSignal = Vector3.zero;
+    controlSignal.x = actionBuffers.ContinuousActions[0];
+    controlSignal.z = actionBuffers.ContinuousActions[1];
+    rBody.AddForce(controlSignal * forceMultiplier);
+
+    // Rewards
+    float distanceToTarget = Vector3.Distance(this.transform.localPosition, Target.localPosition);
+
+    // Reached target
+    if (distanceToTarget &lt; 1.42f)
+    {
+        SetReward(1.0f);
+        EndEpisode();
+    }
+
+    // Fell off platform
+    else if (this.transform.localPosition.y &lt; 0)
+    {
+        EndEpisode();
+    }
+}
+</code></pre>
+<p>Note the <code>forceMultiplier</code> class variable is defined before the method definition.
+Since <code>forceMultiplier</code> is public, you can set the value from the Inspector window.</p>
+<h2 id="final-agent-setup-in-editor">Final Agent Setup in Editor</h2>
+<p>Now that all the GameObjects and ML-Agent components are in place, it is time
+to connect everything together in the Unity Editor. This involves adding and
+setting some of the Agent Component's properties so that they are compatible
+with our Agent script.</p>
+<ol>
+<li>Select the <strong>RollerAgent</strong> GameObject to show its properties in the Inspector
+   window.</li>
+<li>Drag the Target GameObject in the Hierarchy into the <code>Target</code> field in RollerAgent Script.</li>
+<li>Add a <code>Decision Requester</code> script with the <strong>Add Component</strong> button.
+   Set the <strong>Decision Period</strong> to <code>10</code>. For more information on decisions,
+   see <a href="../Learning-Environment-Design-Agents/#decisions">the Agent documentation</a></li>
+<li>Add a <code>Behavior Parameters</code> script with the <strong>Add Component</strong> button.
+   Set the Behavior Parameters of the Agent to the following:</li>
+<li><code>Behavior Name</code>: <em>RollerBall</em></li>
+<li><code>Vector Observation</code> &gt; <code>Space Size</code> = 8</li>
+<li><code>Actions</code> &gt; <code>Continuous Actions</code> = 2</li>
+</ol>
+<p>In the inspector, the <code>RollerAgent</code> should look like this now:</p>
+<p align="left">
+  <img src="images/roller-ball-agent.png"
+       alt="The Agent GameObject in the Inspector window"
+       width="400" border="5" />
+</p>
+
+<p>Now you are ready to test the environment before training.</p>
+<h2 id="testing-the-environment">Testing the Environment</h2>
+<p>It is always a good idea to first test your environment by controlling the Agent
+using the keyboard. To do so, you will need to extend the <code>Heuristic()</code> method
+in the <code>RollerAgent</code> class. For our example, the heuristic will generate an
+action corresponding to the values of the "Horizontal" and "Vertical" input axis
+(which correspond to the keyboard arrow keys):</p>
+<pre><code class="language-csharp">public override void Heuristic(in ActionBuffers actionsOut)
+{
+    var continuousActionsOut = actionsOut.ContinuousActions;
+    continuousActionsOut[0] = Input.GetAxis(&quot;Horizontal&quot;);
+    continuousActionsOut[1] = Input.GetAxis(&quot;Vertical&quot;);
+}
+</code></pre>
+<p>In order for the Agent to use the Heuristic, You will need to set the
+<code>Behavior Type</code> to <code>Heuristic Only</code> in the <code>Behavior Parameters</code> of the
+RollerAgent.</p>
+<p>Press <strong>Play</strong> to run the scene and use the arrows keys to move the Agent around
+the platform. Make sure that there are no errors displayed in the Unity Editor
+Console window and that the Agent resets when it reaches its target or falls
+from the platform.</p>
+<h2 id="training-the-environment">Training the Environment</h2>
+<p>The process is the same as described in the
+<a href="../Getting-Started/">Getting Started Guide</a>.</p>
+<p>The hyperparameters for training are specified in a configuration file that you
+pass to the <code>mlagents-learn</code> program. Create a new <code>rollerball_config.yaml</code> file
+under <code>config/</code> and include the following hyperparameter values:</p>
+<pre><code class="language-yml">behaviors:
+  RollerBall:
+    trainer_type: ppo
+    hyperparameters:
+      batch_size: 10
+      buffer_size: 100
+      learning_rate: 3.0e-4
+      beta: 5.0e-4
+      epsilon: 0.2
+      lambd: 0.99
+      num_epoch: 3
+      learning_rate_schedule: linear
+      beta_schedule: constant
+      epsilon_schedule: linear
+    network_settings:
+      normalize: false
+      hidden_units: 128
+      num_layers: 2
+    reward_signals:
+      extrinsic:
+        gamma: 0.99
+        strength: 1.0
+    max_steps: 500000
+    time_horizon: 64
+    summary_freq: 10000
+</code></pre>
+<p>Hyperparameters are explained in <a href="../Training-Configuration-File/">the training configuration file documentation</a></p>
+<p>Since this example creates a very simple training environment with only a few
+inputs and outputs, using small batch and buffer sizes speeds up the training
+considerably. However, if you add more complexity to the environment or change
+the reward or observation functions, you might also find that training performs
+better with different hyperparameter values. In addition to setting these
+hyperparameter values, the Agent <strong>DecisionFrequency</strong> parameter has a large
+effect on training time and success. A larger value reduces the number of
+decisions the training algorithm has to consider and, in this simple
+environment, speeds up training.</p>
+<p>To train your agent, run the following command before pressing <strong>Play</strong> in the
+Editor:</p>
+<pre><code>mlagents-learn config/rollerball_config.yaml --run-id=RollerBall
+</code></pre>
+<p>To monitor the statistics of Agent performance during training, use
+<a href="../Using-Tensorboard/">TensorBoard</a>.</p>
+<p><img alt="TensorBoard statistics display" src="../images/mlagents-RollerAgentStats.png" /></p>
+<p>In particular, the <em>cumulative_reward</em> and <em>value_estimate</em> statistics show how
+well the Agent is achieving the task. In this example, the maximum reward an
+Agent can earn is 1.0, so these statistics approach that value when the Agent
+has successfully <em>solved</em> the problem.</p>
+<h2 id="optional-multiple-training-areas-within-the-same-scene">Optional: Multiple Training Areas within the Same Scene</h2>
+<p>In many of the <a href="../Learning-Environment-Examples/">example environments</a>, many
+copies of the training area are instantiated in the scene. This generally speeds
+up training, allowing the environment to gather many experiences in parallel.
+This can be achieved simply by instantiating many Agents with the same
+<code>Behavior Name</code>. Note that we've already simplified our transition to using
+multiple areas by creating the <code>TrainingArea</code> GameObject and relying on local
+positions in <code>RollerAgent.cs</code>. Use the following steps to parallelize your
+RollerBall environment:</p>
+<ol>
+<li>Drag the TrainingArea GameObject, along with its attached GameObjects, into
+   your Assets browser, turning it into a prefab.</li>
+<li>You can now instantiate copies of the TrainingArea prefab. Drag them into
+   your scene, positioning them so that they do not overlap.</li>
+</ol>
+<p>Alternatively, you can use the <code>TrainingAreaReplicator</code> to replicate training areas. Use the following steps:</p>
+<ol>
+<li>Create a new empty Game Object in the scene.</li>
+<li>Click on the new object and add a TrainingAreaReplicator component to the empty Game Object through the inspector.</li>
+<li>Drag the training area to <code>Base Area</code> in the Training Area Replicator.</li>
+<li>Specify the number of areas to replicate and the separation between areas.</li>
+<li>Hit play and the areas will be replicated automatically!</li>
+</ol>
+<h2 id="optional-training-using-concurrent-unity-instances">Optional: Training Using Concurrent Unity Instances</h2>
+<p>Another level of parallelization comes by training using
+<a href="../ML-Agents-Overview/#additional-features">concurrent Unity instances</a>.
+For example,</p>
+<pre><code>mlagents-learn config/rollerball_config.yaml --run-id=RollerBall --num-envs=2
+</code></pre>
+<p>will start ML Agents training with two environment instances. Combining multiple
+training areas within the same scene, with concurrent Unity instances, effectively
+gives you two levels of parallelism to speed up training. The command line option
+<code>--num-envs=&lt;n&gt;</code> controls the number of concurrent Unity instances that are
+executed in parallel during training.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Python-PettingZoo-API-Documentation/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Petting Zoo Documentation - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Petting Zoo Documentation";
+    var mkdocs_page_input_path = "Python-PettingZoo-API-Documentation.md";
+    var mkdocs_page_url = "/ml-agents/Python-PettingZoo-API-Documentation/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="#">Petting Zoo API</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="./">Petting Zoo Documentation</a>
+    <ul class="current">
+    </ul>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Interfacing with Unity Builds &raquo;</li>
+        
+      
+        
+          <li>Petting Zoo API &raquo;</li>
+        
+      
+    
+    <li>Petting Zoo Documentation</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Python-PettingZoo-API-Documentation.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="table-of-contents">Table of Contents</h1>
+<ul>
+<li><a href="#mlagents_envs.envs.pettingzoo_env_factory">mlagents_envs.envs.pettingzoo_env_factory</a></li>
+<li><a href="#mlagents_envs.envs.pettingzoo_env_factory.PettingZooEnvFactory">PettingZooEnvFactory</a><ul>
+<li><a href="#mlagents_envs.envs.pettingzoo_env_factory.PettingZooEnvFactory.env">env</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.envs.unity_aec_env">mlagents_envs.envs.unity_aec_env</a></li>
+<li><a href="#mlagents_envs.envs.unity_aec_env.UnityAECEnv">UnityAECEnv</a><ul>
+<li><a href="#mlagents_envs.envs.unity_aec_env.UnityAECEnv.__init__">__init__</a></li>
+<li><a href="#mlagents_envs.envs.unity_aec_env.UnityAECEnv.step">step</a></li>
+<li><a href="#mlagents_envs.envs.unity_aec_env.UnityAECEnv.observe">observe</a></li>
+<li><a href="#mlagents_envs.envs.unity_aec_env.UnityAECEnv.last">last</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.envs.unity_parallel_env">mlagents_envs.envs.unity_parallel_env</a></li>
+<li><a href="#mlagents_envs.envs.unity_parallel_env.UnityParallelEnv">UnityParallelEnv</a><ul>
+<li><a href="#mlagents_envs.envs.unity_parallel_env.UnityParallelEnv.__init__">__init__</a></li>
+<li><a href="#mlagents_envs.envs.unity_parallel_env.UnityParallelEnv.reset">reset</a></li>
+</ul>
+</li>
+<li><a href="#mlagents_envs.envs.unity_pettingzoo_base_env">mlagents_envs.envs.unity_pettingzoo_base_env</a></li>
+<li><a href="#mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv">UnityPettingzooBaseEnv</a><ul>
+<li><a href="#mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.observation_spaces">observation_spaces</a></li>
+<li><a href="#mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.observation_space">observation_space</a></li>
+<li><a href="#mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.action_spaces">action_spaces</a></li>
+<li><a href="#mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.action_space">action_space</a></li>
+<li><a href="#mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.side_channel">side_channel</a></li>
+<li><a href="#mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.reset">reset</a></li>
+<li><a href="#mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.seed">seed</a></li>
+<li><a href="#mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.render">render</a></li>
+<li><a href="#mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.close">close</a></li>
+</ul>
+</li>
+</ul>
+<p><a name="mlagents_envs.envs.pettingzoo_env_factory"></a></p>
+<h1 id="mlagents_envsenvspettingzoo_env_factory">mlagents_envs.envs.pettingzoo_env_factory</h1>
+<p><a name="mlagents_envs.envs.pettingzoo_env_factory.PettingZooEnvFactory"></a></p>
+<h2 id="pettingzooenvfactory-objects">PettingZooEnvFactory Objects</h2>
+<pre><code class="language-python">class PettingZooEnvFactory()
+</code></pre>
+<p><a name="mlagents_envs.envs.pettingzoo_env_factory.PettingZooEnvFactory.env"></a></p>
+<h4 id="env">env</h4>
+<pre><code class="language-python"> | env(seed: Optional[int] = None, **kwargs: Union[List, int, bool, None]) -&gt; UnityAECEnv
+</code></pre>
+<p>Creates the environment with env_id from unity's default_registry and wraps it in a UnityToPettingZooWrapper</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>seed</code>: The seed for the action spaces of the agents.</li>
+<li><code>kwargs</code>: Any argument accepted by <code>UnityEnvironment</code>class except file_name</li>
+</ul>
+<p><a name="mlagents_envs.envs.unity_aec_env"></a></p>
+<h1 id="mlagents_envsenvsunity_aec_env">mlagents_envs.envs.unity_aec_env</h1>
+<p><a name="mlagents_envs.envs.unity_aec_env.UnityAECEnv"></a></p>
+<h2 id="unityaecenv-objects">UnityAECEnv Objects</h2>
+<pre><code class="language-python">class UnityAECEnv(UnityPettingzooBaseEnv,  AECEnv)
+</code></pre>
+<p>Unity AEC (PettingZoo) environment wrapper.</p>
+<p><a name="mlagents_envs.envs.unity_aec_env.UnityAECEnv.__init__"></a></p>
+<h4 id="__init__">__init__</h4>
+<pre><code class="language-python"> | __init__(env: BaseEnv, seed: Optional[int] = None)
+</code></pre>
+<p>Initializes a Unity AEC environment wrapper.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>env</code>: The UnityEnvironment that is being wrapped.</li>
+<li><code>seed</code>: The seed for the action spaces of the agents.</li>
+</ul>
+<p><a name="mlagents_envs.envs.unity_aec_env.UnityAECEnv.step"></a></p>
+<h4 id="step">step</h4>
+<pre><code class="language-python"> | step(action: Any) -&gt; None
+</code></pre>
+<p>Sets the action of the active agent and get the observation, reward, done
+and info of the next agent.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>action</code>: The action for the active agent</li>
+</ul>
+<p><a name="mlagents_envs.envs.unity_aec_env.UnityAECEnv.observe"></a></p>
+<h4 id="observe">observe</h4>
+<pre><code class="language-python"> | observe(agent_id)
+</code></pre>
+<p>Returns the observation an agent currently can make. <code>last()</code> calls this function.</p>
+<p><a name="mlagents_envs.envs.unity_aec_env.UnityAECEnv.last"></a></p>
+<h4 id="last">last</h4>
+<pre><code class="language-python"> | last(observe=True)
+</code></pre>
+<p>returns observation, cumulative reward, done, info for the current agent (specified by self.agent_selection)</p>
+<p><a name="mlagents_envs.envs.unity_parallel_env"></a></p>
+<h1 id="mlagents_envsenvsunity_parallel_env">mlagents_envs.envs.unity_parallel_env</h1>
+<p><a name="mlagents_envs.envs.unity_parallel_env.UnityParallelEnv"></a></p>
+<h2 id="unityparallelenv-objects">UnityParallelEnv Objects</h2>
+<pre><code class="language-python">class UnityParallelEnv(UnityPettingzooBaseEnv,  ParallelEnv)
+</code></pre>
+<p>Unity Parallel (PettingZoo) environment wrapper.</p>
+<p><a name="mlagents_envs.envs.unity_parallel_env.UnityParallelEnv.__init__"></a></p>
+<h4 id="__init___1">__init__</h4>
+<pre><code class="language-python"> | __init__(env: BaseEnv, seed: Optional[int] = None)
+</code></pre>
+<p>Initializes a Unity Parallel environment wrapper.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>env</code>: The UnityEnvironment that is being wrapped.</li>
+<li><code>seed</code>: The seed for the action spaces of the agents.</li>
+</ul>
+<p><a name="mlagents_envs.envs.unity_parallel_env.UnityParallelEnv.reset"></a></p>
+<h4 id="reset">reset</h4>
+<pre><code class="language-python"> | reset() -&gt; Dict[str, Any]
+</code></pre>
+<p>Resets the environment.</p>
+<p><a name="mlagents_envs.envs.unity_pettingzoo_base_env"></a></p>
+<h1 id="mlagents_envsenvsunity_pettingzoo_base_env">mlagents_envs.envs.unity_pettingzoo_base_env</h1>
+<p><a name="mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv"></a></p>
+<h2 id="unitypettingzoobaseenv-objects">UnityPettingzooBaseEnv Objects</h2>
+<pre><code class="language-python">class UnityPettingzooBaseEnv()
+</code></pre>
+<p>Unity Petting Zoo base environment.</p>
+<p><a name="mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.observation_spaces"></a></p>
+<h4 id="observation_spaces">observation_spaces</h4>
+<pre><code class="language-python"> | @property
+ | observation_spaces() -&gt; Dict[str, spaces.Space]
+</code></pre>
+<p>Return the observation spaces of all the agents.</p>
+<p><a name="mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.observation_space"></a></p>
+<h4 id="observation_space">observation_space</h4>
+<pre><code class="language-python"> | observation_space(agent: str) -&gt; Optional[spaces.Space]
+</code></pre>
+<p>The observation space of the current agent.</p>
+<p><a name="mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.action_spaces"></a></p>
+<h4 id="action_spaces">action_spaces</h4>
+<pre><code class="language-python"> | @property
+ | action_spaces() -&gt; Dict[str, spaces.Space]
+</code></pre>
+<p>Return the action spaces of all the agents.</p>
+<p><a name="mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.action_space"></a></p>
+<h4 id="action_space">action_space</h4>
+<pre><code class="language-python"> | action_space(agent: str) -&gt; Optional[spaces.Space]
+</code></pre>
+<p>The action space of the current agent.</p>
+<p><a name="mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.side_channel"></a></p>
+<h4 id="side_channel">side_channel</h4>
+<pre><code class="language-python"> | @property
+ | side_channel() -&gt; Dict[str, Any]
+</code></pre>
+<p>The side channels of the environment. You can access the side channels
+of an environment with <code>env.side_channel[&lt;name-of-channel&gt;]</code>.</p>
+<p><a name="mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.reset"></a></p>
+<h4 id="reset_1">reset</h4>
+<pre><code class="language-python"> | reset()
+</code></pre>
+<p>Resets the environment.</p>
+<p><a name="mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.seed"></a></p>
+<h4 id="seed">seed</h4>
+<pre><code class="language-python"> | seed(seed=None)
+</code></pre>
+<p>Reseeds the environment (making the resulting environment deterministic).
+<code>reset()</code> must be called after <code>seed()</code>, and before <code>step()</code>.</p>
+<p><a name="mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.render"></a></p>
+<h4 id="render">render</h4>
+<pre><code class="language-python"> | render(mode=&quot;human&quot;)
+</code></pre>
+<p>NOT SUPPORTED.</p>
+<p>Displays a rendered frame from the environment, if supported.
+Alternate render modes in the default environments are <code>'rgb_array'</code>
+which returns a numpy array and is supported by all environments outside of classic,
+and <code>'ansi'</code> which returns the strings printed (specific to classic environments).</p>
+<p><a name="mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.close"></a></p>
+<h4 id="close">close</h4>
+<pre><code class="language-python"> | close() -&gt; None
+</code></pre>
+<p>Close the environment.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../Python-LLAPI/" class="btn btn-neutral float-right" title="Getting started with the LLAPI">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../Python-PettingZoo-API/" class="btn btn-neutral" title="Getting started with the PettingZoo API"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../Python-PettingZoo-API/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../Python-LLAPI/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

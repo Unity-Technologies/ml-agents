@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Training-ML-Agents/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Training ML-Agents - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Training ML-Agents";
+    var mkdocs_page_input_path = "Training-ML-Agents.md";
+    var mkdocs_page_url = "/ml-agents/Training-ML-Agents/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Training ML-Agents</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Training-ML-Agents.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="training-ml-agents">Training ML-Agents</h1>
+<p><strong>Table of Contents</strong></p>
+<ul>
+<li><a href="#training-ml-agents">Training ML-Agents</a></li>
+<li><a href="#training-with-mlagents-learn">Training with mlagents-learn</a><ul>
+<li><a href="#starting-training">Starting Training</a></li>
+<li><a href="#observing-training">Observing Training</a></li>
+<li><a href="#stopping-and-resuming-training">Stopping and Resuming Training</a></li>
+<li><a href="#loading-an-existing-model">Loading an Existing Model</a></li>
+</ul>
+</li>
+<li><a href="#training-configurations">Training Configurations</a><ul>
+<li><a href="#adding-cli-arguments-to-the-training-configuration-file">Adding CLI Arguments to the Training Configuration file</a></li>
+<li><a href="#environment-settings">Environment settings</a></li>
+<li><a href="#engine-settings">Engine settings</a></li>
+<li><a href="#checkpoint-settings">Checkpoint settings</a></li>
+<li><a href="#torch-settings">Torch settings:</a></li>
+<li><a href="#behavior-configurations">Behavior Configurations</a></li>
+<li><a href="#default-behavior-settings">Default Behavior Settings</a></li>
+<li><a href="#environment-parameters">Environment Parameters</a></li>
+<li><a href="#environment-parameter-randomization">Environment Parameter Randomization</a><ul>
+<li><a href="#supported-sampler-types">Supported Sampler Types</a></li>
+<li><a href="#training-with-environment-parameter-randomization">Training with Environment Parameter Randomization</a></li>
+</ul>
+</li>
+<li><a href="#curriculum">Curriculum</a><ul>
+<li><a href="#training-with-a-curriculum">Training with a Curriculum</a></li>
+</ul>
+</li>
+<li><a href="#training-using-concurrent-unity-instances">Training Using Concurrent Unity Instances</a></li>
+</ul>
+</li>
+</ul>
+<p>For a broad overview of reinforcement learning, imitation learning and all the
+training scenarios, methods and options within the ML-Agents Toolkit, see
+<a href="../ML-Agents-Overview/">ML-Agents Toolkit Overview</a>.</p>
+<p>Once your learning environment has been created and is ready for training, the
+next step is to initiate a training run. Training in the ML-Agents Toolkit is
+powered by a dedicated Python package, <code>mlagents</code>. This package exposes a
+command <code>mlagents-learn</code> that is the single entry point for all training
+workflows (e.g. reinforcement leaning, imitation learning, curriculum learning).
+Its implementation can be found at
+<a href="../ml-agents/mlagents/trainers/learn.py">ml-agents/mlagents/trainers/learn.py</a>.</p>
+<h2 id="training-with-mlagents-learn">Training with mlagents-learn</h2>
+<h3 id="starting-training">Starting Training</h3>
+<p><code>mlagents-learn</code> is the main training utility provided by the ML-Agents Toolkit.
+It accepts a number of CLI options in addition to a YAML configuration file that
+contains all the configurations and hyperparameters to be used during training.
+The set of configurations and hyperparameters to include in this file depend on
+the agents in your environment and the specific training method you wish to
+utilize. Keep in mind that the hyperparameter values can have a big impact on
+the training performance (i.e. your agent's ability to learn a policy that
+solves the task). In this page, we will review all the hyperparameters for all
+training methods and provide guidelines and advice on their values.</p>
+<p>To view a description of all the CLI options accepted by <code>mlagents-learn</code>, use
+the <code>--help</code>:</p>
+<pre><code class="language-sh">mlagents-learn --help
+</code></pre>
+<p>The basic command for training is:</p>
+<pre><code class="language-sh">mlagents-learn &lt;trainer-config-file&gt; --env=&lt;env_name&gt; --run-id=&lt;run-identifier&gt;
+</code></pre>
+<p>where</p>
+<ul>
+<li><code>&lt;trainer-config-file&gt;</code> is the file path of the trainer configuration YAML.
+  This contains all the hyperparameter values. We offer a detailed guide on the
+  structure of this file and the meaning of the hyperparameters (and advice on
+  how to set them) in the dedicated
+  <a href="#training-configurations">Training Configurations</a> section below.</li>
+<li><code>&lt;env_name&gt;</code><strong>(Optional)</strong> is the name (including path) of your
+  <a href="../Learning-Environment-Executable/">Unity executable</a> containing the agents
+  to be trained. If <code>&lt;env_name&gt;</code> is not passed, the training will happen in the
+  Editor. Press the <strong>Play</strong> button in Unity when the message <em>"Start training
+  by pressing the Play button in the Unity Editor"</em> is displayed on the screen.</li>
+<li><code>&lt;run-identifier&gt;</code> is a unique name you can use to identify the results of
+  your training runs.</li>
+</ul>
+<p>See the
+<a href="../Getting-Started/#training-a-new-model-with-reinforcement-learning">Getting Started Guide</a>
+for a sample execution of the <code>mlagents-learn</code> command.</p>
+<h4 id="observing-training">Observing Training</h4>
+<p>Regardless of which training methods, configurations or hyperparameters you
+provide, the training process will always generate three artifacts, all found
+in the <code>results/&lt;run-identifier&gt;</code> folder:</p>
+<ol>
+<li>Summaries: these are training metrics that
+   are updated throughout the training process. They are helpful to monitor your
+   training performance and may help inform how to update your hyperparameter
+   values. See <a href="../Using-Tensorboard/">Using TensorBoard</a> for more details on how
+   to visualize the training metrics.</li>
+<li>Models: these contain the model checkpoints that
+   are updated throughout training and the final model file (<code>.onnx</code>). This final
+   model file is generated once either when training completes or is
+   interrupted.</li>
+<li>Timers file (under <code>results/&lt;run-identifier&gt;/run_logs</code>): this contains aggregated
+   metrics on your training process, including time spent on specific code
+   blocks. See <a href="../Profiling-Python/">Profiling in Python</a> for more information
+   on the timers generated.</li>
+</ol>
+<p>These artifacts are updated throughout the training
+process and finalized when training is completed or is interrupted.</p>
+<h4 id="stopping-and-resuming-training">Stopping and Resuming Training</h4>
+<p>To interrupt training and save the current progress, hit <code>Ctrl+C</code> once and wait
+for the model(s) to be saved out.</p>
+<p>To resume a previously interrupted or completed training run, use the <code>--resume</code>
+flag and make sure to specify the previously used run ID.</p>
+<p>If you would like to re-run a previously interrupted or completed training run
+and re-use the same run ID (in this case, overwriting the previously generated
+artifacts), then use the <code>--force</code> flag.</p>
+<h4 id="loading-an-existing-model">Loading an Existing Model</h4>
+<p>You can also use this mode to run inference of an already-trained model in
+Python by using both the <code>--resume</code> and <code>--inference</code> flags. Note that if you
+want to run inference in Unity, you should use the
+<a href="../Getting-Started/#running-a-pre-trained-model">Unity Inference Engine</a>.</p>
+<p>Additionally, if the network architecture changes, you may still load an existing model,
+but ML-Agents will only load the parts of the model it can load and ignore all others. For instance,
+if you add a new reward signal, the existing model will load but the new reward signal
+will be initialized from scratch. If you have a model with a visual encoder (CNN) but
+change the <code>hidden_units</code>, the CNN will be loaded but the body of the network will be
+initialized from scratch.</p>
+<p>Alternatively, you might want to start a new training run but <em>initialize</em> it
+using an already-trained model. You may want to do this, for instance, if your
+environment changed and you want a new model, but the old behavior is still
+better than random. You can do this by specifying
+<code>--initialize-from=&lt;run-identifier&gt;</code>, where <code>&lt;run-identifier&gt;</code> is the old run
+ID.</p>
+<h2 id="training-configurations">Training Configurations</h2>
+<p>The Unity ML-Agents Toolkit provides a wide range of training scenarios, methods
+and options. As such, specific training runs may require different training
+configurations and may generate different artifacts and TensorBoard statistics.
+This section offers a detailed guide into how to manage the different training
+set-ups withing the toolkit.</p>
+<p>More specifically, this section offers a detailed guide on the command-line
+flags for <code>mlagents-learn</code> that control the training configurations:</p>
+<ul>
+<li><code>&lt;trainer-config-file&gt;</code>: defines the training hyperparameters for each
+  Behavior in the scene, and the set-ups for the environment parameters
+  (Curriculum Learning and Environment Parameter Randomization)</li>
+</ul>
+<p>It is important to highlight that successfully training a Behavior in the
+ML-Agents Toolkit involves tuning the training hyperparameters and
+configuration. This guide contains some best practices for tuning the training
+process when the default parameters don't seem to be giving the level of
+performance you would like. We provide sample configuration files for our
+example environments in the <a href="../config/">config/</a> directory. The
+<code>config/ppo/3DBall.yaml</code> was used to train the 3D Balance Ball in the
+<a href="../Getting-Started/">Getting Started</a> guide. That configuration file uses the
+PPO trainer, but we also have configuration files for SAC and GAIL.</p>
+<p>Additionally, the set of configurations you provide depend on the training
+functionalities you use (see <a href="../ML-Agents-Overview/">ML-Agents Toolkit Overview</a>
+for a description of all the training functionalities). Each functionality you
+add typically has its own training configurations. For instance:</p>
+<ul>
+<li>Use PPO or SAC?</li>
+<li>Use Recurrent Neural Networks for adding memory to your agents?</li>
+<li>Use the intrinsic curiosity module?</li>
+<li>Ignore the environment reward signal?</li>
+<li>Pre-train using behavioral cloning? (Assuming you have recorded
+  demonstrations.)</li>
+<li>Include the GAIL intrinsic reward signals? (Assuming you have recorded
+  demonstrations.)</li>
+<li>Use self-play? (Assuming your environment includes multiple agents.)</li>
+</ul>
+<p>The trainer config file, <code>&lt;trainer-config-file&gt;</code>, determines the features you will
+use during training, and the answers to the above questions will dictate its contents.
+The rest of this guide breaks down the different sub-sections of the trainer config file
+and explains the possible settings for each. If you need a list of all the trainer
+configurations, please see <a href="../Training-Configuration-File/">Training Configuration File</a>.</p>
+<p><strong>NOTE:</strong> The configuration file format has been changed between 0.17.0 and 0.18.0 and
+between 0.18.0 and onwards. To convert
+an old set of configuration files (trainer config, curriculum, and sampler files) to the new
+format, a script has been provided. Run <code>python -m mlagents.trainers.upgrade_config -h</code> in your
+console to see the script's usage.</p>
+<h3 id="adding-cli-arguments-to-the-training-configuration-file">Adding CLI Arguments to the Training Configuration file</h3>
+<p>Additionally, within the training configuration YAML file, you can also add the
+CLI arguments (such as <code>--num-envs</code>).</p>
+<p>Reminder that a detailed description of all the CLI arguments can be found by
+using the help utility:</p>
+<pre><code class="language-sh">mlagents-learn --help
+</code></pre>
+<p>These additional CLI arguments are grouped into environment, engine, checkpoint and torch.
+The available settings and example values are shown below.</p>
+<h4 id="environment-settings">Environment settings</h4>
+<pre><code class="language-yaml">env_settings:
+  env_path: FoodCollector
+  env_args: null
+  base_port: 5005
+  num_envs: 1
+  seed: -1
+  max_lifetime_restarts: 10
+  restarts_rate_limit_n: 1
+  restarts_rate_limit_period_s: 60
+</code></pre>
+<h4 id="engine-settings">Engine settings</h4>
+<pre><code class="language-yaml">engine_settings:
+  width: 84
+  height: 84
+  quality_level: 5
+  time_scale: 20
+  target_frame_rate: -1
+  capture_frame_rate: 60
+  no_graphics: false
+</code></pre>
+<h4 id="checkpoint-settings">Checkpoint settings</h4>
+<pre><code class="language-yaml">checkpoint_settings:
+  run_id: foodtorch
+  initialize_from: null
+  load_model: false
+  resume: false
+  force: true
+  train_model: false
+  inference: false
+</code></pre>
+<h4 id="torch-settings">Torch settings:</h4>
+<pre><code class="language-yaml">torch_settings:
+  device: cpu
+</code></pre>
+<h3 id="behavior-configurations">Behavior Configurations</h3>
+<p>The primary section of the trainer config file is a
+set of configurations for each Behavior in your scene. These are defined under
+the sub-section <code>behaviors</code> in your trainer config file. Some of the
+configurations are required while others are optional. To help us get started,
+below is a sample file that includes all the possible settings if we're using a
+PPO trainer with all the possible training functionalities enabled (memory,
+behavioral cloning, curiosity, GAIL and self-play). You will notice that
+curriculum and environment parameter randomization settings are not part of the <code>behaviors</code>
+configuration, but in their own section called <code>environment_parameters</code>.</p>
+<pre><code class="language-yaml">behaviors:
+  BehaviorPPO:
+    trainer_type: ppo
+
+    hyperparameters:
+      # Hyperparameters common to PPO and SAC
+      batch_size: 1024
+      buffer_size: 10240
+      learning_rate: 3.0e-4
+      learning_rate_schedule: linear
+
+      # PPO-specific hyperparameters
+      # Replaces the &quot;PPO-specific hyperparameters&quot; section above
+      beta: 5.0e-3
+      beta_schedule: constant
+      epsilon: 0.2
+      epsilon_schedule: linear
+      lambd: 0.95
+      num_epoch: 3
+
+    # Configuration of the neural network (common to PPO/SAC)
+    network_settings:
+      vis_encode_type: simple
+      normalize: false
+      hidden_units: 128
+      num_layers: 2
+      # memory
+      memory:
+        sequence_length: 64
+        memory_size: 256
+
+    # Trainer configurations common to all trainers
+    max_steps: 5.0e5
+    time_horizon: 64
+    summary_freq: 10000
+    keep_checkpoints: 5
+    checkpoint_interval: 50000
+    threaded: false
+    init_path: null
+
+    # behavior cloning
+    behavioral_cloning:
+      demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
+      strength: 0.5
+      steps: 150000
+      batch_size: 512
+      num_epoch: 3
+      samples_per_update: 0
+
+    reward_signals:
+      # environment reward (default)
+      extrinsic:
+        strength: 1.0
+        gamma: 0.99
+
+      # curiosity module
+      curiosity:
+        strength: 0.02
+        gamma: 0.99
+        encoding_size: 256
+        learning_rate: 3.0e-4
+
+      # GAIL
+      gail:
+        strength: 0.01
+        gamma: 0.99
+        encoding_size: 128
+        demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
+        learning_rate: 3.0e-4
+        use_actions: false
+        use_vail: false
+
+    # self-play
+    self_play:
+      window: 10
+      play_against_latest_model_ratio: 0.5
+      save_steps: 50000
+      swap_steps: 2000
+      team_change: 100000
+</code></pre>
+<p>Here is an equivalent file if we use an SAC trainer instead. Notice that the
+configurations for the additional functionalities (memory, behavioral cloning,
+curiosity and self-play) remain unchanged.</p>
+<pre><code class="language-yaml">behaviors:
+  BehaviorSAC:
+    trainer_type: sac
+
+    # Trainer configs common to PPO/SAC (excluding reward signals)
+    # same as PPO config
+
+    # SAC-specific configs (replaces the hyperparameters section above)
+    hyperparameters:
+      # Hyperparameters common to PPO and SAC
+      # Same as PPO config
+
+      # SAC-specific hyperparameters
+      # Replaces the &quot;PPO-specific hyperparameters&quot; section above
+      buffer_init_steps: 0
+      tau: 0.005
+      steps_per_update: 10.0
+      save_replay_buffer: false
+      init_entcoef: 0.5
+      reward_signal_steps_per_update: 10.0
+
+    # Configuration of the neural network (common to PPO/SAC)
+    network_settings:
+      # Same as PPO config
+
+    # Trainer configurations common to all trainers
+      # &lt;Same as PPO config&gt;
+
+    # pre-training using behavior cloning
+    behavioral_cloning:
+      # same as PPO config
+
+    reward_signals:
+      # environment reward
+      extrinsic:
+        # same as PPO config
+
+      # curiosity module
+      curiosity:
+        # same as PPO config
+
+      # GAIL
+      gail:
+        # same as PPO config
+
+    # self-play
+    self_play:
+      # same as PPO config
+</code></pre>
+<p>We now break apart the components of the configuration file and describe what
+each of these parameters mean and provide guidelines on how to set them. See
+<a href="../Training-Configuration-File/">Training Configuration File</a> for a detailed
+description of all the configurations listed above, along with their defaults.
+Unless otherwise specified, omitting a configuration will revert it to its default.</p>
+<h3 id="default-behavior-settings">Default Behavior Settings</h3>
+<p>In some cases, you may want to specify a set of default configurations for your Behaviors.
+This may be useful, for instance, if your Behavior names are generated procedurally by
+the environment and not known before runtime, or if you have many Behaviors with very similar
+settings. To specify a default configuraton, insert a <code>default_settings</code> section in your YAML.
+This section should be formatted exactly like a configuration for a Behavior.</p>
+<pre><code class="language-yaml">default_settings:
+  # &lt; Same as Behavior configuration &gt;
+behaviors:
+  # &lt; Same as above &gt;
+</code></pre>
+<p>Behaviors found in the environment that aren't specified in the YAML will now use the <code>default_settings</code>,
+and unspecified settings in behavior configurations will default to the values in <code>default_settings</code> if
+specified there.</p>
+<h3 id="environment-parameters">Environment Parameters</h3>
+<p>In order to control the <code>EnvironmentParameters</code> in the Unity simulation during training,
+you need to add a section called <code>environment_parameters</code>. For example you can set the
+value of an <code>EnvironmentParameter</code> called <code>my_environment_parameter</code> to <code>3.0</code> with
+the following code :</p>
+<pre><code class="language-yml">behaviors:
+  BehaviorY:
+    # &lt; Same as above &gt;
+
+# Add this section
+environment_parameters:
+  my_environment_parameter: 3.0
+</code></pre>
+<p>Inside the Unity simulation, you can access your Environment Parameters by doing :</p>
+<pre><code class="language-csharp">Academy.Instance.EnvironmentParameters.GetWithDefault(&quot;my_environment_parameter&quot;, 0.0f);
+</code></pre>
+<h4 id="environment-parameter-randomization">Environment Parameter Randomization</h4>
+<p>To enable environment parameter randomization, you need to edit the <code>environment_parameters</code>
+section of your training configuration yaml file. Instead of providing a single float value
+for your environment parameter, you can specify a sampler instead. Here is an example with
+three environment parameters called <code>mass</code>, <code>length</code> and <code>scale</code>:</p>
+<pre><code class="language-yml">behaviors:
+  BehaviorY:
+    # &lt; Same as above &gt;
+
+# Add this section
+environment_parameters:
+  mass:
+    sampler_type: uniform
+    sampler_parameters:
+        min_value: 0.5
+        max_value: 10
+
+  length:
+    sampler_type: multirangeuniform
+    sampler_parameters:
+        intervals: [[7, 10], [15, 20]]
+
+  scale:
+    sampler_type: gaussian
+    sampler_parameters:
+        mean: 2
+        st_dev: .3
+</code></pre>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>Setting</strong></th>
+<th align="left"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>sampler_type</code></td>
+<td align="left">A string identifier for the type of sampler to use for this <code>Environment Parameter</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>sampler_parameters</code></td>
+<td align="left">The parameters for a given <code>sampler_type</code>. Samplers of different types can have different <code>sampler_parameters</code></td>
+</tr>
+</tbody>
+</table>
+<h5 id="supported-sampler-types">Supported Sampler Types</h5>
+<p>Below is a list of the <code>sampler_type</code> values supported by the toolkit.</p>
+<ul>
+<li><code>uniform</code> - Uniform sampler</li>
+<li>Uniformly samples a single float value from a range with a given minimum
+    and maximum value (inclusive).</li>
+<li><strong>parameters</strong> - <code>min_value</code>, <code>max_value</code></li>
+<li><code>gaussian</code> - Gaussian sampler</li>
+<li>Samples a single float value from a normal distribution with a given mean
+    and standard deviation.</li>
+<li><strong>parameters</strong> - <code>mean</code>, <code>st_dev</code></li>
+<li><code>multirange_uniform</code> - Multirange uniform sampler</li>
+<li>First, samples an interval from a set of intervals in proportion to relative
+    length of the intervals. Then, uniformly samples a single float value from the
+    sampled interval (inclusive). This sampler can take an arbitrary number of
+    intervals in a list in the following format:
+    [[<code>interval_1_min</code>, <code>interval_1_max</code>], [<code>interval_2_min</code>,
+    <code>interval_2_max</code>], ...]</li>
+<li><strong>parameters</strong> - <code>intervals</code></li>
+</ul>
+<p>The implementation of the samplers can be found in the
+<a href="../com.unity.ml-agents/Runtime/Sampler.cs">Samplers.cs file</a>.</p>
+<h5 id="training-with-environment-parameter-randomization">Training with Environment Parameter Randomization</h5>
+<p>After the sampler configuration is defined, we proceed by launching <code>mlagents-learn</code>
+and specify trainer configuration with  parameter randomization enabled. For example,
+if we wanted to train the 3D ball agent with parameter randomization, we would run</p>
+<pre><code class="language-sh">mlagents-learn config/ppo/3DBall_randomize.yaml --run-id=3D-Ball-randomize
+</code></pre>
+<p>We can observe progress and metrics via TensorBoard.</p>
+<h4 id="curriculum">Curriculum</h4>
+<p>To enable curriculum learning, you need to add a <code>curriculum</code> sub-section to your environment
+parameter. Here is one example with the environment parameter <code>my_environment_parameter</code> :</p>
+<pre><code class="language-yml">behaviors:
+  BehaviorY:
+    # &lt; Same as above &gt;
+
+# Add this section
+environment_parameters:
+  my_environment_parameter:
+    curriculum:
+      - name: MyFirstLesson # The '-' is important as this is a list
+        completion_criteria:
+          measure: progress
+          behavior: my_behavior
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.2
+        value: 0.0
+      - name: MySecondLesson # This is the start of the second lesson
+        completion_criteria:
+          measure: progress
+          behavior: my_behavior
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.6
+          require_reset: true
+        value:
+          sampler_type: uniform
+          sampler_parameters:
+            min_value: 4.0
+            max_value: 7.0
+      - name: MyLastLesson
+        value: 8.0
+</code></pre>
+<p>Note that this curriculum <strong>only</strong> applies to <code>my_environment_parameter</code>. The <code>curriculum</code> section
+contains a list of <code>Lessons</code>. In the example, the lessons are named <code>MyFirstLesson</code>, <code>MySecondLesson</code>
+and <code>MyLastLesson</code>.
+Each <code>Lesson</code> has 3 fields :</p>
+<ul>
+<li><code>name</code> which is a user defined name for the lesson (The name of the lesson will be displayed in
+ the console when the lesson changes)</li>
+<li><code>completion_criteria</code> which determines what needs to happen in the simulation before the lesson
+ can be considered complete. When that condition is met, the curriculum moves on to the next
+ <code>Lesson</code>. Note that you do not need to specify a <code>completion_criteria</code> for the last <code>Lesson</code></li>
+<li><code>value</code> which is the value the environment parameter will take during the lesson. Note that this
+ can be a float or a sampler.</li>
+</ul>
+<p>There are the different settings of the <code>completion_criteria</code> :</p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>Setting</strong></th>
+<th align="left"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>measure</code></td>
+<td align="left">What to measure learning progress, and advancement in lessons by.<br><br> <code>reward</code> uses a measure of received reward, <code>progress</code> uses the ratio of steps/max_steps, while <code>Elo</code> is available only for self-play situations and uses Elo score as a curriculum completion measure.</td>
+</tr>
+<tr>
+<td align="left"><code>behavior</code></td>
+<td align="left">Specifies which behavior is being tracked. There can be multiple behaviors with different names, each at different points of training. This setting allows the curriculum to track only one of them.</td>
+</tr>
+<tr>
+<td align="left"><code>threshold</code></td>
+<td align="left">Determines at what point in value of <code>measure</code> the lesson should be increased.</td>
+</tr>
+<tr>
+<td align="left"><code>min_lesson_length</code></td>
+<td align="left">The minimum number of episodes that should be completed before the lesson can change. If <code>measure</code> is set to <code>reward</code>, the average cumulative reward of the last <code>min_lesson_length</code> episodes will be used to determine if the lesson should change. Must be nonnegative. <br><br> <strong>Important</strong>: the average reward that is compared to the thresholds is different than the mean reward that is logged to the console. For example, if <code>min_lesson_length</code> is <code>100</code>, the lesson will increment after the average cumulative reward of the last <code>100</code> episodes exceeds the current threshold. The mean reward logged to the console is dictated by the <code>summary_freq</code> parameter defined above.</td>
+</tr>
+<tr>
+<td align="left"><code>signal_smoothing</code></td>
+<td align="left">Whether to weight the current progress measure by previous values.</td>
+</tr>
+<tr>
+<td align="left"><code>require_reset</code></td>
+<td align="left">Whether changing lesson requires the environment to reset (default: false)</td>
+</tr>
+<tr>
+<td align="left">##### Training with a Curriculum</td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+<p>Once we have specified our metacurriculum and curricula, we can launch
+<code>mlagents-learn</code> to point to the config file containing
+our curricula and PPO will train using Curriculum Learning. For example, to
+train agents in the Wall Jump environment with curriculum learning, we can run:</p>
+<pre><code class="language-sh">mlagents-learn config/ppo/WallJump_curriculum.yaml --run-id=wall-jump-curriculum
+</code></pre>
+<p>We can then keep track of the current lessons and progresses via TensorBoard. If you've terminated
+the run, you can resume it using <code>--resume</code> and lesson progress will start off where it
+ended.</p>
+<h3 id="training-using-concurrent-unity-instances">Training Using Concurrent Unity Instances</h3>
+<p>In order to run concurrent Unity instances during training, set the number of
+environment instances using the command line option <code>--num-envs=&lt;n&gt;</code> when you
+invoke <code>mlagents-learn</code>. Optionally, you can also set the <code>--base-port</code>, which
+is the starting port used for the concurrent Unity instances.</p>
+<p>Some considerations:</p>
+<ul>
+<li><strong>Buffer Size</strong> - If you are having trouble getting an agent to train, even
+  with multiple concurrent Unity instances, you could increase <code>buffer_size</code> in
+  the trainer config file. A common practice is to multiply
+  <code>buffer_size</code> by <code>num-envs</code>.</li>
+<li><strong>Resource Constraints</strong> - Invoking concurrent Unity instances is constrained
+  by the resources on the machine. Please use discretion when setting
+  <code>--num-envs=&lt;n&gt;</code>.</li>
+<li><strong>Result Variation Using Concurrent Unity Instances</strong> - If you keep all the
+  hyperparameters the same, but change <code>--num-envs=&lt;n&gt;</code>, the results and model
+  would likely change.</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

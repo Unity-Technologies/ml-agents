@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/ML-Agents-Overview/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>ML-Agents Toolkit Overview - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "ML-Agents Toolkit Overview";
+    var mkdocs_page_input_path = "ML-Agents-Overview.md";
+    var mkdocs_page_url = "/ml-agents/ML-Agents-Overview/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>ML-Agents Toolkit Overview</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/ML-Agents-Overview.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="ml-agents-toolkit-overview">ML-Agents Toolkit Overview</h1>
+<p><strong>Table of Contents</strong></p>
+<ul>
+<li><a href="#running-example-training-npc-behaviors">Running Example: Training NPC Behaviors</a></li>
+<li><a href="#key-components">Key Components</a></li>
+<li><a href="#training-modes">Training Modes</a></li>
+<li><a href="#built-in-training-and-inference">Built-in Training and Inference</a><ul>
+<li><a href="#cross-platform-inference">Cross-Platform Inference</a></li>
+</ul>
+</li>
+<li><a href="#custom-training-and-inference">Custom Training and Inference</a></li>
+<li><a href="#flexible-training-scenarios">Flexible Training Scenarios</a></li>
+<li><a href="#training-methods-environment-agnostic">Training Methods: Environment-agnostic</a></li>
+<li><a href="#a-quick-note-on-reward-signals">A Quick Note on Reward Signals</a></li>
+<li><a href="#deep-reinforcement-learning">Deep Reinforcement Learning</a><ul>
+<li><a href="#curiosity-for-sparse-reward-environments">Curiosity for Sparse-reward Environments</a></li>
+<li><a href="#rnd-for-sparse-reward-environments">RND for Sparse-reward Environments</a></li>
+</ul>
+</li>
+<li><a href="#imitation-learning">Imitation Learning</a><ul>
+<li><a href="#gail-generative-adversarial-imitation-learning">GAIL (Generative Adversarial Imitation Learning)</a></li>
+<li><a href="#behavioral-cloning-bc">Behavioral Cloning (BC)</a></li>
+<li><a href="#recording-demonstrations">Recording Demonstrations</a></li>
+</ul>
+</li>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#training-methods-environment-specific">Training Methods: Environment-specific</a></li>
+<li><a href="#training-in-competitive-multi-agent-environments-with-self-play">Training in Competitive Multi-Agent Environments with Self-Play</a></li>
+<li><a href="#training-in-cooperative-multi-agent-environments-with-ma-poca">Training in Cooperative Multi-Agent Environments with MA-POCA</a></li>
+<li><a href="#solving-complex-tasks-using-curriculum-learning">Solving Complex Tasks using Curriculum Learning</a></li>
+<li><a href="#training-robust-agents-using-environment-parameter-randomization">Training Robust Agents using Environment Parameter Randomization</a></li>
+<li><a href="#model-types">Model Types</a></li>
+<li><a href="#learning-from-vector-observations">Learning from Vector Observations</a></li>
+<li><a href="#learning-from-cameras-using-convolutional-neural-networks">Learning from Cameras using Convolutional Neural Networks</a></li>
+<li><a href="#learning-from-ariable-length-observations-using-attention">Learning from Variable Length Observations using Attention</a></li>
+<li><a href="#memory-enhanced-agents-using-recurrent-neural-networks">Memory-enhanced Agents using Recurrent Neural Networks</a></li>
+<li><a href="#additional-features">Additional Features</a></li>
+<li><a href="#summary-and-next-steps">Summary and Next Steps</a></li>
+</ul>
+<p><strong>The Unity Machine Learning Agents Toolkit</strong> (ML-Agents Toolkit) is an
+open-source project that enables games and simulations to serve as environments
+for training intelligent agents. Agents can be trained using reinforcement
+learning, imitation learning, neuroevolution, or other machine learning methods
+through a simple-to-use Python API. We also provide implementations (based on
+PyTorch) of state-of-the-art algorithms to enable game developers and
+hobbyists to easily train intelligent agents for 2D, 3D and VR/AR games. These
+trained agents can be used for multiple purposes, including controlling NPC
+behavior (in a variety of settings such as multi-agent and adversarial),
+automated testing of game builds and evaluating different game design decisions
+pre-release. The ML-Agents Toolkit is mutually beneficial for both game
+developers and AI researchers as it provides a central platform where advances
+in AI can be evaluated on Unity’s rich environments and then made accessible to
+the wider research and game developer communities.</p>
+<p>Depending on your background (i.e. researcher, game developer, hobbyist), you
+may have very different questions on your mind at the moment. To make your
+transition to the ML-Agents Toolkit easier, we provide several background pages
+that include overviews and helpful resources on the
+<a href="../Background-Unity/">Unity Engine</a>,
+<a href="../Background-Machine-Learning/">machine learning</a> and
+<a href="../Background-PyTorch/">PyTorch</a>. We <strong>strongly</strong> recommend browsing the
+relevant background pages if you're not familiar with a Unity scene, basic
+machine learning concepts or have not previously heard of PyTorch.</p>
+<p>The remainder of this page contains a deep dive into ML-Agents, its key
+components, different training modes and scenarios. By the end of it, you should
+have a good sense of <em>what</em> the ML-Agents Toolkit allows you to do. The
+subsequent documentation pages provide examples of <em>how</em> to use ML-Agents. To
+get started, watch this
+<a href="https://www.youtube.com/watch?v=fiQsmdwEGT8&amp;feature=youtu.be">demo video of ML-Agents in action</a>.</p>
+<h2 id="running-example-training-npc-behaviors">Running Example: Training NPC Behaviors</h2>
+<p>To help explain the material and terminology in this page, we'll use a
+hypothetical, running example throughout. We will explore the problem of
+training the behavior of a non-playable character (NPC) in a game. (An NPC is a
+game character that is never controlled by a human player and its behavior is
+pre-defined by the game developer.) More specifically, let's assume we're
+building a multi-player, war-themed game in which players control the soldiers.
+In this game, we have a single NPC who serves as a medic, finding and reviving
+wounded players. Lastly, let us assume that there are two teams, each with five
+players and one NPC medic.</p>
+<p>The behavior of a medic is quite complex. It first needs to avoid getting
+injured, which requires detecting when it is in danger and moving to a safe
+location. Second, it needs to be aware of which of its team members are injured
+and require assistance. In the case of multiple injuries, it needs to assess the
+degree of injury and decide who to help first. Lastly, a good medic will always
+place itself in a position where it can quickly help its team members. Factoring
+in all of these traits means that at every instance, the medic needs to measure
+several attributes of the environment (e.g. position of team members, position
+of enemies, which of its team members are injured and to what degree) and then
+decide on an action (e.g. hide from enemy fire, move to help one of its
+members). Given the large number of settings of the environment and the large
+number of actions that the medic can take, defining and implementing such
+complex behaviors by hand is challenging and prone to errors.</p>
+<p>With ML-Agents, it is possible to <em>train</em> the behaviors of such NPCs (called
+<strong>Agents</strong>) using a variety of methods. The basic idea is quite simple. We need
+to define three entities at every moment of the game (called <strong>environment</strong>):</p>
+<ul>
+<li><strong>Observations</strong> - what the medic perceives about the environment.
+  Observations can be numeric and/or visual. Numeric observations measure
+  attributes of the environment from the point of view of the agent. For our
+  medic this would be attributes of the battlefield that are visible to it. For
+  most interesting environments, an agent will require several continuous
+  numeric observations. Visual observations, on the other hand, are images
+  generated from the cameras attached to the agent and represent what the agent
+  is seeing at that point in time. It is common to confuse an agent's
+  observation with the environment (or game) <strong>state</strong>. The environment state
+  represents information about the entire scene containing all the game
+  characters. The agents observation, however, only contains information that
+  the agent is aware of and is typically a subset of the environment state. For
+  example, the medic observation cannot include information about an enemy in
+  hiding that the medic is unaware of.</li>
+<li><strong>Actions</strong> - what actions the medic can take. Similar to observations,
+  actions can either be continuous or discrete depending on the complexity of
+  the environment and agent. In the case of the medic, if the environment is a
+  simple grid world where only their location matters, then a discrete action
+  taking on one of four values (north, south, east, west) suffices. However, if
+  the environment is more complex and the medic can move freely then using two
+  continuous actions (one for direction and another for speed) is more
+  appropriate.</li>
+<li><strong>Reward signals</strong> - a scalar value indicating how well the medic is doing.
+  Note that the reward signal need not be provided at every moment, but only
+  when the medic performs an action that is good or bad. For example, it can
+  receive a large negative reward if it dies, a modest positive reward whenever
+  it revives a wounded team member, and a modest negative reward when a wounded
+  team member dies due to lack of assistance. Note that the reward signal is how
+  the objectives of the task are communicated to the agent, so they need to be
+  set up in a manner where maximizing reward generates the desired optimal
+  behavior.</li>
+</ul>
+<p>After defining these three entities (the building blocks of a <strong>reinforcement
+learning task</strong>), we can now <em>train</em> the medic's behavior. This is achieved by
+simulating the environment for many trials where the medic, over time, learns
+what is the optimal action to take for every observation it measures by
+maximizing its future reward. The key is that by learning the actions that
+maximize its reward, the medic is learning the behaviors that make it a good
+medic (i.e. one who saves the most number of lives). In <strong>reinforcement
+learning</strong> terminology, the behavior that is learned is called a <strong>policy</strong>,
+which is essentially a (optimal) mapping from observations to actions. Note that
+the process of learning a policy through running simulations is called the
+<strong>training phase</strong>, while playing the game with an NPC that is using its learned
+policy is called the <strong>inference phase</strong>.</p>
+<p>The ML-Agents Toolkit provides all the necessary tools for using Unity as the
+simulation engine for learning the policies of different objects in a Unity
+environment. In the next few sections, we discuss how the ML-Agents Toolkit
+achieves this and what features it provides.</p>
+<h2 id="key-components">Key Components</h2>
+<p>The ML-Agents Toolkit contains five high-level components:</p>
+<ul>
+<li><strong>Learning Environment</strong> - which contains the Unity scene and all the game
+  characters. The Unity scene provides the environment in which agents observe,
+  act, and learn. How you set up the Unity scene to serve as a learning
+  environment really depends on your goal. You may be trying to solve a specific
+  reinforcement learning problem of limited scope, in which case you can use the
+  same scene for both training and for testing trained agents. Or, you may be
+  training agents to operate in a complex game or simulation. In this case, it
+  might be more efficient and practical to create a purpose-built training
+  scene. The ML-Agents Toolkit includes an ML-Agents Unity SDK
+  (<code>com.unity.ml-agents</code> package) that enables you to transform any Unity scene
+  into a learning environment by defining the agents and their behaviors.</li>
+<li><strong>Python Low-Level API</strong> - which contains a low-level Python interface for
+  interacting and manipulating a learning environment. Note that, unlike the
+  Learning Environment, the Python API is not part of Unity, but lives outside
+  and communicates with Unity through the Communicator. This API is contained in
+  a dedicated <code>mlagents_envs</code> Python package and is used by the Python training
+  process to communicate with and control the Academy during training. However,
+  it can be used for other purposes as well. For example, you could use the API
+  to use Unity as the simulation engine for your own machine learning
+  algorithms. See <a href="../Python-LLAPI/">Python API</a> for more information.</li>
+<li><strong>External Communicator</strong> - which connects the Learning Environment with the
+  Python Low-Level API. It lives within the Learning Environment.</li>
+<li><strong>Python Trainers</strong> which contains all the machine learning algorithms that
+  enable training agents. The algorithms are implemented in Python and are part
+  of their own <code>mlagents</code> Python package. The package exposes a single
+  command-line utility <code>mlagents-learn</code> that supports all the training methods
+  and options outlined in this document. The Python Trainers interface solely
+  with the Python Low-Level API.</li>
+<li><strong>Gym Wrapper</strong> (not pictured). A common way in which machine learning
+  researchers interact with simulation environments is via a wrapper provided by
+  OpenAI called <a href="https://github.com/openai/gym">gym</a>. We provide a gym wrapper
+  in a dedicated <code>gym-unity</code> Python package and
+  <a href="../Python-Gym-API/">instructions</a> for using it with existing machine
+  learning algorithms which utilize gym.</li>
+</ul>
+<p align="center">
+  <img src="images/learning_environment_basic.png"
+       alt="Simplified ML-Agents Scene Block Diagram"
+       width="600"
+       border="10" />
+</p>
+
+<p><em>Simplified block diagram of ML-Agents.</em></p>
+<p>The Learning Environment contains two Unity Components that help organize the
+Unity scene:</p>
+<ul>
+<li><strong>Agents</strong> - which is attached to a Unity GameObject (any character within a
+  scene) and handles generating its observations, performing the actions it
+  receives and assigning a reward (positive / negative) when appropriate. Each
+  Agent is linked to a Behavior.</li>
+<li><strong>Behavior</strong> - defines specific attributes of the agent such as the number of
+  actions that agent can take. Each Behavior is uniquely identified by a
+  <code>Behavior Name</code> field. A Behavior can be thought as a function that receives
+  observations and rewards from the Agent and returns actions. A Behavior can be
+  of one of three types: Learning, Heuristic or Inference. A Learning Behavior
+  is one that is not, yet, defined but about to be trained. A Heuristic Behavior
+  is one that is defined by a hard-coded set of rules implemented in code. An
+  Inference Behavior is one that includes a trained Neural Network file. In
+  essence, after a Learning Behavior is trained, it becomes an Inference
+  Behavior.</li>
+</ul>
+<p>Every Learning Environment will always have one Agent for every character in the
+scene. While each Agent must be linked to a Behavior, it is possible for Agents
+that have similar observations and actions to have the same Behavior. In our
+sample game, we have two teams each with their own medic. Thus we will have two
+Agents in our Learning Environment, one for each medic, but both of these medics
+can have the same Behavior. This does not mean that at each instance they will
+have identical observation and action <em>values</em>.</p>
+<p align="center">
+  <img src="images/learning_environment_example.png"
+       alt="Example ML-Agents Scene Block Diagram"
+       width="700"
+       border="10" />
+</p>
+
+<p><em>Example block diagram of ML-Agents Toolkit for our sample game.</em></p>
+<p>Note that in a single environment, there can be multiple Agents and multiple
+Behaviors at the same time. For example, if we expanded our game to include tank
+driver NPCs, then the Agent attached to those characters cannot share its
+Behavior with the Agent linked to the medics (medics and drivers have different
+actions). The Learning Environment through the Academy (not represented in the
+diagram) ensures that all the Agents are in sync in addition to controlling
+environment-wide settings.</p>
+<p>Lastly, it is possible to exchange data between Unity and Python outside of the
+machine learning loop through <em>Side Channels</em>. One example of using <em>Side
+Channels</em> is to exchange data with Python about <em>Environment Parameters</em>. The
+following diagram illustrates the above.</p>
+<p align="center">
+  <img src="images/learning_environment_full.png"
+       alt="More Complete Example ML-Agents Scene Block Diagram"
+       border="10" />
+</p>
+
+<h2 id="training-modes">Training Modes</h2>
+<p>Given the flexibility of ML-Agents, there are a few ways in which training and
+inference can proceed.</p>
+<h3 id="built-in-training-and-inference">Built-in Training and Inference</h3>
+<p>As mentioned previously, the ML-Agents Toolkit ships with several
+implementations of state-of-the-art algorithms for training intelligent agents.
+More specifically, during training, all the medics in the scene send their
+observations to the Python API through the External Communicator. The Python API
+processes these observations and sends back actions for each medic to take.
+During training these actions are mostly exploratory to help the Python API
+learn the best policy for each medic. Once training concludes, the learned
+policy for each medic can be exported as a model file. Then during the inference
+phase, the medics still continue to generate their observations, but instead of
+being sent to the Python API, they will be fed into their (internal, embedded)
+model to generate the <em>optimal</em> action for each medic to take at every point in
+time.</p>
+<p>The <a href="../Getting-Started/">Getting Started Guide</a> tutorial covers this training
+mode with the <strong>3D Balance Ball</strong> sample environment.</p>
+<h4 id="cross-platform-inference">Cross-Platform Inference</h4>
+<p>It is important to note that the ML-Agents Toolkit leverages the
+<a href="../Unity-Inference-Engine/">Unity Inference Engine</a> to run the models within a
+Unity scene such that an agent can take the <em>optimal</em> action at each step. Given
+that the Unity Inference Engine support most platforms that Unity does, this
+means that any model you train with the ML-Agents Toolkit can be embedded into
+your Unity application that runs on any platform. See our
+<a href="https://blogs.unity3d.com/2019/03/01/unity-ml-agents-toolkit-v0-7-a-leap-towards-cross-platform-inference/">dedicated blog post</a>
+for additional information.</p>
+<h3 id="custom-training-and-inference">Custom Training and Inference</h3>
+<p>In the previous mode, the Agents were used for training to generate a PyTorch
+model that the Agents can later use. However, any user of the ML-Agents Toolkit
+can leverage their own algorithms for training. In this case, the behaviors of
+all the Agents in the scene will be controlled within Python. You can even turn
+your environment into a <a href="../Python-Gym-API/">gym.</a></p>
+<p>We do not currently have a tutorial highlighting this mode, but you can learn
+more about the Python API <a href="../Python-LLAPI/">here</a>.</p>
+<h2 id="flexible-training-scenarios">Flexible Training Scenarios</h2>
+<p>While the discussion so-far has mostly focused on training a single agent, with
+ML-Agents, several training scenarios are possible. We are excited to see what
+kinds of novel and fun environments the community creates. For those new to
+training intelligent agents, below are a few examples that can serve as
+inspiration:</p>
+<ul>
+<li>Single-Agent. A single agent, with its own reward signal. The traditional way
+  of training an agent. An example is any single-player game, such as Chicken.</li>
+<li>Simultaneous Single-Agent. Multiple independent agents with independent reward
+  signals with same <code>Behavior Parameters</code>. A parallelized version of the
+  traditional training scenario, which can speed-up and stabilize the training
+  process. Helpful when you have multiple versions of the same character in an
+  environment who should learn similar behaviors. An example might be training a
+  dozen robot-arms to each open a door simultaneously.</li>
+<li>Adversarial Self-Play. Two interacting agents with inverse reward signals. In
+  two-player games, adversarial self-play can allow an agent to become
+  increasingly more skilled, while always having the perfectly matched opponent:
+  itself. This was the strategy employed when training AlphaGo, and more
+  recently used by OpenAI to train a human-beating 1-vs-1 Dota 2 agent.</li>
+<li>Cooperative Multi-Agent. Multiple interacting agents with a shared reward
+  signal with same or different <code>Behavior Parameters</code>. In this scenario, all
+  agents must work together to accomplish a task that cannot be done alone.
+  Examples include environments where each agent only has access to partial
+  information, which needs to be shared in order to accomplish the task or
+  collaboratively solve a puzzle.</li>
+<li>Competitive Multi-Agent. Multiple interacting agents with inverse reward
+  signals with same or different <code>Behavior Parameters</code>. In this scenario, agents
+  must compete with one another to either win a competition, or obtain some
+  limited set of resources. All team sports fall into this scenario.</li>
+<li>Ecosystem. Multiple interacting agents with independent reward signals with
+  same or different <code>Behavior Parameters</code>. This scenario can be thought of as
+  creating a small world in which animals with different goals all interact,
+  such as a savanna in which there might be zebras, elephants and giraffes, or
+  an autonomous driving simulation within an urban environment.</li>
+</ul>
+<h2 id="training-methods-environment-agnostic">Training Methods: Environment-agnostic</h2>
+<p>The remaining sections overview the various state-of-the-art machine learning
+algorithms that are part of the ML-Agents Toolkit. If you aren't studying
+machine and reinforcement learning as a subject and just want to train agents to
+accomplish tasks, you can treat these algorithms as <em>black boxes</em>. There are a
+few training-related parameters to adjust inside Unity as well as on the Python
+training side, but you do not need in-depth knowledge of the algorithms
+themselves to successfully create and train agents. Step-by-step procedures for
+running the training process are provided in the
+<a href="../Training-ML-Agents/">Training ML-Agents</a> page.</p>
+<p>This section specifically focuses on the training methods that are available
+regardless of the specifics of your learning environment.</p>
+<h4 id="a-quick-note-on-reward-signals">A Quick Note on Reward Signals</h4>
+<p>In this section we introduce the concepts of <em>intrinsic</em> and <em>extrinsic</em>
+rewards, which helps explain some of the training methods.</p>
+<p>In reinforcement learning, the end goal for the Agent is to discover a behavior
+(a Policy) that maximizes a reward. You will need to provide the agent one or
+more reward signals to use during training. Typically, a reward is defined by
+your environment, and corresponds to reaching some goal. These are what we refer
+to as <em>extrinsic</em> rewards, as they are defined external of the learning
+algorithm.</p>
+<p>Rewards, however, can be defined outside of the environment as well, to
+encourage the agent to behave in certain ways, or to aid the learning of the
+true extrinsic reward. We refer to these rewards as <em>intrinsic</em> reward signals.
+The total reward that the agent will learn to maximize can be a mix of extrinsic
+and intrinsic reward signals.</p>
+<p>The ML-Agents Toolkit allows reward signals to be defined in a modular way, and
+we provide four reward signals that can the mixed and matched to help shape
+your agent's behavior:</p>
+<ul>
+<li><code>extrinsic</code>: represents the rewards defined in your environment, and is
+  enabled by default</li>
+<li><code>gail</code>: represents an intrinsic reward signal that is defined by GAIL (see
+  below)</li>
+<li><code>curiosity</code>: represents an intrinsic reward signal that encourages exploration
+  in sparse-reward environments that is defined by the Curiosity module (see
+  below).</li>
+<li><code>rnd</code>: represents an intrinsic reward signal that encourages exploration
+  in sparse-reward environments that is defined by the Curiosity module (see
+  below).</li>
+</ul>
+<h3 id="deep-reinforcement-learning">Deep Reinforcement Learning</h3>
+<p>ML-Agents provide an implementation of two reinforcement learning algorithms:</p>
+<ul>
+<li><a href="https://blog.openai.com/openai-baselines-ppo/">Proximal Policy Optimization (PPO)</a></li>
+<li><a href="https://bair.berkeley.edu/blog/2018/12/14/sac/">Soft Actor-Critic (SAC)</a></li>
+</ul>
+<p>The default algorithm is PPO. This is a method that has been shown to be more
+general purpose and stable than many other RL algorithms.</p>
+<p>In contrast with PPO, SAC is <em>off-policy</em>, which means it can learn from
+experiences collected at any time during the past. As experiences are collected,
+they are placed in an experience replay buffer and randomly drawn during
+training. This makes SAC significantly more sample-efficient, often requiring
+5-10 times less samples to learn the same task as PPO. However, SAC tends to
+require more model updates. SAC is a good choice for heavier or slower
+environments (about 0.1 seconds per step or more). SAC is also a "maximum
+entropy" algorithm, and enables exploration in an intrinsic way. Read more about
+maximum entropy RL
+<a href="https://bair.berkeley.edu/blog/2017/10/06/soft-q-learning/">here</a>.</p>
+<h4 id="curiosity-for-sparse-reward-environments">Curiosity for Sparse-reward Environments</h4>
+<p>In environments where the agent receives rare or infrequent rewards (i.e.
+sparse-reward), an agent may never receive a reward signal on which to bootstrap
+its training process. This is a scenario where the use of an intrinsic reward
+signals can be valuable. Curiosity is one such signal which can help the agent
+explore when extrinsic rewards are sparse.</p>
+<p>The <code>curiosity</code> Reward Signal enables the Intrinsic Curiosity Module. This is an
+implementation of the approach described in
+<a href="https://pathak22.github.io/noreward-rl/">Curiosity-driven Exploration by Self-supervised Prediction</a>
+by Pathak, et al. It trains two networks:</p>
+<ul>
+<li>an inverse model, which takes the current and next observation of the agent,
+  encodes them, and uses the encoding to predict the action that was taken
+  between the observations</li>
+<li>a forward model, which takes the encoded current observation and action, and
+  predicts the next encoded observation.</li>
+</ul>
+<p>The loss of the forward model (the difference between the predicted and actual
+encoded observations) is used as the intrinsic reward, so the more surprised the
+model is, the larger the reward will be.</p>
+<p>For more information, see our dedicated
+<a href="https://blogs.unity3d.com/2018/06/26/solving-sparse-reward-tasks-with-curiosity/">blog post on the Curiosity module</a>.</p>
+<h4 id="rnd-for-sparse-reward-environments">RND for Sparse-reward Environments</h4>
+<p>Similarly to Curiosity, Random Network Distillation (RND) is useful in sparse or rare
+reward environments as it helps the Agent explore. The RND Module is implemented following
+the paper <a href="https://arxiv.org/abs/1810.12894">Exploration by Random Network Distillation</a>.
+RND uses two networks:
+ - The first is a network with fixed random weights that takes observations as inputs and
+ generates an encoding
+ - The second is a network with similar architecture that is trained to predict the
+ outputs of the first network and uses the observations the Agent collects as training data.</p>
+<p>The loss (the squared difference between the predicted and actual encoded observations)
+of the trained model is used as intrinsic reward. The more an Agent visits a state, the
+more accurate the predictions and the lower the rewards which encourages the Agent to
+explore new states with higher prediction errors.</p>
+<h3 id="imitation-learning">Imitation Learning</h3>
+<p>It is often more intuitive to simply demonstrate the behavior we want an agent
+to perform, rather than attempting to have it learn via trial-and-error methods.
+For example, instead of indirectly training a medic with the help of a reward
+function, we can give the medic real world examples of observations from the
+game and actions from a game controller to guide the medic's behavior. Imitation
+Learning uses pairs of observations and actions from a demonstration to learn a
+policy. See this <a href="https://youtu.be/kpb8ZkMBFYs">video demo</a> of imitation
+learning .</p>
+<p>Imitation learning can either be used alone or in conjunction with reinforcement
+learning. If used alone it can provide a mechanism for learning a specific type
+of behavior (i.e. a specific style of solving the task). If used in conjunction
+with reinforcement learning it can dramatically reduce the time the agent takes
+to solve the environment. This can be especially pronounced in sparse-reward
+environments. For instance, on the
+<a href="../Learning-Environment-Examples/#pyramids">Pyramids environment</a>, using 6
+episodes of demonstrations can reduce training steps by more than 4 times. See
+Behavioral Cloning + GAIL + Curiosity + RL below.</p>
+<p align="center">
+  <img src="images/mlagents-ImitationAndRL.png"
+       alt="Using Demonstrations with Reinforcement Learning"
+       width="700" border="0" />
+</p>
+
+<p>The ML-Agents Toolkit provides a way to learn directly from demonstrations, as
+well as use them to help speed up reward-based training (RL). We include two
+algorithms called Behavioral Cloning (BC) and Generative Adversarial Imitation
+Learning (GAIL). In most scenarios, you can combine these two features:</p>
+<ul>
+<li>If you want to help your agents learn (especially with environments that have
+  sparse rewards) using pre-recorded demonstrations, you can generally enable
+  both GAIL and Behavioral Cloning at low strengths in addition to having an
+  extrinsic reward. An example of this is provided for the PushBlock example
+  environment in <code>config/imitation/PushBlock.yaml</code>.</li>
+<li>If you want to train purely from demonstrations with GAIL and BC <em>without</em> an
+  extrinsic reward signal, please see the CrawlerStatic example environment under
+  in <code>config/imitation/CrawlerStatic.yaml</code>.</li>
+</ul>
+<p><strong><em>Note:</em></strong> GAIL introduces a <a href="https://arxiv.org/pdf/1809.02925.pdf"><em>survivor bias</em></a>
+to the learning process. That is, by giving positive rewards based on similarity
+to the expert, the agent is incentivized to remain alive for as long as possible.
+This can directly conflict with goal-oriented tasks like our PushBlock or Pyramids
+example environments where an agent must reach a goal state thus ending the
+episode as quickly as possible. In these cases, we strongly recommend that you
+use a low strength GAIL reward signal and a sparse extrinisic signal when
+the agent achieves the task. This way, the GAIL reward signal will guide the
+agent until it discovers the extrnisic signal and will not overpower it. If the
+agent appears to be ignoring the extrinsic reward signal, you should reduce
+the strength of GAIL.</p>
+<h4 id="gail-generative-adversarial-imitation-learning">GAIL (Generative Adversarial Imitation Learning)</h4>
+<p>GAIL, or
+<a href="https://arxiv.org/abs/1606.03476">Generative Adversarial Imitation Learning</a>,
+uses an adversarial approach to reward your Agent for behaving similar to a set
+of demonstrations. GAIL can be used with or without environment rewards, and
+works well when there are a limited number of demonstrations. In this framework,
+a second neural network, the discriminator, is taught to distinguish whether an
+observation/action is from a demonstration or produced by the agent. This
+discriminator can then examine a new observation/action and provide it a reward
+based on how close it believes this new observation/action is to the provided
+demonstrations.</p>
+<p>At each training step, the agent tries to learn how to maximize this reward.
+Then, the discriminator is trained to better distinguish between demonstrations
+and agent state/actions. In this way, while the agent gets better and better at
+mimicking the demonstrations, the discriminator keeps getting stricter and
+stricter and the agent must try harder to "fool" it.</p>
+<p>This approach learns a <em>policy</em> that produces states and actions similar to the
+demonstrations, requiring fewer demonstrations than direct cloning of the
+actions. In addition to learning purely from demonstrations, the GAIL reward
+signal can be mixed with an extrinsic reward signal to guide the learning
+process.</p>
+<h4 id="behavioral-cloning-bc">Behavioral Cloning (BC)</h4>
+<p>BC trains the Agent's policy to exactly mimic the actions shown in a set of
+demonstrations. The BC feature can be enabled on the PPO or SAC trainers. As BC
+cannot generalize past the examples shown in the demonstrations, BC tends to
+work best when there exists demonstrations for nearly all of the states that the
+agent can experience, or in conjunction with GAIL and/or an extrinsic reward.</p>
+<h4 id="recording-demonstrations">Recording Demonstrations</h4>
+<p>Demonstrations of agent behavior can be recorded from the Unity Editor or build,
+and saved as assets. These demonstrations contain information on the
+observations, actions, and rewards for a given agent during the recording
+session. They can be managed in the Editor, as well as used for training with BC
+and GAIL. See the
+<a href="../Learning-Environment-Design-Agents/#recording-demonstrations">Designing Agents</a>
+page for more information on how to record demonstrations for your agent.</p>
+<h3 id="summary">Summary</h3>
+<p>To summarize, we provide 3 training methods: BC, GAIL and RL (PPO or SAC) that
+can be used independently or together:</p>
+<ul>
+<li>BC can be used on its own or as a pre-training step before GAIL and/or RL</li>
+<li>GAIL can be used with or without extrinsic rewards</li>
+<li>RL can be used on its own (either PPO or SAC) or in conjunction with BC and/or
+  GAIL.</li>
+</ul>
+<p>Leveraging either BC or GAIL requires recording demonstrations to be provided as
+input to the training algorithms.</p>
+<h2 id="training-methods-environment-specific">Training Methods: Environment-specific</h2>
+<p>In addition to the three environment-agnostic training methods introduced in the
+previous section, the ML-Agents Toolkit provides additional methods that can aid
+in training behaviors for specific types of environments.</p>
+<h3 id="training-in-competitive-multi-agent-environments-with-self-play">Training in Competitive Multi-Agent Environments with Self-Play</h3>
+<p>ML-Agents provides the functionality to train both symmetric and asymmetric
+adversarial games with
+<a href="https://openai.com/blog/competitive-self-play/">Self-Play</a>. A symmetric game is
+one in which opposing agents are equal in form, function and objective. Examples
+of symmetric games are our Tennis and Soccer example environments. In
+reinforcement learning, this means both agents have the same observation and
+actions and learn from the same reward function and so <em>they can share the
+same policy</em>. In asymmetric games, this is not the case. An example of an
+asymmetric games are Hide and Seek. Agents in these types of games do not always
+have the same observation or actions and so sharing policy networks is not
+necessarily ideal.</p>
+<p>With self-play, an agent learns in adversarial games by competing against fixed,
+past versions of its opponent (which could be itself as in symmetric games) to
+provide a more stable, stationary learning environment. This is compared to
+competing against the current, best opponent in every episode, which is
+constantly changing (because it's learning).</p>
+<p>Self-play can be used with our implementations of both Proximal Policy
+Optimization (PPO) and Soft Actor-Critic (SAC). However, from the perspective of
+an individual agent, these scenarios appear to have non-stationary dynamics
+because the opponent is often changing. This can cause significant issues in the
+experience replay mechanism used by SAC. Thus, we recommend that users use PPO.
+For further reading on this issue in particular, see the paper
+<a href="https://arxiv.org/pdf/1702.08887.pdf">Stabilising Experience Replay for Deep Multi-Agent Reinforcement Learning</a>.</p>
+<p>See our
+<a href="../Learning-Environment-Design-Agents/#defining-teams-for-multi-agent-scenarios">Designing Agents</a>
+page for more information on setting up teams in your Unity scene. Also, read
+our
+<a href="https://blogs.unity3d.com/2020/02/28/training-intelligent-adversaries-using-self-play-with-ml-agents/">blog post on self-play</a>
+for additional information.</p>
+<h3 id="training-in-cooperative-multi-agent-environments-with-ma-poca">Training In Cooperative Multi-Agent Environments with MA-POCA</h3>
+<p><img alt="PushBlock with Agents Working Together" src="../images/cooperative_pushblock.png" /></p>
+<p>ML-Agents provides the functionality for training cooperative behaviors - i.e.,
+groups of agents working towards a common goal, where the success of the individual
+is linked to the success of the whole group. In such a scenario, agents typically receive
+rewards as a group. For instance, if a team of agents wins a game against an opposing
+team, everyone is rewarded - even agents who did not directly contribute to the win. This
+makes learning what to do as an individual difficult - you may get a win
+for doing nothing, and a loss for doing your best.</p>
+<p>In ML-Agents, we provide MA-POCA (MultiAgent POsthumous Credit Assignment), which
+is a novel multi-agent trainer that trains a <em>centralized critic</em>, a neural network
+that acts as a "coach" for a whole group of agents. You can then give rewards to the team
+as a whole, and the agents will learn how best to contribute to achieving that reward.
+Agents can <em>also</em> be given rewards individually, and the team will work together to help the
+individual achieve those goals. During an episode, agents can be added or removed from the group,
+such as when agents spawn or die in a game. If agents are removed mid-episode (e.g., if teammates die
+or are removed from the game), they will still learn whether their actions contributed
+to the team winning later, enabling agents to take group-beneficial actions even if
+they result in the individual being removed from the game (i.e., self-sacrifice).
+MA-POCA can also be combined with self-play to train teams of agents to play against each other.</p>
+<p>To learn more about enabling cooperative behaviors for agents in an ML-Agents environment,
+check out <a href="../Learning-Environment-Design-Agents/#groups-for-cooperative-scenarios">this page</a>.</p>
+<p>For further reading, MA-POCA builds on previous work in multi-agent cooperative learning
+(<a href="https://arxiv.org/abs/1706.02275">Lowe et al.</a>, <a href="https://arxiv.org/pdf/1705.08926.pdf">Foerster et al.</a>,
+among others) to enable the above use-cases.</p>
+<h3 id="solving-complex-tasks-using-curriculum-learning">Solving Complex Tasks using Curriculum Learning</h3>
+<p>Curriculum learning is a way of training a machine learning model where more
+difficult aspects of a problem are gradually introduced in such a way that the
+model is always optimally challenged. This idea has been around for a long time,
+and it is how we humans typically learn. If you imagine any childhood primary
+school education, there is an ordering of classes and topics. Arithmetic is
+taught before algebra, for example. Likewise, algebra is taught before calculus.
+The skills and knowledge learned in the earlier subjects provide a scaffolding
+for later lessons. The same principle can be applied to machine learning, where
+training on easier tasks can provide a scaffolding for harder tasks in the
+future.</p>
+<p>Imagine training the medic to scale a wall to arrive at a wounded team
+member. The starting point when training a medic to accomplish this task will be
+a random policy. That starting policy will have the medic running in circles,
+and will likely never, or very rarely scale the wall properly to revive their
+team member (and achieve the reward). If we start with a simpler task, such as
+moving toward an unobstructed team member, then the medic can easily learn to
+accomplish the task. From there, we can slowly add to the difficulty of the task
+by increasing the size of the wall until the medic can complete the initially
+near-impossible task of scaling the wall. We have included an environment to
+demonstrate this with ML-Agents, called
+<a href="../Learning-Environment-Examples/#wall-jump">Wall Jump</a>.</p>
+<p><img alt="Wall" src="../images/curriculum.png" /></p>
+<p><em>Demonstration of a hypothetical curriculum training scenario in which a
+progressively taller wall obstructs the path to the goal.</em></p>
+<p><em>[<strong>Note</strong>: The example provided above is for instructional purposes, and was
+based on an early version of the
+<a href="../Learning-Environment-Examples/">Wall Jump example environment</a>. As such, it
+is not possible to directly replicate the results here using that environment.]</em></p>
+<p>The ML-Agents Toolkit supports modifying custom environment parameters during
+the training process to aid in learning. This allows elements of the environment
+related to difficulty or complexity to be dynamically adjusted based on training
+progress. The <a href="../Training-ML-Agents/#curriculum-learning">Training ML-Agents</a>
+page has more information on defining training curriculums.</p>
+<h3 id="training-robust-agents-using-environment-parameter-randomization">Training Robust Agents using Environment Parameter Randomization</h3>
+<p>An agent trained on a specific environment, may be unable to generalize to any
+tweaks or variations in the environment (in machine learning this is referred to
+as overfitting). This becomes problematic in cases where environments are
+instantiated with varying objects or properties. One mechanism to alleviate this
+and train more robust agents that can generalize to unseen variations of the
+environment is to expose them to these variations during training. Similar to
+Curriculum Learning, where environments become more difficult as the agent
+learns, the ML-Agents Toolkit provides a way to randomly sample parameters of
+the environment during training. We refer to this approach as <strong>Environment
+Parameter Randomization</strong>. For those familiar with Reinforcement Learning
+research, this approach is based on the concept of
+<a href="https://arxiv.org/abs/1703.06907">Domain Randomization</a>. By using
+<a href="../Training-ML-Agents/#environment-parameter-randomization">parameter randomization during training</a>,
+the agent can be better suited to adapt (with higher performance) to future
+unseen variations of the environment.</p>
+<table>
+<thead>
+<tr>
+<th align="center">Ball scale of 0.5</th>
+<th align="center">Ball scale of 4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><img alt="" src="../images/3dball_small.png" /></td>
+<td align="center"><img alt="" src="../images/3dball_big.png" /></td>
+</tr>
+</tbody>
+</table>
+<p><em>Example of variations of the 3D Ball environment. The environment parameters
+are <code>gravity</code>, <code>ball_mass</code> and <code>ball_scale</code>.</em></p>
+<h2 id="model-types">Model Types</h2>
+<p>Regardless of the training method deployed, there are a few model types that
+users can train using the ML-Agents Toolkit. This is due to the flexibility in
+defining agent observations, which include vector, ray cast and visual
+observations. You can learn more about how to instrument an agent's observation
+in the <a href="../Learning-Environment-Design-Agents/">Designing Agents</a> guide.</p>
+<h3 id="learning-from-vector-observations">Learning from Vector Observations</h3>
+<p>Whether an agent's observations are ray cast or vector, the ML-Agents Toolkit
+provides a fully connected neural network model to learn from those
+observations. At training time you can configure different aspects of this model
+such as the number of hidden units and number of layers.</p>
+<h3 id="learning-from-cameras-using-convolutional-neural-networks">Learning from Cameras using Convolutional Neural Networks</h3>
+<p>Unlike other platforms, where the agent’s observation might be limited to a
+single vector or image, the ML-Agents Toolkit allows multiple cameras to be used
+for observations per agent. This enables agents to learn to integrate
+information from multiple visual streams. This can be helpful in several
+scenarios such as training a self-driving car which requires multiple cameras
+with different viewpoints, or a navigational agent which might need to integrate
+aerial and first-person visuals. You can learn more about adding visual
+observations to an agent
+<a href="../Learning-Environment-Design-Agents/#multiple-visual-observations">here</a>.</p>
+<p>When visual observations are utilized, the ML-Agents Toolkit leverages
+convolutional neural networks (CNN) to learn from the input images. We offer
+three network architectures:</p>
+<ul>
+<li>a simple encoder which consists of two convolutional layers</li>
+<li>the implementation proposed by
+  <a href="https://www.nature.com/articles/nature14236">Mnih et al.</a>, consisting of
+  three convolutional layers,</li>
+<li>the <a href="https://arxiv.org/abs/1802.01561">IMPALA Resnet</a> consisting of three
+  stacked layers, each with two residual blocks, making a much larger network
+  than the other two.</li>
+</ul>
+<p>The choice of the architecture depends on the visual complexity of the scene and
+the available computational resources.</p>
+<h3 id="learning-from-variable-length-observations-using-attention">Learning from Variable Length Observations using Attention</h3>
+<p>Using the ML-Agents Toolkit, it is possible to have agents learn from a
+varying number of inputs. To do so, each agent can keep track of a buffer
+of vector observations. At each step, the agent will go through all the
+elements in the buffer and extract information but the elements
+in the buffer can change at every step.
+This can be useful in scenarios in which the agents must keep track of
+a varying number of elements throughout the episode. For example in a game
+where an agent must learn to avoid projectiles, but the projectiles can vary in
+numbers.</p>
+<p><img alt="Variable Length Observations Illustrated" src="../images/variable-length-observation-illustrated.png" /></p>
+<p>You can learn more about variable length observations
+<a href="../Learning-Environment-Design-Agents/#variable-length-observations">here</a>.
+When variable length observations are utilized, the ML-Agents Toolkit
+leverages attention networks to learn from a varying number of entities.
+Agents using attention will ignore entities that are deemed not relevant
+and pay special attention to entities relevant to the current situation
+based on context.</p>
+<h3 id="memory-enhanced-agents-using-recurrent-neural-networks">Memory-enhanced Agents using Recurrent Neural Networks</h3>
+<p>Have you ever entered a room to get something and immediately forgot what you
+were looking for? Don't let that happen to your agents.</p>
+<p><img alt="Inspector" src="../images/ml-agents-LSTM.png" /></p>
+<p>In some scenarios, agents must learn to remember the past in order to take the
+best decision. When an agent only has partial observability of the environment,
+keeping track of past observations can help the agent learn. Deciding what the
+agents should remember in order to solve a task is not easy to do by hand, but
+our training algorithms can learn to keep track of what is important to remember
+with <a href="https://en.wikipedia.org/wiki/Long_short-term_memory">LSTM</a>.</p>
+<h2 id="additional-features">Additional Features</h2>
+<p>Beyond the flexible training scenarios available, the ML-Agents Toolkit includes
+additional features which improve the flexibility and interpretability of the
+training process.</p>
+<ul>
+<li><strong>Concurrent Unity Instances</strong> - We enable developers to run concurrent,
+  parallel instances of the Unity executable during training. For certain
+  scenarios, this should speed up training. Check out our dedicated page on
+  <a href="../Learning-Environment-Executable/">creating a Unity executable</a> and the
+  <a href="../Training-ML-Agents/#training-using-concurrent-unity-instances">Training ML-Agents</a>
+  page for instructions on how to set the number of concurrent instances.</li>
+<li><strong>Recording Statistics from Unity</strong> - We enable developers to
+  <a href="../Learning-Environment-Design/#recording-statistics">record statistics</a> from
+  within their Unity environments. These statistics are aggregated and generated
+  during the training process.</li>
+<li><strong>Custom Side Channels</strong> - We enable developers to
+  <a href="../Custom-SideChannels/">create custom side channels</a> to manage data transfer
+  between Unity and Python that is unique to their training workflow and/or
+  environment.</li>
+<li><strong>Custom Samplers</strong> - We enable developers to
+  <a href="../Training-ML-Agents/#defining-a-new-sampler-type">create custom sampling methods</a>
+  for Environment Parameter Randomization. This enables users to customize this
+  training method for their particular environment.</li>
+</ul>
+<h2 id="summary-and-next-steps">Summary and Next Steps</h2>
+<p>To briefly summarize: The ML-Agents Toolkit enables games and simulations built
+in Unity to serve as the platform for training intelligent agents. It is
+designed to enable a large variety of training modes and scenarios and comes
+packed with several features to enable researchers and developers to leverage
+(and enhance) machine learning within Unity.</p>
+<p>In terms of next steps:</p>
+<ul>
+<li>For a walkthrough of running ML-Agents with a simple scene, check out the
+  <a href="../Getting-Started/">Getting Started</a> guide.</li>
+<li>For a "Hello World" introduction to creating your own Learning Environment,
+  check out the
+  <a href="../Learning-Environment-Create-New/">Making a New Learning Environment</a> page.</li>
+<li>For an overview on the more complex example environments that are provided in
+  this toolkit, check out the
+  <a href="../Learning-Environment-Examples/">Example Environments</a> page.</li>
+<li>For more information on the various training options available, check out the
+  <a href="../Training-ML-Agents/">Training ML-Agents</a> page.</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

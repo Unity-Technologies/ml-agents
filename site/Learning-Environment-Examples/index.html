@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Learning-Environment-Examples/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Example Learning Environments - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Example Learning Environments";
+    var mkdocs_page_input_path = "Learning-Environment-Examples.md";
+    var mkdocs_page_url = "/ml-agents/Learning-Environment-Examples/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Example Learning Environments</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Learning-Environment-Examples.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="example-learning-environments">Example Learning Environments</h1>
+<p><img src="images/example-envs.png" align="middle" width="3000"/></p>
+<p>The Unity ML-Agents Toolkit includes an expanding set of example environments
+that highlight the various features of the toolkit. These environments can also
+serve as templates for new environments or as ways to test new ML algorithms.
+Environments are located in <code>Project/Assets/ML-Agents/Examples</code> and summarized
+below.</p>
+<p>For the environments that highlight specific features of the toolkit, we provide
+the pre-trained model files and the training config file that enables you to
+train the scene yourself. The environments that are designed to serve as
+challenges for researchers do not have accompanying pre-trained model files or
+training configs and are marked as <em>Optional</em> below.</p>
+<p>This page only overviews the example environments we provide. To learn more on
+how to design and build your own environments see our
+<a href="../Learning-Environment-Create-New/">Making a New Learning Environment</a> page. If
+you would like to contribute environments, please see our
+<a href="../com.unity.ml-agents/CONTRIBUTING.md">contribution guidelines</a> page.</p>
+<h2 id="basic">Basic</h2>
+<p><img alt="Basic" src="../images/basic.png" /></p>
+<ul>
+<li>Set-up: A linear movement task where the agent must move left or right to
+  rewarding states.</li>
+<li>Goal: Move to the most reward state.</li>
+<li>Agents: The environment contains one agent.</li>
+<li>Agent Reward Function:</li>
+<li>-0.01 at each step</li>
+<li>+0.1 for arriving at suboptimal state.</li>
+<li>+1.0 for arriving at optimal state.</li>
+<li>Behavior Parameters:</li>
+<li>Vector Observation space: One variable corresponding to current state.</li>
+<li>Actions: 1 discrete action branch with 3 actions (Move left, do nothing, move
+    right).</li>
+<li>Visual Observations: None</li>
+<li>Float Properties: None</li>
+<li>Benchmark Mean Reward: 0.93</li>
+</ul>
+<h2 id="3dball-3d-balance-ball">3DBall: 3D Balance Ball</h2>
+<p><img alt="3D Balance Ball" src="../images/balance.png" /></p>
+<ul>
+<li>Set-up: A balance-ball task, where the agent balances the ball on it's head.</li>
+<li>Goal: The agent must balance the ball on it's head for as long as possible.</li>
+<li>Agents: The environment contains 12 agents of the same kind, all using the
+  same Behavior Parameters.</li>
+<li>Agent Reward Function:</li>
+<li>+0.1 for every step the ball remains on it's head.</li>
+<li>-1.0 if the ball falls off.</li>
+<li>Behavior Parameters:</li>
+<li>Vector Observation space: 8 variables corresponding to rotation of the agent
+    cube, and position and velocity of ball.</li>
+<li>Vector Observation space (Hard Version): 5 variables corresponding to
+    rotation of the agent cube and position of ball.</li>
+<li>Actions: 2 continuous actions, with one value corresponding to
+    X-rotation, and the other to Z-rotation.</li>
+<li>Visual Observations: Third-person view from the upper-front of the agent. Use
+    <code>Visual3DBall</code> scene.</li>
+<li>Float Properties: Three</li>
+<li>scale: Specifies the scale of the ball in the 3 dimensions (equal across the
+    three dimensions)<ul>
+<li>Default: 1</li>
+<li>Recommended Minimum: 0.2</li>
+<li>Recommended Maximum: 5</li>
+</ul>
+</li>
+<li>gravity: Magnitude of gravity<ul>
+<li>Default: 9.81</li>
+<li>Recommended Minimum: 4</li>
+<li>Recommended Maximum: 105</li>
+</ul>
+</li>
+<li>mass: Specifies mass of the ball<ul>
+<li>Default: 1</li>
+<li>Recommended Minimum: 0.1</li>
+<li>Recommended Maximum: 20</li>
+</ul>
+</li>
+<li>Benchmark Mean Reward: 100</li>
+</ul>
+<h2 id="gridworld">GridWorld</h2>
+<p><img alt="GridWorld" src="../images/gridworld.png" /></p>
+<ul>
+<li>Set-up: A multi-goal version of the grid-world task. Scene contains agent, goal,
+  and obstacles.</li>
+<li>Goal: The agent must navigate the grid to the appropriate goal while
+  avoiding the obstacles.</li>
+<li>Agents: The environment contains nine agents with the same Behavior
+  Parameters.</li>
+<li>Agent Reward Function:</li>
+<li>-0.01 for every step.</li>
+<li>+1.0 if the agent navigates to the correct goal (episode ends).</li>
+<li>-1.0 if the agent navigates to an incorrect goal (episode ends).</li>
+<li>Behavior Parameters:</li>
+<li>Vector Observation space: None</li>
+<li>Actions: 1 discrete action branch with 5 actions, corresponding to movement in
+    cardinal directions or not moving. Note that for this environment,
+    <a href="../Learning-Environment-Design-Agents/#masking-discrete-actions">action masking</a>
+    is turned on by default (this option can be toggled using the <code>Mask Actions</code>
+    checkbox within the <code>trueAgent</code> GameObject). The trained model file provided
+    was generated with action masking turned on.</li>
+<li>Visual Observations: One corresponding to top-down view of GridWorld.</li>
+<li>Goal Signal : A one hot vector corresponding to which color is the correct goal
+  for the Agent</li>
+<li>Float Properties: Three, corresponding to grid size, number of green goals, and
+  number of red goals.</li>
+<li>Benchmark Mean Reward: 0.8</li>
+</ul>
+<h2 id="push-block">Push Block</h2>
+<p><img alt="Push" src="../images/push.png" /></p>
+<ul>
+<li>Set-up: A platforming environment where the agent can push a block around.</li>
+<li>Goal: The agent must push the block to the goal.</li>
+<li>Agents: The environment contains one agent.</li>
+<li>Agent Reward Function:</li>
+<li>-0.0025 for every step.</li>
+<li>+1.0 if the block touches the goal.</li>
+<li>Behavior Parameters:</li>
+<li>Vector Observation space: (Continuous) 70 variables corresponding to 14
+    ray-casts each detecting one of three possible objects (wall, goal, or
+    block).</li>
+<li>Actions: 1 discrete action branch with 7 actions, corresponding to turn clockwise
+    and counterclockwise, move along four different face directions, or do nothing.</li>
+<li>Float Properties: Four</li>
+<li>block_scale: Scale of the block along the x and z dimensions<ul>
+<li>Default: 2</li>
+<li>Recommended Minimum: 0.5</li>
+<li>Recommended Maximum: 4</li>
+</ul>
+</li>
+<li>dynamic_friction: Coefficient of friction for the ground material acting on
+    moving objects<ul>
+<li>Default: 0</li>
+<li>Recommended Minimum: 0</li>
+<li>Recommended Maximum: 1</li>
+</ul>
+</li>
+<li>static_friction: Coefficient of friction for the ground material acting on
+    stationary objects<ul>
+<li>Default: 0</li>
+<li>Recommended Minimum: 0</li>
+<li>Recommended Maximum: 1</li>
+</ul>
+</li>
+<li>block_drag: Effect of air resistance on block<ul>
+<li>Default: 0.5</li>
+<li>Recommended Minimum: 0</li>
+<li>Recommended Maximum: 2000</li>
+</ul>
+</li>
+<li>Benchmark Mean Reward: 4.5</li>
+</ul>
+<h2 id="wall-jump">Wall Jump</h2>
+<p><img alt="Wall" src="../images/wall.png" /></p>
+<ul>
+<li>Set-up: A platforming environment where the agent can jump over a wall.</li>
+<li>Goal: The agent must use the block to scale the wall and reach the goal.</li>
+<li>Agents: The environment contains one agent linked to two different Models. The
+  Policy the agent is linked to changes depending on the height of the wall. The
+  change of Policy is done in the WallJumpAgent class.</li>
+<li>Agent Reward Function:</li>
+<li>-0.0005 for every step.</li>
+<li>+1.0 if the agent touches the goal.</li>
+<li>-1.0 if the agent falls off the platform.</li>
+<li>Behavior Parameters:</li>
+<li>Vector Observation space: Size of 74, corresponding to 14 ray casts each
+    detecting 4 possible objects. plus the global position of the agent and
+    whether or not the agent is grounded.</li>
+<li>Actions: 4 discrete action branches:<ul>
+<li>Forward Motion (3 possible actions: Forward, Backwards, No Action)</li>
+<li>Rotation (3 possible actions: Rotate Left, Rotate Right, No Action)</li>
+<li>Side Motion (3 possible actions: Left, Right, No Action)</li>
+<li>Jump (2 possible actions: Jump, No Action)</li>
+</ul>
+</li>
+<li>Visual Observations: None</li>
+<li>Float Properties: Four</li>
+<li>Benchmark Mean Reward (Big &amp; Small Wall): 0.8</li>
+</ul>
+<h2 id="crawler">Crawler</h2>
+<p><img alt="Crawler" src="../images/crawler.png" /></p>
+<ul>
+<li>Set-up: A creature with 4 arms and 4 forearms.</li>
+<li>Goal: The agents must move its body toward the goal direction without falling.</li>
+<li>Agents: The environment contains 10 agents with same Behavior Parameters.</li>
+<li>Agent Reward Function (independent):
+  The reward function is now geometric meaning the reward each step is a product
+  of all the rewards instead of a sum, this helps the agent try to maximize all
+  rewards instead of the easiest rewards.</li>
+<li>Body velocity matches goal velocity. (normalized between (0,1))</li>
+<li>Head direction alignment with goal direction. (normalized between (0,1))</li>
+<li>Behavior Parameters:</li>
+<li>Vector Observation space: 172 variables corresponding to position, rotation,
+    velocity, and angular velocities of each limb plus the acceleration and
+    angular acceleration of the body.</li>
+<li>Actions: 20 continuous actions, corresponding to target
+    rotations for joints.</li>
+<li>Visual Observations: None</li>
+<li>Float Properties: None</li>
+<li>Benchmark Mean Reward: 3000</li>
+</ul>
+<h2 id="worm">Worm</h2>
+<p><img alt="Worm" src="../images/worm.png" /></p>
+<ul>
+<li>Set-up: A worm with a head and 3 body segments.</li>
+<li>Goal: The agents must move its body toward the goal direction.</li>
+<li>Agents: The environment contains 10 agents with same Behavior Parameters.</li>
+<li>Agent Reward Function (independent):
+  The reward function is now geometric meaning the reward each step is a product
+  of all the rewards instead of a sum, this helps the agent try to maximize all
+  rewards instead of the easiest rewards.</li>
+<li>Body velocity matches goal velocity. (normalized between (0,1))</li>
+<li>Body direction alignment with goal direction. (normalized between (0,1))</li>
+<li>Behavior Parameters:</li>
+<li>Vector Observation space: 64 variables corresponding to position, rotation,
+    velocity, and angular velocities of each limb plus the acceleration and
+    angular acceleration of the body.</li>
+<li>Actions: 9 continuous actions, corresponding to target
+    rotations for joints.</li>
+<li>Visual Observations: None</li>
+<li>Float Properties: None</li>
+<li>Benchmark Mean Reward: 800</li>
+</ul>
+<h2 id="food-collector">Food Collector</h2>
+<p><img alt="Collector" src="../images/foodCollector.png" /></p>
+<ul>
+<li>Set-up: A multi-agent environment where agents compete to collect food.</li>
+<li>Goal: The agents must learn to collect as many green food spheres as possible
+  while avoiding red spheres.</li>
+<li>Agents: The environment contains 5 agents with same Behavior Parameters.</li>
+<li>Agent Reward Function (independent):</li>
+<li>+1 for interaction with green spheres</li>
+<li>-1 for interaction with red spheres</li>
+<li>Behavior Parameters:</li>
+<li>Vector Observation space: 53 corresponding to velocity of agent (2), whether
+    agent is frozen and/or shot its laser (2), plus grid based perception of
+    objects around agent's forward direction (40 by 40 with 6 different categories).</li>
+<li>Actions:<ul>
+<li>3 continuous actions correspond to Forward Motion, Side Motion and Rotation</li>
+<li>1 discrete acion branch for Laser with 2 possible actions corresponding to
+  Shoot Laser or No Action</li>
+</ul>
+</li>
+<li>Visual Observations (Optional): First-person camera per-agent, plus one vector
+    flag representing the frozen state of the agent. This scene uses a combination
+    of vector and visual observations and the training will not succeed without
+    the frozen vector flag. Use <code>VisualFoodCollector</code> scene.</li>
+<li>Float Properties: Two</li>
+<li>laser_length: Length of the laser used by the agent<ul>
+<li>Default: 1</li>
+<li>Recommended Minimum: 0.2</li>
+<li>Recommended Maximum: 7</li>
+</ul>
+</li>
+<li>agent_scale: Specifies the scale of the agent in the 3 dimensions (equal
+    across the three dimensions)<ul>
+<li>Default: 1</li>
+<li>Recommended Minimum: 0.5</li>
+<li>Recommended Maximum: 5</li>
+</ul>
+</li>
+<li>Benchmark Mean Reward: 10</li>
+</ul>
+<h2 id="hallway">Hallway</h2>
+<p><img alt="Hallway" src="../images/hallway.png" /></p>
+<ul>
+<li>Set-up: Environment where the agent needs to find information in a room,
+  remember it, and use it to move to the correct goal.</li>
+<li>Goal: Move to the goal which corresponds to the color of the block in the
+  room.</li>
+<li>Agents: The environment contains one agent.</li>
+<li>Agent Reward Function (independent):</li>
+<li>+1 For moving to correct goal.</li>
+<li>-0.1 For moving to incorrect goal.</li>
+<li>-0.0003 Existential penalty.</li>
+<li>Behavior Parameters:</li>
+<li>Vector Observation space: 30 corresponding to local ray-casts detecting
+    objects, goals, and walls.</li>
+<li>Actions: 1 discrete action Branch, with 4 actions corresponding to agent
+    rotation and forward/backward movement.</li>
+<li>Float Properties: None</li>
+<li>Benchmark Mean Reward: 0.7</li>
+<li>To train this environment, you can enable curiosity by adding the <code>curiosity</code> reward signal
+    in <code>config/ppo/Hallway.yaml</code></li>
+</ul>
+<h2 id="soccer-twos">Soccer Twos</h2>
+<p><img alt="SoccerTwos" src="../images/soccer.png" /></p>
+<ul>
+<li>Set-up: Environment where four agents compete in a 2 vs 2 toy soccer game.</li>
+<li>Goal:</li>
+<li>Get the ball into the opponent's goal while preventing the ball from
+    entering own goal.</li>
+<li>Agents: The environment contains two different Multi Agent Groups with two agents in each.
+  Parameters : SoccerTwos.</li>
+<li>Agent Reward Function (dependent):</li>
+<li>(1 - <code>accumulated time penalty</code>) When ball enters opponent's goal
+    <code>accumulated time penalty</code> is incremented by (1 / <code>MaxStep</code>) every fixed
+    update and is reset to 0 at the beginning of an episode.</li>
+<li>-1 When ball enters team's goal.</li>
+<li>Behavior Parameters:</li>
+<li>Vector Observation space: 336 corresponding to 11 ray-casts forward
+    distributed over 120 degrees and 3 ray-casts backward distributed over 90
+    degrees each detecting 6 possible object types, along with the object's
+    distance. The forward ray-casts contribute 264 state dimensions and backward
+    72 state dimensions over three observation stacks.</li>
+<li>Actions: 3 discrete branched actions corresponding to
+    forward, backward, sideways movement, as well as rotation.</li>
+<li>Visual Observations: None</li>
+<li>Float Properties: Two</li>
+<li>ball_scale: Specifies the scale of the ball in the 3 dimensions (equal
+    across the three dimensions)<ul>
+<li>Default: 7.5</li>
+<li>Recommended minimum: 4</li>
+<li>Recommended maximum: 10</li>
+</ul>
+</li>
+<li>gravity: Magnitude of the gravity<ul>
+<li>Default: 9.81</li>
+<li>Recommended minimum: 6</li>
+<li>Recommended maximum: 20</li>
+</ul>
+</li>
+</ul>
+<h2 id="strikers-vs-goalie">Strikers Vs. Goalie</h2>
+<p><img alt="StrikersVsGoalie" src="../images/strikersvsgoalie.png" /></p>
+<ul>
+<li>Set-up: Environment where two agents compete in a 2 vs 1 soccer variant.</li>
+<li>Goal:</li>
+<li>Striker: Get the ball into the opponent's goal.</li>
+<li>Goalie: Keep the ball out of the goal.</li>
+<li>Agents: The environment contains two different Multi Agent Groups. One with two Strikers and the other one Goalie.
+  Behavior Parameters : Striker, Goalie.</li>
+<li>Striker Agent Reward Function (dependent):</li>
+<li>+1 When ball enters opponent's goal.</li>
+<li>-0.001 Existential penalty.</li>
+<li>Goalie Agent Reward Function (dependent):</li>
+<li>-1 When ball enters goal.</li>
+<li>0.001 Existential bonus.</li>
+<li>Behavior Parameters:</li>
+<li>Striker Vector Observation space: 294 corresponding to 11 ray-casts forward
+    distributed over 120 degrees and 3 ray-casts backward distributed over 90
+    degrees each detecting 5 possible object types, along with the object's
+    distance. The forward ray-casts contribute 231 state dimensions and backward
+    63 state dimensions over three observation stacks.</li>
+<li>Striker Actions: 3 discrete branched actions corresponding
+    to forward, backward, sideways movement, as well as rotation.</li>
+<li>Goalie Vector Observation space: 738 corresponding to 41 ray-casts
+    distributed over 360 degrees each detecting 4 possible object types, along
+    with the object's distance and 3 observation stacks.</li>
+<li>Goalie Actions: 3 discrete branched actions corresponding
+    to forward, backward, sideways movement, as well as rotation.</li>
+<li>Visual Observations: None</li>
+<li>Float Properties: Two</li>
+<li>ball_scale: Specifies the scale of the ball in the 3 dimensions (equal
+    across the three dimensions)<ul>
+<li>Default: 7.5</li>
+<li>Recommended minimum: 4</li>
+<li>Recommended maximum: 10</li>
+</ul>
+</li>
+<li>gravity: Magnitude of the gravity<ul>
+<li>Default: 9.81</li>
+<li>Recommended minimum: 6</li>
+<li>Recommended maximum: 20</li>
+</ul>
+</li>
+</ul>
+<h2 id="walker">Walker</h2>
+<p><img alt="Walker" src="../images/walker.png" /></p>
+<ul>
+<li>Set-up: Physics-based Humanoid agents with 26 degrees of freedom. These DOFs
+  correspond to articulation of the following body-parts: hips, chest, spine,
+  head, thighs, shins, feet, arms, forearms and hands.</li>
+<li>Goal: The agents must move its body toward the goal direction without falling.</li>
+<li>Agents: The environment contains 10 independent agents with same Behavior
+  Parameters.</li>
+<li>Agent Reward Function (independent):
+  The reward function is now geometric meaning the reward each step is a product
+  of all the rewards instead of a sum, this helps the agent try to maximize all
+  rewards instead of the easiest rewards.</li>
+<li>Body velocity matches goal velocity. (normalized between (0,1))</li>
+<li>Head direction alignment with goal direction. (normalized between (0,1))</li>
+<li>Behavior Parameters:</li>
+<li>Vector Observation space: 243 variables corresponding to position, rotation,
+    velocity, and angular velocities of each limb, along with goal direction.</li>
+<li>Actions: 39 continuous actions, corresponding to target
+    rotations and strength applicable to the joints.</li>
+<li>Visual Observations: None</li>
+<li>Float Properties: Four</li>
+<li>gravity: Magnitude of gravity<ul>
+<li>Default: 9.81</li>
+<li>Recommended Minimum:</li>
+<li>Recommended Maximum:</li>
+</ul>
+</li>
+<li>hip_mass: Mass of the hip component of the walker<ul>
+<li>Default: 8</li>
+<li>Recommended Minimum: 7</li>
+<li>Recommended Maximum: 28</li>
+</ul>
+</li>
+<li>chest_mass: Mass of the chest component of the walker<ul>
+<li>Default: 8</li>
+<li>Recommended Minimum: 3</li>
+<li>Recommended Maximum: 20</li>
+</ul>
+</li>
+<li>spine_mass: Mass of the spine component of the walker<ul>
+<li>Default: 8</li>
+<li>Recommended Minimum: 3</li>
+<li>Recommended Maximum: 20</li>
+</ul>
+</li>
+<li>Benchmark Mean Reward : 2500</li>
+</ul>
+<h2 id="pyramids">Pyramids</h2>
+<p><img alt="Pyramids" src="../images/pyramids.png" /></p>
+<ul>
+<li>Set-up: Environment where the agent needs to press a button to spawn a
+  pyramid, then navigate to the pyramid, knock it over, and move to the gold
+  brick at the top.</li>
+<li>Goal: Move to the golden brick on top of the spawned pyramid.</li>
+<li>Agents: The environment contains one agent.</li>
+<li>Agent Reward Function (independent):</li>
+<li>+2 For moving to golden brick (minus 0.001 per step).</li>
+<li>Behavior Parameters:</li>
+<li>Vector Observation space: 148 corresponding to local ray-casts detecting
+    switch, bricks, golden brick, and walls, plus variable indicating switch
+    state.</li>
+<li>Actions: 1 discrete action branch, with 4 actions corresponding to agent rotation and
+    forward/backward movement.</li>
+<li>Float Properties: None</li>
+<li>Benchmark Mean Reward: 1.75</li>
+</ul>
+<h2 id="match-3">Match 3</h2>
+<p><img alt="Match 3" src="../images/match3.png" /></p>
+<ul>
+<li>Set-up: Simple match-3 game. Matched pieces are removed, and remaining pieces
+drop down. New pieces are spawned randomly at the top, with a chance of being
+"special".</li>
+<li>Goal: Maximize score from matching pieces.</li>
+<li>Agents: The environment contains several independent Agents.</li>
+<li>Agent Reward Function (independent):</li>
+<li>.01 for each normal piece cleared. Special pieces are worth 2x or 3x.</li>
+<li>Behavior Parameters:</li>
+<li>None</li>
+<li>Observations and actions are defined with a sensor and actuator respectively.</li>
+<li>Float Properties: None</li>
+<li>Benchmark Mean Reward:</li>
+<li>39.5 for visual observations</li>
+<li>38.5 for vector observations</li>
+<li>34.2 for simple heuristic (pick a random valid move)</li>
+<li>37.0 for greedy heuristic (pick the highest-scoring valid move)</li>
+</ul>
+<h2 id="sorter">Sorter</h2>
+<p><img alt="Sorter" src="../images/sorter.png" /></p>
+<ul>
+<li>Set-up: The Agent is in a circular room with numbered tiles. The values of the
+ tiles are random between 1 and 20. The tiles present in the room are randomized
+ at each episode. When the Agent visits a tile, it turns green.</li>
+<li>Goal: Visit all the tiles in ascending order.</li>
+<li>Agents: The environment contains a single Agent</li>
+<li>Agent Reward Function:</li>
+<li>-.0002 Existential penalty.</li>
+<li>+1 For visiting the right tile</li>
+<li>-1 For visiting the wrong tile</li>
+<li>BehaviorParameters:</li>
+<li>Vector Observations : 4 : 2 floats for Position and 2 floats for orientation</li>
+<li>Variable Length Observations : Between 1 and 20 entities (one for each tile)
+  each with 22 observations, the first 20 are one hot encoding of the value of the tile,
+  the 21st and 22nd represent the position of the tile relative to the Agent and the 23rd
+  is <code>1</code> if the tile was visited and <code>0</code> otherwise.</li>
+<li>Actions: 3 discrete branched actions corresponding to forward, backward,
+  sideways movement, as well as rotation.</li>
+<li>Float Properties: One<ul>
+<li>num_tiles: The maximum number of tiles to sample.</li>
+<li>Default: 2</li>
+<li>Recommended Minimum: 1</li>
+<li>Recommended Maximum: 20</li>
+</ul>
+</li>
+<li>Benchmark Mean Reward: Depends on the number of tiles.</li>
+</ul>
+<h2 id="cooperative-push-block">Cooperative Push Block</h2>
+<p><img alt="CoopPushBlock" src="../images/cooperative_pushblock.png" /></p>
+<ul>
+<li>Set-up: Similar to Push Block, the agents are in an area with blocks that need
+to be pushed into a goal. Small blocks can be pushed by one agents and are worth
++1 value, medium blocks require two agents to push in and are worth +2, and large
+blocks require all 3 agents to push and are worth +3.</li>
+<li>Goal: Push all blocks into the goal.</li>
+<li>Agents: The environment contains three Agents in a Multi Agent Group.</li>
+<li>Agent Reward Function:</li>
+<li>-0.0001 Existential penalty, as a group reward.</li>
+<li>+1, +2, or +3 for pushing in a block, added as a group reward.</li>
+<li>Behavior Parameters:</li>
+<li>Observation space: A single Grid Sensor with separate tags for each block size,
+    the goal, the walls, and other agents.</li>
+<li>Actions: 1 discrete action branch with 7 actions, corresponding to turn clockwise
+    and counterclockwise, move along four different face directions, or do nothing.</li>
+<li>Float Properties: None</li>
+<li>Benchmark Mean Reward: 11 (Group Reward)</li>
+</ul>
+<h2 id="dungeon-escape">Dungeon Escape</h2>
+<p><img alt="DungeonEscape" src="../images/dungeon_escape.png" /></p>
+<ul>
+<li>Set-up: Agents are trapped in a dungeon with a dragon, and must work together to escape.
+  To retrieve the key, one of the agents must find and slay the dragon, sacrificing itself
+  to do so. The dragon will drop a key for the others to use. The other agents can then pick
+  up this key and unlock the dungeon door. If the agents take too long, the dragon will escape
+  through a portal and the environment resets.</li>
+<li>Goal: Unlock the dungeon door and leave.</li>
+<li>Agents: The environment contains three Agents in a Multi Agent Group and one Dragon, which
+  moves in a predetermined pattern.</li>
+<li>Agent Reward Function:</li>
+<li>+1 group reward if any agent successfully unlocks the door and leaves the dungeon.</li>
+<li>Behavior Parameters:</li>
+<li>Observation space: A Ray Perception Sensor with separate tags for the walls, other agents,
+    the door, key, the dragon, and the dragon's portal. A single Vector Observation which indicates
+    whether the agent is holding a key.</li>
+<li>Actions: 1 discrete action branch with 7 actions, corresponding to turn clockwise
+    and counterclockwise, move along four different face directions, or do nothing.</li>
+<li>Float Properties: None</li>
+<li>Benchmark Mean Reward: 1.0 (Group Reward)</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

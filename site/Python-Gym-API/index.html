@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Python-Gym-API/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Getting started with the Gym API - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Getting started with the Gym API";
+    var mkdocs_page_input_path = "Python-Gym-API.md";
+    var mkdocs_page_url = "/ml-agents/Python-Gym-API/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="#">Gym API</a>
+    <ul class="current">
+                <li class="toctree-l2 current"><a class="reference internal current" href="./">Getting started with the Gym API</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#using-the-gym-wrapper">Using the Gym Wrapper</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#limitations">Limitations</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#running-openai-baselines-algorithms">Running OpenAI Baselines Algorithms</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#example-dqn-baseline">Example - DQN Baseline</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#other-algorithms">Other Algorithms</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#run-google-dopamine-algorithms">Run Google Dopamine Algorithms</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#adapting-dopamines-scripts">Adapting Dopamine's Scripts</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#limitations_1">Limitations</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#hyperparameters">Hyperparameters</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#starting-a-run">Starting a Run</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#example-gridworld">Example: GridWorld</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Interfacing with Unity Builds &raquo;</li>
+        
+      
+        
+          <li>Gym API &raquo;</li>
+        
+      
+    
+    <li>Getting started with the Gym API</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Python-Gym-API.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="unity-ml-agents-gym-wrapper">Unity ML-Agents Gym Wrapper</h1>
+<p>A common way in which machine learning researchers interact with simulation
+environments is via a wrapper provided by OpenAI called <code>gym</code>. For more
+information on the gym interface, see <a href="https://github.com/openai/gym">here</a>.</p>
+<p>We provide a gym wrapper and instructions for using it with existing machine
+learning algorithms which utilize gym. Our wrapper provides interfaces on top of
+our <code>UnityEnvironment</code> class, which is the default way of interfacing with a
+Unity environment via Python.</p>
+<h2 id="installation">Installation</h2>
+<p>The gym wrapper can be installed using:</p>
+<pre><code class="language-sh">pip3 install gym_unity
+</code></pre>
+<p>or by running the following from the <code>/gym-unity</code> directory of the repository:</p>
+<pre><code class="language-sh">pip3 install -e .
+</code></pre>
+<h2 id="using-the-gym-wrapper">Using the Gym Wrapper</h2>
+<p>The gym interface is available from <code>gym_unity.envs</code>. To launch an environment
+from the root of the project repository use:</p>
+<pre><code class="language-python">
+from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
+
+env = UnityToGymWrapper(unity_env, uint8_visual, flatten_branched, allow_multiple_obs)
+</code></pre>
+<ul>
+<li>
+<p><code>unity_env</code> refers to the Unity environment to be wrapped.</p>
+</li>
+<li>
+<p><code>uint8_visual</code> refers to whether to output visual observations as <code>uint8</code>
+  values (0-255). Many common Gym environments (e.g. Atari) do this. By default
+  they will be floats (0.0-1.0). Defaults to <code>False</code>.</p>
+</li>
+<li>
+<p><code>flatten_branched</code> will flatten a branched discrete action space into a Gym
+  Discrete. Otherwise, it will be converted into a MultiDiscrete. Defaults to
+  <code>False</code>.</p>
+</li>
+<li>
+<p><code>allow_multiple_obs</code> will return a list of observations. The first elements
+  contain the visual observations and the last element contains the array of
+  vector observations. If False the environment returns a single array (containing
+  a single visual observations, if present, otherwise the vector observation).
+  Defaults to <code>False</code>.</p>
+</li>
+<li>
+<p><code>action_space_seed</code> is the optional seed for action sampling. If non-None, will
+  be used to set the random seed on created gym.Space instances.</p>
+</li>
+</ul>
+<p>The returned environment <code>env</code> will function as a gym.</p>
+<h2 id="limitations">Limitations</h2>
+<ul>
+<li>It is only possible to use an environment with a <strong>single</strong> Agent.</li>
+<li>By default, the first visual observation is provided as the <code>observation</code>, if
+  present. Otherwise, vector observations are provided. You can receive all
+  visual and vector observations by using the <code>allow_multiple_obs=True</code> option in
+  the gym parameters. If set to <code>True</code>, you will receive a list of <code>observation</code>
+  instead of only one.</li>
+<li>The <code>TerminalSteps</code> or <code>DecisionSteps</code> output from the environment can still
+  be accessed from the <code>info</code> provided by <code>env.step(action)</code>.</li>
+<li>Stacked vector observations are not supported.</li>
+<li>Environment registration for use with <code>gym.make()</code> is currently not supported.</li>
+<li>Calling env.render() will not render a new frame of the environment. It will
+  return the latest visual observation if using visual observations.</li>
+</ul>
+<h2 id="running-openai-baselines-algorithms">Running OpenAI Baselines Algorithms</h2>
+<p>OpenAI provides a set of open-source maintained and tested Reinforcement
+Learning algorithms called the <a href="https://github.com/openai/baselines">Baselines</a>.</p>
+<p>Using the provided Gym wrapper, it is possible to train ML-Agents environments
+using these algorithms. This requires the creation of custom training scripts to
+launch each algorithm. In most cases these scripts can be created by making
+slight modifications to the ones provided for Atari and Mujoco environments.</p>
+<p>These examples were tested with baselines version 0.1.6.</p>
+<h3 id="example-dqn-baseline">Example - DQN Baseline</h3>
+<p>In order to train an agent to play the <code>GridWorld</code> environment using the
+Baselines DQN algorithm, you first need to install the baselines package using
+pip:</p>
+<pre><code>pip install git+git://github.com/openai/baselines
+</code></pre>
+<p>Next, create a file called <code>train_unity.py</code>. Then create an <code>/envs/</code> directory
+and build the environment to that directory. For more information on
+building Unity environments, see
+<a href="../docs/Learning-Environment-Executable.md">here</a>. Note that because of
+limitations of the DQN baseline, the environment must have a single visual
+observation, a single discrete action and a single Agent in the scene.
+Add the following code to the <code>train_unity.py</code> file:</p>
+<pre><code class="language-python">import gym
+
+from baselines import deepq
+from baselines import logger
+
+from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
+
+
+def main():
+  unity_env = UnityEnvironment( &lt; path - to - environment &gt;)
+  env = UnityToGymWrapper(unity_env, uint8_visual=True)
+  logger.configure('./logs')  # Change to log in a different directory
+  act = deepq.learn(
+    env,
+    &quot;cnn&quot;,  # For visual inputs
+    lr=2.5e-4,
+    total_timesteps=1000000,
+    buffer_size=50000,
+    exploration_fraction=0.05,
+    exploration_final_eps=0.1,
+    print_freq=20,
+    train_freq=5,
+    learning_starts=20000,
+    target_network_update_freq=50,
+    gamma=0.99,
+    prioritized_replay=False,
+    checkpoint_freq=1000,
+    checkpoint_path='./logs',  # Change to save model in a different directory
+    dueling=True
+  )
+  print(&quot;Saving model to unity_model.pkl&quot;)
+  act.save(&quot;unity_model.pkl&quot;)
+
+
+if __name__ == '__main__':
+  main()
+</code></pre>
+<p>To start the training process, run the following from the directory containing
+<code>train_unity.py</code>:</p>
+<pre><code class="language-sh">python -m train_unity
+</code></pre>
+<h3 id="other-algorithms">Other Algorithms</h3>
+<p>Other algorithms in the Baselines repository can be run using scripts similar to
+the examples from the baselines package. In most cases, the primary changes
+needed to use a Unity environment are to import <code>UnityToGymWrapper</code>, and to
+replace the environment creation code, typically <code>gym.make()</code>, with a call to
+<code>UnityToGymWrapper(unity_environment)</code> passing the environment as input.</p>
+<p>A typical rule of thumb is that for vision-based environments, modification
+should be done to Atari training scripts, and for vector observation
+environments, modification should be done to Mujoco scripts.</p>
+<p>Some algorithms will make use of <code>make_env()</code> or <code>make_mujoco_env()</code> functions.
+You can define a similar function for Unity environments. An example of such a
+method using the PPO2 baseline:</p>
+<pre><code class="language-python">from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.envs import UnityToGymWrapper
+from baselines.common.vec_env.subproc_vec_env import SubprocVecEnv
+from baselines.common.vec_env.dummy_vec_env import DummyVecEnv
+from baselines.bench import Monitor
+from baselines import logger
+import baselines.ppo2.ppo2 as ppo2
+
+import os
+
+try:
+  from mpi4py import MPI
+except ImportError:
+  MPI = None
+
+
+def make_unity_env(env_directory, num_env, visual, start_index=0):
+  &quot;&quot;&quot;
+  Create a wrapped, monitored Unity environment.
+  &quot;&quot;&quot;
+
+  def make_env(rank, use_visual=True):  # pylint: disable=C0111
+    def _thunk():
+      unity_env = UnityEnvironment(env_directory, base_port=5000 + rank)
+      env = UnityToGymWrapper(unity_env, uint8_visual=True)
+      env = Monitor(env, logger.get_dir() and os.path.join(logger.get_dir(), str(rank)))
+      return env
+
+    return _thunk
+
+  if visual:
+    return SubprocVecEnv([make_env(i + start_index) for i in range(num_env)])
+  else:
+    rank = MPI.COMM_WORLD.Get_rank() if MPI else 0
+    return DummyVecEnv([make_env(rank, use_visual=False)])
+
+
+def main():
+  env = make_unity_env( &lt; path - to - environment &gt;, 4, True)
+  ppo2.learn(
+    network=&quot;mlp&quot;,
+    env=env,
+    total_timesteps=100000,
+    lr=1e-3,
+  )
+
+
+if __name__ == '__main__':
+  main()
+</code></pre>
+<h2 id="run-google-dopamine-algorithms">Run Google Dopamine Algorithms</h2>
+<p>Google provides a framework <a href="https://github.com/google/dopamine">Dopamine</a>, and
+implementations of algorithms, e.g. DQN, Rainbow, and the C51 variant of
+Rainbow. Using the Gym wrapper, we can run Unity environments using Dopamine.</p>
+<p>First, after installing the Gym wrapper, clone the Dopamine repository.</p>
+<pre><code>git clone https://github.com/google/dopamine
+</code></pre>
+<p>Then, follow the appropriate install instructions as specified on
+<a href="https://github.com/google/dopamine">Dopamine's homepage</a>. Note that the
+Dopamine guide specifies using a virtualenv. If you choose to do so, make sure
+your unity_env package is also installed within the same virtualenv as Dopamine.</p>
+<h3 id="adapting-dopamines-scripts">Adapting Dopamine's Scripts</h3>
+<p>First, open <code>dopamine/atari/run_experiment.py</code>. Alternatively, copy the entire
+<code>atari</code> folder, and name it something else (e.g. <code>unity</code>). If you choose the
+copy approach, be sure to change the package names in the import statements in
+<code>train.py</code> to your new directory.</p>
+<p>Within <code>run_experiment.py</code>, we will need to make changes to which environment is
+instantiated, just as in the Baselines example. At the top of the file, insert</p>
+<pre><code class="language-python">from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.envs import UnityToGymWrapper
+</code></pre>
+<p>to import the Gym Wrapper. Navigate to the <code>create_atari_environment</code> method in
+the same file, and switch to instantiating a Unity environment by replacing the
+method with the following code.</p>
+<pre><code class="language-python">    game_version = 'v0' if sticky_actions else 'v4'
+    full_game_name = '{}NoFrameskip-{}'.format(game_name, game_version)
+    unity_env = UnityEnvironment(&lt;path-to-environment&gt;)
+    env = UnityToGymWrapper(unity_env, uint8_visual=True)
+    return env
+</code></pre>
+<p><code>&lt;path-to-environment&gt;</code> is the path to your built Unity executable. For more
+information on building Unity environments, see
+<a href="../docs/Learning-Environment-Executable.md">here</a>, and note the Limitations
+section below.</p>
+<p>Note that we are not using the preprocessor from Dopamine, as it uses many
+Atari-specific calls. Furthermore, frame-skipping can be done from within Unity,
+rather than on the Python side.</p>
+<h3 id="limitations_1">Limitations</h3>
+<p>Since Dopamine is designed around variants of DQN, it is only compatible with
+discrete action spaces, and specifically the Discrete Gym space. For
+environments that use branched discrete action spaces, you can enable the
+<code>flatten_branched</code> parameter in <code>UnityToGymWrapper</code>, which treats each
+combination of branched actions as separate actions.</p>
+<p>Furthermore, when building your environments, ensure that your Agent is using
+visual observations with greyscale enabled, and that the dimensions of the
+visual observations is 84 by 84 (matches the parameter found in <code>dqn_agent.py</code>
+and <code>rainbow_agent.py</code>). Dopamine's agents currently do not automatically adapt
+to the observation dimensions or number of channels.</p>
+<h3 id="hyperparameters">Hyperparameters</h3>
+<p>The hyperparameters provided by Dopamine are tailored to the Atari games, and
+you will likely need to adjust them for ML-Agents environments. Here is a sample
+<code>dopamine/agents/rainbow/configs/rainbow.gin</code> file that is known to work with
+a simple GridWorld.</p>
+<pre><code class="language-python">import dopamine.agents.rainbow.rainbow_agent
+import dopamine.unity.run_experiment
+import dopamine.replay_memory.prioritized_replay_buffer
+import gin.tf.external_configurables
+
+RainbowAgent.num_atoms = 51
+RainbowAgent.stack_size = 1
+RainbowAgent.vmax = 10.
+RainbowAgent.gamma = 0.99
+RainbowAgent.update_horizon = 3
+RainbowAgent.min_replay_history = 20000  # agent steps
+RainbowAgent.update_period = 5
+RainbowAgent.target_update_period = 50  # agent steps
+RainbowAgent.epsilon_train = 0.1
+RainbowAgent.epsilon_eval = 0.01
+RainbowAgent.epsilon_decay_period = 50000  # agent steps
+RainbowAgent.replay_scheme = 'prioritized'
+RainbowAgent.tf_device = '/cpu:0'  # use '/cpu:*' for non-GPU version
+RainbowAgent.optimizer = @tf.train.AdamOptimizer()
+
+tf.train.AdamOptimizer.learning_rate = 0.00025
+tf.train.AdamOptimizer.epsilon = 0.0003125
+
+Runner.game_name = &quot;Unity&quot; # any name can be used here
+Runner.sticky_actions = False
+Runner.num_iterations = 200
+Runner.training_steps = 10000  # agent steps
+Runner.evaluation_steps = 500  # agent steps
+Runner.max_steps_per_episode = 27000  # agent steps
+
+WrappedPrioritizedReplayBuffer.replay_capacity = 1000000
+WrappedPrioritizedReplayBuffer.batch_size = 32
+</code></pre>
+<p>This example assumed you copied <code>atari</code> to a separate folder named <code>unity</code>.
+Replace <code>unity</code> in <code>import dopamine.unity.run_experiment</code> with the folder you
+copied your <code>run_experiment.py</code> and <code>trainer.py</code> files to. If you directly
+modified the existing files, then use <code>atari</code> here.</p>
+<h3 id="starting-a-run">Starting a Run</h3>
+<p>You can now run Dopamine as you would normally:</p>
+<pre><code>python -um dopamine.unity.train \
+  --agent_name=rainbow \
+  --base_dir=/tmp/dopamine \
+  --gin_files='dopamine/agents/rainbow/configs/rainbow.gin'
+</code></pre>
+<p>Again, we assume that you've copied <code>atari</code> into a separate folder. Remember to
+replace <code>unity</code> with the directory you copied your files into. If you edited the
+Atari files directly, this should be <code>atari</code>.</p>
+<h3 id="example-gridworld">Example: GridWorld</h3>
+<p>As a baseline, here are rewards over time for the three algorithms provided with
+Dopamine as run on the GridWorld example environment. All Dopamine (DQN,
+Rainbow, C51) runs were done with the same epsilon, epsilon decay, replay
+history, training steps, and buffer settings as specified above. Note that the
+first 20000 steps are used to pre-fill the training buffer, and no learning
+happens.</p>
+<p>We provide results from our PPO implementation and the DQN from Baselines as
+reference. Note that all runs used the same greyscale GridWorld as Dopamine. For
+PPO, <code>num_layers</code> was set to 2, and all other hyperparameters are the default
+for GridWorld in <code>config/ppo/GridWorld.yaml</code>. For Baselines DQN, the provided
+hyperparameters in the previous section are used. Note that Baselines implements
+certain features (e.g. dueling-Q) that are not enabled in Dopamine DQN.</p>
+<p><img alt="Dopamine on GridWorld" src="../images/dopamine_gridworld_plot.png" /></p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../Python-Gym-API-Documentation/" class="btn btn-neutral float-right" title="Gym API Documentation">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../Background-Unity/" class="btn btn-neutral" title="Unity"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../Background-Unity/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../Python-Gym-API-Documentation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

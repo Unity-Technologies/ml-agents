@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/FAQ/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>FAQs - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "FAQs";
+    var mkdocs_page_input_path = "FAQ.md";
+    var mkdocs_page_url = "/ml-agents/FAQ/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">FAQs</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#installation-problems">Installation problems</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#environment-permission-error">Environment Permission Error</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#environment-connection-timeout">Environment Connection Timeout</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#communication-port-still-in-use">Communication port {} still in use</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#mean-reward-nan">Mean reward : nan</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#file-name-cannot-be-opened-because-the-developer-cannot-be-verified">"File name" cannot be opened because the developer cannot be verified.</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>About &raquo;</li>
+        
+      
+    
+    <li>FAQs</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/FAQ.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="frequently-asked-questions">Frequently Asked Questions</h1>
+<h2 id="installation-problems">Installation problems</h2>
+<h2 id="environment-permission-error">Environment Permission Error</h2>
+<p>If you directly import your Unity environment without building it in the editor,
+you might need to give it additional permissions to execute it.</p>
+<p>If you receive such a permission error on macOS, run:</p>
+<pre><code class="language-sh">chmod -R 755 *.app
+</code></pre>
+<p>or on Linux:</p>
+<pre><code class="language-sh">chmod -R 755 *.x86_64
+</code></pre>
+<p>On Windows, you can find
+<a href="https://technet.microsoft.com/en-us/library/cc754344(v=ws.11).aspx">instructions</a>.</p>
+<h2 id="environment-connection-timeout">Environment Connection Timeout</h2>
+<p>If you are able to launch the environment from <code>UnityEnvironment</code> but then
+receive a timeout error like this:</p>
+<pre><code>UnityAgentsException: The Communicator was unable to connect. Please make sure the External process is ready to accept communication with Unity.
+</code></pre>
+<p>There may be a number of possible causes:</p>
+<ul>
+<li><em>Cause</em>: There may be no agent in the scene</li>
+<li><em>Cause</em>: On OSX, the firewall may be preventing communication with the
+  environment. <em>Solution</em>: Add the built environment binary to the list of
+  exceptions on the firewall by following
+  <a href="https://support.apple.com/en-us/HT201642">instructions</a>.</li>
+<li><em>Cause</em>: An error happened in the Unity Environment preventing communication.
+  <em>Solution</em>: Look into the
+  <a href="https://docs.unity3d.com/Manual/LogFiles.html">log files</a> generated by the
+  Unity Environment to figure what error happened.</li>
+<li><em>Cause</em>: You have assigned <code>HTTP_PROXY</code> and <code>HTTPS_PROXY</code> values in your
+  environment variables. <em>Solution</em>: Remove these values and try again.</li>
+<li><em>Cause</em>: You are running in a headless environment (e.g. remotely connected
+  to a server). <em>Solution</em>: Pass <code>--no-graphics</code> to <code>mlagents-learn</code>, or
+  <code>no_graphics=True</code> to <code>RemoteRegistryEntry.make()</code> or the <code>UnityEnvironment</code>
+  initializer. If you need graphics for visual observations, you will need to
+  set up <code>xvfb</code> (or equivalent).</li>
+</ul>
+<h2 id="communication-port-still-in-use">Communication port {} still in use</h2>
+<p>If you receive an exception
+<code>"Couldn't launch new environment because communication port {} is still in use. "</code>,
+you can change the worker number in the Python script when calling</p>
+<pre><code class="language-python">UnityEnvironment(file_name=filename, worker_id=X)
+</code></pre>
+<h2 id="mean-reward-nan">Mean reward : nan</h2>
+<p>If you receive a message <code>Mean reward : nan</code> when attempting to train a model
+using PPO, this is due to the episodes of the Learning Environment not
+terminating. In order to address this, set <code>Max Steps</code> for the Agents within the
+Scene Inspector to a value greater than 0. Alternatively, it is possible to
+manually set <code>done</code> conditions for episodes from within scripts for custom
+episode-terminating events.</p>
+<h2 id="file-name-cannot-be-opened-because-the-developer-cannot-be-verified">"File name" cannot be opened because the developer cannot be verified.</h2>
+<p>If you have downloaded the repository using the github website on macOS 10.15 (Catalina)
+or later, you may see this error when attempting to play scenes in the Unity project.
+Workarounds include installing the package using the Unity Package Manager (this is
+the officially supported approach - see <a href="../Installation/">here</a>), or following the
+instructions <a href="https://support.apple.com/en-us/HT202491">here</a> to verify the relevant
+files on your machine on a file-by-file basis.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../Limitations/" class="btn btn-neutral float-right" title="Limitations">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../Python-LLAPI-Documentation/" class="btn btn-neutral" title="LLAPI Documentation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../Python-LLAPI-Documentation/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../Limitations/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

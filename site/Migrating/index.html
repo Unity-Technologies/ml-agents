@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Migrating/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Migrating - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Migrating";
+    var mkdocs_page_input_path = "Migrating.md";
+    var mkdocs_page_url = "/ml-agents/Migrating/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Migrating</a>
+    <ul class="current">
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>About &raquo;</li>
+        
+      
+    
+    <li>Migrating</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/master/docs/Migrating.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="upgrading">Upgrading</h1>
+<h1 id="migrating">Migrating</h1>
+<h2 id="migrating-the-package-to-version-20">Migrating the package to version 2.0</h2>
+<ul>
+<li>The official version of Unity ML-Agents supports is now 2020.3 LTS. If you run
+  into issues, please consider deleting your project's Library folder and reponening your
+  project.</li>
+<li>If you used any of the APIs that were deprecated before version 2.0, you need to use their replacement. These
+deprecated APIs have been removed. See the migration steps bellow for specific API replacements.</li>
+</ul>
+<h3 id="deprecated-methods-removed">Deprecated methods removed</h3>
+<table>
+<thead>
+<tr>
+<th align="center"><strong>Deprecated API</strong></th>
+<th align="center"><strong>Suggested Replacement</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><code>IActuator ActuatorComponent.CreateActuator()</code></td>
+<td align="center"><code>IActuator[] ActuatorComponent.CreateActuators()</code></td>
+</tr>
+<tr>
+<td align="center"><code>IActionReceiver.PackActions(in float[] destination)</code></td>
+<td align="center">none</td>
+</tr>
+<tr>
+<td align="center"><code>Agent.CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)</code></td>
+<td align="center"><code>Agent.WriteDiscreteActionMask(IDiscreteActionMask actionMask)</code></td>
+</tr>
+<tr>
+<td align="center"><code>Agent.Heuristic(float[] actionsOut)</code></td>
+<td align="center"><code>Agent.Heuristic(in ActionBuffers actionsOut)</code></td>
+</tr>
+<tr>
+<td align="center"><code>Agent.OnActionReceived(float[] vectorAction)</code></td>
+<td align="center"><code>Agent.OnActionReceived(ActionBuffers actions)</code></td>
+</tr>
+<tr>
+<td align="center"><code>Agent.GetAction()</code></td>
+<td align="center"><code>Agent.GetStoredActionBuffers()</code></td>
+</tr>
+<tr>
+<td align="center"><code>BrainParameters.SpaceType</code>, <code>VectorActionSize</code>, <code>VectorActionSpaceType</code>, and <code>NumActions</code></td>
+<td align="center"><code>BrainParameters.ActionSpec</code></td>
+</tr>
+<tr>
+<td align="center"><code>ObservationWriter.AddRange(IEnumerable&lt;float&gt; data, int writeOffset = 0)</code></td>
+<td align="center"><code>ObservationWriter. AddList(IList&lt;float&gt; data, int writeOffset = 0</code></td>
+</tr>
+<tr>
+<td align="center"><code>SensorComponent.IsVisual()</code> and <code>IsVector()</code></td>
+<td align="center">none</td>
+</tr>
+<tr>
+<td align="center"><code>VectorSensor.AddObservation(IEnumerable&lt;float&gt; observation)</code></td>
+<td align="center"><code>VectorSensor.AddObservation(IList&lt;float&gt; observation)</code></td>
+</tr>
+<tr>
+<td align="center"><code>SideChannelsManager</code></td>
+<td align="center"><code>SideChannelManager</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="idiscreteactionmask-changes">IDiscreteActionMask changes</h3>
+<ul>
+<li>The interface for disabling specific discrete actions has changed. <code>IDiscreteActionMask.WriteMask()</code> was removed,
+and replaced with <code>SetActionEnabled()</code>. Instead of returning an IEnumerable with indices to disable, you can
+now call <code>SetActionEnabled</code> for each index to disable (or enable). As an example, if you overrode
+<code>Agent.WriteDiscreteActionMask()</code> with something that looked like:</li>
+</ul>
+<pre><code class="language-csharp">public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
+{
+    var branch = 2;
+    var actionsToDisable = new[] {1, 3};
+    actionMask.WriteMask(branch, actionsToDisable);
+}
+</code></pre>
+<p>the equivalent code would now be</p>
+<pre><code class="language-csharp">public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
+{
+    var branch = 2;
+    actionMask.SetActionEnabled(branch, 1, false);
+    actionMask.SetActionEnabled(branch, 3, false);
+}
+</code></pre>
+<h3 id="iactuator-changes">IActuator changes</h3>
+<ul>
+<li>The <code>IActuator</code> interface now implements <code>IHeuristicProvider</code>.  Please add the corresponding <code>Heuristic(in ActionBuffers)</code>
+method to your custom Actuator classes.</li>
+</ul>
+<h3 id="isensor-and-sensorcomponent-changes">ISensor and SensorComponent changes</h3>
+<ul>
+<li>The <code>ISensor.GetObservationShape()</code> method and <code>ITypedSensor</code>
+and <code>IDimensionPropertiesSensor</code> interfaces were removed, and <code>GetObservationSpec()</code> was added. You can use
+<code>ObservationSpec.Vector()</code> or <code>ObservationSpec.Visual()</code> to generate <code>ObservationSpec</code>s that are equivalent to
+the previous shape. For example, if your old ISensor looked like:</li>
+</ul>
+<pre><code class="language-csharp">public override int[] GetObservationShape()
+{
+    return new[] { m_Height, m_Width, m_NumChannels };
+}
+</code></pre>
+<p>the equivalent code would now be</p>
+<pre><code class="language-csharp">public override ObservationSpec GetObservationSpec()
+{
+    return ObservationSpec.Visual(m_Height, m_Width, m_NumChannels);
+}
+</code></pre>
+<ul>
+<li>The <code>ISensor.GetCompressionType()</code> method and <code>ISparseChannelSensor</code> interface was removed,
+and <code>GetCompressionSpec()</code> was added. You can use <code>CompressionSpec.Default()</code> or
+<code>CompressionSpec.Compressed()</code> to generate <code>CompressionSpec</code>s that are  equivalent to
+ the previous values. For example, if your old ISensor looked like:
+ ```csharp
+public virtual SensorCompressionType GetCompressionType()
+{
+    return SensorCompressionType.None;
+}</li>
+</ul>
+<pre><code>
+the equivalent code would now be
+
+```csharp
+public CompressionSpec GetCompressionSpec()
+{
+    return CompressionSpec.Default();
+}
+</code></pre>
+<ul>
+<li>The abstract method <code>SensorComponent.GetObservationShape()</code> was removed.</li>
+<li>The abstract method <code>SensorComponent.CreateSensor()</code> was replaced with <code>CreateSensors()</code>, which returns an <code>ISensor[]</code>.</li>
+</ul>
+<h3 id="match3-integration-changes">Match3 integration changes</h3>
+<p>The Match-3 integration utilities were moved from <code>com.unity.ml-agents.extensions</code> to <code>com.unity.ml-agents</code>.</p>
+<p>The <code>AbstractBoard</code> interface was changed:
+* <code>AbstractBoard</code> no longer contains <code>Rows</code>, <code>Columns</code>, <code>NumCellTypes</code>, and <code>NumSpecialTypes</code> fields.
+* <code>public abstract BoardSize GetMaxBoardSize()</code> was added as an abstract method. <code>BoardSize</code> is a new struct that
+contains <code>Rows</code>, <code>Columns</code>, <code>NumCellTypes</code>, and <code>NumSpecialTypes</code> fields, with the same meanings as the old
+<code>AbstractBoard</code> fields.
+* <code>public virtual BoardSize GetCurrentBoardSize()</code> is an optional method; by default it returns <code>GetMaxBoardSize()</code>. If
+you wish to use a single behavior to work with multiple board sizes, override <code>GetCurrentBoardSize()</code> to return the
+current <code>BoardSize</code>. The values returned by <code>GetCurrentBoardSize()</code> must be less than or equal to the corresponding
+values from <code>GetMaxBoardSize()</code>.</p>
+<h3 id="gridsensor-changes">GridSensor changes</h3>
+<p>The sensor configuration has changed:
+* The sensor implementation has been refactored and exsisting GridSensor created from extension package
+will not work in newer version. Some errors might show up when loading the old sensor in the scene.
+You'll need to remove the old sensor and create a new GridSensor.
+* These parameters names have changed but still refer to the same concept in the sensor: <code>GridNumSide</code> -&gt; <code>GridSize</code>,
+<code>RotateToAgent</code> -&gt; <code>RotateWithAgent</code>, <code>ObserveMask</code> -&gt; <code>ColliderMask</code>, <code>DetectableObjects</code> -&gt; <code>DetectableTags</code>
+* <code>DepthType</code> (<code>ChanelBase</code>/<code>ChannelHot</code>) option and <code>ChannelDepth</code> are removed. Now the default is
+one-hot encoding for detected tag. If you were using original GridSensor without overriding any method,
+switching to new GridSensor will produce similar effect for training although the actual observations
+will be slightly different.</p>
+<p>For creating your GridSensor implementation with custom data:
+* To create custom GridSensor, derive from <code>GridSensorBase</code> instead of <code>GridSensor</code>. Besides overriding
+<code>GetObjectData()</code>, you will also need to consider override <code>GetCellObservationSize()</code>, <code>IsDataNormalized()</code>
+and <code>GetProcessCollidersMethod()</code> according to the data you collect. Also you'll need to override
+<code>GridSensorComponent.GetGridSensors()</code> and return your custom GridSensor.
+* The input argument <code>tagIndex</code> in <code>GetObjectData()</code> has changed from 1-indexed to 0-indexed and the
+data type changed from <code>float</code> to <code>int</code>. The index of first detectable tag will be 0 instead of 1.
+<code>normalizedDistance</code> was removed from input.
+* The observation data should be written to the input <code>dataBuffer</code> instead of creating and returning a new array.
+* Removed the constraint of all data required to be normalized. You should specify it in <code>IsDataNormalized()</code>.
+Sensors with non-normalized data cannot use PNG compression type.
+* The sensor will not further encode the data recieved from <code>GetObjectData()</code> anymore. The values
+recieved from <code>GetObjectData()</code> will be the observation sent to the trainer.</p>
+<h3 id="lstm-models-from-previous-releases-no-longer-supported">LSTM models from previous releases no longer supported</h3>
+<p>The way the Unity Inference Engine processes LSTM (recurrent neural networks) has changed. As a result, models
+trained with previous versions of ML-Agents will not be usable at inference if they were trained with a <code>memory</code>
+setting in the <code>.yaml</code> config file.
+If you want to use a model that has a recurrent neural network in this release of ML-Agents, you need to train
+the model using the python trainer from this release.</p>
+<h2 id="migrating-to-release-13">Migrating to Release 13</h2>
+<h3 id="implementing-iheuristic-in-your-iactuator-implementations">Implementing IHeuristic in your IActuator implementations</h3>
+<ul>
+<li>If you have any custom actuators, you can now implement the <code>IHeuristicProvider</code> interface to have your actuator
+  handle the generation of actions when an Agent is running in heuristic mode.</li>
+<li><code>VectorSensor.AddObservation(IEnumerable&lt;float&gt;)</code> is deprecated. Use <code>VectorSensor.AddObservation(IList&lt;float&gt;)</code>
+  instead.</li>
+<li><code>ObservationWriter.AddRange()</code> is deprecated. Use <code>ObservationWriter.AddList()</code> instead.</li>
+<li><code>ActuatorComponent.CreateAcuator()</code> is deprecated.  Please use override <code>ActuatorComponent.CreateActuators</code>
+  instead.  Since <code>ActuatorComponent.CreateActuator()</code> is abstract, you will still need to override it in your
+  class until it is removed.  It is only ever called if you don't override <code>ActuatorComponent.CreateActuators</code>.
+  You can suppress the warnings by surrounding the method with the following pragma:
+    <code>c#
+    #pragma warning disable 672
+    public IActuator CreateActuator() { ... }
+    #pragma warning restore 672</code></li>
+</ul>
+<h1 id="migrating_1">Migrating</h1>
+<h2 id="migrating-to-release-11">Migrating to Release 11</h2>
+<h3 id="agent-virtual-method-deprecation">Agent virtual method deprecation</h3>
+<ul>
+<li><code>Agent.CollectDiscreteActionMasks()</code> was deprecated and should be replaced with <code>Agent.WriteDiscreteActionMask()</code></li>
+<li><code>Agent.Heuristic(float[])</code> was deprecated and should be replaced with <code>Agent.Heuristic(ActionBuffers)</code>.</li>
+<li><code>Agent.OnActionReceived(float[])</code> was deprecated and should be replaced with <code>Agent.OnActionReceived(ActionBuffers)</code>.</li>
+<li><code>Agent.GetAction()</code> was deprecated and should be replaced with <code>Agent.GetStoredActionBuffers()</code>.</li>
+</ul>
+<p>The default implementation of these will continue to call the deprecated versions where appropriate. However, the
+deprecated versions may not be compatible with continuous and discrete actions on the same Agent.</p>
+<h3 id="brainparameters-field-and-method-deprecation">BrainParameters field and method deprecation</h3>
+<ul>
+<li><code>BrainParameters.VectorActionSize</code> was deprecated; you can now set <code>BrainParameters.ActionSpec.NumContinuousActions</code>
+ or <code>BrainParameters.ActionSpec.BranchSizes</code> instead.</li>
+<li><code>BrainParameters.VectorActionSpaceType</code> was deprecated, since both continuous and discrete actions can now be used.</li>
+<li><code>BrainParameters.NumActions()</code> was deprecated. Use  <code>BrainParameters.ActionSpec.NumContinuousActions</code> and
+ <code>BrainParameters.ActionSpec.NumDiscreteActions</code> instead.</li>
+</ul>
+<h2 id="migrating-from-release-7-to-latest">Migrating from Release 7 to latest</h2>
+<h3 id="important-changes">Important changes</h3>
+<ul>
+<li>Some trainer files were moved. If you were using the <code>TrainerFactory</code> class, it was moved to
+the <code>trainers/trainer</code> folder.</li>
+<li>The <code>components</code> folder containing <code>bc</code> and <code>reward_signals</code> code was moved to the <code>trainers/tf</code>
+folder</li>
+</ul>
+<h3 id="steps-to-migrate">Steps to Migrate</h3>
+<ul>
+<li>Replace calls to <code>from mlagents.trainers.trainer_util import TrainerFactory</code> to <code>from mlagents.trainers.trainer import TrainerFactory</code></li>
+<li>Replace calls to <code>from mlagents.trainers.trainer_util import handle_existing_directories</code> to <code>from mlagents.trainers.directory_utils import validate_existing_directories</code></li>
+<li>Replace <code>mlagents.trainers.components</code> with <code>mlagents.trainers.tf.components</code> in your import statements.</li>
+</ul>
+<h2 id="migrating-from-release-3-to-release-7">Migrating from Release 3 to Release 7</h2>
+<h3 id="important-changes_1">Important changes</h3>
+<ul>
+<li>The Parameter Randomization feature has been merged with the Curriculum feature. It is now possible to specify a sampler
+in the lesson of a Curriculum. Curriculum has been refactored and is now specified at the level of the parameter, not the
+behavior. More information
+<a href="https://github.com/Unity-Technologies/ml-agents/blob/release_19_docs/docs/Training-ML-Agents.md">here</a>.(#4160)</li>
+</ul>
+<h3 id="steps-to-migrate_1">Steps to Migrate</h3>
+<ul>
+<li>The configuration format for curriculum and parameter randomization has changed. To upgrade your configuration files,
+an upgrade script has been provided. Run <code>python -m mlagents.trainers.upgrade_config -h</code> to see the script usage. Note that you will have had to upgrade to/install the current version of ML-Agents before running the script. To update manually:</li>
+<li>If your config file used a <code>parameter_randomization</code> section, rename that section to <code>environment_parameters</code></li>
+<li>If your config file used a <code>curriculum</code> section, you will need to rewrite your curriculum with this <a href="../Training-ML-Agents/#curriculum">format</a>.</li>
+</ul>
+<h2 id="migrating-from-release-1-to-release-3">Migrating from Release 1 to Release 3</h2>
+<h3 id="important-changes_2">Important changes</h3>
+<ul>
+<li>Training artifacts (trained models, summaries) are now found under <code>results/</code>
+  instead of <code>summaries/</code> and <code>models/</code>.</li>
+<li>Trainer configuration, curriculum configuration, and parameter randomization
+  configuration have all been moved to a single YAML file. (#3791)</li>
+<li>Trainer configuration format has changed, and using a "default" behavior name has
+  been deprecated. (#3936)</li>
+<li><code>max_step</code> in the <code>TerminalStep</code> and <code>TerminalSteps</code> objects was renamed <code>interrupted</code>.</li>
+<li>On the UnityEnvironment API, <code>get_behavior_names()</code> and <code>get_behavior_specs()</code> methods were combined into the property <code>behavior_specs</code> that contains a mapping from behavior names to behavior spec.</li>
+<li><code>use_visual</code> and <code>allow_multiple_visual_obs</code> in the <code>UnityToGymWrapper</code> constructor
+were replaced by <code>allow_multiple_obs</code> which allows one or more visual observations and
+vector observations to be used simultaneously.</li>
+<li><code>--save-freq</code> has been removed from the CLI and is now configurable in the trainer configuration
+  file.</li>
+<li><code>--lesson</code> has been removed from the CLI. Lessons will resume when using <code>--resume</code>.
+  To start at a different lesson, modify your Curriculum configuration.</li>
+</ul>
+<h3 id="steps-to-migrate_2">Steps to Migrate</h3>
+<ul>
+<li>To upgrade your configuration files, an upgrade script has been provided. Run
+  <code>python -m mlagents.trainers.upgrade_config -h</code> to see the script usage. Note that you will have
+  had to upgrade to/install the current version of ML-Agents before running the script.</li>
+</ul>
+<p>To do it manually, copy your <code>&lt;BehaviorName&gt;</code> sections from <code>trainer_config.yaml</code> into a separate trainer configuration file, under a <code>behaviors</code> section.
+  The <code>default</code> section is no longer needed. This new file should be specific to your environment, and not contain
+  configurations for multiple environments (unless they have the same Behavior Names).
+  - You will need to reformat your trainer settings as per the <a href="../Training-ML-Agents/">example</a>.
+  - If your training uses <a href="../Training-ML-Agents/#curriculum-learning">curriculum</a>, move those configurations under a <code>curriculum</code> section.
+  - If your training uses <a href="../Training-ML-Agents/#environment-parameter-randomization">parameter randomization</a>, move
+  the contents of the sampler config to <code>parameter_randomization</code> in the main trainer configuration.
+- If you are using <code>UnityEnvironment</code> directly, replace <code>max_step</code> with <code>interrupted</code>
+ in the <code>TerminalStep</code> and <code>TerminalSteps</code> objects.
+ - Replace usage of <code>get_behavior_names()</code> and <code>get_behavior_specs()</code> in UnityEnvironment with <code>behavior_specs</code>.
+ - If you use the <code>UnityToGymWrapper</code>, remove <code>use_visual</code> and <code>allow_multiple_visual_obs</code>
+ from the constructor and add <code>allow_multiple_obs = True</code> if the environment contains either
+ both visual and vector observations or multiple visual observations.
+ - If you were setting <code>--save-freq</code> in the CLI, add a <code>checkpoint_interval</code> value in your
+  trainer configuration, and set it equal to <code>save-freq * n_agents_in_scene</code>.</p>
+<h2 id="migrating-from-015-to-release-1">Migrating from 0.15 to Release 1</h2>
+<h3 id="important-changes_3">Important changes</h3>
+<ul>
+<li>The <code>MLAgents</code> C# namespace was renamed to <code>Unity.MLAgents</code>, and other nested
+  namespaces were similarly renamed (#3843).</li>
+<li>The <code>--load</code> and <code>--train</code> command-line flags have been deprecated and
+  replaced with <code>--resume</code> and <code>--inference</code>.</li>
+<li>Running with the same <code>--run-id</code> twice will now throw an error.</li>
+<li>The <code>play_against_current_self_ratio</code> self-play trainer hyperparameter has
+  been renamed to <code>play_against_latest_model_ratio</code></li>
+<li>Removed the multi-agent gym option from the gym wrapper. For multi-agent
+  scenarios, use the <a href="../Python-LLAPI/">Low Level Python API</a>.</li>
+<li>The low level Python API has changed. You can look at the document
+  <a href="../Python-LLAPI/">Low Level Python API documentation</a> for more information. If
+  you use <code>mlagents-learn</code> for training, this should be a transparent change.</li>
+<li>The obsolete <code>Agent</code> methods <code>GiveModel</code>, <code>Done</code>, <code>InitializeAgent</code>,
+  <code>AgentAction</code> and <code>AgentReset</code> have been removed.</li>
+<li>The signature of <code>Agent.Heuristic()</code> was changed to take a <code>float[]</code> as a
+  parameter, instead of returning the array. This was done to prevent a common
+  source of error where users would return arrays of the wrong size.</li>
+<li>The SideChannel API has changed (#3833, #3660) :</li>
+<li>Introduced the <code>SideChannelManager</code> to register, unregister and access side
+    channels.</li>
+<li><code>EnvironmentParameters</code> replaces the default <code>FloatProperties</code>. You can
+    access the <code>EnvironmentParameters</code> with
+    <code>Academy.Instance.EnvironmentParameters</code> on C#. If you were previously
+    creating a <code>UnityEnvironment</code> in python and passing it a
+    <code>FloatPropertiesChannel</code>, create an <code>EnvironmentParametersChannel</code> instead.</li>
+<li><code>SideChannel.OnMessageReceived</code> is now a protected method (was public)</li>
+<li>SideChannel IncomingMessages methods now take an optional default argument,
+    which is used when trying to read more data than the message contains.</li>
+<li>Added a feature to allow sending stats from C# environments to TensorBoard
+    (and other python StatsWriters). To do this from your code, use
+    <code>Academy.Instance.StatsRecorder.Add(key, value)</code>(#3660)</li>
+<li><code>num_updates</code> and <code>train_interval</code> for SAC have been replaced with
+  <code>steps_per_update</code>.</li>
+<li>The <code>UnityEnv</code> class from the <code>gym-unity</code> package was renamed
+  <code>UnityToGymWrapper</code> and no longer creates the <code>UnityEnvironment</code>. Instead, the
+  <code>UnityEnvironment</code> must be passed as input to the constructor of
+  <code>UnityToGymWrapper</code></li>
+<li>Public fields and properties on several classes were renamed to follow Unity's
+  C# style conventions. All public fields and properties now use "PascalCase"
+  instead of "camelCase"; for example, <code>Agent.maxStep</code> was renamed to
+  <code>Agent.MaxStep</code>. For a full list of changes, see the pull request. (#3828)</li>
+<li><code>WriteAdapter</code> was renamed to <code>ObservationWriter</code>. (#3834)</li>
+</ul>
+<h3 id="steps-to-migrate_3">Steps to Migrate</h3>
+<ul>
+<li>In C# code, replace <code>using MLAgents</code> with <code>using Unity.MLAgents</code>. Replace
+  other nested namespaces such as <code>using MLAgents.Sensors</code> with
+  <code>using Unity.MLAgents.Sensors</code></li>
+<li>Replace the <code>--load</code> flag with <code>--resume</code> when calling <code>mlagents-learn</code>, and
+  don't use the <code>--train</code> flag as training will happen by default. To run
+  without training, use <code>--inference</code>.</li>
+<li>To force-overwrite files from a pre-existing run, add the <code>--force</code>
+  command-line flag.</li>
+<li>The Jupyter notebooks have been removed from the repository.</li>
+<li>If your Agent class overrides <code>Heuristic()</code>, change the signature to
+  <code>public override void Heuristic(float[] actionsOut)</code> and assign values to
+  <code>actionsOut</code> instead of returning an array.</li>
+<li>If you used <code>SideChannels</code> you must:</li>
+<li>Replace <code>Academy.FloatProperties</code> with
+    <code>Academy.Instance.EnvironmentParameters</code>.</li>
+<li><code>Academy.RegisterSideChannel</code> and <code>Academy.UnregisterSideChannel</code> were
+    removed. Use <code>SideChannelManager.RegisterSideChannel</code> and
+    <code>SideChannelManager.UnregisterSideChannel</code> instead.</li>
+<li>Set <code>steps_per_update</code> to be around equal to the number of agents in your
+  environment, times <code>num_updates</code> and divided by <code>train_interval</code>.</li>
+<li>Replace <code>UnityEnv</code> with <code>UnityToGymWrapper</code> in your code. The constructor no
+  longer takes a file name as input but a fully constructed <code>UnityEnvironment</code>
+  instead.</li>
+<li>Update uses of "camelCase" fields and properties to "PascalCase".</li>
+</ul>
+<h2 id="migrating-from-014-to-015">Migrating from 0.14 to 0.15</h2>
+<h3 id="important-changes_4">Important changes</h3>
+<ul>
+<li>The <code>Agent.CollectObservations()</code> virtual method now takes as input a
+  <code>VectorSensor</code> sensor as argument. The <code>Agent.AddVectorObs()</code> methods were
+  removed.</li>
+<li>The <code>SetMask</code> was renamed to <code>SetMask</code> method must now be called on the
+  <code>DiscreteActionMasker</code> argument of the <code>CollectDiscreteActionMasks</code> virtual
+  method.</li>
+<li>We consolidated our API for <code>DiscreteActionMasker</code>. <code>SetMask</code> takes two
+  arguments : the branch index and the list of masked actions for that branch.</li>
+<li>The <code>Monitor</code> class has been moved to the Examples Project. (It was prone to
+  errors during testing)</li>
+<li>The <code>MLAgents.Sensors</code> namespace has been introduced. All sensors classes are
+  part of the <code>MLAgents.Sensors</code> namespace.</li>
+<li>The <code>MLAgents.SideChannels</code> namespace has been introduced. All side channel
+  classes are part of the <code>MLAgents.SideChannels</code> namespace.</li>
+<li>The interface for <code>RayPerceptionSensor.PerceiveStatic()</code> was changed to take
+  an input class and write to an output class, and the method was renamed to
+  <code>Perceive()</code>.</li>
+<li>The <code>SetMask</code> method must now be called on the <code>DiscreteActionMasker</code> argument
+  of the <code>CollectDiscreteActionMasks</code> method.</li>
+<li>The method <code>GetStepCount()</code> on the Agent class has been replaced with the
+  property getter <code>StepCount</code></li>
+<li>The <code>--multi-gpu</code> option has been removed temporarily.</li>
+<li><code>AgentInfo.actionMasks</code> has been renamed to <code>AgentInfo.discreteActionMasks</code>.</li>
+<li><code>BrainParameters</code> and <code>SpaceType</code> have been removed from the public API</li>
+<li><code>BehaviorParameters</code> have been removed from the public API.</li>
+<li><code>DecisionRequester</code> has been made internal (you can still use the
+  DecisionRequesterComponent from the inspector). <code>RepeatAction</code> was renamed
+  <code>TakeActionsBetweenDecisions</code> for clarity.</li>
+<li>The following methods in the <code>Agent</code> class have been renamed. The original
+  method names will be removed in a later release:</li>
+<li><code>InitializeAgent()</code> was renamed to <code>Initialize()</code></li>
+<li><code>AgentAction()</code> was renamed to <code>OnActionReceived()</code></li>
+<li><code>AgentReset()</code> was renamed to <code>OnEpsiodeBegin()</code></li>
+<li><code>Done()</code> was renamed to <code>EndEpisode()</code></li>
+<li><code>GiveModel()</code> was renamed to <code>SetModel()</code></li>
+<li>The <code>IFloatProperties</code> interface has been removed.</li>
+<li>The interface for SideChannels was changed:</li>
+<li>In C#, <code>OnMessageReceived</code> now takes a <code>IncomingMessage</code> argument, and
+    <code>QueueMessageToSend</code> takes an <code>OutgoingMessage</code> argument.</li>
+<li>In python, <code>on_message_received</code> now takes a <code>IncomingMessage</code> argument, and
+    <code>queue_message_to_send</code> takes an <code>OutgoingMessage</code> argument.</li>
+<li>Automatic stepping for Academy is now controlled from the
+    AutomaticSteppingEnabled property.</li>
+</ul>
+<h3 id="steps-to-migrate_4">Steps to Migrate</h3>
+<ul>
+<li>Add the <code>using MLAgents.Sensors;</code> in addition to <code>using MLAgents;</code> on top of
+  your Agent's script.</li>
+<li>Replace your Agent's implementation of <code>CollectObservations()</code> with
+  <code>CollectObservations(VectorSensor sensor)</code>. In addition, replace all calls to
+  <code>AddVectorObs()</code> with <code>sensor.AddObservation()</code> or
+  <code>sensor.AddOneHotObservation()</code> on the <code>VectorSensor</code> passed as argument.</li>
+<li>Replace your calls to <code>SetActionMask</code> on your Agent to
+  <code>DiscreteActionMasker.SetActionMask</code> in <code>CollectDiscreteActionMasks</code>.</li>
+<li>If you call <code>RayPerceptionSensor.PerceiveStatic()</code> manually, add your inputs
+  to a <code>RayPerceptionInput</code>. To get the previous float array output, iterate
+  through <code>RayPerceptionOutput.rayOutputs</code> and call
+  <code>RayPerceptionOutput.RayOutput.ToFloatArray()</code>.</li>
+<li>Replace all calls to <code>Agent.GetStepCount()</code> with <code>Agent.StepCount</code></li>
+<li>We strongly recommend replacing the following methods with their new
+  equivalent as they will be removed in a later release:</li>
+<li><code>InitializeAgent()</code> to <code>Initialize()</code></li>
+<li><code>AgentAction()</code> to <code>OnActionReceived()</code></li>
+<li><code>AgentReset()</code> to <code>OnEpisodeBegin()</code></li>
+<li><code>Done()</code> to <code>EndEpisode()</code></li>
+<li><code>GiveModel()</code> to <code>SetModel()</code></li>
+<li>Replace <code>IFloatProperties</code> variables with <code>FloatPropertiesChannel</code> variables.</li>
+<li>If you implemented custom <code>SideChannels</code>, update the signatures of your
+  methods, and add your data to the <code>OutgoingMessage</code> or read it from the
+  <code>IncomingMessage</code>.</li>
+<li>Replace calls to Academy.EnableAutomaticStepping()/DisableAutomaticStepping()
+  with Academy.AutomaticSteppingEnabled = true/false.</li>
+</ul>
+<h2 id="migrating-from-013-to-014">Migrating from 0.13 to 0.14</h2>
+<h3 id="important-changes_5">Important changes</h3>
+<ul>
+<li>The <code>UnitySDK</code> folder has been split into a Unity Package
+  (<code>com.unity.ml-agents</code>) and an examples project (<code>Project</code>). Please follow the
+  <a href="../Installation/">Installation Guide</a> to get up and running with this new repo
+  structure.</li>
+<li>Several changes were made to how agents are reset and marked as done:</li>
+<li>Calling <code>Done()</code> on the Agent will now reset it immediately and call the
+    <code>AgentReset</code> virtual method. (This is to simplify the previous logic in
+    which the Agent had to wait for the next <code>EnvironmentStep</code> to reset)</li>
+<li>The "Reset on Done" setting in AgentParameters was removed; this is now
+    effectively always true. <code>AgentOnDone</code> virtual method on the Agent has been
+    removed.</li>
+<li>The <code>Decision Period</code> and <code>On Demand decision</code> checkbox have been removed from
+  the Agent. On demand decision is now the default (calling <code>RequestDecision</code> on
+  the Agent manually.)</li>
+<li>The Academy class was changed to a singleton, and its virtual methods were
+  removed.</li>
+<li>Trainer steps are now counted per-Agent, not per-environment as in previous
+  versions. For instance, if you have 10 Agents in the scene, 20 environment
+  steps now corresponds to 200 steps as printed in the terminal and in
+  Tensorboard.</li>
+<li>Curriculum config files are now YAML formatted and all curricula for a
+  training run are combined into a single file.</li>
+<li>The <code>--num-runs</code> command-line option has been removed from <code>mlagents-learn</code>.</li>
+<li>Several fields on the Agent were removed or made private in order to simplify
+  the interface.</li>
+<li>The <code>agentParameters</code> field of the Agent has been removed. (Contained only
+    <code>maxStep</code> information)</li>
+<li><code>maxStep</code> is now a public field on the Agent. (Was moved from
+    <code>agentParameters</code>)</li>
+<li>The <code>Info</code> field of the Agent has been made private. (Was only used
+    internally and not meant to be modified outside of the Agent)</li>
+<li>The <code>GetReward()</code> method on the Agent has been removed. (It was being
+    confused with <code>GetCumulativeReward()</code>)</li>
+<li>The <code>AgentAction</code> struct no longer contains a <code>value</code> field. (Value
+    estimates were not set during inference)</li>
+<li>The <code>GetValueEstimate()</code> method on the Agent has been removed.</li>
+<li>The <code>UpdateValueAction()</code> method on the Agent has been removed.</li>
+<li>The deprecated <code>RayPerception3D</code> and <code>RayPerception2D</code> classes were removed,
+  and the <code>legacyHitFractionBehavior</code> argument was removed from
+  <code>RayPerceptionSensor.PerceiveStatic()</code>.</li>
+<li>RayPerceptionSensor was inconsistent in how it handle scale on the Agent's
+  transform. It now scales the ray length and sphere size for casting as the
+  transform's scale changes.</li>
+</ul>
+<h3 id="steps-to-migrate_5">Steps to Migrate</h3>
+<ul>
+<li>Follow the instructions on how to install the <code>com.unity.ml-agents</code> package
+  into your project in the <a href="../Installation/">Installation Guide</a>.</li>
+<li>If your Agent implemented <code>AgentOnDone</code> and did not have the checkbox
+  <code>Reset On Done</code> checked in the inspector, you must call the code that was in
+  <code>AgentOnDone</code> manually.</li>
+<li>If you give your Agent a reward or penalty at the end of an episode (e.g. for
+  reaching a goal or falling off of a platform), make sure you call
+  <code>AddReward()</code> or <code>SetReward()</code> <em>before</em> calling <code>Done()</code>. Previously, the
+  order didn't matter.</li>
+<li>If you were not using <code>On Demand Decision</code> for your Agent, you <strong>must</strong> add a
+  <code>DecisionRequester</code> component to your Agent GameObject and set its
+  <code>Decision Period</code> field to the old <code>Decision Period</code> of the Agent.</li>
+<li>If you have a class that inherits from Academy:</li>
+<li>If the class didn't override any of the virtual methods and didn't store any
+    additional data, you can just remove the old script from the scene.</li>
+<li>If the class had additional data, create a new MonoBehaviour and store the
+    data in the new MonoBehaviour instead.</li>
+<li>If the class overrode the virtual methods, create a new MonoBehaviour and
+    move the logic to it:<ul>
+<li>Move the InitializeAcademy code to MonoBehaviour.Awake</li>
+<li>Move the AcademyStep code to MonoBehaviour.FixedUpdate</li>
+<li>Move the OnDestroy code to MonoBehaviour.OnDestroy.</li>
+<li>Move the AcademyReset code to a new method and add it to the
+  Academy.OnEnvironmentReset action.</li>
+</ul>
+</li>
+<li>Multiply <code>max_steps</code> and <code>summary_freq</code> in your <code>trainer_config.yaml</code> by the
+  number of Agents in the scene.</li>
+<li>Combine curriculum configs into a single file. See
+  <a href="https://github.com/Unity-Technologies/ml-agents/blob/0.14.1/config/curricula/wall_jump.yaml">the WallJump curricula</a> for an example of
+  the new curriculum config format. A tool like https://www.json2yaml.com may be
+  useful to help with the conversion.</li>
+<li>If you have a model trained which uses RayPerceptionSensor and has non-1.0
+  scale in the Agent's transform, it must be retrained.</li>
+</ul>
+<h2 id="migrating-from-ml-agents-toolkit-v0120-to-v0130">Migrating from ML-Agents Toolkit v0.12.0 to v0.13.0</h2>
+<h3 id="important-changes_6">Important changes</h3>
+<ul>
+<li>The low level Python API has changed. You can look at the document
+  <a href="../Python-LLAPI/">Low Level Python API documentation</a> for more information. This
+  should only affect you if you're writing a custom trainer; if you use
+  <code>mlagents-learn</code> for training, this should be a transparent change.</li>
+<li><code>reset()</code> on the Low-Level Python API no longer takes a <code>train_mode</code>
+    argument. To modify the performance/speed of the engine, you must use an
+    <code>EngineConfigurationChannel</code></li>
+<li><code>reset()</code> on the Low-Level Python API no longer takes a <code>config</code> argument.
+    <code>UnityEnvironment</code> no longer has a <code>reset_parameters</code> field. To modify float
+    properties in the environment, you must use a <code>FloatPropertiesChannel</code>. For
+    more information, refer to the
+    <a href="../Python-LLAPI/">Low Level Python API documentation</a></li>
+<li><code>CustomResetParameters</code> are now removed.</li>
+<li>The Academy no longer has a <code>Training Configuration</code> nor
+  <code>Inference Configuration</code> field in the inspector. To modify the configuration
+  from the Low-Level Python API, use an <code>EngineConfigurationChannel</code>. To modify
+  it during training, use the new command line arguments <code>--width</code>, <code>--height</code>,
+  <code>--quality-level</code>, <code>--time-scale</code> and <code>--target-frame-rate</code> in
+  <code>mlagents-learn</code>.</li>
+<li>The Academy no longer has a <code>Default Reset Parameters</code> field in the inspector.
+  The Academy class no longer has a <code>ResetParameters</code>. To access shared float
+  properties with Python, use the new <code>FloatProperties</code> field on the Academy.</li>
+<li>Offline Behavioral Cloning has been removed. To learn from demonstrations, use
+  the GAIL and Behavioral Cloning features with either PPO or SAC.</li>
+<li><code>mlagents.envs</code> was renamed to <code>mlagents_envs</code>. The previous repo layout
+  depended on <a href="https://www.python.org/dev/peps/pep-0420/">PEP420</a>, which caused
+  problems with some of our tooling such as mypy and pylint.</li>
+<li>The official version of Unity ML-Agents supports is now 2018.4 LTS. If you run
+  into issues, please consider deleting your library folder and reponening your
+  projects. You will need to install the Barracuda package into your project in
+  order to ML-Agents to compile correctly.</li>
+</ul>
+<h3 id="steps-to-migrate_6">Steps to Migrate</h3>
+<ul>
+<li>If you had a custom <code>Training Configuration</code> in the Academy inspector, you
+  will need to pass your custom configuration at every training run using the
+  new command line arguments <code>--width</code>, <code>--height</code>, <code>--quality-level</code>,
+  <code>--time-scale</code> and <code>--target-frame-rate</code>.</li>
+<li>If you were using <code>--slow</code> in <code>mlagents-learn</code>, you will need to pass your old
+  <code>Inference Configuration</code> of the Academy inspector with the new command line
+  arguments <code>--width</code>, <code>--height</code>, <code>--quality-level</code>, <code>--time-scale</code> and
+  <code>--target-frame-rate</code> instead.</li>
+<li>Any imports from <code>mlagents.envs</code> should be replaced with <code>mlagents_envs</code>.</li>
+</ul>
+<h2 id="migrating-from-ml-agents-toolkit-v0110-to-v0120">Migrating from ML-Agents Toolkit v0.11.0 to v0.12.0</h2>
+<h3 id="important-changes_7">Important Changes</h3>
+<ul>
+<li>Text actions and observations, and custom action and observation protos have
+  been removed.</li>
+<li>RayPerception3D and RayPerception2D are marked deprecated, and will be removed
+  in a future release. They can be replaced by RayPerceptionSensorComponent3D
+  and RayPerceptionSensorComponent2D.</li>
+<li>The <code>Use Heuristic</code> checkbox in Behavior Parameters has been replaced with a
+  <code>Behavior Type</code> dropdown menu. This has the following options:</li>
+<li><code>Default</code> corresponds to the previous unchecked behavior, meaning that
+    Agents will train if they connect to a python trainer, otherwise they will
+    perform inference.</li>
+<li><code>Heuristic Only</code> means the Agent will always use the <code>Heuristic()</code> method.
+    This corresponds to having "Use Heuristic" selected in 0.11.0.</li>
+<li><code>Inference Only</code> means the Agent will always perform inference.</li>
+<li>Barracuda was upgraded to 0.3.2, and it is now installed via the Unity Package
+  Manager.</li>
+</ul>
+<h3 id="steps-to-migrate_7">Steps to Migrate</h3>
+<ul>
+<li>We <a href="https://github.com/Unity-Technologies/ml-agents/pull/2823">fixed a bug</a> in
+  <code>RayPerception3d.Perceive()</code> that was causing the <code>endOffset</code> to be used
+  incorrectly. However this may produce different behavior from previous
+  versions if you use a non-zero <code>startOffset</code>. To reproduce the old behavior,
+  you should increase the value of <code>endOffset</code> by <code>startOffset</code>. You can
+  verify your raycasts are performing as expected in scene view using the debug
+  rays.</li>
+<li>If you use RayPerception3D, replace it with RayPerceptionSensorComponent3D
+  (and similarly for 2D). The settings, such as ray angles and detectable tags,
+  are configured on the component now. RayPerception3D would contribute
+  <code>(# of rays) * (# of tags + 2)</code> to the State Size in Behavior Parameters, but
+  this is no longer necessary, so you should reduce the State Size by this
+  amount. Making this change will require retraining your model, since the
+  observations that RayPerceptionSensorComponent3D produces are different from
+  the old behavior.</li>
+<li>If you see messages such as
+  <code>The type or namespace 'Barracuda' could not be found</code> or
+  <code>The type or namespace 'Google' could not be found</code>, you will need to
+  <a href="../Installation/#package-installation">install the Barracuda preview package</a>.</li>
+</ul>
+<h2 id="migrating-from-ml-agents-toolkit-v010-to-v0110">Migrating from ML-Agents Toolkit v0.10 to v0.11.0</h2>
+<h3 id="important-changes_8">Important Changes</h3>
+<ul>
+<li>The definition of the gRPC service has changed.</li>
+<li>The online BC training feature has been removed.</li>
+<li>The BroadcastHub has been deprecated. If there is a training Python process,
+  all LearningBrains in the scene will automatically be trained. If there is no
+  Python process, inference will be used.</li>
+<li>The Brain ScriptableObjects have been deprecated. The Brain Parameters are now
+  on the Agent and are referred to as Behavior Parameters. Make sure the
+  Behavior Parameters is attached to the Agent GameObject.</li>
+<li>To use a heuristic behavior, implement the <code>Heuristic()</code> method in the Agent
+  class and check the <code>use heuristic</code> checkbox in the Behavior Parameters.</li>
+<li>Several changes were made to the setup for visual observations (i.e. using
+  Cameras or RenderTextures):</li>
+<li>Camera resolutions are no longer stored in the Brain Parameters.</li>
+<li>AgentParameters no longer stores lists of Cameras and RenderTextures</li>
+<li>To add visual observations to an Agent, you must now attach a
+    CameraSensorComponent or RenderTextureComponent to the agent. The
+    corresponding Camera or RenderTexture can be added to these in the editor,
+    and the resolution and color/grayscale is configured on the component
+    itself.</li>
+</ul>
+<h4 id="steps-to-migrate_8">Steps to Migrate</h4>
+<ul>
+<li>In order to be able to train, make sure both your ML-Agents Python package and
+  UnitySDK code come from the v0.11 release. Training will not work, for
+  example, if you update the ML-Agents Python package, and only update the API
+  Version in UnitySDK.</li>
+<li>If your Agents used visual observations, you must add a CameraSensorComponent
+  corresponding to each old Camera in the Agent's camera list (and similarly for
+  RenderTextures).</li>
+<li>Since Brain ScriptableObjects have been removed, you will need to delete all
+  the Brain ScriptableObjects from your <code>Assets</code> folder. Then, add a
+  <code>Behavior Parameters</code> component to each <code>Agent</code> GameObject. You will then need
+  to complete the fields on the new <code>Behavior Parameters</code> component with the
+  BrainParameters of the old Brain.</li>
+</ul>
+<h2 id="migrating-from-ml-agents-toolkit-v09-to-v010">Migrating from ML-Agents Toolkit v0.9 to v0.10</h2>
+<h3 id="important-changes_9">Important Changes</h3>
+<ul>
+<li>We have updated the C# code in our repository to be in line with Unity Coding
+  Conventions. This has changed the name of some public facing classes and
+  enums.</li>
+<li>The example environments have been updated. If you were using these
+  environments to benchmark your training, please note that the resulting
+  rewards may be slightly different in v0.10.</li>
+</ul>
+<h4 id="steps-to-migrate_9">Steps to Migrate</h4>
+<ul>
+<li><code>UnitySDK/Assets/ML-Agents/Scripts/Communicator.cs</code> and its class
+  <code>Communicator</code> have been renamed to
+  <code>UnitySDK/Assets/ML-Agents/Scripts/ICommunicator.cs</code> and <code>ICommunicator</code>
+  respectively.</li>
+<li>The <code>SpaceType</code> Enums <code>discrete</code>, and <code>continuous</code> have been renamed to
+  <code>Discrete</code> and <code>Continuous</code>.</li>
+<li>We have removed the <code>Done</code> call as well as the capacity to set <code>Max Steps</code> on
+  the Academy. Therefore an AcademyReset will never be triggered from C# (only
+  from Python). If you want to reset the simulation after a fixed number of
+  steps, or when an event in the simulation occurs, we recommend looking at our
+  multi-agent example environments (such as FoodCollector). In our examples,
+  groups of Agents can be reset through an "Area" that can reset groups of
+  Agents.</li>
+<li>The import for <code>mlagents.envs.UnityEnvironment</code> was removed. If you are using
+  the Python API, change <code>from mlagents_envs import UnityEnvironment</code> to
+  <code>from mlagents_envs.environment import UnityEnvironment</code>.</li>
+</ul>
+<h2 id="migrating-from-ml-agents-toolkit-v08-to-v09">Migrating from ML-Agents Toolkit v0.8 to v0.9</h2>
+<h3 id="important-changes_10">Important Changes</h3>
+<ul>
+<li>We have changed the way reward signals (including Curiosity) are defined in
+  the <code>trainer_config.yaml</code>.</li>
+<li>When using multiple environments, every "step" is recorded in TensorBoard.</li>
+<li>The steps in the command line console corresponds to a single step of a single
+  environment. Previously, each step corresponded to one step for all
+  environments (i.e., <code>num_envs</code> steps).</li>
+</ul>
+<h4 id="steps-to-migrate_10">Steps to Migrate</h4>
+<ul>
+<li>If you were overriding any of these following parameters in your config file,
+  remove them from the top-level config and follow the steps below:</li>
+<li><code>gamma</code>: Define a new <code>extrinsic</code> reward signal and set it's <code>gamma</code> to your
+    new gamma.</li>
+<li><code>use_curiosity</code>, <code>curiosity_strength</code>, <code>curiosity_enc_size</code>: Define a
+    <code>curiosity</code> reward signal and set its <code>strength</code> to <code>curiosity_strength</code>,
+    and <code>encoding_size</code> to <code>curiosity_enc_size</code>. Give it the same <code>gamma</code> as
+    your <code>extrinsic</code> signal to mimic previous behavior.</li>
+<li>TensorBoards generated when running multiple environments in v0.8 are not
+  comparable to those generated in v0.9 in terms of step count. Multiply your
+  v0.8 step count by <code>num_envs</code> for an approximate comparison. You may need to
+  change <code>max_steps</code> in your config as appropriate as well.</li>
+</ul>
+<h2 id="migrating-from-ml-agents-toolkit-v07-to-v08">Migrating from ML-Agents Toolkit v0.7 to v0.8</h2>
+<h3 id="important-changes_11">Important Changes</h3>
+<ul>
+<li>We have split the Python packages into two separate packages <code>ml-agents</code> and
+  <code>ml-agents-envs</code>.</li>
+<li><code>--worker-id</code> option of <code>learn.py</code> has been removed, use <code>--base-port</code> instead
+  if you'd like to run multiple instances of <code>learn.py</code>.</li>
+</ul>
+<h4 id="steps-to-migrate_11">Steps to Migrate</h4>
+<ul>
+<li>If you are installing via PyPI, there is no change.</li>
+<li>If you intend to make modifications to <code>ml-agents</code> or <code>ml-agents-envs</code> please
+  check the Installing for Development in the
+  <a href="../Installation/">Installation documentation</a>.</li>
+</ul>
+<h2 id="migrating-from-ml-agents-toolkit-v06-to-v07">Migrating from ML-Agents Toolkit v0.6 to v0.7</h2>
+<h3 id="important-changes_12">Important Changes</h3>
+<ul>
+<li>We no longer support TFS and are now using the
+  <a href="../Unity-Inference-Engine/">Unity Inference Engine</a></li>
+</ul>
+<h4 id="steps-to-migrate_12">Steps to Migrate</h4>
+<ul>
+<li>Make sure to remove the <code>ENABLE_TENSORFLOW</code> flag in your Unity Project
+  settings</li>
+</ul>
+<h2 id="migrating-from-ml-agents-toolkit-v05-to-v06">Migrating from ML-Agents Toolkit v0.5 to v0.6</h2>
+<h3 id="important-changes_13">Important Changes</h3>
+<ul>
+<li>Brains are now Scriptable Objects instead of MonoBehaviors.</li>
+<li>
+<p>You can no longer modify the type of a Brain. If you want to switch between
+  <code>PlayerBrain</code> and <code>LearningBrain</code> for multiple agents, you will need to assign
+  a new Brain to each agent separately. <strong>Note:</strong> You can pass the same Brain to
+  multiple agents in a scene by leveraging Unity's prefab system or look for all
+  the agents in a scene using the search bar of the <code>Hierarchy</code> window with the
+  word <code>Agent</code>.</p>
+</li>
+<li>
+<p>We replaced the <strong>Internal</strong> and <strong>External</strong> Brain with <strong>Learning Brain</strong>.
+  When you need to train a model, you need to drag it into the <code>Broadcast Hub</code>
+  inside the <code>Academy</code> and check the <code>Control</code> checkbox.</p>
+</li>
+<li>We removed the <code>Broadcast</code> checkbox of the Brain, to use the broadcast
+  functionality, you need to drag the Brain into the <code>Broadcast Hub</code>.</li>
+<li>When training multiple Brains at the same time, each model is now stored into
+  a separate model file rather than in the same file under different graph
+  scopes.</li>
+<li>The <strong>Learning Brain</strong> graph scope, placeholder names, output names and custom
+  placeholders can no longer be modified.</li>
+</ul>
+<h4 id="steps-to-migrate_13">Steps to Migrate</h4>
+<ul>
+<li>To update a scene from v0.5 to v0.6, you must:</li>
+<li>Remove the <code>Brain</code> GameObjects in the scene. (Delete all of the Brain
+    GameObjects under Academy in the scene.)</li>
+<li>Create new <code>Brain</code> Scriptable Objects using <code>Assets -&gt; Create -&gt; ML-Agents</code>
+    for each type of the Brain you plan to use, and put the created files under
+    a folder called Brains within your project.</li>
+<li>Edit their <code>Brain Parameters</code> to be the same as the parameters used in the
+    <code>Brain</code> GameObjects.</li>
+<li>Agents have a <code>Brain</code> field in the Inspector, you need to drag the
+    appropriate Brain ScriptableObject in it.</li>
+<li>The Academy has a <code>Broadcast Hub</code> field in the inspector, which is list of
+    brains used in the scene. To train or control your Brain from the
+    <code>mlagents-learn</code> Python script, you need to drag the relevant
+    <code>LearningBrain</code> ScriptableObjects used in your scene into entries into this
+    list.</li>
+</ul>
+<h2 id="migrating-from-ml-agents-toolkit-v04-to-v05">Migrating from ML-Agents Toolkit v0.4 to v0.5</h2>
+<h3 id="important">Important</h3>
+<ul>
+<li>The Unity project <code>unity-environment</code> has been renamed <code>UnitySDK</code>.</li>
+<li>The <code>python</code> folder has been renamed to <code>ml-agents</code>. It now contains two
+  packages, <code>mlagents.env</code> and <code>mlagents.trainers</code>. <code>mlagents.env</code> can be used
+  to interact directly with a Unity environment, while <code>mlagents.trainers</code>
+  contains the classes for training agents.</li>
+<li>The supported Unity version has changed from <code>2017.1 or later</code> to
+  <code>2017.4 or later</code>. 2017.4 is an LTS (Long Term Support) version that helps us
+  maintain good quality and support. Earlier versions of Unity might still work,
+  but you may encounter an
+  <a href="../FAQ/#instance-of-corebraininternal-couldnt-be-created">error</a> listed here.</li>
+</ul>
+<h3 id="unity-api">Unity API</h3>
+<ul>
+<li>Discrete Actions now use <a href="https://arxiv.org/abs/1711.08946">branches</a>. You can
+  now specify concurrent discrete actions. You will need to update the Brain
+  Parameters in the Brain Inspector in all your environments that use discrete
+  actions. Refer to the
+  <a href="../Learning-Environment-Design-Agents/#discrete-action-space">discrete action documentation</a>
+  for more information.</li>
+</ul>
+<h3 id="python-api">Python API</h3>
+<ul>
+<li>In order to run a training session, you can now use the command
+  <code>mlagents-learn</code> instead of <code>python3 learn.py</code> after installing the <code>mlagents</code>
+  packages. This change is documented
+  <a href="../Training-ML-Agents/#training-with-mlagents-learn">here</a>. For example, if we
+  previously ran</li>
+</ul>
+<p><code>sh
+  python3 learn.py 3DBall --train</code></p>
+<p>from the <code>python</code> subdirectory (which is changed to <code>ml-agents</code> subdirectory
+  in v0.5), we now run</p>
+<p><code>sh
+  mlagents-learn config/trainer_config.yaml --env=3DBall --train</code></p>
+<p>from the root directory where we installed the ML-Agents Toolkit.</p>
+<ul>
+<li>It is now required to specify the path to the yaml trainer configuration file
+  when running <code>mlagents-learn</code>. For an example trainer configuration file, see
+  <a href="https://github.com/Unity-Technologies/ml-agents/blob/0.5.0a/config/trainer_config.yaml">trainer_config.yaml</a>. An example of passing a
+  trainer configuration to <code>mlagents-learn</code> is shown above.</li>
+<li>The environment name is now passed through the <code>--env</code> option.</li>
+<li>Curriculum learning has been changed. In summary:</li>
+<li>Curriculum files for the same environment must now be placed into a folder.
+    Each curriculum file should be named after the Brain whose curriculum it
+    specifies.</li>
+<li><code>min_lesson_length</code> now specifies the minimum number of episodes in a lesson
+    and affects reward thresholding.</li>
+<li>It is no longer necessary to specify the <code>Max Steps</code> of the Academy to use
+    curriculum learning.</li>
+</ul>
+<h2 id="migrating-from-ml-agents-toolkit-v03-to-v04">Migrating from ML-Agents Toolkit v0.3 to v0.4</h2>
+<h3 id="unity-api_1">Unity API</h3>
+<ul>
+<li><code>using MLAgents;</code> needs to be added in all of the C# scripts that use
+  ML-Agents.</li>
+</ul>
+<h3 id="python-api_1">Python API</h3>
+<ul>
+<li>We've changed some of the Python packages dependencies in requirement.txt
+  file. Make sure to run <code>pip3 install -e .</code> within your <code>ml-agents/python</code>
+  folder to update your Python packages.</li>
+</ul>
+<h2 id="migrating-from-ml-agents-toolkit-v02-to-v03">Migrating from ML-Agents Toolkit v0.2 to v0.3</h2>
+<p>There are a large number of new features and improvements in the ML-Agents
+toolkit v0.3 which change both the training process and Unity API in ways which
+will cause incompatibilities with environments made using older versions. This
+page is designed to highlight those changes for users familiar with v0.1 or v0.2
+in order to ensure a smooth transition.</p>
+<h3 id="important_1">Important</h3>
+<ul>
+<li>The ML-Agents Toolkit is no longer compatible with Python 2.</li>
+</ul>
+<h3 id="python-training">Python Training</h3>
+<ul>
+<li>The training script <code>ppo.py</code> and <code>PPO.ipynb</code> Python notebook have been
+  replaced with a single <code>learn.py</code> script as the launching point for training
+  with ML-Agents. For more information on using <code>learn.py</code>, see
+  <a href="../Training-ML-Agents/#training-with-mlagents-learn">here</a>.</li>
+<li>Hyperparameters for training Brains are now stored in the
+  <code>trainer_config.yaml</code> file. For more information on using this file, see
+  <a href="../Training-ML-Agents/#training-configurations">here</a>.</li>
+</ul>
+<h3 id="unity-api_2">Unity API</h3>
+<ul>
+<li>Modifications to an Agent's rewards must now be done using either
+  <code>AddReward()</code> or <code>SetReward()</code>.</li>
+<li>Setting an Agent to done now requires the use of the <code>Done()</code> method.</li>
+<li><code>CollectStates()</code> has been replaced by <code>CollectObservations()</code>, which now no
+  longer returns a list of floats.</li>
+<li>To collect observations, call <code>AddVectorObs()</code> within <code>CollectObservations()</code>.
+  Note that you can call <code>AddVectorObs()</code> with floats, integers, lists and
+  arrays of floats, Vector3 and Quaternions.</li>
+<li><code>AgentStep()</code> has been replaced by <code>AgentAction()</code>.</li>
+<li><code>WaitTime()</code> has been removed.</li>
+<li>The <code>Frame Skip</code> field of the Academy is replaced by the Agent's
+  <code>Decision Frequency</code> field, enabling the Agent to make decisions at different
+  frequencies.</li>
+<li>The names of the inputs in the Internal Brain have been changed. You must
+  replace <code>state</code> with <code>vector_observation</code> and <code>observation</code> with
+  <code>visual_observation</code>. In addition, you must remove the <code>epsilon</code> placeholder.</li>
+</ul>
+<h3 id="semantics">Semantics</h3>
+<p>In order to more closely align with the terminology used in the Reinforcement
+Learning field, and to be more descriptive, we have changed the names of some of
+the concepts used in ML-Agents. The changes are highlighted in the table below.</p>
+<table>
+<thead>
+<tr>
+<th>Old - v0.2 and earlier</th>
+<th>New - v0.3 and later</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>State</td>
+<td>Vector Observation</td>
+</tr>
+<tr>
+<td>Observation</td>
+<td>Visual Observation</td>
+</tr>
+<tr>
+<td>Action</td>
+<td>Vector Action</td>
+</tr>
+<tr>
+<td>N/A</td>
+<td>Text Observation</td>
+</tr>
+<tr>
+<td>N/A</td>
+<td>Text Action</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../Versioning/" class="btn btn-neutral float-right" title="Versioning">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../Limitations/" class="btn btn-neutral" title="Limitations"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../Limitations/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../Versioning/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
