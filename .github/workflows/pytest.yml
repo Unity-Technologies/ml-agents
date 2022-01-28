@@ -19,12 +19,10 @@ jobs:
         TEST_ENFORCE_BUFFER_KEY_TYPES: 1
     strategy:
       matrix:
-        python-version: [3.6.x, 3.7.x, 3.8.x, 3.9.x]
+        python-version: [3.7.x, 3.8.x, 3.9.x]
         include:
-          - python-version: 3.6.x
-            pip_constraints: test_constraints_min_version.txt
           - python-version: 3.7.x
-            pip_constraints: test_constraints_mid_version.txt
+            pip_constraints: test_constraints_min_version.txt
           - python-version: 3.8.x
             pip_constraints: test_constraints_mid_version.txt
           - python-version: 3.9.x
