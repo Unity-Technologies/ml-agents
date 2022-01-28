@@ -24,14 +24,11 @@ jobs:
       # If one test in the matrix fails we still want to run the others.
       fail-fast: false
       matrix:
-        # NOTE: 3.9.10 was failing but is hard to test since it JUST came out. Delaying debugging for now.
-        # TODO: Set back to 3.9.x once we can test with 3.9.10 via pyenv.
-        python-version: [3.6.x, 3.7.x, 3.8.x, 3.9.9]
+	# pinning to 3.9.9 due to problem with 3.9.10
+        python-version: [3.7.x, 3.8.x, 3.9.9]
         include:
-          - python-version: 3.6.x
-            pip_constraints: test_constraints_min_version.txt
           - python-version: 3.7.x
-            pip_constraints: test_constraints_mid_version.txt
+            pip_constraints: test_constraints_min_version.txt
           - python-version: 3.8.x
             pip_constraints: test_constraints_mid_version.txt
           - python-version: 3.9.9

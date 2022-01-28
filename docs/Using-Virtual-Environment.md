@@ -19,7 +19,7 @@ from dependencies of other projects. This has a few advantages:
 
 ## Python Version Requirement (Required)
 
-This guide has been tested with Python 3.6 through Python 3.8. Newer versions might not
+This guide has been tested with Python 3.7 through Python 3.8. Newer versions might not
 have support for the dependent libraries, so are not recommended.
 
 ## Installing Pip (Required)
@@ -65,7 +65,7 @@ then python3-distutils needs to be installed. Install python3-distutils using
 
 Note:
 
-- Verify that you are using Python 3.6 or Python 3.7. Launch a command prompt
+- Verify that you are using Python 3.7. Launch a command prompt
   using `cmd` and execute `python --version` to verify the version.
 - Python3 installation may require admin privileges on Windows.
 - This guide is for Windows 10 using a 64-bit architecture only.
