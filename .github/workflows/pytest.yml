@@ -24,7 +24,7 @@ jobs:
       # If one test in the matrix fails we still want to run the others.
       fail-fast: false
       matrix:
-	# pinning to 3.9.9 due to problem with 3.9.10
+        # pinning python 3.9.9 since there are typing issues with 3.9.10: https://github.com/Unity-Technologies/ml-agents/issues/5689
         python-version: [3.7.x, 3.8.x, 3.9.9]
         include:
           - python-version: 3.7.x
