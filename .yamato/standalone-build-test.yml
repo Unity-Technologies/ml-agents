@@ -10,7 +10,9 @@ test_linux_standalone_{{ editor.version }}:
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
-    - eval "$($HOME/anaconda/bin/conda shell.bash hook)"
+    - |
+      eval "$($HOME/anaconda/bin/conda shell.bash hook)"
+      conda init
     - conda activate python3.7
     - python3 -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
     - python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
