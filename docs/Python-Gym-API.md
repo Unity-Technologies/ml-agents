@@ -11,17 +11,9 @@ Unity environment via Python.
 
 ## Installation
 
-The gym wrapper can be installed using:
+The gym wrapper is part of the `mlgents_envs` package. Please refer to the
+[mlagents_envs installation instructions](../ml-agents-envs/README.md).
 
-```sh
-pip3 install gym_unity
-```
-
-or by running the following from the `/gym-unity` directory of the repository:
-
-```sh
-pip3 install -e .
-```
 
 ## Using the Gym Wrapper
 
@@ -29,7 +21,6 @@ The gym interface is available from `gym_unity.envs`. To launch an environment
 from the root of the project repository use:
 
 ```python
-
 from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
 
 env = UnityToGymWrapper(unity_env, uint8_visual, flatten_branched, allow_multiple_obs)

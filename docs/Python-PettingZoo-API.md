@@ -21,6 +21,9 @@ This wrapper is compatible with PettingZoo API. Please check out
 Here's an example of interacting with wrapped environment:
 
 ```python
+from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.envs import UnityToPettingZooWrapper
+
 unity_env = UnityEnvironment("StrikersVsGoalie")
 env = UnityToPettingZooWrapper(unity_env)
 env.reset()

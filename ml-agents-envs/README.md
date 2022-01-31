@@ -2,9 +2,13 @@
 
 The `mlagents_envs` Python package is part of the
 [ML-Agents Toolkit](https://github.com/Unity-Technologies/ml-agents).
-`mlagents_envs` provides a Python API that allows direct interaction with the
-Unity game engine. It is used by the trainer implementation in `mlagents` as
-well as the `gym-unity` package to perform reinforcement learning within Unity.
+`mlagents_envs` provides three Python APIs that allows direct interaction with the
+Unity game engine:
+- A gym-like single agent API (Gym API)
+- A gym-like multi-agent API (PettingZoo API)
+- A low-level API (LLAPI)
+
+The LLAPI used by the trainer implementation in `mlagents`.
 `mlagents_envs` can be used independently of `mlagents` for Python
 communication.
 
@@ -13,13 +17,17 @@ communication.
 Install the `mlagents_envs` package with:
 
 ```sh
-python -m pip install mlagents_envs==0.28.0
+python -m pip install mlagents_envs==0.29.0
 ```
 
 ## Usage & More Information
 
-See the [Python API Guide](../docs/Python-LLAPI.md) for more information on how to
-use the API to interact with a Unity environment.
+See
+- [Gym API Guide](../docs/Python-Gym-API.md)
+- [PettingZoo API Guide](../docs/Python-PettingZoo-API.md)
+- [Python API Guide](../docs/Python-LLAPI.md)
+
+for more information on how to use the API to interact with a Unity environment.
 
 For more information on the ML-Agents Toolkit and how to instrument a Unity
 scene with the ML-Agents SDK, check out the main
