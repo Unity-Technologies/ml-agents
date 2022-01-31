@@ -181,17 +181,12 @@ learning algorithms which utilize gym. Our wrapper provides interfaces on top of
 our <code>UnityEnvironment</code> class, which is the default way of interfacing with a
 Unity environment via Python.</p>
 <h2 id="installation">Installation</h2>
-<p>The gym wrapper can be installed using:</p>
-<pre><code class="language-sh">pip3 install gym_unity
-</code></pre>
-<p>or by running the following from the <code>/gym-unity</code> directory of the repository:</p>
-<pre><code class="language-sh">pip3 install -e .
-</code></pre>
+<p>The gym wrapper is part of the <code>mlgents_envs</code> package. Please refer to the
+<a href="../ml-agents-envs/README.md">mlagents_envs installation instructions</a>.</p>
 <h2 id="using-the-gym-wrapper">Using the Gym Wrapper</h2>
 <p>The gym interface is available from <code>gym_unity.envs</code>. To launch an environment
 from the root of the project repository use:</p>
-<pre><code class="language-python">
-from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
+<pre><code class="language-python">from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
 
 env = UnityToGymWrapper(unity_env, uint8_visual, flatten_branched, allow_multiple_obs)
 </code></pre>

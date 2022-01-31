@@ -165,7 +165,10 @@ which is a multi-agents environment with multiple different behavior names.</p>
 <p>This wrapper is compatible with PettingZoo API. Please check out
 <a href="https://www.pettingzoo.ml/api">PettingZoo API page</a> for more details.
 Here's an example of interacting with wrapped environment:</p>
-<pre><code class="language-python">unity_env = UnityEnvironment(&quot;StrikersVsGoalie&quot;)
+<pre><code class="language-python">from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.envs import UnityToPettingZooWrapper
+
+unity_env = UnityEnvironment(&quot;StrikersVsGoalie&quot;)
 env = UnityToPettingZooWrapper(unity_env)
 env.reset()
 for agent in env.agent_iter():
