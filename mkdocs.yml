@@ -7,19 +7,18 @@ site_author: Unity Technologies
 copyright: com.unity.ml-agents copyright © 2017 Unity Technologies
 pages:
 - Home: index.md
+- ML-Agents Overview: ML-Agents-Overview.md
 - Background:
     - Machine Learning: Background-Machine-Learning.md
     - PyTorch: Background-PyTorch.md
     - Unity: Background-Unity.md
 - Interfacing with Unity Builds:
-    - Gym API:
       - Getting started with the Gym API: Python-Gym-API.md
-      - Gym API Documentation: Python-Gym-API-Documentation.md
-    - Petting Zoo API:
       - Getting started with the PettingZoo API: Python-PettingZoo-API.md
-      - Petting Zoo Documentation: Python-PettingZoo-API-Documentation.md
-    - Low-level API:
       - Getting started with the LLAPI: Python-LLAPI.md
+- API Documentation:
+      - Gym API Documentation: Python-Gym-API-Documentation.md
+      - Petting Zoo Documentation: Python-PettingZoo-API-Documentation.md
       - LLAPI Documentation: Python-LLAPI-Documentation.md
 - About:
     - FAQs: FAQ.md

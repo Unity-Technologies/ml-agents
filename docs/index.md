@@ -24,7 +24,7 @@ developer communities.
 
 ## Features
 
-- 18+ [example Unity environments](docs/Learning-Environment-Examples.md)
+- 18+ [example Unity environments](Learning-Environment-Examples.md)
 - Support for multiple environment configurations and training scenarios
 - Flexible Unity SDK that can be integrated into your game or custom Unity scene
 - Support for training single-agent, multi-agent cooperative, and multi-agent
@@ -34,12 +34,14 @@ developer communities.
 - Train robust agents using environment randomization
 - Flexible agent control with On Demand Decision Making
 - Train using multiple concurrent Unity environment instances
-- Utilizes the [Unity Inference Engine](docs/Unity-Inference-Engine.md) to
+- Utilizes the [Unity Inference Engine](Unity-Inference-Engine.md) to
   provide native cross-platform support
-- Unity environment [control from Python](docs/Python-LLAPI.md)
-- Wrap Unity learning environments as a [gym](docs/Python-Gym-API.md)
+- Wrap Unity learning environments as a [gym](Python-Gym-API.md) environment
+- Wrap Unity learning environments as a [PettingZoo](Python-PettingZoo-API.md) environment
+- Unity environment [control from Python](Python-LLAPI.md)
 
-See our [ML-Agents Overview](docs/ML-Agents-Overview.md) page for detailed
+
+See our [ML-Agents Overview](ML-Agents-Overview.md) page for detailed
 descriptions of all these features.
 
 ## Releases & Documentation
@@ -50,11 +52,11 @@ to get started with the latest release of ML-Agents.**
 
 The table below lists all our releases, including our `main` branch which is
 under active development and may be unstable. A few helpful guidelines:
-- The [Versioning page](docs/Versioning.md) overviews how we manage our GitHub
+- The [Versioning page](Versioning.md) overviews how we manage our GitHub
   releases and the versioning process for each of the ML-Agents components.
 - The [Releases page](https://github.com/Unity-Technologies/ml-agents/releases)
   contains details of the changes between releases.
-- The [Migration page](docs/Migrating.md) contains details on how to upgrade
+- The [Migration page](Migrating.md) contains details on how to upgrade
   from earlier releases of the ML-Agents Toolkit.
 - The **Documentation** links in the table below include installation and usage
   instructions specific to each release. Remember to always use the
@@ -145,13 +147,12 @@ We have also published a series of blog posts that are relevant for ML-Agents:
 
 - [Unity Robotics](https://github.com/Unity-Technologies/Unity-Robotics-Hub)
 - [Unity Computer Vision](https://unity.com/computer-vision)
-- [Unity Game Simulation](https://unity.com/products/game-simulation)
 
 ## Community and Feedback
 
 The ML-Agents Toolkit is an open-source project and we encourage and welcome
 contributions. If you wish to contribute, be sure to review our
-[contribution guidelines](com.unity.ml-agents/CONTRIBUTING.md) and
+[contribution guidelines](CONTRIBUTING.md) and
 [code of conduct](CODE_OF_CONDUCT.md).
 
 For problems with the installation and setup of the ML-Agents Toolkit, or
@@ -183,4 +184,4 @@ Please refer to "Information that is passively collected by Unity" in the
 
 ## License
 
-[Apache License 2.0](LICENSE.md)
+[Apache License 2.0](../LICENSE.md)
