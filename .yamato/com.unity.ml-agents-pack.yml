@@ -2,10 +2,11 @@ pack:
   name: Pack
   agent:
     type: Unity::VM
-    image: package-ci/ubuntu:stable
+    image: ml-agents/ml-agents-ubuntu-18.04:latest
     flavor: b1.small
   commands:
     - |
+      conda activate python3.7
       python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
       unity-downloader-cli -u 2020.3 -c editor --wait --fast
       ./.Editor/Unity -projectPath Project -batchMode -executeMethod Unity.MLAgents.SampleExporter.ExportCuratedSamples -logFile -

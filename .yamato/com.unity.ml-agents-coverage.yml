@@ -14,7 +14,9 @@ test_coverage_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
     commands:
         - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
         - upm-ci project test -u {{ editor.version }} --type project-tests --project-path {{ editor.testProject }} --package-filter {{ package.name }} {{ coverageOptions }} --extra-utr-arg "reruncount=2"
-        - python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ package.minCoveragePct }}
+        - |
+          conda activate python3.7
+          python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ package.minCoveragePct }}
     artifacts:
         logs:
             paths:

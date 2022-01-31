@@ -2,15 +2,15 @@ test_linux_protobuf_generation:
   name: Protobuf Generation Tests
   agent:
     type: Unity::VM
-    image: package-ci/ubuntu:stable
+    image: ml-agents/ml-agents-ubuntu-18.04:latest
     flavor: b1.large
   variables:
     GRPC_VERSION: "1.14.1"
     CS_PROTO_PATH: "com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects"
   commands:
     - |
-      sudo apt-get update && sudo apt-get install -y python3-venv nuget
-      python3 -m venv venv && source venv/bin/activate
+      sudo apt-get update && sudo apt-get install -y nuget
+      conda activate python3.7
       nuget install Grpc.Tools -Version $GRPC_VERSION -OutputDirectory protobuf-definitions/
       python3 -m pip install --upgrade pip --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python3 -m pip install grpcio==1.28.1 grpcio-tools==1.13.0 protobuf==3.11.3 six==1.14.0 mypy-protobuf==1.16.0  --progress-bar=off --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
