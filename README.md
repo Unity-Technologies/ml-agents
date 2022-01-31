@@ -1,4 +1,4 @@
-<img src="images/U_MachineLearningAgents_Logo_Black_RGB.png" align="middle" width="3000"/>
+<img src="docs/images/U_MachineLearningAgents_Logo_Black_RGB.png" align="middle" width="3000"/>
 
 # Unity ML-Agents Toolkit
 
