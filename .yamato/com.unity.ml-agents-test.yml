@@ -124,9 +124,9 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
         flavor: {{ platform.flavor}}
     commands:
         - |
-      {% if platform.name == "linux" %}
+{% if platform.name == "linux" %}
           conda activate python3.7
-      {% endif %}
+{% endif %}
           python -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
           unity-downloader-cli -u trunk -c editor --wait --fast
           npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
