@@ -209,6 +209,7 @@ POCASettings = PPOSettings
 class RewardSignalType(Enum):
     EXTRINSIC: str = "extrinsic"
     GAIL: str = "gail"
+    PREF: str = "preference"
     CURIOSITY: str = "curiosity"
     RND: str = "rnd"
 
@@ -216,6 +217,7 @@ class RewardSignalType(Enum):
         _mapping = {
             RewardSignalType.EXTRINSIC: RewardSignalSettings,
             RewardSignalType.GAIL: GAILSettings,
+            RewardSignalType.PREF: GAILSettings,
             RewardSignalType.CURIOSITY: CuriositySettings,
             RewardSignalType.RND: RNDSettings,
         }

@@ -15,6 +15,10 @@ from mlagents.trainers.torch.components.reward_providers.curiosity_reward_provid
 from mlagents.trainers.torch.components.reward_providers.gail_reward_provider import (
     GAILRewardProvider,
 )
+from mlagents.trainers.torch.components.reward_providers.pref_reward_provider import (
+    PreferenceRewardProvider,
+)
+
 from mlagents.trainers.torch.components.reward_providers.rnd_reward_provider import (
     RNDRewardProvider,
 )
@@ -25,6 +29,7 @@ NAME_TO_CLASS: Dict[RewardSignalType, Type[BaseRewardProvider]] = {
     RewardSignalType.EXTRINSIC: ExtrinsicRewardProvider,
     RewardSignalType.CURIOSITY: CuriosityRewardProvider,
     RewardSignalType.GAIL: GAILRewardProvider,
+    RewardSignalType.PREF: PreferenceRewardProvider,
     RewardSignalType.RND: RNDRewardProvider,
 }
 

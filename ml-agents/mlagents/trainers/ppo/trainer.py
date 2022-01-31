@@ -124,7 +124,6 @@ class PPOTrainer(RLTrainer):
             local_value_estimates = agent_buffer_trajectory[
                 RewardSignalUtil.value_estimates_key(name)
             ].get_batch()
-
             local_advantage = get_gae(
                 rewards=local_rewards,
                 value_estimates=local_value_estimates,
@@ -213,6 +212,9 @@ class PPOTrainer(RLTrainer):
             for stat, val in update_stats.items():
                 self._stats_reporter.add_stat(stat, val)
         self._clear_update_buffer()
+
+        for name, reward_signal in self.optimizer.reward_signals.items():
+            reward_signal.clear()
         return True
 
     def create_torch_policy(

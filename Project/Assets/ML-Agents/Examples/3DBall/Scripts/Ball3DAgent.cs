@@ -48,16 +48,24 @@ public class Ball3DAgent : Agent
         {
             gameObject.transform.Rotate(new Vector3(1, 0, 0), actionX);
         }
-        if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
-            Mathf.Abs(ball.transform.position.x - gameObject.transform.position.x) > 3f ||
-            Mathf.Abs(ball.transform.position.z - gameObject.transform.position.z) > 3f)
+
+        if (this.StepCount == 500)
         {
-            SetReward(-1f);
             EndEpisode();
+        }
+        else if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
+            Mathf.Abs(ball.transform.position.x - gameObject.transform.position.x) > 4f ||
+            Mathf.Abs(ball.transform.position.z - gameObject.transform.position.z) > 4f)
+        {
+            //ball.transform.position = new Vector3(ball.transform.position.x, gameObject.transform.position.y - 2f, ball.transform.position.z);
+            m_BallRb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ;
+            //AddReward(-.2f);
         }
         else
         {
-            SetReward(0.1f);
+            Vector3 relPos = ball.transform.position - gameObject.transform.position;
+            float offset = .001f * (Mathf.Pow(2 - relPos.x, 2) + Mathf.Pow(2 - relPos.z, 2));
+            AddReward(.1f - offset);
         }
     }
 
@@ -66,6 +74,7 @@ public class Ball3DAgent : Agent
         gameObject.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
         gameObject.transform.Rotate(new Vector3(1, 0, 0), Random.Range(-10f, 10f));
         gameObject.transform.Rotate(new Vector3(0, 0, 1), Random.Range(-10f, 10f));
+        m_BallRb.constraints = RigidbodyConstraints.None;
         m_BallRb.velocity = new Vector3(0f, 0f, 0f);
         ball.transform.position = new Vector3(Random.Range(-1.5f, 1.5f), 4f, Random.Range(-1.5f, 1.5f))
             + gameObject.transform.position;

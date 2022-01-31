@@ -79,3 +79,6 @@ class BaseRewardProvider(ABC):
         of the reward providers.
         """
         return {}
+
+    def clear(self):
+        assert True
