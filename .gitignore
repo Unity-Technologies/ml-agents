@@ -52,6 +52,7 @@
 
 # Generated doc folders
 /docs/html
+site
 
 # Mac hidden files
 *.DS_Store
