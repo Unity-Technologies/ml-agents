@@ -51,6 +51,10 @@
                     <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../ML-Agents-Overview/">ML-Agents Overview</a>
+                    </li>
+                </ul>
                 <p class="caption"><span class="caption-text">Background</span></p>
                 <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
@@ -62,41 +66,50 @@
                 </ul>
                 <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
                 <ul class="current">
-                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
-                </li>
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
-                </li>
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="#">Low-level API</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Getting started with the LLAPI</a>
     <ul class="current">
-                <li class="toctree-l2 current"><a class="reference internal current" href="./">Getting started with the LLAPI</a>
-    <ul class="current">
-    <li class="toctree-l3"><a class="reference internal" href="#mlagents_envs">mlagents_envs</a>
+    <li class="toctree-l2"><a class="reference internal" href="#mlagents_envs">mlagents_envs</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#loading-a-unity-environment">Loading a Unity Environment</a>
+    <li class="toctree-l2"><a class="reference internal" href="#loading-a-unity-environment">Loading a Unity Environment</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#interacting-with-a-unity-environment">Interacting with a Unity Environment</a>
+    <li class="toctree-l3"><a class="reference internal" href="#interacting-with-a-unity-environment">Interacting with a Unity Environment</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#the-baseenv-interface">The BaseEnv interface</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#communicating-additional-information-with-the-environment">Communicating additional information with the Environment</a>
+    <li class="toctree-l4"><a class="reference internal" href="#decisionsteps-and-decisionstep">DecisionSteps and DecisionStep</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#terminalsteps-and-terminalstep">TerminalSteps and TerminalStep</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#behaviorspec">BehaviorSpec</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#communicating-additional-information-with-the-environment">Communicating additional information with the Environment</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#engineconfigurationchannel">EngineConfigurationChannel</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#environmentparameters">EnvironmentParameters</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#custom-side-channels">Custom side channels</a>
+    </li>
+        </ul>
     </li>
         </ul>
     </li>
     </ul>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
-                </li>
-    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">API Documentation</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">About</span></p>
@@ -132,10 +145,6 @@
       
         
           <li>Interfacing with Unity Builds &raquo;</li>
-        
-      
-        
-          <li>Low-level API &raquo;</li>
         
       
     
@@ -474,10 +483,10 @@ types, see the documentation <a href="../Custom-SideChannels/">here</a>.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../Python-LLAPI-Documentation/" class="btn btn-neutral float-right" title="LLAPI Documentation">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../Python-Gym-API-Documentation/" class="btn btn-neutral float-right" title="Gym API Documentation">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../Python-PettingZoo-API-Documentation/" class="btn btn-neutral" title="Petting Zoo Documentation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../Python-PettingZoo-API/" class="btn btn-neutral" title="Getting started with the PettingZoo API"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -509,10 +518,10 @@ types, see the documentation <a href="../Custom-SideChannels/">here</a>.</p>
         </span>
     
     
-      <span><a href="../Python-PettingZoo-API-Documentation/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../Python-PettingZoo-API/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../Python-LLAPI-Documentation/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../Python-Gym-API-Documentation/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

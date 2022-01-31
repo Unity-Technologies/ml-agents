@@ -53,6 +53,10 @@
     </ul>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="ML-Agents-Overview/">ML-Agents Overview</a>
+                    </li>
+                </ul>
                 <p class="caption"><span class="caption-text">Background</span></p>
                 <ul>
                     <li class="toctree-l1"><a class="reference internal" href="Background-Machine-Learning/">Machine Learning</a>
@@ -64,29 +68,20 @@
                 </ul>
                 <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="Python-Gym-API/">Getting started with the Gym API</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="Python-Gym-API-Documentation/">Gym API Documentation</a>
-                </li>
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="Python-Gym-API/">Getting started with the Gym API</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
-                </li>
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="Python-LLAPI/">Getting started with the LLAPI</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="Python-LLAPI-Documentation/">LLAPI Documentation</a>
-                </li>
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="Python-LLAPI/">Getting started with the LLAPI</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">API Documentation</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="Python-Gym-API-Documentation/">Gym API Documentation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="Python-LLAPI-Documentation/">LLAPI Documentation</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">About</span></p>
@@ -157,7 +152,7 @@ rich environments and then made accessible to the wider research and game
 developer communities.</p>
 <h2 id="features">Features</h2>
 <ul>
-<li>18+ <a href="docs/Learning-Environment-Examples.md">example Unity environments</a></li>
+<li>18+ <a href="Learning-Environment-Examples/">example Unity environments</a></li>
 <li>Support for multiple environment configurations and training scenarios</li>
 <li>Flexible Unity SDK that can be integrated into your game or custom Unity scene</li>
 <li>Support for training single-agent, multi-agent cooperative, and multi-agent
@@ -167,12 +162,13 @@ developer communities.</p>
 <li>Train robust agents using environment randomization</li>
 <li>Flexible agent control with On Demand Decision Making</li>
 <li>Train using multiple concurrent Unity environment instances</li>
-<li>Utilizes the <a href="docs/Unity-Inference-Engine.md">Unity Inference Engine</a> to
+<li>Utilizes the <a href="Unity-Inference-Engine/">Unity Inference Engine</a> to
   provide native cross-platform support</li>
-<li>Unity environment <a href="docs/Python-LLAPI.md">control from Python</a></li>
-<li>Wrap Unity learning environments as a <a href="docs/Python-Gym-API.md">gym</a></li>
+<li>Wrap Unity learning environments as a <a href="Python-Gym-API/">gym</a> environment</li>
+<li>Wrap Unity learning environments as a <a href="Python-PettingZoo-API/">PettingZoo</a> environment</li>
+<li>Unity environment <a href="Python-LLAPI/">control from Python</a></li>
 </ul>
-<p>See our <a href="docs/ML-Agents-Overview.md">ML-Agents Overview</a> page for detailed
+<p>See our <a href="ML-Agents-Overview/">ML-Agents Overview</a> page for detailed
 descriptions of all these features.</p>
 <h2 id="releases-documentation">Releases &amp; Documentation</h2>
 <p><strong>Our latest, stable release is <code>Release 19</code>. Click
@@ -180,11 +176,11 @@ descriptions of all these features.</p>
 to get started with the latest release of ML-Agents.</strong></p>
 <p>The table below lists all our releases, including our <code>main</code> branch which is
 under active development and may be unstable. A few helpful guidelines:
-- The <a href="docs/Versioning.md">Versioning page</a> overviews how we manage our GitHub
+- The <a href="Versioning/">Versioning page</a> overviews how we manage our GitHub
   releases and the versioning process for each of the ML-Agents components.
 - The <a href="https://github.com/Unity-Technologies/ml-agents/releases">Releases page</a>
   contains details of the changes between releases.
-- The <a href="docs/Migrating.md">Migration page</a> contains details on how to upgrade
+- The <a href="Migrating/">Migration page</a> contains details on how to upgrade
   from earlier releases of the ML-Agents Toolkit.
 - The <strong>Documentation</strong> links in the table below include installation and usage
   instructions specific to each release. Remember to always use the
@@ -304,13 +300,12 @@ on how to implement and use the ML-Agents Toolkit.</p>
 <ul>
 <li><a href="https://github.com/Unity-Technologies/Unity-Robotics-Hub">Unity Robotics</a></li>
 <li><a href="https://unity.com/computer-vision">Unity Computer Vision</a></li>
-<li><a href="https://unity.com/products/game-simulation">Unity Game Simulation</a></li>
 </ul>
 <h2 id="community-and-feedback">Community and Feedback</h2>
 <p>The ML-Agents Toolkit is an open-source project and we encourage and welcome
 contributions. If you wish to contribute, be sure to review our
-<a href="com.unity.ml-agents/CONTRIBUTING.md">contribution guidelines</a> and
-<a href="CODE_OF_CONDUCT.md">code of conduct</a>.</p>
+<a href="CONTRIBUTING/">contribution guidelines</a> and
+<a href="CODE_OF_CONDUCT/">code of conduct</a>.</p>
 <p>For problems with the installation and setup of the ML-Agents Toolkit, or
 discussions about how to best setup or train your agents, please create a new
 thread on the
@@ -332,7 +327,7 @@ ml-agents@unity3d.com.</p>
 Please refer to "Information that is passively collected by Unity" in the
 <a href="https://unity3d.com/legal/privacy-policy">Unity Privacy Policy</a>.</p>
 <h2 id="license">License</h2>
-<p><a href="LICENSE.md">Apache License 2.0</a></p>
+<p><a href="../LICENSE.md">Apache License 2.0</a></p>
               
             </div>
           </div>
@@ -340,7 +335,7 @@ Please refer to "Information that is passively collected by Unity" in the
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="Background-Machine-Learning/" class="btn btn-neutral float-right" title="Machine Learning">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="ML-Agents-Overview/" class="btn btn-neutral float-right" title="ML-Agents Overview">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
     </div>
@@ -374,7 +369,7 @@ Please refer to "Information that is passively collected by Unity" in the
     
     
     
-      <span><a href="Background-Machine-Learning/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="ML-Agents-Overview/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
@@ -393,5 +388,5 @@ Please refer to "Information that is passively collected by Unity" in the
 
 <!--
 MkDocs version : 1.2.3
-Build Date UTC : 2022-01-31 21:48:14.977587+00:00
+Build Date UTC : 2022-01-31 23:07:12.828597+00:00
 -->

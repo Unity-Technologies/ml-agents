@@ -26,6 +26,16 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://unity-technologies.github.io/ml-agents/CODE_OF_CONDUCT/</loc>
+         <lastmod>2022-01-31</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://unity-technologies.github.io/ml-agents/CONTRIBUTING/</loc>
+         <lastmod>2022-01-31</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://unity-technologies.github.io/ml-agents/Custom-SideChannels/</loc>
          <lastmod>2022-01-31</lastmod>
          <changefreq>daily</changefreq>

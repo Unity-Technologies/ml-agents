@@ -9,7 +9,7 @@
   <meta name="author" content="Unity Technologies">
   <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/ML-Agents-Overview/">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>ML-Agents Toolkit Overview - Unity ML-Agents Toolkit</title>
+  <title>ML-Agents Overview - Unity ML-Agents Toolkit</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -19,7 +19,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "ML-Agents Toolkit Overview";
+    var mkdocs_page_name = "ML-Agents Overview";
     var mkdocs_page_input_path = "ML-Agents-Overview.md";
     var mkdocs_page_url = "/ml-agents/ML-Agents-Overview/";
   </script>
@@ -51,6 +51,84 @@
                     <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
                     </li>
                 </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">ML-Agents Overview</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#running-example-training-npc-behaviors">Running Example: Training NPC Behaviors</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#key-components">Key Components</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#training-modes">Training Modes</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#built-in-training-and-inference">Built-in Training and Inference</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#cross-platform-inference">Cross-Platform Inference</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#custom-training-and-inference">Custom Training and Inference</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#flexible-training-scenarios">Flexible Training Scenarios</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#training-methods-environment-agnostic">Training Methods: Environment-agnostic</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#a-quick-note-on-reward-signals">A Quick Note on Reward Signals</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#deep-reinforcement-learning">Deep Reinforcement Learning</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#curiosity-for-sparse-reward-environments">Curiosity for Sparse-reward Environments</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#rnd-for-sparse-reward-environments">RND for Sparse-reward Environments</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#imitation-learning">Imitation Learning</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#gail-generative-adversarial-imitation-learning">GAIL (Generative Adversarial Imitation Learning)</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#behavioral-cloning-bc">Behavioral Cloning (BC)</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#recording-demonstrations">Recording Demonstrations</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#summary">Summary</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#training-methods-environment-specific">Training Methods: Environment-specific</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#training-in-competitive-multi-agent-environments-with-self-play">Training in Competitive Multi-Agent Environments with Self-Play</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#training-in-cooperative-multi-agent-environments-with-ma-poca">Training In Cooperative Multi-Agent Environments with MA-POCA</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#solving-complex-tasks-using-curriculum-learning">Solving Complex Tasks using Curriculum Learning</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#training-robust-agents-using-environment-parameter-randomization">Training Robust Agents using Environment Parameter Randomization</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#model-types">Model Types</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#learning-from-vector-observations">Learning from Vector Observations</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#learning-from-cameras-using-convolutional-neural-networks">Learning from Cameras using Convolutional Neural Networks</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#learning-from-variable-length-observations-using-attention">Learning from Variable Length Observations using Attention</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#memory-enhanced-agents-using-recurrent-neural-networks">Memory-enhanced Agents using Recurrent Neural Networks</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#additional-features">Additional Features</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#summary-and-next-steps">Summary and Next Steps</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
                 <p class="caption"><span class="caption-text">Background</span></p>
                 <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
@@ -62,29 +140,20 @@
                 </ul>
                 <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="#">Gym API</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
-                </li>
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="#">Petting Zoo API</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
-                </li>
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="#">Low-level API</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
-                </li>
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">API Documentation</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">About</span></p>
@@ -119,7 +188,7 @@
     
       
     
-    <li>ML-Agents Toolkit Overview</li>
+    <li>ML-Agents Overview</li>
     <li class="wy-breadcrumbs-aside">
       
         <a href="https://github.com/Unity-Technologies/ml-agents/edit/main/docs/ML-Agents-Overview.md"
@@ -869,6 +938,15 @@ packed with several features to enable researchers and developers to leverage
           </div>
           <footer>
   
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../Background-Machine-Learning/" class="btn btn-neutral float-right" title="Machine Learning">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
 
   <hr/>
 
@@ -897,6 +975,10 @@ packed with several features to enable researchers and developers to leverage
         </span>
     
     
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../Background-Machine-Learning/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
