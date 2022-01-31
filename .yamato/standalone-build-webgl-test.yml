@@ -9,12 +9,12 @@ test_webgl_standalone_{{ editor_version }}:
     UNITY_VERSION: {{ editor_version }}
   commands:
     - |
+      eval "$($HOME/anaconda/bin/conda shell.bash hook)"
       conda activate python3.7
       python -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
       unity-downloader-cli -u {{ editor_version }} -c editor -c WebGL --wait --fast
       python -u -m ml-agents.tests.yamato.standalone_build_tests --build-target=webgl
-
   triggers:
     cancel_old_ci: true
     recurring:

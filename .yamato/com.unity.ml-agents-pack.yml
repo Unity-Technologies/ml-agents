@@ -6,6 +6,7 @@ pack:
     flavor: b1.small
   commands:
     - |
+      eval "$($HOME/anaconda/bin/conda shell.bash hook)"
       conda activate python3.7
       python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
       unity-downloader-cli -u 2020.3 -c editor --wait --fast
