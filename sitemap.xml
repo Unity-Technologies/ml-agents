@@ -76,6 +76,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://unity-technologies.github.io/ml-agents/LICENSE/</loc>
+         <lastmod>2022-02-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://unity-technologies.github.io/ml-agents/Learning-Environment-Create-New/</loc>
          <lastmod>2022-02-01</lastmod>
          <changefreq>daily</changefreq>
@@ -106,7 +111,17 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://unity-technologies.github.io/ml-agents/ML-Agents-Envs-README/</loc>
+         <lastmod>2022-02-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://unity-technologies.github.io/ml-agents/ML-Agents-Overview/</loc>
+         <lastmod>2022-02-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://unity-technologies.github.io/ml-agents/ML-Agents-README/</loc>
          <lastmod>2022-02-01</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -207,6 +222,11 @@
     </url>
     <url>
          <loc>https://unity-technologies.github.io/ml-agents/Versioning/</loc>
+         <lastmod>2022-02-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://unity-technologies.github.io/ml-agents/com.unity.ml-agents/</loc>
          <lastmod>2022-02-01</lastmod>
          <changefreq>daily</changefreq>
     </url>

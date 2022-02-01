@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Unity Technologies">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/com.unity.ml-agents/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Com.unity.ml agents - Unity ML-Agents Toolkit</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Com.unity.ml agents";
+    var mkdocs_page_input_path = "com.unity.ml-agents.md";
+    var mkdocs_page_url = "/ml-agents/com.unity.ml-agents/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Unity ML-Agents Toolkit</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../ML-Agents-Overview/">ML-Agents Overview</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Background</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Machine-Learning/">Machine Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-PyTorch/">PyTorch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Background-Unity/">Unity</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Interfacing with Unity Builds</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-Gym-API/">Getting started with the Gym API</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-PettingZoo-API/">Getting started with the PettingZoo API</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-LLAPI/">Getting started with the LLAPI</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">API Documentation</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-Gym-API-Documentation/">Gym API Documentation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-PettingZoo-API-Documentation/">Petting Zoo Documentation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Python-LLAPI-Documentation/">LLAPI Documentation</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">About</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Limitations/">Limitations</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Migrating/">Migrating</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Versioning/">Versioning</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Unity ML-Agents Toolkit</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Com.unity.ml agents</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/main/docs/com.unity.ml-agents.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="about-ml-agents-package-comunityml-agents">About ML-Agents package (<code>com.unity.ml-agents</code>)</h1>
+<p>The <em>ML-Agents</em> package contains the primary C# SDK for the <a href="https://github.com/Unity-Technologies/ml-agents">Unity ML-Agents
+Toolkit</a>.</p>
+<p>The package allows you to convert any Unity scene into a learning environment
+and train character behaviors using a variety of machine learning algorithms.
+Additionally, it allows you to embed these trained behaviors back into Unity
+scenes to control your characters. More specifically, the package provides the
+following core functionalities:</p>
+<ul>
+<li>Define Agents: entities, or characters, whose behavior will be learned. Agents
+  are entities that generate observations (through sensors), take actions, and
+  receive rewards from the environment.</li>
+<li>Define Behaviors: entities that specify how an agent should act. Multiple
+  agents can share the same Behavior and a scene may have multiple Behaviors.</li>
+<li>Record demonstrations of an agent within the Editor. You can use
+  demonstrations to help train a behavior for that agent.</li>
+<li>Embedding a trained behavior into the scene via the <a href="https://docs.unity3d.com/Packages/com.unity.barracuda@latest/index.html">Unity Inference Engine</a>.
+  Embedded behaviors allow you to switch an Agent between learning and
+  inference.</li>
+</ul>
+<p>Note that the <em>ML-Agents</em> package does not contain the machine learning
+algorithms for training behaviors. The <em>ML-Agents</em> package only supports
+instrumenting a Unity scene, setting it up for training, and then embedding the
+trained model back into your Unity scene. The machine learning algorithms that
+orchestrate training are part of the companion <a href="https://github.com/Unity-Technologies/ml-agents">Python package</a>.</p>
+<p>Note that we also provide an <em>ML-Agents Extensions</em> package
+(<code>com.unity.ml-agents.extensions</code>) that contains early/experimental features
+that you may find useful. This package is only available from the <a href="https://github.com/Unity-Technologies/ml-agents/blob/release_19_docs/com.unity.ml-agents.extensions">ML-Agents
+GitHub repo</a>.</p>
+<h2 id="package-contents">Package contents</h2>
+<p>The following table describes the package folder structure:</p>
+<table>
+<thead>
+<tr>
+<th><strong>Location</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Documentation~</em></td>
+<td>Contains the documentation for the Unity package.</td>
+</tr>
+<tr>
+<td><em>Editor</em></td>
+<td>Contains utilities for Editor windows and drawers.</td>
+</tr>
+<tr>
+<td><em>Plugins</em></td>
+<td>Contains third-party DLLs.</td>
+</tr>
+<tr>
+<td><em>Runtime</em></td>
+<td>Contains core C# APIs for integrating ML-Agents into your Unity scene.</td>
+</tr>
+<tr>
+<td><em>Runtime/Integrations</em></td>
+<td>Contains utilities for integrating ML-Agents into specific game genres.</td>
+</tr>
+<tr>
+<td><em>Tests</em></td>
+<td>Contains the unit tests for the package.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="Installation"></a></p>
+<h2 id="installation">Installation</h2>
+<p>To install this <em>ML-Agents</em> package, follow the instructions in the <a href="https://docs.unity3d.com/Manual/upm-ui-install.html">Package
+Manager documentation</a>.</p>
+<p>To install the companion Python package to enable training behaviors, follow the
+<a href="https://github.com/Unity-Technologies/ml-agents/blob/release_19_docs/docs/Installation.md">installation instructions</a> on our <a href="https://github.com/Unity-Technologies/ml-agents">GitHub repository</a>.</p>
+<h3 id="advanced-installation">Advanced Installation</h3>
+<p>With the changes to Unity Package Manager in 2021, experimental packages will not show up in the package list and have to be installed manually. There are two recommended ways to install the package manually:</p>
+<h4 id="github-via-package-manager">Github via Package Manager</h4>
+<p>In Unity 2019.4 or later, open the Package Manager, hit the "+" button, and select "Add package from git URL".</p>
+<p><img alt="Package Manager git URL" src="https://github.com/Unity-Technologies/ml-agents/blob/release_19_docs/docs/images/unity_package_manager_git_url.png" /></p>
+<p>In the dialog that appears, enter
+ ```
+git+https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents#release_19</p>
+<pre><code>
+You can also edit your project's `manifest.json` directly and add the following line to the `dependencies`
+section:
+</code></pre>
+<p>"com.unity.ml-agents": "git+https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents#release_19",
+```
+See <a href="https://docs.unity3d.com/Manual/upm-git.html#subfolder">Git dependencies</a> for more information. Note that this
+may take several minutes to resolve the packages the first time that you add it.</p>
+<h4 id="local-installation-for-development">Local Installation for Development</h4>
+<p><a href="https://github.com/Unity-Technologies/ml-agents/tree/release_19_docs/docs/Installation.md#clone-the-ml-agents-toolkit-repository-optional">Clone the repository</a> and follow the
+<a href="https://github.com/Unity-Technologies/ml-agents/tree/release_19_docs/docs/Installation.md#advanced-local-installation-for-development-1">Local Installation for Development</a>
+directions.</p>
+<h2 id="requirements">Requirements</h2>
+<p>This version of the Unity ML-Agents package is compatible with the following
+versions of the Unity Editor:</p>
+<ul>
+<li>2019.4 and later</li>
+</ul>
+<h2 id="known-limitations">Known Limitations</h2>
+<h3 id="training">Training</h3>
+<p>Training is limited to the Unity Editor and Standalone builds on Windows, MacOS,
+and Linux with the Mono scripting backend. Currently, training does not work
+with the IL2CPP scripting backend. Your environment will default to inference
+mode if training is not supported or is not currently running.</p>
+<h3 id="inference">Inference</h3>
+<p>Inference is executed via the
+<a href="https://docs.unity3d.com/Packages/com.unity.barracuda@latest/index.html">Unity Inference Engine</a>.</p>
+<p><strong>CPU</strong></p>
+<p>All platforms supported.</p>
+<p><strong>GPU</strong></p>
+<p>All platforms supported except:</p>
+<ul>
+<li>WebGL and GLES 3/2 on Android / iPhone</li>
+</ul>
+<p><strong>NOTE:</strong> Mobile platform support includes:</p>
+<ul>
+<li>Vulkan for Android</li>
+<li>Metal for iOS.</li>
+</ul>
+<h3 id="headless-mode">Headless Mode</h3>
+<p>If you enable Headless mode, you will not be able to collect visual observations
+from your agents.</p>
+<h3 id="rendering-speed-and-synchronization">Rendering Speed and Synchronization</h3>
+<p>Currently the speed of the game physics can only be increased to 100x real-time.
+The Academy also moves in time with FixedUpdate() rather than Update(), so game
+behavior implemented in Update() may be out of sync with the agent decision
+making. See <a href="https://docs.unity3d.com/Manual/ExecutionOrder.html">Execution Order of Event Functions</a> for more information.</p>
+<p>You can control the frequency of Academy stepping by calling
+<code>Academy.Instance.DisableAutomaticStepping()</code>, and then calling
+<code>Academy.Instance.EnvironmentStep()</code></p>
+<h3 id="unity-inference-engine-models">Unity Inference Engine Models</h3>
+<p>Currently, only models created with our trainers are supported for running
+ML-Agents with a neural network behavior.</p>
+<h2 id="helpful-links">Helpful links</h2>
+<p>If you are new to the Unity ML-Agents package, or have a question after reading
+the documentation, you can checkout our <a href="https://github.com/Unity-Technologies/ml-agents">GitHub Repository</a>, which also includes
+a number of ways to <a href="https://github.com/Unity-Technologies/ml-agents#community-and-feedback">connect with us</a> including our <a href="https://forum.unity.com/forums/ml-agents.453/">ML-Agents Forum</a>.</p>
+<p>In order to improve the developer experience for Unity ML-Agents Toolkit, we have added in-editor analytics.
+Please refer to "Information that is passively collected by Unity" in the
+<a href="https://unity3d.com/legal/privacy-policy">Unity Privacy Policy</a>.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>com.unity.ml-agents copyright © 2017 Unity Technologies</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Unity-Technologies/ml-agents/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
