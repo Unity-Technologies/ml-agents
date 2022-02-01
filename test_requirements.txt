@@ -1,5 +1,5 @@
 # Test-only dependencies should go here, not in setup.py
-pytest>4.0.0,<6.0.0
+pytest>=6.2.5
 pytest-cov==2.6.1
 pytest-xdist==1.34.0
 

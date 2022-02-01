@@ -11,15 +11,22 @@ on:
     - '.github/workflows/pytest.yml'
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   pytest:
-    runs-on: ubuntu-latest
+    # Only run on GitHub Enterprise
+    if: ${{ github.server_url == 'https://github.cds.internal.unity3d.com' }}
+    runs-on: [self-hosted, Linux, X64]
     env:
         TEST_ENFORCE_BUFFER_KEY_TYPES: 1
     strategy:
+      # If one test in the matrix fails we still want to run the others.
+      fail-fast: false
       matrix:
-        python-version: [3.6.x, 3.7.x, 3.8.x, 3.9.x]
+        # NOTE: 3.9.10 was failing but is hard to test since it JUST came out. Delaying debugging for now.
+        # TODO: Set back to 3.9.x once we can test with 3.9.10 via pyenv.
+        python-version: [3.6.x, 3.7.x, 3.8.x, 3.9.9]
         include:
           - python-version: 3.6.x
             pip_constraints: test_constraints_min_version.txt
@@ -27,7 +34,7 @@ jobs:
             pip_constraints: test_constraints_mid_version.txt
           - python-version: 3.8.x
             pip_constraints: test_constraints_mid_version.txt
-          - python-version: 3.9.x
+          - python-version: 3.9.9
             pip_constraints: test_constraints_max_version.txt
     steps:
     - uses: actions/checkout@v2
@@ -35,16 +42,18 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Cache pip
-      uses: actions/cache@v2
-      with:
-        # This path is specific to Ubuntu
-        path: ~/.cache/pip
-        # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'gym-unity/setup.py', 'test_requirements.txt', matrix.pip_constraints) }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-          ${{ runner.os }}-
+# Caching not supported on GitHub Enterprise
+# See https://github.com/actions/cache/issues/505
+#    - name: Cache pip
+#      uses: actions/cache@v2
+#      with:
+#        # This path is specific to Ubuntu
+#        path: ~/.cache/pip
+#        # Look to see if there is a cache hit for the corresponding requirements file
+#        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'gym-unity/setup.py', 'test_requirements.txt', matrix.pip_constraints) }}
+#        restore-keys: |
+#          ${{ runner.os }}-pip-
+#          ${{ runner.os }}-
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
     - name: Install dependencies

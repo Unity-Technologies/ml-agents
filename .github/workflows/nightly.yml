@@ -3,17 +3,24 @@ name: nightly
 on:
   schedule:
     - cron: '0 7 * * *' # run at 7 AM UTC == midnight PST
+  workflow_dispatch:
 
 jobs:
   markdown-link-check-full:
-    runs-on: ubuntu-latest
+    # Only run on GitHub Enterprise
+    if: ${{ github.server_url == 'https://github.cds.internal.unity3d.com' }}
+    runs-on: [self-hosted, Linux, X64]
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
-    - uses: actions/setup-node@v2-beta
+    - uses: actions/setup-python@v2
+    - uses: actions/setup-node@v2
       with:
         node-version: '12'
-    - run: sudo npm install -g markdown-link-check
-    - uses: pre-commit/action@v2.0.0
-      with:
-          extra_args: --hook-stage manual markdown-link-check-full --all-files
+    - name: Install manual dependencies
+      run: |
+        sudo npm install -g markdown-link-check
+        python -m pip install pre-commit
+        pre-commit install
+    - name: Run markdown checker
+      run: |
+        pre-commit run --hook-stage manual markdown-link-check-full --all-files

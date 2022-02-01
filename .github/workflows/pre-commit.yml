@@ -4,40 +4,56 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
+    if: ${{ github.server_url == 'https://github.cds.internal.unity3d.com' }}
+    runs-on: [self-hosted, Linux, X64]
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
       with:
         python-version: 3.7.x
     - uses: actions/setup-ruby@v1
+      env:
+        ImageOS: ubuntu20
       with:
         ruby-version: '2.6'
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '6.0.x'
         include-prerelease: true
-    - uses: pre-commit/action@v2.0.0
-
+    - name: Install manual dependencies
+      run: |
+        python -m pip install pre-commit
+        pre-commit install
+    - name: Run pre-commit
+      run: |
+        pre-commit run --all-files
   markdown-link-check:
-    runs-on: ubuntu-latest
+    # Only run on GitHub Enterprise
+    if: ${{ github.server_url == 'https://github.cds.internal.unity3d.com' }}
+    runs-on: [self-hosted, Linux, X64]
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
-    - uses: actions/setup-node@v2-beta
+    - uses: actions/setup-python@v2
+    - uses: actions/setup-node@v2
       with:
         node-version: '12'
-    - run: sudo npm install -g markdown-link-check
-    - uses: pre-commit/action@v2.0.0
-      with:
-          extra_args: --hook-stage manual markdown-link-check --all-files
-
+    - name: Install manual dependencies
+      run: |
+        sudo npm install -g markdown-link-check
+        python -m pip install pre-commit
+        pre-commit install
+    - name: Run markdown checker
+      run: |
+        pre-commit run --hook-stage manual markdown-link-check --all-files
   validate-meta-files:
-    runs-on: ubuntu-latest
+    # Only run on GitHub Enterprise
+    if: ${{ github.server_url == 'https://github.cds.internal.unity3d.com' }}
+    runs-on: [self-hosted, Linux, X64]
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
+    - uses: actions/setup-python@v2
     - run: python utils/validate_meta_files.py
