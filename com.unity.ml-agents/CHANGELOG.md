@@ -10,7 +10,7 @@ and this project adheres to
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-- The minimum supported Python version for ml-agents-envs was changed to 3.7.0. (#4)
+- The minimum supported Python version for ml-agents-envs was changed to 3.7.2 (#4)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)

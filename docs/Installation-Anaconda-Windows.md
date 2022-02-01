@@ -18,7 +18,7 @@ versions and features.
 
 [Download](https://www.anaconda.com/download/#windows) and install Anaconda for
 Windows. By using Anaconda, you can manage separate environments for different
-distributions of Python. Python 3.7.0 or higher is required as we no longer
+distributions of Python. Python 3.7.2 or higher is required as we no longer
 support Python 2. In this guide, we are using Python version 3.7 and Anaconda
 version 5.1
 ([64-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe)
