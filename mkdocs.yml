@@ -27,3 +27,6 @@ pages:
     - Versioning: Versioning.md
 theme: readthedocs
 extra_css: [extra.css]
+markdown_extensions:
+    - markdown_include.include:
+        base_path: docs

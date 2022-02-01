@@ -1,5 +1,3 @@
-<img src="docs/images/U_MachineLearningAgents_Logo_Black_RGB.png" align="middle" width="3000"/>
-
 # Unity ML-Agents Toolkit
 
 [![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/release_19_docs/docs/)
@@ -153,7 +151,7 @@ We have also published a series of blog posts that are relevant for ML-Agents:
 
 The ML-Agents Toolkit is an open-source project and we encourage and welcome
 contributions. If you wish to contribute, be sure to review our
-[contribution guidelines](com.unity.ml-agents/CONTRIBUTING.md) and
+[contribution guidelines](CONTRIBUTING.md) and
 [code of conduct](CODE_OF_CONDUCT.md).
 
 For problems with the installation and setup of the ML-Agents Toolkit, or
