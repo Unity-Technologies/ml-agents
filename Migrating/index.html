@@ -137,6 +137,25 @@
               
                 <h1 id="upgrading">Upgrading</h1>
 <h1 id="migrating">Migrating</h1>
+<!---
+TODO: update ml-agents-env package version before release
+--->
+<h2 id="migrating-to-the-ml-agents-envs-0290dev0-package">Migrating to the ml-agents-envs 0.29.0.dev0 package</h2>
+<ul>
+<li>Python 3.7 is now the minimum version of python supported due to <a href="https://endoflife.date/python">python3.6 EOL</a>.
+  Please update your python installation to 3.7.2 or higher. Note: Due to an issue with the typing system, the maximum
+  version of python supported is python 3.9.9.</li>
+<li>The <code>gym-unity</code> package has been refactored into the <code>ml-agents-envs</code> package. Please update your imports accordingly.</li>
+<li>Example:</li>
+<li>Before</li>
+</ul>
+<pre><code class="language-python">from gym_unity.unity_gym_env import UnityToGymWrapper
+</code></pre>
+<ul>
+<li>After:</li>
+</ul>
+<pre><code class="language-python">from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
+</code></pre>
 <h2 id="migrating-the-package-to-version-20">Migrating the package to version 2.0</h2>
 <ul>
 <li>The official version of Unity ML-Agents supports is now 2020.3 LTS. If you run

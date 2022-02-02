@@ -7,9 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <meta name="author" content="Unity Technologies">
-  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/ML-Agents-Envs-README/">
+  <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/ML-Agents-Toolkit-Documentation/">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>ML Agents Envs README - Unity ML-Agents Toolkit</title>
+  <title>Unity ML-Agents Toolkit Documentation - Unity ML-Agents Toolkit</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -19,9 +19,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "ML Agents Envs README";
-    var mkdocs_page_input_path = "ML-Agents-Envs-README.md";
-    var mkdocs_page_url = "/ml-agents/ML-Agents-Envs-README/";
+    var mkdocs_page_name = "Unity ML-Agents Toolkit Documentation";
+    var mkdocs_page_input_path = "ML-Agents-Toolkit-Documentation.md";
+    var mkdocs_page_url = "/ml-agents/ML-Agents-Toolkit-Documentation/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js" defer></script>
@@ -114,10 +114,10 @@
     
       
     
-    <li>ML Agents Envs README</li>
+    <li>Unity ML-Agents Toolkit Documentation</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/Unity-Technologies/ml-agents/edit/main/docs/ML-Agents-Envs-README.md"
+        <a href="https://github.com/Unity-Technologies/ml-agents/edit/main/docs/ML-Agents-Toolkit-Documentation.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -129,39 +129,83 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="unity-ml-agents-python-interface">Unity ML-Agents Python Interface</h1>
-<p>The <code>mlagents_envs</code> Python package is part of the
-<a href="https://github.com/Unity-Technologies/ml-agents">ML-Agents Toolkit</a>.
-<code>mlagents_envs</code> provides three Python APIs that allows direct interaction with the
-Unity game engine:
-- A single agent API (Gym API)
-- A gym-like multi-agent API (PettingZoo API)
-- A low-level API (LLAPI)</p>
-<p>The LLAPI is used by the trainer implementation in <code>mlagents</code>.
-<code>mlagents_envs</code> can be used independently of <code>mlagents</code> for Python
-communication.</p>
-<h2 id="installation">Installation</h2>
-<p>Install the <code>mlagents_envs</code> package with:</p>
-<pre><code class="language-sh">python -m pip install mlagents_envs==0.29.0
-</code></pre>
-<h2 id="usage-more-information">Usage &amp; More Information</h2>
-<p>See
-- <a href="../docs/Python-Gym-API.md">Gym API Guide</a>
-- <a href="../docs/Python-PettingZoo-API.md">PettingZoo API Guide</a>
-- <a href="../docs/Python-LLAPI.md">Python API Guide</a></p>
-<p>for more information on how to use the API to interact with a Unity environment.</p>
-<p>For more information on the ML-Agents Toolkit and how to instrument a Unity
-scene with the ML-Agents SDK, check out the main
-<a href="../docs/ML-Agents-Toolkit-Documentation.md">ML-Agents Toolkit documentation</a>.</p>
-<h2 id="limitations">Limitations</h2>
+                <h1 id="unity-ml-agents-toolkit-documentation">Unity ML-Agents Toolkit Documentation</h1>
+<h2 id="installation-set-up">Installation &amp; Set-up</h2>
 <ul>
-<li><code>mlagents_envs</code> uses localhost ports to exchange data between Unity and
-  Python. As such, multiple instances can have their ports collide, leading to
-  errors. Make sure to use a different port if you are using multiple instances
-  of <code>UnityEnvironment</code>.</li>
-<li>Communication between Unity and the Python <code>UnityEnvironment</code> is not secure.</li>
-<li>On Linux, ports are not released immediately after the communication closes.
-  As such, you cannot reuse ports right after closing a <code>UnityEnvironment</code>.</li>
+<li><a href="../Installation/">Installation</a></li>
+<li><a href="../Using-Virtual-Environment/">Using Virtual Environment</a></li>
+</ul>
+<h2 id="getting-started">Getting Started</h2>
+<ul>
+<li><a href="../Getting-Started/">Getting Started Guide</a></li>
+<li><a href="../ML-Agents-Overview/">ML-Agents Toolkit Overview</a></li>
+<li><a href="../Background-Unity/">Background: Unity</a></li>
+<li><a href="../Background-Machine-Learning/">Background: Machine Learning</a></li>
+<li><a href="../Background-PyTorch/">Background: PyTorch</a></li>
+<li><a href="../Learning-Environment-Examples/">Example Environments</a></li>
+</ul>
+<h2 id="creating-learning-environments">Creating Learning Environments</h2>
+<ul>
+<li><a href="../Learning-Environment-Create-New/">Making a New Learning Environment</a></li>
+<li><a href="../Learning-Environment-Design/">Designing a Learning Environment</a></li>
+<li><a href="../Learning-Environment-Design-Agents/">Designing Agents</a></li>
+<li><a href="../Learning-Environment-Executable/">Using an Executable Environment</a></li>
+<li><a href="../Package-Settings/">ML-Agents Package Settings</a></li>
+</ul>
+<h2 id="training-inference">Training &amp; Inference</h2>
+<ul>
+<li><a href="../Training-ML-Agents/">Training ML-Agents</a></li>
+<li><a href="../Training-Configuration-File/">Training Configuration File</a></li>
+<li><a href="../Using-Tensorboard/">Using TensorBoard to Observe Training</a></li>
+<li><a href="../Profiling-Python/">Profiling Trainers</a></li>
+<li><a href="../Unity-Inference-Engine/">Unity Inference Engine</a></li>
+</ul>
+<h2 id="extending-ml-agents">Extending ML-Agents</h2>
+<ul>
+<li><a href="../Custom-SideChannels/">Creating Custom Side Channels</a></li>
+<li><a href="../Training-ML-Agents/#defining-a-new-sampler-type">Creating Custom Samplers for Environment Parameter Randomization</a></li>
+</ul>
+<h2 id="python-tutorial-with-google-colab">Python Tutorial with Google Colab</h2>
+<ul>
+<li><a href="https://colab.research.google.com/github/Unity-Technologies/ml-agents/blob/release_19_docs/colab/Colab_UnityEnvironment_1_Run.ipynb">Using a UnityEnvironment</a></li>
+<li><a href="https://colab.research.google.com/github/Unity-Technologies/ml-agents/blob/release_19_docs/colab/Colab_UnityEnvironment_2_Train.ipynb">Q-Learning with a UnityEnvironment</a></li>
+<li><a href="https://colab.research.google.com/github/Unity-Technologies/ml-agents/blob/release_19_docs/colab/Colab_UnityEnvironment_3_SideChannel.ipynb">Using Side Channels on a UnityEnvironment</a></li>
+</ul>
+<h2 id="help">Help</h2>
+<ul>
+<li><a href="../Migrating/">Migrating from earlier versions of ML-Agents</a></li>
+<li><a href="../FAQ/">Frequently Asked Questions</a></li>
+<li><a href="../Glossary/">ML-Agents Glossary</a></li>
+<li><a href="../Limitations/">Limitations</a></li>
+</ul>
+<h2 id="api-docs">API Docs</h2>
+<ul>
+<li><a href="../API-Reference/">API Reference</a></li>
+<li><a href="../Python-LLAPI-Documentation/">Python API Documentation</a></li>
+<li><a href="../Python-LLAPI/">How to use the Python API</a></li>
+<li><a href="../Unity-Environment-Registry/">How to use the Unity Environment Registry</a></li>
+<li><a href="../Python-Gym-API/">Wrapping Learning Environment as a Gym (+Baselines/Dopamine Integration)</a></li>
+</ul>
+<h2 id="translations">Translations</h2>
+<p>To make the Unity ML-Agents Toolkit accessible to the global research and Unity
+developer communities, we're attempting to create and maintain translations of
+our documentation. We've started with translating a subset of the documentation
+to one language (Chinese), but we hope to continue translating more pages and to
+other languages. Consequently, we welcome any enhancements and improvements from
+the community.</p>
+<ul>
+<li><a href="../localized_docs/zh-CN/">Chinese</a></li>
+<li><a href="../localized_docs/KR/">Korean</a></li>
+</ul>
+<h2 id="deprecated-docs">Deprecated Docs</h2>
+<p>We no longer use them ourselves and so they may not be up-to-date. We've decided
+to keep them up just in case they are helpful to you.</p>
+<ul>
+<li><a href="../Installation-Anaconda-Windows/">Windows Anaconda Installation</a></li>
+<li><a href="../Using-Docker/">Using Docker</a></li>
+<li><a href="../Training-on-Amazon-Web-Service/">Training on the Cloud with Amazon Web Services</a></li>
+<li><a href="../Training-on-Microsoft-Azure/">Training on the Cloud with Microsoft Azure</a></li>
+<li><a href="https://github.com/Unity-Technologies/video-recorder">Using the Video Recorder</a></li>
 </ul>
               
             </div>
