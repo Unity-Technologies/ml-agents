@@ -40,7 +40,6 @@ setup(
         "Intended Audience :: Developers",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "License :: OSI Approved :: Apache Software License",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
     ],
@@ -54,6 +53,6 @@ setup(
         "protobuf>=3.6",
         "pyyaml>=3.1.0",
     ],
-    python_requires=">=3.6.1",
+    python_requires=">=3.7.2",
     cmdclass={"verify": VerifyVersionCommand},
 )
