@@ -9,15 +9,17 @@ and this project adheres to
 ## [Unreleased]
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-#### ml-agents / ml-agents-envs / gym-unity (Python)
-- The minimum supported Python version for ml-agents-envs was changed to 3.7.2 (#4)
+#### ml-agents / ml-agents-envs
+- The minimum supported Python version for ml-agents-envs was changed to 3.7.2 (#5)
+- Added support for the PettingZoo multi-agent API (#6)
+- Refactored `gym-unity` into the `ml-agents-envs` package (#6)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-#### ml-agents / ml-agents-envs / gym-unity (Python)
+#### ml-agents / ml-agents-envs
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-#### ml-agents / ml-agents-envs / gym-unity (Python)
+#### ml-agents / ml-agents-envs
 
 ## [2.2.1-exp.1] - 2022-01-14
 ### Major Changes

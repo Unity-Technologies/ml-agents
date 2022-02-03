@@ -1,3 +1,10 @@
+"""
+Copied from ml-agents/mlagents/trainers/tests/simple_test_envs.py
+
+Modified the env so that it doesn't automatically reset and respawn agent in order to pass
+pettingzoo api tests, since current PZ api test doesn't allow spawning new agents.
+"""
+
 import random
 from typing import Dict, List, Any, Tuple
 import numpy as np
@@ -13,11 +20,8 @@ from mlagents_envs.base_env import (
     TerminalSteps,
     BehaviorMapping,
 )
-from .test_rpc_utils import proto_from_steps_and_action
-from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
-    AgentInfoActionPairProto,
-)
-from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
+from mlagents_envs.side_channel.side_channel_manager import SideChannelManager
+from dummy_config import create_observation_specs_with_shapes
 
 OBS_SIZE = 1
 VIS_OBS_SIZE = (20, 20, 3)
@@ -72,6 +76,7 @@ class SimpleEnvironment(BaseEnv):
         self.names = brain_names
         self.positions: Dict[str, List[float]] = {}
         self.step_count: Dict[str, float] = {}
+        self._side_channel_manager = SideChannelManager([])
 
         # Concatenate the arguments for a consistent random seed
         seed = (
@@ -155,10 +160,10 @@ class SimpleEnvironment(BaseEnv):
     def _take_action(self, name: str) -> bool:
         deltas = []
         _act = self.action[name]
-        if self.action_spec.continuous_size > 0:
+        if self.action_spec.continuous_size > 0 and not _act:
             for _cont in _act.continuous[0]:
                 deltas.append(_cont)
-        if self.action_spec.discrete_size > 0:
+        if self.action_spec.discrete_size > 0 and not _act:
             for _disc in _act.discrete[0]:
                 deltas.append(1 if _disc else -1)
         for i, _delta in enumerate(deltas):
@@ -214,29 +219,30 @@ class SimpleEnvironment(BaseEnv):
         terminal_step = TerminalSteps.empty(self.behavior_spec)
         if done:
             self.final_rewards[name].append(self.rewards[name])
-            self._reset_agent(name)
-            new_vector_obs = self._make_obs(self.goal[name])
-            (
-                new_reward,
-                new_done,
-                new_agent_id,
-                new_action_mask,
-                new_group_id,
-                new_group_reward,
-            ) = self._construct_reset_step(name)
+            # self._reset_agent(name)
+            # new_vector_obs = self._make_obs(self.goal[name])
+            # (
+            #     new_reward,
+            #     new_done,
+            #     new_agent_id,
+            #     new_action_mask,
+            #     new_group_id,
+            #     new_group_reward,
+            # ) = self._construct_reset_step(name)
 
-            decision_step = DecisionSteps(
-                new_vector_obs,
-                new_reward,
-                new_agent_id,
-                new_action_mask,
-                new_group_id,
-                new_group_reward,
-            )
+            # decision_step = DecisionSteps(
+            #     new_vector_obs,
+            #     new_reward,
+            #     new_agent_id,
+            #     new_action_mask,
+            #     new_group_id,
+            #     new_group_reward,
+            # )
+            decision_step = DecisionSteps([], [], [], [], [], [])
             terminal_step = TerminalSteps(
                 m_vector_obs,
                 m_reward,
-                np.array([False], dtype=np.bool),
+                np.array([False], dtype=bool),
                 m_agent_id,
                 m_group_id,
                 m_group_reward,
@@ -281,63 +287,6 @@ class SimpleEnvironment(BaseEnv):
 
     def close(self):
         pass
-
-
-class MemoryEnvironment(SimpleEnvironment):
-    def __init__(self, brain_names, action_sizes=(1, 0), step_size=0.2):
-        super().__init__(brain_names, action_sizes=action_sizes, step_size=step_size)
-        # Number of steps to reveal the goal for. Lower is harder. Should be
-        # less than 1/step_size to force agent to use memory
-        self.num_show_steps = 2
-
-    def _make_batched_step(
-        self, name: str, done: bool, reward: float, group_reward: float
-    ) -> Tuple[DecisionSteps, TerminalSteps]:
-        recurrent_obs_val = (
-            self.goal[name] if self.step_count[name] <= self.num_show_steps else 0
-        )
-        m_vector_obs = self._make_obs(recurrent_obs_val)
-        m_reward = np.array([reward], dtype=np.float32)
-        m_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
-        m_group_id = np.array([0], dtype=np.int32)
-        m_group_reward = np.array([group_reward], dtype=np.float32)
-        action_mask = self._generate_mask()
-        decision_step = DecisionSteps(
-            m_vector_obs, m_reward, m_agent_id, action_mask, m_group_id, m_group_reward
-        )
-        terminal_step = TerminalSteps.empty(self.behavior_spec)
-        if done:
-            self.final_rewards[name].append(self.rewards[name])
-            self._reset_agent(name)
-            recurrent_obs_val = (
-                self.goal[name] if self.step_count[name] <= self.num_show_steps else 0
-            )
-            new_vector_obs = self._make_obs(recurrent_obs_val)
-            (
-                new_reward,
-                new_done,
-                new_agent_id,
-                new_action_mask,
-                new_group_id,
-                new_group_reward,
-            ) = self._construct_reset_step(name)
-            decision_step = DecisionSteps(
-                new_vector_obs,
-                new_reward,
-                new_agent_id,
-                new_action_mask,
-                new_group_id,
-                new_group_reward,
-            )
-            terminal_step = TerminalSteps(
-                m_vector_obs,
-                m_reward,
-                np.array([False], dtype=np.bool),
-                m_agent_id,
-                m_group_id,
-                m_group_reward,
-            )
-        return (decision_step, terminal_step)
 
 
 class MultiAgentEnvironment(BaseEnv):
@@ -390,6 +339,7 @@ class MultiAgentEnvironment(BaseEnv):
         self.behavior_spec = self.envs[name_and_num].behavior_spec
         self.action_spec = self.envs[name_and_num].action_spec
         self.num_agents = num_agents
+        self._side_channel_manager = SideChannelManager([])
 
     @property
     def all_done(self):
@@ -496,6 +446,8 @@ class MultiAgentEnvironment(BaseEnv):
             ter_group_id,
             ter_group_reward,
         )
+        if self.all_done:
+            decision_step = DecisionSteps([], [], [], [], [], [])
         return (decision_step, terminal_step)
 
     def step(self) -> None:
@@ -518,7 +470,7 @@ class MultiAgentEnvironment(BaseEnv):
                             name, done, 0.0, reward
                         )
                         self.final_rewards[name].append(reward)
-                        self.reset()
+                        # self.reset()
                     elif done:
                         # This agent has finished but others are still running.
                         # This gives a reward of the time penalty if this agent
@@ -540,82 +492,19 @@ class MultiAgentEnvironment(BaseEnv):
                 name_and_num = name + str(i)
                 self.dones[name_and_num] = False
 
+        self.dones = {}
+        self.just_died = set()
+        self.final_rewards = {}
+        for name in self.names:
+            self.final_rewards[name] = []
+            for i in range(self.num_agents):
+                name_and_num = name + str(i)
+                self.dones[name_and_num] = False
+                self.envs[name_and_num].reset()
+
     @property
     def reset_parameters(self) -> Dict[str, str]:
         return {}
 
     def close(self):
         pass
-
-
-class RecordEnvironment(SimpleEnvironment):
-    def __init__(
-        self,
-        brain_names,
-        step_size=0.2,
-        num_visual=0,
-        num_vector=1,
-        action_sizes=(1, 0),
-        n_demos=30,
-    ):
-        super().__init__(
-            brain_names,
-            step_size=step_size,
-            num_visual=num_visual,
-            num_vector=num_vector,
-            action_sizes=action_sizes,
-        )
-        self.demonstration_protos: Dict[str, List[AgentInfoActionPairProto]] = {}
-        self.n_demos = n_demos
-        for name in self.names:
-            self.demonstration_protos[name] = []
-
-    def step(self) -> None:
-        super().step()
-        for name in self.names:
-            discrete_actions = (
-                self.action[name].discrete
-                if self.action_spec.discrete_size > 0
-                else None
-            )
-            continuous_actions = (
-                self.action[name].continuous
-                if self.action_spec.continuous_size > 0
-                else None
-            )
-            self.demonstration_protos[name] += proto_from_steps_and_action(
-                self.step_result[name][0],
-                self.step_result[name][1],
-                continuous_actions,
-                discrete_actions,
-            )
-            self.demonstration_protos[name] = self.demonstration_protos[name][
-                -self.n_demos :
-            ]
-
-    def solve(self) -> None:
-        self.reset()
-        for _ in range(self.n_demos):
-            for name in self.names:
-                if self.action_spec.discrete_size > 0:
-                    self.action[name] = ActionTuple(
-                        np.array([], dtype=np.float32),
-                        np.array(
-                            [[1]] if self.goal[name] > 0 else [[0]], dtype=np.int32
-                        ),
-                    )
-                else:
-                    self.action[name] = ActionTuple(
-                        np.array([[float(self.goal[name])]], dtype=np.float32),
-                        np.array([], dtype=np.int32),
-                    )
-            self.step()
-
-
-class UnexpectedExceptionEnvironment(SimpleEnvironment):
-    def __init__(self, brain_names, use_discrete, to_raise):
-        super().__init__(brain_names, use_discrete)
-        self.to_raise = to_raise
-
-    def step(self) -> None:
-        raise self.to_raise()

@@ -30,7 +30,6 @@ test_gym_interface_{{ editor.version }}:
       pull_request.changes.any match "Project/**" OR
       pull_request.changes.any match "ml-agents/tests/yamato/**" OR
       pull_request.changes.any match "ml-agents-envs/**" OR
-      pull_request.changes.any match "gym-unity/**" OR
       pull_request.changes.any match ".yamato/gym-interface-test.yml") AND
       NOT pull_request.changes.all match "**/*.md"
     {% endif %}

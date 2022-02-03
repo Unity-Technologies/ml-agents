@@ -19,8 +19,6 @@ class UnityGymException(error.Error):
 
 
 logger = logging_util.get_logger(__name__)
-logging_util.set_log_level(logging_util.INFO)
-
 GymStepResult = Tuple[np.ndarray, float, bool, Dict]
 
 
@@ -58,7 +56,7 @@ class UnityToGymWrapper(gym.Env):
         self.visual_obs = None
 
         # Save the step result from the last time all Agents requested decisions.
-        self._previous_decision_step: DecisionSteps = None
+        self._previous_decision_step: Optional[DecisionSteps] = None
         self._flattener = None
         # Hidden flag used by Atari environments to determine if the game is over
         self.game_over = False
@@ -355,7 +353,7 @@ class ActionFlattener:
     def lookup_action(self, action):
         """
         Convert a scalar discrete action into a unique set of branched actions.
-        :param: action: A scalar value representing one of the discrete actions.
-        :return: The List containing the branched actions.
+        :param action: A scalar value representing one of the discrete actions.
+        :returns: The List containing the branched actions.
         """
         return self.action_lookup[action]

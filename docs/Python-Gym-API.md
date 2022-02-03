@@ -11,17 +11,9 @@ Unity environment via Python.
 
 ## Installation
 
-The gym wrapper can be installed using:
+The gym wrapper is part of the `mlgents_envs` package. Please refer to the
+[mlagents_envs installation instructions](../ml-agents-envs/README.md).
 
-```sh
-pip3 install gym_unity
-```
-
-or by running the following from the `/gym-unity` directory of the repository:
-
-```sh
-pip3 install -e .
-```
 
 ## Using the Gym Wrapper
 
@@ -29,7 +21,7 @@ The gym interface is available from `gym_unity.envs`. To launch an environment
 from the root of the project repository use:
 
 ```python
-from gym_unity.envs import UnityToGymWrapper
+from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
 
 env = UnityToGymWrapper(unity_env, uint8_visual, flatten_branched, allow_multiple_obs)
 ```
@@ -107,35 +99,37 @@ from baselines import deepq
 from baselines import logger
 
 from mlagents_envs.environment import UnityEnvironment
-from gym_unity.envs import UnityToGymWrapper
+from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
+
 
 def main():
-    unity_env = UnityEnvironment(<path-to-environment>)
-    env = UnityToGymWrapper(unity_env, uint8_visual=True)
-    logger.configure('./logs') # Change to log in a different directory
-    act = deepq.learn(
-        env,
-        "cnn", # For visual inputs
-        lr=2.5e-4,
-        total_timesteps=1000000,
-        buffer_size=50000,
-        exploration_fraction=0.05,
-        exploration_final_eps=0.1,
-        print_freq=20,
-        train_freq=5,
-        learning_starts=20000,
-        target_network_update_freq=50,
-        gamma=0.99,
-        prioritized_replay=False,
-        checkpoint_freq=1000,
-        checkpoint_path='./logs', # Change to save model in a different directory
-        dueling=True
-    )
-    print("Saving model to unity_model.pkl")
-    act.save("unity_model.pkl")
+  unity_env = UnityEnvironment( < path - to - environment >)
+  env = UnityToGymWrapper(unity_env, uint8_visual=True)
+  logger.configure('./logs')  # Change to log in a different directory
+  act = deepq.learn(
+    env,
+    "cnn",  # For visual inputs
+    lr=2.5e-4,
+    total_timesteps=1000000,
+    buffer_size=50000,
+    exploration_fraction=0.05,
+    exploration_final_eps=0.1,
+    print_freq=20,
+    train_freq=5,
+    learning_starts=20000,
+    target_network_update_freq=50,
+    gamma=0.99,
+    prioritized_replay=False,
+    checkpoint_freq=1000,
+    checkpoint_path='./logs',  # Change to save model in a different directory
+    dueling=True
+  )
+  print("Saving model to unity_model.pkl")
+  act.save("unity_model.pkl")
+
 
 if __name__ == '__main__':
-    main()
+  main()
 ```
 
 To start the training process, run the following from the directory containing
@@ -163,7 +157,7 @@ method using the PPO2 baseline:
 
 ```python
 from mlagents_envs.environment import UnityEnvironment
-from gym_unity.envs import UnityToGymWrapper
+from mlagents_envs.envs import UnityToGymWrapper
 from baselines.common.vec_env.subproc_vec_env import SubprocVecEnv
 from baselines.common.vec_env.dummy_vec_env import DummyVecEnv
 from baselines.bench import Monitor
@@ -173,38 +167,44 @@ import baselines.ppo2.ppo2 as ppo2
 import os
 
 try:
-    from mpi4py import MPI
+  from mpi4py import MPI
 except ImportError:
-    MPI = None
+  MPI = None
+
 
 def make_unity_env(env_directory, num_env, visual, start_index=0):
-    """
-    Create a wrapped, monitored Unity environment.
-    """
-    def make_env(rank, use_visual=True): # pylint: disable=C0111
-        def _thunk():
-            unity_env = UnityEnvironment(env_directory, base_port=5000 + rank)
-            env = UnityToGymWrapper(unity_env, uint8_visual=True)
-            env = Monitor(env, logger.get_dir() and os.path.join(logger.get_dir(), str(rank)))
-            return env
-        return _thunk
-    if visual:
-        return SubprocVecEnv([make_env(i + start_index) for i in range(num_env)])
-    else:
-        rank = MPI.COMM_WORLD.Get_rank() if MPI else 0
-        return DummyVecEnv([make_env(rank, use_visual=False)])
+  """
+  Create a wrapped, monitored Unity environment.
+  """
+
+  def make_env(rank, use_visual=True):  # pylint: disable=C0111
+    def _thunk():
+      unity_env = UnityEnvironment(env_directory, base_port=5000 + rank)
+      env = UnityToGymWrapper(unity_env, uint8_visual=True)
+      env = Monitor(env, logger.get_dir() and os.path.join(logger.get_dir(), str(rank)))
+      return env
+
+    return _thunk
+
+  if visual:
+    return SubprocVecEnv([make_env(i + start_index) for i in range(num_env)])
+  else:
+    rank = MPI.COMM_WORLD.Get_rank() if MPI else 0
+    return DummyVecEnv([make_env(rank, use_visual=False)])
+
 
 def main():
-    env = make_unity_env(<path-to-environment>, 4, True)
-    ppo2.learn(
-        network="mlp",
-        env=env,
-        total_timesteps=100000,
-        lr=1e-3,
-    )
+  env = make_unity_env( < path - to - environment >, 4, True)
+  ppo2.learn(
+    network="mlp",
+    env=env,
+    total_timesteps=100000,
+    lr=1e-3,
+  )
+
 
 if __name__ == '__main__':
-    main()
+  main()
 ```
 
 ## Run Google Dopamine Algorithms
@@ -236,7 +236,7 @@ instantiated, just as in the Baselines example. At the top of the file, insert
 
 ```python
 from mlagents_envs.environment import UnityEnvironment
-from gym_unity.envs import UnityToGymWrapper
+from mlagents_envs.envs import UnityToGymWrapper
 ```
 
 to import the Gym Wrapper. Navigate to the `create_atari_environment` method in

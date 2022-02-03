@@ -8,11 +8,7 @@ import argparse
 
 VERSION_LINE_START = "__version__ = "
 
-DIRECTORIES = [
-    "ml-agents/mlagents/trainers",
-    "ml-agents-envs/mlagents_envs",
-    "gym-unity/gym_unity",
-]
+DIRECTORIES = ["ml-agents/mlagents/trainers", "ml-agents-envs/mlagents_envs"]
 
 MLAGENTS_PACKAGE_JSON_PATH = "com.unity.ml-agents/package.json"
 MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH = "com.unity.ml-agents.extensions/package.json"

@@ -43,7 +43,9 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
     ],
-    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+    packages=find_packages(
+        exclude=["*.tests", "*.tests.*", "tests.*", "tests", "colabs", "*.ipynb"]
+    ),
     zip_safe=False,
     install_requires=[
         "cloudpickle",
@@ -52,6 +54,9 @@ setup(
         "Pillow>=4.2.1",
         "protobuf>=3.6",
         "pyyaml>=3.1.0",
+        "gym==0.21.0",
+        "pettingzoo==1.14.0",
+        "numpy==1.21.2",
     ],
     python_requires=">=3.7.2",
     cmdclass={"verify": VerifyVersionCommand},

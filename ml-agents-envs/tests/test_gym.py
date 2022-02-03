@@ -3,7 +3,8 @@ import pytest
 import numpy as np
 
 from gym import spaces
-from gym_unity.envs import UnityToGymWrapper
+
+from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
 from mlagents_envs.base_env import (
     BehaviorSpec,
     ActionSpec,
@@ -11,7 +12,7 @@ from mlagents_envs.base_env import (
     TerminalSteps,
     BehaviorMapping,
 )
-from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
+from dummy_config import create_observation_specs_with_shapes
 
 
 def test_gym_wrapper():

@@ -7,7 +7,7 @@ from mlagents_envs.base_env import (
     ActionSpec,
     BehaviorSpec,
 )
-from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
+from dummy_config import create_observation_specs_with_shapes
 
 
 def test_decision_steps():

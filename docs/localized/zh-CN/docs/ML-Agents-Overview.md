@@ -252,7 +252,7 @@ Internal Brain 中，以便为连接到该 Brain 的所有 Agent 生成
 的 Brain 类型都会设置为 External，并且场景中所有 Agent 的行为
 都将在 Python 中接受控制。
 
-我们目前没有教程介绍这种模式，但您可以在[这里](/docs/Python-API.md)
+我们目前没有教程介绍这种模式，但您可以在[这里](/docs/Python-LLAPI.md)
 了解有关 Python API 的更多信息。
 
 ### Curriculum Learning（课程学习）

@@ -167,7 +167,7 @@ The ML-Agents Toolkit contains five high-level components:
   process to communicate with and control the Academy during training. However,
   it can be used for other purposes as well. For example, you could use the API
   to use Unity as the simulation engine for your own machine learning
-  algorithms. See [Python API](Python-API.md) for more information.
+  algorithms. See [Python API](Python-LLAPI.md) for more information.
 - **External Communicator** - which connects the Learning Environment with the
   Python Low-Level API. It lives within the Learning Environment.
 - **Python Trainers** which contains all the machine learning algorithms that
@@ -179,9 +179,15 @@ The ML-Agents Toolkit contains five high-level components:
 - **Gym Wrapper** (not pictured). A common way in which machine learning
   researchers interact with simulation environments is via a wrapper provided by
   OpenAI called [gym](https://github.com/openai/gym). We provide a gym wrapper
-  in a dedicated `gym-unity` Python package and
-  [instructions](../gym-unity/README.md) for using it with existing machine
+  in the `ml-agents-envs` package and
+  [instructions](Python-Gym-API.md) for using it with existing machine
   learning algorithms which utilize gym.
+- **PettingZoo Wrapper** (not pictured) PettingZoo is python API for
+  interacting with multi-agent simulation environments that provides a
+  gym-like interface. We provide a PettingZoo wrapper for Unity ML-Agents
+  environments in the `ml-agents-envs` package and
+  [instructions](Python-PettingZoo-API.md) for using it with machine learning
+  algorithms.
 
 <p align="center">
   <img src="images/learning_environment_basic.png"
@@ -286,10 +292,10 @@ In the previous mode, the Agents were used for training to generate a PyTorch
 model that the Agents can later use. However, any user of the ML-Agents Toolkit
 can leverage their own algorithms for training. In this case, the behaviors of
 all the Agents in the scene will be controlled within Python. You can even turn
-your environment into a [gym.](../gym-unity/README.md)
+your environment into a [gym.](Python-Gym-API.md)
 
 We do not currently have a tutorial highlighting this mode, but you can learn
-more about the Python API [here](Python-API.md).
+more about the Python API [here](Python-LLAPI.md).
 
 ## Flexible Training Scenarios
 

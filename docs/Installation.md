@@ -18,8 +18,6 @@ The ML-Agents Toolkit contains several components:
     a Unity scene. It is a foundational layer that facilitates data messaging
     between Unity scene and the Python machine learning algorithms.
     Consequently, `mlagents` depends on `mlagents_envs`.
-  - [`gym_unity`](../gym-unity/) provides a Python-wrapper for your Unity scene
-    that supports the OpenAI Gym interface.
 - Unity [Project](../Project/) that contains several
   [example environments](Learning-Environment-Examples.md) that highlight the
   various features of the toolkit to help you get started.

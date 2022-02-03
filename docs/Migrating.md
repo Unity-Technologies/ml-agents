@@ -1,6 +1,25 @@
 # Upgrading
 
 # Migrating
+<!---
+TODO: update ml-agents-env package version before release
+--->
+## Migrating to the ml-agents-envs 0.29.0.dev0 package
+- Python 3.7 is now the minimum version of python supported due to [python3.6 EOL](https://endoflife.date/python).
+  Please update your python installation to 3.7.2 or higher. Note: Due to an issue with the typing system, the maximum
+  version of python supported is python 3.9.9.
+- The `gym-unity` package has been refactored into the `ml-agents-envs` package. Please update your imports accordingly.
+- Example:
+  - Before
+```python
+from gym_unity.unity_gym_env import UnityToGymWrapper
+```
+  - After:
+```python
+from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
+```
+
+
 ## Migrating the package to version 2.0
 - The official version of Unity ML-Agents supports is now 2020.3 LTS. If you run
   into issues, please consider deleting your project's Library folder and reponening your
@@ -260,9 +279,9 @@ vector observations to be used simultaneously.
 - The `play_against_current_self_ratio` self-play trainer hyperparameter has
   been renamed to `play_against_latest_model_ratio`
 - Removed the multi-agent gym option from the gym wrapper. For multi-agent
-  scenarios, use the [Low Level Python API](Python-API.md).
+  scenarios, use the [Low Level Python API](Python-LLAPI.md).
 - The low level Python API has changed. You can look at the document
-  [Low Level Python API documentation](Python-API.md) for more information. If
+  [Low Level Python API documentation](Python-LLAPI.md) for more information. If
   you use `mlagents-learn` for training, this should be a transparent change.
 - The obsolete `Agent` methods `GiveModel`, `Done`, `InitializeAgent`,
   `AgentAction` and `AgentReset` have been removed.
@@ -487,7 +506,7 @@ vector observations to be used simultaneously.
 ### Important changes
 
 - The low level Python API has changed. You can look at the document
-  [Low Level Python API documentation](Python-API.md) for more information. This
+  [Low Level Python API documentation](Python-LLAPI.md) for more information. This
   should only affect you if you're writing a custom trainer; if you use
   `mlagents-learn` for training, this should be a transparent change.
   - `reset()` on the Low-Level Python API no longer takes a `train_mode`
@@ -497,7 +516,7 @@ vector observations to be used simultaneously.
     `UnityEnvironment` no longer has a `reset_parameters` field. To modify float
     properties in the environment, you must use a `FloatPropertiesChannel`. For
     more information, refer to the
-    [Low Level Python API documentation](Python-API.md)
+    [Low Level Python API documentation](Python-LLAPI.md)
 - `CustomResetParameters` are now removed.
 - The Academy no longer has a `Training Configuration` nor
   `Inference Configuration` field in the inspector. To modify the configuration
