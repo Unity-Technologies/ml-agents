@@ -58,6 +58,6 @@ setup(
         "pettingzoo==1.14.0",
         "numpy==1.21.2",
     ],
-    python_requires=">=3.7.2",
+    python_requires=">=3.7.2,<3.9.10",
     cmdclass={"verify": VerifyVersionCommand},
 )
