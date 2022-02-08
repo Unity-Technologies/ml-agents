@@ -138,7 +138,7 @@ def test_sample_actions(rnn, visual, discrete):
 
 def test_step_overflow():
     policy = create_policy_mock(TrainerSettings())
-    policy.set_step(2 ** 31 - 1)
-    assert policy.get_current_step() == 2 ** 31 - 1  # step = 2147483647
+    policy.set_step(2**31 - 1)
+    assert policy.get_current_step() == 2**31 - 1  # step = 2147483647
     policy.increment_step(3)
-    assert policy.get_current_step() == 2 ** 31 + 2  # step = 2147483650
+    assert policy.get_current_step() == 2**31 + 2  # step = 2147483650

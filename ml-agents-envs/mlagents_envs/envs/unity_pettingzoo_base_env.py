@@ -253,9 +253,15 @@ class UnityPettingzooBaseEnv:
         self._current_action[behavior_name] = self._create_empty_actions(
             behavior_name, len(current_batch[0])
         )
-        agents, obs, dones, rewards, cumulative_rewards, infos, id_map = _unwrap_batch_steps(
-            current_batch, behavior_name
-        )
+        (
+            agents,
+            obs,
+            dones,
+            rewards,
+            cumulative_rewards,
+            infos,
+            id_map,
+        ) = _unwrap_batch_steps(current_batch, behavior_name)
         self._live_agents += agents
         self._agents += agents
         self._observations.update(obs)

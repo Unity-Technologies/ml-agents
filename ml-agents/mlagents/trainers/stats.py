@@ -33,7 +33,7 @@ def _dict_to_str(param_dict: Dict[str, Any], num_tabs: int) -> str:
             [
                 "\t"
                 + "  " * num_tabs
-                + "{}:\t{}".format(x, _dict_to_str(param_dict[x], num_tabs + 1))
+                + f"{x}:\t{_dict_to_str(param_dict[x], num_tabs + 1)}"
                 for x in param_dict
             ]
         )

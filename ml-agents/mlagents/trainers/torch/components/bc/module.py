@@ -33,7 +33,9 @@ class BCModule:
         self._anneal_steps = settings.steps
         self.current_lr = policy_learning_rate * settings.strength
 
-        learning_rate_schedule: ScheduleType = ScheduleType.LINEAR if self._anneal_steps > 0 else ScheduleType.CONSTANT
+        learning_rate_schedule: ScheduleType = (
+            ScheduleType.LINEAR if self._anneal_steps > 0 else ScheduleType.CONSTANT
+        )
         self.decay_learning_rate = ModelUtils.DecayedValue(
             learning_rate_schedule, self.current_lr, 1e-10, self._anneal_steps
         )

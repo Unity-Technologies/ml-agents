@@ -70,7 +70,7 @@ class GaussianDistInstance(DistInstance):
         return self.mean
 
     def log_prob(self, value):
-        var = self.std ** 2
+        var = self.std**2
         log_scale = torch.log(self.std + EPSILON)
         return (
             -((value - self.mean) ** 2) / (2 * var + EPSILON)
@@ -84,7 +84,7 @@ class GaussianDistInstance(DistInstance):
 
     def entropy(self):
         return torch.mean(
-            0.5 * torch.log(2 * math.pi * math.e * self.std ** 2 + EPSILON),
+            0.5 * torch.log(2 * math.pi * math.e * self.std**2 + EPSILON),
             dim=1,
             keepdim=True,
         )  # Use equivalent behavior to TF

@@ -183,10 +183,10 @@ class DiscriminatorNetwork(torch.nn.Module):
             kl_loss = torch.mean(
                 -torch.sum(
                     1
-                    + (self._z_sigma ** 2).log()
-                    - 0.5 * expert_mu ** 2
-                    - 0.5 * policy_mu ** 2
-                    - (self._z_sigma ** 2),
+                    + (self._z_sigma**2).log()
+                    - 0.5 * expert_mu**2
+                    - 0.5 * policy_mu**2
+                    - (self._z_sigma**2),
                     dim=1,
                 )
             )
@@ -255,6 +255,6 @@ class DiscriminatorNetwork(torch.nn.Module):
         estimate = self._estimator(hidden).squeeze(1).sum()
         gradient = torch.autograd.grad(estimate, encoder_input, create_graph=True)[0]
         # Norm's gradient could be NaN at 0. Use our own safe_norm
-        safe_norm = (torch.sum(gradient ** 2, dim=1) + self.EPSILON).sqrt()
+        safe_norm = (torch.sum(gradient**2, dim=1) + self.EPSILON).sqrt()
         gradient_mag = torch.mean((safe_norm - 1) ** 2)
         return gradient_mag

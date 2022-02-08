@@ -188,7 +188,7 @@ def check_file(
                         new_file.write(line)
                     else:
                         bad_lines.append(f"{filename}: {line}")
-                        new_line = re.sub(r"release_[0-9]+", fr"{release_tag}", line)
+                        new_line = re.sub(r"release_[0-9]+", rf"{release_tag}", line)
                         new_line = update_pip_install_line(new_line, package_version)
                         new_file.write(new_line)
         if bad_lines:
@@ -235,7 +235,7 @@ def main():
     print(f"Python package version: {package_version}")
     release_allow_pattern = re.compile(f"{release_tag}(_docs)?")
     pip_allow_pattern = re.compile(
-        fr"python -m pip install (-q )?mlagents(_envs)?=={package_version}"
+        rf"python -m pip install (-q )?mlagents(_envs)?=={package_version}"
     )
     bad_lines = check_all_files(
         release_allow_pattern, release_tag, pip_allow_pattern, package_version

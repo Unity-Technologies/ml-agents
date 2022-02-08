@@ -165,7 +165,10 @@ class EnvironmentParameterManager:
             ):
                 behavior_to_consider = lesson.completion_criteria.behavior
                 if behavior_to_consider in trainer_steps:
-                    must_increment, new_smoothing = lesson.completion_criteria.need_increment(
+                    (
+                        must_increment,
+                        new_smoothing,
+                    ) = lesson.completion_criteria.need_increment(
                         float(trainer_steps[behavior_to_consider])
                         / float(trainer_max_steps[behavior_to_consider]),
                         trainer_reward_buffer[behavior_to_consider],

@@ -39,7 +39,7 @@ def get_zero_entities_mask(entities: List[torch.Tensor]) -> List[torch.Tensor]:
 
         # Generate the masking tensors for each entities tensor (mask only if all zeros)
         key_masks: List[torch.Tensor] = [
-            (torch.sum(ent ** 2, axis=2) < 0.01).float() for ent in entities
+            (torch.sum(ent**2, axis=2) < 0.01).float() for ent in entities
         ]
     return key_masks
 
@@ -101,11 +101,11 @@ class MultiHeadAttention(torch.nn.Module):
         qk = torch.matmul(query, key)  # (b, h, n_q, n_k)
 
         if key_mask is None:
-            qk = qk / (self.embedding_size ** 0.5)
+            qk = qk / (self.embedding_size**0.5)
         else:
             key_mask = key_mask.reshape(b, 1, 1, n_k)
             qk = (1 - key_mask) * qk / (
-                self.embedding_size ** 0.5
+                self.embedding_size**0.5
             ) + key_mask * self.NEG_INF
 
         att = torch.softmax(qk, dim=3)  # (b, h, n_q, n_k)

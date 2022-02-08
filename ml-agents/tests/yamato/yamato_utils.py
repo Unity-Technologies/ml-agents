@@ -24,7 +24,7 @@ def get_base_path():
 
 
 def get_base_output_path():
-    """"
+    """ "
     Returns the artifact folder to use for yamato jobs.
     """
     return os.path.join(get_base_path(), "artifacts")

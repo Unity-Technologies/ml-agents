@@ -137,7 +137,7 @@ class RLTrainer(Trainer):
         return model_saver
 
     def _policy_mean_reward(self) -> Optional[float]:
-        """ Returns the mean episode reward for the current policy. """
+        """Returns the mean episode reward for the current policy."""
         rewards = self.cumulative_returns_since_policy_update
         if len(rewards) == 0:
             return None

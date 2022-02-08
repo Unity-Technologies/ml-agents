@@ -90,7 +90,10 @@ def test_all_masking(mask_value):
     # We make sure that a mask of all zeros or all ones will not trigger an error
     np.random.seed(1336)
     torch.manual_seed(1336)
-    size, n_k, = 3, 5
+    size, n_k, = (
+        3,
+        5,
+    )
     embedding_size = 64
     entity_embeddings = EntityEmbedding(size, n_k, embedding_size)
     entity_embeddings.add_self_embedding(size)
@@ -134,7 +137,10 @@ def test_all_masking(mask_value):
 def test_predict_closest_training():
     np.random.seed(1336)
     torch.manual_seed(1336)
-    size, n_k, = 3, 5
+    size, n_k, = (
+        3,
+        5,
+    )
     embedding_size = 64
     entity_embeddings = EntityEmbedding(size, n_k, embedding_size)
     entity_embeddings.add_self_embedding(size)

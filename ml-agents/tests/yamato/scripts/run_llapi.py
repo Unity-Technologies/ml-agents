@@ -47,9 +47,7 @@ def test_run_environment(env_name):
         print("Is there a visual observation ?", vis_obs)
 
         # Examine the state space for the first observation for the first agent
-        print(
-            "First Agent observation looks like: \n{}".format(decision_steps.obs[0][0])
-        )
+        print(f"First Agent observation looks like: \n{decision_steps.obs[0][0]}")
 
         for _episode in range(10):
             env.reset()

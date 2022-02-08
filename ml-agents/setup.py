@@ -89,5 +89,6 @@ setup(
             "default=mlagents.plugins.stats_writer:get_default_stats_writers"
         ],
     },
-    cmdclass={"verify": VerifyVersionCommand},
+    # TODO: Remove this once mypy stops having spurious setuptools issues.
+    cmdclass={"verify": VerifyVersionCommand},  # type: ignore
 )

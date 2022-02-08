@@ -12,7 +12,7 @@ from mlagents_envs.base_env import ActionSpec
 
 
 def create_action_model(inp_size, act_size, deterministic=False):
-    mask = torch.ones([1, act_size ** 2])
+    mask = torch.ones([1, act_size**2])
     action_spec = ActionSpec(act_size, tuple(act_size for _ in range(act_size)))
     action_model = ActionModel(inp_size, action_spec, deterministic=deterministic)
     return action_model, mask
