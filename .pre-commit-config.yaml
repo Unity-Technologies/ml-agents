@@ -17,14 +17,14 @@ repos:
         name: mypy-ml-agents
         files: "ml-agents/.*"
         args: [--ignore-missing-imports, --disallow-incomplete-defs, --no-strict-optional]
-        additional_dependencies: [types-PyYAML, types-attrs, types-protobuf, types-setuptools]
+        additional_dependencies: [types-PyYAML, types-attrs, types-protobuf, types-setuptools, types-filelock]
     -   id: mypy
         name: mypy-ml-agents-envs
         files: "ml-agents-envs/.*"
         # Exclude protobuf files and don't follow them when imported
         exclude: ".*_pb2.py"
         args: [--ignore-missing-imports, --disallow-incomplete-defs, --no-strict-optional]
-        additional_dependencies: [types-PyYAML, types-attrs, types-protobuf, types-setuptools]
+        additional_dependencies: [types-PyYAML, types-attrs, types-protobuf, types-setuptools, types-filelock]
 -   repo: https://gitlab.com/pycqa/flake8
     rev: 3.9.2
     hooks:

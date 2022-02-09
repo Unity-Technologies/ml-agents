@@ -4,12 +4,15 @@ import os
 import uuid
 import shutil
 import glob
+
 import yaml
 import hashlib
 
 from zipfile import ZipFile
 from sys import platform
 from typing import Tuple, Optional, Dict, Any
+
+from filelock import FileLock
 
 from mlagents_envs.env_utils import validate_environment_path
 
@@ -30,25 +33,28 @@ def get_local_binary_path(name: str, url: str) -> str:
     :param url: The URL of the zip file
     """
     NUMBER_ATTEMPTS = 5
-    path = get_local_binary_path_if_exists(name, url)
-    if path is None:
-        logger.debug(
-            f"Local environment {name} not found, downloading environment from {url}"
-        )
-    for attempt in range(NUMBER_ATTEMPTS):  # Perform 5 attempts at downloading the file
-        if path is not None:
-            break
-        try:
-            download_and_extract_zip(url, name)
-        except Exception:
-            if attempt + 1 < NUMBER_ATTEMPTS:
-                logger.warning(
-                    f"Attempt {attempt + 1} / {NUMBER_ATTEMPTS}"
-                    ": Failed to download and extract binary."
-                )
-            else:
-                raise
+    with FileLock(os.path.join(tempfile.gettempdir(), name + ".lock")):
         path = get_local_binary_path_if_exists(name, url)
+        if path is None:
+            logger.debug(
+                f"Local environment {name} not found, downloading environment from {url}"
+            )
+        for attempt in range(
+            NUMBER_ATTEMPTS
+        ):  # Perform 5 attempts at downloading the file
+            if path is not None:
+                break
+            try:
+                download_and_extract_zip(url, name)
+            except Exception:
+                if attempt + 1 < NUMBER_ATTEMPTS:
+                    logger.warning(
+                        f"Attempt {attempt + 1} / {NUMBER_ATTEMPTS}"
+                        ": Failed to download and extract binary."
+                    )
+                else:
+                    raise
+            path = get_local_binary_path_if_exists(name, url)
 
     if path is None:
         raise FileNotFoundError(
@@ -94,12 +100,7 @@ def get_local_binary_path_if_exists(name: str, url: str) -> Optional[str]:
         return None
 
 
-def get_tmp_dir() -> Tuple[str, str]:
-    """
-    Returns the path to the folder containing the downloaded zip files and the extracted
-    binaries. If these folders do not exist, they will be created.
-    :retrun: Tuple containing path to : (zip folder, extracted files folder)
-    """
+def _get_tmp_dir_helper():
     TEMPDIR = "/tmp" if platform == "darwin" else tempfile.gettempdir()
     MLAGENTS = "ml-agents-binaries"
     TMP_FOLDER_NAME = "tmp"
@@ -117,6 +118,22 @@ def get_tmp_dir() -> Tuple[str, str]:
         os.makedirs(bin_directory)
         os.chmod(bin_directory, 16877)
     return (zip_directory, bin_directory)
+
+
+def get_tmp_dir() -> Tuple[str, str]:
+    """
+    Returns the path to the folder containing the downloaded zip files and the extracted
+    binaries. If these folders do not exist, they will be created.
+    :retrun: Tuple containing path to : (zip folder, extracted files folder)
+    """
+    # TODO: Once we don't use python 3.7 we should just use exists_ok=True when creating the dirs to avoid this.
+    # Should only be able to error out 3 times (once for each subdir).
+    for _attempt in range(3):
+        try:
+            return _get_tmp_dir_helper()
+        except FileExistsError:
+            continue
+    return _get_tmp_dir_helper()
 
 
 def download_and_extract_zip(url: str, name: str) -> None:

@@ -57,6 +57,7 @@ setup(
         "gym==0.21.0",
         "pettingzoo==1.14.0",
         "numpy==1.21.2",
+        "filelock>=3.4.0",
     ],
     python_requires=">=3.7.2,<3.9.10",
     # TODO: Remove this once mypy stops having spurious setuptools issues.
