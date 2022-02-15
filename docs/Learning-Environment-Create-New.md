@@ -26,10 +26,9 @@ steps:
 1. Add your Agent subclasses to appropriate GameObjects, typically, the object
    in the scene that represents the Agent in the simulation.
 
-**Note:** If you are unfamiliar with Unity, refer to
-[Learning the interface](https://docs.unity3d.com/Manual/LearningtheInterface.html)
-in the Unity Manual if an Editor task isn't explained sufficiently in this
-tutorial.
+**Note:** If you are unfamiliar with Unity, refer to the
+[Unity manual](https://docs.unity3d.com/Manual/index.html)
+if an Editor task isn't explained sufficiently in this tutorial.
 
 If you haven't already, follow the [installation instructions](Installation.md).
 

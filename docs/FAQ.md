@@ -20,7 +20,7 @@ chmod -R 755 *.x86_64
 ```
 
 On Windows, you can find
-[instructions](<https://technet.microsoft.com/en-us/library/cc754344(v=ws.11).aspx>).
+[instructions](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc754344(v=ws.11)).
 
 ## Environment Connection Timeout
 
