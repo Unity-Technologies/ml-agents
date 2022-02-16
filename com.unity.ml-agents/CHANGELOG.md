@@ -17,6 +17,8 @@ and this project adheres to
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs
+- Extended support to python 3.9.10
+
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs
