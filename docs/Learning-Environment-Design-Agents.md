@@ -284,7 +284,7 @@ to the previous one.
 
 ```csharp
 enum ItemType { Sword, Shield, Bow, LastItem }
-const int NUM_ITEM_TYPES = (int)ItemType.LastItem;
+const int NUM_ITEM_TYPES = (int)ItemType.LastItem + 1;
 
 public override void CollectObservations(VectorSensor sensor)
 {

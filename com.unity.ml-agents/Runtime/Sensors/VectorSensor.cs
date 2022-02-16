@@ -206,7 +206,7 @@ namespace Unity.MLAgents.Sensors
         /// Adds a one-hot encoding observation.
         /// </summary>
         /// <param name="observation">The index of this observation.</param>
-        /// <param name="range">The max index for any observation.</param>
+        /// <param name="range">The upper limit on the value observation can take (exclusive).</param>
         public void AddOneHotObservation(int observation, int range)
         {
             for (var i = 0; i < range; i++)
