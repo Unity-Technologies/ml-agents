@@ -24,17 +24,20 @@ logger = get_logger(__name__)
 BLOCK_SIZE = 8192
 
 
-def get_local_binary_path(name: str, url: str) -> str:
+def get_local_binary_path(name: str, url: str, tmp_dir: Optional[str] = None) -> str:
     """
     Returns the path to the executable previously downloaded with the name argument. If
     None is found, the executable at the url argument will be downloaded and stored
     under name for future uses.
     :param name: The name that will be given to the folder containing the extracted data
     :param url: The URL of the zip file
+    :param: tmp_dir: Optional override for the temporary directory to save binaries and zips in.
     """
     NUMBER_ATTEMPTS = 5
-    with FileLock(os.path.join(tempfile.gettempdir(), name + ".lock")):
-        path = get_local_binary_path_if_exists(name, url)
+    tmp_dir = tmp_dir or tempfile.gettempdir()
+    lock = FileLock(os.path.join(tmp_dir, name + ".lock"))
+    with lock:
+        path = get_local_binary_path_if_exists(name, url, tmp_dir=tmp_dir)
         if path is None:
             logger.debug(
                 f"Local environment {name} not found, downloading environment from {url}"
@@ -45,7 +48,7 @@ def get_local_binary_path(name: str, url: str) -> str:
             if path is not None:
                 break
             try:
-                download_and_extract_zip(url, name)
+                download_and_extract_zip(url, name, tmp_dir=tmp_dir)
             except Exception:
                 if attempt + 1 < NUMBER_ATTEMPTS:
                     logger.warning(
@@ -54,7 +57,7 @@ def get_local_binary_path(name: str, url: str) -> str:
                     )
                 else:
                     raise
-            path = get_local_binary_path_if_exists(name, url)
+            path = get_local_binary_path_if_exists(name, url, tmp_dir=tmp_dir)
 
     if path is None:
         raise FileNotFoundError(
@@ -64,15 +67,16 @@ def get_local_binary_path(name: str, url: str) -> str:
     return path
 
 
-def get_local_binary_path_if_exists(name: str, url: str) -> Optional[str]:
+def get_local_binary_path_if_exists(name: str, url: str, tmp_dir: str) -> Optional[str]:
     """
     Recursively searches for a Unity executable in the extracted files folders. This is
     platform dependent : It will only return a Unity executable compatible with the
     computer's OS. If no executable is found, None will be returned.
     :param name: The name/identifier of the executable
     :param url: The url the executable was downloaded from (for verification)
+    :param: tmp_dir: Optional override for the temporary directory to save binaries and zips in.
     """
-    _, bin_dir = get_tmp_dir()
+    _, bin_dir = get_tmp_dirs(tmp_dir)
     extension = None
 
     if platform == "linux" or platform == "linux2":
@@ -100,27 +104,27 @@ def get_local_binary_path_if_exists(name: str, url: str) -> Optional[str]:
         return None
 
 
-def _get_tmp_dir_helper():
-    TEMPDIR = "/tmp" if platform == "darwin" else tempfile.gettempdir()
+def _get_tmp_dir_helper(tmp_dir: Optional[str] = None) -> Tuple[str, str]:
+    tmp_dir = tmp_dir or ("/tmp" if platform == "darwin" else tempfile.gettempdir())
     MLAGENTS = "ml-agents-binaries"
     TMP_FOLDER_NAME = "tmp"
     BINARY_FOLDER_NAME = "binaries"
-    mla_directory = os.path.join(TEMPDIR, MLAGENTS)
+    mla_directory = os.path.join(tmp_dir, MLAGENTS)
     if not os.path.exists(mla_directory):
         os.makedirs(mla_directory)
         os.chmod(mla_directory, 16877)
-    zip_directory = os.path.join(TEMPDIR, MLAGENTS, TMP_FOLDER_NAME)
+    zip_directory = os.path.join(tmp_dir, MLAGENTS, TMP_FOLDER_NAME)
     if not os.path.exists(zip_directory):
         os.makedirs(zip_directory)
         os.chmod(zip_directory, 16877)
-    bin_directory = os.path.join(TEMPDIR, MLAGENTS, BINARY_FOLDER_NAME)
+    bin_directory = os.path.join(tmp_dir, MLAGENTS, BINARY_FOLDER_NAME)
     if not os.path.exists(bin_directory):
         os.makedirs(bin_directory)
         os.chmod(bin_directory, 16877)
-    return (zip_directory, bin_directory)
+    return zip_directory, bin_directory
 
 
-def get_tmp_dir() -> Tuple[str, str]:
+def get_tmp_dirs(tmp_dir: Optional[str] = None) -> Tuple[str, str]:
     """
     Returns the path to the folder containing the downloaded zip files and the extracted
     binaries. If these folders do not exist, they will be created.
@@ -130,21 +134,24 @@ def get_tmp_dir() -> Tuple[str, str]:
     # Should only be able to error out 3 times (once for each subdir).
     for _attempt in range(3):
         try:
-            return _get_tmp_dir_helper()
+            return _get_tmp_dir_helper(tmp_dir)
         except FileExistsError:
             continue
-    return _get_tmp_dir_helper()
+    return _get_tmp_dir_helper(tmp_dir)
 
 
-def download_and_extract_zip(url: str, name: str) -> None:
+def download_and_extract_zip(
+    url: str, name: str, tmp_dir: Optional[str] = None
+) -> None:
     """
     Downloads a zip file under a URL, extracts its contents into a folder with the name
     argument and gives chmod 755 to all the files it contains. Files are downloaded and
     extracted into special folders in the temp folder of the machine.
     :param url: The URL of the zip file
     :param name: The name that will be given to the folder containing the extracted data
+    :param: tmp_dir: Optional override for the temporary directory to save binaries and zips in.
     """
-    zip_dir, bin_dir = get_tmp_dir()
+    zip_dir, bin_dir = get_tmp_dirs(tmp_dir)
     url_hash = "-" + hashlib.md5(url.encode()).hexdigest()
     binary_path = os.path.join(bin_dir, name + url_hash)
     if os.path.exists(binary_path):
@@ -206,7 +213,7 @@ def load_remote_manifest(url: str) -> Dict[str, Any]:
     """
     Converts a remote yaml file into a Python dictionary
     """
-    tmp_dir, _ = get_tmp_dir()
+    tmp_dir, _ = get_tmp_dirs()
     try:
         request = urllib.request.urlopen(url, timeout=30)
     except urllib.error.HTTPError as e:  # type: ignore

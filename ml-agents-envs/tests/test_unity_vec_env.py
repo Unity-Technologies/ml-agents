@@ -36,6 +36,7 @@ def test_vec_env_basic(base_port: int) -> None:
     sb3_vec_env.close()
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("n_ports", [4])
 def test_vec_env_trains(base_port: int) -> None:
     sb3_vec_env = make_mla_sb3_env(

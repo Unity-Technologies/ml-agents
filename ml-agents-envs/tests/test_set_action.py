@@ -1,3 +1,5 @@
+import pytest
+
 from mlagents_envs.registry import default_registry
 from mlagents_envs.side_channel.engine_configuration_channel import (
     EngineConfigurationChannel,
@@ -8,10 +10,11 @@ import numpy as np
 BALL_ID = "3DBall"
 
 
-def test_set_action_single_agent():
+@pytest.mark.parametrize("n_ports", [1])
+def test_set_action_single_agent(base_port: int) -> None:
     engine_config_channel = EngineConfigurationChannel()
     env = default_registry[BALL_ID].make(
-        base_port=6000,
+        base_port=base_port,
         worker_id=0,
         no_graphics=True,
         side_channels=[engine_config_channel],
@@ -32,10 +35,11 @@ def test_set_action_single_agent():
     env.close()
 
 
-def test_set_action_multi_agent():
+@pytest.mark.parametrize("n_ports", [1])
+def test_set_action_multi_agent(base_port: int) -> None:
     engine_config_channel = EngineConfigurationChannel()
     env = default_registry[BALL_ID].make(
-        base_port=6001,
+        base_port=base_port,
         worker_id=0,
         no_graphics=True,
         side_channels=[engine_config_channel],

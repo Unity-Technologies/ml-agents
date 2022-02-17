@@ -11,6 +11,19 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      pytest_markers:
+        description: "Restrict which tests to run based on pytest markers"
+        required: false
+        default: "not slow"
+        type: string
+  workflow_call:
+    inputs:
+      pytest_markers:
+        required: false
+        # Hacky way to make sure we run all tests
+        default: "slow or not slow"
+        type: string
 
 jobs:
   pytest:
@@ -63,8 +76,19 @@ jobs:
       run: |
         pip freeze > pip_versions-${{ matrix.python-version }}.txt
         cat pip_versions-${{ matrix.python-version }}.txt
+    - name: Get pytest marker
+      id: pytest_marker
+      run: |
+        if [ "${{ github.event.inputs.pytest_markers }}" != "" ]; then
+          echo "::set-output name=markers::${{ github.event.inputs.pytest_markers }}"
+        else
+          echo "::set-output name=markers::not slow"
+        fi
     - name: Run pytest
-      run: pytest --cov=ml-agents --cov=ml-agents-envs --cov-report=html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings -v
+      run: |
+        pytest --cov=ml-agents --cov=ml-agents-envs \
+        --cov-report=html --junitxml=junit/test-results-${{ matrix.python-version }}.xml \
+        -p no:warnings -v -m "${{ steps.pytest_marker.outputs.markers }}" -n auto
     - name: Upload pytest test results
       uses: actions/upload-artifact@v2
       with:

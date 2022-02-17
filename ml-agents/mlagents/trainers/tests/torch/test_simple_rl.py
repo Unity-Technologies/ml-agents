@@ -46,7 +46,7 @@ SAC_TORCH_CONFIG = sac_dummy_config()
 POCA_TORCH_CONFIG = poca_dummy_config()
 
 # tests in this file won't be tested on GPU machine
-pytestmark = pytest.mark.check_environment_trains
+pytestmark = pytest.mark.slow
 
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])

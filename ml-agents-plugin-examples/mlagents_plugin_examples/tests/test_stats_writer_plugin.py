@@ -6,7 +6,7 @@ from mlagents.trainers.settings import RunOptions
 from mlagents_plugin_examples.example_stats_writer import ExampleStatsWriter
 
 
-@pytest.mark.check_environment_trains
+@pytest.mark.slow
 def test_register_stats_writers():
     # Make sure that the ExampleStatsWriter gets returned from the list of all StatsWriters
     stats_writers = register_stats_writer_plugins(RunOptions())

@@ -103,7 +103,7 @@ def test_visual_encoder(vis_class, image_size):
         (FullyConnectedVisualEncoder, 36),
     ],
 )
-@pytest.mark.check_environment_trains
+@pytest.mark.slow
 def test_visual_encoder_trains(vis_class, size):
     torch.manual_seed(0)
     image_size = (size, size, 1)
