@@ -18,6 +18,7 @@ OptionalDependencyTests_{{ optional_dep.name }}:
         image: ml-agents/ml-agents-ubuntu-18.04:latest
         flavor: b1.medium
     commands:
+        - git submodule update --init --recursive
         - |
             curl -L https://artifactory.prd.it.unity3d.com/artifactory/api/gpg/key/public | sudo apt-key add -
             sudo sh -c "echo 'deb https://artifactory.prd.it.unity3d.com/artifactory/unity-apt-local bionic main' > /etc/apt/sources.list.d/unity.list"

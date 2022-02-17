@@ -1,0 +1,3 @@
+[submodule "com.unity.ml-agents"]
+	path = com.unity.ml-agents
+	url = ../com.unity.ml-agents.git

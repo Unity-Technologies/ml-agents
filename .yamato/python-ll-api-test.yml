@@ -10,6 +10,7 @@ test_linux_ll_api_{{ editor.version }}:
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
+    - git submodule update --init --recursive
     - |
       eval "$($HOME/anaconda/bin/conda shell.bash hook)"
       conda activate python3.7

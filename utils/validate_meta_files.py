@@ -15,13 +15,25 @@ def main():
             "com.unity.ml-agents/.editorconfig",
             "com.unity.ml-agents/.gitignore",
             "com.unity.ml-agents/.npmignore",
+            "com.unity.ml-agents/.git",
             "com.unity.ml-agents/Tests/.tests.json",
+            "com.unity.ml-agents/.pre-commit-config.yaml",
+            "com.unity.ml-agents/.pre-commit-search-and-replace.yaml",
+            "com.unity.ml-agents/CODEOWNERS",
+            "com.unity.ml-agents/README.md",
+            "com.unity.ml-agents/catalog-info.yaml",
+            "com.unity.ml-agents/release.txt",
             "com.unity.ml-agents.extensions/.gitignore",
             "com.unity.ml-agents.extensions/.npmignore",
             "com.unity.ml-agents.extensions/Tests/.tests.json",
         ]
     )
-    ignored_dirs = {"Documentation~"}
+    ignored_dirs = {
+        "Documentation~",
+        ".github",
+        ".yamato",
+        "utils",
+    }
 
     num_matched = 0
 

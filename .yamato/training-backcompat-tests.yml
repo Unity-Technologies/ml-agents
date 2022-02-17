@@ -12,6 +12,7 @@ test_mac_backcompat_2019.4:
   variables:
     UNITY_VERSION: {{ editor_version }}
   commands:
+    - git submodule update --init --recursive
     - |
       python -m venv venv && source venv/bin/activate
       python -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
