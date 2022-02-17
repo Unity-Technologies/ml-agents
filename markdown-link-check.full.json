@@ -19,6 +19,10 @@
         {
             "pattern": "mailto:",
             "comment": "mailto checking broken"
+        },
+        {
+            "pattern": "https://www.researchgate.net/",
+            "comment": "Issue with GHE certs / firewall"
         }
     ]
 }
