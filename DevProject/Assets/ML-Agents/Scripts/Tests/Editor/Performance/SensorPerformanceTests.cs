@@ -110,7 +110,7 @@ namespace MLAgentsExamples.Tests.Performance
             var behaviorParams = agent.GetComponent<BehaviorParameters>();
             behaviorParams.BrainParameters.VectorObservationSize = obsSize;
             behaviorParams.ObservableAttributeHandling = obsOptions;
-
+            agent.Awake();
             agent.LazyInitialize();
             for (var i = 0; i < numSteps; i++)
             {
@@ -148,9 +148,9 @@ namespace MLAgentsExamples.Tests.Performance
         public void TestObservablePropertyAgent()
         {
             Measure.Method(() =>
-                {
-                    RunAgent<ObservablePropertyAgent>(k_NumAgentSteps, 0, ObservableAttributeOptions.ExcludeInherited);
-                })
+            {
+                RunAgent<ObservablePropertyAgent>(k_NumAgentSteps, 0, ObservableAttributeOptions.ExcludeInherited);
+            })
                 .MeasurementCount(k_MeasurementCount)
                 .GC()
                 .Run();
