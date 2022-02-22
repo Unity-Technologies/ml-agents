@@ -12,6 +12,9 @@ jobs:
     runs-on: [self-hosted, Linux, X64]
     steps:
     - uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.GHE_ACCESS_TOKEN }}
+        submodules: recursive
     - uses: actions/setup-python@v2
     - uses: actions/setup-node@v2
       with:
