@@ -41,7 +41,10 @@ echo from .${FILE%.py} import \* >> $DST_DIR_P/$PYTHON_PACKAGE/__init__.py
 done
 
 # Surround UnityToExternal.cs file with macro
-echo "#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+echo "#if UNITY_EDITOR || UNITY_STANDALONE
+#define MLA_SUPPORTED_TRAINING_PLATFORM
+#endif
+#if MLA_SUPPORTED_TRAINING_PLATFORM
 `cat $DST_DIR_C/UnityToExternalGrpc.cs`
 #endif" > $DST_DIR_C/UnityToExternalGrpc.cs
 

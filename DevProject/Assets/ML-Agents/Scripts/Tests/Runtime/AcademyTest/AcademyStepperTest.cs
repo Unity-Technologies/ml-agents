@@ -15,8 +15,11 @@ namespace Tests
         [SetUp]
         public void Setup()
         {
+            // We need register the communicator first before accessing the Academy.
+            CommunicatorFactory.Register<ICommunicator>(RpcCommunicator.Create);
             Academy.Instance.Dispose();
             SceneManager.LoadScene("ML-Agents/Scripts/Tests/Runtime/AcademyTest/AcademyStepperTestScene");
+            var academy = Academy.Instance;
         }
 
         /// <summary>
