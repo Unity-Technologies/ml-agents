@@ -5,16 +5,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Sensors;
 
 public class PushAgentCollabWithComms : Agent
 {
 
     private PushBlockSettings m_PushBlockSettings;
     private Rigidbody m_AgentRb;  //cached on initialization
+    private PushBlockEnvControllerWithComms envController;
+    public float[] previousMessage = new float[4];
 
     protected override void Awake()
     {
         base.Awake();
+        envController = GetComponentInParent<PushBlockEnvControllerWithComms>();
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
     }
 
@@ -46,6 +50,18 @@ public class PushAgentCollabWithComms : Agent
             ForceMode.VelocityChange);
     }
 
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        foreach (var item in envController.AgentsList)
+        {
+            if (item.Agent != this)
+            {
+                sensor.AddObservation(item.Agent.previousMessage);
+            }
+        }
+    }
+
     // [SerializeField]
     // public float[,,,] word = new float[0,0,0,0];
     // public float[,,,] sentence = new float[0,0,0,0];
@@ -61,6 +77,12 @@ public class PushAgentCollabWithComms : Agent
         // Move the agent using the action.
         MoveAgent(actionBuffers);
 
+        var branch0 = actionBuffers.DiscreteActions[0];
+        var branch1 = actionBuffers.DiscreteActions[1];
+        var branch2 = actionBuffers.DiscreteActions[2];
+        var branch3 = actionBuffers.DiscreteActions[3];
+
+        previousMessage = new float[] { branch0, branch1, branch2, branch3 };
         /*  sentence [ [0,0,1,0], [1,0,1,0] ]
                 word [0,1,0,0]
                     letters 0 || 1
