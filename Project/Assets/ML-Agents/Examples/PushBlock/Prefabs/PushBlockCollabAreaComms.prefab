@@ -1034,7 +1034,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 8
+    VectorObservationSize: 32
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 3
@@ -1069,6 +1069,26 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   previousMessage:
+  - 0
+  - 0
+  - 0
+  - 0
+  m0:
+  - 0
+  - 0
+  - 0
+  - 0
+  m1:
+  - 0
+  - 0
+  - 0
+  - 0
+  m2:
+  - 0
+  - 0
+  - 0
+  - 0
+  m3:
   - 0
   - 0
   - 0
@@ -1682,7 +1702,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 8
+    VectorObservationSize: 32
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 3
@@ -1717,6 +1737,26 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   previousMessage:
+  - 0
+  - 0
+  - 0
+  - 0
+  m0:
+  - 0
+  - 0
+  - 0
+  - 0
+  m1:
+  - 0
+  - 0
+  - 0
+  - 0
+  m2:
+  - 0
+  - 0
+  - 0
+  - 0
+  m3:
   - 0
   - 0
   - 0
@@ -3837,7 +3877,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 8
+    VectorObservationSize: 32
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 3
@@ -3872,6 +3912,26 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   previousMessage:
+  - 0
+  - 0
+  - 0
+  - 0
+  m0:
+  - 0
+  - 0
+  - 0
+  - 0
+  m1:
+  - 0
+  - 0
+  - 0
+  - 0
+  m2:
+  - 0
+  - 0
+  - 0
+  - 0
+  m3:
   - 0
   - 0
   - 0
