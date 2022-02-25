@@ -14,10 +14,10 @@ public class PushAgentCollabWithComms : Agent
     private Rigidbody m_AgentRb;  //cached on initialization
     private PushBlockEnvControllerWithComms envController;
     public float[] previousMessage = new float[4];
-    public float[] m0 = new float[4];
-    public float[] m1 = new float[4];
-    public float[] m2 = new float[4];
-    public float[] m3 = new float[4];
+    public float[] message0 = new float[4];
+    public float[] message1 = new float[4];
+    public float[] message2 = new float[4];
+    public float[] message3 = new float[4];
 
     protected override void Awake()
     {
@@ -62,10 +62,10 @@ public class PushAgentCollabWithComms : Agent
             if (item.Agent != this)
             {
                 // sensor.AddObservation(item.Agent.previousMessage);
-                sensor.AddObservation(item.Agent.m0);
-                sensor.AddObservation(item.Agent.m1);
-                sensor.AddObservation(item.Agent.m2);
-                sensor.AddObservation(item.Agent.m3);
+                sensor.AddObservation(item.Agent.message0);
+                sensor.AddObservation(item.Agent.message1);
+                sensor.AddObservation(item.Agent.message2);
+                sensor.AddObservation(item.Agent.message3);
             }
         }
     }
@@ -89,22 +89,22 @@ public class PushAgentCollabWithComms : Agent
         var branch1 = actionBuffers.DiscreteActions[1];
         var branch2 = actionBuffers.DiscreteActions[2];
         var branch3 = actionBuffers.DiscreteActions[3];
-        previousMessage = new float[] { branch0, branch1, branch2, branch3 };
+        // previousMessage = new float[] { branch0, branch1, branch2, branch3 };
 
 
 
-        var b0 = new float[] { 0, 0, 0, 0 };
-        var b1 = new float[] { 0, 0, 0, 0 };
-        var b2 = new float[] { 0, 0, 0, 0 };
-        var b3 = new float[] { 0, 0, 0, 0 };
-        b0[branch0] = 1;
-        b1[branch1] = 1;
-        b2[branch2] = 1;
-        b3[branch3] = 1;
-        m0 = b0;
-        m1 = b1;
-        m2 = b2;
-        m3 = b3;
+        var word0 = new float[] { 0, 0, 0, 0 };
+        var word1 = new float[] { 0, 0, 0, 0 };
+        var word2 = new float[] { 0, 0, 0, 0 };
+        var word3 = new float[] { 0, 0, 0, 0 };
+        word0[branch0] = 1;
+        word1[branch1] = 1;
+        word2[branch2] = 1;
+        word3[branch3] = 1;
+        message0 = word0;
+        message1 = word1;
+        message2 = word2;
+        message3 = word3;
 
 
 
