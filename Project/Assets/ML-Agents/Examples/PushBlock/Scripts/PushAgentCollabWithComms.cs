@@ -1,4 +1,7 @@
 //Put this script on your blue cube.
+
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -43,6 +46,12 @@ public class PushAgentCollabWithComms : Agent
             ForceMode.VelocityChange);
     }
 
+    // [SerializeField]
+    // public float[,,,] word = new float[0,0,0,0];
+    // public float[,,,] sentence = new float[0,0,0,0];
+
+    // public List<float, float> messageList = new List<float, float>;
+    // public [][] x =
     /// <summary>
     /// Called every step of the engine. Here the agent takes an action.
     /// </summary>
@@ -51,7 +60,42 @@ public class PushAgentCollabWithComms : Agent
     {
         // Move the agent using the action.
         MoveAgent(actionBuffers);
+
+        /*  sentence [ [0,0,1,0], [1,0,1,0] ]
+                word [0,1,0,0]
+                    letters 0 || 1
+        */
+
+        //branch0
+        // actionBuffers.DiscreteActions[0]
+        // messageArray[0,1,0,0] = 4;
+        // BitArray bitArray = new BitArray(4);
+        // for (float i = 0; i < 2; i++)
+        // {
+        //     for (float j = 0; j < 2; j++)
+        //     {
+        //         for (float k = 0; k < 2; k++)
+        //         {
+        //             for (float l = 0; l < 2; l++)
+        //             {
+        //                var x = new float[,,,]{i,j,k,l};
+        //             }
+        //         }
+        //     }
+        // }
+
+        // //option1
+        // float[] message0 = new float[] {0,0,0,0};
+        // float[] message1 = new float[] {1,0,0,0};
+        //
+        // discreteAction[0] = message0;
+        // discreteAction[1] = message1;
+        // //option2
+        // var m0p0, m0p1, m0p2, m0p3 = 0
+        // float[] message0 = [m0p0,m0p1,m0p2,m0p3];
+
     }
+
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
