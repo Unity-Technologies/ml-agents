@@ -57,6 +57,9 @@ public class PushAgentCollabWithComms : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
+        sensor.AddObservation(transform.localPosition.x);
+        sensor.AddObservation(transform.localPosition.z);
+        sensor.AddObservation(transform.localRotation.y/360);
         foreach (var item in envController.AgentsList)
         {
             if (item.Agent != this)

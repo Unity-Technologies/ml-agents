@@ -1034,7 +1034,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 32
+    VectorObservationSize: 35
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 3
@@ -1073,22 +1073,22 @@ MonoBehaviour:
   - 0
   - 0
   - 0
-  m0:
+  message0:
   - 0
   - 0
   - 0
   - 0
-  m1:
+  message1:
   - 0
   - 0
   - 0
   - 0
-  m2:
+  message2:
   - 0
   - 0
   - 0
   - 0
-  m3:
+  message3:
   - 0
   - 0
   - 0
@@ -1702,7 +1702,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 32
+    VectorObservationSize: 35
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 3
@@ -1741,22 +1741,22 @@ MonoBehaviour:
   - 0
   - 0
   - 0
-  m0:
+  message0:
   - 0
   - 0
   - 0
   - 0
-  m1:
+  message1:
   - 0
   - 0
   - 0
   - 0
-  m2:
+  message2:
   - 0
   - 0
   - 0
   - 0
-  m3:
+  message3:
   - 0
   - 0
   - 0
@@ -3877,7 +3877,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 32
+    VectorObservationSize: 35
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 3
@@ -3916,22 +3916,22 @@ MonoBehaviour:
   - 0
   - 0
   - 0
-  m0:
+  message0:
   - 0
   - 0
   - 0
   - 0
-  m1:
+  message1:
   - 0
   - 0
   - 0
   - 0
-  m2:
+  message2:
   - 0
   - 0
   - 0
   - 0
-  m3:
+  message3:
   - 0
   - 0
   - 0
