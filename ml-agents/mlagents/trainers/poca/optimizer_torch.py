@@ -292,14 +292,23 @@ class TorchPOCAOptimizer(TorchOptimizer):
             baseline_memories = torch.stack(baseline_memories).unsqueeze(0)
         comm_actions = []
         for i, _prev_obs in enumerate(prev_group_obs):
-            _comm = self.policy.get_comms(_prev_obs, act_masks)[0]
-            comm_actions.append(_comm)
+            _comms = self.policy.get_comms(_prev_obs, act_masks)
+            # for multiple branches of comms
+            if len(_comms) > 1:
+                _comm_tens = torch.cat(_comms, dim=1)
+            # if there is only one branch
+            else:
+                _comm_tens = _comms[0]
+            comm_actions.append(_comm_tens)
 
-        comm_tensor = torch.cat(comm_actions, dim=1)
-        one_hot_diff_comms = current_obs[-1] - comm_tensor.detach() + comm_tensor
+        all_comm_tensor = torch.cat(comm_actions, dim=1)
+        one_hot_diff_comms = current_obs[-1] - all_comm_tensor.detach() + all_comm_tensor
 
         current_obs_with_comm_grad = []
-        current_obs_with_comm_grad.append(current_obs[0])
+        # assumes last obs is comm obs, will break if not true
+        for _ob in current_obs[:-1]:
+            current_obs_with_comm_grad.append(_ob)
+
         current_obs_with_comm_grad.append(one_hot_diff_comms)
         log_probs, entropy = self.policy.evaluate_actions(
             current_obs_with_comm_grad,
