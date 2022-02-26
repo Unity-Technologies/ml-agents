@@ -317,7 +317,8 @@ class TorchPOCAOptimizer(TorchOptimizer):
             memories=memories,
             seq_len=self.policy.sequence_length,
         )
-        #grad_of_comm = torch.autograd.grad(torch.mean(log_probs.flatten()), comm_tensor, create_graph=True))
+        grad_of_comm = torch.autograd.grad(torch.mean(log_probs.flatten()), all_comm_tensor, create_graph=True)
+        
         all_obs = [current_obs] + groupmate_obs
         values, _ = self.critic.critic_pass(
             all_obs,
@@ -370,6 +371,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
             "Policy/Learning Rate": decay_lr,
             "Policy/Epsilon": decay_eps,
             "Policy/Beta": decay_bet,
+            "Policy/Grad of Comm": torch.mean(torch.sum(grad_of_comm[0] ** 2, dim=1)).item(),
         }
 
         for reward_provider in self.reward_signals.values():
