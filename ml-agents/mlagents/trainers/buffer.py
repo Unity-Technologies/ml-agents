@@ -54,6 +54,7 @@ class ObservationKeyPrefix(enum.Enum):
     OBSERVATION = "obs"
     NEXT_OBSERVATION = "next_obs"
 
+    PREV_GROUP_OBSERVATION = "prev_group_obs"
     GROUP_OBSERVATION = "group_obs"
     NEXT_GROUP_OBSERVATION = "next_group_obs"
 

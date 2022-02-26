@@ -212,6 +212,10 @@ class ActionModel(nn.Module):
             deterministic_discrete_out,
         )
 
+    def get_comms(self, inputs: torch.Tensor, masks: torch.Tensor) -> torch.Tensor:
+        comms = self._discrete_distribution.differentiable_forward(inputs, masks)
+        return comms
+
     def forward(
         self, inputs: torch.Tensor, masks: torch.Tensor
     ) -> Tuple[AgentAction, ActionLogProbs, torch.Tensor]:

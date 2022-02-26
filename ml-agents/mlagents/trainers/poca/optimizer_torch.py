@@ -34,6 +34,7 @@ from mlagents.trainers.settings import NetworkSettings
 from mlagents_envs.logging_util import get_logger
 
 logger = get_logger(__name__)
+torch.set_printoptions(threshold=10000)
 
 
 class TorchPOCAOptimizer(TorchOptimizer):
@@ -256,6 +257,11 @@ class TorchPOCAOptimizer(TorchOptimizer):
             [ModelUtils.list_to_tensor(obs) for obs in _groupmate_obs]
             for _groupmate_obs in groupmate_obs
         ]
+        prev_group_obs = GroupObsUtil.prev_from_buffer(batch, n_obs)
+        prev_group_obs = [
+            [ModelUtils.list_to_tensor(obs) for obs in _prev_obs]
+            for _prev_obs in prev_group_obs
+        ]
 
         act_masks = ModelUtils.list_to_tensor(batch[BufferKey.ACTION_MASK])
         actions = AgentAction.from_buffer(batch)
@@ -284,14 +290,25 @@ class TorchPOCAOptimizer(TorchOptimizer):
         if len(value_memories) > 0:
             value_memories = torch.stack(value_memories).unsqueeze(0)
             baseline_memories = torch.stack(baseline_memories).unsqueeze(0)
+        comm_actions = []
+        for i, _prev_obs in enumerate(prev_group_obs):
+            _comm = self.policy.get_comms(_prev_obs, act_masks)[0]
+            comm_actions.append(_comm)
 
+        comm_tensor = torch.cat(comm_actions, dim=1)
+        one_hot_diff_comms = current_obs[-1] - comm_tensor.detach() + comm_tensor
+
+        current_obs_with_comm_grad = []
+        current_obs_with_comm_grad.append(current_obs[0])
+        current_obs_with_comm_grad.append(one_hot_diff_comms)
         log_probs, entropy = self.policy.evaluate_actions(
-            current_obs,
+            current_obs_with_comm_grad,
             masks=act_masks,
             actions=actions,
             memories=memories,
             seq_len=self.policy.sequence_length,
         )
+        #grad_of_comm = torch.autograd.grad(torch.mean(log_probs.flatten()), comm_tensor, create_graph=True))
         all_obs = [current_obs] + groupmate_obs
         values, _ = self.critic.critic_pass(
             all_obs,

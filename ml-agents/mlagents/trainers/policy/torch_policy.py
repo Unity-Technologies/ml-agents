@@ -114,6 +114,17 @@ class TorchPolicy(Policy):
         if self.normalize:
             self.actor.update_normalization(buffer)
 
+    def get_comms(
+        self,
+        obs: List[torch.Tensor],
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        seq_len: int = 1,
+    ) -> Tuple[torch.Tensor]:
+
+        comms = self.actor.get_comms(obs, masks, memories, seq_len)
+        return comms
+
     @timed
     def sample_actions(
         self,

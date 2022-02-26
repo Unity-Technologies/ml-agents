@@ -58,6 +58,7 @@ class AgentProcessor:
             GlobalAgentId, List[AgentExperience]
         ] = defaultdict(list)
         self._last_step_result: Dict[GlobalAgentId, Tuple[DecisionStep, int]] = {}
+        self._last_last_step_result: Dict[GlobalAgentId, Tuple[DecisionStep, int]] = {}
         # current_group_obs is used to collect the current (i.e. the most recently seen)
         # obs of all the agents in the same group, and assemble the group obs.
         # It is a dictionary of GlobalGroupId to dictionaries of GlobalAgentId to observation.
@@ -70,6 +71,10 @@ class AgentProcessor:
         self._group_status: Dict[
             GlobalGroupId, Dict[GlobalAgentId, AgentStatus]
         ] = defaultdict(lambda: defaultdict(None))
+        self._last_group_obs: Dict[
+            GlobalGroupId, Dict[GlobalAgentId, List[np.ndarray]]
+        ] = defaultdict(lambda: defaultdict(list))
+
         # last_take_action_outputs stores the action a_t taken before the current observation s_(t+1), while
         # grabbing previous_action from the policy grabs the action PRIOR to that, a_(t-1).
         self._last_take_action_outputs: Dict[GlobalAgentId, ActionInfoOutputs] = {}
@@ -163,6 +168,10 @@ class AgentProcessor:
             global group id.
         """
         global_agent_id = get_global_agent_id(worker_id, step.agent_id)
+        last_stored_decision_step, idx = self._last_last_step_result.get(
+            global_agent_id, (None, None)
+        )
+
         stored_decision_step, idx = self._last_step_result.get(
             global_agent_id, (None, None)
         )
@@ -187,6 +196,9 @@ class AgentProcessor:
                 )
                 self._group_status[global_group_id][global_agent_id] = group_status
                 self._current_group_obs[global_group_id][global_agent_id] = step.obs
+
+                if last_stored_decision_step is not None:
+                    self._last_group_obs[global_group_id][global_agent_id] = last_stored_decision_step.obs
 
     def _clear_group_status_and_obs(self, global_id: GlobalAgentId) -> None:
         """
@@ -215,6 +227,11 @@ class AgentProcessor:
             global_agent_id, None
         )
         if not terminated:
+            if global_agent_id in self._last_step_result:
+                self._last_last_step_result[global_agent_id] = self._last_step_result[global_agent_id]
+            #for the first obs
+            else:
+                self._last_last_step_result[global_agent_id] = (None, 0)
             # Index is needed to grab from last_take_action_outputs
             self._last_step_result[global_agent_id] = (step, index)
 
@@ -243,9 +260,14 @@ class AgentProcessor:
 
             # Assemble teammate_obs. If none saved, then it will be an empty list.
             group_statuses = []
+            previous_group_obs = []
             for _id, _mate_status in self._group_status[global_group_id].items():
                 if _id != global_agent_id:
                     group_statuses.append(_mate_status)
+            for _id, _prev_mate_obs in self._last_group_obs[global_group_id].items():
+                if _id != global_agent_id:
+                    previous_group_obs.append(_prev_mate_obs)
+                    
 
             experience = AgentExperience(
                 obs=obs,
@@ -259,6 +281,7 @@ class AgentProcessor:
                 memory=memory,
                 group_status=group_statuses,
                 group_reward=step.group_reward,
+                prev_group_obs=previous_group_obs
             )
             # Add the value outputs if needed
             self._experience_buffers[global_agent_id].append(experience)
@@ -303,6 +326,7 @@ class AgentProcessor:
         self._safe_delete(self._experience_buffers, global_id)
         self._safe_delete(self._last_take_action_outputs, global_id)
         self._safe_delete(self._last_step_result, global_id)
+        self._safe_delete(self._last_last_step_result, global_id)
         self._safe_delete(self._episode_steps, global_id)
         self._safe_delete(self._episode_rewards, global_id)
         self.policy.remove_previous_action([global_id])

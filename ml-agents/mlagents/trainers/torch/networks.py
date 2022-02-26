@@ -656,6 +656,21 @@ class SimpleActor(nn.Module, Actor):
 
         return log_probs, entropies
 
+    def get_comms(
+        self,
+        inputs: List[torch.Tensor],
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Tuple[torch.Tensor]:
+
+        encoding, memories_out = self.network_body(
+            inputs, memories=memories, sequence_length=sequence_length
+        )
+        comms = self.action_model.get_comms(encoding, masks)
+        return comms
+
+
     def forward(
         self,
         inputs: List[torch.Tensor],

@@ -192,6 +192,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PushBlockCollabAreaComms (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 4299010229118584598, guid: 1eadc24e2f1104faba82d5986e55768d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1eadc24e2f1104faba82d5986e55768d, type: 3}
 --- !u!1 &255077123
@@ -431,6 +436,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PushBlockCollabAreaComms (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 4299010229118584598, guid: 1eadc24e2f1104faba82d5986e55768d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1eadc24e2f1104faba82d5986e55768d, type: 3}
 --- !u!1001 &810298282
@@ -499,6 +509,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PushBlockCollabAreaComms (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4299010229118584598, guid: 1eadc24e2f1104faba82d5986e55768d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1eadc24e2f1104faba82d5986e55768d, type: 3}
@@ -770,6 +785,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PushBlockCollabAreaComms (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 4299010229118584598, guid: 1eadc24e2f1104faba82d5986e55768d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1eadc24e2f1104faba82d5986e55768d, type: 3}
 --- !u!1001 &1795077399
@@ -838,6 +858,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PushBlockCollabAreaComms (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4299010229118584598, guid: 1eadc24e2f1104faba82d5986e55768d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1eadc24e2f1104faba82d5986e55768d, type: 3}

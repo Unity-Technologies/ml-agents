@@ -236,6 +236,21 @@ class MultiCategoricalDistribution(nn.Module):
             split_masks.append(masks[:, start:end])
         return split_masks
 
+    def differentiable_forward(
+        self, inputs: torch.Tensor, masks: torch.Tensor
+    ) -> List[DistInstance]:
+        # Todo - Support multiple branches in mask code
+        branch_distributions = []
+        masks = self._split_masks(masks)
+        for idx, branch in enumerate(self.branches):
+            logits = branch(inputs)
+            norm_logits = self._mask_branch(logits, masks[idx])
+            distribution = torch.nn.functional.gumbel_softmax(
+                norm_logits, hard=False, dim=1
+            )
+            branch_distributions.append(distribution)
+        return branch_distributions
+
     def forward(self, inputs: torch.Tensor, masks: torch.Tensor) -> List[DistInstance]:
         # Todo - Support multiple branches in mask code
         branch_distributions = []

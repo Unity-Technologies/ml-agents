@@ -41,6 +41,7 @@ class AgentExperience(NamedTuple):
     memory: np.ndarray
     group_status: List[AgentStatus]
     group_reward: float
+    prev_group_obs: List[List[np.ndarray]]
 
 
 class ObsUtil:
@@ -80,6 +81,14 @@ class ObsUtil:
 
 
 class GroupObsUtil:
+
+    @staticmethod
+    def get_prev_name_at(index: int) -> AgentBufferKey:
+        """
+        returns the name of the observation given the index of the observation
+        """
+        return ObservationKeyPrefix.PREV_GROUP_OBSERVATION, index
+
     @staticmethod
     def get_name_at(index: int) -> AgentBufferKey:
         """
@@ -99,6 +108,21 @@ class GroupObsUtil:
         list_list: List[List[np.ndarray]],
     ) -> List[List[np.ndarray]]:
         return list(map(list, zip(*list_list)))
+
+    @staticmethod
+    def prev_from_buffer(batch: AgentBuffer, num_obs: int) -> List[np.array]:
+        """
+        Creates the list of observations from an AgentBuffer
+        """
+        separated_obs: List[np.array] = []
+        for i in range(num_obs):
+            separated_obs.append(
+                batch[GroupObsUtil.get_prev_name_at(i)].padded_to_batch(pad_value=0)
+            )
+        # separated_obs contains a List(num_obs) of Lists(num_agents), we want to flip
+        # that and get a List(num_agents) of Lists(num_obs)
+        result = GroupObsUtil._transpose_list_of_lists(separated_obs)
+        return result
 
     @staticmethod
     def from_buffer(batch: AgentBuffer, num_obs: int) -> List[np.array]:
@@ -215,6 +239,15 @@ class Trajectory(NamedTuple):
                 agent_buffer_trajectory[GroupObsUtil.get_name_at(i)].append(
                     ith_group_obs
                 )
+                ith_prev_obs = []
+                for _prev_group_obs in exp.prev_group_obs:
+                    # Assume teammates have same obs space
+                    ith_prev_obs.append(_prev_group_obs[i])
+                agent_buffer_trajectory[GroupObsUtil.get_prev_name_at(i)].append(
+                    ith_prev_obs
+                )
+
+
 
                 ith_group_obs_next = []
                 if is_last_step:
