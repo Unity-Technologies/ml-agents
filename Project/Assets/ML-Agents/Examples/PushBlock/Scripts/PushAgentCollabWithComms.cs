@@ -16,8 +16,8 @@ public class PushAgentCollabWithComms : Agent
     public float[] previousMessage = new float[4];
     public float[] message0 = new float[4];
     public float[] message1 = new float[4];
-    public float[] message2 = new float[4];
-    public float[] message3 = new float[4];
+//    public float[] message2 = new float[4];
+//    public float[] message3 = new float[4];
 
     protected override void Awake()
     {
@@ -57,9 +57,6 @@ public class PushAgentCollabWithComms : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(transform.localPosition.x);
-        sensor.AddObservation(transform.localPosition.z);
-        sensor.AddObservation(transform.localRotation.y/360);
         foreach (var item in envController.AgentsList)
         {
             if (item.Agent != this)
@@ -67,8 +64,8 @@ public class PushAgentCollabWithComms : Agent
                 // sensor.AddObservation(item.Agent.previousMessage);
                 sensor.AddObservation(item.Agent.message0);
                 sensor.AddObservation(item.Agent.message1);
-                sensor.AddObservation(item.Agent.message2);
-                sensor.AddObservation(item.Agent.message3);
+        //        sensor.AddObservation(item.Agent.message2);
+        //        sensor.AddObservation(item.Agent.message3);
             }
         }
     }
@@ -90,24 +87,24 @@ public class PushAgentCollabWithComms : Agent
 
         var branch0 = actionBuffers.DiscreteActions[0];
         var branch1 = actionBuffers.DiscreteActions[1];
-        var branch2 = actionBuffers.DiscreteActions[2];
-        var branch3 = actionBuffers.DiscreteActions[3];
+        //var branch2 = actionBuffers.DiscreteActions[2];
+        //var branch3 = actionBuffers.DiscreteActions[3];
         // previousMessage = new float[] { branch0, branch1, branch2, branch3 };
 
 
 
         var word0 = new float[] { 0, 0, 0, 0 };
         var word1 = new float[] { 0, 0, 0, 0 };
-        var word2 = new float[] { 0, 0, 0, 0 };
-        var word3 = new float[] { 0, 0, 0, 0 };
+        //var word2 = new float[] { 0, 0, 0, 0 };
+        //var word3 = new float[] { 0, 0, 0, 0 };
         word0[branch0] = 1;
         word1[branch1] = 1;
-        word2[branch2] = 1;
-        word3[branch3] = 1;
+        //word2[branch2] = 1;
+        //word3[branch3] = 1;
         message0 = word0;
         message1 = word1;
-        message2 = word2;
-        message3 = word3;
+        //message2 = word2;
+        //message3 = word3;
 
 
 

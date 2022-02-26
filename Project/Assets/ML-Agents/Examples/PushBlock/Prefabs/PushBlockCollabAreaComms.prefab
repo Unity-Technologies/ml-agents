@@ -1034,11 +1034,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 35
+    VectorObservationSize: 16
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 3
-      BranchSizes: 04000000040000000400000004000000
+      BranchSizes: 0400000004000000
     VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
@@ -1079,16 +1079,6 @@ MonoBehaviour:
   - 0
   - 0
   message1:
-  - 0
-  - 0
-  - 0
-  - 0
-  message2:
-  - 0
-  - 0
-  - 0
-  - 0
-  message3:
   - 0
   - 0
   - 0
@@ -1702,11 +1692,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 35
+    VectorObservationSize: 16
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 3
-      BranchSizes: 04000000040000000400000004000000
+      BranchSizes: 0400000004000000
     VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
@@ -1747,16 +1737,6 @@ MonoBehaviour:
   - 0
   - 0
   message1:
-  - 0
-  - 0
-  - 0
-  - 0
-  message2:
-  - 0
-  - 0
-  - 0
-  - 0
-  message3:
   - 0
   - 0
   - 0
@@ -3877,11 +3857,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 35
+    VectorObservationSize: 16
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 3
-      BranchSizes: 04000000040000000400000004000000
+      BranchSizes: 0400000004000000
     VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
@@ -3922,16 +3902,6 @@ MonoBehaviour:
   - 0
   - 0
   message1:
-  - 0
-  - 0
-  - 0
-  - 0
-  message2:
-  - 0
-  - 0
-  - 0
-  - 0
-  message3:
   - 0
   - 0
   - 0
