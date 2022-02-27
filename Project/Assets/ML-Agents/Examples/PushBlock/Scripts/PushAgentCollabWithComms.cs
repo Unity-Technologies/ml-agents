@@ -13,6 +13,7 @@ public class PushAgentCollabWithComms : Agent
     private PushBlockSettings m_PushBlockSettings;
     private Rigidbody m_AgentRb;  //cached on initialization
     private PushBlockEnvControllerWithComms envController;
+    private VectorSensorComponent commSensor;
     public float[] previousMessage = new float[4];
     public float[] message0 = new float[4];
     public float[] message1 = new float[4];
@@ -24,6 +25,7 @@ public class PushAgentCollabWithComms : Agent
         base.Awake();
         envController = GetComponentInParent<PushBlockEnvControllerWithComms>();
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
+        commSensor = GetComponent<VectorSensorComponent>();
     }
 
     public override void Initialize()
@@ -57,13 +59,15 @@ public class PushAgentCollabWithComms : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
+        sensor.AddObservation(transform.localPosition.x / 20f);
+        sensor.AddObservation(transform.localPosition.z / 20f);
         foreach (var item in envController.AgentsList)
         {
             if (item.Agent != this)
             {
                 // sensor.AddObservation(item.Agent.previousMessage);
-                sensor.AddObservation(item.Agent.message0);
-                sensor.AddObservation(item.Agent.message1);
+                commSensor.GetSensor().AddObservation(item.Agent.message0);
+                commSensor.GetSensor().AddObservation(item.Agent.message1);
         //        sensor.AddObservation(item.Agent.message2);
         //        sensor.AddObservation(item.Agent.message3);
             }
