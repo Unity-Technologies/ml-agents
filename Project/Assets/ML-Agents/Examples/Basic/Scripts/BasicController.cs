@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.MLAgents;
@@ -25,6 +26,19 @@ public class BasicController : MonoBehaviour
 
     Agent m_Agent;
 
+    public void Awake()
+    {
+        // Since this example does not inherit from the Agent class, explicit registration
+        // of the RpcCommunicator is required. The RPCCommunicator should only be compiled
+        // for Standalone platforms (i.e. Windows, Linux, or Mac)
+#if UNITY_EDITOR || UNITY_STANDALONE
+        if (!CommunicatorFactory.CommunicatorRegistered)
+        {
+            Debug.Log("Registered Communicator.");
+            CommunicatorFactory.Register<ICommunicator>(RpcCommunicator.Create);
+        }
+#endif
+    }
 
     public void OnEnable()
     {

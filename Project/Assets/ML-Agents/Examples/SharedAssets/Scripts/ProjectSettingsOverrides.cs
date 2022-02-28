@@ -9,7 +9,6 @@ namespace Unity.MLAgentsExamples
     /// This can modify some Physics and time-stepping properties, so you
     /// shouldn't copy it into your project unless you know what you're doing.
     /// </summary>
-    [DefaultExecutionOrder(4)]
     public class ProjectSettingsOverrides : MonoBehaviour
     {
         // Original values
