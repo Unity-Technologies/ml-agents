@@ -17,6 +17,7 @@ public class PushAgentCollabWithComms : Agent
     public float[] previousMessage = new float[4];
     public float[] message0 = new float[4];
     public float[] message1 = new float[4];
+//    public int id;
 //    public float[] message2 = new float[4];
 //    public float[] message3 = new float[4];
 
@@ -61,6 +62,11 @@ public class PushAgentCollabWithComms : Agent
     {
         sensor.AddObservation(transform.localPosition.x / 20f);
         sensor.AddObservation(transform.localPosition.z / 20f);
+        sensor.AddObservation(transform.localRotation.y / 360f);
+        sensor.AddObservation(message0);
+        sensor.AddObservation(message1);
+
+        //sensor.AddObservation(id);
         foreach (var item in envController.AgentsList)
         {
             if (item.Agent != this)
