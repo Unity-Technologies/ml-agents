@@ -264,9 +264,11 @@ class AgentProcessor:
             for _id, _mate_status in self._group_status[global_group_id].items():
                 if _id != global_agent_id:
                     group_statuses.append(_mate_status)
-            for _id, _prev_mate_obs in self._last_group_obs[global_group_id].items():
+            for _id, _prev_mate_obs in reversed(self._last_group_obs[global_group_id].items()):
                 if _id != global_agent_id:
                     previous_group_obs.append(_prev_mate_obs)
+                    print(_prev_mate_obs[1])
+            print("fin")
                     
 
             experience = AgentExperience(
