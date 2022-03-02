@@ -18,18 +18,6 @@ public class SymbolSelectWithCommsEnvController : MonoBehaviour
         public Rigidbody Rb;
     }
 
-    // [System.Serializable]
-    // public class BlockInfo
-    // {
-    //     public Transform T;
-    //     [HideInInspector]
-    //     public Vector3 StartingPos;
-    //     [HideInInspector]
-    //     public Quaternion StartingRot;
-    //     [HideInInspector]
-    //     public Rigidbody Rb;
-    // }
-
     /// <summary>
     /// Max Academy steps before this platform resets
     /// </summary>
@@ -37,17 +25,9 @@ public class SymbolSelectWithCommsEnvController : MonoBehaviour
     [Header("Max Environment Steps")] public int MaxEnvironmentSteps = 25000;
 
     /// <summary>
-    /// The area bounds.
-    /// </summary>
-    // [HideInInspector]
-    // public Bounds areaBounds;
-    /// <summary>
     /// The ground. The bounds are used to spawn the elements.
     /// </summary>
     public GameObject ground;
-
-    // public GameObject area;
-
     Material m_GroundMaterial; //cached on Awake()
 
     /// <summary>
@@ -57,7 +37,6 @@ public class SymbolSelectWithCommsEnvController : MonoBehaviour
 
     //List of Agents On Platform
     public PlayerInfo[] AgentsArray = new PlayerInfo[0];
-    //List of Blocks On Platform
     private PushBlockSettings m_PushBlockSettings;
     private SimpleMultiAgentGroup m_AgentGroup;
     void Start()
@@ -94,15 +73,23 @@ public class SymbolSelectWithCommsEnvController : MonoBehaviour
 
         if (done)
         {
+
+            var correctAnswer = AgentsArray[0].Agent.assignedNumber ^ AgentsArray[1].Agent.assignedNumber;
+
+            // //doublecheck xor math in console
+            // print($"Assigned - 0:{AgentsArray[0].Agent.assignedNumber} 1:{AgentsArray[1].Agent.assignedNumber} correct: {correctAnswer}");
+
             //IF SECOND AGENT CHOSE THE SAME AS THE FIRST GIVE IT A REWARD
-            if (AgentsArray[1].Agent.targetChoiceIndex == AgentsArray[0].Agent.targetChoiceIndex)
+            if (AgentsArray[0].Agent.answerChoice == correctAnswer && AgentsArray[1].Agent.answerChoice == correctAnswer)
             {
-                // print("Chose Correctly");
+            // print(
+            //     $"Chose Correctly - 0:{AgentsArray[0].Agent.answerChoice} 1:{AgentsArray[1].Agent.answerChoice} correct: {correctAnswer}");
                 m_AgentGroup.AddGroupReward(1f);
             }
             else
             {
-                // print("Chose Incorrectly");
+            // print(
+            //     $"Chose Incorrectly - 0:{AgentsArray[0].Agent.answerChoice} 1:{AgentsArray[1].Agent.answerChoice} correct: {correctAnswer}");
             }
             m_AgentGroup.EndGroupEpisode();
             // ResetScene();

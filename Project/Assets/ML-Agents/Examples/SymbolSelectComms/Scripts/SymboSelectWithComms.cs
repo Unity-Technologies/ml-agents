@@ -17,20 +17,18 @@ public class SymboSelectWithComms : Agent
     private SymbolSelectWithCommsEnvController envController;
     private VectorSensorComponent commSensor;
     public float[] message0 = new float[]{0,0};
+    public int assignedNumber;
+    // public float[] assignedNumber = new float[]{0,0}; //the tile/number randomly assigned to an agent during an episode
 
     public Transform[] targetArray; //array of possible targets
-    public int targetChoiceIndex; //index array of current selection
-    public bool canChooseNow;
-    public bool hasChosen;
+    public int answerChoice = -1; //the tile/number randomly assigned to an agent during an episode
     public bool hasMovedToTarget;
-    public bool isFirstOne;
     private Vector3 m_StartingPos;
     private Quaternion m_StartingRot;
 
     public override void Initialize()
     {
         base.Initialize();
-        // Cache the agent rb
         m_AgentRb = GetComponent<Rigidbody>();
         envController = GetComponentInParent<SymbolSelectWithCommsEnvController>();
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
@@ -48,13 +46,15 @@ public class SymboSelectWithComms : Agent
 
     void ResetAgent()
     {
+
+        answerChoice = -1;
+        assignedNumber = Random.Range(0,2);
         message0 = new float[] { 0, 0 };
-        canChooseNow = isFirstOne? true : false;
-        hasChosen = false;
         hasMovedToTarget = false;
         transform.SetPositionAndRotation(m_StartingPos, m_StartingRot);
         m_AgentRb.velocity = Vector3.zero;
         m_AgentRb.angularVelocity = Vector3.zero;
+        StartCoroutine(MoveToTarget());
     }
 
     // /// <summary>
@@ -80,30 +80,6 @@ public class SymboSelectWithComms : Agent
     //         ForceMode.VelocityChange);
     // }
 
-    // private void FixedUpdate()
-    // {
-    //     if (canChooseNow && !isFirstOne)
-    //     // if (canChooseNow)
-    //     {
-    //         // //FIRST AGENT WILL CHOOSE RANDOMLY
-    //         // if (isFirstOne)
-    //         // {
-    //         //     targetChoiceIndex = Random.Range(0, 1);
-    //         // }
-    //         //SECOND AGENT WILL NEED TO DECIDE
-    //         // else
-    //         // {
-    //             // if (Academy.Instance.IsCommunicatorOn)
-    //             // {
-    //             //     RequestDecision();
-    //             // }
-    //         // }
-    //         canChooseNow = false;
-    //         hasChosen = true;
-    //     }
-    //
-    // }
-
     // private void OnCollisionEnter(Collision other)
     // {
     //     if (other.gameObject.CompareTag("tile"))
@@ -114,77 +90,70 @@ public class SymboSelectWithComms : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        // print($"CollectedObservations on {transform.name}");
+        var assignedOneHot = assignedNumber == 0 ? new float[] { 1, 0 } : new float[] { 0, 1 };
+        sensor.AddObservation(assignedOneHot); //2bit one-hot
         foreach (var item in envController.AgentsArray)
         {
-            // if (item.Agent != this)
-            // {
+            if (item.Agent != this)
+            {
                 commSensor.GetSensor().AddObservation(item.Agent.message0);
-            // }
+            }
         }
     }
-
-    // [SerializeField]
-    // public float[,,,] word = new float[0,0,0,0];
-    // public float[,,,] sentence = new float[0,0,0,0];
 
     /// <summary>
     /// Called every step of the engine. Here the agent takes an action.
     /// </summary>
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        var selectionBranch = actionBuffers.DiscreteActions[0];
-        var messageBranch = actionBuffers.DiscreteActions[1];
+        var selection = actionBuffers.ContinuousActions[0];
+        answerChoice = selection < 0? 0: 1; //if negative set to zero, positive set to 1
+
+        var messageBranch = actionBuffers.DiscreteActions[0];
         var word0 = new float[]{0,0};
         word0[messageBranch] = 1;
         message0 = word0;
-        if (canChooseNow && !isFirstOne)
-        {
-            canChooseNow = false;
-            hasChosen = true;
-        }
-        if (hasChosen && !canChooseNow)
-        {
-            hasChosen = false;
-            // print(selectionBranch);
-            targetChoiceIndex = selectionBranch;
-            StartCoroutine(MoveToTarget());
-            // m_AgentRb.MovePosition(targetArray[targetChoiceIndex].position);
-            // hasMovedToTarget = true;
-
-        }
     }
+
 
     //MOVE OVER THE COURSE OF 2 FIXEDUPDATE TICS
     IEnumerator MoveToTarget()
     {
         WaitForFixedUpdate wait = new WaitForFixedUpdate();
+        //make some decisions
+        if (Academy.Instance.IsCommunicatorOn){ RequestDecision(); }
         yield return wait;
-        m_AgentRb.MovePosition(targetArray[targetChoiceIndex].position);
+        if (Academy.Instance.IsCommunicatorOn){ RequestDecision(); }
+        yield return wait;
+        if (Academy.Instance.IsCommunicatorOn){ RequestDecision(); }
+        yield return wait;
+
+
+        m_AgentRb.MovePosition(targetArray[answerChoice].position);
         yield return wait;
         hasMovedToTarget = true;
     }
 
-    public override void Heuristic(in ActionBuffers actionsOut)
-    {
-        // if (Input.GetKey(KeyCode.D))
-        // {
-        // print("heuristic");
-        // }
-        var acts = actionsOut.DiscreteActions;
-        if (canChooseNow)
-        {
-            //FIRST AGENT WILL CHOOSE RANDOMLY
-            if (isFirstOne)
-            {
-                canChooseNow = false;
-                hasChosen = true;
-
-                acts[0] = Random.Range(0,2); //SELECTION BRANCH
-                acts[1] = acts[0]; //MESSAGE IS SAME INDEX AS SELECTION
-                //SECOND AGENT CAN NOW CHOOSE
-                envController.AgentsArray[1].Agent.canChooseNow = true;
-            }
-        }
-    }
+    // public override void Heuristic(in ActionBuffers actionsOut)
+    // {
+    //     // if (Input.GetKey(KeyCode.D))
+    //     // {
+    //     // print("heuristic");
+    //     // }
+    //     var acts = actionsOut.DiscreteActions;
+    //     if (canChooseNow)
+    //     {
+    //         //FIRST AGENT WILL CHOOSE RANDOMLY
+    //         if (isFirstOne)
+    //         {
+    //             canChooseNow = false;
+    //             hasChosen = true;
+    //
+    //             acts[0] = Random.Range(0,2); //SELECTION BRANCH
+    //             acts[1] = acts[0]; //MESSAGE IS SAME INDEX AS SELECTION
+    //             //SECOND AGENT CAN NOW CHOOSE
+    //             envController.AgentsArray[1].Agent.canChooseNow = true;
+    //         }
+    //     }
+    // }
 }
