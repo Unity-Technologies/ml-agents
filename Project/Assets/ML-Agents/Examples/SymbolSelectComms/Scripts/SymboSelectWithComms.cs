@@ -80,29 +80,29 @@ public class SymboSelectWithComms : Agent
     //         ForceMode.VelocityChange);
     // }
 
-    private void FixedUpdate()
-    {
-        if (canChooseNow && !isFirstOne)
-        // if (canChooseNow)
-        {
-            // //FIRST AGENT WILL CHOOSE RANDOMLY
-            // if (isFirstOne)
-            // {
-            //     targetChoiceIndex = Random.Range(0, 1);
-            // }
-            //SECOND AGENT WILL NEED TO DECIDE
-            // else
-            // {
-                if (Academy.Instance.IsCommunicatorOn)
-                {
-                    RequestDecision();
-                }
-            // }
-            canChooseNow = false;
-            hasChosen = true;
-        }
-
-    }
+    // private void FixedUpdate()
+    // {
+    //     if (canChooseNow && !isFirstOne)
+    //     // if (canChooseNow)
+    //     {
+    //         // //FIRST AGENT WILL CHOOSE RANDOMLY
+    //         // if (isFirstOne)
+    //         // {
+    //         //     targetChoiceIndex = Random.Range(0, 1);
+    //         // }
+    //         //SECOND AGENT WILL NEED TO DECIDE
+    //         // else
+    //         // {
+    //             // if (Academy.Instance.IsCommunicatorOn)
+    //             // {
+    //             //     RequestDecision();
+    //             // }
+    //         // }
+    //         canChooseNow = false;
+    //         hasChosen = true;
+    //     }
+    //
+    // }
 
     // private void OnCollisionEnter(Collision other)
     // {
@@ -138,6 +138,11 @@ public class SymboSelectWithComms : Agent
         var word0 = new float[]{0,0};
         word0[messageBranch] = 1;
         message0 = word0;
+        if (canChooseNow && !isFirstOne)
+        {
+            canChooseNow = false;
+            hasChosen = true;
+        }
         if (hasChosen && !canChooseNow)
         {
             hasChosen = false;
