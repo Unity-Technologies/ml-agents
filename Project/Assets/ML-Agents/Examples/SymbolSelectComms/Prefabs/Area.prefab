@@ -1337,11 +1337,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 3
+    VectorObservationSize: 5
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 1
-      BranchSizes: 02000000
+      BranchSizes: 04000000
     VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
@@ -1372,6 +1372,8 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   message0:
+  - 0
+  - 0
   - 0
   - 0
   assignedNumber: 0
@@ -1420,7 +1422,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SensorName: ZVectorSensor
-  m_ObservationSize: 2
+  m_ObservationSize: 4
   m_ObservationType: 0
   m_ObservationStacks: 1
 --- !u!1 &2140872240853157189
@@ -2666,11 +2668,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 3
+    VectorObservationSize: 5
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 1
-      BranchSizes: 02000000
+      BranchSizes: 04000000
     VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
@@ -2701,6 +2703,8 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   message0:
+  - 0
+  - 0
   - 0
   - 0
   assignedNumber: 0
@@ -2749,7 +2753,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SensorName: ZVectorSensor
-  m_ObservationSize: 2
+  m_ObservationSize: 4
   m_ObservationType: 0
   m_ObservationStacks: 1
 --- !u!1 &4381665327750774675

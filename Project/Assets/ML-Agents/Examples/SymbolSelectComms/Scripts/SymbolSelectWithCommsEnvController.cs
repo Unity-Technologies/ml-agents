@@ -80,7 +80,7 @@ public class SymbolSelectWithCommsEnvController : MonoBehaviour
             // print($"Assigned - 0:{AgentsArray[0].Agent.assignedNumber} 1:{AgentsArray[1].Agent.assignedNumber} correct: {correctAnswer}");
 
             //IF SECOND AGENT CHOSE THE SAME AS THE FIRST GIVE IT A REWARD
-            if (AgentsArray[0].Agent.answerChoice == correctAnswer && AgentsArray[1].Agent.answerChoice == correctAnswer)
+            if (AgentsArray[0].Agent.answerChoice == AgentsArray[1].Agent.assignedNumber && AgentsArray[1].Agent.answerChoice == AgentsArray[0].Agent.assignedNumber)
             {
             // print(
             //     $"Chose Correctly - 0:{AgentsArray[0].Agent.answerChoice} 1:{AgentsArray[1].Agent.answerChoice} correct: {correctAnswer}");
@@ -95,6 +95,31 @@ public class SymbolSelectWithCommsEnvController : MonoBehaviour
             m_AgentGroup.EndGroupEpisode();
             // ResetScene();
         }
+
+        // if (done)
+        // {
+        //
+        //     var correctAnswer = AgentsArray[0].Agent.assignedNumber ^ AgentsArray[1].Agent.assignedNumber;
+        //
+        //     // //doublecheck xor math in console
+        //     // print($"Assigned - 0:{AgentsArray[0].Agent.assignedNumber} 1:{AgentsArray[1].Agent.assignedNumber} correct: {correctAnswer}");
+        //
+        //     //IF SECOND AGENT CHOSE THE SAME AS THE FIRST GIVE IT A REWARD
+        //     if (AgentsArray[0].Agent.answerChoice == correctAnswer && AgentsArray[1].Agent.answerChoice == correctAnswer)
+        //     {
+        //     // print(
+        //     //     $"Chose Correctly - 0:{AgentsArray[0].Agent.answerChoice} 1:{AgentsArray[1].Agent.answerChoice} correct: {correctAnswer}");
+        //         m_AgentGroup.AddGroupReward(1f);
+        //     }
+        //     else
+        //     {
+        //         m_AgentGroup.AddGroupReward(-1f);
+        //     // print(
+        //     //     $"Chose Incorrectly - 0:{AgentsArray[0].Agent.answerChoice} 1:{AgentsArray[1].Agent.answerChoice} correct: {correctAnswer}");
+        //     }
+        //     m_AgentGroup.EndGroupEpisode();
+        //     // ResetScene();
+        // }
     }
 
     /// <summary>
