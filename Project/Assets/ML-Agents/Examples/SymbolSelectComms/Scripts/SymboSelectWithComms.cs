@@ -25,10 +25,15 @@ public class SymboSelectWithComms : Agent
     public bool hasMovedToTarget;
     private Vector3 m_StartingPos;
     private Quaternion m_StartingRot;
+    public float stepCounter;
 
+    private float[] zeroOneHot = new float[] { 1, 0 };
+    private float[] oneOneHot = new float[] { 0, 1 };
     public override void Initialize()
     {
         base.Initialize();
+        zeroOneHot = new float[] { 1, 0 };
+        oneOneHot = new float[] { 0, 1 };
         m_AgentRb = GetComponent<Rigidbody>();
         envController = GetComponentInParent<SymbolSelectWithCommsEnvController>();
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
@@ -54,6 +59,7 @@ public class SymboSelectWithComms : Agent
         transform.SetPositionAndRotation(m_StartingPos, m_StartingRot);
         m_AgentRb.velocity = Vector3.zero;
         m_AgentRb.angularVelocity = Vector3.zero;
+        stepCounter = 0;
         StartCoroutine(MoveToTarget());
     }
 
@@ -87,10 +93,11 @@ public class SymboSelectWithComms : Agent
     //
     //     }
     // }
-
     public override void CollectObservations(VectorSensor sensor)
     {
-        var assignedOneHot = assignedNumber == 0 ? new float[] { 1, 0 } : new float[] { 0, 1 };
+        sensor.AddObservation(stepCounter); //2bit one-hot
+        stepCounter += .33f;
+        var assignedOneHot = assignedNumber == 0 ? zeroOneHot : oneOneHot;
         sensor.AddObservation(assignedOneHot); //2bit one-hot
         foreach (var item in envController.AgentsArray)
         {

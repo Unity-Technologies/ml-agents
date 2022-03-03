@@ -88,6 +88,7 @@ public class SymbolSelectWithCommsEnvController : MonoBehaviour
             }
             else
             {
+                m_AgentGroup.AddGroupReward(-1f);
             // print(
             //     $"Chose Incorrectly - 0:{AgentsArray[0].Agent.answerChoice} 1:{AgentsArray[1].Agent.answerChoice} correct: {correctAnswer}");
             }

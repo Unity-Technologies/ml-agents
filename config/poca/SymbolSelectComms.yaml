@@ -2,10 +2,10 @@ behaviors:
   SymbolSelectComms:
     trainer_type: poca
     hyperparameters:
-      batch_size: 1024
-      buffer_size: 1024
-      learning_rate: 0.0003
-      beta: 0.01
+      batch_size: 100
+      buffer_size: 1000
+      learning_rate: 0.0004
+      beta: 0.005
       epsilon: 0.2
       lambd: 0.95
       num_epoch: 3
@@ -13,7 +13,7 @@ behaviors:
     network_settings:
       normalize: false
       hidden_units: 256
-      num_layers: 2
+      num_layers: 3
       vis_encode_type: simple
     reward_signals:
       extrinsic:
@@ -21,5 +21,5 @@ behaviors:
         strength: 1.0
     keep_checkpoints: 5
     max_steps: 15000000
-    time_horizon: 64
+    time_horizon: 1000
     summary_freq: 2048
