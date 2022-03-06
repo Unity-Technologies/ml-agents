@@ -30,8 +30,8 @@ public class FoodCollectorAgent : Agent
     public bool contribute;
     public bool useVectorObs;
     [Tooltip("Use only the frozen flag in vector observations. If \"Use Vector Obs\" " +
-             "is checked, this option has no effect. This option is necessary for the " +
-             "VisualFoodCollector scene.")]
+            "is checked, this option has no effect. This option is necessary for the " +
+            "VisualFoodCollector scene.")]
     public bool useVectorFrozenFlag;
 
     EnvironmentParameters m_ResetParams;

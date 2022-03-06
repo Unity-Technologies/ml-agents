@@ -17,13 +17,13 @@ namespace Unity.MLAgents.CommunicatorObjects {
     #region Descriptor
     /// <summary>File descriptor for mlagents_envs/communicator_objects/capabilities.proto</summary>
     public static pbr::FileDescriptor Descriptor {
-      get { return descriptor; }
+    get { return descriptor; }
     }
     private static pbr::FileDescriptor descriptor;
 
     static CapabilitiesReflection() {
-      byte[] descriptorData = global::System.Convert.FromBase64String(
-          string.Concat(
+    byte[] descriptorData = global::System.Convert.FromBase64String(
+        string.Concat(
             "CjVtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2NhcGFiaWxp",
             "dGllcy5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMi7AEKGFVuaXR5UkxD",
             "YXBhYmlsaXRpZXNQcm90bxIaChJiYXNlUkxDYXBhYmlsaXRpZXMYASABKAgS",
@@ -33,11 +33,11 @@ namespace Unity.MLAgents.CommunicatorObjects {
             "Z3RoT2JzZXJ2YXRpb24YBiABKAgSGAoQbXVsdGlBZ2VudEdyb3VwcxgHIAEo",
             "CEIlqgIiVW5pdHkuTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJv",
             "dG8z"));
-      descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+    descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
+        new pbr::FileDescriptor[] { },
+        new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto.Parser, new[]{ "BaseRLCapabilities", "ConcatenatedPngObservations", "CompressedChannelMapping", "HybridActions", "TrainingAnalytics", "VariableLengthObservation", "MultiAgentGroups" }, null, null, null)
-          }));
+        }));
     }
     #endregion
 
@@ -56,36 +56,36 @@ namespace Unity.MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Unity.MLAgents.CommunicatorObjects.CapabilitiesReflection.Descriptor.MessageTypes[0]; }
+    get { return global::Unity.MLAgents.CommunicatorObjects.CapabilitiesReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
+    get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public UnityRLCapabilitiesProto() {
-      OnConstruction();
+    OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public UnityRLCapabilitiesProto(UnityRLCapabilitiesProto other) : this() {
-      baseRLCapabilities_ = other.baseRLCapabilities_;
-      concatenatedPngObservations_ = other.concatenatedPngObservations_;
-      compressedChannelMapping_ = other.compressedChannelMapping_;
-      hybridActions_ = other.hybridActions_;
-      trainingAnalytics_ = other.trainingAnalytics_;
-      variableLengthObservation_ = other.variableLengthObservation_;
-      multiAgentGroups_ = other.multiAgentGroups_;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    baseRLCapabilities_ = other.baseRLCapabilities_;
+    concatenatedPngObservations_ = other.concatenatedPngObservations_;
+    compressedChannelMapping_ = other.compressedChannelMapping_;
+    hybridActions_ = other.hybridActions_;
+    trainingAnalytics_ = other.trainingAnalytics_;
+    variableLengthObservation_ = other.variableLengthObservation_;
+    multiAgentGroups_ = other.multiAgentGroups_;
+    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public UnityRLCapabilitiesProto Clone() {
-      return new UnityRLCapabilitiesProto(this);
+    return new UnityRLCapabilitiesProto(this);
     }
 
     /// <summary>Field number for the "baseRLCapabilities" field.</summary>
@@ -96,10 +96,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool BaseRLCapabilities {
-      get { return baseRLCapabilities_; }
-      set {
+    get { return baseRLCapabilities_; }
+    set {
         baseRLCapabilities_ = value;
-      }
+    }
     }
 
     /// <summary>Field number for the "concatenatedPngObservations" field.</summary>
@@ -110,10 +110,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool ConcatenatedPngObservations {
-      get { return concatenatedPngObservations_; }
-      set {
+    get { return concatenatedPngObservations_; }
+    set {
         concatenatedPngObservations_ = value;
-      }
+    }
     }
 
     /// <summary>Field number for the "compressedChannelMapping" field.</summary>
@@ -124,10 +124,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool CompressedChannelMapping {
-      get { return compressedChannelMapping_; }
-      set {
+    get { return compressedChannelMapping_; }
+    set {
         compressedChannelMapping_ = value;
-      }
+    }
     }
 
     /// <summary>Field number for the "hybridActions" field.</summary>
@@ -138,10 +138,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HybridActions {
-      get { return hybridActions_; }
-      set {
+    get { return hybridActions_; }
+    set {
         hybridActions_ = value;
-      }
+    }
     }
 
     /// <summary>Field number for the "trainingAnalytics" field.</summary>
@@ -152,10 +152,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool TrainingAnalytics {
-      get { return trainingAnalytics_; }
-      set {
+    get { return trainingAnalytics_; }
+    set {
         trainingAnalytics_ = value;
-      }
+    }
     }
 
     /// <summary>Field number for the "variableLengthObservation" field.</summary>
@@ -166,10 +166,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool VariableLengthObservation {
-      get { return variableLengthObservation_; }
-      set {
+    get { return variableLengthObservation_; }
+    set {
         variableLengthObservation_ = value;
-      }
+    }
     }
 
     /// <summary>Field number for the "multiAgentGroups" field.</summary>
@@ -180,188 +180,188 @@ namespace Unity.MLAgents.CommunicatorObjects {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool MultiAgentGroups {
-      get { return multiAgentGroups_; }
-      set {
+    get { return multiAgentGroups_; }
+    set {
         multiAgentGroups_ = value;
-      }
+    }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as UnityRLCapabilitiesProto);
+    return Equals(other as UnityRLCapabilitiesProto);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(UnityRLCapabilitiesProto other) {
-      if (ReferenceEquals(other, null)) {
+    if (ReferenceEquals(other, null)) {
         return false;
-      }
-      if (ReferenceEquals(other, this)) {
+    }
+    if (ReferenceEquals(other, this)) {
         return true;
-      }
-      if (BaseRLCapabilities != other.BaseRLCapabilities) return false;
-      if (ConcatenatedPngObservations != other.ConcatenatedPngObservations) return false;
-      if (CompressedChannelMapping != other.CompressedChannelMapping) return false;
-      if (HybridActions != other.HybridActions) return false;
-      if (TrainingAnalytics != other.TrainingAnalytics) return false;
-      if (VariableLengthObservation != other.VariableLengthObservation) return false;
-      if (MultiAgentGroups != other.MultiAgentGroups) return false;
-      return Equals(_unknownFields, other._unknownFields);
+    }
+    if (BaseRLCapabilities != other.BaseRLCapabilities) return false;
+    if (ConcatenatedPngObservations != other.ConcatenatedPngObservations) return false;
+    if (CompressedChannelMapping != other.CompressedChannelMapping) return false;
+    if (HybridActions != other.HybridActions) return false;
+    if (TrainingAnalytics != other.TrainingAnalytics) return false;
+    if (VariableLengthObservation != other.VariableLengthObservation) return false;
+    if (MultiAgentGroups != other.MultiAgentGroups) return false;
+    return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
-      int hash = 1;
-      if (BaseRLCapabilities != false) hash ^= BaseRLCapabilities.GetHashCode();
-      if (ConcatenatedPngObservations != false) hash ^= ConcatenatedPngObservations.GetHashCode();
-      if (CompressedChannelMapping != false) hash ^= CompressedChannelMapping.GetHashCode();
-      if (HybridActions != false) hash ^= HybridActions.GetHashCode();
-      if (TrainingAnalytics != false) hash ^= TrainingAnalytics.GetHashCode();
-      if (VariableLengthObservation != false) hash ^= VariableLengthObservation.GetHashCode();
-      if (MultiAgentGroups != false) hash ^= MultiAgentGroups.GetHashCode();
-      if (_unknownFields != null) {
+    int hash = 1;
+    if (BaseRLCapabilities != false) hash ^= BaseRLCapabilities.GetHashCode();
+    if (ConcatenatedPngObservations != false) hash ^= ConcatenatedPngObservations.GetHashCode();
+    if (CompressedChannelMapping != false) hash ^= CompressedChannelMapping.GetHashCode();
+    if (HybridActions != false) hash ^= HybridActions.GetHashCode();
+    if (TrainingAnalytics != false) hash ^= TrainingAnalytics.GetHashCode();
+    if (VariableLengthObservation != false) hash ^= VariableLengthObservation.GetHashCode();
+    if (MultiAgentGroups != false) hash ^= MultiAgentGroups.GetHashCode();
+    if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
+    }
+    return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
+    return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (BaseRLCapabilities != false) {
+    if (BaseRLCapabilities != false) {
         output.WriteRawTag(8);
         output.WriteBool(BaseRLCapabilities);
-      }
-      if (ConcatenatedPngObservations != false) {
+    }
+    if (ConcatenatedPngObservations != false) {
         output.WriteRawTag(16);
         output.WriteBool(ConcatenatedPngObservations);
-      }
-      if (CompressedChannelMapping != false) {
+    }
+    if (CompressedChannelMapping != false) {
         output.WriteRawTag(24);
         output.WriteBool(CompressedChannelMapping);
-      }
-      if (HybridActions != false) {
+    }
+    if (HybridActions != false) {
         output.WriteRawTag(32);
         output.WriteBool(HybridActions);
-      }
-      if (TrainingAnalytics != false) {
+    }
+    if (TrainingAnalytics != false) {
         output.WriteRawTag(40);
         output.WriteBool(TrainingAnalytics);
-      }
-      if (VariableLengthObservation != false) {
+    }
+    if (VariableLengthObservation != false) {
         output.WriteRawTag(48);
         output.WriteBool(VariableLengthObservation);
-      }
-      if (MultiAgentGroups != false) {
+    }
+    if (MultiAgentGroups != false) {
         output.WriteRawTag(56);
         output.WriteBool(MultiAgentGroups);
-      }
-      if (_unknownFields != null) {
+    }
+    if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
-      }
+    }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
-      int size = 0;
-      if (BaseRLCapabilities != false) {
+    int size = 0;
+    if (BaseRLCapabilities != false) {
         size += 1 + 1;
-      }
-      if (ConcatenatedPngObservations != false) {
+    }
+    if (ConcatenatedPngObservations != false) {
         size += 1 + 1;
-      }
-      if (CompressedChannelMapping != false) {
+    }
+    if (CompressedChannelMapping != false) {
         size += 1 + 1;
-      }
-      if (HybridActions != false) {
+    }
+    if (HybridActions != false) {
         size += 1 + 1;
-      }
-      if (TrainingAnalytics != false) {
+    }
+    if (TrainingAnalytics != false) {
         size += 1 + 1;
-      }
-      if (VariableLengthObservation != false) {
+    }
+    if (VariableLengthObservation != false) {
         size += 1 + 1;
-      }
-      if (MultiAgentGroups != false) {
+    }
+    if (MultiAgentGroups != false) {
         size += 1 + 1;
-      }
-      if (_unknownFields != null) {
+    }
+    if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
-      }
-      return size;
+    }
+    return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(UnityRLCapabilitiesProto other) {
-      if (other == null) {
+    if (other == null) {
         return;
-      }
-      if (other.BaseRLCapabilities != false) {
+    }
+    if (other.BaseRLCapabilities != false) {
         BaseRLCapabilities = other.BaseRLCapabilities;
-      }
-      if (other.ConcatenatedPngObservations != false) {
+    }
+    if (other.ConcatenatedPngObservations != false) {
         ConcatenatedPngObservations = other.ConcatenatedPngObservations;
-      }
-      if (other.CompressedChannelMapping != false) {
+    }
+    if (other.CompressedChannelMapping != false) {
         CompressedChannelMapping = other.CompressedChannelMapping;
-      }
-      if (other.HybridActions != false) {
+    }
+    if (other.HybridActions != false) {
         HybridActions = other.HybridActions;
-      }
-      if (other.TrainingAnalytics != false) {
+    }
+    if (other.TrainingAnalytics != false) {
         TrainingAnalytics = other.TrainingAnalytics;
-      }
-      if (other.VariableLengthObservation != false) {
+    }
+    if (other.VariableLengthObservation != false) {
         VariableLengthObservation = other.VariableLengthObservation;
-      }
-      if (other.MultiAgentGroups != false) {
+    }
+    if (other.MultiAgentGroups != false) {
         MultiAgentGroups = other.MultiAgentGroups;
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
-          default:
+        default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
+        case 8: {
             BaseRLCapabilities = input.ReadBool();
             break;
-          }
-          case 16: {
+        }
+        case 16: {
             ConcatenatedPngObservations = input.ReadBool();
             break;
-          }
-          case 24: {
+        }
+        case 24: {
             CompressedChannelMapping = input.ReadBool();
             break;
-          }
-          case 32: {
+        }
+        case 32: {
             HybridActions = input.ReadBool();
             break;
-          }
-          case 40: {
+        }
+        case 40: {
             TrainingAnalytics = input.ReadBool();
             break;
-          }
-          case 48: {
+        }
+        case 48: {
             VariableLengthObservation = input.ReadBool();
             break;
-          }
-          case 56: {
+        }
+        case 56: {
             MultiAgentGroups = input.ReadBool();
             break;
-          }
         }
-      }
+        }
+    }
     }
 
   }

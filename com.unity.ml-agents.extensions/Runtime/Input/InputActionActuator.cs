@@ -36,9 +36,9 @@ namespace Unity.MLAgents.Extensions.Input
         ///     and the <see cref="InputSystem"/>.</param>
         /// <param name="inputActuatorEventContext">The object that will provide the event ptr to write to.</param>
         public InputActionActuator(InputDevice inputDevice, BehaviorParameters behaviorParameters,
-                                   InputAction action,
-                                   IRLActionInputAdaptor adaptor,
-                                   InputActuatorEventContext inputActuatorEventContext)
+                                    InputAction action,
+                                    IRLActionInputAdaptor adaptor,
+                                    InputActuatorEventContext inputActuatorEventContext)
         {
             m_BehaviorParameters = behaviorParameters;
             Name = $"InputActionActuator-{action.name}";

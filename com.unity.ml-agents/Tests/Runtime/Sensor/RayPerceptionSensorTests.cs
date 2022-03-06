@@ -52,17 +52,17 @@ namespace Unity.MLAgents.Tests
         void SetupScene()
         {
             /* Creates game objects in the world for testing.
-             *   C is a cube
-             *   S are spheres
-             *   @ is the agent (at the origin)
-             * Each space or line is 5 world units, +x is right, +z is up
-             *
-             *      C
-             *    S   S
-             *      @
-             *
-             *      S
-             */
+            *   C is a cube
+            *   S are spheres
+            *   @ is the agent (at the origin)
+            * Each space or line is 5 world units, +x is right, +z is up
+            *
+            *      C
+            *    S   S
+            *      @
+            *
+            *      S
+            */
             var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cube.transform.position = new Vector3(0, 0, 10);
             cube.tag = k_CubeTag;

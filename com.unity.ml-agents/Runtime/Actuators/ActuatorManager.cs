@@ -393,8 +393,8 @@ namespace Unity.MLAgents.Actuators
         }
 
         /*********************************************************************************
-         * IList implementation that delegates to m_Actuators List.                      *
-         *********************************************************************************/
+        * IList implementation that delegates to m_Actuators List.                      *
+        *********************************************************************************/
 
         /// <inheritdoc/>
         public IEnumerator<IActuator> GetEnumerator()

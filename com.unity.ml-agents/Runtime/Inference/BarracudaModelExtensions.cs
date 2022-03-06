@@ -165,12 +165,12 @@ namespace Unity.MLAgents.Inference
             else
             {
                 bool hasStochasticOutput = !deterministicInference &&
-                                           model.outputs.Contains(TensorNames.ContinuousActionOutput);
+                                            model.outputs.Contains(TensorNames.ContinuousActionOutput);
                 bool hasDeterministicOutput = deterministicInference &&
-                                              model.outputs.Contains(TensorNames.DeterministicContinuousActionOutput);
+                                            model.outputs.Contains(TensorNames.DeterministicContinuousActionOutput);
 
                 return (hasStochasticOutput || hasDeterministicOutput) &&
-                       (int)model.GetTensorByName(TensorNames.ContinuousActionOutputShape)[0] > 0;
+                        (int)model.GetTensorByName(TensorNames.ContinuousActionOutputShape)[0] > 0;
             }
         }
 
@@ -240,11 +240,11 @@ namespace Unity.MLAgents.Inference
             else
             {
                 bool hasStochasticOutput = !deterministicInference &&
-                                           model.outputs.Contains(TensorNames.DiscreteActionOutput);
+                                            model.outputs.Contains(TensorNames.DiscreteActionOutput);
                 bool hasDeterministicOutput = deterministicInference &&
-                                              model.outputs.Contains(TensorNames.DeterministicDiscreteActionOutput);
+                                            model.outputs.Contains(TensorNames.DeterministicDiscreteActionOutput);
                 return (hasStochasticOutput || hasDeterministicOutput) &&
-                       model.DiscreteOutputSize() > 0;
+                        model.DiscreteOutputSize() > 0;
             }
         }
 

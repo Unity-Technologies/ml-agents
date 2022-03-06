@@ -17,13 +17,13 @@ namespace Unity.MLAgents.CommunicatorObjects {
     #region Descriptor
     /// <summary>File descriptor for mlagents_envs/communicator_objects/unity_to_external.proto</summary>
     public static pbr::FileDescriptor Descriptor {
-      get { return descriptor; }
+    get { return descriptor; }
     }
     private static pbr::FileDescriptor descriptor;
 
     static UnityToExternalReflection() {
-      byte[] descriptorData = global::System.Convert.FromBase64String(
-          string.Concat(
+    byte[] descriptorData = global::System.Convert.FromBase64String(
+        string.Concat(
             "CjptbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3VuaXR5X3Rv",
             "X2V4dGVybmFsLnByb3RvEhRjb21tdW5pY2F0b3Jfb2JqZWN0cxo2bWxhZ2Vu",
             "dHNfZW52cy9jb21tdW5pY2F0b3Jfb2JqZWN0cy91bml0eV9tZXNzYWdlLnBy",
@@ -31,9 +31,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
             "bXVuaWNhdG9yX29iamVjdHMuVW5pdHlNZXNzYWdlUHJvdG8aJy5jb21tdW5p",
             "Y2F0b3Jfb2JqZWN0cy5Vbml0eU1lc3NhZ2VQcm90byIAQiWqAiJVbml0eS5N",
             "TEFnZW50cy5Db21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
-      descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Unity.MLAgents.CommunicatorObjects.UnityMessageReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, null));
+    descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
+        new pbr::FileDescriptor[] { global::Unity.MLAgents.CommunicatorObjects.UnityMessageReflection.Descriptor, },
+        new pbr::GeneratedClrTypeInfo(null, null));
     }
     #endregion
 

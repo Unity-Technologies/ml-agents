@@ -26,8 +26,8 @@ namespace Unity.MLAgents.Actuators
         /// <param name="actionSpec"></param>
         /// <param name="name"></param>
         public VectorActuator(IActionReceiver actionReceiver,
-                              ActionSpec actionSpec,
-                              string name = "VectorActuator")
+                            ActionSpec actionSpec,
+                            string name = "VectorActuator")
             : this(actionReceiver, actionReceiver as IHeuristicProvider, actionSpec, name) { }
 
         /// <summary>
@@ -39,9 +39,9 @@ namespace Unity.MLAgents.Actuators
         /// <param name="actionSpec"></param>
         /// <param name="name"></param>
         public VectorActuator(IActionReceiver actionReceiver,
-                              IHeuristicProvider heuristicProvider,
-                              ActionSpec actionSpec,
-                              string name = "VectorActuator")
+                            IHeuristicProvider heuristicProvider,
+                            ActionSpec actionSpec,
+                            string name = "VectorActuator")
         {
             m_ActionReceiver = actionReceiver;
             m_HeuristicProvider = heuristicProvider;

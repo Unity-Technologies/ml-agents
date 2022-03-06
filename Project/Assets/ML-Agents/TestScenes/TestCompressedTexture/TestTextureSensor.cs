@@ -67,4 +67,3 @@ public class TestTextureSensor : ISensor
         return CompressionSpec.Default();
     }
 }
-

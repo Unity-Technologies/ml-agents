@@ -119,8 +119,8 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         {
             var boardString =
                 @"000
-                  000
-                  010";
+                000
+                010";
             var gameObj = new GameObject("board");
             var board = gameObj.AddComponent<StringBoard>();
             board.SetBoard(boardString);
@@ -175,9 +175,9 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
 
             var boardString =
                 @"0105
-                  1024
-                  0203
-                  2022";
+                1024
+                0203
+                2022";
             board.SetBoard(boardString);
             var boardSize = board.GetMaxBoardSize();
             if (!fullBoard)

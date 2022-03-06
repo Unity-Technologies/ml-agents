@@ -10,7 +10,7 @@ using CheckTypeEnum = Unity.MLAgents.Inference.BarracudaModelParamLoader.FailedC
 namespace Unity.MLAgents.Editor
 {
     /*
-     This code is meant to modify the behavior of the inspector on Agent Components.
+    This code is meant to modify the behavior of the inspector on Agent Components.
     */
     [CustomEditor(typeof(BehaviorParameters))]
     [CanEditMultipleObjects]

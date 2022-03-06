@@ -8,4 +8,3 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Extensions")]
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Extensions.Input")]
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Extensions.Tests")]
-

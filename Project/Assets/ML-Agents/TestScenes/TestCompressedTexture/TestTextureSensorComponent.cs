@@ -33,4 +33,3 @@ public class TestTextureSensorComponent : SensorComponent
         return new ISensor[] { m_Sensor };
     }
 }
-

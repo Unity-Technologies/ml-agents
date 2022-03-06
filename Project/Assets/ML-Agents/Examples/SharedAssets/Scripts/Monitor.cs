@@ -355,7 +355,7 @@ namespace Unity.MLAgents
             }
 
             s_DisplayTransformValues = new Dictionary<Transform,
-                                                      Dictionary<string, DisplayValue>>();
+                                                    Dictionary<string, DisplayValue>>();
 
             s_TransformCamera = new Dictionary<Transform, Camera>();
         }

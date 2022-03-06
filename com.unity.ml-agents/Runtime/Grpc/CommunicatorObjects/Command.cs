@@ -17,20 +17,20 @@ namespace Unity.MLAgents.CommunicatorObjects {
     #region Descriptor
     /// <summary>File descriptor for mlagents_envs/communicator_objects/command.proto</summary>
     public static pbr::FileDescriptor Descriptor {
-      get { return descriptor; }
+    get { return descriptor; }
     }
     private static pbr::FileDescriptor descriptor;
 
     static CommandReflection() {
-      byte[] descriptorData = global::System.Convert.FromBase64String(
-          string.Concat(
+    byte[] descriptorData = global::System.Convert.FromBase64String(
+        string.Concat(
             "CjBtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2NvbW1hbmQu",
             "cHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzKi0KDENvbW1hbmRQcm90bxII",
             "CgRTVEVQEAASCQoFUkVTRVQQARIICgRRVUlUEAJCJaoCIlVuaXR5Lk1MQWdl",
             "bnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
-      descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Unity.MLAgents.CommunicatorObjects.CommandProto), }, null));
+    descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
+        new pbr::FileDescriptor[] { },
+        new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Unity.MLAgents.CommunicatorObjects.CommandProto), }, null));
     }
     #endregion
 

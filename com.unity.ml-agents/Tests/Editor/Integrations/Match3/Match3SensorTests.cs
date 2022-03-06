@@ -23,8 +23,8 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         {
             var boardString =
                 @"000
-                  000
-                  010";
+                000
+                010";
             var gameObj = new GameObject("board");
             var board = gameObj.AddComponent<StringBoard>();
             board.SetBoard(boardString);
@@ -69,12 +69,12 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         {
             var boardString =
                 @"000
-                  000
-                  010";
+                000
+                010";
             var specialString =
                 @"010
-                  200
-                  000";
+                200
+                000";
 
             var gameObj = new GameObject("board");
             var board = gameObj.AddComponent<StringBoard>();
@@ -119,8 +119,8 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         {
             var boardString =
                 @"000
-                  000
-                  010";
+                000
+                010";
             var gameObj = new GameObject("board");
             var board = gameObj.AddComponent<StringBoard>();
             board.SetBoard(boardString);
@@ -182,12 +182,12 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         {
             var boardString =
                 @"000
-                  000
-                  010";
+                000
+                010";
             var specialString =
                 @"010
-                  200
-                  000";
+                200
+                000";
 
             var gameObj = new GameObject("board");
             var board = gameObj.AddComponent<StringBoard>();
@@ -266,12 +266,12 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         {
             var boardString =
                 @"003
-                  000
-                  010";
+                000
+                010";
             var specialString =
                 @"014
-                  200
-                  000";
+                200
+                000";
 
             var gameObj = new GameObject("board");
             var board = gameObj.AddComponent<StringBoard>();

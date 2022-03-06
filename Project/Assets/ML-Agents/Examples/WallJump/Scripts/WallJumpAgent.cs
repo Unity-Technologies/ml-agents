@@ -108,8 +108,8 @@ public class WallJumpAgent : Agent
             {
                 if (col != null && col.transform != transform &&
                     (col.CompareTag("walkableSurface") ||
-                     col.CompareTag("block") ||
-                     col.CompareTag("wall")))
+                    col.CompareTag("block") ||
+                    col.CompareTag("wall")))
                 {
                     grounded = true; //then we're grounded
                     break;
@@ -125,8 +125,8 @@ public class WallJumpAgent : Agent
 
             if (hit.collider != null &&
                 (hit.collider.CompareTag("walkableSurface") ||
-                 hit.collider.CompareTag("block") ||
-                 hit.collider.CompareTag("wall"))
+                hit.collider.CompareTag("block") ||
+                hit.collider.CompareTag("wall"))
                 && hit.normal.y > 0.95f)
             {
                 return true;

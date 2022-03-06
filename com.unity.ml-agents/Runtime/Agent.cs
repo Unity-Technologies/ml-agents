@@ -87,9 +87,9 @@ namespace Unity.MLAgents
     internal class AgentVectorActuator : VectorActuator
     {
         public AgentVectorActuator(IActionReceiver actionReceiver,
-                                   IHeuristicProvider heuristicProvider,
-                                   ActionSpec actionSpec,
-                                   string name = "VectorActuator"
+                                    IHeuristicProvider heuristicProvider,
+                                    ActionSpec actionSpec,
+                                    string name = "VectorActuator"
         ) : base(actionReceiver, heuristicProvider, actionSpec, name)
         { }
 

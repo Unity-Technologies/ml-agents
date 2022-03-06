@@ -164,9 +164,9 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
 
             var boardString =
                 @"0105
-                  1024
-                  0203
-                  2022";
+                1024
+                0203
+                2022";
             board.SetBoard(boardString);
             var boardSize = board.GetMaxBoardSize();
             if (!fullBoard)

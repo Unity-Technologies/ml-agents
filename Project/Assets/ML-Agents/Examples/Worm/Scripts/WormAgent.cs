@@ -113,7 +113,7 @@ public class WormAgent : Agent
         var velGoal = cubeForward * m_MaxWalkingSpeed;
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
         sensor.AddObservation(Quaternion.Angle(m_OrientationCube.transform.rotation,
-                                  m_JdController.bodyPartsDict[bodySegment0].rb.rotation) / 180);
+                                m_JdController.bodyPartsDict[bodySegment0].rb.rotation) / 180);
         sensor.AddObservation(Quaternion.FromToRotation(bodySegment0.forward, cubeForward));
 
         //Add pos of target relative to orientation cube

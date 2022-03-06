@@ -25,9 +25,9 @@ namespace Unity.MLAgents.Integrations.Match3
         /// <param name="seed">The seed used to initialize <see cref="System.Random"/>.</param>
         /// <param name="name"></param>
         public Match3Actuator(AbstractBoard board,
-                              bool forceHeuristic,
-                              int seed,
-                              string name)
+                            bool forceHeuristic,
+                            int seed,
+                            string name)
         {
             m_Board = board;
             m_MaxBoardSize = m_Board.GetMaxBoardSize();

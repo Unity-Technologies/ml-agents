@@ -143,8 +143,8 @@ namespace Unity.MLAgents.Editor
             position.x += 20;
             position.width -= 20;
             for (var branchIndex = 0;
-                 branchIndex < branchSizes.arraySize;
-                 branchIndex++)
+                branchIndex < branchSizes.arraySize;
+                branchIndex++)
             {
                 var branchActionSize =
                     branchSizes.GetArrayElementAtIndex(branchIndex);

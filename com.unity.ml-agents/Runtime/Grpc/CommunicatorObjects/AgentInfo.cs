@@ -17,13 +17,13 @@ namespace Unity.MLAgents.CommunicatorObjects {
     #region Descriptor
     /// <summary>File descriptor for mlagents_envs/communicator_objects/agent_info.proto</summary>
     public static pbr::FileDescriptor Descriptor {
-      get { return descriptor; }
+    get { return descriptor; }
     }
     private static pbr::FileDescriptor descriptor;
 
     static AgentInfoReflection() {
-      byte[] descriptorData = global::System.Convert.FromBase64String(
-          string.Concat(
+    byte[] descriptorData = global::System.Convert.FromBase64String(
+        string.Concat(
             "CjNtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2FnZW50X2lu",
             "Zm8ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzGjRtbGFnZW50c19lbnZz",
             "L2NvbW11bmljYXRvcl9vYmplY3RzL29ic2VydmF0aW9uLnByb3RvIvkBCg5B",
@@ -34,11 +34,11 @@ namespace Unity.MLAgents.CommunicatorObjects {
             "KAUSFAoMZ3JvdXBfcmV3YXJkGA8gASgCSgQIARACSgQIAhADSgQIAxAESgQI",
             "BBAFSgQIBRAGSgQIBhAHSgQIDBANQiWqAiJVbml0eS5NTEFnZW50cy5Db21t",
             "dW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
-      descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Unity.MLAgents.CommunicatorObjects.ObservationReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+    descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
+        new pbr::FileDescriptor[] { global::Unity.MLAgents.CommunicatorObjects.ObservationReflection.Descriptor, },
+        new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.AgentInfoProto), global::Unity.MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "Reward", "Done", "MaxStepReached", "Id", "ActionMask", "Observations", "GroupId", "GroupReward" }, null, null, null)
-          }));
+        }));
     }
     #endregion
 
@@ -52,37 +52,37 @@ namespace Unity.MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Unity.MLAgents.CommunicatorObjects.AgentInfoReflection.Descriptor.MessageTypes[0]; }
+    get { return global::Unity.MLAgents.CommunicatorObjects.AgentInfoReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
+    get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public AgentInfoProto() {
-      OnConstruction();
+    OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public AgentInfoProto(AgentInfoProto other) : this() {
-      reward_ = other.reward_;
-      done_ = other.done_;
-      maxStepReached_ = other.maxStepReached_;
-      id_ = other.id_;
-      actionMask_ = other.actionMask_.Clone();
-      observations_ = other.observations_.Clone();
-      groupId_ = other.groupId_;
-      groupReward_ = other.groupReward_;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    reward_ = other.reward_;
+    done_ = other.done_;
+    maxStepReached_ = other.maxStepReached_;
+    id_ = other.id_;
+    actionMask_ = other.actionMask_.Clone();
+    observations_ = other.observations_.Clone();
+    groupId_ = other.groupId_;
+    groupReward_ = other.groupReward_;
+    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public AgentInfoProto Clone() {
-      return new AgentInfoProto(this);
+    return new AgentInfoProto(this);
     }
 
     /// <summary>Field number for the "reward" field.</summary>
@@ -90,10 +90,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     private float reward_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public float Reward {
-      get { return reward_; }
-      set {
+    get { return reward_; }
+    set {
         reward_ = value;
-      }
+    }
     }
 
     /// <summary>Field number for the "done" field.</summary>
@@ -101,10 +101,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     private bool done_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Done {
-      get { return done_; }
-      set {
+    get { return done_; }
+    set {
         done_ = value;
-      }
+    }
     }
 
     /// <summary>Field number for the "max_step_reached" field.</summary>
@@ -112,10 +112,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     private bool maxStepReached_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool MaxStepReached {
-      get { return maxStepReached_; }
-      set {
+    get { return maxStepReached_; }
+    set {
         maxStepReached_ = value;
-      }
+    }
     }
 
     /// <summary>Field number for the "id" field.</summary>
@@ -123,10 +123,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     private int id_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int Id {
-      get { return id_; }
-      set {
+    get { return id_; }
+    set {
         id_ = value;
-      }
+    }
     }
 
     /// <summary>Field number for the "action_mask" field.</summary>
@@ -136,7 +136,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     private readonly pbc::RepeatedField<bool> actionMask_ = new pbc::RepeatedField<bool>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<bool> ActionMask {
-      get { return actionMask_; }
+    get { return actionMask_; }
     }
 
     /// <summary>Field number for the "observations" field.</summary>
@@ -146,7 +146,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     private readonly pbc::RepeatedField<global::Unity.MLAgents.CommunicatorObjects.ObservationProto> observations_ = new pbc::RepeatedField<global::Unity.MLAgents.CommunicatorObjects.ObservationProto>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<global::Unity.MLAgents.CommunicatorObjects.ObservationProto> Observations {
-      get { return observations_; }
+    get { return observations_; }
     }
 
     /// <summary>Field number for the "group_id" field.</summary>
@@ -154,10 +154,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     private int groupId_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int GroupId {
-      get { return groupId_; }
-      set {
+    get { return groupId_; }
+    set {
         groupId_ = value;
-      }
+    }
     }
 
     /// <summary>Field number for the "group_reward" field.</summary>
@@ -165,191 +165,191 @@ namespace Unity.MLAgents.CommunicatorObjects {
     private float groupReward_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public float GroupReward {
-      get { return groupReward_; }
-      set {
+    get { return groupReward_; }
+    set {
         groupReward_ = value;
-      }
+    }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as AgentInfoProto);
+    return Equals(other as AgentInfoProto);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(AgentInfoProto other) {
-      if (ReferenceEquals(other, null)) {
+    if (ReferenceEquals(other, null)) {
         return false;
-      }
-      if (ReferenceEquals(other, this)) {
+    }
+    if (ReferenceEquals(other, this)) {
         return true;
-      }
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Reward, other.Reward)) return false;
-      if (Done != other.Done) return false;
-      if (MaxStepReached != other.MaxStepReached) return false;
-      if (Id != other.Id) return false;
-      if(!actionMask_.Equals(other.actionMask_)) return false;
-      if(!observations_.Equals(other.observations_)) return false;
-      if (GroupId != other.GroupId) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(GroupReward, other.GroupReward)) return false;
-      return Equals(_unknownFields, other._unknownFields);
+    }
+    if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Reward, other.Reward)) return false;
+    if (Done != other.Done) return false;
+    if (MaxStepReached != other.MaxStepReached) return false;
+    if (Id != other.Id) return false;
+    if(!actionMask_.Equals(other.actionMask_)) return false;
+    if(!observations_.Equals(other.observations_)) return false;
+    if (GroupId != other.GroupId) return false;
+    if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(GroupReward, other.GroupReward)) return false;
+    return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
-      int hash = 1;
-      if (Reward != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Reward);
-      if (Done != false) hash ^= Done.GetHashCode();
-      if (MaxStepReached != false) hash ^= MaxStepReached.GetHashCode();
-      if (Id != 0) hash ^= Id.GetHashCode();
-      hash ^= actionMask_.GetHashCode();
-      hash ^= observations_.GetHashCode();
-      if (GroupId != 0) hash ^= GroupId.GetHashCode();
-      if (GroupReward != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(GroupReward);
-      if (_unknownFields != null) {
+    int hash = 1;
+    if (Reward != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Reward);
+    if (Done != false) hash ^= Done.GetHashCode();
+    if (MaxStepReached != false) hash ^= MaxStepReached.GetHashCode();
+    if (Id != 0) hash ^= Id.GetHashCode();
+    hash ^= actionMask_.GetHashCode();
+    hash ^= observations_.GetHashCode();
+    if (GroupId != 0) hash ^= GroupId.GetHashCode();
+    if (GroupReward != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(GroupReward);
+    if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
+    }
+    return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
+    return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Reward != 0F) {
+    if (Reward != 0F) {
         output.WriteRawTag(61);
         output.WriteFloat(Reward);
-      }
-      if (Done != false) {
+    }
+    if (Done != false) {
         output.WriteRawTag(64);
         output.WriteBool(Done);
-      }
-      if (MaxStepReached != false) {
+    }
+    if (MaxStepReached != false) {
         output.WriteRawTag(72);
         output.WriteBool(MaxStepReached);
-      }
-      if (Id != 0) {
+    }
+    if (Id != 0) {
         output.WriteRawTag(80);
         output.WriteInt32(Id);
-      }
-      actionMask_.WriteTo(output, _repeated_actionMask_codec);
-      observations_.WriteTo(output, _repeated_observations_codec);
-      if (GroupId != 0) {
+    }
+    actionMask_.WriteTo(output, _repeated_actionMask_codec);
+    observations_.WriteTo(output, _repeated_observations_codec);
+    if (GroupId != 0) {
         output.WriteRawTag(112);
         output.WriteInt32(GroupId);
-      }
-      if (GroupReward != 0F) {
+    }
+    if (GroupReward != 0F) {
         output.WriteRawTag(125);
         output.WriteFloat(GroupReward);
-      }
-      if (_unknownFields != null) {
+    }
+    if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
-      }
+    }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
-      int size = 0;
-      if (Reward != 0F) {
+    int size = 0;
+    if (Reward != 0F) {
         size += 1 + 4;
-      }
-      if (Done != false) {
+    }
+    if (Done != false) {
         size += 1 + 1;
-      }
-      if (MaxStepReached != false) {
+    }
+    if (MaxStepReached != false) {
         size += 1 + 1;
-      }
-      if (Id != 0) {
+    }
+    if (Id != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Id);
-      }
-      size += actionMask_.CalculateSize(_repeated_actionMask_codec);
-      size += observations_.CalculateSize(_repeated_observations_codec);
-      if (GroupId != 0) {
+    }
+    size += actionMask_.CalculateSize(_repeated_actionMask_codec);
+    size += observations_.CalculateSize(_repeated_observations_codec);
+    if (GroupId != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(GroupId);
-      }
-      if (GroupReward != 0F) {
+    }
+    if (GroupReward != 0F) {
         size += 1 + 4;
-      }
-      if (_unknownFields != null) {
+    }
+    if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
-      }
-      return size;
+    }
+    return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(AgentInfoProto other) {
-      if (other == null) {
+    if (other == null) {
         return;
-      }
-      if (other.Reward != 0F) {
+    }
+    if (other.Reward != 0F) {
         Reward = other.Reward;
-      }
-      if (other.Done != false) {
+    }
+    if (other.Done != false) {
         Done = other.Done;
-      }
-      if (other.MaxStepReached != false) {
+    }
+    if (other.MaxStepReached != false) {
         MaxStepReached = other.MaxStepReached;
-      }
-      if (other.Id != 0) {
+    }
+    if (other.Id != 0) {
         Id = other.Id;
-      }
-      actionMask_.Add(other.actionMask_);
-      observations_.Add(other.observations_);
-      if (other.GroupId != 0) {
+    }
+    actionMask_.Add(other.actionMask_);
+    observations_.Add(other.observations_);
+    if (other.GroupId != 0) {
         GroupId = other.GroupId;
-      }
-      if (other.GroupReward != 0F) {
+    }
+    if (other.GroupReward != 0F) {
         GroupReward = other.GroupReward;
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
-          default:
+        default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 61: {
+        case 61: {
             Reward = input.ReadFloat();
             break;
-          }
-          case 64: {
+        }
+        case 64: {
             Done = input.ReadBool();
             break;
-          }
-          case 72: {
+        }
+        case 72: {
             MaxStepReached = input.ReadBool();
             break;
-          }
-          case 80: {
+        }
+        case 80: {
             Id = input.ReadInt32();
             break;
-          }
-          case 90:
-          case 88: {
+        }
+        case 90:
+        case 88: {
             actionMask_.AddEntriesFrom(input, _repeated_actionMask_codec);
             break;
-          }
-          case 106: {
+        }
+        case 106: {
             observations_.AddEntriesFrom(input, _repeated_observations_codec);
             break;
-          }
-          case 112: {
+        }
+        case 112: {
             GroupId = input.ReadInt32();
             break;
-          }
-          case 125: {
+        }
+        case 125: {
             GroupReward = input.ReadFloat();
             break;
-          }
         }
-      }
+        }
+    }
     }
 
   }

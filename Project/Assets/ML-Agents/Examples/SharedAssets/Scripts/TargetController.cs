@@ -14,7 +14,7 @@ namespace Unity.MLAgentsExamples
     {
 
         [Header("Collider Tag To Detect")]
-        public string tagToDetect = "agent"; //collider tag to detect 
+        public string tagToDetect = "agent"; //collider tag to detect
 
         [Header("Target Placement")]
         public float spawnRadius; //The radius in which a target can be randomly spawned.
@@ -22,7 +22,7 @@ namespace Unity.MLAgentsExamples
 
         [Header("Target Fell Protection")]
         public bool respawnIfFallsOffPlatform = true; //If the target falls off the platform, reset the position.
-        public float fallDistance = 5; //distance below the starting height that will trigger a respawn 
+        public float fallDistance = 5; //distance below the starting height that will trigger a respawn
 
 
         private Vector3 m_startingPos; //the starting position of the target

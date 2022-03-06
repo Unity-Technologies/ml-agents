@@ -17,13 +17,13 @@ namespace Unity.MLAgents.CommunicatorObjects {
     #region Descriptor
     /// <summary>File descriptor for mlagents_envs/communicator_objects/brain_parameters.proto</summary>
     public static pbr::FileDescriptor Descriptor {
-      get { return descriptor; }
+    get { return descriptor; }
     }
     private static pbr::FileDescriptor descriptor;
 
     static BrainParametersReflection() {
-      byte[] descriptorData = global::System.Convert.FromBase64String(
-          string.Concat(
+    byte[] descriptorData = global::System.Convert.FromBase64String(
+        string.Concat(
             "CjltbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2JyYWluX3Bh",
             "cmFtZXRlcnMucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzGjNtbGFnZW50",
             "c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3NwYWNlX3R5cGUucHJvdG8i",
@@ -39,12 +39,12 @@ namespace Unity.MLAgents.CommunicatorObjects {
             "bmljYXRvcl9vYmplY3RzLkFjdGlvblNwZWNQcm90b0oECAEQAkoECAIQA0oE",
             "CAQQBUIlqgIiVW5pdHkuTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IG",
             "cHJvdG8z"));
-      descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Unity.MLAgents.CommunicatorObjects.SpaceTypeReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+    descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
+        new pbr::FileDescriptor[] { global::Unity.MLAgents.CommunicatorObjects.SpaceTypeReflection.Descriptor, },
+        new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.ActionSpecProto), global::Unity.MLAgents.CommunicatorObjects.ActionSpecProto.Parser, new[]{ "NumContinuousActions", "NumDiscreteActions", "DiscreteBranchSizes", "ActionDescriptions" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.BrainParametersProto), global::Unity.MLAgents.CommunicatorObjects.BrainParametersProto.Parser, new[]{ "VectorActionSizeDeprecated", "VectorActionDescriptionsDeprecated", "VectorActionSpaceTypeDeprecated", "BrainName", "IsTraining", "ActionSpec" }, null, null, null)
-          }));
+        }));
     }
     #endregion
 
@@ -58,33 +58,33 @@ namespace Unity.MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Unity.MLAgents.CommunicatorObjects.BrainParametersReflection.Descriptor.MessageTypes[0]; }
+    get { return global::Unity.MLAgents.CommunicatorObjects.BrainParametersReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
+    get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ActionSpecProto() {
-      OnConstruction();
+    OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ActionSpecProto(ActionSpecProto other) : this() {
-      numContinuousActions_ = other.numContinuousActions_;
-      numDiscreteActions_ = other.numDiscreteActions_;
-      discreteBranchSizes_ = other.discreteBranchSizes_.Clone();
-      actionDescriptions_ = other.actionDescriptions_.Clone();
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    numContinuousActions_ = other.numContinuousActions_;
+    numDiscreteActions_ = other.numDiscreteActions_;
+    discreteBranchSizes_ = other.discreteBranchSizes_.Clone();
+    actionDescriptions_ = other.actionDescriptions_.Clone();
+    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ActionSpecProto Clone() {
-      return new ActionSpecProto(this);
+    return new ActionSpecProto(this);
     }
 
     /// <summary>Field number for the "num_continuous_actions" field.</summary>
@@ -92,10 +92,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     private int numContinuousActions_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int NumContinuousActions {
-      get { return numContinuousActions_; }
-      set {
+    get { return numContinuousActions_; }
+    set {
         numContinuousActions_ = value;
-      }
+    }
     }
 
     /// <summary>Field number for the "num_discrete_actions" field.</summary>
@@ -103,10 +103,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     private int numDiscreteActions_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int NumDiscreteActions {
-      get { return numDiscreteActions_; }
-      set {
+    get { return numDiscreteActions_; }
+    set {
         numDiscreteActions_ = value;
-      }
+    }
     }
 
     /// <summary>Field number for the "discrete_branch_sizes" field.</summary>
@@ -116,7 +116,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     private readonly pbc::RepeatedField<int> discreteBranchSizes_ = new pbc::RepeatedField<int>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<int> DiscreteBranchSizes {
-      get { return discreteBranchSizes_; }
+    get { return discreteBranchSizes_; }
     }
 
     /// <summary>Field number for the "action_descriptions" field.</summary>
@@ -126,124 +126,124 @@ namespace Unity.MLAgents.CommunicatorObjects {
     private readonly pbc::RepeatedField<string> actionDescriptions_ = new pbc::RepeatedField<string>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<string> ActionDescriptions {
-      get { return actionDescriptions_; }
+    get { return actionDescriptions_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as ActionSpecProto);
+    return Equals(other as ActionSpecProto);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(ActionSpecProto other) {
-      if (ReferenceEquals(other, null)) {
+    if (ReferenceEquals(other, null)) {
         return false;
-      }
-      if (ReferenceEquals(other, this)) {
+    }
+    if (ReferenceEquals(other, this)) {
         return true;
-      }
-      if (NumContinuousActions != other.NumContinuousActions) return false;
-      if (NumDiscreteActions != other.NumDiscreteActions) return false;
-      if(!discreteBranchSizes_.Equals(other.discreteBranchSizes_)) return false;
-      if(!actionDescriptions_.Equals(other.actionDescriptions_)) return false;
-      return Equals(_unknownFields, other._unknownFields);
+    }
+    if (NumContinuousActions != other.NumContinuousActions) return false;
+    if (NumDiscreteActions != other.NumDiscreteActions) return false;
+    if(!discreteBranchSizes_.Equals(other.discreteBranchSizes_)) return false;
+    if(!actionDescriptions_.Equals(other.actionDescriptions_)) return false;
+    return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
-      int hash = 1;
-      if (NumContinuousActions != 0) hash ^= NumContinuousActions.GetHashCode();
-      if (NumDiscreteActions != 0) hash ^= NumDiscreteActions.GetHashCode();
-      hash ^= discreteBranchSizes_.GetHashCode();
-      hash ^= actionDescriptions_.GetHashCode();
-      if (_unknownFields != null) {
+    int hash = 1;
+    if (NumContinuousActions != 0) hash ^= NumContinuousActions.GetHashCode();
+    if (NumDiscreteActions != 0) hash ^= NumDiscreteActions.GetHashCode();
+    hash ^= discreteBranchSizes_.GetHashCode();
+    hash ^= actionDescriptions_.GetHashCode();
+    if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
+    }
+    return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
+    return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (NumContinuousActions != 0) {
+    if (NumContinuousActions != 0) {
         output.WriteRawTag(8);
         output.WriteInt32(NumContinuousActions);
-      }
-      if (NumDiscreteActions != 0) {
+    }
+    if (NumDiscreteActions != 0) {
         output.WriteRawTag(16);
         output.WriteInt32(NumDiscreteActions);
-      }
-      discreteBranchSizes_.WriteTo(output, _repeated_discreteBranchSizes_codec);
-      actionDescriptions_.WriteTo(output, _repeated_actionDescriptions_codec);
-      if (_unknownFields != null) {
+    }
+    discreteBranchSizes_.WriteTo(output, _repeated_discreteBranchSizes_codec);
+    actionDescriptions_.WriteTo(output, _repeated_actionDescriptions_codec);
+    if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
-      }
+    }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
-      int size = 0;
-      if (NumContinuousActions != 0) {
+    int size = 0;
+    if (NumContinuousActions != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(NumContinuousActions);
-      }
-      if (NumDiscreteActions != 0) {
+    }
+    if (NumDiscreteActions != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(NumDiscreteActions);
-      }
-      size += discreteBranchSizes_.CalculateSize(_repeated_discreteBranchSizes_codec);
-      size += actionDescriptions_.CalculateSize(_repeated_actionDescriptions_codec);
-      if (_unknownFields != null) {
+    }
+    size += discreteBranchSizes_.CalculateSize(_repeated_discreteBranchSizes_codec);
+    size += actionDescriptions_.CalculateSize(_repeated_actionDescriptions_codec);
+    if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
-      }
-      return size;
+    }
+    return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(ActionSpecProto other) {
-      if (other == null) {
+    if (other == null) {
         return;
-      }
-      if (other.NumContinuousActions != 0) {
+    }
+    if (other.NumContinuousActions != 0) {
         NumContinuousActions = other.NumContinuousActions;
-      }
-      if (other.NumDiscreteActions != 0) {
+    }
+    if (other.NumDiscreteActions != 0) {
         NumDiscreteActions = other.NumDiscreteActions;
-      }
-      discreteBranchSizes_.Add(other.discreteBranchSizes_);
-      actionDescriptions_.Add(other.actionDescriptions_);
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+    discreteBranchSizes_.Add(other.discreteBranchSizes_);
+    actionDescriptions_.Add(other.actionDescriptions_);
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
-          default:
+        default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
+        case 8: {
             NumContinuousActions = input.ReadInt32();
             break;
-          }
-          case 16: {
+        }
+        case 16: {
             NumDiscreteActions = input.ReadInt32();
             break;
-          }
-          case 26:
-          case 24: {
+        }
+        case 26:
+        case 24: {
             discreteBranchSizes_.AddEntriesFrom(input, _repeated_discreteBranchSizes_codec);
             break;
-          }
-          case 34: {
+        }
+        case 34: {
             actionDescriptions_.AddEntriesFrom(input, _repeated_actionDescriptions_codec);
             break;
-          }
         }
-      }
+        }
+    }
     }
 
   }
@@ -256,35 +256,35 @@ namespace Unity.MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Unity.MLAgents.CommunicatorObjects.BrainParametersReflection.Descriptor.MessageTypes[1]; }
+    get { return global::Unity.MLAgents.CommunicatorObjects.BrainParametersReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
+    get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public BrainParametersProto() {
-      OnConstruction();
+    OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public BrainParametersProto(BrainParametersProto other) : this() {
-      vectorActionSizeDeprecated_ = other.vectorActionSizeDeprecated_.Clone();
-      vectorActionDescriptionsDeprecated_ = other.vectorActionDescriptionsDeprecated_.Clone();
-      vectorActionSpaceTypeDeprecated_ = other.vectorActionSpaceTypeDeprecated_;
-      brainName_ = other.brainName_;
-      isTraining_ = other.isTraining_;
-      ActionSpec = other.actionSpec_ != null ? other.ActionSpec.Clone() : null;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    vectorActionSizeDeprecated_ = other.vectorActionSizeDeprecated_.Clone();
+    vectorActionDescriptionsDeprecated_ = other.vectorActionDescriptionsDeprecated_.Clone();
+    vectorActionSpaceTypeDeprecated_ = other.vectorActionSpaceTypeDeprecated_;
+    brainName_ = other.brainName_;
+    isTraining_ = other.isTraining_;
+    ActionSpec = other.actionSpec_ != null ? other.ActionSpec.Clone() : null;
+    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public BrainParametersProto Clone() {
-      return new BrainParametersProto(this);
+    return new BrainParametersProto(this);
     }
 
     /// <summary>Field number for the "vector_action_size_deprecated" field.</summary>
@@ -297,7 +297,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<int> VectorActionSizeDeprecated {
-      get { return vectorActionSizeDeprecated_; }
+    get { return vectorActionSizeDeprecated_; }
     }
 
     /// <summary>Field number for the "vector_action_descriptions_deprecated" field.</summary>
@@ -310,7 +310,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<string> VectorActionDescriptionsDeprecated {
-      get { return vectorActionDescriptionsDeprecated_; }
+    get { return vectorActionDescriptionsDeprecated_; }
     }
 
     /// <summary>Field number for the "vector_action_space_type_deprecated" field.</summary>
@@ -321,10 +321,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Unity.MLAgents.CommunicatorObjects.SpaceTypeProto VectorActionSpaceTypeDeprecated {
-      get { return vectorActionSpaceTypeDeprecated_; }
-      set {
+    get { return vectorActionSpaceTypeDeprecated_; }
+    set {
         vectorActionSpaceTypeDeprecated_ = value;
-      }
+    }
     }
 
     /// <summary>Field number for the "brain_name" field.</summary>
@@ -332,10 +332,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     private string brainName_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string BrainName {
-      get { return brainName_; }
-      set {
+    get { return brainName_; }
+    set {
         brainName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
+    }
     }
 
     /// <summary>Field number for the "is_training" field.</summary>
@@ -343,10 +343,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     private bool isTraining_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool IsTraining {
-      get { return isTraining_; }
-      set {
+    get { return isTraining_; }
+    set {
         isTraining_ = value;
-      }
+    }
     }
 
     /// <summary>Field number for the "action_spec" field.</summary>
@@ -354,165 +354,165 @@ namespace Unity.MLAgents.CommunicatorObjects {
     private global::Unity.MLAgents.CommunicatorObjects.ActionSpecProto actionSpec_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Unity.MLAgents.CommunicatorObjects.ActionSpecProto ActionSpec {
-      get { return actionSpec_; }
-      set {
+    get { return actionSpec_; }
+    set {
         actionSpec_ = value;
-      }
+    }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as BrainParametersProto);
+    return Equals(other as BrainParametersProto);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(BrainParametersProto other) {
-      if (ReferenceEquals(other, null)) {
+    if (ReferenceEquals(other, null)) {
         return false;
-      }
-      if (ReferenceEquals(other, this)) {
+    }
+    if (ReferenceEquals(other, this)) {
         return true;
-      }
-      if(!vectorActionSizeDeprecated_.Equals(other.vectorActionSizeDeprecated_)) return false;
-      if(!vectorActionDescriptionsDeprecated_.Equals(other.vectorActionDescriptionsDeprecated_)) return false;
-      if (VectorActionSpaceTypeDeprecated != other.VectorActionSpaceTypeDeprecated) return false;
-      if (BrainName != other.BrainName) return false;
-      if (IsTraining != other.IsTraining) return false;
-      if (!object.Equals(ActionSpec, other.ActionSpec)) return false;
-      return Equals(_unknownFields, other._unknownFields);
+    }
+    if(!vectorActionSizeDeprecated_.Equals(other.vectorActionSizeDeprecated_)) return false;
+    if(!vectorActionDescriptionsDeprecated_.Equals(other.vectorActionDescriptionsDeprecated_)) return false;
+    if (VectorActionSpaceTypeDeprecated != other.VectorActionSpaceTypeDeprecated) return false;
+    if (BrainName != other.BrainName) return false;
+    if (IsTraining != other.IsTraining) return false;
+    if (!object.Equals(ActionSpec, other.ActionSpec)) return false;
+    return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
-      int hash = 1;
-      hash ^= vectorActionSizeDeprecated_.GetHashCode();
-      hash ^= vectorActionDescriptionsDeprecated_.GetHashCode();
-      if (VectorActionSpaceTypeDeprecated != 0) hash ^= VectorActionSpaceTypeDeprecated.GetHashCode();
-      if (BrainName.Length != 0) hash ^= BrainName.GetHashCode();
-      if (IsTraining != false) hash ^= IsTraining.GetHashCode();
-      if (actionSpec_ != null) hash ^= ActionSpec.GetHashCode();
-      if (_unknownFields != null) {
+    int hash = 1;
+    hash ^= vectorActionSizeDeprecated_.GetHashCode();
+    hash ^= vectorActionDescriptionsDeprecated_.GetHashCode();
+    if (VectorActionSpaceTypeDeprecated != 0) hash ^= VectorActionSpaceTypeDeprecated.GetHashCode();
+    if (BrainName.Length != 0) hash ^= BrainName.GetHashCode();
+    if (IsTraining != false) hash ^= IsTraining.GetHashCode();
+    if (actionSpec_ != null) hash ^= ActionSpec.GetHashCode();
+    if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
+    }
+    return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
+    return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      vectorActionSizeDeprecated_.WriteTo(output, _repeated_vectorActionSizeDeprecated_codec);
-      vectorActionDescriptionsDeprecated_.WriteTo(output, _repeated_vectorActionDescriptionsDeprecated_codec);
-      if (VectorActionSpaceTypeDeprecated != 0) {
+    vectorActionSizeDeprecated_.WriteTo(output, _repeated_vectorActionSizeDeprecated_codec);
+    vectorActionDescriptionsDeprecated_.WriteTo(output, _repeated_vectorActionDescriptionsDeprecated_codec);
+    if (VectorActionSpaceTypeDeprecated != 0) {
         output.WriteRawTag(48);
         output.WriteEnum((int) VectorActionSpaceTypeDeprecated);
-      }
-      if (BrainName.Length != 0) {
+    }
+    if (BrainName.Length != 0) {
         output.WriteRawTag(58);
         output.WriteString(BrainName);
-      }
-      if (IsTraining != false) {
+    }
+    if (IsTraining != false) {
         output.WriteRawTag(64);
         output.WriteBool(IsTraining);
-      }
-      if (actionSpec_ != null) {
+    }
+    if (actionSpec_ != null) {
         output.WriteRawTag(74);
         output.WriteMessage(ActionSpec);
-      }
-      if (_unknownFields != null) {
+    }
+    if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
-      }
+    }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
-      int size = 0;
-      size += vectorActionSizeDeprecated_.CalculateSize(_repeated_vectorActionSizeDeprecated_codec);
-      size += vectorActionDescriptionsDeprecated_.CalculateSize(_repeated_vectorActionDescriptionsDeprecated_codec);
-      if (VectorActionSpaceTypeDeprecated != 0) {
+    int size = 0;
+    size += vectorActionSizeDeprecated_.CalculateSize(_repeated_vectorActionSizeDeprecated_codec);
+    size += vectorActionDescriptionsDeprecated_.CalculateSize(_repeated_vectorActionDescriptionsDeprecated_codec);
+    if (VectorActionSpaceTypeDeprecated != 0) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) VectorActionSpaceTypeDeprecated);
-      }
-      if (BrainName.Length != 0) {
+    }
+    if (BrainName.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(BrainName);
-      }
-      if (IsTraining != false) {
+    }
+    if (IsTraining != false) {
         size += 1 + 1;
-      }
-      if (actionSpec_ != null) {
+    }
+    if (actionSpec_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ActionSpec);
-      }
-      if (_unknownFields != null) {
+    }
+    if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
-      }
-      return size;
+    }
+    return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(BrainParametersProto other) {
-      if (other == null) {
+    if (other == null) {
         return;
-      }
-      vectorActionSizeDeprecated_.Add(other.vectorActionSizeDeprecated_);
-      vectorActionDescriptionsDeprecated_.Add(other.vectorActionDescriptionsDeprecated_);
-      if (other.VectorActionSpaceTypeDeprecated != 0) {
+    }
+    vectorActionSizeDeprecated_.Add(other.vectorActionSizeDeprecated_);
+    vectorActionDescriptionsDeprecated_.Add(other.vectorActionDescriptionsDeprecated_);
+    if (other.VectorActionSpaceTypeDeprecated != 0) {
         VectorActionSpaceTypeDeprecated = other.VectorActionSpaceTypeDeprecated;
-      }
-      if (other.BrainName.Length != 0) {
+    }
+    if (other.BrainName.Length != 0) {
         BrainName = other.BrainName;
-      }
-      if (other.IsTraining != false) {
+    }
+    if (other.IsTraining != false) {
         IsTraining = other.IsTraining;
-      }
-      if (other.actionSpec_ != null) {
+    }
+    if (other.actionSpec_ != null) {
         if (actionSpec_ == null) {
-          actionSpec_ = new global::Unity.MLAgents.CommunicatorObjects.ActionSpecProto();
+        actionSpec_ = new global::Unity.MLAgents.CommunicatorObjects.ActionSpecProto();
         }
         ActionSpec.MergeFrom(other.ActionSpec);
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
-          default:
+        default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 26:
-          case 24: {
+        case 26:
+        case 24: {
             vectorActionSizeDeprecated_.AddEntriesFrom(input, _repeated_vectorActionSizeDeprecated_codec);
             break;
-          }
-          case 42: {
+        }
+        case 42: {
             vectorActionDescriptionsDeprecated_.AddEntriesFrom(input, _repeated_vectorActionDescriptionsDeprecated_codec);
             break;
-          }
-          case 48: {
+        }
+        case 48: {
             vectorActionSpaceTypeDeprecated_ = (global::Unity.MLAgents.CommunicatorObjects.SpaceTypeProto) input.ReadEnum();
             break;
-          }
-          case 58: {
+        }
+        case 58: {
             BrainName = input.ReadString();
             break;
-          }
-          case 64: {
+        }
+        case 64: {
             IsTraining = input.ReadBool();
             break;
-          }
-          case 74: {
+        }
+        case 74: {
             if (actionSpec_ == null) {
-              actionSpec_ = new global::Unity.MLAgents.CommunicatorObjects.ActionSpecProto();
+            actionSpec_ = new global::Unity.MLAgents.CommunicatorObjects.ActionSpecProto();
             }
             input.ReadMessage(actionSpec_);
             break;
-          }
         }
-      }
+        }
+    }
     }
 
   }

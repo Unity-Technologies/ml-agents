@@ -4,7 +4,7 @@ using UnityEditor;
 namespace Unity.MLAgents.Editor
 {
     /*
-     This code is meant to modify the behavior of the inspector on Agent Components.
+    This code is meant to modify the behavior of the inspector on Agent Components.
     */
     [CustomEditor(typeof(Agent), true)]
     [CanEditMultipleObjects]
