@@ -1,11 +1,11 @@
 # Adapted from https://packaging.python.org/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
-name: Publish to PyPI (or TestPyPI)
+name: Publish Python APIs to PyPI (or TestPyPI)
 
 on:
   push:
     tags:
-      - "release_[0-9]+_test[0-9]+"
-      - "release_[0-9]+"
+      - "api_release_[0-9]+_test[0-9]+"
+      - "api_release_[0-9]+"
   workflow_dispatch:
 
 jobs:
@@ -16,7 +16,7 @@ jobs:
     runs-on: [self-hosted, Linux, X64]
     strategy:
         matrix:
-            package-path: [ml-agents, ml-agents-envs]
+            package-path: [ml-agents-envs]
 
     steps:
     - uses: actions/checkout@main
