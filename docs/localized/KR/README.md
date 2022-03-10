@@ -162,4 +162,4 @@ Unity ML-Agents Toolkit에 대한 개발자 경험을 개선하기 위해, 우�
 
 최태혁:  [chlxogur_@naver.com](mailto:chlxogur_@naver.com)
 
-박우진: [woojin.park@unity3d.com](mailto:woojin.park@unity3d.com)
+박우진: [woojin.park@unity3d.com](mailto:woojin.park@unity3d.com), [pnltoen@naver.com](mailto:pnltoen@naver.com)
