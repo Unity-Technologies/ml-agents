@@ -395,12 +395,4 @@
 
 ## 한글 번역
 
-유니티 ML-Agents 관련 문서의 한글 번역은 [장현준(Hyeonjun Jang)][[https://github.com/JangHyeonJun](https://github.com/JangHyeonJun)], 민규식 (Kyushik Min), 박우진(Woojin Park)에 의해 진행되었습니다. 내용상 오류나 오탈자가 있는 경우 각 문서의 번역을 진행한 사람의 이메일을 통해 연락해주시면 감사드리겠습니다.
-
-장현준:  [totok682@naver.com](mailto:totok682@naver.com)
-
-민규식:  [kyushikmin@gmail.com](mailto:kyushikmin@gmail.com)
-
-최태혁:  [chlxogur_@naver.com](mailto:chlxogur_@naver.com)
-
-박우진: [woojin.park@unity3d.com](mailto:woojin.park@unity3d.com), [pnltoen@gmail.com](mailto:pnltoen@naver.com)
+해당 문서의 한글 번역은 박우진 (Woojin Park)에 의해 진행되었습니다. 내용상 오류나 오탈자가 있는 경우 [woojin.park@unity3d.com](mailto:woojin.park@unity3d.com) 또는 [pnltoen@gmail.com](mailto:pnltoen@naver.com)으로 연락주시면 감사드리겠습니다.
