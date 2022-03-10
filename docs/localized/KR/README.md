@@ -38,7 +38,7 @@ ML-Agents Toolkit은 유니티의 자유로운 환경에서 인공지능 에이�
 **최신의 안정적 릴리즈는 'Release 19' 입니다. 클릭해서 ML-Agents의 최신 릴리즈를 시작하세요.** [여기](https://github.com/Unity-Technologies/ml-agents/tree/release_19_docs/docs/Readme.md)
 
 
-아래 표에는 현재 개발이 진행 중이며 불안정할 수 있는 `main` 브랜치를 포함한 모든 릴리스가 나와 있습니다. 몇 가지 유용한 지침:
+아래 표에는 현재 개발이 진행 중이며 불안정할 수 있는 `main` 브랜치를 포함한 모든 릴리스가 나와 있습니다. 몇 가지 유의 사항:
 - [버전 관리 페이지](docs/Versioning.md) 는 GitHub 릴리즈를 관리하는 방법과 각 ML-Agents 구성 요소에 대한 버전 관리 프로세스를 간략히 설명합니다.
 - [릴리즈 페이지](https://github.com/Unity-Technologies/ml-agents/releases) 는 릴리스 간의 변경 사항에 대한 세부 정보가 포함되어 있습니다.
 - [마이그레이션(Migration) 페이지](docs/Migrating.md) 는 이전 릴리스의 ML-Agents Toolkit에서 업그레이드하는 방법에 대한 세부 정보가 포함되어 있습니다.
