@@ -1,5 +1,5 @@
 ﻿
-# 예제 학습 환경
+# 학습 환경 예제
 
 <img src="images/example-envs.png" align="middle" width="3000"/>
 
