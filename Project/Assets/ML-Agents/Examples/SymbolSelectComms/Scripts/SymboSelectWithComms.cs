@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using Random = UnityEngine.Random;
 
@@ -17,7 +18,7 @@ public class SymboSelectWithComms : Agent
     private SymbolSelectWithCommsEnvController envController;
     private VectorSensorComponent commSensor;
     // public float[] message0 = new float[]{0,0};
-    public float[] message0 = new float[]{0,0,0,0};
+    public float[] message0;
     public int assignedNumber;
     // public float[] assignedNumber = new float[]{0,0}; //the tile/number randomly assigned to an agent during an episode
 
@@ -29,22 +30,26 @@ public class SymboSelectWithComms : Agent
     private Quaternion m_StartingRot;
     public float stepCounter;
 
+    public int NumOfMessageBits = 4;
     // private float[] zeroOneHot = new float[] { 1, 0 };
     // private float[] oneOneHot = new float[] { 0, 1 };
-    private float[] zeroOneHot = new float[] {1,0,0,0};
-    private float[] oneOneHot = new float[] { 0,1,0,0};
-    private float[] twoOneHot = new float[] { 0,0,1,0};
-    private float[] threeOneHot = new float[] { 0,0,0,1};
+
+    // private float[] zeroOneHot = new float[] {1,0,0,0};
+    // private float[] oneOneHot = new float[] { 0,1,0,0};
+    // private float[] twoOneHot = new float[] { 0,0,1,0};
+    // private float[] threeOneHot = new float[] { 0,0,0,1};
     public override void Initialize()
     {
         base.Initialize();
         // zeroOneHot = new float[] { 1, 0 };
         // oneOneHot = new float[] { 0, 1 };
-        message0 = new float[] { 0, 0, 0, 0};
-        zeroOneHot = new float[] {1,0,0,0};
-        oneOneHot = new float[] {0,1,0,0};
-        twoOneHot = new float[] { 0,0,1,0};
-        threeOneHot = new float[] { 0,0,0,1};
+        message0 = new float[NumOfMessageBits];
+        // GetComponent<BehaviorParameters>().BrainParameters.ActionSpec.BranchSizes = new[] { 1, NumOfMessageBits };
+        // message0 = new float[] { 0, 0, 0, 0};
+        // zeroOneHot = new float[] {1,0,0,0};
+        // oneOneHot = new float[] {0,1,0,0};
+        // twoOneHot = new float[] { 0,0,1,0};
+        // threeOneHot = new float[] { 0,0,0,1};
         m_AgentRb = GetComponent<Rigidbody>();
         envController = GetComponentInParent<SymbolSelectWithCommsEnvController>();
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
@@ -60,13 +65,22 @@ public class SymboSelectWithComms : Agent
         ResetAgent();
     }
 
+    public float[] selectionKeys;
+
     void ResetAgent()
     {
 
         answerChoice = -1;
-        assignedNumber = Random.Range(0,4);
+        assignedNumber = Random.Range(0, NumOfMessageBits);
         // message0 = new float[] { 0, 0 };
-        message0 = new float[]{0,0,0,0};
+        message0 = new float[NumOfMessageBits];
+        selectionKeys = new float[NumOfMessageBits];
+        for (int i = 0; i < NumOfMessageBits; i++)
+        {
+            var t = i / NumOfMessageBits;
+            selectionKeys[i] = Mathf.Lerp(-1, 1, t);
+        }
+
         hasMovedToTarget = false;
         transform.SetPositionAndRotation(m_StartingPos, m_StartingRot);
         m_AgentRb.velocity = Vector3.zero;
@@ -109,11 +123,13 @@ public class SymboSelectWithComms : Agent
     {
         sensor.AddObservation(stepCounter); //2bit one-hot
         stepCounter += .33f;
-        var assignedOneHot=
-            assignedNumber == 0 ? zeroOneHot :
-            assignedNumber == 1 ? oneOneHot :
-            assignedNumber == 2 ? twoOneHot : threeOneHot;
-        sensor.AddObservation(assignedOneHot); //2bit one-hot
+        var assignedOneHot = new float[NumOfMessageBits];
+        assignedOneHot[assignedNumber] = 1;
+        // var assignedOneHot=
+        //     assignedNumber == 0 ? zeroOneHot :
+        //     assignedNumber == 1 ? oneOneHot :
+        //     assignedNumber == 2 ? twoOneHot : threeOneHot;
+        sensor.AddObservation(assignedOneHot); //
         foreach (var item in envController.AgentsArray)
         {
             if (item.Agent != this)
@@ -128,19 +144,24 @@ public class SymboSelectWithComms : Agent
     /// </summary>
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        var selection = actionBuffers.ContinuousActions[0];
+        var contAct = actionBuffers.ContinuousActions[0];
         // var selection1 = actionBuffers.ContinuousActions[1];
         // answerChoice = selection < 0? 0: 1; //if negative set to zero, positive set to 1
-        var zero = -1 < selection && selection < -.5f;
-        var one = -.5f < selection && selection < 0f;
-        var two = 0 < selection && selection < 0.5f;
-        var three = .5f < selection && selection < 1f;
+        // Mathf.Approximately()
+        var selRange = ((contAct + 1) * .5f) * NumOfMessageBits;
+        answerChoice = (int)selRange;
 
-        answerChoice = zero? 0 : one? 1: two? 2: 3; //if negative set to zero, positive set to 1
+        // var zero = -1 < selection && selection < -.5f;
+        // var one = -.5f < selection && selection < 0f;
+        // var two = 0 < selection && selection < 0.5f;
+        // var three = .5f < selection && selection < 1f;
+
+        // answerChoice = zero? 0 : one? 1: two? 2: 3; //if negative set to zero, positive set to 1
         // answerChoice = selection0 < 0? 0: 1; //if negative set to zero, positive set to 1
         var messageBranch = actionBuffers.DiscreteActions[0];
         // var word0 = new float[]{0,0};
-        var word0 = new float[]{0,0,0,0};
+        // var word0 = new float[]{0,0,0,0};
+        var word0 = new float[NumOfMessageBits];
         word0[messageBranch] = 1;
         message0 = word0;
     }
@@ -150,21 +171,24 @@ public class SymboSelectWithComms : Agent
     IEnumerator MoveToTarget()
     {
         WaitForFixedUpdate wait = new WaitForFixedUpdate();
+        for (int i = 0; i < 2; i++)
+        {
+            if (Academy.Instance.IsCommunicatorOn) { RequestDecision(); }
+            yield return wait;
+        }
         //make some decisions
-        if (Academy.Instance.IsCommunicatorOn){ RequestDecision(); }
-        yield return wait;
-        if (Academy.Instance.IsCommunicatorOn){ RequestDecision(); }
-        yield return wait;
-        if (Academy.Instance.IsCommunicatorOn){ RequestDecision(); }
-        yield return wait;
-        if (Academy.Instance.IsCommunicatorOn){ RequestDecision(); }
-        yield return wait;
-        if (Academy.Instance.IsCommunicatorOn){ RequestDecision(); }
-        yield return wait;
-
-
-        // m_AgentRb.MovePosition(targetArray[answerChoice].position);
-        yield return wait;
+        // if (Academy.Instance.IsCommunicatorOn){ RequestDecision(); }
+        // yield return wait;
+        // if (Academy.Instance.IsCommunicatorOn){ RequestDecision(); }
+        // yield return wait;
+        // if (Academy.Instance.IsCommunicatorOn){ RequestDecision(); }
+        // yield return wait;
+        // if (Academy.Instance.IsCommunicatorOn){ RequestDecision(); }
+        // yield return wait;
+        //
+        //
+        // // m_AgentRb.MovePosition(targetArray[answerChoice].position);
+        // yield return wait;
         hasMovedToTarget = true;
     }
 

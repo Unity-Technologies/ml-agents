@@ -1337,16 +1337,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 5
+    VectorObservationSize: 9
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 1
-      BranchSizes: 04000000
+      BranchSizes: 08000000
     VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: da192e7e308484c1dbaa7de06c5efe09, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SymbolSelectComms
@@ -1383,6 +1383,8 @@ MonoBehaviour:
   answerChoice: -1
   hasMovedToTarget: 0
   stepCounter: 0
+  NumOfMessageBits: 8
+  selectionKeys: []
 --- !u!65 &2140872240671606869
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1422,7 +1424,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SensorName: ZVectorSensor
-  m_ObservationSize: 4
+  m_ObservationSize: 8
   m_ObservationType: 0
   m_ObservationStacks: 1
 --- !u!1 &2140872240853157189
@@ -2668,16 +2670,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 5
+    VectorObservationSize: 9
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 1
-      BranchSizes: 04000000
+      BranchSizes: 08000000
     VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: da192e7e308484c1dbaa7de06c5efe09, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SymbolSelectComms
@@ -2714,6 +2716,8 @@ MonoBehaviour:
   answerChoice: -1
   hasMovedToTarget: 0
   stepCounter: 0
+  NumOfMessageBits: 8
+  selectionKeys: []
 --- !u!65 &2756363428800478988
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2753,7 +2757,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SensorName: ZVectorSensor
-  m_ObservationSize: 4
+  m_ObservationSize: 8
   m_ObservationType: 0
   m_ObservationStacks: 1
 --- !u!1 &4381665327750774675
