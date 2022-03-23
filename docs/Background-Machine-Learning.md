@@ -111,9 +111,7 @@ every step, but only when a robot arrives at a success or failure situation), is
 a defining characteristic of reinforcement learning and precisely why learning
 good policies can be difficult (and/or time-consuming) for complex environments.
 
-<p align="center">
-  <img src="images/rl_cycle.png" alt="The reinforcement learning cycle."/>
-</p>
+<div style="text-align: center"><img src="../images/rl_cycle.png" alt="The reinforcement learning lifecycle."></div>
 
 [Learning a policy](https://blogs.unity3d.com/2017/08/22/unity-ai-reinforcement-learning-with-q-learning/)
 usually requires many trials and iterative policy updates. More specifically,

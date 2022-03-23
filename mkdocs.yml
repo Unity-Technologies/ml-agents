@@ -1,0 +1,33 @@
+site_name: Unity ML-Agents Toolkit
+site_url: https://unity-technologies.github.io/ml-agents/
+repo_url: https://github.com/Unity-Technologies/ml-agents
+edit_uri: edit/main/docs/
+site_description: The Unity Machine Learning Agents Toolkit (ML-Agents) is an open-source project that enables games and simulations to serve as environments for training intelligent agents.
+site_author: Unity Technologies
+copyright: com.unity.ml-agents copyright © 2017 Unity Technologies
+pages:
+- Home: index.md
+- ML-Agents Overview: ML-Agents-Overview.md
+- Toolkit Documentation: ML-Agents-Toolkit-Documentation.md
+- Background:
+    - Machine Learning: Background-Machine-Learning.md
+    - PyTorch: Background-PyTorch.md
+    - Unity: Background-Unity.md
+- Interfacing with Unity Builds:
+    - Getting started with the Gym API: Python-Gym-API.md
+    - Getting started with the PettingZoo API: Python-PettingZoo-API.md
+    - Getting started with the LLAPI: Python-LLAPI.md
+- Python API Docs:
+    - Gym API Documentation: Python-Gym-API-Documentation.md
+    - Petting Zoo Documentation: Python-PettingZoo-API-Documentation.md
+    - LLAPI Documentation: Python-LLAPI-Documentation.md
+- About:
+    - FAQs: FAQ.md
+    - Limitations: Limitations.md
+    - Migrating: Migrating.md
+    - Versioning: Versioning.md
+theme: readthedocs
+extra_css: [extra.css]
+markdown_extensions:
+    - markdown_include.include:
+        base_path: docs
