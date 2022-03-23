@@ -27,7 +27,7 @@
 - [Model Types](#model-types)
   - [Learning from Vector Observations](#learning-from-vector-observations)
   - [Learning from Cameras using Convolutional Neural Networks](#learning-from-cameras-using-convolutional-neural-networks)
-  - [Learning from Variable Length Observations using Attention](#learning-from-ariable-length-observations-using-attention)
+  - [Learning from Variable Length Observations using Attention](#learning-from-variable-length-observations-using-attention)
   - [Memory-enhanced Agents using Recurrent Neural Networks](#memory-enhanced-agents-using-recurrent-neural-networks)
 - [Additional Features](#additional-features)
 - [Summary and Next Steps](#summary-and-next-steps)

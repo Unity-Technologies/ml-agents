@@ -58,8 +58,6 @@ setup(
         "pettingzoo>=1.15.0",
         "numpy==1.21.2",
         "filelock>=3.4.0",
-        "stable_baselines3[extra]",
-        "supersuit>=3.3.3",
     ],
     python_requires=">=3.7.2,<3.10.0",
     # TODO: Remove this once mypy stops having spurious setuptools issues.
