@@ -509,7 +509,7 @@ Below is a list of the `sampler_type` values supported by the toolkit.
   - **parameters** - `intervals`
 
 The implementation of the samplers can be found in the
-[Samplers.cs file](../com.unity.ml-agents/Runtime/Sampler.cs).
+[Samplers.cs file](https://github.com/Unity-Technologies/ml-agents/blob/main/com.unity.ml-agents/Runtime/Sampler.cs).
 
 ##### Training with Environment Parameter Randomization
 

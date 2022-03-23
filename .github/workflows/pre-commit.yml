@@ -48,8 +48,9 @@ jobs:
       with:
         node-version: '12'
     - name: Install manual dependencies
+    # pin markdown-link-check version to support multi-level reference link
       run: |
-        sudo npm install -g markdown-link-check
+        sudo npm install -g markdown-link-check@3.8.7
         python -m pip install pre-commit
         pre-commit install
     - name: Run markdown checker
