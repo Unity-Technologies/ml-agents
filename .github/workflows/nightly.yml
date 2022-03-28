@@ -21,7 +21,7 @@ jobs:
         node-version: '12'
     - name: Install manual dependencies
       run: |
-        sudo npm install -g markdown-link-check
+        sudo npm install -g markdown-link-check@3.8.7
         python -m pip install pre-commit
         pre-commit install
     - name: Run markdown checker
