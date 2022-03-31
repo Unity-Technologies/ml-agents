@@ -137,7 +137,6 @@ class AgentBufferField(list):
         Sets the list of BufferEntry to the input data
         :param data: The BufferEntry list to be set.
         """
-        self[:] = []
         self[:] = data
 
     def get_batch(

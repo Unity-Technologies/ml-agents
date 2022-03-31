@@ -56,7 +56,10 @@ def test_policy_evaluate(rnn, visual, discrete):
 
     run_out = policy.evaluate(decision_step, list(decision_step.agent_id))
     if discrete:
-        run_out["action"].discrete.shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
+        assert run_out["action"].discrete.shape == (
+            NUM_AGENTS,
+            len(DISCRETE_ACTION_SPACE),
+        )
     else:
         assert run_out["action"].continuous.shape == (NUM_AGENTS, VECTOR_ACTION_SPACE)
 

@@ -550,7 +550,9 @@ def test_default_settings():
 
     # Change the overridden fields back, and check if the rest are equal.
     test1_settings.max_steps = 1
-    test1_settings.network_settings.hidden_units == default_settings_cls.network_settings.hidden_units
+    test1_settings.network_settings.hidden_units = (
+        default_settings_cls.network_settings.hidden_units
+    )
     check_if_different(test1_settings, default_settings_cls)
 
 

@@ -42,7 +42,7 @@ def test_initialize_ppo_trainer(BehaviorSpecMock, dummy_config):
         trainer_settings,
         training,
         load,
-        seed,
+        p_seed,
         artifact_path,
     ):
         assert brain == brain_name
@@ -50,7 +50,7 @@ def test_initialize_ppo_trainer(BehaviorSpecMock, dummy_config):
         assert reward_buff_cap == expected_reward_buff_cap
         assert training == train_model
         assert load == load_model
-        assert seed == seed
+        assert p_seed == seed
         assert artifact_path == os.path.join(output_path, brain_name)
 
     with patch.object(PPOTrainer, "__init__", mock_constructor):
