@@ -4,10 +4,9 @@
 <!---
 TODO: update ml-agents-env package version before release
 --->
-## Migrating to the ml-agents-envs 0.29.0.dev0 package
+## Migrating to the ml-agents-envs 0.29.0 package
 - Python 3.7 is now the minimum version of python supported due to [python3.6 EOL](https://endoflife.date/python).
-  Please update your python installation to 3.7.2 or higher. Note: Due to an issue with the typing system, the maximum
-  version of python supported is python 3.9.9.
+  Please update your python installation to 3.7.2 or higher.
 - The `gym-unity` package has been refactored into the `ml-agents-envs` package. Please update your imports accordingly.
 - Example:
   - Before
