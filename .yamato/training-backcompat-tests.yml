@@ -30,7 +30,7 @@ test_mac_backcompat_2019.4:
   triggers:
     cancel_old_ci: true
     recurring:
-      - branch: main
+      - branch: develop
         frequency: daily
   artifacts:
     logs:

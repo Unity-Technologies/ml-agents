@@ -9,7 +9,10 @@ on:
     - 'test_requirements.txt'
     - '.github/workflows/pytest.yml'
   push:
-    branches: [main]
+    branches: 
+     - main
+     - develop
+     - 'release/**'
   workflow_dispatch:
     inputs:
       pytest_markers:

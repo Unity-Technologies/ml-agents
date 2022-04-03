@@ -23,6 +23,7 @@ pytest_gpu:
     cancel_old_ci: true
     expression: |
       (push.branch eq "main" OR
+      push.branch eq "develop" OR
       push.branch match "release.+") AND
       push.changes.any match "ml-agents/**" AND
       NOT push.changes.all match "**/*.md"
