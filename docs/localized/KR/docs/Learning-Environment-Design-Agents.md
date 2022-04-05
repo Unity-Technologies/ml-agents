@@ -525,10 +525,7 @@ Actuator Component 추상 클래스는 실행 시 실제 'IActuator'를 만들�
 - 에이전트는 `이산적인(Discrete)` 그리고/또는 `연속적인(Continuous)` 행동을 할 수 있습니다.
 - 이산적인 행동(Discrete Actions)은 여러 행동 가지(Branches)를 포함할 수 있습니다. 그리고 마스크(mask)을 통해 특정한 행동을 택하지 않도록 설정할 수 있습니다.
 - 일반적으로, 가능한 행동의 개수가 적을수록 학습의 난이도가 감소합니다.
-- 연속적인 행동(
-- `Be sure to set the Continuous Action Size and Discrete Branch Size to the desired
-  number for each type of action, and not greater, as doing the latter can interfere with the
-  efficiency of the training process.`
+- 연속적인 행동과 이산적인 행동의 크기를 크지않게 알맞게 설정해주시길 바랍니다. 크기가 일치하지 않을 경우 추론시 모델의 성능이 하락(간섭)할 수 있습니다.
 - 에이전트가 연속적인 행동을 할 경우 `Mathf.clip`을 활용해서 [-1, 1] 사이의 값으로 클립(clip) 해주시길 바랍니다. PPO 알고리즘을 사용할 경우 이러한 클립을 자동으로 진행합니다. 
 
 ## 보상
