@@ -211,12 +211,14 @@ public class HeroAgent : Agent
 최고의 학습을 위해, 특정 벡터 구간을 [-1, +1] 또는 [0, 1]로 정규화 하는 것이 좋습니다. 값을 정규화 할 때, PPO 뉴럴 네트워크는 보상의 수렴 속도를 증가시킬 수 있습니다. 이러한 값으로 정규화를 하는 것은 필수적이지는 않지만, 뉴럴 네트워크를 사용할 때 고려할만 합니다. 관측 컨포넌트의 범위 변동이 클수록, 학습에 영향을 미칠 가능성이 높아집니다.
 
 [0, 1] 의 값으로 정규화 할 때, 다음의 공식을 사용할 수 있습니다.
+
 ```csharp
 normalizedValue = (currentValue - minValue)/(maxValue - minValue)
 ```
+
 :warning:벡터의 경우 위의 공식을 각 성분 (x,y 그리고 z)에 적용해야 합니다. 이는 유니티 에디터 상의 `Vector3.normalized` 또는 `Vector3.Normalize()` 와 같지 않습니다.
 
-회전 과 각도 또한 정규화할 수 있습니다. 각도의 경우 0에서 360도 까지, 다음의 공식을 따를 수 있습니다.
+회전과 각도 또한 정규화할 수 있습니다. 각도의 경우 0에서 360도 까지, 다음의 공식을 따를 수 있습니다.
 
 ```csharp
 Quaternion rotation = transform.rotation;
