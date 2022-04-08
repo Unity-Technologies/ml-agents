@@ -1,5 +1,5 @@
 import os
-from typing import Dict
+from typing import Dict, Optional
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
@@ -25,7 +25,7 @@ class TrainerFactory:
         load_model: bool,
         seed: int,
         param_manager: EnvironmentParameterManager,
-        init_path: str = None,
+        init_path: Optional[str] = None,
         multi_gpu: bool = False,
     ):
         """
