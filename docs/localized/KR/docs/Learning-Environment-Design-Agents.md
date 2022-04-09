@@ -39,20 +39,20 @@
 에이전트는 환경을 관측하고 이를 통해, 최적의 행동을 결정하고 시행합니다.
 에이전트는 유니티 에디터 내에서 `Agent` 클래스를 상속 받음으로써 생성할 수 있습니다. 에이전트를 만들 때 가장 중요한 것은 에이전트의 관측과 보상 함수를 적절하게 설정함으로써 문제를 해결할 수 있도록 하는 것입니다.
 
-에이전트는 관측 후 정책을 업데이트하고, 어떤 행동을 할 지 결정 후 행동합니다. 에이전트 코드는 꼭 액션(Onactionreceived 함수)를 재정의(Override)해야합니다. 예를 들어, [강화학습을 활용하여 에이전트를 학습하기 위해 (train an agent using reinforcement learning)](Learning-Environment-Design.md), 에이전트가 각 방향으로 움직이고, 행동을 할 때 마다 최적의 정책을 찾기 위한 보상을 계산해야 합니다. 
+에이전트는 관측 후 정책을 업데이트하고, 어떤 행동을 할 지 결정 후 행동합니다. 에이전트 코드는 꼭 액션(Onactionreceived 함수)를 재정의(Override)해야합니다. 예를 들어, [강화학습을 활용하여 에이전트를 학습하기 위해 (train an agent using reinforcement learning)](Learning-Environment-Design.md), 에이전트가 각 방향으로 움직이고, 행동을 할 때 마다 최적의 정책을 찾기 위한 보상을 계산해야 합니다.
 `Policy` 정책 클래스는 에이전트 자체의 의사 결정 논리(Logic)를 추상화합니다. 따라서 다양한 에이전트에 동일한 정책을 사용할 수 있습니다. 정책이 결정을 결정하는 것은 에이전트와 연결된 `Behavior Parameters`에 의존합니다.
 
 에이전트 오브젝트의 `Behavior Type`을 `Heuristic Only`로 설정할 경우, 에이전트는 휴리스틱 메소드를 사용합니다. 따라서 키보드와 마우스 같은 입력 시스템을 활용해서 에이전트를 직접 조종하고, 구현한 나만의 환경이 의도한 대로 작동하는지 검증할 수 있습니다.
 
-만약 에이전트에 `Model` 파일이 있을 경우, 행동을 택하기 위한 에이전트의 정책은 학습된 뉴럴 네트워크(neural network)의 정책을 따릅니다. 
+만약 에이전트에 `Model` 파일이 있을 경우, 행동을 택하기 위한 에이전트의 정책은 학습된 뉴럴 네트워크(neural network)의 정책을 따릅니다.
 
-에이전트를 생성할 때, 기존에 `Monobehaviour (Default)`로 상속된 클래스를 `Agent`를 상속하도록 변경해주어야 합니다. 
+에이전트를 생성할 때, 기존에 `Monobehaviour (Default)`로 상속된 클래스를 `Agent`를 상속하도록 변경해주어야 합니다.
 
 - `Agent.OnEpisodeBegin()` — 에피소드가 시작할 때 또는 시뮬레이션이 시작될 때 호출 됩니다 (예시 : `Agnet.Endepisode()`) `Agent.CollectObservations(VectorSensor sensor)` — 에이전트가 결정을 요청하는 매 스텝마다 호출됩니다. 에이전트가 환경을 관측하는 하나의 방법입니다.  상세한 내용은 다음의 문서를 참고해주세요. [Generating Observations](#generating-observations)
 - `Agent.OnActionReceived()` — 에이전트가 행동을 하도록 요청될 때 마다 호출됩니다. `Agent.Addreward()`를 활용하여 행동을 할 때 마다 가점 또는 감점을 줄 수 있습니다.
-- `Agent.Heuristic()` - 에이전트 Behavior Parameters의 `Behavior Type`이 `Heuristic Only`로 설정되어 있을 때, 에이전트의 액션은 `Heuristic()` 방법을 사용합니다. 
+- `Agent.Heuristic()` - 에이전트 Behavior Parameters의 `Behavior Type`이 `Heuristic Only`로 설정되어 있을 때, 에이전트의 액션은 `Heuristic()` 방법을 사용합니다.
  __주의__: `Heuristic()` 메소드에서 새로운 실수 배열을 생성할 경우 원래 행동 배열에 사용이 불가능합니다.
- 
+
 구체적인 예시로서 3D_BALL 에이전트 클래스는 다음과 같이 구현됩니다.
 
 - `Agent.OnEpisodeBegin()` — 에이전트 큐브와 공을 초기위치로 초기화합니다.
@@ -82,7 +82,7 @@ ML-Agents는 에이전트가 관측을 할 수 있도록 여러 방법을 제공
 
 `VectorSensor.AddObservation` 메소드는 일반적인 유형의 데이터를 추가하기 위한 여러 오버로드를 제공합니다. 이에 따라서 정수 그리고 논리형을 바로 관측 벡터에 추가할 수 있습니다. 유니티에서 흔히 사용하는 데이터 타입인 `Vector 2`, `Vector 3`, 그리고 `Quaternion` 또한 가능합니다.
 
-다양한 상태 관측 기능의 예시로, [example environments](Learning-Environment-Examples.md) 문서를 참고해주시길 바랍니다. 예를 들어서 
+다양한 상태 관측 기능의 예시로, [example environments](Learning-Environment-Examples.md) 문서를 참고해주시길 바랍니다. 예를 들어서
 3DBall 예제는 아래와 같이 플랫폼의 회전, 공의 상대 거리, 그리고 속도를 상태 관측으로 사용합니다.
 
 ```csharp
@@ -246,7 +246,7 @@ step 3: [0.3, 0.2, 0.1]
 step 4: [0.4, 0.3, 0.2]
 ```
 (step 1에서 이전 관측이 없음으로 padding 되어 0.0 으로 표기됩니다)
-이 방법은 복잡성 또는 RNN을 추가하지 않고 에이전트에 제한된 "메모리"를 주는 간단한 방법입니다. 
+이 방법은 복잡성 또는 RNN을 추가하지 않고 에이전트에 제한된 "메모리"를 주는 간단한 방법입니다.
 
 관측을 생성할 때 누적(stacking)을 사용할 수 있는 여러 방법입니다.
 * 에이전트 `Behavior Parameters`에서 Stacked Vectors" 값을 1보다 크게 설정합니다.
@@ -265,12 +265,12 @@ step 4: [0.4, 0.3, 0.2]
 ### Visual Observations
 
 에이전트에 `CameraSensor` 또는 `RenderTextureSensor` 컴포넌트를 추가해서 시각적 관측을 추가할 수 있습니다. 이렇게 추가된 이미지 정보는 3D 텐서로 변형되어 에이전트 정책의 CNN 뉴럴 네트워크 모델에 입력됩니다.
-CNNs에 대한 내용은 다음을 참고해주시길 바랍니다. [this guide](http://cs231n.github.io/convolutional-networks/). 
+CNNs에 대한 내용은 다음을 참고해주시길 바랍니다. [this guide](http://cs231n.github.io/convolutional-networks/).
 이를 통해 에이전트는 관측 이미지의 공간 규칙성을 학습할 수 있습니다. 에이전트가 시각적 관측과 벡터 관측을 동시에 사용할 수 있습니다.
 
 시각적 관측을 사용하는 에이전트는 숫자로 표현하기 힘든 임의의 복잡한 상태를 관측할 수 있습니다. 하지만 일반적으로 학습 속도가 느리고 효율적이지 않습니다. 그리고 때때로 벡터 관측과 비교했을 때 학습에 성공적이지 않을 수 있습니다.  이와 같이 시간적 관측은 벡터 또는 ray-cast 센서로 관측을 정의하기 힘들 경우 사용하는 것이 좋습니다.
 
-에이전트에 시각적 관측을 수가하기 위해, `camera sensor` 또는 `RenderTextures Sensor` 컴포넌트를 에이전트에 추가해주시길 바랍니다. 
+에이전트에 시각적 관측을 수가하기 위해, `camera sensor` 또는 `RenderTextures Sensor` 컴포넌트를 에이전트에 추가해주시길 바랍니다.
 이 후 추가하고자 하는 Camera 또는 Render Texture를 필드에 드래그해주시길 바랍니다. 하나 이상의 Camera 또는 Render Texture 그리고 둘을 같이 사용할 수 있습니다. 각각의 시각적 관측에서, 가로와 세로 이미지 (in pixels)를 설정하고 관측의 색상과 흑백 여부를 설정할 수 있습니다.
 
 ![Agent Camera](images/visual-observation.png)
@@ -288,7 +288,7 @@ CNNs에 대한 내용은 다음을 참고해주시길 바랍니다. [this guide]
 
 ![RenderTexture with Raw Image](images/visual-observation-rawimage.png)
 
- [GridWorld environment](Learning-Environment-Examples.md#gridworld) 환경은 RenderTexture를 디버깅 그리고 관측으로 사용하는 예제 환경입니다. 
+ [GridWorld environment](Learning-Environment-Examples.md#gridworld) 환경은 RenderTexture를 디버깅 그리고 관측으로 사용하는 예제 환경입니다.
 RenderTexture를 업데이트 하기 위해, Camera는 매 결정 단계마다 Camera 렌더링을 요구해야 합니다. 하지만 Camera를 관찰로 직접 사용하는 경우 에이전트는 이러한 과정을 자동으로 수행합니다.
 
 ![Agent RenderTexture Debug](images/gridworld.png)
@@ -413,7 +413,7 @@ __Note__: 최근에, `BufferSensor`로 입력되는 관측은 정규화되지 �
  - `VectorSensorComponent` 또는 `CameraSensorComponent`를 에이전트에 추가하고 Observation Type을 Goal로 설정합니다.
  - 하이퍼 파라미터 (.yaml) 파일에 conditioining_type을 설정합니다.
  - HyperNetwork를 사용할 때 hidden unit의 개수를 최대한 적게 설정합니다.
- 
+
 ## Actions and Actuators
 
 행동은 에이전트가 수행하는 정책의 지시입니다. Academy가 IActionReciever를 호출할 때 액션은 ActionBuffers 파라미터로서 IActionReceiver(에이전트 또는 IActuator)에 전달됩니다. **연속적인** 그리고 **이산적인** 행동이 지원됩니다.
@@ -511,8 +511,8 @@ Actuator API를 이용하면 에이전트 및 컴포넌트에서 동작을 추�
 
 `Isensor` 인터페이스와 마찬가지로 `IActuator` 인터페이스는 고급 사용자자를 대상으로 합니다.
 
-Actuator Component 추상 클래스는 실행 시 실제 'IActuator'를 만들기 위해 사용됩니다.  에이전트와 동일한 게임오브젝트 또는 하위 오브젝트에 연결해야 합니다. 런타임에 예상되지 않은 할당을 방지하기 위해  `Agent.Initialize` 중 Actuator 및 모든 데이터 구조는 초기화 됩니다. 
-  
+Actuator Component 추상 클래스는 실행 시 실제 'IActuator'를 만들기 위해 사용됩니다.  에이전트와 동일한 게임오브젝트 또는 하위 오브젝트에 연결해야 합니다. 런타임에 예상되지 않은 할당을 방지하기 위해  `Agent.Initialize` 중 Actuator 및 모든 데이터 구조는 초기화 됩니다.
+
 `IActuator` 구현과 관련된 예제로 `Basic` 예제 환경을 확인할 수 있습니다.
 **참고**: `IActuator`와 `ActuatorComponents`를 사용할 때 `Behavior Parameters`를 조정할 필요는 없습니다.
 
@@ -526,7 +526,7 @@ Actuator Component 추상 클래스는 실행 시 실제 'IActuator'를 만들�
 - 이산적인 행동(Discrete Actions)은 여러 행동 가지(Branches)를 포함할 수 있습니다. 그리고 마스크(mask)을 통해 특정한 행동을 택하지 않도록 설정할 수 있습니다.
 - 일반적으로, 가능한 행동의 개수가 적을수록 학습의 난이도가 감소합니다.
 - 연속적인 행동과 이산적인 행동의 크기를 크지않게 알맞게 설정해주시길 바랍니다. 크기가 일치하지 않을 경우 추론시 모델의 성능이 하락(간섭)할 수 있습니다.
-- 에이전트가 연속적인 행동을 할 경우 `Mathf.clip`을 활용해서 [-1, 1] 사이의 값으로 클립(clip) 해주시길 바랍니다. PPO 알고리즘을 사용할 경우 이러한 클립을 자동으로 진행합니다. 
+- 에이전트가 연속적인 행동을 할 경우 `Mathf.clip`을 활용해서 [-1, 1] 사이의 값으로 클립(clip) 해주시길 바랍니다. PPO 알고리즘을 사용할 경우 이러한 클립을 자동으로 진행합니다.
 
 ## 보상
 
@@ -537,7 +537,7 @@ Actuator Component 추상 클래스는 실행 시 실제 'IActuator'를 만들�
 
 간단한 보상함수를 구현하신 후 필요에 따라서 조금씩 추가하시는 것을 추천드립니다. 일반적으로 행동에 따른 보상 보다 결과에 따른 보상 메커니즘을 추천드립니다. Heurisitc 방법으로 직접 컨트롤 함으로써 구현된 보상함수를 테스트할 수 있습니다.
 
-`AddReward()`와 `SetReward()`를 호출해서 에이전트에 보상을 할당할 수 있습니다. 각 결정에 따라 받는 보상은 -1과 1 사이여야 합니다. 에이전트가 새로운 결정을 받으면 `reward` 값은 0으로 초기화 됩니다. 단일 결정에 여러 `AddReward`가 호출될 경우 이전 결정이 얼마나 좋았는지, 평가하기 위해 보상은 합산됩니다. `SetReward`는 이전 결정 이 후 에이전트에 주어진 모든 보상을 덮어씁니다. 
+`AddReward()`와 `SetReward()`를 호출해서 에이전트에 보상을 할당할 수 있습니다. 각 결정에 따라 받는 보상은 -1과 1 사이여야 합니다. 에이전트가 새로운 결정을 받으면 `reward` 값은 0으로 초기화 됩니다. 단일 결정에 여러 `AddReward`가 호출될 경우 이전 결정이 얼마나 좋았는지, 평가하기 위해 보상은 합산됩니다. `SetReward`는 이전 결정 이 후 에이전트에 주어진 모든 보상을 덮어씁니다.
 
 ### Examples
 
@@ -617,7 +617,7 @@ if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
   - `Actions`
     - `Continuous Actions` - 에이전트가 수행할 수 있는 연속적 행동의 수 입니다.
     - `Discrete Branches` - 여러 개의 정수를 동시에 정의하는 정수의 배열입니다. `Discrete Branches` 배열에 있는 값은 각각의 행동 가지(action Branch)에서 가능한 Discrete Branches 수와 대응해야 합니다.
-  - `Model` - 학습 후 얻어진 onnx 모델 입니다. 추론을 위해 사용합니다.    
+  - `Model` - 학습 후 얻어진 onnx 모델 입니다. 추론을 위해 사용합니다.
   - `Inference Device` - 모델을 추론 할 때 사용할 장치입니다. CPU와 GPU 중 선택할 수 있습니다.
   - `Behavior Type` - 에이전트가 학습을 진행할 것 인지, 추론을 진행할 것 인지 아니면 직접 플레이(Heuristic)을 할 것인지 설정할 수 있습니다.
     - `Default` - 파이썬 트레이너와 연결되어 있을 경우 학습을 진행하고 그렇지 않을 경우 추론을 합니다.
@@ -629,7 +629,7 @@ if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
 
 ## Destroying an Agent
 
-학습이 진행되는 중에 에이전트 오브젝트를 파괴할 수 있습니다. 하지만 환경이 초기화 될 때 리스폰을 통해서 적어도 1개의 에이전트는 학습을 진행하도록 해주시길 바랍니다. 
+학습이 진행되는 중에 에이전트 오브젝트를 파괴할 수 있습니다. 하지만 환경이 초기화 될 때 리스폰을 통해서 적어도 1개의 에이전트는 학습을 진행하도록 해주시길 바랍니다.
 
 ## Defining Multi-agent Scenarios
 
@@ -650,7 +650,7 @@ if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
 ### Groups for Cooperative Scenarios
 
 ML-Agents의 협동형 학습은 `Simple MultiAgent Group` 인스턴스를 만들어서 활성화할 수 있습니다.
-모든 에이전트는 `SimpleMultiAgentGroup`에 추가되어야 하고, 같은 Behavior Name 과 Behavior Parameters를 가져야 합니다. `SimpleMultiAgentGroup`와 `AddGroupReward`, `SetGroupReward()`, `EndGroupEpisode()`, `GroupEpisodeInterrupted()`  를 사용함으로써 소수의 에이전트가 희생하더라도 협동하여 공동의 목표를 이룰 수 있습니다. 
+모든 에이전트는 `SimpleMultiAgentGroup`에 추가되어야 하고, 같은 Behavior Name 과 Behavior Parameters를 가져야 합니다. `SimpleMultiAgentGroup`와 `AddGroupReward`, `SetGroupReward()`, `EndGroupEpisode()`, `GroupEpisodeInterrupted()`  를 사용함으로써 소수의 에이전트가 희생하더라도 협동하여 공동의 목표를 이룰 수 있습니다.
 
 ```csharp
 // Create a Multi Agent Group in Start() or Initialize()
@@ -675,10 +675,10 @@ ResetScene();
 ```
 
 멀티 에이전트 그룹은 협동형 환경의 학습을 위해 제작된 MA-POCA 알고리즘(Trainer)를 사용해야 합니다.
-이를 위해 다음의 문서를 참고해주시길 바랍니다. [training configurations](Training-Configuration-File.md) 
+이를 위해 다음의 문서를 참고해주시길 바랍니다. [training configurations](Training-Configuration-File.md)
 MA-POCA 알고리즘을 사용할 때 씬에서 비활성화되었거나 제거된 에이전트도 그룹 단위의 보상을 받습니다.
 
-멀티 에이전트 그룹이 어떻게 사용되는지 보기 위해, 다음의 환경을 참고해주세요. [Cooperative Push Block](Learning-Environment-Examples.md#cooperative-push-block), [Dungeon Escape](Learning-Environment-Examples.md#dungeon-escape) 
+멀티 에이전트 그룹이 어떻게 사용되는지 보기 위해, 다음의 환경을 참고해주세요. [Cooperative Push Block](Learning-Environment-Examples.md#cooperative-push-block), [Dungeon Escape](Learning-Environment-Examples.md#dungeon-escape)
 
 **참고**: 협동형 환경에서 그룹은 다음의 조건에 맞게 설정해야 합니다. 에이전트가 협동하는 경우 같은 그룹에 에이전트를 추가해야합니다. 반면에 에이전트간 서로 경쟁을 하는 경우 에이전트는 다른 팀 아이디 (Tead IDs)를 사용해야 합니다. 만약 씬에서 하나의 환경에 2개의 다른 팀이 있을 경우, 각 팀별로 1개씩 2개의 그룹이 있어야 하며 각 팀에는 다른 그룹을 할당해야 합니다. 만약 학습 속도를 높이기 위해, 씬에서 학습 환경이 여러번 복제되었을 경우 각 환경마다 2개의 그룹과 2개의 고유한 팀 ID가 있어야 합니다. 이와 같이 그룹과 팀 ID가 모두 설정되어 있는 환경에서 MA-POCA 알고리즘와 셀프-플레이(self-play)는 학습을 위해 같이 사용될 수 있습니다. 아래를 참고해보면 2개의 에이전트가 각가의 팀에 그리고 팀끼리 경기하는 2개의 경기장이 있는 것을 확인할 수 있습니다.
 모든 파란 에이전트는 같은 팀 아이디를 공유하고 (주황 에이전트와는 다른), 에이전트와 연결되는 4개의 그룹 매니저가 있습니다.
@@ -700,12 +700,12 @@ Please see the [SoccerTwos](Learning-Environment-Examples.md#soccer-twos) enviro
 
 * `EndGroupEpisode` 그리고 `GroupEpisodeInterrupted` 동일하게 에피소드를 종료합니다. 하지만 학습에는 조금 다른 영향을 미칩니다. 에피소드가 클리어 됐을 때 `EndGroupEpisode`를 호출하고 에피소드가 종료되지 않았지만 충분히 학습을 진행한 경우 `GroupEpisodeInterrupted`를 호출 할 수 있습니다.
 
-* `EndEpisode()`는 에이전트를 초기화 하는 `OnEpisodeBegin()` 호출합니다. 따라서 에이전트가 게임에서 문제를 해결했거나, 제거되었거나, 죽었을 경우 `EndEpisode()`를 호출하지 말아주시길 바랍니다. 대신에 다음 에피소드의 시작에서 에이전트를 비활성화-활성화 해주시길 바랍니다. 
+* `EndEpisode()`는 에이전트를 초기화 하는 `OnEpisodeBegin()` 호출합니다. 따라서 에이전트가 게임에서 문제를 해결했거나, 제거되었거나, 죽었을 경우 `EndEpisode()`를 호출하지 말아주시길 바랍니다. 대신에 다음 에피소드의 시작에서 에이전트를 비활성화-활성화 해주시길 바랍니다.
 
 * 씬에 있는 에이전트가 비활성화 후 활성화 될 경우, MultiAgentGroup에 다시 등록 해야합니다.
 * If an agent that was disabled in a scene needs to be re-enabled, it must be re-registered to the MultiAgentGroup.
 
-* `AddGroupReward()` 와 `agent.AddReward()`는 다릅니다. 그룹 보상은 개별 보상과는 별개로, 에이전트가 공동의 목표를 이루도록 유도합니다. 
+* `AddGroupReward()` 와 `agent.AddReward()`는 다릅니다. 그룹 보상은 개별 보상과는 별개로, 에이전트가 공동의 목표를 이루도록 유도합니다.
 
 * 멀티 에이전트 그룹을 사용할 경우에도 `Agent.AddReward()'를 사용할 수 있습니다. 하지만 이 경우 활성화 되어있고, 그룹 단위가 아닌 각각의 에이전트만 보상을 받을 수 있습니다.
 

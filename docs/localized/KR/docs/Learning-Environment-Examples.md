@@ -11,7 +11,7 @@
 유니티 ML-Agents Toolkit은 사전 훈련(pre-trained)된 모델(onnx)과 사용자가 직접 학습할 수 있도록 하이퍼 파라미터 설정 파일(yaml)을 제공합니다 (단, _Optional_ 제외)
 
 이 문서는 예제 환경의 내용만 포함합니다. 환경 제작에 관련된 문서 링크는 다음과 같습니다.
-[Making a New Learning Environment](Learning-Environment-Create-New.md) page. 
+[Making a New Learning Environment](Learning-Environment-Create-New.md) page.
 만약 공식적인 ML-Agents 예제 환경에 기여하고 싶다면, 다음 문서를 참고해주시길 바랍니다.
 [contribution guidelines](../com.unity.ml-agents/CONTRIBUTING.md) page.
 
@@ -106,7 +106,7 @@
     - 기본값: 0
     - 권장 최솟값: 0
     - 권장 최댓값: 1
-  - 정적 마찰: 정지한 물체가 갖는 정적 마찰 계수 
+  - 정적 마찰: 정지한 물체가 갖는 정적 마찰 계수
     - 기본값: 0
     - 권장 최솟값: 0
     - 권장 최댓값: 1
@@ -122,7 +122,7 @@
 
 - 구성: 에이전트가 벽을 뛰어넘을 수 있는 플랫폼 환경입니다.
 - 목표: 에이전트는 벽의 높이에 따라 블록을 사용하거나, 사용하지 않고 최대한 빠르게 목표에 도달해야 합니다.
-- 에이전트: 2개의 학습 모델을 사용하는 하나의 에이전트는 벽의 높이에 따라 적절한 학습 모델을 선택합니다. (벽의 높이가 높을 때 BigWallJump.onnx, 낮을 때 SmallWallJump.onnx) 
+- 에이전트: 2개의 학습 모델을 사용하는 하나의 에이전트는 벽의 높이에 따라 적절한 학습 모델을 선택합니다. (벽의 높이가 높을 때 BigWallJump.onnx, 낮을 때 SmallWallJump.onnx)
 -  보상 함수:
   - -0.0005 스텝마다 감점.
   - +1.0 목적지에 도착할 때.
@@ -335,7 +335,7 @@
   - 관찰 및 동작은 각각 센서와 액추에이터로 정의됩니다.
 - Float Properties: 0
 - Benchmark Mean Reward:
-  - 시각적 관측 : 39.5 
+  - 시각적 관측 : 39.5
   - 벡터 관측 : 38.5
   - 간단한 Heuristic : 34.2
   - 탐욕적인 Heuristic : 37.0
@@ -365,13 +365,13 @@
 ## Cooperative Push Block
 ![CoopPushBlock](images/cooperative_pushblock.png)
 
-- 구성: 
+- 구성:
 - Push Block 환경과 유사하지만, 협동 환경입니다. 하나의 에이전트가 푸쉬할 수 있는 작은 블록과 달리 중간 그리고 큰 블록일 때 에이전트간 협동을 통해 푸쉬할 수 있습니다.
 - 목표: 모든 블록을 골대에 넣습니다.
 - 에이전트: 환경마다 단일 팀으로 3개의 에이전트가 존재합니다.
 - 보상 함수:
   - -0.0001 스텝마다 그룸 감점
-  - +1, +2, or +3 블록을 푸쉬할 때마다 크기에 따른 그룹 가점, 
+  - +1, +2, or +3 블록을 푸쉬할 때마다 크기에 따른 그룹 가점,
 - Behavior Parameters:
   - 관측 크기:  6개의 태그 오브젝트를 감지하기 위해 그리드 센서를 사용합니다.
   - 행동: 1 이산적 행동 - 분기(Branch) 7개 (시계방향 회전, 반시계 방향 회전, 기본 방향 이동, 정지)
