@@ -2,7 +2,7 @@ csharp:
   name: Sonarqube Scan for ml-agents python repo
   agent:
     type: Unity::metal::macmini
-    image: package-ci/mac
+    image: package-ci/mac:v1.8.1-822785
     flavor: m1.mac
   variables:
     SONARQUBE_PROJECT_KEY: ai-ml-agents-toolkit
