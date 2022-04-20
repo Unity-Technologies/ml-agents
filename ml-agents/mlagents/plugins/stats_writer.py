@@ -13,7 +13,7 @@ from mlagents.trainers.stats import StatsWriter
 from mlagents_envs import logging_util
 from mlagents.plugins import ML_AGENTS_STATS_WRITER
 from mlagents.trainers.settings import RunOptions
-from mlagents.trainers.stats import TensorboardWriter, GaugeWriter, ConsoleWriter
+from mlagents.trainers.stats import TensorboardWriter, GaugeWriter, ConsoleWriter, WandbWriter
 
 
 logger = logging_util.get_logger(__name__)
@@ -25,6 +25,7 @@ def get_default_stats_writers(run_options: RunOptions) -> List[StatsWriter]:
     * A TensorboardWriter to write information to TensorBoard
     * A GaugeWriter to record our internal stats
     * A ConsoleWriter to output to stdout.
+    * A Wandb.AI Writer
     """
     checkpoint_settings = run_options.checkpoint_settings
     return [
@@ -35,6 +36,7 @@ def get_default_stats_writers(run_options: RunOptions) -> List[StatsWriter]:
         ),
         GaugeWriter(),
         ConsoleWriter(),
+        WandbWriter()
     ]
 
 
