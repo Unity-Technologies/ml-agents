@@ -284,6 +284,7 @@ behaviors:
       epsilon_schedule: linear
       lambd: 0.95
       num_epoch: 3
+      shared_critic: False
 
     # Configuration of the neural network (common to PPO/SAC)
     network_settings:

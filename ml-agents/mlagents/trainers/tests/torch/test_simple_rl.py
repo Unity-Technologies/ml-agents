@@ -151,7 +151,8 @@ def test_2d_ppo(action_sizes):
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
 @pytest.mark.parametrize("num_visual", [1, 2])
-def test_visual_ppo(num_visual, action_sizes):
+@pytest.mark.parametrize("shared_critic", [True, False])
+def test_visual_ppo(shared_critic, num_visual, action_sizes):
     env = SimpleEnvironment(
         [BRAIN_NAME],
         action_sizes=action_sizes,
@@ -160,7 +161,9 @@ def test_visual_ppo(num_visual, action_sizes):
         step_size=0.2,
     )
     new_hyperparams = attr.evolve(
-        PPO_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4
+        PPO_TORCH_CONFIG.hyperparameters,
+        learning_rate=3.0e-4,
+        shared_critic=shared_critic,
     )
     config = attr.evolve(PPO_TORCH_CONFIG, hyperparameters=new_hyperparams)
     check_environment_trains(env, {BRAIN_NAME: config})

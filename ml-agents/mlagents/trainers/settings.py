@@ -180,6 +180,7 @@ class PPOSettings(HyperparamSettings):
     epsilon: float = 0.2
     lambd: float = 0.95
     num_epoch: int = 3
+    shared_critic: bool = False
     learning_rate_schedule: ScheduleType = ScheduleType.LINEAR
     beta_schedule: ScheduleType = ScheduleType.LINEAR
     epsilon_schedule: ScheduleType = ScheduleType.LINEAR

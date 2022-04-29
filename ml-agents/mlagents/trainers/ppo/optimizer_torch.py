@@ -29,6 +29,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         reward_signal_configs = trainer_settings.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
 
+        params = list(self.policy.actor.parameters())
         if policy.shared_critic:
             self._critic = policy.actor
         else:
@@ -38,8 +39,8 @@ class TorchPPOOptimizer(TorchOptimizer):
                 network_settings=trainer_settings.network_settings,
             )
             self._critic.to(default_device())
+            params += list(self._critic.parameters())
 
-        params = list(self.policy.actor.parameters()) + list(self._critic.parameters())
         self.hyperparameters: PPOSettings = cast(
             PPOSettings, trainer_settings.hyperparameters
         )
