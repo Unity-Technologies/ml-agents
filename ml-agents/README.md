@@ -27,7 +27,5 @@ scene with the ML-Agents SDK, check out the main
 
 ## Limitations
 
-- `mlagents` does not yet explicitly support multi-agent scenarios so training
-  cooperative behavior among different agents is not stable.
 - Resuming self-play from a checkpoint resets the reported ELO to the default
   value.
