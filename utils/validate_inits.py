@@ -13,7 +13,7 @@ class NonTrivialPEP420PackageFinder(PEP420PackageFinder):
     """
 
     @staticmethod
-    def _looks_like_package(path):
+    def _looks_like_package(path, package_name=None):
         glob_path = os.path.join(path, "*.py")
         return any(glob.iglob(glob_path))
 

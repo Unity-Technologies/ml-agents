@@ -55,7 +55,7 @@ setup(
         "protobuf>=3.6",
         "pyyaml>=3.1.0",
         "gym>=0.21.0",
-        "pettingzoo>=1.15.0",
+        "pettingzoo==1.15.0",
         "numpy==1.21.2",
         "filelock>=3.4.0",
     ],
