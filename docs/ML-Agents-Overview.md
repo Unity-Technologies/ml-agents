@@ -621,6 +621,8 @@ MA-POCA can also be combined with self-play to train teams of agents to play aga
 To learn more about enabling cooperative behaviors for agents in an ML-Agents environment,
 check out [this page](Learning-Environment-Design-Agents.md#groups-for-cooperative-scenarios).
 
+To learn more about MA-POCA, please see our paper
+[On the Use and Misuse of Absorbing States in Multi-Agent Reinforcement Learning](https://arxiv.org/pdf/2111.05992.pdf).
 For further reading, MA-POCA builds on previous work in multi-agent cooperative learning
 ([Lowe et al.](https://arxiv.org/abs/1706.02275), [Foerster et al.](https://arxiv.org/pdf/1705.08926.pdf),
 among others) to enable the above use-cases.
