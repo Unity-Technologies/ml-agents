@@ -71,6 +71,9 @@ env = UnityEnvironment(file_name="3DBall", seed=1, side_channels=[])
 # Start interacting with the environment.
 env.reset()
 behavior_names = env.behavior_specs.keys()
+for i in range(1000):
+    env.step()
+env.close()
 ...
 ```
 **NOTE:** Please read [Interacting with a Unity Environment](#interacting-with-a-unity-environment)
