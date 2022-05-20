@@ -73,7 +73,7 @@ env.reset()
 behavior_names = env.behavior_specs.keys()
 for i in range(1000):
     env.step()
-exit()
+env.close()
 ...
 ```
 **NOTE:** Please read [Interacting with a Unity Environment](#interacting-with-a-unity-environment)
