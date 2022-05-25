@@ -454,7 +454,7 @@ Agent.
 
 - To collect visual observations, attach `CameraSensor` or `RenderTextureSensor`
   components to the agent GameObject.
-- Visual observations should generally be used unless vector observations are
+- Visual observations should generally only be used when vector observations are
   not sufficient.
 - Image size should be kept as small as possible, without the loss of needed
   details for decision making.
