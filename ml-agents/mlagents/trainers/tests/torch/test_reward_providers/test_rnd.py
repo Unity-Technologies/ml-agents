@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from mlagents.torch_utils import torch
-from mlagents.trainers.torch.components.reward_providers import (
+from mlagents.trainers.torch_entities.components.reward_providers import (
     RNDRewardProvider,
     create_reward_provider,
 )

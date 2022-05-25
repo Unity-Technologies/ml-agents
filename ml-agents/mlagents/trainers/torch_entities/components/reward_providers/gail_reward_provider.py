@@ -3,17 +3,17 @@ import numpy as np
 from mlagents.torch_utils import torch, default_device
 
 from mlagents.trainers.buffer import AgentBuffer, BufferKey
-from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
+from mlagents.trainers.torch_entities.components.reward_providers.base_reward_provider import (
     BaseRewardProvider,
 )
 from mlagents.trainers.settings import GAILSettings
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents_envs import logging_util
-from mlagents.trainers.torch.utils import ModelUtils
-from mlagents.trainers.torch.agent_action import AgentAction
-from mlagents.trainers.torch.action_flattener import ActionFlattener
-from mlagents.trainers.torch.networks import NetworkBody
-from mlagents.trainers.torch.layers import linear_layer, Initialization
+from mlagents.trainers.torch_entities.utils import ModelUtils
+from mlagents.trainers.torch_entities.agent_action import AgentAction
+from mlagents.trainers.torch_entities.action_flattener import ActionFlattener
+from mlagents.trainers.torch_entities.networks import NetworkBody
+from mlagents.trainers.torch_entities.layers import linear_layer, Initialization
 from mlagents.trainers.demo_loader import demo_to_buffer
 from mlagents.trainers.trajectory import ObsUtil
 

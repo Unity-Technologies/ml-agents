@@ -1,9 +1,9 @@
 from typing import Tuple, Optional, Union
 
-from mlagents.trainers.torch.layers import linear_layer, Initialization, Swish
+from mlagents.trainers.torch_entities.layers import linear_layer, Initialization, Swish
 
 from mlagents.torch_utils import torch, nn
-from mlagents.trainers.torch.model_serialization import exporting_to_onnx
+from mlagents.trainers.torch_entities.model_serialization import exporting_to_onnx
 
 
 class Normalizer(nn.Module):

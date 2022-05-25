@@ -3,7 +3,7 @@ from typing import List
 from mlagents.torch_utils import torch, nn
 import numpy as np
 import math
-from mlagents.trainers.torch.layers import linear_layer, Initialization
+from mlagents.trainers.torch_entities.layers import linear_layer, Initialization
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 

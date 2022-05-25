@@ -2,7 +2,7 @@ from mlagents.torch_utils import torch
 from unittest import mock
 import pytest
 
-from mlagents.trainers.torch.encoders import (
+from mlagents.trainers.torch_entities.encoders import (
     VectorInput,
     Normalizer,
     SmallVisualEncoder,
@@ -50,7 +50,7 @@ def test_normalizer():
         assert val == pytest.approx(0.707, abs=0.001)
 
 
-@mock.patch("mlagents.trainers.torch.encoders.Normalizer")
+@mock.patch("mlagents.trainers.torch_entities.encoders.Normalizer")
 def test_vector_encoder(mock_normalizer):
     mock_normalizer_inst = mock.Mock()
     mock_normalizer.return_value = mock_normalizer_inst

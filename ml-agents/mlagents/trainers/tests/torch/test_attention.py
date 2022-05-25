@@ -2,9 +2,9 @@ import pytest
 from mlagents.torch_utils import torch
 import numpy as np
 
-from mlagents.trainers.torch.utils import ModelUtils
-from mlagents.trainers.torch.layers import linear_layer, LinearEncoder
-from mlagents.trainers.torch.attention import (
+from mlagents.trainers.torch_entities.utils import ModelUtils
+from mlagents.trainers.torch_entities.layers import linear_layer, LinearEncoder
+from mlagents.trainers.torch_entities.attention import (
     MultiHeadAttention,
     EntityEmbedding,
     ResidualSelfAttention,

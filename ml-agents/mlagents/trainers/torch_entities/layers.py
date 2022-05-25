@@ -2,7 +2,7 @@ from mlagents.torch_utils import torch
 import abc
 from typing import Tuple
 from enum import Enum
-from mlagents.trainers.torch.model_serialization import exporting_to_onnx
+from mlagents.trainers.torch_entities.model_serialization import exporting_to_onnx
 
 
 class Swish(torch.nn.Module):

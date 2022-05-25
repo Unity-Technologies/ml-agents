@@ -3,19 +3,19 @@ from mlagents.trainers.exception import UnityTrainerException
 
 from mlagents.trainers.settings import RewardSignalSettings, RewardSignalType
 
-from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
+from mlagents.trainers.torch_entities.components.reward_providers.base_reward_provider import (
     BaseRewardProvider,
 )
-from mlagents.trainers.torch.components.reward_providers.extrinsic_reward_provider import (
+from mlagents.trainers.torch_entities.components.reward_providers.extrinsic_reward_provider import (
     ExtrinsicRewardProvider,
 )
-from mlagents.trainers.torch.components.reward_providers.curiosity_reward_provider import (
+from mlagents.trainers.torch_entities.components.reward_providers.curiosity_reward_provider import (
     CuriosityRewardProvider,
 )
-from mlagents.trainers.torch.components.reward_providers.gail_reward_provider import (
+from mlagents.trainers.torch_entities.components.reward_providers.gail_reward_provider import (
     GAILRewardProvider,
 )
-from mlagents.trainers.torch.components.reward_providers.rnd_reward_provider import (
+from mlagents.trainers.torch_entities.components.reward_providers.rnd_reward_provider import (
     RNDRewardProvider,
 )
 

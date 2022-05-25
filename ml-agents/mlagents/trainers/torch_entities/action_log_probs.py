@@ -2,7 +2,7 @@ from typing import List, Optional, NamedTuple
 from mlagents.torch_utils import torch
 import numpy as np
 
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch_entities.utils import ModelUtils
 from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents_envs.base_env import _ActionTupleBase
 

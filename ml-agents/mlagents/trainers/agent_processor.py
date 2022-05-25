@@ -19,7 +19,7 @@ from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.trajectory import AgentStatus, Trajectory, AgentExperience
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo, ActionInfoOutputs
-from mlagents.trainers.torch.action_log_probs import LogProbsTuple
+from mlagents.trainers.torch_entities.action_log_probs import LogProbsTuple
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.behavior_id_utils import (
     get_global_agent_id,

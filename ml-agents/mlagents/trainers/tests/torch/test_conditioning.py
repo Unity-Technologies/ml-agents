@@ -2,8 +2,8 @@ import pytest
 from mlagents.torch_utils import torch
 import numpy as np
 
-from mlagents.trainers.torch.layers import linear_layer
-from mlagents.trainers.torch.conditioning import ConditionalEncoder
+from mlagents.trainers.torch_entities.layers import linear_layer
+from mlagents.trainers.torch_entities.conditioning import ConditionalEncoder
 
 
 def test_conditional_layer_initialization():

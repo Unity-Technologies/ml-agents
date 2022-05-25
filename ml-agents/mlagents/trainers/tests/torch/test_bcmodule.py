@@ -5,7 +5,7 @@ import mlagents.trainers.tests.mock_brain as mb
 import os
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
-from mlagents.trainers.torch.components.bc.module import BCModule
+from mlagents.trainers.torch_entities.components.bc.module import BCModule
 from mlagents.trainers.settings import (
     TrainerSettings,
     BehavioralCloningSettings,

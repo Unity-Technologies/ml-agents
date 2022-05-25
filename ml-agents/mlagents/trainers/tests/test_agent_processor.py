@@ -9,7 +9,7 @@ from mlagents.trainers.agent_processor import (
     AgentManagerQueue,
 )
 from mlagents.trainers.action_info import ActionInfo
-from mlagents.trainers.torch.action_log_probs import LogProbsTuple
+from mlagents.trainers.torch_entities.action_log_probs import LogProbsTuple
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.stats import StatsReporter, StatsSummary
 from mlagents.trainers.behavior_id_utils import get_global_agent_id

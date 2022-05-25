@@ -2,8 +2,8 @@ from typing import List
 from mlagents.torch_utils import torch
 
 from mlagents_envs.base_env import ActionSpec
-from mlagents.trainers.torch.agent_action import AgentAction
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch_entities.agent_action import AgentAction
+from mlagents.trainers.torch_entities.utils import ModelUtils
 
 
 class ActionFlattener:

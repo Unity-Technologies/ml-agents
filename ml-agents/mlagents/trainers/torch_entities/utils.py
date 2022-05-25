@@ -1,9 +1,9 @@
 from typing import List, Optional, Tuple, Dict
 from mlagents.torch_utils import torch, nn
-from mlagents.trainers.torch.layers import LinearEncoder, Initialization
+from mlagents.trainers.torch_entities.layers import LinearEncoder, Initialization
 import numpy as np
 
-from mlagents.trainers.torch.encoders import (
+from mlagents.trainers.torch_entities.encoders import (
     SimpleVisualEncoder,
     ResNetVisualEncoder,
     NatureVisualEncoder,
@@ -12,7 +12,10 @@ from mlagents.trainers.torch.encoders import (
     VectorInput,
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
-from mlagents.trainers.torch.attention import EntityEmbedding, ResidualSelfAttention
+from mlagents.trainers.torch_entities.attention import (
+    EntityEmbedding,
+    ResidualSelfAttention,
+)
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents_envs.base_env import ObservationSpec, DimensionProperty
 

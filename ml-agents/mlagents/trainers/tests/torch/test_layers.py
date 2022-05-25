@@ -1,6 +1,6 @@
 from mlagents.torch_utils import torch
 
-from mlagents.trainers.torch.layers import (
+from mlagents.trainers.torch_entities.layers import (
     Swish,
     linear_layer,
     lstm_layer,

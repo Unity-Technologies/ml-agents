@@ -1,13 +1,13 @@
 from typing import List, Tuple, NamedTuple, Optional
 from mlagents.torch_utils import torch, nn
-from mlagents.trainers.torch.distributions import (
+from mlagents.trainers.torch_entities.distributions import (
     DistInstance,
     DiscreteDistInstance,
     GaussianDistribution,
     MultiCategoricalDistribution,
 )
-from mlagents.trainers.torch.agent_action import AgentAction
-from mlagents.trainers.torch.action_log_probs import ActionLogProbs
+from mlagents.trainers.torch_entities.agent_action import AgentAction
+from mlagents.trainers.torch_entities.action_log_probs import ActionLogProbs
 from mlagents_envs.base_env import ActionSpec
 
 

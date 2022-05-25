@@ -4,18 +4,18 @@ import abc
 from mlagents.torch_utils import torch, nn
 
 from mlagents_envs.base_env import ActionSpec, ObservationSpec, ObservationType
-from mlagents.trainers.torch.action_model import ActionModel
-from mlagents.trainers.torch.agent_action import AgentAction
-from mlagents.trainers.torch.action_log_probs import ActionLogProbs
+from mlagents.trainers.torch_entities.action_model import ActionModel
+from mlagents.trainers.torch_entities.agent_action import AgentAction
+from mlagents.trainers.torch_entities.action_log_probs import ActionLogProbs
 from mlagents.trainers.settings import NetworkSettings, EncoderType, ConditioningType
-from mlagents.trainers.torch.utils import ModelUtils
-from mlagents.trainers.torch.decoders import ValueHeads
-from mlagents.trainers.torch.layers import LSTM, LinearEncoder
-from mlagents.trainers.torch.encoders import VectorInput
+from mlagents.trainers.torch_entities.utils import ModelUtils
+from mlagents.trainers.torch_entities.decoders import ValueHeads
+from mlagents.trainers.torch_entities.layers import LSTM, LinearEncoder
+from mlagents.trainers.torch_entities.encoders import VectorInput
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import ObsUtil
-from mlagents.trainers.torch.conditioning import ConditionalEncoder
-from mlagents.trainers.torch.attention import (
+from mlagents.trainers.torch_entities.conditioning import ConditionalEncoder
+from mlagents.trainers.torch_entities.attention import (
     EntityEmbedding,
     ResidualSelfAttention,
     get_zero_entities_mask,

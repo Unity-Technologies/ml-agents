@@ -23,7 +23,7 @@ from mlagents.trainers.settings import (
 )
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.torch.test_policy import create_policy_mock
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch_entities.utils import ModelUtils
 
 
 def test_register(tmp_path):

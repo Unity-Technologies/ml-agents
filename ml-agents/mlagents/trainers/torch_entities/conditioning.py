@@ -2,7 +2,7 @@ from mlagents.torch_utils import torch
 from typing import List
 import math
 
-from mlagents.trainers.torch.layers import (
+from mlagents.trainers.torch_entities.layers import (
     linear_layer,
     Swish,
     Initialization,

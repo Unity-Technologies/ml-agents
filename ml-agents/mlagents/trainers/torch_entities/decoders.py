@@ -1,7 +1,7 @@
 from typing import List, Dict
 
 from mlagents.torch_utils import torch, nn
-from mlagents.trainers.torch.layers import linear_layer
+from mlagents.trainers.torch_entities.layers import linear_layer
 
 
 class ValueHeads(nn.Module):

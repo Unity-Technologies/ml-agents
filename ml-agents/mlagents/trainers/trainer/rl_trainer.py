@@ -16,7 +16,7 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
+from mlagents.trainers.torch_entities.components.reward_providers.base_reward_provider import (
     BaseRewardProvider,
 )
 from mlagents_envs.timers import hierarchical_timer

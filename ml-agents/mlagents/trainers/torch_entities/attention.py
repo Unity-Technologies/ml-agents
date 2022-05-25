@@ -1,13 +1,13 @@
 from mlagents.torch_utils import torch
 import warnings
 from typing import Tuple, Optional, List
-from mlagents.trainers.torch.layers import (
+from mlagents.trainers.torch_entities.layers import (
     LinearEncoder,
     Initialization,
     linear_layer,
     LayerNorm,
 )
-from mlagents.trainers.torch.model_serialization import exporting_to_onnx
+from mlagents.trainers.torch_entities.model_serialization import exporting_to_onnx
 from mlagents.trainers.exception import UnityTrainerException
 
 

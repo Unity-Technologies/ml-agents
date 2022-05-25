@@ -1,6 +1,6 @@
 from typing import Dict, cast, List, Tuple, Optional
 from collections import defaultdict
-from mlagents.trainers.torch.components.reward_providers.extrinsic_reward_provider import (
+from mlagents.trainers.torch_entities.components.reward_providers.extrinsic_reward_provider import (
     ExtrinsicRewardProvider,
 )
 import numpy as np
@@ -23,11 +23,11 @@ from mlagents.trainers.settings import (
     TrainerSettings,
     POCASettings,
 )
-from mlagents.trainers.torch.networks import Critic, MultiAgentNetworkBody
-from mlagents.trainers.torch.decoders import ValueHeads
-from mlagents.trainers.torch.agent_action import AgentAction
-from mlagents.trainers.torch.action_log_probs import ActionLogProbs
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch_entities.networks import Critic, MultiAgentNetworkBody
+from mlagents.trainers.torch_entities.decoders import ValueHeads
+from mlagents.trainers.torch_entities.agent_action import AgentAction
+from mlagents.trainers.torch_entities.action_log_probs import ActionLogProbs
+from mlagents.trainers.torch_entities.utils import ModelUtils
 from mlagents.trainers.trajectory import ObsUtil, GroupObsUtil
 from mlagents.trainers.settings import NetworkSettings
 

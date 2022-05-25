@@ -1,9 +1,9 @@
 import pytest
 
 from mlagents.torch_utils import torch
-from mlagents.trainers.torch.action_model import ActionModel, DistInstances
-from mlagents.trainers.torch.agent_action import AgentAction
-from mlagents.trainers.torch.distributions import (
+from mlagents.trainers.torch_entities.action_model import ActionModel, DistInstances
+from mlagents.trainers.torch_entities.agent_action import AgentAction
+from mlagents.trainers.torch_entities.distributions import (
     GaussianDistInstance,
     CategoricalDistInstance,
 )

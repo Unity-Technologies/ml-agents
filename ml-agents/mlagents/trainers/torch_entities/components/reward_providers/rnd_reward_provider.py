@@ -3,15 +3,15 @@ from typing import Dict
 from mlagents.torch_utils import torch
 
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
+from mlagents.trainers.torch_entities.components.reward_providers.base_reward_provider import (
     BaseRewardProvider,
 )
 from mlagents.trainers.settings import RNDSettings
 
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents_envs import logging_util
-from mlagents.trainers.torch.utils import ModelUtils
-from mlagents.trainers.torch.networks import NetworkBody
+from mlagents.trainers.torch_entities.utils import ModelUtils
+from mlagents.trainers.torch_entities.networks import NetworkBody
 from mlagents.trainers.trajectory import ObsUtil
 
 logger = logging_util.get_logger(__name__)

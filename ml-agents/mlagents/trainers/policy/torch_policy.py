@@ -10,12 +10,16 @@ from mlagents_envs.base_env import DecisionSteps, BehaviorSpec
 from mlagents_envs.timers import timed
 
 from mlagents.trainers.settings import TrainerSettings
-from mlagents.trainers.torch.networks import SimpleActor, SharedActorCritic, GlobalSteps
+from mlagents.trainers.torch_entities.networks import (
+    SimpleActor,
+    SharedActorCritic,
+    GlobalSteps,
+)
 
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch_entities.utils import ModelUtils
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.torch.agent_action import AgentAction
-from mlagents.trainers.torch.action_log_probs import ActionLogProbs
+from mlagents.trainers.torch_entities.agent_action import AgentAction
+from mlagents.trainers.torch_entities.action_log_probs import ActionLogProbs
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 

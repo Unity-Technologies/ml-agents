@@ -4,7 +4,7 @@ import numpy as np
 from mlagents.torch_utils import torch
 
 from mlagents.trainers.buffer import AgentBuffer, BufferKey
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch_entities.utils import ModelUtils
 from mlagents_envs.base_env import ActionTuple
 
 

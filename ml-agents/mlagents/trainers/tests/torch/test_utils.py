@@ -3,9 +3,9 @@ from mlagents.torch_utils import torch
 import numpy as np
 
 from mlagents.trainers.settings import EncoderType, ScheduleType
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch_entities.utils import ModelUtils
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents.trainers.torch.encoders import VectorInput
+from mlagents.trainers.torch_entities.encoders import VectorInput
 from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
 
 

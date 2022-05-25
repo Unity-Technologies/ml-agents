@@ -2,7 +2,7 @@ import numpy as np
 from mlagents.torch_utils import torch
 
 from mlagents.trainers.buffer import AgentBuffer, BufferKey
-from mlagents.trainers.torch.agent_action import AgentAction
+from mlagents.trainers.torch_entities.agent_action import AgentAction
 
 
 def test_agent_action_group_from_buffer():

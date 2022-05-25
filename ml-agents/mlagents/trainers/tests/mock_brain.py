@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer, AgentBufferKey
-from mlagents.trainers.torch.action_log_probs import LogProbsTuple
+from mlagents.trainers.torch_entities.action_log_probs import LogProbsTuple
 from mlagents.trainers.trajectory import AgentStatus, Trajectory, AgentExperience
 from mlagents_envs.base_env import (
     DecisionSteps,
