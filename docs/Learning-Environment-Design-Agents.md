@@ -494,6 +494,12 @@ Both sensor components have several settings:
   `Behavior Parameters`.
 - _Start Vertical Offset_ (3D only) The vertical offset of the ray start point.
 - _End Vertical Offset_ (3D only) The vertical offset of the ray end point.
+- _Alternating Ray Order_ Alternating is the default, it gives an order of (0,
+  -delta, delta, -2*delta, 2*delta, ..., -n*delta, n*delta). If alternating is
+  disabled the order is left to right (-n*delta, -(n-1)*delta, ..., -delta, 0,
+  delta, ..., (n-1)*delta, n*delta). For general usage there is no difference
+  but if using custom models the left-to-right layout that matches the spatial
+  structuring can be preferred (e.g. for processing with conv nets).
 
 In the example image above, the Agent has two `RayPerceptionSensorComponent3D`s.
 Both use 3 Rays Per Direction and 90 Max Ray Degrees. One of the components had
