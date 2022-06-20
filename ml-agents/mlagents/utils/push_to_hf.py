@@ -79,12 +79,15 @@ def _generate_model_card(repo_local_path, configfile_name):
   ```
   mlagents-learn <your_configuration_file_path.yaml> --run-id=<run_id> --resume
   ```
-  ### Watch your Agent
-  1. Move your model file into the environment Project
-  2. Open the Unity Editor, and select the scene.
-  3. Select the prefab Agent object.
-  4. Drag the <behavior_name>.onnx file from the Project window of the Editor to the Model placeholder in the Agent inspector window.
-  5. Press the Play button at the top of the Editor.
+  ### Watch your Agent play
+  You can watch your agent **playing directly in your browser:**. 
+  """
+  
+    model_card += f"""
+  1. Go to https://https://huggingface.co/spaces/ThomasSimonini/Unity-ML-Agents-{env_id}
+  2. Step 1: Write your model_id: {repo_id}
+  3. Step 2: Select your *.nn file
+  4. Click on Watch the agent play 👀
   """
 
     return model_card
