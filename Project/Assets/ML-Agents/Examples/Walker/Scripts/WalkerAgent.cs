@@ -285,14 +285,6 @@ public class WalkerAgent : Agent
         return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / MTargetWalkingSpeed, 2), 2);
     }
 
-    /// <summary>
-    /// Agent touched the target
-    /// </summary>
-    public void TouchedTarget()
-    {
-        AddReward(1f);
-    }
-
     public void SetTorsoMass()
     {
         m_JdController.bodyPartsDict[chest].rb.mass = m_ResetParams.GetWithDefault("chest_mass", 8);
