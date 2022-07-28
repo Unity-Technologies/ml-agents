@@ -91,7 +91,7 @@ jobs:
       run: |
         pytest --cov=ml-agents --cov=ml-agents-envs \
         --cov-report=html --junitxml=junit/test-results-${{ matrix.python-version }}.xml \
-        -p no:warnings -v -m "${{ steps.pytest_marker.outputs.markers }}" -n auto
+        -p no:warnings -v -m "${{ steps.pytest_marker.outputs.markers }}" -n 8
     - name: Upload pytest test results
       uses: actions/upload-artifact@v2
       with:
