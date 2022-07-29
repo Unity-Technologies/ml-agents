@@ -21,7 +21,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         Pose[] m_LocalSpacePoses;
 
         Vector3[] m_ModelSpaceLinearVelocities;
+        Vector3[] m_ModelSpaceAngularVelocities;
         Vector3[] m_LocalSpaceLinearVelocities;
+        Vector3[] m_LocalSpaceAngularVelocities;
 
         bool[] m_PoseEnabled;
 
@@ -84,6 +86,25 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
+        /// Read iterator for the enabled model space angular velocities.
+        /// </summary>
+        public IEnumerable<Vector3> GetEnabledModelSpaceAngularVelocities()
+        {
+            if (m_ModelSpaceAngularVelocities == null)
+            {
+                yield break;
+            }
+
+            for (var i = 0; i < m_ModelSpaceAngularVelocities.Length; i++)
+            {
+                if (m_PoseEnabled[i])
+                {
+                    yield return m_ModelSpaceAngularVelocities[i];
+                }
+            }
+        }
+
+        /// <summary>
         /// Read iterator for the enabled local space linear velocities.
         /// </summary>
         public IEnumerable<Vector3> GetEnabledLocalSpaceVelocities()
@@ -98,6 +119,25 @@ namespace Unity.MLAgents.Extensions.Sensors
                 if (m_PoseEnabled[i])
                 {
                     yield return m_LocalSpaceLinearVelocities[i];
+                }
+            }
+        }
+
+        /// <summary>
+        /// Read iterator for the enabled local space angular velocities.
+        /// </summary>
+        public IEnumerable<Vector3> GetEnabledLocalSpaceAngularVelocities()
+        {
+            if (m_LocalSpaceAngularVelocities == null)
+            {
+                yield break;
+            }
+
+            for (var i = 0; i < m_LocalSpaceAngularVelocities.Length; i++)
+            {
+                if (m_PoseEnabled[i])
+                {
+                    yield return m_LocalSpaceAngularVelocities[i];
                 }
             }
         }
@@ -181,7 +221,9 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_LocalSpacePoses = new Pose[numPoses];
 
             m_ModelSpaceLinearVelocities = new Vector3[numPoses];
+            m_ModelSpaceAngularVelocities = new Vector3[numPoses];
             m_LocalSpaceLinearVelocities = new Vector3[numPoses];
+            m_LocalSpaceAngularVelocities = new Vector3[numPoses];
 
             m_PoseEnabled = new bool[numPoses];
             // All poses are enabled by default. Generally we'll want to disable the root though.
@@ -204,6 +246,13 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="index"></param>
         /// <returns></returns>
         protected internal abstract Vector3 GetLinearVelocityAt(int index);
+
+        /// <summary>
+        /// Return the world space angular velocity of the i'th object.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        protected internal abstract Vector3 GetAngularVelocityAt(int index);
 
         /// <summary>
         /// Return the underlying object at the given index. This is only
@@ -232,6 +281,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 var rootWorldTransform = GetPoseAt(0);
                 var worldToModel = rootWorldTransform.Inverse();
                 var rootLinearVel = GetLinearVelocityAt(0);
+                var rootAngularVel = GetAngularVelocityAt(0);
 
                 for (var i = 0; i < m_ModelSpacePoses.Length; i++)
                 {
@@ -240,8 +290,11 @@ namespace Unity.MLAgents.Extensions.Sensors
                     m_ModelSpacePoses[i] = currentModelSpacePose;
 
                     var currentBodyLinearVel = GetLinearVelocityAt(i);
-                    var relativeVelocity = currentBodyLinearVel - rootLinearVel;
-                    m_ModelSpaceLinearVelocities[i] = worldToModel.rotation * relativeVelocity;
+                    var relativeLinearVel = currentBodyLinearVel - rootLinearVel;
+                    m_ModelSpaceLinearVelocities[i] = worldToModel.rotation * relativeLinearVel;
+                    var currentBodyAngularVel = GetAngularVelocityAt(i);
+                    var relativeAngularVel = currentBodyAngularVel - rootAngularVel;
+                    m_ModelSpaceAngularVelocities[i] = worldToModel.rotation * relativeAngularVel;
                 }
             }
         }
@@ -272,11 +325,15 @@ namespace Unity.MLAgents.Extensions.Sensors
                         var parentLinearVel = GetLinearVelocityAt(m_ParentIndices[i]);
                         var currentLinearVel = GetLinearVelocityAt(i);
                         m_LocalSpaceLinearVelocities[i] = invParent.rotation * (currentLinearVel - parentLinearVel);
+                        var parentAngularVel = GetAngularVelocityAt(m_ParentIndices[i]);
+                        var currentAngularVel = GetAngularVelocityAt(i);
+                        m_LocalSpaceAngularVelocities[i] = invParent.rotation * (currentAngularVel - parentAngularVel);
                     }
                     else
                     {
                         m_LocalSpacePoses[i] = Pose.identity;
                         m_LocalSpaceLinearVelocities[i] = Vector3.zero;
+                        m_LocalSpaceAngularVelocities[i] = Vector3.zero;
                     }
                 }
             }
@@ -296,7 +353,9 @@ namespace Unity.MLAgents.Extensions.Sensors
             obsPerPose += settings.UseLocalSpaceRotations ? 4 : 0;
 
             obsPerPose += settings.UseModelSpaceLinearVelocity ? 3 : 0;
+            obsPerPose += settings.UseModelSpaceAngularVelocity ? 3 : 0;
             obsPerPose += settings.UseLocalSpaceLinearVelocity ? 3 : 0;
+            obsPerPose += settings.UseLocalSpaceAngularVelocity ? 3 : 0;
 
             return NumEnabledPoses * obsPerPose;
         }
@@ -363,6 +422,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 return Array.Empty<DisplayNode>();
             }
+
             var nodesOut = new List<DisplayNode>(NumPoses);
 
             // List of children for each node
@@ -379,6 +439,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 {
                     tree[parent] = new List<int>();
                 }
+
                 tree[parent].Add(i);
             }
 
@@ -422,7 +483,6 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             return nodesOut;
         }
-
     }
 
     /// <summary>

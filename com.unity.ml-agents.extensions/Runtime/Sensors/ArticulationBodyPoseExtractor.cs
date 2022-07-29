@@ -64,6 +64,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <inheritdoc/>
+        protected internal override Vector3 GetAngularVelocityAt(int index)
+        {
+            return m_Bodies[index].angularVelocity;
+        }
+
+        /// <inheritdoc/>
         protected internal override Pose GetPoseAt(int index)
         {
             var body = m_Bodies[index];
