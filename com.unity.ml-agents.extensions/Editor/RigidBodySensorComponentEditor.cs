@@ -1,11 +1,10 @@
-using UnityEditor;
 using Unity.MLAgents.Editor;
 using Unity.MLAgents.Extensions.Sensors;
+using UnityEditor;
 
 namespace Unity.MLAgents.Extensions.Editor
 {
     [CustomEditor(typeof(RigidBodySensorComponent))]
-    [CanEditMultipleObjects]
     internal class RigidBodySensorComponentEditor : UnityEditor.Editor
     {
         bool ShowHierarchy = true;
@@ -26,8 +25,6 @@ namespace Unity.MLAgents.Extensions.Editor
                 );
             }
 
-            bool requireExtractorUpdate;
-
             EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
                 // All the fields affect the sensor order or observation size,
@@ -36,8 +33,11 @@ namespace Unity.MLAgents.Extensions.Editor
                 EditorGUILayout.PropertyField(so.FindProperty("RootBody"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("VirtualRoot"), true);
 
-                // Changing the root body or virtual root changes the hierarchy, so we need to reset later.
-                requireExtractorUpdate = EditorGUI.EndChangeCheck();
+                // Changing the root body or virtual root changes the hierarchy, so we need to reset.
+                if (EditorGUI.EndChangeCheck())
+                {
+                    rbSensorComp.ResetPoseExtractor();
+                }
 
                 EditorGUILayout.PropertyField(so.FindProperty("Settings"), true);
 
@@ -47,13 +47,13 @@ namespace Unity.MLAgents.Extensions.Editor
                 {
                     var treeNodes = rbSensorComp.GetDisplayNodes();
                     var originalIndent = EditorGUI.indentLevel;
+                    var poseEnabled = so.FindProperty("m_PoseExtractor").FindPropertyRelative("m_PoseEnabled");
                     foreach (var node in treeNodes)
                     {
                         var obj = node.NodeObject;
                         var objContents = EditorGUIUtility.ObjectContent(obj, obj.GetType());
                         EditorGUI.indentLevel = originalIndent + node.Depth;
-                        var enabled = EditorGUILayout.Toggle(objContents, node.Enabled);
-                        rbSensorComp.SetPoseEnabled(node.OriginalIndex, enabled);
+                        EditorGUILayout.PropertyField(poseEnabled.GetArrayElementAtIndex(node.OriginalIndex), objContents);
                     }
 
                     EditorGUI.indentLevel = originalIndent;
@@ -64,12 +64,6 @@ namespace Unity.MLAgents.Extensions.Editor
             EditorGUI.EndDisabledGroup();
 
             so.ApplyModifiedProperties();
-            if (requireExtractorUpdate)
-            {
-                rbSensorComp.ResetPoseExtractor();
-            }
         }
-
-
     }
 }

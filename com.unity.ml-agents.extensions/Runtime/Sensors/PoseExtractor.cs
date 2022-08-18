@@ -14,16 +14,17 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// Poses are either considered in model space, which is relative to a root body,
     /// or in local space, which is relative to their parent.
     /// </summary>
-    public abstract class PoseExtractor
+    [Serializable]
+    public abstract class PoseExtractor : ISerializationCallbackReceiver
     {
-        int[] m_ParentIndices;
+        [SerializeField] int[] m_ParentIndices;
         Pose[] m_ModelSpacePoses;
         Pose[] m_LocalSpacePoses;
 
         Vector3[] m_ModelSpaceLinearVelocities;
         Vector3[] m_LocalSpaceLinearVelocities;
 
-        bool[] m_PoseEnabled;
+        [SerializeField] bool[] m_PoseEnabled;
 
 
         /// <summary>
@@ -177,11 +178,8 @@ namespace Unity.MLAgents.Extensions.Sensors
 #endif
             m_ParentIndices = parentIndices;
             var numPoses = parentIndices.Length;
-            m_ModelSpacePoses = new Pose[numPoses];
-            m_LocalSpacePoses = new Pose[numPoses];
 
-            m_ModelSpaceLinearVelocities = new Vector3[numPoses];
-            m_LocalSpaceLinearVelocities = new Vector3[numPoses];
+            CreateSensorArrays(numPoses);
 
             m_PoseEnabled = new bool[numPoses];
             // All poses are enabled by default. Generally we'll want to disable the root though.
@@ -189,6 +187,25 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 m_PoseEnabled[i] = true;
             }
+        }
+
+        public void OnBeforeSerialize()
+        {
+            // no-op
+        }
+
+        public void OnAfterDeserialize()
+        {
+            CreateSensorArrays(m_ParentIndices.Length);
+        }
+
+        private void CreateSensorArrays(int numPoses)
+        {
+            m_ModelSpacePoses = new Pose[numPoses];
+            m_LocalSpacePoses = new Pose[numPoses];
+
+            m_ModelSpaceLinearVelocities = new Vector3[numPoses];
+            m_LocalSpaceLinearVelocities = new Vector3[numPoses];
         }
 
         /// <summary>
