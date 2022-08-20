@@ -25,6 +25,8 @@ namespace Unity.MLAgents.Extensions.Editor
                 );
             }
 
+            bool requireExtractorUpdate;
+
             EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
                 // All the fields affect the sensor order or observation size,
@@ -33,11 +35,8 @@ namespace Unity.MLAgents.Extensions.Editor
                 EditorGUILayout.PropertyField(so.FindProperty("RootBody"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("VirtualRoot"), true);
 
-                // Changing the root body or virtual root changes the hierarchy, so we need to reset.
-                if (EditorGUI.EndChangeCheck())
-                {
-                    rbSensorComp.ResetPoseExtractor();
-                }
+                // Changing the root body or virtual root changes the hierarchy, so we need to reset later.
+                requireExtractorUpdate = EditorGUI.EndChangeCheck();
 
                 EditorGUILayout.PropertyField(so.FindProperty("Settings"), true);
 
@@ -64,6 +63,10 @@ namespace Unity.MLAgents.Extensions.Editor
             EditorGUI.EndDisabledGroup();
 
             so.ApplyModifiedProperties();
+            if (requireExtractorUpdate)
+            {
+                rbSensorComp.ResetPoseExtractor();
+            }
         }
     }
 }
