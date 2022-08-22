@@ -22,7 +22,7 @@ from mlagents.trainers.settings import (
     POCASettings,
 )
 from mlagents.trainers.tests import mock_brain as mb
-from mlagents.trainers.tests.torch.test_policy import create_policy_mock
+from mlagents.trainers.tests.torch_entities.test_policy import create_policy_mock
 from mlagents.trainers.torch_entities.utils import ModelUtils
 
 

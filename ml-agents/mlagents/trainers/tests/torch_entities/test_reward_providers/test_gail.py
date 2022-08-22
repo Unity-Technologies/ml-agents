@@ -10,7 +10,7 @@ from mlagents.trainers.torch_entities.components.reward_providers import (
 )
 from mlagents_envs.base_env import BehaviorSpec, ActionSpec
 from mlagents.trainers.settings import GAILSettings, RewardSignalType
-from mlagents.trainers.tests.torch.test_reward_providers.utils import (
+from mlagents.trainers.tests.torch_entities.test_reward_providers.utils import (
     create_agent_buffer,
 )
 from mlagents.trainers.torch_entities.components.reward_providers.gail_reward_provider import (

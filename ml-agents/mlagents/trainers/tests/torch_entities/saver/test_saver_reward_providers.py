@@ -18,8 +18,8 @@ from mlagents.trainers.settings import (
     SACSettings,
     POCASettings,
 )
-from mlagents.trainers.tests.torch.test_policy import create_policy_mock
-from mlagents.trainers.tests.torch.test_reward_providers.utils import (
+from mlagents.trainers.tests.torch_entities.test_policy import create_policy_mock
+from mlagents.trainers.tests.torch_entities.test_reward_providers.utils import (
     create_agent_buffer,
 )
 
