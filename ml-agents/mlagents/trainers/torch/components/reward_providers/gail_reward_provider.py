@@ -10,11 +10,11 @@ from mlagents.trainers.settings import GAILSettings
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents_envs import logging_util
 from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.demo_loader import DemoManager
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_flattener import ActionFlattener
 from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.torch.layers import linear_layer, Initialization
-from mlagents.trainers.demo_loader import demo_to_buffer
 from mlagents.trainers.trajectory import ObsUtil
 
 logger = logging_util.get_logger(__name__)
@@ -26,7 +26,7 @@ class GAILRewardProvider(BaseRewardProvider):
         self._ignore_done = False
         self._discriminator_network = DiscriminatorNetwork(specs, settings)
         self._discriminator_network.to(default_device())
-        _, self._demo_buffer = demo_to_buffer(
+        self._demo_manager = DemoManager(
             settings.demo_path, 1, specs
         )  # This is supposed to be the sequence length but we do not have access here
         params = list(self._discriminator_network.parameters())
@@ -46,8 +46,16 @@ class GAILRewardProvider(BaseRewardProvider):
             )
 
     def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
+        num_new = self._demo_manager.refresh()
+        if num_new > 0:
+            # This is printed here so it is module-specific.
+            logger.info(f"Loaded {num_new} demo samples for GAIL.")
 
-        expert_batch = self._demo_buffer.sample_mini_batch(
+        # Check if we have no demos at all.
+        if len(self._demo_manager.demo_buffer.keys()) == 0:
+            return {}
+
+        expert_batch = self._demo_manager.demo_buffer.sample_mini_batch(
             mini_batch.num_experiences, 1
         )
         self._discriminator_network.encoder.update_normalization(expert_batch)

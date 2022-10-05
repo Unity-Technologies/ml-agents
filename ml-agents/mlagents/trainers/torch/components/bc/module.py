@@ -3,13 +3,16 @@ import numpy as np
 from mlagents.torch_utils import torch
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
-from mlagents.trainers.demo_loader import demo_to_buffer
+from mlagents.trainers.demo_loader import DemoManager
 from mlagents.trainers.settings import BehavioralCloningSettings, ScheduleType
 from mlagents.trainers.torch.agent_action import AgentAction
 from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.trajectory import ObsUtil
 from mlagents.trainers.buffer import AgentBuffer
+from mlagents_envs import logging_util
+
+logger = logging_util.get_logger(__name__)
 
 
 class BCModule:
@@ -33,13 +36,15 @@ class BCModule:
         self._anneal_steps = settings.steps
         self.current_lr = policy_learning_rate * settings.strength
 
-        learning_rate_schedule: ScheduleType = ScheduleType.LINEAR if self._anneal_steps > 0 else ScheduleType.CONSTANT
+        learning_rate_schedule: ScheduleType = (
+            ScheduleType.LINEAR if self._anneal_steps > 0 else ScheduleType.CONSTANT
+        )
         self.decay_learning_rate = ModelUtils.DecayedValue(
             learning_rate_schedule, self.current_lr, 1e-10, self._anneal_steps
         )
         params = self.policy.actor.parameters()
         self.optimizer = torch.optim.Adam(params, lr=self.current_lr)
-        _, self.demonstration_buffer = demo_to_buffer(
+        self._demo_manager = DemoManager(
             settings.demo_path, policy.sequence_length, policy.behavior_spec
         )
         self.batch_size = (
@@ -47,7 +52,7 @@ class BCModule:
         )
         self.num_epoch = settings.num_epoch if settings.num_epoch else default_num_epoch
         self.n_sequences = max(
-            min(self.batch_size, self.demonstration_buffer.num_experiences)
+            min(self.batch_size, self._demo_manager.demo_buffer.num_experiences)
             // policy.sequence_length,
             1,
         )
@@ -62,15 +67,23 @@ class BCModule:
         :param max_batches: The maximum number of batches to use per update.
         :return: The loss of the update.
         """
-        # Don't continue training if the learning rate has reached 0, to reduce training time.
+        num_new = self._demo_manager.refresh()
+        if num_new > 0:
+            # This is printed here so it is module-specific.
+            logger.info(f"Loaded {num_new} new demo samples for Behavior Cloning.")
 
+        # Check if we have no demos at all.
+        if len(self._demo_manager.demo_buffer.keys()) == 0:
+            return {}
+
+        # Don't continue training if the learning rate has reached 0, to reduce training time.
         decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
         if self.current_lr <= 1e-10:  # Unlike in TF, this never actually reaches 0.
             return {"Losses/Pretraining Loss": 0}
 
         batch_losses = []
         possible_demo_batches = (
-            self.demonstration_buffer.num_experiences // self.n_sequences
+            self._demo_manager.demo_buffer.num_experiences // self.n_sequences
         )
         possible_batches = possible_demo_batches
 
@@ -78,7 +91,7 @@ class BCModule:
 
         n_epoch = self.num_epoch
         for _ in range(n_epoch):
-            self.demonstration_buffer.shuffle(
+            self._demo_manager.demo_buffer.shuffle(
                 sequence_length=self.policy.sequence_length
             )
             if max_batches == 0:
@@ -86,7 +99,7 @@ class BCModule:
             else:
                 num_batches = min(possible_batches, max_batches)
             for i in range(num_batches // self.policy.sequence_length):
-                demo_update_buffer = self.demonstration_buffer
+                demo_update_buffer = self._demo_manager.demo_buffer
                 start = i * self.n_sequences * self.policy.sequence_length
                 end = (i + 1) * self.n_sequences * self.policy.sequence_length
                 mini_batch_demo = demo_update_buffer.make_mini_batch(start, end)

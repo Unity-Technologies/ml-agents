@@ -12,7 +12,11 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- The Demonstration Recorder will record demonstrations in chunks if `Num Steps To Record` is set to a
+value greater than 0. (#5455)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- During a training run with Behavior Cloning and/or GAIL, any demonstration files added to a demonstration
+directory will be loaded automatically. (#5455)
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
