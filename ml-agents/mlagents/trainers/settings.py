@@ -491,6 +491,7 @@ class CompletionCriteriaSettings:
     class MeasureType(Enum):
         PROGRESS: str = "progress"
         REWARD: str = "reward"
+        ELO: str = "Elo"
 
     behavior: str
     measure: MeasureType = attr.ib(default=MeasureType.REWARD)
@@ -516,7 +517,7 @@ class CompletionCriteriaSettings:
                 )
 
     def need_increment(
-        self, progress: float, reward_buffer: List[float], smoothing: float
+        self, progress: float, reward_buffer: List[float], elo_score: float, smoothing: float
     ) -> Tuple[bool, float]:
         """
         Given measures, this method returns a boolean indicating if the lesson
@@ -528,7 +529,7 @@ class CompletionCriteriaSettings:
         if self.measure == CompletionCriteriaSettings.MeasureType.PROGRESS:
             if progress > self.threshold:
                 return True, smoothing
-        if self.measure == CompletionCriteriaSettings.MeasureType.REWARD:
+        elif self.measure == CompletionCriteriaSettings.MeasureType.REWARD:
             if len(reward_buffer) < 1:
                 return False, smoothing
             measure = np.mean(reward_buffer)
@@ -538,6 +539,13 @@ class CompletionCriteriaSettings:
                 measure = 0.25 * smoothing + 0.75 * measure
                 smoothing = measure
             if measure > self.threshold:
+                return True, smoothing
+        elif self.measure == CompletionCriteriaSettings.MeasureType.ELO:
+            if elo_score is None:
+                raise TrainerConfigError(
+                    "Elo isn't a valid completion criteria measure if not using self-play."
+                )
+            if elo_score > self.threshold:
                 return True, smoothing
         return False, smoothing
 

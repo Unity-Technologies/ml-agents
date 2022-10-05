@@ -131,7 +131,7 @@ def test_curriculum_conversion():
     assert lesson.value.max_value == 3
 
 
-test_bad_curriculum_no_competion_criteria_config_yaml = """
+test_bad_curriculum_no_completion_criteria_config_yaml = """
 environment_parameters:
     param_1:
       curriculum:
@@ -154,7 +154,7 @@ environment_parameters:
 """
 
 
-test_bad_curriculum_all_competion_criteria_config_yaml = """
+test_bad_curriculum_all_completion_criteria_config_yaml = """
 environment_parameters:
     param_1:
       curriculum:
@@ -175,6 +175,14 @@ environment_parameters:
                 require_reset: true
             value: 2
           - name: Lesson3
+            completion_criteria:
+                measure: Elo
+                behavior: fake_behavior
+                threshold: 1300
+                min_lesson_length: 100
+                require_reset: true
+            value: 3
+          - name: Lesson4
             completion_criteria:
                 measure: reward
                 behavior: fake_behavior
@@ -192,14 +200,14 @@ environment_parameters:
 def test_curriculum_raises_no_completion_criteria_conversion():
     with pytest.raises(TrainerConfigError):
         RunOptions.from_dict(
-            yaml.safe_load(test_bad_curriculum_no_competion_criteria_config_yaml)
+            yaml.safe_load(test_bad_curriculum_no_completion_criteria_config_yaml)
         )
 
 
 def test_curriculum_raises_all_completion_criteria_conversion():
     with pytest.warns(TrainerConfigWarning):
         run_options = RunOptions.from_dict(
-            yaml.safe_load(test_bad_curriculum_all_competion_criteria_config_yaml)
+            yaml.safe_load(test_bad_curriculum_all_completion_criteria_config_yaml)
         )
 
     param_manager = EnvironmentParameterManager(
@@ -209,19 +217,36 @@ def test_curriculum_raises_all_completion_criteria_conversion():
         trainer_steps={"fake_behavior": 500},
         trainer_max_steps={"fake_behavior": 1000},
         trainer_reward_buffer={"fake_behavior": [1000] * 101},
+        trainer_elo_score={"fake_behavior": 1200.0},   #TODO: trainer_elo_scores aren't set properly for tests
     ) == (True, True)
     assert param_manager.update_lessons(
         trainer_steps={"fake_behavior": 500},
         trainer_max_steps={"fake_behavior": 1000},
         trainer_reward_buffer={"fake_behavior": [1000] * 101},
+        trainer_elo_score={"fake_behavior": 1200.0},
     ) == (True, True)
+    assert param_manager.get_current_lesson_number() == {"param_1": 2}
     assert param_manager.update_lessons(
         trainer_steps={"fake_behavior": 500},
         trainer_max_steps={"fake_behavior": 1000},
         trainer_reward_buffer={"fake_behavior": [1000] * 101},
+        trainer_elo_score={"fake_behavior": 1200.0},
     ) == (False, False)
     assert param_manager.get_current_lesson_number() == {"param_1": 2}
-
+    assert param_manager.update_lessons(
+        trainer_steps={"fake_behavior": 500},
+        trainer_max_steps={"fake_behavior": 1000},
+        trainer_reward_buffer={"fake_behavior": [1000] * 101},
+        trainer_elo_score={"fake_behavior": 1500.0},
+    ) == (True, True)
+    assert param_manager.get_current_lesson_number() == {"param_1": 3}
+    assert param_manager.update_lessons(
+        trainer_steps={"fake_behavior": 500},
+        trainer_max_steps={"fake_behavior": 1000},
+        trainer_reward_buffer={"fake_behavior": [1000] * 101},
+        trainer_elo_score={"fake_behavior": 1500.0},
+    ) == (False, False)   # No step to advance to
+    assert param_manager.get_current_lesson_number() == {"param_1": 3}
 
 test_everything_config_yaml = """
 environment_parameters:
@@ -279,17 +304,20 @@ def test_create_manager():
         trainer_steps={"fake_behavior": 500},
         trainer_max_steps={"fake_behavior": 1000},
         trainer_reward_buffer={"fake_behavior": [1000] * 99},
+        trainer_elo_score={"fake_behavior": 1200.0},
     ) == (False, False)
     # Not enough episodes reward
     assert param_manager.update_lessons(
         trainer_steps={"fake_behavior": 500},
         trainer_max_steps={"fake_behavior": 1000},
         trainer_reward_buffer={"fake_behavior": [1] * 101},
+        trainer_elo_score={"fake_behavior": 1200.0},
     ) == (False, False)
     assert param_manager.update_lessons(
         trainer_steps={"fake_behavior": 500},
         trainer_max_steps={"fake_behavior": 1000},
         trainer_reward_buffer={"fake_behavior": [1000] * 101},
+        trainer_elo_score={"fake_behavior": 1200.0},
     ) == (True, True)
     assert param_manager.get_current_lesson_number() == {
         "param_1": 1,
@@ -310,6 +338,7 @@ def test_create_manager():
         trainer_steps={"fake_behavior": 700},
         trainer_max_steps={"fake_behavior": 1000},
         trainer_reward_buffer={"fake_behavior": [0] * 101},
+        trainer_elo_score={"fake_behavior": 1200.0},
     ) == (True, False)
     assert param_manager.get_current_samplers() == {
         "param_1": UniformSettings(seed=1337 + 2, min_value=1, max_value=3),

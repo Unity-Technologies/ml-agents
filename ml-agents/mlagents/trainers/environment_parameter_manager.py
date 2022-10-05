@@ -137,6 +137,7 @@ class EnvironmentParameterManager:
         trainer_steps: Dict[str, int],
         trainer_max_steps: Dict[str, int],
         trainer_reward_buffer: Dict[str, List[float]],
+        trainer_elo_score: Dict[str, int],
     ) -> Tuple[bool, bool]:
         """
         Given progress metrics, calculates if at least one environment parameter is
@@ -148,6 +149,8 @@ class EnvironmentParameterManager:
         of training steps this behavior's trainer has performed.
         :param trainer_reward_buffer: A dictionary from behavior_name to the list of
         the most recent episode returns for this behavior's trainer.
+        :trainer_elo_score: A Dictionary from behavior_name to the minimum Elo score
+        to be reached.
         :returns: A tuple of two booleans : (True if any lesson has changed, True if
         environment needs to reset)
         """
@@ -169,6 +172,7 @@ class EnvironmentParameterManager:
                         float(trainer_steps[behavior_to_consider])
                         / float(trainer_max_steps[behavior_to_consider]),
                         trainer_reward_buffer[behavior_to_consider],
+                        trainer_elo_score[behavior_to_consider] if trainer_elo_score else None,
                         self._smoothed_values[param_name],
                     )
                     self._smoothed_values[param_name] = new_smoothing
