@@ -288,7 +288,8 @@ class SACTrainer(RLTrainer):
         # a large buffer at each update.
         if self.update_buffer.num_experiences > self.hyperparameters.buffer_size:
             self.update_buffer.truncate(
-                int(self.hyperparameters.buffer_size * BUFFER_TRUNCATE_PERCENT)
+                int(self.hyperparameters.buffer_size * BUFFER_TRUNCATE_PERCENT),
+                self.policy.sequence_length,
             )
         return has_updated
 

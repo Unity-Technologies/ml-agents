@@ -60,6 +60,7 @@ and this project adheres to
 - Fixed the bug where curriculum learning would crash because of the incorrect run_options parsing. (#5586)
 - Fixed a bug in multi-agent cooperative training where agents might not receive all of the states of
 terminated teammates. (#5441)
+- Fixed a bug when using LSTM and SAC where the buffer might contain non-integer numbers of sequences. (#5456)
 - Fixed wrong attribute name in argparser for torch device option (#5433)(#5467)
 - Fixed conflicting CLI and yaml options regarding resume & initialize_from (#5495)
 - Fixed failing tests for gym-unity due to gym 0.20.0 release (#5540)
