@@ -184,9 +184,7 @@ class TorchPOCAOptimizer(TorchOptimizer):
             self.trainer_settings.max_steps,
         )
 
-        self.optimizer = torch.optim.Adam(
-            params, lr=self.trainer_settings.hyperparameters.learning_rate
-        )
+        self.optimizer = torch.optim.Adam(params)
         self.stats_name_to_update_name = {
             "Losses/Value Loss": "value_loss",
             "Losses/Policy Loss": "policy_loss",
