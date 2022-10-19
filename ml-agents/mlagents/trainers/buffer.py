@@ -244,6 +244,12 @@ class AgentBufferField(list):
         )
         return new_list
 
+    def to_ndarray(self):
+        """
+        Returns the AgentBufferField which is a list of numpy ndarrays (or List[np.ndarray]) as an ndarray.
+        """
+        return np.array(self)
+
 
 class AgentBuffer(MutableMapping):
     """

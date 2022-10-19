@@ -320,9 +320,24 @@ class ModelUtils:
         :param tensor: Tensor which needs mean computation.
         :param masks: Boolean tensor of masks with same dimension as tensor.
         """
-        return (tensor.T * masks).sum() / torch.clamp(
-            (torch.ones_like(tensor.T) * masks).float().sum(), min=1.0
-        )
+        if tensor.ndim == 0:
+            return (tensor * masks).sum() / torch.clamp(
+                (torch.ones_like(tensor) * masks).float().sum(), min=1.0
+            )
+        else:
+            return (
+                tensor.permute(*torch.arange(tensor.ndim - 1, -1, -1)) * masks
+            ).sum() / torch.clamp(
+                (
+                    torch.ones_like(
+                        tensor.permute(*torch.arange(tensor.ndim - 1, -1, -1))
+                    )
+                    * masks
+                )
+                .float()
+                .sum(),
+                min=1.0,
+            )
 
     @staticmethod
     def soft_update(source: nn.Module, target: nn.Module, tau: float) -> None:

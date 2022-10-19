@@ -13,7 +13,7 @@ test_compressed_obs_{{ editor.version }}:
     - git submodule update --init --recursive
     - |
       eval "$($HOME/anaconda/bin/conda shell.bash hook)"
-      conda activate python3.7
+      conda activate python3.8
       python -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python -u -m ml-agents.tests.yamato.setup_venv
       python ml-agents/tests/yamato/scripts/run_compressed_sensor.py --env=artifacts/testPlayer-TestGridCompressed

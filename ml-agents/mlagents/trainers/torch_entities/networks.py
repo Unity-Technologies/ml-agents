@@ -88,7 +88,7 @@ class ObservationEncoder(nn.Module):
         obs = ObsUtil.from_buffer(buffer, len(self.processors))
         for vec_input, enc in zip(obs, self.processors):
             if isinstance(enc, VectorInput):
-                enc.update_normalization(torch.as_tensor(vec_input))
+                enc.update_normalization(torch.as_tensor(vec_input.to_ndarray()))
 
     def copy_normalization(self, other_encoder: "ObservationEncoder") -> None:
         if self.normalize:

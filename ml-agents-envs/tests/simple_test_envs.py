@@ -179,9 +179,7 @@ class SimpleEnvironment(BaseEnv):
         action_mask = None
         if self.action_spec.discrete_size > 0:
             # LL-Python API will return an empty dim if there is only 1 agent.
-            ndmask = np.array(
-                2 * self.action_spec.discrete_size * [False], dtype=np.bool
-            )
+            ndmask = np.array(2 * self.action_spec.discrete_size * [False], dtype=bool)
             ndmask = np.expand_dims(ndmask, axis=0)
             action_mask = [ndmask]
         return action_mask
@@ -253,7 +251,7 @@ class SimpleEnvironment(BaseEnv):
         self, name: str
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         new_reward = np.array([0.0], dtype=np.float32)
-        new_done = np.array([False], dtype=np.bool)
+        new_done = np.array([False], dtype=bool)
         new_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
         new_action_mask = self._generate_mask()
         new_group_id = np.array([0], dtype=np.int32)
@@ -270,7 +268,6 @@ class SimpleEnvironment(BaseEnv):
     def step(self) -> None:
         assert all(action is not None for action in self.action.values())
         for name in self.names:
-
             done = self._take_action(name)
             reward = self._compute_reward(name, done)
             self.rewards[name] += reward

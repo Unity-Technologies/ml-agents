@@ -3,7 +3,7 @@ name: pre-commit
 on:
   pull_request:
   push:
-    branches: 
+    branches:
      - main
      - develop
      - 'release/**'
@@ -20,7 +20,7 @@ jobs:
         submodules: recursive
     - uses: actions/setup-python@v2
       with:
-        python-version: 3.7.x
+        python-version: 3.8.x
     - uses: actions/setup-ruby@v1
       env:
         ImageOS: ubuntu20
