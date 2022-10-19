@@ -82,7 +82,18 @@ namespace Unity.MLAgents.Sensors
             if (m_WrappedSensor.GetCompressionSpec().SensorCompressionType != SensorCompressionType.None)
             {
                 m_StackedCompressedObservations = new byte[numStackedObservations][];
-                m_EmptyCompressedObservation = CreateEmptyPNG();
+
+                // Generate Single Empty PNG
+                Byte[] singleEmptyPNG = CreateEmptyPNG();
+                List<byte> emptyCompressedObservationList = new List<byte>();
+
+                // Combine Multiple Empty PNGs for channels more than 3
+                for (int i = 0; i < (m_WrappedSpec.Shape[^1] + 2) / 3; i++)
+                {
+                    emptyCompressedObservationList.AddRange(singleEmptyPNG);
+                }
+                m_EmptyCompressedObservation = emptyCompressedObservationList.ToArray();
+
                 for (var i = 0; i < numStackedObservations; i++)
                 {
                     m_StackedCompressedObservations[i] = m_EmptyCompressedObservation;
