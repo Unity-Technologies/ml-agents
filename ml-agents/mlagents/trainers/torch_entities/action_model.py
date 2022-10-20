@@ -68,7 +68,7 @@ class ActionModel(nn.Module):
 
         # During training, clipping is done in TorchPolicy, but we need to clip before ONNX
         # export as well.
-        self._clip_action_on_export = not tanh_squash
+        self.clip_action = not tanh_squash
         self._deterministic = deterministic
 
     def _sample_action(self, dists: DistInstances) -> AgentAction:
@@ -181,7 +181,7 @@ class ActionModel(nn.Module):
             continuous_out = dists.continuous.exported_model_output()
             action_out_deprecated = continuous_out
             deterministic_continuous_out = dists.continuous.deterministic_sample()
-            if self._clip_action_on_export:
+            if self.clip_action:
                 continuous_out = torch.clamp(continuous_out, -3, 3) / 3
                 action_out_deprecated = continuous_out
                 deterministic_continuous_out = (

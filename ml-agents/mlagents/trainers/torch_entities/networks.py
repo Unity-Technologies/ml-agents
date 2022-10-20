@@ -1,4 +1,4 @@
-from typing import Callable, List, Dict, Tuple, Optional, Union
+from typing import Callable, List, Dict, Tuple, Optional, Union, Any
 import abc
 
 from mlagents.torch_utils import torch, nn
@@ -6,7 +6,6 @@ from mlagents.torch_utils import torch, nn
 from mlagents_envs.base_env import ActionSpec, ObservationSpec, ObservationType
 from mlagents.trainers.torch_entities.action_model import ActionModel
 from mlagents.trainers.torch_entities.agent_action import AgentAction
-from mlagents.trainers.torch_entities.action_log_probs import ActionLogProbs
 from mlagents.trainers.settings import NetworkSettings, EncoderType, ConditioningType
 from mlagents.trainers.torch_entities.utils import ModelUtils
 from mlagents.trainers.torch_entities.decoders import ValueHeads
@@ -519,7 +518,7 @@ class Actor(abc.ABC):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[AgentAction, ActionLogProbs, torch.Tensor, torch.Tensor]:
+    ) -> Tuple[AgentAction, Dict[str, Any], torch.Tensor]:
         """
         Returns sampled actions.
         If memory is enabled, return the memories as well.
@@ -539,7 +538,7 @@ class Actor(abc.ABC):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[ActionLogProbs, torch.Tensor]:
+    ) -> Dict[str, Any]:
         """
         Returns log_probs for actions and entropies.
         If memory is enabled, return the memories as well.
@@ -633,13 +632,22 @@ class SimpleActor(nn.Module, Actor):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[AgentAction, ActionLogProbs, torch.Tensor, torch.Tensor]:
+    ) -> Tuple[AgentAction, Dict[str, Any], torch.Tensor]:
 
         encoding, memories = self.network_body(
             inputs, memories=memories, sequence_length=sequence_length
         )
         action, log_probs, entropies = self.action_model(encoding, masks)
-        return action, log_probs, entropies, memories
+        run_out = {}
+        # This is the clipped action which is not saved to the buffer
+        # but is exclusively sent to the environment.
+        run_out["env_action"] = action.to_action_tuple(
+            clip=self.action_model.clip_action
+        )
+        run_out["log_probs"] = log_probs
+        run_out["entropy"] = entropies
+
+        return action, run_out, memories
 
     def get_stats(
         self,
@@ -648,13 +656,16 @@ class SimpleActor(nn.Module, Actor):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[ActionLogProbs, torch.Tensor]:
+    ) -> Dict[str, Any]:
         encoding, actor_mem_outs = self.network_body(
             inputs, memories=memories, sequence_length=sequence_length
         )
-        log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
 
-        return log_probs, entropies
+        log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
+        run_out = {}
+        run_out["log_probs"] = log_probs
+        run_out["entropy"] = entropies
+        return run_out
 
     def forward(
         self,

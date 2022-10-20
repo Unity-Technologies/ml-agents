@@ -4,9 +4,9 @@ import os
 import numpy as np
 
 from mlagents_envs.logging_util import WARNING
-from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
-from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
-from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer
+from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer, PPOSettings
+from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer, SACSettings
+from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer, POCASettings
 from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
 from mlagents.trainers.settings import (
     TrainerSettings,
@@ -14,9 +14,6 @@ from mlagents.trainers.settings import (
     CuriositySettings,
     GAILSettings,
     RNDSettings,
-    PPOSettings,
-    SACSettings,
-    POCASettings,
 )
 from mlagents.trainers.tests.torch_entities.test_policy import create_policy_mock
 from mlagents.trainers.tests.torch_entities.test_reward_providers.utils import (
@@ -49,7 +46,7 @@ def test_reward_provider_save(tmp_path, optimizer):
         RewardSignalType.GAIL: GAILSettings(demo_path=DEMO_PATH),
         RewardSignalType.RND: RNDSettings(),
     }
-    policy = create_policy_mock(trainer_settings, use_discrete=False)
+    policy = create_policy_mock(trainer_settings.network_settings, use_discrete=False)
     optimizer = OptimizerClass(policy, trainer_settings)
 
     # save at path 1
@@ -63,7 +60,7 @@ def test_reward_provider_save(tmp_path, optimizer):
 
     # create a new optimizer and policy
     optimizer2 = OptimizerClass(policy, trainer_settings)
-    policy2 = create_policy_mock(trainer_settings, use_discrete=False)
+    policy2 = create_policy_mock(trainer_settings.network_settings, use_discrete=False)
 
     # load weights
     model_saver2 = TorchModelSaver(trainer_settings, path1, load=True)
@@ -116,7 +113,7 @@ def test_load_different_reward_provider(caplog, tmp_path, optimizer):
         RewardSignalType.RND: RNDSettings(),
     }
 
-    policy = create_policy_mock(trainer_settings, use_discrete=False)
+    policy = create_policy_mock(trainer_settings.network_settings, use_discrete=False)
     optimizer = OptimizerClass(policy, trainer_settings)
 
     # save at path 1
@@ -136,7 +133,7 @@ def test_load_different_reward_provider(caplog, tmp_path, optimizer):
     }
 
     # create a new optimizer and policy
-    policy2 = create_policy_mock(trainer_settings2, use_discrete=False)
+    policy2 = create_policy_mock(trainer_settings2.network_settings, use_discrete=False)
     optimizer2 = OptimizerClass(policy2, trainer_settings2)
 
     # load weights

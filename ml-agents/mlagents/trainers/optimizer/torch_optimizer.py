@@ -132,6 +132,12 @@ class TorchOptimizer(Optimizer):
         next_mem = _mem
         return all_value_tensors, all_next_memories, next_mem
 
+    def update_reward_signals(self, batch: AgentBuffer) -> Dict[str, float]:
+        update_stats: Dict[str, float] = {}
+        for reward_provider in self.reward_signals.values():
+            update_stats.update(reward_provider.update(batch))
+        return update_stats
+
     def get_trajectory_value_estimates(
         self,
         batch: AgentBuffer,

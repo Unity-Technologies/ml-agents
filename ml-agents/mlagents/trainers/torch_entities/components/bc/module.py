@@ -168,12 +168,13 @@ class BCModule:
         if self.policy.use_recurrent:
             memories = torch.zeros(1, self.n_sequences, self.policy.m_size)
 
-        selected_actions, log_probs, _, _ = self.policy.sample_actions(
+        selected_actions, run_out, _ = self.policy.actor.get_action_and_stats(
             tensor_obs,
             masks=act_masks,
             memories=memories,
-            seq_len=self.policy.sequence_length,
+            sequence_length=self.policy.sequence_length,
         )
+        log_probs = run_out["log_probs"]
         bc_loss = self._behavioral_cloning_loss(
             selected_actions, log_probs, expert_actions
         )

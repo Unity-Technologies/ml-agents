@@ -4,24 +4,24 @@ import pytest
 import copy
 import os
 from mlagents.trainers.settings import (
-    POCASettings,
     TrainerSettings,
-    PPOSettings,
-    SACSettings,
     GAILSettings,
     CuriositySettings,
     RewardSignalSettings,
     NetworkSettings,
-    TrainerType,
     RewardSignalType,
     ScheduleType,
 )
+
+from mlagents.trainers.ppo.optimizer_torch import PPOSettings
+from mlagents.trainers.sac.optimizer_torch import SACSettings
+from mlagents.trainers.poca.optimizer_torch import POCASettings
 
 CONTINUOUS_DEMO_PATH = os.path.dirname(os.path.abspath(__file__)) + "/test.demo"
 DISCRETE_DEMO_PATH = os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
 
 _PPO_CONFIG = TrainerSettings(
-    trainer_type=TrainerType.PPO,
+    trainer_type="ppo",
     hyperparameters=PPOSettings(
         learning_rate=5.0e-3,
         learning_rate_schedule=ScheduleType.CONSTANT,
@@ -35,7 +35,7 @@ _PPO_CONFIG = TrainerSettings(
 )
 
 _SAC_CONFIG = TrainerSettings(
-    trainer_type=TrainerType.SAC,
+    trainer_type="sac",
     hyperparameters=SACSettings(
         learning_rate=5.0e-3,
         learning_rate_schedule=ScheduleType.CONSTANT,
@@ -52,7 +52,7 @@ _SAC_CONFIG = TrainerSettings(
 )
 
 _POCA_CONFIG = TrainerSettings(
-    trainer_type=TrainerType.POCA,
+    trainer_type="poca",
     hyperparameters=POCASettings(
         learning_rate=5.0e-3,
         learning_rate_schedule=ScheduleType.CONSTANT,

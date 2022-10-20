@@ -6,9 +6,9 @@ import os
 import numpy as np
 from mlagents.torch_utils import torch, default_device
 from mlagents.trainers.policy.torch_policy import TorchPolicy
-from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
-from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
-from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer
+from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer, PPOSettings
+from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer, SACSettings
+from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer, POCASettings
 from mlagents.trainers.model_saver.torch_model_saver import (
     TorchModelSaver,
     DEFAULT_CHECKPOINT_NAME,
@@ -17,9 +17,6 @@ from mlagents.trainers.settings import (
     TrainerSettings,
     NetworkSettings,
     EncoderType,
-    PPOSettings,
-    SACSettings,
-    POCASettings,
 )
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.torch_entities.test_policy import create_policy_mock
@@ -36,7 +33,7 @@ def test_register(tmp_path):
     assert model_saver.policy is None
 
     trainer_params = TrainerSettings()
-    policy = create_policy_mock(trainer_params)
+    policy = create_policy_mock(trainer_params.network_settings)
     opt.get_modules = mock.Mock(return_value={})
     model_saver.register(policy)
     assert model_saver.policy is not None
@@ -46,7 +43,7 @@ def test_load_save_policy(tmp_path):
     path1 = os.path.join(tmp_path, "runid1")
     path2 = os.path.join(tmp_path, "runid2")
     trainer_params = TrainerSettings()
-    policy = create_policy_mock(trainer_params)
+    policy = create_policy_mock(trainer_params.network_settings)
     model_saver = TorchModelSaver(trainer_params, path1)
     model_saver.register(policy)
     model_saver.initialize_or_load(policy)
@@ -58,7 +55,7 @@ def test_load_save_policy(tmp_path):
 
     # Try load from this path
     model_saver2 = TorchModelSaver(trainer_params, path1, load=True)
-    policy2 = create_policy_mock(trainer_params)
+    policy2 = create_policy_mock(trainer_params.network_settings)
     model_saver2.register(policy2)
     model_saver2.initialize_or_load(policy2)
     _compare_two_policies(policy, policy2)
@@ -67,7 +64,7 @@ def test_load_save_policy(tmp_path):
     # Try initialize from path 1
     trainer_params.init_path = os.path.join(path1, DEFAULT_CHECKPOINT_NAME)
     model_saver3 = TorchModelSaver(trainer_params, path2)
-    policy3 = create_policy_mock(trainer_params)
+    policy3 = create_policy_mock(trainer_params.network_settings)
     model_saver3.register(policy3)
     model_saver3.initialize_or_load(policy3)
     _compare_two_policies(policy2, policy3)
@@ -82,7 +79,7 @@ def test_load_policy_different_hidden_units(tmp_path, vis_encode_type):
     trainer_params.network_settings = NetworkSettings(
         hidden_units=12, vis_encode_type=EncoderType(vis_encode_type)
     )
-    policy = create_policy_mock(trainer_params, use_visual=True)
+    policy = create_policy_mock(trainer_params.network_settings, use_visual=True)
     conv_params = [mod for mod in policy.actor.parameters() if len(mod.shape) > 2]
 
     model_saver = TorchModelSaver(trainer_params, path1)
@@ -99,7 +96,7 @@ def test_load_policy_different_hidden_units(tmp_path, vis_encode_type):
         hidden_units=10, vis_encode_type=EncoderType(vis_encode_type)
     )
     model_saver2 = TorchModelSaver(trainer_params2, path1, load=True)
-    policy2 = create_policy_mock(trainer_params2, use_visual=True)
+    policy2 = create_policy_mock(trainer_params2.network_settings, use_visual=True)
     conv_params2 = [mod for mod in policy2.actor.parameters() if len(mod.shape) > 2]
     # asserts convolutions have different parameters before load
     for conv1, conv2 in zip(conv_params, conv_params2):
@@ -133,7 +130,7 @@ def test_load_save_optimizer(tmp_path, optimizer):
 
     trainer_settings = TrainerSettings()
     trainer_settings.hyperparameters = HyperparametersClass()
-    policy = create_policy_mock(trainer_settings, use_discrete=False)
+    policy = create_policy_mock(trainer_settings.network_settings, use_discrete=False)
     optimizer = OptimizerClass(policy, trainer_settings)
 
     # save at path 1
@@ -146,7 +143,7 @@ def test_load_save_optimizer(tmp_path, optimizer):
     model_saver.save_checkpoint("MockBrain", 2000)
 
     # create a new optimizer and policy
-    policy2 = create_policy_mock(trainer_settings, use_discrete=False)
+    policy2 = create_policy_mock(trainer_settings.network_settings, use_discrete=False)
     optimizer2 = OptimizerClass(policy2, trainer_settings)
 
     # load weights
@@ -180,12 +177,14 @@ def _compare_two_policies(policy1: TorchPolicy, policy2: TorchPolicy) -> None:
     tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
 
     with torch.no_grad():
-        _, log_probs1, _, _ = policy1.sample_actions(
+        _, stat_dict1, _ = policy1.actor.get_action_and_stats(
             tensor_obs, masks=masks, memories=memories
         )
-        _, log_probs2, _, _ = policy2.sample_actions(
+        _, stat_dict2, _ = policy2.actor.get_action_and_stats(
             tensor_obs, masks=masks, memories=memories
         )
+        log_probs1 = stat_dict1["log_probs"]
+        log_probs2 = stat_dict2["log_probs"]
     np.testing.assert_array_equal(
         ModelUtils.to_numpy(log_probs1.all_discrete_tensor),
         ModelUtils.to_numpy(log_probs2.all_discrete_tensor),
@@ -218,7 +217,10 @@ def test_checkpoint_conversion(tmpdir, rnn, visual, discrete):
     dummy_config = TrainerSettings()
     model_path = os.path.join(tmpdir, "Mock_Brain")
     policy = create_policy_mock(
-        dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
+        dummy_config.network_settings,
+        use_rnn=rnn,
+        use_discrete=discrete,
+        use_visual=visual,
     )
     trainer_params = TrainerSettings()
     model_saver = TorchModelSaver(trainer_params, model_path)

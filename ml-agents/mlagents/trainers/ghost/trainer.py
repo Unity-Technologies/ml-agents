@@ -11,6 +11,7 @@ from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy import Policy
 
 from mlagents.trainers.trainer import Trainer
+from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.stats import StatsPropertyType
@@ -336,7 +337,6 @@ class GhostTrainer(Trainer):
         self,
         parsed_behavior_id: BehaviorIdentifiers,
         behavior_spec: BehaviorSpec,
-        create_graph: bool = False,
     ) -> Policy:
         """
         Creates policy with the wrapped trainer's create_policy function
@@ -345,9 +345,7 @@ class GhostTrainer(Trainer):
         team are grouped. All policies associated with this team are added to the
         wrapped trainer to be trained.
         """
-        policy = self.trainer.create_policy(
-            parsed_behavior_id, behavior_spec, create_graph=True
-        )
+        policy = self.trainer.create_policy(parsed_behavior_id, behavior_spec)
         team_id = parsed_behavior_id.team_id
         self.controller.subscribe_team_id(team_id, self)
 
@@ -372,6 +370,9 @@ class GhostTrainer(Trainer):
             )
         return policy
 
+    def create_optimizer(self) -> TorchOptimizer:
+        pass
+
     def add_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
     ) -> None:
@@ -383,14 +384,6 @@ class GhostTrainer(Trainer):
         name_behavior_id = parsed_behavior_id.behavior_id
         self._name_to_parsed_behavior_id[name_behavior_id] = parsed_behavior_id
         self.policies[name_behavior_id] = policy
-
-    def get_policy(self, name_behavior_id: str) -> Policy:
-        """
-        Gets policy associated with name_behavior_id
-        :param name_behavior_id: Fully qualified behavior name
-        :return: Policy associated with name_behavior_id
-        """
-        return self.policies[name_behavior_id]
 
     def _save_snapshot(self) -> None:
         """

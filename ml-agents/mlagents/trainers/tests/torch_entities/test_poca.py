@@ -1,6 +1,6 @@
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 import pytest
-
+from typing import Dict, Any
 import numpy as np
 import attr
 
@@ -22,6 +22,7 @@ from mlagents.trainers.tests.dummy_config import (  # noqa: F401
     curiosity_dummy_config,
     gail_dummy_config,
 )
+from mlagents.trainers.torch_entities.networks import SimpleActor
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.settings import TrainerSettings
 
@@ -64,7 +65,13 @@ def create_test_poca_optimizer(dummy_config, use_rnn, use_discrete, use_visual):
         if use_rnn
         else None
     )
-    policy = TorchPolicy(0, mock_specs, trainer_settings, "test", False)
+    actor_kwargs: Dict[str, Any] = {
+        "conditional_sigma": False,
+        "tanh_squash": False,
+    }
+    policy = TorchPolicy(
+        0, mock_specs, trainer_settings.network_settings, SimpleActor, actor_kwargs
+    )
     optimizer = TorchPOCAOptimizer(policy, trainer_settings)
     return optimizer
 
@@ -294,7 +301,7 @@ def test_poca_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F
 
 
 def test_poca_end_episode():
-    name_behavior_id = "test_trainer"
+    name_behavior_id = "test_brain?team=0"
     trainer = POCATrainer(
         name_behavior_id,
         10,
@@ -310,8 +317,8 @@ def test_poca_end_episode():
     parsed_behavior_id = BehaviorIdentifiers.from_name_behavior_id(name_behavior_id)
     mock_policy = trainer.create_policy(parsed_behavior_id, behavior_spec)
     trainer.add_policy(parsed_behavior_id, mock_policy)
-    trajectory_queue = AgentManagerQueue("testbrain")
-    policy_queue = AgentManagerQueue("testbrain")
+    trajectory_queue = AgentManagerQueue("test_brain?team=0")
+    policy_queue = AgentManagerQueue("test_brain?team=0")
     trainer.subscribe_trajectory_queue(trajectory_queue)
     trainer.publish_policy_queue(policy_queue)
     time_horizon = 10

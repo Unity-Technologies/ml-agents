@@ -87,6 +87,7 @@ def make_fake_trajectory(
     num_other_agents_in_group: int = 0,
     group_reward: float = 0.0,
     is_terminal: bool = True,
+    team_id: int = 0,
 ) -> Trajectory:
     """
     Makes a fake trajectory of length length. If max_step_complete,
@@ -125,7 +126,7 @@ def make_fake_trajectory(
         max_step = False
         memory = np.ones(memory_size, dtype=np.float32)
         agent_id = "test_agent"
-        behavior_id = "test_brain"
+        behavior_id = "test_brain?team=" + str(team_id)
         group_status = []
         for _ in range(num_other_agents_in_group):
             group_status.append(AgentStatus(obs, reward, action, done))

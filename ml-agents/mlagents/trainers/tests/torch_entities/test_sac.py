@@ -4,6 +4,7 @@ from mlagents.torch_utils import torch
 from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
 from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
+from mlagents.trainers.torch_entities.networks import SimpleActor
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.tests.dummy_config import (  # noqa: F401
@@ -39,7 +40,13 @@ def create_sac_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
         if use_rnn
         else None
     )
-    policy = TorchPolicy(0, mock_brain, trainer_settings)
+    actor_kwargs = {
+        "conditional_sigma": False,
+        "tanh_squash": False,
+    }
+    policy = TorchPolicy(
+        0, mock_brain, trainer_settings.network_settings, SimpleActor, actor_kwargs
+    )
     optimizer = TorchSACOptimizer(policy, trainer_settings)
     return optimizer
 
@@ -103,9 +110,7 @@ def test_sac_update_reward_signals(
     update_buffer[RewardSignalUtil.rewards_key("curiosity")] = update_buffer[
         BufferKey.ENVIRONMENT_REWARDS
     ]
-    return_stats = optimizer.update_reward_signals(
-        {"curiosity": update_buffer}, num_sequences=update_buffer.num_experiences
-    )
+    return_stats = optimizer.update_reward_signals(update_buffer)
     required_stats = ["Losses/Curiosity Forward Loss", "Losses/Curiosity Inverse Loss"]
     for stat in required_stats:
         assert stat in return_stats.keys()

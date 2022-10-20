@@ -137,7 +137,6 @@ class TrainerController:
         policy = trainer.create_policy(
             parsed_behavior_id,
             env_manager.training_behaviors[name_behavior_id],
-            create_graph=True,
         )
         trainer.add_policy(parsed_behavior_id, policy)
 

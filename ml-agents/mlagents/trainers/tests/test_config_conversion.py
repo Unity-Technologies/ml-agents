@@ -2,12 +2,10 @@ import yaml
 import pytest
 
 from mlagents.trainers.upgrade_config import convert_behaviors, remove_nones, convert
-from mlagents.trainers.settings import (
-    TrainerType,
-    PPOSettings,
-    SACSettings,
-    RewardSignalType,
-)
+from mlagents.trainers.settings import RewardSignalType
+from mlagents.trainers.ppo.trainer import PPOSettings, TRAINER_NAME as PPO_TRAINER_NAME
+from mlagents.trainers.sac.trainer import SACSettings, TRAINER_NAME as SAC_TRAINER_NAME
+
 
 BRAIN_NAME = "testbehavior"
 
@@ -162,9 +160,9 @@ RANDOMIZATION = """
 
 
 @pytest.mark.parametrize("use_recurrent", [True, False])
-@pytest.mark.parametrize("trainer_type", [TrainerType.PPO, TrainerType.SAC])
+@pytest.mark.parametrize("trainer_type", [PPO_TRAINER_NAME, SAC_TRAINER_NAME])
 def test_convert_behaviors(trainer_type, use_recurrent):
-    if trainer_type == TrainerType.PPO:
+    if trainer_type == PPO_TRAINER_NAME:
         trainer_config = PPO_CONFIG
         trainer_settings_type = PPOSettings
     else:

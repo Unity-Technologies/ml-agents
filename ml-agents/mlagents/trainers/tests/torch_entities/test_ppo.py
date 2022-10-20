@@ -5,6 +5,7 @@ import attr
 
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
+from mlagents.trainers.torch_entities.networks import SimpleActor
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import copy_buffer_fields
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
@@ -50,7 +51,13 @@ def create_test_ppo_optimizer(dummy_config, use_rnn, use_discrete, use_visual):
         if use_rnn
         else None
     )
-    policy = TorchPolicy(0, mock_specs, trainer_settings, "test", False)
+    actor_kwargs = {
+        "conditional_sigma": False,
+        "tanh_squash": False,
+    }
+    policy = TorchPolicy(
+        0, mock_specs, trainer_settings.network_settings, SimpleActor, actor_kwargs
+    )
     optimizer = TorchPPOOptimizer(policy, trainer_settings)
     return optimizer
 

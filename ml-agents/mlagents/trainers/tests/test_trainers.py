@@ -69,7 +69,7 @@ def test_ppo_trainer_update_normalization(ppo_config):
     with patch(
         "mlagents.trainers.torch_entities.networks.ValueNetwork.update_normalization"
     ) as optimizer_update_normalization_mock, patch(
-        "mlagents.trainers.policy.torch_policy.TorchPolicy.update_normalization"
+        "mlagents.trainers.torch_entities.networks.SimpleActor.update_normalization"
     ) as policy_update_normalization_mock:
         ppo_trainer.advance()
         optimizer_update_normalization_mock.assert_called_once()
@@ -113,7 +113,7 @@ def test_sac_trainer_update_normalization(sac_config):
     with patch(
         "mlagents.trainers.torch_entities.networks.ValueNetwork.update_normalization"
     ) as optimizer_update_normalization_mock, patch(
-        "mlagents.trainers.policy.torch_policy.TorchPolicy.update_normalization"
+        "mlagents.trainers.torch_entities.networks.SimpleActor.update_normalization"
     ) as policy_update_normalization_mock:
         sac_trainer.advance()
         optimizer_update_normalization_mock.assert_called_once()
@@ -157,7 +157,7 @@ def test_poca_trainer_update_normalization(poca_config):
     with patch(
         "mlagents.trainers.poca.optimizer_torch.TorchPOCAOptimizer.POCAValueNetwork.update_normalization"
     ) as optimizer_update_normalization_mock, patch(
-        "mlagents.trainers.policy.torch_policy.TorchPolicy.update_normalization"
+        "mlagents.trainers.torch_entities.networks.SimpleActor.update_normalization"
     ) as policy_update_normalization_mock:
         poca_trainer.advance()
         optimizer_update_normalization_mock.assert_called_once()

@@ -128,10 +128,9 @@ class Trainer(abc.ABC):
         self,
         parsed_behavior_id: BehaviorIdentifiers,
         behavior_spec: BehaviorSpec,
-        create_graph: bool = False,
     ) -> Policy:
         """
-        Creates policy
+        Creates a Policy object
         """
         pass
 
@@ -144,12 +143,13 @@ class Trainer(abc.ABC):
         """
         pass
 
-    @abc.abstractmethod
     def get_policy(self, name_behavior_id: str) -> Policy:
         """
-        Gets policy from trainer.
+        Gets policy associated with name_behavior_id
+        :param name_behavior_id: Fully qualified behavior name
+        :return: Policy associated with name_behavior_id
         """
-        pass
+        return self.policies[name_behavior_id]
 
     @abc.abstractmethod
     def advance(self) -> None:
@@ -177,3 +177,7 @@ class Trainer(abc.ABC):
         :param trajectory_queue: Trajectory queue to read from.
         """
         self.trajectory_queues.append(trajectory_queue)
+
+    @staticmethod
+    def get_trainer_name() -> str:
+        raise NotImplementedError

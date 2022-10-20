@@ -1,4 +1,4 @@
-# config to specify which modules will be used to render api docs
+# config to specify which modules will be used to render api docs docs from ml-agents-env package
 folder: docs
 modules:
     - name: mlagents_envs

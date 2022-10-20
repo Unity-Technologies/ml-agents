@@ -3,7 +3,7 @@ import sys
 
 from setuptools import setup, find_packages
 from setuptools.command.install import install
-from mlagents.plugins import ML_AGENTS_STATS_WRITER
+from mlagents.plugins import ML_AGENTS_STATS_WRITER, ML_AGENTS_TRAINER_TYPE
 import mlagents.trainers
 
 VERSION = mlagents.trainers.__version__
@@ -88,6 +88,9 @@ setup(
         # Plugins - each plugin type should have an entry here for the default behavior
         ML_AGENTS_STATS_WRITER: [
             "default=mlagents.plugins.stats_writer:get_default_stats_writers"
+        ],
+        ML_AGENTS_TRAINER_TYPE: [
+            "default=mlagents.plugins.trainer_type:get_default_trainer_types"
         ],
     },
     # TODO: Remove this once mypy stops having spurious setuptools issues.

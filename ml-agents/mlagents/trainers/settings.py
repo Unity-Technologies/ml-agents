@@ -30,6 +30,7 @@ from mlagents_envs import logging_util
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
 )
+from mlagents.plugins import all_trainer_settings, all_trainer_types
 
 logger = logging_util.get_logger(__name__)
 
@@ -44,23 +45,9 @@ def check_and_structure(key: str, value: Any, class_type: type) -> Any:
     return cattr.structure(value, attr_fields_dict[key].type)
 
 
-class TrainerType(Enum):
-    PPO: str = "ppo"
-    SAC: str = "sac"
-    POCA: str = "poca"
-
-    def to_settings(self) -> type:
-        _mapping = {
-            TrainerType.PPO: PPOSettings,
-            TrainerType.SAC: SACSettings,
-            TrainerType.POCA: POCASettings,
-        }
-        return _mapping[self]
-
-
-def check_hyperparam_schedules(val: Dict, trainer_type: TrainerType) -> Dict:
+def check_hyperparam_schedules(val: Dict, trainer_type: str) -> Dict:
     # Check if beta and epsilon are set. If not, set to match learning rate schedule.
-    if trainer_type is TrainerType.PPO or trainer_type is TrainerType.POCA:
+    if trainer_type == "ppo" or trainer_type == "poca":
         if "beta_schedule" not in val.keys() and "learning_rate_schedule" in val.keys():
             val["beta_schedule"] = val["learning_rate_schedule"]
         if (
@@ -175,35 +162,18 @@ class HyperparamSettings:
 
 
 @attr.s(auto_attribs=True)
-class PPOSettings(HyperparamSettings):
-    beta: float = 5.0e-3
-    epsilon: float = 0.2
-    lambd: float = 0.95
+class OnPolicyHyperparamSettings(HyperparamSettings):
     num_epoch: int = 3
-    shared_critic: bool = False
-    learning_rate_schedule: ScheduleType = ScheduleType.LINEAR
-    beta_schedule: ScheduleType = ScheduleType.LINEAR
-    epsilon_schedule: ScheduleType = ScheduleType.LINEAR
 
 
 @attr.s(auto_attribs=True)
-class SACSettings(HyperparamSettings):
+class OffPolicyHyperparamSettings(HyperparamSettings):
     batch_size: int = 128
     buffer_size: int = 50000
     buffer_init_steps: int = 0
-    tau: float = 0.005
     steps_per_update: float = 1
     save_replay_buffer: bool = False
-    init_entcoef: float = 1.0
-    reward_signal_steps_per_update: float = attr.ib()
-
-    @reward_signal_steps_per_update.default
-    def _reward_signal_steps_per_update_default(self):
-        return self.steps_per_update
-
-
-# POCA uses the same hyperparameters as PPO
-POCASettings = PPOSettings
+    reward_signal_steps_per_update: float = 4
 
 
 # INTRINSIC REWARD SIGNALS #############################################################
@@ -644,12 +614,12 @@ class SelfPlaySettings:
 @attr.s(auto_attribs=True)
 class TrainerSettings(ExportableSettings):
     default_override: ClassVar[Optional["TrainerSettings"]] = None
-    trainer_type: TrainerType = TrainerType.PPO
+    trainer_type: str = "ppo"
     hyperparameters: HyperparamSettings = attr.ib()
 
     @hyperparameters.default
     def _set_default_hyperparameters(self):
-        return self.trainer_type.to_settings()()
+        return all_trainer_settings[self.trainer_type]()
 
     network_settings: NetworkSettings = attr.ib(factory=NetworkSettings)
     reward_signals: Dict[RewardSignalType, RewardSignalSettings] = attr.ib(
@@ -723,12 +693,20 @@ class TrainerSettings(ExportableSettings):
                     d_copy[key] = check_hyperparam_schedules(
                         val, d_copy["trainer_type"]
                     )
-                    d_copy[key] = strict_to_cls(
-                        d_copy[key], TrainerType(d_copy["trainer_type"]).to_settings()
-                    )
+                    try:
+                        d_copy[key] = strict_to_cls(
+                            d_copy[key], all_trainer_settings[d_copy["trainer_type"]]
+                        )
+                    except KeyError:
+                        raise TrainerConfigError(
+                            f"Settings for trainer type {d_copy['trainer_type']} were not found"
+                        )
             elif key == "max_steps":
                 d_copy[key] = int(float(val))
                 # In some legacy configs, max steps was specified as a float
+            elif key == "trainer_type":
+                if val not in all_trainer_types.keys():
+                    raise TrainerConfigError(f"Invalid trainer type {val} was found")
             else:
                 d_copy[key] = check_and_structure(key, val, t)
         return t(**d_copy)
@@ -969,7 +947,9 @@ class RunOptions(ExportableSettings):
         return final_runoptions
 
     @staticmethod
-    def from_dict(options_dict: Dict[str, Any]) -> "RunOptions":
+    def from_dict(
+        options_dict: Dict[str, Any],
+    ) -> "RunOptions":
         # If a default settings was specified, set the TrainerSettings class override
         if (
             "default_settings" in options_dict.keys()

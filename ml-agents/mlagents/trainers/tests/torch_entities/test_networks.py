@@ -273,10 +273,11 @@ def test_valuenetwork():
 @pytest.mark.parametrize("lstm", [True, False])
 def test_actor_critic(lstm, shared):
     obs_size = 4
+    vis_obs_size = (84, 84, 3)
     network_settings = NetworkSettings(
         memory=NetworkSettings.MemorySettings() if lstm else None, normalize=True
     )
-    obs_spec = create_observation_specs_with_shapes([(obs_size,)])
+    obs_spec = create_observation_specs_with_shapes([(obs_size,), vis_obs_size])
     act_size = 2
     mask = torch.ones([1, act_size * 2])
     stream_names = [f"stream_name{n}" for n in range(4)]
@@ -289,17 +290,23 @@ def test_actor_critic(lstm, shared):
         actor = SimpleActor(obs_spec, network_settings, action_spec)
         critic = ValueNetwork(stream_names, obs_spec, network_settings)
     if lstm:
-        sample_obs = torch.ones((1, network_settings.memory.sequence_length, obs_size))
+        sample_vis_obs = torch.ones(
+            (network_settings.memory.sequence_length, 84, 84, 3), dtype=torch.float32
+        )
+        sample_obs = torch.ones((network_settings.memory.sequence_length, obs_size))
         memories = torch.ones(
             (1, network_settings.memory.sequence_length, actor.memory_size)
         )
     else:
+        sample_vis_obs = 0.1 * torch.ones((1, 84, 84, 3), dtype=torch.float32)
         sample_obs = torch.ones((1, obs_size))
         memories = torch.tensor([])
         # memories isn't always set to None, the network should be able to
         # deal with that.
     # Test critic pass
-    value_out, memories_out = critic.critic_pass([sample_obs], memories=memories)
+    value_out, memories_out = critic.critic_pass(
+        [sample_obs] + [sample_vis_obs], memories=memories
+    )
     for stream in stream_names:
         if lstm:
             assert value_out[stream].shape == (network_settings.memory.sequence_length,)
@@ -308,20 +315,43 @@ def test_actor_critic(lstm, shared):
             assert value_out[stream].shape == (1,)
 
     # Test get action stats and_value
-    action, log_probs, entropies, mem_out = actor.get_action_and_stats(
-        [sample_obs], memories=memories, masks=mask
+    action, run_out, mem_out = actor.get_action_and_stats(
+        [sample_obs] + [sample_vis_obs], memories=memories, masks=mask
     )
+    log_probs = run_out["log_probs"]
+    entropy = run_out["entropy"]
+
+    eval_run_out = actor.get_stats(
+        [sample_obs] + [sample_vis_obs], action, memories=memories, masks=mask
+    )
+    eval_log_probs = eval_run_out["log_probs"]
+    eval_entropy = eval_run_out["entropy"]
+
     if lstm:
         assert action.continuous_tensor.shape == (64, 2)
+        assert log_probs.continuous_tensor.shape == (64, 2)
+        assert entropy.shape == (64,)
+        assert eval_log_probs.continuous_tensor.shape == (64, 2)
+        assert eval_entropy.shape == (64,)
+
     else:
         assert action.continuous_tensor.shape == (1, 2)
+        assert log_probs.continuous_tensor.shape == (1, 2)
+        assert entropy.shape == (1,)
+        assert eval_log_probs.continuous_tensor.shape == (1, 2)
+        assert eval_entropy.shape == (1,)
 
     assert len(action.discrete_list) == 2
-    for _disc in action.discrete_list:
+    for _disc, _disc_prob, _eval_disc_prob in zip(
+        action.discrete_list, log_probs.discrete_list, eval_log_probs.discrete_list
+    ):
         if lstm:
             assert _disc.shape == (64, 1)
+            assert _eval_disc_prob.shape == (64,)
         else:
             assert _disc.shape == (1, 1)
+            assert _disc_prob.shape == (1,)
+            assert _eval_disc_prob.shape == (1,)
 
     if mem_out is not None:
         assert mem_out.shape == memories.shape

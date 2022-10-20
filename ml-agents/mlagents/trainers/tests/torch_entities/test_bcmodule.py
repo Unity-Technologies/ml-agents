@@ -1,11 +1,11 @@
+import os
+from typing import Dict, Any
 from unittest.mock import MagicMock
 import pytest
 import mlagents.trainers.tests.mock_brain as mb
-
-import os
-
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.torch_entities.components.bc.module import BCModule
+from mlagents.trainers.torch_entities.networks import SimpleActor
 from mlagents.trainers.settings import (
     TrainerSettings,
     BehavioralCloningSettings,
@@ -19,8 +19,16 @@ def create_bc_module(mock_behavior_specs, bc_settings, use_rnn, tanhresample):
     trainer_config.network_settings.memory = (
         NetworkSettings.MemorySettings() if use_rnn else None
     )
+    actor_kwargs: Dict[str, Any] = {
+        "conditional_sigma": False,
+        "tanh_squash": tanhresample,
+    }
     policy = TorchPolicy(
-        0, mock_behavior_specs, trainer_config, tanhresample, tanhresample
+        0,
+        mock_behavior_specs,
+        trainer_config.network_settings,
+        SimpleActor,
+        actor_kwargs,
     )
     bc_module = BCModule(
         policy,
@@ -128,6 +136,8 @@ def test_bcmodule_dc_visual_update(is_sac):
 
 
 # Test with discrete control, visual observations and RNN
+
+
 @pytest.mark.parametrize("is_sac", [True, False], ids=["sac", "ppo"])
 def test_bcmodule_rnn_dc_update(is_sac):
     mock_specs = mb.create_mock_banana_behavior_specs()

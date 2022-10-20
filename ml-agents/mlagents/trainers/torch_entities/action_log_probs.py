@@ -23,6 +23,13 @@ class LogProbsTuple(_ActionTupleBase):
         """
         return np.float32
 
+    @staticmethod
+    def empty_log_probs() -> "LogProbsTuple":
+        """
+        Generates a dummy LogProbsTuple
+        """
+        return LogProbsTuple()
+
 
 class ActionLogProbs(NamedTuple):
     """
