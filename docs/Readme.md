@@ -23,7 +23,7 @@ rich environments and then made accessible to the wider research and game
 developer communities.
 
 ## Features
-- 18+ [example Unity environments](Learning-Environment-Examples.md)
+- 17+ [example Unity environments](Learning-Environment-Examples.md)
 - Support for multiple environment configurations and training scenarios
 - Flexible Unity SDK that can be integrated into your game or custom Unity scene
 - Support for training single-agent, multi-agent cooperative, and multi-agent

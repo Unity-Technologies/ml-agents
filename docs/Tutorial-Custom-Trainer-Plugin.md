@@ -1,18 +1,15 @@
-### Step 1: Write your own custom trainer class
-Before you start writing your code, make sure to create a python environment:
+### Step 1: Write your custom trainer class
+Before you start writing your code, make sure to use your favorite environment management tool(e.g. `venv` or `conda`) to create and activate a Python virtual environment. The following command uses `conda`, but other tools work similarly:
 ```shell
-conda create -n trainer-env python=3.8
+conda create -n trainer-env python=3.8.13
+conda activate trainer-env
 ```
 
 Users of the plug-in system are responsible for implementing the trainer class subject to the API standard. Let us follow an example by implementing a custom trainer named "YourCustomTrainer". You can either extend `OnPolicyTrainer` or `OffPolicyTrainer` classes depending on the training strategies you choose.
 
-Model-free RL algorithms generally fall into two broad categories: on-policy and off-policy. On-policy algorithms rely on performing updates based on data gathered from the current policy. Off-policy algorithms learn a Q function from a buffer of previous data, then use this Q function to make decisions. Off-policy algorithms have three key benefits in the context of ML-Agents:
-They tend to use fewer samples than on-policy as they can pull and re-use data from the buffer many times.
-They allow player demonstrations to be inserted in-line with RL data into the buffer, enabling new ways of doing imitation learning by streaming player data.
-They are conducive to distributed training, where the policy running on other machines may not be synchronized with the current policy.
-However, until recently, off-policy algorithms tended to be more brittle, had difficulty with exploration, and were usually not as useful for continuous control problems. Soft Actor-Critic (Haarnoja et. al, 2018) is an off-policy algorithm that combines the sample-efficiency of Q-learning with the stochasticity of a policy-gradient method such as PPO.
+Please refer to the internal [PPO implementation](../ml-agents/mlagents/trainers/ppo/trainer.py) for a complete code example. We will not provide a workable code in the document. The purpose of the tutorial is to introduce you to the core components and interfaces of our plugin framework. We use code snippets and patterns to demonstrate the control and data flow.
 
-Your custom trainers are Responsible for collecting experiences and training the models. Your custom trainer class acts like a co-ordinator to the policy and optimizer. To start implement methods in the class, create a policy and an optimizer class objects:
+Your custom trainers are responsible for collecting experiences and training the models. Your custom trainer class acts like a co-ordinator to the policy and optimizer. To start implementing methods in the class, create a policy class objects from method `create_policy`:
 
 
 ```python
@@ -44,9 +41,9 @@ def create_policy(
 
 ```
 
-Depending on whether you use shared or separate network architecuture for your policy, we provide `SimpleActor` and `SharedActorCritic` from `mlagents.trainers.torch_entities.networks` that you can choose from. In our example above, we use a `SimpleActor`
+Depending on whether you use shared or separate network architecture for your policy, we provide `SimpleActor` and `SharedActorCritic` from `mlagents.trainers.torch_entities.networks` that you can choose from. In our example above, we use a `SimpleActor`.
 
-Next, create an optimizer class object from `create_optimizer` method:
+Next, create an optimizer class object from `create_optimizer` method and connect it to the policy object you created above:
 
 
 ```python
@@ -57,9 +54,10 @@ def create_optimizer(self) -> TorchOptimizer:
 
 ```
 
-There are a couple abstract methods(`_process_trajectory` and `_update_policy`) inherited from `RLTrainer` you need to implement in your custom trainer class. `_process_trajectory` takes a trajectory and processes it, puts it into the update buffer. Processing involves calculating value and advantage targets for the model updating step. Given input `trajectory: Trajectory`, users are responsible for processing the data in the trajectory and append `agent_buffer_trajectory` to the back of update buffer by calling `self._append_to_update_buffer(agent_buffer_trajectory)`, whose output will be used in updating the model in `optimizer` class.
+There are a couple of abstract methods(`_process_trajectory` and `_update_policy`) inherited from `RLTrainer` that you need to implement in your custom trainer class. `_process_trajectory` takes a trajectory and processes it, putting it into the update buffer. Processing involves calculating value and advantage targets for the model updating step. Given input `trajectory: Trajectory`, users are responsible for processing the data in the trajectory and append `agent_buffer_trajectory` to the back of the update buffer by calling `self._append_to_update_buffer(agent_buffer_trajectory)`, whose output will be used in updating the model in `optimizer` class.
 
-A typical `_process_trajectory` function(incomplete) - would look like the following:
+A typical `_process_trajectory` function(incomplete) will convert a trajectory object to an agent buffer then get all value estimates from the trajectory by calling `self.optimizer.get_trajectory_value_estimates`. From the returned dictionary of value estimates we extract reward signals keyed by their names:
+
 ```python
 def _process_trajectory(self, trajectory: Trajectory) -> None:
     super()._process_trajectory(trajectory)
@@ -72,7 +70,7 @@ def _process_trajectory(self, trajectory: Trajectory) -> None:
         value_estimates,
         value_next,
         value_memories,
-    ) = self.optimizer.get_trajectory_value_estimates(
+    ) =  self.optimizer.get_trajectory_value_estimates(
         agent_buffer_trajectory,
         trajectory.next_obs,
         trajectory.done_reached and not trajectory.interrupted,
@@ -105,15 +103,14 @@ def _process_trajectory(self, trajectory: Trajectory) -> None:
 
 ```
 
-A trajectory will be a list of dictionaries of string to anything. When calling forward on a policy, the argument will include an “experience” dict of string to anything from the last step. The forward method will generate action and the next “experience” dictionary. Examples of fields in the “experience” dictionary include observation, action, reward, done status, group_reward, LSTM memory state, etc...
+A trajectory will be a list of dictionaries of strings mapped to `Anything`. When calling `forward` on a policy, the argument will include an “experience” dictionary from the last step. The `forward` method will generate an action and the next “experience” dictionary. Examples of fields in the “experience” dictionary include observation, action, reward, done status, group_reward, LSTM memory state, etc.
 
 
 
 ### Step 2: implement your custom optimizer for the trainer.
-We will show you an example we implemented - `class TorchPPOOptimizer(TorchOptimizer)`, Which Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy. Your optimizer should include a value estimator and a loss function in the update method
+We will show you an example we implemented - `class TorchPPOOptimizer(TorchOptimizer)`, which takes a Policy and a Dict of trainer parameters and creates an Optimizer that connects to the policy. Your optimizer should include a value estimator and a loss function in the `update` method.
 
-Before writing your optimizer class, first define setting class `class PPOSettings(OnPolicyHyperparamSettings):
-` for your custom optimizer:
+Before writing your optimizer class, first define setting class `class PPOSettings(OnPolicyHyperparamSettings)` for your custom optimizer:
 
 
 
@@ -130,7 +127,7 @@ class PPOSettings(OnPolicyHyperparamSettings):
 
 ```
 
-You should implement `update` function:
+You should implement `update` function following interface:
 
 
 ```python
@@ -138,7 +135,7 @@ def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
 
 ```
 
-Calculate losses and other metrics from an `AgentBuffer` generated from your trainer class, a typical pattern(incomplete) would like this:
+In which losses and other metrics are calculated from an `AgentBuffer` that is generated from your trainer class, depending on which model you choose to implement the loss functions will be different. In our case we calculate value loss from critic and trust region policy loss. A typical pattern(incomplete) of the calculations will look like the following:
 
 
 ```python
@@ -173,7 +170,7 @@ loss = (
 
 ```
 
-Update the model and return  the a dictionary including calculated losses and updated decay learning rate:
+Finally update the model and return the a dictionary including calculated losses and updated decay learning rate:
 
 
 ```python
@@ -183,8 +180,6 @@ loss.backward()
 
 self.optimizer.step()
 update_stats = {
-    # NOTE: abs() is not technically correct, but matches the behavior in TensorFlow.
-    # TODO: After PyTorch is default, change to something more correct.
     "Losses/Policy Loss": torch.abs(policy_loss).item(),
     "Losses/Value Loss": value_loss.item(),
     "Policy/Learning Rate": decay_lr,
@@ -216,7 +211,7 @@ your_trainer_type: name your trainer type, used in configuration file
 your_package: your pip installable package containing custom trainer implementation
 ```
 
-Also define get_type_and_setting method in YourCustomTrainer class:
+Also define `get_type_and_setting` method in `YourCustomTrainer` class:
 
 
 ```python
@@ -250,7 +245,7 @@ pip3 install your_custom_package
 ```
 Or follow our internal implementations:
 ```shell
-pip install -e ./ml-agents-trainer-plugin
+pip3 install -e ./ml-agents-trainer-plugin
 ```
 
 Following the previous installations your package is added as an entrypoint and you can use a config file with new
@@ -261,37 +256,28 @@ mlagents-learn ml-agents-trainer-plugin/mlagents_trainer_plugin/a2c/a2c_3DBall.y
 ```
 
 ### Validate your implementations:
-Create a clean python environment with python 3.8+ before you start.
+Create a clean Python environment with Python 3.8+ and activate it before you start, if you haven't done so already:
 ```shell
-conda create -n trainer-env python=3.8
+conda create -n trainer-env python=3.8.13
+conda activate trainer-env
 ```
 
-Make sure you follow previous steps and install all required packages. We are testing internal implementations here, but ML-Agents users can run similar validations once they have their own implementation installed:
+Make sure you follow previous steps and install all required packages. We are testing internal implementations in this tutorial, but ML-Agents users can run similar validations once they have their own implementations installed:
 ```shell
 pip3 install -e ./ml-agents-envs && pip3 install -e ./ml-agents
-pip install -e ./ml-agents-trainer-plugin
+pip3 install -e ./ml-agents-trainer-plugin
 ```
-Once your package is added as an entrypoint and you can use a config file with new trainer. Check if trainer type is specified in the config file `a2c_3DBall.yaml`:
+Once your package is added as an `entrypoint`, you can add to the config file the new trainer type. Check if trainer type is specified in the config file `a2c_3DBall.yaml`:
 ```
 trainer_type: a2c
 ```
 
-Test if custom trainer package is install:
+Test if custom trainer package is installed by running:
 ```shell
 mlagents-learn ml-agents-trainer-plugin/mlagents_trainer_plugin/a2c/a2c_3DBall.yaml --run-id test-trainer
 ```
 
-If it is properly installed, you will see Unity logo and message indicating training will start:
-```
-[INFO] Listening on port 5004. Start training by pressing the Play button in the Unity Editor.
-```
-
-If you see the following error message, it could be due to train type is wrong or the trainer type specified is not installed:
-```shell
-mlagents.trainers.exception.TrainerConfigError: Invalid trainer type a2c was found
-```
-
-You can also check all trainers installed in the registry. Type `python` in your shell to open a REPL session. Run the python code below, you should be able to see all trainer types installed:
+You can also list all trainers installed in the registry. Type `python` in your shell to open a REPL session. Run the python code below, you should be able to see all trainer types currently installed:
 ```python
 >>> import pkg_resources
 >>> for entry in pkg_resources.iter_entry_points('mlagents.trainer_type'):
@@ -301,3 +287,14 @@ default = mlagents.plugins.trainer_type:get_default_trainer_types
 a2c = mlagents_trainer_plugin.a2c.a2c_trainer:get_type_and_setting
 dqn = mlagents_trainer_plugin.dqn.dqn_trainer:get_type_and_setting
 ```
+
+If it is properly installed, you will see Unity logo and message indicating training will start:
+```
+[INFO] Listening on port 5004. Start training by pressing the Play button in the Unity Editor.
+```
+
+If you see the following error message, it could be due to trainer type is wrong or the trainer type specified is not installed:
+```shell
+mlagents.trainers.exception.TrainerConfigError: Invalid trainer type a2c was found
+```
+
