@@ -289,6 +289,12 @@ def _create_parser() -> argparse.ArgumentParser:
         help="Whether to run the Unity executable in no-graphics mode (i.e. without initializing "
         "the graphics driver. Use this only if your agents don't use visual observations.",
     )
+    eng_conf.add_argument(
+        "--timeout-wait",
+        default=60,
+        help="Time (in seconds) to wait for connection from environment.",
+        action=DetectDefault,
+    )
 
     torch_conf = argparser.add_argument_group(title="Torch Configuration")
     torch_conf.add_argument(

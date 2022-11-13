@@ -95,6 +95,7 @@ def run_training(run_seed: int, options: RunOptions, num_areas: int) -> None:
         env_factory = create_environment_factory(
             env_settings.env_path,
             engine_settings.no_graphics,
+            engine_settings.timeout_wait,
             run_seed,
             num_areas,
             port,
@@ -169,6 +170,7 @@ def write_timing_tree(output_dir: str) -> None:
 def create_environment_factory(
     env_path: Optional[str],
     no_graphics: bool,
+    timeout_wait: int,
     seed: int,
     num_areas: int,
     start_port: Optional[int],
@@ -186,6 +188,7 @@ def create_environment_factory(
             seed=env_seed,
             num_areas=num_areas,
             no_graphics=no_graphics,
+            timeout_wait=timeout_wait,
             base_port=start_port,
             additional_args=env_args,
             side_channels=side_channels,
