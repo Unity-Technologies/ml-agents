@@ -851,6 +851,7 @@ class EngineSettings:
     target_frame_rate: int = parser.get_default("target_frame_rate")
     capture_frame_rate: int = parser.get_default("capture_frame_rate")
     no_graphics: bool = parser.get_default("no_graphics")
+    timeout_wait: int = parser.get_default("timeout_wait")
 
 
 @attr.s(auto_attribs=True)
