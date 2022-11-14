@@ -9,6 +9,7 @@ PluginImporter:
   executionOrder: {}
   isPreloaded: 0
   isOverridable: 0
+  isExplicitlyReferenced: 1
   platformData:
   - first:
       Any: 
