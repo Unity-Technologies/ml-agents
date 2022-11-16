@@ -79,7 +79,6 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
         image: {{ platform.image }}
         flavor: {{ platform.flavor}}
     commands:
-        - git submodule update --init --recursive
         - npm install upm-ci-utils@1.27.0 -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
         - upm-ci package test -u {{ editor.version }} --package-path {{ package.name }} {{ noDefaultPackagesOptions }} --warnings-as-errors --extra-utr-arg "reruncount=2"
     artifacts:
@@ -125,7 +124,6 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
         image: {{ platform.image }}
         flavor: {{ platform.flavor}}
     commands:
-        - git submodule update --init --recursive
         - |
 {% if platform.name == "linux" %}
           conda activate python3.8

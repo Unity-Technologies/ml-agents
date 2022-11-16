@@ -5,7 +5,6 @@ pytest_gpu:
     image: ml-agents/ml-agents-ubuntu-18.04:latest
     flavor: b1.large
   commands:
-    - git submodule update --init --recursive
     - |
       eval "$($HOME/anaconda/bin/conda shell.bash hook)"
       conda activate python3.8

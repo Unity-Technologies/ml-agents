@@ -6,9 +6,8 @@ test_linux_protobuf_generation:
     flavor: b1.large
   variables:
     GRPC_VERSION: "1.14.1"
-    CS_PROTO_PATH: "Runtime/Grpc/CommunicatorObjects"
+    CS_PROTO_PATH: "com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects"
   commands:
-    - git submodule update --init --recursive
     - |
       sudo apt-get update && sudo apt-get install -y nuget
       eval "$($HOME/anaconda/bin/conda shell.bash hook)"
@@ -23,7 +22,6 @@ test_linux_protobuf_generation:
       popd
       mkdir -p artifacts
       touch artifacts/proto.patch
-      cd com.unity.ml-agents
       git diff --exit-code -- :/ ":(exclude,top)$CS_PROTO_PATH/*.meta"                          \
       || { GIT_ERR=$?; echo "protobufs need to be regenerated, apply the patch uploaded to artifacts."; \
       echo "Apply the patch with the command 'git apply proto.patch'";                                  \
