@@ -1,0 +1,37 @@
+{
+    "name": "Unity.ML-Agents.Runtime.Tests",
+    "references": [
+        "Unity.ML-Agents",
+        "Unity.Barracuda",
+        "Unity.ML-Agents.CommunicatorObjects",
+        "Unity.ML-Agents.Editor"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "System.IO.Abstractions.dll",
+        "System.IO.Abstractions.TestingHelpers.dll",
+        "Google.Protobuf.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.modules.physics",
+            "expression": "1.0.0",
+            "define": "MLA_UNITY_PHYSICS_MODULE"
+        },
+        {
+            "name": "com.unity.modules.physics2d",
+            "expression": "1.0.0",
+            "define": "MLA_UNITY_PHYSICS2D_MODULE"
+        }
+    ]
+}

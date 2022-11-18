@@ -373,7 +373,7 @@ def steps_from_proto(
 
     max_step = np.array(
         [agent_info.max_step_reached for agent_info in terminal_agent_info_list],
-        dtype=np.bool,
+        dtype=bool,
     )
     decision_agent_id = np.array(
         [agent_info.id for agent_info in decision_agent_info_list], dtype=np.int32
@@ -389,7 +389,7 @@ def steps_from_proto(
         ):
             n_agents = len(decision_agent_info_list)
             a_size = np.sum(behavior_spec.action_spec.discrete_branches)
-            mask_matrix = np.ones((n_agents, a_size), dtype=np.bool)
+            mask_matrix = np.ones((n_agents, a_size), dtype=bool)
             for agent_index, agent_info in enumerate(decision_agent_info_list):
                 if agent_info.action_mask is not None:
                     if len(agent_info.action_mask) == a_size:
@@ -397,7 +397,7 @@ def steps_from_proto(
                             False if agent_info.action_mask[k] else True
                             for k in range(a_size)
                         ]
-            action_mask = (1 - mask_matrix).astype(np.bool)
+            action_mask = (1 - mask_matrix).astype(bool)
             indices = _generate_split_indices(
                 behavior_spec.action_spec.discrete_branches
             )

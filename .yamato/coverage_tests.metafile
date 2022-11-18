@@ -1,5 +1,5 @@
 coverage_test_editors:
-    - version: 2020.3
+    - version: 2021.3
       testProject: DevProject
 
 coverage_test_platforms:

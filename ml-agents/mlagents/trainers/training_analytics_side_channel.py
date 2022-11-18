@@ -147,7 +147,7 @@ class TrainingAnalyticsSideChannel(DefaultTrainingAnalyticsSideChannel):
         raw_config = self._sanitize_trainer_settings(config)
         msg = TrainingBehaviorInitialized(
             behavior_name=self._hash(behavior_name),
-            trainer_type=config.trainer_type.value,
+            trainer_type=config.trainer_type,
             extrinsic_reward_enabled=(
                 RewardSignalType.EXTRINSIC in config.reward_signals
             ),

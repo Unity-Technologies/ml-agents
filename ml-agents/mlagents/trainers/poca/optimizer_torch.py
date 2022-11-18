@@ -1,6 +1,8 @@
 from typing import Dict, cast, List, Tuple, Optional
 from collections import defaultdict
-from mlagents.trainers.torch.components.reward_providers.extrinsic_reward_provider import (
+import attr
+
+from mlagents.trainers.torch_entities.components.reward_providers.extrinsic_reward_provider import (
     ExtrinsicRewardProvider,
 )
 import numpy as np
@@ -21,19 +23,31 @@ from mlagents.trainers.settings import (
     RewardSignalSettings,
     RewardSignalType,
     TrainerSettings,
-    POCASettings,
+    NetworkSettings,
+    OnPolicyHyperparamSettings,
+    ScheduleType,
 )
-from mlagents.trainers.torch.networks import Critic, MultiAgentNetworkBody
-from mlagents.trainers.torch.decoders import ValueHeads
-from mlagents.trainers.torch.agent_action import AgentAction
-from mlagents.trainers.torch.action_log_probs import ActionLogProbs
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch_entities.networks import Critic, MultiAgentNetworkBody
+from mlagents.trainers.torch_entities.decoders import ValueHeads
+from mlagents.trainers.torch_entities.agent_action import AgentAction
+from mlagents.trainers.torch_entities.action_log_probs import ActionLogProbs
+from mlagents.trainers.torch_entities.utils import ModelUtils
 from mlagents.trainers.trajectory import ObsUtil, GroupObsUtil
-from mlagents.trainers.settings import NetworkSettings
 
 from mlagents_envs.logging_util import get_logger
 
 logger = get_logger(__name__)
+
+
+@attr.s(auto_attribs=True)
+class POCASettings(OnPolicyHyperparamSettings):
+    beta: float = 5.0e-3
+    epsilon: float = 0.2
+    lambd: float = 0.95
+    num_epoch: int = 3
+    learning_rate_schedule: ScheduleType = ScheduleType.LINEAR
+    beta_schedule: ScheduleType = ScheduleType.LINEAR
+    epsilon_schedule: ScheduleType = ScheduleType.LINEAR
 
 
 class TorchPOCAOptimizer(TorchOptimizer):
@@ -162,9 +176,11 @@ class TorchPOCAOptimizer(TorchOptimizer):
         self._critic.to(default_device())
 
         params = list(self.policy.actor.parameters()) + list(self.critic.parameters())
+
         self.hyperparameters: POCASettings = cast(
             POCASettings, trainer_settings.hyperparameters
         )
+
         self.decay_learning_rate = ModelUtils.DecayedValue(
             self.hyperparameters.learning_rate_schedule,
             self.hyperparameters.learning_rate,
@@ -285,13 +301,17 @@ class TorchPOCAOptimizer(TorchOptimizer):
             value_memories = torch.stack(value_memories).unsqueeze(0)
             baseline_memories = torch.stack(baseline_memories).unsqueeze(0)
 
-        log_probs, entropy = self.policy.evaluate_actions(
+        run_out = self.policy.actor.get_stats(
             current_obs,
+            actions,
             masks=act_masks,
-            actions=actions,
             memories=memories,
-            seq_len=self.policy.sequence_length,
+            sequence_length=self.policy.sequence_length,
         )
+
+        log_probs = run_out["log_probs"]
+        entropy = run_out["entropy"]
+
         all_obs = [current_obs] + groupmate_obs
         values, _ = self.critic.critic_pass(
             all_obs,
@@ -345,9 +365,6 @@ class TorchPOCAOptimizer(TorchOptimizer):
             "Policy/Epsilon": decay_eps,
             "Policy/Beta": decay_bet,
         }
-
-        for reward_provider in self.reward_signals.values():
-            update_stats.update(reward_provider.update(batch))
 
         return update_stats
 

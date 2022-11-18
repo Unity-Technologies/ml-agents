@@ -1,5 +1,5 @@
 test_editors:
-  - version: 2019.3
+  - version: 2021.3
 test_platforms:
   - name: win
     type: Unity::VM
@@ -18,7 +18,7 @@ promotion_test_{{ platform.name }}_{{ editor.version }}:
   variables:
     UPMCI_PROMOTION: 1
   commands:
-    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - npm install upm-ci-utils@1.27.0 -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     - upm-ci package test --unity-version {{ editor.version }} --package-path com.unity.ml-agents
   artifacts:
     logs:
@@ -48,7 +48,7 @@ promote:
   variables:
     UPMCI_PROMOTION: 1
   commands:
-    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - npm install upm-ci-utils@1.27.0 -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     - upm-ci package promote --package-path com.unity.ml-agents
 #  triggers:
 #    tags:

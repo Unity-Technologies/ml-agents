@@ -1,6 +1,6 @@
 test_editors:
-  - version: 2020.3
-  - version: 2021.2
+  - version: 2021.3
+  - version: 2022.1
 ---
 {% for editor in test_editors %}
 Run_Mac_Perfomance_Tests{{ editor.version }}:
@@ -12,7 +12,6 @@ Run_Mac_Perfomance_Tests{{ editor.version }}:
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
-    - git submodule update --init --recursive
     - python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
     - unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
     - curl -s https://artifactory.prd.it.unity3d.com/artifactory/unity-tools-local/utr-standalone/utr --output utr
@@ -21,7 +20,7 @@ Run_Mac_Perfomance_Tests{{ editor.version }}:
   triggers:
     cancel_old_ci: true
     recurring:
-      - branch: main
+      - branch: develop
         frequency: daily
   artifacts:
     logs:

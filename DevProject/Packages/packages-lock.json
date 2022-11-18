@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.unity.barracuda": {
-      "version": "2.3.1-preview",
+      "version": "3.0.0",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -12,7 +12,7 @@
       "url": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates"
     },
     "com.unity.burst": {
-      "version": "1.6.0",
+      "version": "1.6.6",
       "depth": 2,
       "source": "registry",
       "dependencies": {
@@ -46,7 +46,7 @@
       "url": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates"
     },
     "com.unity.mathematics": {
-      "version": "1.2.1",
+      "version": "1.2.6",
       "depth": 3,
       "source": "registry",
       "dependencies": {},
@@ -57,7 +57,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.unity.barracuda": "2.3.1-preview",
+        "com.unity.barracuda": "3.0.0",
         "com.unity.modules.imageconversion": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       }
@@ -72,16 +72,14 @@
       }
     },
     "com.unity.nuget.mono-cecil": {
-      "version": "0.1.6-preview.2",
+      "version": "1.10.1",
       "depth": 1,
       "source": "registry",
-      "dependencies": {
-        "nuget.mono-cecil": "0.1.6-preview"
-      },
+      "dependencies": {},
       "url": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates"
     },
     "com.unity.nuget.newtonsoft-json": {
-      "version": "2.0.0-preview",
+      "version": "3.0.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
@@ -108,7 +106,7 @@
       "url": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates"
     },
     "com.unity.settings-manager": {
-      "version": "1.0.1",
+      "version": "1.0.3",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
@@ -154,13 +152,6 @@
     },
     "nuget.castle-core": {
       "version": "1.0.1",
-      "depth": 2,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates"
-    },
-    "nuget.mono-cecil": {
-      "version": "0.1.6-preview",
       "depth": 2,
       "source": "registry",
       "dependencies": {},

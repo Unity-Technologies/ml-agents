@@ -12,7 +12,7 @@ Unity environment via Python.
 ## Installation
 
 The gym wrapper is part of the `mlgents_envs` package. Please refer to the
-[mlagents_envs installation instructions](../ml-agents-envs/README.md).
+[mlagents_envs installation instructions](ML-Agents-Envs-README.md).
 
 
 ## Using the Gym Wrapper

@@ -6,8 +6,7 @@ from mlagents_envs.base_env import ActionTuple, BehaviorSpec, DecisionSteps
 from mlagents_envs.exception import UnityException
 
 from mlagents.trainers.action_info import ActionInfo
-from mlagents.trainers.settings import TrainerSettings, NetworkSettings
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.behavior_id_utils import GlobalAgentId
 
 
@@ -24,39 +23,21 @@ class Policy:
         self,
         seed: int,
         behavior_spec: BehaviorSpec,
-        trainer_settings: TrainerSettings,
-        tanh_squash: bool = False,
-        condition_sigma_on_obs: bool = True,
+        network_settings: NetworkSettings,
     ):
         self.behavior_spec = behavior_spec
-        self.trainer_settings = trainer_settings
-        self.network_settings: NetworkSettings = trainer_settings.network_settings
+        self.network_settings: NetworkSettings = network_settings
         self.seed = seed
         self.previous_action_dict: Dict[str, np.ndarray] = {}
         self.previous_memory_dict: Dict[str, np.ndarray] = {}
         self.memory_dict: Dict[str, np.ndarray] = {}
-        self.normalize = trainer_settings.network_settings.normalize
+        self.normalize = network_settings.normalize
         self.use_recurrent = self.network_settings.memory is not None
-        self.h_size = self.network_settings.hidden_units
-        num_layers = self.network_settings.num_layers
-        if num_layers < 1:
-            num_layers = 1
-        self.num_layers = num_layers
-
-        self.vis_encode_type = self.network_settings.vis_encode_type
-        self.tanh_squash = tanh_squash
-        self.condition_sigma_on_obs = condition_sigma_on_obs
-
         self.m_size = 0
         self.sequence_length = 1
-        if self.network_settings.memory is not None:
+        if self.use_recurrent:
             self.m_size = self.network_settings.memory.memory_size
             self.sequence_length = self.network_settings.memory.sequence_length
-
-        # Non-exposed parameters; these aren't exposed because they don't have a
-        # good explanation and usually shouldn't be touched.
-        self.log_std_min = -20
-        self.log_std_max = 2
 
     def make_empty_memory(self, num_agents):
         """
@@ -143,10 +124,6 @@ class Policy:
             has_nan = np.isnan(d)
             if has_nan:
                 raise RuntimeError("Continuous NaN action detected.")
-
-    @abstractmethod
-    def update_normalization(self, buffer: AgentBuffer) -> None:
-        pass
 
     @abstractmethod
     def increment_step(self, n_steps):

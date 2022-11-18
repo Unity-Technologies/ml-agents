@@ -137,7 +137,6 @@ class AgentBufferField(list):
         Sets the list of BufferEntry to the input data
         :param data: The BufferEntry list to be set.
         """
-        self[:] = []
         self[:] = data
 
     def get_batch(
@@ -244,6 +243,12 @@ class AgentBufferField(list):
             )
         )
         return new_list
+
+    def to_ndarray(self):
+        """
+        Returns the AgentBufferField which is a list of numpy ndarrays (or List[np.ndarray]) as an ndarray.
+        """
+        return np.array(self)
 
 
 class AgentBuffer(MutableMapping):

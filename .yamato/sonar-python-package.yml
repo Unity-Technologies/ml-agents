@@ -1,0 +1,23 @@
+csharp:
+  name: Sonarqube Scan for ml-agents python repo
+  agent:
+    type: Unity::metal::macmini
+    image: package-ci/mac:v1.8.1-822785
+    flavor: m1.mac
+  variables:
+    SONARQUBE_PROJECT_KEY: ai-ml-agents-toolkit
+    SONARQUBE_URL: https://sonarqube.internal.unity3d.com
+    SONARQUBE_LOGIN: a08467db099d82931708d480b8dbf428cf1921d5
+    TARGET_BRANCH: develop
+  commands:
+    - npm install shellcheck --save-dev
+    - npm install upm-ci-utils@1.27.0 -g --registry https://artifactory.prd.it.unity3d.com/artifactory/api/npm/upm-npm
+    - curl https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-macosx.zip -o sonar-scanner-cli-macosx.zip -L
+    - unzip sonar-scanner-cli-macosx.zip -d ~/sonar-scanner-cli
+    - ~/sonar-scanner-cli/sonar-scanner-4.7.0.2747-macosx/bin/sonar-scanner -Dsonar.projectKey=$SONARQUBE_PROJECT_KEY -Dsonar.sources=ml-agents-env -Dsonar.sources=ml-agents -Dsonar.sources=ml-agents-plugin-examples -Dsonar.sources=ml-agents-trainer-plugin -Dsonar.sources=utils -Dsonar.host.url=$SONARQUBE_URL -Dsonar.login=$SONARQUBE_LOGIN -Dsonar.branch.name=$TARGET_BRANCH -Dsonar.scm.provider=git
+  triggers:
+    cancel_old_ci: true
+    expression: |
+      ((pull_request.target eq "main" OR pull_request.target eq "develop" OR pull_request.target match "release.+")
+      AND NOT pull_request.push.changes.all match "**/*.md") OR
+      (push.branch eq "main" OR push.branch eq "develop")

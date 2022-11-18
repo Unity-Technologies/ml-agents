@@ -257,7 +257,7 @@ class TerminalSteps(Mapping):
         return TerminalSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
-            interrupted=np.zeros(0, dtype=np.bool),
+            interrupted=np.zeros(0, dtype=bool),
             agent_id=np.zeros(0, dtype=np.int32),
             group_id=np.zeros(0, dtype=np.int32),
             group_reward=np.zeros(0, dtype=np.float32),

@@ -1,4 +1,6 @@
 from typing import Dict, cast
+import attr
+
 from mlagents.torch_utils import torch, default_device
 
 from mlagents.trainers.buffer import AgentBuffer, BufferKey, RewardSignalUtil
@@ -6,12 +8,28 @@ from mlagents.trainers.buffer import AgentBuffer, BufferKey, RewardSignalUtil
 from mlagents_envs.timers import timed
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
-from mlagents.trainers.settings import TrainerSettings, PPOSettings
-from mlagents.trainers.torch.networks import ValueNetwork
-from mlagents.trainers.torch.agent_action import AgentAction
-from mlagents.trainers.torch.action_log_probs import ActionLogProbs
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.settings import (
+    TrainerSettings,
+    OnPolicyHyperparamSettings,
+    ScheduleType,
+)
+from mlagents.trainers.torch_entities.networks import ValueNetwork
+from mlagents.trainers.torch_entities.agent_action import AgentAction
+from mlagents.trainers.torch_entities.action_log_probs import ActionLogProbs
+from mlagents.trainers.torch_entities.utils import ModelUtils
 from mlagents.trainers.trajectory import ObsUtil
+
+
+@attr.s(auto_attribs=True)
+class PPOSettings(OnPolicyHyperparamSettings):
+    beta: float = 5.0e-3
+    epsilon: float = 0.2
+    lambd: float = 0.95
+    num_epoch: int = 3
+    shared_critic: bool = False
+    learning_rate_schedule: ScheduleType = ScheduleType.LINEAR
+    beta_schedule: ScheduleType = ScheduleType.LINEAR
+    epsilon_schedule: ScheduleType = ScheduleType.LINEAR
 
 
 class TorchPPOOptimizer(TorchOptimizer):
@@ -29,7 +47,12 @@ class TorchPPOOptimizer(TorchOptimizer):
         reward_signal_configs = trainer_settings.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
 
-        if policy.shared_critic:
+        self.hyperparameters: PPOSettings = cast(
+            PPOSettings, trainer_settings.hyperparameters
+        )
+
+        params = list(self.policy.actor.parameters())
+        if self.hyperparameters.shared_critic:
             self._critic = policy.actor
         else:
             self._critic = ValueNetwork(
@@ -38,11 +61,8 @@ class TorchPPOOptimizer(TorchOptimizer):
                 network_settings=trainer_settings.network_settings,
             )
             self._critic.to(default_device())
+            params += list(self._critic.parameters())
 
-        params = list(self.policy.actor.parameters()) + list(self._critic.parameters())
-        self.hyperparameters: PPOSettings = cast(
-            PPOSettings, trainer_settings.hyperparameters
-        )
         self.decay_learning_rate = ModelUtils.DecayedValue(
             self.hyperparameters.learning_rate_schedule,
             self.hyperparameters.learning_rate,
@@ -123,13 +143,17 @@ class TorchPPOOptimizer(TorchOptimizer):
         if len(value_memories) > 0:
             value_memories = torch.stack(value_memories).unsqueeze(0)
 
-        log_probs, entropy = self.policy.evaluate_actions(
+        run_out = self.policy.actor.get_stats(
             current_obs,
+            actions,
             masks=act_masks,
-            actions=actions,
             memories=memories,
-            seq_len=self.policy.sequence_length,
+            sequence_length=self.policy.sequence_length,
         )
+
+        log_probs = run_out["log_probs"]
+        entropy = run_out["entropy"]
+
         values, _ = self.critic.critic_pass(
             current_obs,
             memories=value_memories,
@@ -170,11 +194,9 @@ class TorchPPOOptimizer(TorchOptimizer):
             "Policy/Beta": decay_bet,
         }
 
-        for reward_provider in self.reward_signals.values():
-            update_stats.update(reward_provider.update(batch))
-
         return update_stats
 
+    # TODO move module update into TorchOptimizer for reward_provider
     def get_modules(self):
         modules = {
             "Optimizer:value_optimizer": self.optimizer,

@@ -1,26 +1,44 @@
 import numpy as np
-from typing import Dict, List, Mapping, NamedTuple, cast, Tuple, Optional
+from typing import Dict, List, NamedTuple, cast, Tuple, Optional
+import attr
+
 from mlagents.torch_utils import torch, nn, default_device
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.torch.networks import ValueNetwork
-from mlagents.trainers.torch.agent_action import AgentAction
-from mlagents.trainers.torch.action_log_probs import ActionLogProbs
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch_entities.networks import ValueNetwork, SharedActorCritic
+from mlagents.trainers.torch_entities.agent_action import AgentAction
+from mlagents.trainers.torch_entities.action_log_probs import ActionLogProbs
+from mlagents.trainers.torch_entities.utils import ModelUtils
 from mlagents.trainers.buffer import AgentBuffer, BufferKey, RewardSignalUtil
 from mlagents_envs.timers import timed
 from mlagents_envs.base_env import ActionSpec, ObservationSpec
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents.trainers.settings import TrainerSettings, SACSettings
+from mlagents.trainers.settings import TrainerSettings, OffPolicyHyperparamSettings
 from contextlib import ExitStack
 from mlagents.trainers.trajectory import ObsUtil
 
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
 logger = get_logger(__name__)
+
+
+@attr.s(auto_attribs=True)
+class SACSettings(OffPolicyHyperparamSettings):
+    batch_size: int = 128
+    buffer_size: int = 50000
+    buffer_init_steps: int = 0
+    tau: float = 0.005
+    steps_per_update: float = 1
+    save_replay_buffer: bool = False
+    init_entcoef: float = 1.0
+    reward_signal_steps_per_update: float = attr.ib()
+
+    @reward_signal_steps_per_update.default
+    def _reward_signal_steps_per_update_default(self):
+        return self.steps_per_update
 
 
 class TorchSACOptimizer(TorchOptimizer):
@@ -105,19 +123,21 @@ class TorchSACOptimizer(TorchOptimizer):
             self.discrete = discrete
             self.continuous = continuous
 
-    def __init__(self, policy: TorchPolicy, trainer_params: TrainerSettings):
-        super().__init__(policy, trainer_params)
-        reward_signal_configs = trainer_params.reward_signals
+    def __init__(self, policy: TorchPolicy, trainer_settings: TrainerSettings):
+        super().__init__(policy, trainer_settings)
+        reward_signal_configs = trainer_settings.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
-        if policy.shared_critic:
+        if isinstance(policy.actor, SharedActorCritic):
             raise UnityTrainerException("SAC does not support SharedActorCritic")
         self._critic = ValueNetwork(
             reward_signal_names,
             policy.behavior_spec.observation_specs,
             policy.network_settings,
         )
+        hyperparameters: SACSettings = cast(
+            SACSettings, trainer_settings.hyperparameters
+        )
 
-        hyperparameters: SACSettings = cast(SACSettings, trainer_params.hyperparameters)
         self.tau = hyperparameters.tau
         self.init_entcoef = hyperparameters.init_entcoef
 
@@ -133,7 +153,7 @@ class TorchSACOptimizer(TorchOptimizer):
 
         self.stream_names = list(self.reward_signals.keys())
         # Use to reduce "survivor bonus" when using Curiosity or GAIL.
-        self.gammas = [_val.gamma for _val in trainer_params.reward_signals.values()]
+        self.gammas = [_val.gamma for _val in trainer_settings.reward_signals.values()]
         self.use_dones_in_backup = {
             name: int(not self.reward_signals[name].ignore_done)
             for name in self.stream_names
@@ -521,12 +541,13 @@ class TorchSACOptimizer(TorchOptimizer):
             self.policy.actor.network_body
         )
         self._critic.network_body.copy_normalization(self.policy.actor.network_body)
-        sampled_actions, log_probs, _, _, = self.policy.actor.get_action_and_stats(
+        sampled_actions, run_out, _, = self.policy.actor.get_action_and_stats(
             current_obs,
             masks=act_masks,
             memories=memories,
             sequence_length=self.policy.sequence_length,
         )
+        log_probs = run_out["log_probs"]
         value_estimates, _ = self._critic.critic_pass(
             current_obs, value_memories, sequence_length=self.policy.sequence_length
         )
@@ -584,11 +605,7 @@ class TorchSACOptimizer(TorchOptimizer):
         policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks)
         entropy_loss = self.sac_entropy_loss(log_probs, masks)
 
-        total_value_loss = q1_loss + q2_loss
-        if self.policy.shared_critic:
-            policy_loss += value_loss
-        else:
-            total_value_loss += value_loss
+        total_value_loss = q1_loss + q2_loss + value_loss
 
         decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
         ModelUtils.update_learning_rate(self.policy_optimizer, decay_lr)
@@ -622,14 +639,6 @@ class TorchSACOptimizer(TorchOptimizer):
             "Policy/Learning Rate": decay_lr,
         }
 
-        return update_stats
-
-    def update_reward_signals(
-        self, reward_signal_minibatches: Mapping[str, AgentBuffer], num_sequences: int
-    ) -> Dict[str, float]:
-        update_stats: Dict[str, float] = {}
-        for name, update_buffer in reward_signal_minibatches.items():
-            update_stats.update(self.reward_signals[name].update(update_buffer))
         return update_stats
 
     def get_modules(self):

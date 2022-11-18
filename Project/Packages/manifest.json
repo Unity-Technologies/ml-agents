@@ -6,7 +6,7 @@
     "com.unity.ml-agents.extensions": "file:../../com.unity.ml-agents.extensions",
     "com.unity.nuget.newtonsoft-json": "2.0.0",
     "com.unity.test-framework": "1.1.29",
-    "com.unity.toolchain.macos-x86_64-linux-x86_64": "0.1.20-preview",
+    "com.unity.toolchain.macos-x86_64-linux-x86_64": "2.0.3",
     "com.unity.ugui": "1.0.0",
     "com.unity.modules.imageconversion": "1.0.0",
     "com.unity.modules.jsonserialize": "1.0.0",

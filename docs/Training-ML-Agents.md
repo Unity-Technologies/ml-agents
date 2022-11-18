@@ -284,6 +284,7 @@ behaviors:
       epsilon_schedule: linear
       lambd: 0.95
       num_epoch: 3
+      shared_critic: False
 
     # Configuration of the neural network (common to PPO/SAC)
     network_settings:
@@ -509,7 +510,7 @@ Below is a list of the `sampler_type` values supported by the toolkit.
   - **parameters** - `intervals`
 
 The implementation of the samplers can be found in the
-[Samplers.cs file](../com.unity.ml-agents/Runtime/Sampler.cs).
+[Samplers.cs file](https://github.com/Unity-Technologies/ml-agents/blob/main/com.unity.ml-agents/Runtime/Sampler.cs).
 
 ##### Training with Environment Parameter Randomization
 

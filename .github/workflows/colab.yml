@@ -8,7 +8,10 @@ on:
     - 'colab/**'
     - '.github/workflows/colab.yml'
   push:
-    branches: [main]
+    branches: 
+     - main
+     - develop
+     - 'release/**'
   workflow_dispatch:
 
 jobs:

@@ -5,12 +5,10 @@ from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.exception import TrainerConfigError
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.ppo.trainer import PPOTrainer
-from mlagents.trainers.sac.trainer import SACTrainer
-from mlagents.trainers.poca.trainer import POCATrainer
 from mlagents.trainers.ghost.trainer import GhostTrainer
 from mlagents.trainers.ghost.controller import GhostController
-from mlagents.trainers.settings import TrainerSettings, TrainerType
+from mlagents.trainers.settings import TrainerSettings
+from mlagents.plugins import all_trainer_types
 
 
 logger = get_logger(__name__)
@@ -101,10 +99,10 @@ class TrainerFactory:
         min_lesson_length = param_manager.get_minimum_reward_buffer_size(brain_name)
 
         trainer: Trainer = None  # type: ignore  # will be set to one of these, or raise
-        trainer_type = trainer_settings.trainer_type
 
-        if trainer_type == TrainerType.PPO:
-            trainer = PPOTrainer(
+        try:
+            trainer_type = all_trainer_types[trainer_settings.trainer_type]
+            trainer = trainer_type(
                 brain_name,
                 min_lesson_length,
                 trainer_settings,
@@ -113,29 +111,11 @@ class TrainerFactory:
                 seed,
                 trainer_artifact_path,
             )
-        elif trainer_type == TrainerType.POCA:
-            trainer = POCATrainer(
-                brain_name,
-                min_lesson_length,
-                trainer_settings,
-                train_model,
-                load_model,
-                seed,
-                trainer_artifact_path,
-            )
-        elif trainer_type == TrainerType.SAC:
-            trainer = SACTrainer(
-                brain_name,
-                min_lesson_length,
-                trainer_settings,
-                train_model,
-                load_model,
-                seed,
-                trainer_artifact_path,
-            )
-        else:
+
+        except KeyError:
             raise TrainerConfigError(
-                f'The trainer config contains an unknown trainer type "{trainer_type}" for brain {brain_name}'
+                f"The trainer config contains an unknown trainer type "
+                f"{trainer_settings.trainer_type} for brain {brain_name}"
             )
 
         if trainer_settings.self_play is not None:

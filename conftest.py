@@ -14,6 +14,7 @@ import pytest
 from filelock import FileLock
 
 # TODO: Use this in all ml-agents tests so they can all run in parallel.
+import mlagents.plugins.trainer_type
 
 _BASE_PORT = 6005
 
@@ -76,3 +77,8 @@ def base_port(n_ports: int) -> int:
     :return: The base port number.
     """
     return PortAllocator().reserve_n_ports(n_ports)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_plugin_trainers():
+    _, _ = mlagents.plugins.trainer_type.register_trainer_plugins()

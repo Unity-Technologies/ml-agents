@@ -1,6 +1,6 @@
 repos:
 -   repo: https://github.com/python/black
-    rev: 22.1.0
+    rev: 22.3.0
     hooks:
     -   id: black
         exclude: >
@@ -25,7 +25,7 @@ repos:
         exclude: ".*_pb2.py"
         args: [--ignore-missing-imports, --disallow-incomplete-defs, --no-strict-optional]
         additional_dependencies: [types-PyYAML, types-attrs, types-protobuf, types-setuptools, types-filelock]
--   repo: https://gitlab.com/pycqa/flake8
+-   repo: https://github.com/PyCQA/flake8
     rev: 3.9.2
     hooks:
     -   id: flake8
@@ -128,6 +128,6 @@ repos:
     -   id: generate-markdown-docs
         name: generate markdown docs
         language: python
-        entry: ./utils/generate_markdown_docs.py --package_dirs ml-agents-envs
+        entry: ./utils/generate_markdown_docs.py --package_dirs ml-agents-envs ml-agents
         pass_filenames: false
         additional_dependencies: [pyyaml, pydoc-markdown==3.10.1]

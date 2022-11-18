@@ -3,6 +3,7 @@ import numpy as np
 from typing import List, Dict, TypeVar, Generic, Tuple, Any, Union
 from collections import defaultdict, Counter
 import queue
+from mlagents.torch_utils import torch
 
 from mlagents_envs.base_env import (
     ActionTuple,
@@ -19,7 +20,6 @@ from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.trajectory import AgentStatus, Trajectory, AgentExperience
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo, ActionInfoOutputs
-from mlagents.trainers.torch.action_log_probs import LogProbsTuple
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.behavior_id_utils import (
     get_global_agent_id,
@@ -27,6 +27,8 @@ from mlagents.trainers.behavior_id_utils import (
     GlobalAgentId,
     GlobalGroupId,
 )
+from mlagents.trainers.torch_entities.action_log_probs import LogProbsTuple
+from mlagents.trainers.torch_entities.utils import ModelUtils
 
 T = TypeVar("T")
 
@@ -100,8 +102,13 @@ class AgentProcessor:
         """
         take_action_outputs = previous_action.outputs
         if take_action_outputs:
-            for _entropy in take_action_outputs["entropy"]:
-                self._stats_reporter.add_stat("Policy/Entropy", _entropy)
+            try:
+                for _entropy in take_action_outputs["entropy"]:
+                    if isinstance(_entropy, torch.Tensor):
+                        _entropy = ModelUtils.to_numpy(_entropy)
+                    self._stats_reporter.add_stat("Policy/Entropy", _entropy)
+            except KeyError:
+                pass
 
         # Make unique agent_ids that are global across workers
         action_global_agent_ids = [
@@ -233,11 +240,17 @@ class AgentProcessor:
                 continuous=stored_actions.continuous[idx],
                 discrete=stored_actions.discrete[idx],
             )
-            stored_action_probs = stored_take_action_outputs["log_probs"]
-            log_probs_tuple = LogProbsTuple(
-                continuous=stored_action_probs.continuous[idx],
-                discrete=stored_action_probs.discrete[idx],
-            )
+            try:
+                stored_action_probs = stored_take_action_outputs["log_probs"]
+                if not isinstance(stored_action_probs, LogProbsTuple):
+                    stored_action_probs = stored_action_probs.to_log_probs_tuple()
+                log_probs_tuple = LogProbsTuple(
+                    continuous=stored_action_probs.continuous[idx],
+                    discrete=stored_action_probs.discrete[idx],
+                )
+            except KeyError:
+                log_probs_tuple = LogProbsTuple.empty_log_probs()
+
             action_mask = stored_decision_step.action_mask
             prev_action = self.policy.retrieve_previous_action([global_agent_id])[0, :]
 

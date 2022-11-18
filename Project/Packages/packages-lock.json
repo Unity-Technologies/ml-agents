@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.unity.barracuda": {
-      "version": "2.3.1-preview",
+      "version": "3.0.0",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -12,7 +12,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.burst": {
-      "version": "1.6.0",
+      "version": "1.6.6",
       "depth": 2,
       "source": "registry",
       "dependencies": {
@@ -44,7 +44,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.mathematics": {
-      "version": "1.2.1",
+      "version": "1.2.6",
       "depth": 3,
       "source": "registry",
       "dependencies": {},
@@ -55,7 +55,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.unity.barracuda": "2.3.1-preview",
+        "com.unity.barracuda": "3.0.0",
         "com.unity.modules.imageconversion": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       }
@@ -77,18 +77,18 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.sysroot": {
-      "version": "0.1.19-preview",
+      "version": "2.0.4",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.sysroot.linux-x86_64": {
-      "version": "0.1.14-preview",
+      "version": "2.0.3",
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.unity.sysroot": "0.1.18-preview"
+        "com.unity.sysroot": "2.0.4"
       },
       "url": "https://packages.unity.com"
     },
@@ -104,12 +104,12 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.toolchain.macos-x86_64-linux-x86_64": {
-      "version": "0.1.20-preview",
+      "version": "2.0.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.sysroot": "0.1.19-preview",
-        "com.unity.sysroot.linux-x86_64": "0.1.14-preview"
+        "com.unity.sysroot": "2.0.4",
+        "com.unity.sysroot.linux-x86_64": "2.0.3"
       },
       "url": "https://packages.unity.com"
     },

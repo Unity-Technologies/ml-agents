@@ -28,6 +28,7 @@ def main():
         "Documentation~",
         ".github",
         ".yamato",
+        "Samples",
     }
 
     num_matched = 0

@@ -7,7 +7,7 @@ publish:
   variables:
     UPMCI_ENABLE_PACKAGE_SIGNING: 1
   commands:
-    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - npm install upm-ci-utils@1.27.0 -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     - upm-ci package publish --package-path com.unity.ml-agents
   triggers:
     cancel_old_ci: true

@@ -18,7 +18,7 @@ Steps to reproduce the behavior:
 4. See error
 
 **Console logs / stack traces**
-Please wrap in [triple backticks (```)](https://help.github.com/en/articles/creating-and-highlighting-code-blocks) to make it easier to read.
+Please wrap in triple backticks (```) to make it easier to read.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.

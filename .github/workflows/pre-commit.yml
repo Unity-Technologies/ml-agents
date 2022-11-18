@@ -3,7 +3,10 @@ name: pre-commit
 on:
   pull_request:
   push:
-    branches: [main]
+    branches:
+     - main
+     - develop
+     - 'release/**'
   workflow_dispatch:
 
 jobs:
@@ -17,7 +20,7 @@ jobs:
         submodules: recursive
     - uses: actions/setup-python@v2
       with:
-        python-version: 3.7.x
+        python-version: 3.8.x
     - uses: actions/setup-ruby@v1
       env:
         ImageOS: ubuntu20
@@ -48,8 +51,9 @@ jobs:
       with:
         node-version: '12'
     - name: Install manual dependencies
+    # pin markdown-link-check version to support multi-level reference link
       run: |
-        sudo npm install -g markdown-link-check
+        sudo npm install -g markdown-link-check@3.8.7
         python -m pip install pre-commit
         pre-commit install
     - name: Run markdown checker

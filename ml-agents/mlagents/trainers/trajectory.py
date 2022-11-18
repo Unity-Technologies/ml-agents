@@ -8,7 +8,7 @@ from mlagents.trainers.buffer import (
     BufferKey,
 )
 from mlagents_envs.base_env import ActionTuple
-from mlagents.trainers.torch.action_log_probs import LogProbsTuple
+from mlagents.trainers.torch_entities.action_log_probs import LogProbsTuple
 
 
 class AgentStatus(NamedTuple):

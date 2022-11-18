@@ -1,0 +1,21 @@
+# For more information about the available options please visit: http://go/backstage (VPN required)
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  annotations:
+    github.com/project-slug: unity/com.unity.ml-agents
+  name: com.unity.ml-agents
+  description: "Unity ML-Agents Package"
+  labels:
+    costcenter: "5160"
+  tags:
+    - planned-public
+    - enterprise
+  links:
+    - url: https://unity.slack.com/messages/C8FECS6L9/
+      title: "#devs-ml-agents"
+      icon: chat
+spec:
+  type: unity-package
+  lifecycle: production
+  owner: unity/behavior-authoring

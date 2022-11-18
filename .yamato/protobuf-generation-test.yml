@@ -6,13 +6,12 @@ test_linux_protobuf_generation:
     flavor: b1.large
   variables:
     GRPC_VERSION: "1.14.1"
-    CS_PROTO_PATH: "Runtime/Grpc/CommunicatorObjects"
+    CS_PROTO_PATH: "com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects"
   commands:
-    - git submodule update --init --recursive
     - |
       sudo apt-get update && sudo apt-get install -y nuget
       eval "$($HOME/anaconda/bin/conda shell.bash hook)"
-      conda activate python3.7
+      conda activate python3.8
       nuget install Grpc.Tools -Version $GRPC_VERSION -OutputDirectory protobuf-definitions/
       python3 -m pip install --upgrade pip --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python3 -m pip install grpcio==1.28.1 grpcio-tools==1.13.0 protobuf==3.11.3 six==1.14.0 mypy-protobuf==1.16.0  --progress-bar=off --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
@@ -23,7 +22,6 @@ test_linux_protobuf_generation:
       popd
       mkdir -p artifacts
       touch artifacts/proto.patch
-      cd com.unity.ml-agents
       git diff --exit-code -- :/ ":(exclude,top)$CS_PROTO_PATH/*.meta"                          \
       || { GIT_ERR=$?; echo "protobufs need to be regenerated, apply the patch uploaded to artifacts."; \
       echo "Apply the patch with the command 'git apply proto.patch'";                                  \
@@ -32,6 +30,7 @@ test_linux_protobuf_generation:
     cancel_old_ci: true
     expression: |
       (pull_request.target eq "main" OR
+      pull_request.target eq "develop" OR
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "protobuf-definitions/**" OR

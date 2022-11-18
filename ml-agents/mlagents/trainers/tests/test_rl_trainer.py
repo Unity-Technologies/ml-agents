@@ -8,6 +8,10 @@ from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.tests.test_buffer import construct_fake_buffer
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.settings import TrainerSettings
+from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
+from mlagents_envs.base_env import BehaviorSpec
+from mlagents.trainers.policy import Policy
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.tests.dummy_config import create_observation_specs_with_shapes
 from mlagents_envs.base_env import ActionSpec
 import os.path
@@ -43,7 +47,14 @@ class FakeTrainer(RLTrainer):
         mock_model_saver.save_checkpoint.side_effect = checkpoint_path
         self.model_saver = mock_model_saver
 
-    def create_torch_policy(self, parsed_behavior_id, behavior_spec):
+    def create_optimizer(self) -> TorchOptimizer:
+        return mock.Mock()
+
+    def create_policy(
+        self,
+        parsed_behavior_id: BehaviorIdentifiers,
+        behavior_spec: BehaviorSpec,
+    ) -> Policy:
         return mock.Mock()
 
     def _process_trajectory(self, trajectory):

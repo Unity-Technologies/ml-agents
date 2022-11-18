@@ -15,7 +15,7 @@ def test_decision_steps():
         obs=[np.array(range(12), dtype=np.float32).reshape(3, 4)],
         reward=np.array(range(3), dtype=np.float32),
         agent_id=np.array(range(10, 13), dtype=np.int32),
-        action_mask=[np.zeros((3, 4), dtype=np.bool)],
+        action_mask=[np.zeros((3, 4), dtype=bool)],
         group_id=np.array(range(3), dtype=np.int32),
         group_reward=np.array(range(3), dtype=np.float32),
     )
@@ -30,7 +30,7 @@ def test_decision_steps():
     mask_agent = ds[10].action_mask
     assert isinstance(mask_agent, list)
     assert len(mask_agent) == 1
-    assert np.array_equal(mask_agent[0], np.zeros((4), dtype=np.bool))
+    assert np.array_equal(mask_agent[0], np.zeros((4), dtype=bool))
 
     for agent_id in ds:
         assert ds.agent_id_to_index[agent_id] in range(3)
@@ -52,7 +52,7 @@ def test_terminal_steps():
         obs=[np.array(range(12), dtype=np.float32).reshape(3, 4)],
         reward=np.array(range(3), dtype=np.float32),
         agent_id=np.array(range(10, 13), dtype=np.int32),
-        interrupted=np.array([1, 0, 1], dtype=np.bool),
+        interrupted=np.array([1, 0, 1], dtype=bool),
         group_id=np.array(range(3), dtype=np.int32),
         group_reward=np.array(range(3), dtype=np.float32),
     )

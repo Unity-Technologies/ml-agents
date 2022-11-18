@@ -1,4 +1,4 @@
-{% capture editor_version %}2020.3{% endcapture %}
+{% capture editor_version %}2021.3{% endcapture %}
 test_webgl_standalone_{{ editor_version }}:
   name: Test WebGL Standalone {{ editor_version }}
   agent:
@@ -8,10 +8,9 @@ test_webgl_standalone_{{ editor_version }}:
   variables:
     UNITY_VERSION: {{ editor_version }}
   commands:
-    - git submodule update --init --recursive
     - |
       eval "$($HOME/anaconda/bin/conda shell.bash hook)"
-      conda activate python3.7
+      conda activate python3.8
       python -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
       unity-downloader-cli -u {{ editor_version }} -c editor -c WebGL --wait --fast
@@ -19,7 +18,7 @@ test_webgl_standalone_{{ editor_version }}:
   triggers:
     cancel_old_ci: true
     recurring:
-      - branch: main
+      - branch: develop
         frequency: weekly
   artifacts:
     logs:

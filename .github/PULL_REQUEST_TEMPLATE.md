@@ -17,8 +17,8 @@ Describe the changes made in this PR.
 
 ### Checklist
 - [ ] Added tests that prove my fix is effective or that my feature works
-- [ ] Updated the [changelog](https://github.com/Unity-Technologies/ml-agents/blob/main/com.unity.ml-agents/CHANGELOG.md) (if applicable)
-- [ ] Updated the [documentation](https://github.com/Unity-Technologies/ml-agents/tree/main/docs) (if applicable)
-- [ ] Updated the [migration guide](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Migrating.md) (if applicable)
+- [ ] Updated the changelog (if applicable)
+- [ ] Updated the documentation (if applicable)
+- [ ] Updated the migration guide (if applicable)
 
 ### Other comments

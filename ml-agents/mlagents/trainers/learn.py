@@ -33,6 +33,7 @@ from mlagents_envs.timers import (
 )
 from mlagents_envs import logging_util
 from mlagents.plugins.stats_writer import register_stats_writer_plugins
+from mlagents.plugins.trainer_type import register_trainer_plugins
 
 logger = logging_util.get_logger(__name__)
 
@@ -47,7 +48,10 @@ def get_version_string() -> str:
   PyTorch: {torch_utils.torch.__version__}"""
 
 
-def parse_command_line(argv: Optional[List[str]] = None) -> RunOptions:
+def parse_command_line(
+    argv: Optional[List[str]] = None,
+) -> RunOptions:
+    _, _ = register_trainer_plugins()
     args = parser.parse_args(argv)
     return RunOptions.from_argparse(args)
 
