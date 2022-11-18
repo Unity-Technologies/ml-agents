@@ -6,15 +6,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.3.0-exp.3] - 2022-11-21
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - The minimum supported Unity version was updated to 2021.3. (#)
 
 #### ml-agents / ml-agents-envs
-- renaming the path that shadows torch with "mlagents/trainers/torch_entities" and update respective imports (#27)
-- The minimum supported Python version for ml-agents was changed to 3.8.13. (#5)
+- Add your trainers to the package using Ml-Agents Custom Trainers plugin. (#)
+  - ML-Agents Custom Trainers plugin is an extensible plugin system to define new trainers based on the
+  High level trainer API, read more [here](../docs/Python-Custom-Trainer-Plugin.md).
+- Refactored core modules to make ML-Agents internal classes more generalizable to various RL algorithms. (#)
+- The minimum supported Python version for ML-agents has changed to 3.8.13. (#)
 - The minimum supported version of PyTorch was changed to 1.8.0. (#)
+- Add shared critic configurability for PPO. (#)
+- We moved `UnityToGymWrapper` and `PettingZoo` API to `ml-agents-envs` package. All these environments will be
+versioned under `ml-agents-envs` package in the future (#)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
@@ -23,6 +29,7 @@ and this project adheres to
 - Added suppport for enabling/disabling camera object attached to camera sensor in order to improve performance. (#31)
 
 #### ml-agents / ml-agents-envs
+- Renaming the path that shadows torch with "mlagents/trainers/torch_entities" and update respective imports (#)
 
 
 ### Bug Fixes
@@ -35,13 +42,13 @@ and this project adheres to
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 #### ml-agents / ml-agents-envs
 - Refactored to support the new ML-Agents Pro package.
-- The minimum supported Python version for ml-agents-envs was changed to 3.7.2 (#5)
-- Added support for the PettingZoo multi-agent API (#6)
-- Refactored `gym-unity` into the `ml-agents-envs` package (#6)
+- The minimum supported Python version for ML-Agents-envs is changed to 3.7.2 (#)
+- Added support for the PettingZoo multi-agent API (#)
+- Refactored `gym-unity` into the `ml-agents-envs` package (#)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- Upgrade barracuda dependency to 3.0.0 (#9)
+- Upgrade barracuda dependency to 3.0.0 (#)
 #### ml-agents / ml-agents-envs
 - Added the new unity_vec_env file to the ml-agents-envs module
 - Extended support to python 3.9.10

@@ -5,7 +5,7 @@
   "unity": "2021.3",
   "description": "A source-only package for new features based on ML-Agents",
   "dependencies": {
-    "com.unity.ml-agents": "2.2.1-exp.1",
+    "com.unity.ml-agents": "2.3.0-exp.3",
     "com.unity.modules.physics": "1.0.0"
   }
 }
