@@ -35,9 +35,9 @@ The ML-Agents Toolkit only supports the models created with our trainers. Model
 loading expects certain conventions for constants and tensor names. While it is
 possible to construct a model that follows these conventions, we don't provide
 any additional help for this. More details can be found in
-[TensorNames.cs](https://github.com/Unity-Technologies/ml-agents/blob/release_19_docs/com.unity.ml-agents/Runtime/Inference/TensorNames.cs)
+[TensorNames.cs](https://github.com/Unity-Technologies/ml-agents/blob/release_20_docs/com.unity.ml-agents/Runtime/Inference/TensorNames.cs)
 and
-[BarracudaModelParamLoader.cs](https://github.com/Unity-Technologies/ml-agents/blob/release_19_docs/com.unity.ml-agents/Runtime/Inference/BarracudaModelParamLoader.cs).
+[BarracudaModelParamLoader.cs](https://github.com/Unity-Technologies/ml-agents/blob/release_20_docs/com.unity.ml-agents/Runtime/Inference/BarracudaModelParamLoader.cs).
 
 If you wish to run inference on an externally trained model, you should use
 Barracuda directly, instead of trying to run it through ML-Agents.
