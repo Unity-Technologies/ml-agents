@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Major Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+
+#### ml-agents / ml-agents-envs
+
+### Minor Changes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+
+#### ml-agents / ml-agents-envs
+
+### Bug Fixes
+#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+#### ml-agents / ml-agents-envs
+
+
 ## [2.3.0-exp.3] - 2022-11-21
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
