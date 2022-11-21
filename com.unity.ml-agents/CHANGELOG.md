@@ -15,6 +15,8 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Fixes compiler errors when using IAsyncEnumerable<T> with .NET Standard 2.1 enabled (#5799)
+  
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ## [2.2.1-exp.1] - 2022-01-14
