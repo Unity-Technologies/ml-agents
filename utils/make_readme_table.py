@@ -137,6 +137,7 @@ versions = [
     ReleaseInfo("release_17", "2.0.0", "0.26.0", "April 22, 2021"),
     ReleaseInfo("release_18", "2.1.0", "0.27.0", "June 9, 2021"),
     ReleaseInfo("release_19", "2.2.1", "0.28.0", "January 14, 2022"),
+    ReleaseInfo("release_20", "2.3.0", "0.30.0", "November 21, 2022"),
     # Verified releases
     ReleaseInfo("", "1.0.8", "0.16.1", "May 26, 2021", is_verified=True),
     ReleaseInfo("", "1.0.7", "0.16.1", "March 8, 2021", is_verified=True),
