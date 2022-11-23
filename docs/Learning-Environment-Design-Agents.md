@@ -573,7 +573,7 @@ To allow more variety of observations that grid sensor can capture, the
 `GridSensorComponent` and the underlying `GridSensorBase` also provides interfaces
 that can be overridden to collect customized observation from detected objects.
 See the doc on
-[extending grid Sensors](https://github.com/Unity-Technologies/ml-agents/blob/release_19_docs/com.unity.ml-agents.extensions/Documentation~/CustomGridSensors.md)
+[extending grid Sensors](https://github.com/Unity-Technologies/ml-agents/blob/release_20_docs/com.unity.ml-agents.extensions/Documentation~/CustomGridSensors.md)
 for more details on custom grid sensors.
 
 __Note__: The `GridSensor` only works in 3D environments and will not behave
