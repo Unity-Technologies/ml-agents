@@ -56,7 +56,7 @@ setup(
         "pyyaml>=3.1.0",
         "gym>=0.21.0",
         "pettingzoo==1.15.0",
-        "numpy==1.23.0",
+        "numpy==1.23.5",
         "filelock>=3.4.0",
     ],
     python_requires=">=3.8.13,<=3.10.8",
