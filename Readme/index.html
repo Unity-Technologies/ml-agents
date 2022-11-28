@@ -1,0 +1,925 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The Unity Machine Learning Agents Toolkit (ML-Agents) is an open-source project that enables games and simulations to serve as environments for training intelligent agents.">
+      
+      
+        <meta name="author" content="Unity Technologies">
+      
+      
+        <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Readme/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>Unity ML-Agents Toolkit - Unity ML-Agents Toolkit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.472b142f.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.08040f6c.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4cae4f">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="light-green">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#unity-ml-agents-toolkit" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Unity ML-Agents Toolkit" class="md-header__button md-logo" aria-label="Unity ML-Agents Toolkit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Unity ML-Agents Toolkit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Unity ML-Agents Toolkit
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Unity-Technologies/ml-agents" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Unity ML-Agents Toolkit" class="md-nav__button md-logo" aria-label="Unity ML-Agents Toolkit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Unity ML-Agents Toolkit
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Unity-Technologies/ml-agents" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ML-Agents-Overview/" class="md-nav__link">
+        ML-Agents Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ML-Agents-Toolkit-Documentation/" class="md-nav__link">
+        Toolkit Documentation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Background
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Background" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Background
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Background-Machine-Learning/" class="md-nav__link">
+        Machine Learning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Background-PyTorch/" class="md-nav__link">
+        PyTorch
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Background-Unity/" class="md-nav__link">
+        Unity
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Interfacing with Unity Builds
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Interfacing with Unity Builds" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Interfacing with Unity Builds
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Python-Gym-API/" class="md-nav__link">
+        Getting started with the Gym API
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Python-PettingZoo-API/" class="md-nav__link">
+        Getting started with the PettingZoo API
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Python-LLAPI/" class="md-nav__link">
+        Getting started with the LLAPI
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Python API Docs
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Python API Docs" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Python API Docs
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Python-Gym-API-Documentation/" class="md-nav__link">
+        Gym API Documentation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Python-PettingZoo-API-Documentation/" class="md-nav__link">
+        Petting Zoo Documentation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Python-LLAPI-Documentation/" class="md-nav__link">
+        LLAPI Documentation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          About
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="About" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          About
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FAQ/" class="md-nav__link">
+        FAQs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Limitations/" class="md-nav__link">
+        Limitations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Migrating/" class="md-nav__link">
+        Migrating
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Versioning/" class="md-nav__link">
+        Versioning
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    Features
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#releases-documentation" class="md-nav__link">
+    Releases &amp; Documentation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-resources" class="md-nav__link">
+    Additional Resources
+  </a>
+  
+    <nav class="md-nav" aria-label="Additional Resources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#more-from-unity" class="md-nav__link">
+    More from Unity
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#community-and-feedback" class="md-nav__link">
+    Community and Feedback
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#privacy" class="md-nav__link">
+    Privacy
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/Unity-Technologies/ml-agents/edit/main/docs/Readme.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="unity-ml-agents-toolkit">Unity ML-Agents Toolkit</h1>
+<p><a href="https://github.com/Unity-Technologies/ml-agents/tree/release_20_docs/docs/"><img alt="docs badge" src="https://img.shields.io/badge/docs-reference-blue.svg" /></a></p>
+<p><a href="../LICENSE.md"><img alt="license badge" src="https://img.shields.io/badge/license-Apache--2.0-green.svg" /></a></p>
+<p>(<a href="https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release">latest release</a>)
+(<a href="https://github.com/Unity-Technologies/ml-agents/releases">all releases</a>)</p>
+<p><strong>The Unity Machine Learning Agents Toolkit</strong> (ML-Agents) is an open-source
+project that enables games and simulations to serve as environments for
+training intelligent agents. We provide implementations (based on PyTorch)
+of state-of-the-art algorithms to enable game developers and hobbyists to easily
+train intelligent agents for 2D, 3D and VR/AR games. Researchers can also use the
+provided simple-to-use Python API to train Agents using reinforcement learning,
+imitation learning, neuroevolution, or any other methods. These trained agents can be
+used for multiple purposes, including controlling NPC behavior (in a variety of
+settings such as multi-agent and adversarial), automated testing of game builds
+and evaluating different game design decisions pre-release. The ML-Agents
+Toolkit is mutually beneficial for both game developers and AI researchers as it
+provides a central platform where advances in AI can be evaluated on Unity’s
+rich environments and then made accessible to the wider research and game
+developer communities.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>17+ <a href="../Learning-Environment-Examples/">example Unity environments</a></li>
+<li>Support for multiple environment configurations and training scenarios</li>
+<li>Flexible Unity SDK that can be integrated into your game or custom Unity scene</li>
+<li>Support for training single-agent, multi-agent cooperative, and multi-agent
+  competitive scenarios via several Deep Reinforcement Learning algorithms (PPO, SAC, MA-POCA, self-play).</li>
+<li>Support for learning from demonstrations through two Imitation Learning algorithms (BC and GAIL).</li>
+<li>Easily definable Curriculum Learning scenarios for complex tasks</li>
+<li>Train robust agents using environment randomization</li>
+<li>Flexible agent control with On Demand Decision Making</li>
+<li>Train using multiple concurrent Unity environment instances</li>
+<li>Utilizes the <a href="../Unity-Inference-Engine/">Unity Inference Engine</a> to
+  provide native cross-platform support</li>
+<li>Unity environment <a href="../Python-LLAPI/">control from Python</a></li>
+<li>Wrap Unity learning environments as a <a href="../Python-Gym-API/">gym</a> environment</li>
+<li>Wrap Unity learning environments as a <a href="../Python-PettingZoo-API/">PettingZoo</a> environment</li>
+</ul>
+<p>See our <a href="../ML-Agents-Overview/">ML-Agents Overview</a> page for detailed
+descriptions of all these features. Our go straight to our <a href="https://unity-technologies.github.io/ml-agents/">web docs</a>.</p>
+<h2 id="releases-documentation">Releases &amp; Documentation</h2>
+<p><strong>Our latest, stable release is <code>Release 20</code>. Click
+<a href="../Getting-Started/">here</a>
+to get started with the latest release of ML-Agents.</strong></p>
+<p><strong>You can also check out our new <a href="https://unity-technologies.github.io/ml-agents/">web docs</a>!</strong></p>
+<p>The table below lists all our releases, including our <code>main</code> branch which is
+under active development and may be unstable. A few helpful guidelines:
+- The <a href="../Versioning/">Versioning page</a> overviews how we manage our GitHub
+  releases and the versioning process for each of the ML-Agents components.
+- The <a href="https://github.com/Unity-Technologies/ml-agents/releases">Releases page</a>
+  contains details of the changes between releases.
+- The <a href="../Migrating/">Migration page</a> contains details on how to upgrade
+  from earlier releases of the ML-Agents Toolkit.
+- The <strong>Documentation</strong> links in the table below include installation and usage
+  instructions specific to each release. Remember to always use the
+  documentation that corresponds to the release version you're using.
+- The <code>com.unity.ml-agents</code> package is <a href="https://docs.unity3d.com/2020.1/Documentation/Manual/pack-safe.html">verified</a>
+  for Unity 2020.1 and later. Verified packages releases are numbered 1.0.x.</p>
+<table>
+<thead>
+<tr>
+<th align="center"><strong>Version</strong></th>
+<th align="center"><strong>Release Date</strong></th>
+<th align="center"><strong>Source</strong></th>
+<th align="center"><strong>Documentation</strong></th>
+<th align="center"><strong>Download</strong></th>
+<th align="center"><strong>Python Package</strong></th>
+<th align="center"><strong>Unity Package</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><strong>Release 20</strong></td>
+<td align="center"><strong>November 21, 2022</strong></td>
+<td align="center"><strong><a href="https://github.com/Unity-Technologies/ml-agents/tree/release_20">source</a></strong></td>
+<td align="center"><strong><a href="https://github.com/Unity-Technologies/ml-agents/tree/release_20_docs/docs/Readme.md">docs</a></strong></td>
+<td align="center"><strong><a href="https://github.com/Unity-Technologies/ml-agents/archive/release_20.zip">download</a></strong></td>
+<td align="center"><strong><a href="https://pypi.org/project/mlagents/0.30.0/">0.30.0</a></strong></td>
+<td align="center"><strong><a href="https://docs.unity3d.com/Packages/com.unity.ml-agents@2.3/manual/index.html">2.3.0</a></strong></td>
+</tr>
+<tr>
+<td align="center"><strong>main (unstable)</strong></td>
+<td align="center">--</td>
+<td align="center"><a href="https://github.com/Unity-Technologies/ml-agents/tree/main">source</a></td>
+<td align="center"><a href="https://github.com/Unity-Technologies/ml-agents/tree/main/docs/Readme.md">docs</a></td>
+<td align="center"><a href="https://github.com/Unity-Technologies/ml-agents/archive/main.zip">download</a></td>
+<td align="center">--</td>
+<td align="center">--</td>
+</tr>
+<tr>
+<td align="center"><strong>Verified Package 1.0.8</strong></td>
+<td align="center"><strong>May 26, 2021</strong></td>
+<td align="center"><strong><a href="https://github.com/Unity-Technologies/ml-agents/tree/com.unity.ml-agents_1.0.8">source</a></strong></td>
+<td align="center"><strong><a href="https://github.com/Unity-Technologies/ml-agents/blob/release_20_verified_docs/docs/Readme.md">docs</a></strong></td>
+<td align="center"><strong><a href="https://github.com/Unity-Technologies/ml-agents/archive/com.unity.ml-agents_1.0.8.zip">download</a></strong></td>
+<td align="center"><strong><a href="https://pypi.org/project/mlagents/0.16.1/">0.16.1</a></strong></td>
+<td align="center"><strong><a href="https://docs.unity3d.com/Packages/com.unity.ml-agents@1.0/manual/index.html">1.0.8</a></strong></td>
+</tr>
+</tbody>
+</table>
+<p>If you are a researcher interested in a discussion of Unity as an AI platform,
+see a pre-print of our
+<a href="https://arxiv.org/abs/1809.02627">reference paper on Unity and the ML-Agents Toolkit</a>.</p>
+<p>If you use Unity or the ML-Agents Toolkit to conduct research, we ask that you
+cite the following paper as a reference:</p>
+<pre><code>@article{juliani2020,
+  title={Unity: A general platform for intelligent agents},
+  author={Juliani, Arthur and Berges, Vincent-Pierre and Teng, Ervin and Cohen, Andrew and Harper, Jonathan and Elion, Chris and Goy, Chris and Gao, Yuan and Henry, Hunter and Mattar, Marwan and Lange, Danny},
+  journal={arXiv preprint arXiv:1809.02627},
+  year={2020}
+}
+</code></pre>
+<p>Additionally, if you use the MA-POCA trainer in your research, we ask that you
+cite the following paper as a reference:</p>
+<pre><code>@article{cohen2022,
+  title={On the Use and Misuse of Abosrbing States in Multi-agent Reinforcement Learning},
+  author={Cohen, Andrew and Teng, Ervin and Berges, Vincent-Pierre and Dong, Ruo-Ping and Henry, Hunter and Mattar, Marwan and Zook, Alexander and Ganguly, Sujoy},
+  journal={RL in Games Workshop AAAI 2022},
+  year={2022}
+}
+</code></pre>
+<h2 id="additional-resources">Additional Resources</h2>
+<p>We have a Unity Learn course,
+<a href="https://learn.unity.com/course/ml-agents-hummingbirds">ML-Agents: Hummingbirds</a>,
+that provides a gentle introduction to Unity and the ML-Agents Toolkit.</p>
+<p>We've also partnered with
+<a href="https://www.youtube.com/c/CodeMonkeyUnity">CodeMonkeyUnity</a> to create a
+<a href="https://www.youtube.com/playlist?list=PLzDRvYVwl53vehwiN_odYJkPBzcqFw110">series of tutorial videos</a>
+on how to implement and use the ML-Agents Toolkit.</p>
+<p>We have also published a series of blog posts that are relevant for ML-Agents:</p>
+<ul>
+<li>(July 12, 2021)
+  <a href="https://blog.unity.com/technology/ml-agents-plays-dodgeball">ML-Agents plays Dodgeball</a></li>
+<li>(May 5, 2021)
+  <a href="https://blogs.unity3d.com/2021/05/05/ml-agents-v2-0-release-now-supports-training-complex-cooperative-behaviors/">ML-Agents v2.0 release: Now supports training complex cooperative behaviors</a></li>
+<li>(December 28, 2020)
+  <a href="https://blogs.unity3d.com/2020/12/28/happy-holidays-from-the-unity-ml-agents-team/">Happy holidays from the Unity ML-Agents team!</a></li>
+<li>(November 20, 2020)
+  <a href="https://blogs.unity3d.com/2020/11/20/how-eidos-montreal-created-grid-sensors-to-improve-observations-for-training-agents/">How Eidos-Montréal created Grid Sensors to improve observations for training agents</a></li>
+<li>(November 11, 2020)
+  <a href="https://blogs.unity3d.com/2020/11/11/2020-aiunity-interns-shoutout/">2020 AI@Unity interns shoutout</a></li>
+<li>(May 12, 2020)
+  <a href="https://blogs.unity3d.com/2020/05/12/announcing-ml-agents-unity-package-v1-0/">Announcing ML-Agents Unity Package v1.0!</a></li>
+<li>(February 28, 2020)
+  <a href="https://blogs.unity3d.com/2020/02/28/training-intelligent-adversaries-using-self-play-with-ml-agents/">Training intelligent adversaries using self-play with ML-Agents</a></li>
+<li>(November 11, 2019)
+  <a href="https://blogs.unity3d.com/2019/11/11/training-your-agents-7-times-faster-with-ml-agents/">Training your agents 7 times faster with ML-Agents</a></li>
+<li>(October 21, 2019)
+  <a href="https://blogs.unity3d.com/2019/10/21/the-aiunity-interns-help-shape-the-world/">The AI@Unity interns help shape the world</a></li>
+<li>(April 15, 2019)
+  <a href="https://blogs.unity3d.com/2019/04/15/unity-ml-agents-toolkit-v0-8-faster-training-on-real-games/">Unity ML-Agents Toolkit v0.8: Faster training on real games</a></li>
+<li>(March 1, 2019)
+  <a href="https://blogs.unity3d.com/2019/03/01/unity-ml-agents-toolkit-v0-7-a-leap-towards-cross-platform-inference/">Unity ML-Agents Toolkit v0.7: A leap towards cross-platform inference</a></li>
+<li>(December 17, 2018)
+  <a href="https://blogs.unity3d.com/2018/12/17/ml-agents-toolkit-v0-6-improved-usability-of-brains-and-imitation-learning/">ML-Agents Toolkit v0.6: Improved usability of Brains and Imitation Learning</a></li>
+<li>(October 2, 2018)
+  <a href="https://blogs.unity3d.com/2018/10/02/puppo-the-corgi-cuteness-overload-with-the-unity-ml-agents-toolkit/">Puppo, The Corgi: Cuteness Overload with the Unity ML-Agents Toolkit</a></li>
+<li>(September 11, 2018)
+  <a href="https://blogs.unity3d.com/2018/09/11/ml-agents-toolkit-v0-5-new-resources-for-ai-researchers-available-now/">ML-Agents Toolkit v0.5, new resources for AI researchers available now</a></li>
+<li>(June 26, 2018)
+  <a href="https://blogs.unity3d.com/2018/06/26/solving-sparse-reward-tasks-with-curiosity/">Solving sparse-reward tasks with Curiosity</a></li>
+<li>(June 19, 2018)
+  <a href="https://blogs.unity3d.com/2018/06/19/unity-ml-agents-toolkit-v0-4-and-udacity-deep-reinforcement-learning-nanodegree/">Unity ML-Agents Toolkit v0.4 and Udacity Deep Reinforcement Learning Nanodegree</a></li>
+<li>(May 24, 2018)
+  <a href="https://blogs.unity3d.com/2018/05/24/imitation-learning-in-unity-the-workflow/">Imitation Learning in Unity: The Workflow</a></li>
+<li>(March 15, 2018)
+  <a href="https://blogs.unity3d.com/2018/03/15/ml-agents-v0-3-beta-released-imitation-learning-feedback-driven-features-and-more/">ML-Agents Toolkit v0.3 Beta released: Imitation Learning, feedback-driven features, and more</a></li>
+<li>(December 11, 2017)
+  <a href="https://blogs.unity3d.com/2017/12/11/using-machine-learning-agents-in-a-real-game-a-beginners-guide/">Using Machine Learning Agents in a real game: a beginner’s guide</a></li>
+<li>(December 8, 2017)
+  <a href="https://blogs.unity3d.com/2017/12/08/introducing-ml-agents-v0-2-curriculum-learning-new-environments-and-more/">Introducing ML-Agents Toolkit v0.2: Curriculum Learning, new environments, and more</a></li>
+<li>(September 19, 2017)
+  <a href="https://blogs.unity3d.com/2017/09/19/introducing-unity-machine-learning-agents/">Introducing: Unity Machine Learning Agents Toolkit</a></li>
+<li>Overviewing reinforcement learning concepts
+  (<a href="https://blogs.unity3d.com/2017/06/26/unity-ai-themed-blog-entries/">multi-armed bandit</a>
+  and
+  <a href="https://blogs.unity3d.com/2017/08/22/unity-ai-reinforcement-learning-with-q-learning/">Q-learning</a>)</li>
+</ul>
+<h3 id="more-from-unity">More from Unity</h3>
+<ul>
+<li><a href="https://unity.com/products/unity-simulation-pro">Unity Simulation Pro</a></li>
+<li><a href="https://github.com/Unity-Technologies/Unity-Robotics-Hub">Unity Robotics</a></li>
+<li><a href="https://unity.com/computer-vision">Unity Computer Vision</a></li>
+</ul>
+<h2 id="community-and-feedback">Community and Feedback</h2>
+<p>The ML-Agents Toolkit is an open-source project and we encourage and welcome
+contributions. If you wish to contribute, be sure to review our
+<a href="../CONTRIBUTING/">contribution guidelines</a> and
+<a href="../CODE_OF_CONDUCT.md">code of conduct</a>.</p>
+<p>For problems with the installation and setup of the ML-Agents Toolkit, or
+discussions about how to best setup or train your agents, please create a new
+thread on the
+<a href="https://forum.unity.com/forums/ml-agents.453/">Unity ML-Agents forum</a> and make
+sure to include as much detail as possible. If you run into any other problems
+using the ML-Agents Toolkit or have a specific feature request, please
+<a href="https://github.com/Unity-Technologies/ml-agents/issues">submit a GitHub issue</a>.</p>
+<p>Please tell us which samples you would like to see shipped with the ML-Agents Unity
+package by replying to
+<a href="https://forum.unity.com/threads/feedback-wanted-shipping-sample-s-with-the-ml-agents-package.1073468/">this forum thread</a>.</p>
+<p>Your opinion matters a great deal to us. Only by hearing your thoughts on the
+Unity ML-Agents Toolkit can we continue to improve and grow. Please take a few
+minutes to
+<a href="https://unitysoftware.co1.qualtrics.com/jfe/form/SV_55pQKCZ578t0kbc">let us know about it</a>.</p>
+<p>For any other questions or feedback, connect directly with the ML-Agents team at
+ml-agents@unity3d.com.</p>
+<h2 id="privacy">Privacy</h2>
+<p>In order to improve the developer experience for Unity ML-Agents Toolkit, we have added in-editor analytics.
+Please refer to "Information that is passively collected by Unity" in the
+<a href="https://unity3d.com/legal/privacy-policy">Unity Privacy Policy</a>.</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      com.unity.ml-agents copyright © 2017 - 2022 Unity Technologies
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d6c3db9e.min.js"></script>
+      
+    
+  </body>
+</html>

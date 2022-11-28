@@ -169,7 +169,7 @@ input.blue-btn, input.gray-btn { padding: 0 20px 4px 20px; }
 .gray-btn:hover { color: #fff; background-color: #222c37; }
 .bbtn { height: 50px; line-height: 50px; padding: 0 40px !important; font-size: 1.0em; }
 .sbtn { height: 24px; line-height: 24px; padding: 0 10px !important; font-size: 0.75em; }
-.dbtn, .dbtn:hover, .dbtn:active { cursor: default; background-color: #ccc; color: #f0f0f0; background-color: #ccc;  }
+.dbtn, .dbtn:hover, .dbtn:active { cursor: default; background-color: #ccc; color: #f0f0f0; }
 .centerbtn { float: none; display: inline-block; margin: 0; }
 
 /****************************************
@@ -400,7 +400,7 @@ div.content-wrap { width: 480px; float: left; margin: 0; }
 div.content-block { margin: 0; }
 
 }
-@media only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+@media only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (-webkit-min-device-pixel-ratio: 2) {
 
 div.header .menu .logo a, div.header .more ul li a, div.toolbar div.script-lang div.dialog div.close, div.lang-switcher div.current div.arrow, div.sidebar-menu ul li div.arrow { background-image: url(../images/sprites@2x.png); -webkit-background-size: 500px 250px; -moz-background-size: 500px 250px; -o-background-size: 500px 250px; background-size: 500px 250px; } 
 input[type="text"].error, input[type="tel"].error, input[type="email"].error, input[type="password"].error, textarea.error { background-image: url(../images/error-red.png); -webkit-background-size: 24px 12px; -moz-background-size: 24px 12px; background-size: 24px 12px; }
