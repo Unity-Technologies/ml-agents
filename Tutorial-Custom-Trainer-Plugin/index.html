@@ -19,7 +19,7 @@
     
     
       
-        <title>Tutorial Custom Trainer Plugin - Unity ML-Agents Toolkit</title>
+        <title>Custom Trainer Plugin - Unity ML-Agents Toolkit</title>
       
     
     
@@ -106,7 +106,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Tutorial Custom Trainer Plugin
+              Custom Trainer Plugin
             
           </span>
         </div>
@@ -500,23 +500,138 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" checked>
       
       
       
       
         <label class="md-nav__link" for="__nav_7">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Custom Trainer Plugin
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Custom Trainer Plugin
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-write-your-custom-trainer-class" class="md-nav__link">
+    Step 1: Write your custom trainer class
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-implement-your-custom-optimizer-for-the-trainer" class="md-nav__link">
+    Step 2: implement your custom optimizer for the trainer.
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-integrate-your-custom-trainer-into-the-plugin-system" class="md-nav__link">
+    Step 3: Integrate your custom trainer into the plugin system
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-install-your-custom-trainer-and-run-training" class="md-nav__link">
+    Step 4: Install your custom trainer and run training:
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validate-your-implementations" class="md-nav__link">
+    Validate your implementations:
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8">
           About
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="About" data-md-level="1">
-        <label class="md-nav__title" for="__nav_7">
+        <label class="md-nav__title" for="__nav_8">
           <span class="md-nav__icon md-icon"></span>
           About
         </label>
@@ -663,7 +778,7 @@
   </a>
 
 
-  <h1>Tutorial Custom Trainer Plugin</h1>
+  <h1>Custom Trainer Plugin</h1>
 
 <h3 id="step-1-write-your-custom-trainer-class">Step 1: Write your custom trainer class</h3>
 <p>Before you start writing your code, make sure to use your favorite environment management tool(e.g. <code>venv</code> or <code>conda</code>) to create and activate a Python virtual environment. The following command uses <code>conda</code>, but other tools work similarly:</p>
@@ -904,6 +1019,42 @@ dqn = mlagents_trainer_plugin.dqn.dqn_trainer:get_type_and_setting
       </main>
       
         <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../Python-On-Off-Policy-Trainer-Documentation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: On/Off Policy Trainer" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              On/Off Policy Trainer
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../FAQ/" class="md-footer__link md-footer__link--next" aria-label="Next: FAQs" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              FAQs
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
