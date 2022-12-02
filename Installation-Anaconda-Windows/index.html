@@ -30,7 +30,7 @@
         
           
           
-          <meta name="theme-color" content="#4cae4f">
+          <meta name="theme-color" content="#2094f3">
         
       
       
@@ -64,7 +64,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="light-green">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
   
     
     
@@ -775,8 +775,8 @@ versions and features.</p>
 <h2 id="step-1-install-python-via-anaconda">Step 1: Install Python via Anaconda</h2>
 <p><a href="https://www.anaconda.com/download/#windows">Download</a> and install Anaconda for
 Windows. By using Anaconda, you can manage separate environments for different
-distributions of Python. Python 3.8.13 or higher is required as we no longer
-support Python 2. In this guide, we are using Python version 3.8 and Anaconda
+distributions of Python. Python 3.7.2 or higher is required as we no longer
+support Python 2. In this guide, we are using Python version 3.7 and Anaconda
 version 5.1
 (<a href="https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe">64-bit</a>
 or <a href="https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe">32-bit</a>
@@ -825,11 +825,11 @@ installation of Python or other environments. Whenever you want to run
 ML-Agents, you will need activate this Conda environment.</p>
 <p>To create a new Conda environment, open a new Anaconda Prompt (<em>Anaconda Prompt</em>
 in the search bar) and type in the following command:</p>
-<pre><code class="language-sh">conda create -n ml-agents python=3.8
+<pre><code class="language-sh">conda create -n ml-agents python=3.7
 </code></pre>
 <p>You may be asked to install new packages. Type <code>y</code> and press enter <em>(make sure
 you are connected to the Internet)</em>. You must install these required packages.
-The new Conda environment is called ml-agents and uses Python version 3.8.</p>
+The new Conda environment is called ml-agents and uses Python version 3.7.</p>
 <p align="center">
   <img src="images/conda_new.PNG" alt="Anaconda Install" width="500" border="10" />
 </p>
@@ -855,9 +855,9 @@ local computer. You can do this using Git
 (<a href="https://git-scm.com/download/win">download here</a>) and running the following
 commands in an Anaconda Prompt <em>(if you open a new prompt, be sure to activate
 the ml-agents Conda environment by typing <code>activate ml-agents</code>)</em>:</p>
-<pre><code class="language-sh">git clone --branch release_20 https://github.com/Unity-Technologies/ml-agents.git
+<pre><code class="language-sh">git clone --branch release_19 https://github.com/Unity-Technologies/ml-agents.git
 </code></pre>
-<p>The <code>--branch release_20</code> option will switch to the tag of the latest stable
+<p>The <code>--branch release_19</code> option will switch to the tag of the latest stable
 release. Omitting that will get the <code>main</code> branch which is potentially
 unstable.</p>
 <p>If you don't want to use Git, you can find download links on the
