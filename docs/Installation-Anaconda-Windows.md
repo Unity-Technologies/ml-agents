@@ -18,8 +18,8 @@ versions and features.
 
 [Download](https://www.anaconda.com/download/#windows) and install Anaconda for
 Windows. By using Anaconda, you can manage separate environments for different
-distributions of Python. Python 3.8.13 or higher is required as we no longer
-support Python 2. In this guide, we are using Python version 3.8 and Anaconda
+distributions of Python. Python 3.7.2 or higher is required as we no longer
+support Python 2. In this guide, we are using Python version 3.7 and Anaconda
 version 5.1
 ([64-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe)
 or [32-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe)
@@ -80,12 +80,12 @@ To create a new Conda environment, open a new Anaconda Prompt (_Anaconda Prompt_
 in the search bar) and type in the following command:
 
 ```sh
-conda create -n ml-agents python=3.8
+conda create -n ml-agents python=3.7
 ```
 
 You may be asked to install new packages. Type `y` and press enter _(make sure
 you are connected to the Internet)_. You must install these required packages.
-The new Conda environment is called ml-agents and uses Python version 3.8.
+The new Conda environment is called ml-agents and uses Python version 3.7.
 
 <p align="center">
   <img src="images/conda_new.PNG" alt="Anaconda Install" width="500" border="10" />
@@ -151,7 +151,7 @@ config files in this directory when running `mlagents-learn`. Make sure you are
 connected to the Internet and then type in the Anaconda Prompt:
 
 ```console
-python -m pip install mlagents==0.29.0
+python -m pip install mlagents==0.30.0
 ```
 
 This will complete the installation of all the required Python packages to run
@@ -162,7 +162,7 @@ pip will get stuck when trying to read the cache of the package. If you see
 this, you can try:
 
 ```console
-python -m pip install mlagents==0.29.0 --no-cache-dir
+python -m pip install mlagents==0.30.0 --no-cache-dir
 ```
 
 This `--no-cache-dir` tells the pip to disable the cache.

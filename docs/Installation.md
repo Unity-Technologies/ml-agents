@@ -42,9 +42,9 @@ Consequently, to install and use the ML-Agents Toolkit you will need to:
 strongly recommend that you install Unity through the Unity Hub as it will
 enable you to manage multiple Unity versions.
 
-### Install **Python 3.8.13** or Higher
+### Install **Python 3.7.2** or Higher
 
-We recommend [installing](https://www.python.org/downloads/) Python 3.8.
+We recommend [installing](https://www.python.org/downloads/) Python 3.7.
 If you are using Windows, please install the x86-64 version and not x86.
 If your Python environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
@@ -74,7 +74,7 @@ You will need to clone the repository if you plan to modify or extend the
 ML-Agents Toolkit for your purposes. If you plan to contribute those changes
 back, make sure to clone the `main` branch (by omitting `--branch release_19`
 from the command above). See our
-[Contributions Guidelines](CONTRIBUTING.md) for more
+[Contributions Guidelines](../com.unity.ml-agents/CONTRIBUTING.md) for more
 information on contributing to the ML-Agents Toolkit.
 
 ### Install the `com.unity.ml-agents` Unity package
@@ -153,7 +153,7 @@ To install the `mlagents` Python package, activate your virtual environment and
 run from the command line:
 
 ```sh
-python -m pip install mlagents==0.29.0
+python -m pip install mlagents==0.30.0
 ```
 
 Note that this will install `mlagents` from PyPi, _not_ from the cloned
