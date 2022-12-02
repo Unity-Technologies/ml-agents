@@ -34,8 +34,8 @@ theme:
   logo: images/unity-logo.png
   favicon: images/unity-logo-black.png
   palette:
-    primary: green
-    accent: light green
+    primary: blue
+    accent: light blue
 extra_css:
   - extra.css
 markdown_extensions:
