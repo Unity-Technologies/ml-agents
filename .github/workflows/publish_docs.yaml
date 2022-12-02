@@ -6,7 +6,7 @@ on:
 jobs:
   publish:
     name: Publish Docs to GH Pages
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2

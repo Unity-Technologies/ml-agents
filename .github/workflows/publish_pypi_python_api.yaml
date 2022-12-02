@@ -10,10 +10,8 @@ on:
 
 jobs:
   build-and-publish:
-    # Only run on GitHub Enterprise
-    if: ${{ github.server_url == 'https://github.cds.internal.unity3d.com' }}
     name: publish to PyPI (or TestPyPI)
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: ubuntu-latest
     strategy:
         matrix:
             package-path: [ml-agents-envs]

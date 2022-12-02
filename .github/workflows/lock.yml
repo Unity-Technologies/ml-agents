@@ -10,8 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: dessant/lock-threads@v2
-        # Only lock threads on public GitHub mirror, not enterprise.
-        if: ${{ github.server_url == 'https://github.com' }}
         with:
           github-token: ${{ github.token }}
           issue-lock-inactive-days: '30'
