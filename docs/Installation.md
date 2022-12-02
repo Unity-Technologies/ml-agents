@@ -18,7 +18,7 @@ The ML-Agents Toolkit contains several components:
     a Unity scene. It is a foundational layer that facilitates data messaging
     between Unity scene and the Python machine learning algorithms.
     Consequently, `mlagents` depends on `mlagents_envs`.
-- Unity [Project](../Project/) that contains several
+- Unity [Project](https://github.com/Unity-Technologies/ml-agents/tree/main/Project/) that contains several
   [example environments](Learning-Environment-Examples.md) that highlight the
   various features of the toolkit to help you get started.
 
@@ -101,13 +101,13 @@ project by:
 1. Select the `package.json` file.
 
 <p align="center">
-  <img src="images/unity_package_manager_window.png"
+  <img src="../images/unity_package_manager_window.png"
        alt="Unity Package Manager Window"
-       height="300"
+       height="150"
        border="10" />
-  <img src="images/unity_package_json.png"
+  <img src="../images/unity_package_json.png"
      alt="package.json"
-     height="300"
+     height="150"
      border="10" />
 </p>
 
