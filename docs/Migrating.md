@@ -10,13 +10,13 @@ TODO: update ml-agents-env package version before release
 - The `gym-unity` package has been refactored into the `ml-agents-envs` package. Please update your imports accordingly.
 - Example:
   - Before
-```python
-from gym_unity.unity_gym_env import UnityToGymWrapper
-```
+    ```python
+    from gym_unity.unity_gym_env import UnityToGymWrapper
+    ```
   - After:
-```python
-from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
-```
+    ```python
+    from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
+    ```
 
 
 ## Migrating the package to version 2.0
