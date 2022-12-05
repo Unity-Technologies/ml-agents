@@ -8,7 +8,7 @@ on:
     - 'colab/**'
     - '.github/workflows/colab.yml'
   push:
-    branches: 
+    branches:
      - main
      - develop
      - 'release/**'
@@ -16,9 +16,7 @@ on:
 
 jobs:
   colab:
-    # Only run on GitHub Enterprise
-    if: ${{ github.server_url == 'https://github.cds.internal.unity3d.com' }}
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: ubuntu-latest
     env:
         COLAB_ALWAYS_INSTALL_XVFB: 1
         QLEARNING_NUM_TRAINING_STEPS: 5
@@ -37,18 +35,16 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '6.0.x'
-# Caching not supported on GitHub Enterprise
-# See https://github.com/actions/cache/issues/505
-#    - name: Cache pip
-#      uses: actions/cache@v2
-#      with:
-#        # This path is specific to Ubuntu
-#        path: ~/.cache/pip
-#        # Look to see if there is a cache hit for the corresponding requirements file
-#        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'gym-unity/setup.py', 'colab_requirements.txt') }}
-#        restore-keys: |
-#          ${{ runner.os }}-pip-
-#          ${{ runner.os }}-
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        # This path is specific to Ubuntu
+        path: ~/.cache/pip
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'gym-unity/setup.py', 'colab_requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip

@@ -7,9 +7,7 @@ on:
 
 jobs:
   markdown-link-check-full:
-    # Only run on GitHub Enterprise
-    if: ${{ github.server_url == 'https://github.cds.internal.unity3d.com' }}
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
       with:
@@ -28,8 +26,7 @@ jobs:
       run: |
         pre-commit run --hook-stage manual markdown-link-check-full --all-files
   full-pytest:
-    if: ${{ github.server_url == 'https://github.cds.internal.unity3d.com' }}
-    runs-on: [ self-hosted, Linux, X64 ]
+    runs-on: ubuntu-latest
 #   TODO: Re-use pytest workflow once https://github.com/github/roadmap/issues/257 is done.
 #    steps:
 #    - uses: actions/checkout@v2
@@ -57,18 +54,16 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-# Caching not supported on GitHub Enterprise
-# See https://github.com/actions/cache/issues/505
-#    - name: Cache pip
-#      uses: actions/cache@v2
-#      with:
-#        # This path is specific to Ubuntu
-#        path: ~/.cache/pip
-#        # Look to see if there is a cache hit for the corresponding requirements file
-#        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'test_requirements.txt', matrix.pip_constraints) }}
-#        restore-keys: |
-#          ${{ runner.os }}-pip-
-#          ${{ runner.os }}-
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        # This path is specific to Ubuntu
+        path: ~/.cache/pip
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'test_requirements.txt', matrix.pip_constraints) }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
     - name: Install dependencies

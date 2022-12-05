@@ -11,7 +11,7 @@ repos:
             )$
 
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.931
+    rev: v0.991
     hooks:
     -   id: mypy
         name: mypy-ml-agents
@@ -81,16 +81,21 @@ repos:
     types: [markdown]
     exclude: ".*localized.*"
 
-- repo: https://github.com/dotnet/format
-  rev: v5.1.225507
-  hooks:
-  - id: dotnet-format
-    entry: dotnet-format whitespace
-    args: [--folder, --include]
+#- repo: https://github.com/dotnet/format
+#  rev: v5.1.225507
+#  hooks:
+#  - id: dotnet-format
+#    entry: dotnet-format whitespace
+#    args: [--folder, --include]
 
 # "Local" hooks, see https://pre-commit.com/#repository-local-hooks
 -   repo: local
     hooks:
+    -   id: dotnet-format
+        name: dotnet-format
+        language: system
+        entry: dotnet format whitespace --folder --include
+        types_or: ["c#"]
     -   id: markdown-link-check
         name: markdown-link-check
         entry: utils/run_markdown_link_check.py
