@@ -72,7 +72,7 @@ public class ModelCarousel : MonoBehaviour
 
         Reset();
 
-        k_FixedUpdatePerSecond = (int) (1.0f / Time.fixedDeltaTime);
+        k_FixedUpdatePerSecond = (int)(1.0f / Time.fixedDeltaTime);
 
         if (m_TimeScaleOverride > 0.0f)
         {
@@ -87,7 +87,7 @@ public class ModelCarousel : MonoBehaviour
 
         Debug.Log("Starting Recording");
         RecorderWindow recorderWindow = GetRecorderWindow();
-        if(!recorderWindow.IsRecording())
+        if (!recorderWindow.IsRecording())
             recorderWindow.StartRecording();
     }
 
