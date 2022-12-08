@@ -186,6 +186,37 @@ def test_trainersettingsschedules_structure():
     assert trainer_settings.hyperparameters.epsilon_schedule == ScheduleType.LINEAR
 
 
+def test_even_checkpoints_structure():
+    """
+    Test structuring for even checkpoints
+    """
+    trainersettings_dict = {
+        "trainer_type": PPO_TRAINER_NAME,
+        "keep_checkpoints": 2,
+        "even_checkpoints": True,
+        "max_steps": 100.0,
+    }
+
+    trainer_settings = TrainerSettings.structure(trainersettings_dict, TrainerSettings)
+    assert isinstance(trainer_settings.hyperparameters, PPOSettings)
+    assert trainer_settings.checkpoint_interval == 50
+
+
+def test_default_checkpoint_interval_structure():
+    """
+    Test structuring for even checkpoints
+    """
+    trainersettings_dict = {
+        "trainer_type": PPO_TRAINER_NAME,
+        "keep_checkpoints": 2,
+        "max_steps": 100.0,
+    }
+
+    trainer_settings = TrainerSettings.structure(trainersettings_dict, TrainerSettings)
+    assert isinstance(trainer_settings.hyperparameters, PPOSettings)
+    assert trainer_settings.checkpoint_interval == 500000
+
+
 def test_reward_signal_structure():
     """
     Tests the RewardSignalSettings structure method. This one is special b/c
