@@ -616,10 +616,15 @@ class TrainerSettings(ExportableSettings):
     default_override: ClassVar[Optional["TrainerSettings"]] = None
     trainer_type: str = "ppo"
     hyperparameters: HyperparamSettings = attr.ib()
+    checkpoint_interval: int = attr.ib()
 
     @hyperparameters.default
     def _set_default_hyperparameters(self):
         return all_trainer_settings[self.trainer_type]()
+
+    @checkpoint_interval.default
+    def _set_default_checkpoint_interval(self):
+        return 500000
 
     network_settings: NetworkSettings = attr.ib(factory=NetworkSettings)
     reward_signals: Dict[RewardSignalType, RewardSignalSettings] = attr.ib(
@@ -627,7 +632,7 @@ class TrainerSettings(ExportableSettings):
     )
     init_path: Optional[str] = None
     keep_checkpoints: int = 5
-    checkpoint_interval: int = 500000
+    even_checkpoints: bool = False
     max_steps: int = 500000
     time_horizon: int = 64
     summary_freq: int = 50000
@@ -650,6 +655,11 @@ class TrainerSettings(ExportableSettings):
                 raise TrainerConfigError(
                     "When using memory, sequence length must be less than or equal to batch size. "
                 )
+
+    @checkpoint_interval.validator
+    def _set_checkpoint_interval(self, attribute, value):
+        if self.even_checkpoints:
+            self.checkpoint_interval = int(self.max_steps / self.keep_checkpoints)
 
     @staticmethod
     def dict_to_trainerdict(d: Dict, t: type) -> "TrainerSettings.DefaultTrainerDict":
@@ -704,6 +714,9 @@ class TrainerSettings(ExportableSettings):
             elif key == "max_steps":
                 d_copy[key] = int(float(val))
                 # In some legacy configs, max steps was specified as a float
+            # elif key == "even_checkpoints":
+            #     if val:
+            #         d_copy["checkpoint_interval"] = int(d_copy["max_steps"] / d_copy["keep_checkpoints"])
             elif key == "trainer_type":
                 if val not in all_trainer_types.keys():
                     raise TrainerConfigError(f"Invalid trainer type {val} was found")
