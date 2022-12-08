@@ -285,7 +285,7 @@ namespace Unity.MLAgents.Sensors
                 var cellColors = m_DebugSensor.PerceptionBuffer;
                 var rotation = m_GridPerception.GetGridRotation();
 
-                var scale = new Vector3(m_CellScale.x, 1, m_CellScale.z);
+                var scale = new Vector3(m_CellScale.x, m_CellScale.y, m_CellScale.z);
                 var gizmoYOffset = new Vector3(0, m_GizmoYOffset, 0);
                 var oldGizmoMatrix = Gizmos.matrix;
                 for (var i = 0; i < m_DebugSensor.PerceptionBuffer.Length; i++)
