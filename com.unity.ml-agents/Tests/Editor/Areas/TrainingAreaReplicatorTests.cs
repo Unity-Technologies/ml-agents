@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Tests.Areas
     [TestFixture]
     public class TrainingAreaReplicatorTests
     {
-        private TrainingAreaReplicator m_Replicator;
+        TrainingAreaReplicator m_Replicator;
 
         [SetUp]
         public void Setup()
@@ -19,6 +19,17 @@ namespace Unity.MLAgents.Tests.Areas
             trainingArea.name = "MyTrainingArea";
             m_Replicator = gameObject.AddComponent<TrainingAreaReplicator>();
             m_Replicator.baseArea = trainingArea;
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            var trainingAreas = Resources.FindObjectsOfTypeAll<GameObject>().Where(obj => obj.name == m_Replicator.TrainingAreaName);
+            foreach (var trainingArea in trainingAreas)
+            {
+                Object.DestroyImmediate(trainingArea);
+            }
+            m_Replicator = null;
         }
 
         private static object[] NumAreasCases =
@@ -51,10 +62,23 @@ namespace Unity.MLAgents.Tests.Areas
         public void TestAddEnvironments()
         {
             m_Replicator.numAreas = 10;
+            m_Replicator.buildOnly = false;
             m_Replicator.Awake();
             m_Replicator.OnEnable();
             var trainingAreas = Resources.FindObjectsOfTypeAll<GameObject>().Where(obj => obj.name == m_Replicator.TrainingAreaName);
             Assert.AreEqual(10, trainingAreas.Count());
+
+        }
+
+        [Test]
+        public void TestAddEnvironmentsBuildOnly()
+        {
+            m_Replicator.numAreas = 10;
+            m_Replicator.buildOnly = true;
+            m_Replicator.Awake();
+            m_Replicator.OnEnable();
+            var trainingAreas = Resources.FindObjectsOfTypeAll<GameObject>().Where(obj => obj.name == m_Replicator.TrainingAreaName);
+            Assert.AreEqual(1, trainingAreas.Count());
 
         }
     }
