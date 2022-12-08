@@ -9,11 +9,25 @@ using UnityEditor;
 using UnityEditor.Recorder;
 using UnityEngine;
 
+/**
+ *  Usage Notes:
+ *
+ *  Add onnx models to the list and they will be played sequentially.
+ *  Create a recorder and a video of the sequence will be captured automatically if "Auto Record" is selected.
+ *  Create a TextMeshPro Text GameObject and attach it to have the number of training steps of the current model shown.
+ *  To manually control transition between models choose a very large time, or "Pause" the system,
+ *  then use "Force Next" to advance.
+ *  "Reset" will start the sequence from the beginning again, use "Start" to proceed after resetting.
+ *  "Time Scale Override" can be set, "Seconds Between Switches" will decrease proportionally if you increase this
+ *  (i.e it represents simulated seconds between switches, not real time)
+ */
+
+
 public class ModelCarousel : MonoBehaviour
 {
-    public bool m_Start = false;
+    public bool m_Start = true;
     public bool m_Reset = false;
-    public bool m_Pause = false;
+    public bool m_Pause = true;
     public bool m_ForceNext = false;
     public bool m_Loop = false;
     public bool m_AutoRecord = true;
@@ -105,11 +119,10 @@ public class ModelCarousel : MonoBehaviour
             steps /= round;
             steps *= round;
 
-            newText = $"After {steps} steps";
+            newText = $"After {steps:n0} steps";
         }
 
         textMeshComponent?.SetText(newText);
-
     }
 
     void SetModel()
@@ -126,7 +139,6 @@ public class ModelCarousel : MonoBehaviour
             m_Agent.EndEpisode();
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         if (m_Start)
@@ -180,5 +192,3 @@ public class ModelCarousel : MonoBehaviour
         }
     }
 }
-
-
