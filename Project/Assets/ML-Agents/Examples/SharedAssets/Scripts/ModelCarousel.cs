@@ -6,7 +6,9 @@ using Unity.Barracuda;
 using Unity.MLAgents;
 using Unity.MLAgents.Policies;
 using UnityEditor;
+#if UNITY_EDITOR
 using UnityEditor.Recorder;
+#endif
 using UnityEngine;
 
 /**
@@ -14,6 +16,7 @@ using UnityEngine;
  *
  *  Add onnx models to the list and they will be played sequentially.
  *  Create a recorder and a video of the sequence will be captured automatically if "Auto Record" is selected.
+ *  Recording only works in the Editor (not in standalone build)
  *  Create a TextMeshPro Text GameObject and attach it to have the number of training steps of the current model shown.
  *  To manually control transition between models choose a very large time, or "Pause" the system,
  *  then use "Force Next" to advance.
@@ -51,10 +54,12 @@ public class ModelCarousel : MonoBehaviour
 
     public TextMeshProUGUI textMeshComponent;
 
+#if UNITY_EDITOR
     private RecorderWindow GetRecorderWindow()
     {
         return (RecorderWindow)EditorWindow.GetWindow(typeof(RecorderWindow));
     }
+#endif
 
     private void Reset()
     {
@@ -82,6 +87,7 @@ public class ModelCarousel : MonoBehaviour
 
     void StartRecording()
     {
+#if UNITY_EDITOR
         if (!m_AutoRecord)
             return;
 
@@ -89,10 +95,12 @@ public class ModelCarousel : MonoBehaviour
         RecorderWindow recorderWindow = GetRecorderWindow();
         if (!recorderWindow.IsRecording())
             recorderWindow.StartRecording();
+#endif
     }
 
     void StopRecording()
     {
+#if UNITY_EDITOR
         if (!m_AutoRecord)
             return;
 
@@ -100,6 +108,7 @@ public class ModelCarousel : MonoBehaviour
         RecorderWindow recorderWindow = GetRecorderWindow();
         if (recorderWindow.IsRecording())
             recorderWindow.StopRecording();
+#endif
     }
 
     void UpdateStepNumberText()
