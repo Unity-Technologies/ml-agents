@@ -70,9 +70,7 @@ namespace Unity.MLAgents.Areas
 #endif
                 return;
             }
-#if UNITY_EDITOR
             AddEnvironments();
-#endif
         }
 
         /// <summary>
