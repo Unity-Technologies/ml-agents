@@ -16,6 +16,7 @@ csharp:
     - unzip sonar-scanner-cli-macosx.zip -d ~/sonar-scanner-cli
     - echo "My secret is $SONARQUBE_TOKEN"
     - echo "My secret is $SONARQUBE_URL"
+    - echo "$SONARQUBE_LOGIN"
     - ~/sonar-scanner-cli/sonar-scanner-4.7.0.2747-macosx/bin/sonar-scanner -Dsonar.projectKey=$SONARQUBE_PROJECT_KEY -Dsonar.sources=ml-agents-env -Dsonar.sources=ml-agents -Dsonar.sources=ml-agents-plugin-examples -Dsonar.sources=ml-agents-trainer-plugin -Dsonar.sources=utils -Dsonar.host.url=$SONARQUBE_URL -Dsonar.login=$SONARQUBE_LOGIN -Dsonar.branch.name=$TARGET_BRANCH -Dsonar.scm.provider=git
   triggers:
     cancel_old_ci: true
