@@ -25,8 +25,13 @@ namespace Unity.MLAgents.Areas
         /// </summary>
         public float separation = 10f;
 
-        int3 m_GridSize = new int3(1, 1, 1);
-        int m_areaCount = 0;
+        /// <summary>
+        /// Whether to replicate in the editor or in a build only. Default = true
+        /// </summary>
+        public bool buildOnly = true;
+
+        int3 m_GridSize = new(1, 1, 1);
+        int m_AreaCount;
         string m_TrainingAreaName;
 
         /// <summary>
@@ -57,7 +62,14 @@ namespace Unity.MLAgents.Areas
         /// </summary>
         public void OnEnable()
         {
-            // Adds the training are replicas during OnEnable to ensure they are added before the Academy begins its work.
+            // Adds the training as replicas during OnEnable to ensure they are added before the Academy begins its work.
+            if (buildOnly)
+            {
+#if UNITY_STANDALONE && !UNITY_EDITOR
+                AddEnvironments();
+#endif
+                return;
+            }
             AddEnvironments();
         }
 
@@ -95,14 +107,14 @@ namespace Unity.MLAgents.Areas
                 {
                     for (int x = 0; x < m_GridSize.x; x++)
                     {
-                        if (m_areaCount == 0)
+                        if (m_AreaCount == 0)
                         {
                             // Skip this first area since it already exists.
-                            m_areaCount = 1;
+                            m_AreaCount = 1;
                         }
-                        else if (m_areaCount < numAreas)
+                        else if (m_AreaCount < numAreas)
                         {
-                            m_areaCount++;
+                            m_AreaCount++;
                             var area = Instantiate(baseArea, new Vector3(x * separation, y * separation, z * separation), Quaternion.identity);
                             area.name = m_TrainingAreaName;
                         }

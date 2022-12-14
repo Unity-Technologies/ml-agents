@@ -16,6 +16,8 @@ and this project adheres to
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 
 #### ml-agents / ml-agents-envs
+- Added training config feature to evenly distribute checkpoints throughout training. (#5842)
+- Updated training area replicator to add a condition to only replicate training areas when running a build. (#5842)
 
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
