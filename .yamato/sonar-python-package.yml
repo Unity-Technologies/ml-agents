@@ -7,7 +7,7 @@ csharp:
   variables:
     SONARQUBE_PROJECT_KEY: ai-ml-agents-toolkit
     SONARQUBE_URL: https://sonarqube.internal.unity3d.com
-    SONARQUBE_LOGIN: {{ secrets.SONARQUBE_PASSWORD }}
+    SONARQUBE_LOGIN: $SONARQUBE_TOKEN
     TARGET_BRANCH: develop
   commands:
     - npm install shellcheck --save-dev
