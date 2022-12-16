@@ -1,0 +1,108 @@
+fileFormatVersion: 2
+guid: b12bab3936bac71499d6b66aeb5ff2ed
+timeCreated: 1548117479
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: SM_Prop_Billboard_Burger_01
+    100004: SM_Prop_Billboard_Car_01
+    100006: SM_Prop_Billboard_City_01
+    100008: SM_Prop_Billboard_Donut_01
+    100010: SM_Prop_Billboard_Pizza_01
+    400000: //RootNode
+    400002: SM_Prop_Billboard_Burger_01
+    400004: SM_Prop_Billboard_Car_01
+    400006: SM_Prop_Billboard_City_01
+    400008: SM_Prop_Billboard_Donut_01
+    400010: SM_Prop_Billboard_Pizza_01
+    2300000: //RootNode
+    2300002: SM_Prop_Billboard_Burger_01
+    2300004: SM_Prop_Billboard_Car_01
+    2300006: SM_Prop_Billboard_City_01
+    2300008: SM_Prop_Billboard_Donut_01
+    2300010: SM_Prop_Billboard_Pizza_01
+    3300000: //RootNode
+    3300002: SM_Prop_Billboard_Burger_01
+    3300004: SM_Prop_Billboard_Car_01
+    3300006: SM_Prop_Billboard_City_01
+    3300008: SM_Prop_Billboard_Donut_01
+    3300010: SM_Prop_Billboard_Pizza_01
+    4300000: SM_Prop_Billboard_Base_01
+    4300002: SM_Prop_Billboard_Donut_01
+    4300004: SM_Prop_Billboard_City_01
+    4300006: SM_Prop_Billboard_Burger_01
+    4300008: SM_Prop_Billboard_Car_01
+    4300010: SM_Prop_Billboard_Pizza_01
+    9500000: //RootNode
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 0
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 0
+    keepQuads: 0
+    weldVertices: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 0
+    normalImportMode: 1
+    tangentImportMode: 3
+  importAnimation: 0
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
