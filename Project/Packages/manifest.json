@@ -15,7 +15,8 @@
     "com.unity.modules.physics": "1.0.0",
     "com.unity.modules.physics2d": "1.0.0",
     "com.unity.modules.uielements": "1.0.0",
-    "com.unity.modules.unityanalytics": "1.0.0"
+    "com.unity.modules.unityanalytics": "1.0.0",
+    "com.unity.modules.vehicles": "1.0.0"
   },
   "testables": [
     "com.unity.ml-agents",
