@@ -47,8 +47,6 @@ public class ModelCarousel : MonoBehaviour
 
     private NNModel m_OriginalModel = null;
 
-    private int k_FixedUpdatePerSecond;
-
     // The attached Agent
     Agent m_Agent;
 
@@ -61,12 +59,17 @@ public class ModelCarousel : MonoBehaviour
     }
 #endif
 
-    private void Reset()
+    private void Reset(bool setModel)
     {
         m_Reset = false;
         m_StepsSinceLastSwitch = 0;
         m_CurrentModelIndex = 0;
-        m_Agent.SetModel(m_OriginalModel.name, m_OriginalModel);
+
+        if (setModel)
+        {
+            m_Agent.SetModel(m_OriginalModel.name, m_OriginalModel);
+        }
+
         textMeshComponent?.SetText("Ready to Start");
     }
 
@@ -75,9 +78,7 @@ public class ModelCarousel : MonoBehaviour
         m_Agent = GetComponent<Agent>();
         m_OriginalModel = m_Agent.GetComponent<BehaviorParameters>().Model;
 
-        Reset();
-
-        k_FixedUpdatePerSecond = (int)(1.0f / Time.fixedDeltaTime);
+        Reset(false);
 
         if (m_TimeScaleOverride > 0.0f)
         {
@@ -160,7 +161,7 @@ public class ModelCarousel : MonoBehaviour
         if (m_Reset)
         {
             StopRecording();
-            Reset();
+            Reset(true);
             m_Pause = true;
             m_Start = false;
         }
@@ -175,7 +176,7 @@ public class ModelCarousel : MonoBehaviour
 
         m_StepsSinceLastSwitch++;
 
-        if (m_StepsSinceLastSwitch >= m_SecondsBetweenSwitches * k_FixedUpdatePerSecond || m_ForceNext)
+        if (m_StepsSinceLastSwitch >= (m_SecondsBetweenSwitches / Time.fixedDeltaTime) || m_ForceNext)
         {
             m_ForceNext = false;
             m_StepsSinceLastSwitch = 0;
