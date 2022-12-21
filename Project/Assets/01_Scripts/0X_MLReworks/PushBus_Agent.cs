@@ -31,6 +31,7 @@ public class PushBus_Agent : Agent
     /// The block to be pushed to the goal.
     /// </summary>
     public GameObject block;
+    public bool isRound;
 
     /// <summary>
     /// Detects when the block touches the goal.
@@ -260,12 +261,15 @@ public class PushBus_Agent : Agent
 
     public void SetBlockProperties()
     {
-        var scale = m_ResetParams.GetWithDefault("block_scale", 2);
-        //Set the scale of the block
-        m_BlockRb.transform.localScale = new Vector3(scale, 0.75f, scale);
+        if(!isRound)
+        {
+            var scale = m_ResetParams.GetWithDefault("block_scale", 2);
+            //Set the scale of the block
+            m_BlockRb.transform.localScale = new Vector3(scale, 0.75f, scale);
 
-        // Set the drag of the block
-        m_BlockRb.drag = m_ResetParams.GetWithDefault("block_drag", 0.5f);
+            // Set the drag of the block
+            m_BlockRb.drag = m_ResetParams.GetWithDefault("block_drag", 0.5f);
+        }
     }
 
     void SetResetParameters()
