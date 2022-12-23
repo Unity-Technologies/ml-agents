@@ -21,7 +21,6 @@ from mlagents.trainers.torch_entities.attention import (
 )
 from mlagents.trainers.exception import UnityTrainerException
 
-
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
 EncoderFunction = Callable[
     [torch.Tensor, int, ActivationFunction, int, str, bool], torch.Tensor
@@ -765,3 +764,23 @@ class LearningRate(nn.Module):
         # Todo: add learning rate decay
         super().__init__()
         self.learning_rate = torch.Tensor([lr])
+
+
+class SimpleDiscriminator(nn.Module):
+    def __init__(
+        self,
+        observation_specs: List[ObservationSpec],
+        network_settings: NetworkSettings,
+    ):
+        super().__init__()
+        self.network_body = NetworkBody(observation_specs, network_settings)
+        self.output_layer = nn.Sigmoid()
+
+    def forward(self, inputs: List[torch.Tensor]) -> torch.Tensor:
+        network_output, memories_out = self.network_body(inputs)
+        return self.output_layer(network_output)
+
+
+class SkillEncoder(nn.Module):
+    def __init__(self, skill_embedding_size: int):
+        super().__init__()
