@@ -321,6 +321,9 @@ namespace Unity.MLAgents
         /// </summary>
         internal VectorSensor collectObservationsSensor;
 
+
+        internal VectorSensor embeddingSensor;
+
         /// <summary>
         /// StackingSensor which is written to by AddVectorObs
         /// </summary>
@@ -601,6 +604,7 @@ namespace Unity.MLAgents
             using (m_CollectObservationsChecker.Start())
             {
                 CollectObservations(collectObservationsSensor);
+                CollectEmbedding(embeddingSensor);
             }
             // Request the last decision with no callbacks
             // We request a decision so Python knows the Agent is done immediately
@@ -1025,6 +1029,12 @@ namespace Unity.MLAgents
                 }
             }
 
+            if (param.EmbeddingSize > 0)
+            {
+                embeddingSensor = new VectorSensor(param.EmbeddingSize, "EmbeddingSensor");
+                sensors.Add(embeddingSensor);
+            }
+
             // Sort the Sensors by name to ensure determinism
             SensorUtils.SortSensors(sensors);
 
@@ -1110,6 +1120,7 @@ namespace Unity.MLAgents
                 using (m_CollectObservationsChecker.Start())
                 {
                     CollectObservations(collectObservationsSensor);
+                    CollectEmbedding(embeddingSensor);
                 }
             }
             using (TimerStack.Instance.Scoped("WriteActionMask"))
@@ -1200,6 +1211,11 @@ namespace Unity.MLAgents
         /// </remarks>
         public virtual void CollectObservations(VectorSensor sensor)
         {
+        }
+
+        public virtual void CollectEmbedding(VectorSensor embedding)
+        {
+
         }
 
         /// <summary>

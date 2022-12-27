@@ -766,21 +766,30 @@ class LearningRate(nn.Module):
         self.learning_rate = torch.Tensor([lr])
 
 
-class SimpleDiscriminator(nn.Module):
+class DiscriminatorEncoder(nn.Module):
     def __init__(
         self,
         observation_specs: List[ObservationSpec],
         network_settings: NetworkSettings,
+        shared: bool = True,
+        embedding_size: int = 32,
     ):
         super().__init__()
-        self.network_body = NetworkBody(observation_specs, network_settings)
-        self.output_layer = nn.Sigmoid()
+        self.discriminator_network_body = NetworkBody(
+            observation_specs, network_settings
+        )
+        if shared:
+            self.encoder_network_body = self.discriminator_network_body
+        else:
+            self.encoder_network_body = NetworkBody(observation_specs, network_settings)
+        self.encoding_size = network_settings.hidden_units
+        self.discriminator_output_layer = nn.Sigmoid()
+        self.encoder_output_layer = nn.Linear(self.encoding_size, embedding_size)
 
     def forward(self, inputs: List[torch.Tensor]) -> torch.Tensor:
-        network_output, memories_out = self.network_body(inputs)
-        return self.output_layer(network_output)
+        network_output, _ = self.discriminator_network_body(inputs)
+        return self.discriminator_output_layer(network_output)
 
-
-class SkillEncoder(nn.Module):
-    def __init__(self, skill_embedding_size: int):
-        super().__init__()
+    def eval_encoder(self, inputs: List[torch.Tensor]) -> torch.Tensor:
+        network_output, _ = self.encoder_network_body(inputs)
+        return self.encoder_output_layer(network_output)
