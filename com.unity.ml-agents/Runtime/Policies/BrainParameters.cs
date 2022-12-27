@@ -35,6 +35,8 @@ namespace Unity.MLAgents.Policies
     [Serializable]
     public class BrainParameters : ISerializationCallbackReceiver
     {
+        public int EmbeddingSize = 0;
+
         /// <summary>
         /// The number of the observations that are added in
         /// <see cref="Agent.CollectObservations(Sensors.VectorSensor)"/>
@@ -113,6 +115,7 @@ namespace Unity.MLAgents.Policies
             return new BrainParameters
             {
                 VectorObservationSize = VectorObservationSize,
+                EmbeddingSize = EmbeddingSize,
                 NumStackedVectorObservations = NumStackedVectorObservations,
                 VectorActionDescriptions = (string[])VectorActionDescriptions.Clone(),
                 ActionSpec = new ActionSpec(ActionSpec.NumContinuousActions, ActionSpec.BranchSizes),

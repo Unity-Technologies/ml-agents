@@ -19,13 +19,14 @@ namespace Unity.MLAgents.Editor
         const string k_DiscreteBranchSizeName = "BranchSizes";
         const string k_ActionDescriptionPropName = "VectorActionDescriptions";
         const string k_VecObsPropName = "VectorObservationSize";
+        const string k_EmbeddingSize = "EmbeddingSize";
         const string k_NumVecObsPropName = "NumStackedVectorObservations";
 
         /// <inheritdoc />
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             return GetHeightDrawVectorObservation() +
-                GetHeightDrawVectorAction(property);
+                GetHeightDrawVectorAction(property) + GetHeightDrawEmbeddingSize();
         }
 
         /// <inheritdoc />
@@ -37,6 +38,10 @@ namespace Unity.MLAgents.Editor
             EditorGUI.BeginProperty(position, label, property);
             EditorGUI.indentLevel++;
 
+            // Embedding Size
+            DrawEmbeddingSize(position, property);
+            position.y += k_LineHeight;
+
             // Vector Observations
             DrawVectorObservation(position, property);
             position.y += GetHeightDrawVectorObservation();
@@ -47,6 +52,12 @@ namespace Unity.MLAgents.Editor
 
             EditorGUI.EndProperty();
             EditorGUI.indentLevel = indent;
+        }
+
+        static void DrawEmbeddingSize(Rect position, SerializedProperty property)
+        {
+            EditorGUI.PropertyField(position, property.FindPropertyRelative(k_EmbeddingSize),
+                new GUIContent("Embedding Size", "The size of the model conditioning embedding."));
         }
 
         /// <summary>
@@ -85,6 +96,11 @@ namespace Unity.MLAgents.Editor
         static float GetHeightDrawVectorObservation()
         {
             return k_VecObsNumLine * k_LineHeight;
+        }
+
+        static float GetHeightDrawEmbeddingSize()
+        {
+            return k_LineHeight;
         }
 
         /// <summary>

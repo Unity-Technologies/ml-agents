@@ -9,7 +9,7 @@ from mlagents.trainers.settings import TrainerSettings, SerializationSettings
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.torch_entities.model_serialization import ModelSerializer
-
+from mlagents.trainers.policy.ase_policy import ASEPolicy
 
 logger = get_logger(__name__)
 DEFAULT_CHECKPOINT_NAME = "checkpoint.pt"
@@ -33,8 +33,12 @@ class TorchModelSaver(BaseModelSaver):
         self.exporter: Optional[ModelSerializer] = None
         self.modules: Dict[str, torch.nn.Modules] = {}
 
-    def register(self, module: Union[TorchPolicy, TorchOptimizer]) -> None:
-        if isinstance(module, TorchPolicy) or isinstance(module, TorchOptimizer):
+    def register(self, module: Union[TorchPolicy, TorchOptimizer, ASEPolicy]) -> None:
+        if (
+            isinstance(module, TorchPolicy)
+            or isinstance(module, TorchOptimizer)
+            or isinstance(module, ASEPolicy)
+        ):
             self.modules.update(module.get_modules())  # type: ignore
         else:
             raise UnityPolicyException(
