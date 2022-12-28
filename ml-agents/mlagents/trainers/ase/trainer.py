@@ -20,7 +20,7 @@ from mlagents.trainers.trajectory import Trajectory
 
 # import numpy as np
 from mlagents.trainers.policy.torch_policy import TorchPolicy
-from trainers.policy import Policy
+from mlagents.trainers.policy import Policy
 
 TRAINER_NAME = "ase"
 
