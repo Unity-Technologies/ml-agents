@@ -11,7 +11,7 @@ from mlagents.trainers.settings import (
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.torch_entities.networks import ValueNetwork
 from mlagents.trainers.buffer import AgentBuffer
-from timers import timed
+from mlagents_envs.timers import timed
 from mlagents.torch_utils import torch, default_device
 from mlagents.trainers.torch_entities.utils import ModelUtils
 
@@ -36,6 +36,7 @@ class ASESettings(OnPolicyHyperparamSettings):
     learning_rate_schedule: ScheduleType = ScheduleType.CONSTANT
     beta_schedule: ScheduleType = ScheduleType.CONSTANT
     epsilon_schedule: ScheduleType = ScheduleType.CONSTANT
+    demo_path: str = None
 
 
 class TorchASEOptimizer(TorchOptimizer):
