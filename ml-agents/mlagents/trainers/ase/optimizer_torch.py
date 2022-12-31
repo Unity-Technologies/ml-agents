@@ -18,7 +18,9 @@ from mlagents.trainers.torch_entities.utils import ModelUtils
 
 @attr.s(auto_attribs=True)
 class ASESettings(OnPolicyHyperparamSettings):
-    latent_dim: int = 16
+    latent_dim: int = 32
+    latent_steps_min: int = 1
+    latent_steps_max: int = 150
     beta: float = 5.0e-3
     epsilon: float = 0.2
     num_epoch: int = 3
@@ -95,7 +97,7 @@ class TorchASEOptimizer(TorchOptimizer):
 
     @timed
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
-        pass
+        print(num_sequences)
 
     # TODO move module update into TorchOptimizer for reward_provider
     def get_modules(self):

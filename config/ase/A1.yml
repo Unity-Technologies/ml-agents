@@ -2,8 +2,11 @@ behaviors:
   A1Skill:
     trainer_type: ase
     hyperparameters:
-      batch_size: 2048
-      buffer_size: 20480
+      latent_dim: 32
+      latent_steps_min: 1
+      latent_steps_max: 500
+      batch_size: 256
+      buffer_size: 2048
       learning_rate: 0.0003
       beta: 0.01
       epsilon: 0.2
@@ -30,6 +33,6 @@ behaviors:
 #      steps: 1000000
 #      strength: 1.0
 #      samples_per_update: 0
-#env_settings:
+env_settings:
 #   num_envs: 8
-#   num_areas: 8
+   num_areas: 8

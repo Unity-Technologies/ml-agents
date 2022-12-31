@@ -4,6 +4,7 @@
 
 from typing import cast, Type, Union, Dict, Any, Tuple
 
+from mlagents.trainers.exception import TrainerConfigError
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.ase.optimizer_torch import ASESettings, TorchASEOptimizer
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
@@ -54,12 +55,11 @@ class ASETrainer(OnPolicyTrainer):
         self.shared_discriminator = self.hyperparameters.shared_discriminator
         self.policy: ASEPolicy = None  # type: ignore
 
-    @staticmethod
-    def _get_embedding_size(behavior_spec: BehaviorSpec) -> Tuple:
-        for spec in behavior_spec.observation_specs:
+    def _get_embedding_size_and_idx(self, behavior_spec: BehaviorSpec) -> Tuple[int, int]:
+        for idx, spec in enumerate(behavior_spec.observation_specs):
             if spec.name == "EmbeddingSensor":
-                return spec.shape
-        return (0,)
+                return spec.shape[0], idx
+        raise TrainerConfigError("For some reason, the agent is missing the embedding vector sensor!")
 
     def create_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
@@ -70,7 +70,13 @@ class ASETrainer(OnPolicyTrainer):
             "conditional_sigma": False,
             "tanh_squash": False,
         }
-        disc_enc_kwargs: Dict[str, Any] = {"shared": self.shared_discriminator}
+        embedding_size, embedding_idx = self._get_embedding_size_and_idx(behavior_spec)
+        disc_enc_kwargs: Dict[str, Any] = {"shared": self.shared_discriminator,
+                                           "embedding_size": embedding_size}
+
+        additional_kwargs: Dict[str, Any] = {"latent_steps_min": self.hyperparameters.latent_steps_min,
+                                             "latent_steps_max": self.hyperparameters.latent_steps_max,
+                                             "embedding_idx": embedding_idx}
 
         if self.shared_critic:
             reward_signal_configs = self.trainer_settings.reward_signals
@@ -88,6 +94,7 @@ class ASETrainer(OnPolicyTrainer):
             actor_kwargs,
             disc_enc_cls,
             disc_enc_kwargs,
+            additional_kwargs
         )
 
         return policy
@@ -96,7 +103,7 @@ class ASETrainer(OnPolicyTrainer):
         return TorchASEOptimizer(cast(TorchPolicy, self.policy), self.trainer_settings)
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
-        pass
+        print(trajectory.behavior_id)
 
     def get_policy(self, name_behavior_id: str) -> Policy:
         return self.policy
