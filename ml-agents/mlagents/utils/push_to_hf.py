@@ -172,7 +172,7 @@ def package_to_hub(run_id,
     # Step 2: Download the files
     # Git pull
     repo_local_path = Path(local_repo_path) / repo_name
-    repo = Repository(repo_local_path, clone_from=repo_url, use_auth_token=use_auth_token)
+    repo = Repository(repo_local_path, clone_from=repo_url)
     repo.git_pull(rebase=True)
     repo.lfs_track(["*.onnx"])
 
@@ -227,7 +227,6 @@ def main():
     parser.add_argument("--commit-message", help="Commit message", type=str)
     parser.add_argument("--configfile-name", help="Name of the configuration yaml file", type=str,
                         default="configuration.yaml")
-    parser.add_argument("--use_auth_token", type=bool, default=True)
     parser.add_argument("--local-repo-path", help="local repository path", type=str, default="hub")
     args = parser.parse_args()
 
@@ -237,7 +236,6 @@ def main():
                    args.repo_id,
                    args.commit_message,
                    args.configfile_name,
-                   args.use_auth_token,
                    args.local_repo_path)
 
 # For python debugger to directly run this script
