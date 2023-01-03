@@ -70,11 +70,12 @@ def _generate_metadata(model_name: str, env_id: str, mean_reward: float, std_rew
     return metadata
 
 
-def _generate_model_card(repo_local_path, configfile_name, repo_id):
+def _generate_model_card(repo_local_path, configfile_name, repo_id, mean_reward, std_reward):
     """
     Generate the model card for the Hub
-    :param model_name: name of the model
-    :env_id: name of the environment
+    :param repo_local_path: local path of the repo
+    :param configfile_name: name of the yaml config file (by default configuration.yaml)
+    :param repo_id: id of the model repository from the Hugging Face Hub
     :mean_reward: mean reward of the agent
     :std_reward: standard deviation of the mean reward of the agent
     """
@@ -87,7 +88,7 @@ def _generate_model_card(repo_local_path, configfile_name, repo_id):
         model_name = data["behaviors"][env_id]["trainer_type"]
 
     # Step 2: Create the metadata
-    metadata = _generate_metadata(model_name, env_id)
+    metadata = _generate_metadata(model_name, env_id, mean_reward, std_reward)
 
     # Step 3: Generate the model card
     model_card = f"""
@@ -152,6 +153,7 @@ def package_to_hub(run_id,
     with all his files into the Hub
     :param run_id : name of the run
     :param path_of_run_id: path of the run_id folder that contains the onnx model.
+    :param repo_id: id of the model repository from the Hugging Face Hub
     :param commit_message: commit message
     :param configfile_name: name of the yaml config file (by default configuration.yaml)
     """
@@ -188,9 +190,14 @@ def package_to_hub(run_id,
 
     # Step 4: Create a config file
     _generate_config(repo_local_path, configfile_name)
+    
+    # Step 5: Retrieve evaluation results TODO
+    # Retrieve evaluation
+    mean_reward = 0.0
+    std_reward = 0.0
 
-    # Step 5: Generate and save the model card
-    generated_model_card, metadata = _generate_model_card(repo_local_path, configfile_name, repo_id)
+    # Step 6: Generate and save the model card
+    generated_model_card, metadata = _generate_model_card(repo_local_path, configfile_name, repo_id, mean_reward, std_reward)
     _save_model_card(repo_local_path, generated_model_card, metadata)
 
     logging.info(f"Pushing repo {run_id} to the Hugging Face Hub")
