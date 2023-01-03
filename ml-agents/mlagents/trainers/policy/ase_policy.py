@@ -119,7 +119,7 @@ class ASEPolicy(Policy):
             for agent_id in decision_requests.agent_id
         ]  # For 1-D array, the iterator order is correct.
 
-        self._update_latents(decision_requests, global_agent_ids)
+        # self._update_latents(decision_requests, global_agent_ids)
 
         run_out = self.evaluate(decision_requests, global_agent_ids)
         self.save_memories(global_agent_ids, run_out.get("memory_out"))
@@ -131,57 +131,57 @@ class ASEPolicy(Policy):
             agent_ids=list(decision_requests.agent_id),
         )
 
-    def _update_latents(self, decision_requests: DecisionSteps, global_agent_ids: List[str]) -> None:
-        if self._latents_need_updates(global_agent_ids):
-            self._reset_latents(global_agent_ids)
-            self._reset_latent_step_count(global_agent_ids)
-        else:
-            self._decrease_latent_step_count()
-
-        decision_requests.obs[self._embedding_idx] = np.array([self._latents[k] for k in global_agent_ids])
-
-    def _decrease_latent_step_count(self):
-        for k in self._latent_step_count:
-            self._latent_step_count[k] -= 1
-
-    def _latents_need_updates(self, global_agent_ids: List[str]) -> bool:
-        for agent_id in global_agent_ids:
-            try:
-                if self._latent_step_count[agent_id] <= 0:
-                    return True
-            except KeyError:
-                return True
-        return False
-
-    def _get_latents_need_updates(self, global_agent_ids: List[str]) -> List[str]:
-        needs_update_list = []
-        for agent_id in global_agent_ids:
-            try:
-                if self._latent_step_count[agent_id] <= 0:
-                    needs_update_list.append(agent_id)
-            except KeyError:
-                return global_agent_ids
-        return needs_update_list
-
-    def _reset_latents(self, global_agent_ids: List[str]) -> None:
-        update_list = self._get_latents_need_updates(global_agent_ids)
-        latents = self.sample_latents(len(update_list))
-        self._latents.update(zip(update_list, latents))
-
-    def _reset_latent_step_count(self, global_agent_ids: List[str]) -> None:
-        self._latent_step_count.update(zip(global_agent_ids,
-                                           [np.random.randint(self._latent_steps_min, self._latent_steps_max) for _ in
-                                            range(len(global_agent_ids))]))
-
-    def sample_latents(self, n):
-        z = np.random.normal(np.zeros([n, self._embedding_size])).astype(np.float32)
-        z = self._normalize(z)
-        return z
-
-    @staticmethod
-    def _normalize(z: np.ndarray) -> np.ndarray:
-        denom = np.linalg.norm(z, axis=1, keepdims=True)
-        return z / denom
+    # def _update_latents(self, decision_requests: DecisionSteps, global_agent_ids: List[str]) -> None:
+    #     if self._latents_need_updates(global_agent_ids):
+    #         self._reset_latents(global_agent_ids)
+    #         self._reset_latent_step_count(global_agent_ids)
+    #     else:
+    #         self._decrease_latent_step_count()
+    #
+    #     decision_requests.obs[self._embedding_idx] = np.array([self._latents[k] for k in global_agent_ids])
+    #
+    # def _decrease_latent_step_count(self):
+    #     for k in self._latent_step_count:
+    #         self._latent_step_count[k] -= 1
+    #
+    # def _latents_need_updates(self, global_agent_ids: List[str]) -> bool:
+    #     for agent_id in global_agent_ids:
+    #         try:
+    #             if self._latent_step_count[agent_id] <= 0:
+    #                 return True
+    #         except KeyError:
+    #             return True
+    #     return False
+    #
+    # def _get_latents_need_updates(self, global_agent_ids: List[str]) -> List[str]:
+    #     needs_update_list = []
+    #     for agent_id in global_agent_ids:
+    #         try:
+    #             if self._latent_step_count[agent_id] <= 0:
+    #                 needs_update_list.append(agent_id)
+    #         except KeyError:
+    #             return global_agent_ids
+    #     return needs_update_list
+    #
+    # def _reset_latents(self, global_agent_ids: List[str]) -> None:
+    #     update_list = self._get_latents_need_updates(global_agent_ids)
+    #     latents = self.sample_latents(len(update_list))
+    #     self._latents.update(zip(update_list, latents))
+    #
+    # def _reset_latent_step_count(self, global_agent_ids: List[str]) -> None:
+    #     self._latent_step_count.update(zip(global_agent_ids,
+    #                                        [np.random.randint(self._latent_steps_min, self._latent_steps_max) for _ in
+    #                                         range(len(global_agent_ids))]))
+    #
+    # def sample_latents(self, n):
+    #     z = np.random.normal(np.zeros([n, self._embedding_size])).astype(np.float32)
+    #     z = self._normalize(z)
+    #     return z
+    #
+    # @staticmethod
+    # def _normalize(z: np.ndarray) -> np.ndarray:
+    #     denom = np.linalg.norm(z, axis=1, keepdims=True)
+    #     return z / denom
 
     def increment_step(self, n_steps):
         self.global_step.increment(n_steps)

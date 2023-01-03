@@ -2,16 +2,12 @@ behaviors:
   A1Skill:
     trainer_type: ase
     hyperparameters:
-      latent_dim: 32
-      latent_steps_min: 1
-      latent_steps_max: 500
       batch_size: 256
       buffer_size: 2048
       learning_rate: 0.0003
       beta: 0.01
       epsilon: 0.2
-      gae_lambda: 0.95
-      td_lambda: 0.95
+      lambd: 0.95
       num_epoch: 3
       learning_rate_schedule: linear
     network_settings:
@@ -20,9 +16,12 @@ behaviors:
       num_layers: 3
       vis_encode_type: simple
     reward_signals:
-      extrinsic:
-        gamma: 0.995
-        strength: 1.0
+      ase:
+        latent_dim: 8
+        latent_steps_min: 1
+        latent_steps_max: 150
+        batch_size: 1024
+        demo_path: /home/miguelalonsojr/Projects/rle/Demos
     keep_checkpoints: 50
     even_checkpoints: true
     max_steps: 50000000

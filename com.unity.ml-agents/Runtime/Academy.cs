@@ -180,6 +180,7 @@ namespace Unity.MLAgents
         /// </summary>
         public int InferenceSeed
         {
+            get => m_InferenceSeed;
             set { m_InferenceSeed = value; }
         }
 
