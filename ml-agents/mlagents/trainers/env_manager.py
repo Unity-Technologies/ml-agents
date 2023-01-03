@@ -122,6 +122,7 @@ class EnvManager(ABC):
                     self.set_policy(brain_name, _policy)
         # Step the environments
         new_step_infos = self._step()
+
         return new_step_infos
 
     def process_steps(self, new_step_infos: List[EnvironmentStep]) -> int:

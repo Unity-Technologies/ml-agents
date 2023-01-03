@@ -18,7 +18,6 @@ from mlagents.trainers.ase.trainer import ASETrainer
 from mlagents.trainers.ppo.optimizer_torch import PPOSettings
 from mlagents.trainers.sac.optimizer_torch import SACSettings
 from mlagents.trainers.poca.optimizer_torch import POCASettings
-from mlagents.trainers.ase.optimizer_torch import ASESettings
 from mlagents import plugins as mla_plugins
 
 logger = logging_util.get_logger(__name__)
@@ -43,7 +42,7 @@ def get_default_trainer_types() -> Tuple[Dict[str, Any], Dict[str, Any]]:
             PPOTrainer.get_trainer_name(): PPOSettings,
             SACTrainer.get_trainer_name(): SACSettings,
             POCATrainer.get_trainer_name(): POCASettings,
-            ASETrainer.get_trainer_name(): ASESettings,
+            ASETrainer.get_trainer_name(): PPOSettings,
         }
     )
 

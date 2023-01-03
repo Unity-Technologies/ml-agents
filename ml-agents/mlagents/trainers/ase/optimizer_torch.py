@@ -1,44 +1,17 @@
 from typing import cast, Dict
 
-import attr
-
-from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
-from mlagents.trainers.settings import (
-    OnPolicyHyperparamSettings,
-    ScheduleType,
-    TrainerSettings,
-)
-from mlagents.trainers.policy.torch_policy import TorchPolicy
-from mlagents.trainers.torch_entities.networks import ValueNetwork
-from mlagents.trainers.buffer import AgentBuffer
-from mlagents_envs.timers import timed
 from mlagents.torch_utils import torch, default_device
+from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
+from mlagents.trainers.policy.torch_policy import TorchPolicy
+from mlagents.trainers.ppo.optimizer_torch import PPOSettings
+from mlagents.trainers.settings import (
+    TrainerSettings, RewardSignalType, RewardSignalSettings,
+)
+from mlagents.trainers.torch_entities.components.reward_providers import create_reward_provider
+from mlagents.trainers.torch_entities.networks import ValueNetwork
 from mlagents.trainers.torch_entities.utils import ModelUtils
-
-
-@attr.s(auto_attribs=True)
-class ASESettings(OnPolicyHyperparamSettings):
-    latent_dim: int = 32
-    latent_steps_min: int = 1
-    latent_steps_max: int = 150
-    beta: float = 5.0e-3
-    epsilon: float = 0.2
-    num_epoch: int = 3
-    beta_sdo: float = 0.5
-    omega_gp: float = 5
-    omega_do: float = 0.01
-    encoder_scaling: float = 1
-    spu: int = 32768
-    pv_mini_batch: int = 4096
-    de_mini_batch: int = 1024
-    gae_lambda: float = 0.95
-    td_lambda: float = 0.95
-    shared_critic: bool = False
-    shared_discriminator: bool = True
-    learning_rate_schedule: ScheduleType = ScheduleType.CONSTANT
-    beta_schedule: ScheduleType = ScheduleType.CONSTANT
-    epsilon_schedule: ScheduleType = ScheduleType.CONSTANT
-    demo_path: str = None
+from mlagents_envs.timers import timed
 
 
 class TorchASEOptimizer(TorchOptimizer):
@@ -46,8 +19,8 @@ class TorchASEOptimizer(TorchOptimizer):
         super().__init__(policy, trainer_settings)
         reward_signal_configs = trainer_settings.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
-        self.hyperparameters: ASESettings = cast(
-            ASESettings, trainer_settings.hyperparameters
+        self.hyperparameters: PPOSettings = cast(
+            PPOSettings, trainer_settings.hyperparameters
         )
 
         params = list(self.policy.actor.parameters())
@@ -97,7 +70,15 @@ class TorchASEOptimizer(TorchOptimizer):
 
     @timed
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
-        print(num_sequences)
+        pass
+
+    def create_reward_signals(
+        self, reward_signal_configs: Dict[RewardSignalType, RewardSignalSettings]
+    ) -> None:
+        for reward_signal, settings in reward_signal_configs.items():
+            self.reward_signals[reward_signal.value] = create_reward_provider(
+                reward_signal, self.policy.behavior_spec, settings
+            )
 
     # TODO move module update into TorchOptimizer for reward_provider
     def get_modules(self):

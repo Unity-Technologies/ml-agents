@@ -182,6 +182,7 @@ class RewardSignalType(Enum):
     GAIL: str = "gail"
     CURIOSITY: str = "curiosity"
     RND: str = "rnd"
+    ASE: str = "ase"
 
     def to_settings(self) -> type:
         _mapping = {
@@ -189,6 +190,7 @@ class RewardSignalType(Enum):
             RewardSignalType.GAIL: GAILSettings,
             RewardSignalType.CURIOSITY: CuriositySettings,
             RewardSignalType.RND: RNDSettings,
+            RewardSignalType.ASE: ASESettings
         }
         return _mapping[self]
 
@@ -248,6 +250,20 @@ class CuriositySettings(RewardSignalSettings):
 class RNDSettings(RewardSignalSettings):
     learning_rate: float = 1e-4
     encoding_size: Optional[int] = None
+
+
+@attr.s(auto_attribs=True)
+class ASESettings(RewardSignalSettings):
+    latent_dim: int = 8
+    latent_steps_min: int = 1
+    latent_steps_max: int = 150
+    encoder_scaling: float = 1
+    beta_sdo: float = 0.5
+    omega_gp: float = 5
+    omega_do: float = 0.01
+    batch_size: int = 1024
+    shared_discriminator: bool = True
+    demo_path: str = attr.ib(kw_only=True)
 
 
 # SAMPLERS #############################################################################
