@@ -13,6 +13,8 @@ from pathlib import Path
 from huggingface_hub import HfApi, HfFolder, Repository, upload_folder
 from huggingface_hub.repocard import metadata_eval_result, metadata_save
 
+from typing import Optional
+
 
 def _generate_config(repo_local_path, configfile_name):
     """
