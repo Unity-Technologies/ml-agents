@@ -144,7 +144,8 @@ def package_to_hub(run_id,
                    repo_id: str,
                    commit_message: str,
                    configfile_name,
-                   token: Optional[str] = None
+                   token: Optional[str] = None,
+                   local_repo_path="hub",
                    ):
     """
     This method generates the model card and upload the run_id folder
