@@ -764,32 +764,3 @@ class LearningRate(nn.Module):
         # Todo: add learning rate decay
         super().__init__()
         self.learning_rate = torch.Tensor([lr])
-
-
-class DiscriminatorEncoder(nn.Module):
-    def __init__(
-        self,
-        observation_specs: List[ObservationSpec],
-        network_settings: NetworkSettings,
-        shared: bool = True,
-        embedding_size: int = 32,
-    ):
-        super().__init__()
-        self.discriminator_network_body = NetworkBody(
-            observation_specs, network_settings
-        )
-        if shared:
-            self.encoder_network_body = self.discriminator_network_body
-        else:
-            self.encoder_network_body = NetworkBody(observation_specs, network_settings)
-        self.encoding_size = network_settings.hidden_units
-        self.discriminator_output_layer = nn.Sigmoid()
-        self.encoder_output_layer = nn.Linear(self.encoding_size, embedding_size)
-
-    def forward(self, inputs: List[torch.Tensor]) -> torch.Tensor:
-        network_output, _ = self.discriminator_network_body(inputs)
-        return self.discriminator_output_layer(network_output)
-
-    def eval_encoder(self, inputs: List[torch.Tensor]) -> torch.Tensor:
-        network_output, _ = self.encoder_network_body(inputs)
-        return self.encoder_output_layer(network_output)
