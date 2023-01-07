@@ -258,6 +258,7 @@ class ASESettings(RewardSignalSettings):
     latent_steps_min: int = 1
     latent_steps_max: int = 150
     encoder_scaling: float = 1
+    learning_rate: float = 2e-5
     beta_sdo: float = 0.5
     omega_gp: float = 5
     omega_do: float = 0.01
