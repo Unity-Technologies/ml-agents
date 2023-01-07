@@ -103,7 +103,7 @@ def make_demo_buffer(
 
 @timed
 def demo_to_buffer(
-    file_path: str, sequence_length: int, expected_behavior_spec: BehaviorSpec = None
+    file_path: str, sequence_length: int, expected_behavior_spec: BehaviorSpec = None, skip_obs_check: bool = False
 ) -> Tuple[BehaviorSpec, AgentBuffer]:
     """
     Loads demonstration file and uses it to fill training buffer.
@@ -124,7 +124,7 @@ def demo_to_buffer(
         # check observations match
         if len(behavior_spec.observation_specs) != len(
             expected_behavior_spec.observation_specs
-        ):
+        ) and not skip_obs_check:
             raise RuntimeError(
                 "The demonstrations do not have the same number of observations as the policy."
             )
@@ -135,7 +135,7 @@ def demo_to_buffer(
                     expected_behavior_spec.observation_specs,
                 )
             ):
-                if demo_obs.shape != policy_obs.shape:
+                if demo_obs.shape != policy_obs.shape and not skip_obs_check:
                     raise RuntimeError(
                         f"The shape {demo_obs} for observation {i} in demonstration \
                         do not match the policy's {policy_obs}."

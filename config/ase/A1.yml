@@ -21,7 +21,8 @@ behaviors:
         latent_steps_min: 1
         latent_steps_max: 150
         batch_size: 1024
-        demo_path: /home/miguelalonsojr/Projects/rle/Demos
+        demo_path: /home/miguelalonsojr/Projects/rle/Demos/A1
+        learning_rate: 2e-5
     keep_checkpoints: 50
     even_checkpoints: true
     max_steps: 50000000
