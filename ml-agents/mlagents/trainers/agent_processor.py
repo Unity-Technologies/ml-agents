@@ -2,7 +2,9 @@ import sys
 import numpy as np
 from typing import List, Dict, TypeVar, Generic, Tuple, Any, Union
 from collections import defaultdict, Counter
-import queue
+# import queue
+from multiprocessing import Queue
+from queue import Empty as QueueuEmptyException
 from mlagents.torch_utils import torch
 
 from mlagents_envs.base_env import (
@@ -369,7 +371,7 @@ class AgentManagerQueue(Generic[T]):
         separately from an AgentManager.
         """
         self._maxlen: int = maxlen
-        self._queue: queue.Queue = queue.Queue(maxsize=maxlen)
+        self._queue: Queue = Queue(maxsize=maxlen)
         self._behavior_id = behavior_id
 
     @property
@@ -393,9 +395,17 @@ class AgentManagerQueue(Generic[T]):
         Returns the approximate size of the queue. Note that values may differ
         depending on the underlying queue implementation.
         """
+        # TODO: Note that this may raise NotImplementedError on Unix platforms like macOS where sem_getvalue()
+        #  is not implemented.
+        # return self._queue.qsize()
         return self._queue.qsize()
+        return self._queue.size.value
 
     def empty(self) -> bool:
+        """
+        Returns the approximate size of the queue. Note that values may differ
+        depending on the underlying queue implementation.
+        """
         return self._queue.empty()
 
     def get_nowait(self) -> T:
@@ -405,7 +415,7 @@ class AgentManagerQueue(Generic[T]):
         """
         try:
             return self._queue.get_nowait()
-        except queue.Empty:
+        except QueueuEmptyException:
             raise self.Empty("The AgentManagerQueue is empty.")
 
     def put(self, item: T) -> None:

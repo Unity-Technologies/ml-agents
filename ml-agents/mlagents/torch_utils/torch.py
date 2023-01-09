@@ -1,5 +1,5 @@
 import os
-
+import platform
 from distutils.version import LooseVersion
 import pkg_resources
 from mlagents.torch_utils import cpu_utils
@@ -32,9 +32,14 @@ assert_torch_installed()
 # This should be the only place that we import torch directly.
 # Everywhere else is caught by the banned-modules setting for flake8
 import torch  # noqa I201
+import torch.multiprocessing as mp # noqa I201
 
+# torch.set_num_threads(cpu_utils.get_num_threads_to_use()) # TODO
+if platform == "linux" or platform == "linux2" or "darwin":
+    mp.set_start_method('forkserver', force=True)  # critical for make multiprocessing work
+if platform == "win32":
+    mp.set_start_method('spawn', force=True)  # critical for make multiprocessing work
 
-torch.set_num_threads(cpu_utils.get_num_threads_to_use())
 os.environ["KMP_BLOCKTIME"] = "0"
 
 

@@ -327,5 +327,7 @@ def _load_config(fp: TextIO) -> Dict[str, Any]:
             "A tool such as http://www.yamllint.com/ can be helpful with this."
         ) from e
 
+def _defaultdict_factory(args):
+    return args
 
 parser = _create_parser()

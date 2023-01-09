@@ -1,6 +1,7 @@
 # # Unity ML-Agents Toolkit
 from typing import Dict, List, Optional
 from collections import defaultdict
+from functools import partial
 import abc
 import time
 import attr
@@ -27,7 +28,7 @@ from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.stats import StatsPropertyType
 from mlagents.trainers.model_saver.model_saver import BaseModelSaver
-
+from mlagents.trainers.cli_utils import _defaultdict_factory
 
 logger = get_logger(__name__)
 
@@ -44,7 +45,8 @@ class RLTrainer(Trainer):
         # of what reward signals are actually present.
         self.cumulative_returns_since_policy_update: List[float] = []
         self.collected_rewards: Dict[str, Dict[str, int]] = {
-            "environment": defaultdict(lambda: 0)
+            # "environment": defaultdict(lambda: 0)
+            "environment": defaultdict(partial(_defaultdict_factory, 0))
         }
         self.update_buffer: AgentBuffer = AgentBuffer()
         self._stats_reporter.add_property(
@@ -275,7 +277,7 @@ class RLTrainer(Trainer):
                 )
                 self._has_warned_group_rewards = True
 
-    def advance(self) -> None:
+    def advance_process(self) -> None:
         """
         Steps the trainer, taking in trajectories and updates if ready.
         Will block and wait briefly if there are no trajectories.
@@ -286,18 +288,24 @@ class RLTrainer(Trainer):
                 # This ensures that even if the queue is being filled faster than it is
                 # being emptied, the trajectories in the queue are on-policy.
                 _queried = False
-                for _ in range(traj_queue.qsize()):
+                # for _ in range(traj_queue.qsize()):
+                while not traj_queue.empty():
                     _queried = True
                     try:
                         t = traj_queue.get_nowait()
                         self._process_trajectory(t)
                     except AgentManagerQueue.Empty:
                         break
-                if self.threaded and not _queried:
+                if self.threaded and not _queried:# TODO: do I need this for multiProc?
                     # Yield thread to avoid busy-waiting
                     time.sleep(0.0001)
+    def advance_update(self) -> None:
+        # TODO: some variables not compatible with single process
+
         if self.should_still_train:
             if self._is_ready_update():
+                print("maryam is ready to update!", flush=True)
+                print(self.get_step)
                 with hierarchical_timer("_update_policy"):
                     if self._update_policy():
                         for q in self.policy_queues:
