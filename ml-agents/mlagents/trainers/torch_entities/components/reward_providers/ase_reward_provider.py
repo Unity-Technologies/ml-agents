@@ -93,8 +93,10 @@ class DiscriminatorEncoder(nn.Module):
     def forward(self, inputs: List[torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
         discriminator_network_output, _ = self.discriminator_network_body(inputs)
         encoder_network_output, _ = self.encoder_network_body(inputs)
-        return self.discriminator_output_layer(discriminator_network_output), self.encoder_output_layer(
-            encoder_network_output)
+        discriminator_output = self.discriminator_output_layer(discriminator_network_output)
+        encoder_output = self.encoder_output_layer(encoder_network_output)
+        encoder_output = torch.nn.functional.normalize(encoder_output, dim=-1)
+        return discriminator_output, encoder_output
 
     def update_latents(self, expert_batch: AgentBuffer, mini_batch: AgentBuffer):
         n_obs = len(self.discriminator_network_body.processors)
@@ -119,6 +121,7 @@ class DiscriminatorEncoder(nn.Module):
         return ase_latents
 
     def compute_rewards(self, mini_batch: AgentBuffer) -> Tuple[torch.Tensor, torch.Tensor]:
+        # self.discriminator_network_body.update_normalization(mini_batch)
         disc_output, enc_output = self.compute_estimates(mini_batch)
         ase_latents = self.get_ase_latents(mini_batch)
         enc_reward = self._calc_encoder_reward(enc_output, ase_latents)
