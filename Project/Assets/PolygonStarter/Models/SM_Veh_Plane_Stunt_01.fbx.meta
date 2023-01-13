@@ -1,0 +1,148 @@
+fileFormatVersion: 2
+guid: 89cfb46882e163d428cb9f3d79ae2393
+timeCreated: 1572310485
+licenseType: Store
+ModelImporter:
+  serializedVersion: 21
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: SM_Veh_Plane_Stunt_01_Cockpit_Stick
+    100004: SM_Veh_Plane_Stunt_01_Crop_Duster
+    100006: SM_Veh_Plane_Stunt_01_Flap_fl_01
+    100008: SM_Veh_Plane_Stunt_01_Flap_fl_02
+    100010: SM_Veh_Plane_Stunt_01_Flap_fr_01
+    100012: SM_Veh_Plane_Stunt_01_Flap_fr_02
+    100014: SM_Veh_Plane_Stunt_01_Flap_rl_01
+    100016: SM_Veh_Plane_Stunt_01_Flap_rr_01
+    100018: SM_Veh_Plane_Stunt_01_Flap_Tail
+    100020: SM_Veh_Plane_Stunt_01_Glass
+    100022: SM_Veh_Plane_Stunt_01_Prop
+    100024: SM_Veh_Plane_Stunt_01_Wheels
+    400000: //RootNode
+    400002: SM_Veh_Plane_Stunt_01_Cockpit_Stick
+    400004: SM_Veh_Plane_Stunt_01_Crop_Duster
+    400006: SM_Veh_Plane_Stunt_01_Flap_fl_01
+    400008: SM_Veh_Plane_Stunt_01_Flap_fl_02
+    400010: SM_Veh_Plane_Stunt_01_Flap_fr_01
+    400012: SM_Veh_Plane_Stunt_01_Flap_fr_02
+    400014: SM_Veh_Plane_Stunt_01_Flap_rl_01
+    400016: SM_Veh_Plane_Stunt_01_Flap_rr_01
+    400018: SM_Veh_Plane_Stunt_01_Flap_Tail
+    400020: SM_Veh_Plane_Stunt_01_Glass
+    400022: SM_Veh_Plane_Stunt_01_Prop
+    400024: SM_Veh_Plane_Stunt_01_Wheels
+    2300000: //RootNode
+    2300002: SM_Veh_Plane_Stunt_01_Cockpit_Stick
+    2300004: SM_Veh_Plane_Stunt_01_Crop_Duster
+    2300006: SM_Veh_Plane_Stunt_01_Flap_fl_01
+    2300008: SM_Veh_Plane_Stunt_01_Flap_fl_02
+    2300010: SM_Veh_Plane_Stunt_01_Flap_fr_01
+    2300012: SM_Veh_Plane_Stunt_01_Flap_fr_02
+    2300014: SM_Veh_Plane_Stunt_01_Flap_rl_01
+    2300016: SM_Veh_Plane_Stunt_01_Flap_rr_01
+    2300018: SM_Veh_Plane_Stunt_01_Flap_Tail
+    2300020: SM_Veh_Plane_Stunt_01_Glass
+    2300022: SM_Veh_Plane_Stunt_01_Prop
+    2300024: SM_Veh_Plane_Stunt_01_Wheels
+    3300000: //RootNode
+    3300002: SM_Veh_Plane_Stunt_01_Cockpit_Stick
+    3300004: SM_Veh_Plane_Stunt_01_Crop_Duster
+    3300006: SM_Veh_Plane_Stunt_01_Flap_fl_01
+    3300008: SM_Veh_Plane_Stunt_01_Flap_fl_02
+    3300010: SM_Veh_Plane_Stunt_01_Flap_fr_01
+    3300012: SM_Veh_Plane_Stunt_01_Flap_fr_02
+    3300014: SM_Veh_Plane_Stunt_01_Flap_rl_01
+    3300016: SM_Veh_Plane_Stunt_01_Flap_rr_01
+    3300018: SM_Veh_Plane_Stunt_01_Flap_Tail
+    3300020: SM_Veh_Plane_Stunt_01_Glass
+    3300022: SM_Veh_Plane_Stunt_01_Prop
+    3300024: SM_Veh_Plane_Stunt_01_Wheels
+    4300000: SM_Veh_Plane_Stunt_01
+    4300002: SM_Veh_Plane_Stunt_01_Wheels
+    4300004: SM_Veh_Plane_Stunt_01_Prop
+    4300006: SM_Veh_Plane_Stunt_01_Flap_fr_02
+    4300008: SM_Veh_Plane_Stunt_01_Cockpit_Stick
+    4300010: SM_Veh_Plane_Stunt_01_Flap_rl_01
+    4300012: SM_Veh_Plane_Stunt_01_Flap_rr_01
+    4300014: SM_Veh_Plane_Stunt_01_Flap_fl_01
+    4300016: SM_Veh_Plane_Stunt_01_Flap_fl_02
+    4300018: SM_Veh_Plane_Stunt_01_Crop_Duster
+    4300020: SM_Veh_Plane_Stunt_01_Glass
+    4300022: SM_Veh_Plane_Stunt_01_Flap_fr_01
+    4300024: SM_Veh_Plane_Stunt_01_Flap_Tail
+    9500000: //RootNode
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 0
+    importBlendShapes: 0
+    importCameras: 0
+    importLights: 0
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 0
+    normalImportMode: 1
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 0
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
